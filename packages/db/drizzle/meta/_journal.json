@@ -1,0 +1,230 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1787718035606,
+      "tag": "0000_squashed_baseline",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789266641746,
+      "tag": "0001_skinny_thunderbolt_ross",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789270738369,
+      "tag": "0002_organization_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789288721535,
+      "tag": "0003_news_system",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789322548244,
+      "tag": "0004_org_scoped_api_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789322883394,
+      "tag": "0005_match_streams_pk",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789327865945,
+      "tag": "0006_volatile_ego",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789327934743,
+      "tag": "0007_worthless_grim_reaper",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789362542027,
+      "tag": "0008_gray_blizzard",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789404826723,
+      "tag": "0009_sparkling_kabuki",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789404826724,
+      "tag": "0010_drop_legacy_notifications_placeholder",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789543920084,
+      "tag": "0011_clammy_black_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789552931646,
+      "tag": "0012_wakeful_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1789568391702,
+      "tag": "0013_daffy_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1789587789947,
+      "tag": "0014_chubby_killer_shrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1789597993725,
+      "tag": "0015_demonic_ares",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789598032639,
+      "tag": "0016_green_ser_duncan",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789660985471,
+      "tag": "0017_long_scrambler",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790007494268,
+      "tag": "0018_add_sessions_invalidated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1790012224158,
+      "tag": "0019_hard_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1790017912758,
+      "tag": "0020_flawless_naoko",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1790100000000,
+      "tag": "0021_tournament_stage_socials",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790050377863,
+      "tag": "0022_chief_krista_starr",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1790120729565,
+      "tag": "0023_mature_rictor",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1790127066587,
+      "tag": "0024_next_slyde",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790296140572,
+      "tag": "0025_absent_jimmy_woo",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1790304311263,
+      "tag": "0026_tiny_mole_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1790318424335,
+      "tag": "0027_keen_corsair",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1790413744430,
+      "tag": "0028_liquipedia_team_names",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1790548961019,
+      "tag": "0029_fk_lookup_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1790718470124,
+      "tag": "0030_ghost_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1790797832950,
+      "tag": "0031_stream_channel_type",
+      "breakpoints": true
+    }
+  ]
+}

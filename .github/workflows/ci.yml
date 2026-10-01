@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow_ref }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # cloudflare-env.d.ts is gitignored, apps/web typecheck needs it.
+      - name: Generate Cloudflare types
+        run: npm run cf-typegen --workspace=apps/web
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - name: Check Drizzle migrations
+        working-directory: packages/db
+        run: npx drizzle-kit check
+
+      - name: Build Worker bundle
+        run: npm run cf-build --workspace=apps/web

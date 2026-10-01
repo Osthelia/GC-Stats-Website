@@ -1,0 +1,1 @@
+ALTER TABLE "match_streams" ADD CONSTRAINT "match_streams_match_id_stream_channel_id_pk" PRIMARY KEY("match_id","stream_channel_id");

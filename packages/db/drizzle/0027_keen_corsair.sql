@@ -1,0 +1,1 @@
+ALTER TABLE "news_authors" DROP COLUMN "socials";

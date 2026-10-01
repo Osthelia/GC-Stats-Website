@@ -1,0 +1,1 @@
+ALTER TABLE "stream_channels" ADD COLUMN "type" text DEFAULT 'official' NOT NULL;

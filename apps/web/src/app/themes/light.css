@@ -1,0 +1,34 @@
+/**
+ * Public site — light theme. See ../themes/dark.css for the counterpart.
+ * The `neutral-*` scale is inverted rather than left alone: components use
+ * e.g. `text-neutral-500`/`border-neutral-800` expecting "dim text"/"subtle
+ * border" *relative to the page background*, not a specific literal gray —
+ * so light theme needs values that read the same way against a light page.
+ */
+:root[data-site-theme="light"] {
+  color-scheme: light;
+
+  --gcs-bg: #f6f6f7;
+  --gcs-surface: #ffffff;
+  --gcs-surface-2: #f0f0f2;
+  --gcs-surface-3: #fafafb;
+  --gcs-hover: #eef0f3;
+  --gcs-hover-2: #e4e6ea;
+  --gcs-border: #e2e3e6;
+
+  --gcs-text: #16171a;
+  --gcs-text-dim: #2c2d31;
+  --gcs-text-secondary: #5a5b61;
+  --gcs-text-tertiary: #7a7b82;
+
+  --color-neutral-50: #18181b;
+  --color-neutral-100: #26262a;
+  --color-neutral-200: #35353a;
+  --color-neutral-300: #45454b;
+  --color-neutral-400: #5c5c62;
+  --color-neutral-500: #75757c;
+  --color-neutral-600: #8f8f96;
+  --color-neutral-700: #aeaeb4;
+  --color-neutral-800: #dcdce0;
+  --color-neutral-900: #eeeef0;
+}

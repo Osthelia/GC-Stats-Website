@@ -1,0 +1,75 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "gc-stats-web",
+  "main": "./custom-worker.ts",
+  "compatibility_date": "2026-08-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "images": {
+    "binding": "IMAGES"
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "a47df1aacaaf46399507f2dd5cd32847"
+    },
+    {
+      // Same Neon database as HYPERDRIVE, caching disabled — used by
+      // packages/db/src/client.ts's `adminDb` for admin/dashboard reads that
+      // must reflect a write made moments earlier.
+      "binding": "HYPERDRIVE_ADMIN",
+      "id": "2a5a163febd24c0ea6392872f115b8f1"
+    }
+  ],
+  "vpc_services": [
+    {
+      "binding": "RIOT_RELAY",
+      "service_id": "01a0e3ed-56fb-7691-a6f5-39c2c693c47d"
+    }
+  ],
+  "services": [
+    {
+      "binding": "DISCORD_NOTIFICATIONS",
+      "service": "discord-notifications-worker"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/15 * * * *", "5 0 1 * *", "0 0 * * *", "* * * * *"]
+  },
+  "vars": {
+    "DEPLOY_TARGET": "cloudflare",
+    "AUTH_TRUST_HOST": true,
+    "AUTH_URL": "https://v2.gc-stats.app",
+    "SITE_URL": "https://v2.gc-stats.app",
+    "S3_REGION": "auto",
+    "S3_PUBLIC_URL": "https://cdn.gc-stats.app",
+    "S3_FORCE_PATH_STYLE": true,
+    "DISCORD_GUILD_ID": "1497392646958747858",
+    "DISCORD_INVITE_URL": "https://discord.gg/kFHNN8cDXJ",
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "redact_query_string": false,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "destinations": [
+        "osthelia-logs"
+      ],
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "destinations": [
+        "osthelia-traces"
+      ],
+      "persist": true
+    }
+  }
+}

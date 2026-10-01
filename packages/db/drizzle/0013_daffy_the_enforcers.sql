@@ -1,0 +1,1 @@
+ALTER TABLE "stage_qualifications" ALTER COLUMN "cash_prize_currency" SET DATA TYPE varchar(8);

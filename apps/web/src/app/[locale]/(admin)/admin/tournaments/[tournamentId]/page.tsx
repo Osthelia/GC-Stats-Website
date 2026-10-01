@@ -1,0 +1,55 @@
+/**
+ * GC-Stats — page
+ *
+ * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { PERMISSIONS } from "@gc-stats/db";
+import { getAdminTournament, listPointTypeOptions } from "@/lib/admin-tournaments";
+import { listTournamentEntrants, listTournamentStages } from "@/lib/admin-tournament-detail";
+import { requireAdminPermission, hasAccess } from "@/lib/rbac";
+import type { AppLocale } from "@/i18n/routing";
+import { TournamentDetailHeader } from "@/components/admin/tournament-detail-header";
+import { TournamentEntrantsPanel } from "@/components/admin/tournament-entrants-panel";
+import { TournamentStagesOverview } from "@/components/admin/tournament-stages-overview";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { tournamentId } = await params;
+  const id = Number(tournamentId);
+  const tournament = Number.isInteger(id) ? await getAdminTournament(id) : null;
+  return { title: tournament?.name ?? "Tournament" };
+}
+
+export default async function AdminTournamentDetailPage({ params }: { params: Promise<{ locale: string; tournamentId: string }> }) {
+  const { locale, tournamentId } = await params;
+  const id = Number(tournamentId);
+  if (!Number.isInteger(id)) notFound();
+
+  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
+  await getTranslations({ locale, namespace: "admin.tournaments" });
+
+  const tournament = await getAdminTournament(id);
+  if (!tournament) notFound();
+
+  const [entrants, stages, pointTypeOptions] = await Promise.all([listTournamentEntrants(id), listTournamentStages(id), listPointTypeOptions()]);
+  const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <TournamentDetailHeader tournament={tournament} pointTypeOptions={pointTypeOptions} canManage={canManage} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <TournamentStagesOverview tournamentId={id} stages={stages} />
+        </div>
+        <div className="lg:col-span-5">
+          <TournamentEntrantsPanel tournamentId={id} entrants={entrants} canManage={canManage} />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,28 @@
+{
+  "name": "gc-stats",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": "Osthelia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Osthelia/GC-Stats-Website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Osthelia/GC-Stats-Website/issues"
+  },
+  "homepage": "https://github.com/Osthelia/GC-Stats-Website#readme",
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

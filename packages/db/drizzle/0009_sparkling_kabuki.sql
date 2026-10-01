@@ -1,0 +1,2 @@
+ALTER TABLE "data_explorer_error_logs" ADD COLUMN "created_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "match_player_povs" ADD CONSTRAINT "match_player_povs_match_login_unique" UNIQUE("match_id","twitch_login");

@@ -1,0 +1,24 @@
+// @ts-expect-error `.open-next/worker.js` is generated at build time by `opennextjs-cloudflare build`
+import { default as handler } from "./.open-next/worker.js";
+
+export default {
+  fetch: handler.fetch,
+
+  // Routed through a real fetch instead of calling runJobsForCron directly:
+  // getCloudflareContext() (used by packages/db and riot-relay-client) only
+  // resolves inside the request context that handler.fetch's own wrapper
+  // sets up, which a bare scheduled() call never gets.
+  async scheduled(controller, env, ctx) {
+    const url = new URL("/api/internal/cron", "https://internal.gc-stats.app");
+    url.searchParams.set("cron", controller.cron);
+    const request = new Request(url, {
+      method: "POST",
+      headers: { authorization: `Bearer ${env.CRON_SECRET}` },
+    });
+    ctx.waitUntil(handler.fetch(request, env, ctx));
+  },
+} satisfies ExportedHandler<CloudflareEnv>;
+
+// Required because this app uses the DO Queue and DO Tag Cache for ISR/cache revalidation.
+// @ts-expect-error `.open-next/worker.js` is generated at build time by `opennextjs-cloudflare build`
+export { DOQueueHandler, DOShardedTagCache } from "./.open-next/worker.js";

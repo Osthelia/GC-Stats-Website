@@ -1,0 +1,1 @@
+CREATE INDEX "page_views_viewed_at_idx" ON "page_views" USING btree ("viewed_at");

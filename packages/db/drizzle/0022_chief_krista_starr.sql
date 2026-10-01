@@ -1,0 +1,1 @@
+ALTER TABLE "forum_messages" ADD CONSTRAINT "forum_messages_parent_id_forum_messages_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."forum_messages"("id") ON DELETE set null ON UPDATE no action;

@@ -1,0 +1,2 @@
+ALTER TABLE "forum_threads" ADD CONSTRAINT "forum_threads_subject_unique" UNIQUE("subject_type","subject_id");--> statement-breakpoint
+ALTER TABLE "reactions" ADD CONSTRAINT "reactions_reactable_user_emote_unique" UNIQUE("reactable_type","reactable_id","user_id","emote_id");

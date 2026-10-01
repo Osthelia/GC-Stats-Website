@@ -1,0 +1,40 @@
+/**
+ * Public site — dark theme (default). Scoped to `:root` so it also acts as
+ * the pre-hydration fallback (no `data-site-theme` attribute yet = dark),
+ * matching the site's original always-dark look. See ../themes/light.css
+ * for the counterpart and src/lib/site-settings.tsx for how the attribute
+ * gets set.
+ */
+:root,
+:root[data-site-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces, darkest to lightest */
+  --gcs-bg: #0e0e0e;
+  --gcs-surface: #161616;
+  --gcs-surface-2: #111111;
+  --gcs-surface-3: #171717;
+  --gcs-hover: #1f1f1f;
+  --gcs-hover-2: #2a2a2a;
+  --gcs-border: #232323;
+
+  /* Text, brightest to dimmest */
+  --gcs-text: #f2f2f2;
+  --gcs-text-dim: #d4d4d4;
+  --gcs-text-secondary: #9a9a9a;
+  --gcs-text-tertiary: #7a7a7a;
+
+  /* Tailwind's neutral-* scale, restated as-is — this is the site's
+     original palette, kept explicit here (rather than left to Tailwind's
+     own default) so light.css has an obvious counterpart to invert. */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a1a1a1;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+}
