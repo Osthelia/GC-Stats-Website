@@ -10,7 +10,7 @@
  */
 
 import { asc, eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { changeRequestMessages, users } from "@gc-stats/db";
 
 // changeRequestMessages has no createdAt column (schema/content.ts) — id

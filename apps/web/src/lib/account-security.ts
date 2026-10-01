@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, authenticators } from "@gc-stats/db";
 import { eq } from "drizzle-orm";
 

@@ -14,7 +14,7 @@
 import { after } from "next/server";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
-import { db, adminDb } from "@gc-stats/db/client";
+import { adminDb } from "@gc-stats/db/client";
 import { notifications, users, changeRequestDiscordNotices } from "@gc-stats/db";
 import { sendEmail } from "@/lib/email/client";
 import { renderNotificationEmail } from "@/lib/email/notification-template";
@@ -62,7 +62,7 @@ export type NotificationRow = {
 
 /** Creates a notification row, then fires the opt-in email off the request's critical path. */
 export async function notify(input: NotifyInput): Promise<void> {
-  const [row] = await db
+  const [row] = await adminDb
     .insert(notifications)
     .values({
       userId: input.recipientId,
@@ -99,7 +99,7 @@ function openLink(notificationId: number): string {
  */
 async function maybeSendEmail(input: NotifyInput, notificationId: number): Promise<void> {
   try {
-    const [recipient] = await db.select({ email: users.email, preferences: users.preferences }).from(users).where(eq(users.id, input.recipientId)).limit(1);
+    const [recipient] = await adminDb.select({ email: users.email, preferences: users.preferences }).from(users).where(eq(users.id, input.recipientId)).limit(1);
     if (!recipient?.email) return;
 
     const category = EMAIL_CATEGORY_BY_TYPE[input.type];
@@ -129,7 +129,7 @@ type DiscordSendPayload = { type: "message"; message: string; images?: string[];
  * needs a mutual server with the recipient).
  */
 async function sendDiscordDmToRecipient(recipientId: string, category: EmailCategory, buildPayload: () => Promise<DiscordSendPayload | null>): Promise<void> {
-  const [recipient] = await db.select({ preferences: users.preferences }).from(users).where(eq(users.id, recipientId)).limit(1);
+  const [recipient] = await adminDb.select({ preferences: users.preferences }).from(users).where(eq(users.id, recipientId)).limit(1);
   if (!recipient) return;
 
   const prefs = (recipient.preferences as { discordNotifications?: Partial<Record<EmailCategory, boolean>> } | null)?.discordNotifications;
@@ -153,7 +153,7 @@ const CHANGE_REQUEST_DISCORD_DEBOUNCE_MS = 2 * 60 * 1000;
 /** Upserts the pending notice, pushing scheduledAt forward on every call — see flush-change-request-discord-notices.ts for the other half. */
 async function scheduleChangeRequestDiscordNotice(changeRequestId: number): Promise<void> {
   const scheduledAt = new Date(Date.now() + CHANGE_REQUEST_DISCORD_DEBOUNCE_MS);
-  await db
+  await adminDb
     .insert(changeRequestDiscordNotices)
     .values({ changeRequestId, scheduledAt })
     .onConflictDoUpdate({ target: changeRequestDiscordNotices.changeRequestId, set: { scheduledAt } });
@@ -229,7 +229,7 @@ export async function sendChangeRequestDiscordDecision(changeRequestId: number):
 
 /** One unread "your DMs are closed" notice at a time — a batch of failed DMs shouldn't spam the bell. */
 async function notifyDiscordDmBlockedOnce(recipientId: string): Promise<void> {
-  const [existing] = await db
+  const [existing] = await adminDb
     .select({ id: notifications.id })
     .from(notifications)
     .where(and(eq(notifications.userId, recipientId), eq(notifications.type, "discord.dm_blocked"), isNull(notifications.readAt)))
@@ -287,14 +287,14 @@ export async function listNotifications(userId: string, { page, unreadOnly }: { 
   const where = unreadOnly ? and(eq(notifications.userId, userId), isNull(notifications.readAt)) : eq(notifications.userId, userId);
 
   const [rows, countRows] = await Promise.all([
-    db
+    adminDb
       .select({ id: notifications.id, type: notifications.type, data: notifications.data, link: notifications.link, authorId: notifications.authorId, readAt: notifications.readAt, createdAt: notifications.createdAt })
       .from(notifications)
       .where(where)
       .orderBy(desc(notifications.createdAt))
       .limit(PAGE_SIZE)
       .offset((page - 1) * PAGE_SIZE),
-    db.select({ count: sql<number>`count(*)::int` }).from(notifications).where(where),
+    adminDb.select({ count: sql<number>`count(*)::int` }).from(notifications).where(where),
   ]);
 
   return { rows: rows as NotificationRow[], totalPages: Math.max(1, Math.ceil((countRows[0]?.count ?? 0) / PAGE_SIZE)) };

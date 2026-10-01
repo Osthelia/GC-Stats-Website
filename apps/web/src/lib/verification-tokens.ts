@@ -12,7 +12,7 @@
 
 import crypto from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { verificationTokens } from "@gc-stats/db";
 
 const DEFAULT_TTL_MS = 24 * 60 * 60_000;

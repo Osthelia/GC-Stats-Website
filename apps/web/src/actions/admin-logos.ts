@@ -162,9 +162,10 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
 
   let buffer: Buffer | null = null;
   if (hasFile) {
-    buffer = Buffer.from(await (file as File).arrayBuffer());
-    const validation = await validateImageBuffer(buffer);
+    const uploaded = Buffer.from(await (file as File).arrayBuffer());
+    const validation = await validateImageBuffer(uploaded);
     if (!validation.ok) return { ok: false, fieldErrors: { file: validation.error } };
+    buffer = uploaded;
   }
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);

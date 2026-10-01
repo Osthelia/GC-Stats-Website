@@ -13,7 +13,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentUserId } from "@/lib/session";
 import { countAuthMethods } from "@/lib/account-security";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, authenticators } from "@gc-stats/db";
 import { EmailSettings } from "@/components/settings/email-settings";
 import { PasswordSettings } from "@/components/settings/password-settings";

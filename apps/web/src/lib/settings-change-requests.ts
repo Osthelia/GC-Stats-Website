@@ -11,7 +11,7 @@
  */
 
 import { desc, eq, sql } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { changeRequests } from "@gc-stats/db";
 import type { ChangeRequestSubjectType } from "@/lib/change-request-fields";
 import { subjectLabels, getAdminChangeRequestDetail, type ChangeRequestStatus, type AdminChangeRequestDetail } from "@/lib/admin-change-requests";

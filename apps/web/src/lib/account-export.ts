@@ -11,7 +11,7 @@
  */
 
 import { eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, people, rosterMemberships, teams, sanctions } from "@gc-stats/db";
 
 /**

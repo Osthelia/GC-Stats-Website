@@ -14,7 +14,7 @@
 
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { auth } from "@/auth";
 import { encrypt, decrypt } from "@/lib/encryption";

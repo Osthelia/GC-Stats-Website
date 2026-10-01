@@ -14,7 +14,7 @@ import crypto from "node:crypto";
 import { generateSecret as generateTotpSecret, generate, verify, generateURI } from "otplib";
 import QRCode from "qrcode";
 import { and, eq, lt } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { verificationTokens } from "@gc-stats/db";
 
 const ISSUER = "GC-Stats";

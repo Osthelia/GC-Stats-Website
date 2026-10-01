@@ -13,7 +13,7 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems, changeRequestMessages, PERMISSIONS } from "@gc-stats/db";
 import { storeLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles } from "@gc-stats/storage";
 import { auth } from "@/auth";
@@ -273,9 +273,10 @@ export async function submitChangeRequest(
   let logoBuffer: Buffer | null = null;
   if (logoFile instanceof File && logoFile.size > 0) {
     if (logoFile.size > MAX_IMAGE_BYTES) return { ok: false, fieldErrors: { logo: "tooLarge" } };
-    logoBuffer = Buffer.from(await logoFile.arrayBuffer());
-    const validation = await validateImageBuffer(logoBuffer);
+    const uploaded = Buffer.from(await logoFile.arrayBuffer());
+    const validation = await validateImageBuffer(uploaded);
     if (!validation.ok) return { ok: false, fieldErrors: { logo: validation.error } };
+    logoBuffer = uploaded;
   }
   const newLogoTheme = (formData.get("logoTheme")?.toString() ?? "") || null;
   const newLogoSince = formData.get("logoSince")?.toString() || new Date().toISOString().slice(0, 10);

@@ -15,7 +15,7 @@
 import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
 import { getLocale, getTranslations } from "next-intl/server";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, authenticators } from "@gc-stats/db";
 import { auth } from "@/auth";
 import { countAuthMethods } from "@/lib/account-security";

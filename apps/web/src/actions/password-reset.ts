@@ -16,7 +16,7 @@ import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { getLocale, getTranslations } from "next-intl/server";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { getClientIp } from "@/lib/client-ip";
 import { checkPasswordResetThrottle } from "@/lib/auth-throttle";

@@ -12,7 +12,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { auth } from "@/auth";
 import { EMAIL_CATEGORIES, type EmailCategory } from "@/lib/notification-categories";

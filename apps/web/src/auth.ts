@@ -19,7 +19,7 @@ import Credentials from "next-auth/providers/credentials";
 import WebAuthn from "next-auth/providers/webauthn";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import bcrypt from "bcryptjs";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, sessions, verificationTokens, authenticators } from "@gc-stats/db";
 import { and, eq } from "drizzle-orm";
 import { generateUsername } from "@/lib/username";

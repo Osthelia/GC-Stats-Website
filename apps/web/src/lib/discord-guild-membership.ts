@@ -10,7 +10,7 @@
  */
 
 import { eq, and } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { accounts } from "@gc-stats/db";
 
 interface DiscordGuild {

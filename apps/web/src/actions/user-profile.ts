@@ -12,7 +12,7 @@
 "use server";
 
 import { and, eq, ne, sql } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { users, teams } from "@gc-stats/db";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import { getCurrentUserId } from "@/lib/session";

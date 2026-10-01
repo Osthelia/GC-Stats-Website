@@ -11,7 +11,7 @@
  */
 
 import { and, desc, eq, ne, sql } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { sanctions } from "@gc-stats/db";
 import { statusOf, type SanctionStatus } from "@/lib/admin-sanctions";
 import type { SanctionType } from "@/lib/sanction-constants";
