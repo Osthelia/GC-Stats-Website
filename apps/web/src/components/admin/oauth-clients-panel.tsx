@@ -11,8 +11,9 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Plug } from "lucide-react";
+import { Check, Copy, Plug } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
@@ -32,6 +33,28 @@ function ClientLogo({ logoUrl, name }: { logoUrl: string | null; name: string })
     );
   }
   return <img src={logoUrl} alt={name} className="h-7 w-7 rounded-[6px] object-cover" onError={() => setBroken(true)} />;
+}
+
+// Full id stays one click away (copy) and on hover; the cell only shows enough
+// of it to tell clients apart without stretching the row.
+function ClientIdCell({ clientId, label }: { clientId: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(clientId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  const short = clientId.length > 20 ? `${clientId.slice(0, 16)}…` : clientId;
+  return (
+    <div className="flex items-center gap-1.5">
+      <span title={clientId}>{short}</span>
+      <button type="button" onClick={handleCopy} aria-label={label} title={label} className="flex-none text-muted-foreground hover:text-foreground">
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      </button>
+    </div>
+  );
 }
 
 export function OAuthClientsPanel({ clients, canManage }: { clients: AdminOAuthClientRow[]; canManage: boolean }) {
@@ -118,9 +141,20 @@ export function OAuthClientsPanel({ clients, canManage }: { clients: AdminOAuthC
                     {client.name}
                   </div>
                 </TableCell>
-                <TableCell className="font-mono text-xs text-muted-foreground">{client.clientId}</TableCell>
+                <TableCell className="font-mono text-xs whitespace-nowrap text-muted-foreground">
+                  <ClientIdCell clientId={client.clientId} label={t("revealClientId")} />
+                </TableCell>
                 <TableCell className="text-muted-foreground">{client.isConfidential ? t("clientTypeConfidential") : t("clientTypePublic")}</TableCell>
-                <TableCell className="text-muted-foreground">{client.allowedScopes.map((s) => t(`scope.${s}`)).join(", ")}</TableCell>
+                <TableCell>
+                  {/* Raw scope ids (what clients send in `scope=`), the long consent-screen wording sits in the tooltip. */}
+                  <div className="flex max-w-xs flex-wrap gap-1">
+                    {client.allowedScopes.map((s) => (
+                      <Badge key={s} variant="secondary" className="font-mono text-[11px]" title={t(`scope.${s}`)}>
+                        {s}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <ActiveStatusBadge active={client.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
                 </TableCell>
