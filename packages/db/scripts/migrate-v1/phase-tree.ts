@@ -11,8 +11,9 @@
  * but a few have both (handled by giving that phase's own matches their
  * own container in addition to descending into its children). Nesting goes
  * up to 3 levels deep: only the top-level phase becomes a `stage`, every
- * descendant with matches becomes a `stage_container` directly under it,
- * named by joining the ancestor chain.
+ * descendant with matches (and every leaf, even without matches yet)
+ * becomes a `stage_container` directly under it, named by joining the
+ * ancestor chain.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -50,6 +51,8 @@ export interface StagePlan {
 export interface PhaseTreePlan {
   stages: StagePlan[];
   containers: ContainerPlan[];
+  /** Leaf phase id of the container a phase is entered through (itself if it owns one), or null for a phase with no container below it. */
+  entryLeafOf: (phaseId: number) => number | null;
 }
 
 /**
@@ -84,7 +87,10 @@ export function resolvePhaseTree(phases: V1Phase[], phaseIdsWithMatches: Set<num
     while (stack.length > 0) {
       const { phase, namePath } = stack.pop()!;
       const kids = childrenOf.get(phase.id) ?? [];
-      if (phaseIdsWithMatches.has(phase.id)) {
+      // A leaf always gets a container, matches or not: a not-yet-played
+      // phase (e.g. an upcoming round robin) is still a real container that
+      // qualification rules can point at.
+      if (phaseIdsWithMatches.has(phase.id) || kids.length === 0) {
         // A phase with both own matches and children (rare, 4/917 rows —
         // e.g. a "Main Event" phase holding a direct "Grand Final" match
         // alongside "Upper Bracket"/"Lower Bracket" children) would
@@ -108,5 +114,20 @@ export function resolvePhaseTree(phases: V1Phase[], phaseIdsWithMatches: Set<num
     }
   }
 
-  return { stages, containers };
+  // A pure grouping phase has no container of its own, but V1 rules still
+  // target it (e.g. "top 6 -> Playoffs"): its entry point is its first
+  // child in V1 `order` (Playoffs -> Upper Bracket, Group Stage -> Group A),
+  // recursively until a phase that does own a container.
+  const containerLeafIds = new Set(containers.map((c) => c.leafPhaseId));
+  const byOrder = (a: V1Phase, b: V1Phase) => (a.order ?? Infinity) - (b.order ?? Infinity) || a.id - b.id;
+  const entryLeafOf = (phaseId: number): number | null => {
+    if (containerLeafIds.has(phaseId)) return phaseId;
+    for (const kid of [...(childrenOf.get(phaseId) ?? [])].sort(byOrder)) {
+      const leaf = entryLeafOf(kid.id);
+      if (leaf !== null) return leaf;
+    }
+    return null;
+  };
+
+  return { stages, containers, entryLeafOf };
 }

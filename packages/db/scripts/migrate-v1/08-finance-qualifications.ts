@@ -10,8 +10,10 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { and, eq, isNull } from "drizzle-orm";
 import { db, v1 } from "./connection";
 import { getMappedId, setMappedId, batchInsert, preloadEntityType } from "./id-map";
+import { resolvePhaseTree, type V1Phase } from "./phase-tree";
 import { financeEntries, stageQualifications, qualificationResults, pointEntries } from "../../src/schema";
 
 export async function migrateFinance() {
@@ -51,9 +53,36 @@ export async function migrateQualifications() {
             destination_phase_id, placement, placement_label, points, cash_prize_amount, cash_prize_currency
      FROM phase_qualifications`
   );
-  let qCreated = 0, qSkipped = 0, qUnresolved = 0;
+  // A destination is often a pure grouping phase ("Playoffs" wrapping Upper/
+  // Lower Bracket) that has no container of its own in V2 — fall back to
+  // its entry container, see phase-tree.ts::entryLeafOf.
+  const [treeRows] = await v1.query<any[]>("SELECT id, parent_id, tournament_id, name, format, `order` FROM tournament_phases");
+  const [matchPhaseRows] = await v1.query<any[]>("SELECT DISTINCT phase_id FROM matches");
+  const { entryLeafOf } = resolvePhaseTree(treeRows as V1Phase[], new Set((matchPhaseRows as any[]).map((r) => r.phase_id as number)));
+  const resolveDestination = async (phaseId: number | null): Promise<number | null> => {
+    if (!phaseId) return null;
+    const leaf = entryLeafOf(phaseId);
+    return (await getMappedId("phase_as_container", phaseId)) ?? (leaf !== null ? (await getMappedId("phase_as_container", leaf)) ?? null : null);
+  };
+
+  let qCreated = 0, qSkipped = 0, qUnresolved = 0, qPatched = 0;
   for (const row of phaseRows as any[]) {
-    if (await getMappedId("phase_qualification", row.id)) { qSkipped++; continue; }
+    const existingId = await getMappedId("phase_qualification", row.id);
+    if (existingId) {
+      qSkipped++;
+      // Rows migrated before the grouping-phase fallback existed were
+      // inserted with a NULL destination — patch them in place.
+      if (row.destination_type !== "placement" && row.destination_phase_id) {
+        const destinationContainerId = await resolveDestination(row.destination_phase_id);
+        if (destinationContainerId) {
+          const patched = await db.update(stageQualifications).set({ destinationContainerId })
+            .where(and(eq(stageQualifications.id, existingId), isNull(stageQualifications.destinationContainerId)))
+            .returning({ id: stageQualifications.id });
+          qPatched += patched.length;
+        }
+      }
+      continue;
+    }
     // V2's stage_qualifications_source_check wants EXACTLY one of
     // sourceContainerId/sourceMatchId. V1's source_phase_id is NOT NULL on
     // every row (it's just "which phase this qualification belongs to"),
@@ -62,7 +91,7 @@ export async function migrateQualifications() {
     const sourceMatchId = row.source_match_id ? (await getMappedId("match", row.source_match_id)) ?? null : null;
     const sourceContainerId = sourceMatchId ? null : (await getMappedId("phase_as_container", row.source_phase_id)) ?? null;
     if (!sourceContainerId && !sourceMatchId) { qUnresolved++; continue; }
-    const destinationContainerId = row.destination_phase_id ? (await getMappedId("phase_as_container", row.destination_phase_id)) ?? null : null;
+    const destinationContainerId = await resolveDestination(row.destination_phase_id);
     try {
       const [inserted] = await db.insert(stageQualifications).values({
         sourceContainerId, rankFrom: row.rank_from, rankTo: row.rank_to, sourceMatchId, outcome: row.outcome,
@@ -77,7 +106,7 @@ export async function migrateQualifications() {
       console.warn(`phase_qualification#${row.id}: ${e.cause?.message ?? e.message}`);
     }
   }
-  console.log(`stage_qualifications: ${qCreated} created, ${qSkipped} already migrated, ${qUnresolved} unresolved`);
+  console.log(`stage_qualifications: ${qCreated} created, ${qSkipped} already migrated (${qPatched} destination patched), ${qUnresolved} unresolved`);
 
   // qualification_results — need the source phase's tournament to resolve
   // team_id -> entrant.
@@ -95,8 +124,14 @@ export async function migrateQualifications() {
     const qualificationId = await getMappedId("phase_qualification", row.phase_qualification_id);
     const entrantId = row.tournament_id ? await getMappedId("entrant", entrantKey(row.tournament_id, row.entity_id)) : undefined;
     if (!qualificationId || !entrantId) { rUnresolved++; continue; }
+    // V1 is still live: a result deleted and re-added there comes back under
+    // a new legacy id for a (qualification, entrant) pair V2 already holds —
+    // adopt that row instead of tripping the unique constraint.
     const [inserted] = await db.insert(qualificationResults).values({
       qualificationId, entrantId, rank: row.rank,
+    }).onConflictDoUpdate({
+      target: [qualificationResults.qualificationId, qualificationResults.entrantId],
+      set: { rank: row.rank },
     }).returning({ id: qualificationResults.id });
     await setMappedId("qualification_result", row.id, inserted.id);
     rCreated++;
