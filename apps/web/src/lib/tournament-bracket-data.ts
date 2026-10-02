@@ -18,7 +18,7 @@ import { visibleTournament } from "@/lib/ghost-visibility";
 import { listTournamentStages, type AdminContainerRow } from "@/lib/admin-tournament-detail";
 import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/admin-bracket-editor-data";
 import { computeContainerStandings, type GroupStandingsEntry } from "@/lib/bracket/standings";
-import { getContainerAdvancementRules } from "@/lib/bracket/container-qualifications";
+import { getContainerAdvancementRules, getMatchAdvancementRules } from "@/lib/bracket/container-qualifications";
 import { getStageFinalStandings } from "@/lib/bracket/final-standings";
 import { parseGroupConfig, isPointsConfigActive } from "@/lib/bracket/config-types";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -95,6 +95,15 @@ export type PublicStandingsRow = GroupStandingsEntry & { displayName: string; te
 
 export type PublicQualificationRule = { rankFrom: number; rankTo: number; label: string; url: string };
 
+/** A bracket match's winner/loser advancing to another container — rendered as a V1-style "Qualified" slot after the match. `entrantName` is null until the match is decided. */
+export type PublicMatchQualifier = {
+  sourceMatchId: number;
+  outcome: "winner" | "loser";
+  entrantName: string | null;
+  label: string;
+  url: string;
+};
+
 export type PublicFinalStandingRow = {
   qualificationId: number;
   placement: number;
@@ -112,7 +121,7 @@ export type PublicFinalStandingRow = {
 
 export type PublicStageContainer = AdminContainerRow & {
   /** Present for bracket-shaped containers (bracket, or a group in round-robin format — both render as a graph). */
-  graph?: { matches: PublicBracketMatch[]; edges: EditorEdge[] };
+  graph?: { matches: PublicBracketMatch[]; edges: EditorEdge[]; qualifiers: PublicMatchQualifier[] };
   /** Present for group containers — ranked standings regardless of shape. */
   standings?: PublicStandingsRow[];
   /** Present for group containers (Swiss and round-robin alike) — resolved matches for the admin bracket viewer's match-list-only display (never a graph, never standings, on that page specifically). */
@@ -197,7 +206,23 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
       let graph: PublicStageContainer["graph"];
       if (!isGroup) {
         const containerEdges = (editorData?.edges ?? []).filter((e) => containerMatches.some((m) => m.id === e.fromMatchId));
-        graph = { matches: resolvedMatches, edges: containerEdges };
+        const matchRules = await getMatchAdvancementRules(db, containerMatches.map((m) => m.id));
+        const matchById = new Map(resolvedMatches.map((m) => [m.id, m]));
+        const qualifiers = matchRules.map((r): PublicMatchQualifier => {
+          const m = matchById.get(r.sourceMatchId)!;
+          const winnerIsA = m.winnerId !== null && m.winnerId === m.entrantAId;
+          const winnerIsB = m.winnerId !== null && m.winnerId === m.entrantBId;
+          const qualifiedIsA = r.outcome === "winner" ? winnerIsA : winnerIsB;
+          const qualifiedIsB = r.outcome === "winner" ? winnerIsB : winnerIsA;
+          return {
+            sourceMatchId: r.sourceMatchId,
+            outcome: r.outcome,
+            entrantName: qualifiedIsA ? m.entrantAName : qualifiedIsB ? m.entrantBName : null,
+            label: `${r.destinationTournamentName} · ${r.destinationContainerName}`,
+            url: `/tournaments/${r.destinationTournamentId}/${slugify(r.destinationTournamentName)}?stage=${r.destinationStageId}`,
+          };
+        });
+        graph = { matches: resolvedMatches, edges: containerEdges, qualifiers };
       }
       const matches: PublicStageContainer["matches"] = isGroup ? resolvedMatches : undefined;
 

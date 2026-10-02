@@ -25,6 +25,12 @@ import {
   BRACKET_MATCH_NODE_HEIGHT,
   type BracketMatchNodeData,
 } from "@/components/tournament/bracket-match-node";
+import {
+  BracketQualifierNode,
+  BRACKET_QUALIFIER_NODE_WIDTH,
+  BRACKET_QUALIFIER_NODE_HEIGHT,
+  type BracketQualifierNodeData,
+} from "@/components/tournament/bracket-qualifier-node";
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
 import { layoutBracket } from "@/lib/bracket-layout";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
@@ -55,7 +61,10 @@ const LANE_GAP = 50;
 // Touch: zoom floor for the initial view, so match names stay readable.
 const TOUCH_MIN_FIT_ZOOM = 0.55;
 
-const NODE_TYPES = { bracketMatchNode: BracketMatchNode };
+// Vertical gap between two qualifier slots hanging off the same match (its winner AND loser both advancing somewhere).
+const QUALIFIER_GAP = 8;
+
+const NODE_TYPES = { bracketMatchNode: BracketMatchNode, bracketQualifierNode: BracketQualifierNode };
 
 /** Live match round, else the first round still waiting on a result, else the last round: where a phone user lands. */
 function focusMatchIds(matches: PublicBracketMatch[]): string[] {
@@ -156,7 +165,7 @@ export function TournamentBracketCanvas({
     // (explicit user report, 2026-09-21).
     const nonTerminalMatchIds = new Set(layoutEdges.map((e) => e.fromMatchId));
 
-    const nodes: Node<BracketMatchNodeData>[] = graphContainers.flatMap(
+    const matchNodes: Node<BracketMatchNodeData>[] = graphContainers.flatMap(
       (container) =>
         (container.graph?.matches ?? []).map((m: PublicBracketMatch) => {
           const winnerSide: "a" | "b" | null =
@@ -196,7 +205,59 @@ export function TournamentBracketCanvas({
         }),
     );
 
-    const baseEdges = graphContainers.flatMap((container) =>
+    // V1's "Qualified" column: one slot per winner/loser advancing to
+    // another container, in an extra column right after the last round of
+    // the source match's own lane, level with that match.
+    const laneMaxX = new Map<number | undefined, number>();
+    for (const m of layoutMatches) {
+      const lane = matchLane.get(m.id);
+      const x = layout.positions.get(m.id)?.x ?? 0;
+      laneMaxX.set(lane, Math.max(laneMaxX.get(lane) ?? 0, x));
+    }
+    const qualifiers = graphContainers.flatMap((c) => c.graph?.qualifiers ?? []);
+    const qualifierNodes: Node<BracketQualifierNodeData>[] = qualifiers.map((q, i) => {
+      const source = String(q.sourceMatchId);
+      const siblings = qualifiers.filter((other) => other.sourceMatchId === q.sourceMatchId);
+      const index = siblings.indexOf(q);
+      const pos = layout.positions.get(source) ?? { x: 0, y: 0 };
+      const offsetY = (index - (siblings.length - 1) / 2) * (BRACKET_QUALIFIER_NODE_HEIGHT + QUALIFIER_GAP);
+      return {
+        id: `qualifier-${i}`,
+        type: "bracketQualifierNode",
+        position: {
+          x: (laneMaxX.get(matchLane.get(source)) ?? pos.x) + COLUMN_WIDTH,
+          y: pos.y + (BRACKET_MATCH_NODE_HEIGHT - BRACKET_QUALIFIER_NODE_HEIGHT) / 2 + offsetY,
+        },
+        width: BRACKET_QUALIFIER_NODE_WIDTH,
+        height: BRACKET_QUALIFIER_NODE_HEIGHT,
+        data: {
+          entrantName: q.entrantName,
+          tbdLabel,
+          tooltip: q.entrantName
+            ? t("qualifiedTooltip", { team: q.entrantName, destination: q.label })
+            : q.outcome === "winner"
+              ? t("qualifiedTooltipWinner", { destination: q.label })
+              : t("qualifiedTooltipLoser", { destination: q.label }),
+          href: q.url,
+        } satisfies BracketQualifierNodeData,
+        draggable: false,
+        selectable: false,
+      };
+    });
+    const nodes: Node<BracketMatchNodeData | BracketQualifierNodeData>[] = [...matchNodes, ...qualifierNodes];
+    const qualifierEdges = qualifiers.map((q, i) => ({
+      id: `${q.sourceMatchId}:${q.outcome}->qualifier-${i}`,
+      source: String(q.sourceMatchId),
+      target: `qualifier-${i}`,
+      sourceHandle: q.outcome,
+      targetHandle: "a",
+      fromResult: q.outcome,
+      crossLane: false,
+      alwaysVisible: true,
+      gutterY: undefined as number | undefined,
+    }));
+
+    const bracketEdges = graphContainers.flatMap((container) =>
       (container.graph?.edges ?? []).map((e) => {
         const sourceLane = matchLane.get(String(e.fromMatchId));
         const targetLane = matchLane.get(String(e.toMatchId));
@@ -232,6 +293,7 @@ export function TournamentBracketCanvas({
         };
       }),
     );
+    const baseEdges = [...bracketEdges, ...qualifierEdges];
 
     const focusIds = focusMatchIds(
       graphContainers.flatMap((c) => c.graph?.matches ?? []),
@@ -243,7 +305,7 @@ export function TournamentBracketCanvas({
       focusIds,
       height: Math.max(360, layout.totalHeight),
     };
-  }, [graphContainers, tbdLabel]);
+  }, [graphContainers, tbdLabel, t]);
 
   // Default: a single gold color, no winner/loser distinction (both leave
   // the match from the same point, cf. BracketMatchNode) — only cross-lane

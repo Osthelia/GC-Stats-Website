@@ -1,15 +1,16 @@
 ﻿/**
  * GC-Stats - container-qualifications
  *
- * Rank-based advancement rules for a group container ("does this rank keep
- * playing"), used to render the standings' qualification indicator/legend.
+ * Advancement rules ("does this rank / this match's winner keep playing"),
+ * used to render the standings' qualification indicator/legend and the
+ * bracket's "Qualified" slots.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { stageQualifications, stageContainers, stages, tournaments } from "@gc-stats/db";
 import type { Tx } from "./repository";
 
@@ -57,4 +58,39 @@ export async function getContainerAdvancementRules(tx: Tx, containerId: number):
     });
   }
   return results.sort((a, b) => a.rankFrom - b.rankFrom);
+}
+
+export type MatchAdvancementRule = {
+  sourceMatchId: number;
+  outcome: "winner" | "loser";
+  destinationContainerName: string;
+  destinationStageId: number;
+  destinationTournamentId: number;
+  destinationTournamentName: string;
+};
+
+/**
+ * Match-based counterpart of `getContainerAdvancementRules`: "the winner
+ * (or loser) of this bracket match moves on to that container" — V1's
+ * `bracket-grid.blade.php` "Qualified" column. Same `'container'` filter,
+ * placement rules stay with the final standings widget.
+ */
+export async function getMatchAdvancementRules(tx: Tx, matchIds: number[]): Promise<MatchAdvancementRule[]> {
+  if (matchIds.length === 0) return [];
+  const rows = await tx
+    .select({
+      sourceMatchId: stageQualifications.sourceMatchId,
+      outcome: stageQualifications.outcome,
+      destinationContainerName: stageContainers.name,
+      destinationStageId: stages.id,
+      destinationTournamentId: tournaments.id,
+      destinationTournamentName: tournaments.name,
+    })
+    .from(stageQualifications)
+    .innerJoin(stageContainers, eq(stageContainers.id, stageQualifications.destinationContainerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
+    .where(and(inArray(stageQualifications.sourceMatchId, matchIds), eq(stageQualifications.destinationType, "container")))
+    .orderBy(asc(stageQualifications.id));
+  return rows.filter((r): r is MatchAdvancementRule => r.sourceMatchId !== null && (r.outcome === "winner" || r.outcome === "loser"));
 }
