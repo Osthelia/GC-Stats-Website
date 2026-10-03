@@ -17,6 +17,8 @@ export function generatePlainApiKey(): string {
   return `gcs_${crypto.randomBytes(32).toString("base64url")}`;
 }
 
+const API_KEY_HASH_PEPPER = process.env.API_KEY_HASH_PEPPER ?? "gc-stats-api-key-pepper";
+
 export function hashApiKey(plainKey: string): string {
-  return crypto.createHash("sha256").update(plainKey).digest("hex");
+  return crypto.scryptSync(plainKey, API_KEY_HASH_PEPPER, 32).toString("hex");
 }
