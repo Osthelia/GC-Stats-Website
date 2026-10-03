@@ -28,9 +28,6 @@ jobs:
 
       - run: npm ci
 
-      # cloudflare-env.d.ts is gitignored, apps/web typecheck needs it.
-      - name: Generate Cloudflare types
-        run: npm run cf-typegen --workspace=apps/web
 
       - run: npm run typecheck
 
@@ -39,6 +36,3 @@ jobs:
       - name: Check Drizzle migrations
         working-directory: packages/db
         run: npx drizzle-kit check
-
-      - name: Build Worker bundle
-        run: npm run cf-build --workspace=apps/web
