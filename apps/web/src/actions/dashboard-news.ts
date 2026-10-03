@@ -121,7 +121,7 @@ async function validateArticle(input: NewsArticleInput, excludeId?: number): Pro
   if (excerpt.length > 500) fieldErrors.excerpt = "tooLong";
 
   const content = sanitizeNewsContent(input.content);
-  const isContentEmpty = content.replace(/<[^>]*>/g, "").trim().length === 0;
+  const isContentEmpty = content.replace(/[<>]/g, "").trim().length === 0;
   if (isContentEmpty) fieldErrors.content = "required";
 
   return { fieldErrors, slug, content };
