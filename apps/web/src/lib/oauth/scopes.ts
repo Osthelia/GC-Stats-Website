@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, ne, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, accounts, people, rosterMemberships, teams, organizationMemberships, organizations, changeRequests, changeRequestItems } from "@gc-stats/db";
+import { users, accounts, people, rosterMemberships, teams, organizationMemberships, organizations, changeRequests, changeRequestItems, sanctions } from "@gc-stats/db";
 import { rangeIsOpen, rangeLower, rangeUpper } from "@/lib/daterange";
 import type { OAuthScope } from "@/lib/oauth/scope-list";
 
@@ -31,6 +31,27 @@ export async function resolveOAuthClaims(userId: string, scopes: OAuthScope[]): 
     const [user] = await db.select({ email: users.email, emailVerified: users.emailVerified }).from(users).where(eq(users.id, userId)).limit(1);
     claims.email = user?.email ?? null;
     claims.emailVerified = user?.emailVerified ?? null;
+  }
+
+  if (scopes.includes("created_at")) {
+    const [user] = await db.select({ createdAt: users.createdAt }).from(users).where(eq(users.id, userId)).limit(1);
+    claims.createdAt = user?.createdAt ? user.createdAt.toISOString() : null;
+  }
+
+  // Active only (not revoked, not expired), same rule as statusOf — and never
+  // a "note", internal only. The reason stays out: it's moderator-written text.
+  if (scopes.includes("sanctions")) {
+    const rows = await db
+      .select({ id: sanctions.id, type: sanctions.type, startsAt: sanctions.startsAt, endsAt: sanctions.endsAt })
+      .from(sanctions)
+      .where(and(eq(sanctions.userId, userId), ne(sanctions.type, "note"), isNull(sanctions.revokedAt), or(isNull(sanctions.endsAt), gt(sanctions.endsAt, sql`now()`))))
+      .orderBy(desc(sanctions.id));
+    claims.activeSanctions = rows.map((r) => ({
+      id: r.id,
+      type: r.type,
+      startsAt: r.startsAt.toISOString(),
+      endsAt: r.endsAt ? r.endsAt.toISOString() : null,
+    }));
   }
 
   if (scopes.includes("linked_accounts")) {

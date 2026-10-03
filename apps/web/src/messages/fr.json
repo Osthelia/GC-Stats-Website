@@ -256,7 +256,11 @@
         "player": "Fiche joueur",
         "teams": "Historique d'équipes",
         "org": "Historique d'organisations",
-        "link_player": "Demande de lien vers une fiche joueur"
+        "link_player": "Demande de lien vers une fiche joueur",
+
+        "created_at": "Date d'inscription",
+
+        "sanctions": "Sanctions actives"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Votre fiche joueur liée, le cas échéant",
         "teams": "L'historique de vos équipes actuelles et passées",
         "org": "L'historique de vos organisations actuelles et passées",
-        "link_player": "Le droit de demander le lien de votre compte vers une fiche joueur"
+        "link_player": "Le droit de demander le lien de votre compte vers une fiche joueur",
+
+        "created_at": "La date de création de votre compte",
+
+        "sanctions": "Vos sanctions actuellement actives (avertissements, mutes, suspensions, bannissements)"
       },
       "allow": "Autoriser",
       "deny": "Refuser",
@@ -3077,7 +3085,11 @@
         "player": "Votre fiche joueur liée, le cas échéant",
         "teams": "L'historique de vos équipes actuelles et passées",
         "org": "L'historique de vos organisations actuelles et passées",
-        "link_player": "Le droit de demander le lien de votre compte vers une fiche joueur"
+        "link_player": "Le droit de demander le lien de votre compte vers une fiche joueur",
+
+        "created_at": "La date de création de votre compte",
+
+        "sanctions": "Vos sanctions actuellement actives (avertissements, mutes, suspensions, bannissements)"
       },
       "cancel": "Annuler",
       "save": "Enregistrer",

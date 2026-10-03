@@ -256,7 +256,11 @@
         "player": "Spielerprofil",
         "teams": "Teamverlauf",
         "org": "Organisationsverlauf",
-        "link_player": "Anfrage zur Verknüpfung mit einem Spielerprofil"
+        "link_player": "Anfrage zur Verknüpfung mit einem Spielerprofil",
+
+        "created_at": "Registrierungsdatum",
+
+        "sanctions": "Aktive Sanktionen"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Ihr verknüpftes Spielerprofil, falls vorhanden",
         "teams": "Ihr aktueller und früherer Teamverlauf",
         "org": "Ihr aktueller und früherer Organisationsverlauf",
-        "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spielerprofil zu beantragen"
+        "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spielerprofil zu beantragen",
+
+        "created_at": "Das Erstellungsdatum Ihres Kontos",
+
+        "sanctions": "Ihre derzeit aktiven Sanktionen (Verwarnungen, Stummschaltungen, Sperren, Banns)"
       },
       "allow": "Erlauben",
       "deny": "Ablehnen",
@@ -3077,7 +3085,11 @@
         "player": "Ihr verknüpftes Spieler:innen Profil, falls vorhanden",
         "teams": "Ihre aktuelle und frühere Teamhistorie",
         "org": "Ihre aktuelle und frühere Organisationshistorie",
-        "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spieler:innen Profil zu beantragen"
+        "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spieler:innen Profil zu beantragen",
+
+        "created_at": "Das Erstellungsdatum Ihres Kontos",
+
+        "sanctions": "Ihre derzeit aktiven Sanktionen (Verwarnungen, Stummschaltungen, Sperren, Banns)"
       },
       "cancel": "Abbrechen",
       "save": "Speichern",

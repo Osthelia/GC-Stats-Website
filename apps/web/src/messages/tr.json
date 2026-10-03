@@ -256,7 +256,11 @@
         "player": "Oyuncu profili",
         "teams": "Takım geçmişi",
         "org": "Organizasyon geçmişi",
-        "link_player": "Oyuncu profili bağlama isteği"
+        "link_player": "Oyuncu profili bağlama isteği",
+
+        "created_at": "Kayıt tarihi",
+
+        "sanctions": "Aktif yaptırımlar"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Varsa bağlı oyuncu profilin",
         "teams": "Mevcut ve geçmiş takım geçmişin",
         "org": "Mevcut ve geçmiş organizasyon geçmişin",
-        "link_player": "Hesabını bir oyuncu profiline bağlama isteğinde bulunma hakkı"
+        "link_player": "Hesabını bir oyuncu profiline bağlama isteğinde bulunma hakkı",
+
+        "created_at": "Hesabının oluşturulma tarihi",
+
+        "sanctions": "Şu anda aktif olan yaptırımların (uyarılar, susturmalar, askıya almalar, yasaklamalar)"
       },
       "allow": "İzin ver",
       "deny": "Reddet",
@@ -3077,7 +3085,11 @@
         "player": "Varsa bağlı oyuncu profiliniz",
         "teams": "Mevcut ve geçmiş takım geçmişiniz",
         "org": "Mevcut ve geçmiş organizasyon geçmişiniz",
-        "link_player": "Hesabınızı bir oyuncu profiline bağlama talebinde bulunma hakkı"
+        "link_player": "Hesabınızı bir oyuncu profiline bağlama talebinde bulunma hakkı",
+
+        "created_at": "Hesabının oluşturulma tarihi",
+
+        "sanctions": "Şu anda aktif olan yaptırımların (uyarılar, susturmalar, askıya almalar, yasaklamalar)"
       },
       "cancel": "İptal",
       "save": "Kaydet",

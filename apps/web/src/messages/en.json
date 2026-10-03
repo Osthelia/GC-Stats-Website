@@ -256,7 +256,11 @@
         "player": "Player profile",
         "teams": "Team history",
         "org": "Organization history",
-        "link_player": "Player profile link request"
+        "link_player": "Player profile link request",
+
+        "created_at": "Account creation date",
+
+        "sanctions": "Active sanctions"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Your linked player profile, if any",
         "teams": "Your current and past team history",
         "org": "Your current and past organization history",
-        "link_player": "The right to request linking your account to a player profile"
+        "link_player": "The right to request linking your account to a player profile",
+
+        "created_at": "The date your account was created",
+
+        "sanctions": "Your currently active sanctions (warnings, mutes, suspensions, bans)"
       },
       "allow": "Allow",
       "deny": "Deny",
@@ -3077,7 +3085,11 @@
         "player": "Your linked player profile, if any",
         "teams": "Your current and past team history",
         "org": "Your current and past organization history",
-        "link_player": "The right to request linking your account to a player profile"
+        "link_player": "The right to request linking your account to a player profile",
+
+        "created_at": "The date your account was created",
+
+        "sanctions": "Your currently active sanctions (warnings, mutes, suspensions, bans)"
       },
       "cancel": "Cancel",
       "save": "Save",

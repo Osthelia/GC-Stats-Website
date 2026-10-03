@@ -256,7 +256,11 @@
         "player": "Profilo giocatrice",
         "teams": "Storico dei team",
         "org": "Storico delle organizzazioni",
-        "link_player": "Richiesta di collegamento a un profilo giocatrice"
+        "link_player": "Richiesta di collegamento a un profilo giocatrice",
+
+        "created_at": "Data di registrazione",
+
+        "sanctions": "Sanzioni attive"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Il tuo profilo giocatrice collegato, se presente",
         "teams": "Il tuo storico dei team, attuali e passati",
         "org": "Il tuo storico delle organizzazioni, attuali e passate",
-        "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice"
+        "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice",
+
+        "created_at": "La data di creazione del tuo account",
+
+        "sanctions": "Le tue sanzioni attualmente attive (avvertimenti, silenziamenti, sospensioni, ban)"
       },
       "allow": "Consenti",
       "deny": "Nega",
@@ -3077,7 +3085,11 @@
         "player": "Il tuo profilo giocatrice collegato, se presente",
         "teams": "Il tuo storico dei team, attuali e passati",
         "org": "Il tuo storico delle organizzazioni, attuali e passate",
-        "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice"
+        "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice",
+
+        "created_at": "La data di creazione del tuo account",
+
+        "sanctions": "Le tue sanzioni attualmente attive (avvertimenti, silenziamenti, sospensioni, ban)"
       },
       "cancel": "Annulla",
       "save": "Salva",

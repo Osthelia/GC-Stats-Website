@@ -256,7 +256,11 @@
         "player": "Perfil de jogadora",
         "teams": "Histórico de times",
         "org": "Histórico de organizações",
-        "link_player": "Pedido de vínculo com perfil de jogadora"
+        "link_player": "Pedido de vínculo com perfil de jogadora",
+
+        "created_at": "Data de cadastro",
+
+        "sanctions": "Sanções ativas"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Seu perfil de jogadora vinculado, se houver",
         "teams": "Seu histórico de times atual e passado",
         "org": "Seu histórico de organizações atual e passado",
-        "link_player": "O direito de solicitar o vínculo da sua conta com um perfil de jogadora"
+        "link_player": "O direito de solicitar o vínculo da sua conta com um perfil de jogadora",
+
+        "created_at": "A data de criação da sua conta",
+
+        "sanctions": "Suas sanções atualmente ativas (advertências, silenciamentos, suspensões, banimentos)"
       },
       "allow": "Permitir",
       "deny": "Negar",
@@ -3077,7 +3085,11 @@
         "player": "Seu perfil de jogadora vinculado, se houver",
         "teams": "Seu histórico de times atual e passado",
         "org": "Seu histórico de organizações atual e passado",
-        "link_player": "O direito de solicitar o vínculo da sua conta com um perfil de jogadora"
+        "link_player": "O direito de solicitar o vínculo da sua conta com um perfil de jogadora",
+
+        "created_at": "A data de criação da sua conta",
+
+        "sanctions": "Suas sanções atualmente ativas (advertências, silenciamentos, suspensões, banimentos)"
       },
       "cancel": "Cancelar",
       "save": "Salvar",

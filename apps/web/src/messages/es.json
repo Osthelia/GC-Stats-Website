@@ -256,7 +256,11 @@
         "player": "Perfil de jugador",
         "teams": "Historial de equipos",
         "org": "Historial de organizaciones",
-        "link_player": "Solicitud de vinculación de perfil de jugador"
+        "link_player": "Solicitud de vinculación de perfil de jugador",
+
+        "created_at": "Fecha de registro",
+
+        "sanctions": "Sanciones activas"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Tu perfil de jugador vinculado, si lo hay",
         "teams": "Tu historial de equipos actual y pasado",
         "org": "Tu historial de organizaciones actual y pasado",
-        "link_player": "El derecho a solicitar la vinculación de tu cuenta a un perfil de jugador"
+        "link_player": "El derecho a solicitar la vinculación de tu cuenta a un perfil de jugador",
+
+        "created_at": "La fecha de creación de tu cuenta",
+
+        "sanctions": "Tus sanciones activas actualmente (advertencias, silencios, suspensiones, baneos)"
       },
       "allow": "Permitir",
       "deny": "Denegar",
@@ -3077,7 +3085,11 @@
         "player": "Tu perfil de jugador vinculado, si lo hay",
         "teams": "Tu historial de equipos actual y pasado",
         "org": "Tu historial de organizaciones actual y pasado",
-        "link_player": "El derecho a solicitar la vinculación de tu cuenta a un perfil de jugador"
+        "link_player": "El derecho a solicitar la vinculación de tu cuenta a un perfil de jugador",
+
+        "created_at": "La fecha de creación de tu cuenta",
+
+        "sanctions": "Tus sanciones activas actualmente (advertencias, silencios, suspensiones, baneos)"
       },
       "cancel": "Cancelar",
       "save": "Guardar",

@@ -256,7 +256,11 @@
         "player": "Profil zawodniczki",
         "teams": "Historia drużyn",
         "org": "Historia organizacji",
-        "link_player": "Prośba o powiązanie z profilem zawodniczki"
+        "link_player": "Prośba o powiązanie z profilem zawodniczki",
+
+        "created_at": "Data rejestracji",
+
+        "sanctions": "Aktywne sankcje"
       }
     },
     "passkeys": {
@@ -548,7 +552,11 @@
         "player": "Powiązany profil zawodniczki, jeśli istnieje",
         "teams": "Twoja obecna i dawna historia drużyn",
         "org": "Twoja obecna i dawna historia organizacji",
-        "link_player": "Prawo do wysłania prośby o powiązanie Twojego konta z profilem zawodniczki"
+        "link_player": "Prawo do wysłania prośby o powiązanie Twojego konta z profilem zawodniczki",
+
+        "created_at": "Data utworzenia Twojego konta",
+
+        "sanctions": "Twoje obecnie aktywne sankcje (ostrzeżenia, wyciszenia, zawieszenia, bany)"
       },
       "allow": "Zezwól",
       "deny": "Odmów",
@@ -3077,7 +3085,11 @@
         "player": "Powiązany profil zawodniczki, jeśli istnieje",
         "teams": "Twoja obecna i dawna historia drużyn",
         "org": "Twoja obecna i dawna historia organizacji",
-        "link_player": "Prawo do wysłania prośby o powiązanie Twojego konta z profilem zawodniczki"
+        "link_player": "Prawo do wysłania prośby o powiązanie Twojego konta z profilem zawodniczki",
+
+        "created_at": "Data utworzenia Twojego konta",
+
+        "sanctions": "Twoje obecnie aktywne sankcje (ostrzeżenia, wyciszenia, zawieszenia, bany)"
       },
       "cancel": "Anuluj",
       "save": "Zapisz",
