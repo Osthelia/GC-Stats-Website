@@ -42,8 +42,8 @@
   "vars": {
     "DEPLOY_TARGET": "cloudflare",
     "AUTH_TRUST_HOST": true,
-    "AUTH_URL": "https://v2.gc-stats.app",
-    "SITE_URL": "https://v2.gc-stats.app",
+    "AUTH_URL": "https://gc-stats.app",
+    "SITE_URL": "https://gc-stats.app",
     "S3_REGION": "auto",
     "S3_PUBLIC_URL": "https://cdn.gc-stats.app",
     "S3_FORCE_PATH_STYLE": true,
