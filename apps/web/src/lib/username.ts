@@ -13,6 +13,7 @@
 import { db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { eq } from "drizzle-orm";
+import { randomBytes } from "crypto";
 
 // Mirrors V1's App\Support\UsernameGenerator — derives a unique
 // `users.username` for flows that don't collect one directly (OAuth/passkey
@@ -29,7 +30,8 @@ export async function generateUsername(base: string | null | undefined): Promise
 
   let username = slug;
   while (await usernameTaken(username)) {
-    username = `${slug}_${Math.random().toString(36).slice(2, 8)}`;
+    const suffix = parseInt(randomBytes(8).toString("hex"), 16).toString(36).slice(0, 6);
+    username = `${slug}_${suffix}`;
   }
   return username;
 }
