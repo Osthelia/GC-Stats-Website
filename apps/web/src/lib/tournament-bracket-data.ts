@@ -89,6 +89,10 @@ export async function getPublicTournamentStageLinks(tournamentId: number): Promi
 export type PublicBracketMatch = EditorMatch & {
   entrantAName: string | null;
   entrantBName: string | null;
+  entrantALogoUrl: string | null;
+  entrantALogoUrlLight: string | null;
+  entrantBLogoUrl: string | null;
+  entrantBLogoUrlLight: string | null;
 };
 
 export type PublicStandingsRow = GroupStandingsEntry & { displayName: string; teamHref: string | null };
@@ -185,8 +189,16 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
   const editorData = await getStageEditorData(stage.id);
   const entrantNameById = new Map(editorData?.entrants.map((e) => [e.id, e.displayName]) ?? []);
   const entrantTeamIdById = new Map(editorData?.entrants.map((e) => [e.id, e.teamId]) ?? []);
+  const stageTeamIds = [...new Set([...entrantTeamIdById.values()].filter((id): id is number => id !== null))];
 
   const finalStandingsPromise = getStageFinalStandings(db, stage.id);
+  const teamLogos: Map<number, { dark: string | null; light: string | null }> = stageTeamIds.length
+    ? await getCurrentLogoUrlsThemed("team", stageTeamIds)
+    : new Map();
+  const entrantLogos = (entrantId: number | null) => {
+    const teamId = entrantId !== null ? (entrantTeamIdById.get(entrantId) ?? null) : null;
+    return teamId !== null ? teamLogos.get(teamId) : undefined;
+  };
   const containers: PublicStageContainer[] = await Promise.all(
     stage.containers.map(async (container) => {
       const isGroup = container.containerType === "group";
@@ -196,6 +208,10 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
         ...m,
         entrantAName: m.entrantAId !== null ? (entrantNameById.get(m.entrantAId) ?? null) : null,
         entrantBName: m.entrantBId !== null ? (entrantNameById.get(m.entrantBId) ?? null) : null,
+        entrantALogoUrl: entrantLogos(m.entrantAId)?.dark ?? null,
+        entrantALogoUrlLight: entrantLogos(m.entrantAId)?.light ?? null,
+        entrantBLogoUrl: entrantLogos(m.entrantBId)?.dark ?? null,
+        entrantBLogoUrlLight: entrantLogos(m.entrantBId)?.light ?? null,
       }));
 
       // Group containers (Swiss and round-robin alike) never render in the
@@ -254,15 +270,14 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
 
   const finalStandingsRaw = await finalStandingsPromise;
   const finalStandingTeamIds = [...new Set(finalStandingsRaw.map((r) => entrantTeamIdById.get(r.entrantId) ?? null).filter((id): id is number => id !== null))];
-  const [finalStandingLogos, finalStandingTeamRows] = await Promise.all([
-    finalStandingTeamIds.length ? getCurrentLogoUrlsThemed("team", finalStandingTeamIds) : Promise.resolve(new Map()),
-    finalStandingTeamIds.length ? db.select({ id: teams.id, shortName: teams.shortName }).from(teams).where(inArray(teams.id, finalStandingTeamIds)) : Promise.resolve([]),
-  ]);
+  const finalStandingTeamRows = finalStandingTeamIds.length
+    ? await db.select({ id: teams.id, shortName: teams.shortName }).from(teams).where(inArray(teams.id, finalStandingTeamIds))
+    : [];
   const shortNameByTeamId = new Map(finalStandingTeamRows.map((t) => [t.id, t.shortName]));
   const finalStandings: PublicFinalStandingRow[] = finalStandingsRaw.map((r) => {
     const displayName = entrantNameById.get(r.entrantId) ?? `#${r.entrantId}`;
     const teamId = entrantTeamIdById.get(r.entrantId) ?? null;
-    const logos = teamId !== null ? finalStandingLogos.get(teamId) : null;
+    const logos = teamId !== null ? teamLogos.get(teamId) : null;
     return {
       qualificationId: r.qualificationId,
       placement: r.placement!,

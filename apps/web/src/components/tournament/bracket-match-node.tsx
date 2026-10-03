@@ -10,6 +10,7 @@
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Link } from "@/i18n/navigation";
+import { TeamBadge } from "@/components/home/team-badge";
 import { GOLD, RED, tint } from "@/lib/home-fake-data";
 import { formatSideScore } from "@/lib/match-score-format";
 
@@ -20,8 +21,12 @@ export type BracketMatchNodeData = {
   status: "pending" | "live" | "completed";
   entrantAId: number | null;
   entrantAName: string | null;
+  entrantALogoUrl: string | null;
+  entrantALogoUrlLight: string | null;
   entrantBId: number | null;
   entrantBName: string | null;
+  entrantBLogoUrl: string | null;
+  entrantBLogoUrlLight: string | null;
   scoreA: number | null;
   scoreB: number | null;
   winnerSide: "a" | "b" | null;
@@ -60,6 +65,8 @@ export const BRACKET_MATCH_NODE_HEIGHT = NODE_HEIGHT;
 function SideRow({
   entrantId,
   name,
+  logoUrl,
+  logoUrlLight,
   score,
   isWinner,
   isLoser,
@@ -67,6 +74,8 @@ function SideRow({
 }: {
   entrantId: number | null;
   name: string | null;
+  logoUrl: string | null;
+  logoUrlLight: string | null;
   score: number | null;
   isWinner: boolean;
   isLoser: boolean;
@@ -74,11 +83,18 @@ function SideRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2 px-2.5" style={{ height: ROW_HEIGHT }}>
-      <span
-        className="truncate text-[12.5px]"
-        style={{ fontWeight: isWinner ? 700 : 500, color: isWinner ? GOLD : isLoser ? "var(--gcs-text-tertiary)" : "var(--gcs-text)" }}
-      >
-        {name ?? tbdLabel}
+      <span className="flex min-w-0 items-center gap-2">
+        {name !== null && (
+          <span className={isLoser ? "opacity-50" : undefined}>
+            <TeamBadge tag={name} logoUrl={logoUrl} logoUrlLight={logoUrlLight} size={18} />
+          </span>
+        )}
+        <span
+          className="truncate text-[12.5px]"
+          style={{ fontWeight: isWinner ? 700 : 500, color: isWinner ? GOLD : isLoser ? "var(--gcs-text-tertiary)" : "var(--gcs-text)" }}
+        >
+          {name ?? tbdLabel}
+        </span>
       </span>
       {score !== null && (
         <span className="font-mono text-[12.5px] tabular-nums" style={{ fontWeight: isWinner ? 800 : 500, color: isWinner ? GOLD : "var(--gcs-text-tertiary)" }}>
@@ -114,8 +130,8 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
       </div>
 
       <div className="divide-y divide-neutral-800/70">
-        <SideRow entrantId={data.entrantAId} name={data.entrantAName} score={data.scoreA} isWinner={data.winnerSide === "a"} isLoser={data.winnerSide === "b"} tbdLabel={data.tbdLabel} />
-        <SideRow entrantId={data.entrantBId} name={data.entrantBName} score={data.scoreB} isWinner={data.winnerSide === "b"} isLoser={data.winnerSide === "a"} tbdLabel={data.tbdLabel} />
+        <SideRow entrantId={data.entrantAId} name={data.entrantAName} logoUrl={data.entrantALogoUrl} logoUrlLight={data.entrantALogoUrlLight} score={data.scoreA} isWinner={data.winnerSide === "a"} isLoser={data.winnerSide === "b"} tbdLabel={data.tbdLabel} />
+        <SideRow entrantId={data.entrantBId} name={data.entrantBName} logoUrl={data.entrantBLogoUrl} logoUrlLight={data.entrantBLogoUrlLight} score={data.scoreB} isWinner={data.winnerSide === "b"} isLoser={data.winnerSide === "a"} tbdLabel={data.tbdLabel} />
       </div>
 
       {/* Both outgoing edges (winner/loser) leave from the exact same point
