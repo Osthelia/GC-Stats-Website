@@ -2194,6 +2194,31 @@
           {
             "type": "object",
             "properties": {
+              "pronouns": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "0 = she/her, 1 = he/him, 2 = they/them."
+                  },
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "she/her",
+                      "he/him",
+                      "they/them"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "description": "Pronouns set on the profile, null when unset."
+              },
               "liquipedia_link": {
                 "type": [
                   "string",
@@ -2206,6 +2231,7 @@
               }
             },
             "required": [
+              "pronouns",
               "liquipedia_link",
               "is_claimed"
             ]
@@ -2748,6 +2774,13 @@
           "platform": {
             "type": "string"
           },
+          "type": {
+            "type": "string",
+            "enum": [
+              "official",
+              "watchparty"
+            ]
+          },
           "url": {
             "type": "string"
           },
@@ -2759,6 +2792,7 @@
           "id",
           "name",
           "platform",
+          "type",
           "url",
           "language_code"
         ]

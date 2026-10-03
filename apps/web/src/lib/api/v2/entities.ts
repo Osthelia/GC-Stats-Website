@@ -19,13 +19,22 @@ export function toApiTeamV2(row: TeamRow): ApiTeamV2 {
   return { ...toApiTeam(row), liquipedia_link: row.liquipediaLink };
 }
 
-// is_claimed: linked to a site account, the account itself is never exposed.
-export type ApiPlayerV2 = ApiPlayer & { liquipedia_link: string | null; is_claimed: boolean };
+// people.pronouns smallint (0/1/2), same order as the site's `pronounsOption` labels.
+export const API_PRONOUNS = ["she/her", "he/him", "they/them"] as const;
+export type ApiPronouns = { id: number; name: (typeof API_PRONOUNS)[number] };
 
-type PlayerRow = Parameters<typeof toApiPlayer>[0] & { liquipediaLink: string | null; userId: string | null };
+function toApiPronouns(value: number | null): ApiPronouns | null {
+  const name = value !== null ? API_PRONOUNS[value] : undefined;
+  return name ? { id: value!, name } : null;
+}
+
+// is_claimed: linked to a site account, the account itself is never exposed.
+export type ApiPlayerV2 = ApiPlayer & { pronouns: ApiPronouns | null; liquipedia_link: string | null; is_claimed: boolean };
+
+type PlayerRow = Parameters<typeof toApiPlayer>[0] & { pronouns: number | null; liquipediaLink: string | null; userId: string | null };
 
 export function toApiPlayerV2(row: PlayerRow): ApiPlayerV2 {
-  return { ...toApiPlayer(row), liquipedia_link: row.liquipediaLink, is_claimed: row.userId !== null };
+  return { ...toApiPlayer(row), pronouns: toApiPronouns(row.pronouns), liquipedia_link: row.liquipediaLink, is_claimed: row.userId !== null };
 }
 
 export type ApiTournamentV2 = ApiTournament & { liquipedia_link: string | null };

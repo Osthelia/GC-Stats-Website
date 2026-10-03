@@ -610,6 +610,10 @@ export const ApiPressEntrySchema = z
   .openapi("PressEntry");
 
 export const ApiPlayerV2Schema = ApiPlayerSchema.extend({
+  pronouns: z
+    .object({ id: z.number().int().openapi({ description: "0 = she/her, 1 = he/him, 2 = they/them." }), name: z.enum(["she/her", "he/him", "they/them"]) })
+    .nullable()
+    .openapi({ description: "Pronouns set on the profile, null when unset." }),
   liquipedia_link: z.string().nullable(),
   is_claimed: z.boolean().openapi({ description: "True when the profile is linked to a GC-Stats account (the account itself is never exposed)." }),
 }).openapi("PlayerV2");
