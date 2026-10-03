@@ -9,38 +9,33 @@
 import type { MetadataRoute } from "next";
 import { and, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, teams, people, news } from "@gc-stats/db";
-import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
+import { tournaments, teams, news } from "@gc-stats/db";
+import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
 import { slugify } from "@/lib/entity-id";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { routing } from "@/i18n/routing";
 
 /**
- * Native Next.js sitemap (replaces V1's sitemap:generate cron — no
- * scheduling needed, this route is computed fresh on every crawl request).
- * Individual matches are deliberately excluded, tens of thousands of them
- * would blow crawl budget for no SEO benefit (mirrors V1). Inactive
- * tournaments, teams and players are excluded too.
- *
- * Split into multiple sitemap files via generateSitemaps: Google rejects a
- * sitemap once it passes 50,000 URLs, and CHUNK_SIZE keeps each file well
- * under that so the site keeps working as the database grows.
+ * Native Next.js sitemap served on /sitemap.xml (replaces V1's
+ * sitemap:generate cron — computed fresh on every crawl request).
+ * Mirrors V1's layout: static pages, every active tournament (with its
+ * matches/stats tabs) and every active team. Players and individual matches
+ * are deliberately excluded, tens of thousands of them would blow crawl
+ * budget for no SEO benefit. A single file stays well under Google's
+ * 50,000 URL / 50 MB limit without them.
  */
 
-const CHUNK_SIZE = 5000;
-// generateSitemaps runs during `next build`'s page data collection, where the
-// DB is never reachable (see next.config.mjs's DEPLOY_TARGET comment) — so
-// chunk ids are overprovisioned instead of counted. A chunk beyond the real
-// row count just renders an empty (still valid) sitemap file.
-const MAX_CHUNKS_PER_SECTION = 40;
+type ChangeFrequency = MetadataRoute.Sitemap[number]["changeFrequency"];
 
-const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }> = [
+const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: ChangeFrequency }> = [
   { path: "", priority: 1, changeFrequency: "daily" },
   { path: "/tournaments", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/news", priority: 0.6, changeFrequency: "daily" },
   { path: "/about", priority: 0.5, changeFrequency: "daily" },
   { path: "/transparency", priority: 0.5, changeFrequency: "daily" },
   { path: "/finance", priority: 0.5, changeFrequency: "daily" },
-  { path: "/data", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/developers-doc", priority: 0.2, changeFrequency: "yearly" },
+  { path: "/data", priority: 0.2, changeFrequency: "yearly" },
   { path: "/terms", priority: 0.2, changeFrequency: "yearly" },
   { path: "/privacy", priority: 0.2, changeFrequency: "yearly" },
   { path: "/legal", priority: 0.2, changeFrequency: "yearly" },
@@ -49,77 +44,36 @@ const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: Met
   { path: "/help/edit_page", priority: 0.2, changeFrequency: "yearly" },
 ];
 
+const TOURNAMENT_TABS = ["", "/matches", "/stats"];
+
 export const dynamic = "force-dynamic";
 
-type Section = "tournaments" | "teams" | "players" | "news";
-
-export function generateSitemaps(): Array<{ id: string }> {
-  const ids = ["static"];
-  const sections: Section[] = ["tournaments", "teams", "players", "news"];
-  for (const section of sections) {
-    for (let i = 0; i < MAX_CHUNKS_PER_SECTION; i++) ids.push(`${section}-${i}`);
-  }
-
-  return ids.map((id) => ({ id }));
-}
-
-export default async function sitemap({ id }: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
-  const resolvedId = await id;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const localize = (path: string) => localizedEntry(base, path);
 
-  if (resolvedId === "static") {
-    return STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(path), priority, changeFrequency }));
-  }
+  const [tournamentRows, teamRows, newsRows] = await Promise.all([
+    db
+      .select({ id: tournaments.id, name: tournaments.name })
+      .from(tournaments)
+      .where(and(eq(tournaments.active, true), visibleTournament))
+      .orderBy(tournaments.id),
+    db
+      .select({ id: teams.id, name: teams.name })
+      .from(teams)
+      .where(and(eq(teams.isActive, true), visibleTeam))
+      .orderBy(teams.id),
+    db.select({ slug: news.slug, publishedAt: news.publishedAt }).from(news).where(isNewsPublishedCondition()).orderBy(news.slug),
+  ]);
 
-  const separatorIndex = resolvedId.lastIndexOf("-");
-  const section = resolvedId.slice(0, separatorIndex) as Section;
-  const offset = Number(resolvedId.slice(separatorIndex + 1)) * CHUNK_SIZE;
-
-  switch (section) {
-    case "tournaments": {
-      const rows = await db
-        .select({ id: tournaments.id, name: tournaments.name })
-        .from(tournaments)
-        .where(and(eq(tournaments.active, true), visibleTournament))
-        .orderBy(tournaments.id)
-        .limit(CHUNK_SIZE)
-        .offset(offset);
-      return rows.map((t) => ({ ...localize(`/tournaments/${t.id}/${slugify(t.name)}`), priority: 0.9, changeFrequency: "weekly" as const }));
-    }
-    case "teams": {
-      const rows = await db
-        .select({ id: teams.id, name: teams.name })
-        .from(teams)
-        .where(and(eq(teams.isActive, true), visibleTeam))
-        .orderBy(teams.id)
-        .limit(CHUNK_SIZE)
-        .offset(offset);
-      return rows.map((t) => ({ ...localize(`/team/${t.id}/${slugify(t.name)}`), priority: 0.6, changeFrequency: "weekly" as const }));
-    }
-    case "players": {
-      const rows = await db
-        .select({ id: people.id, handle: people.handle })
-        .from(people)
-        .where(and(eq(people.isActive, true), visiblePerson))
-        .orderBy(people.id)
-        .limit(CHUNK_SIZE)
-        .offset(offset);
-      return rows.map((p) => ({ ...localize(`/player/${p.id}/${slugify(p.handle)}`), priority: 0.6, changeFrequency: "weekly" as const }));
-    }
-    case "news": {
-      const rows = await db
-        .select({ slug: news.slug, publishedAt: news.publishedAt })
-        .from(news)
-        .where(isNewsPublishedCondition())
-        .orderBy(news.slug)
-        .limit(CHUNK_SIZE)
-        .offset(offset);
-      return rows.map((n) => ({ ...localize(`/news/${n.slug}`), priority: 0.7, changeFrequency: "monthly" as const, lastModified: n.publishedAt ?? undefined }));
-    }
-    default:
-      return [];
-  }
+  return [
+    ...STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(path), priority, changeFrequency })),
+    ...tournamentRows.flatMap((t) =>
+      TOURNAMENT_TABS.map((tab) => ({ ...localize(`/tournaments/${t.id}/${slugify(t.name)}${tab}`), priority: 0.9, changeFrequency: "weekly" as const })),
+    ),
+    ...teamRows.map((t) => ({ ...localize(`/team/${t.id}/${slugify(t.name)}`), priority: 0.6, changeFrequency: "weekly" as const })),
+    ...newsRows.map((n) => ({ ...localize(`/news/${n.slug}`), priority: 0.7, changeFrequency: "monthly" as const, lastModified: n.publishedAt ?? undefined })),
+  ];
 }
 
 /** One sitemap entry per path, `url` on the default locale plus `alternates.languages` for every other locale (localePrefix is "always", see i18n/routing.ts). */
