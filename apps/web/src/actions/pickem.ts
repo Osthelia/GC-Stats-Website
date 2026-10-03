@@ -33,7 +33,10 @@ const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I, av
 
 function generateJoinCode(): string {
   let code = "";
-  for (const byte of crypto.randomBytes(6)) code += JOIN_CODE_ALPHABET[byte % JOIN_CODE_ALPHABET.length];
+  for (let i = 0; i < 6; i++) {
+    const idx = crypto.randomInt(JOIN_CODE_ALPHABET.length);
+    code += JOIN_CODE_ALPHABET[idx];
+  }
   return code;
 }
 
