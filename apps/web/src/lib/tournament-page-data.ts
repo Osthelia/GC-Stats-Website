@@ -13,7 +13,7 @@
 import { and, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { entrants, entrantMembers, groupEntries, people, teams, matches, maps, stageContainers, stages, tournaments, mapPlayerStats } from "@gc-stats/db";
+import { entrants, entrantMembers, people, teams, matches, maps, stageContainers, stages, tournaments, mapPlayerStats } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { normalizeRegion } from "@/lib/home-fake-data";
 import { formatSideScore } from "@/lib/match-score-format";
@@ -59,12 +59,13 @@ export type TournamentParticipant = {
 export async function getTournamentParticipants(tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
   let stageCondition;
   if (stageId != null) {
-    const stageContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId));
-    stageCondition = or(
-      inArray(entrants.id, db.select({ id: matches.entrantAId }).from(matches).where(inArray(matches.containerId, stageContainerIds))),
-      inArray(entrants.id, db.select({ id: matches.entrantBId }).from(matches).where(inArray(matches.containerId, stageContainerIds))),
-      inArray(entrants.id, db.select({ id: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, stageContainerIds))),
-    );
+    const stageMatchRows = await db
+      .select({ a: matches.entrantAId, b: matches.entrantBId })
+      .from(matches)
+      .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+      .where(and(eq(stageContainers.stageId, stageId), or(isNotNull(matches.entrantAId), isNotNull(matches.entrantBId))));
+    const stageEntrantIds = [...new Set(stageMatchRows.flatMap((m) => [m.a, m.b]).filter((id): id is number => id != null))];
+    if (stageEntrantIds.length > 0) stageCondition = inArray(entrants.id, stageEntrantIds);
   }
 
   const entrantRows = await db
