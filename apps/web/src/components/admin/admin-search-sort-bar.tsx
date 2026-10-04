@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export type AdminListOption = { value: string; label: string };
+/** Additional filter select, stored in the query string under `key`. */
+export type AdminListFilter = { key: string; value: string; label: string; options: AdminListOption[] };
 
 /** "" (no filter) can't be a Select item value (base-ui disallows empty strings) — options use "any" instead, mapped to/from the query string here. */
 const ANY = "any";
@@ -55,6 +57,7 @@ export function AdminSearchSortBar({
   statusValue,
   statusOptions,
   statusLabel,
+  extraFilters = [],
 }: {
   searchPlaceholder: string;
   searchSubmitLabel: string;
@@ -67,13 +70,15 @@ export function AdminSearchSortBar({
   statusValue: string;
   statusOptions: AdminListOption[];
   statusLabel: string;
+  extraFilters?: AdminListFilter[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [q, setQ] = useState(searchValue);
 
   function pushQuery(next: Record<string, string>) {
-    const merged = { q, sort, direction, activeWithin: activeWithinValue, status: statusValue, ...next };
+    const extra = Object.fromEntries(extraFilters.map((f) => [f.key, f.value]));
+    const merged = { q, sort, direction, activeWithin: activeWithinValue, status: statusValue, ...extra, ...next };
     const query = Object.fromEntries(Object.entries(merged).filter(([, v]) => v !== ""));
     router.push({ pathname, query });
   }
@@ -92,6 +97,9 @@ export function AdminSearchSortBar({
       </Button>
       {activeWithinOptions.length > 0 && <FilterSelect value={activeWithinValue} options={activeWithinOptions} onChange={(v) => pushQuery({ activeWithin: v })} ariaLabel={activeWithinLabel} />}
       {statusOptions.length > 0 && <FilterSelect value={statusValue} options={statusOptions} onChange={(v) => pushQuery({ status: v })} ariaLabel={statusLabel} />}
+      {extraFilters.map((f) => (
+        <FilterSelect key={f.key} value={f.value} options={f.options} onChange={(v) => pushQuery({ [f.key]: v })} ariaLabel={f.label} />
+      ))}
     </form>
   );
 }

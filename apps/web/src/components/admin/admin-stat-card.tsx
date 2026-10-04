@@ -6,7 +6,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentProps, ComponentType, ReactNode } from "react";
+import { Link } from "@/i18n/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -23,10 +24,25 @@ const COLOR_STYLES = {
 /**
  * Small colored count tile, shared by every admin list page that benefits from an
  * at-a-glance breakdown (moderation group, change requests, dashboard overview).
+ * With `href`, the tile becomes a filter link; `active` highlights the current filter.
  */
-export function AdminStatCard({ label, value, icon: Icon, color }: { label: string; value: ReactNode; icon: ComponentType<{ className?: string }>; color: keyof typeof COLOR_STYLES }) {
-  return (
-    <Card>
+export function AdminStatCard({
+  label,
+  value,
+  icon: Icon,
+  color,
+  href,
+  active = false,
+}: {
+  label: string;
+  value: ReactNode;
+  icon: ComponentType<{ className?: string }>;
+  color: keyof typeof COLOR_STYLES;
+  href?: ComponentProps<typeof Link>["href"];
+  active?: boolean;
+}) {
+  const card = (
+    <Card className={cn(href && "transition-all group-hover/stat:bg-muted/50 group-active/stat:scale-[0.98]", active && "ring-2 ring-primary")}>
       <CardContent className="flex items-center gap-3 py-1">
         <div className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", COLOR_STYLES[color])}>
           <Icon className="size-4.5" />
@@ -37,5 +53,11 @@ export function AdminStatCard({ label, value, icon: Icon, color }: { label: stri
         </div>
       </CardContent>
     </Card>
+  );
+  if (!href) return card;
+  return (
+    <Link href={href} aria-current={active ? "page" : undefined} className="group/stat rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      {card}
+    </Link>
   );
 }

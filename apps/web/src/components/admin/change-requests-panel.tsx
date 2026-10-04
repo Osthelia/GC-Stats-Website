@@ -54,7 +54,7 @@ export function ChangeRequestsPanel({
                   <span className="text-xs text-muted-foreground">{row.subjectType === "team" ? t("subjectTeam") : t("subjectPerson")}</span>
                 </div>
               </TableCell>
-              <TableCell>{row.requestedByUsername ?? t("detail.requestedByUnknown")}</TableCell>
+              <TableCell>{row.requestedByUsername ?? t("requesterSystem")}</TableCell>
               <TableCell className="text-sm text-muted-foreground">
                 {t("itemsSummary", { approved: row.approvedItems, rejected: row.rejectedItems, pending: row.pendingItems })}
               </TableCell>

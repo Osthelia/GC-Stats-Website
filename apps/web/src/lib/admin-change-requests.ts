@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { changeRequests, changeRequestItems, teams, people, rosterMemberships, users } from "@gc-stats/db";
 import { logoUrl } from "@gc-stats/storage";
@@ -26,6 +26,8 @@ export const CHANGE_REQUESTS_PAGE_SIZE = 30;
 // auto-retracts its own stale suggestion. Read-only here, just displayed.
 export type ChangeRequestStatus = "pending" | "approved" | "rejected" | "partial" | "withdrawn";
 export type ChangeRequestSort = "createdAt" | "status";
+// System requests (roster-mismatch detector, V1 import) have no requester.
+export type ChangeRequestOrigin = "user" | "system";
 export type SortDirection = "asc" | "desc";
 
 export type AdminChangeRequestRow = {
@@ -43,8 +45,16 @@ export type AdminChangeRequestRow = {
   rejectedItems: number;
 };
 
-export async function getAdminChangeRequestCounts(): Promise<{ pending: number; approved: number; rejected: number }> {
-  const rows = await db.select({ status: changeRequests.status, count: sql<number>`count(*)::int` }).from(changeRequests).groupBy(changeRequests.status);
+function originCondition(origin: ChangeRequestOrigin) {
+  return origin === "system" ? isNull(changeRequests.requestedBy) : isNotNull(changeRequests.requestedBy);
+}
+
+export async function getAdminChangeRequestCounts(origin: ChangeRequestOrigin | "" = ""): Promise<{ pending: number; approved: number; rejected: number }> {
+  const rows = await db
+    .select({ status: changeRequests.status, count: sql<number>`count(*)::int` })
+    .from(changeRequests)
+    .where(origin ? originCondition(origin) : undefined)
+    .groupBy(changeRequests.status);
   const result = { pending: 0, approved: 0, rejected: 0 };
   for (const row of rows) {
     if (row.status === "pending") result.pending = row.count;
@@ -70,11 +80,12 @@ export async function subjectLabels(subjectType: ChangeRequestSubjectType, ids: 
 export async function listAdminChangeRequests(opts: {
   q: string;
   status: ChangeRequestStatus | "";
+  origin: ChangeRequestOrigin | "";
   sort: ChangeRequestSort;
   direction: SortDirection;
   page: number;
 }): Promise<{ rows: AdminChangeRequestRow[]; total: number }> {
-  const { q, status, sort, direction, page } = opts;
+  const { q, status, origin, sort, direction, page } = opts;
 
   // Search matches the subject's current name/handle or the requester's
   // username — resolved via two extra lookups rather than a join, since
@@ -101,6 +112,7 @@ export async function listAdminChangeRequests(opts: {
 
   const conditions = [];
   if (status) conditions.push(eq(changeRequests.status, status));
+  if (origin) conditions.push(originCondition(origin));
   if (matchingIds !== null) {
     const usernameVariants = q ? typoVariants(q.toLowerCase()) : [];
     const [byUsername] = usernameVariants.length ? [await db.select({ id: users.id }).from(users).where(or(...usernameVariants.map((v) => foldedIlike(users.username, v))))] : [[]];
