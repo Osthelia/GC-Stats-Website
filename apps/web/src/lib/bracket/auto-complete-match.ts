@@ -12,7 +12,8 @@
  */
 
 import { eq } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+import { adminDb as db } from "@gc-stats/db/client";
 import { matches, maps } from "@gc-stats/db";
 import { resolveMatch } from "./match-resolution-service";
 

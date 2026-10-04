@@ -684,15 +684,16 @@ export async function importMatchWikicode(
       await tx.insert(maps).values(
         playOrder.map((row, index) => {
           const info = mapInfoByStep.get(index + 1);
-          const skip = info?.finishedSkip ?? false;
+          // `finished=skip` (map never played) deliberately diverges from V1's
+          // -1/-1 + completed: the map just stays unscored and open.
           return {
             matchId,
             mapName: row.mapName,
             order: index + 1,
             apiMatchId: info?.apiMatchId ?? null,
-            teamAScore: skip ? -1 : null,
-            teamBScore: skip ? -1 : null,
-            isCompleted: skip,
+            teamAScore: null,
+            teamBScore: null,
+            isCompleted: false,
             isForfeit: false,
           };
         })

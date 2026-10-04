@@ -11,7 +11,8 @@
  */
 
 import { eq, inArray } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+import { adminDb as db } from "@gc-stats/db/client";
 import { people, entrantMembers } from "@gc-stats/db";
 import { resolveAgentName, type RiotContent } from "@/lib/riot-content-client";
 
