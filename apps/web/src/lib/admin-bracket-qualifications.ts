@@ -10,7 +10,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { asc, eq, inArray, or } from "drizzle-orm";
+import { and, asc, eq, inArray, or, sql } from "drizzle-orm";
+import { foldedIlike } from "@/lib/db-search";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stageQualifications, qualificationResults, stageContainers, stages, tournaments, entrants, matches } from "@gc-stats/db";
 
@@ -127,30 +128,23 @@ export type QualificationContainerSearchResult = { id: number; name: string; sta
 
 /** Cross-tournament container search for the destination picker (a rule can advance an entrant into another tournament entirely, e.g. regional -> major). */
 export async function searchQualificationDestinationContainers(query: string): Promise<QualificationContainerSearchResult[]> {
-  const words = query.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) {
-    const rows = await db
-      .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
-      .from(stageContainers)
-      .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-      .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-      .orderBy(asc(tournaments.startDate))
-      .limit(15);
-    return rows.reverse();
-  }
+  const words = query
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .split(/\s+/)
+    .filter(Boolean);
 
-  const rows = await db
+  // Each word must match the tournament, stage or container name
+  const conditions = words.map((w) => or(foldedIlike(tournaments.name, w), foldedIlike(stages.name, w), foldedIlike(stageContainers.name, w)));
+
+  return db
     .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
     .from(stageContainers)
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-    .limit(300);
-
-  const lower = words.map((w) => w.toLowerCase());
-  return rows
-    .filter((r) => {
-      const haystack = `${r.tournamentName} ${r.stageName} ${r.name}`.toLowerCase();
-      return lower.every((w) => haystack.includes(w));
-    })
-    .slice(0, 15);
+    .where(and(...conditions))
+    .orderBy(sql`${tournaments.startDate} DESC NULLS LAST`, asc(stages.id), asc(stageContainers.id))
+    .limit(30);
 }
