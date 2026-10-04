@@ -37,10 +37,18 @@ declare global {
   var __gcStatsDbPool: Pool | undefined;
 }
 
+// Without a listener, an idle client's socket error (connection dropped by
+// Postgres/Hyperdrive) is rethrown by EventEmitter as an unhandled rejection.
+// The pool already discards the broken client, so logging is enough.
+function attachPoolErrorHandler(pool: Pool): Pool {
+  pool.on("error", (err) => console.warn("[db] idle client error:", err.message));
+  return pool;
+}
+
 let nodeDb: Db | undefined;
 function getNodeDb(): Db {
   if (!nodeDb) {
-    const pool = globalThis.__gcStatsDbPool ?? new Pool({ connectionString: process.env.DATABASE_URL });
+    const pool = globalThis.__gcStatsDbPool ?? attachPoolErrorHandler(new Pool({ connectionString: process.env.DATABASE_URL }));
     if (process.env.NODE_ENV !== "production") {
       globalThis.__gcStatsDbPool = pool;
     }
@@ -63,7 +71,7 @@ function makeWorkersDbFactory(getConnectionString: (env: WorkersEnv) => string) 
     if (cached) return cached;
 
     const connectionString = getConnectionString(env as unknown as WorkersEnv);
-    const pool = new Pool({ connectionString, maxUses: 1 });
+    const pool = attachPoolErrorHandler(new Pool({ connectionString, maxUses: 1 }));
     const instance = drizzle(pool, { schema });
     if (ctx) perRequest.set(ctx, instance);
     return instance;
