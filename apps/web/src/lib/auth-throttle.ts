@@ -48,3 +48,11 @@ export async function checkPasswordResetThrottle(email: string, ip: string): Pro
   const ipOk = await checkRateLimit(`pwreset:ip:${ip}`, PASSWORD_RESET_WINDOW_MS, PASSWORD_RESET_MAX_PER_IP);
   return emailOk && ipOk;
 }
+
+const VERIFICATION_EMAIL_WINDOW_MS = 60 * 60_000;
+const VERIFICATION_EMAIL_MAX_PER_USER = 3;
+
+/** Gates the "send verification email" button of the account settings. */
+export async function checkVerificationEmailThrottle(userId: string): Promise<boolean> {
+  return checkRateLimit(`verify-email:user:${userId}`, VERIFICATION_EMAIL_WINDOW_MS, VERIFICATION_EMAIL_MAX_PER_USER);
+}

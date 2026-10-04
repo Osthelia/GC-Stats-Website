@@ -28,6 +28,7 @@ import { verifyTotpToken, claimTotpCode } from "@/lib/two-factor";
 import { consumeSessionReissueToken } from "@/lib/session-reissue";
 import { getClientIp } from "@/lib/client-ip";
 import { checkLoginThrottle, checkTwoFactorThrottle } from "@/lib/auth-throttle";
+import { markEmailVerifiedFromProvider } from "@/lib/email-verification";
 
 // `.code` ends up as the `code` query param on a `redirect:false` signIn()'s
 // result (see @auth/core/index.js: `if (error instanceof CredentialsSignin)
@@ -63,6 +64,13 @@ const providers: Provider[] = [
   Twitch({
     clientId: process.env.TWITCH_CLIENT_ID,
     clientSecret: process.env.TWITCH_CLIENT_SECRET,
+    // Default claims plus email_verified (lib/email-verification.ts).
+    authorization: {
+      params: {
+        scope: "openid user:read:email",
+        claims: { id_token: { email: null, email_verified: null, picture: null, preferred_username: null } },
+      },
+    },
   }),
   Twitter({
     clientId: process.env.TWITTER_CLIENT_ID,
@@ -160,7 +168,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // OAuth/WebAuthn signups, which never go through actions/register.ts —
     // mirrors V1's UsernameGenerator fallback. Credentials logins always
     // already have a username (set at registration), so this is a no-op there.
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       // Linking an OAuth provider from an already-authenticated context
       // (the "Connect" button in /settings/account) — this MUST run before
       // the account/user check below returns, because returning a string
@@ -203,6 +211,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               session_state: typeof account.session_state === "string" ? account.session_state : undefined,
             });
           }
+          await markEmailVerifiedFromProvider(activeUserId, account.provider, profile);
           return `/settings/account?linked=${account.provider}`;
         }
         // No active session: a normal login/signup through this provider —
@@ -279,9 +288,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   events: {
     // Fires once per actual sign-in, not per request (session reads use the
     // JWT strategy above and never touch the DB).
-    async signIn({ user }) {
+    async signIn({ user, account, profile }) {
       if (user.id) {
         await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+        if (account) await markEmailVerifiedFromProvider(user.id, account.provider, profile);
       }
     },
   },

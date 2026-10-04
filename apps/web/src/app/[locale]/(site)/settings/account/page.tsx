@@ -55,6 +55,7 @@ export default async function AccountSettingsPage({
     db
       .select({
         email: users.email,
+        emailVerified: users.emailVerified,
         name: users.name,
         passwordHash: users.passwordHash,
         twoFactorConfirmedAt: users.twoFactorConfirmedAt,
@@ -99,7 +100,7 @@ export default async function AccountSettingsPage({
 
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
         <div className="flex flex-col gap-5">
-          <EmailSettings currentEmail={user?.email ?? ""} hasPassword={hasPassword} />
+          <EmailSettings currentEmail={user?.email ?? ""} emailVerified={Boolean(user?.emailVerified)} hasPassword={hasPassword} />
           <PasswordSettings hasPassword={hasPassword} canRemove={canRemoveAMethod} />
           <TwoFactorSettings hasPassword={hasPassword} enabled={Boolean(user?.twoFactorConfirmedAt)} />
         </div>

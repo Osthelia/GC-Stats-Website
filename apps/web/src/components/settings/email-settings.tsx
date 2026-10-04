@@ -10,13 +10,21 @@
 
 import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { requestEmailChange } from "@/actions/account-settings";
+import { requestEmailChange, resendEmailVerification } from "@/actions/account-settings";
 import { SettingsCard } from "./settings-card";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
 
-export function EmailSettings({ currentEmail, hasPassword }: { currentEmail: string; hasPassword: boolean }) {
+export function EmailSettings({
+  currentEmail,
+  emailVerified,
+  hasPassword,
+}: {
+  currentEmail: string;
+  emailVerified: boolean;
+  hasPassword: boolean;
+}) {
   const t = useTranslations("accountSettings.email");
 
   const [newEmail, setNewEmail] = useState("");
@@ -24,6 +32,22 @@ export function EmailSettings({ currentEmail, hasPassword }: { currentEmail: str
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [verifyPending, setVerifyPending] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [verifySent, setVerifySent] = useState(false);
+
+  async function handleSendVerification() {
+    setVerifyError(null);
+    setVerifySent(false);
+    setVerifyPending(true);
+    const result = await resendEmailVerification();
+    setVerifyPending(false);
+    if (!result.ok) {
+      setVerifyError(result.error);
+      return;
+    }
+    setVerifySent(true);
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -50,6 +74,31 @@ export function EmailSettings({ currentEmail, hasPassword }: { currentEmail: str
           {t("currentLabel")}
           <input type="email" value={currentEmail} disabled readOnly className={`${inputClass} opacity-60`} />
         </label>
+
+        {currentEmail &&
+          (emailVerified ? (
+            <p className="text-[13px] text-[#7cc48a]">{t("verification.verified")}</p>
+          ) : (
+            <div className="flex flex-col gap-2.5 rounded-[10px] border border-neutral-800 bg-[var(--gcs-surface-2)] p-3.5">
+              <p className="text-[13px] text-neutral-300">{t("verification.unverified")}</p>
+              <div>
+                <button
+                  type="button"
+                  onClick={handleSendVerification}
+                  disabled={verifyPending}
+                  className="rounded-[9px] border border-neutral-700 px-3.5 py-2 text-[13.5px] font-medium text-neutral-200 transition-colors hover:border-neutral-600 hover:bg-[var(--gcs-hover)] active:bg-[var(--gcs-surface)] disabled:opacity-60"
+                >
+                  {verifyPending ? t("verification.sending") : t("verification.send")}
+                </button>
+              </div>
+              {verifyError && (
+                <p role="alert" className="text-[13px] text-[#e08585]">
+                  {t(`verification.error.${verifyError}`)}
+                </p>
+              )}
+              {verifySent && <p className="text-[13px] text-[#7cc48a]">{t("verification.sent", { email: currentEmail })}</p>}
+            </div>
+          ))}
 
         <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
           <span className="flex items-center gap-1">

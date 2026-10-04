@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Current password",
       "submit": "Send confirmation link",
       "success": "A confirmation link was sent to {email}. Click it to finish the change.",
+      "verification": {
+        "verified": "Your email is verified.",
+        "unverified": "Your email isn't verified yet. Verify it to receive notifications and recover your account.",
+        "send": "Send verification email",
+        "sending": "Sending…",
+        "sent": "A verification link was sent to {email}.",
+        "error": {
+          "noEmail": "This account has no email address.",
+          "alreadyVerified": "Your email is already verified.",
+          "tooManyAttempts": "Too many emails sent, try again in an hour."
+        }
+      },
       "error": {
         "required": "This field is required.",
         "invalid": "This value isn't valid.",

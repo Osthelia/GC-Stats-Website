@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Aktuelles Passwort",
       "submit": "Bestätigungslink senden",
       "success": "Ein Bestätigungslink wurde an {email} gesendet. Klicken Sie darauf, um die Änderung abzuschließen.",
+      "verification": {
+        "verified": "Deine E-Mail ist bestätigt.",
+        "unverified": "Deine E-Mail ist noch nicht bestätigt. Bestätige sie, um Benachrichtigungen zu erhalten und dein Konto wiederherstellen zu können.",
+        "send": "Bestätigungs-E-Mail senden",
+        "sending": "Wird gesendet…",
+        "sent": "Ein Bestätigungslink wurde an {email} gesendet.",
+        "error": {
+          "noEmail": "Dieses Konto hat keine E-Mail-Adresse.",
+          "alreadyVerified": "Deine E-Mail ist bereits bestätigt.",
+          "tooManyAttempts": "Zu viele E-Mails gesendet, versuche es in einer Stunde erneut."
+        }
+      },
       "error": {
         "required": "Dieses Feld ist erforderlich.",
         "invalid": "Dieser Wert ist ungültig.",

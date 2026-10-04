@@ -25,6 +25,8 @@ import { renderNotificationEmail } from "@/lib/email/notification-template";
 import { APP_BASE_URL } from "@/lib/notify";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
 import { createSessionReissueToken } from "@/lib/session-reissue";
+import { sendVerificationEmail } from "@/lib/email-verification";
+import { checkVerificationEmailThrottle } from "@/lib/auth-throttle";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 /** `reissueToken` goes straight into `useSession().update({ reissueToken })` so the calling tab survives the session invalidation. */
@@ -158,6 +160,19 @@ export async function confirmEmailChange(userId: string, newEmail: string, token
   // outstanding token was minted for the old email, safest to force a fresh login.
   await db.update(users).set({ email: newEmail, emailVerified: new Date(), sessionsInvalidatedAt: new Date() }).where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  return { ok: true };
+}
+
+/** Sends a verification link to the current, still unverified, account email. */
+export async function resendEmailVerification(): Promise<ActionResult> {
+  const userId = await requireUserId();
+
+  const [user] = await db.select({ email: users.email, emailVerified: users.emailVerified }).from(users).where(eq(users.id, userId)).limit(1);
+  if (!user?.email) return { ok: false, error: "noEmail" };
+  if (user.emailVerified) return { ok: false, error: "alreadyVerified" };
+  if (!(await checkVerificationEmailThrottle(userId))) return { ok: false, error: "tooManyAttempts" };
+
+  await sendVerificationEmail(user.email);
   return { ok: true };
 }
 

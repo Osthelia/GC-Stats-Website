@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Password attuale",
       "submit": "Invia link di conferma",
       "success": "Un link di conferma è stato inviato a {email}. Cliccalo per completare la modifica.",
+      "verification": {
+        "verified": "La tua email è verificata.",
+        "unverified": "La tua email non è ancora verificata. Verificala per ricevere notifiche e poter recuperare il tuo account.",
+        "send": "Invia email di verifica",
+        "sending": "Invio…",
+        "sent": "Un link di verifica è stato inviato a {email}.",
+        "error": {
+          "noEmail": "Questo account non ha un indirizzo email.",
+          "alreadyVerified": "La tua email è già verificata.",
+          "tooManyAttempts": "Troppe email inviate, riprova tra un'ora."
+        }
+      },
       "error": {
         "required": "Questo campo è obbligatorio.",
         "invalid": "Questo valore non è valido.",

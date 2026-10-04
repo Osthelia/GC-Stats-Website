@@ -206,6 +206,18 @@
       "currentPasswordLabel": "현재 비밀번호",
       "submit": "확인 링크 보내기",
       "success": "{email}로 확인 링크를 보냈어요. 클릭하면 변경이 완료돼요.",
+      "verification": {
+        "verified": "이메일이 인증되었습니다.",
+        "unverified": "이메일이 아직 인증되지 않았습니다. 알림을 받고 계정을 복구하려면 인증하세요.",
+        "send": "인증 이메일 보내기",
+        "sending": "보내는 중…",
+        "sent": "{email}(으)로 인증 링크를 보냈습니다.",
+        "error": {
+          "noEmail": "이 계정에는 이메일 주소가 없습니다.",
+          "alreadyVerified": "이메일이 이미 인증되었습니다.",
+          "tooManyAttempts": "이메일을 너무 많이 보냈습니다. 1시간 후에 다시 시도하세요."
+        }
+      },
       "error": {
         "required": "필수 입력 항목이에요.",
         "invalid": "값이 유효하지 않아요.",

@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Contraseña actual",
       "submit": "Enviar enlace de confirmación",
       "success": "Se ha enviado un enlace de confirmación a {email}. Haz clic en él para completar el cambio.",
+      "verification": {
+        "verified": "Tu correo está verificado.",
+        "unverified": "Tu correo aún no está verificado. Verifícalo para recibir notificaciones y poder recuperar tu cuenta.",
+        "send": "Enviar correo de verificación",
+        "sending": "Enviando…",
+        "sent": "Se envió un enlace de verificación a {email}.",
+        "error": {
+          "noEmail": "Esta cuenta no tiene dirección de correo.",
+          "alreadyVerified": "Tu correo ya está verificado.",
+          "tooManyAttempts": "Demasiados correos enviados, inténtalo de nuevo en una hora."
+        }
+      },
       "error": {
         "required": "Este campo es obligatorio.",
         "invalid": "Este valor no es válido.",

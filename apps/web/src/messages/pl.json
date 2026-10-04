@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Obecne hasło",
       "submit": "Wyślij link potwierdzający",
       "success": "Link potwierdzający został wysłany na {email}. Kliknij go, aby dokończyć zmianę.",
+      "verification": {
+        "verified": "Twój email jest zweryfikowany.",
+        "unverified": "Twój email nie jest jeszcze zweryfikowany. Zweryfikuj go, aby otrzymywać powiadomienia i móc odzyskać konto.",
+        "send": "Wyślij email weryfikacyjny",
+        "sending": "Wysyłanie…",
+        "sent": "Link weryfikacyjny został wysłany na {email}.",
+        "error": {
+          "noEmail": "To konto nie ma adresu email.",
+          "alreadyVerified": "Twój email jest już zweryfikowany.",
+          "tooManyAttempts": "Wysłano zbyt wiele emaili, spróbuj ponownie za godzinę."
+        }
+      },
       "error": {
         "required": "To pole jest wymagane.",
         "invalid": "Ta wartość jest nieprawidłowa.",

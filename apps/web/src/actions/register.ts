@@ -14,15 +14,11 @@
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 import { eq, or } from "drizzle-orm";
-import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { getClientIp } from "@/lib/client-ip";
 import { checkRegisterThrottle } from "@/lib/auth-throttle";
-import { createVerificationToken } from "@/lib/verification-tokens";
-import { sendEmail } from "@/lib/email/client";
-import { renderNotificationEmail } from "@/lib/email/notification-template";
-import { APP_BASE_URL } from "@/lib/notify";
+import { sendVerificationEmail } from "@/lib/email-verification";
 
 const USERNAME_RE = /^[a-zA-Z0-9_-]{3,32}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,15 +26,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export type RegisterField = "name" | "username" | "email" | "password" | "passwordConfirmation";
 export type RegisterFieldErrors = Partial<Record<RegisterField, string>>;
 export type RegisterResult = { ok: true } | { ok: false; fieldErrors: RegisterFieldErrors; formError?: "tooManyAttempts" };
-
-async function sendVerificationEmail(email: string): Promise<void> {
-  const locale = await getLocale();
-  const token = await createVerificationToken(`verify-email:${email}`);
-  const t = await getTranslations({ locale, namespace: "auth.verifyEmail.email" });
-  const link = `${APP_BASE_URL}/${locale}/verify-email?email=${encodeURIComponent(email)}&token=${token}`;
-  const { html, text } = renderNotificationEmail(t("subject"), t("body"), link, t("cta"));
-  await sendEmail({ to: email, subject: t("subject"), html, text });
-}
 
 export type RegisterInput = {
   name: string;

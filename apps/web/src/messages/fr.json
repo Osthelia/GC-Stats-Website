@@ -206,6 +206,18 @@
       "currentPasswordLabel": "Mot de passe actuel",
       "submit": "Envoyer le lien de confirmation",
       "success": "Un lien de confirmation a été envoyé à {email}. Cliquez dessus pour finaliser le changement.",
+      "verification": {
+        "verified": "Ton email est vérifié.",
+        "unverified": "Ton email n'est pas encore vérifié. Vérifie ton adresse pour recevoir les notifications et pouvoir récupérer ton compte.",
+        "send": "Envoyer l'email de vérification",
+        "sending": "Envoi…",
+        "sent": "Un lien de vérification a été envoyé à {email}.",
+        "error": {
+          "noEmail": "Ce compte n'a pas d'adresse email.",
+          "alreadyVerified": "Ton email est déjà vérifié.",
+          "tooManyAttempts": "Trop d'emails envoyés, réessaie dans une heure."
+        }
+      },
       "error": {
         "required": "Ce champ est obligatoire.",
         "invalid": "Cette valeur n'est pas valide.",
