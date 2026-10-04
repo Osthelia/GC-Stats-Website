@@ -16,6 +16,7 @@ import { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { people, changeRequests, changeRequestItems } from "@gc-stats/db";
+import { getUserLinkStatus, buildUserLinkItem } from "@/lib/user-link-request";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { resolveAccessToken } from "@/lib/oauth/token-resolve";
 import { checkOAuthRateLimit } from "@/lib/oauth/rate-limit";
@@ -37,48 +38,22 @@ export async function POST(request: Request) {
   const personId = body && typeof body.personId === "number" && Number.isInteger(body.personId) && body.personId > 0 ? body.personId : null;
   if (!personId) return oauthError(400, "invalid_request", "personId must be a positive integer.");
 
-  const [target] = await db.select({ id: people.id, userId: people.userId }).from(people).where(and(eq(people.id, personId), visiblePerson)).limit(1);
+  const [target] = await db.select({ id: people.id }).from(people).where(and(eq(people.id, personId), visiblePerson)).limit(1);
   if (!target) return oauthError(404, "not_found", "No player with that id.");
 
-  if (target.userId === token.userId) return NextResponse.json({ status: "already_linked" });
-  if (target.userId) return oauthError(409, "already_linked", "This player is already linked to another account.");
-
-  // One pending link request per account, whatever the target: stops an app
-  // from flooding the moderation queue with requests on many players.
-  const [pendingRequest] = await db
-    .select({ id: changeRequests.id })
-    .from(changeRequests)
-    .innerJoin(changeRequestItems, eq(changeRequestItems.changeRequestId, changeRequests.id))
-    .where(
-      and(
-        eq(changeRequests.subjectType, "person"),
-        eq(changeRequests.requestedBy, token.userId),
-        eq(changeRequestItems.field, "user_link"),
-        eq(changeRequestItems.status, "pending")
-      )
-    )
-    .limit(1);
-  if (pendingRequest) return oauthError(409, "request_pending", "A player link request for this account is already pending review.");
-
-  // The account may already have a different player linked (people.userId is
-  // unique) — the request still goes through, carrying the old link as
-  // oldValue, and a moderator applies both sides (unlink + link) together
-  // when approving (see actions/admin-change-requests.ts "user_link").
-  const [previous] = await db.select({ id: people.id }).from(people).where(eq(people.userId, token.userId)).limit(1);
-  const previousPersonId = previous && previous.id !== personId ? previous.id : null;
+  const status = await getUserLinkStatus(token.userId, personId);
+  if (status.state === "linkedToYou") return NextResponse.json({ status: "already_linked" });
+  if (status.state === "linkedToOther") return oauthError(409, "already_linked", "This player is already linked to another account.");
+  if (status.state === "pending") return oauthError(409, "request_pending", "A player link request for this account is already pending review.");
+  if (status.state === "notFound") return oauthError(404, "not_found", "No player with that id.");
+  const item = buildUserLinkItem(token.userId, status.previousPersonId);
 
   const changeRequestId = await db.transaction(async (tx) => {
     const [row] = await tx
       .insert(changeRequests)
       .values({ subjectType: "person", subjectId: personId, requestedBy: token.userId, reason: null, status: "pending" })
       .returning({ id: changeRequests.id });
-    await tx.insert(changeRequestItems).values({
-      changeRequestId: row!.id,
-      field: "user_link",
-      oldValue: { previousPersonId },
-      newValue: { userId: token.userId, previousPersonId },
-      status: "pending",
-    });
+    await tx.insert(changeRequestItems).values({ changeRequestId: row!.id, ...item, status: "pending" });
     return row!.id;
   });
 

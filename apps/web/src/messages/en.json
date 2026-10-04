@@ -3326,7 +3326,7 @@
           "logo": "New logo",
           "logo_edit": "Logo entry edit",
           "logo_delete": "Logo entry removal",
-          "user_link": "Account link request (OAuth)"
+          "user_link": "Account link request"
         },
         "thread": {
           "heading": "Discussion with the requester",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Until",
       "addRow": "Add"
     },
+    "userLink": {
+      "title": "Your account",
+      "checkbox": "This is me: link my account to {name}",
+      "hint": "Staff will check that this profile is really yours before linking it to your account.",
+      "replaces": "Your account is currently linked to {previous}: that link will be replaced once approved.",
+      "state": {
+        "linkedToYou": "This profile is already linked to your account.",
+        "linkedToOther": "This profile is already linked to another account. Contact staff if you think it's a mistake.",
+        "pending": "You already have an account link request pending review."
+      }
+    },
     "error": {
       "required": "This field is required.",
       "tooLong": "This value is too long.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "One of the name history changes you proposed isn't valid.",
       "invalidLogo": "One of the logo changes you proposed isn't valid.",
       "invalid": "This value isn't valid.",
-      "tooMany": "You've added too many entries."
+      "tooMany": "You've added too many entries.",
+      "userLinkAlreadyYours": "This profile is already linked to your account.",
+      "userLinkTaken": "This profile is already linked to another account.",
+      "userLinkPending": "You already have an account link request pending review."
     }
   },
   "tournamentPage": {

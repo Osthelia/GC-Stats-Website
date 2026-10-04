@@ -3326,7 +3326,7 @@
           "logo": "新增商标",
           "logo_edit": "修改商标记录",
           "logo_delete": "删除商标记录",
-          "user_link": "账户绑定请求（OAuth）"
+          "user_link": "账户绑定请求"
         },
         "thread": {
           "heading": "与申请人的讨论",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "截止于",
       "addRow": "添加"
     },
+    "userLink": {
+      "title": "你的账户",
+      "checkbox": "这是我：将我的账户绑定到 {name}",
+      "hint": "在绑定到你的账户之前，工作人员会核实此资料确实属于你。",
+      "replaces": "你的账户目前绑定到 {previous}：批准后该绑定将被替换。",
+      "state": {
+        "linkedToYou": "此资料已绑定到你的账户。",
+        "linkedToOther": "此资料已绑定到其他账户。如果你认为有误，请联系工作人员。",
+        "pending": "你已有一个待审核的账户绑定请求。"
+      }
+    },
     "error": {
       "required": "此字段为必填项。",
       "tooLong": "该值过长。",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "您提议的其中一项曾用名修改无效。",
       "invalidLogo": "您提议的其中一项商标修改无效。",
       "invalid": "该值无效。",
-      "tooMany": "您添加的记录过多。"
+      "tooMany": "您添加的记录过多。",
+      "userLinkAlreadyYours": "此资料已绑定到你的账户。",
+      "userLinkTaken": "此资料已绑定到其他账户。",
+      "userLinkPending": "你已有一个待审核的账户绑定请求。"
     }
   },
   "tournamentPage": {

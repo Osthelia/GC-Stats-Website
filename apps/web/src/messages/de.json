@@ -3326,7 +3326,7 @@
           "logo": "Neues Logo",
           "logo_edit": "Logo Eintrag Bearbeitung",
           "logo_delete": "Logo Eintrag Entfernung",
-          "user_link": "Kontoverknüpfungsanfrage (OAuth)"
+          "user_link": "Kontoverknüpfungsanfrage"
         },
         "thread": {
           "heading": "Unterhaltung mit der antragstellenden Person",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Bis",
       "addRow": "Hinzufügen"
     },
+    "userLink": {
+      "title": "Dein Konto",
+      "checkbox": "Das bin ich: mein Konto mit {name} verknüpfen",
+      "hint": "Das Team prüft, ob dieses Profil wirklich dir gehört, bevor es mit deinem Konto verknüpft wird.",
+      "replaces": "Dein Konto ist derzeit mit {previous} verknüpft: Diese Verknüpfung wird nach der Freigabe ersetzt.",
+      "state": {
+        "linkedToYou": "Dieses Profil ist bereits mit deinem Konto verknüpft.",
+        "linkedToOther": "Dieses Profil ist bereits mit einem anderen Konto verknüpft. Wende dich an das Team, falls das ein Fehler ist.",
+        "pending": "Du hast bereits eine Anfrage zur Kontoverknüpfung, die geprüft wird."
+      }
+    },
     "error": {
       "required": "Dieses Feld ist erforderlich.",
       "tooLong": "Dieser Wert ist zu lang.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "Eine der vorgeschlagenen Änderungen am Namensverlauf ist ungültig.",
       "invalidLogo": "Eine der vorgeschlagenen Logoänderungen ist ungültig.",
       "invalid": "Dieser Wert ist ungültig.",
-      "tooMany": "Sie haben zu viele Einträge hinzugefügt."
+      "tooMany": "Sie haben zu viele Einträge hinzugefügt.",
+      "userLinkAlreadyYours": "Dieses Profil ist bereits mit deinem Konto verknüpft.",
+      "userLinkTaken": "Dieses Profil ist bereits mit einem anderen Konto verknüpft.",
+      "userLinkPending": "Du hast bereits eine Anfrage zur Kontoverknüpfung, die geprüft wird."
     }
   },
   "tournamentPage": {

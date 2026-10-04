@@ -3326,7 +3326,7 @@
           "logo": "Yeni logo",
           "logo_edit": "Logo kaydı düzenlemesi",
           "logo_delete": "Logo kaydı kaldırma",
-          "user_link": "Hesap bağlama talebi (OAuth)"
+          "user_link": "Hesap bağlama talebi"
         },
         "thread": {
           "heading": "Talep eden ile görüşme",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Bitiş",
       "addRow": "Ekle"
     },
+    "userLink": {
+      "title": "Hesabın",
+      "checkbox": "Bu benim: hesabımı {name} ile bağla",
+      "hint": "Ekip, bu profili hesabına bağlamadan önce gerçekten sana ait olduğunu kontrol edecek.",
+      "replaces": "Hesabın şu anda {previous} ile bağlı: onaylandığında bu bağlantı değiştirilecek.",
+      "state": {
+        "linkedToYou": "Bu profil zaten hesabına bağlı.",
+        "linkedToOther": "Bu profil zaten başka bir hesaba bağlı. Bir hata olduğunu düşünüyorsan ekiple iletişime geç.",
+        "pending": "İncelemede bekleyen bir hesap bağlama talebin zaten var."
+      }
+    },
     "error": {
       "required": "Bu alan zorunludur.",
       "tooLong": "Bu değer çok uzun.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "Önerdiğiniz isim geçmişi değişikliklerinden biri geçerli değil.",
       "invalidLogo": "Önerdiğiniz logo değişikliklerinden biri geçerli değil.",
       "invalid": "Bu değer geçerli değil.",
-      "tooMany": "Çok fazla kayıt eklediniz."
+      "tooMany": "Çok fazla kayıt eklediniz.",
+      "userLinkAlreadyYours": "Bu profil zaten hesabına bağlı.",
+      "userLinkTaken": "Bu profil zaten başka bir hesaba bağlı.",
+      "userLinkPending": "İncelemede bekleyen bir hesap bağlama talebin zaten var."
     }
   },
   "tournamentPage": {

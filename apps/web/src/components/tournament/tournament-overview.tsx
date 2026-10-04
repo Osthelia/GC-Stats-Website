@@ -16,8 +16,6 @@ import { TournamentFinalStandings } from "@/components/tournament/tournament-fin
 import { groupBracketContainers } from "@/lib/bracket-group-containers";
 import type { PublicStage, PublicStageSummary } from "@/lib/tournament-bracket-data";
 
-const STAGE_STATUS_COLOR: Record<PublicStage["status"], string> = { pending: "#737373", active: GOLD, completed: "#3fb950" };
-
 /** A stage's own explicit dates only (never derived from its matches) — mirrors V1's phase tab exactly (`d M` / `d M – d M Y`), just with our "→" instead of V1's en dash (CLAUDE.md: no dashes in text). Calendar dates, no time-of-day, so formatted in UTC to avoid a viewer-timezone shift landing on the wrong day. */
 function formatStageDateRange(stage: Pick<PublicStage, "startDate" | "endDate">, locale: string): string | null {
   if (!stage.startDate && !stage.endDate) return null;
@@ -75,7 +73,7 @@ export async function TournamentOverview({ basePath, stages, activeStage }: { ba
                 className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-[13px] transition-all duration-200 active:scale-[0.96] ${on ? "" : "hover:-translate-y-0.5 hover:bg-white/[0.06]"}`}
                 style={on ? { background: GOLD, color: "#0b0b0c", fontWeight: 700 } : { background: "var(--gcs-surface-3)", color: "var(--gcs-text-secondary)", fontWeight: 600, border: "1px solid #262626" }}
               >
-                <span className="h-1.5 w-1.5 flex-none rounded-full" style={{ background: on ? "#0b0b0c" : STAGE_STATUS_COLOR[stage.status] }} />
+                <span className="h-1.5 w-1.5 flex-none rounded-full" style={{ background: on ? "#0b0b0c" : "#737373" }} />
                 <span className="flex flex-col items-start">
                   {stage.name}
                   {dateRange && (

@@ -3326,7 +3326,7 @@
           "logo": "Nuovo logo",
           "logo_edit": "Modifica di una voce del logo",
           "logo_delete": "Rimozione di una voce del logo",
-          "user_link": "Richiesta di collegamento account (OAuth)"
+          "user_link": "Richiesta di collegamento account"
         },
         "thread": {
           "heading": "Discussione con il richiedente",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Fino al",
       "addRow": "Aggiungi"
     },
+    "userLink": {
+      "title": "Il tuo account",
+      "checkbox": "Sono io: collega il mio account a {name}",
+      "hint": "Lo staff verificherà che questo profilo sia davvero tuo prima di collegarlo al tuo account.",
+      "replaces": "Il tuo account è attualmente collegato a {previous}: questo collegamento verrà sostituito dopo l'approvazione.",
+      "state": {
+        "linkedToYou": "Questo profilo è già collegato al tuo account.",
+        "linkedToOther": "Questo profilo è già collegato a un altro account. Contatta lo staff se pensi sia un errore.",
+        "pending": "Hai già una richiesta di collegamento account in attesa di revisione."
+      }
+    },
     "error": {
       "required": "Questo campo è obbligatorio.",
       "tooLong": "Questo valore è troppo lungo.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "Una delle modifiche allo storico dei nomi che hai proposto non è valida.",
       "invalidLogo": "Una delle modifiche al logo che hai proposto non è valida.",
       "invalid": "Questo valore non è valido.",
-      "tooMany": "Hai aggiunto troppe voci."
+      "tooMany": "Hai aggiunto troppe voci.",
+      "userLinkAlreadyYours": "Questo profilo è già collegato al tuo account.",
+      "userLinkTaken": "Questo profilo è già collegato a un altro account.",
+      "userLinkPending": "Hai già una richiesta di collegamento account in attesa di revisione."
     }
   },
   "tournamentPage": {

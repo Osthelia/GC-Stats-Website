@@ -3326,7 +3326,7 @@
           "logo": "Nowe logo",
           "logo_edit": "Edycja wpisu logo",
           "logo_delete": "Usunięcie wpisu logo",
-          "user_link": "Prośba o powiązanie konta (OAuth)"
+          "user_link": "Prośba o powiązanie konta"
         },
         "thread": {
           "heading": "Dyskusja ze zgłaszającym",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Do",
       "addRow": "Dodaj"
     },
+    "userLink": {
+      "title": "Twoje konto",
+      "checkbox": "To ja: powiąż moje konto z {name}",
+      "hint": "Zespół sprawdzi, czy ten profil naprawdę należy do Ciebie, zanim powiąże go z Twoim kontem.",
+      "replaces": "Twoje konto jest obecnie powiązane z {previous}: to powiązanie zostanie zastąpione po zatwierdzeniu.",
+      "state": {
+        "linkedToYou": "Ten profil jest już powiązany z Twoim kontem.",
+        "linkedToOther": "Ten profil jest już powiązany z innym kontem. Skontaktuj się z zespołem, jeśli uważasz, że to błąd.",
+        "pending": "Masz już prośbę o powiązanie konta oczekującą na weryfikację."
+      }
+    },
     "error": {
       "required": "To pole jest wymagane.",
       "tooLong": "Ta wartość jest za długa.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "Jedna z zaproponowanych zmian historii nazw jest nieprawidłowa.",
       "invalidLogo": "Jedna z zaproponowanych zmian logo jest nieprawidłowa.",
       "invalid": "Ta wartość jest nieprawidłowa.",
-      "tooMany": "Dodano zbyt wiele wpisów."
+      "tooMany": "Dodano zbyt wiele wpisów.",
+      "userLinkAlreadyYours": "Ten profil jest już powiązany z Twoim kontem.",
+      "userLinkTaken": "Ten profil jest już powiązany z innym kontem.",
+      "userLinkPending": "Masz już prośbę o powiązanie konta oczekującą na weryfikację."
     }
   },
   "tournamentPage": {

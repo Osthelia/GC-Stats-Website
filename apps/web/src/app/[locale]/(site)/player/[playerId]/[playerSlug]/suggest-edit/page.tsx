@@ -18,6 +18,7 @@ import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPlayerPageInfo, getPlayerTeamHistory } from "@/lib/player-page-data";
 import { getEntityLogos } from "@/lib/admin-logos";
 import { getCurrentUserId } from "@/lib/session";
+import { getUserLinkStatus } from "@/lib/user-link-request";
 import { SuggestEditForm } from "@/components/change-request/suggest-edit-form";
 import type { MembershipEntryView } from "@/components/change-request/membership-history-section";
 
@@ -45,12 +46,18 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
     return null;
   }
 
-  const [t, logos, teamHistory, [rawPerson]] = await Promise.all([
+  const [t, logos, teamHistory, [rawPerson], linkStatus] = await Promise.all([
     getTranslations({ locale: locale as AppLocale, namespace: "suggestEdit" }),
     getEntityLogos("person", id),
     getPlayerTeamHistory(id),
     db.select({ pronouns: people.pronouns, aliases: people.aliases, isActive: people.isActive }).from(people).where(eq(people.id, id)).limit(1),
+    getUserLinkStatus(userId, id),
   ]);
+
+  const previousPersonId = linkStatus.state === "available" ? linkStatus.previousPersonId : null;
+  const [previousPerson] = previousPersonId
+    ? await db.select({ handle: people.handle }).from(people).where(eq(people.id, previousPersonId)).limit(1)
+    : [];
 
   const membershipEntries: MembershipEntryView[] = [
     ...teamHistory.current.map((h) => ({
@@ -91,6 +98,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
         entityName={player.handle}
         logos={logos}
         membershipEntries={membershipEntries}
+        userLink={{ state: linkStatus.state, previousHandle: previousPerson?.handle ?? null }}
       />
     </div>
   );

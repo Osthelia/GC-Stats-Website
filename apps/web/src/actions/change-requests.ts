@@ -32,6 +32,7 @@ import {
   type NameHistoryOperation,
   type LogoOperation,
 } from "@/lib/change-request-fields";
+import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -43,6 +44,13 @@ const COUNTRY_RE = /^[A-Z]{3}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 type Item = { field: string; oldValue: unknown; newValue: unknown };
+
+const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, string> = {
+  linkedToYou: "userLinkAlreadyYours",
+  linkedToOther: "userLinkTaken",
+  pending: "userLinkPending",
+  notFound: "notFound",
+};
 
 /**
  * Proposes edits to a team or person profile — simple fields, logo history,
@@ -286,7 +294,18 @@ export async function submitChangeRequest(
   const reason = (formData.get("reason")?.toString() ?? "").trim();
   if (reason.length > 500) return { ok: false, fieldErrors: { reason: "tooLong" } };
 
-  const allItems = [...items, ...membershipItems, ...nameHistoryItems, ...logoHistoryItems];
+  // --- Account link (person subjects only) -------------------------------
+  const userLinkItems: Item[] = [];
+  const linkUser = formData.get("linkUser");
+  if (linkUser !== null && linkUser !== "true" && linkUser !== "false") return { ok: false, fieldErrors: { linkUser: "invalid" } };
+  if (linkUser === "true") {
+    if (subjectType !== "person") return { ok: false, fieldErrors: { linkUser: "invalid" } };
+    const status = await getUserLinkStatus(userId, subjectId);
+    if (status.state !== "available") return { ok: false, fieldErrors: { linkUser: USER_LINK_ERRORS[status.state] } };
+    userLinkItems.push(buildUserLinkItem(userId, status.previousPersonId));
+  }
+
+  const allItems = [...items, ...membershipItems, ...nameHistoryItems, ...logoHistoryItems, ...userLinkItems];
   if (allItems.length === 0 && !logoBuffer) {
     return { ok: false, fieldErrors: {}, formError: "noChanges" };
   }

@@ -3326,7 +3326,7 @@
           "logo": "새 로고",
           "logo_edit": "로고 항목 수정",
           "logo_delete": "로고 항목 삭제",
-          "user_link": "계정 연동 요청 (OAuth)"
+          "user_link": "계정 연동 요청"
         },
         "thread": {
           "heading": "요청자와의 대화",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "종료일",
       "addRow": "추가"
     },
+    "userLink": {
+      "title": "내 계정",
+      "checkbox": "본인입니다: 내 계정을 {name}에 연결",
+      "hint": "계정에 연결하기 전에 스태프가 이 프로필이 실제로 본인의 것인지 확인합니다.",
+      "replaces": "현재 계정이 {previous}에 연결되어 있습니다. 승인되면 이 연결이 대체됩니다.",
+      "state": {
+        "linkedToYou": "이 프로필은 이미 내 계정에 연결되어 있습니다.",
+        "linkedToOther": "이 프로필은 이미 다른 계정에 연결되어 있습니다. 오류라고 생각되면 스태프에게 문의하세요.",
+        "pending": "검토 대기 중인 계정 연결 요청이 이미 있습니다."
+      }
+    },
     "error": {
       "required": "필수 입력 항목이에요.",
       "tooLong": "값이 너무 길어요.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "제안한 이름 이력 변경 항목 중 하나가 유효하지 않아요.",
       "invalidLogo": "제안한 로고 변경 항목 중 하나가 유효하지 않아요.",
       "invalid": "유효하지 않은 값이에요.",
-      "tooMany": "너무 많은 항목이 추가됐어요."
+      "tooMany": "너무 많은 항목이 추가됐어요.",
+      "userLinkAlreadyYours": "이 프로필은 이미 내 계정에 연결되어 있습니다.",
+      "userLinkTaken": "이 프로필은 이미 다른 계정에 연결되어 있습니다.",
+      "userLinkPending": "검토 대기 중인 계정 연결 요청이 이미 있습니다."
     }
   },
   "tournamentPage": {

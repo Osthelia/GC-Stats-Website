@@ -3326,7 +3326,7 @@
           "logo": "Nouveau logo",
           "logo_edit": "Modification d'une entrée de logo",
           "logo_delete": "Suppression d'une entrée de logo",
-          "user_link": "Demande de lien de compte (OAuth)"
+          "user_link": "Demande de lien de compte"
         },
         "thread": {
           "heading": "Discussion avec le·la demandeur·se",
@@ -5535,6 +5535,17 @@
       "fieldUntil": "Jusqu'à",
       "addRow": "Ajouter"
     },
+    "userLink": {
+      "title": "Votre compte",
+      "checkbox": "C'est moi : lier mon compte à {name}",
+      "hint": "Le staff vérifiera que ce profil est bien le vôtre avant de le lier à votre compte.",
+      "replaces": "Votre compte est actuellement lié à {previous} : ce lien sera remplacé une fois la demande validée.",
+      "state": {
+        "linkedToYou": "Ce profil est déjà lié à votre compte.",
+        "linkedToOther": "Ce profil est déjà lié à un autre compte. Contactez le staff si vous pensez que c'est une erreur.",
+        "pending": "Vous avez déjà une demande de lien de compte en attente de validation."
+      }
+    },
     "error": {
       "required": "Ce champ est obligatoire.",
       "tooLong": "Cette valeur est trop longue.",
@@ -5551,7 +5562,10 @@
       "invalidNameHistory": "L'une des modifications d'historique de noms proposées n'est pas valide.",
       "invalidLogo": "L'une des modifications de logo proposées n'est pas valide.",
       "invalid": "Cette valeur n'est pas valide.",
-      "tooMany": "Vous avez ajouté trop d'entrées."
+      "tooMany": "Vous avez ajouté trop d'entrées.",
+      "userLinkAlreadyYours": "Ce profil est déjà lié à votre compte.",
+      "userLinkTaken": "Ce profil est déjà lié à un autre compte.",
+      "userLinkPending": "Vous avez déjà une demande de lien de compte en attente de validation."
     }
   },
   "tournamentPage": {

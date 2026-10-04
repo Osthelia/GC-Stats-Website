@@ -32,6 +32,9 @@ import { MembershipHistorySection, type MembershipEntryView } from "@/components
 import { TeamNameHistorySection } from "@/components/change-request/team-name-history-section";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import type { TeamNameHistoryEntry } from "@/lib/team-page-data";
+import type { UserLinkStatus } from "@/lib/user-link-request";
+
+export type SuggestEditUserLink = { state: UserLinkStatus["state"]; previousHandle: string | null };
 
 const inputClass =
   "w-full rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60 aria-[invalid=true]:border-[#e08585]";
@@ -55,6 +58,7 @@ export function SuggestEditForm({
   logos,
   membershipEntries,
   nameHistory,
+  userLink,
 }: {
   subjectType: ChangeRequestSubjectType;
   subjectId: number;
@@ -66,6 +70,8 @@ export function SuggestEditForm({
   membershipEntries: MembershipEntryView[];
   /** Team subjects only — omit for a person's suggest-edit page. */
   nameHistory?: TeamNameHistoryEntry[];
+  /** Person subjects only: whether the current user can request a link to this player. */
+  userLink?: SuggestEditUserLink;
 }) {
   const t = useTranslations("suggestEdit");
   const fields = fieldsForSubject(subjectType);
@@ -87,6 +93,7 @@ export function SuggestEditForm({
     Object.fromEntries(tagsFields.map((f) => [f.key, readTagsValue(entity, f.key)]))
   );
   const [reason, setReason] = useState("");
+  const [linkUser, setLinkUser] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoMeta, setLogoMeta] = useState({ theme: "", since: "", until: "" });
   const [logoOps, setLogoOps] = useState<LogoOperation[]>([]);
@@ -115,6 +122,7 @@ export function SuggestEditForm({
     formData.set("membershipOperations", JSON.stringify(membershipOps));
     if (subjectType === "team") formData.set("nameHistoryOperations", JSON.stringify(nameHistoryOps));
     formData.set("logoOperations", JSON.stringify(logoOps));
+    if (userLink?.state === "available") formData.set("linkUser", String(linkUser));
     if (logoFile) {
       formData.set("logoFile", logoFile);
       formData.set("logoTheme", logoMeta.theme);
@@ -286,6 +294,32 @@ export function SuggestEditForm({
       {subjectType === "team" && nameHistory && <TeamNameHistorySection entries={nameHistory} onChange={setNameHistoryOps} />}
 
       <MembershipHistorySection mode={subjectType} fixedId={subjectId} entries={membershipEntries} onChange={setMembershipOps} />
+
+      {userLink && userLink.state !== "notFound" && (
+        <SectionCard title={t("userLink.title")}>
+          {userLink.state === "available" ? (
+            <>
+              <label className="flex cursor-pointer items-start gap-2.5 text-[14px] text-neutral-200">
+                <input
+                  type="checkbox"
+                  checked={linkUser}
+                  onChange={(e) => setLinkUser(e.target.checked)}
+                  aria-invalid={!!fieldErrors.linkUser}
+                  className="mt-0.5 h-4 w-4 accent-[#e4ae22]"
+                />
+                {t("userLink.checkbox", { name: entityName })}
+              </label>
+              <p className="text-[12.5px] text-neutral-500">{t("userLink.hint")}</p>
+              {linkUser && userLink.previousHandle && (
+                <p className="text-[12.5px] text-[#e4ae22]">{t("userLink.replaces", { previous: userLink.previousHandle })}</p>
+              )}
+            </>
+          ) : (
+            <p className="text-[13.5px] text-neutral-400">{t(`userLink.state.${userLink.state}`)}</p>
+          )}
+          {fieldErrors.linkUser && <span className="text-[12px] text-[#e08585]">{t(`error.${fieldErrors.linkUser}`)}</span>}
+        </SectionCard>
+      )}
 
       <SectionCard title={t("sectionReview")}>
         <label className="flex flex-col gap-1.5">
