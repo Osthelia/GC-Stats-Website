@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "試合のwikicode"
       },
+      "scoreBackfill": {
+        "title": "マップからスコアを再計算",
+        "hint": "完了したマップがあるのにスコアがない、この大会の試合にスコアと勝者を設定します。マップでシリーズが決まらない試合や、保存済みの勝者がマップと矛盾する試合は変更しません。ブラケットへの反映は行いません。",
+        "previewButton": "プレビュー",
+        "previewing": "分析中…",
+        "applyButton": "{count} 試合に適用",
+        "resolvable": "修正対象: {count} 試合",
+        "undecided": "未決: {count}（引き分けまたはマップ不足）",
+        "conflicts": "競合: {count}（保存済みの勝者が異なる）",
+        "sampleTitle": "例",
+        "conflictSampleTitle": "手動で確認する競合",
+        "confirmTitle": "試合スコアを再計算しますか？",
+        "confirmDescription": "{count} 試合にスコア、勝者、「完了」ステータスが設定されます。",
+        "confirmButton": "適用",
+        "cancel": "キャンセル",
+        "applySuccess": "{count} 試合を更新しました。",
+        "error": "再計算に失敗しました。"
+      },
       "ghostMatch": {
         "button": "対象外の試合",
         "title": "新しい対象外の試合",

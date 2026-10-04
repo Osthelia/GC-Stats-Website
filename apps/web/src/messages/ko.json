@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "경기 wikicode"
       },
+      "scoreBackfill": {
+        "title": "맵에서 점수 재계산",
+        "hint": "완료된 맵은 있지만 점수가 없는 이 대회 경기의 점수와 승자를 채웁니다. 맵으로 시리즈가 결정되지 않거나 저장된 승자가 맵과 다른 경기는 변경하지 않습니다. 브래킷 반영은 없습니다.",
+        "previewButton": "미리보기",
+        "previewing": "분석 중…",
+        "applyButton": "{count}개 경기에 적용",
+        "resolvable": "수정할 경기: {count}",
+        "undecided": "미결정: {count} (무승부 또는 맵 누락)",
+        "conflicts": "충돌: {count} (저장된 승자가 다름)",
+        "sampleTitle": "예시",
+        "conflictSampleTitle": "직접 확인할 충돌",
+        "confirmTitle": "경기 점수를 재계산할까요?",
+        "confirmDescription": "{count}개 경기에 점수, 승자, \"완료\" 상태가 설정됩니다.",
+        "confirmButton": "적용",
+        "cancel": "취소",
+        "applySuccess": "{count}개 경기를 업데이트했습니다.",
+        "error": "재계산에 실패했습니다."
+      },
       "ghostMatch": {
         "button": "커버리지 외 경기",
         "title": "새 커버리지 외 경기",

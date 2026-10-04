@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Match wikicodes"
       },
+      "scoreBackfill": {
+        "title": "Recompute scores from maps",
+        "hint": "Fills in the score and winner of this tournament's matches that have completed maps but no score. Matches whose maps don't decide the series, or whose stored winner disagrees with the maps, are left untouched. No bracket propagation.",
+        "previewButton": "Preview",
+        "previewing": "Analyzing…",
+        "applyButton": "Apply to {count} matches",
+        "resolvable": "{count} matches to fix",
+        "undecided": "{count} undecided (tie or missing maps)",
+        "conflicts": "{count} conflicts (stored winner differs)",
+        "sampleTitle": "Examples",
+        "conflictSampleTitle": "Conflicts to check by hand",
+        "confirmTitle": "Recompute match scores?",
+        "confirmDescription": "{count} matches will get a score, a winner and the \"completed\" status.",
+        "confirmButton": "Apply",
+        "cancel": "Cancel",
+        "applySuccess": "{count} matches updated.",
+        "error": "Recompute failed."
+      },
       "ghostMatch": {
         "button": "Uncovered match",
         "title": "New uncovered match",

@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode dei match"
       },
+      "scoreBackfill": {
+        "title": "Ricalcola i punteggi dalle mappe",
+        "hint": "Compila punteggio e vincitore delle partite di questo torneo con mappe completate ma senza punteggio. Le partite le cui mappe non decidono la serie, o il cui vincitore salvato contraddice le mappe, non vengono modificate. Nessuna propagazione nel bracket.",
+        "previewButton": "Anteprima",
+        "previewing": "Analisi…",
+        "applyButton": "Applica a {count} partite",
+        "resolvable": "{count} partite da correggere",
+        "undecided": "{count} indecise (pareggio o mappe mancanti)",
+        "conflicts": "{count} conflitti (vincitore salvato diverso)",
+        "sampleTitle": "Esempi",
+        "conflictSampleTitle": "Conflitti da verificare a mano",
+        "confirmTitle": "Ricalcolare i punteggi delle partite?",
+        "confirmDescription": "{count} partite riceveranno un punteggio, un vincitore e lo stato \"completata\".",
+        "confirmButton": "Applica",
+        "cancel": "Annulla",
+        "applySuccess": "{count} partite aggiornate.",
+        "error": "Ricalcolo non riuscito."
+      },
       "ghostMatch": {
         "button": "Partita fuori copertura",
         "title": "Nuova partita fuori copertura",

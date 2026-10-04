@@ -50,6 +50,10 @@
     "DISCORD_GUILD_ID": "1497392646958747858",
     "DISCORD_INVITE_URL": "https://discord.gg/kFHNN8cDXJ",
   },
+  // Paid plan only. Map fetch (Riot JSON parse + stats + inserts) is the heaviest request; I/O waits don't count.
+  "limits": {
+    "cpu_ms": 60000
+  },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1,

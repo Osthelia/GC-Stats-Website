@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode das partidas"
       },
+      "scoreBackfill": {
+        "title": "Recalcular placares a partir dos mapas",
+        "hint": "Preenche o placar e o vencedor das partidas deste torneio com mapas concluídos mas sem placar. Partidas cujos mapas não decidem a série, ou cujo vencedor salvo contradiz os mapas, não são alteradas. Sem propagação no chaveamento.",
+        "previewButton": "Pré-visualizar",
+        "previewing": "Analisando…",
+        "applyButton": "Aplicar a {count} partidas",
+        "resolvable": "{count} partidas a corrigir",
+        "undecided": "{count} indefinidas (empate ou mapas ausentes)",
+        "conflicts": "{count} conflitos (vencedor salvo diferente)",
+        "sampleTitle": "Exemplos",
+        "conflictSampleTitle": "Conflitos para verificar manualmente",
+        "confirmTitle": "Recalcular os placares?",
+        "confirmDescription": "{count} partidas receberão placar, vencedor e o status \"concluída\".",
+        "confirmButton": "Aplicar",
+        "cancel": "Cancelar",
+        "applySuccess": "{count} partidas atualizadas.",
+        "error": "Falha no recálculo."
+      },
       "ghostMatch": {
         "button": "Partida fora da cobertura",
         "title": "Nova partida fora da cobertura",

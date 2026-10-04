@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode de los partidos"
       },
+      "scoreBackfill": {
+        "title": "Recalcular marcadores desde los mapas",
+        "hint": "Rellena el marcador y el ganador de los partidos de este torneo que tienen mapas completados pero no marcador. Los partidos cuyos mapas no deciden la serie, o cuyo ganador guardado contradice los mapas, no se modifican. Sin propagación en el bracket.",
+        "previewButton": "Vista previa",
+        "previewing": "Analizando…",
+        "applyButton": "Aplicar a {count} partidos",
+        "resolvable": "{count} partidos por corregir",
+        "undecided": "{count} indecisos (empate o mapas faltantes)",
+        "conflicts": "{count} conflictos (ganador guardado distinto)",
+        "sampleTitle": "Ejemplos",
+        "conflictSampleTitle": "Conflictos a revisar a mano",
+        "confirmTitle": "¿Recalcular los marcadores?",
+        "confirmDescription": "{count} partidos recibirán un marcador, un ganador y el estado \"completado\".",
+        "confirmButton": "Aplicar",
+        "cancel": "Cancelar",
+        "applySuccess": "{count} partidos actualizados.",
+        "error": "El recálculo falló."
+      },
       "ghostMatch": {
         "button": "Partido fuera de cobertura",
         "title": "Nuevo partido fuera de cobertura",

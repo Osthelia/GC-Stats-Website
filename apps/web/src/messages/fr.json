@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode des matchs"
       },
+      "scoreBackfill": {
+        "title": "Recalculer les scores depuis les maps",
+        "hint": "Renseigne le score et le vainqueur des matchs de ce tournoi qui ont des maps complètes mais pas de score. Les matchs dont les maps ne départagent pas la série, ou dont le vainqueur enregistré contredit les maps, ne sont pas modifiés. Aucune propagation dans le bracket.",
+        "previewButton": "Aperçu",
+        "previewing": "Analyse…",
+        "applyButton": "Appliquer à {count} matchs",
+        "resolvable": "{count} matchs à corriger",
+        "undecided": "{count} indécis (égalité ou maps manquantes)",
+        "conflicts": "{count} conflits (vainqueur enregistré différent)",
+        "sampleTitle": "Exemples",
+        "conflictSampleTitle": "Conflits à vérifier à la main",
+        "confirmTitle": "Recalculer les scores des matchs ?",
+        "confirmDescription": "{count} matchs vont recevoir un score, un vainqueur et le statut « terminé ».",
+        "confirmButton": "Appliquer",
+        "cancel": "Annuler",
+        "applySuccess": "{count} matchs mis à jour.",
+        "error": "Le recalcul a échoué."
+      },
       "ghostMatch": {
         "button": "Match hors couverture",
         "title": "Nouveau match hors couverture",

@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Maç wikicode'ları"
       },
+      "scoreBackfill": {
+        "title": "Skorları haritalardan yeniden hesapla",
+        "hint": "Bu turnuvada tamamlanmış haritaları olan ancak skoru olmayan maçların skorunu ve kazananını doldurur. Haritaları seriyi belirlemeyen veya kayıtlı kazananı haritalarla çelişen maçlara dokunulmaz. Brakette ilerletme yapılmaz.",
+        "previewButton": "Önizle",
+        "previewing": "Analiz ediliyor…",
+        "applyButton": "{count} maça uygula",
+        "resolvable": "Düzeltilecek maç: {count}",
+        "undecided": "Belirsiz: {count} (beraberlik veya eksik harita)",
+        "conflicts": "Çakışma: {count} (kayıtlı kazanan farklı)",
+        "sampleTitle": "Örnekler",
+        "conflictSampleTitle": "Elle kontrol edilecek çakışmalar",
+        "confirmTitle": "Maç skorları yeniden hesaplansın mı?",
+        "confirmDescription": "{count} maça skor, kazanan ve \"tamamlandı\" durumu atanacak.",
+        "confirmButton": "Uygula",
+        "cancel": "İptal",
+        "applySuccess": "{count} maç güncellendi.",
+        "error": "Yeniden hesaplama başarısız."
+      },
       "ghostMatch": {
         "button": "Kapsam dışı maç",
         "title": "Yeni kapsam dışı maç",

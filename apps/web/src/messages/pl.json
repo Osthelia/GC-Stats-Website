@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode meczów"
       },
+      "scoreBackfill": {
+        "title": "Przelicz wyniki z map",
+        "hint": "Uzupełnia wynik i zwycięzcę meczów tego turnieju, które mają ukończone mapy, ale brak wyniku. Mecze, których mapy nie rozstrzygają serii lub których zapisany zwycięzca przeczy mapom, pozostają bez zmian. Bez propagacji w drabince.",
+        "previewButton": "Podgląd",
+        "previewing": "Analiza…",
+        "applyButton": "Zastosuj do {count} meczów",
+        "resolvable": "Meczów do poprawy: {count}",
+        "undecided": "Nierozstrzygnięte: {count} (remis lub brak map)",
+        "conflicts": "Konflikty: {count} (inny zapisany zwycięzca)",
+        "sampleTitle": "Przykłady",
+        "conflictSampleTitle": "Konflikty do ręcznego sprawdzenia",
+        "confirmTitle": "Przeliczyć wyniki meczów?",
+        "confirmDescription": "Meczów, które otrzymają wynik, zwycięzcę i status „zakończony”: {count}.",
+        "confirmButton": "Zastosuj",
+        "cancel": "Anuluj",
+        "applySuccess": "Zaktualizowano meczów: {count}.",
+        "error": "Przeliczanie nie powiodło się."
+      },
       "ghostMatch": {
         "button": "Mecz poza zakresem",
         "title": "Nowy mecz poza zakresem",

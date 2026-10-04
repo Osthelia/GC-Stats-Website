@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "比赛 wikicode"
       },
+      "scoreBackfill": {
+        "title": "根据地图重新计算比分",
+        "hint": "为本赛事中有已完成地图但没有比分的比赛填写比分和胜者。地图无法决出系列赛胜负、或已保存胜者与地图矛盾的比赛不会被修改。不会在对阵图中传递。",
+        "previewButton": "预览",
+        "previewing": "分析中…",
+        "applyButton": "应用到 {count} 场比赛",
+        "resolvable": "待修正：{count} 场",
+        "undecided": "未决：{count}（平局或缺少地图）",
+        "conflicts": "冲突：{count}（已保存胜者不同）",
+        "sampleTitle": "示例",
+        "conflictSampleTitle": "需手动检查的冲突",
+        "confirmTitle": "重新计算比赛比分？",
+        "confirmDescription": "{count} 场比赛将获得比分、胜者和“已完成”状态。",
+        "confirmButton": "应用",
+        "cancel": "取消",
+        "applySuccess": "已更新 {count} 场比赛。",
+        "error": "重新计算失败。"
+      },
       "ghostMatch": {
         "button": "非覆盖比赛",
         "title": "新建非覆盖比赛",

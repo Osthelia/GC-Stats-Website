@@ -4320,6 +4320,24 @@
         },
         "publicWikicodeButton": "Wikicode der Matches"
       },
+      "scoreBackfill": {
+        "title": "Ergebnisse aus Maps neu berechnen",
+        "hint": "Trägt Ergebnis und Sieger der Matches dieses Turniers ein, die abgeschlossene Maps, aber kein Ergebnis haben. Matches, deren Maps die Serie nicht entscheiden oder deren gespeicherter Sieger den Maps widerspricht, bleiben unverändert. Keine Bracket-Weitergabe.",
+        "previewButton": "Vorschau",
+        "previewing": "Analyse…",
+        "applyButton": "Auf {count} Matches anwenden",
+        "resolvable": "{count} Matches zu korrigieren",
+        "undecided": "{count} unentschieden (Gleichstand oder fehlende Maps)",
+        "conflicts": "{count} Konflikte (gespeicherter Sieger weicht ab)",
+        "sampleTitle": "Beispiele",
+        "conflictSampleTitle": "Manuell zu prüfende Konflikte",
+        "confirmTitle": "Match-Ergebnisse neu berechnen?",
+        "confirmDescription": "{count} Matches erhalten ein Ergebnis, einen Sieger und den Status „abgeschlossen“.",
+        "confirmButton": "Anwenden",
+        "cancel": "Abbrechen",
+        "applySuccess": "{count} Matches aktualisiert.",
+        "error": "Neuberechnung fehlgeschlagen."
+      },
       "ghostMatch": {
         "button": "Match außerhalb der Abdeckung",
         "title": "Neues Match außerhalb der Abdeckung",

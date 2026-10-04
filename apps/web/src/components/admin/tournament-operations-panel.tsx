@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { FormField } from "@/components/admin/form-field";
 import { bulkPatchMatches, bulkCreateMatches, type BulkPatchFieldErrors, type BulkCreateFieldErrors } from "@/actions/admin-tournament-operations";
 import { BulkMatchStatusCard } from "@/components/admin/bulk-match-status-card";
+import { MatchScoreBackfillCard } from "@/components/admin/match-score-backfill-card";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
 
@@ -32,6 +33,7 @@ export function TournamentOperationsPanel({ tournamentId, containers, matches }:
       <PatchCard tournamentId={tournamentId} containers={containers} />
       <BulkCreateCard tournamentId={tournamentId} containers={containers} />
       <BulkMatchStatusCard tournamentId={tournamentId} containers={containers} matches={matches} />
+      <MatchScoreBackfillCard tournamentId={tournamentId} />
       {containers.length === 0 && <p className="text-sm text-muted-foreground">{t("noContainers")}</p>}
     </div>
   );
