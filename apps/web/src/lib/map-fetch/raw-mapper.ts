@@ -28,13 +28,21 @@ export function entrantIdForColor(ctx: RawMapperContext, color: RiotTeamId): num
   return color === ctx.teamAColor ? ctx.entrantAId : ctx.entrantBId;
 }
 
-function mapWinType(roundResultCode: string): string {
-  const normalized = roundResultCode.trim().toLowerCase();
-  if (normalized === "elimination") return "elimination";
-  if (normalized === "defuse") return "defuse";
-  if (normalized === "detonate") return "detonate";
-  if (!normalized) return "time";
-  return normalized;
+/** Riot's `roundResultCode` -> its `roundResult` label, for responses missing the latter. */
+const WIN_TYPE_BY_CODE: Record<string, string> = {
+  elimination: "Eliminated",
+  defuse: "Bomb defused",
+  detonate: "Bomb detonated",
+  surrendered: "Surrendered",
+};
+
+/** Stores Riot's own `roundResult` label ("Eliminated", "Bomb defused", ...) like V1 did (GameMapController: 'win_type' => $round['roundResult']). */
+function mapWinType(roundResult: string | undefined, roundResultCode: string | undefined): string {
+  const label = roundResult?.trim();
+  if (label) return label;
+  const code = (roundResultCode ?? "").trim().toLowerCase();
+  if (!code) return "Round timer expired";
+  return WIN_TYPE_BY_CODE[code] ?? roundResultCode!.trim();
 }
 
 function resolveKillWeaponDisplay(damageType: string, weaponOrAbility: string, content: RiotContent): string | null {
@@ -62,7 +70,7 @@ export function buildRoundRows(match: RiotMatchDto, ctx: RawMapperContext): NewR
       mapId: ctx.mapId,
       roundNumber: round.roundNum,
       winningEntrantId: entrantIdForColor(ctx, round.winningTeam),
-      winType: mapWinType(round.roundResultCode),
+      winType: mapWinType(round.roundResult, round.roundResultCode),
       atkEntrantId: entrantIdForColor(ctx, sides.atk),
       defEntrantId: entrantIdForColor(ctx, sides.def),
       plantSite: plant.plantSite,

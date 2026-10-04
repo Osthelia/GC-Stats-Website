@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FormField } from "@/components/admin/form-field";
-import { updateMatchDetails, reportMatchResult, type MatchDetailsFieldErrors, type ReportResultFieldErrors } from "@/actions/admin-matches";
+import { updateMatchDetails, reportMatchResult, saveMatchLiveScore, type MatchDetailsFieldErrors, type ReportResultFieldErrors } from "@/actions/admin-matches";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { toDatetimeLocal } from "@/lib/datetime-local";
 import type { AdminMatchDetail } from "@/lib/admin-matches";
@@ -106,32 +106,24 @@ export function MatchForm({
           setResultErrors({ score: "invalid" });
           return;
         }
-        // 0-0 isn't a real result (no rounds played yet, no winner to
-        // determine) — treat it like leaving the score fields blank instead
-        // of forcing the "scores must differ" rule below on it.
-        if (a !== 0 || b !== 0) {
-          // -1 is the forfeit sentinel (no boolean field, mirrors V1's
-          // Matchs/GameMap score columns) — whichever side has it lost by
-          // forfeit, the other side wins regardless of its own score.
-          let winnerId: number;
-          if (a === -1 && b === -1) {
-            setResultErrors({ score: "bothCannotForfeit" });
-            return;
-          } else if (a === -1) {
-            winnerId = Number(entrantBId);
-          } else if (b === -1) {
-            winnerId = Number(entrantAId);
-          } else if (a === b) {
-            setResultErrors({ score: "mustDetermineAWinner" });
-            return;
-          } else {
-            winnerId = a > b ? Number(entrantAId) : Number(entrantBId);
-          }
-          const resultResult = await reportMatchResult(match.id, { winnerId, scoreA, scoreB });
-          if (!resultResult.ok) {
-            setResultErrors(resultResult.fieldErrors);
-            return;
-          }
+        // -1 is the forfeit sentinel (no boolean field, mirrors V1's
+        // Matchs/GameMap score columns) — whichever side has it lost by
+        // forfeit, the other side wins regardless of its own score.
+        if (a === -1 && b === -1) {
+          setResultErrors({ score: "bothCannotForfeit" });
+          return;
+        }
+        // Only a decided series is reported as a result (completes the match
+        // and propagates it). Anything else, 1-1 in a BO3, 0-0, is just the
+        // running score and leaves the match open. BO1 scores are rounds.
+        const winsNeeded = Number(bestOf) === 1 ? 13 : Math.ceil(Number(bestOf) / 2);
+        const decided = a === -1 || b === -1 || (a !== b && Math.max(a, b) >= winsNeeded);
+        const resultResult = decided
+          ? await reportMatchResult(match.id, { winnerId: a === -1 || (b !== -1 && b > a) ? Number(entrantBId) : Number(entrantAId), scoreA, scoreB })
+          : await saveMatchLiveScore(match.id, { scoreA, scoreB });
+        if (!resultResult.ok) {
+          setResultErrors(resultResult.fieldErrors);
+          return;
         }
       }
 

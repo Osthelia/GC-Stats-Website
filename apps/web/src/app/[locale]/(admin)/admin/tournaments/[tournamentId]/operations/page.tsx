@@ -13,6 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminTournament } from "@/lib/admin-tournaments";
 import { listTournamentContainerOptions } from "@/lib/admin-tournament-detail";
+import { listTournamentMatches } from "@/lib/admin-matches";
 import { requireAdminPermission } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { TournamentOperationsPanel } from "@/components/admin/tournament-operations-panel";
@@ -36,7 +37,7 @@ export default async function AdminTournamentOperationsPage({ params }: { params
   const tournament = await getAdminTournament(id);
   if (!tournament) notFound();
 
-  const containers = await listTournamentContainerOptions(id);
+  const [containers, matches] = await Promise.all([listTournamentContainerOptions(id), listTournamentMatches(id)]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -48,7 +49,7 @@ export default async function AdminTournamentOperationsPage({ params }: { params
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <TournamentOperationsPanel tournamentId={id} containers={containers} />
+      <TournamentOperationsPanel tournamentId={id} containers={containers} matches={matches} />
     </div>
   );
 }

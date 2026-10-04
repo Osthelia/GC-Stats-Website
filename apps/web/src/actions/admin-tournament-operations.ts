@@ -2,7 +2,8 @@
  * GC-Stats - admin-tournament-operations
  *
  * Admin server actions for bulk operations across a tournament's matches,
- * such as bulk-patching the game patch version over a date range.
+ * such as bulk-patching the game patch version over a date range or
+ * bulk-changing match statuses.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -11,10 +12,12 @@
 
 "use server";
 
-import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
+import { and, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
+import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { matches, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
+import { matchTag } from "@/lib/cache-tags";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -121,3 +124,45 @@ export async function bulkCreateMatches(tournamentId: number, input: BulkCreateI
   return { ok: true, count: created.length };
 }
 
+
+export type MatchStatus = "pending" | "live" | "completed";
+export type BulkStatusResult = { ok: true; updated: number; skippedNoResult: number } | { ok: false; error: "invalidStatus" | "noMatches" | "matchNotFound" };
+
+/**
+ * Sets the status of a hand-picked set of matches (selected client-side
+ * from the filtered/sorted list on the operations page). Status flag only:
+ * no resolveMatch, no bracket propagation, no group bookkeeping — meant for
+ * fixing up historical/imported data, not for playing a live bracket.
+ * "completed" is only applied to matches that already carry a winner — a
+ * completed match without a result would break standings/stats — the
+ * others are skipped and counted.
+ */
+export async function bulkSetMatchStatus(tournamentId: number, matchIds: number[], status: MatchStatus): Promise<BulkStatusResult> {
+  await requireTournamentsActor();
+
+  if (status !== "pending" && status !== "live" && status !== "completed") return { ok: false, error: "invalidStatus" };
+  const ids = [...new Set(matchIds)].filter((id) => Number.isInteger(id));
+  if (ids.length === 0) return { ok: false, error: "noMatches" };
+
+  const containerIds = await tournamentContainerIds(tournamentId, null);
+  if (containerIds === "notFound" || containerIds.length === 0) return { ok: false, error: "matchNotFound" };
+
+  const rows = await db
+    .select({ id: matches.id, winnerId: matches.winnerId })
+    .from(matches)
+    .where(and(inArray(matches.id, ids), inArray(matches.containerId, containerIds)));
+  if (rows.length !== ids.length) return { ok: false, error: "matchNotFound" };
+
+  const eligible = status === "completed" ? rows.filter((r) => r.winnerId !== null) : rows;
+  const skippedNoResult = rows.length - eligible.length;
+  if (eligible.length === 0) return { ok: true, updated: 0, skippedNoResult };
+
+  const updated = await db
+    .update(matches)
+    .set({ status })
+    .where(and(inArray(matches.id, eligible.map((r) => r.id)), ne(matches.status, status)))
+    .returning({ id: matches.id });
+  for (const r of updated) updateTag(matchTag(r.id));
+
+  return { ok: true, updated: updated.length, skippedNoResult };
+}

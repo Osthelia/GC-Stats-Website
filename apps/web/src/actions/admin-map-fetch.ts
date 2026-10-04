@@ -13,7 +13,7 @@
 
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { maps, matches, stageContainers, stages, tournaments, PERMISSIONS } from "@gc-stats/db";
@@ -53,10 +53,36 @@ async function loadMapRegionContext(mapId: number) {
   return row ?? null;
 }
 
-export type FetchMapOptions = { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue" };
+const API_MATCH_ID_RE = /^[A-Za-z0-9_-]{1,100}$/;
+
+/**
+ * Saves the match id the admin currently has in the form when it differs
+ * from the stored one, so Fetch/Renew never act on a stale, unsaved id.
+ * Empty or malformed input leaves the stored id alone.
+ */
+async function applyFormMatchId(mapId: number, apiMatchId: string | undefined): Promise<{ ok: true } | { ok: false; error: { kind: "duplicateMatchId" } }> {
+  const trimmed = apiMatchId?.trim() ?? "";
+  if (!trimmed || !API_MATCH_ID_RE.test(trimmed)) return { ok: true };
+  const [current] = await db.select({ apiMatchId: maps.apiMatchId, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
+  if (!current || current.apiMatchId === trimmed) return { ok: true };
+  const [conflict] = await db
+    .select({ id: maps.id })
+    .from(maps)
+    .where(and(eq(maps.apiMatchId, trimmed), ne(maps.id, mapId)))
+    .limit(1);
+  if (conflict) return { ok: false, error: { kind: "duplicateMatchId" } };
+  await db.update(maps).set({ apiMatchId: trimmed }).where(eq(maps.id, mapId));
+  updateTag(matchTag(current.matchId));
+  return { ok: true };
+}
+
+export type FetchMapOptions = { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue"; apiMatchId?: string };
 
 export async function fetchMapData(mapId: number, options?: FetchMapOptions): Promise<FetchMapResult> {
   await requireTournamentsActor();
+
+  const applied = await applyFormMatchId(mapId, options?.apiMatchId);
+  if (!applied.ok) return applied;
 
   const puuidMapping = options?.puuidMapping ? new Map(Object.entries(options.puuidMapping)) : undefined;
   const result = await runFetchMapData(mapId, { puuidMapping, teamAColor: options?.teamAColor });
@@ -67,11 +93,14 @@ export async function fetchMapData(mapId: number, options?: FetchMapOptions): Pr
   return result;
 }
 
-export type RenewMapError = RiotRelayError | { kind: "mapNotFound" } | { kind: "noMatchId" } | { kind: "regionNotConfigured" };
+export type RenewMapError = RiotRelayError | { kind: "mapNotFound" } | { kind: "noMatchId" } | { kind: "regionNotConfigured" } | { kind: "duplicateMatchId" };
 export type RenewMapResult = { ok: true } | { ok: false; error: RenewMapError };
 
-export async function renewMapData(mapId: number): Promise<RenewMapResult> {
+export async function renewMapData(mapId: number, apiMatchId?: string): Promise<RenewMapResult> {
   await requireTournamentsActor();
+
+  const applied = await applyFormMatchId(mapId, apiMatchId);
+  if (!applied.ok) return applied;
 
   const row = await loadMapRegionContext(mapId);
   if (!row) return { ok: false, error: { kind: "mapNotFound" } };

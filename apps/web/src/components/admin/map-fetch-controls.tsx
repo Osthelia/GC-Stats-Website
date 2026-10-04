@@ -74,6 +74,8 @@ function fetchErrorKey(error: FetchMapError): string {
       return "error.invalidResponse";
     case "puuidConflict":
       return "error.puuidConflict";
+    case "duplicateMatchId":
+      return "error.duplicateMatchId";
     case "relay":
       return relayErrorKey(error.relayError);
     default:
@@ -339,14 +341,11 @@ export function MapFetchControls({
   const [ambiguousRosters, setAmbiguousRosters] = useState<TeamColorRoster[] | null>(null);
 
   function showFetchError(error: FetchMapError) {
-    if (error.kind === "missingPuuids") {
-      setMissingPuuids(error.players);
-      return;
-    }
-    if (error.kind === "teamColorAmbiguous") {
-      setAmbiguousRosters(error.rosters);
-      return;
-    }
+    // Only one follow-up dialog at a time: resolving puuids can lead straight
+    // to the team color question, which must replace the puuid dialog.
+    setMissingPuuids(error.kind === "missingPuuids" ? error.players : null);
+    setAmbiguousRosters(error.kind === "teamColorAmbiguous" ? error.rosters : null);
+    if (error.kind === "missingPuuids" || error.kind === "teamColorAmbiguous") return;
     if (error.kind === "relay" && error.relayError.kind === "rateLimited") {
       const seconds = error.relayError.retryAfterSeconds;
       toast.error(seconds ? t("error.rateLimitedWithSeconds", { seconds }) : t("error.rateLimited"));
@@ -357,7 +356,8 @@ export function MapFetchControls({
 
   function runFetch(options?: { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue" }) {
     startFetch(async () => {
-      const result = await fetchMapData(mapId, options);
+      // The match id currently in the field, saved or not, so editing it never fetches the old one.
+      const result = await fetchMapData(mapId, { ...options, apiMatchId: apiMatchId ?? "" });
       if (!result.ok) {
         showFetchError(result.error);
         return;
@@ -371,9 +371,9 @@ export function MapFetchControls({
 
   function handleRenew() {
     startRenew(async () => {
-      const result = await renewMapData(mapId);
+      const result = await renewMapData(mapId, apiMatchId ?? "");
       if (!result.ok) {
-        if (result.error.kind === "mapNotFound" || result.error.kind === "noMatchId" || result.error.kind === "regionNotConfigured") {
+        if (result.error.kind === "mapNotFound" || result.error.kind === "noMatchId" || result.error.kind === "regionNotConfigured" || result.error.kind === "duplicateMatchId") {
           toast.error(t(`error.${result.error.kind}`));
         } else if (result.error.kind === "rateLimited") {
           const seconds = result.error.retryAfterSeconds;

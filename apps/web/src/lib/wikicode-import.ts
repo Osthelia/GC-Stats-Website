@@ -132,11 +132,19 @@ export function parseMapVeto(wikicode: string, mapPool: readonly string[]): Pars
 
 export type WikicodeMapInfo = { finishedSkip: boolean; apiMatchId: string | null };
 
-/** Parses each `{{mapN|finished=skip|matchid=...}}` template, N = 1..9. */
+/** The `{{...}}` value of a `|mapN={{ApiMap|...}}` param, or a legacy `{{mapN|...}}` template. */
+function findMapTemplate(wikicode: string, n: number): string | null {
+  const param = new RegExp(`\\|\\s*map${n}\\s*=\\s*(?=\\{\\{)`, "i").exec(wikicode);
+  if (param) return templateAt(wikicode, param.index + param[0].length);
+  const legacy = new RegExp(`\\{\\{\\s*map${n}\\s*(?=[|}])`, "i").exec(wikicode);
+  return legacy ? templateAt(wikicode, legacy.index) : null;
+}
+
+/** Parses each map's `finished=skip|matchid=...` params (`|mapN={{ApiMap|...}}`), N = 1..9. */
 export function parseMapTemplates(wikicode: string): Map<number, WikicodeMapInfo> {
   const result = new Map<number, WikicodeMapInfo>();
   for (let n = 1; n <= 9; n++) {
-    const template = extractTemplate(wikicode, `map${n}`);
+    const template = findMapTemplate(wikicode, n);
     if (!template) continue;
     const params = parseTemplateParams(template);
     result.set(n, {

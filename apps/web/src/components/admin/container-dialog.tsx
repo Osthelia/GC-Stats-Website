@@ -158,8 +158,8 @@ export function ContainerDialog({
             <Input id="ctr-name" value={form.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!fieldErrors.name} />
           </FormField>
 
-          <FormField label={t("fieldContainerType")} htmlFor="ctr-type" required hint={container ? t("fieldContainerTypeLockedHint") : undefined}>
-            <Select disabled={!!container} items={{ bracket: t("containerTypeBracket"), group: t("containerTypeGroup") }} value={form.containerType} onValueChange={(v) => set("containerType", v as ContainerType)}>
+          <FormField label={t("fieldContainerType")} htmlFor="ctr-type" required hint={container ? t("fieldContainerTypeChangeHint") : undefined}>
+            <Select items={{ bracket: t("containerTypeBracket"), group: t("containerTypeGroup") }} value={form.containerType} onValueChange={(v) => set("containerType", v as ContainerType)}>
               <SelectTrigger id="ctr-type" className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -172,8 +172,8 @@ export function ContainerDialog({
 
           {form.containerType === "group" && (
             <>
-              <FormField label={t("fieldGroupFormat")} htmlFor="ctr-group-format" required hint={container ? t("fieldContainerTypeLockedHint") : undefined}>
-                <Select disabled={!!container} items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => set("groupFormat", v as GroupFormat)}>
+              <FormField label={t("fieldGroupFormat")} htmlFor="ctr-group-format" required>
+                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => set("groupFormat", v as GroupFormat)}>
                   <SelectTrigger id="ctr-group-format" className="w-full">
                     <SelectValue />
                   </SelectTrigger>

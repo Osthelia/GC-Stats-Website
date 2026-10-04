@@ -25,8 +25,12 @@ export function agentIconUrl(agentName: string): string {
   return `/valorant/agents/${agentSlug(agentName)}.webp`;
 }
 
+// Rounds fetched before the V1 naming fix stored Riot's `roundResultCode` instead of its label.
+const LEGACY_WIN_TYPE_KEYS: Record<string, string> = { elimination: "eliminated", defuse: "bomb_defused", detonate: "bomb_detonated", time: "round_timer_expired" };
+
 /** Mirrors V1's storage/icons/wins/{win_type}.webp naming (spaces to underscores, lowercased). */
 export function winTypeIconUrl(winType: string | null): string {
-  const key = winType ? winType.replace(/ /g, "_").toLowerCase() : "round_timer_expired";
+  const raw = winType ? winType.replace(/ /g, "_").toLowerCase() : "round_timer_expired";
+  const key = LEGACY_WIN_TYPE_KEYS[raw] ?? raw;
   return `/valorant/wins/${key}.webp`;
 }

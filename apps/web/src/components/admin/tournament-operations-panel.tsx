@@ -17,18 +17,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { FormField } from "@/components/admin/form-field";
 import { bulkPatchMatches, bulkCreateMatches, type BulkPatchFieldErrors, type BulkCreateFieldErrors } from "@/actions/admin-tournament-operations";
+import { BulkMatchStatusCard } from "@/components/admin/bulk-match-status-card";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
+import type { AdminMatchListRow } from "@/lib/admin-matches";
 
 const ALL_CONTAINERS = "all";
 const BEST_OF_VALUES = ["1", "3", "5"] as const;
 
-export function TournamentOperationsPanel({ tournamentId, containers }: { tournamentId: number; containers: AdminContainerOption[] }) {
+export function TournamentOperationsPanel({ tournamentId, containers, matches }: { tournamentId: number; containers: AdminContainerOption[]; matches: AdminMatchListRow[] }) {
   const t = useTranslations("admin.tournaments.operations");
 
   return (
     <div className="flex flex-col gap-6">
       <PatchCard tournamentId={tournamentId} containers={containers} />
       <BulkCreateCard tournamentId={tournamentId} containers={containers} />
+      <BulkMatchStatusCard tournamentId={tournamentId} containers={containers} matches={matches} />
       {containers.length === 0 && <p className="text-sm text-muted-foreground">{t("noContainers")}</p>}
     </div>
   );

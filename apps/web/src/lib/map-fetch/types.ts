@@ -22,7 +22,8 @@ export type FetchMapError =
   | { kind: "invalidResponse" }
   | { kind: "missingPuuids"; players: MissingPuuidPlayer[] }
   | { kind: "teamColorAmbiguous"; rosters: TeamColorRoster[] }
-  | { kind: "puuidConflict" };
+  | { kind: "puuidConflict" }
+  | { kind: "duplicateMatchId" };
 
 export interface TeamColorRoster {
   color: "Red" | "Blue";

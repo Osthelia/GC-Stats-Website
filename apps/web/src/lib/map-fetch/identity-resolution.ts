@@ -78,6 +78,8 @@ export async function persistPuuidMapping(mapping: Map<string, number>, column: 
 
   for (const [puuid, personId] of mapping) {
     const [conflict] = await db.select({ id: people.id }).from(people).where(eq(col, puuid)).limit(1);
+    // Already linked to this very person (a retry after a later step failed): nothing to do.
+    if (conflict?.id === personId) continue;
     if (conflict) {
       console.warn(`[map-fetch] puuid already mapped to person #${conflict.id}, skipping mapping to person #${personId}`);
       return { ok: false, error: { kind: "puuidConflict" } };

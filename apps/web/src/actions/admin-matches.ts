@@ -19,6 +19,7 @@ import { matches, entrants, maps, matchVetos, mapPlayerStats, mapTeamRoundSummar
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { resolveMatch, MatchResolutionValidationError } from "@/lib/bracket/match-resolution-service";
+import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { MAP_OPTIONS, MAP_UNKNOWN, VALORANT_MAP_POOL } from "@/lib/valorant-maps";
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/wikicode-import";
@@ -172,6 +173,24 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
   return { ok: true };
 }
 
+/** Running score of an undecided series (e.g. 1-1 in a BO3): stored as is, the match stays open and nothing propagates. */
+export async function saveMatchLiveScore(matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
+  await requireTournamentsActor();
+
+  const scoreA = Number(input.scoreA);
+  const scoreB = Number(input.scoreB);
+  if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) || scoreA < 0 || scoreB < 0) return { ok: false, fieldErrors: { score: "invalid" } };
+
+  const [match] = await db.select({ status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
+  if (!match) return { ok: false, fieldErrors: { matchId: "notFound" } };
+  if (match.status === "completed") return { ok: false, fieldErrors: { matchId: "alreadyCompleted" } };
+
+  await db.update(matches).set({ scoreA, scoreB }).where(eq(matches.id, matchId));
+  updateTag(matchTag(matchId));
+
+  return { ok: true };
+}
+
 // --- Veto --------------------------------------------------------------------
 
 export type VetoRowInput = {
@@ -219,19 +238,41 @@ export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Prom
 
   await db.transaction(async (tx) => {
     await tx.delete(matchVetos).where(eq(matchVetos.matchId, matchId));
-    if (rows.length === 0) return;
-    await tx.insert(matchVetos).values(
-      rows.map((row, index) => ({
-        matchId,
-        entrantId: row.entrantId,
-        mapName: row.mapName,
-        type: row.type,
-        order: index + 1,
-        side: row.side,
-        sidePickedByEntrantId: row.sidePickedByEntrantId,
-      }))
-    );
+    if (rows.length > 0) {
+      await tx.insert(matchVetos).values(
+        rows.map((row, index) => ({
+          matchId,
+          entrantId: row.entrantId,
+          mapName: row.mapName,
+          type: row.type,
+          order: index + 1,
+          side: row.side,
+          sidePickedByEntrantId: row.sidePickedByEntrantId,
+        }))
+      );
+    }
+
+    // V1's MatchController::recomputeGameMaps: one map per pick/decider in
+    // veto order, reusing an existing map of the same name (keeps its stats
+    // and match id), dropping maps no longer in the veto.
+    const existingMaps = await tx.select({ id: maps.id, mapName: maps.mapName }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
+    const keptIds = new Set<number>();
+    const played = rows.filter((row) => row.type === "pick" || row.type === "decider");
+    for (const [index, row] of played.entries()) {
+      const existing = existingMaps.find((m) => m.mapName === row.mapName && !keptIds.has(m.id));
+      if (existing) {
+        await tx.update(maps).set({ order: index + 1 }).where(eq(maps.id, existing.id));
+        keptIds.add(existing.id);
+      } else {
+        const [created] = await tx.insert(maps).values({ matchId, mapName: row.mapName, order: index + 1, isCompleted: false }).returning({ id: maps.id });
+        if (created) keptIds.add(created.id);
+      }
+    }
+    const removedIds = existingMaps.filter((m) => !keptIds.has(m.id)).map((m) => m.id);
+    if (removedIds.length > 0) await tx.delete(maps).where(inArray(maps.id, removedIds));
   });
+  await syncMatchScoreFromMaps(matchId);
+  updateTag(matchTag(matchId));
 
   return { ok: true };
 }
@@ -290,6 +331,15 @@ async function validateMapInput(input: MapInput, currentMapId: number | null): P
   return fieldErrors;
 }
 
+/** Keeps the match score in line with its maps after a manual map change; never fails the map save itself. */
+async function syncMatchScoreFromMaps(matchId: number): Promise<void> {
+  try {
+    await maybeAutoCompleteMatchFromMaps(matchId);
+  } catch (err) {
+    console.warn(`[admin-matches] match score sync failed for match #${matchId}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
 function deriveMapIsForfeit(input: MapInput): boolean {
   return Number(input.teamAScore) === -1 || Number(input.teamBScore) === -1;
 }
@@ -318,6 +368,7 @@ export async function addMap(matchId: number, input: MapInput): Promise<MapResul
     })
     .returning({ id: maps.id });
   if (!created) throw new Error("Insert returned no row");
+  await syncMatchScoreFromMaps(matchId);
   updateTag(matchTag(matchId));
 
   return { ok: true, id: created.id };
@@ -345,6 +396,7 @@ export async function updateMap(mapId: number, input: MapInput): Promise<MapResu
       apiMatchId: input.apiMatchId.trim() || null,
     })
     .where(eq(maps.id, mapId));
+  await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
 
   return { ok: true, id: mapId };
@@ -359,6 +411,7 @@ export async function deleteMap(mapId: number): Promise<DeleteMapResult> {
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.delete(maps).where(eq(maps.id, mapId));
+  await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
   return { ok: true };
 }
@@ -378,6 +431,7 @@ export async function resetMap(mapId: number): Promise<ResetMapResult> {
     await tx.delete(mapRoundsRaw).where(eq(mapRoundsRaw.mapId, mapId)); // cascades to kills/loadouts/positions
     await tx.update(maps).set({ teamAScore: null, teamBScore: null, isCompleted: false, isForfeit: false }).where(eq(maps.id, mapId));
   });
+  await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
 
   return { ok: true };

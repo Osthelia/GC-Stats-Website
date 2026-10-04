@@ -132,7 +132,7 @@ export function MapDetailForm({ map, canManage }: { map: AdminMapRow; canManage:
                 disabled={!canManage}
               />
             </FormField>
-            <MapFetchControls mapId={map.id} apiMatchId={map.apiMatchId} canManage={canManage} onMerged={(apiMatchId) => set({ apiMatchId })} />
+            <MapFetchControls mapId={map.id} apiMatchId={value.apiMatchId.trim() || null} canManage={canManage} onMerged={(apiMatchId) => set({ apiMatchId })} />
           </CardContent>
         </Card>
       </div>

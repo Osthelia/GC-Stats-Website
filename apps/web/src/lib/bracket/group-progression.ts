@@ -9,8 +9,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq } from "drizzle-orm";
-import { groupEntries, matches } from "@gc-stats/db";
+import { and, eq, inArray } from "drizzle-orm";
+import { entrants, groupEntries, matches } from "@gc-stats/db";
 import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@gc-stats/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
@@ -182,4 +182,39 @@ export async function advanceSwissGroup(tx: Tx, config: SwissGroupConfig, m: Res
  *  generically (every match row in the container is completed). */
 export async function advanceRoundRobinGroup(tx: Tx, m: ResolvedGroupMatch): Promise<void> {
   await bumpRecordAfterMatch(tx, m);
+}
+
+/**
+ * Rebuilds a group's `group_entries` from the matches already in it —
+ * used when an existing container is converted to a group (typically a
+ * historically-migrated container that landed as a bracket). Same
+ * derivation as the migrate-v1 group_entries backfill: entrants come from
+ * match participation, wins/losses from completed matches, Buchholz
+ * recomputed via the engine. Any previous entries are replaced.
+ */
+export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number): Promise<void> {
+  await tx.delete(groupEntries).where(eq(groupEntries.containerId, containerId));
+
+  const containerMatches = await tx
+    .select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, winnerId: matches.winnerId, status: matches.status })
+    .from(matches)
+    .where(eq(matches.containerId, containerId));
+
+  const record = new Map<number, { wins: number; losses: number }>();
+  for (const m of containerMatches) {
+    for (const id of [m.entrantAId, m.entrantBId]) {
+      if (id !== null && !record.has(id)) record.set(id, { wins: 0, losses: 0 });
+    }
+    if (m.status !== "completed" || m.winnerId === null || m.entrantAId === null || m.entrantBId === null) continue;
+    const loserId = m.winnerId === m.entrantAId ? m.entrantBId : m.entrantAId;
+    record.get(m.winnerId)!.wins++;
+    record.get(loserId)!.losses++;
+  }
+  if (record.size === 0) return;
+
+  const seedRows = await tx.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(inArray(entrants.id, [...record.keys()]));
+  const seedById = new Map(seedRows.map((r) => [r.id, r.seed]));
+
+  await tx.insert(groupEntries).values([...record].map(([entrantId, r]) => ({ containerId, entrantId, seed: seedById.get(entrantId) ?? null, wins: r.wins, losses: r.losses })));
+  await recomputeAndStoreBuchholz(tx, containerId);
 }

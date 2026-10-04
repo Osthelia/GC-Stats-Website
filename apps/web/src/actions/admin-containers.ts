@@ -2,7 +2,8 @@
  * GC-Stats - admin-containers
  *
  * Admin server actions for stage containers (brackets and groups) inside a
- * tournament stage: creation and point/qualification settings.
+ * tournament stage: creation, type/format changes and point/qualification
+ * settings.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -11,9 +12,10 @@
 
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, entrants, groupEntries, PERMISSIONS } from "@gc-stats/db";
+import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, PERMISSIONS } from "@gc-stats/db";
+import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 
 async function requireTournamentsActor(): Promise<void> {
@@ -120,10 +122,13 @@ export async function createContainer(stageId: number, input: ContainerInput): P
 }
 
 /**
- * Name and points config only (2026-09-23, review finding) — `containerType`/
- * `groupFormat` change the generated structure and stay locked once created,
- * so unlike `createContainer` this never regenerates matches and works
- * regardless of whether the container already has matches.
+ * Never regenerates matches, works regardless of whether the container
+ * already has matches. `containerType`/`groupFormat` can be changed
+ * (historically-migrated containers often landed as brackets while they
+ * were really Swiss/round robin): converting bracket -> group drops the
+ * bracket edges touching its matches (a group has no lineage) and rebuilds
+ * `group_entries` from those matches; group -> bracket drops the now
+ * unused `group_entries`. The `legacyImportTarget` flag is preserved.
  */
 export async function updateContainer(id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
   await requireTournamentsActor();
@@ -134,16 +139,25 @@ export async function updateContainer(id: number, stageId: number, input: Contai
     .where(and(eq(stageContainers.id, id), eq(stageContainers.stageId, stageId)))
     .limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
-  if (existing.containerType !== input.containerType) return { ok: false, fieldErrors: { name: "containerTypeLocked" } };
-  if (input.containerType === "group") {
-    const existingFormat = (existing.config as { type?: string } | null)?.type;
-    if (existingFormat !== undefined && existingFormat !== input.groupFormat) return { ok: false, fieldErrors: { name: "groupFormatLocked" } };
-  }
 
   const fieldErrors = validateContainer(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.update(stageContainers).set({ name: input.name.trim(), config: buildConfig(input) }).where(eq(stageContainers.id, id));
+  const legacyImportTarget = (existing.config as { legacyImportTarget?: boolean } | null)?.legacyImportTarget === true;
+  const config = legacyImportTarget ? { ...buildConfig(input), legacyImportTarget: true } : buildConfig(input);
+
+  await db.transaction(async (tx) => {
+    await tx.update(stageContainers).set({ name: input.name.trim(), containerType: input.containerType, config }).where(eq(stageContainers.id, id));
+    if (existing.containerType === input.containerType) return;
+
+    if (input.containerType === "group") {
+      const containerMatchIds = tx.select({ id: matches.id }).from(matches).where(eq(matches.containerId, id));
+      await tx.delete(bracketEdges).where(or(inArray(bracketEdges.fromMatchId, containerMatchIds), inArray(bracketEdges.toMatchId, containerMatchIds)));
+      await rebuildGroupEntriesFromMatches(tx, id);
+    } else {
+      await tx.delete(groupEntries).where(eq(groupEntries.containerId, id));
+    }
+  });
 
   return { ok: true, id };
 }
