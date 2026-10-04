@@ -23,6 +23,7 @@ import {
   TOURNAMENT_FILTER_FIELDS,
   type TournamentSort,
   type SortDirection,
+  type TournamentActiveFilter,
 } from "@/lib/admin-tournaments";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
@@ -51,12 +52,13 @@ export default async function AdminTournamentsPage({
   const sort = (SORT_VALUES as string[]).includes(sp.sort ?? "") ? (sp.sort as TournamentSort) : "startDate";
   const direction: SortDirection = sp.direction === "asc" ? "asc" : "desc";
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
+  const active: TournamentActiveFilter = sp.active === "active" || sp.active === "inactive" ? sp.active : "";
 
   const filters: AdminActiveFilter[] = TOURNAMENT_FILTER_FIELDS.map((field) => ({ field, value: (sp[`f_${field}`] ?? "").trim() })).filter((f) => f.value !== "");
   const filterQuery = Object.fromEntries(filters.map((f) => [`f_${f.field}`, f.value]));
 
   const [{ rows: tournaments, total }, pointTypeOptions, counts] = await Promise.all([
-    listAdminTournaments({ q, sort, direction, page, filters }),
+    listAdminTournaments({ q, sort, direction, page, filters, active }),
     listPointTypeOptions(),
     getAdminTournamentCounts(),
   ]);
@@ -92,18 +94,30 @@ export default async function AdminTournamentsPage({
           statusValue=""
           statusLabel=""
           statusOptions={[]}
+          extraFilters={[
+            {
+              key: "active",
+              value: active,
+              label: t("activeFilterLabel"),
+              options: [
+                { value: "", label: t("activeFilterAny") },
+                { value: "active", label: t("activeFilterActive") },
+                { value: "inactive", label: t("activeFilterInactive") },
+              ],
+            },
+          ]}
         />
-        <AdminColumnFilterBar columns={filterColumns} activeFilters={filters} pathname="/admin/tournaments" baseQuery={{ q, sort, direction }} />
+        <AdminColumnFilterBar columns={filterColumns} activeFilters={filters} pathname="/admin/tournaments" baseQuery={{ q, sort, direction, active }} />
       </div>
 
       <TournamentsPanel
         tournaments={tournaments}
         canManage={canManage}
         pointTypeOptions={pointTypeOptions}
-        sortable={{ pathname: "/admin/tournaments", sort, direction, query: { q, sort, direction, ...filterQuery } }}
+        sortable={{ pathname: "/admin/tournaments", sort, direction, query: { q, sort, direction, active, ...filterQuery } }}
       />
 
-      <AdminPagination pathname="/admin/tournaments" page={page} totalPages={totalPages} total={total} query={{ q, sort, direction, ...filterQuery }} label={`${total}`} />
+      <AdminPagination pathname="/admin/tournaments" page={page} totalPages={totalPages} total={total} query={{ q, sort, direction, active, ...filterQuery }} label={`${total}`} />
     </div>
   );
 }

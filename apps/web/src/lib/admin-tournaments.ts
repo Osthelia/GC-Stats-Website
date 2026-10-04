@@ -25,6 +25,8 @@ export type TournamentStatus = "upcoming" | "live" | "finished";
 export const TOURNAMENT_FILTER_FIELDS = ["region", "category", "status", "location"] as const;
 export type TournamentFilterField = (typeof TOURNAMENT_FILTER_FIELDS)[number];
 export type AdminTournamentFilter = { field: string; value: string };
+/** "" = no filter on the `active` flag. */
+export type TournamentActiveFilter = "" | "active" | "inactive";
 
 function tournamentFilterColumn(field: string) {
   switch (field as TournamentFilterField) {
@@ -62,9 +64,12 @@ export async function listAdminTournaments(opts: {
   direction: SortDirection;
   page: number;
   filters?: AdminTournamentFilter[];
+  active?: TournamentActiveFilter;
 }): Promise<{ rows: AdminTournamentRow[]; total: number }> {
-  const { q, sort, direction, page, filters = [] } = opts;
+  const { q, sort, direction, page, filters = [], active = "" } = opts;
   const conditions = [];
+
+  if (active) conditions.push(eq(tournaments.active, active === "active"));
 
   if (q) {
     const numeric = /^\d+$/.test(q);
