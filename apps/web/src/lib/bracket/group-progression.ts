@@ -184,17 +184,8 @@ export async function advanceRoundRobinGroup(tx: Tx, m: ResolvedGroupMatch): Pro
   await bumpRecordAfterMatch(tx, m);
 }
 
-/**
- * Rebuilds a group's `group_entries` from the matches already in it —
- * used when an existing container is converted to a group (typically a
- * historically-migrated container that landed as a bracket). Same
- * derivation as the migrate-v1 group_entries backfill: entrants come from
- * match participation, wins/losses from completed matches, Buchholz
- * recomputed via the engine. Any previous entries are replaced.
- */
-export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number): Promise<void> {
-  await tx.delete(groupEntries).where(eq(groupEntries.containerId, containerId));
-
+/** Wins/losses per entrant from the container's completed matches. */
+async function recordsFromMatches(tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
   const containerMatches = await tx
     .select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, winnerId: matches.winnerId, status: matches.status })
     .from(matches)
@@ -210,11 +201,45 @@ export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number
     record.get(m.winnerId)!.wins++;
     record.get(loserId)!.losses++;
   }
+  return record;
+}
+
+/**
+ * Rebuilds a group's `group_entries` from the matches already in it —
+ * used when an existing container is converted to a group (typically a
+ * historically-migrated container that landed as a bracket). Same
+ * derivation as the migrate-v1 group_entries backfill: entrants come from
+ * match participation, wins/losses from completed matches, Buchholz
+ * recomputed via the engine. Any previous entries are replaced.
+ */
+export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number): Promise<void> {
+  await tx.delete(groupEntries).where(eq(groupEntries.containerId, containerId));
+
+  const record = await recordsFromMatches(tx, containerId);
   if (record.size === 0) return;
 
   const seedRows = await tx.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(inArray(entrants.id, [...record.keys()]));
   const seedById = new Map(seedRows.map((r) => [r.id, r.seed]));
 
   await tx.insert(groupEntries).values([...record].map(([entrantId, r]) => ({ containerId, entrantId, seed: seedById.get(entrantId) ?? null, wins: r.wins, losses: r.losses })));
+  await recomputeAndStoreBuchholz(tx, containerId);
+}
+
+/**
+ * Realigns existing `group_entries` wins/losses on the container's completed
+ * matches (a bye counts as one win), then recomputes Buchholz. Used after
+ * results are written outside the resolution flow (score backfill).
+ */
+export async function syncGroupRecordsFromMatches(tx: Tx, containerId: number): Promise<void> {
+  const entries = await getGroupEntries(tx, containerId);
+  if (entries.length === 0) return;
+  const record = await recordsFromMatches(tx, containerId);
+  for (const entry of entries) {
+    const r = record.get(entry.entrantId) ?? { wins: 0, losses: 0 };
+    const wins = r.wins + (entry.hadBye ? 1 : 0);
+    if (entry.wins !== wins || entry.losses !== r.losses) {
+      await tx.update(groupEntries).set({ wins, losses: r.losses }).where(eq(groupEntries.id, entry.id));
+    }
+  }
   await recomputeAndStoreBuchholz(tx, containerId);
 }

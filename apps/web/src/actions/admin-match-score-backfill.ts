@@ -18,6 +18,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { matches, maps, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
+import { syncGroupRecordsFromMatches } from "@/lib/bracket/group-progression";
 
 const ID_CHUNK = 1000;
 const SAMPLE_SIZE = 50;
@@ -98,7 +99,8 @@ function sampleRows(computed: Computed[]): ScoreBackfillSample[] {
  * Previews (`apply = false`) or applies the backfill. Applying sets the
  * score, the winner and the "completed" status — a status/result fix-up
  * only, like bulkSetMatchStatus: no resolveMatch, no bracket propagation
- * (historical brackets were already filled in by the migration). A match
+ * (historical brackets were already filled in by the migration), but group
+ * records are realigned on the new winners. A match
  * whose stored winner disagrees with its maps is left untouched and
  * reported as a conflict.
  */
@@ -142,6 +144,13 @@ export async function backfillMatchScoresFromMaps(tournamentId: number, apply: b
             .where(and(inArray(matches.id, group.ids.slice(i, i + ID_CHUNK)), or(isNull(matches.scoreA), isNull(matches.scoreB))));
         }
       }
+      // New winners change the group records (wins, losses, Buchholz).
+      const groupContainers = await tx
+        .select({ id: stageContainers.id })
+        .from(stageContainers)
+        .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+        .where(and(eq(stages.tournamentId, tournamentId), eq(stageContainers.containerType, "group")));
+      for (const c of groupContainers) await syncGroupRecordsFromMatches(tx, c.id);
     });
     for (const r of resolvable) updateTag(matchTag(r.id));
   }
