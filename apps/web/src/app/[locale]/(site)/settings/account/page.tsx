@@ -7,12 +7,12 @@
  */
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { eq } from "drizzle-orm";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { AppLocale } from "@/i18n/routing";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentUserId } from "@/lib/session";
-import { countAuthMethods } from "@/lib/account-security";
 import { adminDb as db } from "@gc-stats/db/client";
 import { users, accounts, authenticators } from "@gc-stats/db";
 import { EmailSettings } from "@/components/settings/email-settings";
@@ -25,7 +25,8 @@ import { DiscordNotificationsSettings } from "@/components/settings/discord-noti
 import { AccountDangerZone } from "@/components/settings/account-danger-zone";
 import { SettingsNav } from "@/components/settings/settings-nav";
 import { EMAIL_CATEGORIES, type EmailCategory } from "@/lib/notification-categories";
-import { getLinkedDiscordId, hasJoinedDiscordGuild } from "@/lib/discord-guild-membership";
+import { hasJoinedDiscordGuild } from "@/lib/discord-guild-membership";
+import { SettingsCard } from "@/components/settings/settings-card";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -50,7 +51,7 @@ export default async function AccountSettingsPage({
     return null;
   }
 
-  const [[user], linkedAccounts, passkeys, authMethods] = await Promise.all([
+  const [[user], linkedAccounts, passkeys] = await Promise.all([
     db
       .select({
         email: users.email,
@@ -62,7 +63,7 @@ export default async function AccountSettingsPage({
       .from(users)
       .where(eq(users.id, userId))
       .limit(1),
-    db.select({ provider: accounts.provider }).from(accounts).where(eq(accounts.userId, userId)),
+    db.select({ provider: accounts.provider, providerAccountId: accounts.providerAccountId }).from(accounts).where(eq(accounts.userId, userId)),
     db
       .select({
         credentialID: authenticators.credentialID,
@@ -72,11 +73,11 @@ export default async function AccountSettingsPage({
       })
       .from(authenticators)
       .where(eq(authenticators.userId, userId)),
-    countAuthMethods(userId),
   ]);
 
-  const discordId = await getLinkedDiscordId(userId);
-  const discordJoined = discordId ? await hasJoinedDiscordGuild(userId) : false;
+  // Same count as lib/account-security countAuthMethods(), from the rows already loaded.
+  const authMethods = (user?.passwordHash ? 1 : 0) + linkedAccounts.length + passkeys.length;
+  const discordId = linkedAccounts.find((a) => a.provider === "discord")?.providerAccountId ?? null;
 
   const t = await getTranslations({ locale: locale as AppLocale, namespace: "accountSettings" });
   const canRemoveAMethod = authMethods > 1;
@@ -121,12 +122,10 @@ export default async function AccountSettingsPage({
             userName={user?.name ?? null}
           />
           <EmailNotificationsSettings initialPrefs={emailPrefs} />
-          <DiscordNotificationsSettings
-            initialPrefs={discordPrefs}
-            initiallyLinked={Boolean(discordId)}
-            initiallyJoined={discordJoined}
-            inviteUrl={process.env.DISCORD_INVITE_URL ?? null}
-          />
+          {/* The guild check calls the Discord API — streamed so it never holds up the rest of the page. */}
+          <Suspense fallback={<DiscordNotificationsSkeleton heading={t("discordNotifications.heading")} />}>
+            <DiscordNotificationsSection userId={userId} discordId={discordId} initialPrefs={discordPrefs} />
+          </Suspense>
         </div>
       </div>
 
@@ -134,5 +133,33 @@ export default async function AccountSettingsPage({
         <AccountDangerZone hasPassword={hasPassword} />
       </div>
     </div>
+  );
+}
+
+async function DiscordNotificationsSection({
+  userId,
+  discordId,
+  initialPrefs,
+}: {
+  userId: string;
+  discordId: string | null;
+  initialPrefs: Record<EmailCategory, boolean>;
+}) {
+  const joined = discordId ? await hasJoinedDiscordGuild(userId) : false;
+  return (
+    <DiscordNotificationsSettings
+      initialPrefs={initialPrefs}
+      initiallyLinked={Boolean(discordId)}
+      initiallyJoined={joined}
+      inviteUrl={process.env.DISCORD_INVITE_URL ?? null}
+    />
+  );
+}
+
+function DiscordNotificationsSkeleton({ heading }: { heading: string }) {
+  return (
+    <SettingsCard heading={heading}>
+      <div aria-hidden="true" className="h-[120px] animate-pulse rounded-[10px] bg-[var(--gcs-surface-2)]" />
+    </SettingsCard>
   );
 }

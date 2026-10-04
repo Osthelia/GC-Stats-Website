@@ -8,9 +8,16 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { auth } from "@/auth";
 
+/**
+ * `auth()` once per request: every call runs the `jwt` callback, which hits
+ * the DB (revocation check) — the site layout and the page both need it.
+ */
+export const getSession = cache(() => auth());
+
 export async function getCurrentUserId(): Promise<string | null> {
-  const session = await auth();
+  const session = await getSession();
   return session?.user?.id ?? null;
 }

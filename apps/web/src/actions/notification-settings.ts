@@ -56,16 +56,20 @@ export async function updateDiscordNotificationPreferences(prefs: Record<EmailCa
     if (typeof prefs[category] !== "boolean") return { ok: false, error: "invalid" };
   }
 
+  const [user] = await db.select({ preferences: users.preferences }).from(users).where(eq(users.id, userId)).limit(1);
+  const current = (user?.preferences as Record<string, unknown> | null) ?? {};
+
   // Re-checked server side: a client can't force categories on without the
   // account actually being eligible (linked + joined the Discord server).
-  if (Object.values(prefs).some(Boolean)) {
+  // Only when a category is newly turned on — that check calls the Discord
+  // API, and turning things off (or keeping them on) needs no eligibility.
+  const stored = (current.discordNotifications as Partial<Record<EmailCategory, boolean>> | undefined) ?? {};
+  if (EMAIL_CATEGORIES.some((c) => prefs[c] && !stored[c])) {
     const discordId = await getLinkedDiscordId(userId);
     if (!discordId) return { ok: false, error: "notLinked" };
     if (!(await hasJoinedDiscordGuild(userId))) return { ok: false, error: "notJoined" };
   }
 
-  const [user] = await db.select({ preferences: users.preferences }).from(users).where(eq(users.id, userId)).limit(1);
-  const current = (user?.preferences as Record<string, unknown> | null) ?? {};
   const merged = { ...current, discordNotifications: prefs };
 
   await db.update(users).set({ preferences: merged }).where(eq(users.id, userId));

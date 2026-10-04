@@ -13,6 +13,10 @@ import { eq, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { accounts } from "@gc-stats/db";
 
+// Discord can hang well past any sensible page budget (rate limits, outages);
+// a timeout reads as "not joined" like any other failure.
+const DISCORD_TIMEOUT_MS = 4000;
+
 interface DiscordGuild {
   id: string;
 }
@@ -33,6 +37,7 @@ async function refreshAccessToken(refreshToken: string): Promise<DiscordTokenRes
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken, client_id: clientId, client_secret: clientSecret }),
+      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
     });
     if (!response.ok) return null;
     return (await response.json()) as DiscordTokenResponse;
@@ -88,6 +93,7 @@ export async function hasJoinedDiscordGuild(userId: string): Promise<boolean> {
 
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
       headers: { Authorization: `Bearer ${accessToken}` },
+      signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS),
     });
     if (!response.ok) return false;
 

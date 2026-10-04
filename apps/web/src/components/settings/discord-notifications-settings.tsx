@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { updateDiscordNotificationPreferences, refreshDiscordEligibility } from "@/actions/notification-settings";
@@ -30,27 +30,55 @@ export function DiscordNotificationsSettings({
   const [prefs, setPrefs] = useState(initialPrefs);
   const [linked, setLinked] = useState(initiallyLinked);
   const [joined, setJoined] = useState(initiallyJoined);
-  const [pending, setPending] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const eligible = linked && joined;
 
-  async function toggle(category: EmailCategory) {
-    const next = { ...prefs, [category]: !prefs[category] };
-    setPrefs(next);
-    setStatus(null);
-    setError(null);
-    setPending(true);
-    const result = await updateDiscordNotificationPreferences(next);
-    setPending(false);
+  // Toggles apply instantly; saves are debounced and serialized so a slow
+  // round trip (the server re-checks Discord guild membership) never blocks
+  // the next click, and only the latest state is ever written.
+  const savedRef = useRef(initialPrefs);
+  const latestRef = useRef(initialPrefs);
+  const savingRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  async function flush() {
+    if (savingRef.current) return;
+    const sent = latestRef.current;
+    if (sent === savedRef.current) return;
+    savingRef.current = true;
+    const result = await updateDiscordNotificationPreferences(sent).catch(() => ({ ok: false as const, error: "invalid" }));
+    savingRef.current = false;
     if (!result.ok) {
-      setPrefs(prefs);
+      latestRef.current = savedRef.current;
+      setPrefs(savedRef.current);
+      setStatus(null);
       setError(t(`error.${result.error}` as never));
       return;
     }
+    savedRef.current = sent;
+    // Toggled again while this save was in flight: write the newer state.
+    if (latestRef.current !== sent) {
+      void flush();
+      return;
+    }
     setStatus(t("saved"));
+  }
+
+  function toggle(category: EmailCategory) {
+    const next = { ...latestRef.current, [category]: !latestRef.current[category] };
+    latestRef.current = next;
+    setPrefs(next);
+    setStatus(null);
+    setError(null);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => void flush(), 500);
   }
 
   async function handleRefresh() {
@@ -109,10 +137,9 @@ export function DiscordNotificationsSettings({
               <span className="text-[13.5px] font-medium text-[var(--gcs-text-dim)]">{t(`category.${category}`)}</span>
               <button
                 type="button"
-                disabled={pending}
                 onClick={() => toggle(category)}
                 aria-pressed={prefs[category]}
-                className="relative ml-auto h-[23px] w-10 flex-none rounded-full transition-colors disabled:opacity-60"
+                className="relative ml-auto h-[23px] w-10 flex-none rounded-full transition-colors"
                 style={{ background: prefs[category] ? "#e4ae22" : "var(--gcs-hover-2)" }}
               >
                 <span
