@@ -42,7 +42,7 @@ export function FinanceTable({
   const [deleting, setDeleting] = useState<AdminFinanceEntry | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const dateFmt = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", year: "numeric" });
+  const dateFmt = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
   const money = new Intl.NumberFormat(locale, { style: "currency", currency: "USD" });
 
   const categoryLabel = (category: string) =>

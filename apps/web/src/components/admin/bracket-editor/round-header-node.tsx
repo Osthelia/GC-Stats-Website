@@ -14,10 +14,9 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { CalendarIcon } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
-import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Button } from "@/components/ui/button";
 import { setRoundScheduledAt } from "@/actions/admin-bracket-editor";
-import { toDatetimeLocal } from "@/lib/datetime-local";
 
 export type RoundHeaderNodeData = {
   containerId: number;
@@ -41,12 +40,12 @@ export type RoundHeaderNodeData = {
 export function RoundHeaderNode({ data }: NodeProps & { data: RoundHeaderNodeData }) {
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
-  const [value, setValue] = useState(toDatetimeLocal(data.commonScheduledAt));
+  const [value, setValue] = useState<string | null>(data.commonScheduledAt);
   const [isPending, startTransition] = useTransition();
 
   function apply() {
     startTransition(async () => {
-      const result = await setRoundScheduledAt(data.containerId, data.stageId, data.round, value ? new Date(value).toISOString() : null);
+      const result = await setRoundScheduledAt(data.containerId, data.stageId, data.round, value);
       if (!result.ok) {
         toast.error(t(`bulkDateError.${result.error}`));
         return;
@@ -67,7 +66,7 @@ export function RoundHeaderNode({ data }: NodeProps & { data: RoundHeaderNodeDat
         {t("roundLabel", { round: data.round })}
       </div>
       <div className="flex items-center gap-1.5">
-        <Input type="datetime-local" value={value} onChange={(e) => setValue(e.target.value)} className="h-7 flex-1 text-xs" />
+        <DateTimeInput value={value} onChange={setValue} showTimezone={false} className="h-7 flex-1 text-xs" />
         <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={isPending} onClick={apply}>
           {t("bulkDateApply")}
         </Button>

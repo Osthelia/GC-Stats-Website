@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -16,6 +16,7 @@ import { listChangeRequestMessages } from "@/lib/change-request-messages";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import { ChangeRequestDetailPanel } from "@/components/admin/change-request-detail-panel";
 import type { AppLocale } from "@/i18n/routing";
+import { FormattedDate } from "@/components/formatted-date";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -52,7 +53,7 @@ export default async function AdminChangeRequestDetailPage({ params }: { params:
         <p className="text-sm text-muted-foreground">
           {detail.requestedByUsername ? t("detail.requestedBy", { username: detail.requestedByUsername }) : t("detail.requestedByUnknown")}
           {" · "}
-          {new Date(detail.createdAt).toLocaleString(locale)}
+          <FormattedDate date={detail.createdAt} mode="datetime" />
         </p>
         <p className="mt-2 text-sm">
           <span className="text-muted-foreground">{t("detail.reason")}: </span>

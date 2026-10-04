@@ -14,13 +14,13 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FormField } from "@/components/admin/form-field";
 import { updateMatchDetails, reportMatchResult, saveMatchLiveScore, type MatchDetailsFieldErrors, type ReportResultFieldErrors } from "@/actions/admin-matches";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
-import { toDatetimeLocal } from "@/lib/datetime-local";
 import type { AdminMatchDetail } from "@/lib/admin-matches";
 
 const ENTRANT_NONE = "none";
@@ -62,7 +62,7 @@ export function MatchForm({
   // reporting) but stays selectable if that's already the current value, so
   // saving other fields (patch, best of...) doesn't silently un-complete it.
   const statusOptions: StatusValue[] = match.status === "completed" ? ["completed", ...STATUS_VALUES] : [...STATUS_VALUES];
-  const [scheduledAt, setScheduledAt] = useState(toDatetimeLocal(match.scheduledAt));
+  const [scheduledAt, setScheduledAt] = useState<string | null>(match.scheduledAt);
   const [bestOf, setBestOf] = useState(String(match.bestOf));
   const [patch, setPatch] = useState(match.patch ?? "");
   const [label, setLabel] = useState(match.label ?? "");
@@ -225,7 +225,7 @@ export function MatchForm({
 
           <div className="md:col-span-2">
             <FormField label={t("fieldScheduledAt")} htmlFor="m-scheduled-at" error={detailsErr("scheduledAt")}>
-              <Input id="m-scheduled-at" type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} disabled={!canManage} aria-invalid={!!detailsErrors.scheduledAt} />
+              <DateTimeInput id="m-scheduled-at" value={scheduledAt} onChange={setScheduledAt} disabled={!canManage} aria-invalid={!!detailsErrors.scheduledAt} />
             </FormField>
           </div>
 

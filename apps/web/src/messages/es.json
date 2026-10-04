@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Zona horaria de administración",
+      "hint": "Todas las fechas de la administración se muestran y editan en esta zona horaria.",
+      "changed": "Zona horaria de administración establecida en {timezone}."
+    },
     "nav": {
       "dashboard": "Panel de control",
       "groupContent": "Contenido",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Roles actualizados.",
       "backToList": "← Volver a los usuarios",
       "noUsername": "Sin nombre de usuario",
-      "joinedOn": "Registrado el {date}",
-      "lastLoginOn": "Última conexión el {date}",
+      "joinedOn": "Registrado el <date></date>",
+      "lastLoginOn": "Última conexión el <date></date>",
       "neverLoggedIn": "Nunca se ha conectado",
       "error": {
         "userNotFound": "Usuario no encontrado.",

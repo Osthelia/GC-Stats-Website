@@ -18,7 +18,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { logos, people, teams, organizations, PERMISSIONS } from "@gc-stats/db";
 import { storeLogoPair, replaceLogoFiles, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
-import { openRangeFrom, closeRange } from "@/lib/daterange";
+import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import type { LogoEntityType } from "@/lib/admin-logos";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -71,7 +71,7 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
 
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -156,7 +156,7 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
 
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 

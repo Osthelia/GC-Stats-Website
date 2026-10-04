@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Strefa czasowa panelu",
+      "hint": "Wszystkie daty w panelu są wyświetlane i edytowane w tej strefie czasowej.",
+      "changed": "Strefa czasowa panelu ustawiona na {timezone}."
+    },
     "nav": {
       "dashboard": "Dashboard",
       "groupContent": "Treści",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Role zaktualizowane.",
       "backToList": "← Wróć do użytkowników",
       "noUsername": "Brak nazwy użytkownika",
-      "joinedOn": "Dołączenie: {date}",
-      "lastLoginOn": "Ostatnie logowanie: {date}",
+      "joinedOn": "Dołączenie: <date></date>",
+      "lastLoginOn": "Ostatnie logowanie: <date></date>",
       "neverLoggedIn": "Nigdy nie zalogowano",
       "error": {
         "userNotFound": "Nie znaleziono użytkownika.",

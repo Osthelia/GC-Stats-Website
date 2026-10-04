@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Admin-Zeitzone",
+      "hint": "Alle Daten im Admin werden in dieser Zeitzone angezeigt und bearbeitet.",
+      "changed": "Admin-Zeitzone auf {timezone} gesetzt."
+    },
     "nav": {
       "dashboard": "Dashboard",
       "groupContent": "Inhalte",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Rollen aktualisiert.",
       "backToList": "← Zurück zu den Benutzer:innen",
       "noUsername": "Kein Benutzername",
-      "joinedOn": "Beigetreten am {date}",
-      "lastLoginOn": "Letzte Anmeldung am {date}",
+      "joinedOn": "Beigetreten am <date></date>",
+      "lastLoginOn": "Letzte Anmeldung am <date></date>",
       "neverLoggedIn": "Nie angemeldet",
       "error": {
         "userNotFound": "Benutzer:in nicht gefunden.",

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -36,6 +36,7 @@ import { listGlobalRoles } from "@/lib/admin-users";
 import { listAdminForumMessages } from "@/lib/admin-forum-messages";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
+import { FormattedDate } from "@/components/formatted-date";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; userId: string }> }): Promise<Metadata> {
   const { locale, userId } = await params;
@@ -85,7 +86,6 @@ export default async function AdminUserDetailPage({
       : Promise.resolve({ rows: [], total: 0 }),
   ]);
 
-  const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
   const canManageUsers = hasAccess(access, PERMISSIONS.usersManage);
   const canManageApiKeys = hasAccess(access, PERMISSIONS.apiKeysManage);
   const messagesTotalPages = Math.max(1, Math.ceil(forumMessages.total / MESSAGES_PAGE_SIZE));
@@ -107,7 +107,7 @@ export default async function AdminUserDetailPage({
           </div>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          {t("joinedOn", { date: dateFmt.format(profile.createdAt) })} · {profile.lastLoginAt ? t("lastLoginOn", { date: dateFmt.format(profile.lastLoginAt) }) : t("neverLoggedIn")}
+          {t.rich("joinedOn", { date: () => <FormattedDate date={profile.createdAt} dateOptions={{ dateStyle: "medium" }} /> })} · {profile.lastLoginAt ? t.rich("lastLoginOn", { date: () => <FormattedDate date={profile.lastLoginAt} dateOptions={{ dateStyle: "medium" }} /> }) : t("neverLoggedIn")}
         </p>
         {profile.bio && (
           <p className="mt-2 max-w-2xl text-sm whitespace-pre-line text-muted-foreground">

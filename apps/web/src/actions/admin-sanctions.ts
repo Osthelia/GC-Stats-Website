@@ -17,6 +17,7 @@ import { sanctions, users, teams, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { SANCTION_TYPES, type SanctionType } from "@/lib/admin-sanctions";
 import { notify } from "@/lib/notify";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 export type SanctionField = "target" | "type" | "reason" | "startsAt" | "endsAt";
 export type SanctionFieldErrors = Partial<Record<SanctionField, string>>;
@@ -50,13 +51,14 @@ async function validateSanction(input: SanctionInput): Promise<SanctionFieldErro
   if (!reason) fieldErrors.reason = "required";
   else if (reason.length > 2000) fieldErrors.reason = "tooLong";
 
-  const startsAt = new Date(input.startsAt);
-  if (!input.startsAt || Number.isNaN(startsAt.getTime())) fieldErrors.startsAt = "required";
+  const startsAt = input.startsAt ? parseIsoInstant(input.startsAt) : null;
+  if (!input.startsAt) fieldErrors.startsAt = "required";
+  else if (!startsAt) fieldErrors.startsAt = "invalid";
 
   if (input.endsAt) {
-    const endsAt = new Date(input.endsAt);
-    if (Number.isNaN(endsAt.getTime())) fieldErrors.endsAt = "invalid";
-    else if (!fieldErrors.startsAt && endsAt.getTime() <= startsAt.getTime()) fieldErrors.endsAt = "endBeforeStart";
+    const endsAt = parseIsoInstant(input.endsAt);
+    if (!endsAt) fieldErrors.endsAt = "invalid";
+    else if (startsAt && endsAt.getTime() <= startsAt.getTime()) fieldErrors.endsAt = "endBeforeStart";
   }
 
   return fieldErrors;

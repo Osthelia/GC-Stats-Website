@@ -9,13 +9,14 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import type { AdminActivityLogRow } from "@/lib/admin-activity-log";
+import { FormattedDate } from "@/components/formatted-date";
 
 const EVENT_STYLES: Record<string, string> = {
   created: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
@@ -43,7 +44,6 @@ function hasDetails(row: AdminActivityLogRow): boolean {
 
 export function ActivityLogPanel({ rows }: { rows: AdminActivityLogRow[] }) {
   const t = useTranslations("admin.activityLog");
-  const locale = useLocale();
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
   function toggle(id: number) {
@@ -109,7 +109,7 @@ export function ActivityLogPanel({ rows }: { rows: AdminActivityLogRow[] }) {
                       t("systemCauser")
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{new Date(row.createdAt).toLocaleString(locale)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground"><FormattedDate date={row.createdAt} mode="datetime" /></TableCell>
                 </TableRow>
                 {expandable && isOpen && (
                   <TableRow className="bg-muted/30 hover:bg-muted/30">

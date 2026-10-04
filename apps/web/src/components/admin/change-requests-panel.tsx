@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminSortableTh } from "@/components/admin/admin-sortable-th";
 import { ChangeRequestStatusBadge } from "@/components/admin/change-request-status-badge";
 import type { AdminChangeRequestRow, SortDirection } from "@/lib/admin-change-requests";
+import { FormattedDate } from "@/components/formatted-date";
 
 /** Server component — the list itself is read-only (approving/rejecting happens on the detail page), so no client state needed here. */
 export function ChangeRequestsPanel({
@@ -60,7 +61,7 @@ export function ChangeRequestsPanel({
               <TableCell>
                 <ChangeRequestStatusBadge status={row.status} />
               </TableCell>
-              <TableCell className="text-sm text-muted-foreground">{new Date(row.createdAt).toLocaleDateString()}</TableCell>
+              <TableCell className="text-sm text-muted-foreground"><FormattedDate date={row.createdAt} /></TableCell>
               <TableCell className="text-right">
                 <Button variant="outline" size="sm" render={<Link href={`/admin/change-requests/${row.id}`} />}>
                   {t("viewButton")}

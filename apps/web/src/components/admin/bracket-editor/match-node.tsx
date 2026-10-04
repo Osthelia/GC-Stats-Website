@@ -15,6 +15,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { EditorSlotSource } from "@/actions/admin-bracket-editor";
+import { useDisplayTimezone } from "@/lib/site-settings";
 
 export type MatchNodeData = {
   containerId: number;
@@ -88,8 +89,9 @@ function SlotRow({ slot, source, label, entrantOptions, onSetSlot, readOnly }: {
 export function MatchNode({ data }: NodeProps & { data: MatchNodeData }) {
   const t = useTranslations("admin.tournaments.editor");
   const locale = useLocale();
+  const timeZone = useDisplayTimezone();
   const scheduledLabel = data.scheduledAt
-    ? new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(data.scheduledAt))
+    ? new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone }).format(new Date(data.scheduledAt))
     : null;
 
   return (

@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
+import { AdminTimezoneSelect } from "@/components/admin/admin-timezone-select";
 import { usePathname } from "@/i18n/navigation";
 import { matchAdminNavItem } from "@/lib/admin-nav-items";
 
@@ -26,7 +27,8 @@ export function AdminHeader() {
       <div className="w-1/3 min-w-0 truncate ml-2">
         <span className="text-sm font-medium">{current ? t(current.labelKey) : t("dashboard")}</span>
       </div>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-3">
+        <AdminTimezoneSelect />
         <HeaderAuthStatus isAdmin />
       </div>
     </header>

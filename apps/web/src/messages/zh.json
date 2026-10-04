@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "后台时区",
+      "hint": "后台的所有日期都以此时区显示和编辑。",
+      "changed": "后台时区已设置为 {timezone}。"
+    },
     "nav": {
       "dashboard": "控制台",
       "groupContent": "内容",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "角色已更新。",
       "backToList": "← 返回用户列表",
       "noUsername": "无用户名",
-      "joinedOn": "注册于 {date}",
-      "lastLoginOn": "最后登录于 {date}",
+      "joinedOn": "注册于 <date></date>",
+      "lastLoginOn": "最后登录于 <date></date>",
       "neverLoggedIn": "从未登录",
       "error": {
         "userNotFound": "未找到该用户。",

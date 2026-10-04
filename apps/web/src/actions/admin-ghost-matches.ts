@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats - admin-ghost-matches
  *
  * Admin server actions for a GC team's match played in an uncovered mix
@@ -19,6 +19,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { GHOST_MATCH_BEST_OF_VALUES, GHOST_MATCH_PLAYER_SLOTS } from "@/lib/ghost-match";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -156,9 +157,9 @@ export async function createGhostMatch(input: GhostMatchInput): Promise<GhostMat
   if (!stageName) fieldErrors.stageName = "required";
   else if (stageName.length > 255) fieldErrors.stageName = "tooLong";
 
-  const scheduledAt = input.scheduledAt ? new Date(input.scheduledAt) : null;
-  if (!scheduledAt) fieldErrors.scheduledAt = "required";
-  else if (Number.isNaN(scheduledAt.getTime())) fieldErrors.scheduledAt = "invalid";
+  const scheduledAt = input.scheduledAt ? parseIsoInstant(input.scheduledAt) : null;
+  if (!input.scheduledAt) fieldErrors.scheduledAt = "required";
+  else if (!scheduledAt) fieldErrors.scheduledAt = "invalid";
 
   const bestOf = Number(input.bestOf);
   if (!(GHOST_MATCH_BEST_OF_VALUES as readonly string[]).includes(input.bestOf)) fieldErrors.bestOf = "invalid";

@@ -15,6 +15,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { NEWS_LANGUAGES_COOKIE } from "@/lib/news-languages-cookie";
+import { isValidTimezone } from "@/lib/datetime-local";
 
 export type SiteTheme = "dark" | "light";
 
@@ -27,6 +28,8 @@ export const KNOWN_ACCENTS: SiteAccent[] = ["pride"];
 export type SiteSettings = {
   theme: SiteTheme;
   timezone: string;
+  /** Used instead of `timezone` to display and edit dates under `/admin`. */
+  adminTimezone: string;
   clock24: boolean;
   accents: SiteAccent[];
   /** null = default rule (site locale + English, see lib/news-languages.ts) — only the header's settings panel writes here. The /news listing page's own filter reads this as its starting point but is otherwise local to that page (URL-only) and never writes back. */
@@ -38,6 +41,7 @@ const STORAGE_KEY = "gcs-site-settings";
 const DEFAULT_SETTINGS: SiteSettings = {
   theme: "dark",
   timezone: "UTC",
+  adminTimezone: "UTC",
   clock24: true,
   accents: [],
   newsLanguages: null,
@@ -66,10 +70,16 @@ try {
 type SiteSettingsContextValue = SiteSettings & {
   setTheme: (theme: SiteTheme) => void;
   setTimezone: (timezone: string) => void;
+  setAdminTimezone: (adminTimezone: string) => void;
   setClock24: (clock24: boolean) => void;
   toggleAccent: (accent: SiteAccent) => void;
   setNewsLanguages: (languages: string[] | null) => void;
 };
+
+// Matches "/admin" and "/<locale>/admin", not a public path like "/user/admin".
+function isAdminPath(pathname: string | null): boolean {
+  return pathname ? /^(\/[a-z]{2})?\/admin(\/|$)/.test(pathname) : false;
+}
 
 const SiteSettingsContext = createContext<SiteSettingsContextValue | null>(null);
 
@@ -79,9 +89,11 @@ function readStoredSettings(): SiteSettings {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return guessDefaults();
     const parsed = JSON.parse(raw);
+    const fallback = guessDefaults();
     return {
       theme: parsed.theme === "light" ? "light" : "dark",
-      timezone: typeof parsed.timezone === "string" && parsed.timezone ? parsed.timezone : guessDefaults().timezone,
+      timezone: typeof parsed.timezone === "string" && isValidTimezone(parsed.timezone) ? parsed.timezone : fallback.timezone,
+      adminTimezone: typeof parsed.adminTimezone === "string" && isValidTimezone(parsed.adminTimezone) ? parsed.adminTimezone : fallback.adminTimezone,
       clock24: typeof parsed.clock24 === "boolean" ? parsed.clock24 : true,
       accents: Array.isArray(parsed.accents) ? parsed.accents.filter((a: unknown): a is SiteAccent => KNOWN_ACCENTS.includes(a as SiteAccent)) : [],
       newsLanguages: Array.isArray(parsed.newsLanguages) && parsed.newsLanguages.every((l: unknown) => typeof l === "string") ? parsed.newsLanguages : null,
@@ -98,7 +110,7 @@ function guessDefaults(): SiteSettings {
   } catch {
     // Intl unsupported/blocked — keep UTC.
   }
-  return { ...DEFAULT_SETTINGS, timezone };
+  return { ...DEFAULT_SETTINGS, timezone, adminTimezone: timezone };
 }
 
 export function SiteSettingsProvider({ children }: { children: React.ReactNode }) {
@@ -112,7 +124,7 @@ export function SiteSettingsProvider({ children }: { children: React.ReactNode }
   // `/admin` keeps its own permanently-dark shadcn theme (see SUIVI.md) and
   // is unaffected by this picker — it must never pick up a "light" choice
   // made on the public site via this shared <html> attribute.
-  const isAdminRoute = pathname?.includes("/admin") ?? false;
+  const isAdminRoute = isAdminPath(pathname);
 
   useEffect(() => {
     setSettings(readStoredSettings());
@@ -144,6 +156,7 @@ export function SiteSettingsProvider({ children }: { children: React.ReactNode }
 
   const setTheme = useCallback((theme: SiteTheme) => persist({ ...settings, theme }), [settings, persist]);
   const setTimezone = useCallback((timezone: string) => persist({ ...settings, timezone }), [settings, persist]);
+  const setAdminTimezone = useCallback((adminTimezone: string) => persist({ ...settings, adminTimezone }), [settings, persist]);
   const setClock24 = useCallback((clock24: boolean) => persist({ ...settings, clock24 }), [settings, persist]);
   const toggleAccent = useCallback(
     (accent: SiteAccent) => {
@@ -170,7 +183,7 @@ export function SiteSettingsProvider({ children }: { children: React.ReactNode }
   );
 
   return (
-    <SiteSettingsContext.Provider value={{ ...settings, setTheme, setTimezone, setClock24, toggleAccent, setNewsLanguages }}>
+    <SiteSettingsContext.Provider value={{ ...settings, setTheme, setTimezone, setAdminTimezone, setClock24, toggleAccent, setNewsLanguages }}>
       {children}
     </SiteSettingsContext.Provider>
   );
@@ -180,4 +193,11 @@ export function useSiteSettings(): SiteSettingsContextValue {
   const ctx = useContext(SiteSettingsContext);
   if (!ctx) throw new Error("useSiteSettings must be used within a SiteSettingsProvider");
   return ctx;
+}
+
+/** Timezone dates are shown and edited in: the admin one under `/admin`, the viewer's elsewhere. */
+export function useDisplayTimezone(): string {
+  const { timezone, adminTimezone } = useSiteSettings();
+  const pathname = usePathname();
+  return isAdminPath(pathname) ? adminTimezone : timezone;
 }

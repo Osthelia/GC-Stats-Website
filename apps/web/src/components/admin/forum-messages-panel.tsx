@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { EyeOff, Eye, Trash2, RotateCcw, ExternalLink, ShieldAlert } from "lucide-react";
 import { useRouter, Link } from "@/i18n/navigation";
@@ -22,6 +22,7 @@ import { SanctionDialog } from "@/components/admin/sanction-dialog";
 import { hideForumMessage, unhideForumMessage, deleteForumMessage, restoreForumMessage } from "@/actions/admin-forum";
 import { cn } from "@/lib/utils";
 import type { AdminForumMessageRow, SortDirection } from "@/lib/admin-forum-messages";
+import { FormattedDate } from "@/components/formatted-date";
 
 const CATEGORY_STYLES: Record<string, string> = {
   tournament: "border-sky-400/20 bg-sky-400/10 text-sky-300",
@@ -43,7 +44,6 @@ export function ForumMessagesPanel({
   sortable: { pathname: string; sort: string; direction: SortDirection; query: Record<string, string> };
 }) {
   const t = useTranslations("admin.forum");
-  const locale = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [sanctionTarget, setSanctionTarget] = useState<{ id: string; username: string | null } | null>(null);
@@ -115,7 +115,7 @@ export function ForumMessagesPanel({
                   </a>
                 </div>
               </TableCell>
-              <TableCell className="text-sm text-muted-foreground">{new Date(row.createdAt).toLocaleString(locale)}</TableCell>
+              <TableCell className="text-sm text-muted-foreground"><FormattedDate date={row.createdAt} mode="datetime" /></TableCell>
               <TableCell>
                 <ForumMessageStatusBadge status={row.status} />
               </TableCell>

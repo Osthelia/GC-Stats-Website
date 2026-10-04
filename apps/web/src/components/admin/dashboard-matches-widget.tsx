@@ -10,6 +10,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminEntityLogo } from "@/components/admin/admin-entity-logo";
 import type { DashboardMatchRow } from "@/lib/admin-dashboard";
+import { FormattedDate } from "@/components/formatted-date";
 
 /** Same widget as V1's admin dashboard "matches_widget" — live matches then soonest upcoming. */
 export async function DashboardMatchesWidget({ matches }: { matches: DashboardMatchRow[] }) {
@@ -46,7 +47,7 @@ export async function DashboardMatchesWidget({ matches }: { matches: DashboardMa
                 >
                   {match.status === "live" ? t("statusLive") : t("statusPending")}
                 </span>
-                <span className="text-[10px] text-muted-foreground">{match.scheduledAt ? new Date(match.scheduledAt).toLocaleString() : "-"}</span>
+                <span className="text-[10px] text-muted-foreground">{match.scheduledAt ? <FormattedDate date={match.scheduledAt} mode="datetime" /> : "-"}</span>
               </div>
             </Link>
           ))}

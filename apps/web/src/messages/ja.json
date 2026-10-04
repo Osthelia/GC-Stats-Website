@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "管理画面のタイムゾーン",
+      "hint": "管理画面のすべての日時はこのタイムゾーンで表示・編集されます。",
+      "changed": "管理画面のタイムゾーンを {timezone} に設定しました。"
+    },
     "nav": {
       "dashboard": "ダッシュボード",
       "groupContent": "コンテンツ",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "ロールを更新しました。",
       "backToList": "← ユーザー一覧に戻る",
       "noUsername": "ユーザー名なし",
-      "joinedOn": "登録日 {date}",
-      "lastLoginOn": "最終ログイン {date}",
+      "joinedOn": "登録日 <date></date>",
+      "lastLoginOn": "最終ログイン <date></date>",
       "neverLoggedIn": "ログイン履歴なし",
       "error": {
         "userNotFound": "ユーザーが見つかりません。",

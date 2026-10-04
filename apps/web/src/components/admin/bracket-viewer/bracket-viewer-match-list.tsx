@@ -19,6 +19,7 @@ import { AdminSortableThClient } from "@/components/admin/admin-sortable-th-clie
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { formatSideScore } from "@/lib/match-score-format";
 import type { PublicBracketMatch } from "@/lib/tournament-bracket-data";
+import { useDisplayTimezone } from "@/lib/site-settings";
 
 type SortCol = "round" | "entrantA" | "entrantB" | "status" | "scheduledAt";
 type Direction = "asc" | "desc";
@@ -61,7 +62,8 @@ export function BracketViewerMatchList({ tournamentId, matches }: { tournamentId
   const [teamFilter, setTeamFilter] = useState("");
   const [roundFilter, setRoundFilter] = useState("");
 
-  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }), [locale]);
+  const timeZone = useDisplayTimezone();
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone }), [locale, timeZone]);
 
   function handleSort(col: SortCol) {
     if (col === sort) setDirection((d) => (d === "asc" ? "desc" : "asc"));

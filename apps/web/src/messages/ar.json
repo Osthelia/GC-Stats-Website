@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "المنطقة الزمنية للإدارة",
+      "hint": "تُعرض جميع التواريخ في لوحة الإدارة وتُعدَّل بهذه المنطقة الزمنية.",
+      "changed": "تم تعيين المنطقة الزمنية للإدارة إلى {timezone}."
+    },
     "nav": {
       "dashboard": "لوحة التحكم",
       "groupContent": "المحتوى",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "تم تحديث الأدوار.",
       "backToList": "→ العودة إلى المستخدمين",
       "noUsername": "بدون اسم مستخدم",
-      "joinedOn": "انضم في {date}",
-      "lastLoginOn": "آخر تسجيل دخول {date}",
+      "joinedOn": "انضم في <date></date>",
+      "lastLoginOn": "آخر تسجيل دخول <date></date>",
       "neverLoggedIn": "لم يسجّل الدخول قط",
       "error": {
         "userNotFound": "المستخدم غير موجود.",

@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Undo2 } from "lucide-react";
 import { useRouter, Link } from "@/i18n/navigation";
@@ -23,6 +23,7 @@ import { SanctionDialog } from "@/components/admin/sanction-dialog";
 import { revokeSanction } from "@/actions/admin-sanctions";
 import { cn } from "@/lib/utils";
 import type { AdminSanctionRow, SortDirection } from "@/lib/admin-sanctions";
+import { FormattedDate } from "@/components/formatted-date";
 
 export function SanctionsPanel({
   rows,
@@ -34,7 +35,6 @@ export function SanctionsPanel({
   sortable: { pathname: string; sort: string; direction: SortDirection; query: Record<string, string> };
 }) {
   const t = useTranslations("admin.sanctions");
-  const locale = useLocale();
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [revoking, setRevoking] = useState<AdminSanctionRow | null>(null);
@@ -109,8 +109,8 @@ export function SanctionsPanel({
                     {row.reason}
                   </p>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{new Date(row.startsAt).toLocaleString(locale)}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{row.endsAt ? new Date(row.endsAt).toLocaleString(locale) : t("noExpiry")}</TableCell>
+                <TableCell className="text-sm text-muted-foreground"><FormattedDate date={row.startsAt} mode="datetime" /></TableCell>
+                <TableCell className="text-sm text-muted-foreground">{row.endsAt ? <FormattedDate date={row.endsAt} mode="datetime" /> : t("noExpiry")}</TableCell>
                 <TableCell>
                   <SanctionStatusBadge status={row.status} />
                 </TableCell>

@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "เขตเวลาของผู้ดูแล",
+      "hint": "วันที่ทั้งหมดในหน้าผู้ดูแลจะแสดงและแก้ไขในเขตเวลานี้",
+      "changed": "ตั้งเขตเวลาของผู้ดูแลเป็น {timezone} แล้ว"
+    },
     "nav": {
       "dashboard": "แดชบอร์ด",
       "groupContent": "เนื้อหา",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "อัปเดตบทบาทแล้ว",
       "backToList": "← กลับไปที่รายชื่อผู้ใช้",
       "noUsername": "ไม่มีชื่อผู้ใช้",
-      "joinedOn": "สมัครเมื่อ {date}",
-      "lastLoginOn": "เข้าสู่ระบบล่าสุด {date}",
+      "joinedOn": "สมัครเมื่อ <date></date>",
+      "lastLoginOn": "เข้าสู่ระบบล่าสุด <date></date>",
       "neverLoggedIn": "ไม่เคยเข้าสู่ระบบ",
       "error": {
         "userNotFound": "ไม่พบผู้ใช้",

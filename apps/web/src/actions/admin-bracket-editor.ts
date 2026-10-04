@@ -31,6 +31,7 @@ import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 export async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -391,9 +392,8 @@ export async function setRoundScheduledAt(containerId: number, stageId: number, 
 
   let scheduledAt: Date | null = null;
   if (scheduledAtIso !== null) {
-    const parsed = new Date(scheduledAtIso);
-    if (Number.isNaN(parsed.getTime())) return { ok: false, error: "invalidDate" };
-    scheduledAt = parsed;
+    scheduledAt = parseIsoInstant(scheduledAtIso);
+    if (!scheduledAt) return { ok: false, error: "invalidDate" };
   }
 
   const [container] = await db.select({ id: stageContainers.id }).from(stageContainers).where(and(eq(stageContainers.id, containerId), eq(stageContainers.stageId, stageId))).limit(1);

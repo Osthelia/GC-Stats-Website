@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Yönetici saat dilimi",
+      "hint": "Yönetim panelindeki tüm tarihler bu saat diliminde gösterilir ve düzenlenir.",
+      "changed": "Yönetici saat dilimi {timezone} olarak ayarlandı."
+    },
     "nav": {
       "dashboard": "Panel",
       "groupContent": "İçerik",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Roller güncellendi.",
       "backToList": "← Kullanıcılara dön",
       "noUsername": "Kullanıcı adı yok",
-      "joinedOn": "Katılım {date}",
-      "lastLoginOn": "Son giriş {date}",
+      "joinedOn": "Katılım <date></date>",
+      "lastLoginOn": "Son giriş <date></date>",
       "neverLoggedIn": "Hiç giriş yapmadı",
       "error": {
         "userNotFound": "Kullanıcı bulunamadı.",

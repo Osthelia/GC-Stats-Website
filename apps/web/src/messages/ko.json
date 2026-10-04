@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "관리자 시간대",
+      "hint": "관리자 화면의 모든 날짜는 이 시간대로 표시되고 편집됩니다.",
+      "changed": "관리자 시간대가 {timezone}(으)로 설정되었습니다."
+    },
     "nav": {
       "dashboard": "대시보드",
       "groupContent": "콘텐츠",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "역할이 업데이트되었습니다.",
       "backToList": "← 사용자 목록으로",
       "noUsername": "사용자명 없음",
-      "joinedOn": "{date} 가입",
-      "lastLoginOn": "마지막 로그인 {date}",
+      "joinedOn": "<date></date> 가입",
+      "lastLoginOn": "마지막 로그인 <date></date>",
       "neverLoggedIn": "로그인 기록 없음",
       "error": {
         "userNotFound": "사용자를 찾을 수 없습니다.",

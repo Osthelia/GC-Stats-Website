@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Admin timezone",
+      "hint": "Every date in the admin is displayed and edited in this timezone.",
+      "changed": "Admin timezone set to {timezone}."
+    },
     "nav": {
       "dashboard": "Dashboard",
       "groupContent": "Content",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Roles updated.",
       "backToList": "← Back to users",
       "noUsername": "No username",
-      "joinedOn": "Joined {date}",
-      "lastLoginOn": "Last login {date}",
+      "joinedOn": "Joined <date></date>",
+      "lastLoginOn": "Last login <date></date>",
       "neverLoggedIn": "Never logged in",
       "error": {
         "userNotFound": "User not found.",

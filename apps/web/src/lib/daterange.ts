@@ -11,12 +11,20 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+// V1 migration sentinel for "date unknown" (never a real membership start).
+const UNKNOWN_DATE_SENTINEL = "1900-01-01";
+
+// Postgres stores `[1900-01-01,1900-01-01)` (start and end both unknown) as `empty`.
+const EMPTY_RANGE = "empty";
+
 export function rangeLower(range: string): string | null {
+  if (range === EMPTY_RANGE) return UNKNOWN_DATE_SENTINEL;
   const match = range.match(/^[[(]([^,]*),/);
   return match && match[1] ? match[1] : null;
 }
 
 export function rangeUpper(range: string): string | null {
+  if (range === EMPTY_RANGE) return UNKNOWN_DATE_SENTINEL;
   const match = range.match(/,([^\])]*)[\])]$/);
   return match && match[1] ? match[1] : null;
 }
@@ -37,12 +45,17 @@ export function closeRange(range: string, until: string): string {
   return `[${lower ?? ""},${effectiveUntil})`;
 }
 
-// V1 migration sentinel for "date unknown" (never a real membership start).
-const UNKNOWN_DATE_SENTINEL = "1900-01-01";
-
 export function isUnknownDate(date: string | null): boolean {
   return date === UNKNOWN_DATE_SENTINEL;
 }
+
+/** True when `until` is not after `from`. Both bounds at the "unknown" sentinel is a valid entry. */
+export function isRangeOrderInvalid(from: string, until: string | null): boolean {
+  if (!until) return false;
+  if (from === UNKNOWN_DATE_SENTINEL && until === UNKNOWN_DATE_SENTINEL) return false;
+  return until <= from;
+}
+
 
 /** "2024-01-01" -> "01/2024" — the compact month/year format roster listings show (mirrors V1's PivotDate::format(..., 'm/Y')). */
 export function monthYear(date: string | null): string | null {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -23,6 +23,7 @@ import { CountryFlag } from "@/components/admin/country-flag";
 import { CreatePlayerDialog } from "@/components/admin/create-player-dialog";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
+import { FormattedDate } from "@/components/formatted-date";
 
 const SORT_VALUES: PlayerSort[] = ["name", "country", "team", "lastActivity"];
 const ACTIVE_WITHIN_VALUES: ActiveWithin[] = ["60d", "120d"];
@@ -58,7 +59,6 @@ export default async function AdminPlayersPage({
   const { rows, total } = await listAdminPlayers({ q, sort, direction, activeWithin, status, page });
   const totalPages = Math.max(1, Math.ceil(total / PLAYERS_PAGE_SIZE));
   const thQuery = { q, activeWithin, status };
-  const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
 
   return (
     <div className="flex flex-col gap-6">
@@ -137,7 +137,7 @@ export default async function AdminPlayersPage({
                     t("noTeam")
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{player.lastActivityAt ? dateFmt.format(player.lastActivityAt) : t("never")}</TableCell>
+                <TableCell className="text-muted-foreground">{player.lastActivityAt ? <FormattedDate date={player.lastActivityAt} dateOptions={{ dateStyle: "medium" }} /> : t("never")}</TableCell>
                 <TableCell>
                   <ActiveStatusBadge active={player.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
                 </TableCell>

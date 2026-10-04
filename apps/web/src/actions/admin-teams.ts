@@ -16,7 +16,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
-import { openRangeFrom, closeRange } from "@/lib/daterange";
+import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
@@ -134,7 +134,7 @@ export async function addTeamNameHistoryEntry(teamId: number, name: string, from
 
   if (!DATE_RE.test(from)) fieldErrors.from = "invalid";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalid";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
 
   const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!team) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -204,7 +204,7 @@ export async function addTeamRosterMember(
   if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.from = fieldErrors.from ?? "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -265,7 +265,7 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };

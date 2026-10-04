@@ -18,6 +18,7 @@ import { AdminColumnFilterBar, type AdminActiveFilter } from "@/components/admin
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { formatSideScore } from "@/lib/match-score-format";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
+import { useDisplayTimezone } from "@/lib/site-settings";
 
 type SortCol = "container" | "round" | "entrantA" | "entrantB" | "status" | "scheduledAt";
 type Direction = "asc" | "desc";
@@ -46,7 +47,8 @@ export function TournamentMatchesPanel({ tournamentId, matches }: { tournamentId
   const [direction, setDirection] = useState<Direction>("asc");
   const [filters, setFilters] = useState<AdminActiveFilter[]>([]);
 
-  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }), [locale]);
+  const timeZone = useDisplayTimezone();
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone }), [locale, timeZone]);
 
   function handleSort(col: SortCol) {
     if (col === sort) setDirection((d) => (d === "asc" ? "desc" : "asc"));

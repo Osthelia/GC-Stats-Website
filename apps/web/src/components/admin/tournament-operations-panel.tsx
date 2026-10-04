@@ -13,6 +13,8 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
+import { useDisplayTimezone } from "@/lib/site-settings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { FormField } from "@/components/admin/form-field";
@@ -47,6 +49,7 @@ function PatchCard({ tournamentId, containers }: { tournamentId: number; contain
   const [containerId, setContainerId] = useState<string>(ALL_CONTAINERS);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const timeZone = useDisplayTimezone();
 
   const err = (field: keyof BulkPatchFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
 
@@ -58,6 +61,7 @@ function PatchCard({ tournamentId, containers }: { tournamentId: number; contain
         containerId: containerId === ALL_CONTAINERS ? null : Number(containerId),
         dateFrom,
         dateTo,
+        timeZone,
       });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
@@ -122,7 +126,7 @@ function BulkCreateCard({ tournamentId, containers }: { tournamentId: number; co
   const [fieldErrors, setFieldErrors] = useState<BulkCreateFieldErrors>({});
   const [containerId, setContainerId] = useState<string>(containers[0] ? String(containers[0].id) : "");
   const [count, setCount] = useState("1");
-  const [scheduledAt, setScheduledAt] = useState("");
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [bestOf, setBestOf] = useState<string>("3");
 
   const err = (field: keyof BulkCreateFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
@@ -133,7 +137,7 @@ function BulkCreateCard({ tournamentId, containers }: { tournamentId: number; co
       const result = await bulkCreateMatches(tournamentId, {
         containerId: containerId ? Number(containerId) : null,
         count,
-        scheduledAt,
+        scheduledAt: scheduledAt ?? "",
         bestOf,
       });
       if (!result.ok) {
@@ -170,7 +174,7 @@ function BulkCreateCard({ tournamentId, containers }: { tournamentId: number; co
             <Input id="op-count" type="number" min={1} max={100} value={count} onChange={(e) => setCount(e.target.value)} aria-invalid={!!fieldErrors.count} />
           </FormField>
           <FormField label={t("fieldScheduledAt")} htmlFor="op-scheduled-at" required error={err("scheduledAt")}>
-            <Input id="op-scheduled-at" type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} aria-invalid={!!fieldErrors.scheduledAt} />
+            <DateTimeInput id="op-scheduled-at" value={scheduledAt} onChange={setScheduledAt} aria-invalid={!!fieldErrors.scheduledAt} />
           </FormField>
           <FormField label={t("fieldBestOf")} htmlFor="op-best-of" required error={err("bestOf")}>
             <Select items={Object.fromEntries(BEST_OF_VALUES.map((v) => [v, `BO${v}`]))} value={bestOf} onValueChange={(v) => v && setBestOf(v)}>

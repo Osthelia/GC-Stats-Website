@@ -25,6 +25,7 @@ import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/wikicode-import";
 import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -38,7 +39,7 @@ export type MatchDetailsInput = {
   entrantAId: number | null;
   entrantBId: number | null;
   status: "pending" | "live" | "completed";
-  scheduledAt: string; // datetime-local, may be empty
+  scheduledAt: string | null; // ISO instant with offset
   bestOf: string;
   patch: string;
   label: string;
@@ -94,10 +95,8 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
     fieldErrors.status = "invalid";
   }
 
-  if (input.scheduledAt) {
-    const d = new Date(input.scheduledAt);
-    if (Number.isNaN(d.getTime())) fieldErrors.scheduledAt = "invalid";
-  }
+  const scheduledAt = input.scheduledAt ? parseIsoInstant(input.scheduledAt) : null;
+  if (input.scheduledAt && !scheduledAt) fieldErrors.scheduledAt = "invalid";
   if (input.patch.trim().length > 20) fieldErrors.patch = "tooLong";
   if (input.label.trim().length > 255) fieldErrors.label = "tooLong";
 
@@ -109,7 +108,7 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
       ...(locked ? {} : { entrantAId: input.entrantAId, entrantBId: input.entrantBId }),
       status: input.status,
       bestOf,
-      scheduledAt: input.scheduledAt ? new Date(input.scheduledAt) : null,
+      scheduledAt,
       patch: input.patch.trim() || null,
       label: input.label.trim() || null,
     })

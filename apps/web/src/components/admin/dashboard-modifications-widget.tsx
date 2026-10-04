@@ -10,6 +10,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminEntityLogo } from "@/components/admin/admin-entity-logo";
 import type { DashboardModificationRow } from "@/lib/admin-dashboard";
+import { FormattedDate } from "@/components/formatted-date";
 
 /**
  * Same widget as V1's dashboard-modifications-widget.blade.php — one partial
@@ -40,7 +41,7 @@ export async function DashboardModificationsWidget({ type, rows }: { type: "team
                     <AdminEntityLogo src={row.subjectLogoUrl} alt="" sizeClassName="size-5" />
                     <span className="truncate text-xs font-bold">{row.subjectName ?? t("deletedSubject")}</span>
                   </div>
-                  <span className="shrink-0 text-[10px] text-muted-foreground">{new Date(row.createdAt).toLocaleString()}</span>
+                  <span className="shrink-0 text-[10px] text-muted-foreground"><FormattedDate date={row.createdAt} mode="datetime" /></span>
                 </div>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <span className="truncate rounded-md bg-amber-400/10 px-2 py-0.5 text-[9px] font-black tracking-widest text-amber-500 uppercase">{row.event ?? "-"}</span>

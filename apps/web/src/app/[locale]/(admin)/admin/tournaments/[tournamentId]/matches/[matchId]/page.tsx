@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -8,7 +8,7 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations, getLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { MatchDeleteButton } from "@/components/admin/match-delete-button";
 import { MatchMapsPanel } from "@/components/admin/match-maps-panel";
 import { AdminPublicLinkButton } from "@/components/admin/admin-public-link-button";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
+import { FormattedDate } from "@/components/formatted-date";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; matchId: string }> }): Promise<Metadata> {
   const { locale, matchId } = await params;
@@ -42,7 +43,6 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
 
   const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
   const t = await getTranslations("admin.tournaments.matches");
-  const uiLocale = await getLocale();
 
   const match = await getAdminMatch(id);
   if (!match || match.tournamentId !== tournId) notFound();
@@ -53,11 +53,10 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
   const entrantAName = entrants.find((e) => e.id === match.entrantAId)?.displayName ?? t("entrantNone");
   const entrantBName = entrants.find((e) => e.id === match.entrantBId)?.displayName ?? t("entrantNone");
 
-  const dateFormat = new Intl.DateTimeFormat(uiLocale, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   const infoRows: { label: string; value: React.ReactNode }[] = [
     { label: t("fieldStatus"), value: <Badge className={matchStatusBadgeClass(match.status)}>{t(`status.${match.status}`)}</Badge> },
-    { label: t("fieldScheduledAt"), value: match.scheduledAt ? dateFormat.format(new Date(match.scheduledAt)) : "–" },
+    { label: t("fieldScheduledAt"), value: match.scheduledAt ? <FormattedDate date={match.scheduledAt} mode="datetime" /> : "–" },
     { label: t("fieldBestOf"), value: `BO${match.bestOf}` },
     { label: t("fieldPatch"), value: match.patch ?? "–" },
     { label: t("infoContainer"), value: `${match.stageName} · ${match.containerName}` },

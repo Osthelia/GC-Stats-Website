@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Fuso horário do admin",
+      "hint": "Todas as datas do admin são exibidas e editadas neste fuso horário.",
+      "changed": "Fuso horário do admin definido para {timezone}."
+    },
     "nav": {
       "dashboard": "Dashboard",
       "groupContent": "Conteúdo",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Cargos atualizados.",
       "backToList": "← Voltar para os usuários",
       "noUsername": "Sem nome de usuário",
-      "joinedOn": "Cadastrado em {date}",
-      "lastLoginOn": "Último login em {date}",
+      "joinedOn": "Cadastrado em <date></date>",
+      "lastLoginOn": "Último login em <date></date>",
       "neverLoggedIn": "Nunca entrou",
       "error": {
         "userNotFound": "Usuário não encontrado.",

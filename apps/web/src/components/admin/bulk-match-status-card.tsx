@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats - bulk-match-status-card
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
@@ -26,6 +26,8 @@ import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { bulkSetMatchStatus, type MatchStatus } from "@/actions/admin-tournament-operations";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
+import { useDisplayTimezone } from "@/lib/site-settings";
+import { zonedInputToIso } from "@/lib/datetime-local";
 
 const ALL = "all";
 const STATUSES: MatchStatus[] = ["pending", "live", "completed"];
@@ -50,7 +52,8 @@ export function BulkMatchStatusCard({ tournamentId, containers, matches }: { tou
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [targetStatus, setTargetStatus] = useState<MatchStatus>("completed");
 
-  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }), [locale]);
+  const timeZone = useDisplayTimezone();
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone }), [locale, timeZone]);
 
   // `containers` is already ordered by stage sequence then container id —
   // its index is the "phase" order.
@@ -59,8 +62,8 @@ export function BulkMatchStatusCard({ tournamentId, containers, matches }: { tou
   const containerChoices = stageFilter === ALL ? containers : containers.filter((c) => c.stageName === stageFilter);
 
   const rows = useMemo(() => {
-    const from = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
-    const to = dateTo ? new Date(`${dateTo}T23:59:59.999`).getTime() : null;
+    const from = dateFrom ? new Date(zonedInputToIso(`${dateFrom}T00:00`, timeZone) ?? NaN).getTime() : null;
+    const to = dateTo ? new Date(zonedInputToIso(`${dateTo}T23:59`, timeZone) ?? NaN).getTime() + 59_999 : null;
     const filtered = matches.filter((m) => {
       if (stageFilter !== ALL && m.stageName !== stageFilter) return false;
       if (containerFilter !== ALL && String(m.containerId) !== containerFilter) return false;
@@ -91,7 +94,7 @@ export function BulkMatchStatusCard({ tournamentId, containers, matches }: { tou
       if (sort === "scheduledAt" && (!a.scheduledAt || !b.scheduledAt)) return (a.scheduledAt ? 0 : 1) - (b.scheduledAt ? 0 : 1) || byPhase(a, b);
       return compare(a, b) * (direction === "asc" ? 1 : -1);
     });
-  }, [matches, stageFilter, containerFilter, statusFilter, dateFrom, dateTo, sort, direction, phaseOrder]);
+  }, [matches, stageFilter, containerFilter, statusFilter, dateFrom, dateTo, timeZone, sort, direction, phaseOrder]);
 
   const visibleSelected = rows.filter((m) => selected.has(m.id));
   const allVisibleSelected = rows.length > 0 && visibleSelected.length === rows.length;

@@ -28,6 +28,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminSortableTh } from "@/components/admin/admin-sortable-th";
 import { updateUserGlobalRoles } from "@/actions/admin-users";
 import type { AdminUserRole, AdminUserRow, SortDirection } from "@/lib/admin-users";
+import { useDisplayTimezone } from "@/lib/site-settings";
 
 export function UsersTable({
   users,
@@ -48,7 +49,8 @@ export function UsersTable({
   const locale = useLocale();
   const [editing, setEditing] = useState<AdminUserRow | null>(null);
 
-  const formatDate = (d: Date | null) => (d ? new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(d)) : t("never"));
+  const timeZone = useDisplayTimezone();
+  const formatDate = (d: Date | null) => (d ? new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone }).format(new Date(d)) : t("never"));
 
   return (
     <>

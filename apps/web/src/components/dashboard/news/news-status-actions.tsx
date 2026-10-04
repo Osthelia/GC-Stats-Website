@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ExternalLinkIcon } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -20,6 +20,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { FormattedDate } from "@/components/formatted-date";
+import { DateTimeInput } from "@/components/ui/datetime-input";
+import { useDisplayTimezone } from "@/lib/site-settings";
+import { timezoneLabel } from "@/lib/datetime-local";
 import {
   submitDashboardNewsForReview,
   approveDashboardNewsArticle,
@@ -33,13 +36,6 @@ import {
   toggleDashboardNewsShowOnHome,
 } from "@/actions/dashboard-news";
 import type { DashboardNewsArticleDetail } from "@/lib/dashboard-news-data";
-
-/** Local datetime-local value (no timezone) -> ISO string, empty -> null (publish now). */
-function toIsoOrNull(localValue: string): string | null {
-  if (!localValue) return null;
-  const d = new Date(localValue);
-  return Number.isNaN(d.getTime()) ? null : d.toISOString();
-}
 
 export function NewsStatusActions({
   organizationId,
@@ -59,11 +55,13 @@ export function NewsStatusActions({
   listHref: string;
 }) {
   const t = useTranslations("dashboard.news");
+  const locale = useLocale();
+  const timeZone = useDisplayTimezone();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isFeatured, setIsFeatured] = useState(article.isFeatured);
   const [showOnHome, setShowOnHome] = useState(article.showOnHome);
-  const [scheduleValue, setScheduleValue] = useState("");
+  const [scheduleValue, setScheduleValue] = useState<string | null>(null);
   const [changesDialogOpen, setChangesDialogOpen] = useState(false);
   const [changesNote, setChangesNote] = useState("");
   const [confirmArchive, setConfirmArchive] = useState(false);
@@ -115,7 +113,7 @@ export function NewsStatusActions({
 
   function handlePublish() {
     startTransition(async () => {
-      const result = await publishDashboardNewsArticle(organizationId, article.id, toIsoOrNull(scheduleValue));
+      const result = await publishDashboardNewsArticle(organizationId, article.id, scheduleValue);
       if (!result.ok) {
         toast.error(t(`review.error.${result.error}`));
         return;
@@ -249,16 +247,10 @@ export function NewsStatusActions({
             </Button>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="news-schedule" className="text-xs text-muted-foreground">
-                {t("scheduleLabel")}
+                {t("scheduleLabel")} <span className="tabular-nums">({timezoneLabel(timeZone, locale)})</span>
               </label>
               <div className="flex gap-1.5">
-                <input
-                  id="news-schedule"
-                  type="datetime-local"
-                  value={scheduleValue}
-                  onChange={(e) => setScheduleValue(e.target.value)}
-                  className="h-8 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-                />
+                <DateTimeInput id="news-schedule" value={scheduleValue} onChange={setScheduleValue} showTimezone={false} className="flex-1" />
                 <Button size="sm" variant="outline" disabled={isPending || !scheduleValue} onClick={handlePublish}>
                   {t("scheduleButton")}
                 </Button>

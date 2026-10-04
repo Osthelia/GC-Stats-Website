@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -26,10 +26,8 @@ import { SANCTION_TYPES } from "@/lib/sanction-constants";
 
 type TargetMode = "user" | "team";
 
-function nowLocalInput(): string {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d.toISOString().slice(0, 16);
+function nowToMinute(): string {
+  return new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString();
 }
 
 export function SanctionDialog({
@@ -51,8 +49,8 @@ export function SanctionDialog({
   const [team, setTeam] = useState<{ id: number; name: string } | null>(null);
   const [type, setType] = useState<string>("warning");
   const [reason, setReason] = useState("");
-  const [startsAt, setStartsAt] = useState(nowLocalInput());
-  const [endsAt, setEndsAt] = useState("");
+  const [startsAt, setStartsAt] = useState<string | null>(nowToMinute());
+  const [endsAt, setEndsAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -62,8 +60,8 @@ export function SanctionDialog({
       setTeam(null);
       setType("warning");
       setReason("");
-      setStartsAt(nowLocalInput());
-      setEndsAt("");
+      setStartsAt(nowToMinute());
+      setEndsAt(null);
     }
   }, [open, initialUser]);
 
@@ -75,8 +73,8 @@ export function SanctionDialog({
         teamId: targetMode === "team" ? (team?.id ?? null) : null,
         type,
         reason,
-        startsAt: startsAt ? new Date(startsAt).toISOString() : "",
-        endsAt: endsAt ? new Date(endsAt).toISOString() : "",
+        startsAt: startsAt ?? "",
+        endsAt: endsAt ?? "",
       });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
@@ -147,10 +145,10 @@ export function SanctionDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <FormField label={t("fieldStartsAt")} htmlFor="sanction-starts" required error={err("startsAt")}>
-              <Input id="sanction-starts" type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} aria-invalid={!!fieldErrors.startsAt} />
+              <DateTimeInput id="sanction-starts" value={startsAt} onChange={setStartsAt} aria-invalid={!!fieldErrors.startsAt} />
             </FormField>
             <FormField label={t("fieldEndsAt")} htmlFor="sanction-ends" error={err("endsAt")} hint={t("fieldEndsAtHint")}>
-              <Input id="sanction-ends" type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} aria-invalid={!!fieldErrors.endsAt} />
+              <DateTimeInput id="sanction-ends" value={endsAt} onChange={setEndsAt} aria-invalid={!!fieldErrors.endsAt} />
             </FormField>
           </div>
         </div>

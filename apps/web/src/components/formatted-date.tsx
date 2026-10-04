@@ -9,7 +9,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useSiteSettings } from "@/lib/site-settings";
+import { useDisplayTimezone, useSiteSettings } from "@/lib/site-settings";
 
 type Mode = "date" | "time" | "datetime";
 
@@ -27,7 +27,7 @@ const TIME_OPTS: Intl.DateTimeFormatOptions = {
 const PLACEHOLDER_BEFORE = Date.UTC(2000, 0, 1);
 
 /**
- * Renders a date/time honoring the viewer's timezone + 12h/24h preference
+ * Renders a date/time honoring the display timezone (admin one under /admin) + 12h/24h preference
  * (site settings, see src/lib/site-settings.tsx) — client-only since that
  * preference lives in localStorage, unknown to the server. Prefer this over
  * a raw `.toLocaleDateString()` call anywhere a match/entry date is shown.
@@ -48,7 +48,8 @@ export function FormattedDate({
 }) {
   const locale = useLocale();
   const t = useTranslations("formattedDate");
-  const { timezone, clock24 } = useSiteSettings();
+  const { clock24 } = useSiteSettings();
+  const timezone = useDisplayTimezone();
 
   if (!date) return null;
   const d = typeof date === "string" ? new Date(date) : date;

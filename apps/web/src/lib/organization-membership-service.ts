@@ -15,7 +15,7 @@ import { and, eq, ne, sql } from "drizzle-orm";
 import type { PgTransaction } from "drizzle-orm/pg-core";
 import { db, adminDb } from "@gc-stats/db/client";
 import { organizations, organizationMemberships, organizationAccess, organizationAccessRoles, organizationMemberRoleLinks, people } from "@gc-stats/db";
-import { openRangeFrom, closeRange } from "@/lib/daterange";
+import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 
 type Db = typeof db | PgTransaction<any, any, any>;
@@ -69,7 +69,7 @@ function validateEntryFields(role: string, from: string, until: string): Partial
   if (!(ORGANIZATION_MEMBER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   return fieldErrors;
 }
 

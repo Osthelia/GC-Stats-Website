@@ -15,6 +15,7 @@ import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { pickemStageSettings, stages, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -30,13 +31,11 @@ export async function updateStagePickemSettings(stageId: number, input: StagePic
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage) return { ok: false, fieldErrors: { opensAt: "stageNotFound" } };
 
-  if (input.enabled) {
-    if (!input.opensAt) return { ok: false, fieldErrors: { opensAt: "required" } };
-    const parsed = new Date(input.opensAt);
-    if (Number.isNaN(parsed.getTime())) return { ok: false, fieldErrors: { opensAt: "invalid" } };
-  }
+  const parsedOpensAt = input.opensAt ? parseIsoInstant(input.opensAt) : null;
+  if (input.enabled && !input.opensAt) return { ok: false, fieldErrors: { opensAt: "required" } };
+  if (input.opensAt && !parsedOpensAt) return { ok: false, fieldErrors: { opensAt: "invalid" } };
 
-  const opensAt = input.opensAt ? new Date(input.opensAt) : new Date();
+  const opensAt = parsedOpensAt ?? new Date();
 
   await db
     .insert(pickemStageSettings)

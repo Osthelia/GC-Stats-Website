@@ -1984,6 +1984,11 @@
     }
   },
   "admin": {
+    "timezone": {
+      "label": "Fuseau horaire admin",
+      "hint": "Toutes les dates de l'admin sont affichées et modifiées dans ce fuseau horaire.",
+      "changed": "Fuseau horaire admin défini sur {timezone}."
+    },
     "nav": {
       "dashboard": "Tableau de bord",
       "groupContent": "Contenu",
@@ -2066,8 +2071,8 @@
       "saveSuccess": "Rôles mis à jour.",
       "backToList": "← Retour aux utilisateurs",
       "noUsername": "Sans pseudo",
-      "joinedOn": "Inscrit le {date}",
-      "lastLoginOn": "Dernière connexion le {date}",
+      "joinedOn": "Inscrit le <date></date>",
+      "lastLoginOn": "Dernière connexion le <date></date>",
       "neverLoggedIn": "Jamais connecté",
       "error": {
         "userNotFound": "Utilisateur introuvable.",

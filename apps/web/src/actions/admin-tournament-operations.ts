@@ -18,6 +18,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { matches, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
+import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -34,7 +35,8 @@ async function tournamentContainerIds(tournamentId: number, containerId: number 
   return ids.includes(containerId) ? [containerId] : "notFound";
 }
 
-export type BulkPatchInput = { patch: string; containerId: number | null; dateFrom: string; dateTo: string };
+/** `timeZone` is the admin timezone the from/to days are read in. */
+export type BulkPatchInput = { patch: string; containerId: number | null; dateFrom: string; dateTo: string; timeZone: string };
 export type BulkPatchField = "patch" | "dateFrom" | "dateTo" | "containerId";
 export type BulkPatchFieldErrors = Partial<Record<BulkPatchField, string>>;
 export type BulkPatchResult = { ok: true; count: number } | { ok: false; fieldErrors: BulkPatchFieldErrors };
@@ -53,6 +55,7 @@ export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInp
 
   if (input.dateFrom && !isValidDate(input.dateFrom)) fieldErrors.dateFrom = "invalid";
   if (input.dateTo && !isValidDate(input.dateTo)) fieldErrors.dateTo = "invalid";
+  if ((input.dateFrom || input.dateTo) && !isValidTimezone(input.timeZone)) fieldErrors.dateFrom = "invalid";
   if (input.dateFrom && input.dateTo && isValidDate(input.dateFrom) && isValidDate(input.dateTo) && input.dateTo < input.dateFrom) {
     fieldErrors.dateTo = "dateRange";
   }
@@ -66,8 +69,11 @@ export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInp
   if (containerIds.length === 0) return { ok: true, count: 0 };
 
   const conditions = [inArray(matches.containerId, containerIds)];
-  if (input.dateFrom) conditions.push(gte(matches.scheduledAt, new Date(`${input.dateFrom}T00:00:00Z`)));
-  if (input.dateTo) conditions.push(lt(matches.scheduledAt, new Date(new Date(`${input.dateTo}T00:00:00Z`).getTime() + 24 * 60 * 60 * 1000)));
+  if (input.dateFrom) conditions.push(gte(matches.scheduledAt, new Date(zonedInputToIso(`${input.dateFrom}T00:00`, input.timeZone)!)));
+  if (input.dateTo) {
+    const nextDay = new Date(new Date(`${input.dateTo}T00:00:00Z`).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    conditions.push(lt(matches.scheduledAt, new Date(zonedInputToIso(`${nextDay}T00:00`, input.timeZone)!)));
+  }
 
   const updated = await db
     .update(matches)
@@ -100,9 +106,9 @@ export async function bulkCreateMatches(tournamentId: number, input: BulkCreateI
   const bestOf = Number(input.bestOf);
   if (!Number.isInteger(bestOf) || bestOf < 1 || bestOf > 5) fieldErrors.bestOf = "invalid";
 
-  const scheduledDate = input.scheduledAt ? new Date(input.scheduledAt) : null;
+  const scheduledDate = input.scheduledAt ? parseIsoInstant(input.scheduledAt) : null;
   if (!input.scheduledAt) fieldErrors.scheduledAt = "required";
-  else if (!scheduledDate || Number.isNaN(scheduledDate.getTime())) fieldErrors.scheduledAt = "invalid";
+  else if (!scheduledDate) fieldErrors.scheduledAt = "invalid";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 

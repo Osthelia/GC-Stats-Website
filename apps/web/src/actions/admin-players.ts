@@ -18,7 +18,7 @@ import { people, teams, rosterMemberships, users, PERMISSIONS } from "@gc-stats/
 import { requireActorAccess, requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { isValidCountryCode } from "@/lib/countries";
-import { openRangeFrom, closeRange } from "@/lib/daterange";
+import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
@@ -290,7 +290,7 @@ export async function addPlayerTeamHistoryEntry(
   if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -335,7 +335,7 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
   if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
-  if (!fieldErrors.from && !fieldErrors.until && until && until <= from) fieldErrors.until = "beforeStart";
+  if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };

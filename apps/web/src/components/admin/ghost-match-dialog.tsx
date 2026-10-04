@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats - ghost-match-dialog
  *
  * Creates a GC team's match in an uncovered mix tournament, with its ghost
@@ -19,6 +19,7 @@ import { XIcon } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -121,7 +122,7 @@ export function GhostMatchDialog() {
 
   const [tournamentName, setTournamentName] = useState("");
   const [stageName, setStageName] = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [bestOf, setBestOf] = useState<string>("3");
   const [gcTeam, setGcTeam] = useState<{ id: number; name: string } | null>(null);
   const [opponentTeam, setOpponentTeam] = useState<{ id: number; name: string } | null>(null);
@@ -132,7 +133,7 @@ export function GhostMatchDialog() {
   function reset() {
     setTournamentName("");
     setStageName("");
-    setScheduledAt("");
+    setScheduledAt(null);
     setBestOf("3");
     setGcTeam(null);
     setOpponentTeam(null);
@@ -162,7 +163,7 @@ export function GhostMatchDialog() {
       const result = await createGhostMatch({
         tournamentName,
         stageName,
-        scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : "",
+        scheduledAt: scheduledAt ?? "",
         bestOf,
         gcTeamId: gcTeam?.id ?? null,
         opponentTeamId: opponentTeam?.id ?? null,
@@ -211,7 +212,7 @@ export function GhostMatchDialog() {
                 <Input id="ghost-stage" value={stageName} onChange={(e) => setStageName(e.target.value)} placeholder={t("fieldStagePlaceholder")} aria-invalid={!!fieldErrors.stageName} />
               </FormField>
               <FormField label={t("fieldScheduledAt")} htmlFor="ghost-scheduled-at" required error={err("scheduledAt")}>
-                <Input id="ghost-scheduled-at" type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} aria-invalid={!!fieldErrors.scheduledAt} />
+                <DateTimeInput id="ghost-scheduled-at" value={scheduledAt} onChange={setScheduledAt} aria-invalid={!!fieldErrors.scheduledAt} />
               </FormField>
               <FormField label={t("fieldBestOf")} htmlFor="ghost-best-of" required error={err("bestOf")}>
                 <Select items={Object.fromEntries(GHOST_MATCH_BEST_OF_VALUES.map((v) => [v, `BO${v}`]))} value={bestOf} onValueChange={(v) => v && setBestOf(v)}>

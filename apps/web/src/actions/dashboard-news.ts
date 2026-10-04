@@ -24,6 +24,7 @@ import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search"
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { searchNewsAuthorsQuery, type NewsAuthorPickerResult } from "@/lib/news-author-search";
 import { slugify } from "@/lib/entity-id";
+import { parseIsoInstant } from "@/lib/datetime-local";
 
 /**
  * Resolves + gates the acting scope for one article action.
@@ -209,8 +210,8 @@ export async function publishDashboardNewsArticle(organizationId: number | null,
 
   let publishAt = existing.publishedAt ?? new Date();
   if (scheduledAt) {
-    const parsed = new Date(scheduledAt);
-    if (Number.isNaN(parsed.getTime())) return { ok: false, error: "invalidDate" };
+    const parsed = parseIsoInstant(scheduledAt);
+    if (!parsed) return { ok: false, error: "invalidDate" };
     publishAt = parsed;
   }
 

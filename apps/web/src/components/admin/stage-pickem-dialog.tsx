@@ -13,20 +13,12 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { updateStagePickemSettings, type StagePickemSettingsFieldErrors } from "@/actions/admin-pickem";
 import type { AdminStageRow } from "@/lib/admin-tournament-detail";
-
-/** Local datetime input <-> ISO string, no timezone math beyond what the browser's own input already does. */
-function toDatetimeLocalValue(iso: string | null): string {
-  if (!iso) return "";
-  const date = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
 
 export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminStageRow | null; open: boolean; onOpenChange: (open: boolean) => void }) {
   const t = useTranslations("admin.tournaments.stages.pickem");
@@ -34,12 +26,12 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<StagePickemSettingsFieldErrors>({});
   const [enabled, setEnabled] = useState(false);
-  const [opensAt, setOpensAt] = useState("");
+  const [opensAt, setOpensAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && stage) {
       setEnabled(stage.pickemEnabled);
-      setOpensAt(toDatetimeLocalValue(stage.pickemOpensAt));
+      setOpensAt(stage.pickemOpensAt);
       setFieldErrors({});
     }
   }, [open, stage]);
@@ -48,7 +40,7 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
     if (!stage) return;
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateStagePickemSettings(stage.id, { enabled, opensAt: opensAt ? new Date(opensAt).toISOString() : null });
+      const result = await updateStagePickemSettings(stage.id, { enabled, opensAt });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -77,7 +69,7 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
 
           {enabled && (
             <FormField label={t("fieldOpensAt")} htmlFor="stg-pickem-opens-at" required error={fieldErrors.opensAt ? t(`error.${fieldErrors.opensAt}`) : undefined} hint={t("fieldOpensAtHint")}>
-              <Input id="stg-pickem-opens-at" type="datetime-local" value={opensAt} onChange={(e) => setOpensAt(e.target.value)} aria-invalid={!!fieldErrors.opensAt} />
+              <DateTimeInput id="stg-pickem-opens-at" value={opensAt} onChange={setOpensAt} aria-invalid={!!fieldErrors.opensAt} />
             </FormField>
           )}
         </div>
