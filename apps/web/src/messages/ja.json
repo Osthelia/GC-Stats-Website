@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "URLで使用されます。小文字、数字、ハイフンのみ使用できます。",
         "fieldCountry": "国",
         "fieldSecondaryCountry": "第二国籍",
+        "fieldBio": "紹介文",
         "fieldCountryPlaceholder": "国を検索…",
         "fieldCountryClear": "（なし）",
         "save": "保存",

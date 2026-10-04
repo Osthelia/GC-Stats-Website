@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "URL'lerde kullanılır: yalnızca küçük harf, rakam ve tire.",
         "fieldCountry": "Ülke",
         "fieldSecondaryCountry": "İkinci uyruk",
+        "fieldBio": "Biyografi",
         "fieldCountryPlaceholder": "Bir ülke ara…",
         "fieldCountryClear": "(Yok)",
         "save": "Kaydet",

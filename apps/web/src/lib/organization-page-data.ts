@@ -36,6 +36,7 @@ export type OrganizationPageInfo = {
   tags: string[];
   countryCode: string | null;
   secondaryCountryCode: string | null;
+  bio: string | null;
   socials: Record<string, string>;
   logoUrl: string | null;
   logoUrlLight: string | null;
@@ -55,6 +56,7 @@ export async function getOrganizationPageInfo(id: number): Promise<OrganizationP
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
     countryCode: row.countryCode,
     secondaryCountryCode: row.secondaryCountryCode,
+    bio: row.bio,
     socials: (row.socials as Record<string, string>) ?? {},
     logoUrl: themed.dark,
     logoUrlLight: themed.light,

@@ -35,11 +35,12 @@ export type OrganizationProfileInput = {
   slug: string;
   countryCode: string;
   secondaryCountryCode: string;
+  bio: string;
   socials: Partial<Record<(typeof ORGANIZATION_SOCIAL_KEYS)[number], string>>;
   tags: string[];
 };
 
-export type OrganizationProfileField = "name" | "slug" | "countryCode" | "secondaryCountryCode" | "tags";
+export type OrganizationProfileField = "name" | "slug" | "countryCode" | "secondaryCountryCode" | "bio" | "tags";
 export type OrganizationProfileFieldErrors = Partial<Record<OrganizationProfileField, string>> & {
   socials?: Partial<Record<(typeof ORGANIZATION_SOCIAL_KEYS)[number], string>>;
 };
@@ -50,6 +51,7 @@ export type ValidatedOrganizationProfile = {
   slug: string;
   countryCode: string;
   secondaryCountryCode: string;
+  bio: string;
   socials: Record<string, string>;
   tags: string[];
 };
@@ -62,6 +64,7 @@ export function validateOrganizationProfileInput(input: OrganizationProfileInput
   const slug = input.slug.trim().toLowerCase();
   const countryCode = input.countryCode.trim();
   const secondaryCountryCode = input.secondaryCountryCode.trim();
+  const bio = input.bio.trim();
 
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
@@ -72,6 +75,8 @@ export function validateOrganizationProfileInput(input: OrganizationProfileInput
 
   if (countryCode && !isValidCountryCode(countryCode)) fieldErrors.countryCode = "invalid";
   if (secondaryCountryCode && !isValidCountryCode(secondaryCountryCode)) fieldErrors.secondaryCountryCode = "invalid";
+
+  if (bio.length > 2000) fieldErrors.bio = "tooLong";
 
   const tags = [...new Set(input.tags)];
   if (tags.some((tag) => !(ORGANIZATION_TAGS as readonly string[]).includes(tag))) fieldErrors.tags = "invalid";
@@ -87,5 +92,5 @@ export function validateOrganizationProfileInput(input: OrganizationProfileInput
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
 
-  return { fieldErrors, name, slug, countryCode, secondaryCountryCode, socials, tags };
+  return { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags };
 }

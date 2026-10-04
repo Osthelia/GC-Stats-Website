@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FormField } from "@/components/admin/form-field";
@@ -41,6 +42,7 @@ function ReadOnlyProfile({ organization }: { organization: AdminOrganizationProf
             <span className="font-medium">{organization.name}</span>
           </div>
           <p className="text-muted-foreground">@{organization.slug}</p>
+          {organization.bio && <p className="whitespace-pre-line text-muted-foreground">{organization.bio}</p>}
           <div className="flex flex-wrap gap-1.5">
             {organization.tags.map((tag) => (
               <Badge key={tag} variant="outline">
@@ -78,6 +80,7 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
   const [slug, setSlug] = useState(organization.slug);
   const [countryCode, setCountryCode] = useState(organization.countryCode ?? "");
   const [secondaryCountryCode, setSecondaryCountryCode] = useState(organization.secondaryCountryCode ?? "");
+  const [bio, setBio] = useState(organization.bio ?? "");
   const [socials, setSocials] = useState<Record<string, string>>(organization.socials);
   const [tags, setTags] = useState<string[]>(organization.tags);
 
@@ -93,7 +96,7 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateDashboardOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, socials, tags });
+      const result = await updateDashboardOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -143,6 +146,10 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
                 />
               </FormField>
             </div>
+
+            <FormField label={t("fieldBio")} htmlFor="dashboard-org-bio" error={err("bio")}>
+              <Textarea id="dashboard-org-bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} maxLength={2000} aria-invalid={!!errors.bio} />
+            </FormField>
           </CardContent>
         </Card>
 

@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "Used in URLs: lowercase letters, digits and hyphens only.",
         "fieldCountry": "Country",
         "fieldSecondaryCountry": "Second nationality",
+        "fieldBio": "Bio",
         "fieldCountryPlaceholder": "Search a country…",
         "fieldCountryClear": "(None)",
         "save": "Save",

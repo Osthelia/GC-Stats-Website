@@ -167,6 +167,12 @@ export async function OrganizationHeader({
               {t("memberCount", { count: memberCount })}
             </span>
 
+            {organization.bio && (
+              <p className="max-w-[620px] text-[14.5px] leading-relaxed text-neutral-400">
+                {organization.bio}
+              </p>
+            )}
+
             {links.length > 0 && (
               <div className="flex flex-wrap gap-2 pb-1 pt-1">
                 {links.map((l) => {

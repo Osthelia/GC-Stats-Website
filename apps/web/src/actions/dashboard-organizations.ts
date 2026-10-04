@@ -65,7 +65,7 @@ export type {
 export async function updateDashboardOrganizationProfile(organizationId: number, input: OrganizationProfileInput): Promise<OrganizationProfileResult> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.profileEdit);
 
-  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, socials, tags } = validateOrganizationProfileInput(input);
+  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validateOrganizationProfileInput(input);
 
   if (!fieldErrors.slug) {
     const [slugTaken] = await db
@@ -80,7 +80,7 @@ export async function updateDashboardOrganizationProfile(organizationId: number,
 
   await db
     .update(organizations)
-    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, socials, tags })
+    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags })
     .where(eq(organizations.id, organizationId));
 
   return { ok: true };

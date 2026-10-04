@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "يُستخدم في الروابط: أحرف لاتينية صغيرة وأرقام وشرطات فقط.",
         "fieldCountry": "البلد",
         "fieldSecondaryCountry": "الجنسية الثانية",
+        "fieldBio": "نبذة",
         "fieldCountryPlaceholder": "ابحث عن بلد…",
         "fieldCountryClear": "(لا شيء)",
         "save": "حفظ",

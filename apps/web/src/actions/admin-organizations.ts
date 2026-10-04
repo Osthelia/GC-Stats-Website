@@ -93,7 +93,7 @@ export async function updateOrganizationProfile(organizationId: number, input: O
   await requireOrgActorId();
 
   const validated = validateOrganizationProfileInput(input);
-  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, socials, tags } = validated;
+  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validated;
 
   const [existing] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -111,7 +111,7 @@ export async function updateOrganizationProfile(organizationId: number, input: O
 
   await db
     .update(organizations)
-    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, socials, tags })
+    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags })
     .where(eq(organizations.id, organizationId));
 
   return { ok: true };

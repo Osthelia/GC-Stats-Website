@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FormField } from "@/components/admin/form-field";
@@ -41,13 +42,14 @@ export function OrganizationEditForm({
   const [slug, setSlug] = useState(organization.slug);
   const [countryCode, setCountryCode] = useState(organization.countryCode ?? "");
   const [secondaryCountryCode, setSecondaryCountryCode] = useState(organization.secondaryCountryCode ?? "");
+  const [bio, setBio] = useState(organization.bio ?? "");
   const [socials, setSocials] = useState<Record<string, string>>(organization.socials);
   const [tags, setTags] = useState<string[]>(organization.tags);
 
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, socials, tags });
+      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -98,6 +100,10 @@ export function OrganizationEditForm({
                   />
                 </FormField>
               </div>
+
+              <FormField label={t("fieldBio")} htmlFor="organization-bio" error={err("bio")}>
+                <Textarea id="organization-bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} maxLength={2000} aria-invalid={!!errors.bio} />
+              </FormField>
             </CardContent>
           </Card>
 

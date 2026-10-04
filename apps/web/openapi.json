@@ -2644,6 +2644,12 @@
               "null"
             ]
           },
+          "bio": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "socials": {
             "type": "object",
             "additionalProperties": {
@@ -2682,6 +2688,7 @@
           "tags",
           "country_code",
           "secondary_country_code",
+          "bio",
           "socials",
           "logos",
           "members",

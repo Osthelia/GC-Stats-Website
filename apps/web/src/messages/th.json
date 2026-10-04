@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "ใช้ใน URL: อักษรตัวพิมพ์เล็ก ตัวเลข และขีดกลางเท่านั้น",
         "fieldCountry": "ประเทศ",
         "fieldSecondaryCountry": "สัญชาติที่สอง",
+        "fieldBio": "ประวัติ",
         "fieldCountryPlaceholder": "ค้นหาประเทศ…",
         "fieldCountryClear": "(ไม่มี)",
         "save": "บันทึก",

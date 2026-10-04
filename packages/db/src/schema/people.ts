@@ -113,6 +113,7 @@ export const organizations = pgTable("organizations", {
   countryCode: char("country_code", { length: 3 }),
   secondaryCountryCode: char("secondary_country_code", { length: 3 }),
   socials: jsonb("socials").notNull().default({}),
+  bio: text("bio"),
   maxPermissions: jsonb("max_permissions"),
 });
 

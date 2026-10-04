@@ -732,6 +732,7 @@ export const ApiOrganizationFullResponseV2Schema = z
     tags: z.array(z.string()),
     country_code: z.string().nullable(),
     secondary_country_code: z.string().nullable(),
+    bio: z.string().nullable(),
     socials: z.record(z.string(), z.string()),
     logos: ApiThemedLogoUrlsSchema,
     members: ApiOrganizationMembersResponseSchema,

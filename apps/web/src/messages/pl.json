@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "Używany w adresach URL: tylko małe litery, cyfry i łączniki.",
         "fieldCountry": "Kraj",
         "fieldSecondaryCountry": "Drugie obywatelstwo",
+        "fieldBio": "Opis",
         "fieldCountryPlaceholder": "Szukaj kraju…",
         "fieldCountryClear": "(Brak)",
         "save": "Zapisz",

@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "用于 URL：仅限小写字母、数字及连字符。",
         "fieldCountry": "国家",
         "fieldSecondaryCountry": "第二国籍",
+        "fieldBio": "简介",
         "fieldCountryPlaceholder": "搜索国家…",
         "fieldCountryClear": "（无）",
         "save": "保存",

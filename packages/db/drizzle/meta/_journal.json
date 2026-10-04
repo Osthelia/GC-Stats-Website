@@ -225,6 +225,13 @@
       "when": 1790797832950,
       "tag": "0031_stream_channel_type",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1791072872178,
+      "tag": "0032_organization_bio",
+      "breakpoints": true
     }
   ]
 }

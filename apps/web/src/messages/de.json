@@ -2207,6 +2207,7 @@
         "fieldSlugHint": "Wird in URLs verwendet: nur Kleinbuchstaben, Ziffern und Bindestriche.",
         "fieldCountry": "Land",
         "fieldSecondaryCountry": "Zweite Nationalität",
+        "fieldBio": "Bio",
         "fieldCountryPlaceholder": "Land suchen…",
         "fieldCountryClear": "(Keine)",
         "save": "Speichern",
