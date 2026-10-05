@@ -73,18 +73,8 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     setMatchPicks({});
     setStandingPicks((prev) => {
       const ranks = { ...prev[containerId] };
-      const previous = ranks[rank];
-      if (entrantId === null) {
-        delete ranks[rank];
-        return { ...prev, [containerId]: ranks };
-      }
-      // Team already placed at another rank: swap both ranks
-      const otherRank = Object.entries(ranks).find(([r, id]) => id === entrantId && Number(r) !== rank)?.[0];
-      if (otherRank !== undefined) {
-        if (previous !== undefined) ranks[Number(otherRank)] = previous;
-        else delete ranks[Number(otherRank)];
-      }
-      ranks[rank] = entrantId;
+      if (entrantId === null) delete ranks[rank];
+      else ranks[rank] = entrantId;
       return { ...prev, [containerId]: ranks };
     });
   }
@@ -115,8 +105,7 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
 
   const groupTabs: TournamentContainerTab[] = data.groupContainers.map((container) => {
     const picked = standingPicks[container.containerId] ?? {};
-    const items: Record<string, string> = { [NO_SELECTION]: t("standingPlaceholder") };
-    for (const e of container.entrants) items[String(e.id)] = e.name;
+    const usedEntrantIds = new Set(Object.values(picked));
     return {
       id: container.containerId,
       name: container.name,
@@ -126,6 +115,11 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
             {container.entrants.map((_, index) => {
               const rank = index + 1;
               const selected = picked[rank] ?? null;
+              const items: Record<string, string> = { [NO_SELECTION]: t("standingPlaceholder") };
+              for (const e of container.entrants) {
+                if (usedEntrantIds.has(e.id) && e.id !== selected) continue;
+                items[String(e.id)] = e.name;
+              }
               return (
                 <div key={rank} className="flex items-center gap-3">
                   <span className="w-10 flex-none text-sm font-semibold text-muted-foreground">#{rank}</span>
