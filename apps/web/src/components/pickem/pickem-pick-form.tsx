@@ -68,10 +68,25 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     });
   }
 
-  function pickStandingRank(containerId: number, rank: number, entrantId: number) {
+  function pickStandingRank(containerId: number, rank: number, entrantId: number | null) {
     // A standings prediction can feed a bracket seed (group_rank) — clearing all bracket picks on change keeps the form always internally consistent, simplest correct behavior.
     setMatchPicks({});
-    setStandingPicks((prev) => ({ ...prev, [containerId]: { ...prev[containerId], [rank]: entrantId } }));
+    setStandingPicks((prev) => {
+      const ranks = { ...prev[containerId] };
+      const previous = ranks[rank];
+      if (entrantId === null) {
+        delete ranks[rank];
+        return { ...prev, [containerId]: ranks };
+      }
+      // Team already placed at another rank: swap both ranks
+      const otherRank = Object.entries(ranks).find(([r, id]) => id === entrantId && Number(r) !== rank)?.[0];
+      if (otherRank !== undefined) {
+        if (previous !== undefined) ranks[Number(otherRank)] = previous;
+        else delete ranks[Number(otherRank)];
+      }
+      ranks[rank] = entrantId;
+      return { ...prev, [containerId]: ranks };
+    });
   }
 
   function handleSubmit() {
@@ -100,7 +115,8 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
 
   const groupTabs: TournamentContainerTab[] = data.groupContainers.map((container) => {
     const picked = standingPicks[container.containerId] ?? {};
-    const usedEntrantIds = new Set(Object.values(picked));
+    const items: Record<string, string> = { [NO_SELECTION]: t("standingPlaceholder") };
+    for (const e of container.entrants) items[String(e.id)] = e.name;
     return {
       id: container.containerId,
       name: container.name,
@@ -110,21 +126,16 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
             {container.entrants.map((_, index) => {
               const rank = index + 1;
               const selected = picked[rank] ?? null;
-              const items: Record<string, string> = { [NO_SELECTION]: t("standingPlaceholder") };
-              for (const e of container.entrants) {
-                if (usedEntrantIds.has(e.id) && e.id !== selected) continue;
-                items[String(e.id)] = e.name;
-              }
               return (
                 <div key={rank} className="flex items-center gap-3">
                   <span className="w-10 flex-none text-sm font-semibold text-muted-foreground">#{rank}</span>
-                  <Select items={items} value={selected !== null ? String(selected) : NO_SELECTION} onValueChange={(v) => v && v !== NO_SELECTION && pickStandingRank(container.containerId, rank, Number(v))}>
+                  <Select items={items} value={selected !== null ? String(selected) : NO_SELECTION} onValueChange={(v) => v && pickStandingRank(container.containerId, rank, v === NO_SELECTION ? null : Number(v))}>
                     <SelectTrigger className="flex-1" aria-label={t("standingRankLabel", { rank })}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(items).map(([value, label]) => (
-                        <SelectItem key={value} value={value} disabled={value === NO_SELECTION}>
+                        <SelectItem key={value} value={value}>
                           {label}
                         </SelectItem>
                       ))}
