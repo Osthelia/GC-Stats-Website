@@ -79,6 +79,17 @@ describe("resolveMatchInGraph", () => {
     expect(result.patches[0]!.becomesReady).toBe(false);
   });
 
+  it("does not overwrite a slot that already holds a team", () => {
+    const result = resolveMatchInGraph({
+      matchId: "m1",
+      winnerId: "w",
+      loserId: "l",
+      outgoingEdges: [{ fromMatchId: "m1", fromResult: "winner", toMatchId: "m2", toSlot: "a" }],
+      downstreamMatches: [match("m2", { entrantAId: "manual" })],
+    });
+    expect(result.patches).toEqual([]);
+  });
+
   it("ignores edges that don't originate from the resolved match", () => {
     const result = resolveMatchInGraph({
       matchId: "m1",

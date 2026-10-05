@@ -526,11 +526,10 @@ export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerSta
 
 // --- Liquipedia wikicode import --------------------------------------------
 // Port of V1's MatchController::importWikicode — paste a {{MapVeto}} +
-// {{mapN}} wikicode block, rebuild the veto and the maps from it. Unlike
+// {{mapN}} wikicode block, rebuild the veto and sync the maps from it. Unlike
 // the plain veto save (deliberately independent from `maps`, cf. above),
-// this action DOES rebuild `maps` — it's the one explicit action whose
-// entire purpose is importing map-level data (Riot match ids, skipped
-// maps), matching V1 1:1.
+// this action DOES sync `maps` (names, Riot match ids, skipped maps), but
+// never resets scores or stats already present: only a Fetch does that.
 
 export type ImportWikicodeError =
   | "required"
@@ -678,26 +677,56 @@ export async function importMatchWikicode(
       }))
     );
 
-    await tx.delete(maps).where(eq(maps.matchId, matchId));
-    if (playOrder.length > 0) {
-      await tx.insert(maps).values(
-        playOrder.map((row, index) => {
-          const info = mapInfoByStep.get(index + 1);
-          // `finished=skip` (map never played) deliberately diverges from V1's
-          // -1/-1 + completed: the map just stays unscored and open.
-          return {
-            matchId,
-            mapName: row.mapName,
-            order: index + 1,
-            apiMatchId: info?.apiMatchId ?? null,
-            teamAScore: null,
-            teamBScore: null,
-            isCompleted: false,
-            isForfeit: false,
-          };
-        })
-      );
+    // Maps are matched by order: scores, completion and stats already entered
+    // (manually or by a Fetch) are kept, only the name and Riot id are synced.
+    const existingMaps = await tx.select().from(maps).where(eq(maps.matchId, matchId));
+    const statMapIds = new Set(
+      existingMaps.length > 0
+        ? (
+            await tx
+              .selectDistinct({ mapId: mapPlayerStats.mapId })
+              .from(mapPlayerStats)
+              .where(inArray(mapPlayerStats.mapId, existingMaps.map((m) => m.id)))
+          ).map((r) => r.mapId)
+        : []
+    );
+    const hasData = (m: (typeof existingMaps)[number]) =>
+      m.teamAScore !== null || m.teamBScore !== null || m.isCompleted || statMapIds.has(m.id);
+
+    // Frees the imported Riot ids first so reordered maps don't hit the unique constraint.
+    if (apiMatchIds.length > 0) {
+      await tx.update(maps).set({ apiMatchId: null }).where(and(eq(maps.matchId, matchId), inArray(maps.apiMatchId, apiMatchIds)));
     }
+
+    const existingByOrder = new Map(existingMaps.map((m) => [m.order, m]));
+    for (const [index, row] of playOrder.entries()) {
+      const order = index + 1;
+      const info = mapInfoByStep.get(order);
+      const existing = existingByOrder.get(order);
+      if (existing) {
+        const keptApiMatchId = existing.apiMatchId && !apiMatchIds.includes(existing.apiMatchId) ? existing.apiMatchId : null;
+        await tx
+          .update(maps)
+          .set({ mapName: row.mapName, apiMatchId: info?.apiMatchId ?? keptApiMatchId })
+          .where(eq(maps.id, existing.id));
+        continue;
+      }
+      // `finished=skip` (map never played) deliberately diverges from V1's
+      // -1/-1 + completed: the map just stays unscored and open.
+      await tx.insert(maps).values({
+        matchId,
+        mapName: row.mapName,
+        order,
+        apiMatchId: info?.apiMatchId ?? null,
+        teamAScore: null,
+        teamBScore: null,
+        isCompleted: false,
+        isForfeit: false,
+      });
+    }
+
+    const staleMapIds = existingMaps.filter((m) => m.order > playOrder.length && !hasData(m)).map((m) => m.id);
+    if (staleMapIds.length > 0) await tx.delete(maps).where(inArray(maps.id, staleMapIds));
   });
   updateTag(matchTag(matchId));
 

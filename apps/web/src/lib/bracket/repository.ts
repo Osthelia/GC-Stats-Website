@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { matches, bracketEdges, matchSeeds } from "@gc-stats/db";
@@ -224,8 +224,9 @@ export async function findQualificationSeeds(tx: Tx, qualificationId: number) {
 }
 
 /** Fills one slot of a match from a resolved seed (group rank or
- *  qualification) — the seed-driven counterpart to `applyDownstreamPatches`. */
+ *  qualification) — the seed-driven counterpart to `applyDownstreamPatches`.
+ *  A slot already holding a team is left untouched. */
 export async function fillMatchSlotFromSeed(tx: Tx, matchId: number, slot: "a" | "b", entrantId: number): Promise<void> {
-  const column = slot === "a" ? { entrantAId: entrantId } : { entrantBId: entrantId };
-  await tx.update(matches).set(column).where(eq(matches.id, matchId));
+  const [column, value] = slot === "a" ? [matches.entrantAId, { entrantAId: entrantId }] : [matches.entrantBId, { entrantBId: entrantId }];
+  await tx.update(matches).set(value).where(and(eq(matches.id, matchId), isNull(column)));
 }

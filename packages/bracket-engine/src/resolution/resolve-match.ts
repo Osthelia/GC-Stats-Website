@@ -67,6 +67,8 @@ export function resolveMatchInGraph(input: ResolveMatchInput): ResolveMatchResul
       a: target.entrantAId ?? undefined,
       b: target.entrantBId ?? undefined,
     };
+    // A slot already holding a team (set by hand or an earlier resolution) is never overwritten.
+    if (already[edge.toSlot] !== undefined) continue;
     already[edge.toSlot] = entrantId;
     pendingFill.set(target.id, already);
 

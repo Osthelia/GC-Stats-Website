@@ -23,6 +23,7 @@ import { StageDialog } from "@/components/admin/stage-dialog";
 import { StagePickemDialog } from "@/components/admin/stage-pickem-dialog";
 import { ContainerDialog } from "@/components/admin/container-dialog";
 import { AssignEntrantsDialog } from "@/components/admin/assign-entrants-dialog";
+import { AddGroupMatchDialog } from "@/components/admin/add-group-match-dialog";
 import { deleteStage, toggleStageActive } from "@/actions/admin-stages";
 import { deleteContainer } from "@/actions/admin-containers";
 import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
@@ -34,12 +35,14 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [assigning, setAssigning] = useState(false);
+  const [addingMatch, setAddingMatch] = useState(false);
   const [editingContainer, setEditingContainer] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [forceDelete, setForceDelete] = useState(false);
 
   const isSwiss = container.containerType === "group" && (container.config as { type?: string } | null)?.type === "swiss";
   const swissStarted = container.matchCount > 0;
+  const isGroup = container.containerType === "group";
 
   function openDeleteConfirm() {
     setForceDelete(false);
@@ -116,6 +119,11 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
             {t("openEditorButton")}
           </Button>
         )}
+        {isGroup && (!isSwiss || swissStarted) && (
+          <Button variant="outline" size="sm" onClick={() => setAddingMatch(true)}>
+            {t("addMatchButton")}
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={() => setEditingContainer(true)}>
           {t("editContainerButton")}
         </Button>
@@ -130,6 +138,7 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
       </div>
 
       <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} open={assigning} onOpenChange={setAssigning} />
+      {isGroup && <AddGroupMatchDialog stageId={stage.id} container={container} entrants={entrants} open={addingMatch} onOpenChange={setAddingMatch} />}
       <ContainerDialog stageId={stage.id} container={container} open={editingContainer} onOpenChange={setEditingContainer} />
       <ConfirmDialog
         open={confirmingDelete}

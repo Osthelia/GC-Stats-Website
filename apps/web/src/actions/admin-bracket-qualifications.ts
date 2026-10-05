@@ -195,8 +195,8 @@ async function validateRule(input: QualificationRuleInput): Promise<{ fieldError
  * already-completed stage (the primary use case here: configuring a
  * tournament's final standings after the fact). Re-running the same
  * resolution functions is safe either way — `qualificationResults` inserts
- * are `onConflictDoNothing` and `fillMatchSlotFromSeed` just writes the same
- * value again.
+ * are `onConflictDoNothing` and `fillMatchSlotFromSeed` never overwrites a
+ * slot that already holds a team.
  */
 async function resolveIfSourceAlreadyDecided(tx: Tx, value: { sourceContainerId: number | null; sourceMatchId: number | null }): Promise<void> {
   if (value.sourceContainerId !== null) {

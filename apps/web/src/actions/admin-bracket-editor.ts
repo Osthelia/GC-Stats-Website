@@ -236,6 +236,61 @@ export async function startSwissRound1(containerId: number): Promise<StartSwissR
   return { ok: true };
 }
 
+export type AddGroupMatchInput = { stageId: number; containerId: number; round: string; bestOf: string; entrantAId: number | null; entrantBId: number | null };
+export type AddGroupMatchField = "container" | "round" | "bestOf" | "entrantAId" | "entrantBId";
+export type AddGroupMatchFieldErrors = Partial<Record<AddGroupMatchField, string>>;
+export type AddGroupMatchResult = { ok: true } | { ok: false; fieldErrors: AddGroupMatchFieldErrors };
+
+/** Adds a single match to a Swiss or round robin group, allowed even once the group has started (insert only, nothing existing is touched). */
+export async function addGroupMatch(input: AddGroupMatchInput): Promise<AddGroupMatchResult> {
+  await requireTournamentsActor();
+
+  const [row] = await db
+    .select({ container: stageContainers, tournamentId: stages.tournamentId })
+    .from(stageContainers)
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(eq(stageContainers.id, input.containerId), eq(stages.id, input.stageId)))
+    .limit(1);
+  if (!row) return { ok: false, fieldErrors: { container: "notFound" } };
+  if (row.container.containerType !== "group") return { ok: false, fieldErrors: { container: "notAGroup" } };
+  const config = parseGroupConfig(row.container.config);
+
+  const fieldErrors: AddGroupMatchFieldErrors = {};
+
+  const round = Number(input.round);
+  if (input.round.trim() === "") fieldErrors.round = "required";
+  else if (!Number.isInteger(round) || round < 1 || round > 99) fieldErrors.round = "invalid";
+  else if (config.type === "swiss" && round > config.maxRounds) fieldErrors.round = "roundAboveMax";
+
+  const bestOf = Number(input.bestOf);
+  if (input.bestOf.trim() === "") fieldErrors.bestOf = "required";
+  else if (!Number.isInteger(bestOf) || bestOf < 1 || bestOf > 99) fieldErrors.bestOf = "invalid";
+
+  if (input.entrantAId !== null && input.entrantAId === input.entrantBId) fieldErrors.entrantBId = "sameEntrant";
+
+  const entries = await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, input.containerId));
+  const groupEntrantIds = new Set(entries.map((e) => e.entrantId));
+  for (const [field, id] of [
+    ["entrantAId", input.entrantAId],
+    ["entrantBId", input.entrantBId],
+  ] as const) {
+    if (id === null || fieldErrors[field]) continue;
+    const [owned] = await db
+      .select({ id: entrants.id })
+      .from(entrants)
+      .where(and(eq(entrants.id, id), eq(entrants.tournamentId, row.tournamentId)))
+      .limit(1);
+    if (!owned) fieldErrors[field] = "entrantNotFound";
+    // Standings only track entrants registered in the group.
+    else if (groupEntrantIds.size > 0 && !groupEntrantIds.has(id)) fieldErrors[field] = "entrantNotInGroup";
+  }
+
+  if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
+
+  await db.insert(matches).values({ containerId: input.containerId, round, bestOf, status: "pending", entrantAId: input.entrantAId, entrantBId: input.entrantBId });
+  return { ok: true };
+}
+
 export type DeleteBracketMatchesResult = { ok: true } | { ok: false; error: string };
 
 /** Wipes generated matches/edges/seeds for a container so it can be

@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 
 type Resolutions = Partial<Record<"1" | "2", LiquipediaConflictResolution>>;
 
-/** Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild veto + maps from it. */
+/** Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild the veto and sync the maps from it. */
 export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.matches.wikicode");
   const router = useRouter();
