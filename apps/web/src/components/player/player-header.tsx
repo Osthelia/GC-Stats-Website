@@ -264,26 +264,26 @@ export async function PlayerHeader({
                 {t("noTitle")}
               </div>
             ) : (
-              <div className="flex gap-2 overflow-x-auto pb-0.5">
+              <div className="flex flex-col gap-1.5">
                 {achievements.items.map((a) => {
                   const color = placementColor(a.placement);
                   return (
                     <Link
                       key={a.qualificationId}
                       href={`/tournaments/${a.tournamentId}/${slugify(a.tournamentName)}`}
-                      className="flex flex-none items-center gap-2 whitespace-nowrap rounded-lg border px-2.5 py-2 transition-colors hover:brightness-110"
+                      className="flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 transition-all hover:brightness-110 active:scale-[0.98]"
                       style={{
                         borderColor: tint(color, 0.35),
                         background: tint(color, 0.12),
                       }}
                     >
                       <span
-                        className="font-mono text-[10px] font-black"
+                        className="w-7 flex-none font-mono text-[10px] font-black"
                         style={{ color }}
                       >
                         {ordinalPlacement(a.placement)}
                       </span>
-                      <span className="max-w-[220px] truncate text-[12px] font-semibold text-neutral-100">
+                      <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-neutral-100">
                         {abbreviateTournamentName(a.tournamentName)}
                       </span>
                     </Link>
