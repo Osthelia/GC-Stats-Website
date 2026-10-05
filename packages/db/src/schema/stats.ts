@@ -86,7 +86,9 @@ export const mapRoundDamagesRaw = pgTable("map_round_damages_raw", {
   headshots: integer("headshots").notNull().default(0),
   bodyshots: integer("bodyshots").notNull().default(0),
   legshots: integer("legshots").notNull().default(0),
-});
+}, (t) => [
+  index("map_round_damages_raw_map_round_id_idx").on(t.mapRoundId),
+]);
 
 export const mapRoundAliveStatesRaw = pgTable("map_round_alive_states_raw", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
@@ -96,7 +98,9 @@ export const mapRoundAliveStatesRaw = pgTable("map_round_alive_states_raw", {
   atkAlive: smallint("atk_alive").notNull(),
   defAlive: smallint("def_alive").notNull(),
   winnerSide: text("winner_side"), // 'atk' | 'def'
-});
+}, (t) => [
+  index("map_round_alive_states_raw_map_round_id_idx").on(t.mapRoundId),
+]);
 
 // The heatmap exception — full granularity kept indefinitely, never archived
 // (see DATABASES.MD §4.1). `playerLocations` on a real Riot kill event
@@ -114,7 +118,10 @@ export const mapRoundPlayerPositionsRaw = pgTable("map_round_player_positions_ra
   y: integer("y").notNull(),
   viewRadians: real("view_radians"),
   timeMs: integer("time_ms"),
-});
+}, (t) => [
+  index("map_round_player_positions_raw_map_round_id_idx").on(t.mapRoundId),
+  index("map_round_player_positions_raw_map_round_kill_id_idx").on(t.mapRoundKillId),
+]);
 
 export const mapRoundPlayerLoadoutsRaw = pgTable("map_round_player_loadouts_raw", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
