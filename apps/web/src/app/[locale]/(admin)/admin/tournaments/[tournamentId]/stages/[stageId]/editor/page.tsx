@@ -30,10 +30,11 @@ export default async function AdminBracketEditorPage({ params }: { params: Promi
   const id = Number(stageId);
   if (!Number.isInteger(id)) notFound();
 
-  await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsManage);
-  const t = await getTranslations({ locale, namespace: "admin.tournaments.editor" });
-
-  const data = await getStageEditorData(id);
+  const [, t, data] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsManage),
+    getTranslations({ locale, namespace: "admin.tournaments.editor" }),
+    getStageEditorData(id),
+  ]);
   if (!data) notFound();
 
   const swissContainers = data.containers.filter((c) => c.containerType === "group" && (c.config as { type?: string } | null)?.type === "swiss");

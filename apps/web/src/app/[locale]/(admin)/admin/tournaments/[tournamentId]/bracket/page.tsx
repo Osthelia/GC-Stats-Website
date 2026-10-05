@@ -43,14 +43,14 @@ export default async function AdminTournamentBracketViewerPage({
   const id = Number(tournamentId);
   if (!Number.isInteger(id)) notFound();
 
-  await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
-  const t = await getTranslations({ locale, namespace: "admin.tournaments.bracketViewerPage" });
-  const tOverview = await getTranslations({ locale, namespace: "tournamentPage" });
-
-  const tournament = await getAdminTournament(id);
+  const [, t, tOverview, tournament, stages] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView),
+    getTranslations({ locale, namespace: "admin.tournaments.bracketViewerPage" }),
+    getTranslations({ locale, namespace: "tournamentPage" }),
+    getAdminTournament(id),
+    getAdminTournamentStages(id),
+  ]);
   if (!tournament) notFound();
-
-  const stages = await getAdminTournamentStages(id);
   const activeStageId = sp.stage ? Number(sp.stage) : null;
 
   return (

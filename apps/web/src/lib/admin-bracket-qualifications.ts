@@ -34,43 +34,42 @@ export type AdminQualificationRule = {
 
 /** Every `stage_qualifications` row anchored (directly or via its source match's container) on one of this tournament's stages — the full set an admin can manage from the tournament's bracket editor hub. */
 export async function getAdminQualificationRules(tournamentId: number): Promise<AdminQualificationRule[]> {
-  const containerRows = await db
-    .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name })
-    .from(stageContainers)
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(eq(stages.tournamentId, tournamentId));
-  if (containerRows.length === 0) return [];
+  const tournamentStageIds = db.select({ id: stages.id }).from(stages).where(eq(stages.tournamentId, tournamentId));
+  const tournamentContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds));
+  const tournamentMatchIds = db.select({ id: matches.id }).from(matches).where(inArray(matches.containerId, tournamentContainerIds));
+
+  const [containerRows, matchRows, rules, entrantRows] = await Promise.all([
+    db
+      .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name })
+      .from(stageContainers)
+      .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+      .where(eq(stages.tournamentId, tournamentId)),
+    db.select().from(matches).where(inArray(matches.containerId, tournamentContainerIds)).orderBy(asc(matches.containerId), asc(matches.round), asc(matches.id)),
+    db
+      .select()
+      .from(stageQualifications)
+      .where(or(inArray(stageQualifications.sourceContainerId, tournamentContainerIds), inArray(stageQualifications.sourceMatchId, tournamentMatchIds))),
+    db.select({ id: entrants.id, displayName: entrants.displayName }).from(entrants).where(eq(entrants.tournamentId, tournamentId)),
+  ]);
+  if (rules.length === 0) return [];
   const containerById = new Map(containerRows.map((c) => [c.id, c]));
-  const containerIds = containerRows.map((c) => c.id);
-
-  const matchRows = await db.select().from(matches).where(inArray(matches.containerId, containerIds)).orderBy(asc(matches.containerId), asc(matches.round), asc(matches.id));
   const matchById = new Map(matchRows.map((m) => [m.id, m]));
-  const matchIds = matchRows.map((m) => m.id);
-
-  const entrantIds = [...new Set(matchRows.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null))];
-  const entrantRows = entrantIds.length ? await db.select({ id: entrants.id, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, entrantIds)) : [];
   const entrantNameById = new Map(entrantRows.map((e) => [e.id, e.displayName]));
 
-  const conditions = [];
-  if (containerIds.length) conditions.push(inArray(stageQualifications.sourceContainerId, containerIds));
-  if (matchIds.length) conditions.push(inArray(stageQualifications.sourceMatchId, matchIds));
-  if (conditions.length === 0) return [];
-
-  const rules = await db.select().from(stageQualifications).where(or(...conditions));
-  if (rules.length === 0) return [];
-
   const destContainerIds = [...new Set(rules.map((r) => r.destinationContainerId).filter((id): id is number => id !== null))];
-  const destRows = destContainerIds.length
-    ? await db
-        .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
-        .from(stageContainers)
-        .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-        .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-        .where(inArray(stageContainers.id, destContainerIds))
-    : [];
+  const [destRows, resultRows] = await Promise.all([
+    destContainerIds.length
+      ? db
+          .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
+          .from(stageContainers)
+          .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+          .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
+          .where(inArray(stageContainers.id, destContainerIds))
+      : [],
+    db.select().from(qualificationResults).where(inArray(qualificationResults.qualificationId, rules.map((r) => r.id))),
+  ]);
   const destById = new Map(destRows.map((d) => [d.id, d]));
 
-  const resultRows = await db.select().from(qualificationResults).where(inArray(qualificationResults.qualificationId, rules.map((r) => r.id)));
   const otherEntrantIds = [...new Set(resultRows.map((r) => r.entrantId).filter((id) => !entrantNameById.has(id)))];
   if (otherEntrantIds.length) {
     const rows = await db.select({ id: entrants.id, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, otherEntrantIds));

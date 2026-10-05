@@ -12,7 +12,7 @@
 import { eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, users, apiKeys, ORGANIZATION_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
-import { auth } from "@/auth";
+import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
@@ -160,7 +160,7 @@ export async function hasDashboardAccess(userId: string): Promise<boolean> {
 
 /** Redirects to /login (no session) or / (logged in, but no organization_access, isAuthor grant, personal API key, or global admin override) — use at the top of the /dashboard layout. `memberships` already includes the global admin override entries (see getCombinedDashboardMemberships), so every caller reading it — picker, sidebar, org switcher, per-org access checks — sees every organization for such an admin without extra plumbing. */
 export async function requireDashboardAccess(locale: AppLocale): Promise<DashboardAccess> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
@@ -176,7 +176,7 @@ export async function requireDashboardAccess(locale: AppLocale): Promise<Dashboa
 
 /** /dashboard/author/* pages — the individual authoring space, gated strictly by users.is_author (not by any organization membership). */
 export async function requireAuthorAccess(locale: AppLocale): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
@@ -186,7 +186,7 @@ export async function requireAuthorAccess(locale: AppLocale): Promise<{ userId: 
 
 /** Server-action mirror of requireAuthorAccess — throws instead of redirecting. */
 export async function requireAuthorActor(): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 
@@ -196,7 +196,7 @@ export async function requireAuthorActor(): Promise<{ userId: string }> {
 
 /** /dashboard/api-keys/* pages — the individual API key space, gated strictly by owning at least one personal api_key row (not by any organization membership). Mirrors requireAuthorAccess. */
 export async function requireApiKeyAccess(locale: AppLocale): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
@@ -206,7 +206,7 @@ export async function requireApiKeyAccess(locale: AppLocale): Promise<{ userId: 
 
 /** Server-action mirror of requireApiKeyAccess — throws instead of redirecting. */
 export async function requireApiKeyActor(): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 
@@ -216,7 +216,7 @@ export async function requireApiKeyActor(): Promise<{ userId: string }> {
 
 /** Page gate for /dashboard/author/profile — broader than requireAuthorAccess (mirrors requireNewsWriterActor below): reachable by isAuthor, or by anyone who can write news for at least one organization, since they still need a byline there too. */
 export async function requireNewsWriterAccess(locale: AppLocale): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
@@ -235,7 +235,7 @@ export async function requireNewsWriterAccess(locale: AppLocale): Promise<{ user
  * organization.news.edit somewhere.
  */
 export async function requireNewsWriterActor(): Promise<{ userId: string }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 
@@ -263,7 +263,7 @@ export async function requireDashboardOrgPermission(locale: AppLocale, organizat
 
 /** Re-check for server actions — mirrors requireDashboardOrgAccess (including the global admin override) but throws instead of redirecting (no response to redirect). */
 export async function requireDashboardOrgActor(organizationId: number): Promise<{ userId: string; membership: DashboardOrgMembership }> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
 

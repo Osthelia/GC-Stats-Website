@@ -14,7 +14,7 @@ import { cache } from "react";
 import { eq, and, isNull } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { roles, rolePermissions, permissions, userRoles } from "@gc-stats/db";
-import { auth } from "@/auth";
+import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -64,7 +64,7 @@ export function hasAccess(access: CurrentUserAccess, permission: string): boolea
  * redirects, a logged-out or non-admin visitor just doesn't see the link.
  */
 export async function isViewerAdmin(): Promise<boolean> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) return false;
   const access = await getGlobalAccess(userId);
@@ -73,7 +73,7 @@ export async function isViewerAdmin(): Promise<boolean> {
 
 /** Redirects to /login (no session) or / (logged in, no admin access) — use at the top of /admin server layouts/pages. */
 export async function requireAdminAccess(locale: AppLocale): Promise<CurrentUserAccess> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) {
     // redirect() throws (Next's redirect-error mechanism) — execution never
@@ -108,7 +108,7 @@ export async function requireAdminPermission(locale: AppLocale, permission: stri
 
 /** Re-check for server actions — mirrors requireAdminAccess but throws instead of redirecting (no response to redirect). */
 export async function requireActorAccess(): Promise<CurrentUserAccess> {
-  const session = await auth();
+  const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
   const access = await getGlobalAccess(userId);

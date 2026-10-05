@@ -1,0 +1,1 @@
+CREATE INDEX "matches_container_id_idx" ON "matches" USING btree ("container_id");

@@ -35,13 +35,13 @@ export default async function AdminMatchEditPage({ params }: { params: Promise<{
   const id = Number(matchId);
   if (!Number.isInteger(tournId) || !Number.isInteger(id)) notFound();
 
-  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
-  const t = await getTranslations("admin.tournaments.matches");
-
-  const match = await getAdminMatch(id);
+  const [access, t, match, entrants] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView),
+    getTranslations("admin.tournaments.matches"),
+    getAdminMatch(id),
+    listTournamentEntrants(tournId),
+  ]);
   if (!match || match.tournamentId !== tournId) notFound();
-
-  const entrants = await listTournamentEntrants(tournId);
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
 
   const entrantAName = entrants.find((e) => e.id === match.entrantAId)?.displayName ?? t("entrantNone");

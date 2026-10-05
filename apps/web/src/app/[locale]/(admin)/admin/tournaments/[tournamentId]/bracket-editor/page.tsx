@@ -34,19 +34,17 @@ export default async function AdminTournamentBracketPage({ params }: { params: P
   const id = Number(tournamentId);
   if (!Number.isInteger(id)) notFound();
 
-  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
-  const t = await getTranslations({ locale, namespace: "admin.tournaments.bracketPage" });
-
-  const tournament = await getAdminTournament(id);
-  if (!tournament) notFound();
-
-  const [entrants, stages, matches, containerOptions, qualificationRules] = await Promise.all([
+  const [access, t, tournament, entrants, stages, matches, containerOptions, qualificationRules] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView),
+    getTranslations({ locale, namespace: "admin.tournaments.bracketPage" }),
+    getAdminTournament(id),
     listTournamentEntrants(id),
     listTournamentStages(id),
     listTournamentMatches(id),
     listTournamentContainerOptions(id),
     getAdminQualificationRules(id),
   ]);
+  if (!tournament) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
   const groupContainers = containerOptions.filter((c) => c.containerType === "group");
 

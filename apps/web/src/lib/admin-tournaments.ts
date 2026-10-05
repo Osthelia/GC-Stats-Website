@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { tournaments, pointTypes } from "@gc-stats/db";
@@ -138,12 +139,12 @@ export type AdminTournamentDetailRow = AdminTournamentRow & {
   pointTypeId: number | null;
 };
 
-export async function getAdminTournament(id: number): Promise<AdminTournamentDetailRow | null> {
-  const [row] = await db.select().from(tournaments).where(eq(tournaments.id, id));
+// Cached per request: generateMetadata and the page both read it.
+export const getAdminTournament = cache(async (id: number): Promise<AdminTournamentDetailRow | null> => {
+  const [[row], logoUrls] = await Promise.all([db.select().from(tournaments).where(eq(tournaments.id, id)), getCurrentLogoUrls("tournament", [id])]);
   if (!row) return null;
-  const logoUrls = await getCurrentLogoUrls("tournament", [id]);
   return { ...row, logoUrl: logoUrls.get(id) ?? null, socials: (row.socials as Record<string, string>) ?? {} };
-}
+});
 
 export async function listPointTypeOptions(): Promise<{ id: number; name: string; label: string }[]> {
   return db.select({ id: pointTypes.id, name: pointTypes.name, label: pointTypes.label }).from(pointTypes).orderBy(asc(pointTypes.name));

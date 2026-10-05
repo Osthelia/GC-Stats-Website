@@ -9,6 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { asc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stages, stageContainers, matches, bracketEdges, matchSeeds, entrants } from "@gc-stats/db";
@@ -51,7 +52,8 @@ export type StageEditorData = {
   entrants: { id: number; displayName: string; seed: number | null; teamId: number | null }[];
 };
 
-export async function getStageEditorData(stageId: number): Promise<StageEditorData | null> {
+// Cached per request: generateMetadata and the page both read it.
+export const getStageEditorData = cache(async (stageId: number): Promise<StageEditorData | null> => {
   // Everything keyed off the stage id through subqueries, so it all runs in one round trip.
   const stageContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId));
   const stageMatchIds = db.select({ id: matches.id }).from(matches).where(inArray(matches.containerId, stageContainerIds));
@@ -103,4 +105,4 @@ export async function getStageEditorData(stageId: number): Promise<StageEditorDa
     edges: edgeRows.map((e) => ({ fromMatchId: e.fromMatchId, fromResult: e.fromResult, toMatchId: e.toMatchId, toSlot: e.toSlot })),
     entrants: entrantRows,
   };
-}
+});

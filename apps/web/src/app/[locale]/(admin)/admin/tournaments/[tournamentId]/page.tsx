@@ -8,7 +8,6 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { getAdminTournament, listPointTypeOptions } from "@/lib/admin-tournaments";
 import { listTournamentEntrants, listTournamentStages } from "@/lib/admin-tournament-detail";
@@ -30,13 +29,14 @@ export default async function AdminTournamentDetailPage({ params }: { params: Pr
   const id = Number(tournamentId);
   if (!Number.isInteger(id)) notFound();
 
-  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
-  await getTranslations({ locale, namespace: "admin.tournaments" });
-
-  const tournament = await getAdminTournament(id);
+  const [access, tournament, entrants, stages, pointTypeOptions] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView),
+    getAdminTournament(id),
+    listTournamentEntrants(id),
+    listTournamentStages(id),
+    listPointTypeOptions(),
+  ]);
   if (!tournament) notFound();
-
-  const [entrants, stages, pointTypeOptions] = await Promise.all([listTournamentEntrants(id), listTournamentStages(id), listPointTypeOptions()]);
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
 
   return (

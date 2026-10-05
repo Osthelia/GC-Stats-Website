@@ -179,6 +179,7 @@ export const matches = pgTable("matches", {
   // didn't come from actually playing it out.
   isForfeit: boolean("is_forfeit").notNull().default(false),
 }, (t) => [
+  index("matches_container_id_idx").on(t.containerId),
   index("matches_entrant_a_id_idx").on(t.entrantAId),
   index("matches_entrant_b_id_idx").on(t.entrantBId),
 ]);

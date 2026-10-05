@@ -73,10 +73,23 @@ export type AdminStageRow = {
 };
 
 export async function listTournamentStages(tournamentId: number): Promise<AdminStageRow[]> {
-  const stageRows = await db.select().from(stages).where(eq(stages.tournamentId, tournamentId)).orderBy(asc(stages.sequenceOrder), asc(stages.id));
+  // Everything keyed off the tournament id through subqueries, so it all runs in one round trip.
+  const tournamentStageIds = db.select({ id: stages.id }).from(stages).where(eq(stages.tournamentId, tournamentId));
+  const tournamentContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds));
+
+  const [stageRows, unsortedContainerRows, matchCounts, groupEntryRows, pickemRows] = await Promise.all([
+    db.select().from(stages).where(eq(stages.tournamentId, tournamentId)).orderBy(asc(stages.sequenceOrder), asc(stages.id)),
+    db.select().from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds)).orderBy(asc(stageContainers.id)),
+    db
+      .select({ containerId: matches.containerId, count: sql<number>`count(*)::int`, played: sql<number>`count(*) filter (where ${matches.status} in ('live', 'completed'))::int` })
+      .from(matches)
+      .where(inArray(matches.containerId, tournamentContainerIds))
+      .groupBy(matches.containerId),
+    db.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, tournamentContainerIds)),
+    db.select().from(pickemStageSettings).where(inArray(pickemStageSettings.stageId, tournamentStageIds)),
+  ]);
   if (stageRows.length === 0) return [];
 
-  const stageIds = stageRows.map((s) => s.id);
   // Creation order matters beyond display: the bracket layout algorithm
   // (lib/bracket-layout.ts) uses this array's order as its tie-break for
   // which lane a merged container (e.g. a grand final) anchors to. Creation
@@ -88,18 +101,9 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
   // else fixes the lane order without disturbing id order among non-Lower
   // containers (including across separately-grouped brackets, each grouped
   // subset keeps its own relative order — see bracket-group-containers.ts).
-  const containerRows = (await db.select().from(stageContainers).where(inArray(stageContainers.stageId, stageIds)).orderBy(asc(stageContainers.id))).sort(
+  const containerRows = unsortedContainerRows.sort(
     (a, b) => Number(a.name.trim().toLowerCase().startsWith("lower")) - Number(b.name.trim().toLowerCase().startsWith("lower")),
   );
-  const containerIds = containerRows.map((c) => c.id);
-
-  const [matchCounts, groupEntryRows, pickemRows] = await Promise.all([
-    containerIds.length
-      ? db.select({ containerId: matches.containerId, count: sql<number>`count(*)::int`, played: sql<number>`count(*) filter (where ${matches.status} in ('live', 'completed'))::int` }).from(matches).where(inArray(matches.containerId, containerIds)).groupBy(matches.containerId)
-      : [],
-    containerIds.length ? db.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)) : [],
-    db.select().from(pickemStageSettings).where(inArray(pickemStageSettings.stageId, stageIds)),
-  ]);
   const countByContainer = new Map(matchCounts.map((r) => [r.containerId, r.count]));
   const playedByContainer = new Map(matchCounts.map((r) => [r.containerId, r.played]));
 

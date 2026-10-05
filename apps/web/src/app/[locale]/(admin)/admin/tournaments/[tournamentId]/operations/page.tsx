@@ -31,13 +31,14 @@ export default async function AdminTournamentOperationsPage({ params }: { params
   const id = Number(tournamentId);
   if (!Number.isInteger(id)) notFound();
 
-  await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsManage);
-  const t = await getTranslations({ locale, namespace: "admin.tournaments.operations" });
-
-  const tournament = await getAdminTournament(id);
+  const [, t, tournament, containers, matches] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsManage),
+    getTranslations({ locale, namespace: "admin.tournaments.operations" }),
+    getAdminTournament(id),
+    listTournamentContainerOptions(id),
+    listTournamentMatches(id),
+  ]);
   if (!tournament) notFound();
-
-  const [containers, matches] = await Promise.all([listTournamentContainerOptions(id), listTournamentMatches(id)]);
 
   return (
     <div className="flex flex-col gap-6">

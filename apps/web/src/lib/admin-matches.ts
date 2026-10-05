@@ -10,7 +10,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { asc, eq, inArray } from "drizzle-orm";
+import { cache } from "react";
+import { asc, eq } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
 import { matches, entrants, stageContainers, stages, maps, matchVetos, entrantMembers, people, mapPlayerStats } from "@gc-stats/db";
 
@@ -35,45 +37,36 @@ export type AdminMatchListRow = {
 
 /** Flat list of every match in a tournament (across all stages/containers) — replaces V1's separate `/admin/tournaments/{t}/matches` page, folded into the bracket management page instead (2026-09-01). */
 export async function listTournamentMatches(tournamentId: number): Promise<AdminMatchListRow[]> {
-  const containerRows = await db
-    .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name })
-    .from(stageContainers)
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(eq(stages.tournamentId, tournamentId));
-  if (containerRows.length === 0) return [];
-  const containerById = new Map(containerRows.map((c) => [c.id, c]));
-
-  const matchRows = await db
-    .select()
+  const entrantA = alias(entrants, "entrant_a");
+  const entrantB = alias(entrants, "entrant_b");
+  const rows = await db
+    .select({ match: matches, containerName: stageContainers.name, stageName: stages.name, entrantAName: entrantA.displayName, entrantBName: entrantB.displayName })
     .from(matches)
-    .where(inArray(matches.containerId, containerRows.map((c) => c.id)))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .leftJoin(entrantA, eq(entrantA.id, matches.entrantAId))
+    .leftJoin(entrantB, eq(entrantB.id, matches.entrantBId))
+    .where(eq(stages.tournamentId, tournamentId))
     .orderBy(asc(matches.containerId), asc(matches.round), asc(matches.id));
 
-  const entrantIds = [...new Set(matchRows.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null))];
-  const entrantRows = entrantIds.length ? await db.select({ id: entrants.id, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, entrantIds)) : [];
-  const entrantById = new Map(entrantRows.map((e) => [e.id, e.displayName]));
-
-  return matchRows.map((m) => {
-    const container = containerById.get(m.containerId);
-    return {
-      id: m.id,
-      containerId: m.containerId,
-      containerName: container?.name ?? "",
-      stageName: container?.stageName ?? "",
-      round: m.round,
-      label: m.label,
-      bestOf: m.bestOf,
-      status: m.status,
-      entrantAId: m.entrantAId,
-      entrantAName: m.entrantAId !== null ? (entrantById.get(m.entrantAId) ?? null) : null,
-      entrantBId: m.entrantBId,
-      entrantBName: m.entrantBId !== null ? (entrantById.get(m.entrantBId) ?? null) : null,
-      scoreA: m.scoreA,
-      scoreB: m.scoreB,
-      scheduledAt: m.scheduledAt ? m.scheduledAt.toISOString() : null,
-      patch: m.patch,
-    };
-  });
+  return rows.map(({ match: m, containerName, stageName, entrantAName, entrantBName }) => ({
+    id: m.id,
+    containerId: m.containerId,
+    containerName,
+    stageName,
+    round: m.round,
+    label: m.label,
+    bestOf: m.bestOf,
+    status: m.status,
+    entrantAId: m.entrantAId,
+    entrantAName,
+    entrantBId: m.entrantBId,
+    entrantBName,
+    scoreA: m.scoreA,
+    scoreB: m.scoreB,
+    scheduledAt: m.scheduledAt ? m.scheduledAt.toISOString() : null,
+    patch: m.patch,
+  }));
 }
 
 export type AdminMatchDetail = {
@@ -97,7 +90,8 @@ export type AdminMatchDetail = {
   isForfeit: boolean;
 };
 
-export async function getAdminMatch(matchId: number): Promise<AdminMatchDetail | null> {
+// Cached per request: generateMetadata and the page both read it.
+export const getAdminMatch = cache(async (matchId: number): Promise<AdminMatchDetail | null> => {
   const [row] = await db
     .select({
       id: matches.id,
@@ -125,7 +119,7 @@ export async function getAdminMatch(matchId: number): Promise<AdminMatchDetail |
     .where(eq(matches.id, matchId));
   if (!row) return null;
   return { ...row, scheduledAt: row.scheduledAt ? row.scheduledAt.toISOString() : null };
-}
+});
 
 export type AdminMapRow = {
   id: number;
@@ -160,7 +154,7 @@ export async function listMatchMaps(matchId: number): Promise<AdminMapRow[]> {
 }
 
 /** Single map lookup for the dedicated admin map page (`.../matches/{matchId}/maps/{mapId}`). */
-export async function getAdminMap(mapId: number): Promise<AdminMapRow | null> {
+export const getAdminMap = cache(async (mapId: number): Promise<AdminMapRow | null> => {
   const [row] = await db
     .select({
       id: maps.id,
@@ -178,7 +172,7 @@ export async function getAdminMap(mapId: number): Promise<AdminMapRow | null> {
     .where(eq(maps.id, mapId))
     .limit(1);
   return row ?? null;
-}
+});
 
 export type AdminRosterMember = { id: number; handle: string };
 

@@ -38,16 +38,15 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
   const mId = Number(mapId);
   if (!Number.isInteger(tournId) || !Number.isInteger(id) || !Number.isInteger(mId)) notFound();
 
-  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView);
-  const t = await getTranslations("admin.tournaments.matches");
-
-  const match = await getAdminMatch(id);
+  const [access, t, match, map, entrants] = await Promise.all([
+    requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView),
+    getTranslations("admin.tournaments.matches"),
+    getAdminMatch(id),
+    getAdminMap(mId),
+    listTournamentEntrants(tournId),
+  ]);
   if (!match || match.tournamentId !== tournId) notFound();
-
-  const map = await getAdminMap(mId);
   if (!map || map.matchId !== id) notFound();
-
-  const entrants = await listTournamentEntrants(tournId);
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
 
   const entrantAName = entrants.find((e) => e.id === match.entrantAId)?.displayName ?? t("entrantNone");
