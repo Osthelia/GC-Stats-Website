@@ -3637,6 +3637,8 @@
         "fieldName": "Name",
         "fieldSequenceOrder": "Reihenfolge",
         "fieldSequenceOrderHint": "Bestimmt die Anzeige und Spielreihenfolge der Turnierphasen.",
+        "fieldStatus": "Status",
+        "fieldStatusHint": "Wird automatisch aktualisiert, wenn Matches enden, kann aber hier geändert werden.",
         "fieldStartDate": "Startdatum",
         "fieldEndDate": "Enddatum",
         "fieldLiquipedia": "Liquipedia Link",

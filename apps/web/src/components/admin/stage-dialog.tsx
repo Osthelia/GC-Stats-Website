@@ -14,12 +14,15 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
-import { createStage, updateStage, type StageFieldErrors } from "@/actions/admin-stages";
+import { createStage, updateStage, type StageFieldErrors, type StageStatus } from "@/actions/admin-stages";
 import type { AdminStageRow } from "@/lib/admin-tournament-detail";
 
-type FormState = { name: string; sequenceOrder: string; startDate: string; endDate: string; liquipediaLink: string };
+const STAGE_STATUSES: StageStatus[] = ["pending", "active", "completed"];
+
+type FormState = { name: string; sequenceOrder: string; status: StageStatus; startDate: string; endDate: string; liquipediaLink: string };
 
 export function StageDialog({
   tournamentId,
@@ -38,14 +41,14 @@ export function StageDialog({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<StageFieldErrors>({});
-  const [form, setForm] = useState<FormState>({ name: "", sequenceOrder: String(nextSequenceOrder), startDate: "", endDate: "", liquipediaLink: "" });
+  const [form, setForm] = useState<FormState>({ name: "", sequenceOrder: String(nextSequenceOrder), status: "pending", startDate: "", endDate: "", liquipediaLink: "" });
 
   useEffect(() => {
     if (open) {
       setForm(
         stage
-          ? { name: stage.name, sequenceOrder: String(stage.sequenceOrder), startDate: stage.startDate ?? "", endDate: stage.endDate ?? "", liquipediaLink: stage.liquipediaLink ?? "" }
-          : { name: "", sequenceOrder: String(nextSequenceOrder), startDate: "", endDate: "", liquipediaLink: "" }
+          ? { name: stage.name, sequenceOrder: String(stage.sequenceOrder), status: stage.status, startDate: stage.startDate ?? "", endDate: stage.endDate ?? "", liquipediaLink: stage.liquipediaLink ?? "" }
+          : { name: "", sequenceOrder: String(nextSequenceOrder), status: "pending", startDate: "", endDate: "", liquipediaLink: "" }
       );
       setFieldErrors({});
     }
@@ -56,6 +59,7 @@ export function StageDialog({
     const input = {
       name: form.name,
       sequenceOrder: Number(form.sequenceOrder),
+      status: form.status,
       startDate: form.startDate || null,
       endDate: form.endDate || null,
       liquipediaLink: form.liquipediaLink,
@@ -71,6 +75,8 @@ export function StageDialog({
       toast.success(stage ? t("updateSuccess") : t("addSuccess"));
     });
   }
+
+  const statusItems = Object.fromEntries(STAGE_STATUSES.map((s) => [s, t(`stageStatus.${s}`)]));
 
   const err = (field: keyof StageFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
 
@@ -88,6 +94,20 @@ export function StageDialog({
           </FormField>
           <FormField label={t("fieldSequenceOrder")} htmlFor="stg-order" required error={err("sequenceOrder")} hint={t("fieldSequenceOrderHint")}>
             <Input id="stg-order" type="number" min={1} value={form.sequenceOrder} onChange={(e) => setForm((p) => ({ ...p, sequenceOrder: e.target.value }))} aria-invalid={!!fieldErrors.sequenceOrder} />
+          </FormField>
+          <FormField label={t("fieldStatus")} htmlFor="stg-status" required error={err("status")} hint={t("fieldStatusHint")}>
+            <Select items={statusItems} value={form.status} onValueChange={(v) => v && setForm((p) => ({ ...p, status: v as StageStatus }))}>
+              <SelectTrigger id="stg-status" className="w-full" aria-invalid={!!fieldErrors.status}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STAGE_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {statusItems[s]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </FormField>
           <div className="grid grid-cols-2 gap-4">
             <FormField label={t("fieldStartDate")} htmlFor="stg-start-date" error={err("startDate")}>

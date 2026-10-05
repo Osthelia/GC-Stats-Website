@@ -3641,6 +3641,8 @@
         "fieldName": "Nombre",
         "fieldSequenceOrder": "Orden",
         "fieldSequenceOrderHint": "Determina el orden de visualización y de juego de las fases del torneo.",
+        "fieldStatus": "Estado",
+        "fieldStatusHint": "Se actualiza automáticamente al terminar los partidos, pero se puede cambiar aquí.",
         "fieldStartDate": "Fecha de inicio",
         "fieldEndDate": "Fecha de fin",
         "fieldLiquipedia": "Enlace de Liquipedia",

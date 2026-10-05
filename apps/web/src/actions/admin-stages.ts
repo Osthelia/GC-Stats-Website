@@ -2,7 +2,7 @@
  * GC-Stats - admin-stages
  *
  * Admin server actions for tournament stages: create/edit name, sequence
- * order, dates and Liquipedia link.
+ * order, status, dates and Liquipedia link.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -20,11 +20,14 @@ async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
 }
 
-export type StageField = "name" | "sequenceOrder" | "startDate" | "endDate" | "liquipediaLink";
+export type StageField = "name" | "sequenceOrder" | "status" | "startDate" | "endDate" | "liquipediaLink";
 export type StageFieldErrors = Partial<Record<StageField, string>>;
 export type StageResult = { ok: true; id: number } | { ok: false; fieldErrors: StageFieldErrors };
 
-export type StageInput = { name: string; sequenceOrder: number; startDate: string | null; endDate: string | null; liquipediaLink: string };
+const STAGE_STATUSES = ["pending", "active", "completed"] as const;
+export type StageStatus = (typeof STAGE_STATUSES)[number];
+
+export type StageInput = { name: string; sequenceOrder: number; status: StageStatus; startDate: string | null; endDate: string | null; liquipediaLink: string };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -43,6 +46,7 @@ function validateStage(input: StageInput): StageFieldErrors {
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
   if (!Number.isInteger(input.sequenceOrder) || input.sequenceOrder < 1) fieldErrors.sequenceOrder = "invalid";
+  if (!STAGE_STATUSES.includes(input.status)) fieldErrors.status = "invalid";
 
   if (input.startDate !== null && !DATE_RE.test(input.startDate)) fieldErrors.startDate = "invalid";
   if (input.endDate !== null && !DATE_RE.test(input.endDate)) fieldErrors.endDate = "invalid";
@@ -71,6 +75,7 @@ export async function createStage(tournamentId: number, input: StageInput): Prom
       tournamentId,
       name: input.name.trim(),
       sequenceOrder: input.sequenceOrder,
+      status: input.status,
       startDate: input.startDate,
       endDate: input.endDate,
       liquipediaLink: input.liquipediaLink.trim() || null,
@@ -95,6 +100,7 @@ export async function updateStage(id: number, tournamentId: number, input: Stage
     .set({
       name: input.name.trim(),
       sequenceOrder: input.sequenceOrder,
+      status: input.status,
       startDate: input.startDate,
       endDate: input.endDate,
       liquipediaLink: input.liquipediaLink.trim() || null,

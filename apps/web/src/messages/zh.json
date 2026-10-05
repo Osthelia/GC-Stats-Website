@@ -3637,6 +3637,8 @@
         "fieldName": "名称",
         "fieldSequenceOrder": "顺序",
         "fieldSequenceOrderHint": "决定该赛事各阶段的显示及进行顺序。",
+        "fieldStatus": "状态",
+        "fieldStatusHint": "比赛结束时会自动更新，也可以在此手动修改。",
         "fieldStartDate": "开始日期",
         "fieldEndDate": "结束日期",
         "fieldLiquipedia": "Liquipedia 链接",

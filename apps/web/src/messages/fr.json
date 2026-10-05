@@ -3641,6 +3641,8 @@
         "fieldName": "Nom",
         "fieldSequenceOrder": "Ordre",
         "fieldSequenceOrderHint": "Détermine l'ordre d'affichage et de déroulement des stages du tournoi.",
+        "fieldStatus": "Statut",
+        "fieldStatusHint": "Calculé automatiquement à la fin des matchs, mais modifiable ici.",
         "fieldStartDate": "Date de début",
         "fieldEndDate": "Date de fin",
         "fieldLiquipedia": "Lien Liquipedia",

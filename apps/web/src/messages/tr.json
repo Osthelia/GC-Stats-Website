@@ -3637,6 +3637,8 @@
         "fieldName": "Ad",
         "fieldSequenceOrder": "Sıra",
         "fieldSequenceOrderHint": "Turnuvanın aşamalarının görüntülenme ve oynanma sırasını belirler.",
+        "fieldStatus": "Durum",
+        "fieldStatusHint": "Maçlar bittikçe otomatik güncellenir, ancak buradan değiştirilebilir.",
         "fieldStartDate": "Başlangıç tarihi",
         "fieldEndDate": "Bitiş tarihi",
         "fieldLiquipedia": "Liquipedia bağlantısı",

@@ -3637,6 +3637,8 @@
         "fieldName": "الاسم",
         "fieldSequenceOrder": "الترتيب",
         "fieldSequenceOrderHint": "يحدد ترتيب عرض مراحل البطولة وترتيب لعبها.",
+        "fieldStatus": "الحالة",
+        "fieldStatusHint": "يتم تحديثها تلقائيًا عند انتهاء المباريات، ويمكن تغييرها هنا.",
         "fieldStartDate": "تاريخ البدء",
         "fieldEndDate": "تاريخ الانتهاء",
         "fieldLiquipedia": "رابط Liquipedia",

@@ -3637,6 +3637,8 @@
         "fieldName": "Nome",
         "fieldSequenceOrder": "Ordem",
         "fieldSequenceOrderHint": "Define a ordem de exibição e de disputa das fases do torneio.",
+        "fieldStatus": "Status",
+        "fieldStatusHint": "Atualizado automaticamente quando as partidas terminam, mas pode ser alterado aqui.",
         "fieldStartDate": "Data de início",
         "fieldEndDate": "Data de término",
         "fieldLiquipedia": "Link da Liquipedia",

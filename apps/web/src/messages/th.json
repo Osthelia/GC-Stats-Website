@@ -3637,6 +3637,8 @@
         "fieldName": "ชื่อ",
         "fieldSequenceOrder": "ลำดับ",
         "fieldSequenceOrderHint": "กำหนดลำดับการแสดงและลำดับการแข่งของสเตจในทัวร์นาเมนต์",
+        "fieldStatus": "สถานะ",
+        "fieldStatusHint": "อัปเดตอัตโนมัติเมื่อแมตช์จบ แต่สามารถเปลี่ยนได้ที่นี่",
         "fieldStartDate": "วันเริ่มต้น",
         "fieldEndDate": "วันสิ้นสุด",
         "fieldLiquipedia": "ลิงก์ Liquipedia",

@@ -3637,6 +3637,8 @@
         "fieldName": "名前",
         "fieldSequenceOrder": "順序",
         "fieldSequenceOrderHint": "トーナメントのステージの表示順とプレイ順を決定します。",
+        "fieldStatus": "ステータス",
+        "fieldStatusHint": "試合終了時に自動更新されますが、ここで変更できます。",
         "fieldStartDate": "開始日",
         "fieldEndDate": "終了日",
         "fieldLiquipedia": "Liquipediaリンク",

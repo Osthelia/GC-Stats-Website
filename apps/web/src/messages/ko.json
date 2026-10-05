@@ -3637,6 +3637,8 @@
         "fieldName": "이름",
         "fieldSequenceOrder": "순서",
         "fieldSequenceOrderHint": "토너먼트 스테이지의 표시 및 진행 순서를 결정합니다.",
+        "fieldStatus": "상태",
+        "fieldStatusHint": "경기가 끝나면 자동으로 갱신되지만 여기서 변경할 수 있습니다.",
         "fieldStartDate": "시작일",
         "fieldEndDate": "종료일",
         "fieldLiquipedia": "리퀴피디아 링크",
