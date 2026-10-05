@@ -14,7 +14,7 @@
 
 import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, PERMISSIONS } from "@gc-stats/db";
+import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 
@@ -162,21 +162,33 @@ export async function updateContainer(id: number, stageId: number, input: Contai
   return { ok: true, id };
 }
 
-export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound" | "hasPlayedMatches" };
+export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "hasPlayedMatches" };
 
-export async function deleteContainer(id: number, stageId: number): Promise<DeleteContainerResult> {
+/** Without `force`, refuses when a match is live or completed. With it, the
+ *  container goes with every match, map and stat row underneath. */
+export async function deleteContainer(id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
   await requireTournamentsActor();
+
+  if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
 
   const [existing] = await db.select({ id: stageContainers.id }).from(stageContainers).where(and(eq(stageContainers.id, id), eq(stageContainers.stageId, stageId))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
-  try {
-    await db.delete(stageContainers).where(eq(stageContainers.id, id));
-  } catch (err) {
-    const code = (err as { cause?: { code?: string } }).cause?.code;
-    if (code === "23503") return { ok: false, error: "hasPlayedMatches" };
-    throw err;
+  if (!force) {
+    const [played] = await db
+      .select({ id: matches.id })
+      .from(matches)
+      .where(and(eq(matches.containerId, id), inArray(matches.status, ["live", "completed"])))
+      .limit(1);
+    if (played) return { ok: false, error: "hasPlayedMatches" };
   }
+
+  await db.transaction(async (tx) => {
+    // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
+    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(eq(matches.containerId, id));
+    await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    await tx.delete(stageContainers).where(eq(stageContainers.id, id));
+  });
   return { ok: true };
 }
 

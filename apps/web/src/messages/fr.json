@@ -3680,6 +3680,9 @@
         "deleteContainerButton": "Supprimer",
         "deleteContainerConfirm": "Supprimer définitivement le container « {name} » et tous ses matchs ?",
         "deleteContainerSuccess": "Container supprimé.",
+        "deleteContainerTitle": "Supprimer le container",
+        "deleteContainerPlayedWarning": "{count, plural, one {# match a déjà été joué} other {# matchs ont déjà été joués}} (en cours ou terminés). Leurs résultats et stats seront perdus.",
+        "deleteContainerForce": "Forcer la suppression, y compris les matchs joués et leurs stats",
         "resetContainerButton": "Réinitialiser",
         "resetContainerConfirm": "Supprimer tous les matchs générés pour « {name} » afin de le régénérer ? Seulement possible tant qu'aucun résultat n'a été enregistré.",
         "resetContainerSuccess": "Container réinitialisé.",
@@ -3734,6 +3737,7 @@
           "alreadyStarted": "Ce groupe a déjà démarré.",
           "notEnoughEntrants": "Il faut au moins 2 entrants assignés.",
           "hasResults": "Impossible de réinitialiser : des résultats ont déjà été enregistrés.",
+          "hasPlayedMatchesForceHint": "Ce container a des matchs joués. Cochez l'option de suppression forcée pour le supprimer quand même.",
           "endBeforeStart": "La date de fin ne peut pas être avant la date de début."
         },
         "pointsSectionTitle": "Tiebreaker par points (optionnel)",

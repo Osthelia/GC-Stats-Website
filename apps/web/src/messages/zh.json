@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "删除",
         "deleteContainerConfirm": "确定要永久删除容器“{name}”及其所有比赛吗？",
         "deleteContainerSuccess": "容器已删除。",
+        "deleteContainerTitle": "删除容器",
+        "deleteContainerPlayedWarning": "已有{count, plural, other {#场比赛}}进行过（进行中或已结束）。其结果和统计数据将会丢失。",
+        "deleteContainerForce": "强制删除，包括已进行的比赛及其统计数据",
         "resetContainerButton": "重置",
         "resetContainerConfirm": "确定要删除“{name}”生成的所有比赛以便重新生成吗？仅在尚未记录任何结果时可执行。",
         "resetContainerSuccess": "容器已重置。",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "该小组已经开始。",
           "notEnoughEntrants": "至少需要分配 2 个参赛方。",
           "hasResults": "无法重置：已记录结果。",
+          "hasPlayedMatchesForceHint": "该容器有已进行的比赛。勾选强制删除选项即可仍然删除。",
           "endBeforeStart": "结束日期不能早于开始日期。"
         },
         "pointsSectionTitle": "积分同分判定（可选）",

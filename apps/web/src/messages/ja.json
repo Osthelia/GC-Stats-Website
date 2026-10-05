@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "削除",
         "deleteContainerConfirm": "コンテナ「{name}」とそのすべての試合を完全に削除しますか。",
         "deleteContainerSuccess": "コンテナを削除しました。",
+        "deleteContainerTitle": "コンテナを削除",
+        "deleteContainerPlayedWarning": "{count, plural, other {#試合}}がすでにプレイされています（ライブまたは終了）。結果と統計は失われます。",
+        "deleteContainerForce": "プレイ済みの試合とその統計を含めて強制的に削除する",
         "resetContainerButton": "リセット",
         "resetContainerConfirm": "「{name}」の生成済み試合をすべて削除し、再生成できるようにしますか。結果が記録されていない場合のみ実行できます。",
         "resetContainerSuccess": "コンテナをリセットしました。",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "このグループはすでに開始されています。",
           "notEnoughEntrants": "少なくとも2つの出場チームの割り当てが必要です。",
           "hasResults": "リセットできません。すでに結果が記録されています。",
+          "hasPlayedMatchesForceHint": "このコンテナにはプレイ済みの試合があります。それでも削除するには強制削除オプションにチェックを入れてください。",
           "endBeforeStart": "終了日を開始日より前にすることはできません。"
         },
         "pointsSectionTitle": "タイブレーク用ポイント（任意）",

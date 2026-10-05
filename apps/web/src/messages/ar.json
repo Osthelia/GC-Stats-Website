@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "حذف",
         "deleteContainerConfirm": "هل تريد حذف الحاوية “{name}” وكل مبارياتها نهائيًا؟",
         "deleteContainerSuccess": "تم حذف الحاوية.",
+        "deleteContainerTitle": "حذف الحاوية",
+        "deleteContainerPlayedWarning": "{count, plural, other {# مباراة}} لُعبت بالفعل (مباشرة أو منتهية). ستفقد نتائجها وإحصاءاتها.",
+        "deleteContainerForce": "فرض الحذف، بما في ذلك المباريات الملعوبة وإحصاءاتها",
         "resetContainerButton": "إعادة تعيين",
         "resetContainerConfirm": "هل تريد حذف كل المباريات المُنشأة لـ “{name}” لإعادة إنشائها؟ ممكن فقط ما دام لم تُسجَّل أي نتيجة.",
         "resetContainerSuccess": "تمت إعادة تعيين الحاوية.",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "بدأت هذه المجموعة بالفعل.",
           "notEnoughEntrants": "يلزم مشاركان مُسندان على الأقل.",
           "hasResults": "لا يمكن إعادة التعيين: سُجّلت نتائج بالفعل.",
+          "hasPlayedMatchesForceHint": "تحتوي هذه الحاوية على مباريات ملعوبة. فعّل خيار الحذف القسري لحذفها على أي حال.",
           "endBeforeStart": "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء."
         },
         "pointsSectionTitle": "كسر التعادل بالنقاط",

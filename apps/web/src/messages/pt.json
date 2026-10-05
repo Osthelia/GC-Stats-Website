@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "Excluir",
         "deleteContainerConfirm": "Excluir o contêiner “{name}” e todas as suas partidas permanentemente?",
         "deleteContainerSuccess": "Contêiner excluído.",
+        "deleteContainerTitle": "Excluir contêiner",
+        "deleteContainerPlayedWarning": "{count, plural, one {# partida já foi jogada} other {# partidas já foram jogadas}} (ao vivo ou concluídas). Seus resultados e estatísticas serão perdidos.",
+        "deleteContainerForce": "Forçar a exclusão, incluindo partidas jogadas e suas estatísticas",
         "resetContainerButton": "Redefinir",
         "resetContainerConfirm": "Excluir todas as partidas geradas de “{name}” para que ele possa ser gerado novamente? Só é possível enquanto nenhum resultado foi registrado.",
         "resetContainerSuccess": "Contêiner redefinido.",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "Este grupo já começou.",
           "notEnoughEntrants": "São necessários pelo menos 2 participantes atribuídos.",
           "hasResults": "Não é possível redefinir: já há resultados registrados.",
+          "hasPlayedMatchesForceHint": "Este contêiner tem partidas jogadas. Marque a opção de exclusão forçada para excluí-lo mesmo assim.",
           "endBeforeStart": "A data de término não pode ser anterior à data de início."
         },
         "pointsSectionTitle": "Desempate por pontos (opcional)",

@@ -3680,6 +3680,9 @@
         "deleteContainerButton": "Delete",
         "deleteContainerConfirm": "Permanently delete the container “{name}” and all its matches?",
         "deleteContainerSuccess": "Container deleted.",
+        "deleteContainerTitle": "Delete container",
+        "deleteContainerPlayedWarning": "{count, plural, one {# match was} other {# matches were}} already played (live or completed). Their results and stats will be lost.",
+        "deleteContainerForce": "Force deletion, including played matches and their stats",
         "resetContainerButton": "Reset",
         "resetContainerConfirm": "Delete every generated match for “{name}” so it can be regenerated? Only possible while no result has been recorded.",
         "resetContainerSuccess": "Container reset.",
@@ -3734,6 +3737,7 @@
           "alreadyStarted": "This group has already started.",
           "notEnoughEntrants": "At least 2 assigned entrants are required.",
           "hasResults": "Can't reset: results have already been recorded.",
+          "hasPlayedMatchesForceHint": "This container has played matches. Tick the force deletion option to delete it anyway.",
           "endBeforeStart": "End date can't be before the start date."
         },
         "pointsSectionTitle": "Points tiebreaker (optional)",

@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "삭제",
         "deleteContainerConfirm": "컨테이너 “{name}”과(와) 그 안의 모든 경기를 영구적으로 삭제하시겠습니까?",
         "deleteContainerSuccess": "컨테이너가 삭제되었습니다.",
+        "deleteContainerTitle": "컨테이너 삭제",
+        "deleteContainerPlayedWarning": "{count, plural, other {#경기}}가 이미 진행되었습니다(진행 중 또는 종료). 결과와 통계가 사라집니다.",
+        "deleteContainerForce": "진행된 경기와 통계를 포함해 강제로 삭제",
         "resetContainerButton": "초기화",
         "resetContainerConfirm": "“{name}”의 생성된 경기를 모두 삭제하고 다시 생성할 수 있게 하시겠습니까? 결과가 하나도 기록되지 않은 경우에만 가능합니다.",
         "resetContainerSuccess": "컨테이너가 초기화되었습니다.",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "이 그룹은 이미 시작되었습니다.",
           "notEnoughEntrants": "최소 2개의 참가팀이 배정되어야 합니다.",
           "hasResults": "초기화할 수 없습니다. 이미 결과가 기록되어 있습니다.",
+          "hasPlayedMatchesForceHint": "이 컨테이너에는 진행된 경기가 있습니다. 그래도 삭제하려면 강제 삭제 옵션을 선택하세요.",
           "endBeforeStart": "종료일은 시작일보다 이전일 수 없습니다."
         },
         "pointsSectionTitle": "포인트 타이브레이커 (선택 항목)",

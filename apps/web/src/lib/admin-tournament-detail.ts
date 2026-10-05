@@ -50,6 +50,8 @@ export type AdminContainerRow = {
   config: unknown;
   status: "pending" | "active" | "completed";
   matchCount: number;
+  /** Live or completed matches, the ones a plain delete refuses to wipe. */
+  playedMatchCount: number;
   /** group containers only — entrant ids already assigned to `group_entries`. */
   groupEntryEntrantIds: number[];
 };
@@ -93,12 +95,13 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
 
   const [matchCounts, groupEntryRows, pickemRows] = await Promise.all([
     containerIds.length
-      ? db.select({ containerId: matches.containerId, count: sql<number>`count(*)::int` }).from(matches).where(inArray(matches.containerId, containerIds)).groupBy(matches.containerId)
+      ? db.select({ containerId: matches.containerId, count: sql<number>`count(*)::int`, played: sql<number>`count(*) filter (where ${matches.status} in ('live', 'completed'))::int` }).from(matches).where(inArray(matches.containerId, containerIds)).groupBy(matches.containerId)
       : [],
     containerIds.length ? db.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)) : [],
     db.select().from(pickemStageSettings).where(inArray(pickemStageSettings.stageId, stageIds)),
   ]);
   const countByContainer = new Map(matchCounts.map((r) => [r.containerId, r.count]));
+  const playedByContainer = new Map(matchCounts.map((r) => [r.containerId, r.played]));
 
   const entrantIdsByContainer = new Map<number, number[]>();
   for (const row of groupEntryRows) {
@@ -129,6 +132,7 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
         config: c.config,
         status: c.status,
         matchCount: countByContainer.get(c.id) ?? 0,
+        playedMatchCount: playedByContainer.get(c.id) ?? 0,
         groupEntryEntrantIds: entrantIdsByContainer.get(c.id) ?? [],
       })),
   }));

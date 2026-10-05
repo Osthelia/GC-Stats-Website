@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "Sil",
         "deleteContainerConfirm": "“{name}” konteyneri ve tüm maçları kalıcı olarak silinsin mi?",
         "deleteContainerSuccess": "Konteyner silindi.",
+        "deleteContainerTitle": "Konteyneri sil",
+        "deleteContainerPlayedWarning": "{count, plural, other {# maç}} zaten oynandı (canlı veya tamamlanmış). Sonuçları ve istatistikleri kaybolacak.",
+        "deleteContainerForce": "Silmeyi zorla, oynanan maçlar ve istatistikleri dahil",
         "resetContainerButton": "Sıfırla",
         "resetContainerConfirm": "“{name}” için oluşturulan tüm maçlar silinsin ve yeniden oluşturulabilsin mi? Yalnızca hiçbir sonuç kaydedilmemişse mümkündür.",
         "resetContainerSuccess": "Konteyner sıfırlandı.",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "Bu grup zaten başladı.",
           "notEnoughEntrants": "En az 2 atanmış katılımcı gereklidir.",
           "hasResults": "Sıfırlanamaz: sonuçlar zaten kaydedildi.",
+          "hasPlayedMatchesForceHint": "Bu konteynerde oynanmış maçlar var. Yine de silmek için zorla silme seçeneğini işaretleyin.",
           "endBeforeStart": "Bitiş tarihi başlangıç tarihinden önce olamaz."
         },
         "pointsSectionTitle": "Puan eşitlik bozucu (isteğe bağlı)",

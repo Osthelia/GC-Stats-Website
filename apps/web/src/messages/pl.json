@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "Usuń",
         "deleteContainerConfirm": "Trwale usunąć kontener „{name}” i wszystkie jego mecze?",
         "deleteContainerSuccess": "Kontener usunięty.",
+        "deleteContainerTitle": "Usuń kontener",
+        "deleteContainerPlayedWarning": "{count, plural, one {# mecz został już rozegrany} few {# mecze zostały już rozegrane} many {# meczów zostało już rozegranych} other {# meczu zostało już rozegranych}} (na żywo lub zakończone). Ich wyniki i statystyki zostaną utracone.",
+        "deleteContainerForce": "Wymuś usunięcie, łącznie z rozegranymi meczami i ich statystykami",
         "resetContainerButton": "Resetuj",
         "resetContainerConfirm": "Usunąć wszystkie wygenerowane mecze dla „{name}”, aby można go było wygenerować ponownie? Możliwe tylko, dopóki nie zapisano żadnego wyniku.",
         "resetContainerSuccess": "Kontener zresetowany.",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "Ta grupa już się rozpoczęła.",
           "notEnoughEntrants": "Wymaganych jest co najmniej 2 przypisanych uczestników.",
           "hasResults": "Nie można zresetować: wyniki zostały już zapisane.",
+          "hasPlayedMatchesForceHint": "Ten kontener ma rozegrane mecze. Zaznacz opcję wymuszonego usunięcia, aby mimo to go usunąć.",
           "endBeforeStart": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia."
         },
         "pointsSectionTitle": "Rozstrzyganie remisów punktami",

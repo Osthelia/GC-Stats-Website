@@ -3680,6 +3680,9 @@
         "deleteContainerButton": "Eliminar",
         "deleteContainerConfirm": "¿Eliminar definitivamente el contenedor “{name}” y todos sus partidos?",
         "deleteContainerSuccess": "Contenedor eliminado.",
+        "deleteContainerTitle": "Eliminar contenedor",
+        "deleteContainerPlayedWarning": "{count, plural, one {# partido ya se ha jugado} other {# partidos ya se han jugado}} (en curso o terminados). Sus resultados y estadísticas se perderán.",
+        "deleteContainerForce": "Forzar la eliminación, incluidos los partidos jugados y sus estadísticas",
         "resetContainerButton": "Reiniciar",
         "resetContainerConfirm": "¿Eliminar todos los partidos generados de “{name}” para poder regenerarlos? Solo es posible mientras no se haya registrado ningún resultado.",
         "resetContainerSuccess": "Contenedor reiniciado.",
@@ -3734,6 +3737,7 @@
           "alreadyStarted": "Este grupo ya ha empezado.",
           "notEnoughEntrants": "Se necesitan al menos 2 participantes asignados.",
           "hasResults": "No se puede reiniciar: ya se han registrado resultados.",
+          "hasPlayedMatchesForceHint": "Este contenedor tiene partidos jugados. Marca la opción de eliminación forzada para eliminarlo de todos modos.",
           "endBeforeStart": "La fecha de fin no puede ser anterior a la fecha de inicio."
         },
         "pointsSectionTitle": "Desempate por puntos (opcional)",

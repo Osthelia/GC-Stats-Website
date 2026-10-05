@@ -3680,6 +3680,9 @@
         "deleteContainerButton": "Elimina",
         "deleteContainerConfirm": "Eliminare definitivamente il contenitore “{name}” e tutti i suoi match?",
         "deleteContainerSuccess": "Contenitore eliminato.",
+        "deleteContainerTitle": "Elimina contenitore",
+        "deleteContainerPlayedWarning": "{count, plural, one {# match è già stato giocato} other {# match sono già stati giocati}} (in corso o terminati). I loro risultati e statistiche andranno persi.",
+        "deleteContainerForce": "Forza l'eliminazione, inclusi i match giocati e le loro statistiche",
         "resetContainerButton": "Reimposta",
         "resetContainerConfirm": "Eliminare tutti i match generati per “{name}” così da poterlo rigenerare? Possibile solo finché non è stato registrato alcun risultato.",
         "resetContainerSuccess": "Contenitore reimpostato.",
@@ -3734,6 +3737,7 @@
           "alreadyStarted": "Questo girone è già iniziato.",
           "notEnoughEntrants": "Servono almeno 2 partecipanti assegnati.",
           "hasResults": "Impossibile reimpostare: sono già stati registrati dei risultati.",
+          "hasPlayedMatchesForceHint": "Questo contenitore ha match giocati. Seleziona l'opzione di eliminazione forzata per eliminarlo comunque.",
           "endBeforeStart": "La data di fine non può essere precedente alla data di inizio."
         },
         "pointsSectionTitle": "Spareggio a punti",

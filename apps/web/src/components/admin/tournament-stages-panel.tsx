@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { StageDialog } from "@/components/admin/stage-dialog";
 import { StagePickemDialog } from "@/components/admin/stage-pickem-dialog";
 import { ContainerDialog } from "@/components/admin/container-dialog";
@@ -33,18 +35,25 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
   const [isPending, startTransition] = useTransition();
   const [assigning, setAssigning] = useState(false);
   const [editingContainer, setEditingContainer] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [forceDelete, setForceDelete] = useState(false);
 
   const isSwiss = container.containerType === "group" && (container.config as { type?: string } | null)?.type === "swiss";
   const swissStarted = container.matchCount > 0;
 
+  function openDeleteConfirm() {
+    setForceDelete(false);
+    setConfirmingDelete(true);
+  }
+
   function handleDelete() {
-    if (!window.confirm(t("deleteContainerConfirm", { name: container.name }))) return;
     startTransition(async () => {
-      const result = await deleteContainer(container.id, stage.id);
+      const result = await deleteContainer(container.id, stage.id, forceDelete);
       if (!result.ok) {
-        toast.error(t(`error.${result.error}`));
+        toast.error(t(`error.${result.error === "hasPlayedMatches" ? "hasPlayedMatchesForceHint" : result.error}`));
         return;
       }
+      setConfirmingDelete(false);
       router.refresh();
       toast.success(t("deleteContainerSuccess"));
     });
@@ -115,13 +124,33 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
             {t("resetContainerButton")}
           </Button>
         )}
-        <Button variant="outline" size="sm" disabled={isPending} onClick={handleDelete} className="text-destructive hover:text-destructive">
+        <Button variant="outline" size="sm" disabled={isPending} onClick={openDeleteConfirm} className="text-destructive hover:text-destructive">
           {t("deleteContainerButton")}
         </Button>
       </div>
 
       <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} open={assigning} onOpenChange={setAssigning} />
       <ContainerDialog stageId={stage.id} container={container} open={editingContainer} onOpenChange={setEditingContainer} />
+      <ConfirmDialog
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        title={t("deleteContainerTitle")}
+        description={t("deleteContainerConfirm", { name: container.name })}
+        confirmLabel={t("deleteContainerButton")}
+        cancelLabel={t("cancel")}
+        onConfirm={handleDelete}
+        isPending={isPending}
+      >
+        {container.playedMatchCount > 0 && (
+          <div className="flex flex-col gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3">
+            <p className="text-sm text-destructive">{t("deleteContainerPlayedWarning", { count: container.playedMatchCount })}</p>
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <Checkbox checked={forceDelete} disabled={isPending} onCheckedChange={(checked) => setForceDelete(checked === true)} />
+              {t("deleteContainerForce")}
+            </label>
+          </div>
+        )}
+      </ConfirmDialog>
     </div>
   );
 }

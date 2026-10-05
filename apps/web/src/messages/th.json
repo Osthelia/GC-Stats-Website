@@ -3676,6 +3676,9 @@
         "deleteContainerButton": "ลบ",
         "deleteContainerConfirm": "ลบคอนเทนเนอร์ “{name}” และแมตช์ทั้งหมดอย่างถาวรใช่ไหม?",
         "deleteContainerSuccess": "ลบคอนเทนเนอร์แล้ว",
+        "deleteContainerTitle": "ลบคอนเทนเนอร์",
+        "deleteContainerPlayedWarning": "มี {count, plural, other {# แมตช์}} ที่แข่งไปแล้ว (กำลังแข่งหรือจบแล้ว) ผลและสถิติจะหายไป",
+        "deleteContainerForce": "บังคับลบ รวมถึงแมตช์ที่แข่งแล้วและสถิติ",
         "resetContainerButton": "รีเซ็ต",
         "resetContainerConfirm": "ลบทุกแมตช์ที่สร้างไว้สำหรับ “{name}” เพื่อสร้างใหม่ใช่ไหม? ทำได้เฉพาะเมื่อยังไม่มีการบันทึกผล",
         "resetContainerSuccess": "รีเซ็ตคอนเทนเนอร์แล้ว",
@@ -3730,6 +3733,7 @@
           "alreadyStarted": "กลุ่มนี้เริ่มแล้ว",
           "notEnoughEntrants": "ต้องมีผู้เข้าแข่งขันที่กำหนดอย่างน้อย 2 ทีม",
           "hasResults": "รีเซ็ตไม่ได้: มีการบันทึกผลแล้ว",
+          "hasPlayedMatchesForceHint": "คอนเทนเนอร์นี้มีแมตช์ที่แข่งแล้ว เลือกตัวเลือกบังคับลบเพื่อลบต่อ",
           "endBeforeStart": "วันสิ้นสุดต้องไม่อยู่ก่อนวันเริ่มต้น"
         },
         "pointsSectionTitle": "การตัดสินคะแนนเท่ากันด้วยแต้ม",
