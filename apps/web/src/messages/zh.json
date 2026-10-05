@@ -3966,7 +3966,9 @@
           "alreadyGenerated": "该阶段已有生成的比赛，重新生成前请先重置或删除其容器。",
           "invalidGraph": "对阵表存在结构性错误（孤立名额或循环），请先修复再保存。",
           "containerMismatch": "其中一个容器不属于该阶段，请刷新页面后重试。",
-          "entrantMismatch": "其中一个已分配的参赛方不属于该赛事，请刷新页面后重试。"
+          "entrantMismatch": "其中一个已分配的参赛方不属于该赛事，请刷新页面后重试。",
+          "bracketStarted": "此对阵图中已有比赛进行，无法再编辑。",
+          "saveFailed": "保存失败，请刷新页面后重试。"
         }
       },
       "legacyImport": {

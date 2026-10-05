@@ -3966,7 +3966,9 @@
           "alreadyGenerated": "Diese Phase hat bereits generierte Matches. Setzen Sie ihre Container zurück oder löschen Sie sie, bevor Sie neu generieren.",
           "invalidGraph": "Das Bracket weist strukturelle Fehler auf (ein verwaister Slot oder ein Zyklus). Beheben Sie diese vor dem Speichern.",
           "containerMismatch": "Einer der Container gehört nicht zu dieser Phase. Laden Sie die Seite neu und versuchen Sie es erneut.",
-          "entrantMismatch": "Einer der zugewiesenen Teilnehmer gehört nicht zu diesem Turnier. Laden Sie die Seite neu und versuchen Sie es erneut."
+          "entrantMismatch": "Einer der zugewiesenen Teilnehmer gehört nicht zu diesem Turnier. Laden Sie die Seite neu und versuchen Sie es erneut.",
+          "bracketStarted": "In diesem Bracket wurden bereits Matches gespielt, es kann nicht mehr bearbeitet werden.",
+          "saveFailed": "Speichern fehlgeschlagen, lade die Seite neu und versuche es erneut."
         }
       },
       "legacyImport": {

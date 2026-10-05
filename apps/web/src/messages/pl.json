@@ -3966,7 +3966,9 @@
           "alreadyGenerated": "Ten etap ma już wygenerowane mecze, zresetuj lub usuń jego kontenery przed ponownym generowaniem.",
           "invalidGraph": "Drabinka zawiera błędy strukturalne (osierocone miejsce lub cykl), popraw je przed zapisem.",
           "containerMismatch": "Jeden z kontenerów nie należy do tego etapu, odśwież stronę i spróbuj ponownie.",
-          "entrantMismatch": "Jeden z przypisanych uczestników nie należy do tego turnieju, odśwież stronę i spróbuj ponownie."
+          "entrantMismatch": "Jeden z przypisanych uczestników nie należy do tego turnieju, odśwież stronę i spróbuj ponownie.",
+          "bracketStarted": "Mecze w tej drabince zostały już rozegrane, nie można jej już edytować.",
+          "saveFailed": "Zapisywanie nie powiodło się, odśwież stronę i spróbuj ponownie."
         }
       },
       "legacyImport": {

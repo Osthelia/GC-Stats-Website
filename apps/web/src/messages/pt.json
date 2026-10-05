@@ -3966,7 +3966,9 @@
           "alreadyGenerated": "Esta fase já tem partidas geradas, redefina ou exclua seus contêineres antes de gerar novamente.",
           "invalidGraph": "O bracket tem erros estruturais (uma vaga órfã ou um ciclo), corrija-os antes de salvar.",
           "containerMismatch": "Um dos contêineres não pertence a esta fase, recarregue a página e tente novamente.",
-          "entrantMismatch": "Um dos participantes atribuídos não pertence a este torneio, recarregue a página e tente novamente."
+          "entrantMismatch": "Um dos participantes atribuídos não pertence a este torneio, recarregue a página e tente novamente.",
+          "bracketStarted": "Partidas deste bracket já foram jogadas, ele não pode mais ser editado.",
+          "saveFailed": "Falha ao salvar, recarregue a página e tente novamente."
         }
       },
       "legacyImport": {

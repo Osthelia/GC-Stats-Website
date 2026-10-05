@@ -3970,7 +3970,9 @@
           "alreadyGenerated": "This stage already has generated matches, reset or delete its containers before regenerating.",
           "invalidGraph": "The bracket has structural errors (an orphan slot or a cycle), fix them before saving.",
           "containerMismatch": "One of the containers does not belong to this stage, reload the page and try again.",
-          "entrantMismatch": "One of the assigned entrants does not belong to this tournament, reload the page and try again."
+          "entrantMismatch": "One of the assigned entrants does not belong to this tournament, reload the page and try again.",
+          "bracketStarted": "Matches in this bracket have already been played, it can no longer be edited.",
+          "saveFailed": "Saving failed, reload the page and try again."
         }
       },
       "legacyImport": {

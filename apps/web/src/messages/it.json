@@ -3970,7 +3970,9 @@
           "alreadyGenerated": "Questa fase ha già match generati, reimposta o elimina i suoi contenitori prima di rigenerarla.",
           "invalidGraph": "Il bracket contiene errori strutturali (uno slot orfano o un ciclo), correggili prima di salvare.",
           "containerMismatch": "Uno dei contenitori non appartiene a questa fase, ricarica la pagina e riprova.",
-          "entrantMismatch": "Uno dei partecipanti assegnati non appartiene a questo torneo, ricarica la pagina e riprova."
+          "entrantMismatch": "Uno dei partecipanti assegnati non appartiene a questo torneo, ricarica la pagina e riprova.",
+          "bracketStarted": "Alcune partite di questo bracket sono già state giocate, non può più essere modificato.",
+          "saveFailed": "Salvataggio non riuscito, ricarica la pagina e riprova."
         }
       },
       "legacyImport": {

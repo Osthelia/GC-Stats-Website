@@ -3966,7 +3966,9 @@
           "alreadyGenerated": "Bu aşamada zaten oluşturulmuş maçlar var, yeniden oluşturmadan önce konteynerlerini sıfırlayın veya silin.",
           "invalidGraph": "Brakette yapısal hatalar var (bağlantısız bir slot veya bir döngü), kaydetmeden önce düzeltin.",
           "containerMismatch": "Konteynerlerden biri bu aşamaya ait değil, sayfayı yeniden yükleyip tekrar deneyin.",
-          "entrantMismatch": "Atanan katılımcılardan biri bu turnuvaya ait değil, sayfayı yeniden yükleyip tekrar deneyin."
+          "entrantMismatch": "Atanan katılımcılardan biri bu turnuvaya ait değil, sayfayı yeniden yükleyip tekrar deneyin.",
+          "bracketStarted": "Bu bracket'teki maçlar zaten oynandı, artık düzenlenemez.",
+          "saveFailed": "Kaydetme başarısız oldu, sayfayı yenileyip tekrar deneyin."
         }
       },
       "legacyImport": {

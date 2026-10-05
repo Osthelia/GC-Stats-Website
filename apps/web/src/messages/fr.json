@@ -3970,7 +3970,9 @@
           "alreadyGenerated": "Ce stage a déjà des matchs générés, réinitialisez ou supprimez ses containers avant de régénérer.",
           "invalidGraph": "Le bracket contient des erreurs de structure (case orpheline ou boucle), corrigez-les avant d'enregistrer.",
           "containerMismatch": "Un des containers n'appartient pas à ce stage, rechargez la page et réessayez.",
-          "entrantMismatch": "Un des entrants assignés n'appartient pas à ce tournoi, rechargez la page et réessayez."
+          "entrantMismatch": "Un des entrants assignés n'appartient pas à ce tournoi, rechargez la page et réessayez.",
+          "bracketStarted": "Des matchs de ce bracket ont déjà été joués, il n'est plus modifiable.",
+          "saveFailed": "L'enregistrement a échoué, rechargez la page et réessayez."
         }
       },
       "legacyImport": {

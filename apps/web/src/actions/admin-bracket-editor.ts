@@ -298,10 +298,8 @@ export type SaveManualGraphResult = { ok: true } | { ok: false; error: string; v
  * the graph shape (same `validateGraph` the generators are held to — no
  * orphan slot, no cycle) before touching anything, then deletes every
  * existing match in the edited containers and re-inserts the graph exactly
- * as drawn. Only allowed while the stage hasn't started (`status ===
- * "pending"`) — editing a bracket with live results doesn't have
- * well-defined semantics (cf. SUIVI.md), so it's out of scope rather than
- * silently allowed to corrupt in-progress results.
+ * as drawn. Only allowed while the stage is pending and none of its matches
+ * is live or completed: the full replace would wipe their results and stats.
  */
 export async function saveManualGraph(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   await requireTournamentsActor();
@@ -316,6 +314,14 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
       .from(stageContainers)
       .where(and(inArray(stageContainers.id, input.containerIds), eq(stageContainers.stageId, input.stageId)));
     if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
+
+    // stages.status stays "pending" until the stage completes, so played matches are the real "started" signal.
+    const [playedMatch] = await db
+      .select({ id: matches.id })
+      .from(matches)
+      .where(and(inArray(matches.containerId, input.containerIds), inArray(matches.status, ["live", "completed"])))
+      .limit(1);
+    if (playedMatch) return { ok: false, error: "bracketStarted" };
   }
 
   const entrantIds = new Set<number>();

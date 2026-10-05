@@ -185,7 +185,7 @@ function BracketEditorCanvasInner({
 }) {
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
-  const readOnly = stageStatus !== "pending";
+  const readOnly = stageStatus !== "pending" || initialMatches.some((m) => m.status !== "pending");
 
   const tbdLabel = t("tbdLabel");
   const initial = useMemo(
@@ -507,8 +507,15 @@ function BracketEditorCanvasInner({
       }),
       edges: currentGraph.edges,
     };
-    const result = await saveManualGraph(payload);
-    setIsSaving(false);
+    let result: Awaited<ReturnType<typeof saveManualGraph>>;
+    try {
+      result = await saveManualGraph(payload);
+    } catch {
+      toast.error(t("error.saveFailed"));
+      return;
+    } finally {
+      setIsSaving(false);
+    }
     if (!result.ok) {
       toast.error(t(`error.${result.error}`));
       return;
