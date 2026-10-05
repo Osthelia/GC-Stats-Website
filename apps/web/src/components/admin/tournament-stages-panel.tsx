@@ -10,7 +10,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { ExternalLinkIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, ExternalLinkIcon, Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter, Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -25,12 +25,12 @@ import { ContainerDialog } from "@/components/admin/container-dialog";
 import { AssignEntrantsDialog } from "@/components/admin/assign-entrants-dialog";
 import { AddGroupMatchDialog } from "@/components/admin/add-group-match-dialog";
 import { deleteStage, toggleStageActive } from "@/actions/admin-stages";
-import { deleteContainer } from "@/actions/admin-containers";
+import { deleteContainer, moveContainer } from "@/actions/admin-containers";
 import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
 import { stageContainerStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
 import type { AdminStageRow, AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 
-function ContainerRow({ stage, container, tournamentId, entrants }: { stage: AdminStageRow; container: AdminContainerRow; tournamentId: number; entrants: AdminEntrantRow[] }) {
+function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLast }: { stage: AdminStageRow; container: AdminContainerRow; tournamentId: number; entrants: AdminEntrantRow[]; isFirst: boolean; isLast: boolean }) {
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -39,6 +39,7 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
   const [editingContainer, setEditingContainer] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [forceDelete, setForceDelete] = useState(false);
+  const [moving, setMoving] = useState<"up" | "down" | null>(null);
 
   const isSwiss = container.containerType === "group" && (container.config as { type?: string } | null)?.type === "swiss";
   const swissStarted = container.matchCount > 0;
@@ -59,6 +60,19 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
       setConfirmingDelete(false);
       router.refresh();
       toast.success(t("deleteContainerSuccess"));
+    });
+  }
+
+  function handleMove(direction: "up" | "down") {
+    setMoving(direction);
+    startTransition(async () => {
+      const result = await moveContainer(container.id, stage.id, direction);
+      setMoving(null);
+      if (!result.ok) {
+        toast.error(t(`error.${result.error}`));
+        return;
+      }
+      router.refresh();
     });
   }
 
@@ -89,17 +103,27 @@ function ContainerRow({ stage, container, tournamentId, entrants }: { stage: Adm
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border px-3 py-2">
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm font-medium">{container.name}</span>
-        <span className="text-xs text-muted-foreground">
-          {t(container.containerType === "bracket" ? "containerTypeBracket" : "containerTypeGroup")}
-          {" · "}
-          <Badge className={cn("align-middle", stageContainerStatusBadgeClass(container.status))}>
-            {t(`containerStatus.${container.status}`)}
-          </Badge>
-          {" · "}
-          {t("matchCount", { count: container.matchCount })}
-        </span>
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col">
+          <Button variant="ghost" size="icon-xs" disabled={isPending || isFirst} onClick={() => handleMove("up")} aria-label={t("moveContainerUp")} title={t("moveContainerUp")}>
+            {moving === "up" ? <Loader2Icon className="animate-spin" /> : <ArrowUpIcon />}
+          </Button>
+          <Button variant="ghost" size="icon-xs" disabled={isPending || isLast} onClick={() => handleMove("down")} aria-label={t("moveContainerDown")} title={t("moveContainerDown")}>
+            {moving === "down" ? <Loader2Icon className="animate-spin" /> : <ArrowDownIcon />}
+          </Button>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-medium">{container.name}</span>
+          <span className="text-xs text-muted-foreground">
+            {t(container.containerType === "bracket" ? "containerTypeBracket" : "containerTypeGroup")}
+            {" · "}
+            <Badge className={cn("align-middle", stageContainerStatusBadgeClass(container.status))}>
+              {t(`containerStatus.${container.status}`)}
+            </Badge>
+            {" · "}
+            {t("matchCount", { count: container.matchCount })}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -256,8 +280,16 @@ export function TournamentStagesPanel({ tournamentId, stages, entrants, canManag
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               {stage.containers.length === 0 && <p className="text-sm text-muted-foreground">{t("noContainers")}</p>}
-              {stage.containers.map((container) => (
-                <ContainerRow key={container.id} stage={stage} container={container} tournamentId={tournamentId} entrants={entrants} />
+              {stage.containers.map((container, index) => (
+                <ContainerRow
+                  key={container.id}
+                  stage={stage}
+                  container={container}
+                  tournamentId={tournamentId}
+                  entrants={entrants}
+                  isFirst={index === 0}
+                  isLast={index === stage.containers.length - 1}
+                />
               ))}
             </CardContent>
           </Card>

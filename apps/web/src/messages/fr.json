@@ -3676,6 +3676,8 @@
         "containerEditDescription": "Le type et le format peuvent être modifiés : convertir en groupe reconstruit le classement à partir des matchs existants.",
         "containerUpdateSuccess": "Container mis à jour.",
         "editContainerButton": "Modifier",
+        "moveContainerUp": "Monter",
+        "moveContainerDown": "Descendre",
         "fieldContainerTypeChangeHint": "Changer le type reconstruit le classement à partir des matchs existants et supprime les liens de bracket.",
         "deleteContainerButton": "Supprimer",
         "deleteContainerConfirm": "Supprimer définitivement le container « {name} » et tous ses matchs ?",
@@ -3752,7 +3754,8 @@
           "roundAboveMax": "Cette ronde dépasse le nombre maximum de rondes du groupe.",
           "sameEntrant": "Les deux cases ne peuvent pas contenir la même équipe.",
           "entrantNotFound": "Cette équipe n'est pas inscrite au tournoi.",
-          "entrantNotInGroup": "Cette équipe n'est pas assignée à ce groupe."
+          "entrantNotInGroup": "Cette équipe n'est pas assignée à ce groupe.",
+          "cannotMove": "Ce container ne peut pas aller plus loin."
         },
         "pointsSectionTitle": "Tiebreaker par points (optionnel)",
         "pointsSectionHint": "Chaque type de point est indépendant : laissez vide pour ne pas l'utiliser. Les points cumulés servent de départage avant Buchholz/diff de rounds.",
@@ -4100,7 +4103,8 @@
           "invalid": "Valeur invalide.",
           "notFound": "Match introuvable.",
           "sameEntrant": "Les deux équipes doivent être différentes.",
-          "entrantNotFound": "Entrant introuvable."
+          "entrantNotFound": "Entrant introuvable.",
+          "entrantNotInGroup": "Cette équipe n'est pas assignée à ce groupe."
         },
         "resultHeading": "Résultat",
         "finalScore": "Score final : {scoreA} - {scoreB}",

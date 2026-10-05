@@ -184,8 +184,8 @@ export async function advanceRoundRobinGroup(tx: Tx, m: ResolvedGroupMatch): Pro
   await bumpRecordAfterMatch(tx, m);
 }
 
-/** Wins/losses per entrant from the container's completed matches. */
-async function recordsFromMatches(tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
+/** Wins/losses per entrant from the container's completed matches (every entrant with a match is listed). */
+export async function recordsFromMatches(tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
   const containerMatches = await tx
     .select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, winnerId: matches.winnerId, status: matches.status })
     .from(matches)

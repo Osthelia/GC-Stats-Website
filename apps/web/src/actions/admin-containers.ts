@@ -2,8 +2,8 @@
  * GC-Stats - admin-containers
  *
  * Admin server actions for stage containers (brackets and groups) inside a
- * tournament stage: creation, type/format changes and point/qualification
- * settings.
+ * tournament stage: creation, ordering, type/format changes and
+ * point/qualification settings.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -17,6 +17,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
+import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -114,7 +115,7 @@ export async function createContainer(stageId: number, input: ContainerInput): P
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), containerType: input.containerType, config: buildConfig(input) })
+    .values({ stageId, name: input.name.trim(), containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -188,6 +189,32 @@ export async function deleteContainer(id: number, stageId: number, force: boolea
     const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(eq(matches.containerId, id));
     await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
+  });
+  return { ok: true };
+}
+
+export type MoveContainerResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "cannotMove" };
+
+/** Swaps a container with its neighbour, then renumbers the whole stage 1..n. */
+export async function moveContainer(id: number, stageId: number, direction: "up" | "down"): Promise<MoveContainerResult> {
+  await requireTournamentsActor();
+
+  if (!Number.isInteger(id) || !Number.isInteger(stageId) || (direction !== "up" && direction !== "down")) return { ok: false, error: "invalid" };
+
+  const siblings = await db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy);
+  const index = siblings.findIndex((c) => c.id === id);
+  if (index === -1) return { ok: false, error: "notFound" };
+
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (target < 0 || target >= siblings.length) return { ok: false, error: "cannotMove" };
+
+  const ordered = siblings.map((c) => c.id);
+  [ordered[index], ordered[target]] = [ordered[target]!, ordered[index]!];
+
+  await db.transaction(async (tx) => {
+    for (const [position, containerId] of ordered.entries()) {
+      await tx.update(stageContainers).set({ displayOrder: position + 1 }).where(eq(stageContainers.id, containerId));
+    }
   });
   return { ok: true };
 }

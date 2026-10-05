@@ -17,6 +17,7 @@
 import { eq, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stages, stageContainers, matches, bracketEdges } from "@gc-stats/db";
+import { nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import {
   generateSingleElimination,
   generateDoubleElimination,
@@ -68,7 +69,7 @@ export async function generateLegacyBracketShape(input: GenerateLegacyShapeInput
   async function makeContainer(name: string, containerType: "bracket" | "group" = "bracket", config: Record<string, unknown> = {}) {
     const [row] = await db
       .insert(stageContainers)
-      .values({ stageId: input.stageId, name, containerType, config: { ...config, legacyImportTarget: true } })
+      .values({ stageId: input.stageId, name, containerType, config: { ...config, legacyImportTarget: true }, displayOrder: nextContainerDisplayOrder(input.stageId) })
       .returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;

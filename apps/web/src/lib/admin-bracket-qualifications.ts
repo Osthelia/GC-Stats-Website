@@ -14,6 +14,7 @@ import { and, asc, eq, inArray, or, sql } from "drizzle-orm";
 import { foldedIlike } from "@/lib/db-search";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stageQualifications, qualificationResults, stageContainers, stages, tournaments, entrants, matches } from "@gc-stats/db";
+import { containerOrderBy } from "@/lib/bracket/container-order";
 
 export type AdminQualificationSource =
   | { kind: "rank"; containerId: number; containerName: string; stageName: string; rankFrom: number; rankTo: number }
@@ -144,6 +145,6 @@ export async function searchQualificationDestinationContainers(query: string): P
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
     .where(and(...conditions))
-    .orderBy(sql`${tournaments.startDate} DESC NULLS LAST`, asc(stages.id), asc(stageContainers.id))
+    .orderBy(sql`${tournaments.startDate} DESC NULLS LAST`, asc(stages.id), ...containerOrderBy)
     .limit(30);
 }

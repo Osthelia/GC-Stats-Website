@@ -15,6 +15,7 @@ import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEn
 import type { Tx } from "./repository";
 import { parseGroupConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
+import { recordsFromMatches } from "./group-progression";
 
 export type GroupStandingsEntry = RankedStandingsEntry & { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
 
@@ -70,12 +71,14 @@ async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number
 }
 
 /** Ranked standings for a group container, using the calculator that
- *  matches its configured format (swiss vs round robin) — read-time only,
- *  `group_entries` doesn't store rank. */
+ *  matches its configured format (swiss vs round robin). Wins/losses are
+ *  derived from the matches, and an entrant playing in the group without a
+ *  `group_entries` row is still listed. */
 export async function computeContainerStandings(tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
   const config = parseGroupConfig(rawConfig);
-  const [entries, points, mapRecord, completedMatches] = await Promise.all([
+  const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+    recordsFromMatches(tx, containerId),
     config.pointsConfig ? computeContainerPoints(tx, containerId, config.pointsConfig) : null,
     computeMapRecord(tx, containerId),
     // Head to head input, only read by round robin.
@@ -86,6 +89,20 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
           .from(matches)
           .where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
   ]);
+  const storedById = new Map(storedEntries.map((e) => [e.entrantId, e]));
+  const entrantIds = [...new Set([...storedById.keys(), ...matchRecord.keys()])];
+  const entries = entrantIds.map((entrantId) => {
+    const stored = storedById.get(entrantId);
+    const r = matchRecord.get(entrantId) ?? { wins: 0, losses: 0 };
+    return {
+      entrantId,
+      seed: stored?.seed ?? null,
+      wins: r.wins + (stored?.hadBye ? 1 : 0),
+      losses: r.losses,
+      buchholz: stored?.buchholz ?? 0,
+    };
+  });
+
   const emptyRecord: MapRecord = { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
   const roundDiffOf = (entrantId: number) => {
     const rec = mapRecord.get(entrantId) ?? emptyRecord;

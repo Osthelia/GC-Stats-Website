@@ -3672,6 +3672,8 @@
         "containerEditDescription": "Tür ve format değiştirilebilir: gruba dönüştürmek, sıralamayı mevcut maçlardan yeniden oluşturur.",
         "containerUpdateSuccess": "Konteyner güncellendi.",
         "editContainerButton": "Düzenle",
+        "moveContainerUp": "Yukarı taşı",
+        "moveContainerDown": "Aşağı taşı",
         "fieldContainerTypeChangeHint": "Türü değiştirmek, sıralamayı mevcut maçlardan yeniden oluşturur ve bracket bağlantılarını kaldırır.",
         "deleteContainerButton": "Sil",
         "deleteContainerConfirm": "“{name}” konteyneri ve tüm maçları kalıcı olarak silinsin mi?",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "Bu tur, grubun azami tur sayısını aşıyor.",
           "sameEntrant": "İki slot aynı takımı içeremez.",
           "entrantNotFound": "Bu takım turnuvaya kayıtlı değil.",
-          "entrantNotInGroup": "Bu takım bu gruba atanmamış."
+          "entrantNotInGroup": "Bu takım bu gruba atanmamış.",
+          "cannotMove": "Bu konteyner daha fazla taşınamaz."
         },
         "pointsSectionTitle": "Puan eşitlik bozucu (isteğe bağlı)",
         "pointsSectionHint": "Her puan türü bağımsızdır, kullanmamak için boş bırakın. Biriken puanlar, Buchholz/tur farkından önce eşitlikleri bozar.",
@@ -4096,7 +4099,8 @@
           "invalid": "Geçersiz değer.",
           "notFound": "Maç bulunamadı.",
           "sameEntrant": "İki takım farklı olmalıdır.",
-          "entrantNotFound": "Katılımcı bulunamadı."
+          "entrantNotFound": "Katılımcı bulunamadı.",
+          "entrantNotInGroup": "Bu takım bu gruba atanmamış."
         },
         "resultHeading": "Sonuç",
         "finalScore": "Final skoru: {scoreA} - {scoreB}",

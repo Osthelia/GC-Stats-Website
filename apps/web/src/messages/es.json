@@ -3676,6 +3676,8 @@
         "containerEditDescription": "El tipo y el formato se pueden cambiar: convertir en grupo reconstruye la clasificación a partir de los partidos existentes.",
         "containerUpdateSuccess": "Contenedor actualizado.",
         "editContainerButton": "Editar",
+        "moveContainerUp": "Subir",
+        "moveContainerDown": "Bajar",
         "fieldContainerTypeChangeHint": "Cambiar el tipo reconstruye la clasificación a partir de los partidos existentes y elimina los enlaces del bracket.",
         "deleteContainerButton": "Eliminar",
         "deleteContainerConfirm": "¿Eliminar definitivamente el contenedor “{name}” y todos sus partidos?",
@@ -3752,7 +3754,8 @@
           "roundAboveMax": "Esta ronda supera el número máximo de rondas del grupo.",
           "sameEntrant": "Las dos plazas no pueden tener el mismo equipo.",
           "entrantNotFound": "Este equipo no está inscrito en el torneo.",
-          "entrantNotInGroup": "Este equipo no está asignado a este grupo."
+          "entrantNotInGroup": "Este equipo no está asignado a este grupo.",
+          "cannotMove": "Este contenedor no se puede mover más."
         },
         "pointsSectionTitle": "Desempate por puntos (opcional)",
         "pointsSectionHint": "Cada tipo de punto es independiente: déjalo vacío para no usarlo. Los puntos acumulados desempatan antes del Buchholz y la diferencia de rondas.",
@@ -4100,7 +4103,8 @@
           "invalid": "Valor no válido.",
           "notFound": "Partido no encontrado.",
           "sameEntrant": "Los dos equipos deben ser distintos.",
-          "entrantNotFound": "Participante no encontrado."
+          "entrantNotFound": "Participante no encontrado.",
+          "entrantNotInGroup": "Este equipo no está asignado a este grupo."
         },
         "resultHeading": "Resultado",
         "finalScore": "Resultado final: {scoreA} - {scoreB}",

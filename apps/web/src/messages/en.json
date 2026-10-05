@@ -3676,6 +3676,8 @@
         "containerEditDescription": "Type and format can be changed: converting to a group rebuilds its standings from the existing matches.",
         "containerUpdateSuccess": "Container updated.",
         "editContainerButton": "Edit",
+        "moveContainerUp": "Move up",
+        "moveContainerDown": "Move down",
         "fieldContainerTypeChangeHint": "Changing the type rebuilds the standings from existing matches and removes bracket links.",
         "deleteContainerButton": "Delete",
         "deleteContainerConfirm": "Permanently delete the container “{name}” and all its matches?",
@@ -3752,7 +3754,8 @@
           "roundAboveMax": "This round exceeds the group's maximum number of rounds.",
           "sameEntrant": "Both slots can't hold the same team.",
           "entrantNotFound": "This team isn't registered in the tournament.",
-          "entrantNotInGroup": "This team isn't assigned to this group."
+          "entrantNotInGroup": "This team isn't assigned to this group.",
+          "cannotMove": "This container can't be moved further."
         },
         "pointsSectionTitle": "Points tiebreaker (optional)",
         "pointsSectionHint": "Each point type is independent: leave blank to not use it. Accumulated points break ties before Buchholz/round diff.",
@@ -4100,7 +4103,8 @@
           "invalid": "Invalid value.",
           "notFound": "Match not found.",
           "sameEntrant": "The two teams must be different.",
-          "entrantNotFound": "Entrant not found."
+          "entrantNotFound": "Entrant not found.",
+          "entrantNotInGroup": "This team isn't assigned to this group."
         },
         "resultHeading": "Result",
         "finalScore": "Final score: {scoreA} - {scoreB}",

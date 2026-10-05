@@ -13,6 +13,7 @@ import { cache } from "react";
 import { asc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stages, stageContainers, matches, bracketEdges, matchSeeds, entrants } from "@gc-stats/db";
+import { containerOrderBy } from "@/lib/bracket/container-order";
 
 export type EditorMatch = {
   id: number;
@@ -61,7 +62,7 @@ export const getStageEditorData = cache(async (stageId: number): Promise<StageEd
 
   const [[stage], containerRows, matchRows, edgeRows, seedRows, entrantRows] = await Promise.all([
     db.select().from(stages).where(eq(stages.id, stageId)),
-    db.select().from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(asc(stageContainers.id)),
+    db.select().from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy),
     db.select().from(matches).where(inArray(matches.containerId, stageContainerIds)).orderBy(asc(matches.round), asc(matches.id)),
     db.select().from(bracketEdges).where(inArray(bracketEdges.fromMatchId, stageMatchIds)),
     db.select().from(matchSeeds).where(inArray(matchSeeds.matchId, stageMatchIds)),

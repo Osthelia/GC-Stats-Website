@@ -3672,6 +3672,8 @@
         "containerEditDescription": "Typ i format można zmienić: konwersja na grupę odbudowuje tabelę z istniejących meczów.",
         "containerUpdateSuccess": "Kontener zaktualizowany.",
         "editContainerButton": "Edytuj",
+        "moveContainerUp": "Przesuń w górę",
+        "moveContainerDown": "Przesuń w dół",
         "fieldContainerTypeChangeHint": "Zmiana typu odbudowuje tabelę z istniejących meczów i usuwa połączenia drabinki.",
         "deleteContainerButton": "Usuń",
         "deleteContainerConfirm": "Trwale usunąć kontener „{name}” i wszystkie jego mecze?",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "Ta runda przekracza maksymalną liczbę rund grupy.",
           "sameEntrant": "Oba miejsca nie mogą zawierać tej samej drużyny.",
           "entrantNotFound": "Ta drużyna nie jest zapisana do turnieju.",
-          "entrantNotInGroup": "Ta drużyna nie jest przypisana do tej grupy."
+          "entrantNotInGroup": "Ta drużyna nie jest przypisana do tej grupy.",
+          "cannotMove": "Tego kontenera nie można przesunąć dalej."
         },
         "pointsSectionTitle": "Rozstrzyganie remisów punktami",
         "pointsSectionHint": "Każdy rodzaj punktów jest niezależny: zostaw puste, aby go nie używać. Zgromadzone punkty rozstrzygają remisy przed Buchholzem/różnicą rund.",
@@ -4096,7 +4099,8 @@
           "invalid": "Nieprawidłowa wartość.",
           "notFound": "Nie znaleziono meczu.",
           "sameEntrant": "Obie drużyny muszą być różne.",
-          "entrantNotFound": "Nie znaleziono uczestnika."
+          "entrantNotFound": "Nie znaleziono uczestnika.",
+          "entrantNotInGroup": "Ta drużyna nie jest przypisana do tej grupy."
         },
         "resultHeading": "Wynik",
         "finalScore": "Wynik końcowy: {scoreA} - {scoreB}",

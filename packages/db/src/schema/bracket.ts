@@ -97,6 +97,8 @@ export const stageContainers = pgTable("stage_containers", {
   containerType: containerTypeEnum("container_type").notNull(),
   config: jsonb("config").notNull().default({}),
   status: stageStatusEnum("status").notNull().default("pending"),
+  // Position within its stage, set by the admin (ties broken by id).
+  displayOrder: integer("display_order").notNull().default(0),
 }, (t) => [
   index("stage_containers_stage_id_idx").on(t.stageId),
 ]);

@@ -15,6 +15,7 @@
 import { eq, inArray, asc, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stages, stageContainers, matches, matchSeeds, groupEntries, entrants, PERMISSIONS } from "@gc-stats/db";
+import { nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { requireActorPermission } from "@/lib/rbac";
 import {
   generateSingleElimination,
@@ -75,7 +76,7 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
   // the id map to the generator/repository — same shared function whether
   // this graph comes from a template or (eventually) the visual editor.
   async function makeContainer(name: string, containerType: "bracket" | "group" = "bracket", config: Record<string, unknown> = {}) {
-    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, config }).returning({ id: stageContainers.id });
+    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, config, displayOrder: nextContainerDisplayOrder(input.stageId) }).returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;
   }

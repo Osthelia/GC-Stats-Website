@@ -3672,6 +3672,8 @@
         "containerEditDescription": "يمكن تغيير النوع والصيغة: التحويل إلى مجموعة يعيد بناء الترتيب من المباريات الحالية.",
         "containerUpdateSuccess": "تم تحديث الحاوية.",
         "editContainerButton": "تعديل",
+        "moveContainerUp": "نقل لأعلى",
+        "moveContainerDown": "نقل لأسفل",
         "fieldContainerTypeChangeHint": "تغيير النوع يعيد بناء الترتيب من المباريات الحالية ويزيل روابط الشجرة.",
         "deleteContainerButton": "حذف",
         "deleteContainerConfirm": "هل تريد حذف الحاوية “{name}” وكل مبارياتها نهائيًا؟",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "هذه الجولة تتجاوز الحد الأقصى لعدد جولات المجموعة.",
           "sameEntrant": "لا يمكن أن تحتوي الخانتان على الفريق نفسه.",
           "entrantNotFound": "هذا الفريق غير مسجل في البطولة.",
-          "entrantNotInGroup": "هذا الفريق غير مُسند إلى هذه المجموعة."
+          "entrantNotInGroup": "هذا الفريق غير مُسند إلى هذه المجموعة.",
+          "cannotMove": "لا يمكن نقل هذه الحاوية أكثر."
         },
         "pointsSectionTitle": "كسر التعادل بالنقاط",
         "pointsSectionHint": "كل نوع نقاط مستقل: اتركه فارغًا لعدم استخدامه. تكسر النقاط المتراكمة التعادل قبل Buchholz وفارق الجولات.",
@@ -4096,7 +4099,8 @@
           "invalid": "قيمة غير صالحة.",
           "notFound": "المباراة غير موجودة.",
           "sameEntrant": "يجب أن يكون الفريقان مختلفين.",
-          "entrantNotFound": "المشارك غير موجود."
+          "entrantNotFound": "المشارك غير موجود.",
+          "entrantNotInGroup": "هذا الفريق غير مُسند إلى هذه المجموعة."
         },
         "resultHeading": "النتيجة",
         "finalScore": "النتيجة النهائية: {scoreA} - {scoreB}",

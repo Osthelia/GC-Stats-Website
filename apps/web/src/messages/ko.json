@@ -3672,6 +3672,8 @@
         "containerEditDescription": "유형과 형식을 변경할 수 있으며, 그룹으로 변환하면 기존 경기로 순위표를 다시 만듭니다.",
         "containerUpdateSuccess": "컨테이너가 수정되었습니다.",
         "editContainerButton": "수정",
+        "moveContainerUp": "위로 이동",
+        "moveContainerDown": "아래로 이동",
         "fieldContainerTypeChangeHint": "유형을 변경하면 기존 경기로 순위표를 다시 만들고 브래킷 연결을 제거합니다.",
         "deleteContainerButton": "삭제",
         "deleteContainerConfirm": "컨테이너 “{name}”과(와) 그 안의 모든 경기를 영구적으로 삭제하시겠습니까?",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "이 라운드는 그룹의 최대 라운드 수를 초과합니다.",
           "sameEntrant": "두 슬롯에 같은 팀을 넣을 수 없습니다.",
           "entrantNotFound": "이 팀은 토너먼트에 등록되어 있지 않습니다.",
-          "entrantNotInGroup": "이 팀은 이 그룹에 배정되어 있지 않습니다."
+          "entrantNotInGroup": "이 팀은 이 그룹에 배정되어 있지 않습니다.",
+          "cannotMove": "이 컨테이너는 더 이상 이동할 수 없습니다."
         },
         "pointsSectionTitle": "포인트 타이브레이커 (선택 항목)",
         "pointsSectionHint": "각 포인트 유형은 독립적으로 작동합니다. 사용하지 않으려면 비워 두세요. 누적 포인트는 Buchholz/라운드 득실보다 먼저 동점을 가릅니다.",
@@ -4096,7 +4099,8 @@
           "invalid": "유효하지 않은 값입니다.",
           "notFound": "경기를 찾을 수 없습니다.",
           "sameEntrant": "두 팀은 서로 달라야 합니다.",
-          "entrantNotFound": "참가자를 찾을 수 없습니다."
+          "entrantNotFound": "참가자를 찾을 수 없습니다.",
+          "entrantNotInGroup": "이 팀은 이 그룹에 배정되어 있지 않습니다."
         },
         "resultHeading": "결과",
         "finalScore": "최종 스코어: {scoreA} - {scoreB}",

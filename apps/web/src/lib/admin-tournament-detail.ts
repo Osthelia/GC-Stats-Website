@@ -13,6 +13,7 @@
 import { asc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { entrants, stages, stageContainers, matches, groupEntries, pickemStageSettings } from "@gc-stats/db";
+import { containerOrderBy } from "@/lib/bracket/container-order";
 
 export type AdminContainerOption = { id: number; name: string; stageName: string; containerType: "bracket" | "group" };
 
@@ -23,7 +24,7 @@ export async function listTournamentContainerOptions(tournamentId: number): Prom
     .from(stageContainers)
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .where(eq(stages.tournamentId, tournamentId))
-    .orderBy(asc(stages.sequenceOrder), asc(stageContainers.id));
+    .orderBy(asc(stages.sequenceOrder), ...containerOrderBy);
   return rows.map(({ id, name, stageName, containerType }) => ({ id, name, stageName, containerType }));
 }
 
@@ -77,9 +78,9 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
   const tournamentStageIds = db.select({ id: stages.id }).from(stages).where(eq(stages.tournamentId, tournamentId));
   const tournamentContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds));
 
-  const [stageRows, unsortedContainerRows, matchCounts, groupEntryRows, pickemRows] = await Promise.all([
+  const [stageRows, containerRows, matchCounts, groupEntryRows, pickemRows] = await Promise.all([
     db.select().from(stages).where(eq(stages.tournamentId, tournamentId)).orderBy(asc(stages.sequenceOrder), asc(stages.id)),
-    db.select().from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds)).orderBy(asc(stageContainers.id)),
+    db.select().from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds)).orderBy(...containerOrderBy),
     db
       .select({ containerId: matches.containerId, count: sql<number>`count(*)::int`, played: sql<number>`count(*) filter (where ${matches.status} in ('live', 'completed'))::int` })
       .from(matches)
@@ -90,20 +91,7 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
   ]);
   if (stageRows.length === 0) return [];
 
-  // Creation order matters beyond display: the bracket layout algorithm
-  // (lib/bracket-layout.ts) uses this array's order as its tie-break for
-  // which lane a merged container (e.g. a grand final) anchors to. Creation
-  // order alone isn't reliable though — the V1 migration's phase-tree walk
-  // doesn't guarantee an "Upper Bracket" container was inserted before its
-  // sibling "Lower Bracket" (explicit user report: Lower sometimes rendered
-  // above Upper). Every naming scheme in use always starts a lower-bracket
-  // container's name with "Lower", so stable-sorting those after everything
-  // else fixes the lane order without disturbing id order among non-Lower
-  // containers (including across separately-grouped brackets, each grouped
-  // subset keeps its own relative order — see bracket-group-containers.ts).
-  const containerRows = unsortedContainerRows.sort(
-    (a, b) => Number(a.name.trim().toLowerCase().startsWith("lower")) - Number(b.name.trim().toLowerCase().startsWith("lower")),
-  );
+  // Array order is also the bracket layout's lane tie-break (lib/bracket-layout.ts).
   const countByContainer = new Map(matchCounts.map((r) => [r.containerId, r.count]));
   const playedByContainer = new Map(matchCounts.map((r) => [r.containerId, r.played]));
 

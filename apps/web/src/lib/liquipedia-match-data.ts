@@ -12,6 +12,7 @@
 import { and, asc, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { tournaments, stages, stageContainers, matches, entrants, matchVetos, maps, mapRoundsRaw, liquipediaTeamNames } from "@gc-stats/db";
+import { containerOrderBy } from "@/lib/bracket/container-order";
 import { buildMatchPageWikicode, type WikicodeMap, type WikicodeVetoStep } from "@/lib/liquipedia-match-wikicode";
 import { knownScheduledAt } from "@/lib/match-schedule";
 
@@ -203,7 +204,7 @@ export async function getStageLiquipediaWikicodes(stageId: number): Promise<Liqu
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .where(and(eq(stageContainers.stageId, stageId), or(isNotNull(matches.entrantAId), isNotNull(matches.entrantBId))))
-    .orderBy(asc(stageContainers.id), asc(matches.round), asc(matches.scheduledAt), asc(matches.displayOrder), asc(matches.id));
+    .orderBy(...containerOrderBy, asc(matches.round), asc(matches.scheduledAt), asc(matches.displayOrder), asc(matches.id));
   const order = new Map(rows.map((r, index) => [r.id, index]));
   const result = await buildWikicodes(rows.map((r) => r.id));
   return result.sort((x, y) => order.get(x.matchId)! - order.get(y.matchId)!);

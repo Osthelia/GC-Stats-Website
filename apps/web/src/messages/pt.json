@@ -3672,6 +3672,8 @@
         "containerEditDescription": "O tipo e o formato podem ser alterados: converter em grupo reconstrói a classificação a partir das partidas existentes.",
         "containerUpdateSuccess": "Contêiner atualizado.",
         "editContainerButton": "Editar",
+        "moveContainerUp": "Mover para cima",
+        "moveContainerDown": "Mover para baixo",
         "fieldContainerTypeChangeHint": "Alterar o tipo reconstrói a classificação a partir das partidas existentes e remove os vínculos do bracket.",
         "deleteContainerButton": "Excluir",
         "deleteContainerConfirm": "Excluir o contêiner “{name}” e todas as suas partidas permanentemente?",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "Esta rodada excede o número máximo de rodadas do grupo.",
           "sameEntrant": "As duas vagas não podem ter o mesmo time.",
           "entrantNotFound": "Este time não está inscrito no torneio.",
-          "entrantNotInGroup": "Este time não está atribuído a este grupo."
+          "entrantNotInGroup": "Este time não está atribuído a este grupo.",
+          "cannotMove": "Este contêiner não pode ser movido mais."
         },
         "pointsSectionTitle": "Desempate por pontos (opcional)",
         "pointsSectionHint": "Cada tipo de ponto é independente: deixe em branco para não usá-lo. Os pontos acumulados desempatam antes do Buchholz/saldo de rounds.",
@@ -4096,7 +4099,8 @@
           "invalid": "Valor inválido.",
           "notFound": "Partida não encontrada.",
           "sameEntrant": "Os dois times devem ser diferentes.",
-          "entrantNotFound": "Participante não encontrado."
+          "entrantNotFound": "Participante não encontrado.",
+          "entrantNotInGroup": "Este time não está atribuído a este grupo."
         },
         "resultHeading": "Resultado",
         "finalScore": "Placar final: {scoreA} - {scoreB}",

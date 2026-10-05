@@ -15,7 +15,7 @@
 import { eq, ne, and, inArray, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, entrants, maps, matchVetos, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, stageContainers, stages, teams, liquipediaTeamNames, PERMISSIONS } from "@gc-stats/db";
+import { matches, entrants, maps, matchVetos, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, stageContainers, stages, groupEntries, teams, liquipediaTeamNames, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { resolveMatch, MatchResolutionValidationError } from "@/lib/bracket/match-resolution-service";
@@ -67,11 +67,15 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
       fieldErrors.entrantBId = "sameEntrant";
     }
     const [matchTournament] = await db
-      .select({ tournamentId: stages.tournamentId })
+      .select({ tournamentId: stages.tournamentId, containerType: stageContainers.containerType })
       .from(stageContainers)
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
       .where(eq(stageContainers.id, existing.containerId))
       .limit(1);
+    const groupEntrantIds =
+      matchTournament!.containerType === "group"
+        ? new Set((await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, existing.containerId))).map((e) => e.entrantId))
+        : new Set<number>();
     for (const [field, id] of [
       ["entrantAId", input.entrantAId],
       ["entrantBId", input.entrantBId],
@@ -83,6 +87,8 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
         .where(and(eq(entrants.id, id), eq(entrants.tournamentId, matchTournament!.tournamentId)))
         .limit(1);
       if (!row) fieldErrors[field] = "entrantNotFound";
+      // Standings only track entrants registered in the group.
+      else if (groupEntrantIds.size > 0 && !groupEntrantIds.has(id)) fieldErrors[field] = "entrantNotInGroup";
     }
   }
 

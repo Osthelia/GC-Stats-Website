@@ -3672,6 +3672,8 @@
         "containerEditDescription": "種別とフォーマットは変更できます。グループに変換すると、既存の試合から順位表を再構築します。",
         "containerUpdateSuccess": "コンテナを更新しました。",
         "editContainerButton": "編集",
+        "moveContainerUp": "上へ移動",
+        "moveContainerDown": "下へ移動",
         "fieldContainerTypeChangeHint": "種別を変更すると、既存の試合から順位表を再構築し、ブラケットの接続を削除します。",
         "deleteContainerButton": "削除",
         "deleteContainerConfirm": "コンテナ「{name}」とそのすべての試合を完全に削除しますか。",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "このラウンドはグループの最大ラウンド数を超えています。",
           "sameEntrant": "両方の枠に同じチームは設定できません。",
           "entrantNotFound": "このチームはトーナメントに登録されていません。",
-          "entrantNotInGroup": "このチームはこのグループに割り当てられていません。"
+          "entrantNotInGroup": "このチームはこのグループに割り当てられていません。",
+          "cannotMove": "このコンテナはこれ以上移動できません。"
         },
         "pointsSectionTitle": "タイブレーク用ポイント（任意）",
         "pointsSectionHint": "各ポイントタイプは独立しています。使用しない場合は空欄のままにしてください。獲得ポイントはブフホルツ/ラウンド差より先にタイブレークに使われます。",
@@ -4096,7 +4099,8 @@
           "invalid": "無効な値です。",
           "notFound": "試合が見つかりません。",
           "sameEntrant": "2つのチームは異なる必要があります。",
-          "entrantNotFound": "出場チームが見つかりません。"
+          "entrantNotFound": "出場チームが見つかりません。",
+          "entrantNotInGroup": "このチームはこのグループに割り当てられていません。"
         },
         "resultHeading": "結果",
         "finalScore": "最終スコア: {scoreA} - {scoreB}",

@@ -3672,6 +3672,8 @@
         "containerEditDescription": "类型和赛制均可更改：转换为小组会根据现有比赛重建积分榜。",
         "containerUpdateSuccess": "容器已更新。",
         "editContainerButton": "编辑",
+        "moveContainerUp": "上移",
+        "moveContainerDown": "下移",
         "fieldContainerTypeChangeHint": "更改类型会根据现有比赛重建积分榜，并移除对阵图连线。",
         "deleteContainerButton": "删除",
         "deleteContainerConfirm": "确定要永久删除容器“{name}”及其所有比赛吗？",
@@ -3748,7 +3750,8 @@
           "roundAboveMax": "该轮次超过了小组的最大轮数。",
           "sameEntrant": "两个名额不能是同一支队伍。",
           "entrantNotFound": "该队伍未报名此赛事。",
-          "entrantNotInGroup": "该队伍未分配到此小组。"
+          "entrantNotInGroup": "该队伍未分配到此小组。",
+          "cannotMove": "此容器无法再移动。"
         },
         "pointsSectionTitle": "积分同分判定（可选）",
         "pointsSectionHint": "每种积分类型相互独立，留空表示不使用。累计积分会在 Buchholz/轮次差之前用于判定同分名次。",
@@ -4096,7 +4099,8 @@
           "invalid": "值无效。",
           "notFound": "未找到该比赛。",
           "sameEntrant": "两支战队必须不同。",
-          "entrantNotFound": "未找到该参赛方。"
+          "entrantNotFound": "未找到该参赛方。",
+          "entrantNotInGroup": "该队伍未分配到此小组。"
         },
         "resultHeading": "结果",
         "finalScore": "最终比分：{scoreA} - {scoreB}",
