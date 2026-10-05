@@ -60,7 +60,10 @@ export async function getStagePickemStatus(stageId: number): Promise<StagePickem
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .where(eq(stageContainers.stageId, stageId));
 
-  const closesAt = row?.earliest ?? null;
+  const closesAtRaw = row?.earliest ?? null;
+  const closesAt = closesAtRaw
+      ? new Date(closesAtRaw)
+      : null;
   const enabled = settings?.enabled ?? false;
   const opensAt = settings?.opensAt ?? null;
 
