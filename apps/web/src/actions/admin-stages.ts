@@ -15,6 +15,7 @@ import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { stages, tournaments, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
+import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -23,9 +24,6 @@ async function requireTournamentsActor(): Promise<void> {
 export type StageField = "name" | "sequenceOrder" | "status" | "startDate" | "endDate" | "liquipediaLink";
 export type StageFieldErrors = Partial<Record<StageField, string>>;
 export type StageResult = { ok: true; id: number } | { ok: false; fieldErrors: StageFieldErrors };
-
-const STAGE_STATUSES = ["pending", "active", "completed"] as const;
-export type StageStatus = (typeof STAGE_STATUSES)[number];
 
 export type StageInput = { name: string; sequenceOrder: number; status: StageStatus; startDate: string | null; endDate: string | null; liquipediaLink: string };
 
@@ -46,7 +44,7 @@ function validateStage(input: StageInput): StageFieldErrors {
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
   if (!Number.isInteger(input.sequenceOrder) || input.sequenceOrder < 1) fieldErrors.sequenceOrder = "invalid";
-  if (!STAGE_STATUSES.includes(input.status)) fieldErrors.status = "invalid";
+  if (!isStageStatus(input.status)) fieldErrors.status = "invalid";
 
   if (input.startDate !== null && !DATE_RE.test(input.startDate)) fieldErrors.startDate = "invalid";
   if (input.endDate !== null && !DATE_RE.test(input.endDate)) fieldErrors.endDate = "invalid";

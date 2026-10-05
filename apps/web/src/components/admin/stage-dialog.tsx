@@ -14,13 +14,12 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
-import { createStage, updateStage, type StageFieldErrors, type StageStatus } from "@/actions/admin-stages";
+import { StageStatusSelect } from "@/components/admin/stage-status-select";
+import { createStage, updateStage, type StageFieldErrors } from "@/actions/admin-stages";
 import type { AdminStageRow } from "@/lib/admin-tournament-detail";
-
-const STAGE_STATUSES: StageStatus[] = ["pending", "active", "completed"];
+import type { StageStatus } from "@/lib/stage-status";
 
 type FormState = { name: string; sequenceOrder: string; status: StageStatus; startDate: string; endDate: string; liquipediaLink: string };
 
@@ -76,8 +75,6 @@ export function StageDialog({
     });
   }
 
-  const statusItems = Object.fromEntries(STAGE_STATUSES.map((s) => [s, t(`stageStatus.${s}`)]));
-
   const err = (field: keyof StageFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
 
   return (
@@ -96,18 +93,7 @@ export function StageDialog({
             <Input id="stg-order" type="number" min={1} value={form.sequenceOrder} onChange={(e) => setForm((p) => ({ ...p, sequenceOrder: e.target.value }))} aria-invalid={!!fieldErrors.sequenceOrder} />
           </FormField>
           <FormField label={t("fieldStatus")} htmlFor="stg-status" required error={err("status")} hint={t("fieldStatusHint")}>
-            <Select items={statusItems} value={form.status} onValueChange={(v) => v && setForm((p) => ({ ...p, status: v as StageStatus }))}>
-              <SelectTrigger id="stg-status" className="w-full" aria-invalid={!!fieldErrors.status}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STAGE_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {statusItems[s]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <StageStatusSelect id="stg-status" value={form.status} onChange={(status) => setForm((p) => ({ ...p, status }))} invalid={!!fieldErrors.status} />
           </FormField>
           <div className="grid grid-cols-2 gap-4">
             <FormField label={t("fieldStartDate")} htmlFor="stg-start-date" error={err("startDate")}>

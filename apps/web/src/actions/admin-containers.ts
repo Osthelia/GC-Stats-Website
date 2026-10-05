@@ -18,6 +18,7 @@ import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges,
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
+import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -25,6 +26,7 @@ async function requireTournamentsActor(): Promise<void> {
 
 export type ContainerField =
   | "name"
+  | "status"
   | "containerType"
   | "qualifyAtWins"
   | "eliminateAtLosses"
@@ -49,8 +51,8 @@ export type PointsInput = {
 };
 
 export type ContainerInput =
-  | { name: string; containerType: "bracket" }
-  | ({ name: string; containerType: "group"; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
+  | { name: string; status: StageStatus; containerType: "bracket" }
+  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
 
 const POINTS_FIELDS: (keyof PointsInput)[] = ["matchWinPoints", "mapWinPoints", "roundWinPoints", "matchForfeitWinPoints", "mapForfeitWinPoints"];
 
@@ -59,6 +61,7 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
   const name = input.name.trim();
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
+  if (!isStageStatus(input.status)) fieldErrors.status = "invalid";
 
   if (input.containerType === "group") {
     if (input.groupFormat === "swiss") {
@@ -115,7 +118,7 @@ export async function createContainer(stageId: number, input: ContainerInput): P
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
+    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -148,7 +151,7 @@ export async function updateContainer(id: number, stageId: number, input: Contai
   const config = legacyImportTarget ? { ...buildConfig(input), legacyImportTarget: true } : buildConfig(input);
 
   await db.transaction(async (tx) => {
-    await tx.update(stageContainers).set({ name: input.name.trim(), containerType: input.containerType, config }).where(eq(stageContainers.id, id));
+    await tx.update(stageContainers).set({ name: input.name.trim(), status: input.status, containerType: input.containerType, config }).where(eq(stageContainers.id, id));
     if (existing.containerType === input.containerType) return;
 
     if (input.containerType === "group") {

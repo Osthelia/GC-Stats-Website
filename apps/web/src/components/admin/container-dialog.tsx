@@ -17,15 +17,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { createContainer, updateContainer, type ContainerFieldErrors, type ContainerInput, type PointsInput } from "@/actions/admin-containers";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
+import type { StageStatus } from "@/lib/stage-status";
 
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
 
 type FormState = {
   name: string;
+  status: StageStatus;
   containerType: ContainerType;
   groupFormat: GroupFormat;
   qualifyAtWins: string;
@@ -41,6 +44,7 @@ type FormState = {
 function emptyState(): FormState {
   return {
     name: "",
+    status: "pending",
     containerType: "bracket",
     groupFormat: "swiss",
     qualifyAtWins: "3",
@@ -57,6 +61,7 @@ function emptyState(): FormState {
 function stateFromContainer(container: AdminContainerRow): FormState {
   const base = emptyState();
   base.name = container.name;
+  base.status = container.status;
   base.containerType = container.containerType;
   if (container.containerType !== "group") return base;
 
@@ -121,9 +126,10 @@ export function ContainerDialog({
     };
     const input: ContainerInput =
       form.containerType === "bracket"
-        ? { name: form.name, containerType: "bracket" }
+        ? { name: form.name, status: form.status, containerType: "bracket" }
         : {
             name: form.name,
+            status: form.status,
             containerType: "group",
             groupFormat: form.groupFormat,
             qualifyAtWins: form.groupFormat === "swiss" && form.qualifyAtWins.trim() !== "" ? Number(form.qualifyAtWins) : null,
@@ -156,6 +162,10 @@ export function ContainerDialog({
         <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto py-2">
           <FormField label={t("fieldContainerName")} htmlFor="ctr-name" required error={err("name")}>
             <Input id="ctr-name" value={form.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!fieldErrors.name} />
+          </FormField>
+
+          <FormField label={t("fieldStatus")} htmlFor="ctr-status" required error={err("status")} hint={t("fieldStatusHint")}>
+            <StageStatusSelect id="ctr-status" value={form.status} onChange={(status) => set("status", status)} invalid={!!fieldErrors.status} />
           </FormField>
 
           <FormField label={t("fieldContainerType")} htmlFor="ctr-type" required hint={container ? t("fieldContainerTypeChangeHint") : undefined}>
