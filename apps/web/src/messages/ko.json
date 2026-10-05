@@ -5606,6 +5606,7 @@
       "empty": "이미지가 비어 있어요.",
       "invalidImage": "유효한 이미지 파일이 아니에요.",
       "invalidMembership": "제안한 로스터 변경 항목 중 하나가 유효하지 않아요.",
+      "membershipDateOrder": "종료일은 시작일 이후여야 합니다.",
       "tooManyAdditions": "한 번에 최대 6개의 새 항목만 제안할 수 있어요.",
       "invalidNameHistory": "제안한 이름 이력 변경 항목 중 하나가 유효하지 않아요.",
       "invalidLogo": "제안한 로고 변경 항목 중 하나가 유효하지 않아요.",

@@ -5606,6 +5606,7 @@
       "empty": "Esta imagem está vazia.",
       "invalidImage": "Este arquivo não é uma imagem válida.",
       "invalidMembership": "Uma das alterações de roster que você propôs não é válida.",
+      "membershipDateOrder": "Uma data de término deve ser posterior à data de início.",
       "tooManyAdditions": "Você pode propor no máximo 6 novas entradas de uma vez.",
       "invalidNameHistory": "Uma das alterações no histórico de nomes que você propôs não é válida.",
       "invalidLogo": "Uma das alterações de logo que você propôs não é válida.",

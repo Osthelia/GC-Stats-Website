@@ -5610,6 +5610,7 @@
       "empty": "Questa immagine è vuota.",
       "invalidImage": "Questo file non è un'immagine valida.",
       "invalidMembership": "Una delle modifiche al roster che hai proposto non è valida.",
+      "membershipDateOrder": "Una data di fine deve essere successiva alla data di inizio.",
       "tooManyAdditions": "Puoi proporre al massimo 6 nuove voci alla volta.",
       "invalidNameHistory": "Una delle modifiche allo storico dei nomi che hai proposto non è valida.",
       "invalidLogo": "Una delle modifiche al logo che hai proposto non è valida.",

@@ -179,6 +179,7 @@ export async function submitChangeRequest(
         if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+        if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
         if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         // The fixed side (subject) must match this suggest-edit page — the picked side is trusted to exist (picker only offers real rows) but re-checked anyway.
         const fixedOk = subjectType === "team" ? op.teamId === subjectId : op.personId === subjectId;
@@ -208,6 +209,7 @@ export async function submitChangeRequest(
           if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+          if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
           if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           membershipItems.push({
             field: "membership_edit",

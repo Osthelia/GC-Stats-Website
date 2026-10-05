@@ -5606,6 +5606,7 @@
       "empty": "该图片为空。",
       "invalidImage": "该文件不是有效的图片。",
       "invalidMembership": "您提议的其中一项名单修改无效。",
+      "membershipDateOrder": "结束日期必须晚于开始日期。",
       "tooManyAdditions": "一次最多只能提议新增 6 条记录。",
       "invalidNameHistory": "您提议的其中一项曾用名修改无效。",
       "invalidLogo": "您提议的其中一项商标修改无效。",

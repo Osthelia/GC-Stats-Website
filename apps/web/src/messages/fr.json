@@ -5610,6 +5610,7 @@
       "empty": "Cette image est vide.",
       "invalidImage": "Ce fichier n'est pas une image valide.",
       "invalidMembership": "L'une des modifications d'effectif proposées n'est pas valide.",
+      "membershipDateOrder": "Une date de fin doit être postérieure à sa date de début.",
       "tooManyAdditions": "Vous pouvez proposer au maximum 6 nouvelles entrées à la fois.",
       "invalidNameHistory": "L'une des modifications d'historique de noms proposées n'est pas valide.",
       "invalidLogo": "L'une des modifications de logo proposées n'est pas valide.",

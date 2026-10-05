@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { CountryBadge } from "@/components/team/country-badge";
 import { PublicSelect } from "@/components/forms/public-select";
@@ -31,8 +31,9 @@ export type MembershipEntryView = {
   isCurrent: boolean;
 };
 
-type EditState = { role: string; since: string; until: string; inactiveSince: string; deleted: boolean };
-type AddDraft = { entity: { id: number; label: string } | null; role: string; since: string; until: string; inactiveSince: string };
+type MembershipFields = { role: string; since: string; until: string; inactiveSince: string };
+type EditState = MembershipFields & { deleted: boolean };
+type AddDraft = MembershipFields & { uid: number; entity: { id: number; label: string } | null };
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -67,6 +68,7 @@ export function MembershipHistorySection({
     )
   );
   const [additions, setAdditions] = useState<AddDraft[]>([]);
+  const nextAddUid = useRef(0);
 
   const roleOptions = ROSTER_ROLES.map((r) => ({ value: r, label: tRole(r.replace(/\s+/g, "_")) }));
 
@@ -118,7 +120,7 @@ export function MembershipHistorySection({
 
   function addRow() {
     if (additions.length >= MAX_MEMBERSHIP_ADDITIONS) return;
-    const next = [...additions, { entity: null, role: "player", since: today(), until: "", inactiveSince: "" }];
+    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", inactiveSince: "" }];
     setAdditions(next);
   }
 
@@ -137,53 +139,91 @@ export function MembershipHistorySection({
   const current = entries.filter((e) => e.isCurrent);
   const past = entries.filter((e) => !e.isCurrent);
 
-  function renderCard(entry: MembershipEntryView) {
+  function renderFields(value: MembershipFields, update: (patch: Partial<MembershipFields>) => void) {
+    return (
+      <div className="flex flex-col gap-2">
+        <PublicSelect value={value.role} onChange={(v) => update({ role: v })} options={roleOptions} />
+        <div className="grid grid-cols-2 gap-1.5">
+          <input type="date" value={value.since} onChange={(e) => update({ since: e.target.value })} className={inputClass} />
+          <input type="date" value={value.until} onChange={(e) => update({ until: e.target.value })} className={inputClass} />
+        </div>
+        <input type="date" value={value.inactiveSince} onChange={(e) => update({ inactiveSince: e.target.value })} placeholder={t("inactiveSince")} className={inputClass} />
+      </div>
+    );
+  }
+
+  function renderCard({ key, role, inactiveSince, dimmed, header, body, action }: { key: string; role: string; inactiveSince: string; dimmed: boolean; header: ReactNode; body: ReactNode; action: ReactNode }) {
+    const styles = rosterRoleStyles(role, !!inactiveSince);
+    return (
+      <div key={key} className={`flex flex-col rounded-lg border border-neutral-800 ${dimmed ? "opacity-40" : ""}`}>
+        <div className={`h-1 w-full shrink-0 rounded-t-[7px] ${styles.bar}`} />
+        <div className="flex flex-1 flex-col gap-2.5 p-3">
+          {header}
+          {body}
+          {action}
+        </div>
+      </div>
+    );
+  }
+
+  function renderEntry(entry: MembershipEntryView) {
     const edit = edits[entry.membershipId]!;
     const styles = rosterRoleStyles(edit.role, !!edit.inactiveSince);
     const initial = entry.displayName.trim().charAt(0).toUpperCase() || "?";
 
-    return (
-      <div key={entry.membershipId} className={`flex flex-col overflow-hidden rounded-lg border border-neutral-800 ${edit.deleted ? "opacity-40" : ""}`}>
-        <div className={`h-1 w-full shrink-0 ${styles.bar}`} />
-        <div className="flex flex-1 flex-col gap-2.5 p-3">
-          <div className="flex items-center gap-2.5">
-            <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg text-sm font-black ${styles.badgeBg} ${styles.badgeText}`}>{initial}</div>
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <div className="flex min-w-0 items-center gap-1.5 truncate text-[13.5px] font-semibold text-neutral-100">
-                <CountryBadge code={entry.countryCode} secondaryCode={entry.secondaryCountryCode} />
-                <span className="truncate">{entry.displayName}</span>
-              </div>
-              {!entry.isCurrent && <span className="text-[10.5px] text-neutral-500">{t("past")}</span>}
+    return renderCard({
+      key: `entry-${entry.membershipId}`,
+      role: edit.role,
+      inactiveSince: edit.inactiveSince,
+      dimmed: edit.deleted,
+      header: (
+        <div className="flex items-center gap-2.5">
+          <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg text-sm font-black ${styles.badgeBg} ${styles.badgeText}`}>{initial}</div>
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <div className="flex min-w-0 items-center gap-1.5 truncate text-[13.5px] font-semibold text-neutral-100">
+              <CountryBadge code={entry.countryCode} secondaryCode={entry.secondaryCountryCode} />
+              <span className="truncate">{entry.displayName}</span>
             </div>
+            {!entry.isCurrent && <span className="text-[10.5px] text-neutral-500">{t("past")}</span>}
           </div>
-
-          {!edit.deleted && (
-            <div className="flex flex-col gap-2">
-              <PublicSelect value={edit.role} onChange={(v) => updateEdit(entry.membershipId, { role: v })} options={roleOptions} />
-              <div className="grid grid-cols-2 gap-1.5">
-                <input type="date" value={edit.since} onChange={(e) => updateEdit(entry.membershipId, { since: e.target.value })} className={inputClass} />
-                <input type="date" value={edit.until} onChange={(e) => updateEdit(entry.membershipId, { until: e.target.value })} className={inputClass} />
-              </div>
-              <input
-                type="date"
-                value={edit.inactiveSince}
-                onChange={(e) => updateEdit(entry.membershipId, { inactiveSince: e.target.value })}
-                placeholder={t("inactiveSince")}
-                className={inputClass}
-              />
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={() => updateEdit(entry.membershipId, { deleted: !edit.deleted })}
-            className="self-start text-[12px] text-[#e08585] underline hover:text-[#f0a0a0]"
-          >
-            {edit.deleted ? t("undoRemove") : t("remove")}
-          </button>
         </div>
-      </div>
-    );
+      ),
+      body: !edit.deleted && renderFields(edit, (patch) => updateEdit(entry.membershipId, patch)),
+      action: (
+        <button
+          type="button"
+          onClick={() => updateEdit(entry.membershipId, { deleted: !edit.deleted })}
+          className="self-start text-[12px] text-[#e08585] underline hover:text-[#f0a0a0] active:text-[#c06060]"
+        >
+          {edit.deleted ? t("undoRemove") : t("remove")}
+        </button>
+      ),
+    });
+  }
+
+  function renderAddition(draft: AddDraft, index: number) {
+    return renderCard({
+      key: `add-${draft.uid}`,
+      role: draft.role,
+      inactiveSince: draft.inactiveSince,
+      dimmed: false,
+      header: (
+        <PublicEntityPicker
+          type={mode === "team" ? "player" : "team"}
+          value={draft.entity}
+          onChange={(v) => updateAddition(index, { entity: v })}
+          placeholder={mode === "team" ? t("pickPlayerPlaceholder") : t("pickTeamPlaceholder")}
+          searchPlaceholder={t("searchPlaceholder")}
+          noResultsLabel={t("noResults")}
+        />
+      ),
+      body: renderFields(draft, (patch) => updateAddition(index, patch)),
+      action: (
+        <button type="button" onClick={() => removeAddition(index)} className="self-start text-[12px] text-[#e08585] underline hover:text-[#f0a0a0] active:text-[#c06060]">
+          {t("remove")}
+        </button>
+      ),
+    });
   }
 
   return (
@@ -192,34 +232,18 @@ export function MembershipHistorySection({
 
       {entries.length === 0 && <p className="text-[13.5px] text-neutral-500">{t("empty")}</p>}
 
-      {current.length > 0 && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{current.map(renderCard)}</div>}
+      {current.length > 0 && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{current.map(renderEntry)}</div>}
 
       {past.length > 0 && (
         <div className="flex flex-col gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{t("pastTitle")}</span>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{past.map(renderCard)}</div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{past.map(renderEntry)}</div>
         </div>
       )}
 
       <div className="flex flex-col gap-2 border-t border-neutral-800 pt-4">
         <span className="text-[13px] font-medium text-neutral-300">{mode === "team" ? t("addPersonTitle") : t("addTeamTitle")}</span>
-        {additions.map((draft, i) => (
-          <div key={i} className="flex flex-wrap items-center gap-2">
-            <PublicEntityPicker
-              type={mode === "team" ? "player" : "team"}
-              value={draft.entity}
-              onChange={(v) => updateAddition(i, { entity: v })}
-              placeholder={mode === "team" ? t("pickPlayerPlaceholder") : t("pickTeamPlaceholder")}
-              searchPlaceholder={t("searchPlaceholder")}
-              noResultsLabel={t("noResults")}
-            />
-            <PublicSelect value={draft.role} onChange={(v) => updateAddition(i, { role: v })} options={roleOptions} />
-            <input type="date" value={draft.since} onChange={(e) => updateAddition(i, { since: e.target.value })} className={inputClass} />
-            <button type="button" onClick={() => removeAddition(i)} className="text-[12px] text-[#e08585] underline hover:text-[#f0a0a0]">
-              {t("remove")}
-            </button>
-          </div>
-        ))}
+        {additions.length > 0 && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{additions.map(renderAddition)}</div>}
         {additions.length < MAX_MEMBERSHIP_ADDITIONS && (
           <button
             type="button"

@@ -5606,6 +5606,7 @@
       "empty": "Bu görsel boş.",
       "invalidImage": "Bu dosya geçerli bir görsel değil.",
       "invalidMembership": "Önerdiğiniz kadro değişikliklerinden biri geçerli değil.",
+      "membershipDateOrder": "Bitiş tarihi başlangıç tarihinden sonra olmalıdır.",
       "tooManyAdditions": "Aynı anda en fazla 6 yeni kayıt önerebilirsiniz.",
       "invalidNameHistory": "Önerdiğiniz isim geçmişi değişikliklerinden biri geçerli değil.",
       "invalidLogo": "Önerdiğiniz logo değişikliklerinden biri geçerli değil.",

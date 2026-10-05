@@ -5606,6 +5606,7 @@
       "empty": "Dieses Bild ist leer.",
       "invalidImage": "Diese Datei ist kein gültiges Bild.",
       "invalidMembership": "Eine der vorgeschlagenen Rosteränderungen ist ungültig.",
+      "membershipDateOrder": "Ein Enddatum muss nach dem Startdatum liegen.",
       "tooManyAdditions": "Sie können höchstens 6 neue Einträge gleichzeitig vorschlagen.",
       "invalidNameHistory": "Eine der vorgeschlagenen Änderungen am Namensverlauf ist ungültig.",
       "invalidLogo": "Eine der vorgeschlagenen Logoänderungen ist ungültig.",

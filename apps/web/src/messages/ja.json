@@ -5606,6 +5606,7 @@
       "empty": "この画像は空です。",
       "invalidImage": "このファイルは有効な画像ではありません。",
       "invalidMembership": "提案されたロスターの変更のいずれかが無効です。",
+      "membershipDateOrder": "終了日は開始日より後である必要があります。",
       "tooManyAdditions": "一度に提案できる新規追加は最大6件までです。",
       "invalidNameHistory": "提案された名称履歴の変更のいずれかが無効です。",
       "invalidLogo": "提案されたロゴの変更のいずれかが無効です。",
