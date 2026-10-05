@@ -91,7 +91,7 @@ export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; c
       </CardContent>
 
       <Dialog open={conflicts !== null} onOpenChange={(open) => !open && !isPending && setConflicts(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("conflict.title")}</DialogTitle>
             <DialogDescription>{t("conflict.description")}</DialogDescription>

@@ -147,7 +147,7 @@ export function ContainerDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{container ? t("containerEditTitle") : t("containerAddTitle")}</DialogTitle>
           <DialogDescription>{container ? t("containerEditDescription") : t("containerAddDescription")}</DialogDescription>

@@ -156,7 +156,7 @@ export function QualificationRuleDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{rule ? t("edit.title") : t("create.title")}</DialogTitle>
           <DialogDescription>{rule ? t("edit.description") : t("create.description")}</DialogDescription>

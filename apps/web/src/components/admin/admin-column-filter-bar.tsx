@@ -91,7 +91,7 @@ export function AdminColumnFilterBar({ columns, activeFilters, ...mode }: AdminC
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
           </DialogHeader>

@@ -92,7 +92,7 @@ export function AboutTeamMemberDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{member ? (member.name || member.username) : ""}</DialogTitle>
           <DialogDescription>{t("editDescription")}</DialogDescription>

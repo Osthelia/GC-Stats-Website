@@ -102,7 +102,7 @@ function MissingPuuidsDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && !pending && onCancel()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("missingPuuidsTitle")}</DialogTitle>
           <DialogDescription>{t("missingPuuidsDescription")}</DialogDescription>
@@ -250,7 +250,7 @@ function MergeSegmentsDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("mergeTitle")}</DialogTitle>
           <DialogDescription>{t("mergeDescription")}</DialogDescription>

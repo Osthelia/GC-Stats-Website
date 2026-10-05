@@ -102,7 +102,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         {t("editProfileButton")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("editProfileTitle", { handle })}</DialogTitle>
             <DialogDescription>{t("editProfileDescription")}</DialogDescription>

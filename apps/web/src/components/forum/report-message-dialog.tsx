@@ -43,7 +43,7 @@ export function ReportMessageDialog({ messageId, onClose }: { messageId: number;
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="max-w-[440px] rounded-2xl border border-neutral-800 bg-[var(--gcs-surface-3)] p-6 text-neutral-50 ring-0 shadow-[0_22px_50px_rgba(0,0,0,.72)]">
+      <DialogContent className="sm:max-w-[440px] rounded-2xl border border-neutral-800 bg-[var(--gcs-surface-3)] p-6 text-neutral-50 ring-0 shadow-[0_22px_50px_rgba(0,0,0,.72)]">
         {submitted ? (
           <div className="text-center">
             <p className="mb-4 text-[14.5px] font-semibold text-[#7cc48a]">{t("success")}</p>

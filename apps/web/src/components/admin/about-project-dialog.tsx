@@ -86,7 +86,7 @@ export function AboutProjectDialog({ project, open, onOpenChange }: { project: A
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{project ? t("editTitle") : t("createTitle")}</DialogTitle>
           <DialogDescription>{project ? t("editDescription") : t("createDescription")}</DialogDescription>

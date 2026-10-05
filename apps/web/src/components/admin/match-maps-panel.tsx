@@ -96,7 +96,7 @@ function AddMapDialog({ matchId, nextOrder, existingMapNames, open, onOpenChange
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("createTitle")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>

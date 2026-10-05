@@ -63,7 +63,7 @@ export function AboutTeamCategoryDialog({ category, open, onOpenChange }: { cate
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{category ? t("editTitle", { key: category.key }) : t("createTitle")}</DialogTitle>
           <DialogDescription>{category ? t("editDescription") : t("createDescription")}</DialogDescription>

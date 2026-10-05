@@ -127,7 +127,7 @@ export function FinanceEntryDialog({ entry, open, onOpenChange }: { entry: Admin
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{entry ? t("edit.title") : t("create.title")}</DialogTitle>
           <DialogDescription>{entry ? t("edit.description") : t("create.description")}</DialogDescription>
