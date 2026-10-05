@@ -60,6 +60,8 @@ const nextConfig = {
           // deploy — merely being reachable in the bundle is enough for
           // node-cron's background-scheduled-task.ts to crash at startup.
           "node-cron": "./stubs/node-cron-stub.js",
+          // Messages are fetched from static assets instead of bundled, see load-messages.cloudflare.ts.
+          "@/i18n/load-messages": "./src/i18n/load-messages.cloudflare.ts",
         }
       : // @cf-wasm/photon/workerd (packages/storage/src/image-cloudflare.ts,
         // only reached at runtime when DEPLOY_TARGET=cloudflare) imports a

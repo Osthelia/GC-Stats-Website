@@ -11,7 +11,7 @@
     "preview": "npm run cf-build && opennextjs-cloudflare preview",
     "deploy": "npm run cf-build && opennextjs-cloudflare deploy",
     "upload": "npm run cf-build && opennextjs-cloudflare upload",
-    "cf-build": "npm run cf-typegen && cross-env OPENNEXT_BUILD_TARGET=cloudflare opennextjs-cloudflare build",
+    "cf-build": "npm run cf-typegen && cross-env OPENNEXT_BUILD_TARGET=cloudflare opennextjs-cloudflare build && node scripts/copy-messages-assets.mjs",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "generate:openapi": "tsx scripts/generate-openapi.ts"
   },
