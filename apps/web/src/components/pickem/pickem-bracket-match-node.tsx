@@ -10,7 +10,7 @@
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Check } from "lucide-react";
-import { GOLD, tint } from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
 
 export type PickemBracketMatchNodeData = {
   containerName: string;

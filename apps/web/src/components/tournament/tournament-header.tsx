@@ -8,13 +8,9 @@
 
 import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  GOLD,
-  tint,
-  REGIONS,
-  normalizeRegion,
-  DEFAULT_TOURNAMENT_LOGO,
-} from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
+import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
+import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
 import {
   getPublicTournamentStageLinks,
   type TournamentHeaderInfo,

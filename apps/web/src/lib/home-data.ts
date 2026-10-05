@@ -16,7 +16,7 @@ import { db } from "@gc-stats/db/client";
 import { matches, entrants, tournaments, stageContainers, stages } from "@gc-stats/db";
 import { news, organizations } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
-import { normalizeRegion, type RegionKey, type MatchStatus } from "@/lib/home-fake-data";
+import { normalizeRegion, type RegionKey } from "@/lib/tournament-regions";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { slugify } from "@/lib/entity-id";
@@ -26,6 +26,8 @@ import { HOME_TOURNAMENTS_TAG } from "@/lib/cache-tags";
 import { compareDayOrder, sortDayMatches } from "@/lib/home-day-order";
 import { getTranslations } from "next-intl/server";
 import type { AppLocale } from "@/i18n/routing";
+
+export type MatchStatus = "live" | "upcoming" | "finished";
 
 const MATCH_STATUS: Record<string, MatchStatus> = { pending: "upcoming", live: "live", completed: "finished" };
 

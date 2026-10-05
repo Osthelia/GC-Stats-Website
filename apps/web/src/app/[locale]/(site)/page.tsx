@@ -12,7 +12,7 @@ import { NewsPanel } from "@/components/home/news-panel";
 import { TournamentsPanel } from "@/components/home/tournaments-panel";
 import { getHomeMatchDays, getHomeNews, getHomeTournamentGroups } from "@/lib/home-data";
 import { resolveNewsLanguages } from "@/lib/news-languages";
-import { REGIONS } from "@/lib/home-fake-data";
+import { REGIONS } from "@/lib/tournament-regions";
 import type { AppLocale } from "@/i18n/routing";
 
 function BlockSkeleton({ className }: { className: string }) {

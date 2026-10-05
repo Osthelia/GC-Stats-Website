@@ -7,7 +7,7 @@
  */
 
 import { Link } from "@/i18n/navigation";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 
 // One consistent segmented-control shell for the stats pages' period picker
 // (href-based, server nav) and avg/total toggle (client state) — same DA

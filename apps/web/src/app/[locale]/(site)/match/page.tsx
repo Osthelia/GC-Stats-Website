@@ -14,7 +14,7 @@ import {
   type MatchListStatus,
   type SortDirection,
 } from "@/lib/match-list-data";
-import { RED, tint } from "@/lib/home-fake-data";
+import { RED, tint } from "@/lib/theme-colors";
 import { Link } from "@/i18n/navigation";
 import { FilterPill, SortPill } from "@/components/filters/filter-pill";
 import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";

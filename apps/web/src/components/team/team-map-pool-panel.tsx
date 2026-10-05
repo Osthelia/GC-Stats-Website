@@ -10,7 +10,7 @@ import { getTranslations } from "next-intl/server";
 import type { TeamMapInsight } from "@/lib/team-maps-data";
 import type { TournamentMapPickRate } from "@/lib/tournament-maps-data";
 import { PickRateList } from "@/components/tournament/pick-rate-list";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 
 const INSIGHT_COLORS: Record<TeamMapInsight["label"], string> = {
   mostPlayed: GOLD,

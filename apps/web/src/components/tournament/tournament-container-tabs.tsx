@@ -9,7 +9,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 
 export type TournamentContainerTab = {
   id: number;

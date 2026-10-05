@@ -6,7 +6,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/home-fake-data";
+import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 
 /**

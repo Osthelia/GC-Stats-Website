@@ -10,7 +10,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { teamLogo, teamLogoLight } from "@/lib/home-fake-data";
+import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
 import { slugify } from "@/lib/entity-id";
 import { AgentIcon } from "@/components/match/agent-icon";
 import type { MatchMapPlayerRow, MatchSide } from "@/lib/match-page-data";
@@ -48,10 +48,10 @@ export function MatchTeamStatsTable({
   teamBName: string;
 }) {
   const t = useTranslations("matchPage");
-  const logoA = a.logoUrl ?? teamLogo(a.shortName ?? "");
-  const logoALight = a.logoUrlLight ?? a.logoUrl ?? teamLogoLight(a.shortName ?? "");
-  const logoB = b.logoUrl ?? teamLogo(b.shortName ?? "");
-  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? teamLogoLight(b.shortName ?? "");
+  const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
+  const logoALight = a.logoUrlLight ?? a.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
+  const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
+  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
   const rowCount = Math.max(statsA.length, statsB.length);
   const maxAcs = statsA.concat(statsB).reduce<number | null>((max, s) => (max == null || s.acs > max ? s.acs : max), null);
 

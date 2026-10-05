@@ -15,7 +15,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { entrants, matches, maps, mapPlayerStats, stageContainers, stages, teams, tournaments } from "@gc-stats/db";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
-import { normalizeRegion } from "@/lib/home-fake-data";
+import { normalizeRegion } from "@/lib/tournament-regions";
 import { abbreviateTournamentName, type HomeMatch } from "@/lib/home-data";
 import { formatSideScore } from "@/lib/match-score-format";
 import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";

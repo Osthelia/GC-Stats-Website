@@ -8,7 +8,7 @@
 
 import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 import { TournamentBracketCanvasLazy } from "@/components/tournament/tournament-bracket-canvas-lazy";
 import { TournamentStandingsTable } from "@/components/tournament/tournament-standings-table";
 import { TournamentContainerTabs, type TournamentContainerTab } from "@/components/tournament/tournament-container-tabs";

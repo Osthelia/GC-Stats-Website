@@ -16,7 +16,7 @@ import { TeamBadge } from "@/components/home/team-badge";
 import { FormattedDate } from "@/components/formatted-date";
 import { PickRateList } from "@/components/tournament/pick-rate-list";
 import { SegmentedTrack, SegmentedButton } from "@/components/stats/segmented";
-import { GOLD, tint } from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
 import type {
   TournamentMapComp,
   TournamentMapPickRate,

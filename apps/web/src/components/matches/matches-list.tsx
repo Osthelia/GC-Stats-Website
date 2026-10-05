@@ -10,7 +10,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { GOLD, RED, tint } from "@/lib/home-fake-data";
+import { GOLD, RED, tint } from "@/lib/theme-colors";
 import type { HomeMatch } from "@/lib/home-data";
 import { MatchCard } from "@/components/matches/match-card";
 

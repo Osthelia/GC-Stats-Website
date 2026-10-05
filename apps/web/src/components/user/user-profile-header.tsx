@@ -8,7 +8,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD, tint } from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
 import { getUserFanTeam, type UserProfileInfo } from "@/lib/user-profile-data";
 import { DiscordIcon, TwitchIcon, XIcon, InstagramIcon, YoutubeIcon, TiktokIcon, SOCIAL_BRAND_COLORS } from "@/components/icons/brand-icons";
 import { HeaderUtilityBar } from "@/components/site/header-utility-bar";

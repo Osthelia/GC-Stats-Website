@@ -34,7 +34,7 @@ import {
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
 import { layoutBracket } from "@/lib/bracket-layout";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
-import { GOLD, RED } from "@/lib/home-fake-data";
+import { GOLD, RED } from "@/lib/theme-colors";
 import type {
   PublicBracketMatch,
   PublicStageContainer,
@@ -43,7 +43,7 @@ import type {
 // Same green used for a qualified/positive state elsewhere on the tournament
 // page (tournament-standings-table.tsx) — the previous stock Tailwind
 // green/red (#22c55e/#ef4444) didn't match the site's actual red
-// (home-fake-data's RED, #f2555a), so a hovered loser edge looked like a
+// (theme-colors' RED, #f2555a), so a hovered loser edge looked like a
 // different, off-brand red next to every other red on the page (explicit
 // user report, 2026-09-17).
 const WINNER_EDGE_COLOR = "#3fb950";

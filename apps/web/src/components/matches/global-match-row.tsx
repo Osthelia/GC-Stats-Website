@@ -7,7 +7,8 @@
  */
 
 import { Link } from "@/i18n/navigation";
-import { GOLD, RED, REGIONS, tint } from "@/lib/home-fake-data";
+import { GOLD, RED, tint } from "@/lib/theme-colors";
+import { REGIONS } from "@/lib/tournament-regions";
 import type { HomeMatch } from "@/lib/home-data";
 import { TeamBadge } from "@/components/home/team-badge";
 import { FormattedDate } from "@/components/formatted-date";

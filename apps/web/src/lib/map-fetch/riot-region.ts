@@ -29,6 +29,7 @@ const TOURNAMENT_REGION_TO_RIOT: Record<string, RiotRelayRegion> = {
   Pacific: "ap",
   China: "ap",
   SEA: "ap",
+  International: "esports",
 };
 
 export function resolveRiotRegion(tournamentRegion: string | null): RiotRelayRegion | null {

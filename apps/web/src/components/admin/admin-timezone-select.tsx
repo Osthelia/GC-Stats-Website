@@ -16,7 +16,7 @@ import { GlobeIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSettings } from "@/lib/site-settings";
-import { TIMEZONES } from "@/lib/home-fake-data";
+import { TIMEZONES } from "@/lib/timezones";
 import { isValidTimezone, timezoneLabel } from "@/lib/datetime-local";
 
 export function AdminTimezoneSelect() {

@@ -21,7 +21,7 @@ import { GhostMatchDialog } from "@/components/admin/ghost-match-dialog";
 import { GhostBadge } from "@/components/admin/ghost-badge";
 import { deleteTournament } from "@/actions/admin-tournaments";
 import { tournamentStatusBadgeClass } from "@/lib/status-colors";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/home-fake-data";
+import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentRow, SortDirection } from "@/lib/admin-tournaments";
 

@@ -9,7 +9,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { teamLogo, teamLogoLight } from "@/lib/home-fake-data";
+import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
 import { winTypeIconUrl } from "@/lib/valorant-agents";
 import type { MatchRound, MatchSide } from "@/lib/match-page-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
@@ -66,10 +66,10 @@ export function MatchRoundHistory({ rounds, a, b }: { rounds: MatchRound[]; a: M
   const wrapped = chunks.length > 1;
   const teamAName = a.entrantId != null ? a.displayName : t("teamTbd");
   const teamBName = b.entrantId != null ? b.displayName : t("teamTbd");
-  const logoA = a.logoUrl ?? teamLogo(a.shortName ?? "");
-  const logoALight = a.logoUrlLight ?? a.logoUrl ?? teamLogoLight(a.shortName ?? "");
-  const logoB = b.logoUrl ?? teamLogo(b.shortName ?? "");
-  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? teamLogoLight(b.shortName ?? "");
+  const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
+  const logoALight = a.logoUrlLight ?? a.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
+  const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
+  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
 
   return (
     <section className="w-full overflow-hidden rounded-2xl border border-neutral-800 shadow-2xl" style={{ background: "var(--gcs-surface-2)" }} aria-label={t("roundHistory")}>

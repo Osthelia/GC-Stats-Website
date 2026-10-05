@@ -8,7 +8,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD, tint } from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
 import type { TeamPageInfo, TeamAchievement } from "@/lib/team-page-data";
 import { CountryBadge, hasCountryFlag } from "@/components/team/country-badge";
 import { ordinalPlacement, placementColor } from "@/lib/ordinal";

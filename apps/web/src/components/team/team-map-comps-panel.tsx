@@ -15,7 +15,7 @@ import { AgentIcon } from "@/components/match/agent-icon";
 import { FormattedDate } from "@/components/formatted-date";
 import { PickRateList } from "@/components/tournament/pick-rate-list";
 import { SegmentedTrack, SegmentedButton } from "@/components/stats/segmented";
-import { GOLD, tint } from "@/lib/home-fake-data";
+import { GOLD, tint } from "@/lib/theme-colors";
 import { loadTeamCompMatches, type LoadTeamCompMatchesResult } from "@/actions/team-maps";
 import type { MapsFilters } from "@/lib/maps-filters";
 import type { TeamMapComp, TeamMapCompMatch, TeamMapPoolRow } from "@/lib/team-maps-data";

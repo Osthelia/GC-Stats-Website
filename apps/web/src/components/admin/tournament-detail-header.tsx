@@ -22,7 +22,7 @@ import { GhostBadge } from "@/components/admin/ghost-badge";
 import { toggleTournamentActive, deleteTournament } from "@/actions/admin-tournaments";
 import { slugify } from "@/lib/entity-id";
 import { tournamentStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/home-fake-data";
+import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
 

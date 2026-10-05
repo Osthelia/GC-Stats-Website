@@ -9,7 +9,8 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD, RED, tint, teamLogo, teamLogoLight } from "@/lib/home-fake-data";
+import { GOLD, RED, tint } from "@/lib/theme-colors";
+import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
 import { slugify } from "@/lib/entity-id";
 import type { MatchHeader as MatchHeaderData, MatchSide } from "@/lib/match-page-data";
 import { FormattedDate } from "@/components/formatted-date";
@@ -27,8 +28,8 @@ function TeamBlock({ side, name, align }: { side: MatchSide; name: string; align
       style={{ background: "var(--gcs-surface-2)" }}
     >
       <ThemedLogoImage
-        dark={side.logoUrl ?? teamLogo(side.shortName ?? "")}
-        light={side.logoUrlLight ?? side.logoUrl ?? teamLogoLight(side.shortName ?? "")}
+        dark={side.logoUrl ?? DEFAULT_TEAM_LOGO_DARK}
+        light={side.logoUrlLight ?? side.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT}
         alt={name}
         width={56}
         height={56}

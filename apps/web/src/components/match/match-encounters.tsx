@@ -8,7 +8,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 import type { MatchEncounter, MatchSide } from "@/lib/match-page-data";
 import { TeamBadge } from "@/components/home/team-badge";
 import { FormattedDate } from "@/components/formatted-date";

@@ -12,14 +12,9 @@ import { useMemo, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import {
-  GOLD,
-  RED,
-  REGIONS,
-  tint,
-  type MatchStatus,
-} from "@/lib/home-fake-data";
-import type { HomeDay, HomeMatchDaysPage } from "@/lib/home-data";
+import { GOLD, RED, tint } from "@/lib/theme-colors";
+import { REGIONS } from "@/lib/tournament-regions";
+import type { HomeDay, HomeMatchDaysPage, MatchStatus } from "@/lib/home-data";
 import { compareDayOrder, sortDayMatches } from "@/lib/home-day-order";
 import { loadMoreHomeMatches } from "@/actions/home";
 import { TeamBadge } from "@/components/home/team-badge";

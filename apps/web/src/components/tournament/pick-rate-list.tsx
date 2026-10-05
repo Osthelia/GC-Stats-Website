@@ -10,7 +10,7 @@
 
 import { useState } from "react";
 import { AgentIcon } from "@/components/match/agent-icon";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 import type { TournamentMapPickRate } from "@/lib/tournament-maps-data";
 
 /**

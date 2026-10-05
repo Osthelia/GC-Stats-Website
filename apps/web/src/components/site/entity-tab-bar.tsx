@@ -11,7 +11,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 
 const FADE = "28px";
 

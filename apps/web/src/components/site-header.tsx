@@ -13,7 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing, localeDisplay, type AppLocale } from "@/i18n/routing";
-import { TIMEZONES } from "@/lib/home-fake-data";
+import { TIMEZONES } from "@/lib/timezones";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { GlobalSearch } from "@/components/search/global-search";

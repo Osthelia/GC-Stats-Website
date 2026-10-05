@@ -9,7 +9,7 @@
 import { TrophyIcon } from "lucide-react";
 import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { GOLD } from "@/lib/home-fake-data";
+import { GOLD } from "@/lib/theme-colors";
 import { TeamBadge } from "@/components/home/team-badge";
 import type { PublicFinalStandingRow } from "@/lib/tournament-bracket-data";
 

@@ -11,7 +11,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { REGIONS, normalizeRegion } from "@/lib/home-fake-data";
+import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
 import { cn } from "@/lib/utils";
 import type { DashboardTournamentRow } from "@/lib/admin-dashboard";
 

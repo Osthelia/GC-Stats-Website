@@ -11,7 +11,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
-import { GOLD, RED, tint } from "@/lib/home-fake-data";
+import { GOLD, RED, tint } from "@/lib/theme-colors";
 import { formatSideScore } from "@/lib/match-score-format";
 
 export type BracketMatchNodeData = {

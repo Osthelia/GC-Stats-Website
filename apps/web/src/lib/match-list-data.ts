@@ -31,7 +31,7 @@ import {
   stages,
   stageContainers,
 } from "@gc-stats/db";
-import { normalizeRegion } from "@/lib/home-fake-data";
+import { normalizeRegion } from "@/lib/tournament-regions";
 import { abbreviateTournamentName, type HomeMatch } from "@/lib/home-data";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { formatSideScore } from "@/lib/match-score-format";

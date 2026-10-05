@@ -13,7 +13,8 @@ import {
   type TournamentListSort,
   type SortDirection,
 } from "@/lib/tournament-list-data";
-import { normalizeRegion, REGIONS, RED, tint } from "@/lib/home-fake-data";
+import { normalizeRegion, REGIONS } from "@/lib/tournament-regions";
+import { RED, tint } from "@/lib/theme-colors";
 import { slugify } from "@/lib/entity-id";
 import { Link } from "@/i18n/navigation";
 import { FilterPill, SortPill } from "@/components/filters/filter-pill";

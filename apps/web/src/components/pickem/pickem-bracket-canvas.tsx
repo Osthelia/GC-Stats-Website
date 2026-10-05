@@ -16,7 +16,7 @@ import { PickemBracketMatchNode, PICKEM_BRACKET_MATCH_NODE_WIDTH, PICKEM_BRACKET
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
 import { layoutBracket } from "@/lib/bracket-layout";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
-import { GOLD, RED } from "@/lib/home-fake-data";
+import { GOLD, RED } from "@/lib/theme-colors";
 import type { VirtualMatch } from "@/lib/pickem/bracket-fill";
 import { scoreBracketMatchPick, type PhaseScoringConfig } from "@/lib/pickem/scoring";
 import type { EditorMatch, EditorEdge } from "@/lib/admin-bracket-editor-data";
