@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { listAboutSections, listAboutProjects, type AboutProjectType } from "@/lib/admin-about";
 import { getAboutTeam, type AboutTeamMember } from "@/lib/about-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import { LinkedText } from "@/components/site/linked-text";
 import { DiscordIcon, TwitchIcon, XIcon, InstagramIcon, YoutubeIcon, TiktokIcon, WebsiteIcon, SOCIAL_BRAND_COLORS } from "@/components/icons/brand-icons";
 import type { AppLocale } from "@/i18n/routing";
 import { staticTitleMetadata } from "@/lib/page-metadata";
@@ -89,7 +90,9 @@ export default async function AboutPage() {
             <div className="border-b border-neutral-800 pb-2">
               <h2 className="text-xs font-bold tracking-[0.2em] text-neutral-200 uppercase">{title}</h2>
             </div>
-            <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-400">{content}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-400">
+              <LinkedText text={content} />
+            </p>
           </section>
         );
       })}
