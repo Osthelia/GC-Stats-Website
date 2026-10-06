@@ -4210,6 +4210,8 @@
           "manualScoreboardHeading": "Marcador manual",
           "manualScoreboardDescription": "Para las partidas sin ID de partido de Riot que recuperar (LAN, demasiado antiguas, etc.).",
           "columnPlayer": "Jugador",
+          "columnIgn": "IGN",
+          "noPlayerData": "Sin datos de jugadores.",
           "columnAgent": "Agente",
           "columnKills": "Bajas",
           "columnDeaths": "Muertes",

@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "手動スコアボード",
           "manualScoreboardDescription": "Fetchできるリオット試合IDがない試合用（LAN、古すぎる試合など）。",
           "columnPlayer": "選手",
+          "columnIgn": "IGN",
+          "noPlayerData": "プレイヤーデータがありません。",
           "columnAgent": "エージェント",
           "columnKills": "キル",
           "columnDeaths": "デス",

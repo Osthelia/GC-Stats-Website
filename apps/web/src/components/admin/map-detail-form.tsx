@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
@@ -29,7 +29,7 @@ import type { AdminMapRow } from "@/lib/admin-matches";
  * row). One component owns the form state so a Merge in the right card can
  * update the apiMatchId field in the left card.
  */
-export function MapDetailForm({ map, canManage }: { map: AdminMapRow; canManage: boolean }) {
+export function MapDetailForm({ map, canManage, riotPlayers }: { map: AdminMapRow; canManage: boolean; riotPlayers?: ReactNode }) {
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -133,6 +133,7 @@ export function MapDetailForm({ map, canManage }: { map: AdminMapRow; canManage:
               />
             </FormField>
             <MapFetchControls mapId={map.id} apiMatchId={value.apiMatchId.trim() || null} canManage={canManage} onMerged={(apiMatchId) => set({ apiMatchId })} />
+            {riotPlayers}
           </CardContent>
         </Card>
       </div>

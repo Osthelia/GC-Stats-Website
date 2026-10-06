@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "Placar manual",
           "manualScoreboardDescription": "Para jogos sem ID de partida Riot para fazer o Fetch (LAN, muito antigos etc.).",
           "columnPlayer": "Jogadora",
+          "columnIgn": "IGN",
+          "noPlayerData": "Sem dados de jogadores.",
           "columnAgent": "Agente",
           "columnKills": "Kills",
           "columnDeaths": "Mortes",

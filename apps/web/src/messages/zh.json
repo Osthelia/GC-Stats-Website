@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "手动记分板",
           "manualScoreboardDescription": "适用于没有 Riot 比赛 ID 可抓取的比赛（线下赛、过于久远等）。",
           "columnPlayer": "选手",
+          "columnIgn": "IGN",
+          "noPlayerData": "暂无选手数据。",
           "columnAgent": "特工",
           "columnKills": "击杀",
           "columnDeaths": "死亡",

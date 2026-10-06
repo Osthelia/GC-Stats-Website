@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "لوحة نتائج يدوية",
           "manualScoreboardDescription": "للمباريات التي لا تملك معرّف مباراة Riot للجلب (LAN، قديمة جدًا، إلخ).",
           "columnPlayer": "اللاعبة",
+          "columnIgn": "IGN",
+          "noPlayerData": "لا توجد بيانات للاعبين.",
           "columnAgent": "العميل",
           "columnKills": "القتل",
           "columnDeaths": "الوفيات",

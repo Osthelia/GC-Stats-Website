@@ -4210,6 +4210,8 @@
           "manualScoreboardHeading": "Scoreboard manuale",
           "manualScoreboardDescription": "Per le partite senza un ID match Riot da recuperare (LAN, troppo vecchie, ecc.).",
           "columnPlayer": "Giocatrice",
+          "columnIgn": "IGN",
+          "noPlayerData": "Nessun dato dei giocatori.",
           "columnAgent": "Agente",
           "columnKills": "Kill",
           "columnDeaths": "Morti",

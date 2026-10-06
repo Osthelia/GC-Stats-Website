@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "สกอร์บอร์ดแบบกรอกเอง",
           "manualScoreboardDescription": "สำหรับเกมที่ไม่มี Riot match ID ให้ Fetch (LAN เก่าเกินไป ฯลฯ)",
           "columnPlayer": "ผู้เล่น",
+          "columnIgn": "IGN",
+          "noPlayerData": "ไม่มีข้อมูลผู้เล่น",
           "columnAgent": "เอเจนต์",
           "columnKills": "คิล",
           "columnDeaths": "ตาย",

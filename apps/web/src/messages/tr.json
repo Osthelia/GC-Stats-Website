@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "Manuel skor tablosu",
           "manualScoreboardDescription": "Getirilecek bir Riot maç kimliği olmayan oyunlar için (LAN, çok eski, vb).",
           "columnPlayer": "Oyuncu",
+          "columnIgn": "IGN",
+          "noPlayerData": "Oyuncu verisi yok.",
           "columnAgent": "Ajan",
           "columnKills": "Öldürme",
           "columnDeaths": "Ölüm",

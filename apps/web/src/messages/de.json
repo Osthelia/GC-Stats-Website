@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "Manuelle Scoreboard",
           "manualScoreboardDescription": "Für Spiele ohne abrufbare Riot Match ID (LAN, zu alt usw.).",
           "columnPlayer": "Spielerin",
+          "columnIgn": "IGN",
+          "noPlayerData": "Keine Spielerdaten.",
           "columnAgent": "Agent",
           "columnKills": "Kills",
           "columnDeaths": "Tode",

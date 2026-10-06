@@ -4210,6 +4210,8 @@
           "manualScoreboardHeading": "Manual scoreboard",
           "manualScoreboardDescription": "For games without a Riot match ID to Fetch (LAN, too old, etc).",
           "columnPlayer": "Player",
+          "columnIgn": "IGN",
+          "noPlayerData": "No player data.",
           "columnAgent": "Agent",
           "columnKills": "Kills",
           "columnDeaths": "Deaths",

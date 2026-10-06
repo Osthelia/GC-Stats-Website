@@ -4206,6 +4206,8 @@
           "manualScoreboardHeading": "Ręczna tabela wyników",
           "manualScoreboardDescription": "Dla gier bez identyfikatora meczu Riot do pobrania (LAN, zbyt stare itd.).",
           "columnPlayer": "Zawodniczka",
+          "columnIgn": "IGN",
+          "noPlayerData": "Brak danych graczy.",
           "columnAgent": "Agent",
           "columnKills": "Zabójstwa",
           "columnDeaths": "Śmierci",

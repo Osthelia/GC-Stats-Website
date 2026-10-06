@@ -193,6 +193,8 @@ export type AdminMapPlayerStatRow = {
   handle: string | null;
   entrantId: number;
   agentName: string | null;
+  /** In game name (Riot ID) as played, filled by Fetch. */
+  valName: string | null;
   kills: number;
   deaths: number;
   assists: number;
@@ -212,6 +214,7 @@ export async function getAdminMapPlayerStats(mapId: number): Promise<AdminMapPla
       handle: people.handle,
       entrantId: mapPlayerStats.entrantId,
       agentName: mapPlayerStats.agentName,
+      valName: mapPlayerStats.valName,
       kills: mapPlayerStats.kills,
       deaths: mapPlayerStats.deaths,
       assists: mapPlayerStats.assists,

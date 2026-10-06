@@ -17,6 +17,7 @@ import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { MapArtBanner } from "@/components/admin/map-art-banner";
 import { MapDetailForm } from "@/components/admin/map-detail-form";
+import { MapPlayersPanel } from "@/components/admin/map-players-panel";
 import { MapScoreboardForm } from "@/components/admin/map-scoreboard-form";
 import { MapDangerZone } from "@/components/admin/map-danger-zone";
 
@@ -70,7 +71,15 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
         score={{ a: map.teamAScore ?? 0, b: map.teamBScore ?? 0, entrantAId: match.entrantAId, entrantBId: match.entrantBId }}
       />
 
-      <MapDetailForm map={map} canManage={canManage} />
+      <MapDetailForm
+        map={map}
+        canManage={canManage}
+        riotPlayers={
+          bothEntrantsSet && (
+            <MapPlayersPanel entrantAId={match.entrantAId!} entrantBId={match.entrantBId!} entrantAName={entrantAName} entrantBName={entrantBName} stats={playerStats} />
+          )
+        }
+      />
 
       {bothEntrantsSet && (
         <MapScoreboardForm

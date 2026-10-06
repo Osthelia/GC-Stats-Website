@@ -447,6 +447,8 @@ export async function resetMap(mapId: number): Promise<ResetMapResult> {
 export type MapPlayerStatInput = {
   personId: string;
   agentName: string;
+  /** Kept as fetched, not editable by hand. */
+  valName: string | null;
   kills: string;
   deaths: string;
   assists: string;
@@ -464,6 +466,7 @@ function validatePlayerStatRow(row: MapPlayerStatInput, prefix: string, errors: 
   const personId = Number(row.personId);
   if (!Number.isInteger(personId) || personId < 1) errors[`${prefix}-personId`] = "required";
   if (!VALORANT_AGENTS.includes(row.agentName as (typeof VALORANT_AGENTS)[number])) errors[`${prefix}-agentName`] = "invalid";
+  if (row.valName !== null && (typeof row.valName !== "string" || row.valName.length > 64)) errors[`${prefix}-valName`] = "invalid";
 
   for (const [field, value] of [
     ["kills", row.kills],
@@ -507,7 +510,7 @@ export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerSta
     entrantId,
     personId: Number(row.personId),
     agentName: row.agentName,
-    valName: null,
+    valName: row.valName?.trim() || null,
     kills: Number(row.kills),
     deaths: Number(row.deaths),
     assists: Number(row.assists),
