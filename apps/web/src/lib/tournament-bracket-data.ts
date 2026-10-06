@@ -164,7 +164,24 @@ export type PublicStage = {
 /** A stage as listed in the stage pills, without its bracket. */
 export type PublicStageSummary = Omit<PublicStage, "containers" | "finalStandings">;
 
-/** Every public stage for the pills, but only the displayed one (`activeStageId`, else the first) gets its bracket built. */
+/** Stage to show when none is requested: the one whose dates contain today, else the latest one already started, else the first. */
+function pickDefaultStage<T extends { startDate: string | null; endDate: string | null }>(stages: T[]): T | undefined {
+  const today = new Date().toISOString().slice(0, 10);
+  const day = (iso: string | null) => iso?.slice(0, 10) ?? null;
+  const current = stages.find((s) => {
+    const start = day(s.startDate);
+    const end = day(s.endDate);
+    return (start || end) && (!start || start <= today) && (!end || end >= today);
+  });
+  if (current) return current;
+  const started = stages.filter((s) => {
+    const start = day(s.startDate) ?? day(s.endDate);
+    return start != null && start <= today;
+  });
+  return started[started.length - 1] ?? stages[0];
+}
+
+/** Every public stage for the pills, but only the displayed one (`activeStageId`, else the one running today) gets its bracket built. */
 export async function getPublicTournamentStages(
   tournamentId: number,
   activeStageId: number | null,
@@ -172,7 +189,7 @@ export async function getPublicTournamentStages(
   // The active toggle is a public-visibility switch only — the admin
   // bracket viewer (getAdminTournamentStages) shows every stage regardless.
   const stages = (await listTournamentStages(tournamentId)).filter((s) => s.active);
-  const active = stages.find((s) => s.id === activeStageId) ?? stages[0];
+  const active = stages.find((s) => s.id === activeStageId) ?? pickDefaultStage(stages);
   return {
     stages: stages.map((s) => ({ id: s.id, name: s.name, sequenceOrder: s.sequenceOrder, status: s.status, startDate: s.startDate, endDate: s.endDate, liquipediaLink: s.liquipediaLink })),
     activeStage: active ? await buildStageView(active) : null,
