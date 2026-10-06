@@ -93,20 +93,27 @@ export function MatchVetoPanel({
           next.side = "none";
           next.sidePickedBy = NONE;
         }
-        // BO1 decider exception (2026-09-01): the team credited for the
-        // decider map and the team choosing side on it are the same team,
-        // not opposite teams like V1's general default — force + lock it.
-        if (match.bestOf === 1 && next.type === "decider") {
-          next.sidePickedBy = next.entrantId;
-        }
+        if ("entrantId" in patch || "type" in patch) next.sidePickedBy = autoSidePicker(next);
         return next;
       })
     );
   }
 
+  function autoSidePicker(row: RowState): string {
+    if (row.entrantId === NONE) return row.sidePickedBy;
+    if (row.type === "pick") return row.entrantId === String(match.entrantAId) ? String(match.entrantBId) : String(match.entrantAId);
+    if (row.type === "decider") return row.entrantId;
+    return row.sidePickedBy;
+  }
+
   function applyFirstTeam() {
     if (firstTeam === NONE) return;
-    setRows((prev) => prev.map((row, i) => ({ ...row, entrantId: i % 2 === 0 ? firstTeam : otherTeam })));
+    setRows((prev) =>
+      prev.map((row, i) => {
+        const next = { ...row, entrantId: i % 2 === 0 ? firstTeam : otherTeam };
+        return { ...next, sidePickedBy: autoSidePicker(next) };
+      })
+    );
   }
 
   function handleSave() {
