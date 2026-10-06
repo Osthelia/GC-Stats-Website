@@ -17,6 +17,13 @@ import {
 import { parseProductionParams } from "@/lib/production-list-params";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { ProductionSection } from "@/components/production/production-section";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "tournamentPage.tabProduction");
+}
 
 const SORTS: readonly TournamentProductionSort[] = ["target", "date"];
 

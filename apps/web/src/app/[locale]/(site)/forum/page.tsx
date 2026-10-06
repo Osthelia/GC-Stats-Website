@@ -11,6 +11,9 @@ import { Link } from "@/i18n/navigation";
 import { getForumOverview } from "@/lib/forum-data";
 import { ForumAvatar } from "@/components/forum/forum-avatar";
 import { FormattedDate } from "@/components/formatted-date";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("forum.overview.title");
 
 export default async function ForumPage() {
   const t = await getTranslations("forum.overview");

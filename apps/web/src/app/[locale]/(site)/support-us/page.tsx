@@ -9,6 +9,9 @@
 import { useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, SmallCard, ChannelCard, icons } from "@/components/legal/ui";
 import { Link } from "@/i18n/navigation";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("supportUs.title");
 
 export default function SupportUsPage() {
   const t = useTranslations("supportUs");

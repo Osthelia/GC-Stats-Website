@@ -17,6 +17,13 @@ import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { GroupsActions } from "@/components/pickem/groups-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "pickemPage.groups.heading");
+}
 
 export default async function TournamentPickemGroupsPage({ params }: { params: Promise<{ tournamentId: string; tournamentSlug: string }> }) {
   const { tournamentId } = await params;

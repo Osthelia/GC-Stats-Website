@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { news, newsAuthors, newsRelations, organizations, teams, people, tournaments, users, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
@@ -132,7 +133,7 @@ async function canPreviewUnpublishedNews(row: { organizationId: number | null; a
   return false;
 }
 
-export async function getPublicNewsArticle(slug: string): Promise<PublicNewsArticle | null> {
+export const getPublicNewsArticle = cache(async (slug: string): Promise<PublicNewsArticle | null> => {
   const [row] = await db.select().from(news).where(eq(news.slug, slug)).limit(1);
   if (!row) return null;
 
@@ -206,7 +207,7 @@ export async function getPublicNewsArticle(slug: string): Promise<PublicNewsArti
     people: personRows.map((p) => ({ id: p.id, label: p.handle, href: `/player/${p.id}/${slugify(p.handle)}` })),
     tournaments: tournamentRows.map((t) => ({ id: t.id, label: abbreviateTournamentName(t.name), href: `/tournaments/${t.id}/${slugify(t.name)}` })),
   };
-}
+});
 
 export async function getPublicOrganizationRedirectSegment(slug: string): Promise<string | null> {
   const [row] = await db.select({ id: organizations.id, slug: organizations.slug }).from(organizations).where(eq(organizations.slug, slug)).limit(1);

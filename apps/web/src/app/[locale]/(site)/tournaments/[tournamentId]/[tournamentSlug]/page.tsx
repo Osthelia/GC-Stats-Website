@@ -18,6 +18,13 @@ import { TournamentOverview } from "@/components/tournament/tournament-overview"
 import { TournamentTeamsPanel } from "@/components/tournament/tournament-teams-panel";
 import { RecentMatchesPanel } from "@/components/matches/recent-matches-panel";
 import { ForumThreadPanel } from "@/components/forum/forum-thread-panel";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId);
+}
 
 async function TournamentDiscussion({ tournamentId, basePath, page }: { tournamentId: number; basePath: string; page: number }) {
   const threadId = await findOrCreateThreadFor("tournament", tournamentId);

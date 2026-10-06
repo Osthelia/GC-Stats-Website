@@ -20,6 +20,13 @@ import {
 import { parseProductionParams } from "@/lib/production-list-params";
 import { OrganizationHeader } from "@/components/organization/organization-header";
 import { ProductionSection } from "@/components/production/production-section";
+import type { Metadata } from "next";
+import { organizationPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; organizationId: string }> }): Promise<Metadata> {
+  const { locale, organizationId } = await params;
+  return organizationPageMetadata(locale, organizationId, "tabProduction");
+}
 
 const SORTS: readonly OrganizationProductionSort[] = ["tournament", "date"];
 

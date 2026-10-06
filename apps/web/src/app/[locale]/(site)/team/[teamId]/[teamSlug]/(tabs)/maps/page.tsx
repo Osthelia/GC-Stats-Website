@@ -18,6 +18,13 @@ import { TeamMapPoolPanel } from "@/components/team/team-map-pool-panel";
 import { TeamMapCompsPanel } from "@/components/team/team-map-comps-panel";
 import { MapsFiltersBar } from "@/components/filters/maps-filters-bar";
 import { PageLoading } from "@/components/site/page-loading";
+import type { Metadata } from "next";
+import { teamPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; teamId: string }> }): Promise<Metadata> {
+  const { locale, teamId } = await params;
+  return teamPageMetadata(locale, teamId, "tabMaps");
+}
 
 export default async function TeamMapsPage({
   params,

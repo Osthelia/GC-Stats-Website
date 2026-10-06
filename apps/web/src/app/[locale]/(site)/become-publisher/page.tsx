@@ -9,6 +9,9 @@
 import { useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, SectionList, ChannelCard, icons } from "@/components/legal/ui";
 import { DISCORD_INVITE_URL, DISCORD_INVITE_LABEL } from "@/lib/discord-invite";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("becomePublisher.title");
 
 export default function BecomePublisherPage() {
   const t = useTranslations("becomePublisher");

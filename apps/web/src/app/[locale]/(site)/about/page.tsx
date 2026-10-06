@@ -13,6 +13,9 @@ import { getAboutTeam, type AboutTeamMember } from "@/lib/about-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 import { DiscordIcon, TwitchIcon, XIcon, InstagramIcon, YoutubeIcon, TiktokIcon, WebsiteIcon, SOCIAL_BRAND_COLORS } from "@/components/icons/brand-icons";
 import type { AppLocale } from "@/i18n/routing";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("aboutPage.title");
 
 const SOCIAL_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
   twitter: XIcon,

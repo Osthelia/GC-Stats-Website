@@ -9,6 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import {
@@ -42,7 +43,7 @@ export type OrganizationPageInfo = {
   logoUrlLight: string | null;
 };
 
-export async function getOrganizationPageInfo(id: number): Promise<OrganizationPageInfo | null> {
+export const getOrganizationPageInfo = cache(async (id: number): Promise<OrganizationPageInfo | null> => {
   const [row] = await db.select().from(organizations).where(eq(organizations.id, id)).limit(1);
   if (!row) return null;
 
@@ -61,7 +62,7 @@ export async function getOrganizationPageInfo(id: number): Promise<OrganizationP
     logoUrl: themed.dark,
     logoUrlLight: themed.light,
   };
-}
+});
 
 export type OrganizationMember = {
   membershipId: number;

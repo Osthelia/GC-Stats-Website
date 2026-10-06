@@ -18,6 +18,13 @@ import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
 import { aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMNS, buildWeaponColumns, weaponNameFromColumnKey } from "@/lib/stats-columns";
 import { parseStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "tournamentPage.tabStats");
+}
 
 export default async function TournamentStatsPage({
   params,

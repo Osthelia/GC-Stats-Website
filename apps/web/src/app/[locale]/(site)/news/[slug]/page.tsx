@@ -18,6 +18,12 @@ import { findOrCreateThreadFor } from "@/lib/forum-threads";
 import { FormattedDate } from "@/components/formatted-date";
 import { ForumThreadPanel } from "@/components/forum/forum-thread-panel";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const article = await getPublicNewsArticle((await params).slug);
+  return article ? { title: article.title, description: article.excerpt ?? undefined } : {};
+}
 
 async function NewsDiscussion({ newsId, slug, page }: { newsId: number; slug: string; page: number }) {
   const threadId = await findOrCreateThreadFor("news", newsId);

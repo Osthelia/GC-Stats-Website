@@ -22,6 +22,13 @@ import { OrganizationStreamsPanel } from "@/components/organization/organization
 import { OrganizationVodsPanel } from "@/components/organization/organization-vods-panel";
 import { PressPanel } from "@/components/press/press-panel";
 import type { AppLocale } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { organizationPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; organizationId: string }> }): Promise<Metadata> {
+  const { locale, organizationId } = await params;
+  return organizationPageMetadata(locale, organizationId);
+}
 
 // `/organization/{id}/{slug}` — two separate path segments, like team/player/
 // tournament (see lib/entity-id.ts). `organizationSlug` itself is never read

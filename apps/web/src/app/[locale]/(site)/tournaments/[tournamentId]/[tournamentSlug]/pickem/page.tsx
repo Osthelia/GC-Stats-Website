@@ -18,6 +18,13 @@ import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { PickemLeaderboardTable } from "@/components/pickem/pickem-leaderboard-table";
 import { PickemStatusMessage } from "@/components/pickem/pickem-status-message";
 import { PickemStageBoard, type PickemScopeTabInput } from "@/components/pickem/pickem-stage-board";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "tournamentPage.tabPickem");
+}
 
 export default async function TournamentPickemPage({
   params,

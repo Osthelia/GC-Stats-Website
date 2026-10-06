@@ -10,6 +10,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, Callout, SmallCard, InfoBar, icons } from "@/components/legal/ui";
 import { Link } from "@/i18n/navigation";
 import { formatLastUpdated } from "@/lib/format-date";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("privacy.title");
 
 export default function PrivacyPage() {
   const t = useTranslations("privacy");

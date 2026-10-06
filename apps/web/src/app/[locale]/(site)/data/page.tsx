@@ -9,6 +9,9 @@
 import { useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, icons } from "@/components/legal/ui";
 import { DataCallout, FieldChip, FieldGroup, GroupDivider, LinkCard, TableCard } from "@/components/data/field-dictionary";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("dataPage.title");
 
 function ComingSoonBadge({ label }: { label: string }) {
   return (

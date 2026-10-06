@@ -12,6 +12,9 @@ import { getForumPostStatus } from "@/lib/forum-guards";
 import { getActiveEmotesForPicker } from "@/lib/reactions";
 import { ForumPostGate } from "@/components/forum/forum-post-gate";
 import { CreateThreadForm } from "@/components/forum/create-thread-form";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("forum.create.title");
 
 export default async function CreateForumThreadPage() {
   const t = await getTranslations("forum.create");

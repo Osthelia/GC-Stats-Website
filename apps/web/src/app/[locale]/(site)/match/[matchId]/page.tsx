@@ -22,8 +22,11 @@ import {
   getMatchPlayerPovs,
   type MatchHeader as MatchHeaderData,
 } from "@/lib/match-page-data";
+import type { Metadata } from "next";
 import { parseEntityId } from "@/lib/entity-id";
 import { getTranslations } from "next-intl/server";
+import type { AppLocale } from "@/i18n/routing";
+import { withSection } from "@/lib/page-metadata";
 import { MatchHeader } from "@/components/match/match-header";
 import { MatchVetos } from "@/components/match/match-vetos";
 import { MatchMaps } from "@/components/match/match-maps";
@@ -116,6 +119,21 @@ async function MatchDiscussion({ matchId, page }: { matchId: number; page: numbe
   return <ForumThreadPanel threadId={threadId} page={page} buildHref={(p) => `/match/${matchId}?discussionPage=${p}`} />;
 }
 
+function sideNames(match: MatchHeaderData, t: Awaited<ReturnType<typeof getTranslations>>): [string, string] {
+  const fallback = match.status === "completed" ? t("teamBye") : t("teamTbd");
+  return [match.a.entrantId != null ? match.a.displayName : fallback, match.b.entrantId != null ? match.b.displayName : fallback];
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; matchId: string }> }): Promise<Metadata> {
+  const { locale, matchId: matchIdParam } = await params;
+  const matchId = parseEntityId(matchIdParam);
+  const match = matchId == null ? null : await getMatchHeader(matchId);
+  if (!match) return {};
+  const t = await getTranslations({ locale: locale as AppLocale, namespace: "matchPage" });
+  const [teamAName, teamBName] = sideNames(match, t);
+  return { title: withSection(`${teamAName} ${t("vs")} ${teamBName}`, match.tournamentName) };
+}
+
 export default async function Page({ params, searchParams }: { params: Promise<{ locale: string; matchId: string }>; searchParams: Promise<{ discussionPage?: string }> }) {
   const { matchId: matchIdParam } = await params;
   const sp = await searchParams;
@@ -128,8 +146,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
 
   const t = await getTranslations("matchPage");
   const isCompleted = match.status === "completed";
-  const teamAName = match.a.entrantId != null ? match.a.displayName : isCompleted ? t("teamBye") : t("teamTbd");
-  const teamBName = match.b.entrantId != null ? match.b.displayName : isCompleted ? t("teamBye") : t("teamTbd");
+  const [teamAName, teamBName] = sideNames(match, t);
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-6">

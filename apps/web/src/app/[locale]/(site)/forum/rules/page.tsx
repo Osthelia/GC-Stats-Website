@@ -14,6 +14,9 @@ import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { FormattedDate } from "@/components/formatted-date";
 import { AcceptRulesButton } from "@/components/forum/accept-rules-button";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("forum.rules.title");
 
 const RULE_KEYS = ["respect", "harassment", "spam", "content", "enforcement", "automod"] as const;
 

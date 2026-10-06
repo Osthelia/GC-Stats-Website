@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import {
   and,
   asc,
@@ -141,9 +142,9 @@ function resolveSide(
   };
 }
 
-export async function getMatchHeader(
+export const getMatchHeader = cache(async (
   matchId: number,
-): Promise<MatchHeader | null> {
+): Promise<MatchHeader | null> => {
   const entrantA = alias(entrants, "header_entrant_a");
   const entrantB = alias(entrants, "header_entrant_b");
   const teamA = alias(teams, "header_team_a");
@@ -222,7 +223,7 @@ export async function getMatchHeader(
     stageName: row.stageName,
     containerName: row.containerName,
   };
-}
+});
 
 export type MatchVetoStep = {
   order: number;

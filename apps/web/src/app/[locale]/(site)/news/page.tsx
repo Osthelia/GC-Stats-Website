@@ -13,6 +13,9 @@ import { NewsLanguageFilter } from "@/components/news/news-language-filter";
 import { NewsArticleCard } from "@/components/news/news-article-card";
 import { ListPagination } from "@/components/filters/list-pagination";
 import type { AppLocale } from "@/i18n/routing";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("newsPage.title");
 
 export default async function NewsIndexPage({
   params,

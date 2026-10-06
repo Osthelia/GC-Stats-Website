@@ -23,6 +23,13 @@ import { PlayerCurrentOrganizations } from "@/components/player/player-current-o
 import { RecentMatchesPanel } from "@/components/matches/recent-matches-panel";
 import { PressPanel } from "@/components/press/press-panel";
 import type { AppLocale } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { playerPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; playerId: string }> }): Promise<Metadata> {
+  const { locale, playerId } = await params;
+  return playerPageMetadata(locale, playerId);
+}
 
 function BlockSkeleton({ className }: { className: string }) {
   return <div className={`w-full animate-pulse rounded-2xl border border-neutral-800 ${className}`} style={{ background: "var(--gcs-surface-3)" }} />;

@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { and, count, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { users, teams, forumMessages, newsAuthors, news } from "@gc-stats/db";
@@ -28,7 +29,7 @@ export type UserProfileInfo = {
   createdAt: Date;
 };
 
-export async function getUserProfileByUsername(username: string): Promise<UserProfileInfo | null> {
+export const getUserProfileByUsername = cache(async (username: string): Promise<UserProfileInfo | null> => {
   const [row] = await db
     .select({
       id: users.id,
@@ -47,7 +48,7 @@ export async function getUserProfileByUsername(username: string): Promise<UserPr
   if (!row || !row.username) return null;
 
   return { ...row, username: row.username, socials: (row.socials as Record<string, string>) ?? {} };
-}
+});
 
 export type UserFanTeam = {
   id: number;

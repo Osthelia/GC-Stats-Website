@@ -21,6 +21,9 @@ import { FilterPill, SortPill } from "@/components/filters/filter-pill";
 import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
 import { TournamentBadge } from "@/components/tournament/tournament-badge";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("tournamentsPage.title");
 
 // One formatter per locale, reused by every card.
 const dateFormatters = new Map<string, Intl.DateTimeFormat>();

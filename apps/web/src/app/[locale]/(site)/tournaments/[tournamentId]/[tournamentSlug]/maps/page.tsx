@@ -18,6 +18,13 @@ import { TournamentMapPoolPanel } from "@/components/tournament/tournament-map-p
 import { TournamentMapCompsPanel } from "@/components/tournament/tournament-map-comps-panel";
 import { MapsFiltersBar } from "@/components/filters/maps-filters-bar";
 import { PageLoading } from "@/components/site/page-loading";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "tournamentPage.tabMaps");
+}
 
 export default async function TournamentMapsPage({
   params,

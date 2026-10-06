@@ -18,6 +18,16 @@ import { NewsArticleCard } from "@/components/news/news-article-card";
 import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
 import type { AppLocale } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { withSection } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; username: string }> }): Promise<Metadata> {
+  const { locale, username } = await params;
+  const user = await getUserProfileByUsername(username);
+  if (!user) return {};
+  const t = await getTranslations({ locale: locale as AppLocale, namespace: "userPage" });
+  return { title: withSection(user.name ?? user.username, t("tabNews")) };
+}
 
 export default async function UserNewsPage({
   params,

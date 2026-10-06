@@ -16,6 +16,13 @@ import {
 import { PlayerCurrentTeam } from "@/components/player/player-current-team";
 import { PlayerFormerTeams } from "@/components/player/player-former-teams";
 import { ListPagination } from "@/components/filters/list-pagination";
+import type { Metadata } from "next";
+import { playerPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; playerId: string }> }): Promise<Metadata> {
+  const { locale, playerId } = await params;
+  return playerPageMetadata(locale, playerId, "tabTeamsHistory");
+}
 
 const PAGE_SIZE = 20;
 

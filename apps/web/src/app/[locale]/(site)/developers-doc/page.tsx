@@ -10,6 +10,9 @@ import { useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, SectionList, ChannelCard, icons } from "@/components/legal/ui";
 import { Link } from "@/i18n/navigation";
 import { DISCORD_INVITE_URL, DISCORD_INVITE_LABEL } from "@/lib/discord-invite";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("developersDoc.title");
 
 export default function DevelopersDocPage() {
   const t = useTranslations("developersDoc");

@@ -12,6 +12,13 @@ import { Link } from "@/i18n/navigation";
 import { getForumThread } from "@/lib/forum-data";
 import { ForumThreadPanel } from "@/components/forum/forum-thread-panel";
 import { UserBadges } from "@/components/user/user-badges";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ threadId: string }> }): Promise<Metadata> {
+  const threadId = Number((await params).threadId);
+  const thread = Number.isInteger(threadId) ? await getForumThread(threadId) : null;
+  return thread && thread.category === "general" ? { title: thread.title } : {};
+}
 
 export default async function ForumThreadPage({ params, searchParams }: { params: Promise<{ threadId: string }>; searchParams: Promise<{ page?: string }> }) {
   const { threadId: rawThreadId } = await params;

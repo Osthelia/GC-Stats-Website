@@ -10,6 +10,9 @@ import { getTranslations } from "next-intl/server";
 import { LegalPageHeader, LegalIntro } from "@/components/legal/ui";
 import { FinanceLedger } from "@/components/finance-ledger";
 import { getPublicFinanceEntries } from "@/lib/finance-ledger";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("financePage.title");
 
 export default async function FinancePage() {
   const t = await getTranslations("financePage");

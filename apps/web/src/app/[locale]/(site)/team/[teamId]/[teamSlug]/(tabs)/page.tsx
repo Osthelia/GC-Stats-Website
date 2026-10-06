@@ -16,6 +16,13 @@ import { PressPanel } from "@/components/press/press-panel";
 import { TeamFormerMembers, FORMER_MEMBERS_PREVIEW } from "@/components/team/team-former-members";
 import { entityMatchesHref } from "@/lib/entity-matches";
 import type { AppLocale } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { teamPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; teamId: string }> }): Promise<Metadata> {
+  const { locale, teamId } = await params;
+  return teamPageMetadata(locale, teamId);
+}
 
 // `/team/{id}/{slug}` — two separate path segments, like tournaments (see
 // lib/entity-id.ts). `teamSlug` itself is never read back (cosmetic only,

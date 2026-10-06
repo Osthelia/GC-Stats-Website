@@ -15,6 +15,13 @@ import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { MatchesList } from "@/components/matches/matches-list";
 import { TournamentMatchesFilterBar } from "@/components/tournament/tournament-matches-filter-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "tournamentPage.tabMatches");
+}
 
 export default async function TournamentMatchesPage({
   params,

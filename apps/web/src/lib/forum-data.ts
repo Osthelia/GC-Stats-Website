@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { cache } from "react";
 import { alias } from "drizzle-orm/pg-core";
 import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
@@ -131,7 +132,7 @@ export type ForumThreadDetail = {
   authorFanTeam: UserFanTeam | null;
 };
 
-export async function getForumThread(threadId: number): Promise<ForumThreadDetail | null> {
+export const getForumThread = cache(async (threadId: number): Promise<ForumThreadDetail | null> => {
   const [row] = await db
     .select({
       id: forumThreads.id,
@@ -149,7 +150,7 @@ export async function getForumThread(threadId: number): Promise<ForumThreadDetai
 
   const authorFanTeam = row.authorId ? await getUserFanTeam(row.authorId) : null;
   return { ...row, title: row.title ?? "", authorFanTeam };
-}
+});
 
 export type ForumMessageView = {
   id: number;

@@ -19,6 +19,13 @@ import { parseProductionParams } from "@/lib/production-list-params";
 import { PlayerCurrentOrganizations } from "@/components/player/player-current-organizations";
 import { PlayerFormerOrganizations } from "@/components/player/player-former-organizations";
 import { ProductionSection } from "@/components/production/production-section";
+import type { Metadata } from "next";
+import { playerPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; playerId: string }> }): Promise<Metadata> {
+  const { locale, playerId } = await params;
+  return playerPageMetadata(locale, playerId, "tabProduction");
+}
 
 const SORTS: readonly PersonProductionSort[] = ["tournament", "date"];
 

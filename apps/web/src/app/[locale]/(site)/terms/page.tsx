@@ -9,6 +9,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, SectionList, Callout, SmallCard, InfoBar, icons } from "@/components/legal/ui";
 import { formatLastUpdated } from "@/lib/format-date";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("terms.title");
 
 export default function TermsPage() {
   const t = useTranslations("terms");

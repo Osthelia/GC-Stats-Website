@@ -13,6 +13,9 @@ import { getForumThreadsPage, FORUM_THREADS_PAGE_SIZE } from "@/lib/forum-data";
 import { ForumAvatar } from "@/components/forum/forum-avatar";
 import { FormattedDate } from "@/components/formatted-date";
 import { ListPagination } from "@/components/filters/list-pagination";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("forum.general.title");
 
 export default async function ForumGeneralPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const sp = await searchParams;

@@ -18,6 +18,9 @@ import { FilterPill, SortPill } from "@/components/filters/filter-pill";
 import { ListPagination } from "@/components/filters/list-pagination";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 import { SearchQueryField } from "@/components/search/search-query-field";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("searchPage.title");
 
 const TYPE_ORDER: SearchResultType[] = [
   "team",

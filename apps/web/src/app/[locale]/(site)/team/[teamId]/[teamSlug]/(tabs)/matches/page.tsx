@@ -14,6 +14,13 @@ import { getEntityMatchesPage, getEntityMatchesFilterOptions, parseEntityMatches
 import { MatchesList } from "@/components/matches/matches-list";
 import { MatchFiltersBar } from "@/components/matches/match-filters-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
+import type { Metadata } from "next";
+import { teamPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; teamId: string }> }): Promise<Metadata> {
+  const { locale, teamId } = await params;
+  return teamPageMetadata(locale, teamId, "tabMatches");
+}
 
 export default async function TeamMatchesPage({
   params,

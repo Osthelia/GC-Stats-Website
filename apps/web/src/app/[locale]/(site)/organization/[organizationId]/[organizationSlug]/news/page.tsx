@@ -18,6 +18,13 @@ import { NewsArticleCard } from "@/components/news/news-article-card";
 import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
 import type { AppLocale } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { organizationPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; organizationId: string }> }): Promise<Metadata> {
+  const { locale, organizationId } = await params;
+  return organizationPageMetadata(locale, organizationId, "tabNews");
+}
 
 export default async function OrganizationNewsPage({
   params,

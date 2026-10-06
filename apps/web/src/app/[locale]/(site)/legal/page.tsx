@@ -10,6 +10,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { LegalPageHeader, SectionCard, SectionText, Callout, icons } from "@/components/legal/ui";
 import { Link } from "@/i18n/navigation";
 import { formatLastUpdated } from "@/lib/format-date";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("legalNotice.title");
 
 export default function LegalNoticePage() {
   const t = useTranslations("legalNotice");

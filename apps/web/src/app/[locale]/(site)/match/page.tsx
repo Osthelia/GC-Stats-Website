@@ -21,6 +21,9 @@ import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";
 import { ListPagination } from "@/components/filters/list-pagination";
 import { DateRangeFilter } from "@/components/filters/date-range-filter";
 import { GlobalMatchRow } from "@/components/matches/global-match-row";
+import { staticTitleMetadata } from "@/lib/page-metadata";
+
+export const generateMetadata = staticTitleMetadata("matchesPage.title");
 
 export default async function MatchesIndexPage({
   searchParams,

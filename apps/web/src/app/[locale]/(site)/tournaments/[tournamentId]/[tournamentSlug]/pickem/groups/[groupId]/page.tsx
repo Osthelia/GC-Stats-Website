@@ -20,6 +20,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
 import { DEFAULT_PICKEM_SCORING } from "@/lib/pickem/scoring";
+import type { Metadata } from "next";
+import { tournamentPageMetadata } from "@/lib/page-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string }> }): Promise<Metadata> {
+  const { locale, tournamentId } = await params;
+  return tournamentPageMetadata(locale, tournamentId, "pickemPage.groups.heading");
+}
 
 export default async function PickemGroupDetailPage({ params }: { params: Promise<{ tournamentId: string; tournamentSlug: string; groupId: string }> }) {
   const { tournamentId, groupId } = await params;
