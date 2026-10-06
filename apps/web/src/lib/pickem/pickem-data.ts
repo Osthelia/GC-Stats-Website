@@ -18,7 +18,7 @@ import { computeContainerStandings } from "@/lib/bracket/standings";
 import { computeVirtualBracket, getPickableMatches } from "./bracket-fill";
 import { scoreBracketMatchPick, scoreStandingPick, DEFAULT_PICKEM_SCORING, type PhaseScoringConfig } from "./scoring";
 
-export type PickemStagePhase = { id: number; name: string; status: "pending" | "active" | "completed" };
+export type PickemStagePhase = { id: number; name: string; status: "pending" | "active" | "completed"; startDate: string | null; endDate: string | null };
 
 /**
  * Every bracket-type container's matches/edges of a stage, combined as one
@@ -38,7 +38,7 @@ function getStageBracketMatchesAndEdges(editorData: Awaited<ReturnType<typeof ge
 /** Public-facing stage list for a tournament's pick'em tab — active (publicly visible) stages with pick'em enabled, in stage order. */
 export async function getPickemEnabledStages(tournamentId: number): Promise<PickemStagePhase[]> {
   const stages = await listTournamentStages(tournamentId);
-  return stages.filter((s) => s.active && s.pickemEnabled).map((s) => ({ id: s.id, name: s.name, status: s.status }));
+  return stages.filter((s) => s.active && s.pickemEnabled).map((s) => ({ id: s.id, name: s.name, status: s.status, startDate: s.startDate, endDate: s.endDate }));
 }
 
 export type PickemPhase = "notConfigured" | "notOpenYet" | "open" | "locked";

@@ -11,7 +11,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { parseEntityId, slugify } from "@/lib/entity-id";
-import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
+import { getPublicTournamentHeader, pickDefaultStage } from "@/lib/tournament-bracket-data";
 import { getPickemEnabledStages, getStagePickemStatus, getPickFormData, getStageScoringScopes } from "@/lib/pickem/pickem-data";
 import { ensureStageRewardsComputed, getStageRewards } from "@/lib/pickem/rewards";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
@@ -46,7 +46,7 @@ export default async function TournamentPickemPage({
 
   const stages = await getPickemEnabledStages(id);
   const requestedStageId = sp.stage ? Number(sp.stage) : null;
-  const activeStage = stages.find((s) => s.id === requestedStageId) ?? stages[0] ?? null;
+  const activeStage = stages.find((s) => s.id === requestedStageId) ?? pickDefaultStage(stages) ?? null;
 
   const session = await auth();
   const userId = session?.user?.id ?? null;

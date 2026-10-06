@@ -165,7 +165,7 @@ export type PublicStage = {
 export type PublicStageSummary = Omit<PublicStage, "containers" | "finalStandings">;
 
 /** Stage to show when none is requested: the one whose dates contain today, else the latest one already started, else the first. */
-function pickDefaultStage<T extends { startDate: string | null; endDate: string | null }>(stages: T[]): T | undefined {
+export function pickDefaultStage<T extends { startDate: string | null; endDate: string | null }>(stages: T[]): T | undefined {
   const today = new Date().toISOString().slice(0, 10);
   const day = (iso: string | null) => iso?.slice(0, 10) ?? null;
   const current = stages.find((s) => {
