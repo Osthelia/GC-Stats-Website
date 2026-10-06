@@ -95,7 +95,12 @@ export type PublicBracketMatch = EditorMatch & {
   entrantBLogoUrlLight: string | null;
 };
 
-export type PublicStandingsRow = GroupStandingsEntry & { displayName: string; teamHref: string | null };
+export type PublicStandingsRow = GroupStandingsEntry & {
+  displayName: string;
+  teamHref: string | null;
+  logoUrl: string | null;
+  logoUrlLight: string | null;
+};
 
 export type PublicQualificationRule = { rankFrom: number; rankTo: number; label: string; url: string };
 
@@ -253,7 +258,14 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
         standings = ranked.map((r) => {
           const displayName = entrantNameById.get(Number(r.id)) ?? `#${r.id}`;
           const teamId = entrantTeamIdById.get(Number(r.id)) ?? null;
-          return { ...r, displayName, teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null };
+          const logos = teamId !== null ? teamLogos.get(teamId) : undefined;
+          return {
+            ...r,
+            displayName,
+            teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
+            logoUrl: logos?.dark ?? null,
+            logoUrlLight: logos?.light ?? null,
+          };
         });
         showPoints = isPointsConfigActive(parseGroupConfig(container.config).pointsConfig);
         qualificationRules = advancementRules.map((r) => ({

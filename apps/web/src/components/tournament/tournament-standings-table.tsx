@@ -8,6 +8,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { TeamBadge } from "@/components/home/team-badge";
 import type { PublicStandingsRow, PublicQualificationRule } from "@/lib/tournament-bracket-data";
 
 const QUALIFIED = "#3fb950";
@@ -66,11 +67,15 @@ export async function TournamentStandingsTable({
                 <td className="px-4 py-2.5 text-center font-mono text-xs text-neutral-500">{row.rank}</td>
                 <td className="px-4 py-2.5 font-medium" style={{ color: "var(--gcs-text)" }}>
                   {row.teamHref ? (
-                    <Link href={row.teamHref} className="transition-colors hover:text-[#e4ae22]">
+                    <Link href={row.teamHref} className="flex items-center gap-2 transition-colors hover:text-[#e4ae22]">
+                      <TeamBadge tag={row.displayName} logoUrl={row.logoUrl} logoUrlLight={row.logoUrlLight} size={22} />
                       {row.displayName}
                     </Link>
                   ) : (
-                    row.displayName
+                    <span className="flex items-center gap-2">
+                      <TeamBadge tag={row.displayName} logoUrl={row.logoUrl} logoUrlLight={row.logoUrlLight} size={22} />
+                      {row.displayName}
+                    </span>
                   )}
                 </td>
                 <td className="px-4 py-2.5 text-center font-mono tabular-nums text-neutral-300">
