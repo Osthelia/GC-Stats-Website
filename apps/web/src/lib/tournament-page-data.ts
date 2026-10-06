@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { entrants, entrantMembers, people, teams, matches, maps, stageContainers, stages, tournaments, mapPlayerStats } from "@gc-stats/db";
@@ -128,7 +128,7 @@ export async function getTournamentRecentMatches(tournamentId: number, limit = 9
   return getTournamentMatches(tournamentId, { statuses: ["completed", "live"], limit, liveFirst: true });
 }
 
-export type TournamentMatchesFilters = { stageId?: number; round?: string; teamId?: number; map?: string; status?: MatchStatusFilter };
+export type TournamentMatchesFilters = { stageId?: number; round?: string; teamId?: number; map?: string; status?: MatchStatusFilter; sort?: "oldest" };
 
 function firstParam(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
@@ -149,6 +149,7 @@ export function parseTournamentMatchesFilters(searchParams: Record<string, strin
     teamId: Number.isInteger(teamId) ? teamId : undefined,
     round: round || undefined,
     map: map || undefined,
+    sort: firstParam(searchParams.sort) === "oldest" ? "oldest" : undefined,
     status: status === "live" || status === "upcoming" || status === "finished" ? status : undefined,
   };
 }
@@ -243,7 +244,7 @@ export async function getTournamentMatches(
     .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
     .where(and(...conditions))
     // Live first, then most recently played (overview panel only, via `liveFirst`) — the full matches tab just sorts by date, same as `getTeamMatches`.
-    .orderBy(...(opts.liveFirst ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)] : [desc(matches.scheduledAt)]), desc(matches.id));
+    .orderBy(...(opts.liveFirst ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)] : [opts.filters?.sort === "oldest" ? asc(matches.scheduledAt) : desc(matches.scheduledAt)]), opts.filters?.sort === "oldest" ? asc(matches.id) : desc(matches.id));
 
   let rows: Awaited<typeof baseQuery>;
   if (opts.page != null) {

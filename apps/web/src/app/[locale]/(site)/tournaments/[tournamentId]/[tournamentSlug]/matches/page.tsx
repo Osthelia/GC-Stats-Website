@@ -60,6 +60,7 @@ export default async function TournamentMatchesPage({
     if (filters.round) qs.set("round", filters.round);
     if (filters.teamId != null) qs.set("team", String(filters.teamId));
     if (filters.map) qs.set("map", filters.map);
+    if (filters.sort) qs.set("sort", filters.sort);
     if (status) qs.set("status", status);
     if (targetPage !== 1) qs.set("page", String(targetPage));
     const s = qs.toString();
@@ -82,8 +83,13 @@ export default async function TournamentMatchesPage({
             roundDefault: t("matchesFilterRoundDefault"),
             teamLabel: t("matchesFilterTeamLabel"),
             teamDefault: t("matchesFilterTeamDefault"),
+            teamSearch: t("matchesFilterTeamSearch"),
+            teamNoResult: t("matchesFilterTeamNoResult"),
             mapLabel: t("matchesFilterMapLabel"),
             mapDefault: t("matchesFilterMapDefault"),
+            sortLabel: t("matchesFilterSortLabel"),
+            sortNewest: t("matchesSortNewest"),
+            sortOldest: t("matchesSortOldest"),
           }}
         />
 
