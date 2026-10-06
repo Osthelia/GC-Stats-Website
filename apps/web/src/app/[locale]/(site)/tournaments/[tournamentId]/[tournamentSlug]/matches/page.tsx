@@ -54,7 +54,7 @@ export default async function TournamentMatchesPage({
   const total = filters.status ? counts[filters.status] : counts.all;
   const totalPages = Math.max(1, Math.ceil(total / TOURNAMENT_MATCHES_PAGE_SIZE));
 
-  const buildPageHref = (targetPage: number, status = filters.status) => {
+  const buildPageHref = (targetPage: number, status: string | null | undefined = filters.status) => {
     const qs = new URLSearchParams();
     if (filters.stageId != null) qs.set("stage", String(filters.stageId));
     if (filters.round) qs.set("round", filters.round);
@@ -100,7 +100,7 @@ export default async function TournamentMatchesPage({
           activeStatus={filters.status ?? "all"}
           statusCounts={counts}
           statusHrefs={{
-            all: buildPageHref(1, undefined),
+            all: buildPageHref(1, null),
             live: buildPageHref(1, "live"),
             upcoming: buildPageHref(1, "upcoming"),
             finished: buildPageHref(1, "finished"),
