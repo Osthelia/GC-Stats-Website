@@ -269,9 +269,7 @@
         "teams": "战队历史",
         "org": "机构历史",
         "link_player": "选手资料绑定请求",
-
         "created_at": "注册日期",
-
         "sanctions": "生效中的处罚"
       }
     },
@@ -565,9 +563,7 @@
         "teams": "您的历史及当前战队记录",
         "org": "您的历史及当前机构记录",
         "link_player": "请求将您的账户与选手资料绑定的权限",
-
         "created_at": "您的账户创建日期",
-
         "sanctions": "您当前生效中的处罚（警告、禁言、停权、封禁）"
       },
       "allow": "允许",
@@ -741,8 +737,7 @@
     },
     "privateData": {
       "title": "私密数据",
-      "text": "我们存储的个人数据仅限于运行本站及其账户系统所需的内容：用于绑定选手资料的 Discord ID 和 Riot ID，以及下文所述、任何创建用户账户者的账户数据。",
-      "discordUsage": "Discord ID：用于在通过我们的 Discord 修改选手资料时验证其身份。",
+      "text": "我们存储的个人数据仅限于运行本站及其账户系统所需的内容：用于绑定选手资料的 Riot ID，以及下文所述、任何创建用户账户者的账户数据。",
       "riotUsage": "Riot ID：由我们的团队根据 Riot Games 官方 API 获取的比赛数据进行识别和分配，仅用于将比赛数据与选手资料关联。可根据申请进行更正或删除。"
     },
     "accountData": {
@@ -1043,7 +1038,7 @@
       "reactionsEmotes": "反应与表情"
     },
     "descriptions": {
-      "identity": "一个人（选手、教练、解说、导播、组织者等）只拥有一份资料，即使其角色随时间改变也不会变化。战队和机构有权编辑或删除其“补充信息”。\n\nDiscord ID 和 Riot ID 从不展示或分享，它们由本人通过 Discord 提供，或由我们的团队根据比赛数据识别得出。",
+      "identity": "一个人（选手、教练、解说、导播、组织者等）只拥有一份资料，即使其角色随时间改变也不会变化。战队和机构有权编辑或删除其“补充信息”。\n\nRiot ID 从不展示或分享，它由我们的团队根据比赛数据识别得出。",
       "tournament": "每场赛事都有一个标识符、名称、日期、地区、类别及状态。一场赛事可以被拆分为多个阶段（小组赛、季后赛等），每个阶段又由一个或多个容器（对阵表或小组）组成。战队以“参赛方”身份报名，其名单在该赛事期间被锁定，与战队的常规名单相互独立。",
       "matches": "我们收集大量比赛相关信息以提供详细数据统计，包括：\n- 基本比赛信息（必需）\n- 比赛的地图选禁\n- 已进行的地图，及其结果和数据\n- 按选手及地图汇总的数据，是网站日常查询实际使用的数据\n\n这些数据并非总能被收集到，但我们会尽力获取，以展示尽可能完整的数据统计。",
       "rawStats": "除上述汇总数据外，我们还保留了逐回合的原始数据层（击杀、伤害、经济、存活状态），用于重新计算这些数据统计及展示回合历史。\n\n每位选手在关键事件（击杀、装包、拆包）发生时的位置会被完整地永久保留：它是我们热力图的数据来源，且一旦汇总便无法再还原。",
@@ -1071,7 +1066,6 @@
         "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）",
         "vlrId": "VLR 标识符",
         "liquipediaLink": "该人员 Liquipedia 页面链接",
-        "discordId": "Discord ID（私密信息，用于在编辑资料时验证本人身份）",
         "valId": "Riot ID / PUUID（私密信息，由我们的团队根据 Riot 比赛数据识别并分配，用于将比赛数据与人员关联）",
         "esportsValId": "与游戏账户关联的 Riot 电竞标识符"
       },
@@ -2722,8 +2716,11 @@
           "alreadyLinked": "该账户已绑定至另一位选手。",
           "tooLarge": "图片过大（最多 10 MB）。",
           "invalidImage": "该文件不是有效的图片。",
-          "empty": "请选择一张图片。"
-        }
+          "empty": "请选择一张图片。",
+          "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+        },
+        "fieldDiscordId": "Discord (ID)",
+        "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"
       },
       "merge": {
         "title": "合并选手",
@@ -3104,9 +3101,7 @@
         "teams": "您的历史及当前战队记录",
         "org": "您的历史及当前机构记录",
         "link_player": "请求将您的账户与选手资料绑定的权限",
-
         "created_at": "您的账户创建日期",
-
         "sanctions": "您当前生效中的处罚（警告、禁言、停权、封禁）"
       },
       "cancel": "取消",
@@ -4848,8 +4843,10 @@
         "notFound": "未找到该人员。",
         "userNotFound": "未找到该用户。",
         "alreadyLinked": "该账户已绑定至另一位人员。",
-        "taken": "已被另一位人员使用。"
-      }
+        "taken": "已被另一位人员使用。",
+        "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+      },
+      "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"
     },
     "credits": {
       "title": "制作署名",
@@ -5495,7 +5492,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord",
+      "discord": "Discord (ID)",
       "website": "官网",
       "handle": "用户名",
       "firstName": "名",
@@ -5614,8 +5611,11 @@
       "tooMany": "您添加的记录过多。",
       "userLinkAlreadyYours": "此资料已绑定到你的账户。",
       "userLinkTaken": "此资料已绑定到其他账户。",
-      "userLinkPending": "你已有一个待审核的账户绑定请求。"
-    }
+      "userLinkPending": "你已有一个待审核的账户绑定请求。",
+      "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+    },
+    "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。",
+    "useLinkedDiscord": "使用我已关联的 Discord 账号"
   },
   "tournamentPage": {
     "tabOverview": "概览",

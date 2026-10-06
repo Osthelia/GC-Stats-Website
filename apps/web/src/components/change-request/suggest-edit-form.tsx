@@ -59,6 +59,7 @@ export function SuggestEditForm({
   membershipEntries,
   nameHistory,
   userLink,
+  linkedDiscordId,
 }: {
   subjectType: ChangeRequestSubjectType;
   subjectId: number;
@@ -72,10 +73,12 @@ export function SuggestEditForm({
   nameHistory?: TeamNameHistoryEntry[];
   /** Person subjects only: whether the current user can request a link to this player. */
   userLink?: SuggestEditUserLink;
+  /** Discord account linked to the viewer's own user account, offered as a one click fill for the Discord field. */
+  linkedDiscordId?: string | null;
 }) {
   const t = useTranslations("suggestEdit");
   const fields = fieldsForSubject(subjectType);
-  const textLikeFields = fields.filter((f) => f.type === "text" || f.type === "textarea" || f.type === "url" || f.type === "country" || f.type === "select");
+  const textLikeFields = fields.filter((f) => f.type === "text" || f.type === "textarea" || f.type === "url" || f.type === "discordId" || f.type === "country" || f.type === "select");
   const booleanFields = fields.filter((f) => f.type === "boolean");
   const tagsFields = fields.filter((f) => f.type === "tags");
   const socialFields = fields.filter((f) => f.key.startsWith("socials."));
@@ -223,6 +226,36 @@ export function SuggestEditForm({
           />
           {error && <span className="text-[12px] text-[#e08585]">{t(`error.${error}`)}</span>}
         </label>
+      );
+    }
+
+    if (def.type === "discordId") {
+      const value = values[def.key] ?? "";
+      return (
+        <div key={def.key} className="flex flex-col gap-1.5">
+          <label htmlFor={`field-${def.key}`}>{label}</label>
+          <input
+            id={`field-${def.key}`}
+            type="text"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => setValue(def.key, e.target.value)}
+            aria-invalid={!!error}
+            maxLength={def.maxLength}
+            className={inputClass}
+          />
+          <span className="text-[11.5px] text-neutral-500">{t("discordIdHint")}</span>
+          {linkedDiscordId && value.trim() !== linkedDiscordId && (
+            <button
+              type="button"
+              onClick={() => setValue(def.key, linkedDiscordId)}
+              className="self-start rounded-[8px] border border-neutral-700 bg-white/5 px-3 py-1.5 text-[12.5px] font-semibold text-neutral-200 transition-all hover:border-[#5865F2] hover:text-[#8f99f7] active:scale-[0.97]"
+            >
+              {t("useLinkedDiscord")}
+            </button>
+          )}
+          {error && <span className="text-[12px] text-[#e08585]">{t(`error.${error}`)}</span>}
+        </div>
       );
     }
 

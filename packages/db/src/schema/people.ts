@@ -74,7 +74,6 @@ export const people = pgTable("people", {
   birthDate: date("birth_date"),
   bio: text("bio"),
   socials: jsonb("socials").notNull().default({}),
-  discordId: text("discord_id").unique(),
   valId: text("val_id").unique(), // Riot puuid - null for people who never played competitively
   esportsValId: text("esports_val_id").unique(),
   vlrId: integer("vlr_id"),

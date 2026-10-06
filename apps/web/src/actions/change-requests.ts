@@ -33,6 +33,7 @@ import {
   type LogoOperation,
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
+import { isDiscordUserId } from "@/lib/person-social-keys";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -146,6 +147,10 @@ export async function submitChangeRequest(
     }
     if (trimmed.length > 0 && def.type === "url" && !URL_RE.test(trimmed)) {
       fieldErrors[def.key] = "invalidUrl";
+      continue;
+    }
+    if (trimmed.length > 0 && def.type === "discordId" && !isDiscordUserId(trimmed)) {
+      fieldErrors[def.key] = "invalidDiscordId";
       continue;
     }
     if (trimmed.length > 0 && def.type === "country" && trimmed !== INTERNATIONAL_CODE && !COUNTRY_RE.test(trimmed)) {

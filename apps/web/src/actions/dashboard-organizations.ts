@@ -25,7 +25,7 @@ import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { isValidCountryCode } from "@/lib/countries";
 import { isValidUrl } from "@/lib/admin-validation";
-import { PERSON_SOCIAL_KEYS, type PersonSocialKey } from "@/lib/person-social-keys";
+import { PERSON_SOCIAL_KEYS, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
@@ -300,8 +300,8 @@ export async function updatePersonProfileForOrganization(organizationId: number,
   for (const key of PERSON_SOCIAL_KEYS) {
     const value = input.socials[key]?.trim();
     if (!value) continue;
-    if (value.length > 2000) socialErrors[key] = "tooLong";
-    else if (!isValidUrl(value)) socialErrors[key] = "invalid";
+    const error = personSocialError(key, value);
+    if (error) socialErrors[key] = error;
     else socials[key] = value;
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;

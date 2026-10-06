@@ -269,9 +269,7 @@
         "teams": "Teamverlauf",
         "org": "Organisationsverlauf",
         "link_player": "Anfrage zur Verknüpfung mit einem Spielerprofil",
-
         "created_at": "Registrierungsdatum",
-
         "sanctions": "Aktive Sanktionen"
       }
     },
@@ -565,9 +563,7 @@
         "teams": "Ihr aktueller und früherer Teamverlauf",
         "org": "Ihr aktueller und früherer Organisationsverlauf",
         "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spielerprofil zu beantragen",
-
         "created_at": "Das Erstellungsdatum Ihres Kontos",
-
         "sanctions": "Ihre derzeit aktiven Sanktionen (Verwarnungen, Stummschaltungen, Sperren, Banns)"
       },
       "allow": "Erlauben",
@@ -741,8 +737,7 @@
     },
     "privateData": {
       "title": "Private Daten",
-      "text": "Die von uns gespeicherten personenbezogenen Daten beschränken sich auf das, was für den Betrieb der Website und ihres Kontosystems erforderlich ist: eine Discord ID und eine Riot ID zur Verknüpfung eines Spielerprofils, sowie die unten beschriebenen Kontodaten für jede Person, die ein Benutzerkonto erstellt.",
-      "discordUsage": "Discord ID: Wird verwendet, um die Identität eines Spielers zu überprüfen, wenn dieser sein Profil über unseren Discord ändert.",
+      "text": "Die von uns gespeicherten personenbezogenen Daten beschränken sich auf das, was für den Betrieb der Website und ihres Kontosystems erforderlich ist: eine Riot ID zur Verknüpfung eines Spielerprofils, sowie die unten beschriebenen Kontodaten für jede Person, die ein Benutzerkonto erstellt.",
       "riotUsage": "Riot ID: Von unserem Team anhand von über die offizielle Riot Games API abgerufenen Spieldaten identifiziert und zugewiesen. Wird ausschließlich verwendet, um Spielstatistiken einem Spielerprofil zuzuordnen. Kann auf Anfrage korrigiert oder entfernt werden."
     },
     "accountData": {
@@ -1043,7 +1038,7 @@
       "reactionsEmotes": "Reaktionen und Emotes"
     },
     "descriptions": {
-      "identity": "Eine Person (Spieler/in, Coach, Caster, Observer, Organisator/in...) hat nur ein Profil, auch wenn sich ihre Rolle im Laufe der Zeit ändert. Teams und Organisationen haben das Recht, ihre „Zusätzlichen Informationen“ zu bearbeiten oder zu löschen.\n\nDie Discord ID und die Riot ID werden niemals angezeigt oder geteilt. Sie werden entweder von der Person selbst über Discord angegeben oder von unserem Team anhand von Spieldaten identifiziert.",
+      "identity": "Eine Person (Spieler/in, Coach, Caster, Observer, Organisator/in...) hat nur ein Profil, auch wenn sich ihre Rolle im Laufe der Zeit ändert. Teams und Organisationen haben das Recht, ihre „Zusätzlichen Informationen“ zu bearbeiten oder zu löschen.\n\nDie Riot ID wird niemals angezeigt oder geteilt. Sie wird von unserem Team anhand von Spieldaten identifiziert.",
       "tournament": "Jedes Turnier hat eine Kennung, einen Namen, Termine, eine Region, eine Kategorie und einen Status. Ein Turnier kann in mehrere Phasen (Gruppen, Playoffs...) unterteilt sein, die wiederum aus einem oder mehreren Containern (Bracket oder Gruppe) bestehen. Teams melden sich als „Entrants“ mit einem für dieses spezifische Turnier festgelegten Roster an, getrennt vom festen Roster des Teams.",
       "matches": "Wir sammeln viele Informationen zu Spielen, um detaillierte Statistiken bereitzustellen. Wir erfassen:\n- Die grundlegenden Spielinformationen (erforderlich)\n- Die Vetos des Spiels\n- Die gespielten Karten, mit Ergebnis und Statistiken\n- Aggregierte Statistiken pro Spieler und pro Karte, das, was die Website tagtäglich tatsächlich abfragt\n\nDiese Daten werden nicht immer erhoben, aber wir bemühen uns, sie zu erhalten, um möglichst vollständige Statistiken anzuzeigen.",
       "rawStats": "Zusätzlich zu den oben genannten aggregierten Statistiken führen wir eine rohe Ebene Runde für Runde (Kills, Schaden, Wirtschaft, Lebendstatus), die zur Neuberechnung dieser Statistiken und zur Anzeige des Rundenverlaufs verwendet wird.\n\nDie Position jedes Spielers bei wichtigen Ereignissen (Kill, Plant, Defuse) wird unbegrenzt in voller Detailtiefe gespeichert: Sie speist unsere Heatmaps und kann nach der Aggregation nicht mehr rekonstruiert werden.",
@@ -1071,7 +1066,6 @@
         "socials": "Soziale Netzwerke (Twitter/Instagram/Twitch/YouTube/TikTok)",
         "vlrId": "VLR Kennung",
         "liquipediaLink": "Link zur Liquipedia Seite der Person",
-        "discordId": "Discord ID (vertrauliche Information, verwendet zur Überprüfung der Identität einer Person bei der Bearbeitung ihres Profils)",
         "valId": "Riot ID / PUUID (vertrauliche Information, von unserem Team anhand von Riot Spieldaten identifiziert und zugewiesen, verwendet zur Verknüpfung der Statistiken eines Spiels mit einer Person)",
         "esportsValId": "Riot Esports Kennung des zugehörigen Spielkontos"
       },
@@ -2722,8 +2716,11 @@
           "alreadyLinked": "Dieses Konto ist bereits mit eine:r anderen Spieler:in verknüpft.",
           "tooLarge": "Bild zu groß (max. 10 MB).",
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
-          "empty": "Bitte wählen Sie ein Bild aus."
-        }
+          "empty": "Bitte wählen Sie ein Bild aus.",
+          "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+        },
+        "fieldDiscordId": "Discord (ID)",
+        "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren)."
       },
       "merge": {
         "title": "Spieler:in zusammenführen",
@@ -3104,9 +3101,7 @@
         "teams": "Ihre aktuelle und frühere Teamhistorie",
         "org": "Ihre aktuelle und frühere Organisationshistorie",
         "link_player": "Das Recht, die Verknüpfung Ihres Kontos mit einem Spieler:innen Profil zu beantragen",
-
         "created_at": "Das Erstellungsdatum Ihres Kontos",
-
         "sanctions": "Ihre derzeit aktiven Sanktionen (Verwarnungen, Stummschaltungen, Sperren, Banns)"
       },
       "cancel": "Abbrechen",
@@ -4848,8 +4843,10 @@
         "notFound": "Person nicht gefunden.",
         "userNotFound": "Nutzer nicht gefunden.",
         "alreadyLinked": "Dieses Konto ist bereits mit einer anderen Person verknüpft.",
-        "taken": "Bereits von einer anderen Person verwendet."
-      }
+        "taken": "Bereits von einer anderen Person verwendet.",
+        "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+      },
+      "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren)."
     },
     "credits": {
       "title": "Produktionsteam",
@@ -5495,7 +5492,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord",
+      "discord": "Discord (ID)",
       "website": "Website",
       "handle": "Benutzername",
       "firstName": "Vorname",
@@ -5614,8 +5611,11 @@
       "tooMany": "Sie haben zu viele Einträge hinzugefügt.",
       "userLinkAlreadyYours": "Dieses Profil ist bereits mit deinem Konto verknüpft.",
       "userLinkTaken": "Dieses Profil ist bereits mit einem anderen Konto verknüpft.",
-      "userLinkPending": "Du hast bereits eine Anfrage zur Kontoverknüpfung, die geprüft wird."
-    }
+      "userLinkPending": "Du hast bereits eine Anfrage zur Kontoverknüpfung, die geprüft wird.",
+      "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+    },
+    "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren).",
+    "useLinkedDiscord": "Mein verknüpftes Discord Konto verwenden"
   },
   "tournamentPage": {
     "tabOverview": "Übersicht",

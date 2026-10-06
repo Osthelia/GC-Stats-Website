@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -19,6 +19,7 @@ import { getPlayerPageInfo, getPlayerTeamHistory } from "@/lib/player-page-data"
 import { getEntityLogos } from "@/lib/admin-logos";
 import { getCurrentUserId } from "@/lib/session";
 import { getUserLinkStatus } from "@/lib/user-link-request";
+import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import { SuggestEditForm } from "@/components/change-request/suggest-edit-form";
 import type { MembershipEntryView } from "@/components/change-request/membership-history-section";
 
@@ -46,12 +47,13 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
     return null;
   }
 
-  const [t, logos, teamHistory, [rawPerson], linkStatus] = await Promise.all([
+  const [t, logos, teamHistory, [rawPerson], linkStatus, linkedDiscordId] = await Promise.all([
     getTranslations({ locale: locale as AppLocale, namespace: "suggestEdit" }),
     getEntityLogos("person", id),
     getPlayerTeamHistory(id),
     db.select({ pronouns: people.pronouns, aliases: people.aliases, isActive: people.isActive }).from(people).where(eq(people.id, id)).limit(1),
     getUserLinkStatus(userId, id),
+    getLinkedDiscordId(userId),
   ]);
 
   const previousPersonId = linkStatus.state === "available" ? linkStatus.previousPersonId : null;
@@ -99,6 +101,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
         logos={logos}
         membershipEntries={membershipEntries}
         userLink={{ state: linkStatus.state, previousHandle: previousPerson?.handle ?? null }}
+        linkedDiscordId={linkedDiscordId}
       />
     </div>
   );

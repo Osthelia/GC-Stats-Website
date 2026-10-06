@@ -180,9 +180,16 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
 
                 <div className="grid grid-cols-2 gap-3">
                   {PERSON_SOCIAL_KEYS.map((key) => (
-                    <FormField key={key} label={t(`socialLabels.${key}`)} htmlFor={`edit-person-social-${key}`} error={fieldErrors.socials?.[key] ? t(`error.${fieldErrors.socials[key]}` as "error.invalid") : undefined}>
+                    <FormField
+                      key={key}
+                      label={t(`socialLabels.${key}`)}
+                      htmlFor={`edit-person-social-${key}`}
+                      hint={key === "discord" ? t("discordIdHint") : undefined}
+                      error={fieldErrors.socials?.[key] ? t(`error.${fieldErrors.socials[key]}` as "error.invalid") : undefined}
+                    >
                       <Input
                         id={`edit-person-social-${key}`}
+                        inputMode={key === "discord" ? "numeric" : undefined}
                         value={socials[key] ?? ""}
                         onChange={(e) => setSocials((prev) => ({ ...prev, [key]: e.target.value }))}
                         aria-invalid={!!fieldErrors.socials?.[key]}

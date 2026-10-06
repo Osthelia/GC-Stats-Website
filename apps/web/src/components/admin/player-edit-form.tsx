@@ -22,8 +22,7 @@ import { CountrySelect } from "@/components/admin/country-select";
 import { TagsInput } from "@/components/admin/tags-input";
 import { updatePlayerProfile, type PlayerProfileFieldErrors } from "@/actions/admin-players";
 import type { AdminPlayerProfile } from "@/lib/admin-players";
-
-const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord"] as const;
+import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
 export function PlayerEditForm({
@@ -212,15 +211,17 @@ export function PlayerEditForm({
               <CardTitle>{t("sectionSocials")}</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
-              {SOCIAL_KEYS.map((key) => (
+              {PERSON_SOCIAL_KEYS.map((key) => (
                 <FormField
                   key={key}
-                  label={key.charAt(0).toUpperCase() + key.slice(1)}
+                  label={key === "discord" ? t("fieldDiscordId") : key.charAt(0).toUpperCase() + key.slice(1)}
                   htmlFor={`player-social-${key}`}
+                  hint={key === "discord" ? t("discordIdHint") : undefined}
                   error={errors.socials?.[key] ? t(`error.${errors.socials[key]}`) : undefined}
                 >
                   <Input
                     id={`player-social-${key}`}
+                    inputMode={key === "discord" ? "numeric" : undefined}
                     value={socials[key] ?? ""}
                     onChange={(e) => setSocials((prev) => ({ ...prev, [key]: e.target.value }))}
                     aria-invalid={!!errors.socials?.[key]}

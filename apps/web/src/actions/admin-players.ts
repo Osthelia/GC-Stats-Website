@@ -24,7 +24,7 @@ import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search"
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchTeamsQuery } from "@/lib/team-search";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
-import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
+import { PERSON_SOCIAL_KEYS, personSocialError } from "@/lib/person-social-keys";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -134,8 +134,8 @@ export async function updatePlayerProfile(playerId: number, input: PlayerProfile
   for (const key of SOCIAL_KEYS) {
     const value = input.socials[key]?.trim();
     if (!value) continue;
-    if (value.length > 2000) socialErrors[key] = "tooLong";
-    else if (!isValidUrl(value)) socialErrors[key] = "invalid";
+    const error = personSocialError(key, value);
+    if (error) socialErrors[key] = error;
     else socials[key] = value;
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;

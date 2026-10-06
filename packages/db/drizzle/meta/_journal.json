@@ -253,6 +253,13 @@
       "when": 1791177903913,
       "tag": "0035_stage_containers_display_order",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1791246371832,
+      "tag": "0036_drop_people_discord_id",
+      "breakpoints": true
     }
   ]
 }

@@ -15,7 +15,7 @@
 
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 
-export type ChangeRequestFieldType = "text" | "textarea" | "url" | "country" | "boolean" | "tags" | "select";
+export type ChangeRequestFieldType = "text" | "textarea" | "url" | "discordId" | "country" | "boolean" | "tags" | "select";
 
 export type ChangeRequestFieldDef = {
   /** Dot path into the entity object, e.g. "socials.twitter". */
@@ -45,8 +45,10 @@ const TEAM_SOCIAL_FIELDS: ChangeRequestFieldDef[] = [
   { key: "socials.website", labelKey: "website", type: "url", maxLength: 300 },
 ];
 
-// Mirrors admin/player-edit-form.tsx's SOCIAL_KEYS exactly — no "website" for a person.
-const PERSON_SOCIAL_FIELDS: ChangeRequestFieldDef[] = TEAM_SOCIAL_FIELDS.filter((f) => f.key !== "socials.website");
+// Mirrors PERSON_SOCIAL_KEYS: no "website" for a person, and Discord is a user ID rather than a link.
+const PERSON_SOCIAL_FIELDS: ChangeRequestFieldDef[] = TEAM_SOCIAL_FIELDS.filter((f) => f.key !== "socials.website").map((f) =>
+  f.key === "socials.discord" ? { ...f, type: "discordId", maxLength: 20 } : f
+);
 
 export const TEAM_CHANGE_REQUEST_FIELDS: ChangeRequestFieldDef[] = [
   { key: "name", labelKey: "name", type: "text", required: true, maxLength: 200 },

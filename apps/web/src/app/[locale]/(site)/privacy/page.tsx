@@ -31,7 +31,6 @@ export default function PrivacyPage() {
 
         <SectionCard icon={icons.shield} title={t("privateData.title")}>
           <SectionText>{t("privateData.text")}</SectionText>
-          <Callout>{t("privateData.discordUsage")}</Callout>
           <Callout>{t("privateData.riotUsage")}</Callout>
         </SectionCard>
 

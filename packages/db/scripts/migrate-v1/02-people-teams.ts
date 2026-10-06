@@ -83,14 +83,14 @@ function toDate(v: unknown): string {
 export async function migratePeople() {
   const [players] = await v1.query<any[]>(
     `SELECT id, handle, aliases, first_name, last_name, pronouns, country_code, bio, socials,
-            discord_id, val_id, esports_val_id, vlr_id, liquipedia_link, is_active
+            val_id, esports_val_id, vlr_id, liquipedia_link, is_active
      FROM players`
   );
-  // discordId/valId/esportsValId are UNIQUE in V2 — a handful of V1 rows
+  // valId/esportsValId are UNIQUE in V2 — a handful of V1 rows
   // have duplicate/blank values (data quality), which would abort a whole
   // insert chunk. Null out cross-row duplicates before inserting; keep the
   // first occurrence.
-  const seenDiscord = new Set<string>(), seenVal = new Set<string>(), seenEsports = new Set<string>();
+  const seenVal = new Set<string>(), seenEsports = new Set<string>();
   const dedupe = (seen: Set<string>, v: string | null) => {
     if (!v) return null;
     if (seen.has(v)) return null;
@@ -111,7 +111,6 @@ export async function migratePeople() {
       pronouns: row.pronouns,
       bio: row.bio,
       socials: convertSocials(parseJson(row.socials, {})),
-      discordId: dedupe(seenDiscord, row.discord_id),
       valId: dedupe(seenVal, row.val_id),
       esportsValId: dedupe(seenEsports, row.esports_val_id),
       vlrId: row.vlr_id,

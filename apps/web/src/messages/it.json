@@ -269,9 +269,7 @@
         "teams": "Storico dei team",
         "org": "Storico delle organizzazioni",
         "link_player": "Richiesta di collegamento a un profilo giocatrice",
-
         "created_at": "Data di registrazione",
-
         "sanctions": "Sanzioni attive"
       }
     },
@@ -565,9 +563,7 @@
         "teams": "Il tuo storico dei team, attuali e passati",
         "org": "Il tuo storico delle organizzazioni, attuali e passate",
         "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice",
-
         "created_at": "La data di creazione del tuo account",
-
         "sanctions": "Le tue sanzioni attualmente attive (avvertimenti, silenziamenti, sospensioni, ban)"
       },
       "allow": "Consenti",
@@ -741,8 +737,7 @@
     },
     "privateData": {
       "title": "Dati privati",
-      "text": "I dati personali che conserviamo si limitano a quanto necessario per far funzionare il sito e il suo sistema di account: un ID Discord e un Riot ID per collegare un profilo giocatrice, più i dati dell'account descritti qui sotto per chi crea un account utente.",
-      "discordUsage": "ID Discord: usato per verificare l'identità di una giocatrice quando modifica il proprio profilo tramite il nostro Discord.",
+      "text": "I dati personali che conserviamo si limitano a quanto necessario per far funzionare il sito e il suo sistema di account: un Riot ID per collegare un profilo giocatrice, più i dati dell'account descritti qui sotto per chi crea un account utente.",
       "riotUsage": "Riot ID: identificato e assegnato dal nostro team a partire dai dati dei match recuperati tramite l'API ufficiale di Riot Games. Usato solo per associare le statistiche dei match a un profilo giocatrice. Può essere corretto o rimosso su richiesta."
     },
     "accountData": {
@@ -1043,7 +1038,7 @@
       "reactionsEmotes": "Reazioni ed emote"
     },
     "descriptions": {
-      "identity": "Una persona (giocatrice, coach, caster, observer, organizzatrice...) ha un solo profilo, anche se il suo ruolo cambia nel tempo. Team e organizzazioni hanno il diritto di modificare/eliminare le proprie \"Informazioni aggiuntive\".\n\nL'ID Discord e il Riot ID non vengono mai mostrati né condivisi. Sono forniti dalla persona stessa tramite Discord, oppure identificati dal nostro team a partire dai dati dei match.",
+      "identity": "Una persona (giocatrice, coach, caster, observer, organizzatrice...) ha un solo profilo, anche se il suo ruolo cambia nel tempo. Team e organizzazioni hanno il diritto di modificare/eliminare le proprie \"Informazioni aggiuntive\".\n\nIl Riot ID non viene mai mostrato né condiviso. È identificato dal nostro team a partire dai dati dei match.",
       "tournament": "Ogni torneo ha un identificatore, un nome, delle date, una regione, una categoria e uno stato. Un torneo può essere diviso in più fasi (gironi, playoff...), a loro volta composte da uno o più contenitori (bracket o girone). I team si iscrivono come \"partecipanti\", con un roster bloccato per quel torneo specifico, separato dal roster permanente del team.",
       "matches": "Raccogliamo molte informazioni sui match per offrire statistiche dettagliate. Raccogliamo:\n- Le informazioni di base del match (obbligatorie)\n- I veto del match\n- Le mappe giocate, con risultato e statistiche\n- Le statistiche aggregate per giocatrice e per mappa, quelle che il sito interroga ogni giorno\n\nQuesti dati non vengono sempre raccolti, ma facciamo del nostro meglio per ottenerli e mostrare statistiche il più complete possibile.",
       "rawStats": "Oltre alle statistiche aggregate qui sopra, conserviamo un livello di dati grezzi round per round (kill, danni, economia, giocatrici in vita) usato per ricalcolare quelle statistiche e mostrare lo storico dei round.\n\nLa posizione di ogni giocatrice durante gli eventi chiave (kill, plant, defuse) è conservata in dettaglio senza limiti di tempo: alimenta le nostre heatmap e non può essere ricostruita una volta aggregata.",
@@ -1071,7 +1066,6 @@
         "socials": "Social (Twitter/Instagram/Twitch/YouTube/TikTok)",
         "vlrId": "Identificatore VLR",
         "liquipediaLink": "Link alla pagina Liquipedia della persona",
-        "discordId": "ID Discord (informazione privata, usata per verificare l'identità di una persona quando modifica il proprio profilo)",
         "valId": "Riot ID / PUUID (informazione privata, identificata e assegnata dal nostro team dai dati dei match Riot, usata per collegare le statistiche di un match a una persona)",
         "esportsValId": "Identificatore esport Riot associato all'account di gioco"
       },
@@ -2722,8 +2716,11 @@
           "alreadyLinked": "Questo account è già collegato a un'altra giocatrice.",
           "tooLarge": "Immagine troppo grande (massimo 10 MB).",
           "invalidImage": "Questo file non è un'immagine valida.",
-          "empty": "Scegli un'immagine."
-        }
+          "empty": "Scegli un'immagine.",
+          "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+        },
+        "fieldDiscordId": "Discord (ID)",
+        "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente)."
       },
       "merge": {
         "title": "Unisci giocatrice",
@@ -3104,9 +3101,7 @@
         "teams": "Il tuo storico dei team, attuali e passati",
         "org": "Il tuo storico delle organizzazioni, attuali e passate",
         "link_player": "Il diritto di richiedere il collegamento del tuo account a un profilo giocatrice",
-
         "created_at": "La data di creazione del tuo account",
-
         "sanctions": "Le tue sanzioni attualmente attive (avvertimenti, silenziamenti, sospensioni, ban)"
       },
       "cancel": "Annulla",
@@ -4852,8 +4847,10 @@
         "notFound": "Persona non trovata.",
         "userNotFound": "Utente non trovato.",
         "alreadyLinked": "Questo account è già collegato a un'altra persona.",
-        "taken": "Già usato da un'altra persona."
-      }
+        "taken": "Già usato da un'altra persona.",
+        "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+      },
+      "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente)."
     },
     "credits": {
       "title": "Crediti di produzione",
@@ -5499,7 +5496,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord",
+      "discord": "Discord (ID)",
       "website": "Sito web",
       "handle": "Nickname",
       "firstName": "Nome",
@@ -5618,8 +5615,11 @@
       "tooMany": "Hai aggiunto troppe voci.",
       "userLinkAlreadyYours": "Questo profilo è già collegato al tuo account.",
       "userLinkTaken": "Questo profilo è già collegato a un altro account.",
-      "userLinkPending": "Hai già una richiesta di collegamento account in attesa di revisione."
-    }
+      "userLinkPending": "Hai già una richiesta di collegamento account in attesa di revisione.",
+      "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+    },
+    "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente).",
+    "useLinkedDiscord": "Usa il mio account Discord collegato"
   },
   "tournamentPage": {
     "tabOverview": "Panoramica",

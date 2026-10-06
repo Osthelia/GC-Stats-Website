@@ -56,7 +56,7 @@ export default function DataPage() {
             <Row table="people" names={["aliases", "firstName", "lastName", "countryCode", "secondaryCountryCode", "pronouns", "birthDate", "bio", "socials", "vlrId", "liquipediaLink"]} />
           </FieldGroup>
           <FieldGroup label={f("people.titles.confidential")}>
-            <Row table="people" names={["discordId", "valId", "esportsValId"]} accent />
+            <Row table="people" names={["valId", "esportsValId"]} accent />
           </FieldGroup>
         </TableCard>
 

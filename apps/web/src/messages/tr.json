@@ -269,9 +269,7 @@
         "teams": "Takım geçmişi",
         "org": "Organizasyon geçmişi",
         "link_player": "Oyuncu profili bağlama isteği",
-
         "created_at": "Kayıt tarihi",
-
         "sanctions": "Aktif yaptırımlar"
       }
     },
@@ -565,9 +563,7 @@
         "teams": "Mevcut ve geçmiş takım geçmişin",
         "org": "Mevcut ve geçmiş organizasyon geçmişin",
         "link_player": "Hesabını bir oyuncu profiline bağlama isteğinde bulunma hakkı",
-
         "created_at": "Hesabının oluşturulma tarihi",
-
         "sanctions": "Şu anda aktif olan yaptırımların (uyarılar, susturmalar, askıya almalar, yasaklamalar)"
       },
       "allow": "İzin ver",
@@ -741,8 +737,7 @@
     },
     "privateData": {
       "title": "Özel Veriler",
-      "text": "Sakladığımız kişisel veriler, siteyi ve hesap sistemini çalıştırmak için gereken bilgilerle sınırlıdır: bir oyuncu profilini bağlamak için bir Discord ID'si ve bir Riot ID'si, ayrıca bir kullanıcı hesabı oluşturan herkes için aşağıda açıklanan hesap verileri.",
-      "discordUsage": "Discord ID: Discord'umuz üzerinden bir oyuncunun profilini değiştirirken kimliğini doğrulamak için kullanılır.",
+      "text": "Sakladığımız kişisel veriler, siteyi ve hesap sistemini çalıştırmak için gereken bilgilerle sınırlıdır: bir oyuncu profilini bağlamak için bir Riot ID'si, ayrıca bir kullanıcı hesabı oluşturan herkes için aşağıda açıklanan hesap verileri.",
       "riotUsage": "Riot ID: Resmi Riot Games API'si aracılığıyla alınan maç verilerinden ekibimiz tarafından belirlenir ve atanır. Yalnızca maç istatistiklerini bir oyuncu profiliyle ilişkilendirmek için kullanılır. Talep üzerine düzeltilebilir veya kaldırılabilir."
     },
     "accountData": {
@@ -1043,7 +1038,7 @@
       "reactionsEmotes": "Tepkiler ve Emojiler"
     },
     "descriptions": {
-      "identity": "Bir kişinin (oyuncu, koç, caster, observer, organizatör...) rolü zamanla değişse bile tek bir profili vardır. Takımlar ve organizasyonlar \"Ek bilgiler\"ini düzenleme/silme hakkına sahiptir.\n\nDiscord ID ve Riot ID hiçbir zaman gösterilmez veya paylaşılmaz. Bunlar kişinin kendisi tarafından Discord üzerinden sağlanır veya ekibimiz tarafından maç verilerinden belirlenir.",
+      "identity": "Bir kişinin (oyuncu, koç, caster, observer, organizatör...) rolü zamanla değişse bile tek bir profili vardır. Takımlar ve organizasyonlar \"Ek bilgiler\"ini düzenleme/silme hakkına sahiptir.\n\nRiot ID hiçbir zaman gösterilmez veya paylaşılmaz. Ekibimiz tarafından maç verilerinden belirlenir.",
       "tournament": "Her turnuvanın bir kimliği, bir adı, tarihleri, bir bölgesi, bir kategorisi ve bir durumu vardır. Bir turnuva birkaç aşamaya (gruplar, playofflar...) bölünebilir, bunlar da bir veya daha fazla konteynerden (bracket veya grup) oluşur. Takımlar, takımın kalıcı kadrosundan ayrı olarak o turnuvaya özel sabitlenmiş bir kadroyla \"katılımcı\" olarak kayıt olur.",
       "matches": "Detaylı istatistikler sunabilmek için maçlar hakkında çok fazla bilgi topluyoruz. Şunları topluyoruz:\n- Temel maç bilgileri (zorunlu)\n- Maçın veto işlemleri\n- Oynanan haritalar, sonuç ve istatistikleriyle birlikte\n- Sitenin günlük olarak asıl sorguladığı, oyuncu ve harita başına toplu istatistikler\n\nBu veriler her zaman toplanmaz, ancak mümkün olan en eksiksiz istatistikleri gösterebilmek için elimizden geleni yapıyoruz.",
       "rawStats": "Yukarıdaki toplu istatistiklere ek olarak, bu istatistikleri yeniden hesaplamak ve raunt geçmişini göstermek için kullanılan raunt raunt bir ham veri katmanı (öldürmeler, hasarlar, ekonomi, hayatta kalma durumları) tutuyoruz.\n\nHer oyuncunun kilit olaylar (öldürme, spike yerleştirme, spike etkisizleştirme) sırasındaki konumu süresiz olarak tüm detaylarıyla saklanır: bu veri, ısı haritalarımızı besler ve toplulaştırıldıktan sonra yeniden oluşturulamaz.",
@@ -1071,7 +1066,6 @@
         "socials": "Sosyal medya (Twitter/Instagram/Twitch/YouTube/TikTok)",
         "vlrId": "VLR tanımlayıcısı",
         "liquipediaLink": "Kişinin Liquipedia sayfasının bağlantısı",
-        "discordId": "Discord ID (özel bilgi, profilini düzenlerken bir kişinin kimliğini doğrulamak için kullanılır)",
         "valId": "Riot ID / PUUID (özel bilgi, ekibimiz tarafından Riot maç verilerinden belirlenir ve atanır, bir maçın istatistiklerini bir kişiyle ilişkilendirmek için kullanılır)",
         "esportsValId": "Oyun hesabıyla ilişkili Riot esporlar tanımlayıcısı"
       },
@@ -2722,8 +2716,11 @@
           "alreadyLinked": "Bu hesap zaten başka bir oyuncuya bağlı.",
           "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
-          "empty": "Lütfen bir görsel seçin."
-        }
+          "empty": "Lütfen bir görsel seçin.",
+          "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+        },
+        "fieldDiscordId": "Discord (ID)",
+        "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."
       },
       "merge": {
         "title": "Oyuncuyu birleştir",
@@ -3104,9 +3101,7 @@
         "teams": "Mevcut ve geçmiş takım geçmişiniz",
         "org": "Mevcut ve geçmiş organizasyon geçmişiniz",
         "link_player": "Hesabınızı bir oyuncu profiline bağlama talebinde bulunma hakkı",
-
         "created_at": "Hesabının oluşturulma tarihi",
-
         "sanctions": "Şu anda aktif olan yaptırımların (uyarılar, susturmalar, askıya almalar, yasaklamalar)"
       },
       "cancel": "İptal",
@@ -4848,8 +4843,10 @@
         "notFound": "Kişi bulunamadı.",
         "userNotFound": "Kullanıcı bulunamadı.",
         "alreadyLinked": "Bu hesap zaten başka bir kişiye bağlı.",
-        "taken": "Zaten başka bir kişi tarafından kullanılıyor."
-      }
+        "taken": "Zaten başka bir kişi tarafından kullanılıyor.",
+        "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+      },
+      "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."
     },
     "credits": {
       "title": "Prodüksiyon emeği geçenler",
@@ -5495,7 +5492,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord",
+      "discord": "Discord (ID)",
       "website": "Web sitesi",
       "handle": "Kullanıcı adı",
       "firstName": "Ad",
@@ -5614,8 +5611,11 @@
       "tooMany": "Çok fazla kayıt eklediniz.",
       "userLinkAlreadyYours": "Bu profil zaten hesabına bağlı.",
       "userLinkTaken": "Bu profil zaten başka bir hesaba bağlı.",
-      "userLinkPending": "İncelemede bekleyen bir hesap bağlama talebin zaten var."
-    }
+      "userLinkPending": "İncelemede bekleyen bir hesap bağlama talebin zaten var.",
+      "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+    },
+    "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala).",
+    "useLinkedDiscord": "Bağlı Discord hesabımı kullan"
   },
   "tournamentPage": {
     "tabOverview": "Genel bakış",

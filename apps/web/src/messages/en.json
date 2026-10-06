@@ -269,9 +269,7 @@
         "teams": "Team history",
         "org": "Organization history",
         "link_player": "Player profile link request",
-
         "created_at": "Account creation date",
-
         "sanctions": "Active sanctions"
       }
     },
@@ -565,9 +563,7 @@
         "teams": "Your current and past team history",
         "org": "Your current and past organization history",
         "link_player": "The right to request linking your account to a player profile",
-
         "created_at": "The date your account was created",
-
         "sanctions": "Your currently active sanctions (warnings, mutes, suspensions, bans)"
       },
       "allow": "Allow",
@@ -741,8 +737,7 @@
     },
     "privateData": {
       "title": "Private Data",
-      "text": "The personal data we store is limited to what is needed to run the site and its account system: a Discord ID and a Riot ID to link a player profile, plus the account data described below for anyone who creates a user account.",
-      "discordUsage": "Discord ID: Used to validate a player's identity when modifying their profile via our Discord.",
+      "text": "The personal data we store is limited to what is needed to run the site and its account system: a Riot ID to link a player profile, plus the account data described below for anyone who creates a user account.",
       "riotUsage": "Riot ID: Identified and assigned by our team from match data retrieved through the official Riot Games API. Used solely to associate match statistics with a player profile. Can be corrected or removed upon request."
     },
     "accountData": {
@@ -1043,7 +1038,7 @@
       "reactionsEmotes": "Reactions & Emotes"
     },
     "descriptions": {
-      "identity": "A person (player, coach, caster, observer, organizer...) only has one profile, even if their role changes over time. Teams and organizations have the right to edit/delete their \"Additional information\".\n\nThe Discord ID and Riot ID are never displayed or shared. They're provided by the person themselves via Discord, or identified by our team from match data.",
+      "identity": "A person (player, coach, caster, observer, organizer...) only has one profile, even if their role changes over time. Teams and organizations have the right to edit/delete their \"Additional information\".\n\nThe Riot ID is never displayed or shared. It is identified by our team from match data.",
       "tournament": "Every tournament has an identifier, a name, dates, a region, a category and a status. A tournament can be split into several stages (groups, playoffs...), themselves made of one or more containers (bracket or group). Teams register as \"entrants\", with a roster locked in for that specific tournament, separate from the team's permanent roster.",
       "matches": "We collect a lot of information about matches to provide detailed statistics. We gather:\n- The basic match information (required)\n- The match's vetoes\n- The maps played, with the result and stats\n- Aggregated stats per player and per map, what the site actually queries day to day\n\nThis data isn't always collected, but we try our best to obtain it in order to display the most complete stats possible.",
       "rawStats": "In addition to the aggregated stats above, we keep a round-by-round raw layer (kills, damages, economy, alive states) used to recompute those stats and to display round history.\n\nEvery player's position during key events (kill, plant, defuse) is kept in full detail indefinitely: it feeds our heatmaps and can't be reconstructed once aggregated.",
@@ -1071,7 +1066,6 @@
         "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
         "vlrId": "VLR identifier",
         "liquipediaLink": "Link to the person's Liquipedia page",
-        "discordId": "Discord ID (private information, used to verify a person's identity when editing their profile)",
         "valId": "Riot ID / PUUID (private information, identified and assigned by our team from Riot match data, used to link a match's stats to a person)",
         "esportsValId": "Riot esports identifier associated with the game account"
       },
@@ -2722,8 +2716,11 @@
           "alreadyLinked": "This account is already linked to another player.",
           "tooLarge": "Image is too large (max 10 MB).",
           "invalidImage": "This file isn't a valid image.",
-          "empty": "Please choose an image."
-        }
+          "empty": "Please choose an image.",
+          "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+        },
+        "fieldDiscordId": "Discord (ID)",
+        "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."
       },
       "merge": {
         "title": "Merge player",
@@ -3104,9 +3101,7 @@
         "teams": "Your current and past team history",
         "org": "Your current and past organization history",
         "link_player": "The right to request linking your account to a player profile",
-
         "created_at": "The date your account was created",
-
         "sanctions": "Your currently active sanctions (warnings, mutes, suspensions, bans)"
       },
       "cancel": "Cancel",
@@ -4852,8 +4847,10 @@
         "notFound": "Person not found.",
         "userNotFound": "User not found.",
         "alreadyLinked": "This account is already linked to another person.",
-        "taken": "Already used by another person."
-      }
+        "taken": "Already used by another person.",
+        "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+      },
+      "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."
     },
     "credits": {
       "title": "Production credits",
@@ -5499,7 +5496,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord",
+      "discord": "Discord (ID)",
       "website": "Website",
       "handle": "Handle",
       "firstName": "First name",
@@ -5618,8 +5615,11 @@
       "tooMany": "You've added too many entries.",
       "userLinkAlreadyYours": "This profile is already linked to your account.",
       "userLinkTaken": "This profile is already linked to another account.",
-      "userLinkPending": "You already have an account link request pending review."
-    }
+      "userLinkPending": "You already have an account link request pending review.",
+      "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+    },
+    "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID).",
+    "useLinkedDiscord": "Use my linked Discord account"
   },
   "tournamentPage": {
     "tabOverview": "Overview",
