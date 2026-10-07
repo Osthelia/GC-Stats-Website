@@ -158,7 +158,7 @@ export function TournamentBracketCanvas({
       ]),
     );
     // A match nothing else feeds out of (the bracket's final, or a final
-    // decider) — the cross-lane connector into it (e.g. Lower bracket
+    // decider) — the cross-lane winner connector into it (e.g. Lower bracket
     // champion into the Grand Final) always shows, hover or not: it's the
     // one cross-lane link with nothing else nearby to declutter against,
     // so hiding it by default just makes the ending look disconnected
@@ -292,7 +292,8 @@ export function TournamentBracketCanvas({
           targetHandle: e.toSlot,
           fromResult: e.fromResult,
           crossLane,
-          alwaysVisible: !nonTerminalMatchIds.has(String(e.toMatchId)),
+          alwaysVisible:
+            e.fromResult === "winner" && !nonTerminalMatchIds.has(String(e.toMatchId)),
           gutterY,
         };
       }),
