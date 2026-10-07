@@ -3529,6 +3529,12 @@
       "fieldDescription": "Descrição",
       "fieldLiquipedia": "Link da Liquipedia",
       "fieldPlayerPovPhrase": "Frase do POV de jogadora",
+      "fieldKeywords": "Palavras-chave",
+      "keywordsHint": "Nomes alternativos ou abreviações que ajudam a encontrar este torneio nas pesquisas.",
+      "keywordsPlaceholder": "Adicionar uma palavra-chave…",
+      "keywordsAdd": "Adicionar",
+      "keywordsEmpty": "Sem palavras-chave.",
+      "keywordsRemove": "Remover",
       "sectionSocials": "Redes sociais",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "Este campo é obrigatório.",
         "tooLong": "Longo demais.",
+        "tooMany": "Demasiadas palavras-chave (máximo de 20).",
         "invalid": "Valor inválido.",
         "beforeStart": "A data de término deve ser igual ou posterior à data de início.",
         "notFound": "Torneio não encontrado.",

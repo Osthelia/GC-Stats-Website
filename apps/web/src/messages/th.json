@@ -3529,6 +3529,12 @@
       "fieldDescription": "คำอธิบาย",
       "fieldLiquipedia": "ลิงก์ Liquipedia",
       "fieldPlayerPovPhrase": "วลี POV ของผู้เล่น",
+      "fieldKeywords": "คีย์เวิร์ด",
+      "keywordsHint": "ชื่อทางเลือกหรือตัวย่อที่ช่วยให้ค้นหาทัวร์นาเมนต์นี้เจอ",
+      "keywordsPlaceholder": "เพิ่มคีย์เวิร์ด…",
+      "keywordsAdd": "เพิ่ม",
+      "keywordsEmpty": "ไม่มีคีย์เวิร์ด",
+      "keywordsRemove": "ลบ",
       "sectionSocials": "ลิงก์โซเชียล",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "จำเป็นต้องกรอกช่องนี้",
         "tooLong": "ยาวเกินไป",
+        "tooMany": "คีย์เวิร์ดมากเกินไป (สูงสุด 20)",
         "invalid": "ค่าไม่ถูกต้อง",
         "beforeStart": "วันสิ้นสุดต้องตรงหรือหลังวันเริ่มต้น",
         "notFound": "ไม่พบทัวร์นาเมนต์",

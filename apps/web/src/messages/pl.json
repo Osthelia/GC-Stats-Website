@@ -3529,6 +3529,12 @@
       "fieldDescription": "Opis",
       "fieldLiquipedia": "Link do Liquipedii",
       "fieldPlayerPovPhrase": "Fraza POV zawodniczki",
+      "fieldKeywords": "Słowa kluczowe",
+      "keywordsHint": "Alternatywne nazwy lub skróty, które pomagają znaleźć ten turniej w wyszukiwarce.",
+      "keywordsPlaceholder": "Dodaj słowo kluczowe…",
+      "keywordsAdd": "Dodaj",
+      "keywordsEmpty": "Brak słów kluczowych.",
+      "keywordsRemove": "Usuń",
       "sectionSocials": "Linki do social mediów",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "To pole jest wymagane.",
         "tooLong": "Za długie.",
+        "tooMany": "Zbyt wiele słów kluczowych (maksymalnie 20).",
         "invalid": "Nieprawidłowa wartość.",
         "beforeStart": "Data zakończenia musi być taka sama lub późniejsza niż data rozpoczęcia.",
         "notFound": "Nie znaleziono turnieju.",

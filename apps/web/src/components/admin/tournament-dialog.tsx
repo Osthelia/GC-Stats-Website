@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { TagsInput } from "@/components/admin/tags-input";
 import { createTournament, updateTournament, type TournamentFieldErrors, type TournamentInput } from "@/actions/admin-tournaments";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
 
@@ -41,6 +42,7 @@ function emptyState(): FormState {
     location: "",
     prizePool: "",
     description: "",
+    keywords: [],
     liquipediaLink: "",
     socials: {},
     playerPovPhrase: "",
@@ -60,6 +62,7 @@ function stateFromTournament(tournament: AdminTournamentDetailRow): FormState {
     location: tournament.location ?? "",
     prizePool: tournament.prizePool ?? "",
     description: tournament.description ?? "",
+    keywords: tournament.keywords,
     liquipediaLink: tournament.liquipediaLink ?? "",
     socials: tournament.socials,
     playerPovPhrase: tournament.playerPovPhrase ?? "",
@@ -190,6 +193,19 @@ export function TournamentDialog({
 
           <FormField label={t("fieldDescription")} htmlFor="tn-description" error={err("description")}>
             <Textarea id="tn-description" rows={3} value={form.description} onChange={(e) => set("description", e.target.value)} aria-invalid={!!fieldErrors.description} />
+          </FormField>
+
+          <FormField label={t("fieldKeywords")} htmlFor="tn-keywords" error={err("keywords")}>
+            <p className="text-xs text-muted-foreground">{t("keywordsHint")}</p>
+            <TagsInput
+              value={form.keywords}
+              onChange={(keywords) => set("keywords", keywords)}
+              placeholder={t("keywordsPlaceholder")}
+              addLabel={t("keywordsAdd")}
+              emptyLabel={t("keywordsEmpty")}
+              removeLabel={t("keywordsRemove")}
+              disabled={isPending}
+            />
           </FormField>
 
           <FormField label={t("fieldLiquipedia")} htmlFor="tn-liquipedia" error={err("liquipediaLink")}>

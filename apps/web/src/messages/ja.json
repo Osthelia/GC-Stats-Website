@@ -3529,6 +3529,12 @@
       "fieldDescription": "説明",
       "fieldLiquipedia": "Liquipediaリンク",
       "fieldPlayerPovPhrase": "選手POVフレーズ",
+      "fieldKeywords": "キーワード",
+      "keywordsHint": "検索でこの大会を見つけやすくする別名や略称です。",
+      "keywordsPlaceholder": "キーワードを追加…",
+      "keywordsAdd": "追加",
+      "keywordsEmpty": "キーワードはありません。",
+      "keywordsRemove": "削除",
       "sectionSocials": "ソーシャルリンク",
       "socialLabels": {
         "twitter": "X（Twitter）",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "この項目は必須です。",
         "tooLong": "長すぎます。",
+        "tooMany": "キーワードが多すぎます（最大20個）。",
         "invalid": "無効な値です。",
         "beforeStart": "終了日は開始日以降である必要があります。",
         "notFound": "トーナメントが見つかりません。",

@@ -34,6 +34,8 @@ export const tournaments = pgTable("tournaments", {
   endDate: date("end_date").notNull(),
   status: text("status").notNull().default("upcoming"), // 'upcoming' | 'live' | 'finished'
   description: text("description"),
+  // Extra search terms (abbreviations, former names) matched by the searches.
+  keywords: text("keywords").array().notNull().default([]),
   active: boolean("active").notNull().default(false),
   // Uncovered tournament (mix) holding a GC team's match: only the match is
   // public, the tournament has no page and stays out of every listing.

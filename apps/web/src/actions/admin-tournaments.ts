@@ -35,6 +35,7 @@ export type TournamentField =
   | "location"
   | "prizePool"
   | "description"
+  | "keywords"
   | "liquipediaLink"
   | "playerPovPhrase";
 export type TournamentFieldErrors = Partial<Record<TournamentField, string>> & {
@@ -54,12 +55,28 @@ export type TournamentInput = {
   location: string;
   prizePool: string;
   description: string;
+  keywords: string[];
   liquipediaLink: string;
   socials: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
   playerPovPhrase: string;
 };
 
 const STATUS_VALUES = ["upcoming", "live", "finished"];
+const KEYWORDS_MAX_COUNT = 20;
+const KEYWORD_MAX_LENGTH = 50;
+
+function normalizeKeywords(keywords: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of keywords) {
+    const keyword = raw.trim();
+    const key = keyword.toLowerCase();
+    if (!keyword || seen.has(key)) continue;
+    seen.add(key);
+    result.push(keyword);
+  }
+  return result;
+}
 
 function isValidDate(value: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value).getTime());
@@ -102,6 +119,13 @@ async function validateTournament(input: TournamentInput): Promise<TournamentFie
   if (input.prizePool.trim().length > 100) fieldErrors.prizePool = "tooLong";
   if (input.playerPovPhrase.trim().length > 255) fieldErrors.playerPovPhrase = "tooLong";
 
+  if (!Array.isArray(input.keywords) || input.keywords.some((k) => typeof k !== "string")) fieldErrors.keywords = "invalid";
+  else {
+    const keywords = normalizeKeywords(input.keywords);
+    if (keywords.length > KEYWORDS_MAX_COUNT) fieldErrors.keywords = "tooMany";
+    else if (keywords.some((k) => k.length > KEYWORD_MAX_LENGTH)) fieldErrors.keywords = "tooLong";
+  }
+
   const liquipediaLink = input.liquipediaLink.trim();
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
@@ -136,6 +160,7 @@ function coreColumns(input: TournamentInput) {
     location: input.location.trim() || null,
     prizePool: input.prizePool.trim() || null,
     description: input.description.trim() || null,
+    keywords: normalizeKeywords(input.keywords),
     liquipediaLink: input.liquipediaLink.trim() || null,
     socials,
     playerPovPhrase: input.playerPovPhrase.trim() || null,

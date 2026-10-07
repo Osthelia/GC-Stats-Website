@@ -3529,6 +3529,12 @@
       "fieldDescription": "描述",
       "fieldLiquipedia": "Liquipedia 链接",
       "fieldPlayerPovPhrase": "选手视角标语",
+      "fieldKeywords": "关键词",
+      "keywordsHint": "有助于在搜索中找到该赛事的别名或缩写。",
+      "keywordsPlaceholder": "添加关键词…",
+      "keywordsAdd": "添加",
+      "keywordsEmpty": "暂无关键词。",
+      "keywordsRemove": "移除",
       "sectionSocials": "社交链接",
       "socialLabels": {
         "twitter": "X（Twitter）",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "此字段为必填项。",
         "tooLong": "内容过长。",
+        "tooMany": "关键词过多（最多 20 个）。",
         "invalid": "值无效。",
         "beforeStart": "结束日期必须晚于或等于开始日期。",
         "notFound": "未找到该赛事。",

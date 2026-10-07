@@ -3529,6 +3529,12 @@
       "fieldDescription": "Açıklama",
       "fieldLiquipedia": "Liquipedia bağlantısı",
       "fieldPlayerPovPhrase": "Oyuncu POV ifadesi",
+      "fieldKeywords": "Anahtar kelimeler",
+      "keywordsHint": "Bu turnuvayı aramalarda bulmaya yardımcı olan alternatif adlar veya kısaltmalar.",
+      "keywordsPlaceholder": "Anahtar kelime ekle…",
+      "keywordsAdd": "Ekle",
+      "keywordsEmpty": "Anahtar kelime yok.",
+      "keywordsRemove": "Kaldır",
       "sectionSocials": "Sosyal medya bağlantıları",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "Bu alan zorunludur.",
         "tooLong": "Çok uzun.",
+        "tooMany": "Çok fazla anahtar kelime (en fazla 20).",
         "invalid": "Geçersiz değer.",
         "beforeStart": "Bitiş tarihi, başlangıç tarihiyle aynı veya sonrasında olmalıdır.",
         "notFound": "Turnuva bulunamadı.",

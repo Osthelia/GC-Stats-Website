@@ -3533,6 +3533,12 @@
       "fieldDescription": "Descripción",
       "fieldLiquipedia": "Enlace de Liquipedia",
       "fieldPlayerPovPhrase": "Frase de POV de jugador",
+      "fieldKeywords": "Palabras clave",
+      "keywordsHint": "Nombres alternativos o abreviaturas que ayudan a encontrar este torneo en las búsquedas.",
+      "keywordsPlaceholder": "Añadir una palabra clave…",
+      "keywordsAdd": "Añadir",
+      "keywordsEmpty": "Sin palabras clave.",
+      "keywordsRemove": "Quitar",
       "sectionSocials": "Redes sociales",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3569,6 +3575,7 @@
       "error": {
         "required": "Este campo es obligatorio.",
         "tooLong": "Demasiado largo.",
+        "tooMany": "Demasiadas palabras clave (20 como máximo).",
         "invalid": "Valor no válido.",
         "beforeStart": "La fecha de fin debe ser igual o posterior a la fecha de inicio.",
         "notFound": "Torneo no encontrado.",

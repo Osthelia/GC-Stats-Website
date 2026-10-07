@@ -15,7 +15,7 @@ import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { tournaments, pointTypes } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
-import { foldedIlike } from "@/lib/db-search";
+import { foldedIlike, foldedArrayIlike } from "@/lib/db-search";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
 
 export type TournamentSort = "name" | "startDate" | "status";
@@ -75,7 +75,7 @@ export async function listAdminTournaments(opts: {
   if (q) {
     const numeric = /^\d+$/.test(q);
     const variants = typoVariants(q.toLowerCase());
-    const clauses = variants.map((v) => foldedIlike(tournaments.name, v));
+    const clauses = variants.flatMap((v) => [foldedIlike(tournaments.name, v), foldedArrayIlike(tournaments.keywords, v)]);
     if (numeric) clauses.push(eq(tournaments.id, Number(q)));
     conditions.push(or(...clauses));
   }
@@ -133,6 +133,7 @@ export type AdminTournamentDetailRow = AdminTournamentRow & {
   prizePool: string | null;
   location: string | null;
   description: string | null;
+  keywords: string[];
   liquipediaLink: string | null;
   socials: Record<string, string>;
   playerPovPhrase: string | null;

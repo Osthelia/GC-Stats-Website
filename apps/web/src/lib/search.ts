@@ -16,7 +16,7 @@ import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { teams, people, tournaments, organizations, pageViews } from "@gc-stats/db";
 import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo";
-import { specialCharFoldedIlike, specialCharPrefixRank } from "@/lib/db-search";
+import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
 import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
@@ -97,7 +97,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region })
       .from(tournaments)
       // V1 only ever searches active tournaments (Tournament::where('active', true)).
-      .where(and(eq(tournaments.active, true), visibleTournament, or(...variants.map((v) => specialCharFoldedIlike(tournaments.name, v)))))
+      .where(and(eq(tournaments.active, true), visibleTournament, or(...variants.flatMap((v) => [specialCharFoldedIlike(tournaments.name, v), specialCharFoldedArrayIlike(tournaments.keywords, v)]))))
       .orderBy(specialCharPrefixRank(tournaments.name, base))
       .limit(candidateLimit),
     db

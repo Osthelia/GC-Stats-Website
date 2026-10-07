@@ -3529,6 +3529,12 @@
       "fieldDescription": "Beschreibung",
       "fieldLiquipedia": "Liquipedia Link",
       "fieldPlayerPovPhrase": "Spielerinnen POV Satz",
+      "fieldKeywords": "Schlüsselwörter",
+      "keywordsHint": "Alternative Namen oder Abkürzungen, die helfen, dieses Turnier in der Suche zu finden.",
+      "keywordsPlaceholder": "Schlüsselwort hinzufügen…",
+      "keywordsAdd": "Hinzufügen",
+      "keywordsEmpty": "Keine Schlüsselwörter.",
+      "keywordsRemove": "Entfernen",
       "sectionSocials": "Social Media Links",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "Dieses Feld ist erforderlich.",
         "tooLong": "Zu lang.",
+        "tooMany": "Zu viele Schlüsselwörter (maximal 20).",
         "invalid": "Ungültiger Wert.",
         "beforeStart": "Das Enddatum muss am oder nach dem Startdatum liegen.",
         "notFound": "Turnier nicht gefunden.",

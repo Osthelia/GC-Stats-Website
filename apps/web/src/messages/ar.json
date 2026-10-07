@@ -3529,6 +3529,12 @@
       "fieldDescription": "الوصف",
       "fieldLiquipedia": "رابط Liquipedia",
       "fieldPlayerPovPhrase": "عبارة POV اللاعبة",
+      "fieldKeywords": "الكلمات المفتاحية",
+      "keywordsHint": "أسماء بديلة أو اختصارات تساعد على العثور على هذه البطولة في البحث.",
+      "keywordsPlaceholder": "أضف كلمة مفتاحية…",
+      "keywordsAdd": "إضافة",
+      "keywordsEmpty": "لا توجد كلمات مفتاحية.",
+      "keywordsRemove": "إزالة",
       "sectionSocials": "روابط الشبكات الاجتماعية",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "هذا الحقل مطلوب.",
         "tooLong": "طويل جدًا.",
+        "tooMany": "عدد الكلمات المفتاحية كبير جدًا (20 كحد أقصى).",
         "invalid": "قيمة غير صالحة.",
         "beforeStart": "يجب أن يكون تاريخ الانتهاء مساويًا لتاريخ البدء أو بعده.",
         "notFound": "البطولة غير موجودة.",

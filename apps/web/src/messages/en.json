@@ -3533,6 +3533,12 @@
       "fieldDescription": "Description",
       "fieldLiquipedia": "Liquipedia link",
       "fieldPlayerPovPhrase": "Player POV phrase",
+      "fieldKeywords": "Keywords",
+      "keywordsHint": "Alternative names or abbreviations that help find this tournament in searches.",
+      "keywordsPlaceholder": "Add a keyword…",
+      "keywordsAdd": "Add",
+      "keywordsEmpty": "No keywords.",
+      "keywordsRemove": "Remove",
       "sectionSocials": "Social links",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3569,6 +3575,7 @@
       "error": {
         "required": "This field is required.",
         "tooLong": "Too long.",
+        "tooMany": "Too many keywords (20 maximum).",
         "invalid": "Invalid value.",
         "beforeStart": "The end date must be on or after the start date.",
         "notFound": "Tournament not found.",

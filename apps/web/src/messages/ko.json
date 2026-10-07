@@ -3529,6 +3529,12 @@
       "fieldDescription": "설명",
       "fieldLiquipedia": "리퀴피디아 링크",
       "fieldPlayerPovPhrase": "선수 POV 문구",
+      "fieldKeywords": "키워드",
+      "keywordsHint": "검색에서 이 대회를 찾는 데 도움이 되는 다른 이름이나 약어입니다.",
+      "keywordsPlaceholder": "키워드 추가…",
+      "keywordsAdd": "추가",
+      "keywordsEmpty": "키워드가 없습니다.",
+      "keywordsRemove": "제거",
       "sectionSocials": "소셜 링크",
       "socialLabels": {
         "twitter": "X (Twitter)",
@@ -3565,6 +3571,7 @@
       "error": {
         "required": "필수 항목입니다.",
         "tooLong": "너무 깁니다.",
+        "tooMany": "키워드가 너무 많습니다(최대 20개).",
         "invalid": "값이 올바르지 않습니다.",
         "beforeStart": "종료일은 시작일과 같거나 그 이후여야 합니다.",
         "notFound": "토너먼트를 찾을 수 없습니다.",

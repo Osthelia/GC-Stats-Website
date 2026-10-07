@@ -14,7 +14,7 @@ import { and, eq, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { tournaments } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
-import { foldedIlike } from "@/lib/db-search";
+import { foldedIlike, foldedArrayIlike } from "@/lib/db-search";
 import { visibleTournament } from "@/lib/ghost-visibility";
 
 export type TournamentPickerResult = { id: number; name: string };
@@ -28,7 +28,7 @@ export async function searchTournamentsQuery(query: string): Promise<TournamentP
 
   const numeric = /^\d+$/.test(q);
   const variants = typoVariants(q.toLowerCase());
-  const clauses = variants.map((v) => foldedIlike(tournaments.name, v));
+  const clauses = variants.flatMap((v) => [foldedIlike(tournaments.name, v), foldedArrayIlike(tournaments.keywords, v)]);
   if (numeric) clauses.push(eq(tournaments.id, Number(q)));
 
   return db

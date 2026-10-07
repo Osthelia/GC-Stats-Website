@@ -46,6 +46,16 @@ export function specialCharFoldedIlike(column: AnyPgColumn, pattern: string) {
   return sql`regexp_replace(translate(lower(${column}), ${ACCENT_SRC}, ${ACCENT_DST}), '[^a-z0-9]', '', 'g') LIKE ${`%${escapeLikePattern(pattern)}%`}`;
 }
 
+/** `foldedIlike` over a text[] column: true when any element matches. */
+export function foldedArrayIlike(column: AnyPgColumn, pattern: string) {
+  return sql`EXISTS (SELECT 1 FROM unnest(${column}) AS kw WHERE translate(lower(kw), ${ACCENT_SRC}, ${ACCENT_DST}) LIKE ${`%${escapeLikePattern(pattern)}%`})`;
+}
+
+/** `specialCharFoldedIlike` over a text[] column: true when any element matches. */
+export function specialCharFoldedArrayIlike(column: AnyPgColumn, pattern: string) {
+  return sql`EXISTS (SELECT 1 FROM unnest(${column}) AS kw WHERE regexp_replace(translate(lower(kw), ${ACCENT_SRC}, ${ACCENT_DST}), '[^a-z0-9]', '', 'g') LIKE ${`%${escapeLikePattern(pattern)}%`})`;
+}
+
 /**
  * Ranking expression for ORDER BY — 0 for an exact prefix match, 1 for a
  * substring match elsewhere, 2 otherwise. Mirrors V1's App\Services\
