@@ -56,6 +56,9 @@ const providers: Provider[] = [
   Discord({
     clientId: process.env.DISCORD_CLIENT_ID,
     clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    // Discord now sends `iss` in the callback (RFC 9207); without this Auth.js
+    // compares it to its "https://authjs.dev" placeholder and rejects it.
+    issuer: "https://discord.com",
     // "guilds" is needed to check server membership for Discord DM
     // notifications (lib/discord-guild-membership.ts) — Discord only lets a
     // bot DM a user they share a server with.
