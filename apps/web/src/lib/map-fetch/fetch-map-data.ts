@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, or } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { maps, matches, stageContainers, stages, tournaments } from "@gc-stats/db";
@@ -105,6 +105,15 @@ export async function fetchMapData(mapId: number, options: FetchMapOptions = {})
     personIdByPuuid: known,
     content,
   });
+
+  // "release-13.05-shipping-11-5350494" -> "13.05"
+  const patch = match.matchInfo.gameVersion?.match(/^release-(\d+(?:\.\d+)*)/)?.[1];
+  if (patch) {
+    await db
+      .update(matches)
+      .set({ patch })
+      .where(and(eq(matches.id, row.matchId), or(isNull(matches.patch), eq(matches.patch, ""))));
+  }
 
   try {
     await maybeAutoCompleteMatchFromMaps(row.matchId);
