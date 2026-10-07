@@ -76,8 +76,8 @@ export async function TournamentFinalStandings({ rows }: { rows: PublicFinalStan
             </div>
           )}
           {hasMoney && (
-            <div className="w-16 shrink-0 text-center">
-              <div className={`truncate text-[11px] font-black md:text-xs ${podium ? "text-neutral-100" : "text-neutral-300"}`}>{money ?? ""}</div>
+            <div className="min-w-24 shrink-0 text-center md:min-w-28">
+              <div className={`text-[11px] font-black whitespace-nowrap md:text-xs ${podium ? "text-neutral-100" : "text-neutral-300"}`}>{money ?? ""}</div>
               <div className="text-[7px] font-bold tracking-widest text-neutral-600 uppercase md:text-[8px]">{t("finalStandingsCashPrize")}</div>
             </div>
           )}
