@@ -14,7 +14,7 @@
 
 import { eq, inArray, asc, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stages, stageContainers, matches, matchSeeds, groupEntries, entrants, PERMISSIONS } from "@gc-stats/db";
+import { stages, stageContainers, matches, matchSeeds, bracketEdges, groupEntries, entrants, PERMISSIONS } from "@gc-stats/db";
 import { nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { requireActorPermission } from "@/lib/rbac";
 import {
@@ -346,57 +346,26 @@ export type EditorSaveMatch = {
 
 export type EditorSaveEdge = { fromMatchId: string; fromResult: "winner" | "loser"; toMatchId: string; toSlot: "a" | "b" };
 
-export type SaveManualGraphInput = { stageId: number; containerIds: number[]; matches: EditorSaveMatch[]; edges: EditorSaveEdge[]; forceStarted?: boolean };
+export type SaveManualGraphInput = { stageId: number; containerIds: number[]; matches: EditorSaveMatch[]; edges: EditorSaveEdge[] };
 export type SaveManualGraphResult = { ok: true } | { ok: false; error: string; validationErrors?: string[] };
 
-/**
- * Full-replace save of the visual editor's current canvas state: validates
- * the graph shape (same `validateGraph` the generators are held to — no
- * orphan slot, no cycle) before touching anything, then deletes every
- * existing match in the edited containers and re-inserts the graph exactly
- * as drawn. Only allowed while the stage is pending and none of its matches
- * is live or completed: the full replace would wipe their results and stats.
- * `forceStarted` bypasses both guards and accepts that data loss.
- */
-export async function saveManualGraph(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
-  await requireTournamentsActor();
-
-  const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
-  if (!stage) return { ok: false, error: "stageNotFound" };
-  if (stage.status !== "pending" && !input.forceStarted) return { ok: false, error: "stageNotPending" };
-
-  if (input.containerIds.length > 0) {
-    const ownedContainers = await db
-      .select({ id: stageContainers.id })
-      .from(stageContainers)
-      .where(and(inArray(stageContainers.id, input.containerIds), eq(stageContainers.stageId, input.stageId)));
-    if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
-
-    // stages.status stays "pending" until the stage completes, so played matches are the real "started" signal.
-    const [playedMatch] = input.forceStarted
-      ? []
-      : await db
-          .select({ id: matches.id })
-          .from(matches)
-          .where(and(inArray(matches.containerId, input.containerIds), inArray(matches.status, ["live", "completed"])))
-          .limit(1);
-    if (playedMatch) return { ok: false, error: "bracketStarted" };
-  }
-
+/** Every entrant used by a slot must belong to the stage's tournament. */
+async function findEntrantMismatch(input: SaveManualGraphInput, tournamentId: number): Promise<"entrantMismatch" | null> {
   const entrantIds = new Set<number>();
   for (const m of input.matches) {
     if (m.slotA.type === "entrant") entrantIds.add(m.slotA.entrantId);
     if (m.slotB.type === "entrant") entrantIds.add(m.slotB.entrantId);
   }
-  if (entrantIds.size > 0) {
-    const ownedEntrants = await db
-      .select({ id: entrants.id })
-      .from(entrants)
-      .where(and(inArray(entrants.id, Array.from(entrantIds)), eq(entrants.tournamentId, stage.tournamentId)));
-    if (ownedEntrants.length !== entrantIds.size) return { ok: false, error: "entrantMismatch" };
-  }
+  if (entrantIds.size === 0) return null;
+  const owned = await db
+    .select({ id: entrants.id })
+    .from(entrants)
+    .where(and(inArray(entrants.id, Array.from(entrantIds)), eq(entrants.tournamentId, tournamentId)));
+  return owned.length === entrantIds.size ? null : "entrantMismatch";
+}
 
-  const graph: BracketGraph = {
+function buildSaveGraph(input: SaveManualGraphInput): BracketGraph {
+  return {
     matches: input.matches.map((m) => ({
       id: m.id,
       containerId: String(m.containerId),
@@ -413,6 +382,43 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
     })),
     edges: input.edges,
   };
+}
+
+/**
+ * Full-replace save of the visual editor's current canvas state: validates
+ * the graph shape (same `validateGraph` the generators are held to — no
+ * orphan slot, no cycle) before touching anything, then deletes every
+ * existing match in the edited containers and re-inserts the graph exactly
+ * as drawn. Only allowed while the stage is pending and none of its matches
+ * is live or completed: the full replace would wipe their results and stats.
+ */
+export async function saveManualGraph(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+  await requireTournamentsActor();
+
+  const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
+  if (!stage) return { ok: false, error: "stageNotFound" };
+  if (stage.status !== "pending") return { ok: false, error: "stageNotPending" };
+
+  if (input.containerIds.length > 0) {
+    const ownedContainers = await db
+      .select({ id: stageContainers.id })
+      .from(stageContainers)
+      .where(and(inArray(stageContainers.id, input.containerIds), eq(stageContainers.stageId, input.stageId)));
+    if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
+
+    // stages.status stays "pending" until the stage completes, so played matches are the real "started" signal.
+    const [playedMatch] = await db
+      .select({ id: matches.id })
+      .from(matches)
+      .where(and(inArray(matches.containerId, input.containerIds), inArray(matches.status, ["live", "completed"])))
+      .limit(1);
+    if (playedMatch) return { ok: false, error: "bracketStarted" };
+  }
+
+  const entrantError = await findEntrantMismatch(input, stage.tournamentId);
+  if (entrantError) return { ok: false, error: entrantError };
+
+  const graph = buildSaveGraph(input);
 
   const validation = validateEditorGraph(graph);
   if (!validation.valid) return { ok: false, error: "invalidGraph", validationErrors: validation.errors };
@@ -431,6 +437,167 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
     if (realId === undefined) continue;
     await db.update(matches).set({ displayOrder: m.displayOrder }).where(eq(matches.id, realId));
   }
+
+  return { ok: true };
+}
+
+// --- In-place save (started brackets) ------------------------------------
+
+const edgeKey = (from: string | number, result: string, to: string | number, slot: string) => `${from}:${result}->${to}:${slot}`;
+
+/**
+ * Diff-based save for a bracket that has already started: updates, adds and
+ * removes matches and links without ever recreating a match, so results,
+ * stats, vetos and schedules survive. Matches that are live or completed are
+ * frozen (round, best of, slots and incoming links) and can't be deleted.
+ * A new link from a completed match immediately fills its target slot.
+ */
+export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+  await requireTournamentsActor();
+
+  const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
+  if (!stage) return { ok: false, error: "stageNotFound" };
+  if (input.containerIds.length === 0) return { ok: true };
+
+  const ownedContainers = await db
+    .select({ id: stageContainers.id })
+    .from(stageContainers)
+    .where(and(inArray(stageContainers.id, input.containerIds), eq(stageContainers.stageId, input.stageId)));
+  if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
+
+  const entrantError = await findEntrantMismatch(input, stage.tournamentId);
+  if (entrantError) return { ok: false, error: entrantError };
+
+  const validation = validateEditorGraph(buildSaveGraph(input));
+  if (!validation.valid) return { ok: false, error: "invalidGraph", validationErrors: validation.errors };
+
+  const existing = await db.select().from(matches).where(inArray(matches.containerId, input.containerIds));
+  const existingIds = existing.map((m) => m.id);
+  const seedRows = existingIds.length > 0 ? await db.select().from(matchSeeds).where(inArray(matchSeeds.matchId, existingIds)) : [];
+  const edgeRows = existingIds.length > 0 ? await db.select().from(bracketEdges).where(inArray(bracketEdges.fromMatchId, existingIds)) : [];
+
+  const existingById = new Map(existing.map((m) => [String(m.id), m]));
+  const keptIds = new Set<string>();
+  for (const m of input.matches) {
+    if (m.id.startsWith("new-")) continue;
+    const row = existingById.get(m.id);
+    if (!row || row.containerId !== m.containerId) return { ok: false, error: "matchMismatch" };
+    if (row.status !== "pending" && (row.round !== m.round || row.bestOf !== m.bestOf)) return { ok: false, error: "startedMatchChanged" };
+    keptIds.add(m.id);
+  }
+
+  const isStarted = (id: string) => {
+    const row = existingById.get(id);
+    return row !== undefined && row.status !== "pending";
+  };
+
+  for (const row of existing) {
+    if (keptIds.has(String(row.id))) continue;
+    if (row.status !== "pending" || row.winnerId !== null || row.scoreA !== null || row.scoreB !== null) return { ok: false, error: "startedMatchDeleted" };
+  }
+
+  const oldEdgeKeys = new Set(edgeRows.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
+  const newEdgeKeys = new Set(input.edges.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
+  for (const e of input.edges) {
+    if (!oldEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)) && isStarted(e.toMatchId)) return { ok: false, error: "startedEdgeChanged" };
+  }
+  for (const e of edgeRows) {
+    if (newEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot))) continue;
+    if (keptIds.has(String(e.toMatchId)) && isStarted(String(e.toMatchId))) return { ok: false, error: "startedEdgeChanged" };
+  }
+
+  await db.transaction(async (tx) => {
+    const removedIds = existing.filter((m) => !keptIds.has(String(m.id))).map((m) => m.id);
+    if (removedIds.length > 0) await tx.delete(matches).where(inArray(matches.id, removedIds));
+
+    const idMap = new Map<string, number>();
+    for (const id of keptIds) idMap.set(id, Number(id));
+
+    for (const m of input.matches) {
+      if (!m.id.startsWith("new-")) continue;
+      const [row] = await tx
+        .insert(matches)
+        .values({
+          containerId: m.containerId,
+          round: m.round,
+          displayOrder: m.displayOrder,
+          label: m.label,
+          bestOf: m.bestOf,
+          status: "pending",
+          entrantAId: m.slotA.type === "entrant" ? m.slotA.entrantId : null,
+          entrantBId: m.slotB.type === "entrant" ? m.slotB.entrantId : null,
+        })
+        .returning({ id: matches.id });
+      if (!row) throw new Error(`saveBracketInPlace: insert of match "${m.id}" returned no row`);
+      idMap.set(m.id, row.id);
+      const seeds: (typeof matchSeeds.$inferInsert)[] = [];
+      for (const [slot, source] of [["a", m.slotA], ["b", m.slotB]] as const) {
+        if (source.type === "entrant") seeds.push({ matchId: row.id, slot, sourceType: "seed", sourceRef: { seed: source.entrantId } });
+        if (source.type === "bye") seeds.push({ matchId: row.id, slot, sourceType: "bye", sourceRef: {} });
+      }
+      if (seeds.length > 0) await tx.insert(matchSeeds).values(seeds);
+    }
+
+    for (const m of input.matches) {
+      const row = existingById.get(m.id);
+      if (!row) continue;
+      if (row.status !== "pending") {
+        await tx.update(matches).set({ displayOrder: m.displayOrder, label: m.label }).where(eq(matches.id, row.id));
+        continue;
+      }
+
+      const patch: { entrantAId?: number | null; entrantBId?: number | null } = {};
+      for (const slot of ["a", "b"] as const) {
+        const next = slot === "a" ? m.slotA : m.slotB;
+        const oldEdge = edgeRows.find((e) => e.toMatchId === row.id && e.toSlot === slot);
+        const newEdge = input.edges.find((e) => e.toMatchId === m.id && e.toSlot === slot);
+        const oldSeed = seedRows.find((s) => s.matchId === row.id && s.slot === slot && (s.sourceType === "seed" || s.sourceType === "bye"));
+        const prev: EditorSlotSource = oldEdge
+          ? { type: "edge" }
+          : oldSeed?.sourceType === "bye"
+            ? { type: "bye" }
+            : oldSeed
+              ? { type: "entrant", entrantId: (oldSeed.sourceRef as { seed: number }).seed }
+              : { type: "unset" };
+
+        const changed =
+          prev.type !== next.type ||
+          (prev.type === "entrant" && next.type === "entrant" && prev.entrantId !== next.entrantId) ||
+          (next.type === "edge" && (!oldEdge || !newEdge || String(oldEdge.fromMatchId) !== newEdge.fromMatchId || oldEdge.fromResult !== newEdge.fromResult));
+        if (!changed) continue;
+
+        if (oldSeed) await tx.delete(matchSeeds).where(eq(matchSeeds.id, oldSeed.id));
+        if (next.type === "entrant") await tx.insert(matchSeeds).values({ matchId: row.id, slot, sourceType: "seed", sourceRef: { seed: next.entrantId } });
+        if (next.type === "bye") await tx.insert(matchSeeds).values({ matchId: row.id, slot, sourceType: "bye", sourceRef: {} });
+
+        const entrantId = next.type === "entrant" ? next.entrantId : null;
+        if (slot === "a") patch.entrantAId = entrantId;
+        else patch.entrantBId = entrantId;
+      }
+
+      await tx.update(matches).set({ round: m.round, displayOrder: m.displayOrder, label: m.label, bestOf: m.bestOf, ...patch }).where(eq(matches.id, row.id));
+    }
+
+    const goneEdgeIds = edgeRows
+      .filter((e) => !newEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)) && keptIds.has(String(e.toMatchId)) && keptIds.has(String(e.fromMatchId)))
+      .map((e) => e.id);
+    if (goneEdgeIds.length > 0) await tx.delete(bracketEdges).where(inArray(bracketEdges.id, goneEdgeIds));
+
+    for (const e of input.edges) {
+      if (oldEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot))) continue;
+      const fromId = idMap.get(e.fromMatchId);
+      const toId = idMap.get(e.toMatchId);
+      if (fromId === undefined || toId === undefined) throw new Error("saveBracketInPlace: unresolved edge endpoint");
+      await tx.insert(bracketEdges).values({ fromMatchId: fromId, fromResult: e.fromResult, toMatchId: toId, toSlot: e.toSlot });
+
+      const source = existingById.get(e.fromMatchId);
+      if (!source || source.status !== "completed" || source.winnerId === null) continue;
+      const loserId = source.winnerId === source.entrantAId ? source.entrantBId : source.entrantAId;
+      const entrantId = e.fromResult === "winner" ? source.winnerId : loserId;
+      if (entrantId === null) continue;
+      await tx.update(matches).set(e.toSlot === "a" ? { entrantAId: entrantId } : { entrantBId: entrantId }).where(eq(matches.id, toId));
+    }
+  });
 
   return { ok: true };
 }

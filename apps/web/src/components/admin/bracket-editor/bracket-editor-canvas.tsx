@@ -39,7 +39,7 @@ import { MatchNode, type MatchNodeData } from "@/components/admin/bracket-editor
 import { RoundHeaderNode, type RoundHeaderNodeData } from "@/components/admin/bracket-editor/round-header-node";
 import { GenerateTemplateForm } from "@/components/admin/bracket-editor/generate-template-form";
 import { DeletableEdge, type DeletableEdgeData } from "@/components/admin/bracket-editor/deletable-edge";
-import { saveManualGraph, type EditorSlotSource } from "@/actions/admin-bracket-editor";
+import { saveManualGraph, saveBracketInPlace, type EditorSlotSource } from "@/actions/admin-bracket-editor";
 import { layoutEditorGrid, snapToGrid, rowIndexFromY, type EditorLayoutOptions } from "@/lib/bracket-editor-layout";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
@@ -189,6 +189,7 @@ function BracketEditorCanvasInner({
   const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
   const locked = stageStatus !== "pending" || initialMatches.some((m) => m.status !== "pending");
   const readOnly = locked && !unlocked;
+  const startedIds = useMemo(() => new Set(initialMatches.filter((m) => m.status !== "pending").map((m) => String(m.id))), [initialMatches]);
 
   const tbdLabel = t("tbdLabel");
   const initial = useMemo(
@@ -269,19 +270,20 @@ function BracketEditorCanvasInner({
     () =>
       nodes.map((n) => ({
         ...n,
-        data: { ...n.data, onSetSlot: (slot: "a" | "b", source: EditorSlotSource) => setSlot(n.id, slot, source), onDelete: () => requestDeleteNode(n.id), readOnly },
+        draggable: !startedIds.has(n.id),
+        data: { ...n.data, onSetSlot: (slot: "a" | "b", source: EditorSlotSource) => setSlot(n.id, slot, source), onDelete: () => requestDeleteNode(n.id), readOnly: readOnly || startedIds.has(n.id) },
       })),
-    [nodes, setSlot, requestDeleteNode, readOnly]
+    [nodes, setSlot, requestDeleteNode, readOnly, startedIds]
   );
 
   const edgesWithHandlers = useMemo(
-    () => edges.map((e) => ({ ...e, type: "deletable", data: { onDelete: () => deleteEdge(e), readOnly } as DeletableEdgeData })),
-    [edges, deleteEdge, readOnly]
+    () => edges.map((e) => ({ ...e, type: "deletable", data: { onDelete: () => deleteEdge(e), readOnly: readOnly || startedIds.has(e.target) } as DeletableEdgeData })),
+    [edges, deleteEdge, readOnly, startedIds]
   );
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (readOnly) return;
+      if (readOnly || startedIds.has(connection.target)) return;
       const targetSlot = connection.targetHandle as "a" | "b";
       setEdges((prev) =>
         addEdge(
@@ -293,7 +295,7 @@ function BracketEditorCanvasInner({
         prev.map((n) => (n.id === connection.target ? { ...n, data: { ...n.data, slotA: targetSlot === "a" ? { type: "edge" } : n.data.slotA, slotB: targetSlot === "b" ? { type: "edge" } : n.data.slotB } } : n))
       );
     },
-    [readOnly, setEdges, setNodes]
+    [readOnly, startedIds, setEdges, setNodes]
   );
 
   const resolveContainerId = useCallback(
@@ -311,7 +313,7 @@ function BracketEditorCanvasInner({
   // (round) a match belongs to (2026-09-11 user report).
   const onNodeDragStop: OnNodeDrag<Node<MatchNodeData>> = useCallback(
     (_event, node) => {
-      if (readOnly || node.type !== "matchNode") return;
+      if (readOnly || node.type !== "matchNode" || startedIds.has(node.id)) return;
       const containerId = resolveContainerId(node.id);
       if (containerId === null) return;
       const snapped = snapToGrid(node.position.x, node.position.y, String(containerId), initial.layout, LAYOUT_OPTS);
@@ -319,7 +321,7 @@ function BracketEditorCanvasInner({
         prev.map((n) => (n.id === node.id ? { ...n, position: { x: snapped.x, y: snapped.y }, data: { ...n.data, round: snapped.round } } : n))
       );
     },
-    [readOnly, resolveContainerId, initial.layout, setNodes]
+    [readOnly, startedIds, resolveContainerId, initial.layout, setNodes]
   );
 
   const currentGraph: BracketGraph = useMemo(
@@ -422,10 +424,10 @@ function BracketEditorCanvasInner({
   // change reported for one is simply dropped here rather than applied.
   const handleNodesChange: OnNodesChange<CanvasNode> = useCallback(
     (changes) => {
-      const matchChanges = changes.filter((c) => "id" in c && nodes.some((n) => n.id === c.id)) as NodeChange<Node<MatchNodeData>>[];
+      const matchChanges = changes.filter((c) => "id" in c && nodes.some((n) => n.id === c.id) && !(c.type === "remove" && startedIds.has(c.id))) as NodeChange<Node<MatchNodeData>>[];
       onNodesChange(matchChanges);
     },
-    [onNodesChange, nodes]
+    [onNodesChange, nodes, startedIds]
   );
   const handleNodeDragStop: OnNodeDrag<CanvasNode> = useCallback(
     (event, node, draggedNodes) => {
@@ -444,11 +446,11 @@ function BracketEditorCanvasInner({
       for (const change of changes) {
         if (change.type !== "remove") continue;
         const removedEdge = edges.find((e) => e.id === change.id);
-        if (removedEdge) deleteEdge(removedEdge);
+        if (removedEdge && !startedIds.has(removedEdge.target)) deleteEdge(removedEdge);
       }
       onEdgesChange(changes.filter((c) => c.type !== "remove"));
     },
-    [edges, deleteEdge, onEdgesChange]
+    [edges, deleteEdge, onEdgesChange, startedIds]
   );
 
   function addMatch() {
@@ -509,11 +511,10 @@ function BracketEditorCanvasInner({
         };
       }),
       edges: currentGraph.edges,
-      forceStarted: locked && unlocked,
     };
     let result: Awaited<ReturnType<typeof saveManualGraph>>;
     try {
-      result = await saveManualGraph(payload);
+      result = await (locked ? saveBracketInPlace : saveManualGraph)(payload);
     } catch {
       toast.error(t("error.saveFailed"));
       return;
