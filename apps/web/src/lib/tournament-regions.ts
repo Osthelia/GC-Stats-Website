@@ -8,7 +8,7 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-export type RegionKey = "emea" | "na" | "latam" | "brazil" | "pacific" | "china" | "international" | "other";
+export type RegionKey = "emea" | "na" | "latam" | "brazil" | "pacific" | "china" | "korea" | "international" | "other";
 
 // VCT region branding: the Americas regions share one orange.
 export const REGIONS: Record<RegionKey, { label: string; color: string; short: string }> = {
@@ -18,8 +18,9 @@ export const REGIONS: Record<RegionKey, { label: string; color: string; short: s
   brazil: { label: "Brazil", color: "#FF6B35", short: "BR" },
   pacific: { label: "Pacific", color: "#00C8FF", short: "PA" },
   china: { label: "China", color: "#FF1744", short: "CN" },
+  korea: { label: "Korea", color: "#00C8FF", short: "KR" },
   international: { label: "International", color: "#665400", short: "INT" },
-  // Neutral fallback for regions without a brand color (Japan, Korea, TBD...).
+  // Neutral fallback for regions without a brand color (Japan, TBD...).
   other: { label: "TBD", color: "#8a8a8a", short: "—" },
 };
 
@@ -33,6 +34,7 @@ const REGION_LABEL_TO_KEY: Record<string, RegionKey> = {
   Pacific: "pacific",
   SEA: "pacific",
   China: "china",
+  Korea: "korea",
   International: "international",
 };
 
