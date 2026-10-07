@@ -14,7 +14,7 @@ import { Link } from "@/i18n/navigation";
 import { requireDashboardOrgAccess } from "@/lib/dashboard-rbac";
 import { getAdminOrganization } from "@/lib/admin-organizations";
 import { getOrganizationAccessCount } from "@/lib/organization-access-data";
-import { getEntityLogos, currentLogo } from "@/lib/admin-logos";
+import { getEntityLogos, themedLogoUrls } from "@/lib/admin-logos";
 import { parseEntityId } from "@/lib/entity-id";
 import type { AppLocale } from "@/i18n/routing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +39,7 @@ export default async function DashboardOrganizationPage({ params }: { params: Pr
   const t = await getTranslations({ locale, namespace: "dashboard.overview" });
   const tRole = await getTranslations({ locale, namespace: "admin.organizations.edit.role" });
   const [accessCount, logos] = await Promise.all([getOrganizationAccessCount(id), getEntityLogos("organization", id)]);
-  const logoUrl = currentLogo(logos)?.thumbnailUrl ?? null;
+  const logoUrls = themedLogoUrls(logos, "organization");
 
   const quickLinks = [
     { href: `/dashboard/${id}/profile`, icon: Building2, labelKey: "goProfile" },
@@ -54,7 +54,7 @@ export default async function DashboardOrganizationPage({ params }: { params: Pr
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
-        <OrgLogoTile name={organization.name} logoUrl={logoUrl} className="size-11 rounded-xl text-lg" />
+        <OrgLogoTile name={organization.name} logoUrl={logoUrls.light} darkLogoUrl={logoUrls.dark} className="size-11 rounded-xl text-lg" />
         <div>
           <h1 className="text-2xl font-semibold">{organization.name}</h1>
           <p className="text-sm text-muted-foreground">{t("title")}</p>

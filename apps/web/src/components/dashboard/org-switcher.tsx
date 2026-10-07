@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 
-export type DashboardOrgSwitcherItem = { organizationId: number; organizationName: string; logoUrl: string | null; isGlobalAdminOverride: boolean };
+export type DashboardOrgSwitcherItem = { organizationId: number; organizationName: string; logoUrl: string | null; darkLogoUrl: string | null; isGlobalAdminOverride: boolean };
 
 /** Header org switcher, replaces the old sidebar "Vos organisations" list. Reads the active organization from the URL, same pattern as DashboardSidebar. `isAuthor`/`hasApiKey` each add a fixed individual-space entry so a member with several kinds of access can jump between them from anywhere. */
 export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false }: { organizations: DashboardOrgSwitcherItem[]; isAuthor?: boolean; hasApiKey?: boolean }) {
@@ -63,7 +63,7 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
         ) : isApiKeySpace ? (
           <KeySquare className="size-5 rounded-md text-muted-foreground" />
         ) : (
-          <OrgLogoTile name={active?.organizationName ?? null} logoUrl={active?.logoUrl ?? null} className="size-5 rounded-md" />
+          <OrgLogoTile name={active?.organizationName ?? null} logoUrl={active?.logoUrl ?? null} darkLogoUrl={active?.darkLogoUrl ?? null} className="size-5 rounded-md" />
         )}
         <span className="max-w-40 truncate">{label}</span>
         <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
@@ -108,7 +108,7 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
             >
-              <OrgLogoTile name={org.organizationName} logoUrl={org.logoUrl} className="size-6 rounded-md" />
+              <OrgLogoTile name={org.organizationName} logoUrl={org.logoUrl} darkLogoUrl={org.darkLogoUrl} className="size-6 rounded-md" />
               <span className="min-w-0 flex-1 truncate">{org.organizationName}</span>
               {org.isGlobalAdminOverride && (
                 <span className="flex-none rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">{t("adminAccess")}</span>

@@ -9,7 +9,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { requireDashboardAccess } from "@/lib/dashboard-rbac";
-import { getCurrentLogoUrls } from "@/lib/admin-logos";
+import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
@@ -32,7 +32,7 @@ export default async function DashboardLayout({
   const { locale } = await params;
   const access = await requireDashboardAccess(locale as AppLocale);
 
-  const logoUrls = await getCurrentLogoUrls(
+  const logoUrls = await getCurrentLogoUrlsThemed(
     "organization",
     access.memberships.map((m) => m.organizationId)
   );
@@ -51,7 +51,8 @@ export default async function DashboardLayout({
   const switcherOrganizations = access.memberships.map((m) => ({
     organizationId: m.organizationId,
     organizationName: m.organizationName,
-    logoUrl: logoUrls.get(m.organizationId) ?? null,
+    logoUrl: logoUrls.get(m.organizationId)?.light ?? null,
+    darkLogoUrl: logoUrls.get(m.organizationId)?.dark ?? null,
     isGlobalAdminOverride: m.isGlobalAdminOverride ?? false,
   }));
 

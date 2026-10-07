@@ -11,7 +11,7 @@ import { Newspaper, KeySquare } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import { requireDashboardAccess } from "@/lib/dashboard-rbac";
-import { getCurrentLogoUrls } from "@/lib/admin-logos";
+import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -47,7 +47,7 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
   }
 
   const t = await getTranslations({ locale, namespace: "dashboard.picker" });
-  const logoUrls = await getCurrentLogoUrls(
+  const logoUrls = await getCurrentLogoUrlsThemed(
     "organization",
     access.memberships.map((m) => m.organizationId)
   );
@@ -89,7 +89,7 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
               href={`/dashboard/${m.organizationId}`}
               className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
             >
-              <OrgLogoTile name={m.organizationName} logoUrl={logoUrls.get(m.organizationId) ?? null} className="size-10" />
+              <OrgLogoTile name={m.organizationName} logoUrl={logoUrls.get(m.organizationId)?.light ?? null} darkLogoUrl={logoUrls.get(m.organizationId)?.dark ?? null} className="size-10" />
               <span className="min-w-0 truncate font-medium">{m.organizationName}</span>
             </Link>
           ))}
@@ -109,7 +109,7 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
                 href={`/dashboard/${m.organizationId}`}
                 className="flex items-center gap-3 rounded-lg border border-dashed bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
               >
-                <OrgLogoTile name={m.organizationName} logoUrl={logoUrls.get(m.organizationId) ?? null} className="size-10" />
+                <OrgLogoTile name={m.organizationName} logoUrl={logoUrls.get(m.organizationId)?.light ?? null} darkLogoUrl={logoUrls.get(m.organizationId)?.dark ?? null} className="size-10" />
                 <span className="min-w-0 flex-1 truncate font-medium">{m.organizationName}</span>
                 <span className="flex-none rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">{t("adminBadge")}</span>
               </Link>
