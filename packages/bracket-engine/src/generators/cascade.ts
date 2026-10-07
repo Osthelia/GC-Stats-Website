@@ -106,8 +106,9 @@ export function dropIn(runner: CascadeRunner, feeders: Feeder[], incomingLosers:
     if (left && right) {
       const match = makeMatch(runner, i);
       matches.push(match);
-      edges.push({ fromMatchId: left.matchId, fromResult: left.result, toMatchId: match.id, toSlot: "a" });
-      edges.push({ fromMatchId: right.matchId, fromResult: right.result, toMatchId: match.id, toSlot: "b" });
+      // Le perdant venu du tier du dessus en A, le gagnant du lower en B
+      edges.push({ fromMatchId: right.matchId, fromResult: right.result, toMatchId: match.id, toSlot: "a" });
+      edges.push({ fromMatchId: left.matchId, fromResult: left.result, toMatchId: match.id, toSlot: "b" });
       winners.push({ matchId: match.id, result: "winner" });
       losers.push({ matchId: match.id, result: "loser" });
     } else {
