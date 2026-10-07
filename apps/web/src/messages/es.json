@@ -3929,6 +3929,11 @@
         "backToTournament": "← Volver al torneo",
         "legacyImportLink": "Importar partidos antiguos →",
         "readOnlyNotice": "Esta fase ya ha empezado: el bracket ya no se puede editar aquí. Todavía puedes verlo.",
+        "unlockButton": "Desbloquear la edición",
+        "unlockTitle": "¿Desbloquear este bracket?",
+        "unlockConfirm": "Al guardar se eliminarán y recrearán todos los partidos de este bracket, incluidos los resultados y estadísticas ya registrados. No se puede deshacer.",
+        "unlockConfirmButton": "Desbloquear",
+        "unlockedWarning": "Edición desbloqueada: al guardar se borrarán los resultados y estadísticas de los partidos existentes.",
         "swissContainersNotice": "Los grupos suizos de esta fase ({names}) se gestionan desde la página del torneo, no en este editor: una ronda suiza se genera dinámicamente tras cada resultado, no hay un grafo fijo que dibujar.",
         "templateFormat": "Formato",
         "format": {

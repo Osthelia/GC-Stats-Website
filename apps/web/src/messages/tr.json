@@ -3925,6 +3925,11 @@
         "backToTournament": "← Turnuvaya dön",
         "legacyImportLink": "Eski maçları içe aktar →",
         "readOnlyNotice": "Bu aşama zaten başladı: braket artık burada düzenlenemez. Yine de görüntüleyebilirsiniz.",
+        "unlockButton": "Düzenlemenin kilidini aç",
+        "unlockTitle": "Bu braketin kilidi açılsın mı?",
+        "unlockConfirm": "Kaydetmek, bu braketteki tüm maçları, kayıtlı sonuçlar ve istatistikler dahil silip yeniden oluşturur. Bu işlem geri alınamaz.",
+        "unlockConfirmButton": "Kilidi aç",
+        "unlockedWarning": "Düzenleme kilidi açıldı: kaydetmek mevcut maçların sonuçlarını ve istatistiklerini siler.",
         "swissContainersNotice": "Bu aşamanın İsviçre grupları ({names}) bu editörden değil, turnuva sayfasından yönetilir: her sonuçtan sonra bir İsviçre turu dinamik olarak oluşturulur, çizilecek sabit bir grafik yoktur.",
         "templateFormat": "Format",
         "format": {

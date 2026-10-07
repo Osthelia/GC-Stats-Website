@@ -185,7 +185,10 @@ function BracketEditorCanvasInner({
 }) {
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
-  const readOnly = stageStatus !== "pending" || initialMatches.some((m) => m.status !== "pending");
+  const [unlocked, setUnlocked] = useState(false);
+  const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
+  const locked = stageStatus !== "pending" || initialMatches.some((m) => m.status !== "pending");
+  const readOnly = locked && !unlocked;
 
   const tbdLabel = t("tbdLabel");
   const initial = useMemo(
@@ -506,6 +509,7 @@ function BracketEditorCanvasInner({
         };
       }),
       edges: currentGraph.edges,
+      forceStarted: locked && unlocked,
     };
     let result: Awaited<ReturnType<typeof saveManualGraph>>;
     try {
@@ -526,7 +530,15 @@ function BracketEditorCanvasInner({
 
   return (
     <div className="flex flex-col gap-3">
-      {readOnly && <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">{t("readOnlyNotice")}</p>}
+      {readOnly && (
+        <div className="flex flex-wrap items-center gap-3 rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+          <p>{t("readOnlyNotice")}</p>
+          <Button variant="outline" size="sm" className="active:scale-95" onClick={() => setUnlockDialogOpen(true)}>
+            {t("unlockButton")}
+          </Button>
+        </div>
+      )}
+      {locked && unlocked && <p className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">{t("unlockedWarning")}</p>}
 
       {!readOnly && <GenerateTemplateForm stageId={stageId} seededEntrants={entrants.filter((e): e is { id: number; seed: number; displayName: string } => e.seed !== null)} onGenerated={() => router.refresh()} />}
 
@@ -591,6 +603,16 @@ function BracketEditorCanvasInner({
           {validation.valid && <span className="text-sm text-emerald-600">{t("validationOk")}</span>}
         </div>
       )}
+
+      <ConfirmDialog
+        open={unlockDialogOpen}
+        onOpenChange={setUnlockDialogOpen}
+        title={t("unlockTitle")}
+        description={t("unlockConfirm")}
+        confirmLabel={t("unlockConfirmButton")}
+        cancelLabel={t("cancel")}
+        onConfirm={() => setUnlocked(true)}
+      />
 
       <ConfirmDialog
         open={pendingDeleteNodeId !== null}

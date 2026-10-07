@@ -346,7 +346,7 @@ export type EditorSaveMatch = {
 
 export type EditorSaveEdge = { fromMatchId: string; fromResult: "winner" | "loser"; toMatchId: string; toSlot: "a" | "b" };
 
-export type SaveManualGraphInput = { stageId: number; containerIds: number[]; matches: EditorSaveMatch[]; edges: EditorSaveEdge[] };
+export type SaveManualGraphInput = { stageId: number; containerIds: number[]; matches: EditorSaveMatch[]; edges: EditorSaveEdge[]; forceStarted?: boolean };
 export type SaveManualGraphResult = { ok: true } | { ok: false; error: string; validationErrors?: string[] };
 
 /**
@@ -356,13 +356,14 @@ export type SaveManualGraphResult = { ok: true } | { ok: false; error: string; v
  * existing match in the edited containers and re-inserts the graph exactly
  * as drawn. Only allowed while the stage is pending and none of its matches
  * is live or completed: the full replace would wipe their results and stats.
+ * `forceStarted` bypasses both guards and accepts that data loss.
  */
 export async function saveManualGraph(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   await requireTournamentsActor();
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
   if (!stage) return { ok: false, error: "stageNotFound" };
-  if (stage.status !== "pending") return { ok: false, error: "stageNotPending" };
+  if (stage.status !== "pending" && !input.forceStarted) return { ok: false, error: "stageNotPending" };
 
   if (input.containerIds.length > 0) {
     const ownedContainers = await db
@@ -372,11 +373,13 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
     if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
 
     // stages.status stays "pending" until the stage completes, so played matches are the real "started" signal.
-    const [playedMatch] = await db
-      .select({ id: matches.id })
-      .from(matches)
-      .where(and(inArray(matches.containerId, input.containerIds), inArray(matches.status, ["live", "completed"])))
-      .limit(1);
+    const [playedMatch] = input.forceStarted
+      ? []
+      : await db
+          .select({ id: matches.id })
+          .from(matches)
+          .where(and(inArray(matches.containerId, input.containerIds), inArray(matches.status, ["live", "completed"])))
+          .limit(1);
     if (playedMatch) return { ok: false, error: "bracketStarted" };
   }
 

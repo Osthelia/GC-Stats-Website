@@ -3929,6 +3929,11 @@
         "backToTournament": "← Back to tournament",
         "legacyImportLink": "Import legacy matches →",
         "readOnlyNotice": "This stage has already started: the bracket can no longer be edited here. You can still view it.",
+        "unlockButton": "Unlock editing",
+        "unlockTitle": "Unlock this bracket?",
+        "unlockConfirm": "Saving will delete and recreate every match of this bracket, including results and stats already recorded. This cannot be undone.",
+        "unlockConfirmButton": "Unlock",
+        "unlockedWarning": "Editing unlocked: saving will erase the results and stats of the existing matches.",
         "swissContainersNotice": "This stage's Swiss groups ({names}) are managed from the tournament page, not in this editor: a Swiss round is generated dynamically after each result, there's no fixed graph to draw.",
         "templateFormat": "Format",
         "format": {

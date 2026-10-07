@@ -3925,6 +3925,11 @@
         "backToTournament": "← 토너먼트로 돌아가기",
         "legacyImportLink": "레거시 경기 가져오기 →",
         "readOnlyNotice": "이 스테이지는 이미 시작되어 여기서는 더 이상 브래킷을 편집할 수 없습니다. 조회만 가능합니다.",
+        "unlockButton": "편집 잠금 해제",
+        "unlockTitle": "이 브래킷의 잠금을 해제할까요?",
+        "unlockConfirm": "저장하면 이미 기록된 결과와 통계를 포함해 이 브래킷의 모든 경기가 삭제된 후 다시 생성됩니다. 되돌릴 수 없습니다.",
+        "unlockConfirmButton": "잠금 해제",
+        "unlockedWarning": "편집 잠금 해제됨: 저장하면 기존 경기의 결과와 통계가 삭제됩니다.",
         "swissContainersNotice": "이 스테이지의 스위스 그룹({names})은 이 편집기가 아닌 토너먼트 페이지에서 관리됩니다. 스위스 라운드는 각 결과 이후 동적으로 생성되므로 고정된 그래프가 없습니다.",
         "templateFormat": "포맷",
         "format": {

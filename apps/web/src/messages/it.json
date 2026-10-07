@@ -3929,6 +3929,11 @@
         "backToTournament": "← Torna al torneo",
         "legacyImportLink": "Importa i match della V1 →",
         "readOnlyNotice": "Questa fase è già iniziata: il bracket non può più essere modificato qui. Puoi comunque visualizzarlo.",
+        "unlockButton": "Sblocca la modifica",
+        "unlockTitle": "Sbloccare questo bracket?",
+        "unlockConfirm": "Il salvataggio eliminerà e ricreerà tutte le partite di questo bracket, inclusi risultati e statistiche già registrati. Non si può annullare.",
+        "unlockConfirmButton": "Sblocca",
+        "unlockedWarning": "Modifica sbloccata: il salvataggio cancellerà risultati e statistiche delle partite esistenti.",
         "swissContainersNotice": "I gironi svizzeri di questa fase ({names}) si gestiscono dalla pagina del torneo, non in questo editor: un turno svizzero viene generato dinamicamente dopo ogni risultato, non c'è uno schema fisso da disegnare.",
         "templateFormat": "Formato",
         "format": {

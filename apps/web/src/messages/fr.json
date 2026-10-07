@@ -3929,6 +3929,11 @@
         "backToTournament": "← Retour au tournoi",
         "legacyImportLink": "Importer des matchs historiques →",
         "readOnlyNotice": "Ce stage a déjà démarré : le bracket n'est plus modifiable ici. Vous pouvez toujours le consulter.",
+        "unlockButton": "Déverrouiller l'édition",
+        "unlockTitle": "Déverrouiller ce bracket ?",
+        "unlockConfirm": "La sauvegarde supprimera et recréera tous les matchs de ce bracket, y compris les résultats et stats déjà enregistrés. Cette action est irréversible.",
+        "unlockConfirmButton": "Déverrouiller",
+        "unlockedWarning": "Édition déverrouillée : la sauvegarde effacera les résultats et stats des matchs existants.",
         "swissContainersNotice": "Les groupes Swiss de ce stage ({names}) se gèrent depuis la page du tournoi, pas dans cet éditeur : un round Swiss est généré dynamiquement à chaque résultat, il n'y a pas de graphe fixe à dessiner.",
         "templateFormat": "Format",
         "format": {

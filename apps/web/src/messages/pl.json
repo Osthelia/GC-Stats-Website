@@ -3925,6 +3925,11 @@
         "backToTournament": "← Wróć do turnieju",
         "legacyImportLink": "Importuj mecze z V1 →",
         "readOnlyNotice": "Ten etap już się rozpoczął: drabinki nie można już tu edytować. Nadal możesz ją przeglądać.",
+        "unlockButton": "Odblokuj edycję",
+        "unlockTitle": "Odblokować tę drabinkę?",
+        "unlockConfirm": "Zapis usunie i odtworzy wszystkie mecze tej drabinki, w tym zapisane wyniki i statystyki. Tej operacji nie można cofnąć.",
+        "unlockConfirmButton": "Odblokuj",
+        "unlockedWarning": "Edycja odblokowana: zapis usunie wyniki i statystyki istniejących meczów.",
         "swissContainersNotice": "Grupy w systemie szwajcarskim tego etapu ({names}) są zarządzane ze strony turnieju, nie w tym edytorze: runda szwajcarska generuje się dynamicznie po każdym wyniku, nie ma stałego schematu do narysowania.",
         "templateFormat": "Format",
         "format": {

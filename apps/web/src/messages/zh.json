@@ -3925,6 +3925,11 @@
         "backToTournament": "← 返回赛事",
         "legacyImportLink": "导入历史比赛 →",
         "readOnlyNotice": "该阶段已经开始，无法在此编辑对阵表，但仍可查看。",
+        "unlockButton": "解锁编辑",
+        "unlockTitle": "解锁此对阵表？",
+        "unlockConfirm": "保存将删除并重建此对阵表的所有比赛，包括已记录的结果和统计数据，且无法撤销。",
+        "unlockConfirmButton": "解锁",
+        "unlockedWarning": "编辑已解锁：保存将清除现有比赛的结果和统计数据。",
         "swissContainersNotice": "该阶段的瑞士轮小组（{names}）在赛事页面管理，而非在此编辑器中：瑞士轮的每一轮都在结果出来后动态生成，没有固定的图结构可供绘制。",
         "templateFormat": "格式",
         "format": {
