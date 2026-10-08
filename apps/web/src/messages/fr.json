@@ -4457,6 +4457,51 @@
           "ghostTeam": "Choisis une équipe couverte, pas une équipe fantôme.",
           "duplicate": "Ce joueur est déjà sélectionné."
         }
+      },
+      "logo": {
+        "sectionLogo": "Logo",
+        "logoNoneYet": "Aucun logo pour l'instant.",
+        "logoHistoryEmpty": "Aucun historique de logo.",
+        "logoHistoryHidden": "Masqué",
+        "logoUploadButton": "Importer un logo",
+        "logoUploadDialogTitle": "Importer un logo",
+        "logoUploadDialogDescription": "Stocké en WebP (taille réelle + miniature 200×200). Laisser \"Jusqu'au\" vide pour en faire le logo actuel.",
+        "logoUploadFileLabel": "Image",
+        "logoUploadThemeLabel": "Thème",
+        "logoUploadThemeNone": "(Thème neutre)",
+        "logoUploadThemeLight": "Clair",
+        "logoUploadThemeDark": "Sombre",
+        "logoUploadFromLabel": "Depuis le",
+        "logoUploadUntilLabel": "Jusqu'au",
+        "logoUploadUntilHint": "Laisser vide pour le logo actuel.",
+        "logoUploadCancel": "Annuler",
+        "logoUploadSubmit": "Importer",
+        "logoUploadSubmitting": "Import en cours…",
+        "logoUploadSuccess": "Logo importé.",
+        "logoEditButton": "Modifier",
+        "logoEditDialogTitle": "Modifier le logo",
+        "logoEditDialogDescription": "Changer le thème/les dates, ou remplacer l'image (optionnel) : l'URL reste la même.",
+        "logoEditFileLabel": "Remplacer l'image (optionnel)",
+        "logoEditSubmit": "Enregistrer",
+        "logoEditSuccess": "Logo mis à jour.",
+        "logoDeleteButton": "Supprimer",
+        "logoDeleteConfirm": "Supprimer définitivement ce logo ? Cette action est irréversible.",
+        "logoDeleteSuccess": "Logo supprimé.",
+        "logoDeleteError": {
+          "notFound": "Ce logo n'existe plus."
+        },
+        "cancel": "Annuler",
+        "confirmTitle": "Confirmer la suppression",
+        "error": {
+          "required": "Ce champ est requis.",
+          "invalid": "Valeur invalide.",
+          "invalidDate": "Date invalide.",
+          "beforeStart": "Doit être après la date de début.",
+          "tooLarge": "Image trop volumineuse (10 Mo max).",
+          "invalidImage": "Ce fichier n'est pas une image valide.",
+          "empty": "Merci de choisir une image.",
+          "notFound": "Tournoi introuvable."
+        }
       }
     },
     "reports": {

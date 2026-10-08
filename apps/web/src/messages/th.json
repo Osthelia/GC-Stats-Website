@@ -4453,6 +4453,51 @@
           "ghostTeam": "เลือกทีมที่ครอบคลุม ไม่ใช่ทีมผี",
           "duplicate": "เลือกผู้เล่นคนนี้แล้ว"
         }
+      },
+      "logo": {
+        "sectionLogo": "โลโก้",
+        "logoNoneYet": "ยังไม่มีโลโก้",
+        "logoHistoryEmpty": "ไม่มีประวัติโลโก้",
+        "logoHistoryHidden": "ซ่อนอยู่",
+        "logoUploadButton": "อัปโหลดโลโก้",
+        "logoUploadDialogTitle": "อัปโหลดโลโก้",
+        "logoUploadDialogDescription": "จัดเก็บเป็น WebP (ขนาดเต็ม + ภาพย่อ 200×200) เว้นช่อง \"จนถึง\" ว่างไว้เพื่อให้เป็นโลโก้ปัจจุบัน",
+        "logoUploadFileLabel": "รูปภาพ",
+        "logoUploadThemeLabel": "ธีม",
+        "logoUploadThemeNone": "(ธีมกลาง)",
+        "logoUploadThemeLight": "สว่าง",
+        "logoUploadThemeDark": "มืด",
+        "logoUploadFromLabel": "ตั้งแต่",
+        "logoUploadUntilLabel": "จนถึง",
+        "logoUploadUntilHint": "เว้นว่างไว้สำหรับโลโก้ปัจจุบัน",
+        "logoUploadCancel": "ยกเลิก",
+        "logoUploadSubmit": "อัปโหลด",
+        "logoUploadSubmitting": "กำลังอัปโหลด…",
+        "logoUploadSuccess": "อัปโหลดโลโก้แล้ว",
+        "logoEditButton": "แก้ไข",
+        "logoEditDialogTitle": "แก้ไขโลโก้",
+        "logoEditDialogDescription": "เปลี่ยนธีม/วันที่ หรือแทนที่รูปภาพ: URL ยังคงเดิม",
+        "logoEditFileLabel": "แทนที่รูปภาพ",
+        "logoEditSubmit": "บันทึก",
+        "logoEditSuccess": "อัปเดตโลโก้แล้ว",
+        "logoDeleteButton": "ลบ",
+        "logoDeleteConfirm": "ลบโลโก้นี้อย่างถาวรใช่ไหม? ไม่สามารถย้อนกลับได้",
+        "logoDeleteSuccess": "ลบโลโก้แล้ว",
+        "logoDeleteError": {
+          "notFound": "โลโก้นี้ไม่มีอยู่แล้ว"
+        },
+        "cancel": "ยกเลิก",
+        "confirmTitle": "ยืนยันการลบ",
+        "error": {
+          "required": "จำเป็นต้องกรอกช่องนี้",
+          "invalid": "ค่าไม่ถูกต้อง",
+          "invalidDate": "วันที่ไม่ถูกต้อง",
+          "beforeStart": "ต้องอยู่หลังวันเริ่มต้น",
+          "tooLarge": "รูปภาพใหญ่เกินไป (สูงสุด 10 MB)",
+          "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง",
+          "empty": "กรุณาเลือกรูปภาพ",
+          "notFound": "ไม่พบทัวร์นาเมนต์"
+        }
       }
     },
     "reports": {

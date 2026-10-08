@@ -4457,6 +4457,51 @@
           "ghostTeam": "Pick a covered team, not a ghost team.",
           "duplicate": "This player is already selected."
         }
+      },
+      "logo": {
+        "sectionLogo": "Logo",
+        "logoNoneYet": "No logo yet.",
+        "logoHistoryEmpty": "No logo history.",
+        "logoHistoryHidden": "Hidden",
+        "logoUploadButton": "Upload a logo",
+        "logoUploadDialogTitle": "Upload a logo",
+        "logoUploadDialogDescription": "Stored as WebP (full size + 200×200 thumbnail). Leave \"Until\" empty to make it the current logo.",
+        "logoUploadFileLabel": "Image",
+        "logoUploadThemeLabel": "Theme",
+        "logoUploadThemeNone": "(Neutral theme)",
+        "logoUploadThemeLight": "Light",
+        "logoUploadThemeDark": "Dark",
+        "logoUploadFromLabel": "From",
+        "logoUploadUntilLabel": "Until",
+        "logoUploadUntilHint": "Leave empty for the current logo.",
+        "logoUploadCancel": "Cancel",
+        "logoUploadSubmit": "Upload",
+        "logoUploadSubmitting": "Uploading…",
+        "logoUploadSuccess": "Logo uploaded.",
+        "logoEditButton": "Edit",
+        "logoEditDialogTitle": "Edit logo",
+        "logoEditDialogDescription": "Change theme/dates, or replace the image (optional): the URL stays the same.",
+        "logoEditFileLabel": "Replace image (optional)",
+        "logoEditSubmit": "Save",
+        "logoEditSuccess": "Logo updated.",
+        "logoDeleteButton": "Delete",
+        "logoDeleteConfirm": "Permanently delete this logo? This can't be undone.",
+        "logoDeleteSuccess": "Logo deleted.",
+        "logoDeleteError": {
+          "notFound": "This logo no longer exists."
+        },
+        "cancel": "Cancel",
+        "confirmTitle": "Confirm deletion",
+        "error": {
+          "required": "This field is required.",
+          "invalid": "Invalid value.",
+          "invalidDate": "Invalid date.",
+          "beforeStart": "Must be after the start date.",
+          "tooLarge": "Image too large (10 MB max).",
+          "invalidImage": "This file is not a valid image.",
+          "empty": "Please choose an image.",
+          "notFound": "Tournament not found."
+        }
       }
     },
     "reports": {

@@ -63,7 +63,7 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-/** Shared by team and player edit pages — same `logos` table + upload flow for both entity types, only the i18n namespace differs. */
+/** Shared by team, player, organization and tournament edit pages — same `logos` table + upload flow for both entity types, only the i18n namespace differs. */
 export function EntityLogoPanel({
   namespace,
   entityType,
@@ -72,7 +72,7 @@ export function EntityLogoPanel({
   entries: initialEntries,
   canEdit,
 }: {
-  namespace: "admin.teams.edit" | "admin.players.edit" | "admin.organizations.edit";
+  namespace: "admin.teams.edit" | "admin.players.edit" | "admin.organizations.edit" | "admin.tournaments.logo";
   entityType: LogoEntityType;
   entityId: number;
   displayName: string;

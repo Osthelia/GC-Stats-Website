@@ -4453,6 +4453,51 @@
           "ghostTeam": "اختر فريقًا مغطى، وليس فريقًا شبحيًا.",
           "duplicate": "هذا اللاعب محدد بالفعل."
         }
+      },
+      "logo": {
+        "sectionLogo": "الشعار",
+        "logoNoneYet": "لا يوجد شعار بعد.",
+        "logoHistoryEmpty": "لا يوجد سجل للشعارات.",
+        "logoHistoryHidden": "مخفي",
+        "logoUploadButton": "رفع شعار",
+        "logoUploadDialogTitle": "رفع شعار",
+        "logoUploadDialogDescription": "يُخزَّن بصيغة WebP (الحجم الكامل + صورة مصغّرة 200×200). اترك حقل \"حتى\" فارغًا ليصبح الشعار الحالي.",
+        "logoUploadFileLabel": "الصورة",
+        "logoUploadThemeLabel": "المظهر",
+        "logoUploadThemeNone": "(مظهر محايد)",
+        "logoUploadThemeLight": "فاتح",
+        "logoUploadThemeDark": "داكن",
+        "logoUploadFromLabel": "من",
+        "logoUploadUntilLabel": "حتى",
+        "logoUploadUntilHint": "اتركه فارغًا للشعار الحالي.",
+        "logoUploadCancel": "إلغاء",
+        "logoUploadSubmit": "رفع",
+        "logoUploadSubmitting": "جارٍ الرفع…",
+        "logoUploadSuccess": "تم رفع الشعار.",
+        "logoEditButton": "تعديل",
+        "logoEditDialogTitle": "تعديل الشعار",
+        "logoEditDialogDescription": "غيّر المظهر أو التواريخ، أو استبدل الصورة: يبقى الرابط نفسه.",
+        "logoEditFileLabel": "استبدال الصورة",
+        "logoEditSubmit": "حفظ",
+        "logoEditSuccess": "تم تحديث الشعار.",
+        "logoDeleteButton": "حذف",
+        "logoDeleteConfirm": "هل تريد حذف هذا الشعار نهائيًا؟ لا يمكن التراجع عن ذلك.",
+        "logoDeleteSuccess": "تم حذف الشعار.",
+        "logoDeleteError": {
+          "notFound": "هذا الشعار لم يعد موجودًا."
+        },
+        "cancel": "إلغاء",
+        "confirmTitle": "تأكيد الحذف",
+        "error": {
+          "required": "هذا الحقل مطلوب.",
+          "invalid": "قيمة غير صالحة.",
+          "invalidDate": "تاريخ غير صالح.",
+          "beforeStart": "يجب أن يكون بعد تاريخ البدء.",
+          "tooLarge": "الصورة كبيرة جدًا (10 ميغابايت كحد أقصى).",
+          "invalidImage": "هذا الملف ليس صورة صالحة.",
+          "empty": "يرجى اختيار صورة.",
+          "notFound": "البطولة غير موجودة."
+        }
       }
     },
     "reports": {

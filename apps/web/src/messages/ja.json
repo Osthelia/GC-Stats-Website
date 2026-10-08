@@ -4453,6 +4453,51 @@
           "ghostTeam": "ゴーストチームではなく、対象のチームを選んでください。",
           "duplicate": "この選手はすでに選択されています。"
         }
+      },
+      "logo": {
+        "sectionLogo": "ロゴ",
+        "logoNoneYet": "まだロゴがありません。",
+        "logoHistoryEmpty": "ロゴ履歴はありません。",
+        "logoHistoryHidden": "非表示",
+        "logoUploadButton": "ロゴをアップロード",
+        "logoUploadDialogTitle": "ロゴをアップロード",
+        "logoUploadDialogDescription": "WebP形式（フルサイズ + 200×200サムネイル）で保存されます。「終了日」を空にすると現在のロゴになります。",
+        "logoUploadFileLabel": "画像",
+        "logoUploadThemeLabel": "テーマ",
+        "logoUploadThemeNone": "（テーマなし）",
+        "logoUploadThemeLight": "ライト",
+        "logoUploadThemeDark": "ダーク",
+        "logoUploadFromLabel": "開始日",
+        "logoUploadUntilLabel": "終了日",
+        "logoUploadUntilHint": "現在のロゴにする場合は空欄のままにしてください。",
+        "logoUploadCancel": "キャンセル",
+        "logoUploadSubmit": "アップロード",
+        "logoUploadSubmitting": "アップロード中…",
+        "logoUploadSuccess": "ロゴをアップロードしました。",
+        "logoEditButton": "編集",
+        "logoEditDialogTitle": "ロゴを編集",
+        "logoEditDialogDescription": "テーマ/日付を変更するか、画像を置き換えます（任意）。URLは変わりません。",
+        "logoEditFileLabel": "画像を置き換える（任意）",
+        "logoEditSubmit": "保存",
+        "logoEditSuccess": "ロゴを更新しました。",
+        "logoDeleteButton": "削除",
+        "logoDeleteConfirm": "このロゴを完全に削除しますか。この操作は元に戻せません。",
+        "logoDeleteSuccess": "ロゴを削除しました。",
+        "logoDeleteError": {
+          "notFound": "このロゴはすでに存在しません。"
+        },
+        "cancel": "キャンセル",
+        "confirmTitle": "削除の確認",
+        "error": {
+          "required": "この項目は必須です。",
+          "invalid": "無効な値です。",
+          "invalidDate": "無効な日付です。",
+          "beforeStart": "開始日より後にしてください。",
+          "tooLarge": "画像が大きすぎます（最大10MB）。",
+          "invalidImage": "このファイルは有効な画像ではありません。",
+          "empty": "画像を選択してください。",
+          "notFound": "トーナメントが見つかりません。"
+        }
       }
     },
     "reports": {

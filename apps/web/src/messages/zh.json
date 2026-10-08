@@ -4453,6 +4453,51 @@
           "ghostTeam": "请选择已覆盖的队伍，而不是幽灵队伍。",
           "duplicate": "该选手已被选择。"
         }
+      },
+      "logo": {
+        "sectionLogo": "商标",
+        "logoNoneYet": "暂无商标。",
+        "logoHistoryEmpty": "暂无商标历史。",
+        "logoHistoryHidden": "已隐藏",
+        "logoUploadButton": "上传商标",
+        "logoUploadDialogTitle": "上传商标",
+        "logoUploadDialogDescription": "以 WebP 格式存储（原图 + 200×200 缩略图）。将“截止”留空即可设为当前商标。",
+        "logoUploadFileLabel": "图片",
+        "logoUploadThemeLabel": "主题",
+        "logoUploadThemeNone": "（中性主题）",
+        "logoUploadThemeLight": "浅色",
+        "logoUploadThemeDark": "深色",
+        "logoUploadFromLabel": "起始",
+        "logoUploadUntilLabel": "截止",
+        "logoUploadUntilHint": "留空表示这是当前商标。",
+        "logoUploadCancel": "取消",
+        "logoUploadSubmit": "上传",
+        "logoUploadSubmitting": "上传中…",
+        "logoUploadSuccess": "商标已上传。",
+        "logoEditButton": "编辑",
+        "logoEditDialogTitle": "编辑商标",
+        "logoEditDialogDescription": "修改主题/日期，或替换图片（可选），URL 保持不变。",
+        "logoEditFileLabel": "替换图片（可选）",
+        "logoEditSubmit": "保存",
+        "logoEditSuccess": "商标已更新。",
+        "logoDeleteButton": "删除",
+        "logoDeleteConfirm": "确定要永久删除此商标吗？此操作无法撤销。",
+        "logoDeleteSuccess": "商标已删除。",
+        "logoDeleteError": {
+          "notFound": "该商标已不存在。"
+        },
+        "cancel": "取消",
+        "confirmTitle": "确认删除",
+        "error": {
+          "required": "此字段为必填项。",
+          "invalid": "值无效。",
+          "invalidDate": "日期无效。",
+          "beforeStart": "必须晚于开始日期。",
+          "tooLarge": "图片过大（最多 10 MB）。",
+          "invalidImage": "该文件不是有效的图片。",
+          "empty": "请选择一张图片。",
+          "notFound": "未找到该赛事。"
+        }
       }
     },
     "reports": {

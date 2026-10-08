@@ -4453,6 +4453,51 @@
           "ghostTeam": "Hayalet değil, kapsanan bir takım seç.",
           "duplicate": "Bu oyuncu zaten seçili."
         }
+      },
+      "logo": {
+        "sectionLogo": "Logo",
+        "logoNoneYet": "Henüz logo yok.",
+        "logoHistoryEmpty": "Logo geçmişi yok.",
+        "logoHistoryHidden": "Gizli",
+        "logoUploadButton": "Logo yükle",
+        "logoUploadDialogTitle": "Logo yükle",
+        "logoUploadDialogDescription": "WebP olarak saklanır (tam boy + 200×200 küçük resim). Mevcut logo yapmak için \"Bitiş\" alanını boş bırakın.",
+        "logoUploadFileLabel": "Görsel",
+        "logoUploadThemeLabel": "Tema",
+        "logoUploadThemeNone": "(Nötr tema)",
+        "logoUploadThemeLight": "Açık",
+        "logoUploadThemeDark": "Koyu",
+        "logoUploadFromLabel": "Başlangıç",
+        "logoUploadUntilLabel": "Bitiş",
+        "logoUploadUntilHint": "Mevcut logo için boş bırakın.",
+        "logoUploadCancel": "İptal",
+        "logoUploadSubmit": "Yükle",
+        "logoUploadSubmitting": "Yükleniyor…",
+        "logoUploadSuccess": "Logo yüklendi.",
+        "logoEditButton": "Düzenle",
+        "logoEditDialogTitle": "Logoyu düzenle",
+        "logoEditDialogDescription": "Temayı/tarihleri değiştirin veya görseli değiştirin (isteğe bağlı): URL aynı kalır.",
+        "logoEditFileLabel": "Görseli değiştir (isteğe bağlı)",
+        "logoEditSubmit": "Kaydet",
+        "logoEditSuccess": "Logo güncellendi.",
+        "logoDeleteButton": "Sil",
+        "logoDeleteConfirm": "Bu logo kalıcı olarak silinsin mi? Bu işlem geri alınamaz.",
+        "logoDeleteSuccess": "Logo silindi.",
+        "logoDeleteError": {
+          "notFound": "Bu logo artık mevcut değil."
+        },
+        "cancel": "İptal",
+        "confirmTitle": "Silmeyi onayla",
+        "error": {
+          "required": "Bu alan zorunludur.",
+          "invalid": "Geçersiz değer.",
+          "invalidDate": "Geçersiz tarih.",
+          "beforeStart": "Başlangıç tarihinden sonra olmalıdır.",
+          "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
+          "invalidImage": "Bu dosya geçerli bir görsel değil.",
+          "empty": "Lütfen bir görsel seçin.",
+          "notFound": "Turnuva bulunamadı."
+        }
       }
     },
     "reports": {

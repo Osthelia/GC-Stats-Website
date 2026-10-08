@@ -4453,6 +4453,51 @@
           "ghostTeam": "Escolha uma equipe coberta, não uma equipe fantasma.",
           "duplicate": "Este jogador já está selecionado."
         }
+      },
+      "logo": {
+        "sectionLogo": "Logo",
+        "logoNoneYet": "Nenhum logo ainda.",
+        "logoHistoryEmpty": "Sem histórico de logos.",
+        "logoHistoryHidden": "Oculto",
+        "logoUploadButton": "Enviar um logo",
+        "logoUploadDialogTitle": "Enviar um logo",
+        "logoUploadDialogDescription": "Armazenado em WebP (tamanho original + miniatura 200×200). Deixe \"Até\" vazio para torná-lo o logo atual.",
+        "logoUploadFileLabel": "Imagem",
+        "logoUploadThemeLabel": "Tema",
+        "logoUploadThemeNone": "(Tema neutro)",
+        "logoUploadThemeLight": "Claro",
+        "logoUploadThemeDark": "Escuro",
+        "logoUploadFromLabel": "De",
+        "logoUploadUntilLabel": "Até",
+        "logoUploadUntilHint": "Deixe vazio para o logo atual.",
+        "logoUploadCancel": "Cancelar",
+        "logoUploadSubmit": "Enviar",
+        "logoUploadSubmitting": "Enviando…",
+        "logoUploadSuccess": "Logo enviado.",
+        "logoEditButton": "Editar",
+        "logoEditDialogTitle": "Editar logo",
+        "logoEditDialogDescription": "Altere o tema/as datas ou substitua a imagem (opcional): a URL continua a mesma.",
+        "logoEditFileLabel": "Substituir imagem (opcional)",
+        "logoEditSubmit": "Salvar",
+        "logoEditSuccess": "Logo atualizado.",
+        "logoDeleteButton": "Excluir",
+        "logoDeleteConfirm": "Excluir este logo permanentemente? Isso não pode ser desfeito.",
+        "logoDeleteSuccess": "Logo excluído.",
+        "logoDeleteError": {
+          "notFound": "Este logo não existe mais."
+        },
+        "cancel": "Cancelar",
+        "confirmTitle": "Confirmar exclusão",
+        "error": {
+          "required": "Este campo é obrigatório.",
+          "invalid": "Valor inválido.",
+          "invalidDate": "Data inválida.",
+          "beforeStart": "Deve ser posterior à data de início.",
+          "tooLarge": "Imagem grande demais (máximo de 10 MB).",
+          "invalidImage": "Este arquivo não é uma imagem válida.",
+          "empty": "Escolha uma imagem.",
+          "notFound": "Torneio não encontrado."
+        }
       }
     },
     "reports": {

@@ -4453,6 +4453,51 @@
           "ghostTeam": "Wybierz drużynę objętą zakresem, a nie drużynę widmo.",
           "duplicate": "Ten gracz jest już wybrany."
         }
+      },
+      "logo": {
+        "sectionLogo": "Logo",
+        "logoNoneYet": "Brak logo.",
+        "logoHistoryEmpty": "Brak historii logo.",
+        "logoHistoryHidden": "Ukryte",
+        "logoUploadButton": "Prześlij logo",
+        "logoUploadDialogTitle": "Prześlij logo",
+        "logoUploadDialogDescription": "Zapisywane jako WebP (pełny rozmiar + miniatura 200×200). Zostaw pole \"Do\" puste, aby ustawić je jako obecne logo.",
+        "logoUploadFileLabel": "Obraz",
+        "logoUploadThemeLabel": "Motyw",
+        "logoUploadThemeNone": "(Motyw neutralny)",
+        "logoUploadThemeLight": "Jasny",
+        "logoUploadThemeDark": "Ciemny",
+        "logoUploadFromLabel": "Od",
+        "logoUploadUntilLabel": "Do",
+        "logoUploadUntilHint": "Zostaw puste dla obecnego logo.",
+        "logoUploadCancel": "Anuluj",
+        "logoUploadSubmit": "Prześlij",
+        "logoUploadSubmitting": "Przesyłanie…",
+        "logoUploadSuccess": "Logo przesłane.",
+        "logoEditButton": "Edytuj",
+        "logoEditDialogTitle": "Edytuj logo",
+        "logoEditDialogDescription": "Zmień motyw/daty lub podmień obraz: URL pozostaje ten sam.",
+        "logoEditFileLabel": "Podmień obraz",
+        "logoEditSubmit": "Zapisz",
+        "logoEditSuccess": "Logo zaktualizowane.",
+        "logoDeleteButton": "Usuń",
+        "logoDeleteConfirm": "Trwale usunąć to logo? Tej operacji nie można cofnąć.",
+        "logoDeleteSuccess": "Logo usunięte.",
+        "logoDeleteError": {
+          "notFound": "To logo już nie istnieje."
+        },
+        "cancel": "Anuluj",
+        "confirmTitle": "Potwierdź usunięcie",
+        "error": {
+          "required": "To pole jest wymagane.",
+          "invalid": "Nieprawidłowa wartość.",
+          "invalidDate": "Nieprawidłowa data.",
+          "beforeStart": "Musi być późniejsza niż data początkowa.",
+          "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
+          "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+          "empty": "Wybierz obraz.",
+          "notFound": "Nie znaleziono turnieju."
+        }
       }
     },
     "reports": {

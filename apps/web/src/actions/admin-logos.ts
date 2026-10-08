@@ -15,7 +15,7 @@
 
 import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { logos, people, teams, organizations, PERMISSIONS } from "@gc-stats/db";
+import { logos, people, teams, organizations, tournaments, PERMISSIONS } from "@gc-stats/db";
 import { storeLogoPair, replaceLogoFiles, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
@@ -31,6 +31,7 @@ const THEMES = ["light", "dark"] as const;
 function permissionFor(entityType: LogoEntityType): string {
   if (entityType === "team") return PERMISSIONS.teamsEdit;
   if (entityType === "organization") return PERMISSIONS.organizationsEdit;
+  if (entityType === "tournament") return PERMISSIONS.tournamentsManage;
   return PERMISSIONS.playersEdit;
 }
 
@@ -44,6 +45,7 @@ async function logLogoChange(client: ActivityLogClient, entityType: LogoEntityTy
 async function entityExists(entityType: LogoEntityType, entityId: number): Promise<boolean> {
   if (entityType === "team") return (await db.select({ id: teams.id }).from(teams).where(eq(teams.id, entityId)).limit(1)).length > 0;
   if (entityType === "organization") return (await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, entityId)).limit(1)).length > 0;
+  if (entityType === "tournament") return (await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, entityId)).limit(1)).length > 0;
   return (await db.select({ id: people.id }).from(people).where(eq(people.id, entityId)).limit(1)).length > 0;
 }
 

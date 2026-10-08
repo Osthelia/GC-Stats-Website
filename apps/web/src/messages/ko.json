@@ -4453,6 +4453,51 @@
           "ghostTeam": "고스트 팀이 아닌 커버하는 팀을 선택하세요.",
           "duplicate": "이미 선택된 선수입니다."
         }
+      },
+      "logo": {
+        "sectionLogo": "로고",
+        "logoNoneYet": "아직 로고가 없습니다.",
+        "logoHistoryEmpty": "로고 이력이 없습니다.",
+        "logoHistoryHidden": "숨김",
+        "logoUploadButton": "로고 업로드",
+        "logoUploadDialogTitle": "로고 업로드",
+        "logoUploadDialogDescription": "WebP 형식(원본 크기 + 200×200 썸네일)으로 저장됩니다. \"종료일\"을 비워 두면 현재 로고로 설정됩니다.",
+        "logoUploadFileLabel": "이미지",
+        "logoUploadThemeLabel": "테마",
+        "logoUploadThemeNone": "(중립 테마)",
+        "logoUploadThemeLight": "라이트",
+        "logoUploadThemeDark": "다크",
+        "logoUploadFromLabel": "시작일",
+        "logoUploadUntilLabel": "종료일",
+        "logoUploadUntilHint": "현재 로고로 설정하려면 비워 두세요.",
+        "logoUploadCancel": "취소",
+        "logoUploadSubmit": "업로드",
+        "logoUploadSubmitting": "업로드 중…",
+        "logoUploadSuccess": "로고가 업로드되었습니다.",
+        "logoEditButton": "편집",
+        "logoEditDialogTitle": "로고 편집",
+        "logoEditDialogDescription": "테마 또는 날짜를 변경하거나 이미지를 교체할 수 있습니다(선택 사항). URL은 그대로 유지됩니다.",
+        "logoEditFileLabel": "이미지 교체(선택 사항)",
+        "logoEditSubmit": "저장",
+        "logoEditSuccess": "로고가 업데이트되었습니다.",
+        "logoDeleteButton": "삭제",
+        "logoDeleteConfirm": "이 로고를 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+        "logoDeleteSuccess": "로고가 삭제되었습니다.",
+        "logoDeleteError": {
+          "notFound": "이 로고는 더 이상 존재하지 않습니다."
+        },
+        "cancel": "취소",
+        "confirmTitle": "삭제 확인",
+        "error": {
+          "required": "이 항목은 필수입니다.",
+          "invalid": "값이 유효하지 않습니다.",
+          "invalidDate": "날짜가 유효하지 않습니다.",
+          "beforeStart": "시작일 이후여야 합니다.",
+          "tooLarge": "이미지가 너무 큽니다(최대 10MB).",
+          "invalidImage": "유효한 이미지 파일이 아닙니다.",
+          "empty": "이미지를 선택해 주세요.",
+          "notFound": "토너먼트를 찾을 수 없습니다."
+        }
       }
     },
     "reports": {
