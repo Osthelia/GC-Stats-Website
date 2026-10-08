@@ -6,43 +6,39 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-"use client";
-
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { AdminPagination } from "@/components/admin/admin-pagination";
 import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
 import { cn } from "@/lib/utils";
-import type { DashboardTournamentRow } from "@/lib/admin-dashboard";
+import type { DashboardPage, DashboardTournamentRow, DashboardTournamentTab } from "@/lib/admin-dashboard";
 
-type Tab = "live" | "upcoming" | "inactive";
+const TABS: DashboardTournamentTab[] = ["live", "upcoming", "inactive"];
 
-/** Same 3-tab widget as V1's admin dashboard (live/upcoming/inactive tournaments) — resources/views/admin/dashboard.blade.php. */
-export function DashboardTournamentsWidget({ live, upcoming, inactive }: { live: DashboardTournamentRow[]; upcoming: DashboardTournamentRow[]; inactive: DashboardTournamentRow[] }) {
-  const t = useTranslations("admin.dashboard.tournamentsWidget");
-  const [tab, setTab] = useState<Tab>("live");
-  const rows: Record<Tab, DashboardTournamentRow[]> = { live, upcoming, inactive };
+/** Same 3-tab widget as V1's admin dashboard (live/upcoming/inactive tournaments), tab and page kept in the URL. */
+export async function DashboardTournamentsWidget({ tab, data, query }: { tab: DashboardTournamentTab; data: DashboardPage<DashboardTournamentRow>; query: Record<string, string> }) {
+  const t = await getTranslations("admin.dashboard.tournamentsWidget");
+  const { tournamentPage: _page, tournamentTab: _tab, ...otherQuery } = query;
 
   return (
     <div className="flex flex-col rounded-xl border bg-card">
       <div className="flex items-center justify-between border-b px-4 py-3">
-        {(["live", "upcoming", "inactive"] as const).map((key) => (
-          <button
+        {TABS.map((key) => (
+          <Link
             key={key}
-            type="button"
-            onClick={() => setTab(key)}
-            className={cn("text-[11px] font-bold tracking-widest uppercase transition-colors", tab === key ? "text-amber-400" : "text-muted-foreground hover:text-foreground")}
+            href={{ pathname: "/admin", query: { ...otherQuery, tournamentTab: key } }}
+            className={cn("text-[11px] font-bold tracking-widest uppercase transition-colors active:scale-95", tab === key ? "text-amber-400" : "text-muted-foreground hover:text-foreground")}
           >
             {t(key)}
-          </button>
+          </Link>
         ))}
       </div>
 
-      {rows[tab].length === 0 ? (
+      {data.rows.length === 0 ? (
         <p className="px-4 py-6 text-center text-xs text-muted-foreground">{t("empty")}</p>
       ) : (
         <div>
-          {rows[tab].map((tournament) => {
+          {data.rows.map((tournament) => {
             const region = REGIONS[normalizeRegion(tournament.region)];
             return (
               <Link key={tournament.id} href={`/admin/tournaments/${tournament.id}`} className="block border-b px-4 py-3 transition-colors last:border-0 hover:bg-muted/50">
@@ -63,6 +59,17 @@ export function DashboardTournamentsWidget({ live, upcoming, inactive }: { live:
           })}
         </div>
       )}
+
+      <AdminPagination
+        pathname="/admin"
+        pageParam="tournamentPage"
+        page={data.page}
+        totalPages={data.totalPages}
+        total={data.total}
+        query={{ ...otherQuery, tournamentTab: tab }}
+        label={`${data.total}`}
+        className="border-t px-4 py-2"
+      />
     </div>
   );
 }

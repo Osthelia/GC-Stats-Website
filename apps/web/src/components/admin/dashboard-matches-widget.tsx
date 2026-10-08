@@ -9,11 +9,13 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminEntityLogo } from "@/components/admin/admin-entity-logo";
-import type { DashboardMatchRow } from "@/lib/admin-dashboard";
+import { AdminPagination } from "@/components/admin/admin-pagination";
+import type { DashboardMatchRow, DashboardPage } from "@/lib/admin-dashboard";
 import { FormattedDate } from "@/components/formatted-date";
 
-/** Same widget as V1's admin dashboard "matches_widget" — live matches then soonest upcoming. */
-export async function DashboardMatchesWidget({ matches }: { matches: DashboardMatchRow[] }) {
+/** Live matches, then upcoming ones (future or less than 7 days old), paginated through `matchPage`. */
+export async function DashboardMatchesWidget({ data, query }: { data: DashboardPage<DashboardMatchRow>; query: Record<string, string> }) {
+  const matches = data.rows;
   const t = await getTranslations("admin.dashboard.matchesWidget");
 
   return (
@@ -53,6 +55,8 @@ export async function DashboardMatchesWidget({ matches }: { matches: DashboardMa
           ))}
         </div>
       )}
+
+      <AdminPagination pathname="/admin" pageParam="matchPage" page={data.page} totalPages={data.totalPages} total={data.total} query={query} label={`${data.total}`} className="border-t px-4 py-2" />
     </div>
   );
 }

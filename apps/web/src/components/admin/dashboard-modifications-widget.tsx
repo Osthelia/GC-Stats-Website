@@ -9,7 +9,8 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminEntityLogo } from "@/components/admin/admin-entity-logo";
-import type { DashboardModificationRow } from "@/lib/admin-dashboard";
+import { AdminPagination } from "@/components/admin/admin-pagination";
+import type { DashboardModificationRow, DashboardPage } from "@/lib/admin-dashboard";
 import { FormattedDate } from "@/components/formatted-date";
 
 /**
@@ -18,7 +19,8 @@ import { FormattedDate } from "@/components/formatted-date";
  * See getDashboardModifications for why this is sparser than V1's version
  * (no automatic per-save activity logging in V2 yet).
  */
-export async function DashboardModificationsWidget({ type, rows }: { type: "team" | "player"; rows: DashboardModificationRow[] }) {
+export async function DashboardModificationsWidget({ type, data, query }: { type: "team" | "player"; data: DashboardPage<DashboardModificationRow>; query: Record<string, string> }) {
+  const rows = data.rows;
   const t = await getTranslations(`admin.dashboard.${type === "team" ? "teamModificationsWidget" : "playerModificationsWidget"}`);
   const tCauser = await getTranslations("admin.dashboard");
 
@@ -61,6 +63,17 @@ export async function DashboardModificationsWidget({ type, rows }: { type: "team
           })}
         </div>
       )}
+
+      <AdminPagination
+        pathname="/admin"
+        pageParam={type === "team" ? "teamPage" : "playerPage"}
+        page={data.page}
+        totalPages={data.totalPages}
+        total={data.total}
+        query={query}
+        label={`${data.total}`}
+        className="border-t px-4 py-2"
+      />
     </div>
   );
 }

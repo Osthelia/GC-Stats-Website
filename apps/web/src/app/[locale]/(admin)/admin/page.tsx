@@ -15,7 +15,14 @@ import { DashboardTournamentsWidget } from "@/components/admin/dashboard-tournam
 import { DashboardMatchesWidget } from "@/components/admin/dashboard-matches-widget";
 import { DashboardModificationsWidget } from "@/components/admin/dashboard-modifications-widget";
 import { getDashboardCounts } from "@/lib/admin-data";
-import { getDashboardTournaments, getDashboardRecentMatches, getDashboardModifications } from "@/lib/admin-dashboard";
+import { getDashboardTournaments, getDashboardRecentMatches, getDashboardModifications, type DashboardTournamentTab } from "@/lib/admin-dashboard";
+
+const PAGE_KEYS = ["tournamentTab", "tournamentPage", "teamPage", "playerPage", "matchPage"] as const;
+
+function parsePage(value: string | undefined) {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0 ? n : 1;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -23,15 +30,22 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title") };
 }
 
-export default async function AdminDashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AdminDashboardPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { locale } = await params;
+  const sp = await searchParams;
+  const query: Record<string, string> = {};
+  for (const key of PAGE_KEYS) {
+    const value = sp[key];
+    if (typeof value === "string") query[key] = value;
+  }
+  const tournamentTab: DashboardTournamentTab = query.tournamentTab === "upcoming" || query.tournamentTab === "inactive" ? query.tournamentTab : "live";
   const t = await getTranslations({ locale, namespace: "admin.dashboard" });
   const [counts, tournaments, recentMatches, teamMods, playerMods] = await Promise.all([
     getDashboardCounts(),
-    getDashboardTournaments(),
-    getDashboardRecentMatches(),
-    getDashboardModifications("team"),
-    getDashboardModifications("player"),
+    getDashboardTournaments(tournamentTab, parsePage(query.tournamentPage)),
+    getDashboardRecentMatches(parsePage(query.matchPage)),
+    getDashboardModifications("team", parsePage(query.teamPage)),
+    getDashboardModifications("player", parsePage(query.playerPage)),
   ]);
 
   const cards = [
@@ -61,10 +75,10 @@ export default async function AdminDashboardPage({ params }: { params: Promise<{
       </div>
 
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardTournamentsWidget live={tournaments.live} upcoming={tournaments.upcoming} inactive={tournaments.inactive} />
-        <DashboardModificationsWidget type="team" rows={teamMods} />
-        <DashboardModificationsWidget type="player" rows={playerMods} />
-        <DashboardMatchesWidget matches={recentMatches} />
+        <DashboardTournamentsWidget tab={tournamentTab} data={tournaments} query={query} />
+        <DashboardModificationsWidget type="team" data={teamMods} query={query} />
+        <DashboardModificationsWidget type="player" data={playerMods} query={query} />
+        <DashboardMatchesWidget data={recentMatches} query={query} />
       </div>
     </div>
   );

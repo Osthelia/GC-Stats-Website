@@ -20,6 +20,7 @@ export function AdminPagination({
   query,
   label,
   className,
+  pageParam = "page",
 }: {
   pathname: string;
   page: number;
@@ -28,10 +29,12 @@ export function AdminPagination({
   query: Record<string, string>;
   label: string;
   className?: string;
+  /** Query key holding the page number, for screens with several paginated blocks. */
+  pageParam?: string;
 }) {
   if (totalPages <= 1) return null;
 
-  const cleanQuery = Object.fromEntries(Object.entries(query).filter(([, v]) => v !== ""));
+  const cleanQuery = Object.fromEntries(Object.entries(query).filter(([k, v]) => v !== "" && k !== pageParam));
 
   return (
     <div className={cn("flex items-center justify-between gap-4", className)}>
@@ -42,7 +45,7 @@ export function AdminPagination({
             <ChevronLeft className="size-4" />
           </Button>
         ) : (
-          <Button variant="outline" size="sm" render={<Link href={{ pathname, query: { ...cleanQuery, page: String(page - 1) } }} />}>
+          <Button variant="outline" size="sm" render={<Link href={{ pathname, query: { ...cleanQuery, [pageParam]: String(page - 1) } }} />}>
             <ChevronLeft className="size-4" />
           </Button>
         )}
@@ -54,7 +57,7 @@ export function AdminPagination({
             <ChevronRight className="size-4" />
           </Button>
         ) : (
-          <Button variant="outline" size="sm" render={<Link href={{ pathname, query: { ...cleanQuery, page: String(page + 1) } }} />}>
+          <Button variant="outline" size="sm" render={<Link href={{ pathname, query: { ...cleanQuery, [pageParam]: String(page + 1) } }} />}>
             <ChevronRight className="size-4" />
           </Button>
         )}
