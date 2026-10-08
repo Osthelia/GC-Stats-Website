@@ -4723,13 +4723,16 @@
       "authorProfile": "Profilo autore",
       "apiKeySpace": "Spazio chiavi API",
       "myApiKeys": "Le mie chiavi API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "Tutti gli autori",
+      "authorAdminSpace": "Autori"
     },
     "switcher": {
       "selectOrganization": "Seleziona un'organizzazione",
       "authorSpace": "Spazio autore",
       "apiKeySpace": "Spazio chiavi API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Autori"
     },
     "picker": {
       "title": "Le tue organizzazioni",
@@ -4738,7 +4741,32 @@
       "apiKeySpace": "Spazio chiavi API",
       "allOrganizations": "Tutte le organizzazioni",
       "allOrganizationsSubtitle": "In quanto admin del sito, puoi aprire e gestire la dashboard di qualsiasi organizzazione.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Autori"
+    },
+    "authors": {
+      "title": "Autori",
+      "subtitle": "Tutti i profili autore del sito, con i loro articoli individuali (non legati a un'organizzazione).",
+      "searchPlaceholder": "Cerca un autore…",
+      "columnAuthor": "Autore",
+      "columnAccount": "Account",
+      "columnAccess": "Accesso autore",
+      "columnIndividual": "Articoli individuali",
+      "columnOrganization": "Articoli di organizzazione",
+      "accessGranted": "Autore",
+      "accessNone": "Nessun accesso autore",
+      "noAccount": "Nessun account collegato",
+      "viewButton": "Vedi",
+      "empty": "Ancora nessun profilo autore.",
+      "noResults": "Nessun risultato.",
+      "profileTitle": "Profilo autore",
+      "backToList": "Torna agli autori",
+      "bio": "Bio",
+      "noBio": "Nessuna bio.",
+      "articleTitle": "Articolo",
+      "backToAuthor": "Torna all'autore",
+      "readOnlyNotice": "Vista di sola lettura, stai consultando questo articolo come amministratore del sito.",
+      "publishedAt": "Pubblicato il"
     },
     "overview": {
       "title": "Panoramica",

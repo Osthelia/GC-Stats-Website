@@ -21,7 +21,18 @@ import type { DashboardNewsMessage } from "@/lib/dashboard-news-data";
 const SYSTEM_TYPES = ["submitted", "approved", "changes_requested", "published", "scheduled", "unpublished"] as const;
 
 /** Private conversation attached to one article, never shown on the public site, only to whoever can reach this editor. Also doubles as the review timeline: submit/approve/request-changes/publish each drop a system row here alongside free-text comments. */
-export function NewsConversationPanel({ organizationId, newsId, messages }: { organizationId: number | null; newsId: number; messages: DashboardNewsMessage[] }) {
+export function NewsConversationPanel({
+  organizationId,
+  newsId,
+  messages,
+  readOnly = false,
+}: {
+  organizationId: number | null;
+  newsId: number;
+  messages: DashboardNewsMessage[];
+  /** Admin browsing someone else's article: shows the timeline without the reply box. */
+  readOnly?: boolean;
+}) {
   const t = useTranslations("dashboard.news.conversation");
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -74,12 +85,14 @@ export function NewsConversationPanel({ organizationId, newsId, messages }: { or
         )}
       </div>
 
-      <div className="flex flex-col gap-2 border-t pt-3">
-        <Textarea rows={3} placeholder={t("placeholder")} value={body} onChange={(e) => setBody(e.target.value)} />
-        <Button size="sm" className="self-end" disabled={isPending || !body.trim()} onClick={handlePost}>
-          {t("postButton")}
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="flex flex-col gap-2 border-t pt-3">
+          <Textarea rows={3} placeholder={t("placeholder")} value={body} onChange={(e) => setBody(e.target.value)} />
+          <Button size="sm" className="self-end" disabled={isPending || !body.trim()} onClick={handlePost}>
+            {t("postButton")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

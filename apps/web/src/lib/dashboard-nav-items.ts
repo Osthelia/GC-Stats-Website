@@ -76,6 +76,17 @@ export const DASHBOARD_AUTHOR_NAV_ITEMS: { href: string; labelKey: string; icon:
   { href: "/dashboard/author/profile", labelKey: "authorProfile", icon: UserRound },
 ];
 
+/** The admin view over every author (/dashboard/authors), only for a site admin holding the global override (see dashboard-rbac.ts requireAuthorAdminAccess). */
+export const DASHBOARD_AUTHOR_ADMIN_HREF = "/dashboard/authors";
+export const DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS: { href: string; labelKey: string; icon: ComponentType<{ className?: string }>; exact?: boolean }[] = [
+  { href: DASHBOARD_AUTHOR_ADMIN_HREF, labelKey: "allAuthors", icon: UsersRound },
+];
+
+/** Segment-aware match, since "/dashboard/authors" would otherwise also satisfy a plain startsWith("/dashboard/author"). */
+export function isDashboardPathIn(pathname: string, base: string): boolean {
+  return pathname === base || pathname.startsWith(`${base}/`);
+}
+
 /** The individual API key space (/dashboard/api-keys) — not organization-scoped, gated by owning a personal api_key row instead (see dashboard-rbac.ts requireApiKeyAccess). Same idea as DASHBOARD_AUTHOR_NAV_ITEMS. */
 export const DASHBOARD_API_KEY_NAV_ITEMS: { href: string; labelKey: string; icon: ComponentType<{ className?: string }>; exact?: boolean }[] = [
   { href: "/dashboard/api-keys", labelKey: "myApiKeys", icon: KeySquare, exact: true },
@@ -84,11 +95,12 @@ export const DASHBOARD_API_KEY_NAV_ITEMS: { href: string; labelKey: string; icon
 /** Resolves any /dashboard/{id}/*, /dashboard/author/* or /dashboard/api-keys/* pathname to its nav item's labelKey, mirroring matchAdminNavItem — used by dashboard-header.tsx to name the current page. */
 export function matchDashboardNavItemLabel(pathname: string): string {
   if (pathname === DASHBOARD_HOME_HREF) return "overview";
-  if (pathname.startsWith("/dashboard/author")) {
+  if (isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF)) return "allAuthors";
+  if (isDashboardPathIn(pathname, "/dashboard/author")) {
     const authorItem = DASHBOARD_AUTHOR_NAV_ITEMS.find((i) => pathname === i.href);
     return authorItem?.labelKey ?? "myArticles";
   }
-  if (pathname.startsWith("/dashboard/api-keys")) return "myApiKeys";
+  if (isDashboardPathIn(pathname, "/dashboard/api-keys")) return "myApiKeys";
   const suffix = pathname.replace(/^\/dashboard\/\d+/, "");
   const item = DASHBOARD_ORG_NAV_ITEMS.find((i) => suffix === i.href(0).replace(/^\/dashboard\/0/, ""));
   return item?.labelKey ?? "overview";

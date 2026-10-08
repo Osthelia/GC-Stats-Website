@@ -62,7 +62,7 @@ export default async function DashboardLayout({
         <DashboardRefreshOnFocus />
         <DashboardSidebar organizations={organizations} />
         <SidebarInset>
-          <DashboardHeader organizations={switcherOrganizations} isAuthor={access.isAuthor} hasApiKey={access.hasApiKey} />
+          <DashboardHeader organizations={switcherOrganizations} isAuthor={access.isAuthor} hasApiKey={access.hasApiKey} isAuthorAdmin={access.isAuthorAdmin} />
           <div className="flex-1 p-6">{children}</div>
         </SidebarInset>
       </SidebarProvider>

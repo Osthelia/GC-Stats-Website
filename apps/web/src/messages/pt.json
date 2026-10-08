@@ -4719,13 +4719,16 @@
       "authorProfile": "Perfil de autor",
       "apiKeySpace": "Espaço de chaves de API",
       "myApiKeys": "Minhas chaves de API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "Todos os autores",
+      "authorAdminSpace": "Autores"
     },
     "switcher": {
       "selectOrganization": "Selecionar uma organização",
       "authorSpace": "Espaço do autor",
       "apiKeySpace": "Espaço de chaves de API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Autores"
     },
     "picker": {
       "title": "Suas organizações",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "Espaço de chaves de API",
       "allOrganizations": "Todas as organizações",
       "allOrganizationsSubtitle": "Como admin do site, você pode abrir e gerenciar o dashboard de qualquer organização.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Autores"
+    },
+    "authors": {
+      "title": "Autores",
+      "subtitle": "Todos os perfis de autor do site, com os seus artigos individuais (sem ligação a uma organização).",
+      "searchPlaceholder": "Pesquisar um autor…",
+      "columnAuthor": "Autor",
+      "columnAccount": "Conta",
+      "columnAccess": "Acesso de autor",
+      "columnIndividual": "Artigos individuais",
+      "columnOrganization": "Artigos de organização",
+      "accessGranted": "Autor",
+      "accessNone": "Sem acesso de autor",
+      "noAccount": "Nenhuma conta associada",
+      "viewButton": "Ver",
+      "empty": "Ainda não há perfis de autor.",
+      "noResults": "Sem resultados.",
+      "profileTitle": "Perfil de autor",
+      "backToList": "Voltar aos autores",
+      "bio": "Bio",
+      "noBio": "Sem bio.",
+      "articleTitle": "Artigo",
+      "backToAuthor": "Voltar ao autor",
+      "readOnlyNotice": "Vista só de leitura, está a consultar este artigo como administrador do site.",
+      "publishedAt": "Publicado em"
     },
     "overview": {
       "title": "Visão geral",

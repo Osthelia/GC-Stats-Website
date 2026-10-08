@@ -4719,13 +4719,16 @@
       "authorProfile": "ملف الكاتب",
       "apiKeySpace": "مساحة مفاتيح API",
       "myApiKeys": "مفاتيح API الخاصة بي",
-      "adminAccess": "الإدارة"
+      "adminAccess": "الإدارة",
+      "allAuthors": "كل الكتّاب",
+      "authorAdminSpace": "الكتّاب"
     },
     "switcher": {
       "selectOrganization": "اختر منظمة",
       "authorSpace": "مساحة الكاتب",
       "apiKeySpace": "مساحة مفاتيح API",
-      "adminAccess": "الإدارة"
+      "adminAccess": "الإدارة",
+      "authorAdminSpace": "الكتّاب"
     },
     "picker": {
       "title": "منظماتك",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "مساحة مفاتيح API",
       "allOrganizations": "كل المنظمات",
       "allOrganizationsSubtitle": "بصفتك مسؤولًا عن الموقع، يمكنك فتح لوحة تحكم أي منظمة وإدارتها.",
-      "adminBadge": "مسؤول"
+      "adminBadge": "مسؤول",
+      "authorAdminSpace": "الكتّاب"
+    },
+    "authors": {
+      "title": "الكتّاب",
+      "subtitle": "جميع ملفات الكتّاب في الموقع مع مقالاتهم الفردية (غير المرتبطة بمنظمة).",
+      "searchPlaceholder": "ابحث عن كاتب…",
+      "columnAuthor": "الكاتب",
+      "columnAccount": "الحساب",
+      "columnAccess": "صلاحية الكتابة",
+      "columnIndividual": "المقالات الفردية",
+      "columnOrganization": "مقالات المنظمة",
+      "accessGranted": "كاتب",
+      "accessNone": "بدون صلاحية كتابة",
+      "noAccount": "لا يوجد حساب مرتبط",
+      "viewButton": "عرض",
+      "empty": "لا توجد ملفات كتّاب بعد.",
+      "noResults": "لا توجد نتائج.",
+      "profileTitle": "ملف الكاتب",
+      "backToList": "العودة إلى الكتّاب",
+      "bio": "نبذة",
+      "noBio": "لا توجد نبذة.",
+      "articleTitle": "مقال",
+      "backToAuthor": "العودة إلى الكاتب",
+      "readOnlyNotice": "عرض للقراءة فقط، أنت تطلع على هذا المقال بصفتك مشرف الموقع.",
+      "publishedAt": "تاريخ النشر"
     },
     "overview": {
       "title": "نظرة عامة",

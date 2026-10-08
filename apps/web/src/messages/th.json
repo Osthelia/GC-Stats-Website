@@ -4719,13 +4719,16 @@
       "authorProfile": "โปรไฟล์ผู้เขียน",
       "apiKeySpace": "พื้นที่ API key",
       "myApiKeys": "API key ของฉัน",
-      "adminAccess": "ผู้ดูแล"
+      "adminAccess": "ผู้ดูแล",
+      "allAuthors": "ผู้เขียนทั้งหมด",
+      "authorAdminSpace": "ผู้เขียน"
     },
     "switcher": {
       "selectOrganization": "เลือกองค์กร",
       "authorSpace": "พื้นที่ผู้เขียน",
       "apiKeySpace": "พื้นที่ API key",
-      "adminAccess": "ผู้ดูแล"
+      "adminAccess": "ผู้ดูแล",
+      "authorAdminSpace": "ผู้เขียน"
     },
     "picker": {
       "title": "องค์กรของคุณ",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "พื้นที่ API key",
       "allOrganizations": "ทุกองค์กร",
       "allOrganizationsSubtitle": "ในฐานะผู้ดูแลเว็บไซต์ คุณสามารถเปิดและจัดการแดชบอร์ดขององค์กรใดก็ได้",
-      "adminBadge": "ผู้ดูแล"
+      "adminBadge": "ผู้ดูแล",
+      "authorAdminSpace": "ผู้เขียน"
+    },
+    "authors": {
+      "title": "ผู้เขียน",
+      "subtitle": "โปรไฟล์ผู้เขียนทั้งหมดของเว็บไซต์ พร้อมบทความส่วนตัวที่ไม่ผูกกับองค์กร",
+      "searchPlaceholder": "ค้นหาผู้เขียน…",
+      "columnAuthor": "ผู้เขียน",
+      "columnAccount": "บัญชี",
+      "columnAccess": "สิทธิ์ผู้เขียน",
+      "columnIndividual": "บทความส่วนตัว",
+      "columnOrganization": "บทความขององค์กร",
+      "accessGranted": "ผู้เขียน",
+      "accessNone": "ไม่มีสิทธิ์ผู้เขียน",
+      "noAccount": "ไม่มีบัญชีที่เชื่อมไว้",
+      "viewButton": "ดู",
+      "empty": "ยังไม่มีโปรไฟล์ผู้เขียน",
+      "noResults": "ไม่พบผลลัพธ์",
+      "profileTitle": "โปรไฟล์ผู้เขียน",
+      "backToList": "กลับไปที่ผู้เขียน",
+      "bio": "ประวัติ",
+      "noBio": "ไม่มีประวัติ",
+      "articleTitle": "บทความ",
+      "backToAuthor": "กลับไปที่ผู้เขียน",
+      "readOnlyNotice": "มุมมองอ่านอย่างเดียว คุณกำลังดูบทความนี้ในฐานะผู้ดูแลเว็บไซต์",
+      "publishedAt": "เผยแพร่เมื่อ"
     },
     "overview": {
       "title": "ภาพรวม",

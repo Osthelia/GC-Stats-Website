@@ -4723,13 +4723,16 @@
       "authorProfile": "Perfil de autor",
       "apiKeySpace": "Espacio de claves de API",
       "myApiKeys": "Mis claves de API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "Todos los autores",
+      "authorAdminSpace": "Autores"
     },
     "switcher": {
       "selectOrganization": "Selecciona una organización",
       "authorSpace": "Espacio de autor",
       "apiKeySpace": "Espacio de claves de API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Autores"
     },
     "picker": {
       "title": "Tus organizaciones",
@@ -4738,7 +4741,32 @@
       "apiKeySpace": "Espacio de claves de API",
       "allOrganizations": "Todas las organizaciones",
       "allOrganizationsSubtitle": "Como admin del sitio, puedes abrir y gestionar el panel de control de cualquier organización.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Autores"
+    },
+    "authors": {
+      "title": "Autores",
+      "subtitle": "Todos los perfiles de autor del sitio, con sus artículos individuales (sin vínculo con una organización).",
+      "searchPlaceholder": "Buscar un autor…",
+      "columnAuthor": "Autor",
+      "columnAccount": "Cuenta",
+      "columnAccess": "Acceso de autor",
+      "columnIndividual": "Artículos individuales",
+      "columnOrganization": "Artículos de organización",
+      "accessGranted": "Autor",
+      "accessNone": "Sin acceso de autor",
+      "noAccount": "Sin cuenta vinculada",
+      "viewButton": "Ver",
+      "empty": "Aún no hay perfiles de autor.",
+      "noResults": "Sin resultados.",
+      "profileTitle": "Perfil de autor",
+      "backToList": "Volver a los autores",
+      "bio": "Biografía",
+      "noBio": "Sin biografía.",
+      "articleTitle": "Artículo",
+      "backToAuthor": "Volver al autor",
+      "readOnlyNotice": "Vista de solo lectura, consultas este artículo como administrador del sitio.",
+      "publishedAt": "Publicado el"
     },
     "overview": {
       "title": "Resumen",

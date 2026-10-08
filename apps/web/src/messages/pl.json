@@ -4719,13 +4719,16 @@
       "authorProfile": "Profil autora",
       "apiKeySpace": "Przestrzeń kluczy API",
       "myApiKeys": "Moje klucze API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "Wszyscy autorzy",
+      "authorAdminSpace": "Autorzy"
     },
     "switcher": {
       "selectOrganization": "Wybierz organizację",
       "authorSpace": "Przestrzeń autora",
       "apiKeySpace": "Przestrzeń kluczy API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Autorzy"
     },
     "picker": {
       "title": "Twoje organizacje",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "Przestrzeń kluczy API",
       "allOrganizations": "Wszystkie organizacje",
       "allOrganizationsSubtitle": "Jako administrator strony możesz otworzyć dashboard dowolnej organizacji i nim zarządzać.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Autorzy"
+    },
+    "authors": {
+      "title": "Autorzy",
+      "subtitle": "Wszystkie profile autorów w serwisie wraz z ich artykułami indywidualnymi (niepowiązanymi z organizacją).",
+      "searchPlaceholder": "Szukaj autora…",
+      "columnAuthor": "Autor",
+      "columnAccount": "Konto",
+      "columnAccess": "Dostęp autora",
+      "columnIndividual": "Artykuły indywidualne",
+      "columnOrganization": "Artykuły organizacji",
+      "accessGranted": "Autor",
+      "accessNone": "Brak dostępu autora",
+      "noAccount": "Brak powiązanego konta",
+      "viewButton": "Zobacz",
+      "empty": "Brak profili autorów.",
+      "noResults": "Brak wyników.",
+      "profileTitle": "Profil autora",
+      "backToList": "Wróć do autorów",
+      "bio": "Bio",
+      "noBio": "Brak bio.",
+      "articleTitle": "Artykuł",
+      "backToAuthor": "Wróć do autora",
+      "readOnlyNotice": "Widok tylko do odczytu, przeglądasz ten artykuł jako administrator serwisu.",
+      "publishedAt": "Opublikowano"
     },
     "overview": {
       "title": "Przegląd",

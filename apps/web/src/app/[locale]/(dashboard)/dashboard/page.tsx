@@ -7,7 +7,7 @@
  */
 
 import type { Metadata } from "next";
-import { Newspaper, KeySquare } from "lucide-react";
+import { Newspaper, KeySquare, UsersRound } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import { requireDashboardAccess } from "@/lib/dashboard-rbac";
@@ -61,6 +61,18 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {access.isAuthorAdmin && (
+            <Link
+              href="/dashboard/authors"
+              className="flex items-center gap-3 rounded-lg border border-dashed bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+            >
+              <span className="flex size-10 flex-none items-center justify-center rounded-md bg-muted text-muted-foreground">
+                <UsersRound className="size-5" />
+              </span>
+              <span className="min-w-0 flex-1 truncate font-medium">{t("authorAdminSpace")}</span>
+              <span className="flex-none rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">{t("adminBadge")}</span>
+            </Link>
+          )}
           {access.isAuthor && (
             <Link
               href="/dashboard/author"

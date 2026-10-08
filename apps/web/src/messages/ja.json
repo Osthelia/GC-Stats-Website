@@ -4719,13 +4719,16 @@
       "authorProfile": "執筆者プロフィール",
       "apiKeySpace": "APIキースペース",
       "myApiKeys": "自分のAPIキー",
-      "adminAccess": "管理者"
+      "adminAccess": "管理者",
+      "allAuthors": "すべての著者",
+      "authorAdminSpace": "著者"
     },
     "switcher": {
       "selectOrganization": "組織を選択",
       "authorSpace": "執筆者スペース",
       "apiKeySpace": "APIキースペース",
-      "adminAccess": "管理者"
+      "adminAccess": "管理者",
+      "authorAdminSpace": "著者"
     },
     "picker": {
       "title": "あなたの組織",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "APIキースペース",
       "allOrganizations": "すべての組織",
       "allOrganizationsSubtitle": "サイト管理者として、すべての組織のダッシュボードを開いて管理できます。",
-      "adminBadge": "管理者"
+      "adminBadge": "管理者",
+      "authorAdminSpace": "著者"
+    },
+    "authors": {
+      "title": "著者",
+      "subtitle": "サイト上のすべての著者プロフィールと、組織に紐づかない個人記事の一覧です。",
+      "searchPlaceholder": "著者を検索…",
+      "columnAuthor": "著者",
+      "columnAccount": "アカウント",
+      "columnAccess": "著者権限",
+      "columnIndividual": "個人記事",
+      "columnOrganization": "組織の記事",
+      "accessGranted": "著者",
+      "accessNone": "著者権限なし",
+      "noAccount": "リンクされたアカウントなし",
+      "viewButton": "表示",
+      "empty": "著者プロフィールはまだありません。",
+      "noResults": "結果がありません。",
+      "profileTitle": "著者プロフィール",
+      "backToList": "著者一覧に戻る",
+      "bio": "自己紹介",
+      "noBio": "自己紹介はありません。",
+      "articleTitle": "記事",
+      "backToAuthor": "著者に戻る",
+      "readOnlyNotice": "閲覧専用です。サイト管理者としてこの記事を閲覧しています。",
+      "publishedAt": "公開日"
     },
     "overview": {
       "title": "概要",

@@ -9,22 +9,34 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronsUpDown, Newspaper, KeySquare } from "lucide-react";
+import { Check, ChevronsUpDown, Newspaper, KeySquare, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { DASHBOARD_AUTHOR_ADMIN_HREF, isDashboardPathIn } from "@/lib/dashboard-nav-items";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 
 export type DashboardOrgSwitcherItem = { organizationId: number; organizationName: string; logoUrl: string | null; darkLogoUrl: string | null; isGlobalAdminOverride: boolean };
 
 /** Header org switcher, replaces the old sidebar "Vos organisations" list. Reads the active organization from the URL, same pattern as DashboardSidebar. `isAuthor`/`hasApiKey` each add a fixed individual-space entry so a member with several kinds of access can jump between them from anywhere. */
-export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false }: { organizations: DashboardOrgSwitcherItem[]; isAuthor?: boolean; hasApiKey?: boolean }) {
+export function OrgSwitcher({
+  organizations,
+  isAuthor = false,
+  hasApiKey = false,
+  isAuthorAdmin = false,
+}: {
+  organizations: DashboardOrgSwitcherItem[];
+  isAuthor?: boolean;
+  hasApiKey?: boolean;
+  isAuthorAdmin?: boolean;
+}) {
   const t = useTranslations("dashboard.switcher");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const isAuthorSpace = pathname.startsWith("/dashboard/author");
-  const isApiKeySpace = pathname.startsWith("/dashboard/api-keys");
+  const isAuthorAdminSpace = isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF);
+  const isAuthorSpace = isDashboardPathIn(pathname, "/dashboard/author");
+  const isApiKeySpace = isDashboardPathIn(pathname, "/dashboard/api-keys");
   const orgMatch = /^\/dashboard\/(\d+)/.exec(pathname);
   const activeId = orgMatch ? Number(orgMatch[1]) : null;
   const active = organizations.find((o) => o.organizationId === activeId) ?? null;
@@ -45,9 +57,17 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
     };
   }, [open]);
 
-  if (organizations.length === 0 && !isAuthor && !hasApiKey) return null;
+  if (organizations.length === 0 && !isAuthor && !hasApiKey && !isAuthorAdmin) return null;
 
-  const label = isAuthorSpace ? t("authorSpace") : isApiKeySpace ? t("apiKeySpace") : active ? active.organizationName : t("selectOrganization");
+  const label = isAuthorAdminSpace
+    ? t("authorAdminSpace")
+    : isAuthorSpace
+      ? t("authorSpace")
+      : isApiKeySpace
+        ? t("apiKeySpace")
+        : active
+          ? active.organizationName
+          : t("selectOrganization");
 
   return (
     <div ref={rootRef} className="relative">
@@ -58,7 +78,9 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
         aria-expanded={open}
         className="flex items-center gap-2 rounded-lg border bg-card px-2.5 py-1.5 text-sm font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
       >
-        {isAuthorSpace ? (
+        {isAuthorAdminSpace ? (
+          <UsersRound className="size-5 rounded-md text-muted-foreground" />
+        ) : isAuthorSpace ? (
           <Newspaper className="size-5 rounded-md text-muted-foreground" />
         ) : isApiKeySpace ? (
           <KeySquare className="size-5 rounded-md text-muted-foreground" />
@@ -75,6 +97,18 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
           aria-label={t("selectOrganization")}
           className="absolute right-0 top-[calc(100%+6px)] z-50 flex max-h-80 w-64 flex-col gap-0.5 overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10"
         >
+          {isAuthorAdmin && (
+            <Link
+              href={DASHBOARD_AUTHOR_ADMIN_HREF}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <UsersRound className="size-6 rounded-md p-1 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate">{t("authorAdminSpace")}</span>
+              {isAuthorAdminSpace && <Check className="size-3.5 shrink-0 text-primary" />}
+            </Link>
+          )}
           {isAuthor && (
             <Link
               href="/dashboard/author"
@@ -99,7 +133,7 @@ export function OrgSwitcher({ organizations, isAuthor = false, hasApiKey = false
               {isApiKeySpace && <Check className="size-3.5 shrink-0 text-primary" />}
             </Link>
           )}
-          {(isAuthor || hasApiKey) && organizations.length > 0 && <div className="my-1 border-t" />}
+          {(isAuthorAdmin || isAuthor || hasApiKey) && organizations.length > 0 && <div className="my-1 border-t" />}
           {organizations.map((org) => (
             <Link
               key={org.organizationId}

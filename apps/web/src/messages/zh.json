@@ -4719,13 +4719,16 @@
       "authorProfile": "作者资料",
       "apiKeySpace": "API 密钥空间",
       "myApiKeys": "我的 API 密钥",
-      "adminAccess": "管理"
+      "adminAccess": "管理",
+      "allAuthors": "所有作者",
+      "authorAdminSpace": "作者"
     },
     "switcher": {
       "selectOrganization": "选择一个机构",
       "authorSpace": "作者空间",
       "apiKeySpace": "API 密钥空间",
-      "adminAccess": "管理"
+      "adminAccess": "管理",
+      "authorAdminSpace": "作者"
     },
     "picker": {
       "title": "您的机构",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "API 密钥空间",
       "allOrganizations": "所有机构",
       "allOrganizationsSubtitle": "作为站点管理员，您可以打开并管理任何机构的控制台。",
-      "adminBadge": "管理"
+      "adminBadge": "管理",
+      "authorAdminSpace": "作者"
+    },
+    "authors": {
+      "title": "作者",
+      "subtitle": "网站上的所有作者资料，以及他们不隶属于任何组织的个人文章。",
+      "searchPlaceholder": "搜索作者…",
+      "columnAuthor": "作者",
+      "columnAccount": "账号",
+      "columnAccess": "作者权限",
+      "columnIndividual": "个人文章",
+      "columnOrganization": "组织文章",
+      "accessGranted": "作者",
+      "accessNone": "无作者权限",
+      "noAccount": "未关联账号",
+      "viewButton": "查看",
+      "empty": "暂无作者资料。",
+      "noResults": "没有结果。",
+      "profileTitle": "作者资料",
+      "backToList": "返回作者列表",
+      "bio": "简介",
+      "noBio": "暂无简介。",
+      "articleTitle": "文章",
+      "backToAuthor": "返回作者",
+      "readOnlyNotice": "只读视图，您正以网站管理员身份查看这篇文章。",
+      "publishedAt": "发布于"
     },
     "overview": {
       "title": "概览",

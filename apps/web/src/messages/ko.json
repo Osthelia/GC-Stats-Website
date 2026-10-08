@@ -4719,13 +4719,16 @@
       "authorProfile": "작성자 프로필",
       "apiKeySpace": "API 키 공간",
       "myApiKeys": "내 API 키",
-      "adminAccess": "관리자"
+      "adminAccess": "관리자",
+      "allAuthors": "모든 작성자",
+      "authorAdminSpace": "작성자"
     },
     "switcher": {
       "selectOrganization": "조직 선택",
       "authorSpace": "작성자 공간",
       "apiKeySpace": "API 키 공간",
-      "adminAccess": "관리자"
+      "adminAccess": "관리자",
+      "authorAdminSpace": "작성자"
     },
     "picker": {
       "title": "내 조직",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "API 키 공간",
       "allOrganizations": "모든 조직",
       "allOrganizationsSubtitle": "사이트 관리자로서 모든 조직의 대시보드를 열고 관리할 수 있습니다.",
-      "adminBadge": "관리자"
+      "adminBadge": "관리자",
+      "authorAdminSpace": "작성자"
+    },
+    "authors": {
+      "title": "작성자",
+      "subtitle": "사이트의 모든 작성자 프로필과 조직에 속하지 않은 개인 기사입니다.",
+      "searchPlaceholder": "작성자 검색…",
+      "columnAuthor": "작성자",
+      "columnAccount": "계정",
+      "columnAccess": "작성자 권한",
+      "columnIndividual": "개인 기사",
+      "columnOrganization": "조직 기사",
+      "accessGranted": "작성자",
+      "accessNone": "작성자 권한 없음",
+      "noAccount": "연결된 계정 없음",
+      "viewButton": "보기",
+      "empty": "아직 작성자 프로필이 없습니다.",
+      "noResults": "결과가 없습니다.",
+      "profileTitle": "작성자 프로필",
+      "backToList": "작성자 목록으로",
+      "bio": "소개",
+      "noBio": "소개가 없습니다.",
+      "articleTitle": "기사",
+      "backToAuthor": "작성자로 돌아가기",
+      "readOnlyNotice": "읽기 전용 보기입니다. 사이트 관리자로서 이 기사를 보고 있습니다.",
+      "publishedAt": "게시일"
     },
     "overview": {
       "title": "개요",

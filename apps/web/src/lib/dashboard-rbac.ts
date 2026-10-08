@@ -37,6 +37,8 @@ export type DashboardAccess = {
   isAuthor: boolean;
   /** Owns at least one personal API key (api_key.user_id), independent of any organization — see /dashboard/api-keys. Same idea as isAuthor: having the key is the grant, no separate permission to hold. */
   hasApiKey: boolean;
+  /** Site admin holding the global override (see hasGlobalOrgOverride): can browse every author profile and individual article from /dashboard/authors. */
+  isAuthorAdmin: boolean;
 };
 
 async function getIsAuthor(userId: string): Promise<boolean> {
@@ -164,14 +166,25 @@ export async function requireDashboardAccess(locale: AppLocale): Promise<Dashboa
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
-  const [memberships, isAuthor, hasApiKey] = await Promise.all([
+  const [memberships, isAuthor, hasApiKey, isAuthorAdmin] = await Promise.all([
     getCombinedDashboardMemberships(userId as string),
     getIsAuthor(userId as string),
     getHasPersonalApiKey(userId as string),
+    hasGlobalOrgOverride(userId as string),
   ]);
-  if (memberships.length === 0 && !isAuthor && !hasApiKey) redirect({ href: "/", locale });
+  if (memberships.length === 0 && !isAuthor && !hasApiKey && !isAuthorAdmin) redirect({ href: "/", locale });
 
-  return { userId: userId as string, memberships, isAuthor, hasApiKey };
+  return { userId: userId as string, memberships, isAuthor, hasApiKey, isAuthorAdmin };
+}
+
+/** /dashboard/authors/* pages, the admin view over every author profile and individual article. Same gate as the global organization override, so it grants nothing an admin couldn't already do. */
+export async function requireAuthorAdminAccess(locale: AppLocale): Promise<{ userId: string }> {
+  const session = await getSession();
+  const userId = session?.user?.id;
+  if (!userId) redirect({ href: "/login", locale });
+
+  if (!(await hasGlobalOrgOverride(userId as string))) redirect({ href: "/dashboard", locale });
+  return { userId: userId as string };
 }
 
 /** /dashboard/author/* pages — the individual authoring space, gated strictly by users.is_author (not by any organization membership). */

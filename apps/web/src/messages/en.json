@@ -4723,13 +4723,16 @@
       "authorProfile": "Author profile",
       "apiKeySpace": "API key space",
       "myApiKeys": "My API keys",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "All authors",
+      "authorAdminSpace": "Authors"
     },
     "switcher": {
       "selectOrganization": "Select an organization",
       "authorSpace": "Author space",
       "apiKeySpace": "API key space",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Authors"
     },
     "picker": {
       "title": "Your organizations",
@@ -4738,7 +4741,32 @@
       "apiKeySpace": "API key space",
       "allOrganizations": "All organizations",
       "allOrganizationsSubtitle": "As a site admin, you can open and manage any organization's dashboard.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Authors"
+    },
+    "authors": {
+      "title": "Authors",
+      "subtitle": "Every author profile on the site, with their individual articles (not tied to an organization).",
+      "searchPlaceholder": "Search an author…",
+      "columnAuthor": "Author",
+      "columnAccount": "Account",
+      "columnAccess": "Author access",
+      "columnIndividual": "Individual articles",
+      "columnOrganization": "Organization articles",
+      "accessGranted": "Author",
+      "accessNone": "No author access",
+      "noAccount": "No linked account",
+      "viewButton": "View",
+      "empty": "No author profile yet.",
+      "noResults": "No results.",
+      "profileTitle": "Author profile",
+      "backToList": "Back to authors",
+      "bio": "Bio",
+      "noBio": "No bio.",
+      "articleTitle": "Article",
+      "backToAuthor": "Back to author",
+      "readOnlyNotice": "Read only view, you are browsing this article as a site admin.",
+      "publishedAt": "Published on"
     },
     "overview": {
       "title": "Overview",

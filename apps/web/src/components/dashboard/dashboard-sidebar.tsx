@@ -13,7 +13,16 @@ import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { DASHBOARD_ORG_TOP_ITEMS, DASHBOARD_ORG_NAV_GROUPS, DASHBOARD_AUTHOR_NAV_ITEMS, DASHBOARD_API_KEY_NAV_ITEMS, type DashboardNavItem } from "@/lib/dashboard-nav-items";
+import {
+  DASHBOARD_ORG_TOP_ITEMS,
+  DASHBOARD_ORG_NAV_GROUPS,
+  DASHBOARD_AUTHOR_NAV_ITEMS,
+  DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS,
+  DASHBOARD_AUTHOR_ADMIN_HREF,
+  DASHBOARD_API_KEY_NAV_ITEMS,
+  isDashboardPathIn,
+  type DashboardNavItem,
+} from "@/lib/dashboard-nav-items";
 import {
   Sidebar,
   SidebarContent,
@@ -82,8 +91,16 @@ export function DashboardSidebar({ organizations }: { organizations: DashboardOr
   const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
 
-  const isAuthorSpace = pathname.startsWith("/dashboard/author");
-  const isApiKeySpace = pathname.startsWith("/dashboard/api-keys");
+  const isAuthorAdminSpace = isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF);
+  const isAuthorSpace = isDashboardPathIn(pathname, "/dashboard/author");
+  const isApiKeySpace = isDashboardPathIn(pathname, "/dashboard/api-keys");
+  const individualSpace = isAuthorAdminSpace
+    ? { labelKey: "authorAdminSpace", items: DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS }
+    : isAuthorSpace
+      ? { labelKey: "authorSpace", items: DASHBOARD_AUTHOR_NAV_ITEMS }
+      : isApiKeySpace
+        ? { labelKey: "apiKeySpace", items: DASHBOARD_API_KEY_NAV_ITEMS }
+        : null;
   const orgMatch = /^\/dashboard\/(\d+)/.exec(pathname);
   const activeOrgId = orgMatch ? Number(orgMatch[1]) : null;
   const activeOrg = organizations.find((o) => o.organizationId === activeOrgId) ?? null;
@@ -102,12 +119,12 @@ export function DashboardSidebar({ organizations }: { organizations: DashboardOr
         </div>
       </SidebarHeader>
       <SidebarContent className="gap-3">
-        {isAuthorSpace || isApiKeySpace ? (
+        {individualSpace ? (
           <SidebarGroup className="gap-1">
-            <SidebarGroupLabel className="truncate">{t(isAuthorSpace ? "authorSpace" : "apiKeySpace")}</SidebarGroupLabel>
+            <SidebarGroupLabel className="truncate">{t(individualSpace.labelKey)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="gap-1.5">
-                {(isAuthorSpace ? DASHBOARD_AUTHOR_NAV_ITEMS : DASHBOARD_API_KEY_NAV_ITEMS).map((item) => (
+                {individualSpace.items.map((item) => (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton isActive={item.exact ? pathname === item.href : isActive(item.href)} tooltip={t(item.labelKey)} render={<Link href={item.href} />}>
                       <item.icon className="size-3.5" />

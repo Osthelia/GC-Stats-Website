@@ -4723,13 +4723,16 @@
       "authorProfile": "Profil auteur",
       "apiKeySpace": "Espace clés API",
       "myApiKeys": "Mes clés API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "allAuthors": "Tous les auteurs",
+      "authorAdminSpace": "Auteurs"
     },
     "switcher": {
       "selectOrganization": "Choisir une organisation",
       "authorSpace": "Espace auteur",
       "apiKeySpace": "Espace clés API",
-      "adminAccess": "Admin"
+      "adminAccess": "Admin",
+      "authorAdminSpace": "Auteurs"
     },
     "picker": {
       "title": "Vos organisations",
@@ -4738,7 +4741,32 @@
       "apiKeySpace": "Espace clés API",
       "allOrganizations": "Toutes les organisations",
       "allOrganizationsSubtitle": "En tant qu'administrateur du site, vous pouvez ouvrir et gérer le tableau de bord de n'importe quelle organisation.",
-      "adminBadge": "Admin"
+      "adminBadge": "Admin",
+      "authorAdminSpace": "Auteurs"
+    },
+    "authors": {
+      "title": "Auteurs",
+      "subtitle": "Tous les profils auteurs du site, avec leurs articles individuels (non liés à une organisation).",
+      "searchPlaceholder": "Rechercher un auteur…",
+      "columnAuthor": "Auteur",
+      "columnAccount": "Compte",
+      "columnAccess": "Accès auteur",
+      "columnIndividual": "Articles individuels",
+      "columnOrganization": "Articles d'organisation",
+      "accessGranted": "Auteur",
+      "accessNone": "Sans accès auteur",
+      "noAccount": "Aucun compte lié",
+      "viewButton": "Voir",
+      "empty": "Aucun profil auteur pour le moment.",
+      "noResults": "Aucun résultat.",
+      "profileTitle": "Profil auteur",
+      "backToList": "Retour aux auteurs",
+      "bio": "Bio",
+      "noBio": "Aucune bio.",
+      "articleTitle": "Article",
+      "backToAuthor": "Retour à l'auteur",
+      "readOnlyNotice": "Vue en lecture seule, vous consultez cet article en tant qu'administrateur du site.",
+      "publishedAt": "Publié le"
     },
     "overview": {
       "title": "Vue d'ensemble",

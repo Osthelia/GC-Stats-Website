@@ -4719,13 +4719,16 @@
       "authorProfile": "Yazar profili",
       "apiKeySpace": "API anahtarı alanı",
       "myApiKeys": "API anahtarlarım",
-      "adminAccess": "Yönetici"
+      "adminAccess": "Yönetici",
+      "allAuthors": "Tüm yazarlar",
+      "authorAdminSpace": "Yazarlar"
     },
     "switcher": {
       "selectOrganization": "Bir organizasyon seçin",
       "authorSpace": "Yazar alanı",
       "apiKeySpace": "API anahtarı alanı",
-      "adminAccess": "Yönetici"
+      "adminAccess": "Yönetici",
+      "authorAdminSpace": "Yazarlar"
     },
     "picker": {
       "title": "Organizasyonlarınız",
@@ -4734,7 +4737,32 @@
       "apiKeySpace": "API anahtarı alanı",
       "allOrganizations": "Tüm organizasyonlar",
       "allOrganizationsSubtitle": "Site yöneticisi olarak, herhangi bir organizasyonun panelini açıp yönetebilirsiniz.",
-      "adminBadge": "Yönetici"
+      "adminBadge": "Yönetici",
+      "authorAdminSpace": "Yazarlar"
+    },
+    "authors": {
+      "title": "Yazarlar",
+      "subtitle": "Sitedeki tüm yazar profilleri ve bir organizasyona bağlı olmayan bireysel yazıları.",
+      "searchPlaceholder": "Yazar ara…",
+      "columnAuthor": "Yazar",
+      "columnAccount": "Hesap",
+      "columnAccess": "Yazar erişimi",
+      "columnIndividual": "Bireysel yazılar",
+      "columnOrganization": "Organizasyon yazıları",
+      "accessGranted": "Yazar",
+      "accessNone": "Yazar erişimi yok",
+      "noAccount": "Bağlı hesap yok",
+      "viewButton": "Görüntüle",
+      "empty": "Henüz yazar profili yok.",
+      "noResults": "Sonuç yok.",
+      "profileTitle": "Yazar profili",
+      "backToList": "Yazarlara dön",
+      "bio": "Biyografi",
+      "noBio": "Biyografi yok.",
+      "articleTitle": "Yazı",
+      "backToAuthor": "Yazara dön",
+      "readOnlyNotice": "Salt okunur görünüm, bu yazıyı site yöneticisi olarak görüntülüyorsunuz.",
+      "publishedAt": "Yayın tarihi"
     },
     "overview": {
       "title": "Genel Bakış",
