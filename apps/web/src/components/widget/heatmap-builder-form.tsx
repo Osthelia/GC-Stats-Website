@@ -42,6 +42,7 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
   const [timeEnd, setTimeEnd] = useState(initial.timeEnd != null ? String(initial.timeEnd) : "");
   const [agent, setAgent] = useState<string | null>(initial.agent);
   const [color, setColor] = useState(initial.color ?? "2a78d6");
+  const [rotation, setRotation] = useState<string>(initial.rotation);
   const [credit, setCredit] = useState(initial.credit);
   const [eventTypes, setEventTypes] = useState<string[]>(initial.eventTypes.length > 0 ? initial.eventTypes : ["kill", "plant", "defuse"]);
 
@@ -70,6 +71,7 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
     if (agent) params.set("agent", agent);
     if (color) params.set("color", color);
     if (eventTypes.length > 0) params.set("event_type", eventTypes.join(","));
+    if (rotation === "def") params.set("rotation", "def");
     if (credit) params.set("credit", "1");
     router.push(`/widget?${params.toString()}`);
   }
@@ -208,6 +210,20 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
           })}
         </div>
         {noEventTypes && <p className="mt-2 text-[11.5px] font-medium text-red-400">{t("eventTypesError")}</p>}
+      </div>
+
+      <div>
+        <label className="mb-2 block text-[10px] font-bold tracking-widest text-neutral-500 uppercase">{t("rotation")}</label>
+        <PublicOptionalSelect
+          value={rotation}
+          onChange={(v) => setRotation(v ?? "atk")}
+          placeholder={t("rotationAtk")}
+          options={[
+            { value: "atk", label: t("rotationAtk") },
+            { value: "def", label: t("rotationDef") },
+          ]}
+        />
+        <p className="mt-1.5 text-[10px] text-neutral-500">{t("rotationHint")}</p>
       </div>
 
       <WidgetCreditToggle checked={credit} onChange={setCredit} />

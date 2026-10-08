@@ -63,6 +63,7 @@ export type HeatmapWidgetParams = {
   timeStart: number | null;
   timeEnd: number | null;
   timeReference: "round" | "plant";
+  rotation: "atk" | "def";
   credit: boolean;
 };
 
@@ -106,6 +107,7 @@ export function parseHeatmapWidgetParams(params: WidgetSearchParams): HeatmapWid
     timeStart,
     timeEnd,
     timeReference,
+    rotation: str(params, "rotation") === "def" ? "def" : "atk",
     credit: flag(params, "credit"),
   };
 }
@@ -126,6 +128,7 @@ export function buildHeatmapWidgetUrl(p: Partial<HeatmapWidgetParams>): string |
   if (p.timeStart != null) q.set("time_start", String(p.timeStart));
   if (p.timeEnd != null) q.set("time_end", String(p.timeEnd));
   if (p.timeReference && p.timeReference !== "round") q.set("time_reference", p.timeReference);
+  if (p.rotation === "def") q.set("rotation", "def");
   if (p.credit) q.set("credit", "1");
   return widgetUrl("/heatmap", q);
 }
