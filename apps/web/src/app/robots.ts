@@ -72,7 +72,7 @@ const SCRAPER_BOTS = [
 ];
 
 // Private or non-indexable areas, under every locale prefix.
-const PRIVATE_PATHS = ["/storage/", "/api/", "/oauth/", "/*/oauth/", "/*/admin", "/*/dashboard", "/*/settings", "/*/widget/", "/*/login", "/*/register", "/*/forgot-password", "/*/reset-password", "/*/verify-email", "/*/search"];
+const PRIVATE_PATHS = ["/storage/", "/api/", "/oauth/", "/*/oauth/", "/*/admin", "/*/dashboard", "/*/settings", "/*/login", "/*/register", "/*/forgot-password", "/*/reset-password", "/*/verify-email", "/*/search"];
 
 export default function robots(): MetadataRoute.Robots {
   const base = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");

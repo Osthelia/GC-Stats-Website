@@ -82,10 +82,8 @@ const nextConfig = {
         ],
       },
       {
-        // Anti clickjacking everywhere (OAuth consent, admin, dashboard),
-        // except the overlay widgets which exist to be embedded (OBS, sites),
-        // whatever the locale prefix.
-        source: "/:path((?![^/]+/widget/).*)",
+        // Anti clickjacking everywhere (OAuth consent, admin, dashboard).
+        source: "/:path*",
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },

@@ -22,7 +22,6 @@ type HeatmapInitial = HeatmapWidgetParams & { teamName: string | null; playerNam
 function ResultPanel({ url }: { url: string }) {
   const t = useTranslations("widget.result");
   const [copied, setCopied] = useState(false);
-  const fullUrl = typeof window !== "undefined" ? `${window.location.origin}${url}` : url;
 
   return (
     <div className="mt-2 space-y-3 border-t border-neutral-800 pt-4">
@@ -32,7 +31,7 @@ function ResultPanel({ url }: { url: string }) {
         <input
           type="text"
           readOnly
-          value={fullUrl}
+          value={url}
           onClick={(e) => e.currentTarget.select()}
           className="min-w-0 flex-1 rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface)] px-3 py-2 font-mono text-xs text-neutral-300 outline-none"
         />
@@ -41,7 +40,7 @@ function ResultPanel({ url }: { url: string }) {
             type="button"
             onClick={async () => {
               try {
-                await navigator.clipboard.writeText(fullUrl);
+                await navigator.clipboard.writeText(url);
                 setCopied(true);
                 toast.success(t("copied"));
                 setTimeout(() => setCopied(false), 1200);

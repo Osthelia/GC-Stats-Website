@@ -5973,6 +5973,8 @@
       "agentAll": "所有特工",
       "color": "热力图颜色",
       "colorHint": "也可以直接通过 URL 的 ?color=RRGGBB 参数设置。",
+      "credit": "显示“Widget 由 GC Stats 提供”署名",
+      "creditHint": "默认关闭。会在小组件底部添加一行小字署名。",
       "timeReference": "时间窗口起点",
       "timeReferenceRound": "回合开始",
       "timeReferencePlant": "装包",

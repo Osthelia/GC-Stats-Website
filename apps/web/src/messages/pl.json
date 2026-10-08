@@ -5973,6 +5973,8 @@
       "agentAll": "Wszyscy agenci",
       "color": "Kolor heatmapy",
       "colorHint": "Można go też ustawić bezpośrednio w URL przez ?color=RRGGBB.",
+      "credit": "Pokaż podpis „Widget udostępniony przez GC Stats”",
+      "creditHint": "Domyślnie wyłączone. Dodaje mały podpis na dole widżetu.",
       "timeReference": "Okno czasowe liczone od",
       "timeReferenceRound": "Początek rundy",
       "timeReferencePlant": "Podłożenie",

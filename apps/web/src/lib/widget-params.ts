@@ -14,6 +14,13 @@
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import { isValorantMapKey } from "@/lib/valorant-minimaps";
 
+/** Base URL of the hosted Widgets front (separate repo), no trailing slash. */
+export const WIDGETS_URL = (process.env.NEXT_PUBLIC_WIDGETS_URL ?? "http://localhost:5173").replace(/\/$/, "");
+
+function widgetUrl(path: string, query: URLSearchParams): string {
+  return `${WIDGETS_URL}${path}?${query.toString()}`;
+}
+
 export type WidgetSearchParams = Record<string, string | string[] | undefined>;
 
 const EVENT_TYPES = ["kill", "plant", "defuse"] as const;
@@ -23,6 +30,10 @@ function str(params: WidgetSearchParams, key: string): string | null {
   const value = params[key];
   const v = Array.isArray(value) ? value[0] : value;
   return v && v.length > 0 ? v : null;
+}
+
+function flag(params: WidgetSearchParams, key: string): boolean {
+  return str(params, key) === "1";
 }
 
 function int(params: WidgetSearchParams, key: string): number | null {
@@ -52,6 +63,7 @@ export type HeatmapWidgetParams = {
   timeStart: number | null;
   timeEnd: number | null;
   timeReference: "round" | "plant";
+  credit: boolean;
 };
 
 export function parseHeatmapWidgetParams(params: WidgetSearchParams): HeatmapWidgetParams {
@@ -94,6 +106,7 @@ export function parseHeatmapWidgetParams(params: WidgetSearchParams): HeatmapWid
     timeStart,
     timeEnd,
     timeReference,
+    credit: flag(params, "credit"),
   };
 }
 
@@ -113,7 +126,8 @@ export function buildHeatmapWidgetUrl(p: Partial<HeatmapWidgetParams>): string |
   if (p.timeStart != null) q.set("time_start", String(p.timeStart));
   if (p.timeEnd != null) q.set("time_end", String(p.timeEnd));
   if (p.timeReference && p.timeReference !== "round") q.set("time_reference", p.timeReference);
-  return `/widget/heatmap?${q.toString()}`;
+  if (p.credit) q.set("credit", "1");
+  return widgetUrl("/heatmap", q);
 }
 
 export type HeadToHeadWidgetParams = {
@@ -124,6 +138,7 @@ export type HeadToHeadWidgetParams = {
   endDate: string | null;
   patch: string | null;
   mapPool: string[];
+  credit: boolean;
 };
 
 /** Accepts `mappool=Ascent,Bind` or `mappool=[Ascent,Bind]` — matches V1's WidgetController::parseMapPool(), easier to paste into an OBS Browser Source URL than array query syntax. */
@@ -146,6 +161,7 @@ export function parseHeadToHeadWidgetParams(params: WidgetSearchParams): HeadToH
     endDate: str(params, "end_date"),
     patch: str(params, "patch"),
     mapPool: parseMapPool(str(params, "mappool")),
+    credit: flag(params, "credit"),
   };
 }
 
@@ -159,5 +175,6 @@ export function buildHeadToHeadWidgetUrl(p: Partial<HeadToHeadWidgetParams>): st
   if (p.endDate) q.set("end_date", p.endDate);
   if (p.patch) q.set("patch", p.patch);
   if (p.mapPool && p.mapPool.length > 0) q.set("mappool", p.mapPool.join(","));
-  return `/widget/head-to-head?${q.toString()}`;
+  if (p.credit) q.set("credit", "1");
+  return widgetUrl("/head-to-head", q);
 }

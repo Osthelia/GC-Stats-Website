@@ -5973,6 +5973,8 @@
       "agentAll": "すべてのエージェント",
       "color": "ヒートマップの色",
       "colorHint": "URLで?color=RRGGBBを指定して直接設定することもできます。",
+      "credit": "「Widget provided by GC Stats」のクレジットを表示する",
+      "creditHint": "初期設定ではオフです。ウィジェットの下部に小さなクレジット表記を追加します。",
       "timeReference": "時間の起点",
       "timeReferenceRound": "ラウンド開始",
       "timeReferencePlant": "設置",

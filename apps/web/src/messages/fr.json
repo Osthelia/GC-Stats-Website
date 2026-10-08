@@ -5977,6 +5977,8 @@
       "agentAll": "Tous les agents",
       "color": "Couleur de la heatmap",
       "colorHint": "Modifiable aussi directement dans l'URL via ?color=RRGGBB.",
+      "credit": "Afficher le crédit « Widget fourni par GC Stats »",
+      "creditHint": "Désactivé par défaut. Ajoute une petite ligne de crédit en bas du widget.",
       "timeReference": "La fenêtre de temps part de",
       "timeReferenceRound": "Début du round",
       "timeReferencePlant": "Plant",

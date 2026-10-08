@@ -17,6 +17,7 @@ import {
   aggregateMatchStats,
   getMatchEncounters,
   getHeadToHeadMapComparison,
+  getMapPoolForPatch,
   getMatchStreams,
   getMatchVods,
   getMatchPlayerPovs,
@@ -65,7 +66,8 @@ async function MatchSideEncounters({ matchId, match }: { matchId: number; match:
 
 async function MatchSideH2h({ match }: { match: MatchHeaderData }) {
   const t = await getTranslations("matchPage");
-  const h2h = await getHeadToHeadMapComparison(match.a.teamId, match.b.teamId);
+  const mapPool = match.patch ? await getMapPoolForPatch(match.patch) : [];
+  const h2h = await getHeadToHeadMapComparison(match.a.teamId, match.b.teamId, { mapPool });
   return <MatchH2hGraph a={match.a} b={match.b} rows={h2h} title={t("mapGraph")} emptyLabel={t("noMapGraph")} winLabel={t("winRate")} />;
 }
 

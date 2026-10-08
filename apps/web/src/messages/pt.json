@@ -5973,6 +5973,8 @@
       "agentAll": "Todos os agentes",
       "color": "Cor do mapa de calor",
       "colorHint": "Também pode ser definida diretamente na URL com ?color=RRGGBB.",
+      "credit": "Mostrar o crédito «Widget fornecido por GC Stats»",
+      "creditHint": "Desativado por padrão. Adiciona uma pequena linha de crédito no rodapé do widget.",
       "timeReference": "A janela de tempo começa a partir de",
       "timeReferenceRound": "Início do round",
       "timeReferencePlant": "Plant",

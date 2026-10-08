@@ -14,7 +14,7 @@ import { usePathname } from "@/i18n/navigation";
 /**
  * Fires a beacon to /api/track-page-view on every client-side navigation,
  * feeding /admin/analytics. Mounted once in the root layout so it covers
- * every route group (site/admin/dashboard/widget), mirroring V1's
+ * every route group (site/admin/dashboard), mirroring V1's
  * App\Http\Middleware\LogPageView which tracked every successful page GET.
  * A client component rather than server-side tracking so the root layout
  * (site) keeps its static rendering (see [locale]/layout.tsx) instead of

@@ -15,7 +15,6 @@ import { matches, pickemMatchPicks } from "@gc-stats/db";
 import { getMatchStatsResponse, type ApiMatchStatsResponse } from "../../v1/queries/matches";
 import { getMatchEncounters } from "@/lib/match-page-data";
 import { buildHeadToHeadWidgetUrl } from "@/lib/widget-params";
-import { APP_BASE_URL } from "@/lib/notify";
 
 export type ApiMatchEncounter = {
   match_id: number;
@@ -89,7 +88,7 @@ export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Res
     getMatchPickemVotes(matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
   ]);
 
-  const radarChartWidgetUrl = teamAId != null && teamBId != null ? `${APP_BASE_URL}${buildHeadToHeadWidgetUrl({ teamA: teamAId, teamB: teamBId })}` : null;
+  const radarChartWidgetUrl = teamAId != null && teamBId != null ? buildHeadToHeadWidgetUrl({ teamA: teamAId, teamB: teamBId }) : null;
 
   return {
     ...core,

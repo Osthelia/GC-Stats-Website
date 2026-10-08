@@ -5973,6 +5973,8 @@
       "agentAll": "Alle Agenten",
       "color": "Heatmap Farbe",
       "colorHint": "Auch direkt in der URL über ?color=RRGGBB einstellbar.",
+      "credit": "Den Hinweis „Widget bereitgestellt von GC Stats“ anzeigen",
+      "creditHint": "Standardmäßig deaktiviert. Fügt am unteren Rand des Widgets eine kleine Hinweiszeile hinzu.",
       "timeReference": "Zeitfenster beginnt ab",
       "timeReferenceRound": "Rundenbeginn",
       "timeReferencePlant": "Plant",

@@ -14,7 +14,7 @@ import { teams, people, tournaments } from "@gc-stats/db";
 import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
 import { WidgetDirectory } from "@/components/widget/widget-directory";
 import { getWidgetPreviewMatch } from "@/lib/widget-data";
-import { buildHeadToHeadWidgetUrl, buildHeatmapWidgetUrl, parseHeadToHeadWidgetParams, parseHeatmapWidgetParams, type WidgetSearchParams } from "@/lib/widget-params";
+import { WIDGETS_URL, buildHeadToHeadWidgetUrl, buildHeatmapWidgetUrl, parseHeadToHeadWidgetParams, parseHeatmapWidgetParams, type WidgetSearchParams } from "@/lib/widget-params";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -80,7 +80,7 @@ export default async function WidgetDirectoryPage({ searchParams }: { searchPara
             initial: { ...h2h, teamAName, teamBName, tournamentName: h2hTournamentName },
           }}
           heatmap={{
-            previewUrl: "/widget/heatmap/preview",
+            previewUrl: `${WIDGETS_URL}/heatmap?preview=1`,
             generatedUrl: hasHeatmapQuery ? heatGeneratedUrl : null,
             autoOpen: hasHeatmapQuery,
             initial: { ...heat, teamName: teamName_, playerName: playerName_, tournamentName: heatTournamentName },

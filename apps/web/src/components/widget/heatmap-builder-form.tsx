@@ -15,6 +15,7 @@ import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
 import { PublicOptionalSelect } from "@/components/forms/public-optional-select";
 import { VALORANT_MAP_KEYS } from "@/lib/valorant-minimaps";
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
+import { WidgetCreditToggle } from "@/components/widget/widget-credit-toggle";
 import type { HeatmapWidgetParams } from "@/lib/widget-params";
 
 const EVENT_TYPES = ["kill", "plant", "defuse"] as const;
@@ -41,6 +42,7 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
   const [timeEnd, setTimeEnd] = useState(initial.timeEnd != null ? String(initial.timeEnd) : "");
   const [agent, setAgent] = useState<string | null>(initial.agent);
   const [color, setColor] = useState(initial.color ?? "2a78d6");
+  const [credit, setCredit] = useState(initial.credit);
   const [eventTypes, setEventTypes] = useState<string[]>(initial.eventTypes.length > 0 ? initial.eventTypes : ["kill", "plant", "defuse"]);
 
   function toggleEventType(type: string) {
@@ -68,6 +70,7 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
     if (agent) params.set("agent", agent);
     if (color) params.set("color", color);
     if (eventTypes.length > 0) params.set("event_type", eventTypes.join(","));
+    if (credit) params.set("credit", "1");
     router.push(`/widget?${params.toString()}`);
   }
 
@@ -206,6 +209,8 @@ export function HeatmapBuilderForm({ initial }: { initial: HeatmapWidgetParams &
         </div>
         {noEventTypes && <p className="mt-2 text-[11.5px] font-medium text-red-400">{t("eventTypesError")}</p>}
       </div>
+
+      <WidgetCreditToggle checked={credit} onChange={setCredit} />
 
       <button
         type="submit"

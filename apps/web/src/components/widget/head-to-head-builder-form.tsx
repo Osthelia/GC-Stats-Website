@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
+import { WidgetCreditToggle } from "@/components/widget/widget-credit-toggle";
 import type { HeadToHeadWidgetParams } from "@/lib/widget-params";
 
 export function HeadToHeadBuilderForm({ initial }: { initial: HeadToHeadWidgetParams & { teamAName: string | null; teamBName: string | null; tournamentName: string | null } }) {
@@ -27,6 +28,7 @@ export function HeadToHeadBuilderForm({ initial }: { initial: HeadToHeadWidgetPa
   const [endDate, setEndDate] = useState(initial.endDate ?? "");
   const [patch, setPatch] = useState(initial.patch ?? "");
   const [mappool, setMappool] = useState(initial.mapPool.join(","));
+  const [credit, setCredit] = useState(initial.credit);
 
   const sameTeam = teamA != null && teamB != null && teamA.id === teamB.id;
 
@@ -41,6 +43,7 @@ export function HeadToHeadBuilderForm({ initial }: { initial: HeadToHeadWidgetPa
     if (endDate) params.set("end_date", endDate);
     if (patch) params.set("patch", patch);
     if (mappool) params.set("mappool", mappool);
+    if (credit) params.set("credit", "1");
     router.push(`/widget?${params.toString()}`);
   }
 
@@ -128,6 +131,8 @@ export function HeadToHeadBuilderForm({ initial }: { initial: HeadToHeadWidgetPa
         />
         <p className="mt-1.5 text-[10px] text-neutral-500">{t("mappoolHint")}</p>
       </div>
+
+      <WidgetCreditToggle checked={credit} onChange={setCredit} />
 
       <button
         type="submit"
