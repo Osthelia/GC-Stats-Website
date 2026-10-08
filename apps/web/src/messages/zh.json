@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← 返回战队列表",
         "mergeButton": "合并",
+        "viewPublic": "查看公开页面",
         "delete": "删除战队",
         "deleteConfirm": "确定要永久删除 {name} 吗？此操作无法撤销。",
         "deleteSuccess": "战队已删除。",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← 返回选手列表",
         "mergeButton": "合并",
+        "viewPublic": "查看公开页面",
         "cancel": "取消",
         "confirmTitle": "确认删除",
         "delete": "删除选手",

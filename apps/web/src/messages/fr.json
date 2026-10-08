@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Retour aux équipes",
         "mergeButton": "Fusionner",
+        "viewPublic": "Voir la page publique",
         "delete": "Supprimer l'équipe",
         "deleteConfirm": "Supprimer définitivement {name} ? Action irréversible.",
         "deleteSuccess": "Équipe supprimée.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Retour aux joueur·se·s",
         "mergeButton": "Fusionner",
+        "viewPublic": "Voir la page publique",
         "cancel": "Annuler",
         "confirmTitle": "Confirmer la suppression",
         "delete": "Supprimer le joueur·se",

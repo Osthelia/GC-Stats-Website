@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Wróć do drużyn",
         "mergeButton": "Scal",
+        "viewPublic": "Zobacz stronę publiczną",
         "delete": "Usuń drużynę",
         "deleteConfirm": "Trwale usunąć {name}? Tej operacji nie można cofnąć.",
         "deleteSuccess": "Drużyna usunięta.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Wróć do zawodniczek",
         "mergeButton": "Scal",
+        "viewPublic": "Zobacz stronę publiczną",
         "cancel": "Anuluj",
         "confirmTitle": "Potwierdź usunięcie",
         "delete": "Usuń zawodniczkę",

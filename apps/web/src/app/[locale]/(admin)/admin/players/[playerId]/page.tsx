@@ -13,7 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminPlayer, getAdminPlayerTeamHistory } from "@/lib/admin-players";
 import { getEntityLogos } from "@/lib/admin-logos";
-import { parseEntityId } from "@/lib/entity-id";
+import { parseEntityId, slugify } from "@/lib/entity-id";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { PlayerEditForm } from "@/components/admin/player-edit-form";
@@ -65,6 +65,9 @@ export default async function AdminPlayerPage({
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" render={<Link href={`/player/${player.id}/${slugify(player.handle)}`} />}>
+            {t("viewPublic")}
+          </Button>
           {player.isGhost && hasAccess(access, PERMISSIONS.playersEdit) && <GhostPromoteButton kind="player" id={player.id} name={player.handle} />}
           {hasAccess(access, PERMISSIONS.playersMerge) && (
             <Button variant="outline" size="sm" render={<Link href={`/admin/players/${player.id}/merge`} />}>

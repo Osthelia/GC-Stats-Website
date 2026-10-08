@@ -13,7 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminTeam, getAdminTeamRoster, getAdminTeamNameHistory } from "@/lib/admin-teams";
 import { getEntityLogos } from "@/lib/admin-logos";
-import { parseEntityId } from "@/lib/entity-id";
+import { parseEntityId, slugify } from "@/lib/entity-id";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { TeamEditForm } from "@/components/admin/team-edit-form";
@@ -68,6 +68,9 @@ export default async function AdminTeamPage({
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" render={<Link href={`/team/${team.id}/${slugify(team.name)}`} />}>
+            {t("viewPublic")}
+          </Button>
           {team.isGhost && canEdit && <GhostPromoteButton kind="team" id={team.id} name={team.name} />}
           {hasAccess(access, PERMISSIONS.teamsMerge) && (
             <Button variant="outline" size="sm" render={<Link href={`/admin/teams/${team.id}/merge`} />}>

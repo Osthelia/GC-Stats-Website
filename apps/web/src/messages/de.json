@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Zurück zu den Teams",
         "mergeButton": "Zusammenführen",
+        "viewPublic": "Öffentliche Seite ansehen",
         "delete": "Team löschen",
         "deleteConfirm": "{name} endgültig löschen? Dies kann nicht rückgängig gemacht werden.",
         "deleteSuccess": "Team gelöscht.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Zurück zu den Spieler:innen",
         "mergeButton": "Zusammenführen",
+        "viewPublic": "Öffentliche Seite ansehen",
         "cancel": "Abbrechen",
         "confirmTitle": "Löschung bestätigen",
         "delete": "Spieler:in löschen",

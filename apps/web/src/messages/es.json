@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Volver a los equipos",
         "mergeButton": "Fusionar",
+        "viewPublic": "Ver la página pública",
         "delete": "Eliminar el equipo",
         "deleteConfirm": "¿Eliminar definitivamente {name}? Esta acción no se puede deshacer.",
         "deleteSuccess": "Equipo eliminado.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Volver a los jugadores",
         "mergeButton": "Fusionar",
+        "viewPublic": "Ver la página pública",
         "cancel": "Cancelar",
         "confirmTitle": "Confirmar la eliminación",
         "delete": "Eliminar el jugador",

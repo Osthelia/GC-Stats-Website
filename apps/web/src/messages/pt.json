@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Voltar para os times",
         "mergeButton": "Mesclar",
+        "viewPublic": "Ver a página pública",
         "delete": "Excluir time",
         "deleteConfirm": "Excluir {name} permanentemente? Isso não pode ser desfeito.",
         "deleteSuccess": "Time excluído.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Voltar para as jogadoras",
         "mergeButton": "Mesclar",
+        "viewPublic": "Ver a página pública",
         "cancel": "Cancelar",
         "confirmTitle": "Confirmar exclusão",
         "delete": "Excluir jogadora",

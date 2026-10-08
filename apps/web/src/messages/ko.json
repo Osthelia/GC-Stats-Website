@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← 팀 목록으로",
         "mergeButton": "병합",
+        "viewPublic": "공개 페이지 보기",
         "delete": "팀 삭제",
         "deleteConfirm": "{name}을(를) 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
         "deleteSuccess": "팀이 삭제되었습니다.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← 선수 목록으로",
         "mergeButton": "병합",
+        "viewPublic": "공개 페이지 보기",
         "cancel": "취소",
         "confirmTitle": "삭제 확인",
         "delete": "선수 삭제",

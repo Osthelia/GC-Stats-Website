@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Takımlara dön",
         "mergeButton": "Birleştir",
+        "viewPublic": "Herkese açık sayfayı gör",
         "delete": "Takımı sil",
         "deleteConfirm": "{name} kalıcı olarak silinsin mi? Bu işlem geri alınamaz.",
         "deleteSuccess": "Takım silindi.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Oyunculara dön",
         "mergeButton": "Birleştir",
+        "viewPublic": "Herkese açık sayfayı gör",
         "cancel": "İptal",
         "confirmTitle": "Silmeyi onayla",
         "delete": "Oyuncuyu sil",

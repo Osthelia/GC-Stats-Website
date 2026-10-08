@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "→ العودة إلى الفرق",
         "mergeButton": "دمج",
+        "viewPublic": "عرض الصفحة العامة",
         "delete": "حذف الفريق",
         "deleteConfirm": "هل تريد حذف {name} نهائيًا؟ لا يمكن التراجع عن ذلك.",
         "deleteSuccess": "تم حذف الفريق.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "→ العودة إلى اللاعبات",
         "mergeButton": "دمج",
+        "viewPublic": "عرض الصفحة العامة",
         "cancel": "إلغاء",
         "confirmTitle": "تأكيد الحذف",
         "delete": "حذف اللاعبة",

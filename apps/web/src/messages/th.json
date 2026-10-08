@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← กลับไปที่รายชื่อทีม",
         "mergeButton": "รวม",
+        "viewPublic": "ดูหน้าสาธารณะ",
         "delete": "ลบทีม",
         "deleteConfirm": "ลบ {name} อย่างถาวรใช่ไหม? ไม่สามารถย้อนกลับได้",
         "deleteSuccess": "ลบทีมแล้ว",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← กลับไปที่รายชื่อผู้เล่น",
         "mergeButton": "รวม",
+        "viewPublic": "ดูหน้าสาธารณะ",
         "cancel": "ยกเลิก",
         "confirmTitle": "ยืนยันการลบ",
         "delete": "ลบผู้เล่น",

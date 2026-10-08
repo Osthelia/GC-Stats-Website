@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Back to teams",
         "mergeButton": "Merge",
+        "viewPublic": "View public page",
         "delete": "Delete team",
         "deleteConfirm": "Permanently delete {name}? This can't be undone.",
         "deleteSuccess": "Team deleted.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Back to players",
         "mergeButton": "Merge",
+        "viewPublic": "View public page",
         "cancel": "Cancel",
         "confirmTitle": "Confirm deletion",
         "delete": "Delete player",

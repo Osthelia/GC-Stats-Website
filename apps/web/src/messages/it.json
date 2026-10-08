@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← Torna ai team",
         "mergeButton": "Unisci",
+        "viewPublic": "Vedi la pagina pubblica",
         "delete": "Elimina team",
         "deleteConfirm": "Eliminare definitivamente {name}? L'operazione è irreversibile.",
         "deleteSuccess": "Team eliminato.",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← Torna alle giocatrici",
         "mergeButton": "Unisci",
+        "viewPublic": "Vedi la pagina pubblica",
         "cancel": "Annulla",
         "confirmTitle": "Conferma eliminazione",
         "delete": "Elimina giocatrice",

@@ -2394,6 +2394,7 @@
       "edit": {
         "backToList": "← チーム一覧に戻る",
         "mergeButton": "統合",
+        "viewPublic": "公開ページを見る",
         "delete": "チームを削除",
         "deleteConfirm": "{name} を完全に削除しますか。この操作は元に戻せません。",
         "deleteSuccess": "チームを削除しました。",
@@ -2593,6 +2594,7 @@
       "edit": {
         "backToList": "← 選手一覧に戻る",
         "mergeButton": "統合",
+        "viewPublic": "公開ページを見る",
         "cancel": "キャンセル",
         "confirmTitle": "削除の確認",
         "delete": "選手を削除",
