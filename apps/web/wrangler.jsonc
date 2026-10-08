@@ -49,6 +49,7 @@
     "S3_FORCE_PATH_STYLE": true,
     "DISCORD_GUILD_ID": "1497392646958747858",
     "DISCORD_INVITE_URL": "https://discord.gg/kFHNN8cDXJ",
+    "NEXT_PUBLIC_WIDGETS_URL": "https://widgets.osthelia.org"
   },
   // Paid plan only. Map fetch (Riot JSON parse + stats + inserts) is the heaviest request; I/O waits don't count.
   "limits": {
