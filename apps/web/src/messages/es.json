@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Salida el",
         "rosterDelete": "Eliminar",
         "rosterDeleteConfirm": "¿Eliminar definitivamente a {handle} del roster? Esta acción no se puede deshacer.",
+        "conflictTitle": "¿Cerrar los otros equipos?",
+        "conflictDescription": "{handle} sigue en otros equipos sin fecha de salida. ¿Quieres cerrar estas entradas?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Cerrarlas",
+        "conflictKeep": "Dejarlas abiertas",
         "rosterDeleteError": {
           "notFound": "Esta entrada del roster ya no existe."
         },

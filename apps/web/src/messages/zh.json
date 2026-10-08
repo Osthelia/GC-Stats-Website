@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "离开于",
         "rosterDelete": "删除",
         "rosterDeleteConfirm": "确定要将 {handle} 从名单中永久删除吗？此操作无法撤销。",
+        "conflictTitle": "是否结束其他战队？",
+        "conflictDescription": "{handle} 仍在其他没有结束日期的战队中。是否结束这些记录？",
+        "conflictItem": "{team}（{role}）",
+        "conflictClose": "结束",
+        "conflictKeep": "保持开放",
         "rosterDeleteError": {
           "notFound": "该名单记录已不存在。"
         },

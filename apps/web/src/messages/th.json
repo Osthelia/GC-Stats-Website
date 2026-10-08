@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "ออกเมื่อ",
         "rosterDelete": "ลบ",
         "rosterDeleteConfirm": "ลบ {handle} ออกจากโรสเตอร์อย่างถาวรใช่ไหม? ไม่สามารถย้อนกลับได้",
+        "conflictTitle": "ปิดทีมอื่นหรือไม่?",
+        "conflictDescription": "{handle} ยังอยู่ในทีมอื่นที่ไม่มีวันสิ้นสุด ต้องการปิดรายการเหล่านี้หรือไม่?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "ปิด",
+        "conflictKeep": "คงไว้",
         "rosterDeleteError": {
           "notFound": "รายการในโรสเตอร์นี้ไม่มีอยู่แล้ว"
         },

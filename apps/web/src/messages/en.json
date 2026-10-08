@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Left on",
         "rosterDelete": "Delete",
         "rosterDeleteConfirm": "Permanently delete {handle} from the roster? This can't be undone.",
+        "conflictTitle": "Close other teams?",
+        "conflictDescription": "{handle} is still in other teams without an end date. Do you want to close these entries?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Close them",
+        "conflictKeep": "Keep them open",
         "rosterDeleteError": {
           "notFound": "This roster entry no longer exists."
         },

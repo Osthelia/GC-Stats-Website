@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Odejście",
         "rosterDelete": "Usuń",
         "rosterDeleteConfirm": "Trwale usunąć {handle} ze składu? Tej operacji nie można cofnąć.",
+        "conflictTitle": "Zamknąć pozostałe drużyny?",
+        "conflictDescription": "{handle} nadal jest w innych drużynach bez daty zakończenia. Czy zamknąć te wpisy?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Zamknij",
+        "conflictKeep": "Zostaw otwarte",
         "rosterDeleteError": {
           "notFound": "Ten wpis w składzie już nie istnieje."
         },

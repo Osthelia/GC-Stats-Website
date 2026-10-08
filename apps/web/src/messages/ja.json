@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "脱退日",
         "rosterDelete": "削除",
         "rosterDeleteConfirm": "{handle} をロースターから完全に削除しますか。この操作は元に戻せません。",
+        "conflictTitle": "他のチームを終了しますか？",
+        "conflictDescription": "{handle} は終了日のない他のチームにまだ所属しています。これらの項目を終了しますか？",
+        "conflictItem": "{team}（{role}）",
+        "conflictClose": "終了する",
+        "conflictKeep": "そのままにする",
         "rosterDeleteError": {
           "notFound": "このロースター項目はすでに存在しません。"
         },

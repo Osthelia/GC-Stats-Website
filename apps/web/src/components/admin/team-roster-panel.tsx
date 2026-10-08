@@ -22,6 +22,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
+import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, type AddRosterMemberFieldErrors, type RosterEntryFieldErrors } from "@/actions/admin-teams";
 import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ const roleItemsFor = (t: ReturnType<typeof useTranslations>) => Object.fromEntri
  * role/joined_at/left_at (here also inactive_since) are real inputs on
  * every card, current or past, not just newly-added ones.
  */
-function RosterRow({ member, onSaved, onDeleted }: { member: AdminTeamRosterMember; onSaved: (updated: AdminTeamRosterMember) => void; onDeleted: (membershipId: number) => void }) {
+function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRosterMember; teamId: number; onSaved: (updated: AdminTeamRosterMember) => void; onDeleted: (membershipId: number) => void }) {
   const t = useTranslations("admin.teams.edit");
   const [isPending, startTransition] = useTransition();
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>(member.role as (typeof ROSTER_ROLES)[number]);
@@ -47,14 +48,17 @@ function RosterRow({ member, onSaved, onDeleted }: { member: AdminTeamRosterMemb
   const [inactiveSince, setInactiveSince] = useState(member.inactiveSince ?? "");
   const [fieldErrors, setFieldErrors] = useState<RosterEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
   const roleItems = roleItemsFor(t);
   const err = (field: keyof RosterEntryFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.invalid") : undefined);
 
-  function handleSave() {
+  async function handleSave() {
     setFieldErrors({});
+    const closeIds = until ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
+    if (!closeIds) return;
     startTransition(async () => {
-      const result = await updateRosterMemberEntry(member.membershipId, role, from, until, inactiveSince);
+      const result = await updateRosterMemberEntry(member.membershipId, role, from, until, inactiveSince, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -181,6 +185,7 @@ function RosterRow({ member, onSaved, onDeleted }: { member: AdminTeamRosterMemb
         isPending={isPending}
         destructive
       />
+      {conflictDialog}
     </div>
   );
 }
@@ -196,13 +201,16 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
   const [until, setUntil] = useState("");
   const [inactiveSince, setInactiveSince] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddRosterMemberFieldErrors>({});
+  const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
   const roleItems = roleItemsFor(t);
 
-  function handleAdd() {
+  async function handleAdd() {
     setFieldErrors({});
+    const closeIds = person && !until ? await resolveConflicts(person.id, person.handle, teamId) : [];
+    if (!closeIds) return;
     startTransition(async () => {
-      const result = await addTeamRosterMember(teamId, person?.id ?? null, role, from, until, inactiveSince || null);
+      const result = await addTeamRosterMember(teamId, person?.id ?? null, role, from, until, inactiveSince || null, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -212,9 +220,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
       setUntil("");
       setInactiveSince("");
       toast.success(t("rosterAddSubmit"));
-      // A membership this add silently closed elsewhere (see addTeamRosterMember)
-      // isn't reflected in local state, so refresh from the server instead of
-      // patching state by hand.
+      // Refresh from the server instead of patching local state by hand.
       router.refresh();
     });
   }
@@ -248,7 +254,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
         {current.length > 0 && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {current.map((m) => (
-              <RosterRow key={m.membershipId} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+              <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
             ))}
           </div>
         )}
@@ -258,7 +264,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
             <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("rosterHistoryTitle")}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {past.map((m) => (
-                <RosterRow key={m.membershipId} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+                <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
               ))}
             </div>
           </div>
@@ -341,6 +347,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
           </div>
         </div>
       </CardContent>
+      {conflictDialog}
     </Card>
   );
 }

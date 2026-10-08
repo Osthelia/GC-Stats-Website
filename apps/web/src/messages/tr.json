@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Ayrılış tarihi",
         "rosterDelete": "Sil",
         "rosterDeleteConfirm": "{handle} kadrodan kalıcı olarak silinsin mi? Bu işlem geri alınamaz.",
+        "conflictTitle": "Diğer takımlar kapatılsın mı?",
+        "conflictDescription": "{handle} hâlâ bitiş tarihi olmayan başka takımlarda yer alıyor. Bu kayıtlar kapatılsın mı?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Kapat",
+        "conflictKeep": "Açık bırak",
         "rosterDeleteError": {
           "notFound": "Bu kadro kaydı artık mevcut değil."
         },

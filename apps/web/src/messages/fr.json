@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Parti le",
         "rosterDelete": "Supprimer",
         "rosterDeleteConfirm": "Supprimer définitivement {handle} du roster ? Cette action est irréversible.",
+        "conflictTitle": "Clore les autres équipes ?",
+        "conflictDescription": "{handle} fait encore partie d'autres équipes sans date de fin. Voulez-vous clore ces entrées ?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Les clore",
+        "conflictKeep": "Les laisser ouvertes",
         "rosterDeleteError": {
           "notFound": "Ce membre du roster n'existe plus."
         },

@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "تاريخ المغادرة",
         "rosterDelete": "حذف",
         "rosterDeleteConfirm": "هل تريد حذف {handle} من التشكيلة نهائيًا؟ لا يمكن التراجع عن ذلك.",
+        "conflictTitle": "هل تريد إنهاء الفرق الأخرى؟",
+        "conflictDescription": "{handle} لا يزال في فرق أخرى بدون تاريخ انتهاء. هل تريد إنهاء هذه الإدخالات؟",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "إنهاء",
+        "conflictKeep": "إبقاؤها مفتوحة",
         "rosterDeleteError": {
           "notFound": "هذا الإدخال في التشكيلة لم يعد موجودًا."
         },

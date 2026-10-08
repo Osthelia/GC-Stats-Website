@@ -11,7 +11,7 @@
 
 "use server";
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, ne, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
@@ -228,6 +228,37 @@ export async function deleteRosterMembership(membershipId: number): Promise<Rost
   return { ok: true };
 }
 
+export type RosterConflict = { membershipId: number; teamId: number; teamName: string; role: string };
+
+/** Open (no end date) memberships of a person on other teams than `teamId`. */
+async function findOpenMembershipsElsewhere(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
+  const conditions = [eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), sql`upper_inf(${rosterMemberships.period})`];
+  if (excludeMembershipId) conditions.push(ne(rosterMemberships.id, excludeMembershipId));
+  return db
+    .select({ membershipId: rosterMemberships.id, teamId: rosterMemberships.teamId, teamName: teams.name, role: rosterMemberships.role })
+    .from(rosterMemberships)
+    .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))
+    .where(and(...conditions));
+}
+
+/** Called before saving a roster entry without end date, to ask whether the person's other current teams must be closed. */
+export async function getRosterConflicts(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
+  await requireAdminActorId();
+  return findOpenMembershipsElsewhere(personId, teamId, excludeMembershipId);
+}
+
+/** Closes the chosen memberships at `closeAt`, only if they are still open memberships of that person on other teams. */
+async function closeOpenMemberships(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], ids: number[], personId: number, teamId: number, closeAt: string): Promise<void> {
+  if (ids.length === 0) return;
+  const rows = await tx
+    .select({ id: rosterMemberships.id, period: rosterMemberships.period })
+    .from(rosterMemberships)
+    .where(and(inArray(rosterMemberships.id, ids), eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), sql`upper_inf(${rosterMemberships.period})`));
+  for (const row of rows) {
+    await tx.update(rosterMemberships).set({ period: closeRange(row.period, closeAt) }).where(eq(rosterMemberships.id, row.id));
+  }
+}
+
 export type AddRosterMemberField = "person" | "role" | "from" | "until";
 export type AddRosterMemberFieldErrors = Partial<Record<AddRosterMemberField, string>>;
 export type AddRosterMemberResult = { ok: true } | { ok: false; fieldErrors: AddRosterMemberFieldErrors };
@@ -238,7 +269,8 @@ export async function addTeamRosterMember(
   role: string,
   from: string,
   until: string,
-  inactiveSince: string | null
+  inactiveSince: string | null,
+  closeMembershipIds: number[] = []
 ): Promise<AddRosterMemberResult> {
   const actorUserId = await requireAdminActorId();
 
@@ -263,27 +295,7 @@ export async function addTeamRosterMember(
   const isOngoing = !until;
 
   await db.transaction(async (tx) => {
-    // Mirrors V1 RosterService::save — a person can't be marked 'player' (or
-    // any other role) as currently active on two teams at once, so close out
-    // whatever else is open for that (person, role) pair before opening this
-    // one — only relevant when the new row is itself ongoing (backfilling a
-    // closed historical stint doesn't touch anyone's current membership).
-    if (isOngoing) {
-      const openElsewhere = await tx
-        .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-        .from(rosterMemberships)
-        .where(
-          and(
-            eq(rosterMemberships.personId, personId as number),
-            eq(rosterMemberships.role, role),
-            sql`${rosterMemberships.period} @> CURRENT_DATE`
-          )
-        );
-
-      for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
-      }
-    }
+    if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, personId as number, teamId, from);
 
     await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, inactiveSince: inactiveSince || null });
     await logRosterChange(tx, { teamId, personId: personId as number, role, actorUserId, action: "Added" });
@@ -302,7 +314,7 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * (current and history alike) carries editable role/joined_at/left_at
  * inputs directly, not just newly-added ones.
  */
-export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string): Promise<RosterEntryResult> {
+export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
@@ -322,25 +334,7 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   const isOngoing = !until;
 
   await db.transaction(async (tx) => {
-    // Same anti-overlap rule as addTeamRosterMember — only matters when
-    // this edit makes the row ongoing again.
-    if (isOngoing) {
-      const openElsewhere = await tx
-        .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-        .from(rosterMemberships)
-        .where(
-          and(
-            eq(rosterMemberships.personId, membership.personId),
-            eq(rosterMemberships.role, role),
-            sql`${rosterMemberships.period} @> CURRENT_DATE`,
-            sql`${rosterMemberships.id} != ${membershipId}`
-          )
-        );
-
-      for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
-      }
-    }
+    if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
     const values = { role, period, inactiveSince: inactiveSince || null };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));

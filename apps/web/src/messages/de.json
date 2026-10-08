@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Verlassen am",
         "rosterDelete": "Löschen",
         "rosterDeleteConfirm": "{handle} endgültig aus dem Roster löschen? Dies kann nicht rückgängig gemacht werden.",
+        "conflictTitle": "Andere Teams beenden?",
+        "conflictDescription": "{handle} ist noch in anderen Teams ohne Enddatum. Sollen diese Einträge beendet werden?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Beenden",
+        "conflictKeep": "Offen lassen",
         "rosterDeleteError": {
           "notFound": "Dieser Roster Eintrag existiert nicht mehr."
         },

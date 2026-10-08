@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "Uscita il",
         "rosterDelete": "Elimina",
         "rosterDeleteConfirm": "Eliminare definitivamente {handle} dal roster? L'operazione è irreversibile.",
+        "conflictTitle": "Chiudere le altre squadre?",
+        "conflictDescription": "{handle} fa ancora parte di altre squadre senza data di fine. Vuoi chiudere queste voci?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "Chiudile",
+        "conflictKeep": "Lasciale aperte",
         "rosterDeleteError": {
           "notFound": "Questa voce del roster non esiste più."
         },

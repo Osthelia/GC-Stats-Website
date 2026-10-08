@@ -2484,6 +2484,11 @@
         "rosterAddUntilLabel": "탈퇴일",
         "rosterDelete": "삭제",
         "rosterDeleteConfirm": "{handle}을(를) 로스터에서 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+        "conflictTitle": "다른 팀을 종료할까요?",
+        "conflictDescription": "{handle}은(는) 종료일이 없는 다른 팀에 아직 소속되어 있습니다. 해당 항목을 종료하시겠습니까?",
+        "conflictItem": "{team} ({role})",
+        "conflictClose": "종료",
+        "conflictKeep": "열어 두기",
         "rosterDeleteError": {
           "notFound": "이 로스터 항목은 더 이상 존재하지 않습니다."
         },
