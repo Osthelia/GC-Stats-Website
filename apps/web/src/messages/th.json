@@ -4652,7 +4652,10 @@
       "event": {
         "created": "สร้าง",
         "updated": "แก้ไข",
-        "deleted": "ลบ"
+        "deleted": "ลบ",
+        "login": "เข้าสู่ระบบ",
+        "login_failed": "เข้าสู่ระบบไม่สำเร็จ",
+        "logout": "ออกจากระบบ"
       },
       "columnDescription": "คำอธิบาย",
       "columnSubject": "หัวเรื่อง",

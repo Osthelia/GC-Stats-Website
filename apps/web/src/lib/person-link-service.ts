@@ -14,6 +14,7 @@ import { and, eq, ne, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { people, users, organizationMemberships } from "@gc-stats/db";
 import { autoGrantAccessForMemberRole } from "@/lib/organization-membership-service";
+import { logActivity } from "@/lib/activity-log";
 
 export type LinkUserResult = { ok: true } | { ok: false; error: string };
 
@@ -22,7 +23,7 @@ export type LinkUserResult = { ok: true } | { ok: false; error: string };
  * (actions/dashboard-organizations.ts, scoped to this organization's own
  * roster) — mirrors V1 PlayerController::linkUser (unique-elsewhere check).
  */
-export async function linkUserToPersonEntry(personId: number, userId: string): Promise<LinkUserResult> {
+export async function linkUserToPersonEntry(personId: number, userId: string, actorUserId: string): Promise<LinkUserResult> {
   const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, error: "notFound" };
 
@@ -33,6 +34,7 @@ export async function linkUserToPersonEntry(personId: number, userId: string): P
   if (alreadyLinked) return { ok: false, error: "alreadyLinked" };
 
   await db.update(people).set({ userId }).where(eq(people.id, personId));
+  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Linked account ${userId} to player #${personId}`, actorUserId, changes: { userId: { old: null, new: userId } } }, db);
 
   // Retroactively apply any opted-in member-role -> access-role link for
   // every organization this person is currently listed on, now that they
@@ -48,10 +50,11 @@ export async function linkUserToPersonEntry(personId: number, userId: string): P
   return { ok: true };
 }
 
-export async function unlinkUserFromPersonEntry(personId: number): Promise<LinkUserResult> {
-  const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId)).limit(1);
+export async function unlinkUserFromPersonEntry(personId: number, actorUserId: string): Promise<LinkUserResult> {
+  const [person] = await db.select({ id: people.id, userId: people.userId }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, error: "notFound" };
 
   await db.update(people).set({ userId: null }).where(eq(people.id, personId));
+  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Unlinked account from player #${personId}`, actorUserId, changes: { userId: { old: person.userId, new: null } } }, db);
   return { ok: true };
 }

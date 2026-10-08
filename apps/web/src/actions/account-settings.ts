@@ -27,6 +27,7 @@ import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
 import { createSessionReissueToken } from "@/lib/session-reissue";
 import { sendVerificationEmail } from "@/lib/email-verification";
 import { checkVerificationEmailThrottle } from "@/lib/auth-throttle";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 /** `reissueToken` goes straight into `useSession().update({ reissueToken })` so the calling tab survives the session invalidation. */
@@ -84,6 +85,7 @@ export async function setPassword(input: {
   // token; this tab keeps its own session through the reissue token.
   await db.update(users).set({ passwordHash, sessionsInvalidatedAt: new Date() }).where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, event: "updated", description: user?.passwordHash ? "Password changed" : "Password set", properties: { section: "password" } });
   return { ok: true, reissueToken: await createSessionReissueToken(userId) };
 }
 
@@ -101,6 +103,7 @@ export async function removePassword(): Promise<CredentialChangeResult> {
     .set({ passwordHash: null, twoFactorSecret: null, twoFactorRecoveryCodes: null, twoFactorConfirmedAt: null, sessionsInvalidatedAt: new Date() })
     .where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, event: "updated", description: "Password removed", properties: { section: "password" } });
   return { ok: true, reissueToken: await createSessionReissueToken(userId) };
 }
 
@@ -139,6 +142,7 @@ export async function requestEmailChange(input: { newEmail: string; currentPassw
   const link = `${APP_BASE_URL}/${locale}/settings/confirm-email-change?userId=${userId}&email=${encodeURIComponent(newEmail)}&token=${token}`;
   const { html, text } = renderNotificationEmail(t("subject"), t("body"), link, t("cta"));
   await sendEmail({ to: newEmail, subject: t("subject"), html, text });
+  await logAccountActivity({ userId, event: "updated", description: "Email change requested", properties: { section: "email", newEmail } });
 
   return { ok: true };
 }
@@ -158,8 +162,10 @@ export async function confirmEmailChange(userId: string, newEmail: string, token
 
   // Same session-kill as a password change (auth.ts jwt callback) — every
   // outstanding token was minted for the old email, safest to force a fresh login.
+  const [previous] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
   await db.update(users).set({ email: newEmail, emailVerified: new Date(), sessionsInvalidatedAt: new Date() }).where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, event: "updated", description: "Email changed", changes: { email: { old: previous?.email ?? null, new: newEmail } }, properties: { section: "email" } });
   return { ok: true };
 }
 
@@ -183,6 +189,7 @@ export async function unlinkAccount(provider: string): Promise<ActionResult> {
   if (authMethods <= 1) return { ok: false, error: "lastAuthMethod" };
 
   await db.delete(accounts).where(and(eq(accounts.userId, userId), eq(accounts.provider, provider)));
+  await logAccountActivity({ userId, event: "updated", description: `Unlinked ${provider} account`, properties: { section: "linkedAccount", provider } });
   return { ok: true };
 }
 
@@ -195,6 +202,7 @@ export async function deletePasskey(credentialID: string): Promise<ActionResult>
   await db
     .delete(authenticators)
     .where(and(eq(authenticators.userId, userId), eq(authenticators.credentialID, credentialID)));
+  await logAccountActivity({ userId, event: "updated", description: "Passkey removed", properties: { section: "passkey" } });
   return { ok: true };
 }
 
@@ -220,5 +228,6 @@ export async function deleteAccount(currentPassword: string): Promise<ActionResu
   }
 
   await db.delete(users).where(eq(users.id, userId));
+  await logAccountActivity({ userId, event: "deleted", description: "Account deleted by its owner", properties: { section: "account" } });
   return { ok: true };
 }

@@ -4652,7 +4652,10 @@
       "event": {
         "created": "Oluşturuldu",
         "updated": "Güncellendi",
-        "deleted": "Silindi"
+        "deleted": "Silindi",
+        "login": "Giriş",
+        "login_failed": "Başarısız giriş",
+        "logout": "Çıkış"
       },
       "columnDescription": "Açıklama",
       "columnSubject": "Konu",

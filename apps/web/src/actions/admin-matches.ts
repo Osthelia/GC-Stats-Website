@@ -26,9 +26,19 @@ import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/
 import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+  return access.userId;
+}
+
+type MapLogInput = { mapId: number; matchId: number; actorUserId: string; description: string; event?: "created" | "updated" | "deleted"; changes?: ActivityChanges; properties?: Record<string, unknown> };
+
+/** Map edits are logged on the map itself, with its match in the properties. */
+function logMapChange(client: ActivityLogClient, input: MapLogInput) {
+  const { mapId, matchId, actorUserId, description, event = "updated", changes, properties } = input;
+  return logActivity({ subject: "map", subjectId: mapId, event, description, actorUserId, changes, properties: { matchId, ...properties } }, client);
 }
 
 // --- Match details (non-result fields) -------------------------------------
@@ -47,7 +57,7 @@ export type MatchDetailsInput = {
 export type MatchDetailsResult = { ok: true } | { ok: false; fieldErrors: MatchDetailsFieldErrors };
 
 export async function updateMatchDetails(matchId: number, input: MatchDetailsInput): Promise<MatchDetailsResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { label: "notFound" } };
@@ -108,17 +118,21 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db
-    .update(matches)
-    .set({
-      ...(locked ? {} : { entrantAId: input.entrantAId, entrantBId: input.entrantBId }),
-      status: input.status,
-      bestOf,
-      scheduledAt,
-      patch: input.patch.trim() || null,
-      label: input.label.trim() || null,
-    })
-    .where(eq(matches.id, matchId));
+  const values = {
+    ...(locked ? {} : { entrantAId: input.entrantAId, entrantBId: input.entrantBId }),
+    status: input.status,
+    bestOf,
+    scheduledAt,
+    patch: input.patch.trim() || null,
+    label: input.label.trim() || null,
+  };
+  await db.transaction(async (tx) => {
+    await tx.update(matches).set(values).where(eq(matches.id, matchId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
+    }
+  });
   updateTag(matchTag(matchId));
 
   return { ok: true };
@@ -128,13 +142,16 @@ export type DeleteMatchResult = { ok: true } | { ok: false; error: "notFound" | 
 
 /** V1's admin/matches/show.blade.php delete button — a completed match is locked (mirrors the same guard already used for entrant/status/bestOf edits above: its result may already be propagated through the bracket). */
 export async function deleteMatch(matchId: number): Promise<DeleteMatchResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: matches.id, status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status === "completed") return { ok: false, error: "completedLocked" };
 
-  await db.delete(matches).where(eq(matches.id, matchId));
+  await db.transaction(async (tx) => {
+    await tx.delete(matches).where(eq(matches.id, matchId));
+    await logActivity({ subject: "match", subjectId: matchId, event: "deleted", description: `Deleted match #${matchId}`, actorUserId }, tx);
+  });
   return { ok: true };
 }
 
@@ -149,7 +166,7 @@ export type ReportResultInput = { winnerId: number; scoreA: string; scoreB: stri
 export type ReportResultResult = { ok: true } | { ok: false; fieldErrors: ReportResultFieldErrors };
 
 export async function reportMatchResult(matchId: number, input: ReportResultInput): Promise<ReportResultResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: ReportResultFieldErrors = {};
   const scoreA = Number(input.scoreA);
@@ -173,6 +190,14 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
     }
     throw err;
   }
+  await logActivity({
+    subject: "match",
+    subjectId: matchId,
+    event: "updated",
+    description: `Reported result of match #${matchId} (${scoreA} - ${scoreB})`,
+    actorUserId,
+    properties: { section: "result", winnerId: input.winnerId, scoreA, scoreB },
+  });
   updateTag(matchTag(matchId));
 
   return { ok: true };
@@ -180,17 +205,23 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
 
 /** Running score of an undecided series (e.g. 1-1 in a BO3): stored as is, the match stays open and nothing propagates. */
 export async function saveMatchLiveScore(matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const scoreA = Number(input.scoreA);
   const scoreB = Number(input.scoreB);
   if (!Number.isInteger(scoreA) || !Number.isInteger(scoreB) || scoreA < 0 || scoreB < 0) return { ok: false, fieldErrors: { score: "invalid" } };
 
-  const [match] = await db.select({ status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
+  const [match] = await db.select({ status: matches.status, scoreA: matches.scoreA, scoreB: matches.scoreB }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { matchId: "notFound" } };
   if (match.status === "completed") return { ok: false, fieldErrors: { matchId: "alreadyCompleted" } };
 
-  await db.update(matches).set({ scoreA, scoreB }).where(eq(matches.id, matchId));
+  await db.transaction(async (tx) => {
+    await tx.update(matches).set({ scoreA, scoreB }).where(eq(matches.id, matchId));
+    const changes = diffChanges(match, { scoreA, scoreB });
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
+    }
+  });
   updateTag(matchTag(matchId));
 
   return { ok: true };
@@ -209,7 +240,7 @@ export type VetoFieldErrors = Partial<Record<"rows", string>>;
 export type SaveVetoResult = { ok: true } | { ok: false; fieldErrors: VetoFieldErrors };
 
 export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Promise<SaveVetoResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { rows: "notFound" } };
@@ -275,6 +306,10 @@ export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Prom
     }
     const removedIds = existingMaps.filter((m) => !keptIds.has(m.id)).map((m) => m.id);
     if (removedIds.length > 0) await tx.delete(maps).where(inArray(maps.id, removedIds));
+    await logActivity(
+      { subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
+      tx
+    );
   });
   await syncMatchScoreFromMaps(matchId);
   updateTag(matchTag(matchId));
@@ -350,7 +385,7 @@ function deriveMapIsForfeit(input: MapInput): boolean {
 }
 
 export async function addMap(matchId: number, input: MapInput): Promise<MapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [match] = await db.select({ id: matches.id }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { mapName: "matchNotFound" } as MapFieldErrors };
@@ -358,21 +393,26 @@ export async function addMap(matchId: number, input: MapInput): Promise<MapResul
   const fieldErrors = await validateMapInput(input, null);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [created] = await db
-    .insert(maps)
-    .values({
-      matchId,
-      mapName: input.mapName,
-      order: Number(input.order),
-      teamAScore: input.teamAScore.trim() === "" ? null : Number(input.teamAScore),
-      teamBScore: input.teamBScore.trim() === "" ? null : Number(input.teamBScore),
-      isCompleted: input.isCompleted,
-      isForfeit: deriveMapIsForfeit(input),
-      note: input.note.trim() || null,
-      apiMatchId: input.apiMatchId.trim() || null,
-    })
-    .returning({ id: maps.id });
-  if (!created) throw new Error("Insert returned no row");
+  const created = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(maps)
+      .values({
+        matchId,
+        mapName: input.mapName,
+        order: Number(input.order),
+        teamAScore: input.teamAScore.trim() === "" ? null : Number(input.teamAScore),
+        teamBScore: input.teamBScore.trim() === "" ? null : Number(input.teamBScore),
+        isCompleted: input.isCompleted,
+        isForfeit: deriveMapIsForfeit(input),
+        note: input.note.trim() || null,
+        apiMatchId: input.apiMatchId.trim() || null,
+      })
+      .returning({ id: maps.id });
+    if (!row) throw new Error("Insert returned no row");
+    await logMapChange(tx, { mapId: row.id, matchId, actorUserId, event: "created", description: `Added map ${input.mapName} to match #${matchId}`, properties: { mapName: input.mapName, order: Number(input.order) } });
+    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Added map ${input.mapName} to match #${matchId}`, actorUserId, properties: { section: "maps", mapId: row.id } }, tx);
+    return row;
+  });
   await syncMatchScoreFromMaps(matchId);
   updateTag(matchTag(matchId));
 
@@ -380,27 +420,31 @@ export async function addMap(matchId: number, input: MapInput): Promise<MapResul
 }
 
 export async function updateMap(mapId: number, input: MapInput): Promise<MapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
+  const [existing] = await db.select().from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { mapName: "notFound" } as MapFieldErrors };
 
   const fieldErrors = await validateMapInput(input, mapId);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db
-    .update(maps)
-    .set({
-      mapName: input.mapName,
-      order: Number(input.order),
-      teamAScore: input.teamAScore.trim() === "" ? null : Number(input.teamAScore),
-      teamBScore: input.teamBScore.trim() === "" ? null : Number(input.teamBScore),
-      isCompleted: input.isCompleted,
-      isForfeit: deriveMapIsForfeit(input),
-      note: input.note.trim() || null,
-      apiMatchId: input.apiMatchId.trim() || null,
-    })
-    .where(eq(maps.id, mapId));
+  const values = {
+    mapName: input.mapName,
+    order: Number(input.order),
+    teamAScore: input.teamAScore.trim() === "" ? null : Number(input.teamAScore),
+    teamBScore: input.teamBScore.trim() === "" ? null : Number(input.teamBScore),
+    isCompleted: input.isCompleted,
+    isForfeit: deriveMapIsForfeit(input),
+    note: input.note.trim() || null,
+    apiMatchId: input.apiMatchId.trim() || null,
+  };
+  await db.transaction(async (tx) => {
+    await tx.update(maps).set(values).where(eq(maps.id, mapId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Updated map #${mapId} of match #${existing.matchId}`, changes });
+    }
+  });
   await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
 
@@ -410,12 +454,16 @@ export async function updateMap(mapId: number, input: MapInput): Promise<MapResu
 export type DeleteMapResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteMap(mapId: number): Promise<DeleteMapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
+  const [existing] = await db.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
-  await db.delete(maps).where(eq(maps.id, mapId));
+  await db.transaction(async (tx) => {
+    await tx.delete(maps).where(eq(maps.id, mapId));
+    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, event: "deleted", description: `Deleted map ${existing.mapName} of match #${existing.matchId}` });
+    await logActivity({ subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
+  });
   await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
   return { ok: true };
@@ -425,7 +473,7 @@ export type ResetMapResult = { ok: true } | { ok: false; error: "notFound" };
 
 /** V1's "Reset map" (admin.matches.maps.reset) — wipes stats/rounds/score but keeps apiMatchId/mapName so a Fetch can be retried. */
 export async function resetMap(mapId: number): Promise<ResetMapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -435,6 +483,7 @@ export async function resetMap(mapId: number): Promise<ResetMapResult> {
     await tx.delete(mapTeamRoundSummary).where(eq(mapTeamRoundSummary.mapId, mapId));
     await tx.delete(mapRoundsRaw).where(eq(mapRoundsRaw.mapId, mapId)); // cascades to kills/loadouts/positions
     await tx.update(maps).set({ teamAScore: null, teamBScore: null, isCompleted: false, isForfeit: false }).where(eq(maps.id, mapId));
+    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
   });
   await syncMatchScoreFromMaps(existing.matchId);
   updateTag(matchTag(existing.matchId));
@@ -492,7 +541,7 @@ function validatePlayerStatRow(row: MapPlayerStatInput, prefix: string, errors: 
 
 /** Replaces every `map_player_stats` row for this map (idempotent, mirrors the Fetch pipeline's delete+reinsert convention) with the manually entered scoreboard. Used when no Riot match id exists to Fetch from. */
 export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerStatInput[], playersB: MapPlayerStatInput[]): Promise<UpdateMapPlayerStatsResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [map] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!map) return { ok: false, error: "notFound" };
@@ -527,6 +576,7 @@ export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerSta
   await db.transaction(async (tx) => {
     await tx.delete(mapPlayerStats).where(eq(mapPlayerStats.mapId, mapId));
     if (rowsToInsert.length > 0) await tx.insert(mapPlayerStats).values(rowsToInsert);
+    await logMapChange(tx, { mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
   });
   updateTag(matchTag(map.matchId));
 
@@ -622,7 +672,7 @@ export async function importMatchWikicode(
   wikicode: string,
   resolutions: Partial<Record<"1" | "2", LiquipediaConflictResolution>> = {}
 ): Promise<ImportWikicodeResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const trimmed = wikicode.trim();
   if (!trimmed) return { ok: false, error: "required" };
@@ -736,6 +786,7 @@ export async function importMatchWikicode(
 
     const staleMapIds = existingMaps.filter((m) => m.order > playOrder.length && !hasData(m)).map((m) => m.id);
     if (staleMapIds.length > 0) await tx.delete(maps).where(inArray(maps.id, staleMapIds));
+    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
   });
   updateTag(matchTag(matchId));
 

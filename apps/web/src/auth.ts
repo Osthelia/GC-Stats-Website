@@ -29,6 +29,12 @@ import { consumeSessionReissueToken } from "@/lib/session-reissue";
 import { getClientIp } from "@/lib/client-ip";
 import { checkLoginThrottle, checkTwoFactorThrottle } from "@/lib/auth-throttle";
 import { markEmailVerifiedFromProvider } from "@/lib/email-verification";
+import { logAccountActivity } from "@/lib/account-activity-log";
+
+/** A failed log write must never block a login. */
+function logQuietly(input: Parameters<typeof logAccountActivity>[0]): Promise<void> {
+  return logAccountActivity(input).catch((error) => console.error("Account activity log failed", error));
+}
 
 // `.code` ends up as the `code` query param on a `redirect:false` signIn()'s
 // result (see @auth/core/index.js: `if (error instanceof CredentialsSignin)
@@ -101,10 +107,17 @@ const providers: Provider[] = [
       const ip = getClientIp(request.headers);
       if (!(await checkLoginThrottle(email, ip))) throw new TooManyAttemptsError();
 
+      // Throttled attempts are not logged, so a flood can't fill the table.
+      const logFailure = (userId: string | null, reason: string) =>
+        logQuietly({ userId, actorUserId: null, event: "login_failed", description: `Failed login attempt for ${email}`, ip, properties: { method: "credentials", email, reason } });
+
       const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
       const valid = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
       // No such user, or an OAuth/passkey only account with no password set.
-      if (!user?.passwordHash || !valid) return null;
+      if (!user?.passwordHash || !valid) {
+        await logFailure(user?.id ?? null, "invalidCredentials");
+        return null;
+      }
 
       if (user.twoFactorConfirmedAt) {
         const code = typeof credentials.code === "string" ? credentials.code.trim() : "";
@@ -118,14 +131,19 @@ const providers: Provider[] = [
         // at the 6-digit TOTP space.
         if (!(await checkTwoFactorThrottle(user.id))) throw new TooManyAttemptsError();
 
+        const rejectTwoFactor = async () => {
+          await logFailure(user.id, "invalidTwoFactorCode");
+          return new InvalidTwoFactorCodeError();
+        };
+
         if (code) {
           const secret = decrypt(user.twoFactorSecret!);
-          if (!(await verifyTotpToken(code, secret))) throw new InvalidTwoFactorCodeError();
+          if (!(await verifyTotpToken(code, secret))) throw await rejectTwoFactor();
           // A code seen once (shoulder surfing, realtime phishing) can't log in twice.
-          if (!(await claimTotpCode(user.id, code))) throw new InvalidTwoFactorCodeError();
+          if (!(await claimTotpCode(user.id, code))) throw await rejectTwoFactor();
         } else {
           const storedCodes: string[] = user.twoFactorRecoveryCodes ? JSON.parse(decrypt(user.twoFactorRecoveryCodes)) : [];
-          if (!storedCodes.includes(recoveryCode)) throw new InvalidTwoFactorCodeError();
+          if (!storedCodes.includes(recoveryCode)) throw await rejectTwoFactor();
           // Single use, and conditional on the list we read: of two concurrent
           // logins with the same code, only one gets through.
           const remaining = storedCodes.filter((c) => c !== recoveryCode);
@@ -134,7 +152,7 @@ const providers: Provider[] = [
             .set({ twoFactorRecoveryCodes: encrypt(JSON.stringify(remaining)) })
             .where(and(eq(users.id, user.id), eq(users.twoFactorRecoveryCodes, user.twoFactorRecoveryCodes!)))
             .returning({ id: users.id });
-          if (!redeemed) throw new InvalidTwoFactorCodeError();
+          if (!redeemed) throw await rejectTwoFactor();
         }
       }
 
@@ -213,6 +231,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               id_token: account.id_token,
               session_state: typeof account.session_state === "string" ? account.session_state : undefined,
             });
+            await logQuietly({ userId: activeUserId, event: "updated", description: `Linked ${account.provider} account`, properties: { section: "linkedAccount", provider: account.provider } });
           }
           await markEmailVerifiedFromProvider(activeUserId, account.provider, profile);
           return `/settings/account?linked=${account.provider}`;
@@ -295,7 +314,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user.id) {
         await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
         if (account) await markEmailVerifiedFromProvider(user.id, account.provider, profile);
+        const method = account?.provider ?? "credentials";
+        await logQuietly({ userId: user.id, event: "login", description: `Logged in with ${method}`, properties: { method } });
       }
+    },
+    // Fired by the adapter for OAuth/passkey signups (credentials signups are logged in actions/register.ts).
+    async createUser({ user }) {
+      if (user.id) await logQuietly({ userId: user.id, event: "created", description: "Account created", properties: { section: "account" } });
+    },
+    async signOut(message) {
+      const userId = "token" in message ? message.token?.sub : undefined;
+      if (userId) await logQuietly({ userId, event: "logout", description: "Logged out" });
     },
   },
   pages: {

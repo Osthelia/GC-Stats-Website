@@ -4652,7 +4652,10 @@
       "event": {
         "created": "Utworzenie",
         "updated": "Zmiana",
-        "deleted": "Usunięcie"
+        "deleted": "Usunięcie",
+        "login": "Logowanie",
+        "login_failed": "Nieudane logowanie",
+        "logout": "Wylogowanie"
       },
       "columnDescription": "Opis",
       "columnSubject": "Obiekt",

@@ -149,13 +149,8 @@ export type DashboardModificationRow = {
 
 /**
  * Recent team/player edits — same widget as V1's dashboard-modifications-widget.blade.php,
- * reading activity_log the same way (logName + subjectType). Sparser than V1 for
- * ordinary edits: V2 has no automatic per-save activity logging (V1 had it via
- * Spatie's LogsActivity trait on every model) — only team/player merges and the
- * auto-activation scheduled job currently write logName='team'/'player' rows, see
- * actions/admin-team-merge.ts, actions/admin-player-merge.ts, lib/scheduled-jobs/log-auto-activation.ts.
- * Widget still reads the real table rather than a stub, so it fills in as more
- * write paths start logging.
+ * reading activity_log the same way (logName + subjectType). Rows are written
+ * by the edit actions through lib/activity-log.ts.
  */
 export async function getDashboardModifications(subjectType: "team" | "player", requestedPage: number): Promise<DashboardPage<DashboardModificationRow>> {
   const where = and(eq(activityLog.logName, subjectType), eq(activityLog.subjectType, subjectType));

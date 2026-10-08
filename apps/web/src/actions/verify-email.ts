@@ -15,6 +15,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { users } from "@gc-stats/db";
 import { consumeVerificationToken } from "@/lib/verification-tokens";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
 export type VerifyEmailResult = { ok: true } | { ok: false; error: "invalidOrExpired" };
 
@@ -22,6 +23,7 @@ export async function verifyEmailToken(email: string, token: string): Promise<Ve
   const valid = await consumeVerificationToken(`verify-email:${email}`, token);
   if (!valid) return { ok: false, error: "invalidOrExpired" };
 
-  await db.update(users).set({ emailVerified: new Date() }).where(eq(users.email, email));
+  const [user] = await db.update(users).set({ emailVerified: new Date() }).where(eq(users.email, email)).returning({ id: users.id });
+  if (user) await logAccountActivity({ userId: user.id, event: "updated", description: "Email address verified", properties: { section: "emailVerification" } });
   return { ok: true };
 }

@@ -4652,7 +4652,10 @@
       "event": {
         "created": "생성됨",
         "updated": "수정됨",
-        "deleted": "삭제됨"
+        "deleted": "삭제됨",
+        "login": "로그인",
+        "login_failed": "로그인 실패",
+        "logout": "로그아웃"
       },
       "columnDescription": "설명",
       "columnSubject": "대상",

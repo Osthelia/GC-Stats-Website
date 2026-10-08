@@ -15,6 +15,7 @@ import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { organizations, users, PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 import { validateOrganizationProfileInput, type OrganizationProfileInput, type OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
 import {
   addOrganizationAccessEntry,
@@ -66,7 +67,7 @@ export type CreateOrganizationResult = { ok: true; id: number } | { ok: false; f
 
 /** Quick-create from the admin organizations list — mirrors createTeam's shape (name required, everything else editable afterwards). */
 export async function createOrganization(input: CreateOrganizationInput): Promise<CreateOrganizationResult> {
-  await requireOrgActorId(PERMISSIONS.organizationsEdit);
+  const actorUserId = await requireOrgActorId(PERMISSIONS.organizationsEdit);
 
   const fieldErrors: CreateOrganizationFieldErrors = {};
   const name = input.name.trim();
@@ -77,11 +78,12 @@ export async function createOrganization(input: CreateOrganizationInput): Promis
 
   const slug = await uniqueSlugFrom(name);
 
-  const [created] = await db
-    .insert(organizations)
-    .values({ name, slug, tags: [], socials: {}, maxPermissions: [] })
-    .returning({ id: organizations.id });
-  if (!created) throw new Error("Insert returned no row");
+  const created = await db.transaction(async (tx) => {
+    const [row] = await tx.insert(organizations).values({ name, slug, tags: [], socials: {}, maxPermissions: [] }).returning({ id: organizations.id });
+    if (!row) throw new Error("Insert returned no row");
+    await logActivity({ subject: "organization", subjectId: row.id, event: "created", description: `Created organization #${row.id} (${name})`, actorUserId }, tx);
+    return row;
+  });
 
   return { ok: true, id: created.id };
 }
@@ -90,12 +92,12 @@ export type { OrganizationProfileInput, OrganizationProfileField, OrganizationPr
 export type OrganizationProfileResult = { ok: true } | { ok: false; fieldErrors: OrganizationProfileFieldErrors };
 
 export async function updateOrganizationProfile(organizationId: number, input: OrganizationProfileInput): Promise<OrganizationProfileResult> {
-  await requireOrgActorId();
+  const actorUserId = await requireOrgActorId();
 
   const validated = validateOrganizationProfileInput(input);
   const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validated;
 
-  const [existing] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
+  const [existing] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
 
   if (!fieldErrors.slug) {
@@ -109,10 +111,14 @@ export async function updateOrganizationProfile(organizationId: number, input: O
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db
-    .update(organizations)
-    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags })
-    .where(eq(organizations.id, organizationId));
+  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags };
+  await db.transaction(async (tx) => {
+    await tx.update(organizations).set(values).where(eq(organizations.id, organizationId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Updated organization #${organizationId} (${name})`, actorUserId, changes }, tx);
+    }
+  });
 
   return { ok: true };
 }
@@ -121,15 +127,21 @@ export type UpdateMaxPermissionsResult = { ok: true } | { ok: false; error: "not
 
 /** The "access" side of the 2-level org edit (content vs. access) — sets the ceiling /dashboard's per-organization role system (organization_role_permissions) can ever grant this organization's own members. */
 export async function updateOrganizationMaxPermissions(organizationId: number, maxPermissions: string[]): Promise<UpdateMaxPermissionsResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
 
-  const [existing] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
+  const [existing] = await db.select({ id: organizations.id, maxPermissions: organizations.maxPermissions }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const allowed = new Set<string>(ALL_ORGANIZATION_PERMISSIONS);
   const ceiling = [...new Set(maxPermissions)].filter((p) => allowed.has(p));
 
-  await db.update(organizations).set({ maxPermissions: ceiling }).where(eq(organizations.id, organizationId));
+  await db.transaction(async (tx) => {
+    await tx.update(organizations).set({ maxPermissions: ceiling }).where(eq(organizations.id, organizationId));
+    const changes = diffChanges({ maxPermissions: existing.maxPermissions }, { maxPermissions: ceiling });
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Updated permission ceiling of organization #${organizationId}`, actorUserId, changes }, tx);
+    }
+  });
   return { ok: true };
 }
 
@@ -137,12 +149,15 @@ export type DeleteOrganizationResult = { ok: true } | { ok: false; error: "notFo
 
 /** Hard-deletes an organization. `organization_memberships` cascades and `production_credits.organization_id` is set null (schema) — no FK violation is expected here, unlike deleteTeam. */
 export async function deleteOrganization(organizationId: number): Promise<DeleteOrganizationResult> {
-  await requireActorPermission(PERMISSIONS.organizationsDelete);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.organizationsDelete);
 
-  const [existing] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
+  const [existing] = await db.select({ id: organizations.id, name: organizations.name }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
-  await db.delete(organizations).where(eq(organizations.id, organizationId));
+  await db.transaction(async (tx) => {
+    await tx.delete(organizations).where(eq(organizations.id, organizationId));
+    await logActivity({ subject: "organization", subjectId: organizationId, event: "deleted", description: `Deleted organization #${organizationId} (${existing.name})`, actorUserId }, tx);
+  });
   return { ok: true };
 }
 
@@ -158,18 +173,18 @@ export type {
 
 /** "Owner" (V1's Publisher owner) is just a membership row with role='owner' — no separate table, see packages/db/src/schema/people.ts::organizationMemberships. Business logic lives in organization-membership-service.ts, shared with /dashboard's own member actions (actions/dashboard-organizations.ts) — this wrapper only owns the admin permission check. */
 export async function addOrganizationMember(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return addOrganizationMemberEntry(organizationId, personId, role, from, until);
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return addOrganizationMemberEntry(organizationId, personId, role, from, until, userId);
 }
 
 export async function updateOrganizationMember(membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return updateOrganizationMemberEntry(membershipId, role, from, until);
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return updateOrganizationMemberEntry(membershipId, role, from, until, userId);
 }
 
 export async function deleteOrganizationMembership(membershipId: number): Promise<MembershipActionResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return deleteOrganizationMembershipEntry(membershipId);
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return deleteOrganizationMembershipEntry(membershipId, userId);
 }
 
 // --- Dashboard access (organization_access) --------------------------------
@@ -189,16 +204,16 @@ export type { AccessRoleSelection, AddAccessFieldErrors as AddOrgAccessFieldErro
 // power could be inflated by it, unlike the /dashboard equivalent in
 // actions/dashboard-organizations.ts.
 export async function addOrganizationAccess(organizationId: number, userId: string | null, selection: AccessRoleSelection): Promise<AddAccessResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return addOrganizationAccessEntry(organizationId, userId, selection, true);
+  const actor = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return addOrganizationAccessEntry(organizationId, userId, selection, true, actor.userId);
 }
 
 export async function updateOrganizationAccessRoles(organizationId: number, accessId: number, selection: AccessRoleSelection): Promise<AccessEntryResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return updateOrganizationAccessRolesEntry(organizationId, accessId, selection, true, false);
+  const actor = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return updateOrganizationAccessRolesEntry(organizationId, accessId, selection, true, false, actor.userId);
 }
 
 export async function removeOrganizationAccess(organizationId: number, accessId: number): Promise<AccessActionResult> {
-  await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return removeOrganizationAccessEntry(organizationId, accessId, true, false);
+  const actor = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
+  return removeOrganizationAccessEntry(organizationId, accessId, true, false, actor.userId);
 }

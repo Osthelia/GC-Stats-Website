@@ -19,6 +19,7 @@ import { users } from "@gc-stats/db";
 import { getClientIp } from "@/lib/client-ip";
 import { checkRegisterThrottle } from "@/lib/auth-throttle";
 import { sendVerificationEmail } from "@/lib/email-verification";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
 const USERNAME_RE = /^[a-zA-Z0-9_-]{3,32}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,7 +88,8 @@ export async function registerWithPassword(input: RegisterInput): Promise<Regist
   }
 
   const passwordHash = await bcrypt.hash(input.password, 12);
-  await db.insert(users).values({ name, username, email, passwordHash });
+  const [created] = await db.insert(users).values({ name, username, email, passwordHash }).returning({ id: users.id });
+  if (created) await logAccountActivity({ userId: created.id, event: "created", description: `Account created with email and password (${username})`, ip, properties: { section: "account", method: "credentials", username } });
 
   await sendVerificationEmail(email);
 

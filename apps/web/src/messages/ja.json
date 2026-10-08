@@ -4652,7 +4652,10 @@
       "event": {
         "created": "作成",
         "updated": "更新",
-        "deleted": "削除"
+        "deleted": "削除",
+        "login": "ログイン",
+        "login_failed": "ログイン失敗",
+        "logout": "ログアウト"
       },
       "columnDescription": "説明",
       "columnSubject": "対象",

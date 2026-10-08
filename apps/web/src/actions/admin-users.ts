@@ -16,6 +16,8 @@ import { and, eq, inArray, isNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { users, roles, userRoles, permissions, rolePermissions } from "@gc-stats/db";
 import { ADMIN_ACCESS_PERMISSION, requireSuperAdminActor } from "@/lib/rbac";
+import { diffChanges } from "@/lib/activity-log";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -51,10 +53,16 @@ export async function updateUserGlobalRoles(targetUserId: string, roleIds: numbe
     if (!willKeepAdminAccess) return { ok: false, error: "selfDemote" };
   }
 
+  const previousRoles = await db.select({ roleId: userRoles.roleId }).from(userRoles).where(and(eq(userRoles.userId, targetUserId), isNull(userRoles.scopeId)));
+
   await db.transaction(async (tx) => {
     await tx.delete(userRoles).where(and(eq(userRoles.userId, targetUserId), isNull(userRoles.scopeId)));
     if (uniqueRoleIds.length) {
       await tx.insert(userRoles).values(uniqueRoleIds.map((roleId) => ({ userId: targetUserId, roleId, scopeId: null })));
+    }
+    const changes = diffChanges({ roleIds: previousRoles.map((r) => r.roleId).sort((a, b) => a - b) }, { roleIds: [...uniqueRoleIds].sort((a, b) => a - b) });
+    if (Object.keys(changes).length > 0) {
+      await logAccountActivity({ userId: targetUserId, actorUserId: actorId, event: "updated", description: "Global roles updated", changes, properties: { section: "roles" } }, tx);
     }
   });
 

@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, desc, eq, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { activityLog } from "@gc-stats/db";
+import { activityLog, users } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 
@@ -26,6 +26,8 @@ export type AdminActivityLogRow = {
   event: string | null;
   causerType: string | null;
   causerId: number | null;
+  actorUserId: string | null;
+  actorUsername: string | null;
   attributeChanges: unknown;
   properties: unknown;
   createdAt: string;
@@ -58,6 +60,15 @@ export async function listAdminActivityLog(opts: { q: string; logName: string; e
   ]);
   const count = countRows[0]?.count ?? 0;
 
+  // The acting account is stored in properties.actorUserId, not in causer_*.
+  const actorIdOf = (properties: unknown): string | null => {
+    const id = properties !== null && typeof properties === "object" ? (properties as Record<string, unknown>).actorUserId : null;
+    return typeof id === "string" ? id : null;
+  };
+  const actorIds = [...new Set(rows.map((r) => actorIdOf(r.properties)).filter((id): id is string => !!id))];
+  const actorRows = actorIds.length ? await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, actorIds)) : [];
+  const usernameById = new Map(actorRows.map((u) => [u.id, u.username]));
+
   return {
     rows: rows.map((r) => ({
       id: r.id,
@@ -68,6 +79,8 @@ export async function listAdminActivityLog(opts: { q: string; logName: string; e
       event: r.event,
       causerType: r.causerType,
       causerId: r.causerId,
+      actorUserId: actorIdOf(r.properties),
+      actorUsername: usernameById.get(actorIdOf(r.properties) ?? "") ?? null,
       attributeChanges: r.attributeChanges,
       properties: r.properties,
       createdAt: r.createdAt.toISOString(),

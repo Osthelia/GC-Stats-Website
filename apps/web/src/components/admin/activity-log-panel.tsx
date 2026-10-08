@@ -22,18 +22,15 @@ const EVENT_STYLES: Record<string, string> = {
   created: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
   updated: "border-sky-400/20 bg-sky-400/10 text-sky-300",
   deleted: "border-destructive/20 bg-destructive/10 text-destructive",
+  login: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
+  login_failed: "border-destructive/20 bg-destructive/10 text-destructive",
+  logout: "border-border bg-muted text-muted-foreground",
 };
 
 function EventBadge({ event }: { event: string | null }) {
   const t = useTranslations("admin.activityLog");
   if (!event) return <span className="text-sm text-muted-foreground">–</span>;
   return <Badge variant="outline" className={cn(EVENT_STYLES[event] ?? "border-border bg-muted text-muted-foreground")}>{t.has(`event.${event}`) ? t(`event.${event}`) : event}</Badge>;
-}
-
-function actorUserIdOf(row: AdminActivityLogRow): string | null {
-  if (row.properties === null || typeof row.properties !== "object") return null;
-  const actorUserId = (row.properties as Record<string, unknown>).actorUserId;
-  return typeof actorUserId === "string" ? actorUserId : null;
 }
 
 function hasDetails(row: AdminActivityLogRow): boolean {
@@ -96,15 +93,12 @@ export function ActivityLogPanel({ rows }: { rows: AdminActivityLogRow[] }) {
                     <EventBadge event={row.event} />
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {row.causerType ? (
-                      <span className="flex items-center gap-1.5">
-                        {`${row.causerType} #${row.causerId}`}
-                        {actorUserIdOf(row) && (
-                          <Link href={`/admin/users/${actorUserIdOf(row)}`} className="text-xs text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
-                            {t("viewCauser")}
-                          </Link>
-                        )}
-                      </span>
+                    {row.actorUserId ? (
+                      <Link href={`/admin/users/${row.actorUserId}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {row.actorUsername ?? t("viewCauser")}
+                      </Link>
+                    ) : row.causerType ? (
+                      `${row.causerType} #${row.causerId}`
                     ) : (
                       t("systemCauser")
                     )}

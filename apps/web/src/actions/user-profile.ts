@@ -16,6 +16,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { users, teams } from "@gc-stats/db";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import { getCurrentUserId } from "@/lib/session";
+import { diffChanges, logActivity } from "@/lib/activity-log";
 import { validateUserProfileInput, type UserProfileInput, type UserProfileFieldErrors } from "@/lib/user-profile-validation";
 
 async function requireUserId(): Promise<string> {
@@ -117,9 +118,22 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
+  const [current, currentTeamId] = await Promise.all([
+    db.select({ name: users.name, username: users.username, pronouns: users.pronouns, bio: users.bio, socials: users.socials, teamTag: users.teamTag }).from(users).where(eq(users.id, userId)).limit(1).then((r) => r[0]),
+    getUserTeamId(userId),
+  ]);
+
   await db.transaction(async (tx) => {
     await tx.update(users).set({ name, username, pronouns, bio: bio || null, socials }).where(eq(users.id, userId));
     await tx.execute(sql`update users set team_id = ${teamId}, team_tag = ${teamTag} where id = ${userId}`);
+
+    const changes = diffChanges(
+      { ...current, teamId: currentTeamId },
+      { name, username, pronouns, bio: bio || null, socials, teamId, teamTag }
+    );
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "user", subjectId: userId, logName: "moderation", event: "updated", description: `Updated profile of user ${username}`, actorUserId: userId, changes, properties: { section: "profile" } }, tx);
+    }
   });
 
   return { ok: true, username };

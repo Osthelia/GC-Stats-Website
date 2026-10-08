@@ -18,8 +18,9 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { users, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission, getGlobalAccess, hasAccess, ADMIN_ACCESS_PERMISSION } from "@/lib/rbac";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
-async function requireUsersManageActor(): Promise<{ isSuperAdmin: boolean }> {
+async function requireUsersManageActor(): Promise<Awaited<ReturnType<typeof requireActorPermission>>> {
   // Re-checked here, not just relied on from the /admin layout guard — a
   // server action is reachable as its own POST endpoint regardless of which
   // page rendered the form that calls it. These are account-security support
@@ -54,6 +55,7 @@ export async function adminDisableTwoFactor(userId: string): Promise<ActionResul
     .set({ twoFactorSecret: null, twoFactorRecoveryCodes: null, twoFactorConfirmedAt: null, sessionsInvalidatedAt: new Date() })
     .where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, actorUserId: actor.userId, event: "updated", description: "Two-factor authentication removed by an admin", properties: { section: "twoFactor" } });
   return { ok: true };
 }
 
@@ -74,16 +76,18 @@ export async function adminRevokeUserSessions(userId: string): Promise<ActionRes
   // OAuth tokens die too: signing out a compromised account must cover third party apps.
   await db.update(users).set({ sessionsInvalidatedAt: new Date() }).where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, actorUserId: actor.userId, event: "updated", description: "All sessions revoked by an admin", properties: { section: "sessions" } });
   return { ok: true };
 }
 
 /** Individual "can author news" grant, independent of any organization — the other way to get it is through an organization's own organization.news.edit/publish permission (organization_access + organization_role_permissions). See schema/auth.ts's users.isAuthor comment. */
 export async function setUserAuthorAccess(userId: string, isAuthor: boolean): Promise<ActionResult> {
-  await requireUsersManageActor();
+  const actor = await requireUsersManageActor();
 
-  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
+  const [existing] = await db.select({ id: users.id, isAuthor: users.isAuthor }).from(users).where(eq(users.id, userId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(users).set({ isAuthor }).where(eq(users.id, userId));
+  await logAccountActivity({ userId, actorUserId: actor.userId, event: "updated", description: isAuthor ? "Author access granted" : "Author access removed", changes: { isAuthor: { old: existing.isAuthor, new: isAuthor } }, properties: { section: "authorAccess" } });
   return { ok: true };
 }

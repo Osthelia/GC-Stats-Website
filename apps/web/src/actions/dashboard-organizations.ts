@@ -28,6 +28,7 @@ import { isValidUrl } from "@/lib/admin-validation";
 import { PERSON_SOCIAL_KEYS, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import {
   addOrganizationAccessEntry,
@@ -63,7 +64,7 @@ export type {
 } from "@/lib/organization-membership-service";
 
 export async function updateDashboardOrganizationProfile(organizationId: number, input: OrganizationProfileInput): Promise<OrganizationProfileResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.profileEdit);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.profileEdit);
 
   const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validateOrganizationProfileInput(input);
 
@@ -78,10 +79,15 @@ export async function updateDashboardOrganizationProfile(organizationId: number,
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db
-    .update(organizations)
-    .set({ name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags })
-    .where(eq(organizations.id, organizationId));
+  const [existing] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
+  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags };
+  await db.transaction(async (tx) => {
+    await tx.update(organizations).set(values).where(eq(organizations.id, organizationId));
+    const changes = existing ? diffChanges(existing, values) : {};
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Updated organization #${organizationId} (${name})`, actorUserId, changes }, tx);
+    }
+  });
 
   return { ok: true };
 }
@@ -126,8 +132,8 @@ export async function searchPeopleForNewOrganizationMember(organizationId: numbe
 }
 
 export async function addDashboardOrganizationMember(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return addOrganizationMemberEntry(organizationId, personId, role, from, until);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  return addOrganizationMemberEntry(organizationId, personId, role, from, until, userId);
 }
 
 export type CreatePersonField = "handle" | "countryCode";
@@ -141,7 +147,7 @@ export type CreatePersonResult = { ok: true; id: number; handle: string } | { ok
  * fields relevant here (no team assignment, this isn't a roster).
  */
 export async function createPersonForOrganization(organizationId: number, handle: string, countryCode: string): Promise<CreatePersonResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleCreate);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleCreate);
 
   const fieldErrors: CreatePersonFieldErrors = {};
   const trimmedHandle = handle.trim();
@@ -154,11 +160,15 @@ export async function createPersonForOrganization(organizationId: number, handle
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [created] = await db
-    .insert(people)
-    .values({ handle: trimmedHandle, countryCode: trimmedCountry || null, isActive: true })
-    .returning({ id: people.id, handle: people.handle });
-  if (!created) throw new Error("Insert returned no row");
+  const created = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(people)
+      .values({ handle: trimmedHandle, countryCode: trimmedCountry || null, isActive: true })
+      .returning({ id: people.id, handle: people.handle });
+    if (!row) throw new Error("Insert returned no row");
+    await logActivity({ subject: "player", subjectId: row.id, event: "created", description: `Created player #${row.id} (${row.handle})`, actorUserId, properties: { organizationId } }, tx);
+    return row;
+  });
 
   return { ok: true, id: created.id, handle: created.handle };
 }
@@ -172,15 +182,15 @@ export async function searchUsersForPersonLink(organizationId: number, query: st
 export type { LinkUserResult } from "@/lib/person-link-service";
 
 export async function linkDashboardOrganizationMemberUser(organizationId: number, personId: number, userId: string): Promise<LinkUserResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
   if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
-  return linkUserToPersonEntry(personId, userId);
+  return linkUserToPersonEntry(personId, userId, actorUserId);
 }
 
 export async function unlinkDashboardOrganizationMemberUser(organizationId: number, personId: number): Promise<LinkUserResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
   if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
-  return unlinkUserFromPersonEntry(personId);
+  return unlinkUserFromPersonEntry(personId, actorUserId);
 }
 
 export type OrgPersonProfile = {
@@ -259,7 +269,7 @@ const ORG_PRONOUN_OPTIONS = [0, 1, 2] as const;
 
 /** Write side — same field scope as getPersonProfileForOrganization above, same validation rules as admin's updatePlayerProfile for the fields they share. */
 export async function updatePersonProfileForOrganization(organizationId: number, personId: number, input: OrgPersonProfileInput): Promise<OrgPersonProfileResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
   if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, fieldErrors: { handle: "notFound" } };
 
   const fieldErrors: OrgPersonProfileFieldErrors = {};
@@ -310,20 +320,25 @@ export async function updatePersonProfileForOrganization(organizationId: number,
 
   const aliases = [...new Set(input.aliases.map((a) => a.trim()).filter(Boolean))];
 
-  await db
-    .update(people)
-    .set({
-      handle,
-      firstName: firstName || null,
-      lastName: lastName || null,
-      countryCode: countryCode || null,
-      pronouns: pronounsValue,
-      vlrId: vlrIdValue,
-      liquipediaLink: liquipediaLink || null,
-      aliases,
-      socials,
-    })
-    .where(eq(people.id, personId));
+  const [existing] = await db.select().from(people).where(eq(people.id, personId)).limit(1);
+  const values = {
+    handle,
+    firstName: firstName || null,
+    lastName: lastName || null,
+    countryCode: countryCode || null,
+    pronouns: pronounsValue,
+    vlrId: vlrIdValue,
+    liquipediaLink: liquipediaLink || null,
+    aliases,
+    socials,
+  };
+  await db.transaction(async (tx) => {
+    await tx.update(people).set(values).where(eq(people.id, personId));
+    const changes = existing ? diffChanges(existing, values) : {};
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Updated player #${personId} (${handle})`, actorUserId, changes, properties: { organizationId } }, tx);
+    }
+  });
   // Match scoreboards show the current handle.
   updateTag(MATCH_STATS_TAG);
 
@@ -331,13 +346,13 @@ export async function updatePersonProfileForOrganization(organizationId: number,
 }
 
 export async function updateDashboardOrganizationMember(organizationId: number, membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return updateOrganizationMemberEntry(membershipId, role, from, until, organizationId);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  return updateOrganizationMemberEntry(membershipId, role, from, until, userId, organizationId);
 }
 
 export async function deleteDashboardOrganizationMembership(organizationId: number, membershipId: number): Promise<MembershipActionResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return deleteOrganizationMembershipEntry(membershipId, organizationId);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  return deleteOrganizationMembershipEntry(membershipId, userId, organizationId);
 }
 
 // --- Dashboard access (organization_access) --------------------------------
@@ -345,18 +360,18 @@ export async function deleteDashboardOrganizationMembership(organizationId: numb
 export type { AccessRoleSelection, AddAccessFieldErrors, AddAccessResult, AccessEntryFieldErrors, AccessEntryResult, AccessActionResult };
 
 export async function addDashboardOrganizationAccess(organizationId: number, userId: string | null, selection: AccessRoleSelection): Promise<AddAccessResult> {
-  const { membership } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return addOrganizationAccessEntry(organizationId, userId, selection, membership.isOwner);
+  const { membership, userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
+  return addOrganizationAccessEntry(organizationId, userId, selection, membership.isOwner, actorUserId);
 }
 
 export async function updateDashboardOrganizationAccessRoles(organizationId: number, accessId: number, selection: AccessRoleSelection): Promise<AccessEntryResult> {
-  const { membership } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return updateOrganizationAccessRolesEntry(organizationId, accessId, selection, membership.isOwner, true);
+  const { membership, userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
+  return updateOrganizationAccessRolesEntry(organizationId, accessId, selection, membership.isOwner, true, actorUserId);
 }
 
 export async function removeDashboardOrganizationAccess(organizationId: number, accessId: number): Promise<AccessActionResult> {
-  const { membership } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return removeOrganizationAccessEntry(organizationId, accessId, membership.isOwner, true);
+  const { membership, userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
+  return removeOrganizationAccessEntry(organizationId, accessId, membership.isOwner, true, actorUserId);
 }
 
 // --- Custom roles (organization_roles) --------------------------------------
@@ -509,7 +524,7 @@ const DASHBOARD_LOGO_THEMES = ["light", "dark"] as const;
 export type UploadOrgLogoResult = { ok: true } | { ok: false; error: string };
 
 export async function uploadDashboardOrganizationLogo(organizationId: number, formData: FormData): Promise<UploadOrgLogoResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "required" };
@@ -536,6 +551,7 @@ export async function uploadDashboardOrganizationLogo(organizationId: number, fo
         await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
       }
       await tx.insert(logos).values({ id: stored.id, entityType: "organization", entityId: organizationId, period: openRangeFrom(today), theme, isVisible: true });
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Added logo of organization #${organizationId}`, actorUserId, properties: { section: "logo", logoId: stored.id } }, tx);
     });
   } catch (error) {
     await deleteLogoFiles("organization", stored.id).catch(() => {});
@@ -546,7 +562,7 @@ export async function uploadDashboardOrganizationLogo(organizationId: number, fo
 }
 
 export async function deleteDashboardOrganizationLogo(organizationId: number, logoId: string): Promise<UploadOrgLogoResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
 
   const [row] = await db
     .select({ id: logos.id })
@@ -555,7 +571,10 @@ export async function deleteDashboardOrganizationLogo(organizationId: number, lo
     .limit(1);
   if (!row) return { ok: false, error: "notFound" };
 
-  await db.delete(logos).where(eq(logos.id, logoId));
+  await db.transaction(async (tx) => {
+    await tx.delete(logos).where(eq(logos.id, logoId));
+    await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Deleted logo of organization #${organizationId}`, actorUserId, properties: { section: "logo", logoId } }, tx);
+  });
   await deleteLogoFiles("organization", logoId).catch(() => {});
 
   return { ok: true };

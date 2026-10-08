@@ -19,9 +19,11 @@ import { matches, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
+import { logActivity } from "@/lib/activity-log";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+  return access.userId;
 }
 
 async function tournamentContainerIds(tournamentId: number, containerId: number | null): Promise<number[] | "notFound"> {
@@ -46,7 +48,7 @@ function isValidDate(value: string): boolean {
 }
 
 export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInput): Promise<BulkPatchResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: BulkPatchFieldErrors = {};
   const patch = input.patch.trim();
@@ -75,11 +77,20 @@ export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInp
     conditions.push(lt(matches.scheduledAt, new Date(zonedInputToIso(`${nextDay}T00:00`, input.timeZone)!)));
   }
 
-  const updated = await db
-    .update(matches)
-    .set({ patch })
-    .where(and(...conditions))
-    .returning({ id: matches.id });
+  const updated = await db.transaction(async (tx) => {
+    const rows = await tx
+      .update(matches)
+      .set({ patch })
+      .where(and(...conditions))
+      .returning({ id: matches.id });
+    if (rows.length > 0) {
+      await logActivity(
+        { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set patch "${patch}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkPatch", patch, matchIds: rows.map((r) => r.id) } },
+        tx
+      );
+    }
+    return rows;
+  });
 
   return { ok: true, count: updated.length };
 }
@@ -90,7 +101,7 @@ export type BulkCreateFieldErrors = Partial<Record<BulkCreateField, string>>;
 export type BulkCreateResult = { ok: true; count: number } | { ok: false; fieldErrors: BulkCreateFieldErrors };
 
 export async function bulkCreateMatches(tournamentId: number, input: BulkCreateInput): Promise<BulkCreateResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: BulkCreateFieldErrors = {};
 
@@ -125,7 +136,14 @@ export async function bulkCreateMatches(tournamentId: number, input: BulkCreateI
     scheduledAt: scheduledDate as Date,
   }));
 
-  const created = await db.insert(matches).values(rows).returning({ id: matches.id });
+  const created = await db.transaction(async (tx) => {
+    const inserted = await tx.insert(matches).values(rows).returning({ id: matches.id });
+    await logActivity(
+      { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Created ${inserted.length} matches in tournament #${tournamentId}`, actorUserId, properties: { section: "bulkCreate", containerId, round, matchIds: inserted.map((r) => r.id) } },
+      tx
+    );
+    return inserted;
+  });
 
   return { ok: true, count: created.length };
 }
@@ -144,7 +162,7 @@ export type BulkStatusResult = { ok: true; updated: number; skippedNoResult: num
  * others are skipped and counted.
  */
 export async function bulkSetMatchStatus(tournamentId: number, matchIds: number[], status: MatchStatus): Promise<BulkStatusResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   if (status !== "pending" && status !== "live" && status !== "completed") return { ok: false, error: "invalidStatus" };
   const ids = [...new Set(matchIds)].filter((id) => Number.isInteger(id));
@@ -163,11 +181,20 @@ export async function bulkSetMatchStatus(tournamentId: number, matchIds: number[
   const skippedNoResult = rows.length - eligible.length;
   if (eligible.length === 0) return { ok: true, updated: 0, skippedNoResult };
 
-  const updated = await db
-    .update(matches)
-    .set({ status })
-    .where(and(inArray(matches.id, eligible.map((r) => r.id)), ne(matches.status, status)))
-    .returning({ id: matches.id });
+  const updated = await db.transaction(async (tx) => {
+    const rows = await tx
+      .update(matches)
+      .set({ status })
+      .where(and(inArray(matches.id, eligible.map((r) => r.id)), ne(matches.status, status)))
+      .returning({ id: matches.id });
+    if (rows.length > 0) {
+      await logActivity(
+        { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set status "${status}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkStatus", status, matchIds: rows.map((r) => r.id) } },
+        tx
+      );
+    }
+    return rows;
+  });
   for (const r of updated) updateTag(matchTag(r.id));
 
   return { ok: true, updated: updated.length, skippedNoResult };

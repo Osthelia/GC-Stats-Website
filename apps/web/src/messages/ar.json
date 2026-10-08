@@ -4652,7 +4652,10 @@
       "event": {
         "created": "إنشاء",
         "updated": "تعديل",
-        "deleted": "حذف"
+        "deleted": "حذف",
+        "login": "تسجيل الدخول",
+        "login_failed": "فشل تسجيل الدخول",
+        "logout": "تسجيل الخروج"
       },
       "columnDescription": "الوصف",
       "columnSubject": "الموضوع",

@@ -18,14 +18,19 @@ import { newsAuthors, users, logos } from "@gc-stats/db";
 import { storeLogoPair, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { requireNewsWriterActor } from "@/lib/dashboard-rbac";
+import { diffChanges, logActivity } from "@/lib/activity-log";
 import { getOrCreateAuthorProfileId } from "@/lib/dashboard-news-data";
 import { getEntityLogos, currentLogo } from "@/lib/admin-logos";
 import { validateAuthorProfileInput, type AuthorProfileInput, type AuthorProfileFieldErrors } from "@/lib/author-profile-validation";
 
-async function resolveMyAuthorId(): Promise<number> {
+async function resolveMyAuthor(): Promise<{ authorId: number; userId: string }> {
   const { userId } = await requireNewsWriterActor();
   const [user] = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, userId)).limit(1);
-  return getOrCreateAuthorProfileId(userId, user?.name || user?.username || "Author");
+  return { authorId: await getOrCreateAuthorProfileId(userId, user?.name || user?.username || "Author"), userId };
+}
+
+async function resolveMyAuthorId(): Promise<number> {
+  return (await resolveMyAuthor()).authorId;
 }
 
 export type AuthorProfile = {
@@ -60,7 +65,7 @@ export async function getMyAuthorProfile(): Promise<AuthorProfile> {
 export type AuthorProfileResult = { ok: true } | { ok: false; fieldErrors: AuthorProfileFieldErrors };
 
 export async function updateMyAuthorProfile(input: AuthorProfileInput): Promise<AuthorProfileResult> {
-  const authorId = await resolveMyAuthorId();
+  const { authorId, userId } = await resolveMyAuthor();
 
   const { fieldErrors, name, slug, bio } = validateAuthorProfileInput(input);
 
@@ -71,7 +76,15 @@ export async function updateMyAuthorProfile(input: AuthorProfileInput): Promise<
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.update(newsAuthors).set({ name, slug, bio: bio || null }).where(eq(newsAuthors.id, authorId));
+  const [current] = await db.select({ name: newsAuthors.name, slug: newsAuthors.slug, bio: newsAuthors.bio }).from(newsAuthors).where(eq(newsAuthors.id, authorId)).limit(1);
+
+  await db.transaction(async (tx) => {
+    await tx.update(newsAuthors).set({ name, slug, bio: bio || null }).where(eq(newsAuthors.id, authorId));
+    const changes = diffChanges(current ?? {}, { name, slug, bio: bio || null });
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "author", subjectId: authorId, logName: "moderation", event: "updated", description: `Updated author profile #${authorId} (${name})`, actorUserId: userId, changes, properties: { section: "profile" } }, tx);
+    }
+  });
 
   return { ok: true };
 }
@@ -80,7 +93,7 @@ export type UploadAuthorLogoResult = { ok: true } | { ok: false; error: "empty" 
 
 /** Deliberately simple, like dashboard-logo-panel.tsx (organization logo from /dashboard): one current logo, no theme/history — a replacement just closes whatever was open before. */
 export async function uploadMyAuthorLogo(formData: FormData): Promise<UploadAuthorLogoResult> {
-  const authorId = await resolveMyAuthorId();
+  const { authorId, userId } = await resolveMyAuthor();
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "empty" };
@@ -100,6 +113,7 @@ export async function uploadMyAuthorLogo(formData: FormData): Promise<UploadAuth
         await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
       }
       await tx.insert(logos).values({ id: stored.id, entityType: "news-author", entityId: authorId, period: openRangeFrom(today), theme: null, isVisible: true });
+      await logActivity({ subject: "author", subjectId: authorId, logName: "moderation", event: "updated", description: `Replaced logo of author profile #${authorId}`, actorUserId: userId, properties: { section: "logo", logoId: stored.id } }, tx);
     });
   } catch (error) {
     await deleteLogoFiles("news-author", stored.id).catch(() => {});
@@ -110,12 +124,15 @@ export async function uploadMyAuthorLogo(formData: FormData): Promise<UploadAuth
 }
 
 export async function deleteMyAuthorLogo(logoId: string): Promise<{ ok: true } | { ok: false; error: "notFound" }> {
-  const authorId = await resolveMyAuthorId();
+  const { authorId, userId } = await resolveMyAuthor();
 
   const [row] = await db.select({ id: logos.id }).from(logos).where(and(eq(logos.id, logoId), eq(logos.entityType, "news-author"), eq(logos.entityId, authorId))).limit(1);
   if (!row) return { ok: false, error: "notFound" };
 
-  await db.delete(logos).where(eq(logos.id, logoId));
+  await db.transaction(async (tx) => {
+    await tx.delete(logos).where(eq(logos.id, logoId));
+    await logActivity({ subject: "author", subjectId: authorId, logName: "moderation", event: "updated", description: `Removed logo of author profile #${authorId}`, actorUserId: userId, properties: { section: "logo", logoId } }, tx);
+  });
   await deleteLogoFiles("news-author", logoId).catch(() => {});
 
   return { ok: true };

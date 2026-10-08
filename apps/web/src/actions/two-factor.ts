@@ -20,6 +20,7 @@ import { auth } from "@/auth";
 import { encrypt, decrypt } from "@/lib/encryption";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
 import { createSessionReissueToken } from "@/lib/session-reissue";
+import { logAccountActivity } from "@/lib/account-activity-log";
 import { buildOtpauthUri, generateQrCodeDataUrl, generateRecoveryCodes, generateSecret, verifyTotpToken } from "@/lib/two-factor";
 
 async function requireUserId(): Promise<string> {
@@ -79,6 +80,7 @@ export async function confirmTwoFactor(code: string): Promise<ConfirmTwoFactorRe
     .update(users)
     .set({ twoFactorRecoveryCodes: encrypt(JSON.stringify(recoveryCodes)), twoFactorConfirmedAt: new Date() })
     .where(eq(users.id, userId));
+  await logAccountActivity({ userId, event: "updated", description: "Two-factor authentication enabled", properties: { section: "twoFactor" } });
 
   return { ok: true, recoveryCodes };
 }
@@ -98,6 +100,7 @@ export async function disableTwoFactor(password: string): Promise<DisableTwoFact
     .set({ twoFactorSecret: null, twoFactorRecoveryCodes: null, twoFactorConfirmedAt: null, sessionsInvalidatedAt: new Date() })
     .where(eq(users.id, userId));
   await revokeOAuthTokens({ userId });
+  await logAccountActivity({ userId, event: "updated", description: "Two-factor authentication disabled", properties: { section: "twoFactor" } });
   return { ok: true, reissueToken: await createSessionReissueToken(userId) };
 }
 
@@ -118,5 +121,6 @@ export async function regenerateRecoveryCodes(password: string): Promise<Regener
 
   const recoveryCodes = generateRecoveryCodes();
   await db.update(users).set({ twoFactorRecoveryCodes: encrypt(JSON.stringify(recoveryCodes)) }).where(eq(users.id, userId));
+  await logAccountActivity({ userId, event: "updated", description: "Recovery codes regenerated", properties: { section: "twoFactor" } });
   return { ok: true, recoveryCodes };
 }

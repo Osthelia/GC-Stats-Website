@@ -25,6 +25,8 @@ import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchTeamsQuery } from "@/lib/team-search";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { PERSON_SOCIAL_KEYS, personSocialError } from "@/lib/person-social-keys";
+import { logActivity, diffChanges } from "@/lib/activity-log";
+import { logRosterChange } from "@/lib/roster-activity-log";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -72,7 +74,7 @@ function isValidUrl(value: string): boolean {
 }
 
 export async function updatePlayerProfile(playerId: number, input: PlayerProfileInput): Promise<PlayerProfileResult> {
-  await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
   const fieldErrors: PlayerProfileFieldErrors = {};
 
@@ -114,7 +116,7 @@ export async function updatePlayerProfile(playerId: number, input: PlayerProfile
   if (valId.length > 255) fieldErrors.valId = "tooLong";
   if (esportsValId.length > 255) fieldErrors.esportsValId = "tooLong";
 
-  const [existing] = await db.select({ id: people.id }).from(people).where(eq(people.id, playerId)).limit(1);
+  const [existing] = await db.select().from(people).where(eq(people.id, playerId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { handle: "notFound" } };
 
   // Uniqueness checks only run once the field is otherwise well-formed, and
@@ -144,25 +146,29 @@ export async function updatePlayerProfile(playerId: number, input: PlayerProfile
 
   const aliases = [...new Set(input.aliases.map((a) => a.trim()).filter(Boolean))];
 
-  await db
-    .update(people)
-    .set({
-      handle,
-      aliases,
-      firstName: firstName || null,
-      lastName: lastName || null,
-      countryCode: countryCode || null,
-      secondaryCountryCode: secondaryCountryCode || null,
-      pronouns: pronounsValue,
-      bio: bio || null,
-      vlrId: vlrIdValue,
-      valId: valId || null,
-      esportsValId: esportsValId || null,
-      liquipediaLink: liquipediaLink || null,
-      isActive: input.isActive,
-      socials,
-    })
-    .where(eq(people.id, playerId));
+  const values = {
+    handle,
+    aliases,
+    firstName: firstName || null,
+    lastName: lastName || null,
+    countryCode: countryCode || null,
+    secondaryCountryCode: secondaryCountryCode || null,
+    pronouns: pronounsValue,
+    bio: bio || null,
+    vlrId: vlrIdValue,
+    valId: valId || null,
+    esportsValId: esportsValId || null,
+    liquipediaLink: liquipediaLink || null,
+    isActive: input.isActive,
+    socials,
+  };
+  await db.transaction(async (tx) => {
+    await tx.update(people).set(values).where(eq(people.id, playerId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "player", subjectId: playerId, event: "updated", description: `Updated player #${playerId} (${handle})`, actorUserId, changes }, tx);
+    }
+  });
   // Match scoreboards show the current handle.
   updateTag(MATCH_STATS_TAG);
 
@@ -172,13 +178,13 @@ export async function updatePlayerProfile(playerId: number, input: PlayerProfile
 export type { LinkUserResult } from "@/lib/person-link-service";
 
 export async function linkUserToPlayer(playerId: number, userId: string): Promise<LinkUserResult> {
-  await requireAdminActorId(PERMISSIONS.playersEdit);
-  return linkUserToPersonEntry(playerId, userId);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  return linkUserToPersonEntry(playerId, userId, actorUserId);
 }
 
 export async function unlinkUserFromPlayer(playerId: number): Promise<LinkUserResult> {
-  await requireAdminActorId(PERMISSIONS.playersEdit);
-  return unlinkUserFromPersonEntry(playerId);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  return unlinkUserFromPersonEntry(playerId, actorUserId);
 }
 
 export type { UserPickerResult } from "@/lib/user-search";
@@ -213,7 +219,7 @@ export type CreatePlayerResult = { ok: true; id: number } | { ok: false; fieldEr
  * 'player' starting today, same as V1's RosterService::addMember call.
  */
 export async function createPlayer(input: CreatePlayerInput): Promise<CreatePlayerResult> {
-  await requireAdminActorId(PERMISSIONS.playersCreate);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersCreate);
 
   const fieldErrors: CreatePlayerFieldErrors = {};
 
@@ -255,7 +261,9 @@ export async function createPlayer(input: CreatePlayerInput): Promise<CreatePlay
 
     if (teamIdValue !== null) {
       await tx.insert(rosterMemberships).values({ personId: created.id, teamId: teamIdValue, role: "player", period: openRangeFrom(new Date().toISOString().slice(0, 10)) });
+      await logRosterChange(tx, { teamId: teamIdValue, personId: created.id, role: "player", actorUserId, action: "Added" });
     }
+    await logActivity({ subject: "player", subjectId: created.id, event: "created", description: `Created player #${created.id} (${handle})`, actorUserId }, tx);
 
     return created;
   });
@@ -282,7 +290,7 @@ export async function addPlayerTeamHistoryEntry(
   until: string,
   inactiveSince: string | null
 ): Promise<AddTeamHistoryResult> {
-  await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
   const fieldErrors: AddTeamHistoryFieldErrors = {};
 
@@ -317,6 +325,7 @@ export async function addPlayerTeamHistoryEntry(
     }
 
     await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, inactiveSince: inactiveSince || null });
+    await logRosterChange(tx, { teamId: teamId as number, personId, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
@@ -328,7 +337,7 @@ export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: Te
 
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
 export async function updatePlayerTeamHistoryEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string): Promise<TeamHistoryEntryResult> {
-  await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
   const fieldErrors: TeamHistoryEntryFieldErrors = {};
 
@@ -340,7 +349,7 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId }).from(rosterMemberships).where(eq(rosterMemberships.id, membershipId)).limit(1);
+  const [membership] = await db.select().from(rosterMemberships).where(eq(rosterMemberships.id, membershipId)).limit(1);
   if (!membership) return { ok: false, fieldErrors: { role: "notFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
@@ -365,7 +374,9 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
       }
     }
 
-    await tx.update(rosterMemberships).set({ role, period, inactiveSince: inactiveSince || null }).where(eq(rosterMemberships.id, membershipId));
+    const values = { role, period, inactiveSince: inactiveSince || null };
+    await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
+    await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });
 
   return { ok: true };
@@ -382,13 +393,16 @@ export type DeletePlayerResult = { ok: true } | { ok: false; error: "notFound" |
  * exists. Mirrors deleteTeam in admin-teams.ts.
  */
 export async function deletePlayer(playerId: number): Promise<DeletePlayerResult> {
-  await requireAdminActorId(PERMISSIONS.playersDelete);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.playersDelete);
 
-  const [existing] = await db.select({ id: people.id }).from(people).where(eq(people.id, playerId)).limit(1);
+  const [existing] = await db.select({ id: people.id, handle: people.handle }).from(people).where(eq(people.id, playerId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   try {
-    await db.delete(people).where(eq(people.id, playerId));
+    await db.transaction(async (tx) => {
+      await tx.delete(people).where(eq(people.id, playerId));
+      await logActivity({ subject: "player", subjectId: playerId, event: "deleted", description: `Deleted player #${playerId} (${existing.handle})`, actorUserId }, tx);
+    });
   } catch (error) {
     if (isForeignKeyViolation(error)) return { ok: false, error: "inUse" };
     throw error;

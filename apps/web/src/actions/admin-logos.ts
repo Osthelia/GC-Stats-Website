@@ -20,6 +20,7 @@ import { storeLogoPair, replaceLogoFiles, deleteLogoFiles, validateImageBuffer, 
 import { requireActorPermission } from "@/lib/rbac";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import type { LogoEntityType } from "@/lib/admin-logos";
+import { logActivity, type ActivityLogClient, type ActivitySubject } from "@/lib/activity-log";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const THEMES = ["light", "dark"] as const;
@@ -31,6 +32,13 @@ function permissionFor(entityType: LogoEntityType): string {
   if (entityType === "team") return PERMISSIONS.teamsEdit;
   if (entityType === "organization") return PERMISSIONS.organizationsEdit;
   return PERMISSIONS.playersEdit;
+}
+
+/** Logo edits are logged on the entity that owns the logo (news authors are not tracked). */
+async function logLogoChange(client: ActivityLogClient, entityType: LogoEntityType, entityId: number, actorUserId: string, action: "Added" | "Updated" | "Deleted", logoId: string): Promise<void> {
+  const subject: ActivitySubject | null = entityType === "team" ? "team" : entityType === "person" ? "player" : entityType === "organization" ? "organization" : entityType === "tournament" ? "tournament" : null;
+  if (!subject) return;
+  await logActivity({ subject, subjectId: entityId, event: "updated", description: `${action} logo of ${subject} #${entityId}`, actorUserId, properties: { section: "logo", logoId } }, client);
 }
 
 async function entityExists(entityType: LogoEntityType, entityId: number): Promise<boolean> {
@@ -51,7 +59,7 @@ export type UploadLogoResult = { ok: true } | { ok: false; fieldErrors: UploadLo
  * entry when `until` is given.
  */
 export async function uploadEntityLogo(entityType: LogoEntityType, entityId: number, formData: FormData): Promise<UploadLogoResult> {
-  await requireActorPermission(permissionFor(entityType));
+  const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
 
   const fieldErrors: UploadLogoFieldErrors = {};
 
@@ -108,6 +116,7 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
       }
 
       await tx.insert(logos).values({ id: stored.id, entityType, entityId, period, theme, isVisible: true });
+      await logLogoChange(tx, entityType, entityId, actorUserId, "Added", stored.id);
     });
   } catch (error) {
     // Don't leave orphaned files in the bucket if the DB write failed.
@@ -129,7 +138,7 @@ export type UpdateLogoResult = { ok: true } | { ok: false; fieldErrors: UpdateLo
  * the file is optional here (omit it to just edit dates/theme).
  */
 export async function updateEntityLogo(entityType: LogoEntityType, logoId: string, formData: FormData): Promise<UpdateLogoResult> {
-  await requireActorPermission(permissionFor(entityType));
+  const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
 
   const [existing] = await db
     .select({ id: logos.id, entityId: logos.entityId })
@@ -191,6 +200,7 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
     }
 
     await tx.update(logos).set({ theme, period }).where(eq(logos.id, logoId));
+    await logLogoChange(tx, entityType, existing.entityId, actorUserId, "Updated", logoId);
   });
 
   if (buffer) await replaceLogoFiles(entityType, logoId, buffer);
@@ -201,16 +211,19 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
 export type DeleteLogoResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteEntityLogo(entityType: LogoEntityType, logoId: string): Promise<DeleteLogoResult> {
-  await requireActorPermission(permissionFor(entityType));
+  const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
 
   const [row] = await db
-    .select({ id: logos.id })
+    .select({ id: logos.id, entityId: logos.entityId })
     .from(logos)
     .where(and(eq(logos.id, logoId), eq(logos.entityType, entityType)))
     .limit(1);
   if (!row) return { ok: false, error: "notFound" };
 
-  await db.delete(logos).where(eq(logos.id, logoId));
+  await db.transaction(async (tx) => {
+    await tx.delete(logos).where(eq(logos.id, logoId));
+    await logLogoChange(tx, entityType, row.entityId, actorUserId, "Deleted", logoId);
+  });
   await deleteLogoFiles(entityType, logoId).catch(() => {});
 
   return { ok: true };

@@ -18,6 +18,8 @@ import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
+import { logActivity, diffChanges } from "@/lib/activity-log";
+import { logRosterChange } from "@/lib/roster-activity-log";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
@@ -58,7 +60,7 @@ function isValidUrl(value: string): boolean {
 }
 
 export async function updateTeamProfile(teamId: number, input: TeamProfileInput): Promise<TeamProfileResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
   const fieldErrors: TeamProfileFieldErrors = {};
 
@@ -88,7 +90,7 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
-  const [existing] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, teamId)).limit(1);
+  const [existing] = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -101,21 +103,26 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
 
   const tags = [...new Set(input.tags.map((t) => t.trim()).filter(Boolean))];
 
-  await db
-    .update(teams)
-    .set({
-      name,
-      shortName: shortName || null,
-      countryCode: countryCode || null,
-      secondaryCountryCode: secondaryCountryCode || null,
-      bio: bio || null,
-      vlrId: vlrIdValue,
-      liquipediaLink: liquipediaLink || null,
-      isActive: input.isActive,
-      socials,
-      tags,
-    })
-    .where(eq(teams.id, teamId));
+  const values = {
+    name,
+    shortName: shortName || null,
+    countryCode: countryCode || null,
+    secondaryCountryCode: secondaryCountryCode || null,
+    bio: bio || null,
+    vlrId: vlrIdValue,
+    liquipediaLink: liquipediaLink || null,
+    isActive: input.isActive,
+    socials,
+    tags,
+  };
+
+  await db.transaction(async (tx) => {
+    await tx.update(teams).set(values).where(eq(teams.id, teamId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "team", subjectId: teamId, event: "updated", description: `Updated team #${teamId} (${name})`, actorUserId, changes }, tx);
+    }
+  });
 
   return { ok: true };
 }
@@ -124,7 +131,7 @@ export type NameHistoryFieldErrors = Partial<Record<"name" | "from" | "until", s
 export type NameHistoryResult = { ok: true } | { ok: false; fieldErrors: NameHistoryFieldErrors };
 
 export async function addTeamNameHistoryEntry(teamId: number, name: string, from: string, until: string): Promise<NameHistoryResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
   const fieldErrors: NameHistoryFieldErrors = {};
   const trimmedName = name.trim();
@@ -141,33 +148,63 @@ export async function addTeamNameHistoryEntry(teamId: number, name: string, from
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.insert(teamNameHistory).values({
-    teamId,
-    name: trimmedName,
-    period: until ? `[${from},${until})` : openRangeFrom(from),
-    isVisible: true,
+  await db.transaction(async (tx) => {
+    await tx.insert(teamNameHistory).values({
+      teamId,
+      name: trimmedName,
+      period: until ? `[${from},${until})` : openRangeFrom(from),
+      isVisible: true,
+    });
+    await logActivity(
+      { subject: "team", subjectId: teamId, event: "updated", description: `Added name "${trimmedName}" to the history of team #${teamId}`, actorUserId, properties: { section: "nameHistory", name: trimmedName, from, until: until || null } },
+      tx
+    );
   });
 
   return { ok: true };
 }
 
 export async function deleteTeamNameHistoryEntry(entryId: number): Promise<RosterActionResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
-  const [entry] = await db.select({ id: teamNameHistory.id }).from(teamNameHistory).where(eq(teamNameHistory.id, entryId)).limit(1);
+  const [entry] = await db.select({ id: teamNameHistory.id, teamId: teamNameHistory.teamId, name: teamNameHistory.name }).from(teamNameHistory).where(eq(teamNameHistory.id, entryId)).limit(1);
   if (!entry) return { ok: false, error: "notFound" };
 
-  await db.delete(teamNameHistory).where(eq(teamNameHistory.id, entryId));
+  await db.transaction(async (tx) => {
+    await tx.delete(teamNameHistory).where(eq(teamNameHistory.id, entryId));
+    await logActivity(
+      { subject: "team", subjectId: entry.teamId, event: "updated", description: `Removed name "${entry.name}" from the history of team #${entry.teamId}`, actorUserId, properties: { section: "nameHistory", name: entry.name } },
+      tx
+    );
+  });
   return { ok: true };
 }
 
 export async function toggleTeamNameHistoryVisibility(entryId: number, isVisible: boolean): Promise<RosterActionResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
-  const [entry] = await db.select({ id: teamNameHistory.id }).from(teamNameHistory).where(eq(teamNameHistory.id, entryId)).limit(1);
+  const [entry] = await db
+    .select({ id: teamNameHistory.id, teamId: teamNameHistory.teamId, name: teamNameHistory.name, isVisible: teamNameHistory.isVisible })
+    .from(teamNameHistory)
+    .where(eq(teamNameHistory.id, entryId))
+    .limit(1);
   if (!entry) return { ok: false, error: "notFound" };
 
-  await db.update(teamNameHistory).set({ isVisible }).where(eq(teamNameHistory.id, entryId));
+  await db.transaction(async (tx) => {
+    await tx.update(teamNameHistory).set({ isVisible }).where(eq(teamNameHistory.id, entryId));
+    await logActivity(
+      {
+        subject: "team",
+        subjectId: entry.teamId,
+        event: "updated",
+        description: `${isVisible ? "Showed" : "Hid"} name "${entry.name}" in the history of team #${entry.teamId}`,
+        actorUserId,
+        changes: { isVisible: { old: entry.isVisible, new: isVisible } },
+        properties: { section: "nameHistory", name: entry.name },
+      },
+      tx
+    );
+  });
   return { ok: true };
 }
 
@@ -175,12 +212,19 @@ export type RosterActionResult = { ok: true } | { ok: false; error: string };
 
 /** Hard delete (not "close the period") — for a mistaken entry, not for someone actually leaving the team (use updateRosterMemberEntry's `until` for that). Shared by both the team roster panel and the player-side team-history panel (same rosterMemberships row). */
 export async function deleteRosterMembership(membershipId: number): Promise<RosterActionResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
-  const [membership] = await db.select({ id: rosterMemberships.id }).from(rosterMemberships).where(eq(rosterMemberships.id, membershipId)).limit(1);
+  const [membership] = await db
+    .select({ teamId: rosterMemberships.teamId, personId: rosterMemberships.personId, role: rosterMemberships.role })
+    .from(rosterMemberships)
+    .where(eq(rosterMemberships.id, membershipId))
+    .limit(1);
   if (!membership) return { ok: false, error: "notFound" };
 
-  await db.delete(rosterMemberships).where(eq(rosterMemberships.id, membershipId));
+  await db.transaction(async (tx) => {
+    await tx.delete(rosterMemberships).where(eq(rosterMemberships.id, membershipId));
+    await logRosterChange(tx, { ...membership, actorUserId, action: "Removed" });
+  });
   return { ok: true };
 }
 
@@ -196,7 +240,7 @@ export async function addTeamRosterMember(
   until: string,
   inactiveSince: string | null
 ): Promise<AddRosterMemberResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
   const fieldErrors: AddRosterMemberFieldErrors = {};
 
@@ -242,6 +286,7 @@ export async function addTeamRosterMember(
     }
 
     await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, inactiveSince: inactiveSince || null });
+    await logRosterChange(tx, { teamId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
@@ -258,7 +303,7 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * inputs directly, not just newly-added ones.
  */
 export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string): Promise<RosterEntryResult> {
-  await requireAdminActorId();
+  const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
 
@@ -270,7 +315,7 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId }).from(rosterMemberships).where(eq(rosterMemberships.id, membershipId)).limit(1);
+  const [membership] = await db.select().from(rosterMemberships).where(eq(rosterMemberships.id, membershipId)).limit(1);
   if (!membership) return { ok: false, fieldErrors: { role: "notFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
@@ -297,7 +342,9 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
       }
     }
 
-    await tx.update(rosterMemberships).set({ role, period, inactiveSince: inactiveSince || null }).where(eq(rosterMemberships.id, membershipId));
+    const values = { role, period, inactiveSince: inactiveSince || null };
+    await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
+    await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });
 
   return { ok: true };
@@ -310,7 +357,7 @@ export type CreateTeamResult = { ok: true; id: number } | { ok: false; fieldErro
 
 /** Quick-create from the admin teams list — mirrors createPlayer's shape (name required, everything else optional, full profile editable afterwards). */
 export async function createTeam(input: CreateTeamInput): Promise<CreateTeamResult> {
-  await requireAdminActorId(PERMISSIONS.teamsCreate);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.teamsCreate);
 
   const fieldErrors: CreateTeamFieldErrors = {};
 
@@ -334,11 +381,15 @@ export async function createTeam(input: CreateTeamInput): Promise<CreateTeamResu
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [created] = await db
-    .insert(teams)
-    .values({ name, shortName: shortName || null, countryCode: countryCode || null, vlrId: vlrIdValue, isActive: true, socials: {}, tags: [] })
-    .returning({ id: teams.id });
-  if (!created) throw new Error("Insert returned no row");
+  const created = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(teams)
+      .values({ name, shortName: shortName || null, countryCode: countryCode || null, vlrId: vlrIdValue, isActive: true, socials: {}, tags: [] })
+      .returning({ id: teams.id });
+    if (!row) throw new Error("Insert returned no row");
+    await logActivity({ subject: "team", subjectId: row.id, event: "created", description: `Created team #${row.id} (${name})`, actorUserId }, tx);
+    return row;
+  });
 
   return { ok: true, id: created.id };
 }
@@ -354,13 +405,16 @@ export type DeleteTeamResult = { ok: true } | { ok: false; error: "notFound" | "
  * exists.
  */
 export async function deleteTeam(teamId: number): Promise<DeleteTeamResult> {
-  await requireAdminActorId(PERMISSIONS.teamsDelete);
+  const actorUserId = await requireAdminActorId(PERMISSIONS.teamsDelete);
 
-  const [existing] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, teamId)).limit(1);
+  const [existing] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   try {
-    await db.delete(teams).where(eq(teams.id, teamId));
+    await db.transaction(async (tx) => {
+      await tx.delete(teams).where(eq(teams.id, teamId));
+      await logActivity({ subject: "team", subjectId: teamId, event: "deleted", description: `Deleted team #${teamId} (${existing.name})`, actorUserId }, tx);
+    });
   } catch (error) {
     if (isForeignKeyViolation(error)) return { ok: false, error: "inUse" };
     throw error;

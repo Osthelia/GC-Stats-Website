@@ -17,9 +17,11 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { tournaments, pointTypes, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { HOME_TOURNAMENTS_TAG, TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+  return access.userId;
 }
 
 const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord", "website"] as const;
@@ -168,13 +170,18 @@ function coreColumns(input: TournamentInput) {
 }
 
 export async function createTournament(input: TournamentInput): Promise<TournamentResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const fieldErrors = await validateTournament(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [created] = await db.insert(tournaments).values(coreColumns(input)).returning({ id: tournaments.id });
-  if (!created) throw new Error("Insert returned no row");
+  const values = coreColumns(input);
+  const created = await db.transaction(async (tx) => {
+    const [row] = await tx.insert(tournaments).values(values).returning({ id: tournaments.id });
+    if (!row) throw new Error("Insert returned no row");
+    await logActivity({ subject: "tournament", subjectId: row.id, event: "created", description: `Created tournament #${row.id} (${values.name})`, actorUserId }, tx);
+    return row;
+  });
   updateTag(HOME_TOURNAMENTS_TAG);
   updateTag(TOURNAMENT_FACETS_TAG);
 
@@ -182,15 +189,22 @@ export async function createTournament(input: TournamentInput): Promise<Tourname
 }
 
 export async function updateTournament(id: number, input: TournamentInput): Promise<TournamentResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const [existingRow] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
+  const [existingRow] = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { name: "notFound" } };
 
   const fieldErrors = await validateTournament(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.update(tournaments).set(coreColumns(input)).where(eq(tournaments.id, id));
+  const values = coreColumns(input);
+  await db.transaction(async (tx) => {
+    await tx.update(tournaments).set(values).where(eq(tournaments.id, id));
+    const changes = diffChanges(existingRow, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "tournament", subjectId: id, event: "updated", description: `Updated tournament #${id} (${values.name})`, actorUserId, changes }, tx);
+    }
+  });
   updateTag(HOME_TOURNAMENTS_TAG);
   updateTag(TOURNAMENT_FACETS_TAG);
 
@@ -200,13 +214,19 @@ export async function updateTournament(id: number, input: TournamentInput): Prom
 export type ToggleActiveResult = { ok: true; active: boolean } | { ok: false; error: "notFound" };
 
 export async function toggleTournamentActive(id: number): Promise<ToggleActiveResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: tournaments.id, active: tournaments.active }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const active = !existing.active;
-  await db.update(tournaments).set({ active }).where(eq(tournaments.id, id));
+  await db.transaction(async (tx) => {
+    await tx.update(tournaments).set({ active }).where(eq(tournaments.id, id));
+    await logActivity(
+      { subject: "tournament", subjectId: id, event: "updated", description: `${active ? "Activated" : "Deactivated"} tournament #${id}`, actorUserId, changes: { active: { old: existing.active, new: active } } },
+      tx
+    );
+  });
   updateTag(HOME_TOURNAMENTS_TAG);
   updateTag(TOURNAMENT_FACETS_TAG);
 
@@ -216,13 +236,16 @@ export async function toggleTournamentActive(id: number): Promise<ToggleActiveRe
 export type DeleteTournamentResult = { ok: true } | { ok: false; error: "notFound" | "hasPlayedMatches" };
 
 export async function deleteTournament(id: number): Promise<DeleteTournamentResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const [existing] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
+  const [existing] = await db.select({ id: tournaments.id, name: tournaments.name }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   try {
-    await db.delete(tournaments).where(eq(tournaments.id, id));
+    await db.transaction(async (tx) => {
+      await tx.delete(tournaments).where(eq(tournaments.id, id));
+      await logActivity({ subject: "tournament", subjectId: id, event: "deleted", description: `Deleted tournament #${id} (${existing.name})`, actorUserId }, tx);
+    });
   } catch (err) {
     // Known schema gap (documented in SUIVI.md): matches.entrant_*_id has no
     // ON DELETE, so a tournament with matches that reference real entrants

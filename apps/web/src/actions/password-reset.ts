@@ -25,6 +25,7 @@ import { sendEmail } from "@/lib/email/client";
 import { renderNotificationEmail } from "@/lib/email/notification-template";
 import { APP_BASE_URL } from "@/lib/notify";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
+import { logAccountActivity } from "@/lib/account-activity-log";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESET_TOKEN_TTL_MS = 60 * 60_000;
@@ -52,6 +53,7 @@ export async function requestPasswordReset(rawEmail: string): Promise<RequestPas
     const link = `${APP_BASE_URL}/${locale}/reset-password?email=${encodeURIComponent(email)}&token=${token}`;
     const { html, text } = renderNotificationEmail(t("subject"), t("body"), link, t("cta"));
     await sendEmail({ to: email, subject: t("subject"), html, text });
+    await logAccountActivity({ userId: user.id, actorUserId: null, event: "updated", description: "Password reset requested", ip, properties: { section: "passwordReset" } });
   }
 
   return { ok: true };
@@ -71,6 +73,9 @@ export async function resetPassword(email: string, token: string, newPassword: s
   // the scenario (lost/compromised credentials) that must kill a stolen
   // cookie too, see auth.ts's jwt() callback.
   const [user] = await db.update(users).set({ passwordHash, sessionsInvalidatedAt: new Date() }).where(eq(users.email, email)).returning({ id: users.id });
-  if (user) await revokeOAuthTokens({ userId: user.id });
+  if (user) {
+    await revokeOAuthTokens({ userId: user.id });
+    await logAccountActivity({ userId: user.id, event: "updated", description: "Password reset with an emailed link", properties: { section: "password" } });
+  }
   return { ok: true };
 }

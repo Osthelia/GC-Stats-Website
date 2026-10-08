@@ -21,6 +21,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
+import { logActivity } from "@/lib/activity-log";
 
 type ItemStatus = "approved" | "rejected" | "failed";
 export type ResolveItemResult = { ok: true; status: ItemStatus; applyError: string | null } | { ok: false; error: string };
@@ -287,6 +288,15 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
     try {
       await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue);
       status = "approved";
+      await logActivity({
+        subject: request.subjectType === "team" ? "team" : "player",
+        subjectId: request.subjectId,
+        event: "updated",
+        description: `Applied change request #${request.id} (${item.field}) on ${request.subjectType === "team" ? "team" : "player"} #${request.subjectId}`,
+        actorUserId: access.userId,
+        changes: { [item.field]: { old: item.oldValue, new: item.newValue } },
+        properties: { section: "changeRequest", changeRequestId: request.id, itemId, requestedBy: request.requestedBy },
+      });
     } catch (error) {
       status = "failed";
       applyError = error instanceof Error ? error.message : "unknown";

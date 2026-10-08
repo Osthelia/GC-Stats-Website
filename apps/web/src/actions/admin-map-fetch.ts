@@ -23,6 +23,7 @@ import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data"
 import type { FetchMapResult } from "@/lib/map-fetch/types";
 import { mergeMatch, renewMatch, RIOT_RELAY_REGIONS, type RiotRelayError, type RiotRelayRegion } from "@/lib/riot-relay-client";
 import { resolveRiotRegion } from "@/lib/map-fetch/riot-region";
+import { logActivity } from "@/lib/activity-log";
 
 // Re-exported so client components only ever import fetch-map TYPES through
 // this "use server" boundary (never straight from lib/map-fetch/*, which
@@ -36,8 +37,13 @@ export type { FetchMapResult, FetchMapError, TeamColorRoster } from "@/lib/map-f
 export type { MissingPuuidPlayer } from "@/lib/map-fetch/identity-resolution";
 export type { RiotRelayError, RiotRelayRegion };
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+  return access.userId;
+}
+
+function logMapFetchChange(mapId: number, matchId: number, actorUserId: string, description: string, properties: Record<string, unknown>) {
+  return logActivity({ subject: "map", subjectId: mapId, event: "updated", description, actorUserId, properties: { matchId, ...properties } });
 }
 
 async function loadMapRegionContext(mapId: number) {
@@ -60,7 +66,7 @@ const API_MATCH_ID_RE = /^[A-Za-z0-9_-]{1,100}$/;
  * from the stored one, so Fetch/Renew never act on a stale, unsaved id.
  * Empty or malformed input leaves the stored id alone.
  */
-async function applyFormMatchId(mapId: number, apiMatchId: string | undefined): Promise<{ ok: true } | { ok: false; error: { kind: "duplicateMatchId" } }> {
+async function applyFormMatchId(mapId: number, apiMatchId: string | undefined, actorUserId: string): Promise<{ ok: true } | { ok: false; error: { kind: "duplicateMatchId" } }> {
   const trimmed = apiMatchId?.trim() ?? "";
   if (!trimmed || !API_MATCH_ID_RE.test(trimmed)) return { ok: true };
   const [current] = await db.select({ apiMatchId: maps.apiMatchId, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -72,6 +78,15 @@ async function applyFormMatchId(mapId: number, apiMatchId: string | undefined): 
     .limit(1);
   if (conflict) return { ok: false, error: { kind: "duplicateMatchId" } };
   await db.update(maps).set({ apiMatchId: trimmed }).where(eq(maps.id, mapId));
+  await logActivity({
+    subject: "map",
+    subjectId: mapId,
+    event: "updated",
+    description: `Updated Riot match id of map #${mapId}`,
+    actorUserId,
+    changes: { apiMatchId: { old: current.apiMatchId, new: trimmed } },
+    properties: { matchId: current.matchId },
+  });
   updateTag(matchTag(current.matchId));
   return { ok: true };
 }
@@ -79,16 +94,19 @@ async function applyFormMatchId(mapId: number, apiMatchId: string | undefined): 
 export type FetchMapOptions = { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue"; apiMatchId?: string };
 
 export async function fetchMapData(mapId: number, options?: FetchMapOptions): Promise<FetchMapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const applied = await applyFormMatchId(mapId, options?.apiMatchId);
+  const applied = await applyFormMatchId(mapId, options?.apiMatchId, actorUserId);
   if (!applied.ok) return applied;
 
   const puuidMapping = options?.puuidMapping ? new Map(Object.entries(options.puuidMapping)) : undefined;
   const result = await runFetchMapData(mapId, { puuidMapping, teamAColor: options?.teamAColor });
   if (result.ok) {
     const [map] = await db.select({ matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
-    if (map) updateTag(matchTag(map.matchId));
+    if (map) {
+      await logMapFetchChange(mapId, map.matchId, actorUserId, `Fetched data of map #${mapId}`, { section: "fetch" });
+      updateTag(matchTag(map.matchId));
+    }
   }
   return result;
 }
@@ -97,9 +115,9 @@ export type RenewMapError = RiotRelayError | { kind: "mapNotFound" } | { kind: "
 export type RenewMapResult = { ok: true } | { ok: false; error: RenewMapError };
 
 export async function renewMapData(mapId: number, apiMatchId?: string): Promise<RenewMapResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
-  const applied = await applyFormMatchId(mapId, apiMatchId);
+  const applied = await applyFormMatchId(mapId, apiMatchId, actorUserId);
   if (!applied.ok) return applied;
 
   const row = await loadMapRegionContext(mapId);
@@ -121,7 +139,7 @@ export type MergeSegmentsResult = { ok: true; apiMatchId: string } | { ok: false
 const MATCH_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
 export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput): Promise<MergeSegmentsResult> {
-  await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: MergeSegmentsFieldErrors = {};
   if (!RIOT_RELAY_REGIONS.includes(input.region)) fieldErrors.region = "invalid";
@@ -142,7 +160,7 @@ export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput)
   }
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [map] = await db.select({ id: maps.id }).from(maps).where(eq(maps.id, mapId)).limit(1);
+  const [map] = await db.select({ id: maps.id, matchId: maps.matchId, apiMatchId: maps.apiMatchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!map) return { ok: false, fieldErrors: { segments: "mapNotFound" } };
 
   const result = await mergeMatch(
@@ -152,6 +170,15 @@ export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput)
   if (!result.ok) return { ok: false, error: result.error };
 
   await db.update(maps).set({ apiMatchId: result.data.matchInfo.matchId }).where(eq(maps.id, mapId));
+  await logActivity({
+    subject: "map",
+    subjectId: mapId,
+    event: "updated",
+    description: `Merged ${input.segments.length} segments into map #${mapId}`,
+    actorUserId,
+    changes: { apiMatchId: { old: map.apiMatchId, new: result.data.matchInfo.matchId } },
+    properties: { matchId: map.matchId, section: "mergeSegments" },
+  });
 
   return { ok: true, apiMatchId: result.data.matchInfo.matchId };
 }

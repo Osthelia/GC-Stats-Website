@@ -17,6 +17,7 @@ import { db, adminDb } from "@gc-stats/db/client";
 import { organizations, organizationMemberships, organizationAccess, organizationAccessRoles, organizationMemberRoleLinks, people } from "@gc-stats/db";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
+import { logActivity, diffChanges, type ActivityChanges } from "@/lib/activity-log";
 
 type Db = typeof db | PgTransaction<any, any, any>;
 
@@ -64,6 +65,17 @@ export type MemberEntryResult = { ok: true } | { ok: false; fieldErrors: MemberE
 
 export type MembershipActionResult = { ok: true } | { ok: false; error: string };
 
+type MemberLogInput = { organizationId: number; personId: number; role: string; actorUserId: string; action: "Added" | "Updated" | "Removed"; changes?: ActivityChanges };
+
+/** An organization roster edit is logged on the organization, and on the player so both histories show it. */
+async function logMemberChange(tx: Db, input: MemberLogInput): Promise<void> {
+  const { organizationId, personId, role, actorUserId, action, changes } = input;
+  const description = `${action} roster entry (${role}) of player #${personId} on organization #${organizationId}`;
+  const properties = { section: "members", organizationId, personId, role };
+  await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description, actorUserId, changes, properties }, tx);
+  await logActivity({ subject: "player", subjectId: personId, event: "updated", description, actorUserId, changes, properties }, tx);
+}
+
 function validateEntryFields(role: string, from: string, until: string): Partial<Record<"role" | "from" | "until", string>> {
   const fieldErrors: Partial<Record<"role" | "from" | "until", string>> = {};
   if (!(ORGANIZATION_MEMBER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
@@ -81,7 +93,7 @@ function validateEntryFields(role: string, from: string, until: string): Partial
  * requireActorPermission vs requireDashboardOrgActorPermission at each call
  * site.
  */
-export async function addOrganizationMemberEntry(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
+export async function addOrganizationMemberEntry(organizationId: number, personId: number | null, role: string, from: string, until: string, actorUserId: string): Promise<AddMemberResult> {
   const fieldErrors: AddMemberFieldErrors = { ...validateEntryFields(role, from, until) };
   if (!personId) fieldErrors.person = "required";
 
@@ -120,21 +132,18 @@ export async function addOrganizationMemberEntry(organizationId: number, personI
 
     await tx.insert(organizationMemberships).values({ personId: personId as number, organizationId, role, period });
     if (isOngoing) await autoGrantAccessForMemberRole(tx, organizationId, personId as number, role);
+    await logMemberChange(tx, { organizationId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
 }
 
 /** `expectedOrganizationId` scopes the lookup for /dashboard callers (a caller only allowed to manage one organization must not be able to touch another org's membership by guessing an id) — admin omits it. */
-export async function updateOrganizationMemberEntry(membershipId: number, role: string, from: string, until: string, expectedOrganizationId?: number): Promise<MemberEntryResult> {
+export async function updateOrganizationMemberEntry(membershipId: number, role: string, from: string, until: string, actorUserId: string, expectedOrganizationId?: number): Promise<MemberEntryResult> {
   const fieldErrors: MemberEntryFieldErrors = validateEntryFields(role, from, until);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [membership] = await db
-    .select({ id: organizationMemberships.id, personId: organizationMemberships.personId, organizationId: organizationMemberships.organizationId })
-    .from(organizationMemberships)
-    .where(eq(organizationMemberships.id, membershipId))
-    .limit(1);
+  const [membership] = await db.select().from(organizationMemberships).where(eq(organizationMemberships.id, membershipId)).limit(1);
   if (!membership || (expectedOrganizationId !== undefined && membership.organizationId !== expectedOrganizationId)) {
     return { ok: false, fieldErrors: { role: "notFound" } };
   }
@@ -163,18 +172,24 @@ export async function updateOrganizationMemberEntry(membershipId: number, role: 
 
     await tx.update(organizationMemberships).set({ role, period }).where(eq(organizationMemberships.id, membershipId));
     if (isOngoing) await autoGrantAccessForMemberRole(tx, membership.organizationId, membership.personId, role);
+    await logMemberChange(tx, { organizationId: membership.organizationId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, { role, period }) });
   });
 
   return { ok: true };
 }
 
-export async function deleteOrganizationMembershipEntry(membershipId: number, expectedOrganizationId?: number): Promise<MembershipActionResult> {
-  const [membership] = await db.select({ id: organizationMemberships.id, organizationId: organizationMemberships.organizationId }).from(organizationMemberships).where(eq(organizationMemberships.id, membershipId)).limit(1);
+export async function deleteOrganizationMembershipEntry(membershipId: number, actorUserId: string, expectedOrganizationId?: number): Promise<MembershipActionResult> {
+  const [membership] = await db
+    .select({ organizationId: organizationMemberships.organizationId, personId: organizationMemberships.personId, role: organizationMemberships.role })
+    .from(organizationMemberships).where(eq(organizationMemberships.id, membershipId)).limit(1);
   if (!membership || (expectedOrganizationId !== undefined && membership.organizationId !== expectedOrganizationId)) {
     return { ok: false, error: "notFound" };
   }
 
-  await db.delete(organizationMemberships).where(eq(organizationMemberships.id, membershipId));
+  await db.transaction(async (tx) => {
+    await tx.delete(organizationMemberships).where(eq(organizationMemberships.id, membershipId));
+    await logMemberChange(tx, { ...membership, actorUserId, action: "Removed" });
+  });
   return { ok: true };
 }
 

@@ -4656,7 +4656,10 @@
       "event": {
         "created": "Créé",
         "updated": "Modifié",
-        "deleted": "Supprimé"
+        "deleted": "Supprimé",
+        "login": "Connexion",
+        "login_failed": "Connexion échouée",
+        "logout": "Déconnexion"
       },
       "columnDescription": "Description",
       "columnSubject": "Sujet",

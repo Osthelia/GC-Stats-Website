@@ -16,6 +16,7 @@ import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { tournaments, stages, stageContainers, entrants, entrantMembers, matches, maps, teams, people, rosterMemberships, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
+import { logActivity } from "@/lib/activity-log";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { GHOST_MATCH_BEST_OF_VALUES, GHOST_MATCH_PLAYER_SLOTS } from "@/lib/ghost-match";
@@ -280,13 +281,17 @@ export type PromoteGhostResult = { ok: true } | { ok: false; error: "notFound" }
 
 /** A ghost profile that ends up covered becomes a regular public one, stats included. */
 export async function promoteGhostTeam(teamId: number): Promise<PromoteGhostResult> {
-  await requireActorPermission(PERMISSIONS.teamsEdit);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.teamsEdit);
   const updated = await db.update(teams).set({ isGhost: false }).where(and(eq(teams.id, teamId), eq(teams.isGhost, true))).returning({ id: teams.id });
-  return updated.length ? { ok: true } : { ok: false, error: "notFound" };
+  if (!updated.length) return { ok: false, error: "notFound" };
+  await logActivity({ subject: "team", subjectId: teamId, event: "updated", description: `Promoted ghost team #${teamId} to a public team`, actorUserId, changes: { isGhost: { old: true, new: false } } });
+  return { ok: true };
 }
 
 export async function promoteGhostPlayer(personId: number): Promise<PromoteGhostResult> {
-  await requireActorPermission(PERMISSIONS.playersEdit);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.playersEdit);
   const updated = await db.update(people).set({ isGhost: false }).where(and(eq(people.id, personId), eq(people.isGhost, true))).returning({ id: people.id });
-  return updated.length ? { ok: true } : { ok: false, error: "notFound" };
+  if (!updated.length) return { ok: false, error: "notFound" };
+  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Promoted ghost player #${personId} to a public player`, actorUserId, changes: { isGhost: { old: true, new: false } } });
+  return { ok: true };
 }

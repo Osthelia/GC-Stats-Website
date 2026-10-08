@@ -13,6 +13,7 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { organizationAccess, organizationAccessRoles, users } from "@gc-stats/db";
+import { logActivity } from "@/lib/activity-log";
 import { assertRolesGrantable, assertCanModifyGrant, isLastOwnerAccess, type AccessRoleSelection } from "@/lib/organization-access-rules";
 
 export type { AccessRoleSelection } from "@/lib/organization-access-rules";
@@ -29,7 +30,7 @@ export type AddAccessResult = { ok: true } | { ok: false; fieldErrors: AddAccess
  * requireActorPermission vs requireDashboardOrgActorPermission at each call
  * site. Mirrors lib/organization-membership-service.ts's split.
  */
-export async function addOrganizationAccessEntry(organizationId: number, userId: string | null, selection: AccessRoleSelection, actorIsOwner: boolean): Promise<AddAccessResult> {
+export async function addOrganizationAccessEntry(organizationId: number, userId: string | null, selection: AccessRoleSelection, actorIsOwner: boolean, actorUserId: string): Promise<AddAccessResult> {
   const fieldErrors: AddAccessFieldErrors = {};
   if (!userId) fieldErrors.user = "required";
   const roleError = await assertRolesGrantable(organizationId, selection, actorIsOwner);
@@ -53,6 +54,10 @@ export async function addOrganizationAccessEntry(organizationId: number, userId:
     if (!selection.isOwner && selection.roleIds.length > 0) {
       await tx.insert(organizationAccessRoles).values(selection.roleIds.map((roleId) => ({ accessId: created.id, roleId })));
     }
+    await logActivity(
+      { subject: "organization", subjectId: organizationId, event: "updated", description: `Granted dashboard access to user ${userId} on organization #${organizationId}`, actorUserId, properties: { section: "access", userId, isOwner: selection.isOwner, roleIds: selection.roleIds } },
+      tx
+    );
   });
 
   return { ok: true };
@@ -62,13 +67,13 @@ export type AccessEntryFieldErrors = Partial<Record<"role", string>>;
 export type AccessEntryResult = { ok: true } | { ok: false; fieldErrors: AccessEntryFieldErrors };
 
 /** `checkCanModify` is false for admin callers (always trusted, never blocked by assertCanModifyGrant), true for /dashboard callers. */
-export async function updateOrganizationAccessRolesEntry(organizationId: number, accessId: number, selection: AccessRoleSelection, actorIsOwner: boolean, checkCanModify: boolean): Promise<AccessEntryResult> {
+export async function updateOrganizationAccessRolesEntry(organizationId: number, accessId: number, selection: AccessRoleSelection, actorIsOwner: boolean, checkCanModify: boolean, actorUserId: string): Promise<AccessEntryResult> {
   const fieldErrors: AccessEntryFieldErrors = {};
   const roleError = await assertRolesGrantable(organizationId, selection, actorIsOwner);
   if (roleError) fieldErrors.role = roleError;
 
   const [existing] = await db
-    .select({ id: organizationAccess.id, isOwner: organizationAccess.isOwner })
+    .select({ id: organizationAccess.id, userId: organizationAccess.userId, isOwner: organizationAccess.isOwner })
     .from(organizationAccess)
     .where(and(eq(organizationAccess.id, accessId), eq(organizationAccess.organizationId, organizationId)))
     .limit(1);
@@ -90,6 +95,18 @@ export async function updateOrganizationAccessRolesEntry(organizationId: number,
     if (!selection.isOwner && selection.roleIds.length > 0) {
       await tx.insert(organizationAccessRoles).values(selection.roleIds.map((roleId) => ({ accessId, roleId })));
     }
+    await logActivity(
+      {
+        subject: "organization",
+        subjectId: organizationId,
+        event: "updated",
+        description: `Updated dashboard access of user ${existing.userId} on organization #${organizationId}`,
+        actorUserId,
+        changes: existing.isOwner !== selection.isOwner ? { isOwner: { old: existing.isOwner, new: selection.isOwner } } : undefined,
+        properties: { section: "access", userId: existing.userId, isOwner: selection.isOwner, roleIds: selection.roleIds },
+      },
+      tx
+    );
   });
 
   return { ok: true };
@@ -97,9 +114,9 @@ export async function updateOrganizationAccessRolesEntry(organizationId: number,
 
 export type AccessActionResult = { ok: true } | { ok: false; error: string };
 
-export async function removeOrganizationAccessEntry(organizationId: number, accessId: number, actorIsOwner: boolean, checkCanModify: boolean): Promise<AccessActionResult> {
+export async function removeOrganizationAccessEntry(organizationId: number, accessId: number, actorIsOwner: boolean, checkCanModify: boolean, actorUserId: string): Promise<AccessActionResult> {
   const [existing] = await db
-    .select({ id: organizationAccess.id, isOwner: organizationAccess.isOwner })
+    .select({ id: organizationAccess.id, userId: organizationAccess.userId, isOwner: organizationAccess.isOwner })
     .from(organizationAccess)
     .where(and(eq(organizationAccess.id, accessId), eq(organizationAccess.organizationId, organizationId)))
     .limit(1);
@@ -114,6 +131,12 @@ export async function removeOrganizationAccessEntry(organizationId: number, acce
     return { ok: false, error: "lastOwner" };
   }
 
-  await db.delete(organizationAccess).where(eq(organizationAccess.id, accessId));
+  await db.transaction(async (tx) => {
+    await tx.delete(organizationAccess).where(eq(organizationAccess.id, accessId));
+    await logActivity(
+      { subject: "organization", subjectId: organizationId, event: "updated", description: `Revoked dashboard access of user ${existing.userId} on organization #${organizationId}`, actorUserId, properties: { section: "access", userId: existing.userId, wasOwner: existing.isOwner } },
+      tx
+    );
+  });
   return { ok: true };
 }

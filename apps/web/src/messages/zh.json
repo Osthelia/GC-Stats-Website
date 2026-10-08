@@ -4652,7 +4652,10 @@
       "event": {
         "created": "已创建",
         "updated": "已更新",
-        "deleted": "已删除"
+        "deleted": "已删除",
+        "login": "登录",
+        "login_failed": "登录失败",
+        "logout": "退出登录"
       },
       "columnDescription": "描述",
       "columnSubject": "对象",
