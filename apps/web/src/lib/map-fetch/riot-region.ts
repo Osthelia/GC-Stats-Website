@@ -27,6 +27,7 @@ const TOURNAMENT_REGION_TO_RIOT: Record<string, RiotRelayRegion> = {
   LATAM: "latam",
   EMEA: "eu",
   Pacific: "ap",
+  Oceania: "ap",
   China: "ap",
   Korea: "ap",
   SEA: "ap",
