@@ -88,7 +88,7 @@ export async function TeamFormerMembers({
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-[13.5px] font-semibold text-neutral-100">{m.handle}</span>
                 <span className="font-mono text-[9.5px] tracking-widest uppercase" style={{ color: mutedRoleColor(m.role) }}>
-                  {t(`role.${m.role}` as "role.player", { pronouns: m.pronouns ?? 2 })}
+                  {t.has(`role.${m.role}` as "role.player") ? t(`role.${m.role}` as "role.player", { pronouns: m.pronouns ?? 2 }) : m.role}
                 </span>
               </span>
               <span className="font-mono text-[10.5px] text-neutral-600">

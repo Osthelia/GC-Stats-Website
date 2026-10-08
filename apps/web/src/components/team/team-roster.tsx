@@ -30,13 +30,18 @@ function roleGroup(role: string): RoleGroup {
   return "staff";
 }
 
-const GROUP_STYLES: Record<RoleGroup, { bar: string; badgeBg: string; badgeText: string }> = {
-  igl: { bar: "#e4ae22", badgeBg: "rgba(228,174,34,0.12)", badgeText: "#e4ae22" },
+type GroupStyle = { bar: string; badgeBg: string; badgeText: string };
+
+// IGL: jaune comme player, sauf la bulle de role (violet, comme le staff).
+const GROUP_STYLES: Record<RoleGroup, GroupStyle> = {
+  igl: { bar: "#e4ae22", badgeBg: "rgba(192,132,252,0.12)", badgeText: "#d8b4fe" },
   player: { bar: "#e4ae22", badgeBg: "rgba(228,174,34,0.12)", badgeText: "#e4ae22" },
   sub: { bar: "#38bdf8", badgeBg: "rgba(56,189,248,0.12)", badgeText: "#7dd3fc" },
   staff: { bar: "#c084fc", badgeBg: "rgba(192,132,252,0.12)", badgeText: "#d8b4fe" },
   manager: { bar: "#fb923c", badgeBg: "rgba(251,146,60,0.12)", badgeText: "#fdba74" },
 };
+
+const INACTIVE_STYLE: GroupStyle = { bar: "var(--gcs-text-tertiary)", badgeBg: "rgba(115,115,115,0.12)", badgeText: "#a3a3a3" };
 
 export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
   const t = await getTranslations("teamPage");
@@ -68,21 +73,24 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
       ) : (
         <div className="flex flex-col gap-2">
           {sorted.map((m) => {
-            const group = roleGroup(m.role);
+            // Ancien role V1 "xxx-inactive" : meme rendu qu'un inactif du role de base.
+            const role = m.role.replace(/-inactive$/, "");
+            const isInactive = m.inactiveSince != null || role !== m.role;
+            const group = roleGroup(role);
             const style = GROUP_STYLES[group];
-            const isInactive = m.inactiveSince != null;
+            const avatarStyle = isInactive ? INACTIVE_STYLE : GROUP_STYLES[group === "igl" ? "player" : group];
             return (
               <Link
                 key={m.personId}
                 href={`/player/${m.personId}/${slugify(m.handle)}`}
                 className="group flex overflow-hidden rounded-lg border border-neutral-800 bg-[var(--gcs-surface-2)] transition-colors hover:border-neutral-700"
               >
-                {/* Only the accent bar goes gray for an inactive member — role badge keeps its normal color. */}
-                <span className="w-1 flex-none" style={{ background: isInactive ? "var(--gcs-text-tertiary)" : style.bar }} />
+                {/* Inactif : barre et avatar gris, la bulle de role garde la couleur du role. */}
+                <span className="w-1 flex-none" style={{ background: isInactive ? INACTIVE_STYLE.bar : avatarStyle.bar }} />
                 <div className="flex min-w-0 flex-1 items-center gap-3 p-3">
                   <span
                     className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-lg border border-neutral-800"
-                    style={{ background: `${style.badgeBg}` }}
+                    style={{ background: avatarStyle.badgeBg }}
                   >
                     {m.photoUrl || m.photoUrlLight ? (
                       <ThemedLogoImage
@@ -94,7 +102,7 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
                         className="h-full w-full object-contain"
                       />
                     ) : (
-                      <span className="text-base font-black" style={{ color: style.badgeText }}>
+                      <span className="text-base font-black" style={{ color: avatarStyle.badgeText }}>
                         {m.handle.charAt(0).toUpperCase()}
                       </span>
                     )}
@@ -110,7 +118,7 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
                         className="flex-none rounded-sm px-1.5 py-0.5 font-mono text-[8px] font-black tracking-widest uppercase"
                         style={{ background: style.badgeBg, color: style.badgeText }}
                       >
-                        {t(`role.${m.role}` as "role.player", { pronouns: m.pronouns ?? 2 })}
+                        {t.has(`role.${role}` as "role.player") ? t(`role.${role}` as "role.player", { pronouns: m.pronouns ?? 2 }) : role}
                       </span>
                       <span className="truncate font-mono text-[9px] font-bold text-neutral-500 uppercase tracking-widest">{displayMonthYear(m.since, t("unknownDate"))}</span>
                     </div>

@@ -17,7 +17,7 @@ import { slugify } from "@/lib/entity-id";
 // just applied to a "which team is this person on" card instead of "who's
 // on this team".
 function roleAccent(role: string): { badgeBg: string; badgeText: string } {
-  if (role === "player-igl" || role === "player")
+  if (role === "player")
     return { badgeBg: "rgba(228,174,34,0.12)", badgeText: "#e4ae22" };
   if (role === "sub")
     return { badgeBg: "rgba(56,189,248,0.12)", badgeText: "#7dd3fc" };
