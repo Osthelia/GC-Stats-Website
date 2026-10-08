@@ -21,6 +21,7 @@ import { activateLiveTournaments } from "./jobs/activate-live-tournaments";
 import { detectPlayerPovStreams } from "./jobs/detect-player-pov-streams";
 import { pruneExpiredOAuthTokens } from "./jobs/prune-expired-oauth-tokens";
 import { flushChangeRequestDiscordNotices } from "./jobs/flush-change-request-discord-notices";
+import { deactivateInactiveEntities } from "./jobs/deactivate-inactive-entities";
 
 /** `workersPaused`: skipped on Cloudflare Workers only (Free plan 10ms CPU per tick), still run by the Docker scheduler. */
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string>; workersPaused?: boolean };
@@ -47,6 +48,7 @@ export const jobs: ScheduledJob[] = [
   { name: "detect-player-pov-streams", cron: "* * * * *", run: detectPlayerPovStreams, workersPaused: true },
   { name: "prune-expired-oauth-tokens", cron: "*/15 * * * *", run: pruneExpiredOAuthTokens },
   { name: "flush-change-request-discord-notices", cron: "* * * * *", run: flushChangeRequestDiscordNotices, workersPaused: true },
+  { name: "deactivate-inactive-entities", cron: "10 0 1 * *", run: deactivateInactiveEntities },
 ];
 
 /** Runs every job matching this cron expression, sequentially, swallowing individual failures. Used by the Workers scheduled() dispatcher. */
