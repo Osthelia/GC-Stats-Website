@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "閉じる"
+  },
   "nav": {
     "home": "ホーム",
     "matches": "試合",

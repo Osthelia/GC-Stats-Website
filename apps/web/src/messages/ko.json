@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "닫기"
+  },
   "nav": {
     "home": "홈",
     "matches": "경기",

@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "Kapat"
+  },
   "nav": {
     "home": "Ana Sayfa",
     "matches": "Maçlar",

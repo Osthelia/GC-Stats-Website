@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "Chiudi"
+  },
   "nav": {
     "home": "Home",
     "matches": "Match",

@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "关闭"
+  },
   "nav": {
     "home": "首页",
     "matches": "比赛",

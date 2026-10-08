@@ -1,4 +1,7 @@
 {
+  "toast": {
+    "close": "Schließen"
+  },
   "nav": {
     "home": "Startseite",
     "matches": "Spiele",
