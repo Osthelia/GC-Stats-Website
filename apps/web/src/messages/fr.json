@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG, JPEG, GIF (animée supportée) ou WebP, 10 Mo maximum. Remplit le champ URL de l'image ci-dessus.",
       "uploadButton": "Téléverser",
       "uploadSuccess": "Image téléversée.",
+      "fieldTeam": "Ou créer à partir d'une équipe",
+      "fieldTeamHint": "Copie le logo actuel de l'équipe (instantané, il ne suivra pas ses changements futurs) et préremplit le nom et la source.",
+      "fieldTeamPlaceholder": "Choisir une équipe…",
+      "fieldTeamSearchPlaceholder": "Rechercher une équipe…",
+      "fieldTeamNoResults": "Aucune équipe trouvée.",
+      "teamLogoCopied": "Logo de l'équipe copié.",
       "fieldIsActive": "Active",
       "cancel": "Annuler",
       "save": "Enregistrer",
@@ -3182,7 +3188,9 @@
         "notFound": "Emote introuvable.",
         "tooLarge": "Image trop volumineuse (10 Mo max).",
         "invalidImage": "Ce fichier n'est pas une image valide.",
-        "unsupportedType": "Type de fichier non supporté (PNG, JPEG, GIF ou WebP uniquement)."
+        "unsupportedType": "Type de fichier non supporté (PNG, JPEG, GIF ou WebP uniquement).",
+        "teamNoLogo": "Cette équipe n'a pas de logo actuel.",
+        "teamNotFound": "Équipe introuvable."
       }
     },
     "pointTypes": {

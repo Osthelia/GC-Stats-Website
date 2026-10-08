@@ -11,7 +11,8 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { putObject, deleteObject, publicUrl } from "./s3";
+import { putObject, deleteObject, publicUrl, copyObjectWithinBucket } from "./s3";
+import { LOGO_FOLDERS } from "./logos";
 
 /**
  * `emotes.image_path` holds a storage key for every migrated V1 row (e.g.
@@ -46,6 +47,13 @@ export async function storeEmoteImage(buffer: Buffer, contentType: string): Prom
   const ext = EXTENSION_BY_MIME[contentType] ?? "png";
   const key = `emotes/uploads/${randomUUID()}.${ext}`;
   await putObject(key, buffer, contentType);
+  return { key, url: publicUrl(key) };
+}
+
+/** Frozen copy of a team logo's 200x200 thumbnail: it keeps working (and stays deletable) if the team later changes or removes its logo. */
+export async function copyTeamLogoAsEmote(logoId: string): Promise<StoredEmoteImage> {
+  const key = `emotes/uploads/${randomUUID()}.webp`;
+  await copyObjectWithinBucket(`${LOGO_FOLDERS.team}/${logoId}/200x200.webp`, key);
   return { key, url: publicUrl(key) };
 }
 

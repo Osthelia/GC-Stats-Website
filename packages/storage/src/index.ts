@@ -26,5 +26,5 @@ export { LOGO_FOLDERS, storeLogoPair, replaceLogoFiles, deleteLogoFiles, logoUrl
 export type { LogoEntityType, LogoVariant, StoredLogo } from "./logos";
 export { storeNewsImage, deleteNewsImage, newsImageUrl } from "./news";
 export type { StoredNewsImage } from "./news";
-export { emoteImageUrl, isSupportedEmoteMime, storeEmoteImage, deleteEmoteImageFile } from "./emotes";
+export { emoteImageUrl, isSupportedEmoteMime, storeEmoteImage, copyTeamLogoAsEmote, deleteEmoteImageFile } from "./emotes";
 export type { StoredEmoteImage } from "./emotes";

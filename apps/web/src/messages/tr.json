@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG, JPEG, GIF (animasyonlu desteklenir) veya WebP, maksimum 10 MB. Yukarıdaki görsel URL alanını doldurur.",
       "uploadButton": "Yükle",
       "uploadSuccess": "Görsel yüklendi.",
+      "fieldTeam": "Veya bir takımdan oluştur",
+      "fieldTeamHint": "Takımın mevcut logosunu kopyalar (anlık görüntü, sonraki değişiklikleri takip etmez) ve ad ile kaynağı doldurur.",
+      "fieldTeamPlaceholder": "Bir takım seç…",
+      "fieldTeamSearchPlaceholder": "Takım ara…",
+      "fieldTeamNoResults": "Takım bulunamadı.",
+      "teamLogoCopied": "Takım logosu kopyalandı.",
       "fieldIsActive": "Aktif",
       "cancel": "İptal",
       "save": "Kaydet",
@@ -3182,7 +3188,9 @@
         "notFound": "Emote bulunamadı.",
         "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
         "invalidImage": "Bu dosya geçerli bir görsel değil.",
-        "unsupportedType": "Desteklenmeyen dosya türü (yalnızca PNG, JPEG, GIF veya WebP)."
+        "unsupportedType": "Desteklenmeyen dosya türü (yalnızca PNG, JPEG, GIF veya WebP).",
+        "teamNoLogo": "Bu takımın mevcut bir logosu yok.",
+        "teamNotFound": "Takım bulunamadı."
       }
     },
     "pointTypes": {

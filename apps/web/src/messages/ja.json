@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG、JPEG、GIF（アニメーション対応）またはWebP、最大10MB。上の画像URL欄に自動入力されます。",
       "uploadButton": "アップロード",
       "uploadSuccess": "画像をアップロードしました。",
+      "fieldTeam": "またはチームから作成",
+      "fieldTeamHint": "チームの現在のロゴをコピーし（スナップショットのため今後の変更には追従しません）、名前とソースを自動入力します。",
+      "fieldTeamPlaceholder": "チームを選択…",
+      "fieldTeamSearchPlaceholder": "チームを検索…",
+      "fieldTeamNoResults": "チームが見つかりません。",
+      "teamLogoCopied": "チームのロゴをコピーしました。",
       "fieldIsActive": "有効",
       "cancel": "キャンセル",
       "save": "保存",
@@ -3182,7 +3188,9 @@
         "notFound": "絵文字が見つかりません。",
         "tooLarge": "画像が大きすぎます（最大10MB）。",
         "invalidImage": "このファイルは有効な画像ではありません。",
-        "unsupportedType": "サポートされていないファイル形式です（PNG、JPEG、GIF、WebPのみ）。"
+        "unsupportedType": "サポートされていないファイル形式です（PNG、JPEG、GIF、WebPのみ）。",
+        "teamNoLogo": "このチームには現在のロゴがありません。",
+        "teamNotFound": "チームが見つかりません。"
       }
     },
     "pointTypes": {

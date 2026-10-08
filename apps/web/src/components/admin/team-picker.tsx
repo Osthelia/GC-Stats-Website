@@ -26,6 +26,7 @@ import type { AppLocale } from "@/i18n/routing";
  * flow, backed by searchTeams instead of searchPeople.
  */
 export function TeamPicker({
+  id,
   value,
   onChange,
   placeholder,
@@ -33,6 +34,7 @@ export function TeamPicker({
   noResultsLabel,
   search = searchTeams,
 }: {
+  id?: string;
   value: { id: number; name: string } | null;
   onChange: (team: { id: number; name: string } | null) => void;
   placeholder: string;
@@ -111,6 +113,7 @@ export function TeamPicker({
     <>
       <button
         ref={triggerRef}
+        id={id}
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"

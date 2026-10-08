@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG, JPEG, GIF (รองรับภาพเคลื่อนไหว) หรือ WebP สูงสุด 10 MB จะกรอกช่อง URL รูปภาพด้านบนให้",
       "uploadButton": "อัปโหลด",
       "uploadSuccess": "อัปโหลดรูปภาพแล้ว",
+      "fieldTeam": "หรือสร้างจากทีม",
+      "fieldTeamHint": "คัดลอกโลโก้ปัจจุบันของทีม (เป็นภาพสแนปช็อต จะไม่เปลี่ยนตามการแก้ไขในภายหลัง) และกรอกชื่อกับแหล่งที่มาให้ล่วงหน้า",
+      "fieldTeamPlaceholder": "เลือกทีม…",
+      "fieldTeamSearchPlaceholder": "ค้นหาทีม…",
+      "fieldTeamNoResults": "ไม่พบทีม",
+      "teamLogoCopied": "คัดลอกโลโก้ทีมแล้ว",
       "fieldIsActive": "เปิดใช้งาน",
       "cancel": "ยกเลิก",
       "save": "บันทึก",
@@ -3182,7 +3188,9 @@
         "notFound": "ไม่พบอีโมต",
         "tooLarge": "รูปภาพใหญ่เกินไป (สูงสุด 10 MB)",
         "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง",
-        "unsupportedType": "ไม่รองรับประเภทไฟล์นี้ (PNG, JPEG, GIF หรือ WebP เท่านั้น)"
+        "unsupportedType": "ไม่รองรับประเภทไฟล์นี้ (PNG, JPEG, GIF หรือ WebP เท่านั้น)",
+        "teamNoLogo": "ทีมนี้ไม่มีโลโก้ปัจจุบัน",
+        "teamNotFound": "ไม่พบทีม"
       }
     },
     "pointTypes": {

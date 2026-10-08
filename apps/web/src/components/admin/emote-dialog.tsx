@@ -18,8 +18,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { TeamPicker } from "@/components/admin/team-picker";
 import { AboutProjectLogo } from "@/components/admin/about-project-logo";
-import { createEmote, updateEmote, uploadEmoteImage, type EmoteFieldErrors } from "@/actions/admin-emotes";
+import { copyTeamLogoToEmote, createEmote, updateEmote, uploadEmoteImage, type EmoteFieldErrors } from "@/actions/admin-emotes";
 import type { AdminEmoteRow } from "@/lib/admin-emotes";
 
 type FormState = { name: string; imagePath: string; source: string; isActive: boolean };
@@ -48,6 +49,9 @@ export function EmoteDialog({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isUploading, startUpload] = useTransition();
+  const [isCopyingTeam, startCopyTeam] = useTransition();
+  const [team, setTeam] = useState<{ id: number; name: string } | null>(null);
+  const [teamError, setTeamError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<EmoteFieldErrors>({});
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyState());
@@ -58,6 +62,8 @@ export function EmoteDialog({
       setForm(emote ? stateFromEmote(emote) : emptyState());
       setFieldErrors({});
       setUploadError(null);
+      setTeam(null);
+      setTeamError(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }, [open, emote]);
@@ -81,6 +87,23 @@ export function EmoteDialog({
       set("imagePath", result.url);
       if (fileInputRef.current) fileInputRef.current.value = "";
       toast.success(t("uploadSuccess"));
+    });
+  }
+
+  function handleTeamSelect(picked: { id: number; name: string } | null) {
+    setTeam(picked);
+    setTeamError(null);
+    if (!picked) return;
+
+    startCopyTeam(async () => {
+      const result = await copyTeamLogoToEmote(picked.id);
+      if (!result.ok) {
+        setTeam(null);
+        setTeamError(t(`error.${result.error}`));
+        return;
+      }
+      setForm((prev) => ({ ...prev, imagePath: result.url, source: "teams", name: prev.name.trim() ? prev.name : result.teamName }));
+      toast.success(t("teamLogoCopied"));
     });
   }
 
@@ -125,6 +148,17 @@ export function EmoteDialog({
               </Button>
             </div>
           </FormField>
+
+          {!emote && (
+            <FormField label={t("fieldTeam")} htmlFor="emote-team" hint={t("fieldTeamHint")} error={teamError ?? undefined}>
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <TeamPicker id="emote-team" value={team} onChange={handleTeamSelect} placeholder={t("fieldTeamPlaceholder")} searchPlaceholder={t("fieldTeamSearchPlaceholder")} noResultsLabel={t("fieldTeamNoResults")} />
+                </div>
+                {isCopyingTeam && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
+              </div>
+            </FormField>
+          )}
 
           <FormField label={t("fieldName")} htmlFor="emote-name" required error={err("name")}>
             <Input id="emote-name" value={form.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!fieldErrors.name} />

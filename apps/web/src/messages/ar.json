@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG أو JPEG أو GIF (المتحركة مدعومة) أو WebP، بحد أقصى 10 ميغابايت. يملأ حقل رابط الصورة أعلاه.",
       "uploadButton": "رفع",
       "uploadSuccess": "تم رفع الصورة.",
+      "fieldTeam": "أو الإنشاء من فريق",
+      "fieldTeamHint": "ينسخ الشعار الحالي للفريق (لقطة ثابتة لن تتبع التغييرات اللاحقة) ويملأ الاسم والمصدر مسبقا.",
+      "fieldTeamPlaceholder": "اختر فريقا…",
+      "fieldTeamSearchPlaceholder": "ابحث عن فريق…",
+      "fieldTeamNoResults": "لم يتم العثور على أي فريق.",
+      "teamLogoCopied": "تم نسخ شعار الفريق.",
       "fieldIsActive": "نشط",
       "cancel": "إلغاء",
       "save": "حفظ",
@@ -3182,7 +3188,9 @@
         "notFound": "الرمز التعبيري غير موجود.",
         "tooLarge": "الصورة كبيرة جدًا (10 ميغابايت كحد أقصى).",
         "invalidImage": "هذا الملف ليس صورة صالحة.",
-        "unsupportedType": "نوع ملف غير مدعوم (PNG أو JPEG أو GIF أو WebP فقط)."
+        "unsupportedType": "نوع ملف غير مدعوم (PNG أو JPEG أو GIF أو WebP فقط).",
+        "teamNoLogo": "ليس لهذا الفريق شعار حالي.",
+        "teamNotFound": "الفريق غير موجود."
       }
     },
     "pointTypes": {

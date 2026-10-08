@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "支持 PNG、JPEG、GIF（含动图）或 WebP，最大 10 MB，会自动填入上方图片 URL 字段。",
       "uploadButton": "上传",
       "uploadSuccess": "图片已上传。",
+      "fieldTeam": "或从战队创建",
+      "fieldTeamHint": "复制战队当前的 Logo（为快照，不会跟随之后的变更），并自动填写名称和来源。",
+      "fieldTeamPlaceholder": "选择战队…",
+      "fieldTeamSearchPlaceholder": "搜索战队…",
+      "fieldTeamNoResults": "未找到战队。",
+      "teamLogoCopied": "已复制战队 Logo。",
       "fieldIsActive": "启用",
       "cancel": "取消",
       "save": "保存",
@@ -3182,7 +3188,9 @@
         "notFound": "未找到该表情。",
         "tooLarge": "图片过大（最多 10 MB）。",
         "invalidImage": "该文件不是有效的图片。",
-        "unsupportedType": "不支持的文件类型（仅支持 PNG、JPEG、GIF 或 WebP）。"
+        "unsupportedType": "不支持的文件类型（仅支持 PNG、JPEG、GIF 或 WebP）。",
+        "teamNoLogo": "该战队当前没有 Logo。",
+        "teamNotFound": "未找到战队。"
       }
     },
     "pointTypes": {

@@ -3166,6 +3166,12 @@
       "fieldUploadHint": "PNG, JPEG, GIF (애니메이션 지원) 또는 WebP, 최대 10MB. 위의 이미지 URL 필드를 자동으로 채웁니다.",
       "uploadButton": "업로드",
       "uploadSuccess": "이미지가 업로드되었습니다.",
+      "fieldTeam": "또는 팀에서 만들기",
+      "fieldTeamHint": "팀의 현재 로고를 복사하고(스냅샷이므로 이후 변경은 반영되지 않습니다) 이름과 출처를 자동으로 채웁니다.",
+      "fieldTeamPlaceholder": "팀 선택…",
+      "fieldTeamSearchPlaceholder": "팀 검색…",
+      "fieldTeamNoResults": "팀을 찾을 수 없습니다.",
+      "teamLogoCopied": "팀 로고를 복사했습니다.",
       "fieldIsActive": "활성",
       "cancel": "취소",
       "save": "저장",
@@ -3182,7 +3188,9 @@
         "notFound": "이모트를 찾을 수 없습니다.",
         "tooLarge": "이미지가 너무 큽니다 (최대 10MB).",
         "invalidImage": "유효한 이미지 파일이 아닙니다.",
-        "unsupportedType": "지원하지 않는 파일 형식입니다 (PNG, JPEG, GIF 또는 WebP만 가능)."
+        "unsupportedType": "지원하지 않는 파일 형식입니다 (PNG, JPEG, GIF 또는 WebP만 가능).",
+        "teamNoLogo": "이 팀에는 현재 로고가 없습니다.",
+        "teamNotFound": "팀을 찾을 수 없습니다."
       }
     },
     "pointTypes": {
