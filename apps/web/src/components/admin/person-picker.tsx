@@ -13,7 +13,7 @@ import { createPortal } from "react-dom";
 import { ChevronDownIcon, Loader2Icon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { countryName } from "@/lib/countries";
+import { CountryFlag } from "@/components/admin/country-flag";
 import { useAnchorRect } from "@/hooks/use-anchor-rect";
 import { searchPeople, type PersonPickerResult } from "@/actions/admin-players";
 
@@ -36,8 +36,8 @@ export function PersonPicker({
   noResultsLabel,
   search = searchPeople,
 }: {
-  value: { id: number; handle: string } | null;
-  onChange: (person: { id: number; handle: string } | null) => void;
+  value: { id: number; handle: string; countryCode?: string | null; secondaryCountryCode?: string | null } | null;
+  onChange: (person: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null) => void;
   placeholder: string;
   searchPlaceholder: string;
   noResultsLabel: string;
@@ -90,7 +90,11 @@ export function PersonPicker({
         onClick={() => setOpen((o) => !o)}
         className="flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
       >
-        <span className={cn("truncate", !value && "text-muted-foreground")}>{value ? value.handle : placeholder}</span>
+        <span className={cn("flex min-w-0 items-center gap-2", !value && "text-muted-foreground")}>
+          {value && <CountryFlag code={value.countryCode ?? null} secondaryCode={value.secondaryCountryCode} className="h-3 w-4" />}
+          <span className="truncate">{value ? value.handle : placeholder}</span>
+          {value && <span className="shrink-0 text-xs text-muted-foreground">#{value.id}</span>}
+        </span>
         <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />
       </button>
 
@@ -118,7 +122,7 @@ export function PersonPicker({
                     key={r.id}
                     type="button"
                     onClick={() => {
-                      onChange({ id: r.id, handle: r.handle });
+                      onChange({ id: r.id, handle: r.handle, countryCode: r.countryCode, secondaryCountryCode: r.secondaryCountryCode });
                       setQuery("");
                       setOpen(false);
                     }}
@@ -127,8 +131,11 @@ export function PersonPicker({
                       value?.id === r.id && "bg-accent/60"
                     )}
                   >
-                    <span className="truncate">{r.handle}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{countryName(r.countryCode, "en") ?? ""}</span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <CountryFlag code={r.countryCode} secondaryCode={r.secondaryCountryCode} className="h-3 w-4" />
+                      <span className="truncate">{r.handle}</span>
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">#{r.id}</span>
                   </button>
                 ))}
               {!loading && results.length === 0 && <p className="px-2 py-1.5 text-sm text-muted-foreground">{noResultsLabel}</p>}

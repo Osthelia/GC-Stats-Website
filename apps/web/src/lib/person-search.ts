@@ -12,11 +12,14 @@
 import { and, eq, inArray, ne, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { people } from "@gc-stats/db";
-import { typoVariants } from "@/lib/search-typo";
-import { foldedIlike } from "@/lib/db-search";
+import { typoVariants, stripSpecialChars } from "@/lib/search-typo";
+import { specialCharFoldedIlike, specialCharPrefixRank } from "@/lib/db-search";
+import { scoreMatch } from "@/lib/search";
 import { ghostScopeClause, type GhostScope } from "@/lib/ghost-visibility";
 
-export type PersonPickerResult = { id: number; handle: string; countryCode: string | null };
+export type PersonPickerResult = { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null };
+
+const columns = { id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode };
 
 /**
  * Typo-tolerant people search backing PersonPicker — mirrors V1's
@@ -46,7 +49,7 @@ export async function searchPeopleQuery(query: string, excludeId?: number, restr
 
   if (!q) {
     return db
-      .select({ id: people.id, handle: people.handle, countryCode: people.countryCode })
+      .select(columns)
       .from(people)
       .where(baseClauses.length ? and(...baseClauses) : undefined)
       .orderBy(people.handle)
@@ -54,17 +57,26 @@ export async function searchPeopleQuery(query: string, excludeId?: number, restr
   }
 
   const numeric = /^\d+$/.test(q);
-  const variants = typoVariants(q.toLowerCase());
-  const clauses = variants.map((v) => foldedIlike(people.handle, v));
+  const variants = [...new Set(typoVariants(q.toLowerCase()).map(stripSpecialChars))].filter((v) => v.length > 0);
+  const clauses = variants.map((v) => specialCharFoldedIlike(people.handle, v));
   if (numeric) {
     const n = Number(q);
     clauses.push(eq(people.id, n), eq(people.vlrId, n));
   }
+  if (clauses.length === 0) return [];
+  const base = variants[0] ?? q.toLowerCase();
 
-  return db
-    .select({ id: people.id, handle: people.handle, countryCode: people.countryCode })
+  // Same matching and scoring as the public search, over a wider candidate pool re-ranked in memory.
+  const rows = await db
+    .select(columns)
     .from(people)
     .where(and(or(...clauses), ...baseClauses))
-    .orderBy(people.handle)
-    .limit(8);
+    .orderBy(specialCharPrefixRank(people.handle, base))
+    .limit(30);
+
+  return rows
+    .map((row) => ({ row, score: scoreMatch(row.handle, base, base.length, 0) + (numeric && row.id === Number(q) ? 5000 : 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .map(({ row }) => row);
 }

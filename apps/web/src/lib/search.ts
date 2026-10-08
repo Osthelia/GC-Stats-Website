@@ -53,7 +53,7 @@ const POPULARITY_CAP = 200;
 // searchGlobal's `base`) — folding the candidate name the same way lets
 // "remake" match "Re//make" and "g2gozen" match "G2 Gozen" on top of V1's
 // original accent/typo folding.
-function scoreMatch(name: string, term: string, termLen: number, views: number): number {
+export function scoreMatch(name: string, term: string, termLen: number, views: number): number {
   const folded = stripSpecialChars(stripAccents(name.toLowerCase()));
   const diff = Math.abs(name.length - termLen);
   return (folded.startsWith(term) ? 1000 : 0) + (folded.includes(term) ? 75 : 0) + Math.max(0, 100 - diff * 10) + Math.min(Math.floor(views / 10), POPULARITY_CAP);
