@@ -257,7 +257,7 @@ export function GlobalSearch() {
   const showResultsPanel = open && query.trim().length >= MIN_QUERY_LENGTH;
 
   return (
-    <div ref={rootRef} className="relative flex h-[38px] min-w-10 flex-[0_1_320px]">
+    <div ref={rootRef} className="relative flex h-[38px] min-w-10 flex-[0_1_480px]">
       <div className="group relative flex w-full items-center">
         <svg
           width="15"
