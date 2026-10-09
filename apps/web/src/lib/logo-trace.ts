@@ -61,17 +61,18 @@ export async function withLogoTrace<T>(label: string, fn: (trace: LogoTrace) => 
   let writes: Promise<void> = Promise.resolve();
   const properties = () => ({ section: "logo-trace", label, status, durationMs: Date.now() - startedAt, steps, error, actorUserId: target?.actorUserId ?? null });
   const persist = () => {
-    if (!target) return;
+    // Before the entity is known, only a failure is worth an entry (e.g. the permission check itself throwing).
+    if (!target && status === "running") return;
     writes = writes.then(async () => {
       try {
         if (entryId === null) {
           const [row] = await adminDb
             .insert(activityLog)
             .values({
-              logName: target!.subject,
+              logName: target?.subject ?? "moderation",
               description: `Logo upload trace: ${label}`,
-              subjectType: target!.subject,
-              subjectId: String(target!.subjectId),
+              subjectType: target?.subject ?? null,
+              subjectId: target ? String(target.subjectId) : null,
               event: "updated",
               properties: properties(),
             })
