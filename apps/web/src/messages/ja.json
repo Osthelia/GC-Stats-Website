@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "不明",
     "streamTypeOfficial": "公式",
-    "streamTypeWatchparty": "ウォッチパーティー"
+    "streamTypeWatchparty": "ウォッチパーティー",
+    "organizedTournaments": "主催した大会"
   },
   "production": {
     "title": "プロダクション",
@@ -4504,7 +4505,12 @@
           "empty": "画像を選択してください。",
           "notFound": "トーナメントが見つかりません。"
         }
-      }
+      },
+      "fieldOrganizer": "主催者",
+      "organizerPlaceholder": "組織を選択",
+      "organizerSearchPlaceholder": "組織を検索",
+      "organizerNoResults": "組織が見つかりません",
+      "organizerClear": "解除"
     },
     "reports": {
       "title": "通報",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "エージェントピック率（全体）",
     "mapsPickRatesEmpty": "このマップのエージェントデータはありません。",
     "mapsPickRatesShowMore": "すべて表示",
-    "mapsPickRatesShowLess": "表示を減らす"
+    "mapsPickRatesShowLess": "表示を減らす",
+    "factOrganizer": "主催者"
   },
   "pickemPage": {
     "heading": "Pick'em",

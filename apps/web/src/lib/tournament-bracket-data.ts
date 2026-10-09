@@ -13,7 +13,7 @@
 import { cache } from "react";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, teams, stages } from "@gc-stats/db";
+import { tournaments, teams, stages, organizations } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { listTournamentStages, type AdminContainerRow } from "@/lib/admin-tournament-detail";
 import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/admin-bracket-editor-data";
@@ -40,6 +40,7 @@ export type TournamentHeaderInfo = {
   liquipediaLink: string | null;
   socials: Record<string, string>;
   playerPovPhrase: string | null;
+  organizer: { id: number; name: string; slug: string; logoUrl: string | null; logoUrlLight: string | null } | null;
 };
 
 /** Deduplicated per request (page, header and metadata can all ask for it). */
@@ -60,14 +61,25 @@ export const getPublicTournamentHeader = cache(async (id: number): Promise<Tourn
         liquipediaLink: tournaments.liquipediaLink,
         socials: tournaments.socials,
         playerPovPhrase: tournaments.playerPovPhrase,
+        organizerOrganizationId: tournaments.organizerOrganizationId,
       })
       .from(tournaments)
       .where(and(eq(tournaments.id, id), visibleTournament)),
     getCurrentLogoUrlsThemed("tournament", [id]),
   ]);
   if (!row) return null;
+  const { organizerOrganizationId, ...tournamentRow } = row;
+  let organizer: TournamentHeaderInfo["organizer"] = null;
+  if (organizerOrganizationId != null) {
+    const [[org], orgLogos] = await Promise.all([
+      db.select({ id: organizations.id, name: organizations.name, slug: organizations.slug }).from(organizations).where(eq(organizations.id, organizerOrganizationId)),
+      getCurrentLogoUrlsThemed("organization", [organizerOrganizationId]),
+    ]);
+    if (org) organizer = { ...org, logoUrl: orgLogos.get(org.id)?.dark ?? null, logoUrlLight: orgLogos.get(org.id)?.light ?? null };
+  }
   return {
-    ...row,
+    ...tournamentRow,
+    organizer,
     socials: (row.socials as Record<string, string>) ?? {},
     logoUrl: logosByTournamentId.get(id)?.dark ?? null,
     logoUrlLight: logosByTournamentId.get(id)?.light ?? null,

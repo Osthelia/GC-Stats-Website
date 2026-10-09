@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "Unknown",
     "streamTypeOfficial": "Official",
-    "streamTypeWatchparty": "Watchparty"
+    "streamTypeWatchparty": "Watchparty",
+    "organizedTournaments": "Organized tournaments"
   },
   "production": {
     "title": "Production",
@@ -4508,7 +4509,12 @@
           "empty": "Please choose an image.",
           "notFound": "Tournament not found."
         }
-      }
+      },
+      "fieldOrganizer": "Organizer",
+      "organizerPlaceholder": "Select an organization",
+      "organizerSearchPlaceholder": "Search an organization",
+      "organizerNoResults": "No organization found",
+      "organizerClear": "Remove"
     },
     "reports": {
       "title": "Reports",
@@ -5949,7 +5955,8 @@
     "mapsPickRatesOverallTitle": "Agent pick rate (overall)",
     "mapsPickRatesEmpty": "No agent data for this map.",
     "mapsPickRatesShowMore": "Show all",
-    "mapsPickRatesShowLess": "Show less"
+    "mapsPickRatesShowLess": "Show less",
+    "factOrganizer": "Organizer"
   },
   "pickemPage": {
     "heading": "Pick'em",

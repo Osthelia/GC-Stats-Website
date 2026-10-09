@@ -13,7 +13,7 @@
  */
 
 import { pgTable, pgEnum, bigserial, bigint, integer, text, varchar, jsonb, boolean, date, timestamp, numeric, char, unique, index } from "drizzle-orm/pg-core";
-import { teams, people } from "./people";
+import { teams, people, organizations } from "./people";
 
 export const pointTypes = pgTable("point_types", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
@@ -44,9 +44,12 @@ export const tournaments = pgTable("tournaments", {
   socials: jsonb("socials").notNull().default({}),
   playerPovPhrase: text("player_pov_phrase"),
   pointTypeId: bigint("point_type_id", { mode: "number" }).references(() => pointTypes.id, { onDelete: "set null" }),
+  // Organization shown as the tournament's organizer.
+  organizerOrganizationId: bigint("organizer_organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index("tournaments_active_start_date_idx").on(t.active, t.startDate),
+  index("tournaments_organizer_organization_id_idx").on(t.organizerOrganizationId),
 ]);
 
 // Mirrors component-registry selections (veto system, standings calculator,

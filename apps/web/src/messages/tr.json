@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "Bilinmiyor",
     "streamTypeOfficial": "Resmi",
-    "streamTypeWatchparty": "Watchparty"
+    "streamTypeWatchparty": "Watchparty",
+    "organizedTournaments": "Düzenlenen turnuvalar"
   },
   "production": {
     "title": "Prodüksiyon",
@@ -4504,7 +4505,12 @@
           "empty": "Lütfen bir görsel seçin.",
           "notFound": "Turnuva bulunamadı."
         }
-      }
+      },
+      "fieldOrganizer": "Organizatör",
+      "organizerPlaceholder": "Bir organizasyon seç",
+      "organizerSearchPlaceholder": "Organizasyon ara",
+      "organizerNoResults": "Organizasyon bulunamadı",
+      "organizerClear": "Kaldır"
     },
     "reports": {
       "title": "Bildirimler",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "Ajan seçim oranı (genel)",
     "mapsPickRatesEmpty": "Bu harita için ajan verisi yok.",
     "mapsPickRatesShowMore": "Tümünü göster",
-    "mapsPickRatesShowLess": "Daha az göster"
+    "mapsPickRatesShowLess": "Daha az göster",
+    "factOrganizer": "Organizatör"
   },
   "pickemPage": {
     "heading": "Pick'em",

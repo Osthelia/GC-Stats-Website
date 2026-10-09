@@ -13,7 +13,7 @@
 import { cache } from "react";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { tournaments, pointTypes } from "@gc-stats/db";
+import { tournaments, pointTypes, organizations } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, foldedArrayIlike } from "@/lib/db-search";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
@@ -138,13 +138,22 @@ export type AdminTournamentDetailRow = AdminTournamentRow & {
   socials: Record<string, string>;
   playerPovPhrase: string | null;
   pointTypeId: number | null;
+  organizerOrganizationId: number | null;
+  organizerOrganizationName: string | null;
 };
 
 // Cached per request: generateMetadata and the page both read it.
 export const getAdminTournament = cache(async (id: number): Promise<AdminTournamentDetailRow | null> => {
-  const [[row], logoUrls] = await Promise.all([db.select().from(tournaments).where(eq(tournaments.id, id)), getCurrentLogoUrls("tournament", [id])]);
+  const [[row], logoUrls] = await Promise.all([
+    db
+      .select({ tournament: tournaments, organizerName: organizations.name })
+      .from(tournaments)
+      .leftJoin(organizations, eq(organizations.id, tournaments.organizerOrganizationId))
+      .where(eq(tournaments.id, id)),
+    getCurrentLogoUrls("tournament", [id]),
+  ]);
   if (!row) return null;
-  return { ...row, logoUrl: logoUrls.get(id) ?? null, socials: (row.socials as Record<string, string>) ?? {} };
+  return { ...row.tournament, organizerOrganizationName: row.organizerName, logoUrl: logoUrls.get(id) ?? null, socials: (row.tournament.socials as Record<string, string>) ?? {} };
 });
 
 export async function listPointTypeOptions(): Promise<{ id: number; name: string; label: string }[]> {

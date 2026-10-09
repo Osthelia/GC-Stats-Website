@@ -8,7 +8,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { TournamentBadge } from "@/components/tournament/tournament-badge";
+import { TournamentListCard } from "@/components/tournament/tournament-list-card";
 import type { HomeTournament } from "@/lib/home-data";
 
 export function TournamentsPanel({ groups }: { groups: { label: "ongoing" | "upcomingGroup"; items: HomeTournament[] }[] }) {
@@ -34,24 +34,7 @@ export function TournamentsPanel({ groups }: { groups: { label: "ongoing" | "upc
             </div>
             <div className="flex flex-col gap-1.5">
               {group.items.map((tour) => (
-                <Link
-                  key={tour.id}
-                  href={`/tournaments/${tour.id}/${tour.slug}`}
-                  className="gcs-accent-card flex items-center gap-2.5 rounded-xl border border-neutral-800 bg-[var(--gcs-surface)] py-2.5 pl-3 pr-3 transition-all hover:translate-x-1 hover:bg-[var(--gcs-hover)]"
-                  style={{ borderLeft: `3px solid ${tour.regionColor}` }}
-                >
-                  <TournamentBadge name={tour.name} logoUrl={tour.logoUrl} logoUrlLight={tour.logoUrlLight} size={30} bare />
-                  <div className="min-w-0 flex-1">
-                    <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold tracking-tight text-neutral-50">
-                      {tour.name}
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-1.5">
-                      <span className="whitespace-nowrap text-[12.5px] font-medium" style={{ color: tour.regionColor }}>{tour.region}</span>
-                      <span className="h-[3px] w-[3px] flex-none rounded-full bg-neutral-700" />
-                      <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-neutral-500">{tour.dates}</span>
-                    </div>
-                  </div>
-                </Link>
+                <TournamentListCard key={tour.id} tournament={tour} />
               ))}
             </div>
           </div>

@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "ไม่ทราบ",
     "streamTypeOfficial": "ทางการ",
-    "streamTypeWatchparty": "Watchparty"
+    "streamTypeWatchparty": "Watchparty",
+    "organizedTournaments": "ทัวร์นาเมนต์ที่จัด"
   },
   "production": {
     "title": "โปรดักชัน",
@@ -4504,7 +4505,12 @@
           "empty": "กรุณาเลือกรูปภาพ",
           "notFound": "ไม่พบทัวร์นาเมนต์"
         }
-      }
+      },
+      "fieldOrganizer": "ผู้จัด",
+      "organizerPlaceholder": "เลือกองค์กร",
+      "organizerSearchPlaceholder": "ค้นหาองค์กร",
+      "organizerNoResults": "ไม่พบองค์กร",
+      "organizerClear": "ลบ"
     },
     "reports": {
       "title": "การรายงาน",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "อัตราการเลือกเอเจนต์ (ภาพรวม)",
     "mapsPickRatesEmpty": "ไม่มีข้อมูลเอเจนต์สำหรับแมพนี้",
     "mapsPickRatesShowMore": "แสดงทั้งหมด",
-    "mapsPickRatesShowLess": "แสดงน้อยลง"
+    "mapsPickRatesShowLess": "แสดงน้อยลง",
+    "factOrganizer": "ผู้จัด"
   },
   "pickemPage": {
     "heading": "Pick'em",

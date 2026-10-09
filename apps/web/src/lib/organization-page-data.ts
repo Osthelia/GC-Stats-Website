@@ -22,9 +22,15 @@ import {
   matches,
   entrants,
   teams,
+  tournaments,
 } from "@gc-stats/db";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
-import { getEntityLogos, themedLogoUrls } from "@/lib/admin-logos";
+import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import { visibleTournament } from "@/lib/ghost-visibility";
+import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
+import { slugify } from "@/lib/entity-id";
+import { abbreviateTournamentName } from "@/lib/home-data";
+import type { TournamentListCardItem } from "@/components/tournament/tournament-list-card";
 import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { PublicNewsListItem } from "@/lib/news-page-data";
@@ -272,4 +278,34 @@ export async function getOrganizationNewsPage(
   }));
 
   return { items, total, perPage: ORG_NEWS_PAGE_SIZE };
+}
+
+const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
+
+/** Public tournaments organized by the organization: live first, then most recent. */
+export async function getOrganizationTournaments(organizationId: number, locale: AppLocale): Promise<TournamentListCardItem[]> {
+  const rows = await db
+    .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region, startDate: tournaments.startDate, endDate: tournaments.endDate })
+    .from(tournaments)
+    .where(and(eq(tournaments.organizerOrganizationId, organizationId), eq(tournaments.active, true), visibleTournament))
+    .orderBy(sql`(${tournaments.status} = 'live') desc`, desc(tournaments.startDate), desc(tournaments.id));
+  if (rows.length === 0) return [];
+
+  const logos = await getCurrentLogoUrlsThemed("tournament", rows.map((r) => r.id));
+  const format = new Intl.DateTimeFormat(TOURNAMENT_DATE_LOCALES[locale], { day: "numeric", month: "short", year: "numeric" });
+  const fmt = (d: string) => format.format(new Date(`${d.slice(0, 10)}T00:00:00`));
+
+  return rows.map((r) => {
+    const region = REGIONS[normalizeRegion(r.region)];
+    return {
+      id: r.id,
+      slug: slugify(r.name),
+      name: abbreviateTournamentName(r.name),
+      region: region.label,
+      regionColor: region.color,
+      dates: `${fmt(r.startDate)} - ${fmt(r.endDate)}`,
+      logoUrl: logos.get(r.id)?.dark ?? null,
+      logoUrlLight: logos.get(r.id)?.light ?? null,
+    };
+  });
 }

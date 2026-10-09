@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { TagsInput } from "@/components/admin/tags-input";
+import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { createTournament, updateTournament, type TournamentFieldErrors, type TournamentInput } from "@/actions/admin-tournaments";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
 
@@ -39,6 +40,7 @@ function emptyState(): FormState {
     status: "upcoming",
     active: false,
     pointTypeId: null,
+    organizerOrganizationId: null,
     location: "",
     prizePool: "",
     description: "",
@@ -59,6 +61,7 @@ function stateFromTournament(tournament: AdminTournamentDetailRow): FormState {
     status: tournament.status,
     active: tournament.active,
     pointTypeId: tournament.pointTypeId,
+    organizerOrganizationId: tournament.organizerOrganizationId,
     location: tournament.location ?? "",
     prizePool: tournament.prizePool ?? "",
     description: tournament.description ?? "",
@@ -87,10 +90,12 @@ export function TournamentDialog({
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<TournamentFieldErrors>({});
   const [form, setForm] = useState<FormState>(emptyState());
+  const [organizer, setOrganizer] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     if (open) {
       setForm(tournament ? stateFromTournament(tournament) : emptyState());
+      setOrganizer(tournament?.organizerOrganizationId != null ? { id: tournament.organizerOrganizationId, name: tournament.organizerOrganizationName ?? "" } : null);
       setFieldErrors({});
     }
   }, [open, tournament]);
@@ -181,6 +186,36 @@ export function TournamentDialog({
               </Select>
             </FormField>
           </div>
+
+          <FormField label={t("fieldOrganizer")} htmlFor="tn-organizer" error={err("organizerOrganizationId")}>
+            <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <OrganizationPicker
+                  value={organizer}
+                  onChange={(org) => {
+                    setOrganizer(org);
+                    set("organizerOrganizationId", org?.id ?? null);
+                  }}
+                  placeholder={t("organizerPlaceholder")}
+                  searchPlaceholder={t("organizerSearchPlaceholder")}
+                  noResultsLabel={t("organizerNoResults")}
+                />
+              </div>
+              {organizer && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setOrganizer(null);
+                    set("organizerOrganizationId", null);
+                  }}
+                >
+                  {t("organizerClear")}
+                </Button>
+              )}
+            </div>
+          </FormField>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField label={t("fieldLocation")} htmlFor="tn-location" error={err("location")}>

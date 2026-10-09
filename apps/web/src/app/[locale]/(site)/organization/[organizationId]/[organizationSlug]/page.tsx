@@ -15,10 +15,12 @@ import {
   getOrganizationStreamChannels,
   getOrganizationVods,
   getOrganizationNews,
+  getOrganizationTournaments,
 } from "@/lib/organization-page-data";
 import { OrganizationHeader } from "@/components/organization/organization-header";
 import { OrganizationMembers } from "@/components/organization/organization-members";
 import { OrganizationStreamsPanel } from "@/components/organization/organization-streams-panel";
+import { OrganizationTournamentsPanel } from "@/components/organization/organization-tournaments-panel";
 import { OrganizationVodsPanel } from "@/components/organization/organization-vods-panel";
 import { PressPanel } from "@/components/press/press-panel";
 import type { AppLocale } from "@/i18n/routing";
@@ -44,11 +46,12 @@ export default async function OrganizationPage({ params }: { params: Promise<{ l
 
   const basePath = `${organization.id}/${organization.slug}`;
 
-  const [members, streams, vods, articles, t] = await Promise.all([
+  const [members, streams, vods, articles, organizedTournaments, t] = await Promise.all([
     getOrganizationMembers(id),
     getOrganizationStreamChannels(id),
     getOrganizationVods(id),
     getOrganizationNews(id, organization.name, locale as AppLocale),
+    getOrganizationTournaments(id, locale as AppLocale),
     getTranslations("organizationPage"),
   ]);
 
@@ -57,10 +60,12 @@ export default async function OrganizationPage({ params }: { params: Promise<{ l
       <OrganizationHeader organization={organization} segment={basePath} activeTab="overview" memberCount={members.current.length} />
 
       <div className="mx-auto flex max-w-[1400px] flex-col gap-10 px-6 py-7 pb-[70px]">
+        <OrganizationTournamentsPanel tournaments={organizedTournaments} />
+
         <div className="grid grid-cols-1 gap-7 md:grid-cols-3">
           <OrganizationStreamsPanel channels={streams} />
           <OrganizationVodsPanel vods={vods} />
-          <PressPanel items={articles} title={t("news")} emptyLabel={t("noNews")} langNote={t("newsLangNote")} />
+          {articles.length > 0 && <PressPanel items={articles} title={t("news")} emptyLabel={t("noNews")} langNote={t("newsLangNote")} />}
         </div>
 
         <OrganizationMembers current={members.current} formers={members.formers} />

@@ -15,6 +15,7 @@ import {
   getPublicTournamentStageLinks,
   type TournamentHeaderInfo,
 } from "@/lib/tournament-bracket-data";
+import { OrgBadge } from "@/components/organization/org-badge";
 import { LiquipediaLinkPill } from "@/components/tournament/liquipedia-link-pill";
 import {
   DiscordIcon,
@@ -370,6 +371,18 @@ export async function TournamentHeader({
                   </div>
                 );
               })}
+              {tournament.organizer && (
+                <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                  <span className="text-xs text-neutral-500">{t("factOrganizer")}</span>
+                  <Link
+                    href={`/organization/${tournament.organizer.id}/${tournament.organizer.slug}`}
+                    className="flex min-w-0 items-center gap-2 text-[12.5px] font-semibold text-neutral-100 transition-colors hover:text-[#e4ae22] active:scale-[0.97]"
+                  >
+                    <OrgBadge name={tournament.organizer.name} logoUrl={tournament.organizer.logoUrl} logoUrlLight={tournament.organizer.logoUrlLight} size={22} />
+                    <span className="truncate">{tournament.organizer.name}</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "未知",
     "streamTypeOfficial": "官方",
-    "streamTypeWatchparty": "观赛派对"
+    "streamTypeWatchparty": "观赛派对",
+    "organizedTournaments": "主办的赛事"
   },
   "production": {
     "title": "制作团队",
@@ -4504,7 +4505,12 @@
           "empty": "请选择一张图片。",
           "notFound": "未找到该赛事。"
         }
-      }
+      },
+      "fieldOrganizer": "主办方",
+      "organizerPlaceholder": "选择组织",
+      "organizerSearchPlaceholder": "搜索组织",
+      "organizerNoResults": "未找到组织",
+      "organizerClear": "移除"
     },
     "reports": {
       "title": "举报",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "特工选取率（总体）",
     "mapsPickRatesEmpty": "该地图暂无特工数据。",
     "mapsPickRatesShowMore": "显示全部",
-    "mapsPickRatesShowLess": "收起"
+    "mapsPickRatesShowLess": "收起",
+    "factOrganizer": "主办方"
   },
   "pickemPage": {
     "heading": "Pick'em",

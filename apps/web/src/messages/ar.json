@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "غير معروف",
     "streamTypeOfficial": "رسمي",
-    "streamTypeWatchparty": "Watchparty"
+    "streamTypeWatchparty": "Watchparty",
+    "organizedTournaments": "البطولات المنظمة"
   },
   "production": {
     "title": "الإنتاج",
@@ -4504,7 +4505,12 @@
           "empty": "يرجى اختيار صورة.",
           "notFound": "البطولة غير موجودة."
         }
-      }
+      },
+      "fieldOrganizer": "المنظم",
+      "organizerPlaceholder": "اختر منظمة",
+      "organizerSearchPlaceholder": "ابحث عن منظمة",
+      "organizerNoResults": "لم يتم العثور على منظمة",
+      "organizerClear": "إزالة"
     },
     "reports": {
       "title": "البلاغات",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "نسبة اختيار العملاء (إجمالًا)",
     "mapsPickRatesEmpty": "لا توجد بيانات عن العملاء لهذه الخريطة.",
     "mapsPickRatesShowMore": "عرض الكل",
-    "mapsPickRatesShowLess": "عرض أقل"
+    "mapsPickRatesShowLess": "عرض أقل",
+    "factOrganizer": "المنظم"
   },
   "pickemPage": {
     "heading": "Pick'em",

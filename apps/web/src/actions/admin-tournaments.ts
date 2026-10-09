@@ -14,7 +14,7 @@
 import { eq } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { tournaments, pointTypes, PERMISSIONS } from "@gc-stats/db";
+import { tournaments, pointTypes, organizations, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { HOME_TOURNAMENTS_TAG, TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 import { logActivity, diffChanges } from "@/lib/activity-log";
@@ -34,6 +34,7 @@ export type TournamentField =
   | "endDate"
   | "status"
   | "pointTypeId"
+  | "organizerOrganizationId"
   | "location"
   | "prizePool"
   | "description"
@@ -54,6 +55,7 @@ export type TournamentInput = {
   status: string;
   active: boolean;
   pointTypeId: number | null;
+  organizerOrganizationId: number | null;
   location: string;
   prizePool: string;
   description: string;
@@ -117,6 +119,14 @@ async function validateTournament(input: TournamentInput): Promise<TournamentFie
     if (!existing) fieldErrors.pointTypeId = "notFound";
   }
 
+  if (input.organizerOrganizationId !== null) {
+    if (!Number.isInteger(input.organizerOrganizationId)) fieldErrors.organizerOrganizationId = "invalid";
+    else {
+      const [org] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, input.organizerOrganizationId)).limit(1);
+      if (!org) fieldErrors.organizerOrganizationId = "notFound";
+    }
+  }
+
   if (input.location.trim().length > 255) fieldErrors.location = "tooLong";
   if (input.prizePool.trim().length > 100) fieldErrors.prizePool = "tooLong";
   if (input.playerPovPhrase.trim().length > 255) fieldErrors.playerPovPhrase = "tooLong";
@@ -159,6 +169,7 @@ function coreColumns(input: TournamentInput) {
     status: input.status,
     active: input.active,
     pointTypeId: input.pointTypeId,
+    organizerOrganizationId: input.organizerOrganizationId,
     location: input.location.trim() || null,
     prizePool: input.prizePool.trim() || null,
     description: input.description.trim() || null,

@@ -1703,7 +1703,8 @@
     },
     "unknownDate": "알 수 없음",
     "streamTypeOfficial": "공식",
-    "streamTypeWatchparty": "워치파티"
+    "streamTypeWatchparty": "워치파티",
+    "organizedTournaments": "주최한 대회"
   },
   "production": {
     "title": "프로덕션",
@@ -4504,7 +4505,12 @@
           "empty": "이미지를 선택해 주세요.",
           "notFound": "토너먼트를 찾을 수 없습니다."
         }
-      }
+      },
+      "fieldOrganizer": "주최자",
+      "organizerPlaceholder": "조직 선택",
+      "organizerSearchPlaceholder": "조직 검색",
+      "organizerNoResults": "조직을 찾을 수 없습니다",
+      "organizerClear": "제거"
     },
     "reports": {
       "title": "신고",
@@ -5945,7 +5951,8 @@
     "mapsPickRatesOverallTitle": "요원 픽률 (전체)",
     "mapsPickRatesEmpty": "이 맵에 대한 요원 데이터가 없어요.",
     "mapsPickRatesShowMore": "전체 보기",
-    "mapsPickRatesShowLess": "간단히 보기"
+    "mapsPickRatesShowLess": "간단히 보기",
+    "factOrganizer": "주최자"
   },
   "pickemPage": {
     "heading": "Pick'em",
