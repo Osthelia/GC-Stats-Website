@@ -174,7 +174,7 @@ function PlayerStats({ p, mirrored, mvp }: { p: MatchMapPlayerRow | null; mirror
   if (!p) return Array.from({ length: 7 }).map((_, i) => <div key={i} aria-hidden />);
 
   const agents = (
-    <div key="agents" className={`flex ${mirrored ? "justify-end pr-1" : "pl-1"}`}>
+    <div key="agents" className={`flex ${mirrored ? "justify-end" : ""}`}>
       {agentsOf(p)
         .slice(0, MAX_AGENTS)
         .map((agent, i) => (
@@ -183,9 +183,9 @@ function PlayerStats({ p, mirrored, mvp }: { p: MatchMapPlayerRow | null; mirror
     </div>
   );
   const name = (
-    <div key="name" className={`flex min-w-0 items-center gap-3 ${mirrored ? "flex-row-reverse" : ""}`}>
-      <span className="min-w-0 truncate px-2 text-[24px] font-black text-white uppercase italic">{p.handle}</span>
-      {mvp && <span className="flex-none rounded-md px-2 py-0.5 text-[13px] font-black text-black uppercase" style={{ background: GOLD }}>{t("mvp")}</span>}
+    <div key="name" className={`flex min-w-0 items-center gap-2 ${mirrored ? "flex-row-reverse" : "-ml-1.5"}`}>
+      <span className={`min-w-0 truncate text-[21px] font-black text-white uppercase italic ${mirrored ? "pr-1.5" : "pr-2"}`}>{p.handle}</span>
+      {mvp && <span className="flex-none rounded px-1.5 py-px text-[11px] font-black text-black uppercase" style={{ background: GOLD }}>{t("mvp")}</span>}
     </div>
   );
   const cells = [
