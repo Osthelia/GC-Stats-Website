@@ -43,7 +43,7 @@ export async function convertToWebp(input: Buffer, opts: WebpOptions): Promise<B
   return pipeline.webp({ quality: opts.quality }).toBuffer();
 }
 
-export type ImageValidationError = "empty" | "tooLarge" | "invalidImage";
+export type ImageValidationError = "empty" | "tooLarge" | "invalidImage" | "processingFailed";
 export type ImageValidationResult = { ok: true; width: number; height: number } | { ok: false; error: ImageValidationError };
 
 /** 10 MB — mirrors V1's `ApiTeamLogoController::upload` validation (`max:10240` KB). */
@@ -55,8 +55,13 @@ export async function validateImageBuffer(buffer: Buffer): Promise<ImageValidati
   if (buffer.byteLength > MAX_IMAGE_BYTES) return { ok: false, error: "tooLarge" };
 
   if (isCloudflare) {
-    const { decodeDimensions } = await import("./image-cloudflare");
-    return decodeDimensions(buffer);
+    try {
+      const { decodeDimensions } = await import("./image-cloudflare");
+      return decodeDimensions(buffer);
+    } catch (error) {
+      console.error("[image] cloudflare decoder failed to load", error);
+      return { ok: false, error: "processingFailed" };
+    }
   }
 
   try {

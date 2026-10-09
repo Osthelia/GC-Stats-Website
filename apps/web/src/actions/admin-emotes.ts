@@ -124,7 +124,7 @@ export async function uploadEmoteImage(formData: FormData): Promise<UploadEmoteI
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const validation = await validateImageBuffer(buffer);
-  if (!validation.ok) return { ok: false, error: validation.error === "empty" ? "required" : validation.error };
+  if (!validation.ok) return { ok: false, error: validation.error === "empty" ? "required" : validation.error === "processingFailed" ? "invalidImage" : validation.error };
 
   const stored = await storeEmoteImage(buffer, file.type);
   return { ok: true, url: stored.url };

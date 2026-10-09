@@ -101,7 +101,7 @@ export async function uploadMyAuthorLogo(formData: FormData): Promise<UploadAuth
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const validation = await validateImageBuffer(buffer);
-  if (!validation.ok) return { ok: false, error: validation.error === "invalidImage" ? "invalidImage" : validation.error };
+  if (!validation.ok) return { ok: false, error: validation.error === "processingFailed" ? "invalidImage" : validation.error };
 
   const stored = await storeLogoPair("news-author", buffer);
   const today = new Date().toISOString().slice(0, 10);
