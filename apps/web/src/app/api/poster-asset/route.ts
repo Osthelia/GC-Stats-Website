@@ -25,8 +25,15 @@ export async function GET(request: Request) {
   // Rejects "..": a prefix check alone would let the path climb out of the bucket.
   if (new URL(target).pathname.split("/").includes("..")) return NextResponse.json({ error: "Forbidden asset" }, { status: 403 });
 
-  const upstream = await fetch(target, { redirect: "error" }).catch(() => null);
-  if (!upstream?.ok) return NextResponse.json({ error: "Asset unavailable" }, { status: 502 });
+  // Redirects are followed (a CDN may add one), but only a response still on the bucket is relayed.
+  const upstream = await fetch(target, { headers: { "User-Agent": "GCStats-PosterAsset", Accept: "image/*" } }).catch((error) => {
+    console.warn("[poster-asset] Fetch failed", target, error);
+    return null;
+  });
+  if (!upstream?.ok || !upstream.url.startsWith(`${base}/`)) {
+    console.warn("[poster-asset] Upstream refused", target, upstream?.status, upstream?.url);
+    return NextResponse.json({ error: "Asset unavailable", upstreamStatus: upstream?.status ?? null }, { status: 502 });
+  }
 
   const type = IMAGE_TYPES[new URL(target).pathname.split(".").pop()?.toLowerCase() ?? ""];
   if (!type) return NextResponse.json({ error: "Not an image" }, { status: 415 });
