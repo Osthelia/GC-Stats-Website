@@ -65,7 +65,7 @@ export function MatchMapsTabs({
             ecoSummary={aggregatedEco}
           />
         </div>
-      ) : activeMap.isCompleted ? (
+      ) : activeMap.isCompleted && (activeMap.teamAScore !== null || activeMap.teamBScore !== null) ? (
         <div className="space-y-12">
           {activeMap.note && <p className="text-center text-sm text-neutral-400 italic">{activeMap.note}</p>}
           <MatchRoundHistory rounds={roundsByMapId[activeMap.id] ?? []} a={a} b={b} />
@@ -81,7 +81,7 @@ export function MatchMapsTabs({
           />
         </div>
       ) : (
-        <p className="py-10 text-center text-lg font-semibold text-neutral-500">{t("notPlayedYet")}</p>
+        <p className="py-10 text-center text-lg font-semibold text-neutral-500">{t(activeMap.isCompleted ? "notPlayed" : "notPlayedYet")}</p>
       )}
     </div>
   );

@@ -1760,6 +1760,7 @@
     "maps": "Mapas",
     "noMaps": "Aún no hay mapas registrados para este partido.",
     "notPlayedYet": "Aún no se ha jugado",
+    "notPlayed": "No jugada",
     "noScoreboard": "No hay marcador disponible.",
     "colAgent": "Agente",
     "colKills": "K",

@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { matches, maps } from "@gc-stats/db";
@@ -52,6 +52,13 @@ export async function maybeAutoCompleteMatchFromMaps(matchId: number): Promise<v
   const decidingMap = playedMaps[0];
   const [scoreA, scoreB] = match.bestOf === 1 && decidingMap ? [decidingMap.teamAScore!, decidingMap.teamBScore!] : [winsA, winsB];
   const winnerId = winsA >= majority ? match.entrantAId : winsB >= majority ? match.entrantBId : null;
+
+  // A closed unplayed map is completed without any score; it reopens if the series is no longer decided.
+  const isUnscored = (m: (typeof mapRows)[number]) => m.teamAScore === null && m.teamBScore === null;
+  const toToggle = mapRows.filter((m) => isUnscored(m) && m.isCompleted === (winnerId === null));
+  if (toToggle.length > 0) {
+    await db.update(maps).set({ isCompleted: winnerId !== null }).where(inArray(maps.id, toToggle.map((m) => m.id)));
+  }
 
   if (match.status === "completed") {
     if (!match.isForfeit && winnerId !== null && winnerId === match.winnerId && (match.scoreA !== scoreA || match.scoreB !== scoreB)) {
