@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "แสดงทั้งหมด",
     "mapsPickRatesShowLess": "แสดงน้อยลง",
     "mapsVs": "vs",
-    "unknownDate": "ไม่ทราบ"
+    "unknownDate": "ไม่ทราบ",
+    "tabStaff": "สตาฟ",
+    "staffTitle": "สตาฟของ {team}",
+    "noStaff": "ไม่มีสตาฟของทีมนี้",
+    "formerStaff": "อดีตสตาฟ"
   },
   "userPage": {
     "tabOverview": "ภาพรวม",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "ผู้จัดการฝ่ายสื่อสาร",
       "recruitmentManager": "ผู้จัดการฝ่ายสรรหา",
       "developer": "นักพัฒนา",
-      "volunteer": "อาสาสมัคร"
+      "volunteer": "อาสาสมัคร",
+      "headOfValorant": "หัวหน้าฝ่าย Valorant",
+      "streamer": "สตรีมเมอร์"
     },
     "unknownDate": "ไม่ทราบ",
     "streamTypeOfficial": "ทางการ",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "ผู้จัดการฝ่ายสื่อสาร",
           "recruitmentManager": "ผู้จัดการฝ่ายสรรหา",
           "developer": "นักพัฒนา",
-          "volunteer": "อาสาสมัคร"
+          "volunteer": "อาสาสมัคร",
+          "headOfValorant": "หัวหน้าฝ่าย Valorant",
+          "streamer": "สตรีมเมอร์"
         },
         "error": {
           "required": "จำเป็นต้องกรอกช่องนี้",
@@ -2370,7 +2378,11 @@
           "userNotFound": "ไม่พบบัญชี",
           "alreadyHasAccess": "บัญชีนี้มีสิทธิ์เข้าถึงองค์กรนี้อยู่แล้ว"
         }
-      }
+      },
+      "filterKindLabel": "ประเภทองค์กร",
+      "filterKindAll": "ทุกองค์กร",
+      "filterKindStandalone": "องค์กรทั่วไป",
+      "filterKindTeam": "องค์กรของทีม"
     },
     "teams": {
       "title": "ทีม",
@@ -2541,7 +2553,13 @@
           "storageFailed": "ไม่สามารถบันทึกรูปภาพลงที่จัดเก็บได้ โปรดลองอีกครั้งในอีกสักครู่",
           "saveFailed": "ไม่สามารถบันทึกโลโก้ได้ โปรดลองอีกครั้งในอีกสักครู่",
           "empty": "กรุณาเลือกรูปภาพ"
-        }
+        },
+        "fieldOrganization": "องค์กร",
+        "organizationPlaceholder": "เลือกองค์กร",
+        "organizationSearchPlaceholder": "ค้นหาองค์กร",
+        "organizationNoResults": "ไม่พบองค์กร",
+        "organizationClear": "นำออก",
+        "organizationHint": "องค์กรที่เชื่อมโยงจะไม่มีหน้าสาธารณะ สมาชิกจะแสดงเป็นสตาฟของทีมนี้ และจัดการสตรีมของแมตช์ของทีมนี้ได้จากแดชบอร์ด"
       },
       "merge": {
         "title": "รวมทีม",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "ประเภท",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "ไม่พบแมตช์",
         "matchNotInTournament": "แมตช์นี้ไม่ได้อยู่ในทัวร์นาเมนต์ที่เลือก",
         "alreadyLinked": "ช่องนี้เชื่อมโยงกับแมตช์นี้แล้ว",
-        "invalidType": "ประเภทไม่ถูกต้อง"
-      }
+        "invalidType": "ประเภทไม่ถูกต้อง",
+        "matchNotInTeams": "แมตช์นี้ไม่เกี่ยวข้องกับทีมใดขององค์กรของคุณ"
+      },
+      "teamScopeHint": "องค์กรของคุณดูแล {teams} คุณเชื่อมสตรีมได้เฉพาะกับแมตช์ของทีมนี้เท่านั้น"
     },
     "vods": {
       "title": "VOD",

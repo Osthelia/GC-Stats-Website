@@ -19,7 +19,16 @@ import type { AppLocale } from "@/i18n/routing";
 // Members overview gets its own grid layout (not the vertical row list used
 // for team rosters) — organizations regularly run 20-40 members (staff,
 // casters, producers...), which reads far better dense than as a tall stack.
-export async function OrganizationMembers({ current, formers }: { current: OrganizationMember[]; formers: OrganizationMember[] }) {
+export async function OrganizationMembers({
+  current,
+  formers,
+  labels,
+}: {
+  current: OrganizationMember[];
+  formers: OrganizationMember[];
+  /** Overrides the organization wording, e.g. "Staff" on a team page. */
+  labels?: { title: string; empty: string; formers: string };
+}) {
   const t = await getTranslations("organizationPage");
   const tRoles = await getTranslations("organizationPage.roleOptions");
   const locale = await getLocale();
@@ -27,12 +36,12 @@ export async function OrganizationMembers({ current, formers }: { current: Organ
   return (
     <div>
       <div className="mb-3 flex items-baseline gap-2">
-        <h2 className="text-[13px] font-extrabold tracking-[0.13em] text-neutral-50 uppercase">{t("members")}</h2>
+        <h2 className="text-[13px] font-extrabold tracking-[0.13em] text-neutral-50 uppercase">{labels?.title ?? t("members")}</h2>
         {current.length > 0 && <span className="font-mono text-[11px] text-neutral-600">{t("memberCount", { count: current.length })}</span>}
       </div>
 
       {current.length === 0 ? (
-        <p className="text-sm text-neutral-500">{t("noMembers")}</p>
+        <p className="text-sm text-neutral-500">{labels?.empty ?? t("noMembers")}</p>
       ) : (
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {current.map((m) => {
@@ -64,7 +73,7 @@ export async function OrganizationMembers({ current, formers }: { current: Organ
 
       {formers.length > 0 && (
         <div className="mt-5">
-          <h3 className="mb-2 font-mono text-[10px] tracking-[0.13em] text-neutral-600 uppercase">{t("formerMembers")}</h3>
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.13em] text-neutral-600 uppercase">{labels?.formers ?? t("formerMembers")}</h3>
           <div className="flex flex-wrap gap-1.5">
             {formers.map((m) => (
               <Link

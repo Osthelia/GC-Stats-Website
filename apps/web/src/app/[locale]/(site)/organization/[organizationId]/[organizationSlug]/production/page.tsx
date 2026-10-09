@@ -9,6 +9,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId } from "@/lib/entity-id";
+import { redirectIfOrganizationLinked } from "@/lib/organization-team-link";
 import {
   getOrganizationPageInfo,
   getOrganizationMembers,
@@ -34,15 +35,16 @@ export default async function OrganizationProductionPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ organizationId: string; organizationSlug: string }>;
+  params: Promise<{ locale: string; organizationId: string; organizationSlug: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { organizationId } = await params;
+  const { locale, organizationId } = await params;
   const id = parseEntityId(organizationId);
   if (id === null) notFound();
 
   const organization = await getOrganizationPageInfo(id);
   if (!organization) notFound();
+  await redirectIfOrganizationLinked(id, locale);
 
   const basePath = `${organization.id}/${organization.slug}`;
   const pagePath = `/organization/${basePath}/production`;

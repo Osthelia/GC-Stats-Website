@@ -105,7 +105,7 @@ export async function searchUsersForOrganization(organizationId: number, query: 
 // (components/admin/organization-members-panel.tsx), shared via
 // lib/organization-membership-service.ts — this file only adds the
 // dashboard-scoped permission check and the expectedOrganizationId guard so
-// one organization's staffManage holder can't touch another org's roster.
+// one organization's membersManage holder can't touch another org's roster.
 
 /**
  * Same search as admin's PersonPicker, gated by this organization's own
@@ -125,15 +125,15 @@ export async function searchPeopleForOrganization(organizationId: number, query:
  * unlike searchPeopleForOrganization above (production credits, scoped to
  * this org's existing roster on purpose), this one has to find people who
  * aren't affiliated with the organization yet, since that's the whole point
- * of adding a new member. Same staffManage permission gate.
+ * of adding a new member. Same membersManage permission gate.
  */
 export async function searchPeopleForNewOrganizationMember(organizationId: number, query: string): Promise<PersonPickerResult[]> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
   return searchPeopleQuery(query);
 }
 
 export async function addDashboardOrganizationMember(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
-  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
   return addOrganizationMemberEntry(organizationId, personId, role, from, until, userId);
 }
 
@@ -143,7 +143,7 @@ export type CreatePersonResult = { ok: true; id: number; handle: string } | { ok
 
 /**
  * Lets an organization with the separate peopleCreate permission (distinct
- * from staffManage, which only manages existing roster stints) add a brand
+ * from membersManage, which only manages existing roster stints) add a brand
  * new person to the site — mirrors admin's createPlayer, trimmed to the two
  * fields relevant here (no team assignment, this isn't a roster).
  */
@@ -174,7 +174,7 @@ export async function createPersonForOrganization(organizationId: number, handle
   return { ok: true, id: created.id, handle: created.handle };
 }
 
-/** Search backing the per-member "link account" picker — gated by peopleLinkUser, not membersManage (dashboard access grants) or staffManage (roster stints). */
+/** Search backing the per-member "link account" picker — gated by peopleLinkUser, not membersManage (roster and dashboard access grants) or staffManage (production credits). */
 export async function searchUsersForPersonLink(organizationId: number, query: string): Promise<UserPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
   return searchUsersQuery(query);
@@ -395,12 +395,12 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
 }
 
 export async function updateDashboardOrganizationMember(organizationId: number, membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
-  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
   return updateOrganizationMemberEntry(membershipId, role, from, until, userId, organizationId);
 }
 
 export async function deleteDashboardOrganizationMembership(organizationId: number, membershipId: number): Promise<MembershipActionResult> {
-  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
   return deleteOrganizationMembershipEntry(membershipId, userId, organizationId);
 }
 

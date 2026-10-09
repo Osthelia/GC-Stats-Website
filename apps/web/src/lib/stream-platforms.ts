@@ -9,7 +9,7 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-export const STREAM_PLATFORMS = ["twitch", "youtube", "tiktok"] as const;
+export const STREAM_PLATFORMS = ["twitch", "youtube", "tiktok", "kick"] as const;
 export type StreamPlatform = (typeof STREAM_PLATFORMS)[number];
 
 export const STREAM_CHANNEL_TYPES = ["official", "watchparty"] as const;

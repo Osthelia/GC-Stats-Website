@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, inArray } from "drizzle-orm";
+import { eq, exists, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, users, apiKeys, ORGANIZATION_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
+import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, teams, users, apiKeys, ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
@@ -28,6 +28,8 @@ export type DashboardOrgMembership = {
   permissions: Set<string>;
   /** True only for the synthetic entry a site admin (see getGlobalOrgAdminMemberships) gets for an organization it holds no real organization_access row for — never persisted. */
   isGlobalAdminOverride?: boolean;
+  /** Linked to at least one team: gets LINKED_ORGANIZATION_PERMISSIONS and has no production credits section. */
+  isTeamLinked: boolean;
 };
 
 export type DashboardAccess = {
@@ -40,6 +42,18 @@ export type DashboardAccess = {
   /** Site admin holding the global override (see hasGlobalOrgOverride): can browse every author profile and individual article from /dashboard/authors. */
   isAuthorAdmin: boolean;
 };
+
+/** Adds the permissions every team-linked organization gets and strips those it can never hold (news). */
+function applyLinkedPermissions(permissions: Iterable<string>): Set<string> {
+  const result = new Set(permissions);
+  for (const p of LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS) result.delete(p);
+  for (const p of LINKED_ORGANIZATION_PERMISSIONS) result.add(p);
+  return result;
+}
+
+function ceilingOf(maxPermissions: unknown): string[] {
+  return Array.isArray(maxPermissions) ? (maxPermissions as string[]) : [];
+}
 
 async function getIsAuthor(userId: string): Promise<boolean> {
   const [row] = await db.select({ isAuthor: users.isAuthor }).from(users).where(eq(users.id, userId)).limit(1);
@@ -69,6 +83,7 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
       maxPermissions: organizations.maxPermissions,
       accessId: organizationAccess.id,
       isOwner: organizationAccess.isOwner,
+      isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
     })
     .from(organizationAccess)
     .innerJoin(organizations, eq(organizations.id, organizationAccess.organizationId))
@@ -93,7 +108,7 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
           .where(inArray(organizationRolePermissions.roleId, roleIds));
 
   return rows.map((r) => {
-    const ceiling = new Set<string>(Array.isArray(r.maxPermissions) ? (r.maxPermissions as string[]) : []);
+    const ceiling = new Set<string>(ceilingOf(r.maxPermissions));
     const myRoles = roleRows.filter((rr) => rr.accessId === r.accessId);
     const granted = r.isOwner
       ? ceiling
@@ -104,7 +119,8 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
       organizationSlug: r.organizationSlug,
       roleName: r.isOwner ? "owner" : (myRoles.map((mr) => mr.roleName).join(", ") || "-"),
       isOwner: r.isOwner,
-      permissions: granted,
+      permissions: r.isTeamLinked ? applyLinkedPermissions(granted) : granted,
+      isTeamLinked: r.isTeamLinked,
     };
   });
 }
@@ -130,7 +146,15 @@ async function hasGlobalOrgOverride(userId: string): Promise<boolean> {
 async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOrgMembership[]> {
   if (!(await hasGlobalOrgOverride(userId))) return [];
 
-  const rows = await db.select({ id: organizations.id, name: organizations.name, slug: organizations.slug, maxPermissions: organizations.maxPermissions }).from(organizations);
+  const rows = await db
+    .select({
+      id: organizations.id,
+      name: organizations.name,
+      slug: organizations.slug,
+      maxPermissions: organizations.maxPermissions,
+      isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
+    })
+    .from(organizations);
   return rows.map((r) => ({
     organizationId: r.id,
     organizationName: r.name,
@@ -138,7 +162,8 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
     roleName: "admin",
     isOwner: true,
     isGlobalAdminOverride: true,
-    permissions: new Set<string>(Array.isArray(r.maxPermissions) ? (r.maxPermissions as string[]) : []),
+    isTeamLinked: r.isTeamLinked,
+    permissions: r.isTeamLinked ? applyLinkedPermissions(ceilingOf(r.maxPermissions)) : new Set<string>(ceilingOf(r.maxPermissions)),
   }));
 }
 

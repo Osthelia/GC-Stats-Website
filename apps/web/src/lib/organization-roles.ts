@@ -35,6 +35,8 @@ export const ORGANIZATION_MEMBER_ROLES = [
   "partnershipsManager",
   "communicationsManager",
   "recruitmentManager",
+  "headOfValorant",
+  "streamer",
   "developer",
   "volunteer",
 ] as const;
@@ -72,6 +74,8 @@ const ORGANIZATION_ROLE_COLORS: Record<string, OrganizationRoleColor> = {
   partnershipsManager: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
   communicationsManager: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
   recruitmentManager: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
+  headOfValorant: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
+  streamer: { bg: "rgba(192,132,252,0.12)", text: "#d8b4fe", ring: "rgba(192,132,252,0.3)" },
   secretary: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
   treasurer: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },
   volunteer: { bg: "rgba(251,146,60,0.12)", text: "#fdba74", ring: "rgba(251,146,60,0.3)" },

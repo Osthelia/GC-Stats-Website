@@ -13,7 +13,7 @@
 
 import { and, eq, inArray, ne, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, people, rosterMemberships, teamNameHistory, PERMISSIONS } from "@gc-stats/db";
+import { teams, people, rosterMemberships, teamNameHistory, organizations, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
@@ -41,12 +41,13 @@ export type TeamProfileInput = {
   bio: string;
   vlrId: string;
   liquipediaLink: string;
+  organizationId: number | null;
   isActive: boolean;
   socials: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
   tags: string[];
 };
 
-export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "bio";
+export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio";
 export type TeamProfileFieldErrors = Partial<Record<TeamProfileField, string>>;
 export type TeamProfileResult = { ok: true } | { ok: false; fieldErrors: TeamProfileFieldErrors };
 
@@ -90,6 +91,14 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
+  if (input.organizationId !== null) {
+    if (!Number.isSafeInteger(input.organizationId) || input.organizationId <= 0) fieldErrors.organizationId = "invalid";
+    else {
+      const [org] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, input.organizationId)).limit(1);
+      if (!org) fieldErrors.organizationId = "notFound";
+    }
+  }
+
   const [existing] = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
 
@@ -111,6 +120,7 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
     bio: bio || null,
     vlrId: vlrIdValue,
     liquipediaLink: liquipediaLink || null,
+    organizationId: input.organizationId,
     isActive: input.isActive,
     socials,
     tags,

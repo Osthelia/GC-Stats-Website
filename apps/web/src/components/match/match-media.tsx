@@ -7,7 +7,7 @@
  */
 
 import { getTranslations } from "next-intl/server";
-import { TwitchIcon, YoutubeIcon, TiktokIcon } from "@/components/icons/brand-icons";
+import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon } from "@/components/icons/brand-icons";
 import { languageFlagClass } from "@/lib/countries";
 import type { MatchStream, MatchVod, MatchPlayerPov } from "@/lib/match-page-data";
 
@@ -15,6 +15,7 @@ const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.Re
   twitch: TwitchIcon,
   youtube: YoutubeIcon,
   tiktok: TiktokIcon,
+  kick: KickIcon,
 };
 
 function MediaDivider({ label }: { label: string }) {

@@ -15,6 +15,7 @@
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { teams, people, tournaments, organizations, pageViews } from "@gc-stats/db";
+import { organizationHasNoTeam } from "@/lib/organization-team-link";
 import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo";
 import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
@@ -104,10 +105,14 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       .select({ id: organizations.id, name: organizations.name, slug: organizations.slug, countryCode: organizations.countryCode, secondaryCountryCode: organizations.secondaryCountryCode })
       .from(organizations)
       .where(
-        // The slug is always already special-char-free (see packages/db/src/schema/people.ts)
-        // — matching it directly catches cases where it diverges from a naive
-        // fold of the name, on top of the folded name match.
-        or(...variants.flatMap((v) => [specialCharFoldedIlike(organizations.name, v), specialCharFoldedIlike(organizations.slug, v)]))
+        and(
+          // The slug is always already special-char-free (see packages/db/src/schema/people.ts)
+          // — matching it directly catches cases where it diverges from a naive
+          // fold of the name, on top of the folded name match.
+          or(...variants.flatMap((v) => [specialCharFoldedIlike(organizations.name, v), specialCharFoldedIlike(organizations.slug, v)])),
+          // A team-linked organization has no public page.
+          organizationHasNoTeam()
+        )
       )
       .orderBy(specialCharPrefixRank(organizations.name, base))
       .limit(candidateLimit),

@@ -44,6 +44,7 @@ export type DashboardOrgSummary = {
   isOwner: boolean;
   permissions: string[];
   isGlobalAdminOverride: boolean;
+  isTeamLinked: boolean;
 };
 
 const STORAGE_PREFIX = "gcs_dashboard_nav_";
@@ -105,7 +106,7 @@ export function DashboardSidebar({ organizations }: { organizations: DashboardOr
   const activeOrgId = orgMatch ? Number(orgMatch[1]) : null;
   const activeOrg = organizations.find((o) => o.organizationId === activeOrgId) ?? null;
 
-  const canSee = (item: DashboardNavItem) => !!activeOrg && (!item.ownerOnly || activeOrg.isOwner) && (!item.permission || activeOrg.permissions.includes(item.permission));
+  const canSee = (item: DashboardNavItem) => !!activeOrg && (!item.ownerOnly || activeOrg.isOwner) && (!item.permission || activeOrg.permissions.includes(item.permission)) && !(item.hiddenForTeamLinked && activeOrg.isTeamLinked);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   const visibleGroups = activeOrg ? DASHBOARD_ORG_NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter(canSee) })).filter((group) => group.items.length > 0) : [];

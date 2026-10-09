@@ -22,6 +22,8 @@ export type DashboardNavItem = {
   ownerOnly?: boolean;
   /** Hidden unless the active membership's permission set includes this — unlike ownerOnly, most items have no such gate (readable/writable state is decided per-page instead). */
   permission?: string;
+  /** Hidden for an organization linked to a team (no public profile, its staff comes from the team, no production credits). */
+  hiddenForTeamLinked?: boolean;
 };
 
 // Mirrors admin-nav-items.ts's shape (top item + collapsible groups, shared
@@ -38,7 +40,7 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
     key: "organization",
     labelKey: "groupOrganization",
     items: [
-      { href: (id) => `/dashboard/${id}/profile`, labelKey: "profile", icon: Building2 },
+      { href: (id) => `/dashboard/${id}/profile`, labelKey: "profile", icon: Building2, hiddenForTeamLinked: true },
       { href: (id) => `/dashboard/${id}/members`, labelKey: "members", icon: UsersRound },
       { href: (id) => `/dashboard/${id}/access`, labelKey: "access", icon: Users },
       { href: (id) => `/dashboard/${id}/permissions`, labelKey: "permissions", icon: KeyRound, ownerOnly: true },
@@ -50,7 +52,7 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
     labelKey: "groupContent",
     items: [
       { href: (id) => `/dashboard/${id}/news`, labelKey: "news", icon: Newspaper, permission: ORGANIZATION_PERMISSIONS.newsView },
-      { href: (id) => `/dashboard/${id}/credits`, labelKey: "credits", icon: Clapperboard },
+      { href: (id) => `/dashboard/${id}/credits`, labelKey: "credits", icon: Clapperboard, hiddenForTeamLinked: true },
     ],
   },
   {

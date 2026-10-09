@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "Mostrar tudo",
     "mapsPickRatesShowLess": "Mostrar menos",
     "mapsVs": "vs",
-    "unknownDate": "Desconhecida"
+    "unknownDate": "Desconhecida",
+    "tabStaff": "Staff",
+    "staffTitle": "Staff de {team}",
+    "noStaff": "Nenhum staff registrado para esta equipe.",
+    "formerStaff": "Ex staff"
   },
   "userPage": {
     "tabOverview": "Visão geral",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "Gerente de comunicação",
       "recruitmentManager": "Gerente de recrutamento",
       "developer": "Desenvolvedor(a)",
-      "volunteer": "Voluntário(a)"
+      "volunteer": "Voluntário(a)",
+      "headOfValorant": "Responsável por Valorant",
+      "streamer": "Streamer"
     },
     "unknownDate": "Desconhecida",
     "streamTypeOfficial": "Oficial",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "Gerente de comunicação",
           "recruitmentManager": "Gerente de recrutamento",
           "developer": "Desenvolvedor(a)",
-          "volunteer": "Voluntário(a)"
+          "volunteer": "Voluntário(a)",
+          "headOfValorant": "Responsável por Valorant",
+          "streamer": "Streamer"
         },
         "error": {
           "required": "Este campo é obrigatório.",
@@ -2370,7 +2378,11 @@
           "userNotFound": "Conta não encontrada.",
           "alreadyHasAccess": "Esta conta já tem acesso a esta organização."
         }
-      }
+      },
+      "filterKindLabel": "Tipo de organização",
+      "filterKindAll": "Todas as organizações",
+      "filterKindStandalone": "Organizações clássicas",
+      "filterKindTeam": "Organizações de equipe"
     },
     "teams": {
       "title": "Times",
@@ -2541,7 +2553,13 @@
           "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem."
-        }
+        },
+        "fieldOrganization": "Organização",
+        "organizationPlaceholder": "Selecionar uma organização",
+        "organizationSearchPlaceholder": "Pesquisar uma organização",
+        "organizationNoResults": "Nenhuma organização encontrada",
+        "organizationClear": "Remover",
+        "organizationHint": "Uma organização vinculada perde a página pública: os membros dela aparecem como staff desta equipe e ela gerencia no painel as transmissões das partidas desta equipe."
       },
       "merge": {
         "title": "Mesclar time",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "Tipo",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "Partida não encontrada.",
         "matchNotInTournament": "Esta partida não pertence ao torneio selecionado.",
         "alreadyLinked": "Este canal já está vinculado a esta partida.",
-        "invalidType": "Tipo inválido."
-      }
+        "invalidType": "Tipo inválido.",
+        "matchNotInTeams": "Esta partida não envolve nenhuma equipe da sua organização."
+      },
+      "teamScopeHint": "Sua organização gerencia {teams}: você só pode vincular suas transmissões às partidas desta equipe."
     },
     "vods": {
       "title": "VODs",

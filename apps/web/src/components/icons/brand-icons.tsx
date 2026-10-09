@@ -56,6 +56,14 @@ export function TiktokIcon({ className }: { className?: string }) {
   );
 }
 
+export function KickIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M2 2h5.5v5.5H10V5h2.5V2H18v5.5h-2.5V10H13v4h2.5v2.5H18V22h-5.5v-3H10v-2.5H7.5V22H2z" />
+    </svg>
+  );
+}
+
 export function LiquipediaIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

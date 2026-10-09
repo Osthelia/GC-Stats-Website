@@ -29,6 +29,7 @@ export default async function DashboardOrganizationCreditsPage({ params }: { par
   if (id === null) notFound();
 
   const { membership } = await requireDashboardOrgAccess(locale as AppLocale, id);
+  if (membership.isTeamLinked) notFound();
   const [organization, credits] = await Promise.all([getAdminOrganization(id), getOrganizationProductionCredits(id)]);
   if (!organization) notFound();
 

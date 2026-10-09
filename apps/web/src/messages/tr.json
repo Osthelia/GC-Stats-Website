@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "Tümünü göster",
     "mapsPickRatesShowLess": "Daha az göster",
     "mapsVs": "vs",
-    "unknownDate": "Bilinmiyor"
+    "unknownDate": "Bilinmiyor",
+    "tabStaff": "Kadro",
+    "staffTitle": "{team} kadrosu",
+    "noStaff": "Bu takım için kayıtlı kadro yok.",
+    "formerStaff": "Eski kadro"
   },
   "userPage": {
     "tabOverview": "Genel bakış",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "İletişim yöneticisi",
       "recruitmentManager": "İşe alım yöneticisi",
       "developer": "Geliştirici",
-      "volunteer": "Gönüllü"
+      "volunteer": "Gönüllü",
+      "headOfValorant": "Valorant sorumlusu",
+      "streamer": "Yayıncı"
     },
     "unknownDate": "Bilinmiyor",
     "streamTypeOfficial": "Resmi",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "İletişim yöneticisi",
           "recruitmentManager": "İşe alım yöneticisi",
           "developer": "Geliştirici",
-          "volunteer": "Gönüllü"
+          "volunteer": "Gönüllü",
+          "headOfValorant": "Valorant sorumlusu",
+          "streamer": "Yayıncı"
         },
         "error": {
           "required": "Bu alan zorunludur.",
@@ -2370,7 +2378,11 @@
           "userNotFound": "Hesap bulunamadı.",
           "alreadyHasAccess": "Bu hesabın bu organizasyona erişimi zaten var."
         }
-      }
+      },
+      "filterKindLabel": "Organizasyon türü",
+      "filterKindAll": "Tüm organizasyonlar",
+      "filterKindStandalone": "Standart organizasyonlar",
+      "filterKindTeam": "Takım organizasyonları"
     },
     "teams": {
       "title": "Takımlar",
@@ -2541,7 +2553,13 @@
           "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin."
-        }
+        },
+        "fieldOrganization": "Organizasyon",
+        "organizationPlaceholder": "Bir organizasyon seç",
+        "organizationSearchPlaceholder": "Organizasyon ara",
+        "organizationNoResults": "Organizasyon bulunamadı",
+        "organizationClear": "Kaldır",
+        "organizationHint": "Bağlı bir organizasyon herkese açık sayfasını kaybeder: üyeleri bu takımın kadrosu olarak görünür ve panelden bu takımın maçlarının yayınlarını yönetir."
       },
       "merge": {
         "title": "Takımı birleştir",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "Tür",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "Maç bulunamadı.",
         "matchNotInTournament": "Bu maç seçilen turnuvaya ait değil.",
         "alreadyLinked": "Bu kanal zaten bu maça bağlı.",
-        "invalidType": "Geçersiz tür."
-      }
+        "invalidType": "Geçersiz tür.",
+        "matchNotInTeams": "Bu maç organizasyonunun hiçbir takımını içermiyor."
+      },
+      "teamScopeHint": "Organizasyonun {teams} takımını yönetiyor: yayınlarını yalnızca bu takımın maçlarına bağlayabilirsin."
     },
     "vods": {
       "title": "VOD'lar",

@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "显示全部",
     "mapsPickRatesShowLess": "收起",
     "mapsVs": "对",
-    "unknownDate": "未知"
+    "unknownDate": "未知",
+    "tabStaff": "工作人员",
+    "staffTitle": "{team} 工作人员",
+    "noStaff": "该战队暂无工作人员。",
+    "formerStaff": "前工作人员"
   },
   "userPage": {
     "tabOverview": "概览",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "传播经理",
       "recruitmentManager": "招募经理",
       "developer": "开发者",
-      "volunteer": "志愿者"
+      "volunteer": "志愿者",
+      "headOfValorant": "VALORANT 负责人",
+      "streamer": "主播"
     },
     "unknownDate": "未知",
     "streamTypeOfficial": "官方",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "传播经理",
           "recruitmentManager": "招募经理",
           "developer": "开发者",
-          "volunteer": "志愿者"
+          "volunteer": "志愿者",
+          "headOfValorant": "VALORANT 负责人",
+          "streamer": "主播"
         },
         "error": {
           "required": "此字段为必填项。",
@@ -2370,7 +2378,11 @@
           "userNotFound": "未找到该账户。",
           "alreadyHasAccess": "该账户已拥有此机构的访问权限。"
         }
-      }
+      },
+      "filterKindLabel": "组织类型",
+      "filterKindAll": "所有组织",
+      "filterKindStandalone": "普通组织",
+      "filterKindTeam": "战队组织"
     },
     "teams": {
       "title": "战队",
@@ -2541,7 +2553,13 @@
           "storageFailed": "无法将图片保存到存储。请稍后再试。",
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。"
-        }
+        },
+        "fieldOrganization": "组织",
+        "organizationPlaceholder": "选择组织",
+        "organizationSearchPlaceholder": "搜索组织",
+        "organizationNoResults": "未找到组织",
+        "organizationClear": "移除",
+        "organizationHint": "关联的组织将失去公开页面：其成员会显示为该战队的工作人员，并且可在后台管理该战队比赛的直播。"
       },
       "merge": {
         "title": "合并战队",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "类型",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "未找到该比赛。",
         "matchNotInTournament": "此比赛不属于所选赛事。",
         "alreadyLinked": "该频道已关联至此比赛。",
-        "invalidType": "类型无效。"
-      }
+        "invalidType": "类型无效。",
+        "matchNotInTeams": "该比赛不涉及你所在组织的任何战队。"
+      },
+      "teamScopeHint": "你的组织管理 {teams}：只能将直播关联到该战队的比赛。"
     },
     "vods": {
       "title": "录像回放",

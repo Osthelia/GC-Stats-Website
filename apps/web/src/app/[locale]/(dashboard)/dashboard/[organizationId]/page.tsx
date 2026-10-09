@@ -42,9 +42,9 @@ export default async function DashboardOrganizationPage({ params }: { params: Pr
   const logoUrls = themedLogoUrls(logos, "organization");
 
   const quickLinks = [
-    { href: `/dashboard/${id}/profile`, icon: Building2, labelKey: "goProfile" },
+    ...(membership.isTeamLinked ? [] : [{ href: `/dashboard/${id}/profile`, icon: Building2, labelKey: "goProfile" as const }]),
     { href: `/dashboard/${id}/members`, icon: UsersRound, labelKey: "goRoster" },
-    { href: `/dashboard/${id}/credits`, icon: Clapperboard, labelKey: "goCredits" },
+    ...(membership.isTeamLinked ? [] : [{ href: `/dashboard/${id}/credits`, icon: Clapperboard, labelKey: "goCredits" as const }]),
     { href: `/dashboard/${id}/access`, icon: Users, labelKey: "goMembers" },
     ...(membership.isOwner ? [{ href: `/dashboard/${id}/permissions`, icon: KeyRound, labelKey: "goPermissions" as const }] : []),
   ];

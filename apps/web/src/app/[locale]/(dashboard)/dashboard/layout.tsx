@@ -46,6 +46,7 @@ export default async function DashboardLayout({
     isOwner: m.isOwner,
     permissions: [...m.permissions],
     isGlobalAdminOverride: m.isGlobalAdminOverride ?? false,
+    isTeamLinked: m.isTeamLinked,
   }));
 
   const switcherOrganizations = access.memberships.map((m) => ({

@@ -45,7 +45,7 @@ const SOCIAL_ICONS: Record<
   discord: DiscordIcon,
 };
 
-const TABS = ["overview", "matches", "maps", "history"] as const;
+const TABS = ["overview", "matches", "maps", "history", "staff"] as const;
 
 /** Rendered once by the tabs layout, the active tab follows the URL. */
 export async function TeamHeader({
@@ -89,12 +89,14 @@ export async function TeamHeader({
     matches: `/team/${segment}/matches`,
     maps: `/team/${segment}/maps`,
     history: `/team/${segment}/history`,
+    staff: `/team/${segment}/staff`,
   };
   const tabLabels: Record<(typeof TABS)[number], string> = {
     overview: t("tabOverview"),
     matches: t("tabMatches"),
     maps: t("tabMaps"),
     history: t("tabPlayersHistory"),
+    staff: t("tabStaff"),
   };
 
   return (
@@ -272,7 +274,7 @@ export async function TeamHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.map((tab) => ({
+          tabs={TABS.filter((tab) => tab !== "staff" || team.organizationId !== null).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

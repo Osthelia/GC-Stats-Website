@@ -37,6 +37,17 @@ import type { HomeMatch } from "@/lib/home-data";
 import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
+import { getOrganizationMembers, type OrganizationMember } from "@/lib/organization-page-data";
+
+// Managers and coaches already show on the roster, the staff tab covers the rest of the organization.
+const ROSTER_ORGANIZATION_ROLES = ["manager"];
+
+/** Members of the team's linked organization, current and former, minus the roles already on the roster. */
+export async function getTeamStaff(organizationId: number): Promise<{ current: OrganizationMember[]; formers: OrganizationMember[] }> {
+  const members = await getOrganizationMembers(organizationId);
+  const keep = (m: OrganizationMember) => !ROSTER_ORGANIZATION_ROLES.includes(m.role);
+  return { current: members.current.filter(keep), formers: members.formers.filter(keep) };
+}
 
 export type TeamPageInfo = {
   id: number;
@@ -51,6 +62,8 @@ export type TeamPageInfo = {
   tags: string[];
   logoUrl: string | null;
   logoUrlLight: string | null;
+  /** Linked organization: its members are this team's staff (see getTeamStaff). */
+  organizationId: number | null;
 };
 
 /** Deduplicated per request: the tabs layout and the page both read it. */
@@ -68,6 +81,7 @@ export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | 
         socials: teams.socials,
         liquipediaLink: teams.liquipediaLink,
         tags: teams.tags,
+        organizationId: teams.organizationId,
       })
       .from(teams)
       .where(and(eq(teams.id, id), visibleTeam))
@@ -87,6 +101,7 @@ export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | 
     bio: row.bio,
     socials: (row.socials as Record<string, string>) ?? {},
     liquipediaLink: row.liquipediaLink,
+    organizationId: row.organizationId,
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
     logoUrl: themed.dark,
     logoUrlLight: themed.light,

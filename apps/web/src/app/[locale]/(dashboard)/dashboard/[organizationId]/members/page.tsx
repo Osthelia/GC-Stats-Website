@@ -39,7 +39,7 @@ export default async function DashboardOrganizationMembersPage({ params }: { par
       <OrgMembersPanel
         organizationId={id}
         initialMembers={members}
-        canManage={hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.staffManage)}
+        canManage={hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.membersManage)}
         canCreatePerson={hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.peopleCreate)}
         canLinkUser={hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.peopleLinkUser)}
         canEditProfile={hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.peopleEditProfile)}

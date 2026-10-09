@@ -30,6 +30,7 @@ export default async function DashboardOrganizationProfilePage({ params }: { par
   if (id === null) notFound();
 
   const { membership } = await requireDashboardOrgAccess(locale as AppLocale, id);
+  if (membership.isTeamLinked) notFound();
   const [organization, logos] = await Promise.all([getAdminOrganization(id), getEntityLogos("organization", id)]);
   if (!organization) notFound();
 

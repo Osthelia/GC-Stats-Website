@@ -12,7 +12,7 @@
  */
 
 import { sql } from "drizzle-orm";
-import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, smallint, integer, char, timestamp, date, uuid, unique, uniqueIndex, index } from "drizzle-orm/pg-core";
+import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, smallint, integer, char, timestamp, date, uuid, unique, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { daterange, tstzrange } from "./custom-types";
 import { users } from "./auth";
 
@@ -34,7 +34,13 @@ export const teams = pgTable("teams", {
   maxPermissions: jsonb("max_permissions"),
   tags: jsonb("tags"),
   liquipediaLink: text("liquipedia_link"),
-});
+  // Organization running this team: the org then has no public page of its own
+  // (its members show as the team's staff) and gets an automatic /dashboard
+  // access scoped to the streams of this team's matches. One org can own several teams.
+  organizationId: bigint("organization_id", { mode: "number" }).references((): AnyPgColumn => organizations.id, { onDelete: "set null" }),
+}, (t) => [
+  index("teams_organization_id_idx").on(t.organizationId),
+]);
 
 // Liquipedia page name <-> GC Stats team, strictly one to one: used to write
 // {{TeamOpponent|...}} in generated wikicode and to recognise teams on import.

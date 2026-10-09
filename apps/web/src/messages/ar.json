@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "عرض الكل",
     "mapsPickRatesShowLess": "عرض أقل",
     "mapsVs": "ضد",
-    "unknownDate": "غير معروف"
+    "unknownDate": "غير معروف",
+    "tabStaff": "الطاقم",
+    "staffTitle": "طاقم {team}",
+    "noStaff": "لا يوجد طاقم مسجل لهذا الفريق.",
+    "formerStaff": "الطاقم السابق"
   },
   "userPage": {
     "tabOverview": "نظرة عامة",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "مدير الاتصال",
       "recruitmentManager": "مدير التوظيف",
       "developer": "مطوّر",
-      "volunteer": "متطوع"
+      "volunteer": "متطوع",
+      "headOfValorant": "مسؤول فالورانت",
+      "streamer": "ستريمر"
     },
     "unknownDate": "غير معروف",
     "streamTypeOfficial": "رسمي",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "مدير الاتصال",
           "recruitmentManager": "مدير التوظيف",
           "developer": "مطوّر",
-          "volunteer": "متطوع"
+          "volunteer": "متطوع",
+          "headOfValorant": "مسؤول فالورانت",
+          "streamer": "ستريمر"
         },
         "error": {
           "required": "هذا الحقل مطلوب.",
@@ -2370,7 +2378,11 @@
           "userNotFound": "الحساب غير موجود.",
           "alreadyHasAccess": "هذا الحساب لديه وصول إلى هذه المنظمة بالفعل."
         }
-      }
+      },
+      "filterKindLabel": "نوع المؤسسة",
+      "filterKindAll": "كل المؤسسات",
+      "filterKindStandalone": "مؤسسات عادية",
+      "filterKindTeam": "مؤسسات الفرق"
     },
     "teams": {
       "title": "الفرق",
@@ -2541,7 +2553,13 @@
           "storageFailed": "تعذر حفظ الصورة في التخزين. حاول مرة أخرى بعد قليل.",
           "saveFailed": "تعذر حفظ الشعار. حاول مرة أخرى بعد قليل.",
           "empty": "يرجى اختيار صورة."
-        }
+        },
+        "fieldOrganization": "المؤسسة",
+        "organizationPlaceholder": "اختر مؤسسة",
+        "organizationSearchPlaceholder": "ابحث عن مؤسسة",
+        "organizationNoResults": "لم يتم العثور على مؤسسة",
+        "organizationClear": "إزالة",
+        "organizationHint": "تفقد المؤسسة المرتبطة صفحتها العامة: يظهر أعضاؤها كطاقم لهذا الفريق، وتدير من لوحة التحكم بثوث مباريات هذا الفريق."
       },
       "merge": {
         "title": "دمج الفريق",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "النوع",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "المباراة غير موجودة.",
         "matchNotInTournament": "هذه المباراة لا تنتمي إلى البطولة المحددة.",
         "alreadyLinked": "هذه القناة مرتبطة بالفعل بهذه المباراة.",
-        "invalidType": "نوع غير صالح."
-      }
+        "invalidType": "نوع غير صالح.",
+        "matchNotInTeams": "هذه المباراة لا تشمل أي فريق من مؤسستك."
+      },
+      "teamScopeHint": "مؤسستك تدير {teams}: يمكنك ربط بثوثك بمباريات هذا الفريق فقط."
     },
     "vods": {
       "title": "التسجيلات",

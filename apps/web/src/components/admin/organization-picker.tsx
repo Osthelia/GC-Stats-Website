@@ -19,12 +19,14 @@ import type { OrganizationPickerResult } from "@/lib/organization-search";
 
 /** Searchable organization dropdown — same portaled pattern as UserPicker/TeamPicker/PersonPicker. */
 export function OrganizationPicker({
+  id,
   value,
   onChange,
   placeholder,
   searchPlaceholder,
   noResultsLabel,
 }: {
+  id?: string;
   value: { id: number; name: string } | null;
   onChange: (organization: { id: number; name: string } | null) => void;
   placeholder: string;
@@ -74,6 +76,7 @@ export function OrganizationPicker({
   return (
     <>
       <button
+        id={id}
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((o) => !o)}

@@ -9,9 +9,10 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, exists, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, organizationMemberships, people, users } from "@gc-stats/db";
+import { organizations, organizationMemberships, people, teams, users } from "@gc-stats/db";
+import { organizationHasNoTeam } from "@/lib/organization-team-link";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
@@ -36,9 +37,15 @@ const memberCountSql = sql<number>`(
 
 export const ORGANIZATIONS_PAGE_SIZE = 30;
 
-export async function listAdminOrganizations(opts: { q: string; sort: OrganizationSort; direction: SortDirection; page: number }): Promise<{ rows: AdminOrganizationRow[]; total: number }> {
-  const { q, sort, direction, page } = opts;
+export type OrganizationKind = "standalone" | "team";
+
+export async function listAdminOrganizations(opts: { q: string; sort: OrganizationSort; direction: SortDirection; page: number; kind?: OrganizationKind }): Promise<{ rows: AdminOrganizationRow[]; total: number }> {
+  const { q, sort, direction, page, kind } = opts;
   const conditions = [];
+
+  // "team" = linked to at least one team (no public page), "standalone" = the others.
+  if (kind === "team") conditions.push(exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))));
+  if (kind === "standalone") conditions.push(organizationHasNoTeam());
 
   if (q) {
     const numeric = /^\d+$/.test(q);

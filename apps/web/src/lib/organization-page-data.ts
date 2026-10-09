@@ -107,6 +107,8 @@ const ROLE_ORDER = [
   "partnershipsManager",
   "communicationsManager",
   "recruitmentManager",
+  "headOfValorant",
+  "streamer",
   "developer",
   "volunteer",
 ];

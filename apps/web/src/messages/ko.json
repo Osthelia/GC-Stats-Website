@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "전체 보기",
     "mapsPickRatesShowLess": "간략히 보기",
     "mapsVs": "vs",
-    "unknownDate": "알 수 없음"
+    "unknownDate": "알 수 없음",
+    "tabStaff": "스태프",
+    "staffTitle": "{team} 스태프",
+    "noStaff": "이 팀에 등록된 스태프가 없습니다.",
+    "formerStaff": "전 스태프"
   },
   "userPage": {
     "tabOverview": "개요",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "커뮤니케이션 매니저",
       "recruitmentManager": "채용 매니저",
       "developer": "개발자",
-      "volunteer": "자원봉사자"
+      "volunteer": "자원봉사자",
+      "headOfValorant": "발로란트 총괄",
+      "streamer": "스트리머"
     },
     "unknownDate": "알 수 없음",
     "streamTypeOfficial": "공식",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "커뮤니케이션 매니저",
           "recruitmentManager": "채용 매니저",
           "developer": "개발자",
-          "volunteer": "자원봉사자"
+          "volunteer": "자원봉사자",
+          "headOfValorant": "발로란트 총괄",
+          "streamer": "스트리머"
         },
         "error": {
           "required": "이 항목은 필수입니다.",
@@ -2370,7 +2378,11 @@
           "userNotFound": "계정을 찾을 수 없습니다.",
           "alreadyHasAccess": "이 계정은 이미 이 단체에 대한 접근 권한을 가지고 있습니다."
         }
-      }
+      },
+      "filterKindLabel": "조직 유형",
+      "filterKindAll": "모든 조직",
+      "filterKindStandalone": "일반 조직",
+      "filterKindTeam": "팀 조직"
     },
     "teams": {
       "title": "팀",
@@ -2541,7 +2553,13 @@
           "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요."
-        }
+        },
+        "fieldOrganization": "조직",
+        "organizationPlaceholder": "조직 선택",
+        "organizationSearchPlaceholder": "조직 검색",
+        "organizationNoResults": "조직을 찾을 수 없습니다",
+        "organizationClear": "해제",
+        "organizationHint": "연결된 조직은 공개 페이지가 사라지고, 구성원은 이 팀의 스태프로 표시됩니다. 조직은 대시보드에서 이 팀 경기의 스트림을 관리합니다."
       },
       "merge": {
         "title": "팀 병합",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "유형",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "매치를 찾을 수 없습니다.",
         "matchNotInTournament": "이 매치는 선택한 토너먼트에 속하지 않습니다.",
         "alreadyLinked": "이 채널은 이미 이 매치에 연결되어 있습니다.",
-        "invalidType": "잘못된 유형입니다."
-      }
+        "invalidType": "잘못된 유형입니다.",
+        "matchNotInTeams": "이 경기에는 조직의 팀이 포함되어 있지 않습니다."
+      },
+      "teamScopeHint": "조직이 {teams} 팀을 관리합니다. 이 팀의 경기에만 스트림을 연결할 수 있습니다."
     },
     "vods": {
       "title": "VOD",

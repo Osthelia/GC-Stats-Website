@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { AdminSearchSortBar } from "@/components/admin/admin-search-sort-bar";
 import { AdminSortableTh } from "@/components/admin/admin-sortable-th";
 import { AdminPagination } from "@/components/admin/admin-pagination";
-import { listAdminOrganizations, ORGANIZATIONS_PAGE_SIZE, type OrganizationSort } from "@/lib/admin-organizations";
+import { listAdminOrganizations, ORGANIZATIONS_PAGE_SIZE, type OrganizationSort, type OrganizationKind } from "@/lib/admin-organizations";
 import { organizationTagStyle } from "@/lib/organization-tags";
 import { countryNames } from "@/lib/countries";
 import { CountryFlag } from "@/components/admin/country-flag";
@@ -26,7 +26,9 @@ import { CreateOrganizationDialog } from "@/components/admin/create-organization
 
 const SORT_VALUES: OrganizationSort[] = ["name", "members"];
 
-type SearchParams = { q?: string; sort?: string; direction?: string; page?: string };
+const KIND_VALUES: OrganizationKind[] = ["standalone", "team"];
+
+type SearchParams = { q?: string; sort?: string; direction?: string; page?: string; status?: string };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -52,9 +54,11 @@ export default async function AdminOrganizationsPage({
   const direction = sp.direction === "desc" ? "desc" : "asc";
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
-  const { rows, total } = await listAdminOrganizations({ q, sort, direction, page });
+  const kind = (KIND_VALUES as string[]).includes(sp.status ?? "") ? (sp.status as OrganizationKind) : undefined;
+
+  const { rows, total } = await listAdminOrganizations({ q, sort, direction, page, kind });
   const totalPages = Math.max(1, Math.ceil(total / ORGANIZATIONS_PAGE_SIZE));
-  const thQuery = { q };
+  const thQuery = { q, ...(kind ? { status: kind } : {}) };
 
   return (
     <div className="flex flex-col gap-6">
@@ -75,9 +79,13 @@ export default async function AdminOrganizationsPage({
         activeWithinValue=""
         activeWithinLabel=""
         activeWithinOptions={[]}
-        statusValue=""
-        statusLabel=""
-        statusOptions={[]}
+        statusValue={kind ?? ""}
+        statusLabel={t("filterKindLabel")}
+        statusOptions={[
+          { value: "", label: t("filterKindAll") },
+          { value: "standalone", label: t("filterKindStandalone") },
+          { value: "team", label: t("filterKindTeam") },
+        ]}
       />
 
       <div className="overflow-x-auto rounded-md border">

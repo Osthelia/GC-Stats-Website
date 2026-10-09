@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "すべて表示",
     "mapsPickRatesShowLess": "表示を減らす",
     "mapsVs": "vs",
-    "unknownDate": "不明"
+    "unknownDate": "不明",
+    "tabStaff": "スタッフ",
+    "staffTitle": "{team} のスタッフ",
+    "noStaff": "このチームのスタッフは登録されていません。",
+    "formerStaff": "元スタッフ"
   },
   "userPage": {
     "tabOverview": "概要",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "コミュニケーションマネージャー",
       "recruitmentManager": "採用マネージャー",
       "developer": "デベロッパー",
-      "volunteer": "ボランティア"
+      "volunteer": "ボランティア",
+      "headOfValorant": "VALORANT責任者",
+      "streamer": "配信者"
     },
     "unknownDate": "不明",
     "streamTypeOfficial": "公式",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "広報マネージャー",
           "recruitmentManager": "採用マネージャー",
           "developer": "開発者",
-          "volunteer": "ボランティア"
+          "volunteer": "ボランティア",
+          "headOfValorant": "VALORANT責任者",
+          "streamer": "配信者"
         },
         "error": {
           "required": "この項目は必須です。",
@@ -2370,7 +2378,11 @@
           "userNotFound": "アカウントが見つかりません。",
           "alreadyHasAccess": "このアカウントはすでにこの組織へのアクセス権を持っています。"
         }
-      }
+      },
+      "filterKindLabel": "組織の種類",
+      "filterKindAll": "すべての組織",
+      "filterKindStandalone": "通常の組織",
+      "filterKindTeam": "チームの組織"
     },
     "teams": {
       "title": "チーム",
@@ -2541,7 +2553,13 @@
           "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
           "empty": "画像を選択してください。"
-        }
+        },
+        "fieldOrganization": "組織",
+        "organizationPlaceholder": "組織を選択",
+        "organizationSearchPlaceholder": "組織を検索",
+        "organizationNoResults": "組織が見つかりません",
+        "organizationClear": "解除",
+        "organizationHint": "リンクされた組織は公開ページがなくなり、そのメンバーはこのチームのスタッフとして表示されます。組織はダッシュボードからこのチームの試合の配信を管理できます。"
       },
       "merge": {
         "title": "チームを統合",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "種類",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "試合が見つかりません。",
         "matchNotInTournament": "この試合は選択したトーナメントに属していません。",
         "alreadyLinked": "このチャンネルはすでにこの試合に紐づけられています。",
-        "invalidType": "無効な種類です。"
-      }
+        "invalidType": "無効な種類です。",
+        "matchNotInTeams": "この試合には組織のチームが含まれていません。"
+      },
+      "teamScopeHint": "あなたの組織は {teams} を管理しています。配信はこのチームの試合にのみリンクできます。"
     },
     "vods": {
       "title": "VOD",

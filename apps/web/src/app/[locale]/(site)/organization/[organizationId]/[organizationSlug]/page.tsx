@@ -9,6 +9,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId } from "@/lib/entity-id";
+import { redirectIfOrganizationLinked } from "@/lib/organization-team-link";
 import {
   getOrganizationPageInfo,
   getOrganizationMembers,
@@ -43,6 +44,7 @@ export default async function OrganizationPage({ params }: { params: Promise<{ l
 
   const organization = await getOrganizationPageInfo(id);
   if (!organization) notFound();
+  await redirectIfOrganizationLinked(id, locale);
 
   const basePath = `${organization.id}/${organization.slug}`;
 

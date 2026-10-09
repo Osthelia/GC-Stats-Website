@@ -19,6 +19,7 @@ import { isValidUrl } from "@/lib/admin-validation";
 import { STREAM_PLATFORMS, STREAM_CHANNEL_TYPES } from "@/lib/stream-platforms";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { logActivity, diffChanges } from "@/lib/activity-log";
+import { getOrganizationTeamIds, filterMatchIdsInvolvingTeams, getTournamentIdsOfTeams } from "@/lib/organization-team-link";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
 
 export type { CreditMatchOption } from "@/lib/production-credits-data";
@@ -112,15 +113,20 @@ export async function deleteStreamChannel(organizationId: number, channelId: num
 /** Same search as the production-credits tournament picker, gated by this organization's streamsLink permission instead. */
 export async function searchTournamentsForStreamLink(organizationId: number, query: string): Promise<TournamentPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
-  return searchTournamentsQuery(query);
+  const teamIds = await getOrganizationTeamIds(organizationId);
+  return searchTournamentsQuery(query, teamIds.length > 0 ? { onlyTournamentIds: await getTournamentIdsOfTeams(teamIds) } : {});
 }
 
 export async function getMatchOptionsForStreamLink(organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
-  return getTournamentMatchOptionsForCredit(tournamentId);
+  const options = await getTournamentMatchOptionsForCredit(tournamentId);
+  const teamIds = await getOrganizationTeamIds(organizationId);
+  if (teamIds.length === 0) return options;
+  const allowed = await filterMatchIdsInvolvingTeams(options.map((o) => o.id), teamIds);
+  return options.filter((o) => allowed.has(o.id));
 }
 
-export type LinkStreamResult = { ok: true } | { ok: false; error: "channelNotFound" | "matchNotFound" | "matchNotInTournament" | "alreadyLinked" };
+export type LinkStreamResult = { ok: true } | { ok: false; error: "channelNotFound" | "matchNotFound" | "matchNotInTournament" | "matchNotInTeams" | "alreadyLinked" };
 
 export async function linkStreamChannelToMatch(organizationId: number, channelId: number, tournamentId: number, matchId: number): Promise<LinkStreamResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
@@ -132,6 +138,9 @@ export async function linkStreamChannelToMatch(organizationId: number, channelId
   if (matchTournamentId === null) return { ok: false, error: "matchNotFound" };
   if (matchTournamentId !== tournamentId) return { ok: false, error: "matchNotInTournament" };
 
+  const teamIds = await getOrganizationTeamIds(organizationId);
+  if (teamIds.length > 0 && !(await filterMatchIdsInvolvingTeams([matchId], teamIds)).has(matchId)) return { ok: false, error: "matchNotInTeams" };
+
   const [existing] = await db.select().from(matchStreams).where(and(eq(matchStreams.matchId, matchId), eq(matchStreams.streamChannelId, channelId))).limit(1);
   if (existing) return { ok: false, error: "alreadyLinked" };
 
@@ -142,7 +151,7 @@ export async function linkStreamChannelToMatch(organizationId: number, channelId
   return { ok: true };
 }
 
-export type LinkManyStreamResult = { ok: true; linked: number; alreadyLinked: number } | { ok: false; error: "channelNotFound" };
+export type LinkManyStreamResult = { ok: true; linked: number; alreadyLinked: number } | { ok: false; error: "channelNotFound" | "matchNotInTeams" };
 
 /**
  * Batch sibling of linkStreamChannelToMatch — links one channel to every
@@ -161,13 +170,21 @@ export async function linkStreamChannelToMatches(organizationId: number, channel
 
   if (matchIds.length === 0) return { ok: true, linked: 0, alreadyLinked: 0 };
 
-  const tournamentMatchRows = await db
-    .select({ matchId: matches.id })
-    .from(matches)
-    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(inArray(matches.id, matchIds), eq(stages.tournamentId, tournamentId)));
-  const inTournament = new Set(tournamentMatchRows.map((r) => r.matchId));
+  const [tournamentMatchRows, teamIds] = await Promise.all([
+    db
+      .select({ matchId: matches.id })
+      .from(matches)
+      .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+      .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+      .where(and(inArray(matches.id, matchIds), eq(stages.tournamentId, tournamentId))),
+    getOrganizationTeamIds(organizationId),
+  ]);
+  const tournamentMatchIds = tournamentMatchRows.map((r) => r.matchId);
+  let inTournament = new Set(tournamentMatchIds);
+  if (teamIds.length > 0) {
+    inTournament = await filterMatchIdsInvolvingTeams(tournamentMatchIds, teamIds);
+    if (inTournament.size < tournamentMatchIds.length) return { ok: false, error: "matchNotInTeams" };
+  }
 
   const existingRows = await db
     .select({ matchId: matchStreams.matchId })

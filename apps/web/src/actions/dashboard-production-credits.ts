@@ -14,7 +14,14 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { productionCredits, people, tournaments, matches, maps, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
-import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
+import { requireDashboardOrgActorPermission as requireOrgActorPermission } from "@/lib/dashboard-rbac";
+
+/** Production credits do not exist for an organization linked to a team. */
+async function requireDashboardOrgActorPermission(organizationId: number, permission: string) {
+  const result = await requireOrgActorPermission(organizationId, permission);
+  if (result.membership.isTeamLinked) throw new Error("Not authorized");
+  return result;
+}
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";

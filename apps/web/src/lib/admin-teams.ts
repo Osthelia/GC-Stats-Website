@@ -12,7 +12,7 @@
 
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, entrants, matches, rosterMemberships, people, teamNameHistory } from "@gc-stats/db";
+import { teams, entrants, matches, rosterMemberships, people, teamNameHistory, organizations } from "@gc-stats/db";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
@@ -129,14 +129,24 @@ export type AdminTeamProfile = {
   liquipediaLink: string | null;
   isActive: boolean;
   isGhost: boolean;
+  organizationId: number | null;
+  organizationName: string | null;
   socials: Record<string, string>;
   tags: string[];
 };
 
 export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null> {
-  const [row] = await db.select().from(teams).where(eq(teams.id, id)).limit(1);
-  if (!row) return null;
+  const [found] = await db
+    .select({ team: teams, organizationName: organizations.name })
+    .from(teams)
+    .leftJoin(organizations, eq(organizations.id, teams.organizationId))
+    .where(eq(teams.id, id))
+    .limit(1);
+  if (!found) return null;
+  const row = found.team;
   return {
+    organizationId: row.organizationId,
+    organizationName: found.organizationName,
     id: row.id,
     name: row.name,
     shortName: row.shortName,

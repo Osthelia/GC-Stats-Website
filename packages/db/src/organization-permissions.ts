@@ -55,4 +55,24 @@ export const ORGANIZATION_PERMISSION_GROUPS: { key: string; permissions: Organiz
   { key: "logs", permissions: [ORGANIZATION_PERMISSIONS.logsView] },
 ];
 
+// Granted automatically to every dashboard access of an organization linked to
+// a team (teams.organization_id), on top of its roles and regardless of its
+// max_permissions ceiling. Streams actions then restrict them to that team's matches,
+// and the production credits section is hidden for such an organization.
+export const LINKED_ORGANIZATION_PERMISSIONS: OrganizationPermissionName[] = [
+  ORGANIZATION_PERMISSIONS.streamsView,
+  ORGANIZATION_PERMISSIONS.streamsEdit,
+  ORGANIZATION_PERMISSIONS.streamsDelete,
+  ORGANIZATION_PERMISSIONS.streamsLink,
+  // Org members are the team's staff, so editing them comes with the link too (staffManage, the production credits, does not).
+  ORGANIZATION_PERMISSIONS.membersManage,
+  ORGANIZATION_PERMISSIONS.peopleCreate,
+  ORGANIZATION_PERMISSIONS.peopleLinkUser,
+  ORGANIZATION_PERMISSIONS.peopleEditProfile,
+];
+
+// A linked organization can never hold these, even through its roles or ceiling:
+// it only manages streams and its members.
+export const LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS: OrganizationPermissionName[] = ORGANIZATION_PERMISSION_GROUPS.filter((g) => g.key === "news").flatMap((g) => g.permissions);
+
 export const ALL_ORGANIZATION_PERMISSIONS: OrganizationPermissionName[] = ORGANIZATION_PERMISSION_GROUPS.flatMap((g) => g.permissions);

@@ -20,7 +20,7 @@ export const streamChannels = pgTable("stream_channels", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
   name: text("name").notNull(),
-  platform: text("platform").notNull(), // 'youtube' | 'twitch' | 'tiktok'
+  platform: text("platform").notNull(), // 'youtube' | 'twitch' | 'tiktok' | 'kick'
   type: text("type").notNull().default("official"), // 'official' | 'watchparty'
   url: text("url").notNull(),
   languageCode: char("language_code", { length: 5 }).notNull(),

@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { parseEntityId } from "@/lib/entity-id";
+import { redirectIfOrganizationLinked } from "@/lib/organization-team-link";
 import { getOrganizationPageInfo, getOrganizationMembers, getOrganizationNewsPage } from "@/lib/organization-page-data";
 import { listActiveNewsLanguages, resolveNewsLanguages } from "@/lib/news-languages";
 import { OrganizationHeader } from "@/components/organization/organization-header";
@@ -39,6 +40,7 @@ export default async function OrganizationNewsPage({
 
   const organization = await getOrganizationPageInfo(id);
   if (!organization) notFound();
+  await redirectIfOrganizationLinked(id, locale);
 
   const basePath = `/organization/${organization.id}/${organization.slug}/news`;
   const sp = await searchParams;

@@ -10,6 +10,7 @@ import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { parseEntityId } from "@/lib/entity-id";
+import { redirectIfOrganizationLinked } from "@/lib/organization-team-link";
 import { getOrganizationPageInfo } from "@/lib/organization-page-data";
 
 /** Link shared without its slug: send it to the canonical URL. */
@@ -24,8 +25,10 @@ export default async function OrganizationIdRedirectPage({
   const organization = await getOrganizationPageInfo(id);
   if (!organization) notFound();
 
+  const locale = await getLocale();
+  await redirectIfOrganizationLinked(id, locale);
   redirect({
     href: `/organization/${organization.id}/${organization.slug}`,
-    locale: await getLocale(),
+    locale,
   });
 }

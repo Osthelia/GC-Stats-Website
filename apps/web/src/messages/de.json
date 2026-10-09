@@ -1501,7 +1501,11 @@
     "mapsPickRatesShowMore": "Alle anzeigen",
     "mapsPickRatesShowLess": "Weniger anzeigen",
     "mapsVs": "gegen",
-    "unknownDate": "Unbekannt"
+    "unknownDate": "Unbekannt",
+    "tabStaff": "Staff",
+    "staffTitle": "Staff von {team}",
+    "noStaff": "Kein Staff für dieses Team eingetragen.",
+    "formerStaff": "Ehemaliger Staff"
   },
   "userPage": {
     "tabOverview": "Übersicht",
@@ -1700,7 +1704,9 @@
       "communicationsManager": "Kommunikations Manager/in",
       "recruitmentManager": "Recruiting Manager/in",
       "developer": "Entwickler/in",
-      "volunteer": "Freiwillige/r"
+      "volunteer": "Freiwillige/r",
+      "headOfValorant": "Valorant Leiter",
+      "streamer": "Streamer"
     },
     "unknownDate": "Unbekannt",
     "streamTypeOfficial": "Offiziell",
@@ -2346,7 +2352,9 @@
           "communicationsManager": "Kommunikations Manager:in",
           "recruitmentManager": "Recruitment Manager:in",
           "developer": "Entwickler:in",
-          "volunteer": "Freiwillige:r"
+          "volunteer": "Freiwillige:r",
+          "headOfValorant": "Valorant Leiter",
+          "streamer": "Streamer"
         },
         "error": {
           "required": "Dieses Feld ist erforderlich.",
@@ -2370,7 +2378,11 @@
           "userNotFound": "Konto nicht gefunden.",
           "alreadyHasAccess": "Dieses Konto hat bereits Zugriff auf diese Organisation."
         }
-      }
+      },
+      "filterKindLabel": "Organisationstyp",
+      "filterKindAll": "Alle Organisationen",
+      "filterKindStandalone": "Klassische Organisationen",
+      "filterKindTeam": "Team-Organisationen"
     },
     "teams": {
       "title": "Teams",
@@ -2541,7 +2553,13 @@
           "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus."
-        }
+        },
+        "fieldOrganization": "Organisation",
+        "organizationPlaceholder": "Organisation auswählen",
+        "organizationSearchPlaceholder": "Organisation suchen",
+        "organizationNoResults": "Keine Organisation gefunden",
+        "organizationClear": "Entfernen",
+        "organizationHint": "Eine verknüpfte Organisation verliert ihre öffentliche Seite: Ihre Mitglieder erscheinen als Staff dieses Teams, und sie verwaltet im Dashboard die Streams der Spiele dieses Teams."
       },
       "merge": {
         "title": "Team zusammenführen",
@@ -5134,7 +5152,8 @@
       "platform": {
         "twitch": "Twitch",
         "youtube": "YouTube",
-        "tiktok": "TikTok"
+        "tiktok": "TikTok",
+        "kick": "Kick"
       },
       "typeLabel": "Typ",
       "type": {
@@ -5195,8 +5214,10 @@
         "matchNotFound": "Match nicht gefunden.",
         "matchNotInTournament": "Dieses Match gehört nicht zum ausgewählten Turnier.",
         "alreadyLinked": "Dieser Kanal ist bereits mit diesem Match verknüpft.",
-        "invalidType": "Ungültiger Typ."
-      }
+        "invalidType": "Ungültiger Typ.",
+        "matchNotInTeams": "An diesem Spiel ist kein Team deiner Organisation beteiligt."
+      },
+      "teamScopeHint": "Deine Organisation verwaltet {teams}: Du kannst deine Streams nur mit den Spielen dieses Teams verknüpfen."
     },
     "vods": {
       "title": "VODs",

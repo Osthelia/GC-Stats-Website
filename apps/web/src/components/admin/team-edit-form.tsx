@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
+import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { TagsInput } from "@/components/admin/tags-input";
 import { updateTeamProfile, type TeamProfileFieldErrors } from "@/actions/admin-teams";
 import type { AdminTeamProfile } from "@/lib/admin-teams";
@@ -43,6 +44,7 @@ export function TeamEditForm({
   const [bio, setBio] = useState(team.bio ?? "");
   const [vlrId, setVlrId] = useState(team.vlrId ? String(team.vlrId) : "");
   const [liquipediaLink, setLiquipediaLink] = useState(team.liquipediaLink ?? "");
+  const [organization, setOrganization] = useState<{ id: number; name: string } | null>(team.organizationId !== null ? { id: team.organizationId, name: team.organizationName ?? "" } : null);
   const [isActive, setIsActive] = useState(team.isActive);
   const [socials, setSocials] = useState<Record<string, string>>(team.socials);
   const [tags, setTags] = useState<string[]>(team.tags);
@@ -50,7 +52,7 @@ export function TeamEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, isActive, socials, tags });
+      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -112,6 +114,27 @@ export function TeamEditForm({
                   <Input id="team-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
                 </FormField>
               </div>
+
+              <FormField label={t("fieldOrganization")} htmlFor="team-organization" error={err("organizationId")}>
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <OrganizationPicker
+                      id="team-organization"
+                      value={organization}
+                      onChange={setOrganization}
+                      placeholder={t("organizationPlaceholder")}
+                      searchPlaceholder={t("organizationSearchPlaceholder")}
+                      noResultsLabel={t("organizationNoResults")}
+                    />
+                  </div>
+                  {organization && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setOrganization(null)}>
+                      {t("organizationClear")}
+                    </Button>
+                  )}
+                </div>
+                <p className="mt-1.5 text-xs text-muted-foreground">{t("organizationHint")}</p>
+              </FormField>
 
               <FormField label={t("fieldBio")} htmlFor="team-bio" error={err("bio")}>
                 <Textarea id="team-bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} maxLength={2000} aria-invalid={!!errors.bio} />

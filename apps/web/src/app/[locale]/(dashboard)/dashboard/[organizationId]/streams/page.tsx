@@ -15,6 +15,7 @@ import { getAdminOrganization } from "@/lib/admin-organizations";
 import { listOrganizationStreamChannelRows, listOrganizationStreamLinks } from "@/lib/dashboard-streams-data";
 import { listActiveNewsLanguages } from "@/lib/news-languages";
 import { parseEntityId } from "@/lib/entity-id";
+import { getOrganizationLinkedTeams } from "@/lib/organization-team-link";
 import type { AppLocale } from "@/i18n/routing";
 import { OrgStreamsPanel } from "@/components/dashboard/org-streams-panel";
 
@@ -47,11 +48,12 @@ export default async function DashboardOrganizationStreamsPage({ params }: { par
     );
   }
 
-  const [organization, channels, links, languages] = await Promise.all([
+  const [organization, channels, links, languages, linkedTeams] = await Promise.all([
     getAdminOrganization(id),
     listOrganizationStreamChannelRows(id),
     listOrganizationStreamLinks(id),
     listActiveNewsLanguages(),
+    getOrganizationLinkedTeams(id),
   ]);
   if (!organization) notFound();
 
@@ -61,6 +63,9 @@ export default async function DashboardOrganizationStreamsPage({ params }: { par
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
+      {linkedTeams.length > 0 && (
+        <p className="rounded-lg border border-dashed bg-muted/30 px-3 py-2 text-sm text-muted-foreground">{t("teamScopeHint", { teams: linkedTeams.map((team) => team.name).join(", ") })}</p>
+      )}
       <OrgStreamsPanel
         organizationId={id}
         initialChannels={channels}

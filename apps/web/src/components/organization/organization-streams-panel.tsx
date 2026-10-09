@@ -8,12 +8,13 @@
 
 import { getTranslations } from "next-intl/server";
 import type { OrganizationStreamChannel } from "@/lib/organization-page-data";
-import { TwitchIcon, YoutubeIcon, TiktokIcon, WebsiteIcon } from "@/components/icons/brand-icons";
+import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon, WebsiteIcon } from "@/components/icons/brand-icons";
 
 const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
   twitch: TwitchIcon,
   youtube: YoutubeIcon,
   tiktok: TiktokIcon,
+  kick: KickIcon,
 };
 
 export async function OrganizationStreamsPanel({ channels }: { channels: OrganizationStreamChannel[] }) {
