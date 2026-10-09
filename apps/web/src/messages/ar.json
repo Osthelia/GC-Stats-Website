@@ -6106,5 +6106,15 @@
     "apply": "تطبيق",
     "clear": "مسح",
     "empty": "لا توجد خريطة تطابق هذه الفلاتر."
+  },
+  "achievements": {
+    "title": "الإنجازات",
+    "championship": "Championship",
+    "regional": "إقليمي",
+    "other": "أخرى",
+    "viewAll": "عرض الكل ({count})",
+    "firstPlace": "المركز الأول",
+    "secondPlace": "المركز الثاني",
+    "thirdPlace": "المركز الثالث"
   }
 }

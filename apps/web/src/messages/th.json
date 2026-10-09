@@ -6106,5 +6106,15 @@
     "apply": "ใช้",
     "clear": "ล้าง",
     "empty": "ไม่มีแผนที่ที่ตรงกับตัวกรองนี้"
+  },
+  "achievements": {
+    "title": "ผลงาน",
+    "championship": "Championship",
+    "regional": "ระดับภูมิภาค",
+    "other": "อื่น ๆ",
+    "viewAll": "ดูทั้งหมด ({count})",
+    "firstPlace": "อันดับ 1",
+    "secondPlace": "อันดับ 2",
+    "thirdPlace": "อันดับ 3"
   }
 }

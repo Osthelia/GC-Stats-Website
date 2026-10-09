@@ -11,7 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import type { TeamPageInfo, TeamAchievement } from "@/lib/team-page-data";
 import { CountryBadge, hasCountryFlag } from "@/components/team/country-badge";
-import { ordinalPlacement, placementColor } from "@/lib/ordinal";
+import { AchievementsList } from "@/components/site/achievements-list";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { slugify } from "@/lib/entity-id";
 import {
@@ -257,32 +257,16 @@ export async function TeamHeader({
                 {t("noTitle")}
               </div>
             ) : (
-              <div className="flex flex-col gap-1.5">
-                {achievements.items.map((a) => {
-                  const color = placementColor(a.placement);
-                  return (
-                    <Link
-                      key={a.qualificationId}
-                      href={`/tournaments/${a.tournamentId}/${slugify(a.tournamentName)}`}
-                      className="flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 transition-all hover:brightness-110 active:scale-[0.98]"
-                      style={{
-                        borderColor: tint(color, 0.35),
-                        background: tint(color, 0.12),
-                      }}
-                    >
-                      <span
-                        className="w-7 flex-none font-mono text-[10px] font-black"
-                        style={{ color }}
-                      >
-                        {ordinalPlacement(a.placement)}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-neutral-100">
-                        {abbreviateTournamentName(a.tournamentName)}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
+              <AchievementsList
+                items={achievements.items.map((a) => ({
+                  key: a.qualificationId,
+                  href: `/tournaments/${a.tournamentId}/${slugify(a.tournamentName)}`,
+                  label: abbreviateTournamentName(a.tournamentName),
+                  placement: a.placement,
+                  category: a.category,
+                  year: a.endDate.slice(0, 4),
+                }))}
+              />
             )}
           </div>
         </div>

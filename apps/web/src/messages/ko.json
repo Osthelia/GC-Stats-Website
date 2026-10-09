@@ -6106,5 +6106,15 @@
     "apply": "적용",
     "clear": "초기화",
     "empty": "필터와 일치하는 맵이 없습니다."
+  },
+  "achievements": {
+    "title": "업적",
+    "championship": "Championship",
+    "regional": "지역 대회",
+    "other": "기타",
+    "viewAll": "전체 보기 ({count})",
+    "firstPlace": "1위",
+    "secondPlace": "2위",
+    "thirdPlace": "3위"
   }
 }

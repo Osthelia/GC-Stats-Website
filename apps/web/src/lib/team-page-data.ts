@@ -241,6 +241,7 @@ export type TeamAchievement = {
   qualificationId: number;
   tournamentId: number;
   tournamentName: string;
+  category: string | null;
   placement: number;
   placementLabel: string | null;
   endDate: string;
@@ -254,6 +255,7 @@ export async function getTeamAchievements(teamId: number): Promise<{ items: Team
       placementLabel: stageQualifications.placementLabel,
       tournamentId: tournaments.id,
       tournamentName: tournaments.name,
+      category: tournaments.category,
       endDate: tournaments.endDate,
     })
     .from(qualificationResults)

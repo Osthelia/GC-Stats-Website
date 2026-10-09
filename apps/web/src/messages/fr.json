@@ -6110,5 +6110,15 @@
     "apply": "Appliquer",
     "clear": "Effacer",
     "empty": "Aucune map ne correspond à ces filtres."
+  },
+  "achievements": {
+    "title": "Palmarès",
+    "championship": "Championship",
+    "regional": "Régional",
+    "other": "Autres",
+    "viewAll": "Voir tout ({count})",
+    "firstPlace": "première place",
+    "secondPlace": "deuxième place",
+    "thirdPlace": "troisième place"
   }
 }

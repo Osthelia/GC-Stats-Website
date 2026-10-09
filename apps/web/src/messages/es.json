@@ -6110,5 +6110,15 @@
     "apply": "Aplicar",
     "clear": "Borrar",
     "empty": "Ningún mapa coincide con estos filtros."
+  },
+  "achievements": {
+    "title": "Logros",
+    "championship": "Championship",
+    "regional": "Regional",
+    "other": "Otros",
+    "viewAll": "Ver todo ({count})",
+    "firstPlace": "primer puesto",
+    "secondPlace": "segundo puesto",
+    "thirdPlace": "tercer puesto"
   }
 }

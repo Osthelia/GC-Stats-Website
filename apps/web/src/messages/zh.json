@@ -6106,5 +6106,15 @@
     "apply": "应用",
     "clear": "清除",
     "empty": "没有符合筛选条件的地图。"
+  },
+  "achievements": {
+    "title": "成就",
+    "championship": "Championship",
+    "regional": "地区赛",
+    "other": "其他",
+    "viewAll": "查看全部（{count}）",
+    "firstPlace": "第一名",
+    "secondPlace": "第二名",
+    "thirdPlace": "第三名"
   }
 }

@@ -6110,5 +6110,15 @@
     "apply": "Apply",
     "clear": "Clear",
     "empty": "No map matches these filters."
+  },
+  "achievements": {
+    "title": "Achievements",
+    "championship": "Championship",
+    "regional": "Regional",
+    "other": "Other",
+    "viewAll": "View all ({count})",
+    "firstPlace": "first place",
+    "secondPlace": "second place",
+    "thirdPlace": "third place"
   }
 }

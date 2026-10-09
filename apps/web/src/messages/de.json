@@ -6106,5 +6106,15 @@
     "apply": "Anwenden",
     "clear": "Zurücksetzen",
     "empty": "Keine Map entspricht diesen Filtern."
+  },
+  "achievements": {
+    "title": "Erfolge",
+    "championship": "Championship",
+    "regional": "Regional",
+    "other": "Sonstige",
+    "viewAll": "Alle anzeigen ({count})",
+    "firstPlace": "erster Platz",
+    "secondPlace": "zweiter Platz",
+    "thirdPlace": "dritter Platz"
   }
 }

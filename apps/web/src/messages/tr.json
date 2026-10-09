@@ -6106,5 +6106,15 @@
     "apply": "Uygula",
     "clear": "Temizle",
     "empty": "Bu filtrelere uyan harita yok."
+  },
+  "achievements": {
+    "title": "Başarılar",
+    "championship": "Championship",
+    "regional": "Bölgesel",
+    "other": "Diğer",
+    "viewAll": "Tümünü gör ({count})",
+    "firstPlace": "birincilik",
+    "secondPlace": "ikincilik",
+    "thirdPlace": "üçüncülük"
   }
 }

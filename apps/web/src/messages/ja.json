@@ -6106,5 +6106,15 @@
     "apply": "適用",
     "clear": "クリア",
     "empty": "条件に一致するマップはありません。"
+  },
+  "achievements": {
+    "title": "実績",
+    "championship": "Championship",
+    "regional": "地域大会",
+    "other": "その他",
+    "viewAll": "すべて見る（{count}）",
+    "firstPlace": "1位",
+    "secondPlace": "2位",
+    "thirdPlace": "3位"
   }
 }
