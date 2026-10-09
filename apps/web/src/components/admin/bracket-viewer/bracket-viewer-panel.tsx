@@ -30,7 +30,20 @@ import type { PublicStage } from "@/lib/tournament-bracket-data";
  * ("Je t'ai dit de mettre UNIQUEMENT la liste des matchs") — so this is
  * specifically match-list-only, nothing more, nothing less.
  */
-export async function BracketViewerPanel({ tournamentId, stages, activeStageId }: { tournamentId: number; stages: PublicStage[]; activeStageId: number | null }) {
+export async function BracketViewerPanel({
+  tournamentId,
+  stages,
+  activeStageId,
+  pagePath = "bracket",
+  showEditorLink = true,
+}: {
+  tournamentId: number;
+  stages: PublicStage[];
+  activeStageId: number | null;
+  /** Admin page segment the stage tabs link back to. */
+  pagePath?: string;
+  showEditorLink?: boolean;
+}) {
   const t = await getTranslations("tournamentPage");
   const tViewer = await getTranslations("admin.tournaments.bracketViewerPage");
 
@@ -58,7 +71,7 @@ export async function BracketViewerPanel({ tournamentId, stages, activeStageId }
               return (
                 <Link
                   key={stage.id}
-                  href={{ pathname: `/admin/tournaments/${tournamentId}/bracket`, query: { stage: stage.id } }}
+                  href={{ pathname: `/admin/tournaments/${tournamentId}/${pagePath}`, query: { stage: stage.id } }}
                   className={on ? "rounded-lg bg-primary px-3 py-1.5 text-[13px] font-bold text-primary-foreground" : "rounded-lg border bg-muted px-3 py-1.5 text-[13px] font-semibold text-muted-foreground hover:text-foreground"}
                 >
                   {stage.name}
@@ -70,9 +83,11 @@ export async function BracketViewerPanel({ tournamentId, stages, activeStageId }
           <span />
         )}
 
-        <Link href={`/admin/tournaments/${tournamentId}/stages/${activeStage.id}/editor`} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
-          {tViewer("openInEditor")}
-        </Link>
+        {showEditorLink && (
+          <Link href={`/admin/tournaments/${tournamentId}/stages/${activeStage.id}/editor`} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+            {tViewer("openInEditor")}
+          </Link>
+        )}
       </div>
 
       {activeStage.containers.length === 0 && <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">{t("noContainers")}</p>}

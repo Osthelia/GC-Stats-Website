@@ -4193,6 +4193,18 @@
             "useImport": "ربط “{name}” بـ {team}",
             "cancel": "إلغاء",
             "confirm": "متابعة الاستيراد"
+          },
+          "fetch": {
+            "none": "لا يوجد معرّف مباراة Riot في الـ wikicode، لم يتم جلب أي شيء.",
+            "mapLabel": "الخريطة {order} ({map})",
+            "fetched": "تم جلب بيانات Riot.",
+            "openMap": "فتح الخريطة",
+            "reason": {
+              "missingPuuids": "بعض اللاعبين غير معروفين، اربطهم في صفحة الخريطة ثم أعد الجلب. تم الاحتفاظ بالبيانات الموجودة.",
+              "teamColorAmbiguous": "تعذر تحديد جانب الفريق، اخترْه في صفحة الخريطة ثم أعد الجلب. تم الاحتفاظ بالبيانات الموجودة.",
+              "relay": "لم تُرجع Riot هذه المباراة، حاول مرة أخرى لاحقًا. تم الاحتفاظ بالبيانات الموجودة.",
+              "other": "تعذر تنفيذ الجلب، تحقق من صفحة الخريطة. تم الاحتفاظ بالبيانات الموجودة."
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "يجب أن تسبق الجولة الأولى لكل مقطع جولته الأخيرة.",
             "mergeMapNotFound": "هذه الخريطة لم تعد موجودة."
           }
-        }
+        },
+        "liquipediaImportButton": "استيراد مباراة من Liquipedia"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "اختر منظمة",
       "organizerSearchPlaceholder": "ابحث عن منظمة",
       "organizerNoResults": "لم يتم العثور على منظمة",
-      "organizerClear": "إزالة"
+      "organizerClear": "إزالة",
+      "liquipediaImportPage": {
+        "title": "استيراد مباراة من Liquipedia",
+        "subtitle": "انقر على مباراة للصق الـ wikicode الخاص بها من Liquipedia.",
+        "backToTournament": "← العودة إلى إدارة الجدول",
+        "legend": {
+          "none": "لم يتم استيراد شيء",
+          "partial": "معرّف مباراة Riot بدون بيانات Riot",
+          "done": "تم جلب بيانات Riot"
+        },
+        "dialogDescription": "الصق الـ wikicode الخاص بالمباراة. سيتم استيراد الحظر والخرائط ثم جلب بيانات Riot.",
+        "doneDescription": "اكتمل الاستيراد.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "جارٍ الاستيراد وجلب بيانات Riot، قد يستغرق ذلك لحظة.",
+        "close": "إغلاق"
+      },
+      "activeFilterLabel": "النشاط",
+      "activeFilterAny": "جميع البطولات",
+      "activeFilterActive": "نشطة",
+      "activeFilterInactive": "غير نشطة"
     },
     "reports": {
       "title": "البلاغات",
@@ -5461,6 +5493,21 @@
           "invalidImage": "هذا الملف ليس صورة صالحة.",
           "locked": "لا يمكن تعديل هذا المقال أثناء مراجعته أو بعد نشره. ألغِ نشره أولًا إن احتجت إلى إجراء تغييرات."
         }
+      },
+      "liquipediaImportPage": {
+        "title": "استيراد مباراة من Liquipedia",
+        "subtitle": "انقر على مباراة للصق الـ wikicode الخاص بها من Liquipedia.",
+        "backToTournament": "← العودة إلى إدارة الجدول",
+        "legend": {
+          "none": "لم يتم استيراد شيء",
+          "partial": "معرّف مباراة Riot بدون بيانات Riot",
+          "done": "تم جلب بيانات Riot"
+        },
+        "dialogDescription": "الصق الـ wikicode الخاص بالمباراة. سيتم استيراد الحظر والخرائط ثم جلب بيانات Riot.",
+        "doneDescription": "اكتمل الاستيراد.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "جارٍ الاستيراد وجلب بيانات Riot، قد يستغرق ذلك لحظة.",
+        "close": "إغلاق"
       }
     },
     "author": {

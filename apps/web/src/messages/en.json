@@ -4197,6 +4197,18 @@
             "useImport": "Link “{name}” to {team}",
             "cancel": "Cancel",
             "confirm": "Continue the import"
+          },
+          "fetch": {
+            "none": "No Riot match id in the wikicode, nothing was fetched.",
+            "mapLabel": "Map {order} ({map})",
+            "fetched": "Riot data fetched.",
+            "openMap": "Open the map",
+            "reason": {
+              "missingPuuids": "Some players are unknown, link them on the map page then fetch again. Existing data was kept.",
+              "teamColorAmbiguous": "The team side could not be guessed, pick it on the map page then fetch again. Existing data was kept.",
+              "relay": "Riot did not return this match, try again later. Existing data was kept.",
+              "other": "The fetch could not run, check the map page. Existing data was kept."
+            }
           }
         },
         "veto": {
@@ -4358,7 +4370,8 @@
             "mergeInvalidRoundRange": "Each segment's first round must be before its last round.",
             "mergeMapNotFound": "This map no longer exists."
           }
-        }
+        },
+        "liquipediaImportButton": "Liquipedia Match Import"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4514,7 +4527,22 @@
       "organizerPlaceholder": "Select an organization",
       "organizerSearchPlaceholder": "Search an organization",
       "organizerNoResults": "No organization found",
-      "organizerClear": "Remove"
+      "organizerClear": "Remove",
+      "liquipediaImportPage": {
+        "title": "Liquipedia Match Import",
+        "subtitle": "Click a match to paste its Liquipedia wikicode.",
+        "backToTournament": "← Back to bracket management",
+        "legend": {
+          "none": "Nothing imported",
+          "partial": "Riot match id without Riot data",
+          "done": "Riot data fetched"
+        },
+        "dialogDescription": "Paste the match wikicode. The veto and maps are imported, then the Riot data is fetched.",
+        "doneDescription": "Import finished.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "Importing and fetching Riot data, this can take a moment.",
+        "close": "Close"
+      }
     },
     "reports": {
       "title": "Reports",
@@ -5465,6 +5493,21 @@
           "invalidImage": "This file isn't a valid image.",
           "locked": "This article can't be edited while it's in review or already published. Unpublish it first if you need to make changes."
         }
+      },
+      "liquipediaImportPage": {
+        "title": "Liquipedia Match Import",
+        "subtitle": "Click a match to paste its Liquipedia wikicode.",
+        "backToTournament": "← Back to bracket management",
+        "legend": {
+          "none": "Nothing imported",
+          "partial": "Riot match id without Riot data",
+          "done": "Riot data fetched"
+        },
+        "dialogDescription": "Paste the match wikicode. The veto and maps are imported, then the Riot data is fetched.",
+        "doneDescription": "Import finished.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "Importing and fetching Riot data, this can take a moment.",
+        "close": "Close"
       }
     },
     "author": {

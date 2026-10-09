@@ -12,6 +12,7 @@ import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AdminSortableThClient } from "@/components/admin/admin-sortable-th-client";
 import { AdminColumnFilterBar, type AdminActiveFilter } from "@/components/admin/admin-column-filter-bar";
@@ -40,7 +41,7 @@ function compare(a: AdminMatchListRow, b: AdminMatchListRow, col: SortCol): numb
   }
 }
 
-export function TournamentMatchesPanel({ tournamentId, matches }: { tournamentId: number; matches: AdminMatchListRow[] }) {
+export function TournamentMatchesPanel({ tournamentId, matches, canManage }: { tournamentId: number; matches: AdminMatchListRow[]; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.matches");
   const locale = useLocale();
   const [sort, setSort] = useState<SortCol>("container");
@@ -95,7 +96,14 @@ export function TournamentMatchesPanel({ tournamentId, matches }: { tournamentId
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("listHeading")}</h2>
-        <AdminColumnFilterBar columns={filterColumns} activeFilters={filters} onApply={setFilters} />
+        <div className="flex items-center gap-2">
+          {canManage && (
+            <Link href={`/admin/tournaments/${tournamentId}/liquipedia-import`} className={buttonVariants({ variant: "outline" })}>
+              {t("liquipediaImportButton")}
+            </Link>
+          )}
+          <AdminColumnFilterBar columns={filterColumns} activeFilters={filters} onApply={setFilters} />
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-md border">

@@ -18,6 +18,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AdminSortableThClient } from "@/components/admin/admin-sortable-th-client";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { formatSideScore } from "@/lib/match-score-format";
+import { cn } from "@/lib/utils";
+import { IMPORT_STATUS_ROW_CLASS } from "@/lib/liquipedia-import-status-types";
+import { useBracketViewerMatchAction } from "@/components/admin/bracket-viewer/bracket-viewer-match-action";
 import type { PublicBracketMatch } from "@/lib/tournament-bracket-data";
 import { useDisplayTimezone } from "@/lib/site-settings";
 
@@ -56,6 +59,7 @@ function compare(a: PublicBracketMatch, b: PublicBracketMatch, col: SortCol): nu
 export function BracketViewerMatchList({ tournamentId, matches }: { tournamentId: number; matches: PublicBracketMatch[] }) {
   const t = useTranslations("admin.tournaments.matches");
   const locale = useLocale();
+  const action = useBracketViewerMatchAction();
   const [sort, setSort] = useState<SortCol>("round");
   const [direction, setDirection] = useState<Direction>("asc");
   const [statusFilter, setStatusFilter] = useState("");
@@ -163,7 +167,11 @@ export function BracketViewerMatchList({ tournamentId, matches }: { tournamentId
               </TableRow>
             )}
             {rows.map((match) => (
-              <TableRow key={match.id} className="odd:bg-muted/20">
+              <TableRow
+                key={match.id}
+                onClick={action ? () => action.onSelect({ id: match.id, teamA: match.entrantAName, teamB: match.entrantBName }) : undefined}
+                className={cn("odd:bg-muted/20", action && cn("cursor-pointer transition-colors active:brightness-125", IMPORT_STATUS_ROW_CLASS[action.statuses[match.id] ?? "none"]))}
+              >
                 <TableCell className="text-sm text-muted-foreground">{match.round}</TableCell>
                 <TableCell className="font-medium">{match.entrantAName ?? t("tbdLabel")}</TableCell>
                 <TableCell className="font-medium">{match.entrantBName ?? t("tbdLabel")}</TableCell>
@@ -175,9 +183,13 @@ export function BracketViewerMatchList({ tournamentId, matches }: { tournamentId
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{match.scheduledAt ? dateFormat.format(new Date(match.scheduledAt)) : "–"}</TableCell>
                 <TableCell className="text-right">
-                  <Link href={`/admin/tournaments/${tournamentId}/matches/${match.id}`} className="text-sm text-primary hover:underline">
-                    {t("viewButton")}
-                  </Link>
+                  {action ? (
+                    <span className="text-sm text-primary">{t("wikicode.importButton")}</span>
+                  ) : (
+                    <Link href={`/admin/tournaments/${tournamentId}/matches/${match.id}`} className="text-sm text-primary hover:underline">
+                      {t("viewButton")}
+                    </Link>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

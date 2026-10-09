@@ -16,13 +16,15 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { importMatchWikicode, type LiquipediaConflictResolution, type LiquipediaImportConflict } from "@/actions/admin-matches";
+import { Loader2Icon } from "lucide-react";
+import { LiquipediaImportFetchResults } from "@/components/admin/liquipedia-import-fetch-results";
+import { importMatchWikicode, type ImportMapFetch, type LiquipediaConflictResolution, type LiquipediaImportConflict } from "@/actions/admin-matches";
 import { cn } from "@/lib/utils";
 
 type Resolutions = Partial<Record<"1" | "2", LiquipediaConflictResolution>>;
 
 /** Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild the veto and sync the maps from it. */
-export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; canManage: boolean }) {
+export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tournamentId: number; matchId: number; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.matches.wikicode");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -30,11 +32,13 @@ export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; c
   const [error, setError] = useState<string | null>(null);
   const [conflicts, setConflicts] = useState<LiquipediaImportConflict[] | null>(null);
   const [resolutions, setResolutions] = useState<Resolutions>({});
+  const [fetches, setFetches] = useState<ImportMapFetch[] | null>(null);
 
   if (!canManage) return null;
 
   function runImport(chosen: Resolutions) {
     setError(null);
+    setFetches(null);
     startTransition(async () => {
       const result = await importMatchWikicode(matchId, wikicode, chosen);
       if (!result.ok) {
@@ -49,6 +53,7 @@ export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; c
       }
       setConflicts(null);
       setWikicode("");
+      setFetches(result.fetches);
       router.refresh();
       toast.success(result.linkedNames > 0 ? t("importSuccessLinked", { count: result.linkedNames }) : t("importSuccess"));
     });
@@ -83,11 +88,13 @@ export function MatchWikicodeImport({ matchId, canManage }: { matchId: number; c
             {error}
           </p>
         )}
-        <div>
+        <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handleImport} disabled={isPending || wikicode.trim() === ""}>
             {isPending ? t("importing") : t("importButton")}
           </Button>
+          {isPending && <Loader2Icon className="size-4 animate-spin text-muted-foreground" />}
         </div>
+        {fetches && <LiquipediaImportFetchResults tournamentId={tournamentId} matchId={matchId} fetches={fetches} />}
       </CardContent>
 
       <Dialog open={conflicts !== null} onOpenChange={(open) => !open && !isPending && setConflicts(null)}>

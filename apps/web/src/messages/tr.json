@@ -4193,6 +4193,18 @@
             "useImport": "“{name}” adını {team} takımına bağla",
             "cancel": "İptal",
             "confirm": "İçe aktarmaya devam et"
+          },
+          "fetch": {
+            "none": "Wikicode içinde Riot maç kimliği yok, hiçbir şey alınmadı.",
+            "mapLabel": "Harita {order} ({map})",
+            "fetched": "Riot verileri alındı.",
+            "openMap": "Haritayı aç",
+            "reason": {
+              "missingPuuids": "Bazı oyuncular bilinmiyor, harita sayfasında bağlayın ve tekrar alın. Mevcut veriler korundu.",
+              "teamColorAmbiguous": "Takımın tarafı tahmin edilemedi, harita sayfasında seçin ve tekrar alın. Mevcut veriler korundu.",
+              "relay": "Riot bu maçı döndürmedi, daha sonra tekrar deneyin. Mevcut veriler korundu.",
+              "other": "Alma işlemi çalıştırılamadı, harita sayfasını kontrol edin. Mevcut veriler korundu."
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "Her segmentin ilk round'u son round'undan önce olmalıdır.",
             "mergeMapNotFound": "Bu harita artık mevcut değil."
           }
-        }
+        },
+        "liquipediaImportButton": "Liquipedia maç içe aktarma"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "Bir organizasyon seç",
       "organizerSearchPlaceholder": "Organizasyon ara",
       "organizerNoResults": "Organizasyon bulunamadı",
-      "organizerClear": "Kaldır"
+      "organizerClear": "Kaldır",
+      "liquipediaImportPage": {
+        "title": "Liquipedia maç içe aktarma",
+        "subtitle": "Liquipedia wikicode değerini yapıştırmak için bir maça tıklayın.",
+        "backToTournament": "← Bracket yönetimine dön",
+        "legend": {
+          "none": "Hiçbir şey içe aktarılmadı",
+          "partial": "Riot verisi olmayan Riot maç kimliği",
+          "done": "Riot verileri alındı"
+        },
+        "dialogDescription": "Maçın wikicode değerini yapıştırın. Veto ve haritalar içe aktarılır, ardından Riot verileri alınır.",
+        "doneDescription": "İçe aktarma tamamlandı.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "İçe aktarılıyor ve Riot verileri alınıyor, biraz sürebilir.",
+        "close": "Kapat"
+      },
+      "activeFilterLabel": "Aktivite",
+      "activeFilterAny": "Tüm turnuvalar",
+      "activeFilterActive": "Aktif",
+      "activeFilterInactive": "Pasif"
     },
     "reports": {
       "title": "Bildirimler",
@@ -5461,6 +5493,21 @@
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
           "locked": "Bu yazı incelemedeyken veya yayınlanmışken düzenlenemez. Değişiklik yapmanız gerekiyorsa önce yayından kaldırın."
         }
+      },
+      "liquipediaImportPage": {
+        "title": "Liquipedia maç içe aktarma",
+        "subtitle": "Liquipedia wikicode değerini yapıştırmak için bir maça tıklayın.",
+        "backToTournament": "← Bracket yönetimine dön",
+        "legend": {
+          "none": "Hiçbir şey içe aktarılmadı",
+          "partial": "Riot verisi olmayan Riot maç kimliği",
+          "done": "Riot verileri alındı"
+        },
+        "dialogDescription": "Maçın wikicode değerini yapıştırın. Veto ve haritalar içe aktarılır, ardından Riot verileri alınır.",
+        "doneDescription": "İçe aktarma tamamlandı.",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "İçe aktarılıyor ve Riot verileri alınıyor, biraz sürebilir.",
+        "close": "Kapat"
       }
     },
     "author": {

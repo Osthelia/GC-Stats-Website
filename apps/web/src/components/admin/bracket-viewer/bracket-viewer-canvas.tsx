@@ -58,6 +58,7 @@ export function BracketViewerCanvas({ tournamentId, containers, tbdLabel }: { to
           type: "bracketViewerMatchNode",
           position: pos,
           data: {
+            matchId: m.id,
             containerName: container.name,
             round: m.round,
             label: m.label,

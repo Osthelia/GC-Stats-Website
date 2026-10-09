@@ -4193,6 +4193,18 @@
             "useImport": "将“{name}”关联到 {team}",
             "cancel": "取消",
             "confirm": "继续导入"
+          },
+          "fetch": {
+            "none": "wikicode 中没有 Riot 比赛 ID，未获取任何数据。",
+            "mapLabel": "地图 {order}（{map}）",
+            "fetched": "已获取 Riot 数据。",
+            "openMap": "打开地图",
+            "reason": {
+              "missingPuuids": "有些选手未知，请在地图页面关联后再次获取。现有数据已保留。",
+              "teamColorAmbiguous": "无法推断队伍的阵营，请在地图页面选择后再次获取。现有数据已保留。",
+              "relay": "Riot 没有返回这场比赛，请稍后再试。现有数据已保留。",
+              "other": "无法执行获取，请检查地图页面。现有数据已保留。"
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "每个分段的起始回合必须早于其结束回合。",
             "mergeMapNotFound": "该地图已不存在。"
           }
-        }
+        },
+        "liquipediaImportButton": "Liquipedia 比赛导入"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "选择组织",
       "organizerSearchPlaceholder": "搜索组织",
       "organizerNoResults": "未找到组织",
-      "organizerClear": "移除"
+      "organizerClear": "移除",
+      "liquipediaImportPage": {
+        "title": "Liquipedia 比赛导入",
+        "subtitle": "点击一场比赛以粘贴其 Liquipedia wikicode。",
+        "backToTournament": "← 返回对阵管理",
+        "legend": {
+          "none": "未导入",
+          "partial": "有 Riot 比赛 ID 但无 Riot 数据",
+          "done": "已获取 Riot 数据"
+        },
+        "dialogDescription": "粘贴比赛的 wikicode。将导入禁选和地图，然后获取 Riot 数据。",
+        "doneDescription": "导入已完成。",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "正在导入并获取 Riot 数据，可能需要一些时间。",
+        "close": "关闭"
+      },
+      "activeFilterLabel": "活跃状态",
+      "activeFilterAny": "所有赛事",
+      "activeFilterActive": "活跃",
+      "activeFilterInactive": "不活跃"
     },
     "reports": {
       "title": "举报",
@@ -5461,6 +5493,21 @@
           "invalidImage": "该文件不是有效的图片。",
           "locked": "该文章在审核中或已发布时无法编辑，如需修改请先取消发布。"
         }
+      },
+      "liquipediaImportPage": {
+        "title": "Liquipedia 比赛导入",
+        "subtitle": "点击一场比赛以粘贴其 Liquipedia wikicode。",
+        "backToTournament": "← 返回对阵管理",
+        "legend": {
+          "none": "未导入",
+          "partial": "有 Riot 比赛 ID 但无 Riot 数据",
+          "done": "已获取 Riot 数据"
+        },
+        "dialogDescription": "粘贴比赛的 wikicode。将导入禁选和地图，然后获取 Riot 数据。",
+        "doneDescription": "导入已完成。",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "正在导入并获取 Riot 数据，可能需要一些时间。",
+        "close": "关闭"
       }
     },
     "author": {

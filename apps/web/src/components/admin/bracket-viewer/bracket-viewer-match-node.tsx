@@ -12,8 +12,11 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { formatSideScore } from "@/lib/match-score-format";
+import { IMPORT_STATUS_CARD_CLASS } from "@/lib/liquipedia-import-status-types";
+import { useBracketViewerMatchAction } from "@/components/admin/bracket-viewer/bracket-viewer-match-action";
 
 export type BracketViewerMatchNodeData = {
+  matchId: number;
   containerName: string;
   round: number;
   label: string | null;
@@ -72,12 +75,10 @@ function SideRow({
  */
 export function BracketViewerMatchNode({ data }: NodeProps & { data: BracketViewerMatchNodeData }) {
   const live = data.status === "live";
+  const action = useBracketViewerMatchAction();
 
-  return (
-    <Link
-      href={data.matchHref}
-      className="nodrag nopan block w-56 overflow-hidden rounded-lg border bg-card shadow-sm transition-colors hover:border-primary/50 active:scale-[0.98]"
-    >
+  const content = (
+    <>
       <Handle type="target" position={Position.Left} id="a" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="target" position={Position.Left} id="b" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
 
@@ -100,6 +101,27 @@ export function BracketViewerMatchNode({ data }: NodeProps & { data: BracketView
 
       <Handle type="source" position={Position.Right} id="winner" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="source" position={Position.Right} id="loser" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
+    </>
+  );
+
+  const baseClass = "nodrag nopan block w-56 overflow-hidden rounded-lg border shadow-sm transition-colors active:scale-[0.98]";
+
+  if (action) {
+    const status = action.statuses[data.matchId] ?? "none";
+    return (
+      <button
+        type="button"
+        onClick={() => action.onSelect({ id: data.matchId, teamA: data.entrantAName, teamB: data.entrantBName })}
+        className={cn(baseClass, "cursor-pointer text-left", IMPORT_STATUS_CARD_CLASS[status])}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={data.matchHref} className={cn(baseClass, "bg-card hover:border-primary/50")}>
+      {content}
     </Link>
   );
 }

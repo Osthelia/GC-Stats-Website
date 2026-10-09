@@ -4193,6 +4193,18 @@
             "useImport": "「{name}」を{team}に紐付ける",
             "cancel": "キャンセル",
             "confirm": "インポートを続行"
+          },
+          "fetch": {
+            "none": "wikicodeにRiotのマッチIDがないため、何も取得していません。",
+            "mapLabel": "マップ{order}（{map}）",
+            "fetched": "Riotのデータを取得しました。",
+            "openMap": "マップを開く",
+            "reason": {
+              "missingPuuids": "不明な選手がいます。マップのページで紐付けてから、もう一度取得してください。既存のデータは保持されました。",
+              "teamColorAmbiguous": "チームのサイドを推定できませんでした。マップのページで選択してから、もう一度取得してください。既存のデータは保持されました。",
+              "relay": "Riotがこの試合を返しませんでした。後でもう一度お試しください。既存のデータは保持されました。",
+              "other": "取得を実行できませんでした。マップのページを確認してください。既存のデータは保持されました。"
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "各セグメントの最初のラウンドは最後のラウンドより前である必要があります。",
             "mergeMapNotFound": "このマップはもう存在しません。"
           }
-        }
+        },
+        "liquipediaImportButton": "Liquipedia試合インポート"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "組織を選択",
       "organizerSearchPlaceholder": "組織を検索",
       "organizerNoResults": "組織が見つかりません",
-      "organizerClear": "解除"
+      "organizerClear": "解除",
+      "liquipediaImportPage": {
+        "title": "Liquipedia試合インポート",
+        "subtitle": "試合をクリックして、そのLiquipedia wikicodeを貼り付けます。",
+        "backToTournament": "← ブラケット管理に戻る",
+        "legend": {
+          "none": "未インポート",
+          "partial": "RiotデータのないRiotマッチID",
+          "done": "Riotのデータを取得済み"
+        },
+        "dialogDescription": "試合のwikicodeを貼り付けてください。ベトとマップをインポートし、その後Riotのデータを取得します。",
+        "doneDescription": "インポートが完了しました。",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "インポートとRiotデータの取得中です。しばらくお待ちください。",
+        "close": "閉じる"
+      },
+      "activeFilterLabel": "アクティビティ",
+      "activeFilterAny": "すべての大会",
+      "activeFilterActive": "アクティブ",
+      "activeFilterInactive": "非アクティブ"
     },
     "reports": {
       "title": "通報",
@@ -5461,6 +5493,21 @@
           "invalidImage": "このファイルは有効な画像ではありません。",
           "locked": "この記事はレビュー中または公開済みの間は編集できません。変更するには先に非公開にしてください。"
         }
+      },
+      "liquipediaImportPage": {
+        "title": "Liquipedia試合インポート",
+        "subtitle": "試合をクリックして、そのLiquipedia wikicodeを貼り付けます。",
+        "backToTournament": "← ブラケット管理に戻る",
+        "legend": {
+          "none": "未インポート",
+          "partial": "RiotデータのないRiotマッチID",
+          "done": "Riotのデータを取得済み"
+        },
+        "dialogDescription": "試合のwikicodeを貼り付けてください。ベトとマップをインポートし、その後Riotのデータを取得します。",
+        "doneDescription": "インポートが完了しました。",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "インポートとRiotデータの取得中です。しばらくお待ちください。",
+        "close": "閉じる"
       }
     },
     "author": {

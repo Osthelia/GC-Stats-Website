@@ -59,7 +59,7 @@ export default async function AdminMatchEditPage({ params }: { params: Promise<{
         <div className="lg:col-span-2">
           <MatchForm match={match} entrants={entrants} canManage={canManage} />
         </div>
-        <MatchWikicodeImport matchId={id} canManage={canManage} />
+        <MatchWikicodeImport tournamentId={tournId} matchId={id} canManage={canManage} />
       </div>
     </div>
   );

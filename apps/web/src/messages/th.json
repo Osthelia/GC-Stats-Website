@@ -4193,6 +4193,18 @@
             "useImport": "เชื่อมโยง “{name}” กับ {team}",
             "cancel": "ยกเลิก",
             "confirm": "นำเข้าต่อ"
+          },
+          "fetch": {
+            "none": "ไม่มี match id ของ Riot ใน wikicode จึงไม่ได้ดึงข้อมูลใด ๆ",
+            "mapLabel": "แมพ {order} ({map})",
+            "fetched": "ดึงข้อมูล Riot แล้ว",
+            "openMap": "เปิดแมพ",
+            "reason": {
+              "missingPuuids": "มีผู้เล่นที่ไม่รู้จัก ให้เชื่อมโยงในหน้าแมพแล้วดึงข้อมูลอีกครั้ง ข้อมูลเดิมถูกเก็บไว้",
+              "teamColorAmbiguous": "เดาฝั่งของทีมไม่ได้ ให้เลือกในหน้าแมพแล้วดึงข้อมูลอีกครั้ง ข้อมูลเดิมถูกเก็บไว้",
+              "relay": "Riot ไม่ส่งแมตช์นี้กลับมา ลองใหม่อีกครั้งภายหลัง ข้อมูลเดิมถูกเก็บไว้",
+              "other": "ไม่สามารถดึงข้อมูลได้ ตรวจสอบหน้าแมพ ข้อมูลเดิมถูกเก็บไว้"
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "รอบแรกของแต่ละเซกเมนต์ต้องอยู่ก่อนรอบสุดท้าย",
             "mergeMapNotFound": "แมพนี้ไม่มีอยู่แล้ว"
           }
-        }
+        },
+        "liquipediaImportButton": "นำเข้าแมตช์จาก Liquipedia"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "เลือกองค์กร",
       "organizerSearchPlaceholder": "ค้นหาองค์กร",
       "organizerNoResults": "ไม่พบองค์กร",
-      "organizerClear": "ลบ"
+      "organizerClear": "ลบ",
+      "liquipediaImportPage": {
+        "title": "นำเข้าแมตช์จาก Liquipedia",
+        "subtitle": "คลิกแมตช์เพื่อวาง wikicode ของ Liquipedia",
+        "backToTournament": "← กลับไปที่การจัดการบราเคต",
+        "legend": {
+          "none": "ยังไม่ได้นำเข้า",
+          "partial": "มี match id ของ Riot แต่ไม่มีข้อมูล Riot",
+          "done": "ดึงข้อมูล Riot แล้ว"
+        },
+        "dialogDescription": "วาง wikicode ของแมตช์ ระบบจะนำเข้าเวโต้และแมพ แล้วดึงข้อมูล Riot",
+        "doneDescription": "นำเข้าเสร็จแล้ว",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "กำลังนำเข้าและดึงข้อมูล Riot อาจใช้เวลาสักครู่",
+        "close": "ปิด"
+      },
+      "activeFilterLabel": "กิจกรรม",
+      "activeFilterAny": "ทัวร์นาเมนต์ทั้งหมด",
+      "activeFilterActive": "ใช้งานอยู่",
+      "activeFilterInactive": "ไม่ได้ใช้งาน"
     },
     "reports": {
       "title": "การรายงาน",
@@ -5461,6 +5493,21 @@
           "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง",
           "locked": "ไม่สามารถแก้ไขบทความนี้ระหว่างการตรวจทานหรือหลังเผยแพร่แล้ว ยกเลิกการเผยแพร่ก่อนหากต้องการแก้ไข"
         }
+      },
+      "liquipediaImportPage": {
+        "title": "นำเข้าแมตช์จาก Liquipedia",
+        "subtitle": "คลิกแมตช์เพื่อวาง wikicode ของ Liquipedia",
+        "backToTournament": "← กลับไปที่การจัดการบราเคต",
+        "legend": {
+          "none": "ยังไม่ได้นำเข้า",
+          "partial": "มี match id ของ Riot แต่ไม่มีข้อมูล Riot",
+          "done": "ดึงข้อมูล Riot แล้ว"
+        },
+        "dialogDescription": "วาง wikicode ของแมตช์ ระบบจะนำเข้าเวโต้และแมพ แล้วดึงข้อมูล Riot",
+        "doneDescription": "นำเข้าเสร็จแล้ว",
+        "wikicodeLabel": "Liquipedia wikicode",
+        "importingHint": "กำลังนำเข้าและดึงข้อมูล Riot อาจใช้เวลาสักครู่",
+        "close": "ปิด"
       }
     },
     "author": {

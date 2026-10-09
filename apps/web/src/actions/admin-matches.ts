@@ -12,7 +12,7 @@
 
 "use server";
 
-import { eq, ne, and, inArray, or, sql } from "drizzle-orm";
+import { eq, ne, and, asc, inArray, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { matches, entrants, maps, matchVetos, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, stageContainers, stages, groupEntries, teams, liquipediaTeamNames, PERMISSIONS } from "@gc-stats/db";
@@ -24,6 +24,8 @@ import { MAP_OPTIONS, MAP_UNKNOWN, VALORANT_MAP_POOL } from "@/lib/valorant-maps
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/wikicode-import";
 import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
+import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data";
+import type { FetchMapError } from "@/lib/map-fetch/types";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
@@ -615,8 +617,13 @@ export type LiquipediaImportConflict = {
 /** Per slot: keep the table as is, or relink according to the wikicode. */
 export type LiquipediaConflictResolution = "keep" | "import";
 
+/** Outcome of the Riot fetch run for one imported map. `needsStep` leaves the map's data untouched. */
+export type ImportMapFetch =
+  | { mapId: number; order: number; mapName: string; status: "fetched" }
+  | { mapId: number; order: number; mapName: string; status: "needsStep"; reason: FetchMapError["kind"] | "unexpected" };
+
 export type ImportWikicodeResult =
-  | { ok: true; linkedNames: number }
+  | { ok: true; linkedNames: number; fetches: ImportMapFetch[] }
   | { ok: false; error: ImportWikicodeError }
   | { ok: false; error: "liquipediaConflict"; conflicts: LiquipediaImportConflict[] };
 
@@ -710,6 +717,7 @@ export async function importMatchWikicode(
   }
   const linksToWrite = linkPlans.filter((p) => !p.conflict || resolutions[String(p.conflict.slot) as "1" | "2"] === "import");
 
+  const fetchOrders: number[] = [];
   await db.transaction(async (tx) => {
     if (linksToWrite.length > 0) {
       await tx
@@ -723,17 +731,23 @@ export async function importMatchWikicode(
       await tx.insert(liquipediaTeamNames).values(linksToWrite.map((l) => ({ teamId: l.teamId, name: l.name })));
     }
 
+    // Sides already set survive a re-import when the same team still plays that map.
+    const previousVetos = await tx.select().from(matchVetos).where(eq(matchVetos.matchId, matchId));
     await tx.delete(matchVetos).where(eq(matchVetos.matchId, matchId));
     await tx.insert(matchVetos).values(
-      veto.rows.map((row, index) => ({
-        matchId,
-        entrantId: teamIdForSlot(row.teamSlot),
-        mapName: row.mapName,
-        type: row.type,
-        order: index + 1,
-        side: null,
-        sidePickedByEntrantId: null,
-      }))
+      veto.rows.map((row, index) => {
+        const entrantId = teamIdForSlot(row.teamSlot);
+        const previous = previousVetos.find((p) => p.mapName === row.mapName && p.type === row.type && p.entrantId === entrantId);
+        return {
+          matchId,
+          entrantId,
+          mapName: row.mapName,
+          type: row.type,
+          order: index + 1,
+          side: previous?.side ?? null,
+          sidePickedByEntrantId: previous?.sidePickedByEntrantId ?? null,
+        };
+      })
     );
 
     // Maps are matched by order: scores, completion and stats already entered
@@ -764,12 +778,16 @@ export async function importMatchWikicode(
       const existing = existingByOrder.get(order);
       if (existing) {
         const keptApiMatchId = existing.apiMatchId && !apiMatchIds.includes(existing.apiMatchId) ? existing.apiMatchId : null;
+        const finalApiMatchId = info?.apiMatchId ?? keptApiMatchId;
         await tx
           .update(maps)
-          .set({ mapName: row.mapName, apiMatchId: info?.apiMatchId ?? keptApiMatchId })
+          .set({ mapName: row.mapName, apiMatchId: finalApiMatchId })
           .where(eq(maps.id, existing.id));
+        // A map already fetched with the same Riot id keeps its data.
+        if (finalApiMatchId && !(statMapIds.has(existing.id) && existing.apiMatchId === finalApiMatchId)) fetchOrders.push(order);
         continue;
       }
+      if (info?.apiMatchId) fetchOrders.push(order);
       // `finished=skip` (map never played) deliberately diverges from V1's
       // -1/-1 + completed: the map just stays unscored and open.
       await tx.insert(maps).values({
@@ -790,5 +808,62 @@ export async function importMatchWikicode(
   });
   updateTag(matchTag(matchId));
 
-  return { ok: true, linkedNames: linksToWrite.length };
+  const fetches = await fetchImportedMaps(matchId, fetchOrders, actorUserId);
+  await syncVetoSidesFromRounds(matchId, match.entrantAId, match.entrantBId);
+  updateTag(matchTag(matchId));
+
+  return { ok: true, linkedNames: linksToWrite.length, fetches };
+}
+
+/** Runs the Riot fetch of the given map orders one by one. A fetch asking for an admin step is reported as is, the map keeps its data. */
+async function fetchImportedMaps(matchId: number, orders: number[], actorUserId: string): Promise<ImportMapFetch[]> {
+  if (orders.length === 0) return [];
+  const rows = await db.select({ id: maps.id, order: maps.order, mapName: maps.mapName }).from(maps).where(and(eq(maps.matchId, matchId), inArray(maps.order, orders))).orderBy(asc(maps.order));
+
+  const outcomes: ImportMapFetch[] = [];
+  for (const row of rows) {
+    const base = { mapId: row.id, order: row.order, mapName: row.mapName ?? "" };
+    try {
+      const result = await runFetchMapData(row.id);
+      if (result.ok) {
+        await logMapChange(db, { mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
+        outcomes.push({ ...base, status: "fetched" });
+      } else {
+        outcomes.push({ ...base, status: "needsStep", reason: result.error.kind });
+      }
+    } catch (err) {
+      console.warn(`[wikicode-import] fetch failed for map #${row.id}: ${err instanceof Error ? err.message : String(err)}`);
+      outcomes.push({ ...base, status: "needsStep", reason: "unexpected" });
+    }
+  }
+  return outcomes;
+}
+
+/**
+ * Fills the veto sides from the maps' first round: the team attacking round 1
+ * started on attack. The side belongs to the team choosing it (the team that
+ * did not pick the map, or the decider's team), as in the veto form.
+ */
+async function syncVetoSidesFromRounds(matchId: number, entrantAId: number, entrantBId: number): Promise<void> {
+  const mapRows = await db.select({ id: maps.id, order: maps.order }).from(maps).where(eq(maps.matchId, matchId));
+  if (mapRows.length === 0) return;
+  const firstRounds = await db
+    .selectDistinctOn([mapRoundsRaw.mapId], { mapId: mapRoundsRaw.mapId, atkEntrantId: mapRoundsRaw.atkEntrantId })
+    .from(mapRoundsRaw)
+    .where(inArray(mapRoundsRaw.mapId, mapRows.map((m) => m.id)))
+    .orderBy(asc(mapRoundsRaw.mapId), asc(mapRoundsRaw.roundNumber));
+  const atkByMapId = new Map(firstRounds.map((r) => [r.mapId, r.atkEntrantId]));
+
+  const vetoRows = await db.select().from(matchVetos).where(eq(matchVetos.matchId, matchId)).orderBy(asc(matchVetos.order));
+  const played = vetoRows.filter((v) => v.type === "pick" || v.type === "decider");
+  for (const [index, veto] of played.entries()) {
+    const map = mapRows.find((m) => m.order === index + 1);
+    const atkEntrantId = map ? atkByMapId.get(map.id) : null;
+    if (!atkEntrantId) continue;
+    const picker = veto.type === "decider" ? veto.entrantId : veto.entrantId === entrantAId ? entrantBId : entrantAId;
+    await db
+      .update(matchVetos)
+      .set({ sidePickedByEntrantId: picker, side: picker === atkEntrantId ? "atk" : "def" })
+      .where(eq(matchVetos.id, veto.id));
+  }
 }

@@ -4193,6 +4193,18 @@
             "useImport": "„{name}“ mit {team} verknüpfen",
             "cancel": "Abbrechen",
             "confirm": "Import fortsetzen"
+          },
+          "fetch": {
+            "none": "Keine Riot Match ID im Wikicode, es wurde nichts abgerufen.",
+            "mapLabel": "Map {order} ({map})",
+            "fetched": "Riot Daten abgerufen.",
+            "openMap": "Map öffnen",
+            "reason": {
+              "missingPuuids": "Einige Spieler sind unbekannt, verknüpfe sie auf der Map Seite und rufe die Daten erneut ab. Bestehende Daten wurden beibehalten.",
+              "teamColorAmbiguous": "Die Seite des Teams konnte nicht ermittelt werden, wähle sie auf der Map Seite und rufe die Daten erneut ab. Bestehende Daten wurden beibehalten.",
+              "relay": "Riot hat dieses Match nicht geliefert, versuche es später erneut. Bestehende Daten wurden beibehalten.",
+              "other": "Der Abruf konnte nicht ausgeführt werden, prüfe die Map Seite. Bestehende Daten wurden beibehalten."
+            }
           }
         },
         "veto": {
@@ -4354,7 +4366,8 @@
             "mergeInvalidRoundRange": "Die erste Runde jedes Segments muss vor der letzten Runde liegen.",
             "mergeMapNotFound": "Diese Map existiert nicht mehr."
           }
-        }
+        },
+        "liquipediaImportButton": "Liquipedia Match Import"
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4510,7 +4523,26 @@
       "organizerPlaceholder": "Organisation auswählen",
       "organizerSearchPlaceholder": "Organisation suchen",
       "organizerNoResults": "Keine Organisation gefunden",
-      "organizerClear": "Entfernen"
+      "organizerClear": "Entfernen",
+      "liquipediaImportPage": {
+        "title": "Liquipedia Match Import",
+        "subtitle": "Klicke auf ein Match, um dessen Liquipedia Wikicode einzufügen.",
+        "backToTournament": "← Zurück zur Bracket Verwaltung",
+        "legend": {
+          "none": "Nichts importiert",
+          "partial": "Riot Match ID ohne Riot Daten",
+          "done": "Riot Daten abgerufen"
+        },
+        "dialogDescription": "Füge den Wikicode des Matches ein. Veto und Maps werden importiert, danach werden die Riot Daten abgerufen.",
+        "doneDescription": "Import abgeschlossen.",
+        "wikicodeLabel": "Liquipedia Wikicode",
+        "importingHint": "Import und Abruf der Riot Daten laufen, das kann einen Moment dauern.",
+        "close": "Schließen"
+      },
+      "activeFilterLabel": "Aktivität",
+      "activeFilterAny": "Alle Turniere",
+      "activeFilterActive": "Aktiv",
+      "activeFilterInactive": "Inaktiv"
     },
     "reports": {
       "title": "Meldungen",
@@ -5461,6 +5493,21 @@
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
           "locked": "Dieser Artikel kann nicht bearbeitet werden, solange er in Prüfung oder bereits veröffentlicht ist. Ziehen Sie zunächst die Veröffentlichung zurück, wenn Sie Änderungen vornehmen möchten."
         }
+      },
+      "liquipediaImportPage": {
+        "title": "Liquipedia Match Import",
+        "subtitle": "Klicke auf ein Match, um dessen Liquipedia Wikicode einzufügen.",
+        "backToTournament": "← Zurück zur Bracket Verwaltung",
+        "legend": {
+          "none": "Nichts importiert",
+          "partial": "Riot Match ID ohne Riot Daten",
+          "done": "Riot Daten abgerufen"
+        },
+        "dialogDescription": "Füge den Wikicode des Matches ein. Veto und Maps werden importiert, danach werden die Riot Daten abgerufen.",
+        "doneDescription": "Import abgeschlossen.",
+        "wikicodeLabel": "Liquipedia Wikicode",
+        "importingHint": "Import und Abruf der Riot Daten laufen, das kann einen Moment dauern.",
+        "close": "Schließen"
       }
     },
     "author": {

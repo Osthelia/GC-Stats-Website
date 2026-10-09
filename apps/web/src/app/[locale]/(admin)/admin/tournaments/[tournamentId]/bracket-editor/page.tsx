@@ -59,7 +59,7 @@ export default async function AdminTournamentBracketPage({ params }: { params: P
       </div>
 
       <TournamentStagesPanel tournamentId={id} stages={stages} entrants={entrants} canManage={canManage} />
-      <TournamentMatchesPanel tournamentId={id} matches={matches} />
+      <TournamentMatchesPanel tournamentId={id} matches={matches} canManage={canManage} />
       <QualificationRulesPanel tournamentId={id} rules={qualificationRules} groupContainers={groupContainers} matches={matches} canManage={canManage} />
     </div>
   );
