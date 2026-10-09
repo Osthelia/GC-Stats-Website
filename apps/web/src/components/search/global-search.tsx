@@ -180,22 +180,32 @@ export function GlobalSearch() {
     }
 
     setLoading(true);
-    const handle = setTimeout(() => {
-      abortRef.current?.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
+    const handle = setTimeout(() => {
       fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal })
-        .then((res) => res.json())
-        .then((data) => setResults(data as SearchResults))
-        .catch((err) => {
-          if (err instanceof DOMException && err.name === "AbortError") return;
-          setResults(EMPTY_RESULTS);
+        .then((res) => {
+          if (!res.ok) throw new Error(`Search failed (${res.status})`);
+          return res.json();
         })
-        .finally(() => setLoading(false));
+        .then((data) => {
+          if (controller.signal.aborted) return;
+          setResults({ ...EMPTY_RESULTS, ...(data as Partial<SearchResults>) });
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setResults(EMPTY_RESULTS);
+        })
+        .finally(() => {
+          // Une requête obsolète ne doit pas couper le chargement de la requête en cours
+          if (!controller.signal.aborted) setLoading(false);
+        });
     }, 400);
 
-    return () => clearTimeout(handle);
+    return () => {
+      clearTimeout(handle);
+      controller.abort();
+    };
   }, [query]);
 
   const flatItems = query.trim().length >= MIN_QUERY_LENGTH ? TYPE_ORDER.flatMap((type) => results[type]) : [];
