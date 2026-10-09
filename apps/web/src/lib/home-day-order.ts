@@ -17,6 +17,40 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
+import type { HomeMatch } from "@/lib/home-data";
+
+export type HomeDay = { dayKey: string; label: string; date: string; dayOffset: number; matches: HomeMatch[] };
+
+// "en-CA" formats as YYYY-MM-DD, the calendar day of `date` in `timeZone`.
+function zonedDayKey(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+}
+
+/** Groups matches by calendar day in `timeZone`, so the day matches what the viewer sees on the clock. */
+export function groupHomeDays(matches: HomeMatch[], opts: { timeZone: string; locale: string; todayText: string; tomorrowText: string }): HomeDay[] {
+  const { timeZone, locale, todayText, tomorrowText } = opts;
+  const weekdayFormat = new Intl.DateTimeFormat(locale, { weekday: "long", timeZone });
+  const dateFormat = new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "short", timeZone });
+  const todayMs = Date.parse(`${zonedDayKey(new Date(), timeZone)}T00:00:00Z`);
+
+  const dayMap = new Map<string, HomeDay>();
+  for (const match of matches) {
+    const dayKey = zonedDayKey(match.scheduledAt, timeZone);
+    let day = dayMap.get(dayKey);
+    if (!day) {
+      const dayOffset = Math.round((Date.parse(`${dayKey}T00:00:00Z`) - todayMs) / 86_400_000);
+      const label = dayOffset === 0 ? todayText : dayOffset === 1 ? tomorrowText : weekdayFormat.format(match.scheduledAt);
+      day = { dayKey, label, date: dateFormat.format(match.scheduledAt), dayOffset, matches: [] };
+      dayMap.set(dayKey, day);
+    }
+    day.matches.push(match);
+  }
+
+  const days = [...dayMap.values()].sort(compareDayOrder);
+  for (const day of days) day.matches = sortDayMatches(day.matches, day.dayOffset);
+  return days;
+}
+
 export function compareDayOrder(a: { dayOffset: number }, b: { dayOffset: number }): number {
   const aFuture = a.dayOffset >= 0;
   const bFuture = b.dayOffset >= 0;

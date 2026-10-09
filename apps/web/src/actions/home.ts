@@ -10,13 +10,11 @@
 
 "use server";
 
-import { getHomeMatchDays, type HomeMatchDaysPage } from "@/lib/home-data";
-import { routing, type AppLocale } from "@/i18n/routing";
+import { getHomeMatchPage, type HomeMatchPage } from "@/lib/home-data";
 
-const EMPTY_PAGE: HomeMatchDaysPage = { days: [], nextOffset: 0, hasMore: false };
+const EMPTY_PAGE: HomeMatchPage = { matches: [], nextOffset: 0, hasMore: false };
 
-export async function loadMoreHomeMatches(pastOffset: number, locale: AppLocale): Promise<HomeMatchDaysPage> {
+export async function loadMoreHomeMatches(pastOffset: number): Promise<HomeMatchPage> {
   if (!Number.isInteger(pastOffset) || pastOffset < 0) return EMPTY_PAGE;
-  if (!routing.locales.includes(locale)) return EMPTY_PAGE;
-  return getHomeMatchDays(locale, pastOffset);
+  return getHomeMatchPage(pastOffset);
 }

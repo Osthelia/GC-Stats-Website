@@ -23,8 +23,6 @@ import { slugify } from "@/lib/entity-id";
 import { formatSideScore } from "@/lib/match-score-format";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { HOME_TOURNAMENTS_TAG } from "@/lib/cache-tags";
-import { compareDayOrder, sortDayMatches } from "@/lib/home-day-order";
-import { getTranslations } from "next-intl/server";
 import type { AppLocale } from "@/i18n/routing";
 
 export type MatchStatus = "live" | "upcoming" | "finished";
@@ -63,9 +61,7 @@ export type HomeMatch = {
   scheduledAt: Date;
 };
 
-export type HomeDay = { dayKey: string; label: string; date: string; dayOffset: number; matches: HomeMatch[] };
-
-export type HomeMatchDaysPage = { days: HomeDay[]; nextOffset: number; hasMore: boolean };
+export type HomeMatchPage = { matches: HomeMatch[]; nextOffset: number; hasMore: boolean };
 
 // `scheduledAt` as ISO string: unstable_cache round-trips through JSON.
 type HomeMatchRow = Omit<HomeMatch, "scheduledAt"> & { scheduledAt: string };
@@ -184,36 +180,10 @@ async function fetchHomeMatchRows(firstPage: boolean, pastOffset: number, limit:
 
 const getCachedHomeMatchRows = unstable_cache(fetchHomeMatchRows, ["home-match-rows"], { revalidate: HOME_MATCHES_REVALIDATE_SECONDS });
 
-/** First page without `pastOffset`, then the previous page's `nextOffset`. */
-export async function getHomeMatchDays(locale: AppLocale, pastOffset?: number): Promise<HomeMatchDaysPage> {
-  const [page, t] = await Promise.all([getCachedHomeMatchRows(pastOffset === undefined, pastOffset ?? 0, HOME_MATCH_PAGE_SIZE), getTranslations({ locale, namespace: "home" })]);
-  const todayText = t("today");
-  const tomorrowText = t("tomorrow");
-  const weekdayFormat = new Intl.DateTimeFormat(INTL_LOCALE[locale], { weekday: "long" });
-  const dateFormat = new Intl.DateTimeFormat(INTL_LOCALE[locale], { weekday: "short", day: "numeric", month: "short" });
-
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-
-  const dayMap = new Map<string, HomeDay>();
-  for (const row of page.rows) {
-    const scheduledAt = new Date(row.scheduledAt);
-    const dayKey = row.scheduledAt.slice(0, 10);
-    let day = dayMap.get(dayKey);
-    if (!day) {
-      // Offset from the day's own UTC midnight, not the match's time of day.
-      const dayMidnight = new Date(`${dayKey}T00:00:00.000Z`);
-      const dayOffset = Math.round((dayMidnight.getTime() - today.getTime()) / 86_400_000);
-      const label = dayOffset === 0 ? todayText : dayOffset === 1 ? tomorrowText : weekdayFormat.format(scheduledAt);
-      day = { dayKey, label, date: dateFormat.format(scheduledAt), dayOffset, matches: [] };
-      dayMap.set(dayKey, day);
-    }
-    day.matches.push({ ...row, scheduledAt });
-  }
-
-  const days = [...dayMap.values()].sort(compareDayOrder);
-  for (const day of days) day.matches = sortDayMatches(day.matches, day.dayOffset);
-  return { days, nextOffset: page.nextOffset, hasMore: page.hasMore };
+/** First page without `pastOffset`, then the previous page's `nextOffset`. Days are grouped client side, in the viewer's timezone. */
+export async function getHomeMatchPage(pastOffset?: number): Promise<HomeMatchPage> {
+  const page = await getCachedHomeMatchRows(pastOffset === undefined, pastOffset ?? 0, HOME_MATCH_PAGE_SIZE);
+  return { matches: page.rows.map((row) => ({ ...row, scheduledAt: new Date(row.scheduledAt) })), nextOffset: page.nextOffset, hasMore: page.hasMore };
 }
 
 export type HomeNewsItem = {

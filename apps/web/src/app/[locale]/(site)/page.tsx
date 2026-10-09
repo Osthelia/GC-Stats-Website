@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import { MatchesPanel } from "@/components/home/matches-panel";
 import { NewsPanel } from "@/components/home/news-panel";
 import { TournamentsPanel } from "@/components/home/tournaments-panel";
-import { getHomeMatchDays, getHomeNews, getHomeTournamentGroups } from "@/lib/home-data";
+import { getHomeMatchPage, getHomeNews, getHomeTournamentGroups } from "@/lib/home-data";
 import { resolveNewsLanguages } from "@/lib/news-languages";
 import { REGIONS } from "@/lib/tournament-regions";
 import type { AppLocale } from "@/i18n/routing";
@@ -29,8 +29,8 @@ function MatchesSkeleton() {
   );
 }
 
-async function HomeMatches({ locale }: { locale: AppLocale }) {
-  return <MatchesPanel initialPage={await getHomeMatchDays(locale)} />;
+async function HomeMatches() {
+  return <MatchesPanel initialPage={await getHomeMatchPage()} />;
 }
 
 async function HomeTournaments({ locale }: { locale: AppLocale }) {
@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <div className="mx-auto max-w-[1550px] px-6 py-9 pb-[72px]">
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_420px]">
         <Suspense fallback={<MatchesSkeleton />}>
-          <HomeMatches locale={locale} />
+          <HomeMatches />
         </Suspense>
         <aside className="flex min-w-0 flex-col gap-[38px]">
           <Suspense fallback={<BlockSkeleton className="h-72" />}>

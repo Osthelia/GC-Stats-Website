@@ -10,12 +10,12 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { GOLD, RED, tint } from "@/lib/theme-colors";
 import { REGIONS } from "@/lib/tournament-regions";
-import type { HomeDay, HomeMatchDaysPage, MatchStatus } from "@/lib/home-data";
-import { compareDayOrder, sortDayMatches } from "@/lib/home-day-order";
+import type { HomeMatch, HomeMatchPage, MatchStatus } from "@/lib/home-data";
+import { groupHomeDays, type HomeDay } from "@/lib/home-day-order";
+import { useDisplayTimezone } from "@/lib/site-settings";
 import { loadMoreHomeMatches } from "@/actions/home";
 import { TeamBadge } from "@/components/home/team-badge";
 import { FormattedDate } from "@/components/formatted-date";
@@ -25,29 +25,12 @@ type FilterKey = "all" | MatchStatus;
 // Phones only show the first few matches until "Load more", so tournaments and news stay close.
 const MOBILE_INITIAL_MATCHES = 6;
 
-function mergeDays(current: HomeDay[], extra: HomeDay[]): HomeDay[] {
-  const byKey = new Map(current.map((d) => [d.dayKey, d]));
-  for (const day of extra) {
-    const existing = byKey.get(day.dayKey);
-    if (!existing) {
-      byKey.set(day.dayKey, day);
-      continue;
-    }
-    const byId = new Map(existing.matches.map((m) => [m.id, m]));
-    for (const m of day.matches) byId.set(m.id, m);
-    byKey.set(day.dayKey, {
-      ...existing,
-      matches: sortDayMatches([...byId.values()], existing.dayOffset),
-    });
-  }
-  return [...byKey.values()].sort(compareDayOrder);
-}
-
-export function MatchesPanel({ initialPage }: { initialPage: HomeMatchDaysPage }) {
+export function MatchesPanel({ initialPage }: { initialPage: HomeMatchPage }) {
   const t = useTranslations("home");
-  const locale = useLocale() as AppLocale;
+  const locale = useLocale();
+  const timeZone = useDisplayTimezone();
   const [filter, setFilter] = useState<FilterKey>("all");
-  const [allDays, setAllDays] = useState<HomeDay[]>(initialPage.days);
+  const [allMatches, setAllMatches] = useState<HomeMatch[]>(initialPage.matches);
   const [offset, setOffset] = useState(initialPage.nextOffset);
   const [hasMore, setHasMore] = useState(initialPage.hasMore);
   const [isLoadingMore, startLoadMore] = useTransition();
@@ -55,12 +38,20 @@ export function MatchesPanel({ initialPage }: { initialPage: HomeMatchDaysPage }
 
   const handleLoadMore = () => {
     startLoadMore(async () => {
-      const page = await loadMoreHomeMatches(offset, locale);
-      setAllDays((prev) => mergeDays(prev, page.days));
+      const page = await loadMoreHomeMatches(offset);
+      setAllMatches((prev) => {
+        const byId = new Map(prev.map((m) => [m.id, m]));
+        for (const m of page.matches) byId.set(m.id, m);
+        return [...byId.values()];
+      });
       setOffset(page.nextOffset);
       setHasMore(page.hasMore);
     });
   };
+
+  const todayText = t("today");
+  const tomorrowText = t("tomorrow");
+  const allDays = useMemo(() => groupHomeDays(allMatches, { timeZone, locale, todayText, tomorrowText }), [allMatches, timeZone, locale, todayText, tomorrowText]);
 
   const counts = useMemo(() => {
     const c: Record<FilterKey, number> = {
