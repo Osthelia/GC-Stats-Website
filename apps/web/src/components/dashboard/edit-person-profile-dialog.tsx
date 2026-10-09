@@ -142,7 +142,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
             <div className="flex flex-col gap-5 py-2">
               <div className="flex flex-col gap-3">
                 <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">{t("editProfileBasicSection")}</p>
-                <FormField label={t("editProfilePhotoLabel")} htmlFor="edit-person-photo" required hint={t("editProfilePhotoNotes")} error={err("photo")}>
+                <FormField label={t("editProfilePhotoLabel")} htmlFor="edit-person-photo" hint={t("editProfilePhotoNotes")} error={err("photo")}>
                   <div className="flex items-center gap-3">
                     <OrgLogoTile name={editHandle || handle} logoUrl={photoPreview ?? photoUrl} className="size-20 rounded-lg border text-xl" />
                     <input

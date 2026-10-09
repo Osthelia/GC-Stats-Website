@@ -208,7 +208,7 @@ export type OrgPersonProfile = {
   photoUrl: string | null;
 };
 
-/** Neutral (no theme) photo currently in effect for a person, shown by the profile dialog and required to save. */
+/** Neutral (no theme) photo currently in effect for a person, shown by the profile dialog. */
 async function currentPersonPhotoUrl(personId: number): Promise<string | null> {
   const entries = await getEntityLogos("person", personId);
   return displayLogoUrl(currentLogo(entries.filter((e) => !e.theme)), "person");
@@ -324,8 +324,6 @@ export async function updatePersonProfileForOrganization(organizationId: number,
     else socials[key] = value;
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
-
-  if (!(await currentPersonPhotoUrl(personId))) fieldErrors.photo = "required";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
