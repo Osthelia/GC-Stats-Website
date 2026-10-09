@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "ゴーストプロフィールが見つかりません。"
       }
+    },
+    "memberSort": {
+      "label": "並び替え",
+      "name": "名前",
+      "role": "ロール",
+      "joined": "加入日",
+      "left": "退団日"
     }
   },
   "dashboard": {

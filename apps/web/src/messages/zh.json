@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "未找到幽灵资料。"
       }
+    },
+    "memberSort": {
+      "label": "排序方式",
+      "name": "名称",
+      "role": "角色",
+      "joined": "加入日期",
+      "left": "离开日期"
     }
   },
   "dashboard": {

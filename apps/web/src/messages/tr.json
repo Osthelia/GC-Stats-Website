@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "Hayalet profil bulunamadı."
       }
+    },
+    "memberSort": {
+      "label": "Sırala",
+      "name": "İsim",
+      "role": "Rol",
+      "joined": "Katılma tarihi",
+      "left": "Ayrılma tarihi"
     }
   },
   "dashboard": {

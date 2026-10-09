@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "Geisterprofil nicht gefunden."
       }
+    },
+    "memberSort": {
+      "label": "Sortieren nach",
+      "name": "Name",
+      "role": "Rolle",
+      "joined": "Beitrittsdatum",
+      "left": "Austrittsdatum"
     }
   },
   "dashboard": {

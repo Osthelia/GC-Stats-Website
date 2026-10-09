@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "الملف الشبحي غير موجود."
       }
+    },
+    "memberSort": {
+      "label": "ترتيب حسب",
+      "name": "الاسم",
+      "role": "الدور",
+      "joined": "تاريخ الانضمام",
+      "left": "تاريخ المغادرة"
     }
   },
   "dashboard": {

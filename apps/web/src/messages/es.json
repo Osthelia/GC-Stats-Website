@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "Perfil fantasma no encontrado."
       }
+    },
+    "memberSort": {
+      "label": "Ordenar por",
+      "name": "Nombre",
+      "role": "Rol",
+      "joined": "Fecha de ingreso",
+      "left": "Fecha de salida"
     }
   },
   "dashboard": {

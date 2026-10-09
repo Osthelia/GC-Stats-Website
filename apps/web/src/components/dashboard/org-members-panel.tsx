@@ -23,6 +23,7 @@ import { PersonPicker } from "@/components/admin/person-picker";
 import { UserPicker } from "@/components/admin/user-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
+import { MemberSortSelect, sortMembers, type MemberSortKey } from "@/components/admin/member-sort-select";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CreatePersonDialog } from "@/components/dashboard/create-person-dialog";
 import { EditPersonProfileDialog } from "@/components/dashboard/edit-person-profile-dialog";
@@ -316,6 +317,7 @@ export function OrgMembersPanel({
   const [from, setFrom] = useState(today());
   const [until, setUntil] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddMemberFieldErrors>({});
+  const [sortKey, setSortKey] = useState<MemberSortKey>("joined");
 
   const roleItems = roleItemsFor(t);
 
@@ -349,9 +351,9 @@ export function OrgMembersPanel({
 
   const err = (field: keyof AddMemberFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.invalid") : undefined);
 
-  const byRecent = (a: AdminOrganizationMember, b: AdminOrganizationMember) => (b.since ?? "").localeCompare(a.since ?? "");
-  const current = members.filter((m) => m.isCurrent).sort(byRecent);
-  const past = members.filter((m) => !m.isCurrent).sort(byRecent);
+  const sorted = sortMembers(members, sortKey, ORGANIZATION_MEMBER_ROLES);
+  const current = sorted.filter((m) => m.isCurrent);
+  const past = sorted.filter((m) => !m.isCurrent);
 
   return (
     <div className="flex flex-col gap-4">
@@ -449,6 +451,8 @@ export function OrgMembersPanel({
               </div>
             </div>
           )}
+
+          {members.length > 1 && <MemberSortSelect value={sortKey} onChange={setSortKey} />}
 
           {members.length === 0 && <p className="text-sm text-muted-foreground">{tMembers("empty")}</p>}
 

@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "Ghost profile not found."
       }
+    },
+    "memberSort": {
+      "label": "Sort by",
+      "name": "Name",
+      "role": "Role",
+      "joined": "Join date",
+      "left": "Leave date"
     }
   },
   "dashboard": {

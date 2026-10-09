@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "ไม่พบโปรไฟล์ผี"
       }
+    },
+    "memberSort": {
+      "label": "เรียงตาม",
+      "name": "ชื่อ",
+      "role": "บทบาท",
+      "joined": "วันที่เข้าร่วม",
+      "left": "วันที่ออก"
     }
   },
   "dashboard": {

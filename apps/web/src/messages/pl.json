@@ -4813,6 +4813,13 @@
       "promoteError": {
         "notFound": "Nie znaleziono profilu widma."
       }
+    },
+    "memberSort": {
+      "label": "Sortuj według",
+      "name": "Nazwa",
+      "role": "Rola",
+      "joined": "Data dołączenia",
+      "left": "Data odejścia"
     }
   },
   "dashboard": {

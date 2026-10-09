@@ -22,6 +22,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
+import { MemberSortSelect, sortMembers, type MemberSortKey } from "@/components/admin/member-sort-select";
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, type AddRosterMemberFieldErrors, type RosterEntryFieldErrors } from "@/actions/admin-teams";
 import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
@@ -201,6 +202,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
   const [until, setUntil] = useState("");
   const [inactiveSince, setInactiveSince] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddRosterMemberFieldErrors>({});
+  const [sortKey, setSortKey] = useState<MemberSortKey>("joined");
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
   const roleItems = roleItemsFor(t);
@@ -235,9 +237,9 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
 
   const err = (field: keyof AddRosterMemberFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.invalid") : undefined);
 
-  const byRecent = (a: AdminTeamRosterMember, b: AdminTeamRosterMember) => (b.since ?? "").localeCompare(a.since ?? "");
-  const current = members.filter((m) => m.isCurrent).sort(byRecent);
-  const past = members.filter((m) => !m.isCurrent).sort(byRecent);
+  const sorted = sortMembers(members, sortKey, ROSTER_ROLES);
+  const current = sorted.filter((m) => m.isCurrent);
+  const past = sorted.filter((m) => !m.isCurrent);
 
   return (
     <Card>
@@ -321,6 +323,8 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
             </div>
           </div>
         </div>
+        {members.length > 1 && <MemberSortSelect value={sortKey} onChange={setSortKey} />}
+
         {members.length === 0 && <p className="text-sm text-muted-foreground">{t("rosterEmpty")}</p>}
 
         {/* Current and history share one container (this Card) — same card
