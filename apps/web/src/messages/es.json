@@ -6260,8 +6260,23 @@
     "round": "Ronda {round}",
     "unknownDate": "Fecha por confirmar"
   },
+  "matchPoster": {
+    "title": "Imagen del partido",
+    "description": "Imagen PNG de {width} px de ancho, lista para compartir. Elige todos los mapas o un solo mapa.",
+    "watermark": "Añadir la marca de agua de GC Stats",
+    "loading": "Preparando la imagen",
+    "loadError": "No se pudieron cargar los datos del partido.",
+    "retry": "Reintentar",
+    "download": "Descargar",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "copyError": "No se pudo copiar la imagen. Descárgala en su lugar.",
+    "exporting": "Generando",
+    "exportError": "No se pudo generar la imagen. Inténtalo de nuevo."
+  },
   "share": {
     "button": "Compartir",
+    "poster": "Imagen del partido",
     "liquipediaWikicode": "Wikicode de Liquipedia",
     "tournamentWikicode": "Wikicode del torneo",
     "calendarTitle": "Calendario de partidos",

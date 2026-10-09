@@ -6260,8 +6260,23 @@
     "round": "Tur {round}",
     "unknownDate": "Tarih açıklanacak"
   },
+  "matchPoster": {
+    "title": "Maç görseli",
+    "description": "{width} px genişliğinde, paylaşıma hazır PNG görseli. Tüm haritaları veya tek bir haritayı seç.",
+    "watermark": "GC Stats filigranını ekle",
+    "loading": "Görsel hazırlanıyor",
+    "loadError": "Maç verileri yüklenemedi.",
+    "retry": "Tekrar dene",
+    "download": "İndir",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "copyError": "Görsel kopyalanamadı. Bunun yerine indir.",
+    "exporting": "Oluşturuluyor",
+    "exportError": "Görsel oluşturulamadı. Tekrar dene."
+  },
   "share": {
     "button": "Paylaş",
+    "poster": "Maç görseli",
     "liquipediaWikicode": "Liquipedia wikicode'u",
     "tournamentWikicode": "Turnuva wikicode'u",
     "calendarTitle": "Maç takvimi",

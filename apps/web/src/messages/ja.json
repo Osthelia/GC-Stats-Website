@@ -6260,8 +6260,23 @@
     "round": "ラウンド{round}",
     "unknownDate": "日時未定"
   },
+  "matchPoster": {
+    "title": "試合画像",
+    "description": "幅 {width} px のPNG画像で、そのまま共有できます。全マップまたは単一マップを選択してください。",
+    "watermark": "GC Statsの透かしを追加",
+    "loading": "画像を準備中",
+    "loadError": "試合データを読み込めませんでした。",
+    "retry": "再試行",
+    "download": "ダウンロード",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyError": "画像をコピーできませんでした。代わりにダウンロードしてください。",
+    "exporting": "生成中",
+    "exportError": "画像を生成できませんでした。もう一度お試しください。"
+  },
   "share": {
     "button": "共有",
+    "poster": "試合画像",
     "liquipediaWikicode": "Liquipedia wikicode",
     "tournamentWikicode": "大会のwikicode",
     "calendarTitle": "試合カレンダー",

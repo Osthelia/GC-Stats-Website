@@ -6260,8 +6260,23 @@
     "round": "第 {round} 轮",
     "unknownDate": "日期待定"
   },
+  "matchPoster": {
+    "title": "比赛图片",
+    "description": "宽度 {width} px 的 PNG 图片，可直接分享。可选择全部地图或单张地图。",
+    "watermark": "添加 GC Stats 水印",
+    "loading": "正在准备图片",
+    "loadError": "无法加载比赛数据。",
+    "retry": "重试",
+    "download": "下载",
+    "copy": "复制",
+    "copied": "已复制",
+    "copyError": "无法复制图片，请改为下载。",
+    "exporting": "生成中",
+    "exportError": "无法生成图片，请重试。"
+  },
   "share": {
     "button": "分享",
+    "poster": "比赛图片",
     "liquipediaWikicode": "Liquipedia wikicode",
     "tournamentWikicode": "赛事 wikicode",
     "calendarTitle": "比赛日历",

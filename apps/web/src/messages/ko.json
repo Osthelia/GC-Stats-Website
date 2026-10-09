@@ -6260,8 +6260,23 @@
     "round": "라운드 {round}",
     "unknownDate": "날짜 미정"
   },
+  "matchPoster": {
+    "title": "경기 이미지",
+    "description": "너비 {width} px의 PNG 이미지로, 바로 공유할 수 있습니다. 전체 맵 또는 단일 맵을 선택하세요.",
+    "watermark": "GC Stats 워터마크 추가",
+    "loading": "이미지 준비 중",
+    "loadError": "경기 데이터를 불러오지 못했습니다.",
+    "retry": "다시 시도",
+    "download": "다운로드",
+    "copy": "복사",
+    "copied": "복사됨",
+    "copyError": "이미지를 복사하지 못했습니다. 대신 다운로드해 주세요.",
+    "exporting": "생성 중",
+    "exportError": "이미지를 생성하지 못했습니다. 다시 시도해 주세요."
+  },
   "share": {
     "button": "공유",
+    "poster": "경기 이미지",
     "liquipediaWikicode": "Liquipedia wikicode",
     "tournamentWikicode": "대회 wikicode",
     "calendarTitle": "경기 캘린더",

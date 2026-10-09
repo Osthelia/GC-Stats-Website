@@ -10,8 +10,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { CalendarPlusIcon, CheckIcon, Code2Icon, CopyIcon, LayersIcon, Share2Icon } from "lucide-react";
+import { CalendarPlusIcon, CheckIcon, Code2Icon, CopyIcon, ImageIcon, LayersIcon, Share2Icon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { MatchPosterDialog } from "@/components/match/match-poster-dialog";
 
 const ICONS = { match: Code2Icon, tournament: LayersIcon } as const;
 
@@ -20,12 +21,13 @@ export type ShareMenuItem = { href: string; label: string; icon: keyof typeof IC
 const ITEM_CLASS =
   "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-xs font-semibold text-neutral-300 transition-colors hover:bg-white/5 hover:text-neutral-50 active:bg-white/10";
 
-/** "Share" button of the public entity headers, opening a small menu of links. `calendarPath` adds the match calendar feed entries. */
-export function ShareMenuButton({ items = [], calendarPath }: { items?: ShareMenuItem[]; calendarPath?: string }) {
+/** "Share" button of the public entity headers, opening a small menu of links. `calendarPath` adds the match calendar feed entries, `posterMatchId` the match screenshot entry. */
+export function ShareMenuButton({ items = [], calendarPath, posterMatchId }: { items?: ShareMenuItem[]; calendarPath?: string; posterMatchId?: number }) {
   const t = useTranslations("share");
   const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [posterOpen, setPosterOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,6 +78,20 @@ export function ShareMenuButton({ items = [], calendarPath }: { items?: ShareMen
 
       {open && (
         <div role="menu" className="absolute right-0 z-30 mt-2 w-56 rounded-xl border border-neutral-800 p-1.5 shadow-xl" style={{ background: "var(--gcs-surface-2)" }}>
+          {posterMatchId != null && (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                setPosterOpen(true);
+              }}
+              className={ITEM_CLASS}
+            >
+              <ImageIcon className="h-3.5 w-3.5 flex-none text-neutral-500" />
+              {t("poster")}
+            </button>
+          )}
           {items.map((item) => {
             const Icon = ICONS[item.icon];
             return (
@@ -118,6 +134,7 @@ export function ShareMenuButton({ items = [], calendarPath }: { items?: ShareMen
           )}
         </div>
       )}
+      {posterMatchId != null && <MatchPosterDialog matchId={posterMatchId} open={posterOpen} onOpenChange={setPosterOpen} />}
     </div>
   );
 }

@@ -6260,8 +6260,23 @@
     "round": "รอบ {round}",
     "unknownDate": "รอประกาศวันที่"
   },
+  "matchPoster": {
+    "title": "รูปภาพแมตช์",
+    "description": "รูป PNG กว้าง {width} px พร้อมแชร์ เลือกทุกแมพหรือเลือกแมพเดียว",
+    "watermark": "เพิ่มลายน้ำ GC Stats",
+    "loading": "กำลังเตรียมรูปภาพ",
+    "loadError": "ไม่สามารถโหลดข้อมูลแมตช์ได้",
+    "retry": "ลองอีกครั้ง",
+    "download": "ดาวน์โหลด",
+    "copy": "คัดลอก",
+    "copied": "คัดลอกแล้ว",
+    "copyError": "ไม่สามารถคัดลอกรูปภาพได้ ลองดาวน์โหลดแทน",
+    "exporting": "กำลังสร้าง",
+    "exportError": "ไม่สามารถสร้างรูปภาพได้ ลองอีกครั้ง"
+  },
   "share": {
     "button": "แชร์",
+    "poster": "รูปภาพแมตช์",
     "liquipediaWikicode": "wikicode ของ Liquipedia",
     "tournamentWikicode": "wikicode ของทัวร์นาเมนต์",
     "calendarTitle": "ปฏิทินแมตช์",

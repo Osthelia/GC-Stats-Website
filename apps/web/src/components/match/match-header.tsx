@@ -99,6 +99,7 @@ export async function MatchHeader({ match, children }: { match: MatchHeaderData;
                 ]),
           ]}
           calendarPath={match.tournamentIsGhost ? undefined : "/api/calendar/matches.ics"}
+          posterMatchId={match.id}
         />
         {isAdmin && <AdminPanelLink href={`/admin/tournaments/${match.tournamentId}/matches/${match.id}`} label={tNav("adminPanel")} />}
       </HeaderUtilityBar>

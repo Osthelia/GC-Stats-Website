@@ -6260,8 +6260,23 @@
     "round": "الجولة {round}",
     "unknownDate": "التاريخ سيُعلن لاحقًا"
   },
+  "matchPoster": {
+    "title": "صورة المباراة",
+    "description": "صورة PNG بعرض {width} بكسل جاهزة للمشاركة. اختر كل الخرائط أو خريطة واحدة.",
+    "watermark": "إضافة علامة GC Stats المائية",
+    "loading": "جارٍ تجهيز الصورة",
+    "loadError": "تعذر تحميل بيانات المباراة.",
+    "retry": "إعادة المحاولة",
+    "download": "تنزيل",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "copyError": "تعذر نسخ الصورة. نزّلها بدلاً من ذلك.",
+    "exporting": "جارٍ الإنشاء",
+    "exportError": "تعذر إنشاء الصورة. حاول مرة أخرى."
+  },
   "share": {
     "button": "مشاركة",
+    "poster": "صورة المباراة",
     "liquipediaWikicode": "wikicode لـ Liquipedia",
     "tournamentWikicode": "wikicode البطولة",
     "calendarTitle": "تقويم المباريات",
