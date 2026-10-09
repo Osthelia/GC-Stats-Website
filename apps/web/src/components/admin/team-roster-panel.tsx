@@ -245,32 +245,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
         <CardTitle>{t("sectionRoster")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {members.length === 0 && <p className="text-sm text-muted-foreground">{t("rosterEmpty")}</p>}
-
-        {/* Current and history share one container (this Card) — same card
-            format for both, just a title splitting the two groups, mirroring
-            V1's roster-panel.blade.php (single form, "current" grid then a
-            historyTitle then the "history" grid). */}
-        {current.length > 0 && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {current.map((m) => (
-              <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
-            ))}
-          </div>
-        )}
-
-        {past.length > 0 && (
-          <div className="flex flex-col gap-3">
-            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("rosterHistoryTitle")}</p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {past.map((m) => (
-                <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-3 border-t pt-4">
+        <div className="flex flex-col gap-3 border-b pb-4">
           <p className="text-sm font-medium">{t("rosterAddTitle")}</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div className="flex flex-col gap-1.5">
@@ -346,6 +321,31 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
             </div>
           </div>
         </div>
+        {members.length === 0 && <p className="text-sm text-muted-foreground">{t("rosterEmpty")}</p>}
+
+        {/* Current and history share one container (this Card) — same card
+            format for both, just a title splitting the two groups, mirroring
+            V1's roster-panel.blade.php (single form, "current" grid then a
+            historyTitle then the "history" grid). */}
+        {current.length > 0 && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {current.map((m) => (
+              <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+            ))}
+          </div>
+        )}
+
+        {past.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("rosterHistoryTitle")}</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {past.map((m) => (
+                <RosterRow key={m.membershipId} member={m} teamId={teamId} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+              ))}
+            </div>
+          </div>
+        )}
+
       </CardContent>
       {conflictDialog}
     </Card>
