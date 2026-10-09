@@ -20,6 +20,7 @@ import { tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, validateImageBu
 import { requireActorPermission } from "@/lib/rbac";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import type { LogoEntityType } from "@/lib/admin-logos";
+import { withLogoTrace, type LogoTrace } from "@/lib/logo-trace";
 import { logActivity, type ActivityLogClient, type ActivitySubject } from "@/lib/activity-log";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -61,7 +62,13 @@ export type UploadLogoResult = { ok: true } | { ok: false; fieldErrors: UploadLo
  * entry when `until` is given.
  */
 export async function uploadEntityLogo(entityType: LogoEntityType, entityId: number, formData: FormData): Promise<UploadLogoResult> {
+  return withLogoTrace(`admin upload ${entityType} #${entityId}`, (trace) => uploadEntityLogoImpl(trace, entityType, entityId, formData));
+}
+
+async function uploadEntityLogoImpl(trace: LogoTrace, entityType: LogoEntityType, entityId: number, formData: FormData): Promise<UploadLogoResult> {
   const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
+  trace.step("permission ok");
+  trace.file(formData.get("file"));
 
   const fieldErrors: UploadLogoFieldErrors = {};
 
@@ -89,11 +96,16 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
   // still exists before doing any real work (upload, DB write).
   if (!(await entityExists(entityType, entityId))) return { ok: false, fieldErrors: { file: "notFound" } };
 
+  trace.step("entity exists");
+
   const buffer = Buffer.from(await (file as File).arrayBuffer());
+  trace.step("file read", { bytes: buffer.byteLength });
   const validation = await validateImageBuffer(buffer);
+  trace.step("validated", validation);
   if (!validation.ok) return { ok: false, fieldErrors: { file: validation.error } };
 
   const storedResult = await tryStoreLogoPair(entityType, buffer);
+  trace.step("stored", { ok: storedResult.ok });
   if (!storedResult.ok) return { ok: false, fieldErrors: { file: storedResult.error } };
   const stored = storedResult.logo;
 
@@ -122,6 +134,7 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
       await tx.insert(logos).values({ id: stored.id, entityType, entityId, period, theme, isVisible: true });
       await logLogoChange(tx, entityType, entityId, actorUserId, "Added", stored.id);
     });
+    trace.step("database written");
   } catch (error) {
     // Don't leave orphaned files in the bucket if the DB write failed.
     await deleteLogoFiles(entityType, stored.id).catch(() => {});
@@ -143,7 +156,13 @@ export type UpdateLogoResult = { ok: true } | { ok: false; fieldErrors: UpdateLo
  * the file is optional here (omit it to just edit dates/theme).
  */
 export async function updateEntityLogo(entityType: LogoEntityType, logoId: string, formData: FormData): Promise<UpdateLogoResult> {
+  return withLogoTrace(`admin update ${entityType} ${logoId}`, (trace) => updateEntityLogoImpl(trace, entityType, logoId, formData));
+}
+
+async function updateEntityLogoImpl(trace: LogoTrace, entityType: LogoEntityType, logoId: string, formData: FormData): Promise<UpdateLogoResult> {
   const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
+  trace.step("permission ok");
+  trace.file(formData.get("file"));
 
   const [existing] = await db
     .select({ id: logos.id, entityId: logos.entityId })
@@ -178,6 +197,7 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
   if (hasFile) {
     const uploaded = Buffer.from(await (file as File).arrayBuffer());
     const validation = await validateImageBuffer(uploaded);
+    trace.step("validated", validation);
     if (!validation.ok) return { ok: false, fieldErrors: { file: validation.error } };
     buffer = uploaded;
   }
@@ -185,6 +205,7 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
   // Image first: a failed replacement must not leave the dates/theme half edited.
   if (buffer) {
     const replaced = await tryReplaceLogoFiles(entityType, logoId, buffer);
+    trace.step("files replaced", { ok: replaced.ok });
     if (!replaced.ok) return { ok: false, fieldErrors: { file: replaced.error } };
   }
 
