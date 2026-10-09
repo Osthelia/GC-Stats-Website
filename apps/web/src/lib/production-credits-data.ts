@@ -19,6 +19,7 @@ import {
   organizations,
   tournaments,
   matches,
+  maps,
   entrants,
   stageContainers,
   stages,
@@ -33,17 +34,30 @@ export type OrgProductionCredit = {
   secondaryCountryCode: string | null;
   role: string;
   titleOverride: string | null;
-  /** Exactly one of these two is set, mirroring the exactly-one-of-5 CHECK on production_credits (only tournament/match are exposed from /dashboard, see production-credit-validation.ts). */
-  target:
-    | { scope: "tournament"; tournamentId: number; tournamentName: string }
-    | {
-        scope: "match";
-        matchId: number;
-        tournamentId: number | null;
-        tournamentName: string | null;
-        label: string;
-      };
+  /** Exactly one scope is set, mirroring the exactly-one-of-5 CHECK on production_credits (only tournament/match/map are exposed from /dashboard, see production-credit-validation.ts). */
+  target: ProductionTarget;
 };
+
+export type ProductionTarget =
+  | { scope: "tournament"; tournamentId: number; tournamentName: string }
+  | {
+      scope: "match";
+      matchId: number;
+      tournamentId: number | null;
+      tournamentName: string | null;
+      label: string;
+    }
+  | {
+      scope: "map";
+      matchId: number;
+      mapId: number;
+      tournamentId: number | null;
+      tournamentName: string | null;
+      /** "A vs B" of the map's match. */
+      label: string;
+      /** "Ascent (Map 2)". */
+      mapLabel: string;
+    };
 
 /** Every match label the way admin-matches.ts's listTournamentMatches would compute it, but for an arbitrary set of match ids scattered across tournaments — used to resolve production_credits rows pointing at matchId. */
 export async function resolveMatchTargets(matchIds: number[]) {
@@ -97,6 +111,37 @@ export async function resolveMatchTargets(matchIds: number[]) {
   return result;
 }
 
+type MapTarget = Extract<ProductionTarget, { scope: "map" }>;
+
+/** Same as resolveMatchTargets for credits pointing at a map: the map's own label plus its match's "A vs B" and tournament. */
+export async function resolveMapTargets(mapIds: number[]) {
+  const result = new Map<number, { target: Omit<MapTarget, "scope">; scheduledAt: Date | null }>();
+  if (mapIds.length === 0) return result;
+
+  const mapRows = await db
+    .select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName, order: maps.order })
+    .from(maps)
+    .where(inArray(maps.id, mapIds));
+  const matchTargetById = await resolveMatchTargets([...new Set(mapRows.map((m) => m.matchId))]);
+
+  for (const m of mapRows) {
+    const match = matchTargetById.get(m.matchId);
+    if (!match) continue;
+    result.set(m.id, {
+      scheduledAt: match.scheduledAt,
+      target: {
+        matchId: m.matchId,
+        mapId: m.id,
+        tournamentId: match.tournamentId,
+        tournamentName: match.tournamentName,
+        label: match.label,
+        mapLabel: `${m.mapName ?? "?"} (Map ${m.order})`,
+      },
+    });
+  }
+  return result;
+}
+
 /** /dashboard management only (see components/dashboard/org-production-credits-panel.tsx) — the public site reads through `getOrganizationProductionsPage` instead, see below. */
 export async function getOrganizationProductionCredits(
   organizationId: number,
@@ -112,6 +157,7 @@ export async function getOrganizationProductionCredits(
       titleOverride: productionCredits.titleOverride,
       tournamentId: productionCredits.tournamentId,
       matchId: productionCredits.matchId,
+      mapId: productionCredits.mapId,
     })
     .from(productionCredits)
     .innerJoin(people, eq(people.id, productionCredits.personId))
@@ -135,6 +181,9 @@ export async function getOrganizationProductionCredits(
     .map((r) => r.matchId)
     .filter((id): id is number => id !== null);
   const matchTargetById = await resolveMatchTargets(matchIds);
+  const mapTargetById = await resolveMapTargets(
+    rows.map((r) => r.mapId).filter((id): id is number => id !== null),
+  );
 
   return rows.flatMap((r): OrgProductionCredit[] => {
     const base = {
@@ -175,6 +224,11 @@ export async function getOrganizationProductionCredits(
           },
         },
       ];
+    }
+    if (r.mapId !== null) {
+      const info = mapTargetById.get(r.mapId);
+      if (!info) return [];
+      return [{ ...base, target: { scope: "map", ...info.target } }];
     }
     return [];
   });
@@ -271,15 +325,7 @@ export type ProductionEntry = {
     logoUrl: string | null;
     logoUrlLight: string | null;
   } | null;
-  target:
-    | { scope: "tournament"; tournamentId: number; tournamentName: string }
-    | {
-        scope: "match";
-        matchId: number;
-        tournamentId: number | null;
-        tournamentName: string | null;
-        label: string;
-      };
+  target: ProductionTarget;
 };
 
 export type ProductionSortDirection = "asc" | "desc";
@@ -292,6 +338,7 @@ type RawProductionRow = {
   organizationId: number | null;
   tournamentId: number | null;
   matchId: number | null;
+  mapId: number | null;
 };
 
 async function resolveTournamentNamesAndDates(
@@ -338,7 +385,11 @@ async function resolveProductionEntries(
     ),
   ];
 
-  const [personRows, orgRows, logosByOrgId, matchTargetById, tournamentInfoById] =
+  const mapIds = rows
+    .map((r) => r.mapId)
+    .filter((id): id is number => id !== null);
+
+  const [personRows, orgRows, logosByOrgId, matchTargetById, tournamentInfoById, mapTargetById] =
     await Promise.all([
       personIds.length
         ? db
@@ -364,6 +415,7 @@ async function resolveProductionEntries(
       getCurrentLogoUrlsThemed("organization", orgIds),
       resolveMatchTargets(matchIds),
       resolveTournamentNamesAndDates(directTournamentIds),
+      resolveMapTargets(mapIds),
     ]);
 
   const personById = new Map(personRows.map((p) => [p.id, p]));
@@ -427,6 +479,11 @@ async function resolveProductionEntries(
         },
       ];
     }
+    if (r.mapId !== null) {
+      const m = mapTargetById.get(r.mapId);
+      if (!m) return [];
+      return [{ ...base, date: m.scheduledAt, target: { scope: "map", ...m.target } }];
+    }
     return [];
   });
 }
@@ -468,12 +525,15 @@ async function paginateProductionRows(
 ): Promise<ProductionPage> {
   const pageSize = opts.pageSize ?? DEFAULT_PAGE_SIZE;
 
+  const creditMaps = alias(maps, "prod_credit_maps");
   const matchContainers = alias(stageContainers, "prod_match_containers");
   const matchStages = alias(stages, "prod_match_stages");
   const matchTournaments = alias(tournaments, "prod_match_tournaments");
   const matchEntrantA = alias(entrants, "prod_match_entrant_a");
   const matchEntrantB = alias(entrants, "prod_match_entrant_b");
 
+  // A map credit is dated and sorted through its map's match.
+  const creditMatchId = sql`coalesce(${productionCredits.matchId}, ${creditMaps.matchId})`;
   // Same date as the one displayed: tournament start, or match kickoff.
   const entryDate = sql`coalesce(${tournaments.startDate}, ${matches.scheduledAt})`;
   const sortName = sql`coalesce(${tournaments.name}, ${matchTournaments.name}, '')`;
@@ -502,10 +562,12 @@ async function paginateProductionRows(
         organizationId: productionCredits.organizationId,
         tournamentId: productionCredits.tournamentId,
         matchId: productionCredits.matchId,
+        mapId: productionCredits.mapId,
       })
       .from(productionCredits)
       .leftJoin(tournaments, eq(tournaments.id, productionCredits.tournamentId))
-      .leftJoin(matches, eq(matches.id, productionCredits.matchId))
+      .leftJoin(creditMaps, eq(creditMaps.id, productionCredits.mapId))
+      .leftJoin(matches, eq(matches.id, creditMatchId))
       .leftJoin(matchContainers, eq(matchContainers.id, matches.containerId))
       .leftJoin(matchStages, eq(matchStages.id, matchContainers.stageId))
       .leftJoin(
@@ -526,7 +588,8 @@ async function paginateProductionRows(
       .select({ value: count() })
       .from(productionCredits)
       .leftJoin(tournaments, eq(tournaments.id, productionCredits.tournamentId))
-      .leftJoin(matches, eq(matches.id, productionCredits.matchId))
+      .leftJoin(creditMaps, eq(creditMaps.id, productionCredits.mapId))
+      .leftJoin(matches, eq(matches.id, creditMatchId))
       .where(whereClause),
     db
       .selectDistinct({ role: productionCredits.role })
@@ -565,7 +628,7 @@ export async function getOrganizationProductionsPage(
 
 export type TournamentProductionSort = "target" | "date";
 
-/** Tournament page's "Production" tab — production credits scoped to this tournament, whether given at the tournament level or on one of its matches. */
+/** Tournament page's "Production" tab — production credits scoped to this tournament, whether given at the tournament level, on one of its matches or on one of their maps. */
 export async function getTournamentProductionsPage(
   tournamentId: number,
   opts: ProductionPageOpts<TournamentProductionSort>,
@@ -581,6 +644,10 @@ export async function getTournamentProductionsPage(
     or(
       eq(productionCredits.tournamentId, tournamentId),
       inArray(productionCredits.matchId, tournamentMatchIds),
+      inArray(
+        productionCredits.mapId,
+        db.select({ id: maps.id }).from(maps).where(inArray(maps.matchId, tournamentMatchIds)),
+      ),
     )!,
     opts,
   );

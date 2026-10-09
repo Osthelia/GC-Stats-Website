@@ -22,24 +22,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PersonPicker } from "@/components/admin/person-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
-import { EntitySinglePicker } from "@/components/dashboard/news/entity-single-picker";
+import { ProductionTargetPicker, type SelectedTarget } from "@/components/dashboard/production-target-picker";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import type { EntityOption } from "@/components/dashboard/news/entity-multi-picker";
 import {
-  addProductionCredit,
+  addProductionCredits,
   updateProductionCredit,
   deleteProductionCredit,
-  searchTournamentsForCredit,
-  getMatchOptionsForCredit,
   type ProductionCreditFieldErrors,
-  type ProductionCreditScope,
-  type CreditMatchOption,
 } from "@/actions/dashboard-production-credits";
 import { searchPeopleForOrganization } from "@/actions/dashboard-organizations";
 import { PRODUCTION_CREDIT_ROLES, PRODUCTION_CREDIT_ROLE_OTHER } from "@/lib/production-credit-roles";
 import type { OrgProductionCredit } from "@/lib/production-credits-data";
-
-const NONE_MATCH = "__none__";
 
 /** credit.role is free text (see production-credit-roles.ts), splits it back into a known <Select> value plus the "other" free-text field the row should start with. */
 function decodeRole(role: string): { role: string; roleOther: string } {
@@ -55,6 +48,7 @@ function roleItemsFor(t: ReturnType<typeof useTranslations>): Record<string, str
 
 function targetLabel(t: ReturnType<typeof useTranslations>, credit: OrgProductionCredit): string {
   if (credit.target.scope === "tournament") return t("targetTournament", { name: credit.target.tournamentName });
+  if (credit.target.scope === "map") return t("targetMap", { map: credit.target.mapLabel, label: credit.target.label, tournament: credit.target.tournamentName ?? "?" });
   return t("targetMatch", { label: credit.target.label, tournament: credit.target.tournamentName ?? "?" });
 }
 
@@ -217,70 +211,41 @@ function AddCreditForm({ organizationId, onAdded }: { organizationId: number; on
   const t = useTranslations("dashboard.credits");
   const [isPending, startTransition] = useTransition();
   const [person, setPerson] = useState<{ id: number; handle: string } | null>(null);
-  const [scope, setScope] = useState<ProductionCreditScope>("tournament");
-  const [tournament, setTournament] = useState<EntityOption | null>(null);
-  const [matchOptions, setMatchOptions] = useState<CreditMatchOption[]>([]);
-  const [matchId, setMatchId] = useState<number | null>(null);
-  const [loadingMatches, setLoadingMatches] = useState(false);
+  const [targets, setTargets] = useState<SelectedTarget[]>([]);
   const [role, setRole] = useState<string>(PRODUCTION_CREDIT_ROLES[0]);
   const [roleOther, setRoleOther] = useState("");
   const [titleOverride, setTitleOverride] = useState("");
   const [fieldErrors, setFieldErrors] = useState<ProductionCreditFieldErrors>({});
 
   const roleItems = roleItemsFor(t);
-
-  useEffect(() => {
-    setMatchId(null);
-    if (scope !== "match" || !tournament) {
-      setMatchOptions([]);
-      return;
-    }
-    let cancelled = false;
-    setLoadingMatches(true);
-    getMatchOptionsForCredit(organizationId, tournament.id).then((rows) => {
-      if (cancelled) return;
-      setMatchOptions(rows);
-      setLoadingMatches(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [organizationId, scope, tournament]);
-
-  const scopeItems = { tournament: t("scopeTournament"), match: t("scopeMatch") };
-  const matchItems = Object.fromEntries(matchOptions.map((m) => [String(m.id), m.label]));
+  const err = (field: keyof ProductionCreditFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.required") : undefined);
 
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addProductionCredit(organizationId, {
+      const result = await addProductionCredits(organizationId, {
         personId: person?.id ?? null,
         role,
         roleOther,
         titleOverride,
-        scope,
-        tournamentId: tournament?.id ?? null,
-        matchId,
+        targets: targets.map((x) => ({ scope: x.scope, id: x.id })),
       });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
       setPerson(null);
-      setTournament(null);
-      setMatchId(null);
+      setTargets([]);
       setTitleOverride("");
-      toast.success(t("addSuccess"));
+      toast.success(t("addSuccess", { created: result.created }));
+      if (result.skipped > 0) toast.info(t("addSkipped", { skipped: result.skipped }));
       onAdded();
     });
   }
 
-  const err = (field: keyof ProductionCreditFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.required") : undefined);
-
   return (
-    <div className="flex flex-col gap-3 border-t pt-4">
-      <p className="text-sm font-medium">{t("addTitle")}</p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-1.5">
           <Label>
             {t("personLabel")}
@@ -303,80 +268,11 @@ function AddCreditForm({ organizationId, onAdded }: { organizationId: number; on
 
         <div className="flex flex-col gap-1.5">
           <Label>
-            {t("scopeLabel")}
-            <RequiredMark />
-          </Label>
-          <Select items={scopeItems} value={scope} onValueChange={(v) => v && setScope(v as ProductionCreditScope)}>
-            <SelectTrigger aria-label={t("scopeLabel")} className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="tournament">{scopeItems.tournament}</SelectItem>
-              <SelectItem value="match">{scopeItems.match}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label>
-            {t("tournamentLabel")}
-            <RequiredMark />
-          </Label>
-          <EntitySinglePicker
-            value={tournament}
-            onChange={setTournament}
-            search={(q) => searchTournamentsForCredit(organizationId, q).then((rows) => rows.map((r) => ({ id: r.id, label: r.name })))}
-            placeholder={t("tournamentPlaceholder")}
-            searchPlaceholder={t("tournamentSearchPlaceholder")}
-            noResultsLabel={t("tournamentNoResults")}
-            clearLabel={t("clear")}
-          />
-          {err("tournament") && (
-            <p role="alert" className="text-xs text-destructive">
-              {err("tournament")}
-            </p>
-          )}
-        </div>
-
-        {scope === "match" && (
-          <div className="flex flex-col gap-1.5">
-            <Label>
-              {t("matchLabel")}
-              <RequiredMark />
-            </Label>
-            <Select
-              items={{ [NONE_MATCH]: loadingMatches ? t("matchLoading") : !tournament ? t("matchPickTournamentFirst") : t("matchPlaceholder"), ...matchItems }}
-              value={matchId !== null ? String(matchId) : NONE_MATCH}
-              onValueChange={(v) => setMatchId(v && v !== NONE_MATCH ? Number(v) : null)}
-              disabled={!tournament || loadingMatches}
-            >
-              <SelectTrigger aria-label={t("matchLabel")} aria-invalid={!!fieldErrors.match} className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NONE_MATCH}>{loadingMatches ? t("matchLoading") : !tournament ? t("matchPickTournamentFirst") : t("matchPlaceholder")}</SelectItem>
-                {matchOptions.map((m) => (
-                  <SelectItem key={m.id} value={String(m.id)}>
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {err("match") && (
-              <p role="alert" className="text-xs text-destructive">
-                {err("match")}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-1.5">
-          <Label>
             {t("roleLabel")}
             <RequiredMark />
           </Label>
           <Select items={roleItems} value={role} onValueChange={(v) => v && setRole(v)}>
-            <SelectTrigger aria-label={t("roleLabel")} className="w-full">
+            <SelectTrigger aria-label={t("roleLabel")} aria-invalid={!!fieldErrors.role} className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -419,19 +315,21 @@ function AddCreditForm({ organizationId, onAdded }: { organizationId: number; on
             </p>
           )}
         </div>
+      </div>
 
-        <div className="flex items-end">
-          <Button variant="outline" disabled={isPending} onClick={handleAdd} className="w-full">
-            {isPending ? (
-              <>
-                <Loader2Icon className="size-3.5 animate-spin" />
-                {t("addSubmitting")}
-              </>
-            ) : (
-              t("addSubmit")
-            )}
-          </Button>
-        </div>
+      <ProductionTargetPicker organizationId={organizationId} value={targets} onChange={setTargets} error={err("targets")} />
+
+      <div>
+        <Button variant="outline" disabled={isPending} onClick={handleAdd}>
+          {isPending ? (
+            <>
+              <Loader2Icon className="size-3.5 animate-spin" />
+              {t("addSubmitting")}
+            </>
+          ) : (
+            t("addSubmit", { count: targets.length })
+          )}
+        </Button>
       </div>
     </div>
   );
@@ -441,6 +339,9 @@ export function OrgProductionCreditsPanel({ organizationId, initialCredits, canM
   const t = useTranslations("dashboard.credits");
   const router = useRouter();
   const [credits, setCredits] = useState(initialCredits);
+
+  // Server data changes after router.refresh() (new credits), local edits are applied on top.
+  useEffect(() => setCredits(initialCredits), [initialCredits]);
 
   function handleSaved(updated: OrgProductionCredit) {
     setCredits((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
@@ -454,13 +355,24 @@ export function OrgProductionCreditsPanel({ organizationId, initialCredits, canM
     <div className="flex flex-col gap-4">
       {!canManage && <p className="rounded-lg border border-dashed bg-muted/30 px-3 py-2 text-sm text-muted-foreground">{t("readOnlyHint")}</p>}
 
+      {canManage && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("addTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <p className="text-sm text-muted-foreground">{t("hint")}</p>
+            {/* A new credit needs the same label resolution as the server side listing (joins across matches, maps and entrants), so a router refresh is simpler than duplicating it client side. */}
+            <AddCreditForm organizationId={organizationId} onAdded={() => router.refresh()} />
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <p className="text-sm text-muted-foreground">{t("hint")}</p>
-
           {credits.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
 
           {credits.length > 0 && (
@@ -469,18 +381,6 @@ export function OrgProductionCreditsPanel({ organizationId, initialCredits, canM
                 <CreditRow key={c.id} organizationId={organizationId} canManage={canManage} credit={c} onSaved={handleSaved} onDeleted={handleDeleted} />
               ))}
             </div>
-          )}
-
-          {canManage && (
-            <AddCreditForm
-              organizationId={organizationId}
-              onAdded={() => {
-                // A new credit needs the same match/tournament label resolution the
-                // server-side listing does (join across matches/entrants), so a router
-                // refresh is simpler than duplicating that resolution client-side.
-                router.refresh();
-              }}
-            />
           )}
         </CardContent>
       </Card>

@@ -12,22 +12,24 @@
 
 import { PRODUCTION_CREDIT_ROLES, PRODUCTION_CREDIT_ROLE_OTHER } from "@/lib/production-credit-roles";
 
-export type ProductionCreditScope = "tournament" | "match";
+export type ProductionCreditScope = "tournament" | "match" | "map";
+
+export type ProductionCreditTarget = { scope: ProductionCreditScope; id: number };
+
+export const MAX_PRODUCTION_CREDIT_TARGETS = 200;
 
 export type ProductionCreditInput = {
   personId: number | null;
-  /** One of PRODUCTION_CREDIT_ROLES, or the "other" sentinel — see roleOther. */
+  /** One of PRODUCTION_CREDIT_ROLES, or the "other" sentinel, see roleOther. */
   role: string;
   /** Only read when role === "other"; becomes the actually stored role, trimmed. */
   roleOther: string;
   titleOverride: string;
-  scope: ProductionCreditScope;
-  /** Always required (even for scope "match") so the match picker can be scoped to one tournament — only the "tournament" scope actually persists this on the row, see production_credits' one-of-5 CHECK. */
-  tournamentId: number | null;
-  matchId: number | null;
+  /** One credit row is created per target. */
+  targets: ProductionCreditTarget[];
 };
 
-export type ProductionCreditField = "person" | "role" | "roleOther" | "titleOverride" | "tournament" | "match";
+export type ProductionCreditField = "person" | "role" | "roleOther" | "titleOverride" | "targets";
 export type ProductionCreditFieldErrors = Partial<Record<ProductionCreditField, string>>;
 
 export type ValidatedProductionCredit = {
@@ -42,7 +44,7 @@ export type ValidatedRoleAndTitle = {
   titleOverride: string | null;
 };
 
-/** Shared by the full add-credit validation below and updateProductionCredit (actions/dashboard-production-credits.ts), which only ever edits role/titleOverride in place — person/tournament/match are immutable after creation, see that action's comment. */
+/** Shared by the full add-credit validation below and updateProductionCredit (actions/dashboard-production-credits.ts), which only ever edits role/titleOverride in place — person and targets are immutable after creation, see that action's comment. */
 export function validateRoleAndTitle(role: string, roleOther: string, titleOverride: string): ValidatedRoleAndTitle {
   const fieldErrors: ValidatedRoleAndTitle["fieldErrors"] = {};
 
@@ -62,14 +64,15 @@ export function validateRoleAndTitle(role: string, roleOther: string, titleOverr
   return { fieldErrors, role: resolvedRole, titleOverride: trimmedTitle || null };
 }
 
-/** Pure field validation — DB-backed checks (person/tournament/match existence, match-belongs-to-tournament) stay in the server action that has a `db` handle. */
+/** Pure field validation — DB-backed checks (person and target existence) stay in the server action that has a `db` handle. */
 export function validateProductionCreditInput(input: ProductionCreditInput): ValidatedProductionCredit {
   const { fieldErrors: roleFieldErrors, role, titleOverride } = validateRoleAndTitle(input.role, input.roleOther, input.titleOverride);
   const fieldErrors: ProductionCreditFieldErrors = { ...roleFieldErrors };
 
   if (!input.personId) fieldErrors.person = "required";
-  if (!input.tournamentId) fieldErrors.tournament = "required";
-  if (input.scope === "match" && !input.matchId) fieldErrors.match = "required";
+  if (input.targets.length === 0) fieldErrors.targets = "targetsRequired";
+  else if (input.targets.length > MAX_PRODUCTION_CREDIT_TARGETS) fieldErrors.targets = "tooManyTargets";
+  else if (input.targets.some((t) => !["tournament", "match", "map"].includes(t.scope) || !Number.isInteger(t.id) || t.id <= 0)) fieldErrors.targets = "invalidTarget";
 
   return { fieldErrors, role, titleOverride };
 }

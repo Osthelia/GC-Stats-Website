@@ -71,6 +71,21 @@ export async function ProductionTable({
         return t("targetEntireTournament");
       return t("targetTournament", { name: entry.target.tournamentName });
     }
+    if (entry.target.scope === "map") {
+      const map = entry.target.mapLabel;
+      if (
+        currentTournamentId != null &&
+        entry.target.tournamentId === currentTournamentId
+      )
+        return t("targetMapShort", { map, label: entry.target.label });
+      return t("targetMap", {
+        map,
+        label: entry.target.label,
+        tournament: entry.target.tournamentName
+          ? abbreviateTournamentName(entry.target.tournamentName)
+          : "?",
+      });
+    }
     if (
       currentTournamentId != null &&
       entry.target.tournamentId === currentTournamentId

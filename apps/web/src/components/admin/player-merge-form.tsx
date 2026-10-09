@@ -103,7 +103,11 @@ export function PlayerMergeForm({
           <>
             {tProduction(`role.${entry.role}`)}
             {entry.titleOverride && <span className="text-muted-foreground"> ({entry.titleOverride})</span>}
-            <span className="text-muted-foreground"> {entry.target.scope === "tournament" ? entry.target.tournamentName : tProduction("targetMatch", { label: entry.target.label, tournament: entry.target.tournamentName ?? "" })}</span>
+            <span className="text-muted-foreground"> {entry.target.scope === "tournament"
+              ? entry.target.tournamentName
+              : entry.target.scope === "map"
+                ? tProduction("targetMap", { map: entry.target.mapLabel, label: entry.target.label, tournament: entry.target.tournamentName ?? "" })
+                : tProduction("targetMatch", { label: entry.target.label, tournament: entry.target.tournamentName ?? "" })}</span>
           </>
         ),
       })),
