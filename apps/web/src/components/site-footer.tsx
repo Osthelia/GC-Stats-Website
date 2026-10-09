@@ -34,7 +34,7 @@ const SOCIALS = [
   },
   {
     name: "Ko-fi",
-    href: "https://ko-fi.com/gcstats",
+    href: "https://ko-fi.com/osthelia",
     hoverClasses: "hover:border-[#ff5e5b] hover:text-[#ff7a78] hover:bg-[#1f1616] hover:shadow-[0_6px_16px_rgba(255,94,91,.18)]",
     path: null,
   },

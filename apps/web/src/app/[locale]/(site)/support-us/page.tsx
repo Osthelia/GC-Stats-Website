@@ -55,7 +55,7 @@ export default function SupportUsPage() {
         <SectionCard icon={icons.coffee} title={t("donate.title")}>
           <SectionText>{t("donate.body")}</SectionText>
           <a
-            href="https://ko-fi.com/gcstats"
+            href="https://ko-fi.com/osthelia"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d]"
