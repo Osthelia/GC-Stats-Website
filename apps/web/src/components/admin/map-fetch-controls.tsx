@@ -165,7 +165,10 @@ function TeamColorAmbiguousDialog({
         <div className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-2">
           {rosters.map((roster) => (
             <div key={roster.color} className="flex flex-col gap-4 rounded-lg border p-5">
-              <span className="text-base font-semibold">{roster.color}</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-base font-semibold">{roster.color}</span>
+                <span className="text-xl font-bold tabular-nums">{roster.score ?? "-"}</span>
+              </div>
 
               {/* Riot's own Account API display name (gameName#tagLine) + agent — never the raw puuid, which stays an internal id only. */}
               <ul className="flex flex-col gap-2.5 text-sm text-muted-foreground">

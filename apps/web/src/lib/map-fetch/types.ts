@@ -27,6 +27,7 @@ export type FetchMapError =
 
 export interface TeamColorRoster {
   color: "Red" | "Blue";
+  score: number | null;
   players: { displayName: string; agentName: string }[];
 }
 

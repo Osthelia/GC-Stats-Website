@@ -92,6 +92,7 @@ export async function fetchMapData(mapId: number, options: FetchMapOptions = {})
   if (!teamAColor) {
     const rosters = (["Red", "Blue"] as const).map((color) => ({
       color,
+      score: match.teams.find((t) => t.teamId === color)?.roundsWon ?? null,
       players: playerRefs.filter((p) => p.teamId === color).map((p) => ({ displayName: `${p.gameName}#${p.tagLine}`, agentName: resolveAgentName(content, p.characterId) })),
     }));
     return { ok: false, error: { kind: "teamColorAmbiguous", rosters } };
