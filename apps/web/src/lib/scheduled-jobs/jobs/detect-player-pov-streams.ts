@@ -12,7 +12,7 @@
 
 import { and, eq, gte, inArray, isNotNull, lte, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matches, entrants, entrantMembers, stageContainers, stages, tournaments, teams, people, matchPlayerPovs } from "@gc-stats/db";
+import { matches, entrants, entrantMembers, stageContainers, stages, tournaments, teams, people, matchPlayerPovs, matchStreams, streamChannels } from "@gc-stats/db";
 import { getLiveStreams, type LiveStream } from "@/lib/twitch-client";
 
 /** Start checking this long before the scheduled kickoff. */
@@ -78,10 +78,17 @@ export async function detectPlayerPovStreams(): Promise<string> {
   const allLogins = [...new Set([...candidatesByEntrant.values()].flat().map((c) => c.login))];
   const liveStreams = allLogins.length ? await getLiveStreams(allLogins) : new Map<string, LiveStream>();
 
+  const streamLoginsByMatch = await getStreamLoginsByMatch(checkableMatches.map((m) => m.match.id));
+
   let recorded = 0;
 
   for (const { match, tournament } of checkableMatches) {
-    const candidates = [match.entrantAId, match.entrantBId].filter((id): id is number => id !== null).flatMap((id) => candidatesByEntrant.get(id) ?? []);
+    const streamLogins = streamLoginsByMatch.get(match.id);
+    // Une chaine déjà notée comme stream du match n'est pas un POV
+    const candidates = [match.entrantAId, match.entrantBId]
+      .filter((id): id is number => id !== null)
+      .flatMap((id) => candidatesByEntrant.get(id) ?? [])
+      .filter((c) => !streamLogins?.has(c.login));
     recorded += await recordLiveCandidates(match.id, candidates, liveStreams, tournament.playerPovPhrase as string);
   }
 
@@ -97,6 +104,28 @@ async function getTournamentsByContainer(containerIds: number[]) {
     .where(inArray(stageContainers.id, containerIds));
 
   return new Map(rows.map((r) => [r.containerId, r]));
+}
+
+/** Logins Twitch des stream channels liés à chaque match. */
+async function getStreamLoginsByMatch(matchIds: number[]): Promise<Map<number, Set<string>>> {
+  const byMatch = new Map<number, Set<string>>();
+  if (matchIds.length === 0) return byMatch;
+
+  const rows = await db
+    .select({ matchId: matchStreams.matchId, url: streamChannels.url })
+    .from(matchStreams)
+    .innerJoin(streamChannels, eq(streamChannels.id, matchStreams.streamChannelId))
+    .where(and(inArray(matchStreams.matchId, matchIds), eq(streamChannels.platform, "twitch")));
+
+  for (const row of rows) {
+    const login = row.url.match(/twitch\.tv\/([^/?#\s]+)/i)?.[1]?.toLowerCase();
+    if (!login) continue;
+    const logins = byMatch.get(row.matchId) ?? new Set<string>();
+    logins.add(login);
+    byMatch.set(row.matchId, logins);
+  }
+
+  return byMatch;
 }
 
 async function recordLiveCandidates(matchId: number, candidates: Candidate[], liveStreams: Map<string, LiveStream>, phrase: string): Promise<number> {
