@@ -260,32 +260,8 @@ export function PlayerTeamHistoryPanel({
         <CardTitle>{t("sectionHistory")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {entries.length === 0 && <p className="text-sm text-muted-foreground">{t("historyEmpty")}</p>}
-
-        {/* Current and history share one container (this Card) — same card
-            format for both, just a title splitting the two groups, mirroring
-            V1's roster-panel.blade.php. */}
-        {current.length > 0 && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {current.map((entry) => (
-              <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
-            ))}
-          </div>
-        )}
-
-        {past.length > 0 && (
-          <div className="flex flex-col gap-3">
-            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("historyPastTitle")}</p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {past.map((entry) => (
-                <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
-              ))}
-            </div>
-          </div>
-        )}
-
         {canEdit && (
-        <div className="flex flex-col gap-3 border-t pt-4">
+        <div className="flex flex-col gap-3 border-b pb-4">
           <p className="text-sm font-medium">{t("historyAddTitle")}</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div className="flex flex-col gap-1.5">
@@ -366,6 +342,29 @@ export function PlayerTeamHistoryPanel({
             </div>
           </div>
         </div>
+        )}
+        {entries.length === 0 && <p className="text-sm text-muted-foreground">{t("historyEmpty")}</p>}
+
+        {/* Current and history share one container (this Card) — same card
+            format for both, just a title splitting the two groups, mirroring
+            V1's roster-panel.blade.php. */}
+        {current.length > 0 && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {current.map((entry) => (
+              <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
+            ))}
+          </div>
+        )}
+
+        {past.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("historyPastTitle")}</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {past.map((entry) => (
+                <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
+              ))}
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -252,7 +252,7 @@ function AddChannelForm({ organizationId, languages, onAdded }: { organizationId
   }
 
   return (
-    <div className="flex flex-col gap-3 border-t pt-4">
+    <div className="flex flex-col gap-3 border-b pb-4">
       <p className="text-sm font-medium">{t("addTitle")}</p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="flex flex-col gap-1.5">
@@ -379,7 +379,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
   }
 
   return (
-    <div className="flex flex-col gap-3 border-t pt-4">
+    <div className="flex flex-col gap-3">
       <p className="text-sm font-medium">{t("linksTitle")}</p>
       <p className="text-sm text-muted-foreground">{t("linksHint")}</p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -513,6 +513,7 @@ export function OrgStreamsPanel({
           <CardTitle>{t("channelsTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          {canEdit && <AddChannelForm organizationId={organizationId} languages={languages} onAdded={() => window.location.reload()} />}
           {channels.length === 0 && <p className="text-sm text-muted-foreground">{t("empty")}</p>}
           <div className="flex flex-col gap-3">
             {channels.map((c) => (
@@ -528,7 +529,6 @@ export function OrgStreamsPanel({
               />
             ))}
           </div>
-          {canEdit && <AddChannelForm organizationId={organizationId} languages={languages} onAdded={() => window.location.reload()} />}
         </CardContent>
       </Card>
 
@@ -538,41 +538,43 @@ export function OrgStreamsPanel({
             <CardTitle>{t("linksTitle")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            {links.length === 0 && <p className="text-sm text-muted-foreground">{t("linkEmpty")}</p>}
-            {links.length > 0 && (
-              <MatchTimeFilterBar
-                showAll={linksFilter.showAll}
-                onShowAllChange={linksFilter.setShowAll}
-                defaultFilterLabel={t("filterUpcoming")}
-                allLabel={t("filterAll")}
-                page={linksFilter.page}
-                totalPages={linksFilter.totalPages}
-                onPageChange={linksFilter.setPage}
-                previousLabel={t("previous")}
-                nextLabel={t("next")}
-                pageOfLabel={t("pageOf", { page: linksFilter.page, total: linksFilter.totalPages })}
-              />
-            )}
-            {links.length > 0 && linksFilter.pageItems.length === 0 && <p className="text-sm text-muted-foreground">{t("linkFilterEmpty")}</p>}
-            {linksFilter.pageItems.length > 0 && (
-              <div className="flex flex-col gap-2">
-                {linksFilter.pageItems.map((l) => (
-                  <div key={`${l.channelId}-${l.matchId}`} className="flex items-center justify-between gap-2 rounded-lg border p-2.5">
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="outline">{l.channelName}</Badge>
-                        <span className="truncate text-sm font-medium">{l.matchLabel}</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">{l.tournamentName}</span>
-                    </div>
-                    <Button variant="ghost" size="sm" disabled={isPending} onClick={() => setUnlinking(l)} className="shrink-0 text-destructive hover:text-destructive">
-                      {t("unlinkButton")}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
             <AddLinkForm organizationId={organizationId} channels={channels} onAdded={() => window.location.reload()} />
+            <div className="flex flex-col gap-4 border-t pt-4">
+              {links.length === 0 && <p className="text-sm text-muted-foreground">{t("linkEmpty")}</p>}
+              {links.length > 0 && (
+                <MatchTimeFilterBar
+                  showAll={linksFilter.showAll}
+                  onShowAllChange={linksFilter.setShowAll}
+                  defaultFilterLabel={t("filterUpcoming")}
+                  allLabel={t("filterAll")}
+                  page={linksFilter.page}
+                  totalPages={linksFilter.totalPages}
+                  onPageChange={linksFilter.setPage}
+                  previousLabel={t("previous")}
+                  nextLabel={t("next")}
+                  pageOfLabel={t("pageOf", { page: linksFilter.page, total: linksFilter.totalPages })}
+                />
+              )}
+              {links.length > 0 && linksFilter.pageItems.length === 0 && <p className="text-sm text-muted-foreground">{t("linkFilterEmpty")}</p>}
+              {linksFilter.pageItems.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {linksFilter.pageItems.map((l) => (
+                    <div key={`${l.channelId}-${l.matchId}`} className="flex items-center justify-between gap-2 rounded-lg border p-2.5">
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline">{l.channelName}</Badge>
+                          <span className="truncate text-sm font-medium">{l.matchLabel}</span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{l.tournamentName}</span>
+                      </div>
+                      <Button variant="ghost" size="sm" disabled={isPending} onClick={() => setUnlinking(l)} className="shrink-0 text-destructive hover:text-destructive">
+                        {t("unlinkButton")}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}

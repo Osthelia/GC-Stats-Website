@@ -199,18 +199,8 @@ export function OrganizationDashboardAccessPanel({
         {!canManage && <CardDescription>{tAccess("readOnlyHint")}</CardDescription>}
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {grants.length === 0 && <p className="text-sm text-muted-foreground">{tAccess("empty")}</p>}
-
-        {grants.length > 0 && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {grants.map((g) => (
-              <AccessRow key={g.accessId} organizationId={organizationId} canManage={canManage} roles={roles} grant={g} onSaved={handleSaved} onDeleted={handleDeleted} />
-            ))}
-          </div>
-        )}
-
         {canManage && (
-          <div className="flex flex-col gap-3 border-t pt-4">
+          <div className="flex flex-col gap-3 border-b pb-4">
             <p className="text-sm font-medium">{tAccess("addTitle")}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex flex-col gap-1.5">
@@ -249,6 +239,15 @@ export function OrganizationDashboardAccessPanel({
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+        {grants.length === 0 && <p className="text-sm text-muted-foreground">{tAccess("empty")}</p>}
+
+        {grants.length > 0 && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {grants.map((g) => (
+              <AccessRow key={g.accessId} organizationId={organizationId} canManage={canManage} roles={roles} grant={g} onSaved={handleSaved} onDeleted={handleDeleted} />
+            ))}
           </div>
         )}
       </CardContent>

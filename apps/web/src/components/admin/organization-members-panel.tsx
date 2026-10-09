@@ -220,29 +220,8 @@ export function OrganizationMembersPanel({ organizationId, initialMembers, canMa
         <CardDescription>{t("membersHint")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {members.length === 0 && <p className="text-sm text-muted-foreground">{t("membersEmpty")}</p>}
-
-        {current.length > 0 && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {current.map((m) => (
-              <MemberRow key={m.membershipId} canManage={canManage} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
-            ))}
-          </div>
-        )}
-
-        {past.length > 0 && (
-          <div className="flex flex-col gap-3">
-            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("memberHistoryTitle")}</p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {past.map((m) => (
-                <MemberRow key={m.membershipId} canManage={canManage} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
-              ))}
-            </div>
-          </div>
-        )}
-
         {canManage && (
-          <div className="flex flex-col gap-3 border-t pt-4">
+          <div className="flex flex-col gap-3 border-b pb-4">
             <p className="text-sm font-medium">{t("memberAddTitle")}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex flex-col gap-1.5">
@@ -312,6 +291,26 @@ export function OrganizationMembersPanel({ organizationId, initialMembers, canMa
                   {t("memberAddSubmit")}
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+        {members.length === 0 && <p className="text-sm text-muted-foreground">{t("membersEmpty")}</p>}
+
+        {current.length > 0 && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {current.map((m) => (
+              <MemberRow key={m.membershipId} canManage={canManage} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+            ))}
+          </div>
+        )}
+
+        {past.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("memberHistoryTitle")}</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {past.map((m) => (
+                <MemberRow key={m.membershipId} canManage={canManage} member={m} onSaved={handleRowSaved} onDeleted={handleRowDeleted} />
+              ))}
             </div>
           </div>
         )}

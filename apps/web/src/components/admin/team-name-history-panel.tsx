@@ -86,31 +86,7 @@ export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: numbe
         <CardTitle>{t("sectionNameHistory")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {entries.length === 0 && <p className="text-sm text-muted-foreground">{t("nameHistoryEmpty")}</p>}
-
-        <div className="flex flex-col gap-2">
-          {entries.map((entry) => (
-            <div key={entry.id} className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium">{entry.name}</span>
-                <span className="text-xs text-muted-foreground">
-                  {entry.until ? t("nameHistoryPeriod", { since: entry.since ?? "?", until: entry.until }) : t("nameHistoryOngoing", { since: entry.since ?? "?" })}
-                </span>
-                {!entry.isVisible && <HiddenBadge>{t("nameHistoryHidden")}</HiddenBadge>}
-              </div>
-              <div className="flex shrink-0 items-center gap-1">
-                <Button variant="ghost" size="sm" disabled={isPending} onClick={() => handleToggleVisibility(entry.id, entry.isVisible)}>
-                  {entry.isVisible ? t("nameHistoryHide") : t("nameHistoryShow")}
-                </Button>
-                <Button variant="ghost" size="sm" disabled={isPending} onClick={() => setConfirmDeleteId(entry.id)}>
-                  {t("nameHistoryDelete")}
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col gap-3 border-t pt-4">
+        <div className="flex flex-col gap-3 border-b pb-4">
           <p className="text-sm font-medium">{t("nameHistoryAddTitle")}</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto_auto] sm:items-end">
             <div className="flex flex-col gap-1.5">
@@ -150,6 +126,29 @@ export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: numbe
               {t("nameHistoryAddSubmit")}
             </Button>
           </div>
+        </div>
+        {entries.length === 0 && <p className="text-sm text-muted-foreground">{t("nameHistoryEmpty")}</p>}
+
+        <div className="flex flex-col gap-2">
+          {entries.map((entry) => (
+            <div key={entry.id} className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{entry.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {entry.until ? t("nameHistoryPeriod", { since: entry.since ?? "?", until: entry.until }) : t("nameHistoryOngoing", { since: entry.since ?? "?" })}
+                </span>
+                {!entry.isVisible && <HiddenBadge>{t("nameHistoryHidden")}</HiddenBadge>}
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <Button variant="ghost" size="sm" disabled={isPending} onClick={() => handleToggleVisibility(entry.id, entry.isVisible)}>
+                  {entry.isVisible ? t("nameHistoryHide") : t("nameHistoryShow")}
+                </Button>
+                <Button variant="ghost" size="sm" disabled={isPending} onClick={() => setConfirmDeleteId(entry.id)}>
+                  {t("nameHistoryDelete")}
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
 
