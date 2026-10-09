@@ -2273,7 +2273,8 @@
           "vods": "VOD",
           "staff": "Staff",
           "people": "Persone",
-          "apiKeys": "Chiavi API"
+          "apiKeys": "Chiavi API",
+          "logs": "Log"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Modificare il profilo (nome, social, tag)",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "Creare nuove persone",
           "organization_people_link_user": "Collegare una persona a un account utente",
           "organization_people_edit_profile": "Modificare il profilo di una persona (informazioni di base e avanzate)",
-          "organization_api_keys_manage": "Gestire le chiavi API dell'organizzazione"
+          "organization_api_keys_manage": "Gestire le chiavi API dell'organizzazione",
+          "organization_logs_view": "Vedere i log dell'organizzazione"
         },
         "accessError": {
           "notFound": "Organizzazione non trovata."
@@ -4792,7 +4794,8 @@
       "myApiKeys": "Le mie chiavi API",
       "adminAccess": "Admin",
       "allAuthors": "Tutti gli autori",
-      "authorAdminSpace": "Autori"
+      "authorAdminSpace": "Autori",
+      "logs": "Log"
     },
     "switcher": {
       "selectOrganization": "Seleziona un'organizzazione",
@@ -5486,6 +5489,47 @@
         "tooLarge": "Immagine troppo grande (massimo 10 MB).",
         "invalidImage": "Questo file non è un'immagine valida."
       }
+    },
+    "logs": {
+      "title": "Log dell'organizzazione",
+      "subtitle": "Ogni modifica fatta a nome di questa organizzazione.",
+      "searchPlaceholder": "Descrizione...",
+      "searchSubmit": "Cerca",
+      "subjectLabel": "Soggetto",
+      "subjectAny": "Tutti i soggetti",
+      "eventLabel": "Evento",
+      "eventAny": "Tutti gli eventi",
+      "loading": "Caricamento",
+      "event": {
+        "created": "Creazione",
+        "updated": "Modifica",
+        "deleted": "Eliminazione"
+      },
+      "subject": {
+        "organization": "Organizzazione",
+        "player": "Giocatore",
+        "news": "News",
+        "stream": "Canale stream",
+        "vod": "VOD",
+        "credit": "Credito di produzione",
+        "apiKey": "Chiave API",
+        "author": "Autore",
+        "team": "Squadra",
+        "tournament": "Torneo",
+        "match": "Partita",
+        "map": "Mappa",
+        "user": "Utente"
+      },
+      "columnDescription": "Descrizione",
+      "columnSubject": "Soggetto",
+      "columnEvent": "Evento",
+      "columnCauser": "Account",
+      "columnCreatedAt": "Data",
+      "empty": "Nessuna attività registrata.",
+      "systemCauser": "Sistema",
+      "total": "{count, plural, one {# voce} other {# voci}}",
+      "previous": "Pagina precedente",
+      "next": "Pagina successiva"
     }
   },
   "globalSearch": {

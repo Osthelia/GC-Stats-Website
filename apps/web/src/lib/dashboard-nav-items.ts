@@ -10,7 +10,7 @@
  */
 
 import type { ComponentType } from "react";
-import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText } from "lucide-react";
 import { ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 
 export type DashboardNavItem = {
@@ -42,6 +42,7 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
       { href: (id) => `/dashboard/${id}/members`, labelKey: "members", icon: UsersRound },
       { href: (id) => `/dashboard/${id}/access`, labelKey: "access", icon: Users },
       { href: (id) => `/dashboard/${id}/permissions`, labelKey: "permissions", icon: KeyRound, ownerOnly: true },
+      { href: (id) => `/dashboard/${id}/logs`, labelKey: "logs", icon: ScrollText, permission: ORGANIZATION_PERMISSIONS.logsView },
     ],
   },
   {

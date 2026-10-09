@@ -16,6 +16,7 @@ import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { apiKeys, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
+import { logActivity } from "@/lib/activity-log";
 import { generatePlainApiKey, hashApiKey } from "@/lib/api-key-crypto";
 import { invalidateApiKeyCache } from "@/lib/api/v1/auth";
 import type { RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
@@ -37,12 +38,15 @@ async function assertOwnedByOrganization(organizationId: number, id: number): Pr
  * when a GC Stats admin issues it.
  */
 export async function regenerateOrganizationApiKey(organizationId: number, id: number): Promise<RegenerateApiKeyResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.apiKeysManage);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.apiKeysManage);
   const previousHash = await assertOwnedByOrganization(organizationId, id);
   if (!previousHash) return { ok: false, error: "notFound" };
 
   const plainKey = generatePlainApiKey();
-  await db.update(apiKeys).set({ keyHash: hashApiKey(plainKey) }).where(eq(apiKeys.id, id));
+  await db.transaction(async (tx) => {
+    await tx.update(apiKeys).set({ keyHash: hashApiKey(plainKey) }).where(eq(apiKeys.id, id));
+    await logActivity({ subject: "apiKey", subjectId: id, event: "updated", description: `Regenerated API key #${id}`, actorUserId, properties: { section: "regenerate", organizationId } }, tx);
+  });
   invalidateApiKeyCache(previousHash);
   return { ok: true, plainKey };
 }

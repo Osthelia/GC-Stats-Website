@@ -18,6 +18,7 @@ import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { isValidUrl } from "@/lib/admin-validation";
 import { STREAM_PLATFORMS, STREAM_CHANNEL_TYPES } from "@/lib/stream-platforms";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
 
 export type { CreditMatchOption } from "@/lib/production-credits-data";
@@ -54,43 +55,57 @@ async function validateChannelInput(input: StreamChannelInput): Promise<{ fieldE
 export type StreamChannelResult = { ok: true; id: number } | { ok: false; fieldErrors: StreamChannelFieldErrors };
 
 export async function createStreamChannel(organizationId: number, input: StreamChannelInput): Promise<StreamChannelResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
 
   const { fieldErrors, name } = await validateChannelInput(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [created] = await db
-    .insert(streamChannels)
-    .values({ organizationId, name, platform: input.platform, type: input.type, url: input.url.trim(), languageCode: input.languageCode, isActive: input.isActive })
-    .returning({ id: streamChannels.id });
-  if (!created) throw new Error("Insert returned no row");
-  return { ok: true, id: created.id };
+  const id = await db.transaction(async (tx) => {
+    const [created] = await tx
+      .insert(streamChannels)
+      .values({ organizationId, name, platform: input.platform, type: input.type, url: input.url.trim(), languageCode: input.languageCode, isActive: input.isActive })
+      .returning({ id: streamChannels.id });
+    if (!created) throw new Error("Insert returned no row");
+    await logActivity({ subject: "stream", subjectId: created.id, event: "created", description: `Created stream channel #${created.id} (${name})`, actorUserId, properties: { organizationId } }, tx);
+    return created.id;
+  });
+  return { ok: true, id };
 }
 
 export type UpdateStreamChannelResult = { ok: true } | { ok: false; fieldErrors: StreamChannelFieldErrors; error?: "notFound" };
 
 export async function updateStreamChannel(organizationId: number, channelId: number, input: StreamChannelInput): Promise<UpdateStreamChannelResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
 
-  const [existing] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
+  const [existing] = await db.select().from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, fieldErrors: {}, error: "notFound" };
 
   const { fieldErrors, name } = await validateChannelInput(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.update(streamChannels).set({ name, platform: input.platform, type: input.type, url: input.url.trim(), languageCode: input.languageCode, isActive: input.isActive }).where(eq(streamChannels.id, channelId));
+  const values = { name, platform: input.platform, type: input.type, url: input.url.trim(), languageCode: input.languageCode, isActive: input.isActive };
+  await db.transaction(async (tx) => {
+    await tx.update(streamChannels).set(values).where(eq(streamChannels.id, channelId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "stream", subjectId: channelId, event: "updated", description: `Updated stream channel #${channelId} (${name})`, actorUserId, changes, properties: { organizationId } }, tx);
+    }
+  });
   return { ok: true };
 }
 
 export type DeleteStreamChannelResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteStreamChannel(organizationId: number, channelId: number): Promise<DeleteStreamChannelResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsDelete);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsDelete);
 
-  const [existing] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
+  const [existing] = await db.select({ organizationId: streamChannels.organizationId, name: streamChannels.name }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, error: "notFound" };
 
-  await db.delete(streamChannels).where(eq(streamChannels.id, channelId));
+  await db.transaction(async (tx) => {
+    await tx.delete(streamChannels).where(eq(streamChannels.id, channelId));
+    await logActivity({ subject: "stream", subjectId: channelId, event: "deleted", description: `Deleted stream channel #${channelId} (${existing.name})`, actorUserId, properties: { organizationId } }, tx);
+  });
   return { ok: true };
 }
 
@@ -108,7 +123,7 @@ export async function getMatchOptionsForStreamLink(organizationId: number, tourn
 export type LinkStreamResult = { ok: true } | { ok: false; error: "channelNotFound" | "matchNotFound" | "matchNotInTournament" | "alreadyLinked" };
 
 export async function linkStreamChannelToMatch(organizationId: number, channelId: number, tournamentId: number, matchId: number): Promise<LinkStreamResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!channel || channel.organizationId !== organizationId) return { ok: false, error: "channelNotFound" };
@@ -120,7 +135,10 @@ export async function linkStreamChannelToMatch(organizationId: number, channelId
   const [existing] = await db.select().from(matchStreams).where(and(eq(matchStreams.matchId, matchId), eq(matchStreams.streamChannelId, channelId))).limit(1);
   if (existing) return { ok: false, error: "alreadyLinked" };
 
-  await db.insert(matchStreams).values({ matchId, streamChannelId: channelId });
+  await db.transaction(async (tx) => {
+    await tx.insert(matchStreams).values({ matchId, streamChannelId: channelId });
+    await logActivity({ subject: "stream", subjectId: channelId, event: "updated", description: `Linked stream channel #${channelId} to match #${matchId}`, actorUserId, properties: { section: "links", organizationId, matchId, tournamentId } }, tx);
+  });
   return { ok: true };
 }
 
@@ -136,7 +154,7 @@ export type LinkManyStreamResult = { ok: true; linked: number; alreadyLinked: nu
  * for this exact tournament.
  */
 export async function linkStreamChannelToMatches(organizationId: number, channelId: number, tournamentId: number, matchIds: number[]): Promise<LinkManyStreamResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!channel || channel.organizationId !== organizationId) return { ok: false, error: "channelNotFound" };
@@ -161,7 +179,10 @@ export async function linkStreamChannelToMatches(organizationId: number, channel
   const alreadyLinked = matchIds.filter((id) => inTournament.has(id) && alreadyLinkedIds.has(id)).length;
 
   if (toInsert.length > 0) {
-    await db.insert(matchStreams).values(toInsert.map((matchId) => ({ matchId, streamChannelId: channelId })));
+    await db.transaction(async (tx) => {
+      await tx.insert(matchStreams).values(toInsert.map((matchId) => ({ matchId, streamChannelId: channelId })));
+      await logActivity({ subject: "stream", subjectId: channelId, event: "updated", description: `Linked stream channel #${channelId} to ${toInsert.length} matches`, actorUserId, properties: { section: "links", organizationId, matchIds: toInsert, tournamentId } }, tx);
+    });
   }
 
   return { ok: true, linked: toInsert.length, alreadyLinked };
@@ -170,11 +191,14 @@ export async function linkStreamChannelToMatches(organizationId: number, channel
 export type UnlinkStreamResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function unlinkStreamChannelFromMatch(organizationId: number, channelId: number, matchId: number): Promise<UnlinkStreamResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!channel || channel.organizationId !== organizationId) return { ok: false, error: "notFound" };
 
-  await db.delete(matchStreams).where(and(eq(matchStreams.matchId, matchId), eq(matchStreams.streamChannelId, channelId)));
+  await db.transaction(async (tx) => {
+    await tx.delete(matchStreams).where(and(eq(matchStreams.matchId, matchId), eq(matchStreams.streamChannelId, channelId)));
+    await logActivity({ subject: "stream", subjectId: channelId, event: "updated", description: `Unlinked stream channel #${channelId} from match #${matchId}`, actorUserId, properties: { section: "links", organizationId, matchId } }, tx);
+  });
   return { ok: true };
 }

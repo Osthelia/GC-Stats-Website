@@ -37,6 +37,7 @@ export const ORGANIZATION_PERMISSIONS = {
   peopleLinkUser: "organization.people.link-user",
   peopleEditProfile: "organization.people.edit-profile",
   apiKeysManage: "organization.api-keys.manage",
+  logsView: "organization.logs.view",
 } as const;
 
 export type OrganizationPermissionName = (typeof ORGANIZATION_PERMISSIONS)[keyof typeof ORGANIZATION_PERMISSIONS];
@@ -51,6 +52,7 @@ export const ORGANIZATION_PERMISSION_GROUPS: { key: string; permissions: Organiz
   { key: "staff", permissions: [ORGANIZATION_PERMISSIONS.staffManage] },
   { key: "people", permissions: [ORGANIZATION_PERMISSIONS.peopleCreate, ORGANIZATION_PERMISSIONS.peopleLinkUser, ORGANIZATION_PERMISSIONS.peopleEditProfile] },
   { key: "apiKeys", permissions: [ORGANIZATION_PERMISSIONS.apiKeysManage] },
+  { key: "logs", permissions: [ORGANIZATION_PERMISSIONS.logsView] },
 ];
 
 export const ALL_ORGANIZATION_PERMISSIONS: OrganizationPermissionName[] = ORGANIZATION_PERMISSION_GROUPS.flatMap((g) => g.permissions);

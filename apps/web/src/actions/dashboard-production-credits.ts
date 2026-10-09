@@ -15,6 +15,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { productionCredits, people, tournaments, matches, maps, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
@@ -52,7 +53,7 @@ export type ProductionCreditResult = { ok: true; created: number; skipped: numbe
  * credited with the same person and role are skipped.
  */
 export async function addProductionCredits(organizationId: number, input: ProductionCreditInput): Promise<ProductionCreditResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const { fieldErrors, role, titleOverride } = validateProductionCreditInput(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -90,7 +91,10 @@ export async function addProductionCredits(organizationId: number, input: Produc
   const total = tournamentIds.length + matchIds.length + mapIds.length;
 
   if (toInsert.length > 0) {
-    await db.insert(productionCredits).values(toInsert.map((target) => ({ personId, organizationId, role, titleOverride, ...target })));
+    await db.transaction(async (tx) => {
+      await tx.insert(productionCredits).values(toInsert.map((target) => ({ personId, organizationId, role, titleOverride, ...target })));
+      await logActivity({ subject: "credit", subjectId: null, event: "created", description: `Created ${toInsert.length} production credit(s) (${role}) for player #${personId}`, actorUserId, properties: { organizationId, personId, role, targets: toInsert } }, tx);
+    });
   }
   return { ok: true, created: toInsert.length, skipped: total - toInsert.length };
 }
@@ -100,26 +104,36 @@ export type UpdateCreditResult = { ok: true } | { ok: false; fieldErrors: Produc
 
 /** Only role/titleOverride are editable in place — changing what a credit is attached to (person or target) means deleting it and adding a new one, deliberately simpler than the roster panel's full inline edit. */
 export async function updateProductionCredit(organizationId: number, creditId: number, input: UpdateCreditInput): Promise<UpdateCreditResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const { fieldErrors, role, titleOverride } = validateRoleAndTitle(input.role, input.roleOther, input.titleOverride);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [existing] = await db.select({ id: productionCredits.id, organizationId: productionCredits.organizationId }).from(productionCredits).where(eq(productionCredits.id, creditId)).limit(1);
+  const [existing] = await db.select().from(productionCredits).where(eq(productionCredits.id, creditId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, fieldErrors: { role: "notFound" } };
 
-  await db.update(productionCredits).set({ role, titleOverride }).where(eq(productionCredits.id, creditId));
+  const values = { role, titleOverride };
+  await db.transaction(async (tx) => {
+    await tx.update(productionCredits).set(values).where(eq(productionCredits.id, creditId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "credit", subjectId: creditId, event: "updated", description: `Updated production credit #${creditId} of player #${existing.personId}`, actorUserId, changes, properties: { organizationId, personId: existing.personId } }, tx);
+    }
+  });
   return { ok: true };
 }
 
 export type DeleteCreditResult = { ok: true } | { ok: false; error: string };
 
 export async function deleteProductionCredit(organizationId: number, creditId: number): Promise<DeleteCreditResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
-  const [existing] = await db.select({ id: productionCredits.id, organizationId: productionCredits.organizationId }).from(productionCredits).where(eq(productionCredits.id, creditId)).limit(1);
+  const [existing] = await db.select({ id: productionCredits.id, organizationId: productionCredits.organizationId, personId: productionCredits.personId, role: productionCredits.role }).from(productionCredits).where(eq(productionCredits.id, creditId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, error: "notFound" };
 
-  await db.delete(productionCredits).where(eq(productionCredits.id, creditId));
+  await db.transaction(async (tx) => {
+    await tx.delete(productionCredits).where(eq(productionCredits.id, creditId));
+    await logActivity({ subject: "credit", subjectId: creditId, event: "deleted", description: `Deleted production credit #${creditId} (${existing.role}) of player #${existing.personId}`, actorUserId, properties: { organizationId, personId: existing.personId } }, tx);
+  });
   return { ok: true };
 }

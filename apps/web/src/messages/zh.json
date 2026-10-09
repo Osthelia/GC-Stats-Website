@@ -2273,7 +2273,8 @@
           "vods": "录像回放",
           "staff": "工作人员",
           "people": "人员",
-          "apiKeys": "API 密钥"
+          "apiKeys": "API 密钥",
+          "logs": "日志"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "编辑资料（名称、社交账号、标签）",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "创建新人员",
           "organization_people_link_user": "将人员绑定至用户账户",
           "organization_people_edit_profile": "编辑人员资料（基本及高级信息）",
-          "organization_api_keys_manage": "管理该机构的 API 密钥"
+          "organization_api_keys_manage": "管理该机构的 API 密钥",
+          "organization_logs_view": "查看组织日志"
         },
         "accessError": {
           "notFound": "未找到该机构。"
@@ -4788,7 +4790,8 @@
       "myApiKeys": "我的 API 密钥",
       "adminAccess": "管理",
       "allAuthors": "所有作者",
-      "authorAdminSpace": "作者"
+      "authorAdminSpace": "作者",
+      "logs": "日志"
     },
     "switcher": {
       "selectOrganization": "选择一个机构",
@@ -5482,6 +5485,47 @@
         "tooLarge": "图片过大（最多 10 MB）。",
         "invalidImage": "该文件不是有效的图片。"
       }
+    },
+    "logs": {
+      "title": "组织日志",
+      "subtitle": "以该组织名义进行的所有更改。",
+      "searchPlaceholder": "描述...",
+      "searchSubmit": "搜索",
+      "subjectLabel": "对象",
+      "subjectAny": "所有对象",
+      "eventLabel": "事件",
+      "eventAny": "所有事件",
+      "loading": "加载中",
+      "event": {
+        "created": "创建",
+        "updated": "更新",
+        "deleted": "删除"
+      },
+      "subject": {
+        "organization": "组织",
+        "player": "选手",
+        "news": "新闻",
+        "stream": "直播频道",
+        "vod": "VOD",
+        "credit": "制作署名",
+        "apiKey": "API 密钥",
+        "author": "作者",
+        "team": "战队",
+        "tournament": "赛事",
+        "match": "比赛",
+        "map": "地图",
+        "user": "用户"
+      },
+      "columnDescription": "描述",
+      "columnSubject": "对象",
+      "columnEvent": "事件",
+      "columnCauser": "账号",
+      "columnCreatedAt": "日期",
+      "empty": "暂无记录的活动。",
+      "systemCauser": "系统",
+      "total": "{count, plural, other {#条}}",
+      "previous": "上一页",
+      "next": "下一页"
     }
   },
   "globalSearch": {

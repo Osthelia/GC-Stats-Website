@@ -14,7 +14,7 @@ import { activityLog } from "@gc-stats/db";
 
 export type ActivityLogClient = Pick<typeof adminDb, "insert">;
 
-export type ActivitySubject = "team" | "organization" | "player" | "tournament" | "match" | "map" | "user" | "author";
+export type ActivitySubject = "team" | "organization" | "player" | "tournament" | "match" | "map" | "user" | "author" | "news" | "stream" | "vod" | "credit" | "apiKey";
 
 /** Category shown in the log filter, defaults to the subject. */
 export type ActivityLogName = ActivitySubject | "account" | "moderation";

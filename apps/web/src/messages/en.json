@@ -2273,7 +2273,8 @@
           "vods": "VODs",
           "staff": "Staff",
           "people": "People",
-          "apiKeys": "API keys"
+          "apiKeys": "API keys",
+          "logs": "Logs"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Edit profile (name, socials, tags)",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "Create new people",
           "organization_people_link_user": "Link a person to a user account",
           "organization_people_edit_profile": "Edit a person's profile (basic and advanced info)",
-          "organization_api_keys_manage": "Manage the organization's API keys"
+          "organization_api_keys_manage": "Manage the organization's API keys",
+          "organization_logs_view": "View the organization's logs"
         },
         "accessError": {
           "notFound": "Organization not found."
@@ -4792,7 +4794,8 @@
       "myApiKeys": "My API keys",
       "adminAccess": "Admin",
       "allAuthors": "All authors",
-      "authorAdminSpace": "Authors"
+      "authorAdminSpace": "Authors",
+      "logs": "Logs"
     },
     "switcher": {
       "selectOrganization": "Select an organization",
@@ -5486,6 +5489,47 @@
         "tooLarge": "Image too large (10 MB max).",
         "invalidImage": "This file isn't a valid image."
       }
+    },
+    "logs": {
+      "title": "Organization logs",
+      "subtitle": "Every change made on behalf of this organization.",
+      "searchPlaceholder": "Description...",
+      "searchSubmit": "Search",
+      "subjectLabel": "Subject",
+      "subjectAny": "Any subject",
+      "eventLabel": "Event",
+      "eventAny": "Any event",
+      "loading": "Loading",
+      "event": {
+        "created": "Created",
+        "updated": "Updated",
+        "deleted": "Deleted"
+      },
+      "subject": {
+        "organization": "Organization",
+        "player": "Player",
+        "news": "News",
+        "stream": "Stream channel",
+        "vod": "VOD",
+        "credit": "Production credit",
+        "apiKey": "API key",
+        "author": "Author",
+        "team": "Team",
+        "tournament": "Tournament",
+        "match": "Match",
+        "map": "Map",
+        "user": "User"
+      },
+      "columnDescription": "Description",
+      "columnSubject": "Subject",
+      "columnEvent": "Event",
+      "columnCauser": "Account",
+      "columnCreatedAt": "Date",
+      "empty": "No activity recorded.",
+      "systemCauser": "System",
+      "total": "{count, plural, one {# entry} other {# entries}}",
+      "previous": "Previous page",
+      "next": "Next page"
     }
   },
   "globalSearch": {

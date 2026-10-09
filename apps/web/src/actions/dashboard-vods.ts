@@ -16,6 +16,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { vods, maps, newsLanguages, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { isValidUrl } from "@/lib/admin-validation";
+import { logActivity, diffChanges } from "@/lib/activity-log";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
 import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
@@ -51,7 +52,7 @@ export type AddVodInput = { tournamentId: number | null; matchId: number | null;
 export type AddVodResult = { ok: true; id: number } | { ok: false; fieldErrors: VodFieldErrors };
 
 export async function addVod(organizationId: number, input: AddVodInput): Promise<AddVodResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
   const fieldErrors: VodFieldErrors = {};
   if (!input.tournamentId) fieldErrors.tournament = "required";
@@ -72,21 +73,25 @@ export async function addVod(organizationId: number, input: AddVodInput): Promis
     if (map.matchId !== input.matchId) return { ok: false, fieldErrors: { map: "mapNotInMatch" } };
   }
 
-  const [created] = await db
-    .insert(vods)
-    .values({ matchId: input.matchId as number, mapId: input.mapId, organizationId, url: input.url.trim(), languageCode: input.languageCode })
-    .returning({ id: vods.id });
-  if (!created) throw new Error("Insert returned no row");
-  return { ok: true, id: created.id };
+  const id = await db.transaction(async (tx) => {
+    const [created] = await tx
+      .insert(vods)
+      .values({ matchId: input.matchId as number, mapId: input.mapId, organizationId, url: input.url.trim(), languageCode: input.languageCode })
+      .returning({ id: vods.id });
+    if (!created) throw new Error("Insert returned no row");
+    await logActivity({ subject: "vod", subjectId: created.id, event: "created", description: `Created VOD #${created.id} on match #${input.matchId}`, actorUserId, properties: { organizationId, matchId: input.matchId, mapId: input.mapId } }, tx);
+    return created.id;
+  });
+  return { ok: true, id };
 }
 
 export type UpdateVodInput = { url: string; languageCode: string };
 export type UpdateVodResult = { ok: true } | { ok: false; fieldErrors: VodFieldErrors; error?: "notFound" };
 
 export async function updateVod(organizationId: number, vodId: number, input: UpdateVodInput): Promise<UpdateVodResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
-  const [existing] = await db.select({ organizationId: vods.organizationId }).from(vods).where(eq(vods.id, vodId)).limit(1);
+  const [existing] = await db.select().from(vods).where(eq(vods.id, vodId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, fieldErrors: {}, error: "notFound" };
 
   const fieldErrors: VodFieldErrors = {};
@@ -96,18 +101,28 @@ export async function updateVod(organizationId: number, vodId: number, input: Up
   else if (!(await isActiveLanguage(input.languageCode))) fieldErrors.languageCode = "invalidLanguage";
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  await db.update(vods).set({ url: input.url.trim(), languageCode: input.languageCode }).where(eq(vods.id, vodId));
+  const values = { url: input.url.trim(), languageCode: input.languageCode };
+  await db.transaction(async (tx) => {
+    await tx.update(vods).set(values).where(eq(vods.id, vodId));
+    const changes = diffChanges(existing, values);
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "vod", subjectId: vodId, event: "updated", description: `Updated VOD #${vodId}`, actorUserId, changes, properties: { organizationId, matchId: existing.matchId } }, tx);
+    }
+  });
   return { ok: true };
 }
 
 export type DeleteVodResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteVod(organizationId: number, vodId: number): Promise<DeleteVodResult> {
-  await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
-  const [existing] = await db.select({ organizationId: vods.organizationId }).from(vods).where(eq(vods.id, vodId)).limit(1);
+  const [existing] = await db.select({ organizationId: vods.organizationId, matchId: vods.matchId }).from(vods).where(eq(vods.id, vodId)).limit(1);
   if (!existing || existing.organizationId !== organizationId) return { ok: false, error: "notFound" };
 
-  await db.delete(vods).where(eq(vods.id, vodId));
+  await db.transaction(async (tx) => {
+    await tx.delete(vods).where(eq(vods.id, vodId));
+    await logActivity({ subject: "vod", subjectId: vodId, event: "deleted", description: `Deleted VOD #${vodId}`, actorUserId, properties: { organizationId, matchId: existing.matchId } }, tx);
+  });
   return { ok: true };
 }

@@ -2273,7 +2273,8 @@
           "vods": "VOD",
           "staff": "スタッフ",
           "people": "人物",
-          "apiKeys": "APIキー"
+          "apiKeys": "APIキー",
+          "logs": "ログ"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "プロフィールを編集（名前、ソーシャル、タグ）",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "新しい人物を作成",
           "organization_people_link_user": "人物をユーザーアカウントにリンク",
           "organization_people_edit_profile": "人物のプロフィールを編集（基本情報と詳細情報）",
-          "organization_api_keys_manage": "組織のAPIキーを管理"
+          "organization_api_keys_manage": "組織のAPIキーを管理",
+          "organization_logs_view": "組織のログを表示"
         },
         "accessError": {
           "notFound": "組織が見つかりません。"
@@ -4788,7 +4790,8 @@
       "myApiKeys": "自分のAPIキー",
       "adminAccess": "管理者",
       "allAuthors": "すべての著者",
-      "authorAdminSpace": "著者"
+      "authorAdminSpace": "著者",
+      "logs": "ログ"
     },
     "switcher": {
       "selectOrganization": "組織を選択",
@@ -5482,6 +5485,47 @@
         "tooLarge": "画像が大きすぎます（最大10MB）。",
         "invalidImage": "このファイルは有効な画像ではありません。"
       }
+    },
+    "logs": {
+      "title": "組織のログ",
+      "subtitle": "この組織の名義で行われたすべての変更です。",
+      "searchPlaceholder": "説明...",
+      "searchSubmit": "検索",
+      "subjectLabel": "対象",
+      "subjectAny": "すべての対象",
+      "eventLabel": "イベント",
+      "eventAny": "すべてのイベント",
+      "loading": "読み込み中",
+      "event": {
+        "created": "作成",
+        "updated": "更新",
+        "deleted": "削除"
+      },
+      "subject": {
+        "organization": "組織",
+        "player": "選手",
+        "news": "ニュース",
+        "stream": "配信チャンネル",
+        "vod": "VOD",
+        "credit": "制作クレジット",
+        "apiKey": "APIキー",
+        "author": "著者",
+        "team": "チーム",
+        "tournament": "大会",
+        "match": "試合",
+        "map": "マップ",
+        "user": "ユーザー"
+      },
+      "columnDescription": "説明",
+      "columnSubject": "対象",
+      "columnEvent": "イベント",
+      "columnCauser": "アカウント",
+      "columnCreatedAt": "日付",
+      "empty": "記録された操作はありません。",
+      "systemCauser": "システム",
+      "total": "{count, plural, other {#件}}",
+      "previous": "前のページ",
+      "next": "次のページ"
     }
   },
   "globalSearch": {

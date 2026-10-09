@@ -2273,7 +2273,8 @@
           "vods": "التسجيلات",
           "staff": "الطاقم",
           "people": "الأشخاص",
-          "apiKeys": "مفاتيح API"
+          "apiKeys": "مفاتيح API",
+          "logs": "السجلات"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "تعديل الملف (الاسم، الشبكات الاجتماعية، الوسوم)",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "إنشاء أشخاص جدد",
           "organization_people_link_user": "ربط شخص بحساب مستخدم",
           "organization_people_edit_profile": "تعديل ملف شخص (المعلومات الأساسية والمتقدمة)",
-          "organization_api_keys_manage": "إدارة مفاتيح API الخاصة بالمنظمة"
+          "organization_api_keys_manage": "إدارة مفاتيح API الخاصة بالمنظمة",
+          "organization_logs_view": "عرض سجلات المنظمة"
         },
         "accessError": {
           "notFound": "المنظمة غير موجودة."
@@ -4788,7 +4790,8 @@
       "myApiKeys": "مفاتيح API الخاصة بي",
       "adminAccess": "الإدارة",
       "allAuthors": "كل الكتّاب",
-      "authorAdminSpace": "الكتّاب"
+      "authorAdminSpace": "الكتّاب",
+      "logs": "السجلات"
     },
     "switcher": {
       "selectOrganization": "اختر منظمة",
@@ -5482,6 +5485,47 @@
         "tooLarge": "الصورة كبيرة جدًا (10 ميغابايت كحد أقصى).",
         "invalidImage": "هذا الملف ليس صورة صالحة."
       }
+    },
+    "logs": {
+      "title": "سجلات المنظمة",
+      "subtitle": "كل تغيير تم باسم هذه المنظمة.",
+      "searchPlaceholder": "الوصف...",
+      "searchSubmit": "بحث",
+      "subjectLabel": "الموضوع",
+      "subjectAny": "كل المواضيع",
+      "eventLabel": "الحدث",
+      "eventAny": "كل الأحداث",
+      "loading": "جارٍ التحميل",
+      "event": {
+        "created": "إنشاء",
+        "updated": "تحديث",
+        "deleted": "حذف"
+      },
+      "subject": {
+        "organization": "المنظمة",
+        "player": "اللاعب",
+        "news": "الأخبار",
+        "stream": "قناة البث",
+        "vod": "VOD",
+        "credit": "رصيد الإنتاج",
+        "apiKey": "مفتاح API",
+        "author": "الكاتب",
+        "team": "الفريق",
+        "tournament": "البطولة",
+        "match": "المباراة",
+        "map": "الخريطة",
+        "user": "المستخدم"
+      },
+      "columnDescription": "الوصف",
+      "columnSubject": "الموضوع",
+      "columnEvent": "الحدث",
+      "columnCauser": "الحساب",
+      "columnCreatedAt": "التاريخ",
+      "empty": "لا يوجد نشاط مسجل.",
+      "systemCauser": "النظام",
+      "total": "{count, plural, one {# إدخال} other {# إدخالات}}",
+      "previous": "الصفحة السابقة",
+      "next": "الصفحة التالية"
     }
   },
   "globalSearch": {

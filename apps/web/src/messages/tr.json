@@ -2273,7 +2273,8 @@
           "vods": "VOD'lar",
           "staff": "Ekip",
           "people": "Kişiler",
-          "apiKeys": "API anahtarları"
+          "apiKeys": "API anahtarları",
+          "logs": "Kayıtlar"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Profili düzenle (isim, sosyal medya, etiketler)",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "Yeni kişiler oluştur",
           "organization_people_link_user": "Bir kişiyi kullanıcı hesabına bağla",
           "organization_people_edit_profile": "Bir kişinin profilini düzenle (temel ve gelişmiş bilgiler)",
-          "organization_api_keys_manage": "Organizasyonun API anahtarlarını yönet"
+          "organization_api_keys_manage": "Organizasyonun API anahtarlarını yönet",
+          "organization_logs_view": "Organizasyon kayıtlarını görüntüle"
         },
         "accessError": {
           "notFound": "Organizasyon bulunamadı."
@@ -4788,7 +4790,8 @@
       "myApiKeys": "API anahtarlarım",
       "adminAccess": "Yönetici",
       "allAuthors": "Tüm yazarlar",
-      "authorAdminSpace": "Yazarlar"
+      "authorAdminSpace": "Yazarlar",
+      "logs": "Kayıtlar"
     },
     "switcher": {
       "selectOrganization": "Bir organizasyon seçin",
@@ -5482,6 +5485,47 @@
         "tooLarge": "Görsel çok büyük (en fazla 10 MB).",
         "invalidImage": "Bu dosya geçerli bir görsel değil."
       }
+    },
+    "logs": {
+      "title": "Organizasyon kayıtları",
+      "subtitle": "Bu organizasyon adına yapılan her değişiklik.",
+      "searchPlaceholder": "Açıklama...",
+      "searchSubmit": "Ara",
+      "subjectLabel": "Konu",
+      "subjectAny": "Tüm konular",
+      "eventLabel": "Olay",
+      "eventAny": "Tüm olaylar",
+      "loading": "Yükleniyor",
+      "event": {
+        "created": "Oluşturma",
+        "updated": "Güncelleme",
+        "deleted": "Silme"
+      },
+      "subject": {
+        "organization": "Organizasyon",
+        "player": "Oyuncu",
+        "news": "Haberler",
+        "stream": "Yayın kanalı",
+        "vod": "VOD",
+        "credit": "Yapım kredisi",
+        "apiKey": "API anahtarı",
+        "author": "Yazar",
+        "team": "Takım",
+        "tournament": "Turnuva",
+        "match": "Maç",
+        "map": "Harita",
+        "user": "Kullanıcı"
+      },
+      "columnDescription": "Açıklama",
+      "columnSubject": "Konu",
+      "columnEvent": "Olay",
+      "columnCauser": "Hesap",
+      "columnCreatedAt": "Tarih",
+      "empty": "Kayıtlı etkinlik yok.",
+      "systemCauser": "Sistem",
+      "total": "{count, plural, one {# kayıt} other {# kayıt}}",
+      "previous": "Önceki sayfa",
+      "next": "Sonraki sayfa"
     }
   },
   "globalSearch": {

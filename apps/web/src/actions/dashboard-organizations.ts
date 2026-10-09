@@ -446,24 +446,28 @@ function validateRoleName(name: string, existingNames: string[]): string | null 
 export type CreateRoleResult = { ok: true; id: number } | { ok: false; fieldErrors: RoleFieldErrors };
 
 export async function createOrganizationRole(organizationId: number, name: string): Promise<CreateRoleResult> {
-  await requireDashboardOrgOwnerActor(organizationId);
+  const { userId: actorUserId } = await requireDashboardOrgOwnerActor(organizationId);
 
   const existing = await listOrganizationRoles(organizationId);
   const error = validateRoleName(name, existing.map((r) => r.name));
   if (error) return { ok: false, fieldErrors: { name: error } };
 
-  const [created] = await db.insert(organizationRoles).values({ organizationId, name: name.trim() }).returning({ id: organizationRoles.id });
-  if (!created) throw new Error("Insert returned no row");
-  return { ok: true, id: created.id };
+  const id = await db.transaction(async (tx) => {
+    const [created] = await tx.insert(organizationRoles).values({ organizationId, name: name.trim() }).returning({ id: organizationRoles.id });
+    if (!created) throw new Error("Insert returned no row");
+    await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Created role "${name.trim()}" on organization #${organizationId}`, actorUserId, properties: { section: "roles", roleId: created.id } }, tx);
+    return created.id;
+  });
+  return { ok: true, id };
 }
 
 export type RenameRoleResult = { ok: true } | { ok: false; fieldErrors: RoleFieldErrors };
 
 export async function renameOrganizationRole(organizationId: number, roleId: number, name: string): Promise<RenameRoleResult> {
-  await requireDashboardOrgOwnerActor(organizationId);
+  const { userId: actorUserId } = await requireDashboardOrgOwnerActor(organizationId);
 
   const [role] = await db
-    .select({ id: organizationRoles.id })
+    .select({ id: organizationRoles.id, name: organizationRoles.name })
     .from(organizationRoles)
     .where(and(eq(organizationRoles.id, roleId), eq(organizationRoles.organizationId, organizationId)))
     .limit(1);
@@ -473,7 +477,12 @@ export async function renameOrganizationRole(organizationId: number, roleId: num
   const error = validateRoleName(name, existing.map((r) => r.name));
   if (error) return { ok: false, fieldErrors: { name: error } };
 
-  await db.update(organizationRoles).set({ name: name.trim() }).where(eq(organizationRoles.id, roleId));
+  await db.transaction(async (tx) => {
+    await tx.update(organizationRoles).set({ name: name.trim() }).where(eq(organizationRoles.id, roleId));
+    if (role.name !== name.trim()) {
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Renamed role #${roleId} on organization #${organizationId}`, actorUserId, changes: { name: { old: role.name, new: name.trim() } }, properties: { section: "roles", roleId } }, tx);
+    }
+  });
   return { ok: true };
 }
 
@@ -481,10 +490,10 @@ export type DeleteRoleResult = { ok: true } | { ok: false; error: string };
 
 /** Blocked while any account still holds this role — reassign or revoke their access first (checked here, not left to the FK, so the UI gets a clear reason instead of a raw constraint error). */
 export async function deleteOrganizationRole(organizationId: number, roleId: number): Promise<DeleteRoleResult> {
-  await requireDashboardOrgOwnerActor(organizationId);
+  const { userId: actorUserId } = await requireDashboardOrgOwnerActor(organizationId);
 
   const [role] = await db
-    .select({ id: organizationRoles.id })
+    .select({ id: organizationRoles.id, name: organizationRoles.name })
     .from(organizationRoles)
     .where(and(eq(organizationRoles.id, roleId), eq(organizationRoles.organizationId, organizationId)))
     .limit(1);
@@ -496,7 +505,10 @@ export async function deleteOrganizationRole(organizationId: number, roleId: num
   const [linkedToMemberRole] = await db.select({ id: organizationMemberRoleLinks.id }).from(organizationMemberRoleLinks).where(eq(organizationMemberRoleLinks.permissionRoleId, roleId)).limit(1);
   if (linkedToMemberRole) return { ok: false, error: "roleInUse" };
 
-  await db.delete(organizationRoles).where(eq(organizationRoles.id, roleId));
+  await db.transaction(async (tx) => {
+    await tx.delete(organizationRoles).where(eq(organizationRoles.id, roleId));
+    await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Deleted role "${role.name}" on organization #${organizationId}`, actorUserId, properties: { section: "roles", roleId } }, tx);
+  });
   return { ok: true };
 }
 
@@ -509,12 +521,18 @@ export type SetMemberRoleLinkResult = { ok: true } | { ok: false; error: string 
  * (organization-membership-service.ts) for what a link actually does.
  */
 export async function setOrganizationMemberRoleLink(organizationId: number, memberRole: string, target: "none" | "owner" | number): Promise<SetMemberRoleLinkResult> {
-  await requireDashboardOrgOwnerActor(organizationId);
+  const { userId: actorUserId } = await requireDashboardOrgOwnerActor(organizationId);
 
   if (!(ORGANIZATION_MEMBER_ROLES as readonly string[]).includes(memberRole)) return { ok: false, error: "invalidRole" };
 
+  const logLink = (tx: Parameters<Parameters<typeof db.transaction>[0]>[0]) =>
+    logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Set permission role of member role "${memberRole}" to ${target} on organization #${organizationId}`, actorUserId, properties: { section: "roles", memberRole, target } }, tx);
+
   if (target === "none") {
-    await db.delete(organizationMemberRoleLinks).where(and(eq(organizationMemberRoleLinks.organizationId, organizationId), eq(organizationMemberRoleLinks.memberRole, memberRole)));
+    await db.transaction(async (tx) => {
+      await tx.delete(organizationMemberRoleLinks).where(and(eq(organizationMemberRoleLinks.organizationId, organizationId), eq(organizationMemberRoleLinks.memberRole, memberRole)));
+      await logLink(tx);
+    });
     return { ok: true };
   }
 
@@ -525,10 +543,13 @@ export async function setOrganizationMemberRoleLink(organizationId: number, memb
     permissionRoleId = role.id;
   }
 
-  await db
-    .insert(organizationMemberRoleLinks)
-    .values({ organizationId, memberRole, permissionRoleId })
-    .onConflictDoUpdate({ target: [organizationMemberRoleLinks.organizationId, organizationMemberRoleLinks.memberRole], set: { permissionRoleId } });
+  await db.transaction(async (tx) => {
+    await tx
+      .insert(organizationMemberRoleLinks)
+      .values({ organizationId, memberRole, permissionRoleId })
+      .onConflictDoUpdate({ target: [organizationMemberRoleLinks.organizationId, organizationMemberRoleLinks.memberRole], set: { permissionRoleId } });
+    await logLink(tx);
+  });
 
   return { ok: true };
 }
@@ -536,7 +557,7 @@ export async function setOrganizationMemberRoleLink(organizationId: number, memb
 export type UpdateRolePermissionsResult = { ok: true } | { ok: false; error: "invalidRole" };
 
 export async function updateOrganizationRolePermissions(organizationId: number, roleId: number, permissionNames: string[]): Promise<UpdateRolePermissionsResult> {
-  const { membership } = await requireDashboardOrgOwnerActor(organizationId);
+  const { membership, userId: actorUserId } = await requireDashboardOrgOwnerActor(organizationId);
 
   const [role] = await db
     .select({ id: organizationRoles.id })
@@ -552,10 +573,16 @@ export async function updateOrganizationRolePermissions(organizationId: number, 
   const allowed: Set<string> = new Set(ALL_ORGANIZATION_PERMISSIONS.filter((p) => ceiling.has(p)));
   const permissions = [...new Set(permissionNames)].filter((p) => allowed.has(p));
 
+  const previous = (await db.select({ permission: organizationRolePermissions.permission }).from(organizationRolePermissions).where(eq(organizationRolePermissions.roleId, roleId))).map((r) => r.permission).sort();
+
   await db.transaction(async (tx) => {
     await tx.delete(organizationRolePermissions).where(eq(organizationRolePermissions.roleId, roleId));
     if (permissions.length > 0) {
       await tx.insert(organizationRolePermissions).values(permissions.map((permission) => ({ roleId, permission })));
+    }
+    const changes = diffChanges({ permissions: previous }, { permissions: [...permissions].sort() });
+    if (Object.keys(changes).length > 0) {
+      await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Updated permissions of role #${roleId} on organization #${organizationId}`, actorUserId, changes, properties: { section: "roles", roleId } }, tx);
     }
   });
 

@@ -2273,7 +2273,8 @@
           "vods": "VOD",
           "staff": "สตาฟ",
           "people": "บุคคล",
-          "apiKeys": "API key"
+          "apiKeys": "API key",
+          "logs": "บันทึก"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "แก้ไขโปรไฟล์ (ชื่อ โซเชียล แท็ก)",
@@ -2297,7 +2298,8 @@
           "organization_people_create": "สร้างบุคคลใหม่",
           "organization_people_link_user": "เชื่อมโยงบุคคลกับบัญชีผู้ใช้",
           "organization_people_edit_profile": "แก้ไขโปรไฟล์บุคคล (ข้อมูลพื้นฐานและขั้นสูง)",
-          "organization_api_keys_manage": "จัดการ API key ขององค์กร"
+          "organization_api_keys_manage": "จัดการ API key ขององค์กร",
+          "organization_logs_view": "ดูบันทึกขององค์กร"
         },
         "accessError": {
           "notFound": "ไม่พบองค์กร"
@@ -4788,7 +4790,8 @@
       "myApiKeys": "API key ของฉัน",
       "adminAccess": "ผู้ดูแล",
       "allAuthors": "ผู้เขียนทั้งหมด",
-      "authorAdminSpace": "ผู้เขียน"
+      "authorAdminSpace": "ผู้เขียน",
+      "logs": "บันทึก"
     },
     "switcher": {
       "selectOrganization": "เลือกองค์กร",
@@ -5482,6 +5485,47 @@
         "tooLarge": "รูปภาพใหญ่เกินไป (สูงสุด 10 MB)",
         "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง"
       }
+    },
+    "logs": {
+      "title": "บันทึกขององค์กร",
+      "subtitle": "ทุกการเปลี่ยนแปลงที่ทำในนามขององค์กรนี้",
+      "searchPlaceholder": "คำอธิบาย...",
+      "searchSubmit": "ค้นหา",
+      "subjectLabel": "หัวข้อ",
+      "subjectAny": "ทุกหัวข้อ",
+      "eventLabel": "เหตุการณ์",
+      "eventAny": "ทุกเหตุการณ์",
+      "loading": "กำลังโหลด",
+      "event": {
+        "created": "สร้าง",
+        "updated": "อัปเดต",
+        "deleted": "ลบ"
+      },
+      "subject": {
+        "organization": "องค์กร",
+        "player": "ผู้เล่น",
+        "news": "ข่าว",
+        "stream": "ช่องสตรีม",
+        "vod": "VOD",
+        "credit": "เครดิตการผลิต",
+        "apiKey": "คีย์ API",
+        "author": "ผู้เขียน",
+        "team": "ทีม",
+        "tournament": "ทัวร์นาเมนต์",
+        "match": "แมตช์",
+        "map": "แผนที่",
+        "user": "ผู้ใช้"
+      },
+      "columnDescription": "คำอธิบาย",
+      "columnSubject": "หัวข้อ",
+      "columnEvent": "เหตุการณ์",
+      "columnCauser": "บัญชี",
+      "columnCreatedAt": "วันที่",
+      "empty": "ไม่มีกิจกรรมที่บันทึกไว้",
+      "systemCauser": "ระบบ",
+      "total": "{count, plural, other {# รายการ}}",
+      "previous": "หน้าก่อนหน้า",
+      "next": "หน้าถัดไป"
     }
   },
   "globalSearch": {
