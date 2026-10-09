@@ -13,7 +13,7 @@
 import { cache } from "react";
 import { alias } from "drizzle-orm/pg-core";
 import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import { forumMessages, forumThreads, users } from "@gc-stats/db";
 import { getReactionSummaries, type ReactionSummary } from "@/lib/reactions";
 import { getUserFanTeam, getUserFanTeamsBatch, type UserFanTeam } from "@/lib/user-profile-data";
