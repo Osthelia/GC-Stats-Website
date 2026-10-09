@@ -16,7 +16,6 @@ import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { organizations, organizationAccessRoles, organizationRoles, organizationRolePermissions, organizationMemberships, organizationMemberRoleLinks, users, people, logos, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
-import { withLogoTrace, type LogoTrace } from "@/lib/logo-trace";
 import { tryStoreLogoPair, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireDashboardOrgActorPermission, requireDashboardOrgOwnerActor } from "@/lib/dashboard-rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
@@ -359,14 +358,7 @@ export type UploadPersonPhotoResult = { ok: true } | { ok: false; error: string 
 
 /** Replaces the person's neutral photo (their previous one is closed, not deleted, so the logo history stays intact). */
 export async function uploadPersonPhotoForOrganization(organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
-  return withLogoTrace(`dashboard upload person #${personId} (org #${organizationId})`, (trace) => uploadPersonPhotoImpl(trace, organizationId, personId, formData));
-}
-
-async function uploadPersonPhotoImpl(trace: LogoTrace, organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
-  trace.subject("player", personId, actorUserId);
-  trace.step("permission ok");
-  trace.file(formData.get("file"));
   if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
 
   const file = formData.get("file");
@@ -374,13 +366,10 @@ async function uploadPersonPhotoImpl(trace: LogoTrace, organizationId: number, p
   if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "tooLarge" };
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  trace.step("file read", { bytes: buffer.byteLength });
   const validation = await validateImageBuffer(buffer);
-  trace.step("validated", validation);
   if (!validation.ok) return { ok: false, error: validation.error };
 
   const storedResult = await tryStoreLogoPair("person", buffer);
-  trace.step("stored", { ok: storedResult.ok });
   if (!storedResult.ok) return { ok: false, error: storedResult.error };
   const stored = storedResult.logo;
   const today = new Date().toISOString().slice(0, 10);
@@ -397,7 +386,6 @@ async function uploadPersonPhotoImpl(trace: LogoTrace, organizationId: number, p
       await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, period: openRangeFrom(today), theme: null, isVisible: true });
       await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId } }, tx);
     });
-    trace.step("database written");
   } catch (error) {
     await deleteLogoFiles("person", stored.id).catch(() => {});
     throw error;
@@ -612,14 +600,7 @@ const DASHBOARD_LOGO_THEMES = ["light", "dark"] as const;
 export type UploadOrgLogoResult = { ok: true } | { ok: false; error: string };
 
 export async function uploadDashboardOrganizationLogo(organizationId: number, formData: FormData): Promise<UploadOrgLogoResult> {
-  return withLogoTrace(`dashboard upload organization #${organizationId}`, (trace) => uploadOrganizationLogoImpl(trace, organizationId, formData));
-}
-
-async function uploadOrganizationLogoImpl(trace: LogoTrace, organizationId: number, formData: FormData): Promise<UploadOrgLogoResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
-  trace.subject("organization", organizationId, actorUserId);
-  trace.step("permission ok");
-  trace.file(formData.get("file"));
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "required" };
@@ -630,13 +611,10 @@ async function uploadOrganizationLogoImpl(trace: LogoTrace, organizationId: numb
   if (themeRaw && theme === null) return { ok: false, error: "invalidTheme" };
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  trace.step("file read", { bytes: buffer.byteLength });
   const validation = await validateImageBuffer(buffer);
-  trace.step("validated", validation);
   if (!validation.ok) return { ok: false, error: validation.error };
 
   const storedResult = await tryStoreLogoPair("organization", buffer);
-  trace.step("stored", { ok: storedResult.ok });
   if (!storedResult.ok) return { ok: false, error: storedResult.error };
   const stored = storedResult.logo;
   const today = new Date().toISOString().slice(0, 10);
@@ -653,7 +631,6 @@ async function uploadOrganizationLogoImpl(trace: LogoTrace, organizationId: numb
       await tx.insert(logos).values({ id: stored.id, entityType: "organization", entityId: organizationId, period: openRangeFrom(today), theme, isVisible: true });
       await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description: `Added logo of organization #${organizationId}`, actorUserId, properties: { section: "logo", logoId: stored.id } }, tx);
     });
-    trace.step("database written");
   } catch (error) {
     await deleteLogoFiles("organization", stored.id).catch(() => {});
     throw error;

@@ -58,7 +58,6 @@ export type StoreLogoResult = { ok: true; logo: StoredLogo } | { ok: false; erro
 export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffer): Promise<StoreLogoResult> {
   const id = randomUUID();
 
-  console.log(`[logo-trace] storage converting (${entityType})`, { inputBytes: buffer.byteLength });
   let encoded: { full: Buffer; thumb: Buffer };
   try {
     encoded = await encodePair(buffer);
@@ -66,7 +65,6 @@ export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffe
     console.error(`[logos] webp conversion failed (${entityType})`, error);
     return { ok: false, error: "processingFailed" };
   }
-  console.log(`[logo-trace] storage converted (${entityType})`, { fullBytes: encoded.full.byteLength, thumbBytes: encoded.thumb.byteLength });
 
   const fullKey = logoKey(entityType, id, "full");
   const thumbKey = logoKey(entityType, id, "200x200");
@@ -77,7 +75,6 @@ export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffe
     await deleteObjects([fullKey, thumbKey]).catch(() => {});
     return { ok: false, error: "storageFailed" };
   }
-  console.log(`[logo-trace] storage uploaded (${entityType})`, { fullKey, thumbKey });
 
   return { ok: true, logo: { id, fullUrl: publicUrl(fullKey), thumbnailUrl: publicUrl(thumbKey) } };
 }
