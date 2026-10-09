@@ -4926,6 +4926,11 @@
       "editProfileButton": "Edit profile",
       "editProfileTitle": "Edit {handle}'s profile",
       "editProfileDescription": "Only the fields your organization is allowed to edit are shown here (other details stay admin-only).",
+      "editProfilePhotoLabel": "Photo",
+      "editProfilePhotoNotes": "Real life photo (IRL), required. It must be professional and clear: face fully visible, good lighting, neutral background, no filter, no sunglasses and no group photo.",
+      "editProfilePhotoChoose": "Choose a photo",
+      "editProfilePhotoReplace": "Replace the photo",
+      "editProfileSaving": "Saving…",
       "editProfileLoading": "Loading…",
       "editProfileBasicSection": "Basic info",
       "editProfileHandleLabel": "Handle",
@@ -4962,6 +4967,9 @@
         "userNotFound": "User not found.",
         "alreadyLinked": "This account is already linked to another person.",
         "taken": "Already used by another person.",
+        "tooLarge": "The image is too large.",
+        "invalidImage": "This file is not a valid image.",
+        "empty": "The file is empty.",
         "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
       },
       "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."

@@ -4922,6 +4922,11 @@
       "editProfileButton": "Profili düzenle",
       "editProfileTitle": "{handle} profilini düzenle",
       "editProfileDescription": "Burada yalnızca organizasyonunuzun düzenleme yetkisi olduğu alanlar gösterilir (diğer bilgiler yalnızca yöneticiye açıktır).",
+      "editProfilePhotoLabel": "Fotoğraf",
+      "editProfilePhotoNotes": "Gerçek hayattan (IRL) fotoğraf, zorunludur. Profesyonel ve net olmalıdır: yüz tamamen görünür, iyi aydınlatma, nötr arka plan, filtresiz, güneş gözlüksüz ve grup fotoğrafı olmayan.",
+      "editProfilePhotoChoose": "Fotoğraf seç",
+      "editProfilePhotoReplace": "Fotoğrafı değiştir",
+      "editProfileSaving": "Kaydediliyor…",
       "editProfileLoading": "Yükleniyor…",
       "editProfileBasicSection": "Temel bilgiler",
       "editProfileHandleLabel": "Kullanıcı adı",
@@ -4958,6 +4963,9 @@
         "userNotFound": "Kullanıcı bulunamadı.",
         "alreadyLinked": "Bu hesap zaten başka bir kişiye bağlı.",
         "taken": "Zaten başka bir kişi tarafından kullanılıyor.",
+        "tooLarge": "Görsel çok büyük.",
+        "invalidImage": "Bu dosya geçerli bir görsel değil.",
+        "empty": "Dosya boş.",
         "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
       },
       "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."

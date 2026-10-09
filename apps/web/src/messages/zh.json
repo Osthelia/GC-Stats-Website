@@ -4922,6 +4922,11 @@
       "editProfileButton": "编辑资料",
       "editProfileTitle": "编辑 {handle} 的资料",
       "editProfileDescription": "此处仅显示您的机构有权编辑的字段（其他详情仅限管理员操作）。",
+      "editProfilePhotoLabel": "照片",
+      "editProfilePhotoNotes": "必须上传真实照片（IRL）。照片需专业且清晰：面部完整可见、光线良好、背景简洁、无滤镜、不戴墨镜、不是合照。",
+      "editProfilePhotoChoose": "选择照片",
+      "editProfilePhotoReplace": "更换照片",
+      "editProfileSaving": "保存中…",
       "editProfileLoading": "加载中…",
       "editProfileBasicSection": "基本信息",
       "editProfileHandleLabel": "用户名",
@@ -4958,6 +4963,9 @@
         "userNotFound": "未找到该用户。",
         "alreadyLinked": "该账户已绑定至另一位人员。",
         "taken": "已被另一位人员使用。",
+        "tooLarge": "图片太大。",
+        "invalidImage": "该文件不是有效的图片。",
+        "empty": "文件为空。",
         "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
       },
       "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"

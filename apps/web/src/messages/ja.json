@@ -4922,6 +4922,11 @@
       "editProfileButton": "プロフィールを編集",
       "editProfileTitle": "{handle}のプロフィールを編集",
       "editProfileDescription": "あなたの組織が編集を許可されているフィールドのみここに表示されます（その他の詳細は管理者専用です）。",
+      "editProfilePhotoLabel": "写真",
+      "editProfilePhotoNotes": "実際の写真（IRL）が必須です。プロフェッショナルで鮮明なものにしてください：顔がはっきり見える、明るさが十分、背景が無地、フィルターなし、サングラスなし、集合写真ではない。",
+      "editProfilePhotoChoose": "写真を選択",
+      "editProfilePhotoReplace": "写真を差し替える",
+      "editProfileSaving": "保存中…",
       "editProfileLoading": "読み込み中…",
       "editProfileBasicSection": "基本情報",
       "editProfileHandleLabel": "ハンドルネーム",
@@ -4958,6 +4963,9 @@
         "userNotFound": "ユーザーが見つかりません。",
         "alreadyLinked": "このアカウントはすでに別の人物と連携されています。",
         "taken": "すでに他の人物が使用しています。",
+        "tooLarge": "画像が大きすぎます。",
+        "invalidImage": "このファイルは有効な画像ではありません。",
+        "empty": "ファイルが空です。",
         "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。"
       },
       "discordIdHint": "数字の Discord ユーザー ID（開発者モードでプロフィールを右クリックし、ユーザーIDをコピー）。"

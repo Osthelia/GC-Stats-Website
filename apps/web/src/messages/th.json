@@ -4922,6 +4922,11 @@
       "editProfileButton": "แก้ไขโปรไฟล์",
       "editProfileTitle": "แก้ไขโปรไฟล์ของ {handle}",
       "editProfileDescription": "แสดงเฉพาะช่องที่องค์กรของคุณได้รับอนุญาตให้แก้ไข (รายละเอียดอื่นสงวนไว้สำหรับผู้ดูแล)",
+      "editProfilePhotoLabel": "รูปภาพ",
+      "editProfilePhotoNotes": "ต้องใช้รูปถ่ายจริง (IRL) เท่านั้น ต้องดูเป็นมืออาชีพและชัดเจน: เห็นใบหน้าครบถ้วน แสงดี พื้นหลังเรียบ ไม่ใช้ฟิลเตอร์ ไม่สวมแว่นกันแดด และไม่ใช่รูปหมู่",
+      "editProfilePhotoChoose": "เลือกรูปภาพ",
+      "editProfilePhotoReplace": "เปลี่ยนรูปภาพ",
+      "editProfileSaving": "กำลังบันทึก…",
       "editProfileLoading": "กำลังโหลด…",
       "editProfileBasicSection": "ข้อมูลพื้นฐาน",
       "editProfileHandleLabel": "ชื่อในวงการ",
@@ -4958,6 +4963,9 @@
         "userNotFound": "ไม่พบผู้ใช้",
         "alreadyLinked": "บัญชีนี้เชื่อมโยงกับบุคคลอื่นแล้ว",
         "taken": "ถูกใช้โดยบุคคลอื่นแล้ว",
+        "tooLarge": "รูปภาพมีขนาดใหญ่เกินไป",
+        "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง",
+        "empty": "ไฟล์ว่างเปล่า",
         "invalidDiscordId": "กรุณากรอก Discord ID ที่ถูกต้อง (ตัวเลข 17 ถึง 20 หลัก)"
       },
       "discordIdHint": "ID ผู้ใช้ Discord แบบตัวเลข (โหมดนักพัฒนา คลิกขวาที่โปรไฟล์ แล้วคัดลอก ID ผู้ใช้)"

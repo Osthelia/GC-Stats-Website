@@ -4922,6 +4922,11 @@
       "editProfileButton": "تعديل الملف",
       "editProfileTitle": "تعديل ملف {handle}",
       "editProfileDescription": "لا تظهر هنا إلا الحقول التي يُسمح لمنظمتك بتعديلها (تبقى التفاصيل الأخرى للمسؤولين فقط).",
+      "editProfilePhotoLabel": "الصورة",
+      "editProfilePhotoNotes": "صورة حقيقية (IRL)، إلزامية. يجب أن تكون احترافية وواضحة: الوجه ظاهر بالكامل، إضاءة جيدة، خلفية محايدة، بدون فلتر، بدون نظارات شمسية وليست صورة جماعية.",
+      "editProfilePhotoChoose": "اختر صورة",
+      "editProfilePhotoReplace": "استبدال الصورة",
+      "editProfileSaving": "جارٍ الحفظ…",
       "editProfileLoading": "جارٍ التحميل…",
       "editProfileBasicSection": "المعلومات الأساسية",
       "editProfileHandleLabel": "الاسم المستعار",
@@ -4958,6 +4963,9 @@
         "userNotFound": "المستخدم غير موجود.",
         "alreadyLinked": "هذا الحساب مرتبط بالفعل بشخص آخر.",
         "taken": "مستخدم بالفعل من قِبل شخص آخر.",
+        "tooLarge": "الصورة كبيرة جدًا.",
+        "invalidImage": "هذا الملف ليس صورة صالحة.",
+        "empty": "الملف فارغ.",
         "invalidDiscordId": "أدخل معرّف Discord صالحًا (من 17 إلى 20 رقمًا)."
       },
       "discordIdHint": "معرّف مستخدم Discord الرقمي (وضع المطوّر، انقر بزر الفأرة الأيمن على الملف الشخصي، نسخ معرّف المستخدم)."

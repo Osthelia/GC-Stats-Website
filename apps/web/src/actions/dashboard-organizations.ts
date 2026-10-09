@@ -11,7 +11,7 @@
 
 "use server";
 
-import { and, eq, isNull, ne } from "drizzle-orm";
+import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
@@ -29,6 +29,7 @@ import { PERSON_SOCIAL_KEYS, personSocialError, type PersonSocialKey } from "@/l
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { logActivity, diffChanges } from "@/lib/activity-log";
+import { getEntityLogos, currentLogo, displayLogoUrl } from "@/lib/admin-logos";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import {
   addOrganizationAccessEntry,
@@ -204,7 +205,14 @@ export type OrgPersonProfile = {
   liquipediaLink: string;
   aliases: string[];
   socials: Partial<Record<PersonSocialKey, string>>;
+  photoUrl: string | null;
 };
+
+/** Neutral (no theme) photo currently in effect for a person, shown by the profile dialog and required to save. */
+async function currentPersonPhotoUrl(personId: number): Promise<string | null> {
+  const entries = await getEntityLogos("person", personId);
+  return displayLogoUrl(currentLogo(entries.filter((e) => !e.theme)), "person");
+}
 
 /**
  * Read side of the dashboard profile-edit dialog, gated by the same
@@ -246,6 +254,7 @@ export async function getPersonProfileForOrganization(organizationId: number, pe
     liquipediaLink: row.liquipediaLink ?? "",
     aliases: Array.isArray(row.aliases) ? (row.aliases as string[]) : [],
     socials: (row.socials as Record<string, string>) ?? {},
+    photoUrl: await currentPersonPhotoUrl(personId),
   };
 }
 
@@ -261,7 +270,7 @@ export type OrgPersonProfileInput = {
   socials: Partial<Record<PersonSocialKey, string>>;
 };
 
-export type OrgPersonProfileField = "handle" | "countryCode" | "pronouns" | "vlrId" | "liquipediaLink";
+export type OrgPersonProfileField = "handle" | "photo" | "countryCode" | "pronouns" | "vlrId" | "liquipediaLink";
 export type OrgPersonProfileFieldErrors = Partial<Record<OrgPersonProfileField, string>> & { socials?: Partial<Record<PersonSocialKey, string>> };
 export type OrgPersonProfileResult = { ok: true } | { ok: false; fieldErrors: OrgPersonProfileFieldErrors };
 
@@ -316,6 +325,8 @@ export async function updatePersonProfileForOrganization(organizationId: number,
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
 
+  if (!(await currentPersonPhotoUrl(personId))) fieldErrors.photo = "required";
+
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const aliases = [...new Set(input.aliases.map((a) => a.trim()).filter(Boolean))];
@@ -341,6 +352,44 @@ export async function updatePersonProfileForOrganization(organizationId: number,
   });
   // Match scoreboards show the current handle.
   updateTag(MATCH_STATS_TAG);
+
+  return { ok: true };
+}
+
+export type UploadPersonPhotoResult = { ok: true } | { ok: false; error: string };
+
+/** Replaces the person's neutral photo (their previous one is closed, not deleted, so the logo history stays intact). */
+export async function uploadPersonPhotoForOrganization(organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
+  const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
+  if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: "required" };
+  if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "tooLarge" };
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const validation = await validateImageBuffer(buffer);
+  if (!validation.ok) return { ok: false, error: validation.error };
+
+  const stored = await storeLogoPair("person", buffer);
+  const today = new Date().toISOString().slice(0, 10);
+
+  try {
+    await db.transaction(async (tx) => {
+      const openNeutral = await tx
+        .select({ id: logos.id, period: logos.period })
+        .from(logos)
+        .where(and(eq(logos.entityType, "person"), eq(logos.entityId, personId), isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
+      for (const row of openNeutral) {
+        await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
+      }
+      await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, period: openRangeFrom(today), theme: null, isVisible: true });
+      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId } }, tx);
+    });
+  } catch (error) {
+    await deleteLogoFiles("person", stored.id).catch(() => {});
+    throw error;
+  }
 
   return { ok: true };
 }

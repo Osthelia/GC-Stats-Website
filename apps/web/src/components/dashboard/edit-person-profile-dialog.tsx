@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
 import { TagsInput } from "@/components/admin/tags-input";
-import { getPersonProfileForOrganization, updatePersonProfileForOrganization, type OrgPersonProfileFieldErrors } from "@/actions/dashboard-organizations";
+import { getPersonProfileForOrganization, updatePersonProfileForOrganization, uploadPersonPhotoForOrganization, type OrgPersonProfileFieldErrors } from "@/actions/dashboard-organizations";
+import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
@@ -47,11 +48,26 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
   const [liquipediaLink, setLiquipediaLink] = useState("");
   const [aliases, setAliases] = useState<string[]>([]);
   const [socials, setSocials] = useState<Record<string, string>>({});
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photoFile);
+    setPhotoPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photoFile]);
 
   useEffect(() => {
     if (!open) return;
     setLoading(true);
     setFieldErrors({});
+    setPhotoFile(null);
     getPersonProfileForOrganization(organizationId, personId).then((profile) => {
       if (!profile) {
         setOpen(false);
@@ -66,6 +82,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
       setLiquipediaLink(profile.liquipediaLink);
       setAliases(profile.aliases);
       setSocials(profile.socials);
+      setPhotoUrl(profile.photoUrl);
       setLoading(false);
     });
   }, [open, organizationId, personId]);
@@ -73,6 +90,17 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
+      if (photoFile) {
+        const formData = new FormData();
+        formData.set("file", photoFile);
+        const upload = await uploadPersonPhotoForOrganization(organizationId, personId, formData);
+        if (!upload.ok) {
+          setFieldErrors({ photo: upload.error });
+          return;
+        }
+        setPhotoUrl(null);
+        setPhotoFile(null);
+      }
       const result = await updatePersonProfileForOrganization(organizationId, personId, {
         handle: editHandle,
         firstName,
@@ -114,6 +142,25 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
             <div className="flex flex-col gap-5 py-2">
               <div className="flex flex-col gap-3">
                 <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">{t("editProfileBasicSection")}</p>
+                <FormField label={t("editProfilePhotoLabel")} htmlFor="edit-person-photo" required hint={t("editProfilePhotoNotes")} error={err("photo")}>
+                  <div className="flex items-center gap-3">
+                    <OrgLogoTile name={editHandle || handle} logoUrl={photoPreview ?? photoUrl} className="size-20 rounded-lg border text-xl" />
+                    <input
+                      id="edit-person-photo"
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        setPhotoFile(e.target.files?.[0] ?? null);
+                        setFieldErrors((prev) => ({ ...prev, photo: undefined }));
+                      }}
+                    />
+                    <Button type="button" variant="outline" size="sm" disabled={isPending} onClick={() => photoInputRef.current?.click()} aria-invalid={!!fieldErrors.photo}>
+                      {photoPreview || photoUrl ? t("editProfilePhotoReplace") : t("editProfilePhotoChoose")}
+                    </Button>
+                  </div>
+                </FormField>
                 <FormField label={t("editProfileHandleLabel")} htmlFor="edit-person-handle" required error={err("handle")}>
                   <Input id="edit-person-handle" value={editHandle} onChange={(e) => setEditHandle(e.target.value)} aria-invalid={!!fieldErrors.handle} />
                 </FormField>
@@ -206,7 +253,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
               {t("createPersonCancel")}
             </Button>
             <Button onClick={handleSave} disabled={isPending || loading}>
-              {t("save")}
+              {isPending ? t("editProfileSaving") : t("save")}
             </Button>
           </DialogFooter>
         </DialogContent>

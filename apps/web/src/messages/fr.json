@@ -4926,6 +4926,11 @@
       "editProfileButton": "Éditer le profil",
       "editProfileTitle": "Éditer le profil de {handle}",
       "editProfileDescription": "Seuls les champs que votre organisation peut éditer sont affichés ici, les autres détails restent réservés à l'admin.",
+      "editProfilePhotoLabel": "Photo",
+      "editProfilePhotoNotes": "Photo IRL (réelle), obligatoire. Elle doit être professionnelle et claire : visage entièrement visible, bonne luminosité, fond neutre, sans filtre, sans lunettes de soleil et pas de photo de groupe.",
+      "editProfilePhotoChoose": "Choisir une photo",
+      "editProfilePhotoReplace": "Remplacer la photo",
+      "editProfileSaving": "Enregistrement…",
       "editProfileLoading": "Chargement…",
       "editProfileBasicSection": "Infos de base",
       "editProfileHandleLabel": "Pseudo",
@@ -4962,6 +4967,9 @@
         "userNotFound": "Utilisateur introuvable.",
         "alreadyLinked": "Ce compte est déjà lié à une autre personne.",
         "taken": "Déjà utilisé par une autre personne.",
+        "tooLarge": "L'image est trop volumineuse.",
+        "invalidImage": "Ce fichier n'est pas une image valide.",
+        "empty": "Le fichier est vide.",
         "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
       },
       "discordIdHint": "ID utilisateur Discord numérique (Mode développeur, clic droit sur le profil, Copier l'identifiant)."
