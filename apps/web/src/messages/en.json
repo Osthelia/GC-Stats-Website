@@ -2359,6 +2359,9 @@
           "invalidRole": "Invalid role.",
           "tooLarge": "Image too large (10 MB max).",
           "invalidImage": "This file is not a valid image.",
+          "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+          "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+          "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
           "lastOwner": "The organization must always keep at least one owner.",
           "ownerOnly": "Only an owner can grant or edit the owner role.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Invalid role.",
           "tooLarge": "Image is too large (max 10 MB).",
           "invalidImage": "This file isn't a valid image.",
+          "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+          "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+          "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "This account is already linked to another player.",
           "tooLarge": "Image is too large (max 10 MB).",
           "invalidImage": "This file isn't a valid image.",
+          "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+          "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+          "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
           "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
         },
@@ -4519,6 +4528,9 @@
           "beforeStart": "Must be after the start date.",
           "tooLarge": "Image too large (10 MB max).",
           "invalidImage": "This file is not a valid image.",
+          "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+          "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+          "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
           "notFound": "Tournament not found."
         }
@@ -4913,6 +4925,9 @@
         "required": "Please choose an image.",
         "tooLarge": "Image too large (10 MB max).",
         "invalidImage": "This file isn't a valid image.",
+        "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+        "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+        "saveFailed": "The logo couldn't be saved. Try again in a moment.",
         "invalidTheme": "Invalid theme."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Already used by another person.",
         "tooLarge": "The image is too large.",
         "invalidImage": "This file is not a valid image.",
+        "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+        "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+        "saveFailed": "The logo couldn't be saved. Try again in a moment.",
         "empty": "The file is empty.",
         "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "This image is too large (10 MB max).",
       "empty": "This image is empty.",
       "invalidImage": "This file isn't a valid image.",
+      "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
+      "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
+      "saveFailed": "The logo couldn't be saved. Try again in a moment.",
       "invalidMembership": "One of the roster changes you proposed isn't valid.",
       "membershipDateOrder": "An end date must be after its start date.",
       "tooManyAdditions": "You can propose at most 6 new entries at once.",

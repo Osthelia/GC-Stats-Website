@@ -95,6 +95,8 @@ const nextConfig = {
     // Enables the forbidden()/unauthorized() functions and their
     // forbidden.tsx/unauthorized.tsx pages.
     authInterrupts: true,
+    // Default is 1 MB; image uploads accept up to 10 MB (MAX_IMAGE_BYTES) plus multipart overhead.
+    serverActions: { bodySizeLimit: "11mb" },
   },
 };
 

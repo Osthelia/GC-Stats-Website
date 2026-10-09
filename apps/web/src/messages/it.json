@@ -2359,6 +2359,9 @@
           "invalidRole": "Ruolo non valido.",
           "tooLarge": "Immagine troppo grande (massimo 10 MB).",
           "invalidImage": "Questo file non è un'immagine valida.",
+          "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+          "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+          "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
           "lastOwner": "L'organizzazione deve sempre avere almeno un proprietario.",
           "ownerOnly": "Solo un proprietario può assegnare o modificare il ruolo di proprietario.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Ruolo non valido.",
           "tooLarge": "Immagine troppo grande (massimo 10 MB).",
           "invalidImage": "Questo file non è un'immagine valida.",
+          "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+          "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+          "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "Questo account è già collegato a un'altra giocatrice.",
           "tooLarge": "Immagine troppo grande (massimo 10 MB).",
           "invalidImage": "Questo file non è un'immagine valida.",
+          "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+          "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+          "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
           "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
         },
@@ -4519,6 +4528,9 @@
           "beforeStart": "Deve essere successiva alla data di inizio.",
           "tooLarge": "Immagine troppo grande (massimo 10 MB).",
           "invalidImage": "Questo file non è un'immagine valida.",
+          "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+          "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+          "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
           "notFound": "Torneo non trovato."
         }
@@ -4913,6 +4925,9 @@
         "required": "Scegli un'immagine.",
         "tooLarge": "Immagine troppo grande (massimo 10 MB).",
         "invalidImage": "Questo file non è un'immagine valida.",
+        "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+        "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+        "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
         "invalidTheme": "Tema non valido."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Già usato da un'altra persona.",
         "tooLarge": "L'immagine è troppo grande.",
         "invalidImage": "Questo file non è un'immagine valida.",
+        "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+        "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+        "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
         "empty": "Il file è vuoto.",
         "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Questa immagine è troppo grande (massimo 10 MB).",
       "empty": "Questa immagine è vuota.",
       "invalidImage": "Questo file non è un'immagine valida.",
+      "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
+      "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
+      "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
       "invalidMembership": "Una delle modifiche al roster che hai proposto non è valida.",
       "membershipDateOrder": "Una data di fine deve essere successiva alla data di inizio.",
       "tooManyAdditions": "Puoi proporre al massimo 6 nuove voci alla volta.",

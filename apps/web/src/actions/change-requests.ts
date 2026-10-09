@@ -15,7 +15,7 @@
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems, changeRequestMessages, PERMISSIONS } from "@gc-stats/db";
-import { storeLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles } from "@gc-stats/storage";
+import { tryStoreLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles } from "@gc-stats/storage";
 import { auth } from "@/auth";
 import { INTERNATIONAL_CODE } from "@/lib/countries";
 import { rangeIsOpen, rangeLower, rangeUpper } from "@/lib/daterange";
@@ -321,8 +321,9 @@ export async function submitChangeRequest(
   // submission never leaves an orphaned file in the bucket.
   let storedLogoId: string | null = null;
   if (logoBuffer) {
-    const stored = await storeLogoPair(subjectType, logoBuffer);
-    storedLogoId = stored.id;
+    const storedResult = await tryStoreLogoPair(subjectType, logoBuffer);
+    if (!storedResult.ok) return { ok: false, fieldErrors: { logo: storedResult.error } };
+    storedLogoId = storedResult.logo.id;
     const liveLogo = currentLogo(await getEntityLogos(subjectType, subjectId));
     allItems.push({
       field: "logo",

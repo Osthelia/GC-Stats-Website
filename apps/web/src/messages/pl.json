@@ -2359,6 +2359,9 @@
           "invalidRole": "Nieprawidłowa rola.",
           "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
           "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+          "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+          "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+          "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
           "lastOwner": "Organizacja musi zawsze mieć co najmniej jednego właściciela.",
           "ownerOnly": "Tylko właściciel może nadać lub zmienić rolę właściciela.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Nieprawidłowa rola.",
           "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
           "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+          "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+          "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+          "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "To konto jest już powiązane z inną zawodniczką.",
           "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
           "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+          "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+          "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+          "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
           "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr)."
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "Musi być późniejsza niż data początkowa.",
           "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
           "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+          "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+          "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+          "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
           "notFound": "Nie znaleziono turnieju."
         }
@@ -4913,6 +4925,9 @@
         "required": "Wybierz obraz.",
         "tooLarge": "Obraz jest za duży (maksymalnie 10 MB).",
         "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+        "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+        "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+        "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
         "invalidTheme": "Nieprawidłowy motyw."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Już używane przez inną osobę.",
         "tooLarge": "Obraz jest za duży.",
         "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+        "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+        "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+        "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
         "empty": "Plik jest pusty.",
         "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Ten obraz jest za duży (maksymalnie 10 MB).",
       "empty": "Ten obraz jest pusty.",
       "invalidImage": "Ten plik nie jest prawidłowym obrazem.",
+      "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
+      "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
+      "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
       "invalidMembership": "Jedna z zaproponowanych zmian składu jest nieprawidłowa.",
       "membershipDateOrder": "Data zakończenia musi być późniejsza niż data rozpoczęcia.",
       "tooManyAdditions": "Możesz zaproponować maksymalnie 6 nowych wpisów naraz.",

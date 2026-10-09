@@ -51,6 +51,55 @@ async function encodePair(buffer: Buffer): Promise<{ full: Buffer; thumb: Buffer
   return { full, thumb };
 }
 
+export type StoreLogoError = "processingFailed" | "storageFailed";
+export type StoreLogoResult = { ok: true; logo: StoredLogo } | { ok: false; error: StoreLogoError };
+
+/** Same as storeLogoPair, but returns the failure cause (conversion vs storage) instead of throwing, and logs the real error server side. */
+export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffer): Promise<StoreLogoResult> {
+  const id = randomUUID();
+
+  let encoded: { full: Buffer; thumb: Buffer };
+  try {
+    encoded = await encodePair(buffer);
+  } catch (error) {
+    console.error(`[logos] webp conversion failed (${entityType})`, error);
+    return { ok: false, error: "processingFailed" };
+  }
+
+  const fullKey = logoKey(entityType, id, "full");
+  const thumbKey = logoKey(entityType, id, "200x200");
+  try {
+    await Promise.all([putObject(fullKey, encoded.full, "image/webp"), putObject(thumbKey, encoded.thumb, "image/webp")]);
+  } catch (error) {
+    console.error(`[logos] storage upload failed (${entityType})`, error);
+    await deleteObjects([fullKey, thumbKey]).catch(() => {});
+    return { ok: false, error: "storageFailed" };
+  }
+
+  return { ok: true, logo: { id, fullUrl: publicUrl(fullKey), thumbnailUrl: publicUrl(thumbKey) } };
+}
+
+/** Same as replaceLogoFiles, but returns the failure cause instead of throwing. */
+export async function tryReplaceLogoFiles(entityType: LogoEntityType, id: string, buffer: Buffer): Promise<{ ok: true } | { ok: false; error: StoreLogoError }> {
+  let encoded: { full: Buffer; thumb: Buffer };
+  try {
+    encoded = await encodePair(buffer);
+  } catch (error) {
+    console.error(`[logos] webp conversion failed (${entityType})`, error);
+    return { ok: false, error: "processingFailed" };
+  }
+  try {
+    await Promise.all([
+      putObject(logoKey(entityType, id, "full"), encoded.full, "image/webp"),
+      putObject(logoKey(entityType, id, "200x200"), encoded.thumb, "image/webp"),
+    ]);
+  } catch (error) {
+    console.error(`[logos] storage upload failed (${entityType})`, error);
+    return { ok: false, error: "storageFailed" };
+  }
+  return { ok: true };
+}
+
 /** Mirrors V1 LogoUploadService::storeLogoPair — a full-size WebP plus a 200x200 cropped thumbnail, both under a fresh uuid folder. The uuid becomes the `logos.id` row so DB and storage stay keyed together. */
 export async function storeLogoPair(entityType: LogoEntityType, buffer: Buffer): Promise<StoredLogo> {
   const id = randomUUID();

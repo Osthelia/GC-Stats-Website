@@ -2359,6 +2359,9 @@
           "invalidRole": "Geçersiz rol.",
           "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
+          "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+          "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+          "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
           "lastOwner": "Organizasyonun her zaman en az bir sahibi olmalıdır.",
           "ownerOnly": "Sahip rolünü yalnızca bir sahip verebilir veya düzenleyebilir.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Geçersiz rol.",
           "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
+          "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+          "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+          "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "Bu hesap zaten başka bir oyuncuya bağlı.",
           "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
+          "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+          "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+          "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
           "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "Başlangıç tarihinden sonra olmalıdır.",
           "tooLarge": "Görsel çok büyük (maksimum 10 MB).",
           "invalidImage": "Bu dosya geçerli bir görsel değil.",
+          "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+          "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+          "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
           "notFound": "Turnuva bulunamadı."
         }
@@ -4913,6 +4925,9 @@
         "required": "Lütfen bir görsel seçin.",
         "tooLarge": "Görsel çok büyük (en fazla 10 MB).",
         "invalidImage": "Bu dosya geçerli bir görsel değil.",
+        "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+        "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+        "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
         "invalidTheme": "Geçersiz tema."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Zaten başka bir kişi tarafından kullanılıyor.",
         "tooLarge": "Görsel çok büyük.",
         "invalidImage": "Bu dosya geçerli bir görsel değil.",
+        "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+        "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+        "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
         "empty": "Dosya boş.",
         "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Bu görsel çok büyük (en fazla 10 MB).",
       "empty": "Bu görsel boş.",
       "invalidImage": "Bu dosya geçerli bir görsel değil.",
+      "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
+      "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
+      "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
       "invalidMembership": "Önerdiğiniz kadro değişikliklerinden biri geçerli değil.",
       "membershipDateOrder": "Bitiş tarihi başlangıç tarihinden sonra olmalıdır.",
       "tooManyAdditions": "Aynı anda en fazla 6 yeni kayıt önerebilirsiniz.",

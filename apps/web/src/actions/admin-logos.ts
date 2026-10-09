@@ -16,7 +16,7 @@
 import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { logos, people, teams, organizations, tournaments, PERMISSIONS } from "@gc-stats/db";
-import { storeLogoPair, replaceLogoFiles, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
+import { tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import type { LogoEntityType } from "@/lib/admin-logos";
@@ -93,7 +93,9 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
   const validation = await validateImageBuffer(buffer);
   if (!validation.ok) return { ok: false, fieldErrors: { file: validation.error } };
 
-  const stored = await storeLogoPair(entityType, buffer);
+  const storedResult = await tryStoreLogoPair(entityType, buffer);
+  if (!storedResult.ok) return { ok: false, fieldErrors: { file: storedResult.error } };
+  const stored = storedResult.logo;
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
   const isOngoing = !until;
@@ -123,7 +125,8 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
   } catch (error) {
     // Don't leave orphaned files in the bucket if the DB write failed.
     await deleteLogoFiles(entityType, stored.id).catch(() => {});
-    throw error;
+    console.error(`[logos] database write failed (${entityType} #${entityId})`, error);
+    return { ok: false, fieldErrors: { file: "saveFailed" } };
   }
 
   return { ok: true };
@@ -179,6 +182,12 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
     buffer = uploaded;
   }
 
+  // Image first: a failed replacement must not leave the dates/theme half edited.
+  if (buffer) {
+    const replaced = await tryReplaceLogoFiles(entityType, logoId, buffer);
+    if (!replaced.ok) return { ok: false, fieldErrors: { file: replaced.error } };
+  }
+
   const period = until ? `[${from},${until})` : openRangeFrom(from);
   const isOngoing = !until;
 
@@ -204,8 +213,6 @@ export async function updateEntityLogo(entityType: LogoEntityType, logoId: strin
     await tx.update(logos).set({ theme, period }).where(eq(logos.id, logoId));
     await logLogoChange(tx, entityType, existing.entityId, actorUserId, "Updated", logoId);
   });
-
-  if (buffer) await replaceLogoFiles(entityType, logoId, buffer);
 
   return { ok: true };
 }

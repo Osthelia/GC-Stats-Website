@@ -2359,6 +2359,9 @@
           "invalidRole": "角色无效。",
           "tooLarge": "图片过大（最多 10 MB）。",
           "invalidImage": "该文件不是有效的图片。",
+          "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+          "storageFailed": "无法将图片保存到存储。请稍后再试。",
+          "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
           "lastOwner": "该机构必须始终保留至少一位所有者。",
           "ownerOnly": "只有所有者才能授予或修改所有者角色。",
@@ -2532,6 +2535,9 @@
           "invalidRole": "角色无效。",
           "tooLarge": "图片过大（最多 10 MB）。",
           "invalidImage": "该文件不是有效的图片。",
+          "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+          "storageFailed": "无法将图片保存到存储。请稍后再试。",
+          "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。"
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "该账户已绑定至另一位选手。",
           "tooLarge": "图片过大（最多 10 MB）。",
           "invalidImage": "该文件不是有效的图片。",
+          "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+          "storageFailed": "无法将图片保存到存储。请稍后再试。",
+          "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
           "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "必须晚于开始日期。",
           "tooLarge": "图片过大（最多 10 MB）。",
           "invalidImage": "该文件不是有效的图片。",
+          "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+          "storageFailed": "无法将图片保存到存储。请稍后再试。",
+          "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
           "notFound": "未找到该赛事。"
         }
@@ -4913,6 +4925,9 @@
         "required": "请选择一张图片。",
         "tooLarge": "图片过大（最多 10 MB）。",
         "invalidImage": "该文件不是有效的图片。",
+        "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+        "storageFailed": "无法将图片保存到存储。请稍后再试。",
+        "saveFailed": "无法保存徽标。请稍后再试。",
         "invalidTheme": "主题无效。"
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "已被另一位人员使用。",
         "tooLarge": "图片太大。",
         "invalidImage": "该文件不是有效的图片。",
+        "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+        "storageFailed": "无法将图片保存到存储。请稍后再试。",
+        "saveFailed": "无法保存徽标。请稍后再试。",
         "empty": "文件为空。",
         "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "该图片过大（最多 10 MB）。",
       "empty": "该图片为空。",
       "invalidImage": "该文件不是有效的图片。",
+      "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
+      "storageFailed": "无法将图片保存到存储。请稍后再试。",
+      "saveFailed": "无法保存徽标。请稍后再试。",
       "invalidMembership": "您提议的其中一项名单修改无效。",
       "membershipDateOrder": "结束日期必须晚于开始日期。",
       "tooManyAdditions": "一次最多只能提议新增 6 条记录。",

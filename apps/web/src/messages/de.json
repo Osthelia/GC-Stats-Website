@@ -2359,6 +2359,9 @@
           "invalidRole": "Ungültige Rolle.",
           "tooLarge": "Bild zu groß (max. 10 MB).",
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
+          "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+          "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+          "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
           "lastOwner": "Die Organisation muss immer mindestens eine:n Inhaber:in behalten.",
           "ownerOnly": "Nur ein:e Inhaber:in kann die Inhaber:innen Rolle gewähren oder bearbeiten.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Ungültige Rolle.",
           "tooLarge": "Bild zu groß (max. 10 MB).",
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
+          "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+          "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+          "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "Dieses Konto ist bereits mit eine:r anderen Spieler:in verknüpft.",
           "tooLarge": "Bild zu groß (max. 10 MB).",
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
+          "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+          "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+          "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
           "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "Muss nach dem Startdatum liegen.",
           "tooLarge": "Bild zu groß (max. 10 MB).",
           "invalidImage": "Diese Datei ist kein gültiges Bild.",
+          "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+          "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+          "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
           "notFound": "Turnier nicht gefunden."
         }
@@ -4913,6 +4925,9 @@
         "required": "Bitte wählen Sie ein Bild aus.",
         "tooLarge": "Bild zu groß (maximal 10 MB).",
         "invalidImage": "Diese Datei ist kein gültiges Bild.",
+        "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+        "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+        "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
         "invalidTheme": "Ungültiges Design."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Bereits von einer anderen Person verwendet.",
         "tooLarge": "Das Bild ist zu groß.",
         "invalidImage": "Diese Datei ist kein gültiges Bild.",
+        "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+        "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+        "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
         "empty": "Die Datei ist leer.",
         "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Dieses Bild ist zu groß (maximal 10 MB).",
       "empty": "Dieses Bild ist leer.",
       "invalidImage": "Diese Datei ist kein gültiges Bild.",
+      "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
+      "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
+      "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
       "invalidMembership": "Eine der vorgeschlagenen Rosteränderungen ist ungültig.",
       "membershipDateOrder": "Ein Enddatum muss nach dem Startdatum liegen.",
       "tooManyAdditions": "Sie können höchstens 6 neue Einträge gleichzeitig vorschlagen.",

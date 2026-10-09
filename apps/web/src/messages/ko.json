@@ -2359,6 +2359,9 @@
           "invalidRole": "역할이 유효하지 않습니다.",
           "tooLarge": "이미지가 너무 큽니다(최대 10MB).",
           "invalidImage": "유효한 이미지 파일이 아닙니다.",
+          "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+          "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+          "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
           "lastOwner": "단체에는 항상 최소 한 명의 소유자가 있어야 합니다.",
           "ownerOnly": "소유자 역할은 소유자만 부여하거나 수정할 수 있습니다.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "잘못된 역할입니다.",
           "tooLarge": "이미지가 너무 큽니다(최대 10MB).",
           "invalidImage": "유효한 이미지 파일이 아닙니다.",
+          "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+          "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+          "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "이 계정은 이미 다른 선수와 연동되어 있습니다.",
           "tooLarge": "이미지가 너무 큽니다(최대 10MB).",
           "invalidImage": "유효한 이미지 파일이 아닙니다.",
+          "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+          "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+          "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
           "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "시작일 이후여야 합니다.",
           "tooLarge": "이미지가 너무 큽니다(최대 10MB).",
           "invalidImage": "유효한 이미지 파일이 아닙니다.",
+          "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+          "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+          "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
           "notFound": "토너먼트를 찾을 수 없습니다."
         }
@@ -4913,6 +4925,9 @@
         "required": "이미지를 선택해 주세요.",
         "tooLarge": "이미지가 너무 큽니다 (최대 10MB).",
         "invalidImage": "유효한 이미지 파일이 아닙니다.",
+        "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+        "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
         "invalidTheme": "잘못된 테마입니다."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "이미 다른 인물이 사용 중입니다.",
         "tooLarge": "이미지가 너무 큽니다.",
         "invalidImage": "유효한 이미지 파일이 아닙니다.",
+        "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+        "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+        "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
         "empty": "파일이 비어 있습니다.",
         "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "이미지가 너무 커요 (최대 10MB).",
       "empty": "이미지가 비어 있어요.",
       "invalidImage": "유효한 이미지 파일이 아니에요.",
+      "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
+      "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+      "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
       "invalidMembership": "제안한 로스터 변경 항목 중 하나가 유효하지 않아요.",
       "membershipDateOrder": "종료일은 시작일 이후여야 합니다.",
       "tooManyAdditions": "한 번에 최대 6개의 새 항목만 제안할 수 있어요.",

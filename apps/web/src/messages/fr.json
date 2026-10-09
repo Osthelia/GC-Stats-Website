@@ -2359,6 +2359,9 @@
           "invalidRole": "Rôle invalide.",
           "tooLarge": "Image trop volumineuse (10 Mo max).",
           "invalidImage": "Ce fichier n'est pas une image valide.",
+          "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+          "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+          "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
           "lastOwner": "L'organisation doit toujours garder au moins un propriétaire.",
           "ownerOnly": "Seul un propriétaire peut donner ou modifier le rôle propriétaire.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Rôle invalide.",
           "tooLarge": "Image trop volumineuse (10 Mo max).",
           "invalidImage": "Ce fichier n'est pas une image valide.",
+          "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+          "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+          "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "Ce compte est déjà lié à un·e autre joueur·se.",
           "tooLarge": "Image trop volumineuse (10 Mo max).",
           "invalidImage": "Ce fichier n'est pas une image valide.",
+          "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+          "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+          "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
           "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
         },
@@ -4519,6 +4528,9 @@
           "beforeStart": "Doit être après la date de début.",
           "tooLarge": "Image trop volumineuse (10 Mo max).",
           "invalidImage": "Ce fichier n'est pas une image valide.",
+          "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+          "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+          "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
           "notFound": "Tournoi introuvable."
         }
@@ -4913,6 +4925,9 @@
         "required": "Merci de choisir une image.",
         "tooLarge": "Image trop volumineuse (10 Mo max).",
         "invalidImage": "Ce fichier n'est pas une image valide.",
+        "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+        "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+        "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
         "invalidTheme": "Thème invalide."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Déjà utilisé par une autre personne.",
         "tooLarge": "L'image est trop volumineuse.",
         "invalidImage": "Ce fichier n'est pas une image valide.",
+        "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+        "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+        "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
         "empty": "Le fichier est vide.",
         "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Cette image est trop volumineuse (10 Mo max).",
       "empty": "Cette image est vide.",
       "invalidImage": "Ce fichier n'est pas une image valide.",
+      "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
+      "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
+      "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
       "invalidMembership": "L'une des modifications d'effectif proposées n'est pas valide.",
       "membershipDateOrder": "Une date de fin doit être postérieure à sa date de début.",
       "tooManyAdditions": "Vous pouvez proposer au maximum 6 nouvelles entrées à la fois.",

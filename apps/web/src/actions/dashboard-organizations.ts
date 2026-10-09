@@ -16,7 +16,7 @@ import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { organizations, organizationAccessRoles, organizationRoles, organizationRolePermissions, organizationMemberships, organizationMemberRoleLinks, users, people, logos, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
-import { storeLogoPair, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
+import { tryStoreLogoPair, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireDashboardOrgActorPermission, requireDashboardOrgOwnerActor } from "@/lib/dashboard-rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
@@ -369,7 +369,9 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
   const validation = await validateImageBuffer(buffer);
   if (!validation.ok) return { ok: false, error: validation.error };
 
-  const stored = await storeLogoPair("person", buffer);
+  const storedResult = await tryStoreLogoPair("person", buffer);
+  if (!storedResult.ok) return { ok: false, error: storedResult.error };
+  const stored = storedResult.logo;
   const today = new Date().toISOString().slice(0, 10);
 
   try {
@@ -612,7 +614,9 @@ export async function uploadDashboardOrganizationLogo(organizationId: number, fo
   const validation = await validateImageBuffer(buffer);
   if (!validation.ok) return { ok: false, error: validation.error };
 
-  const stored = await storeLogoPair("organization", buffer);
+  const storedResult = await tryStoreLogoPair("organization", buffer);
+  if (!storedResult.ok) return { ok: false, error: storedResult.error };
+  const stored = storedResult.logo;
   const today = new Date().toISOString().slice(0, 10);
 
   try {

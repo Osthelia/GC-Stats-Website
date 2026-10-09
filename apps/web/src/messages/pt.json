@@ -2359,6 +2359,9 @@
           "invalidRole": "Cargo inválido.",
           "tooLarge": "Imagem grande demais (máximo de 10 MB).",
           "invalidImage": "Este arquivo não é uma imagem válida.",
+          "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+          "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+          "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
           "lastOwner": "A organização deve sempre manter pelo menos um proprietário.",
           "ownerOnly": "Apenas um proprietário pode conceder ou editar o cargo de proprietário.",
@@ -2532,6 +2535,9 @@
           "invalidRole": "Função inválida.",
           "tooLarge": "A imagem é grande demais (máximo de 10 MB).",
           "invalidImage": "Este arquivo não é uma imagem válida.",
+          "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+          "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+          "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem."
         }
       },
@@ -2733,6 +2739,9 @@
           "alreadyLinked": "Esta conta já está vinculada a outra jogadora.",
           "tooLarge": "A imagem é grande demais (máximo de 10 MB).",
           "invalidImage": "Este arquivo não é uma imagem válida.",
+          "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+          "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+          "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
           "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
         },
@@ -4515,6 +4524,9 @@
           "beforeStart": "Deve ser posterior à data de início.",
           "tooLarge": "Imagem grande demais (máximo de 10 MB).",
           "invalidImage": "Este arquivo não é uma imagem válida.",
+          "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+          "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+          "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
           "notFound": "Torneio não encontrado."
         }
@@ -4913,6 +4925,9 @@
         "required": "Escolha uma imagem.",
         "tooLarge": "Imagem grande demais (máximo de 10 MB).",
         "invalidImage": "Este arquivo não é uma imagem válida.",
+        "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+        "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+        "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
         "invalidTheme": "Tema inválido."
       }
     },
@@ -5008,6 +5023,9 @@
         "taken": "Já usado por outra pessoa.",
         "tooLarge": "A imagem é muito grande.",
         "invalidImage": "Este arquivo não é uma imagem válida.",
+        "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+        "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+        "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
         "empty": "O arquivo está vazio.",
         "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
       },
@@ -5841,6 +5859,9 @@
       "tooLarge": "Esta imagem é grande demais (máximo de 10 MB).",
       "empty": "Esta imagem está vazia.",
       "invalidImage": "Este arquivo não é uma imagem válida.",
+      "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
+      "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
+      "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
       "invalidMembership": "Uma das alterações de roster que você propôs não é válida.",
       "membershipDateOrder": "Uma data de término deve ser posterior à data de início.",
       "tooManyAdditions": "Você pode propor no máximo 6 novas entradas de uma vez.",

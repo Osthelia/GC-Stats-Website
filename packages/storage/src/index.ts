@@ -22,7 +22,7 @@ export {
 } from "./s3";
 export { convertToWebp, validateImageBuffer, MAX_IMAGE_BYTES } from "./image";
 export type { ImageFit, WebpOptions, ImageValidationError, ImageValidationResult } from "./image";
-export { LOGO_FOLDERS, storeLogoPair, replaceLogoFiles, deleteLogoFiles, logoUrl } from "./logos";
+export { LOGO_FOLDERS, storeLogoPair, replaceLogoFiles, tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, logoUrl } from "./logos";
 export type { LogoEntityType, LogoVariant, StoredLogo } from "./logos";
 export { storeNewsImage, deleteNewsImage, newsImageUrl } from "./news";
 export type { StoredNewsImage } from "./news";
