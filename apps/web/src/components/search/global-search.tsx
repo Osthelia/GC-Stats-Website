@@ -221,6 +221,7 @@ export function GlobalSearch() {
     setOpen(false);
     setActiveIndex(-1);
     setQuery("");
+    inputRef.current?.blur();
     router.push(`/${path}`);
   }
 
@@ -238,6 +239,7 @@ export function GlobalSearch() {
     const q = query.trim();
     if (q.length < MIN_QUERY_LENGTH) return;
     setOpen(false);
+    inputRef.current?.blur();
     router.push(`/search?q=${encodeURIComponent(q)}`);
   }
 
