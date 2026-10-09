@@ -20,7 +20,7 @@ import { tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, validateImageBu
 import { requireActorPermission } from "@/lib/rbac";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import type { LogoEntityType } from "@/lib/admin-logos";
-import { withLogoTrace, type LogoTrace } from "@/lib/logo-trace";
+import { withLogoTrace, activitySubjectForLogo, type LogoTrace } from "@/lib/logo-trace";
 import { logActivity, type ActivityLogClient, type ActivitySubject } from "@/lib/activity-log";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -67,6 +67,8 @@ export async function uploadEntityLogo(entityType: LogoEntityType, entityId: num
 
 async function uploadEntityLogoImpl(trace: LogoTrace, entityType: LogoEntityType, entityId: number, formData: FormData): Promise<UploadLogoResult> {
   const { userId: actorUserId } = await requireActorPermission(permissionFor(entityType));
+  const traceSubject = activitySubjectForLogo(entityType);
+  if (traceSubject) trace.subject(traceSubject, entityId, actorUserId);
   trace.step("permission ok");
   trace.file(formData.get("file"));
 
@@ -170,6 +172,8 @@ async function updateEntityLogoImpl(trace: LogoTrace, entityType: LogoEntityType
     .where(and(eq(logos.id, logoId), eq(logos.entityType, entityType)))
     .limit(1);
   if (!existing) return { ok: false, fieldErrors: { file: "notFound" } };
+  const traceSubject = activitySubjectForLogo(entityType);
+  if (traceSubject) trace.subject(traceSubject, existing.entityId, actorUserId);
 
   const fieldErrors: UpdateLogoFieldErrors = {};
 

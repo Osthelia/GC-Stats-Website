@@ -364,6 +364,7 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
 
 async function uploadPersonPhotoImpl(trace: LogoTrace, organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
+  trace.subject("player", personId, actorUserId);
   trace.step("permission ok");
   trace.file(formData.get("file"));
   if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
@@ -616,6 +617,7 @@ export async function uploadDashboardOrganizationLogo(organizationId: number, fo
 
 async function uploadOrganizationLogoImpl(trace: LogoTrace, organizationId: number, formData: FormData): Promise<UploadOrgLogoResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.logoUpload);
+  trace.subject("organization", organizationId, actorUserId);
   trace.step("permission ok");
   trace.file(formData.get("file"));
 
