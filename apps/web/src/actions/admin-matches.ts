@@ -25,6 +25,7 @@ import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/wikicode-import";
 import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
 import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data";
+import { detectStartingAttacker } from "@/lib/map-fetch/detect-start-side";
 import type { FetchMapError } from "@/lib/map-fetch/types";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
@@ -840,9 +841,10 @@ async function fetchImportedMaps(matchId: number, orders: number[], actorUserId:
 }
 
 /**
- * Fills the veto sides from the maps' first round: the team attacking round 1
- * started on attack. The side belongs to the team choosing it (the team that
- * did not pick the map, or the decider's team), as in the veto form.
+ * Fills the veto sides from who attacked first on each map: read from the
+ * stored rounds, else from the Riot match matched to the map's scores. The
+ * side belongs to the team choosing it (the team that did not pick the map,
+ * or the decider's team), as in the veto form.
  */
 async function syncVetoSidesFromRounds(matchId: number, entrantAId: number, entrantBId: number): Promise<void> {
   const mapRows = await db.select({ id: maps.id, order: maps.order }).from(maps).where(eq(maps.matchId, matchId));
@@ -858,7 +860,12 @@ async function syncVetoSidesFromRounds(matchId: number, entrantAId: number, entr
   const played = vetoRows.filter((v) => v.type === "pick" || v.type === "decider");
   for (const [index, veto] of played.entries()) {
     const map = mapRows.find((m) => m.order === index + 1);
-    const atkEntrantId = map ? atkByMapId.get(map.id) : null;
+    if (!map) continue;
+    let atkEntrantId = atkByMapId.get(map.id) ?? null;
+    if (!atkEntrantId) {
+      const attacker = await detectStartingAttacker(map.id);
+      atkEntrantId = attacker === "a" ? entrantAId : attacker === "b" ? entrantBId : null;
+    }
     if (!atkEntrantId) continue;
     const picker = veto.type === "decider" ? veto.entrantId : veto.entrantId === entrantAId ? entrantBId : entrantAId;
     await db
