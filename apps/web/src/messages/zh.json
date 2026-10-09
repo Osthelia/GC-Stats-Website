@@ -1612,6 +1612,7 @@
     "pageOf": "第 {page} 页，共 {total} 页",
     "statsColumns": {
       "played": "地图数",
+      "roundsPlayed": "回合",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",
@@ -5988,6 +5989,7 @@
     "pageOf": "第 {page} 页，共 {total} 页",
     "statsColumns": {
       "played": "地图数",
+      "roundsPlayed": "回合",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",

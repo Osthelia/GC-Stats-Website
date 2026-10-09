@@ -13,6 +13,7 @@
 import { and, eq, gte, inArray, lt, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
+import { playerRoundsPlayedSql } from "@/lib/stats-aggregate-sql";
 import { exclusiveUpperBound, type StatsFilter } from "./params";
 
 /** Who an aggregate stats query is scoped to — a team (any of its entrants across tournaments) or a single player. */
@@ -41,6 +42,7 @@ export type ApiSideStats = {
 
 export type ApiAvgStats = {
   maps_played: number;
+  rounds_played: number;
   total_kills: number;
   avg_kills: number;
   total_deaths: number;
@@ -103,6 +105,7 @@ const ZERO_SIDE = (side: "atk" | "def"): ApiSideStats => ({
 
 const ZERO_AVG_STATS: ApiAvgStats = {
   maps_played: 0,
+  rounds_played: 0,
   total_kills: 0,
   avg_kills: 0,
   total_deaths: 0,
@@ -257,6 +260,8 @@ async function fetchFirstBloodCount(
 
 type BaseStatsRow = {
   mapId: number;
+  entrantId: number;
+  roundsPlayed: number;
   kills: number;
   deaths: number;
   assists: number;
@@ -281,6 +286,8 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
   const rows: BaseStatsRow[] = await db
     .select({
       mapId: mapPlayerStats.mapId,
+      entrantId: mapPlayerStats.entrantId,
+      roundsPlayed: playerRoundsPlayedSql,
       kills: mapPlayerStats.kills,
       deaths: mapPlayerStats.deaths,
       assists: mapPlayerStats.assists,
@@ -303,6 +310,9 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
   if (rows.length === 0) return { ...ZERO_AVG_STATS, by_side: { atk, def } };
 
   const mapsPlayed = new Set(rows.map((r) => r.mapId)).size;
+  // Team scope has one row per player per map, so count each (map, entrant) once.
+  const roundsByMapEntrant = new Map(rows.map((r) => [`${r.mapId}:${r.entrantId}`, Number(r.roundsPlayed)]));
+  const roundsPlayed = [...roundsByMapEntrant.values()].reduce((acc, n) => acc + n, 0);
   const sum = (f: (r: BaseStatsRow) => number) => rows.reduce((acc, r) => acc + f(r), 0);
   const avg = (total: number) => (mapsPlayed > 0 ? total / mapsPlayed : 0);
 
@@ -315,6 +325,7 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
 
   return {
     maps_played: mapsPlayed,
+    rounds_played: roundsPlayed,
     total_kills: totalKills,
     avg_kills: avgKills,
     total_deaths: totalDeaths,

@@ -1612,6 +1612,7 @@
     "pageOf": "Página {page} de {total}",
     "statsColumns": {
       "played": "Mapas",
+      "roundsPlayed": "Rounds",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Mortes",
@@ -5988,6 +5989,7 @@
     "pageOf": "Página {page} de {total}",
     "statsColumns": {
       "played": "Mapas",
+      "roundsPlayed": "Rounds",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Mortes",

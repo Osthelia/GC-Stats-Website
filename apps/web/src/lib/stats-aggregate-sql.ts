@@ -13,7 +13,7 @@
 import { inArray, sql, type SQL, type SQLWrapper } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { mapPlayerStats } from "@gc-stats/db";
+import { mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
 import type { StatRow } from "@/lib/stats-aggregate";
 
 /** A `select map_player_stats.id ...` subquery picking the rows to aggregate. */
@@ -28,7 +28,14 @@ function jsonKey(column: PgColumn, key: string) {
   return sql`coalesce((${column} ->> ${key})::numeric, 0)`;
 }
 
-type TotalsRow = StatRow["totals"] & { groupKey: string; mapsPlayed: number };
+/** Rounds the player's team played on that map (both sides), correlated on the `map_player_stats` row. */
+export const playerRoundsPlayedSql = sql<number>`(
+  select coalesce(sum(${mapTeamRoundSummary.roundsPlayed}), 0)
+  from ${mapTeamRoundSummary}
+  where ${mapTeamRoundSummary.mapId} = ${mapPlayerStats.mapId} and ${mapTeamRoundSummary.entrantId} = ${mapPlayerStats.entrantId}
+)`;
+
+type TotalsRow = StatRow["totals"] & { groupKey: string; mapsPlayed: number; roundsPlayed: number };
 
 const sumFloat = (expr: SQL | PgColumn) => sql<number>`coalesce(sum(${expr}), 0)::float8`;
 
@@ -42,6 +49,7 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
       .select({
         groupKey,
         mapsPlayed: sql<number>`count(*)::int`,
+        roundsPlayed: sql<number>`coalesce(sum(${playerRoundsPlayedSql}), 0)::int`,
         kills: sumFloat(mapPlayerStats.kills),
         deaths: sumFloat(mapPlayerStats.deaths),
         assists: sumFloat(mapPlayerStats.assists),
@@ -86,7 +94,7 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
   }
 
   return totalRows.map((row) => {
-    const { groupKey: key, mapsPlayed, ...totals } = row;
-    return { groupKey: key, mapsPlayed, totals, weaponKills: weaponsByGroup.get(key) ?? {} };
+    const { groupKey: key, mapsPlayed, roundsPlayed, ...totals } = row;
+    return { groupKey: key, mapsPlayed, roundsPlayed, totals, weaponKills: weaponsByGroup.get(key) ?? {} };
   });
 }

@@ -1612,6 +1612,7 @@
     "pageOf": "หน้า {page} จาก {total}",
     "statsColumns": {
       "played": "แมพ",
+      "roundsPlayed": "รอบ",
       "acs": "ACS",
       "kills": "คิล",
       "deaths": "ตาย",
@@ -5988,6 +5989,7 @@
     "pageOf": "หน้า {page} จาก {total}",
     "statsColumns": {
       "played": "แมพ",
+      "roundsPlayed": "รอบ",
       "acs": "ACS",
       "kills": "คิล",
       "deaths": "ตาย",

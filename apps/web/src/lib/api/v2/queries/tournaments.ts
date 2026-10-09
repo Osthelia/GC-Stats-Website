@@ -15,6 +15,7 @@ import { db } from "@gc-stats/db/client";
 import { tournaments, entrants, entrantMembers, people, teams, matches, maps, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, mapRoundPlayerLoadoutsRaw, stageContainers, stages } from "@gc-stats/db";
 import { escapeLike, exclusiveUpperBound } from "../../v1/params";
 import { qualifiedColumn } from "@/lib/db-search";
+import { playerRoundsPlayedSql } from "@/lib/stats-aggregate-sql";
 import { getThemedLogoUrls, getThemedLogoUrlsBatch, type ApiThemedLogoUrls } from "../../v1/logo-response";
 import { buildPhasesByTournamentWithLiquipedia } from "../../v1/queries/tournaments";
 import { toApiTeamFromJoined } from "../../v1/entities";
@@ -454,6 +455,7 @@ export type ApiTournamentStatsEntry = {
   team_name: string | null;
   agents: string[];
   maps_played: number;
+  rounds_played: number;
   total_kills: number;
   avg_kills: number;
   total_deaths: number;
@@ -485,6 +487,7 @@ type TournamentStatRow = {
   handle: string;
   countryCode: string | null;
   agentName: string | null;
+  roundsPlayed: number;
   kills: number;
   deaths: number;
   assists: number;
@@ -530,6 +533,7 @@ export async function getTournamentStatsV2(tournamentId: number, filter: Tournam
       handle: people.handle,
       countryCode: people.countryCode,
       agentName: mapPlayerStats.agentName,
+      roundsPlayed: playerRoundsPlayedSql,
       kills: mapPlayerStats.kills,
       deaths: mapPlayerStats.deaths,
       assists: mapPlayerStats.assists,
@@ -556,6 +560,7 @@ export async function getTournamentStatsV2(tournamentId: number, filter: Tournam
     entrantCounts: Map<number, number>;
     teamByEntrant: Map<number, { teamId: number | null; teamName: string | null }>;
     mapsPlayed: number;
+    roundsPlayed: number;
     kills: number;
     deaths: number;
     assists: number;
@@ -572,10 +577,11 @@ export async function getTournamentStatsV2(tournamentId: number, filter: Tournam
     if (r.personId == null) continue;
     let g = groups.get(r.personId);
     if (!g) {
-      g = { handle: r.handle, countryCode: r.countryCode, agents: new Set(), entrantCounts: new Map(), teamByEntrant: new Map(), mapsPlayed: 0, kills: 0, deaths: 0, assists: 0, acs: 0, adr: 0, kast: 0, hs: 0, fk: 0, fd: 0 };
+      g = { handle: r.handle, countryCode: r.countryCode, agents: new Set(), entrantCounts: new Map(), teamByEntrant: new Map(), mapsPlayed: 0, roundsPlayed: 0, kills: 0, deaths: 0, assists: 0, acs: 0, adr: 0, kast: 0, hs: 0, fk: 0, fd: 0 };
       groups.set(r.personId, g);
     }
     g.mapsPlayed += 1;
+    g.roundsPlayed += Number(r.roundsPlayed);
     g.kills += r.kills;
     g.deaths += r.deaths;
     g.assists += r.assists;
@@ -614,6 +620,7 @@ export async function getTournamentStatsV2(tournamentId: number, filter: Tournam
       team_name: team.teamName,
       agents: [...g.agents].sort(),
       maps_played: g.mapsPlayed,
+      rounds_played: g.roundsPlayed,
       total_kills: g.kills,
       avg_kills: avgKills,
       total_deaths: g.deaths,

@@ -15,6 +15,7 @@ export type StatRow = {
   /** agentName (player stats page) or String(personId) (team stats page) */
   groupKey: string;
   mapsPlayed: number;
+  roundsPlayed: number;
   totals: {
     kills: number;
     deaths: number;

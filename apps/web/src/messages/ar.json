@@ -1612,6 +1612,7 @@
     "pageOf": "الصفحة {page} من {total}",
     "statsColumns": {
       "played": "الخرائط",
+      "roundsPlayed": "الجولات",
       "acs": "ACS",
       "kills": "القتل",
       "deaths": "الوفيات",
@@ -5988,6 +5989,7 @@
     "pageOf": "الصفحة {page} من {total}",
     "statsColumns": {
       "played": "الخرائط",
+      "roundsPlayed": "الجولات",
       "acs": "ACS",
       "kills": "القتل",
       "deaths": "الوفيات",

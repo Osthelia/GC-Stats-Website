@@ -305,6 +305,9 @@
           "maps_played": {
             "type": "integer"
           },
+          "rounds_played": {
+            "type": "integer"
+          },
           "total_kills": {
             "type": "number"
           },
@@ -380,6 +383,7 @@
         },
         "required": [
           "maps_played",
+          "rounds_played",
           "total_kills",
           "avg_kills",
           "total_deaths",
@@ -2527,6 +2531,9 @@
           "maps_played": {
             "type": "integer"
           },
+          "rounds_played": {
+            "type": "integer"
+          },
           "total_kills": {
             "type": "number"
           },
@@ -2593,6 +2600,7 @@
           "team_name",
           "agents",
           "maps_played",
+          "rounds_played",
           "total_kills",
           "avg_kills",
           "total_deaths",

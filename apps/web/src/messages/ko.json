@@ -1612,6 +1612,7 @@
     "pageOf": "{total} 중 {page} 페이지",
     "statsColumns": {
       "played": "맵 수",
+      "roundsPlayed": "라운드",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",
@@ -5988,6 +5989,7 @@
     "pageOf": "{total} 중 {page} 페이지",
     "statsColumns": {
       "played": "맵 수",
+      "roundsPlayed": "라운드",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",

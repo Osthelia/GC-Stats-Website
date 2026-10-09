@@ -1612,6 +1612,7 @@
     "pageOf": "Sayfa {page} / {total}",
     "statsColumns": {
       "played": "Harita",
+      "roundsPlayed": "Raunt",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",
@@ -5988,6 +5989,7 @@
     "pageOf": "Sayfa {page} / {total}",
     "statsColumns": {
       "played": "Haritalar",
+      "roundsPlayed": "Raunt",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",

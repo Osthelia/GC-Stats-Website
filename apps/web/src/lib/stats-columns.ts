@@ -37,6 +37,7 @@ function perMap(total: number, mapsPlayed: number, mode: StatsMode): number {
 /** Ordered base column list — mirrors V1's `baseCols` (player/team stats.blade.php), minus `plants`/`defuses` (no per-player data in the V2 schema). */
 export const STAT_COLUMNS: StatColumn[] = [
   { key: "played", i18nKey: "played", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.mapsPlayed },
+  { key: "roundsPlayed", i18nKey: "roundsPlayed", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.roundsPlayed },
   { key: "acs", i18nKey: "acs", format: "int", defaultVisible: true, value: (r, m) => perMap(r.totals.acs, r.mapsPlayed, m) },
   { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: false, value: (r, m) => perMap(r.totals.kills, r.mapsPlayed, m) },
   { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: false, value: (r, m) => perMap(r.totals.deaths, r.mapsPlayed, m) },

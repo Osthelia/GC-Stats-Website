@@ -1612,6 +1612,7 @@
     "pageOf": "{page} / {total}ページ",
     "statsColumns": {
       "played": "マップ数",
+      "roundsPlayed": "ラウンド",
       "acs": "ACS",
       "kills": "キル",
       "deaths": "デス",
@@ -5988,6 +5989,7 @@
     "pageOf": "{total}ページ中{page}ページ目",
     "statsColumns": {
       "played": "マップ数",
+      "roundsPlayed": "ラウンド",
       "acs": "ACS",
       "kills": "キル",
       "deaths": "デス",

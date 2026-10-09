@@ -213,6 +213,7 @@ export const ApiSideStatsSchema = z
 export const ApiAvgStatsSchema = z
   .object({
     maps_played: z.number().int(),
+    rounds_played: z.number().int(),
     total_kills: z.number(),
     avg_kills: z.number(),
     total_deaths: z.number(),
@@ -826,6 +827,7 @@ export const ApiTournamentStatsEntrySchema = z
     team_name: z.string().nullable(),
     agents: z.array(z.string()),
     maps_played: z.number().int(),
+    rounds_played: z.number().int(),
     total_kills: z.number(),
     avg_kills: z.number(),
     total_deaths: z.number(),
