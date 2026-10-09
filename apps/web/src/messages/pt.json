@@ -1738,7 +1738,9 @@
       "editor": "Editor(a)",
       "photographer": "Fotógrafo(a)",
       "translator": "Tradutor(a)",
-      "referee": "Árbitro(a)"
+      "referee": "Árbitro(a)",
+      "head_referee": "Árbitro principal",
+      "product_lead": "Responsável de produto"
     }
   },
   "matchPage": {
@@ -5010,6 +5012,8 @@
         "photographer": "Fotógrafo(a)",
         "translator": "Tradutor(a)",
         "referee": "Árbitro(a)",
+        "head_referee": "Árbitro principal",
+        "product_lead": "Responsável de produto",
         "other": "Outro"
       },
       "error": {

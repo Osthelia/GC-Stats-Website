@@ -24,6 +24,8 @@ export const PRODUCTION_CREDIT_ROLES = [
   "photographer",
   "translator",
   "referee",
+  "head_referee",
+  "product_lead",
 ] as const;
 
 export type ProductionCreditRole = (typeof PRODUCTION_CREDIT_ROLES)[number];

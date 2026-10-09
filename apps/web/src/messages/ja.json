@@ -1738,7 +1738,9 @@
       "editor": "編集者",
       "photographer": "フォトグラファー",
       "translator": "翻訳者",
-      "referee": "レフェリー"
+      "referee": "レフェリー",
+      "head_referee": "ヘッドレフェリー",
+      "product_lead": "プロダクトリード"
     }
   },
   "matchPage": {
@@ -5010,6 +5012,8 @@
         "photographer": "フォトグラファー",
         "translator": "翻訳者",
         "referee": "レフェリー",
+        "head_referee": "ヘッドレフェリー",
+        "product_lead": "プロダクトリード",
         "other": "その他"
       },
       "error": {

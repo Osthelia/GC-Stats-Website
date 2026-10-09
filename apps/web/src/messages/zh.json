@@ -1738,7 +1738,9 @@
       "editor": "剪辑",
       "photographer": "摄影师",
       "translator": "翻译",
-      "referee": "裁判"
+      "referee": "裁判",
+      "head_referee": "裁判长",
+      "product_lead": "产品负责人"
     }
   },
   "matchPage": {
@@ -5010,6 +5012,8 @@
         "photographer": "摄影师",
         "translator": "翻译",
         "referee": "裁判",
+        "head_referee": "裁判长",
+        "product_lead": "产品负责人",
         "other": "其他"
       },
       "error": {
