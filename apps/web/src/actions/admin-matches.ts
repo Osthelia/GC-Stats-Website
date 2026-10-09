@@ -26,7 +26,7 @@ import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/
 import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
 import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data";
 import { detectStartingAttacker } from "@/lib/map-fetch/detect-start-side";
-import type { FetchMapError } from "@/lib/map-fetch/types";
+import type { FetchMapError, TeamColorRoster } from "@/lib/map-fetch/types";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
@@ -816,16 +816,31 @@ export async function importMatchWikicode(
   return { ok: true, linkedNames: linksToWrite.length, fetches };
 }
 
+/** The Riot team whose round score is the map's team A score, null when the scores are missing, tied or don't match. */
+function colorFromMapScore(rosters: TeamColorRoster[], teamAScore: number | null, teamBScore: number | null): "Red" | "Blue" | null {
+  if (teamAScore === null || teamBScore === null || teamAScore === teamBScore) return null;
+  const red = rosters.find((r) => r.color === "Red")?.score;
+  const blue = rosters.find((r) => r.color === "Blue")?.score;
+  if (red === teamAScore && blue === teamBScore) return "Red";
+  if (blue === teamAScore && red === teamBScore) return "Blue";
+  return null;
+}
+
 /** Runs the Riot fetch of the given map orders one by one. A fetch asking for an admin step is reported as is, the map keeps its data. */
 async function fetchImportedMaps(matchId: number, orders: number[], actorUserId: string): Promise<ImportMapFetch[]> {
   if (orders.length === 0) return [];
-  const rows = await db.select({ id: maps.id, order: maps.order, mapName: maps.mapName }).from(maps).where(and(eq(maps.matchId, matchId), inArray(maps.order, orders))).orderBy(asc(maps.order));
+  const rows = await db.select({ id: maps.id, order: maps.order, mapName: maps.mapName, teamAScore: maps.teamAScore, teamBScore: maps.teamBScore }).from(maps).where(and(eq(maps.matchId, matchId), inArray(maps.order, orders))).orderBy(asc(maps.order));
 
   const outcomes: ImportMapFetch[] = [];
   for (const row of rows) {
     const base = { mapId: row.id, order: row.order, mapName: row.mapName ?? "" };
     try {
-      const result = await runFetchMapData(row.id);
+      let result = await runFetchMapData(row.id);
+      // Rosters can't tell the teams apart: the map's own score says which Riot team is entrant A.
+      if (!result.ok && result.error.kind === "teamColorAmbiguous") {
+        const teamAColor = colorFromMapScore(result.error.rosters, row.teamAScore, row.teamBScore);
+        if (teamAColor) result = await runFetchMapData(row.id, { teamAColor });
+      }
       if (result.ok) {
         await logMapChange(db, { mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
         outcomes.push({ ...base, status: "fetched" });
