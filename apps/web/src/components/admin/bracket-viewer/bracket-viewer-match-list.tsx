@@ -170,7 +170,7 @@ export function BracketViewerMatchList({ tournamentId, matches }: { tournamentId
               <TableRow
                 key={match.id}
                 onClick={action ? () => action.onSelect({ id: match.id, teamA: match.entrantAName, teamB: match.entrantBName }) : undefined}
-                className={cn("odd:bg-muted/20", action && cn("cursor-pointer transition-colors active:brightness-125", IMPORT_STATUS_ROW_CLASS[action.statuses[match.id] ?? "none"]))}
+                className={cn(action ? cn("cursor-pointer transition-colors active:brightness-125", IMPORT_STATUS_ROW_CLASS[action.statuses[match.id] ?? "none"]) : "odd:bg-muted/20")}
               >
                 <TableCell className="text-sm text-muted-foreground">{match.round}</TableCell>
                 <TableCell className="font-medium">{match.entrantAName ?? t("tbdLabel")}</TableCell>
