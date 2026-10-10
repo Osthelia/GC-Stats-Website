@@ -8,7 +8,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, inArray, sql, type SQL } from "drizzle-orm";
+import { eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { maps, matches, stageContainers, stages } from "@gc-stats/db";
 
@@ -66,7 +66,8 @@ export function mapsFiltersHref(basePath: string, filters: MapsFilters, override
 
 /** SQL conditions for a query already joining `maps` and `matches`. */
 export function mapsFilterConditions(filters: MapsFilters): SQL[] {
-  const conditions: SQL[] = [];
+  // An unplayed map (decider of a decided series) is completed but has no score.
+  const conditions: SQL[] = [isNotNull(maps.teamAScore), isNotNull(maps.teamBScore)];
   // A map without its own start time falls back to the match schedule.
   const playedAt = sql`coalesce(${maps.startedAt}, ${matches.scheduledAt})`;
   if (filters.dateFrom) conditions.push(sql`${playedAt} >= ${`${filters.dateFrom}T00:00:00.000Z`}::timestamptz`);
