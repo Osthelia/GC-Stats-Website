@@ -204,14 +204,12 @@ export function MatchCard({
           "recent matches" column), overflowing the card with long stage
           names like "Lower Bracket Round 3". */}
       <div className="hidden min-w-0 flex-none text-right @min-[560px]:block @min-[560px]:w-[240px]">
-        <div className="flex items-start justify-end gap-1.5">
+        <div className="text-[12px] leading-snug font-medium text-neutral-400">
           <span
-            className="mt-1 h-1.5 w-1.5 flex-none rounded-sm"
+            className="mr-1.5 inline-block h-1.5 w-1.5 rounded-sm align-middle"
             style={{ background: region.color }}
           />
-          <span className="text-[12px] leading-snug font-medium text-neutral-400">
-            {m.event}
-          </span>
+          {m.event}
         </div>
         <div className="mt-0.5 truncate font-mono text-[10px] text-neutral-600">
           {m.stage || m.format}
