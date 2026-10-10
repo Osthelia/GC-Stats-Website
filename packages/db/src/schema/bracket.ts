@@ -121,6 +121,12 @@ export const entrants = pgTable("entrants", {
   playerId: bigint("player_id", { mode: "number" }).references(() => people.id),
   displayName: text("display_name").notNull(), // snapshot at registration time, survives a later team rename
   seed: integer("seed"),
+  // When false, the source is derived from the qualification rules at read time
+  // and the two columns below are ignored; when true they are the admin's choice.
+  qualificationSourceManual: boolean("qualification_source_manual").notNull().default(false),
+  qualificationSourceType: text("qualification_source_type"), // 'tournament' | 'invite' | 'points'
+  qualificationSourceTournamentId: bigint("qualification_source_tournament_id", { mode: "number" }).references(() => tournaments.id, { onDelete: "set null" }),
+  qualificationSourcePointTypeId: bigint("qualification_source_point_type_id", { mode: "number" }).references(() => pointTypes.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index("entrants_tournament_id_idx").on(t.tournamentId),

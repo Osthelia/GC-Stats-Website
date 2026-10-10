@@ -13,9 +13,11 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, teams, tournaments, PERMISSIONS } from "@gc-stats/db";
+import { entrants, teams, tournaments, pointTypes, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
+import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
+import { QUALIFICATION_MODES, type QualificationMode } from "@/lib/entrant-qualification-source";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -27,7 +29,7 @@ function logEntrantChange(client: ActivityLogClient, tournamentId: number, actor
   return logActivity({ subject: "tournament", subjectId: tournamentId, event: "updated", description, actorUserId, changes: extra.changes, properties: { section: "entrants", ...extra.entrant } }, client);
 }
 
-export type EntrantField = "kind" | "teamId" | "displayName" | "seed";
+export type EntrantField = "kind" | "teamId" | "displayName" | "seed" | "qualificationMode" | "qualificationTournamentId" | "qualificationPointTypeId";
 export type EntrantFieldErrors = Partial<Record<EntrantField, string>>;
 export type EntrantResult = { ok: true; id: number } | { ok: false; fieldErrors: EntrantFieldErrors };
 
@@ -36,7 +38,28 @@ export type EntrantInput = {
   teamId: number | null;
   displayName: string;
   seed: number | null;
+  qualificationMode: QualificationMode;
+  /** Required when the mode is "tournament". */
+  qualificationTournamentId: number | null;
+  /** Required when the mode is "points". */
+  qualificationPointTypeId: number | null;
 };
+
+export async function searchSourceTournaments(query: string): Promise<TournamentPickerResult[]> {
+  await requireTournamentsActor();
+  return searchTournamentsQuery(query);
+}
+
+function qualificationColumns(input: EntrantInput) {
+  if (input.qualificationMode === "auto") return { qualificationSourceManual: false, qualificationSourceType: null, qualificationSourceTournamentId: null, qualificationSourcePointTypeId: null };
+  if (input.qualificationMode === "none") return { qualificationSourceManual: true, qualificationSourceType: null, qualificationSourceTournamentId: null, qualificationSourcePointTypeId: null };
+  return {
+    qualificationSourceManual: true,
+    qualificationSourceType: input.qualificationMode,
+    qualificationSourceTournamentId: input.qualificationMode === "tournament" ? input.qualificationTournamentId : null,
+    qualificationSourcePointTypeId: input.qualificationMode === "points" ? input.qualificationPointTypeId : null,
+  };
+}
 
 async function validateEntrant(tournamentId: number, input: EntrantInput, excludeId?: number): Promise<EntrantFieldErrors> {
   const fieldErrors: EntrantFieldErrors = {};
@@ -79,6 +102,22 @@ async function validateEntrant(tournamentId: number, input: EntrantInput, exclud
     }
   }
 
+  if (!QUALIFICATION_MODES.includes(input.qualificationMode)) fieldErrors.qualificationMode = "invalid";
+  else if (input.qualificationMode === "tournament") {
+    if (input.qualificationTournamentId === null) fieldErrors.qualificationTournamentId = "required";
+    else if (input.qualificationTournamentId === tournamentId) fieldErrors.qualificationTournamentId = "sameTournament";
+    else {
+      const [source] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, input.qualificationTournamentId)).limit(1);
+      if (!source) fieldErrors.qualificationTournamentId = "tournamentNotFound";
+    }
+  } else if (input.qualificationMode === "points") {
+    if (input.qualificationPointTypeId === null) fieldErrors.qualificationPointTypeId = "required";
+    else {
+      const [pointType] = await db.select({ id: pointTypes.id }).from(pointTypes).where(eq(pointTypes.id, input.qualificationPointTypeId)).limit(1);
+      if (!pointType) fieldErrors.qualificationPointTypeId = "pointTypeNotFound";
+    }
+  }
+
   return fieldErrors;
 }
 
@@ -95,7 +134,7 @@ export async function addEntrant(tournamentId: number, input: EntrantInput): Pro
   const created = await db.transaction(async (tx) => {
     const [row] = await tx
       .insert(entrants)
-      .values({ tournamentId, kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName, seed: input.seed })
+      .values({ tournamentId, kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName, seed: input.seed, ...qualificationColumns(input) })
       .returning({ id: entrants.id });
     if (!row) throw new Error("Insert returned no row");
     await logEntrantChange(tx, tournamentId, actorUserId, `Added entrant "${displayName}" to tournament #${tournamentId}`, { entrant: { entrantId: row.id, displayName, teamId: input.teamId } });
@@ -114,7 +153,7 @@ export async function updateEntrant(id: number, tournamentId: number, input: Ent
   const fieldErrors = await validateEntrant(tournamentId, input, id);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const values = { kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName: input.displayName.trim(), seed: input.seed };
+  const values = { kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName: input.displayName.trim(), seed: input.seed, ...qualificationColumns(input) };
   await db.transaction(async (tx) => {
     await tx.update(entrants).set(values).where(eq(entrants.id, id));
     const changes = diffChanges(existingRow, values);

@@ -1152,7 +1152,11 @@
         "kind": "نوع المشارك (دائمًا \"team\" على GC-Stats)",
         "teamId": "الفريق المسجّل",
         "displayName": "الاسم المعروض وقت التسجيل (يبقى دون تغيير حتى لو غيّر الفريق اسمه لاحقًا)",
-        "seed": "التصنيف (Seed) المسند إلى المشارك"
+        "seed": "التصنيف (Seed) المسند إلى المشارك",
+        "qualificationSourceManual": "هل تم تحديد مصدر التأهل يدويًا (وإلا يُستنتج من قواعد التأهل)",
+        "qualificationSourceType": "مصدر تأهل يدوي (بطولة أو دعوة أو نقاط)",
+        "qualificationSourceTournamentId": "البطولة التي تأهل منها المشارك (مصدر يدوي)",
+        "qualificationSourcePointTypeId": "نوع النقاط الذي جاء منه التأهل (مصدر يدوي)"
       },
       "entrantMembers": {
         "personId": "شخص ضمن التشكيلة المثبّتة لهذه البطولة تحديدًا",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "هذا التصنيف مستخدم بالفعل من قِبل مشارك آخر.",
           "inUse": "لا يمكن الإزالة: هذا المشارك مرتبط بالفعل بمباراة.",
           "alreadyRegistered": "هذا الفريق مسجّل بالفعل في هذه البطولة.",
-          "teamNotFound": "الفريق غير موجود."
-        }
+          "teamNotFound": "الفريق غير موجود.",
+          "sameTournament": "لا يمكن أن يكون المصدر هذه البطولة.",
+          "pointTypeNotFound": "لم يتم العثور على نوع النقاط."
+        },
+        "columnQualification": "التأهل",
+        "originAuto": "تلقائي",
+        "originManual": "يدوي",
+        "fieldQualification": "مصدر التأهل",
+        "fieldQualificationHint": "يحدده الوضع التلقائي من قواعد التأهل.",
+        "qualificationMode": {
+          "auto": "تلقائي (حسب قواعد التأهل)",
+          "none": "بدون",
+          "tournament": "بطولة أخرى",
+          "invite": "دعوة",
+          "points": "النقاط"
+        },
+        "fieldQualificationTournament": "البطولة المصدر",
+        "fieldQualificationTournamentPlaceholder": "اختر بطولة…",
+        "fieldQualificationTournamentSearch": "ابحث عن بطولة…",
+        "fieldQualificationTournamentNoResults": "لم يتم العثور على بطولة.",
+        "fieldQualificationPointType": "نوع النقاط",
+        "fieldQualificationPointTypePlaceholder": "اختر نوع النقاط…"
       },
       "stages": {
         "heading": "المراحل والشجرات",
@@ -6311,5 +6335,13 @@
     "firstPlace": "المركز الأول",
     "secondPlace": "المركز الثاني",
     "thirdPlace": "المركز الثالث"
+  },
+  "qualificationSource": {
+    "viaTournament": "تأهل عبر <tournament>{name}</tournament>",
+    "tournament": "تأهل عبر بطولة",
+    "invite": "مدعو",
+    "points": "تأهل عبر نقاط {label}",
+    "pointsUnknown": "تأهل عبر النقاط",
+    "iconLabel": "مصدر التأهل"
   }
 }

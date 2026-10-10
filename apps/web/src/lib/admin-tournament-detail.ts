@@ -14,6 +14,7 @@ import { asc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { entrants, stages, stageContainers, matches, groupEntries, pickemStageSettings } from "@gc-stats/db";
 import { containerOrderBy } from "@/lib/bracket/container-order";
+import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
 
 export type AdminContainerOption = { id: number; name: string; stageName: string; containerType: "bracket" | "group" };
 
@@ -34,14 +35,33 @@ export type AdminEntrantRow = {
   teamId: number | null;
   displayName: string;
   seed: number | null;
+  /** Manual override saved on the entrant (null type with manual on means "no source"). */
+  qualificationSourceManual: boolean;
+  qualificationSourceType: string | null;
+  qualificationSourceTournamentId: number | null;
+  qualificationSourcePointTypeId: number | null;
+  /** Effective source shown in the table: the manual one, else derived from the qualification rules. */
+  qualificationSource: EntrantQualificationSource | null;
 };
 
 export async function listTournamentEntrants(tournamentId: number): Promise<AdminEntrantRow[]> {
-  return db
-    .select({ id: entrants.id, kind: entrants.kind, teamId: entrants.teamId, displayName: entrants.displayName, seed: entrants.seed })
+  const rows = await db
+    .select({
+      id: entrants.id,
+      kind: entrants.kind,
+      teamId: entrants.teamId,
+      displayName: entrants.displayName,
+      seed: entrants.seed,
+      qualificationSourceManual: entrants.qualificationSourceManual,
+      qualificationSourceType: entrants.qualificationSourceType,
+      qualificationSourceTournamentId: entrants.qualificationSourceTournamentId,
+      qualificationSourcePointTypeId: entrants.qualificationSourcePointTypeId,
+    })
     .from(entrants)
     .where(eq(entrants.tournamentId, tournamentId))
     .orderBy(asc(entrants.seed), asc(entrants.id));
+  const sources = await resolveEntrantQualificationSources(db, tournamentId, rows);
+  return rows.map((r) => ({ ...r, qualificationSource: sources.get(r.id) ?? null }));
 }
 
 export type AdminContainerRow = {

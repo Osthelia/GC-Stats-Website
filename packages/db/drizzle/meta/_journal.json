@@ -281,6 +281,20 @@
       "when": 1791565131256,
       "tag": "0039_team_organization",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791624679615,
+      "tag": "0040_entrant_qualification_source",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1791624999828,
+      "tag": "0041_entrant_qualification_point_type",
+      "breakpoints": true
     }
   ]
 }

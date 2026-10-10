@@ -1152,7 +1152,11 @@
         "kind": "エントラントの種類(GC Statsでは常に「チーム」)",
         "teamId": "登録されたチーム",
         "displayName": "登録時点で表示されていた名前(その後チーム名が変更されても変わりません)",
-        "seed": "エントラントに割り当てられたシード"
+        "seed": "エントラントに割り当てられたシード",
+        "qualificationSourceManual": "出場経路を手動で設定したかどうか（そうでなければ出場ルールから判定）",
+        "qualificationSourceType": "手動の出場経路（大会、招待、ポイント）",
+        "qualificationSourceTournamentId": "参加者が出場権を得た大会（手動設定）",
+        "qualificationSourcePointTypeId": "出場権の元になったポイント種別（手動設定）"
       },
       "entrantMembers": {
         "personId": "そのトーナメント専用に固定されたロースターに含まれる人物",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "このシードはすでに他の出場チームに使用されています。",
           "inUse": "削除できません。この出場チームはすでに試合に割り当てられています。",
           "alreadyRegistered": "このチームはすでにこのトーナメントに登録されています。",
-          "teamNotFound": "チームが見つかりません。"
-        }
+          "teamNotFound": "チームが見つかりません。",
+          "sameTournament": "この大会を経路にはできません。",
+          "pointTypeNotFound": "ポイント種別が見つかりません。"
+        },
+        "columnQualification": "出場経路",
+        "originAuto": "自動",
+        "originManual": "手動",
+        "fieldQualification": "出場経路",
+        "fieldQualificationHint": "自動は出場ルールから判定します。",
+        "qualificationMode": {
+          "auto": "自動（出場ルールから判定）",
+          "none": "なし",
+          "tournament": "別の大会",
+          "invite": "招待",
+          "points": "ポイント"
+        },
+        "fieldQualificationTournament": "元の大会",
+        "fieldQualificationTournamentPlaceholder": "大会を選択…",
+        "fieldQualificationTournamentSearch": "大会を検索…",
+        "fieldQualificationTournamentNoResults": "大会が見つかりません。",
+        "fieldQualificationPointType": "ポイント種別",
+        "fieldQualificationPointTypePlaceholder": "ポイント種別を選択…"
       },
       "stages": {
         "heading": "ステージとブラケット",
@@ -6311,5 +6335,13 @@
     "firstPlace": "1位",
     "secondPlace": "2位",
     "thirdPlace": "3位"
+  },
+  "qualificationSource": {
+    "viaTournament": "<tournament>{name}</tournament> 経由で出場",
+    "tournament": "大会経由で出場",
+    "invite": "招待",
+    "points": "{label} ポイントで出場",
+    "pointsUnknown": "ポイントで出場",
+    "iconLabel": "出場経路"
   }
 }

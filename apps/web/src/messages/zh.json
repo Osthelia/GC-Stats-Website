@@ -1152,7 +1152,11 @@
         "kind": "参赛方类型（在 GC-Stats 上始终为“战队”）",
         "teamId": "已报名的战队",
         "displayName": "报名时显示的名称（即使战队此后改名，此名称也保持不变）",
-        "seed": "分配给该参赛方的种子序号"
+        "seed": "分配给该参赛方的种子序号",
+        "qualificationSourceManual": "晋级来源是否为手动设置（否则根据晋级规则推断）",
+        "qualificationSourceType": "手动晋级来源（赛事、邀请或积分）",
+        "qualificationSourceTournamentId": "参赛者晋级所自的赛事（手动来源）",
+        "qualificationSourcePointTypeId": "晋级所依据的积分类型（手动来源）"
       },
       "entrantMembers": {
         "personId": "属于该赛事专属锁定名单的人员",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "该种子序号已被另一个参赛方使用。",
           "inUse": "无法移除：该参赛方已参与某场比赛。",
           "alreadyRegistered": "该战队已报名此赛事。",
-          "teamNotFound": "未找到该战队。"
-        }
+          "teamNotFound": "未找到该战队。",
+          "sameTournament": "来源不能是当前赛事。",
+          "pointTypeNotFound": "未找到积分类型。"
+        },
+        "columnQualification": "晋级来源",
+        "originAuto": "自动",
+        "originManual": "手动",
+        "fieldQualification": "晋级来源",
+        "fieldQualificationHint": "自动会根据晋级规则推断。",
+        "qualificationMode": {
+          "auto": "自动（根据晋级规则）",
+          "none": "无",
+          "tournament": "其他赛事",
+          "invite": "邀请",
+          "points": "积分"
+        },
+        "fieldQualificationTournament": "来源赛事",
+        "fieldQualificationTournamentPlaceholder": "选择赛事…",
+        "fieldQualificationTournamentSearch": "搜索赛事…",
+        "fieldQualificationTournamentNoResults": "未找到赛事。",
+        "fieldQualificationPointType": "积分类型",
+        "fieldQualificationPointTypePlaceholder": "选择积分类型…"
       },
       "stages": {
         "heading": "阶段与对阵表",
@@ -6311,5 +6335,13 @@
     "firstPlace": "第一名",
     "secondPlace": "第二名",
     "thirdPlace": "第三名"
+  },
+  "qualificationSource": {
+    "viaTournament": "通过 <tournament>{name}</tournament> 晋级",
+    "tournament": "通过赛事晋级",
+    "invite": "受邀",
+    "points": "通过 {label} 积分晋级",
+    "pointsUnknown": "通过积分晋级",
+    "iconLabel": "晋级来源"
   }
 }

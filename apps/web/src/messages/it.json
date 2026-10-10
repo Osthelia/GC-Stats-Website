@@ -1152,7 +1152,11 @@
         "kind": "Tipo di partecipante (sempre \"team\" su GC-Stats)",
         "teamId": "Team iscritto",
         "displayName": "Nome mostrato al momento dell'iscrizione (resta invariato anche se il team cambia nome in seguito)",
-        "seed": "Seed assegnato al partecipante"
+        "seed": "Seed assegnato al partecipante",
+        "qualificationSourceManual": "Indica se l'origine della qualificazione è stata impostata a mano (altrimenti dedotta dalle regole di qualificazione)",
+        "qualificationSourceType": "Origine di qualificazione manuale (torneo, invito o punti)",
+        "qualificationSourceTournamentId": "Torneo da cui il partecipante si è qualificato (origine manuale)",
+        "qualificationSourcePointTypeId": "Tipo di punti da cui deriva la qualificazione (origine manuale)"
       },
       "entrantMembers": {
         "personId": "Persona che fa parte del roster bloccato per questo torneo specifico",
@@ -3680,8 +3684,28 @@
           "duplicateSeed": "Questo seed è già usato da un altro partecipante.",
           "inUse": "Impossibile rimuovere: questo partecipante è già assegnato a un match.",
           "alreadyRegistered": "Questo team è già iscritto a questo torneo.",
-          "teamNotFound": "Team non trovato."
-        }
+          "teamNotFound": "Team non trovato.",
+          "sameTournament": "L'origine non può essere questo torneo.",
+          "pointTypeNotFound": "Tipo di punti non trovato."
+        },
+        "columnQualification": "Qualificazione",
+        "originAuto": "Auto",
+        "originManual": "Manuale",
+        "fieldQualification": "Origine della qualificazione",
+        "fieldQualificationHint": "Automatico la deduce dalle regole di qualificazione.",
+        "qualificationMode": {
+          "auto": "Automatico (dalle regole di qualificazione)",
+          "none": "Nessuna",
+          "tournament": "Altro torneo",
+          "invite": "Invito",
+          "points": "Punti"
+        },
+        "fieldQualificationTournament": "Torneo di origine",
+        "fieldQualificationTournamentPlaceholder": "Scegli un torneo…",
+        "fieldQualificationTournamentSearch": "Cerca un torneo…",
+        "fieldQualificationTournamentNoResults": "Nessun torneo trovato.",
+        "fieldQualificationPointType": "Tipo di punti",
+        "fieldQualificationPointTypePlaceholder": "Scegli un tipo di punti…"
       },
       "stages": {
         "heading": "Fasi e bracket",
@@ -6311,5 +6335,13 @@
     "firstPlace": "primo posto",
     "secondPlace": "secondo posto",
     "thirdPlace": "terzo posto"
+  },
+  "qualificationSource": {
+    "viaTournament": "Qualificato tramite <tournament>{name}</tournament>",
+    "tournament": "Qualificato tramite un torneo",
+    "invite": "Invitato",
+    "points": "Qualificato tramite punti {label}",
+    "pointsUnknown": "Qualificato tramite punti",
+    "iconLabel": "Origine della qualificazione"
   }
 }

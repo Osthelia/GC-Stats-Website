@@ -1152,7 +1152,11 @@
         "kind": "Rodzaj uczestnika (na GC-Stats zawsze \"team\")",
         "teamId": "Zapisana drużyna",
         "displayName": "Nazwa wyświetlana w chwili zapisu (nie zmienia się, nawet jeśli drużyna później zmieni nazwę)",
-        "seed": "Seed przypisany uczestnikowi"
+        "seed": "Seed przypisany uczestnikowi",
+        "qualificationSourceManual": "Czy źródło kwalifikacji ustawiono ręcznie (w przeciwnym razie wynika z zasad kwalifikacji)",
+        "qualificationSourceType": "Ręczne źródło kwalifikacji (turniej, zaproszenie lub punkty)",
+        "qualificationSourceTournamentId": "Turniej, z którego uczestnik awansował (źródło ręczne)",
+        "qualificationSourcePointTypeId": "Typ punktów, z którego wynika kwalifikacja (źródło ręczne)"
       },
       "entrantMembers": {
         "personId": "Osoba należąca do składu zablokowanego na ten konkretny turniej",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "Ten seed jest już używany przez innego uczestnika.",
           "inUse": "Nie można usunąć: ten uczestnik jest już przypisany do meczu.",
           "alreadyRegistered": "Ta drużyna jest już zapisana do tego turnieju.",
-          "teamNotFound": "Nie znaleziono drużyny."
-        }
+          "teamNotFound": "Nie znaleziono drużyny.",
+          "sameTournament": "Źródłem nie może być ten turniej.",
+          "pointTypeNotFound": "Nie znaleziono typu punktów."
+        },
+        "columnQualification": "Kwalifikacja",
+        "originAuto": "Auto",
+        "originManual": "Ręcznie",
+        "fieldQualification": "Źródło kwalifikacji",
+        "fieldQualificationHint": "Automatyczne wynika z zasad kwalifikacji.",
+        "qualificationMode": {
+          "auto": "Automatycznie (z zasad kwalifikacji)",
+          "none": "Brak",
+          "tournament": "Inny turniej",
+          "invite": "Zaproszenie",
+          "points": "Punkty"
+        },
+        "fieldQualificationTournament": "Turniej źródłowy",
+        "fieldQualificationTournamentPlaceholder": "Wybierz turniej…",
+        "fieldQualificationTournamentSearch": "Szukaj turnieju…",
+        "fieldQualificationTournamentNoResults": "Nie znaleziono turnieju.",
+        "fieldQualificationPointType": "Typ punktów",
+        "fieldQualificationPointTypePlaceholder": "Wybierz typ punktów…"
       },
       "stages": {
         "heading": "Etapy i drabinki",
@@ -6311,5 +6335,13 @@
     "firstPlace": "pierwsze miejsce",
     "secondPlace": "drugie miejsce",
     "thirdPlace": "trzecie miejsce"
+  },
+  "qualificationSource": {
+    "viaTournament": "Awans przez <tournament>{name}</tournament>",
+    "tournament": "Awans przez turniej",
+    "invite": "Zaproszony",
+    "points": "Awans przez punkty {label}",
+    "pointsUnknown": "Awans przez punkty",
+    "iconLabel": "Źródło kwalifikacji"
   }
 }

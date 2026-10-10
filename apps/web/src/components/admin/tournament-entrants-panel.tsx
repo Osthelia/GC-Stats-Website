@@ -19,11 +19,12 @@ import { AdminSortableThClient } from "@/components/admin/admin-sortable-th-clie
 import { AdminColumnFilterBar, type AdminActiveFilter } from "@/components/admin/admin-column-filter-bar";
 import { EntrantDialog } from "@/components/admin/entrant-dialog";
 import { QuickAddEntrant } from "@/components/admin/quick-add-entrant";
+import { QualificationSourceLabel } from "@/components/tournament/qualification-source-label";
 import { removeEntrant } from "@/actions/admin-tournament-entrants";
 import { stripAccents, typoVariants } from "@/lib/search-typo";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
 
-type SortCol = "seed" | "name" | "type";
+type SortCol = "seed" | "name" | "type" | "qualification";
 type Direction = "asc" | "desc";
 
 function compare(a: AdminEntrantRow, b: AdminEntrantRow, col: SortCol): number {
@@ -34,11 +35,14 @@ function compare(a: AdminEntrantRow, b: AdminEntrantRow, col: SortCol): number {
       return a.displayName.localeCompare(b.displayName);
     case "type":
       return a.kind.localeCompare(b.kind);
+    case "qualification":
+      return (a.qualificationSource?.tournamentName ?? a.qualificationSource?.pointTypeLabel ?? a.qualificationSource?.type ?? "").localeCompare(b.qualificationSource?.tournamentName ?? b.qualificationSource?.pointTypeLabel ?? b.qualificationSource?.type ?? "");
   }
 }
 
-export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: { tournamentId: number; entrants: AdminEntrantRow[]; canManage: boolean }) {
+export function TournamentEntrantsPanel({ tournamentId, entrants, pointTypeOptions, canManage }: { tournamentId: number; entrants: AdminEntrantRow[]; pointTypeOptions: { id: number; label: string }[]; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.entrants");
+  const tSource = useTranslations("qualificationSource");
   const router = useRouter();
   const [editing, setEditing] = useState<AdminEntrantRow | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -71,10 +75,11 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: {
     if (field === "name") return entrant.displayName;
     if (field === "type") return t(entrant.kind === "team" ? "kindTeam" : "kindPlaceholder");
     if (field === "seed") return entrant.seed != null ? String(entrant.seed) : "";
+    if (field === "qualification") return entrant.qualificationSource ? (entrant.qualificationSource.tournamentName ?? entrant.qualificationSource.pointTypeLabel ?? tSource(entrant.qualificationSource.type)) : "";
     return "";
   }
 
-  const filterColumns = useMemo(() => [{ value: "name", label: t("columnName") }, { value: "type", label: t("columnType") }, { value: "seed", label: t("columnSeed") }], [t]);
+  const filterColumns = useMemo(() => [{ value: "name", label: t("columnName") }, { value: "type", label: t("columnType") }, { value: "seed", label: t("columnSeed") }, { value: "qualification", label: t("columnQualification") }], [t]);
 
   const rows = useMemo(() => {
     const filtered =
@@ -93,7 +98,7 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: {
   }, [entrants, filters, sort, direction]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("heading")}</h2>
         <AdminColumnFilterBar columns={filterColumns} activeFilters={filters} onApply={setFilters} />
@@ -113,13 +118,14 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: {
               <AdminSortableThClient col="seed" label={t("columnSeed")} sort={sort} direction={direction} onSort={handleSort} />
               <AdminSortableThClient col="name" label={t("columnName")} sort={sort} direction={direction} onSort={handleSort} />
               <AdminSortableThClient col="type" label={t("columnType")} sort={sort} direction={direction} onSort={handleSort} />
+              <AdminSortableThClient col="qualification" label={t("columnQualification")} sort={sort} direction={direction} onSort={handleSort} />
               <TableHead className="text-right" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
                   {t("empty")}
                 </TableCell>
               </TableRow>
@@ -132,6 +138,18 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: {
                   <Badge variant="outline" className={entrant.kind === "team" ? "border-sky-400/20 bg-sky-400/10 text-sky-300" : "border-amber-400/20 bg-amber-400/10 text-amber-300"}>
                     {t(entrant.kind === "team" ? "kindTeam" : "kindPlaceholder")}
                   </Badge>
+                </TableCell>
+                <TableCell className="max-w-[220px] text-sm whitespace-normal">
+                  {entrant.qualificationSource ? (
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <QualificationSourceLabel source={entrant.qualificationSource} />
+                      <Badge variant="outline" className="text-[10px]">
+                        {t(entrant.qualificationSource.origin === "auto" ? "originAuto" : "originManual")}
+                      </Badge>
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   {canManage && (
@@ -151,7 +169,7 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, canManage }: {
         </Table>
       </div>
 
-      <EntrantDialog tournamentId={tournamentId} entrant={editing} open={editing !== null} onOpenChange={(open) => !open && setEditing(null)} />
+      <EntrantDialog tournamentId={tournamentId} pointTypeOptions={pointTypeOptions} entrant={editing} open={editing !== null} onOpenChange={(open) => !open && setEditing(null)} />
     </div>
   );
 }

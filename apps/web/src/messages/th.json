@@ -1152,7 +1152,11 @@
         "kind": "ประเภทผู้เข้าแข่งขัน (เป็น \"team\" เสมอบน GC-Stats)",
         "teamId": "ทีมที่ลงทะเบียน",
         "displayName": "ชื่อที่แสดงในตอนลงทะเบียน (ไม่เปลี่ยนแม้ทีมจะเปลี่ยนชื่อภายหลัง)",
-        "seed": "ซีดที่กำหนดให้ผู้เข้าแข่งขัน"
+        "seed": "ซีดที่กำหนดให้ผู้เข้าแข่งขัน",
+        "qualificationSourceManual": "ระบุว่าแหล่งที่มาถูกกำหนดเองหรือไม่ (ถ้าไม่ จะอ่านจากกฎการผ่านเข้ารอบ)",
+        "qualificationSourceType": "แหล่งที่มาแบบกำหนดเอง (ทัวร์นาเมนต์ คำเชิญ หรือคะแนน)",
+        "qualificationSourceTournamentId": "ทัวร์นาเมนต์ที่ผู้เข้าแข่งขันผ่านเข้ารอบมา (แหล่งที่มาแบบกำหนดเอง)",
+        "qualificationSourcePointTypeId": "ประเภทคะแนนที่ใช้ผ่านเข้ารอบ (แหล่งที่มาแบบกำหนดเอง)"
       },
       "entrantMembers": {
         "personId": "บุคคลที่อยู่ในโรสเตอร์ที่ล็อกไว้สำหรับทัวร์นาเมนต์นี้โดยเฉพาะ",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "ซีดนี้ถูกใช้โดยผู้เข้าแข่งขันอื่นแล้ว",
           "inUse": "นำออกไม่ได้: ผู้เข้าแข่งขันนี้ถูกกำหนดในแมตช์แล้ว",
           "alreadyRegistered": "ทีมนี้ลงทะเบียนในทัวร์นาเมนต์นี้แล้ว",
-          "teamNotFound": "ไม่พบทีม"
-        }
+          "teamNotFound": "ไม่พบทีม",
+          "sameTournament": "แหล่งที่มาต้องไม่ใช่ทัวร์นาเมนต์นี้",
+          "pointTypeNotFound": "ไม่พบประเภทคะแนน"
+        },
+        "columnQualification": "การผ่านเข้ารอบ",
+        "originAuto": "อัตโนมัติ",
+        "originManual": "กำหนดเอง",
+        "fieldQualification": "แหล่งที่มาของการผ่านเข้ารอบ",
+        "fieldQualificationHint": "โหมดอัตโนมัติจะอ่านจากกฎการผ่านเข้ารอบ",
+        "qualificationMode": {
+          "auto": "อัตโนมัติ (ตามกฎการผ่านเข้ารอบ)",
+          "none": "ไม่มี",
+          "tournament": "ทัวร์นาเมนต์อื่น",
+          "invite": "คำเชิญ",
+          "points": "คะแนน"
+        },
+        "fieldQualificationTournament": "ทัวร์นาเมนต์ต้นทาง",
+        "fieldQualificationTournamentPlaceholder": "เลือกทัวร์นาเมนต์…",
+        "fieldQualificationTournamentSearch": "ค้นหาทัวร์นาเมนต์…",
+        "fieldQualificationTournamentNoResults": "ไม่พบทัวร์นาเมนต์",
+        "fieldQualificationPointType": "ประเภทคะแนน",
+        "fieldQualificationPointTypePlaceholder": "เลือกประเภทคะแนน…"
       },
       "stages": {
         "heading": "สเตจและสายการแข่งขัน",
@@ -6311,5 +6335,13 @@
     "firstPlace": "อันดับ 1",
     "secondPlace": "อันดับ 2",
     "thirdPlace": "อันดับ 3"
+  },
+  "qualificationSource": {
+    "viaTournament": "ผ่านเข้ารอบจาก <tournament>{name}</tournament>",
+    "tournament": "ผ่านเข้ารอบจากทัวร์นาเมนต์",
+    "invite": "ได้รับเชิญ",
+    "points": "ผ่านเข้ารอบจากคะแนน {label}",
+    "pointsUnknown": "ผ่านเข้ารอบจากคะแนน",
+    "iconLabel": "แหล่งที่มาของการผ่านเข้ารอบ"
   }
 }

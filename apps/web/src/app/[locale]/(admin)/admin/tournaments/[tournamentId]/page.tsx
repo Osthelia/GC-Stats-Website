@@ -46,12 +46,12 @@ export default async function AdminTournamentDetailPage({ params }: { params: Pr
     <div className="flex flex-col gap-6">
       <TournamentDetailHeader tournament={tournament} pointTypeOptions={pointTypeOptions} canManage={canManage} />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className="flex flex-col gap-6 lg:col-span-7">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-7">
           <TournamentStagesOverview tournamentId={id} stages={stages} />
           <EntityLogoPanel namespace="admin.tournaments.logo" entityType="tournament" entityId={id} displayName={tournament.name} entries={logos} canEdit={canManage} />
         </div>
-        <div className="lg:col-span-5">
-          <TournamentEntrantsPanel tournamentId={id} entrants={entrants} canManage={canManage} />
+        <div className="min-w-0 lg:col-span-5">
+          <TournamentEntrantsPanel tournamentId={id} entrants={entrants} pointTypeOptions={pointTypeOptions} canManage={canManage} />
         </div>
       </div>
     </div>

@@ -1152,7 +1152,11 @@
         "kind": "Katılımcı türü (GC-Stats'ta her zaman \"takım\")",
         "teamId": "Kayıtlı takım",
         "displayName": "Kayıt sırasında gösterilen ad (takım daha sonra yeniden adlandırılsa bile değişmeden kalır)",
-        "seed": "Katılımcıya atanan seed"
+        "seed": "Katılımcıya atanan seed",
+        "qualificationSourceManual": "Katılım kaynağının elle girilip girilmediği (aksi halde katılım kurallarından çıkarılır)",
+        "qualificationSourceType": "Manuel katılım kaynağı (turnuva, davet veya puan)",
+        "qualificationSourceTournamentId": "Katılımcının hak kazandığı turnuva (manuel kaynak)",
+        "qualificationSourcePointTypeId": "Katılım hakkının geldiği puan türü (manuel kaynak)"
       },
       "entrantMembers": {
         "personId": "Bu belirli turnuva için sabitlenmiş kadronun bir parçası olan kişi",
@@ -3676,8 +3680,28 @@
           "duplicateSeed": "Bu seed zaten başka bir katılımcı tarafından kullanılıyor.",
           "inUse": "Kaldırılamaz: bu katılımcı zaten bir maça atanmış.",
           "alreadyRegistered": "Bu takım bu turnuvaya zaten kayıtlı.",
-          "teamNotFound": "Takım bulunamadı."
-        }
+          "teamNotFound": "Takım bulunamadı.",
+          "sameTournament": "Kaynak bu turnuva olamaz.",
+          "pointTypeNotFound": "Puan türü bulunamadı."
+        },
+        "columnQualification": "Katılım hakkı",
+        "originAuto": "Otomatik",
+        "originManual": "Manuel",
+        "fieldQualification": "Katılım kaynağı",
+        "fieldQualificationHint": "Otomatik, katılım kurallarından çıkarılır.",
+        "qualificationMode": {
+          "auto": "Otomatik (katılım kurallarına göre)",
+          "none": "Yok",
+          "tournament": "Başka bir turnuva",
+          "invite": "Davet",
+          "points": "Puan"
+        },
+        "fieldQualificationTournament": "Kaynak turnuva",
+        "fieldQualificationTournamentPlaceholder": "Bir turnuva seçin…",
+        "fieldQualificationTournamentSearch": "Turnuva ara…",
+        "fieldQualificationTournamentNoResults": "Turnuva bulunamadı.",
+        "fieldQualificationPointType": "Puan türü",
+        "fieldQualificationPointTypePlaceholder": "Bir puan türü seçin…"
       },
       "stages": {
         "heading": "Aşamalar ve braketler",
@@ -6311,5 +6335,13 @@
     "firstPlace": "birincilik",
     "secondPlace": "ikincilik",
     "thirdPlace": "üçüncülük"
+  },
+  "qualificationSource": {
+    "viaTournament": "<tournament>{name}</tournament> üzerinden katıldı",
+    "tournament": "Bir turnuva üzerinden katıldı",
+    "invite": "Davetli",
+    "points": "{label} puanları üzerinden katıldı",
+    "pointsUnknown": "Puanlar üzerinden katıldı",
+    "iconLabel": "Katılım kaynağı"
   }
 }

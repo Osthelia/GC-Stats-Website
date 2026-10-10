@@ -1152,7 +1152,11 @@
         "kind": "Type d'entrant (toujours \"équipe\" côté GC-Stats)",
         "teamId": "Équipe inscrite",
         "displayName": "Nom affiché au moment de l'inscription (reste inchangé même si l'équipe est renommée ensuite)",
-        "seed": "Tête de série attribuée à l'entrant"
+        "seed": "Tête de série attribuée à l'entrant",
+        "qualificationSourceManual": "Indique si la source de qualification a été saisie à la main (sinon déduite des règles de qualification)",
+        "qualificationSourceType": "Source de qualification manuelle (tournoi, invitation ou points)",
+        "qualificationSourceTournamentId": "Tournoi dont l'équipe est issue (source manuelle)",
+        "qualificationSourcePointTypeId": "Type de points dont provient la qualification (source manuelle)"
       },
       "entrantMembers": {
         "personId": "Personne faisant partie du roster verrouillé pour ce tournoi précis",
@@ -3680,8 +3684,28 @@
           "duplicateSeed": "Ce seed est déjà utilisé par un autre entrant.",
           "inUse": "Impossible de retirer : cet entrant est déjà engagé dans un match.",
           "alreadyRegistered": "Cette équipe est déjà inscrite à ce tournoi.",
-          "teamNotFound": "Équipe introuvable."
-        }
+          "teamNotFound": "Équipe introuvable.",
+          "sameTournament": "La source ne peut pas être ce tournoi.",
+          "pointTypeNotFound": "Type de points introuvable."
+        },
+        "columnQualification": "Qualification",
+        "originAuto": "Auto",
+        "originManual": "Manuel",
+        "fieldQualification": "Source de qualification",
+        "fieldQualificationHint": "Automatique la déduit des règles de qualification.",
+        "qualificationMode": {
+          "auto": "Automatique (selon les règles de qualification)",
+          "none": "Aucune",
+          "tournament": "Autre tournoi",
+          "invite": "Invitation",
+          "points": "Points"
+        },
+        "fieldQualificationTournament": "Tournoi source",
+        "fieldQualificationTournamentPlaceholder": "Choisir un tournoi…",
+        "fieldQualificationTournamentSearch": "Rechercher un tournoi…",
+        "fieldQualificationTournamentNoResults": "Aucun tournoi trouvé.",
+        "fieldQualificationPointType": "Type de points",
+        "fieldQualificationPointTypePlaceholder": "Choisir un type de points…"
       },
       "stages": {
         "heading": "Stages & brackets",
@@ -6311,5 +6335,13 @@
     "firstPlace": "première place",
     "secondPlace": "deuxième place",
     "thirdPlace": "troisième place"
+  },
+  "qualificationSource": {
+    "viaTournament": "Qualifié via <tournament>{name}</tournament>",
+    "tournament": "Qualifié via un tournoi",
+    "invite": "Invité",
+    "points": "Qualifié via les points {label}",
+    "pointsUnknown": "Qualifié via les points",
+    "iconLabel": "Source de qualification"
   }
 }

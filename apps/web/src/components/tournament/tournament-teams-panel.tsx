@@ -11,6 +11,7 @@
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
+import { QualificationSourceIcon } from "@/components/tournament/qualification-source-icon";
 import { slugify } from "@/lib/entity-id";
 import type { TournamentParticipant } from "@/lib/tournament-page-data";
 
@@ -91,9 +92,14 @@ export function TournamentTeamsPanel({
           return (
             <div
               key={p.entrantId}
-              className="flex h-full flex-col items-center gap-2 rounded-xl border border-neutral-800 p-3 text-center transition-colors"
+              className="relative flex h-full flex-col items-center gap-2 rounded-xl border border-neutral-800 p-3 text-center transition-colors"
               style={{ background: "var(--gcs-surface-2)" }}
             >
+              {p.qualificationSource && (
+                <div className="absolute top-2 right-2">
+                  <QualificationSourceIcon source={p.qualificationSource} />
+                </div>
+              )}
               {inner}
 
               <div className="flex w-full flex-1 items-center justify-center">

@@ -166,7 +166,7 @@ export default function DataPage() {
         <div className="flex flex-col gap-6">
           <LinkCard label="Entrants">
             <FieldGroup>
-              <Row table="entrants" names={["tournamentId", "kind", "teamId", "displayName", "seed"]} />
+              <Row table="entrants" names={["tournamentId", "kind", "teamId", "displayName", "seed", "qualificationSourceManual", "qualificationSourceType", "qualificationSourceTournamentId", "qualificationSourcePointTypeId"]} />
             </FieldGroup>
           </LinkCard>
           <LinkCard label="Entrant_Members">

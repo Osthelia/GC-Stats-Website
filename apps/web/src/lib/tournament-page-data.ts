@@ -21,6 +21,7 @@ import type { HomeMatch } from "@/lib/home-data";
 import type { EntityMatchStatusFilter as MatchStatusFilter } from "@/lib/entity-matches";
 import type { ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
+import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
 
 export type TournamentRosterPlayer = { personId: number; handle: string };
 
@@ -32,6 +33,7 @@ export type TournamentParticipant = {
   logoUrl: string | null;
   logoUrlLight: string | null;
   seed: number | null;
+  qualificationSource: EntrantQualificationSource | null;
   roster: TournamentRosterPlayer[];
 };
 
@@ -69,7 +71,17 @@ export async function getTournamentParticipants(tournamentId: number, stageId?: 
   }
 
   const entrantRows = await db
-    .select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName, seed: entrants.seed, shortName: teams.shortName })
+    .select({
+      id: entrants.id,
+      teamId: entrants.teamId,
+      displayName: entrants.displayName,
+      seed: entrants.seed,
+      shortName: teams.shortName,
+      qualificationSourceManual: entrants.qualificationSourceManual,
+      qualificationSourceType: entrants.qualificationSourceType,
+      qualificationSourceTournamentId: entrants.qualificationSourceTournamentId,
+      qualificationSourcePointTypeId: entrants.qualificationSourcePointTypeId,
+    })
     .from(entrants)
     .leftJoin(teams, eq(teams.id, entrants.teamId))
     .where(and(eq(entrants.tournamentId, tournamentId), stageCondition))
@@ -79,8 +91,9 @@ export async function getTournamentParticipants(tournamentId: number, stageId?: 
 
   const entrantIds = entrantRows.map((e) => e.id);
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
-  const [logosByTeamId, lockedRows] = await Promise.all([
+  const [logosByTeamId, sourceByEntrant, lockedRows] = await Promise.all([
     getCurrentLogoUrlsThemed("team", teamIds),
+    resolveEntrantQualificationSources(db, tournamentId, entrantRows),
     db
       .select({ entrantId: entrantMembers.entrantId, personId: people.id, handle: people.handle })
       .from(entrantMembers)
@@ -115,6 +128,7 @@ export async function getTournamentParticipants(tournamentId: number, stageId?: 
     logoUrl: e.teamId ? (logosByTeamId.get(e.teamId)?.dark ?? null) : null,
     logoUrlLight: e.teamId ? (logosByTeamId.get(e.teamId)?.light ?? null) : null,
     seed: e.seed,
+    qualificationSource: sourceByEntrant.get(e.id) ?? null,
     roster: rosterByEntrant.get(e.id) ?? [],
   }));
 }
