@@ -184,6 +184,9 @@ const STATUS_TO_DB: Record<MatchStatusFilter, TournamentMatchStatus> = { upcomin
 /** Every Matches tab filter except `status`, which the status counts ignore. */
 function buildTournamentMatchesConditions(tournamentId: number, filters?: TournamentMatchesFilters) {
   const conditions = [eq(stages.tournamentId, tournamentId)];
+  // Un match sans aucune team assignée n'est pas affiché
+  const entrantTeamIds = db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), isNotNull(entrants.teamId)));
+  conditions.push(or(inArray(matches.entrantAId, entrantTeamIds), inArray(matches.entrantBId, entrantTeamIds))!);
   if (filters?.stageId != null) conditions.push(eq(stages.id, filters.stageId));
   if (filters?.round) conditions.push(eq(matches.label, filters.round));
   if (filters?.teamId != null) {
@@ -258,7 +261,7 @@ export async function getTournamentMatches(
     .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
     .where(and(...conditions))
     // Live first, then most recently played (overview panel only, via `liveFirst`) — the full matches tab just sorts by date, same as `getTeamMatches`.
-    .orderBy(...(opts.liveFirst ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)] : [opts.filters?.sort === "oldest" ? asc(matches.scheduledAt) : desc(matches.scheduledAt)]), opts.filters?.sort === "oldest" ? asc(matches.id) : desc(matches.id));
+    .orderBy(...(opts.liveFirst ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)] : [opts.filters?.sort === "oldest" ? sql`${matches.scheduledAt} asc nulls last` : sql`${matches.scheduledAt} desc nulls last`]),opts.filters?.sort === "oldest" ? asc(matches.id) : desc(matches.id));
 
   let rows: Awaited<typeof baseQuery>;
   if (opts.page != null) {
