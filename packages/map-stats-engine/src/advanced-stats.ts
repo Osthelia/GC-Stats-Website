@@ -42,10 +42,10 @@ export function computeMultikills(match: RiotMatchDto): Map<string, Record<strin
 }
 
 /**
- * A clutch: the round where a team first drops to exactly 1 player alive
- * while the opponent still has at least 1 — attributed to that lone
- * survivor, sized by opponents alive at that moment (capped 1v5). Won if
- * the survivor's team ends up winning the round.
+ * A clutch: the first moment a team drops to exactly 1 player alive while
+ * the opponent still has at least 1, attributed to that lone survivor and
+ * sized by opponents alive at that moment (capped 1v5). Each team can have
+ * one per round. Won if the survivor's team wins the round.
  */
 export function computeClutches(match: RiotMatchDto): Map<string, Record<string, ClutchEntry>> {
   const result = new Map<string, Record<string, ClutchEntry>>();
@@ -58,38 +58,28 @@ export function computeClutches(match: RiotMatchDto): Map<string, Record<string,
     };
 
     const kills = normalizeRoundKills(round).sort((a, b) => a.timeSinceRoundStartMillis - b.timeSinceRoundStartMillis);
-    let clutchCandidate: { puuid: string; team: RiotTeamId; size: number } | null = null;
     const flaggedTeams = new Set<RiotTeamId>();
 
     for (const kill of kills) {
       const victimTeam = teamByPuuid.get(kill.victimPuuid);
       if (victimTeam) roster[victimTeam].delete(kill.victimPuuid);
 
-      if (clutchCandidate) continue;
       for (const team of ["Red", "Blue"] as const) {
         if (flaggedTeams.has(team)) continue;
-        const mine = roster[team].size;
-        const opponentTeam = team === "Red" ? "Blue" : "Red";
-        const opponents = roster[opponentTeam].size;
-        if (mine === 1 && opponents >= 1) {
-          const [survivorPuuid] = roster[team];
-          if (survivorPuuid) {
-            clutchCandidate = { puuid: survivorPuuid, team, size: Math.min(opponents, 5) };
-            flaggedTeams.add(team);
-          }
-        }
-      }
-    }
+        const opponents = roster[team === "Red" ? "Blue" : "Red"].size;
+        if (roster[team].size !== 1 || opponents < 1) continue;
+        const [survivorPuuid] = roster[team];
+        if (!survivorPuuid) continue;
+        flaggedTeams.add(team);
 
-    if (clutchCandidate) {
-      const won = round.winningTeam === clutchCandidate.team;
-      const row = result.get(clutchCandidate.puuid) ?? {};
-      const key = `1v${clutchCandidate.size}`;
-      const entry = row[key] ?? { won: 0, total: 0 };
-      entry.total += 1;
-      if (won) entry.won += 1;
-      row[key] = entry;
-      result.set(clutchCandidate.puuid, row);
+        const row = result.get(survivorPuuid) ?? {};
+        const key = `1v${Math.min(opponents, 5)}`;
+        const entry = row[key] ?? { won: 0, total: 0 };
+        entry.total += 1;
+        if (round.winningTeam === team) entry.won += 1;
+        row[key] = entry;
+        result.set(survivorPuuid, row);
+      }
     }
   }
 
