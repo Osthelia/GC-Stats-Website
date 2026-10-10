@@ -142,7 +142,7 @@ export async function getTournamentRecentMatches(tournamentId: number, limit = 9
   return getTournamentMatches(tournamentId, { statuses: ["completed", "live"], limit, liveFirst: true });
 }
 
-export type TournamentMatchesFilters = { stageId?: number; round?: string; teamId?: number; map?: string; status?: MatchStatusFilter; sort?: "oldest" };
+export type TournamentMatchesFilters = { stageId?: number; round?: string; teamId?: number; map?: string; status: MatchStatusFilter | "all"; sort?: "oldest" };
 
 function firstParam(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
@@ -164,7 +164,7 @@ export function parseTournamentMatchesFilters(searchParams: Record<string, strin
     round: round || undefined,
     map: map || undefined,
     sort: firstParam(searchParams.sort) === "oldest" ? "oldest" : undefined,
-    status: status === "live" || status === "upcoming" || status === "finished" ? status : undefined,
+    status: status === "all" || status === "live" || status === "finished" ? status : "upcoming",
   };
 }
 
@@ -179,7 +179,8 @@ export function parseTournamentMatchesFilters(searchParams: Record<string, strin
  */
 export const TOURNAMENT_MATCHES_PAGE_SIZE = 20;
 
-const STATUS_TO_DB: Record<MatchStatusFilter, TournamentMatchStatus> = { upcoming: "pending", live: "live", finished: "completed" };
+// "upcoming" also lists live matches, shown first
+const STATUS_TO_DB: Record<MatchStatusFilter, TournamentMatchStatus[]> = { upcoming: ["live", "pending"], live: ["live"], finished: ["completed"] };
 
 /** Every Matches tab filter except `status`, which the status counts ignore. */
 function buildTournamentMatchesConditions(tournamentId: number, filters?: TournamentMatchesFilters) {
@@ -214,6 +215,7 @@ export async function getTournamentMatchesStatusCounts(tournamentId: number, fil
   for (const r of rows) {
     counts.all += r.count;
     counts[TOURNAMENT_MATCH_STATUS[r.status] ?? "upcoming"] += r.count;
+    if (r.status === "live") counts.upcoming += r.count;
   }
   return counts;
 }
@@ -228,7 +230,7 @@ export async function getTournamentMatches(
   opts: { statuses?: TournamentMatchStatus[]; limit?: number; liveFirst?: boolean; filters?: TournamentMatchesFilters; page?: number } = {},
 ): Promise<HomeMatch[]> {
   const conditions = buildTournamentMatchesConditions(tournamentId, opts.filters);
-  const statuses = opts.filters?.status ? [STATUS_TO_DB[opts.filters.status]] : opts.statuses;
+  const statuses = opts.filters && opts.filters.status !== "all" ? STATUS_TO_DB[opts.filters.status] : opts.statuses;
   if (statuses) conditions.push(inArray(matches.status, statuses));
 
   const baseQuery = db
@@ -260,8 +262,13 @@ export async function getTournamentMatches(
     .leftJoin(entrantB, eq(entrantB.id, matches.entrantBId))
     .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
     .where(and(...conditions))
-    // Live first, then most recently played (overview panel only, via `liveFirst`) — the full matches tab just sorts by date, same as `getTeamMatches`.
-    .orderBy(...(opts.liveFirst ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)] : [opts.filters?.sort === "oldest" ? sql`${matches.scheduledAt} asc nulls last` : sql`${matches.scheduledAt} desc nulls last`]),opts.filters?.sort === "oldest" ? asc(matches.id) : desc(matches.id));
+    // Overview panel (`liveFirst`): live first, then latest. Matches tab: default is the closest to now (past or future), "oldest" is the farthest.
+    .orderBy(
+      ...(opts.liveFirst
+        ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`, desc(matches.scheduledAt)]
+        : [...(opts.filters?.status === "upcoming" ? [sql`case when ${matches.status} = 'live' then 0 else 1 end`] : []), opts.filters?.sort === "oldest" ? sql`abs(extract(epoch from (${matches.scheduledAt} - now()))) desc nulls last` : sql`abs(extract(epoch from (${matches.scheduledAt} - now()))) asc nulls last`]),
+      opts.filters?.sort === "oldest" ? asc(matches.id) : desc(matches.id),
+    );
 
   let rows: Awaited<typeof baseQuery>;
   if (opts.page != null) {
