@@ -278,7 +278,22 @@ export type MatchMapPlayerRow = {
   firstKills: number;
   firstDeaths: number;
   headshotPercentage: number;
+  clutchesWon: number;
+  clutchesPlayed: number;
 };
+
+type ClutchesJson = Record<string, { won?: number; total?: number }>;
+
+/** Sums the per situation clutches (1v1 to 1v5) stored as `{"1v1": {won, total}, ...}`. */
+function sumClutches(clutches: unknown): { won: number; played: number } {
+  let won = 0;
+  let played = 0;
+  for (const c of Object.values((clutches ?? {}) as ClutchesJson)) {
+    won += Number(c?.won ?? 0);
+    played += Number(c?.total ?? 0);
+  }
+  return { won, played };
+}
 
 export type MatchMap = {
   id: number;
@@ -342,6 +357,7 @@ export async function getMatchMaps(
         firstKills: mapPlayerStats.firstKills,
         firstDeaths: mapPlayerStats.firstDeaths,
         headshotPercentage: mapPlayerStats.headshotPercentage,
+        clutches: mapPlayerStats.clutches,
       })
       .from(mapPlayerStats)
       .leftJoin(people, eq(people.id, mapPlayerStats.personId))
@@ -355,8 +371,10 @@ export async function getMatchMaps(
   return rows.map((r) => {
     const players = statRows
       .filter((s) => s.mapId === r.id)
-      .map((s) => ({
+      .map(({ clutches, ...s }) => ({
         ...s,
+        clutchesWon: sumClutches(clutches).won,
+        clutchesPlayed: sumClutches(clutches).played,
         isGhost: s.isGhost ?? false,
         handle: s.handle ?? "?",
         agents: s.agentName ? [s.agentName] : [],
@@ -402,7 +420,7 @@ export function getCompletedMatchStats(
         getMatchMaps(matchId, entrantAId, entrantBId),
         getMatchMapsStatsBatch(matchId, entrantAId, entrantBId),
       ]),
-    ["completed-match-stats", String(matchId), String(entrantAId), String(entrantBId)],
+    ["completed-match-stats-v2", String(matchId), String(entrantAId), String(entrantBId)],
     { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }
@@ -432,6 +450,8 @@ export function aggregateMatchStats(
       hsSum: number;
       firstKills: number;
       firstDeaths: number;
+      clutchesWon: number;
+      clutchesPlayed: number;
       n: number;
     }
   >();
@@ -456,6 +476,8 @@ export function aggregateMatchStats(
       hsSum: 0,
       firstKills: 0,
       firstDeaths: 0,
+      clutchesWon: 0,
+      clutchesPlayed: 0,
       n: 0,
     };
     if (s.agentName) agg.agents.add(s.agentName);
@@ -468,6 +490,8 @@ export function aggregateMatchStats(
     agg.hsSum += Number(s.headshotPercentage);
     agg.firstKills += s.firstKills;
     agg.firstDeaths += s.firstDeaths;
+    agg.clutchesWon += s.clutchesWon;
+    agg.clutchesPlayed += s.clutchesPlayed;
     agg.n += 1;
     byPerson.set(key, agg);
   }
@@ -489,6 +513,8 @@ export function aggregateMatchStats(
       firstKills: a.firstKills,
       firstDeaths: a.firstDeaths,
       headshotPercentage: a.hsSum / a.n,
+      clutchesWon: a.clutchesWon,
+      clutchesPlayed: a.clutchesPlayed,
     }),
   );
 

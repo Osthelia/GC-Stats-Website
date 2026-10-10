@@ -19,14 +19,14 @@ const BUY_COLORS: Record<EcoTierKey, string> = {
   full_buy: "bg-[#e4ae22]",
 };
 
-const PERF_GRID_COLS = "1fr repeat(5,56px) 24px repeat(5,56px) 1fr";
-const PERF_GRID_COLS_MOBILE = "minmax(0,1fr) repeat(5,40px)";
+const PERF_GRID_COLS = "1fr repeat(6,56px) 24px repeat(6,56px) 1fr";
+const PERF_GRID_COLS_MOBILE = "minmax(0,1fr) repeat(6,40px)";
 
-/** SHF abbreviation, the full weapon name shows on hover or focus. */
-function SheriffHeader({ label }: { label: string }) {
+/** Column abbreviation, the full name shows on hover or focus. */
+function AbbrHeader({ abbr, label }: { abbr: string; label: string }) {
   return (
     <Tooltip>
-      <TooltipTrigger className="cursor-help rounded uppercase focus-visible:outline-none focus-visible:text-[#e4ae22] hover:text-[#e4ae22] active:scale-90">SHF</TooltipTrigger>
+      <TooltipTrigger className="cursor-help rounded uppercase focus-visible:outline-none focus-visible:text-[#e4ae22] hover:text-[#e4ae22] active:scale-90">{abbr}</TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );
@@ -36,6 +36,14 @@ function cellColor(v: number): string {
   if (v === 0) return "text-neutral-600";
   if (v >= 3) return "text-green-400";
   return "text-neutral-100";
+}
+
+function clutchLabel(row: MatchMapPlayerRow | null): string {
+  return `${row?.clutchesWon ?? 0}/${row?.clutchesPlayed ?? 0}`;
+}
+
+function clutchColor(row: MatchMapPlayerRow | null): string {
+  return cellColor(row?.clutchesWon ?? 0);
 }
 
 export function MatchPerformanceEconomy({
@@ -57,7 +65,7 @@ export function MatchPerformanceEconomy({
   const rowCount = Math.max(statsA.length, statsB.length);
   const hasEcoA = Object.values(ecoSummary.teamA).some((tier) => tier.total > 0);
   const hasEcoB = Object.values(ecoSummary.teamB).some((tier) => tier.total > 0);
-  const hasPerformance = statsA.some((s) => s.personId != null && performance[s.personId]) || statsB.some((s) => s.personId != null && performance[s.personId]);
+  const hasPerformance = [...statsA, ...statsB].some((s) => s.personId != null && (performance[s.personId] || s.clutchesPlayed > 0));
 
   if (!hasPerformance && !hasEcoA && !hasEcoB) return null;
 
@@ -82,7 +90,8 @@ export function MatchPerformanceEconomy({
               <div className="min-w-[640px]">
                 <div className="grid items-center px-1 py-2 text-[11px] font-semibold text-neutral-500 uppercase" style={{ gridTemplateColumns: PERF_GRID_COLS }}>
                   <div>{t("colPlayer")}</div>
-                  <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
+                  <div className="text-center"><AbbrHeader abbr="CLT" label={t("clutchesFull")} /></div>
+                  <div className="text-center"><AbbrHeader abbr="SHF" label={t("sheriffFull")} /></div>
                   <div className="text-center">2K</div>
                   <div className="text-center">3K</div>
                   <div className="text-center">4K</div>
@@ -92,7 +101,8 @@ export function MatchPerformanceEconomy({
                   <div className="text-center">4K</div>
                   <div className="text-center">3K</div>
                   <div className="text-center">2K</div>
-                  <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
+                  <div className="text-center"><AbbrHeader abbr="SHF" label={t("sheriffFull")} /></div>
+                  <div className="text-center"><AbbrHeader abbr="CLT" label={t("clutchesFull")} /></div>
                   <div className="text-right">{t("colPlayer")}</div>
                 </div>
 
@@ -104,6 +114,7 @@ export function MatchPerformanceEconomy({
                   return (
                     <div key={i} className={`grid items-center rounded-md px-1 py-2 ${i % 2 === 1 ? "bg-white/[0.015]" : ""}`} style={{ gridTemplateColumns: PERF_GRID_COLS }}>
                       <div className="truncate px-1 text-[13px] font-black text-[var(--gcs-text)] italic">{left?.handle ?? "-"}</div>
+                      <div className={`text-center text-[13px] ${clutchColor(left)}`}>{clutchLabel(left)}</div>
                       <div className={`text-center text-[13px] ${cellColor(pfA?.sheriffKills ?? 0)}`}>{pfA?.sheriffKills ?? 0}</div>
                       <div className={`text-center text-[13px] ${cellColor(pfA?.k2 ?? 0)}`}>{pfA?.k2 ?? 0}</div>
                       <div className={`text-center text-[13px] ${cellColor(pfA?.k3 ?? 0)}`}>{pfA?.k3 ?? 0}</div>
@@ -115,6 +126,7 @@ export function MatchPerformanceEconomy({
                       <div className={`text-center text-[13px] ${cellColor(pfB?.k3 ?? 0)}`}>{pfB?.k3 ?? 0}</div>
                       <div className={`text-center text-[13px] ${cellColor(pfB?.k2 ?? 0)}`}>{pfB?.k2 ?? 0}</div>
                       <div className={`text-center text-[13px] ${cellColor(pfB?.sheriffKills ?? 0)}`}>{pfB?.sheriffKills ?? 0}</div>
+                      <div className={`text-center text-[13px] ${clutchColor(right)}`}>{clutchLabel(right)}</div>
                       <div className="truncate px-1 text-right text-[13px] font-black text-[var(--gcs-text)] italic">{right?.handle ?? "-"}</div>
                     </div>
                   );
@@ -131,7 +143,8 @@ export function MatchPerformanceEconomy({
                   <div className="mb-2 text-center text-[13px] font-black tracking-wide text-[var(--gcs-text)] uppercase italic">{team.name}</div>
                   <div className="grid items-center px-1 py-1.5 text-[10px] font-semibold text-neutral-500 uppercase" style={{ gridTemplateColumns: PERF_GRID_COLS_MOBILE }}>
                     <div>{t("colPlayer")}</div>
-                    <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
+                    <div className="text-center"><AbbrHeader abbr="CLT" label={t("clutchesFull")} /></div>
+                    <div className="text-center"><AbbrHeader abbr="SHF" label={t("sheriffFull")} /></div>
                     <div className="text-center">2K</div>
                     <div className="text-center">3K</div>
                     <div className="text-center">4K</div>
@@ -142,6 +155,7 @@ export function MatchPerformanceEconomy({
                     return (
                       <div key={i} className={`grid items-center rounded-md px-1 py-2 ${i % 2 === 1 ? "bg-white/[0.015]" : ""}`} style={{ gridTemplateColumns: PERF_GRID_COLS_MOBILE }}>
                         <div className="truncate text-[12px] font-black text-[var(--gcs-text)] italic">{s.handle}</div>
+                        <div className={`text-center text-[12px] ${clutchColor(s)}`}>{clutchLabel(s)}</div>
                         <div className={`text-center text-[12px] ${cellColor(pf?.sheriffKills ?? 0)}`}>{pf?.sheriffKills ?? 0}</div>
                         <div className={`text-center text-[12px] ${cellColor(pf?.k2 ?? 0)}`}>{pf?.k2 ?? 0}</div>
                         <div className={`text-center text-[12px] ${cellColor(pf?.k3 ?? 0)}`}>{pf?.k3 ?? 0}</div>
