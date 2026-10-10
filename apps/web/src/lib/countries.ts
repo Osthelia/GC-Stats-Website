@@ -5,6 +5,8 @@
  * `country_code` column (teams/people/organizations, all `char(3)`).
  * "INT" is a synthetic code for international/no-fixed-country entities,
  * mirrors V1 Countries::INTERNATIONAL but sized to fit char(3).
+ * "ENG", "SCO", "WAL" and "NIR" are the UK home nations (not ISO alpha-3),
+ * 3 letters to fit char(3), flags come from flag-icons' `gb-*` sprites.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -216,6 +218,10 @@ const COUNTRIES: Country[] = [
   { code: "UKR", a2: "ua", en: "Ukraine", fr: "Ukraine", es: "Ucrania", pt: "Ucrânia", tr: "Ukrayna", ja: "ウクライナ", ko: "우크라이나", de: "Ukraine", zh: "乌克兰", it: "Ucraina", pl: "Ukraina", ar: "أوكرانيا", th: "ยูเครน" },
   { code: "ARE", a2: "ae", en: "United Arab Emirates", fr: "Émirats arabes unis", es: "Emiratos Árabes Unidos", pt: "Emirados Árabes Unidos", tr: "Birleşik Arap Emirlikleri", ja: "アラブ首長国連邦", ko: "아랍에미리트", de: "Vereinigte Arabische Emirate", zh: "阿拉伯联合酋长国", it: "Emirati Arabi Uniti", pl: "Zjednoczone Emiraty Arabskie", ar: "الإمارات العربية المتحدة", th: "สหรัฐอาหรับเอมิเรตส์" },
   { code: "GBR", a2: "gb", en: "United Kingdom", fr: "Royaume-Uni", es: "Reino Unido", pt: "Reino Unido", tr: "Birleşik Krallık", ja: "イギリス", ko: "영국", de: "Vereinigtes Königreich", zh: "英国", it: "Regno Unito", pl: "Wielka Brytania", ar: "المملكة المتحدة", th: "สหราชอาณาจักร" },
+  { code: "ENG", a2: "gb-eng", en: "England", fr: "Angleterre", es: "Inglaterra", pt: "Inglaterra", tr: "İngiltere", ja: "イングランド", ko: "잉글랜드", de: "England", zh: "英格兰", it: "Inghilterra", pl: "Anglia", ar: "إنجلترا", th: "อังกฤษ" },
+  { code: "SCO", a2: "gb-sct", en: "Scotland", fr: "Écosse", es: "Escocia", pt: "Escócia", tr: "İskoçya", ja: "スコットランド", ko: "스코틀랜드", de: "Schottland", zh: "苏格兰", it: "Scozia", pl: "Szkocja", ar: "اسكتلندا", th: "สกอตแลนด์" },
+  { code: "WAL", a2: "gb-wls", en: "Wales", fr: "Pays de Galles", es: "Gales", pt: "País de Gales", tr: "Galler", ja: "ウェールズ", ko: "웨일스", de: "Wales", zh: "威尔士", it: "Galles", pl: "Walia", ar: "ويلز", th: "เวลส์" },
+  { code: "NIR", a2: "gb-nir", en: "Northern Ireland", fr: "Irlande du Nord", es: "Irlanda del Norte", pt: "Irlanda do Norte", tr: "Kuzey İrlanda", ja: "北アイルランド", ko: "북아일랜드", de: "Nordirland", zh: "北爱尔兰", it: "Irlanda del Nord", pl: "Irlandia Północna", ar: "أيرلندا الشمالية", th: "ไอร์แลนด์เหนือ" },
   { code: "USA", a2: "us", en: "United States", fr: "États-Unis", es: "Estados Unidos", pt: "Estados Unidos", tr: "Amerika Birleşik Devletleri", ja: "アメリカ合衆国", ko: "미국", de: "Vereinigte Staaten", zh: "美国", it: "Stati Uniti", pl: "Stany Zjednoczone", ar: "الولايات المتحدة", th: "สหรัฐอเมริกา" },
   { code: "URY", a2: "uy", en: "Uruguay", fr: "Uruguay", es: "Uruguay", pt: "Uruguai", tr: "Uruguay", ja: "ウルグアイ", ko: "우루과이", de: "Uruguay", zh: "乌拉圭", it: "Uruguay", pl: "Urugwaj", ar: "أورغواي", th: "อุรุกวัย" },
   { code: "UZB", a2: "uz", en: "Uzbekistan", fr: "Ouzbékistan", es: "Uzbekistán", pt: "Uzbequistão", tr: "Özbekistan", ja: "ウズベキスタン", ko: "우즈베키스탄", de: "Usbekistan", zh: "乌兹别克斯坦", it: "Uzbekistan", pl: "Uzbekistan", ar: "أوزبكستان", th: "อุซเบกิสถาน" },
