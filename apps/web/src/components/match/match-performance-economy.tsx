@@ -9,6 +9,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { MatchEcoSummary, MatchPerformance, MatchMapPlayerRow, EcoTierKey } from "@/lib/match-page-data";
 
 const BUY_COLORS: Record<EcoTierKey, string> = {
@@ -20,6 +21,16 @@ const BUY_COLORS: Record<EcoTierKey, string> = {
 
 const PERF_GRID_COLS = "1fr repeat(5,56px) 24px repeat(5,56px) 1fr";
 const PERF_GRID_COLS_MOBILE = "minmax(0,1fr) repeat(5,40px)";
+
+/** SHF abbreviation, the full weapon name shows on hover or focus. */
+function SheriffHeader({ label }: { label: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger className="cursor-help rounded uppercase focus-visible:outline-none focus-visible:text-[#e4ae22] hover:text-[#e4ae22] active:scale-90">SHF</TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 function cellColor(v: number): string {
   if (v === 0) return "text-neutral-600";
@@ -71,7 +82,7 @@ export function MatchPerformanceEconomy({
               <div className="min-w-[640px]">
                 <div className="grid items-center px-1 py-2 text-[11px] font-semibold text-neutral-500 uppercase" style={{ gridTemplateColumns: PERF_GRID_COLS }}>
                   <div>{t("colPlayer")}</div>
-                  <div className="text-center">SHF</div>
+                  <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
                   <div className="text-center">2K</div>
                   <div className="text-center">3K</div>
                   <div className="text-center">4K</div>
@@ -81,7 +92,7 @@ export function MatchPerformanceEconomy({
                   <div className="text-center">4K</div>
                   <div className="text-center">3K</div>
                   <div className="text-center">2K</div>
-                  <div className="text-center">SHF</div>
+                  <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
                   <div className="text-right">{t("colPlayer")}</div>
                 </div>
 
@@ -120,7 +131,7 @@ export function MatchPerformanceEconomy({
                   <div className="mb-2 text-center text-[13px] font-black tracking-wide text-[var(--gcs-text)] uppercase italic">{team.name}</div>
                   <div className="grid items-center px-1 py-1.5 text-[10px] font-semibold text-neutral-500 uppercase" style={{ gridTemplateColumns: PERF_GRID_COLS_MOBILE }}>
                     <div>{t("colPlayer")}</div>
-                    <div className="text-center">SHF</div>
+                    <div className="text-center"><SheriffHeader label={t("sheriffFull")} /></div>
                     <div className="text-center">2K</div>
                     <div className="text-center">3K</div>
                     <div className="text-center">4K</div>
