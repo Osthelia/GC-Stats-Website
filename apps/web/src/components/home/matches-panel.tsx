@@ -31,21 +31,27 @@ export function MatchesPanel({ initialPage }: { initialPage: HomeMatchPage }) {
   const timeZone = useDisplayTimezone();
   const [filter, setFilter] = useState<FilterKey>("all");
   const [allMatches, setAllMatches] = useState<HomeMatch[]>(initialPage.matches);
-  const [offset, setOffset] = useState(initialPage.nextOffset);
-  const [hasMore, setHasMore] = useState(initialPage.hasMore);
+  const [pastCursor, setPastCursor] = useState({ offset: initialPage.nextOffset, hasMore: initialPage.hasMore });
+  const [futureCursor, setFutureCursor] = useState({ offset: initialPage.futureNextOffset, hasMore: initialPage.futureHasMore });
   const [isLoadingMore, startLoadMore] = useTransition();
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
+  // The "upcoming" tab pages through the future, every other tab through the past.
+  const direction = filter === "upcoming" ? "future" : "past";
+  const cursor = direction === "future" ? futureCursor : pastCursor;
+  const hasMore = cursor.hasMore;
+
   const handleLoadMore = () => {
     startLoadMore(async () => {
-      const page = await loadMoreHomeMatches(offset);
+      const page = await loadMoreHomeMatches(direction, cursor.offset);
       setAllMatches((prev) => {
         const byId = new Map(prev.map((m) => [m.id, m]));
         for (const m of page.matches) byId.set(m.id, m);
         return [...byId.values()];
       });
-      setOffset(page.nextOffset);
-      setHasMore(page.hasMore);
+      const next = { offset: page.nextOffset, hasMore: page.hasMore };
+      if (direction === "future") setFutureCursor(next);
+      else setPastCursor(next);
     });
   };
 

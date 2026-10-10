@@ -10,11 +10,12 @@
 
 "use server";
 
-import { getHomeMatchPage, type HomeMatchPage } from "@/lib/home-data";
+import { getHomeMatchPage, type HomeMatchChunk, type HomeMatchDirection } from "@/lib/home-data";
 
-const EMPTY_PAGE: HomeMatchPage = { matches: [], nextOffset: 0, hasMore: false };
+const EMPTY_PAGE: HomeMatchChunk = { matches: [], nextOffset: 0, hasMore: false };
 
-export async function loadMoreHomeMatches(pastOffset: number): Promise<HomeMatchPage> {
-  if (!Number.isInteger(pastOffset) || pastOffset < 0) return EMPTY_PAGE;
-  return getHomeMatchPage(pastOffset);
+export async function loadMoreHomeMatches(direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk> {
+  if (direction !== "past" && direction !== "future") return EMPTY_PAGE;
+  if (!Number.isInteger(offset) || offset < 0) return EMPTY_PAGE;
+  return getHomeMatchPage(direction, offset);
 }

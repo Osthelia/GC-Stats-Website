@@ -61,11 +61,14 @@ export type HomeMatch = {
   scheduledAt: Date;
 };
 
-export type HomeMatchPage = { matches: HomeMatch[]; nextOffset: number; hasMore: boolean };
+export type HomeMatchChunk = { matches: HomeMatch[]; nextOffset: number; hasMore: boolean };
+/** First page: the past cursor plus the cursor of the upcoming matches. */
+export type HomeMatchPage = HomeMatchChunk & { futureNextOffset: number; futureHasMore: boolean };
+export type HomeMatchDirection = "past" | "future";
 
 // `scheduledAt` as ISO string: unstable_cache round-trips through JSON.
 type HomeMatchRow = Omit<HomeMatch, "scheduledAt"> & { scheduledAt: string };
-type HomeMatchRowPage = { rows: HomeMatchRow[]; nextOffset: number; hasMore: boolean };
+type HomeMatchRowPage = { rows: HomeMatchRow[]; nextOffset: number; hasMore: boolean; futureNextOffset: number; futureHasMore: boolean };
 
 // The home feed only ever needs a window around "now" (recent results +
 // upcoming schedule), never the full match history.
@@ -79,11 +82,14 @@ const entrantB = alias(entrants, "entrant_b");
 
 /**
  * One page of the home feed, locale independent so it can be cached once.
- * `pastOffset` paginates the past window only: the future window (2 days) is
- * only on the first page, capped separately so a busy live day can never push
- * every past result off that page.
+ * `first` holds the past window plus the next 2 days, capped separately so a
+ * busy live day can never push every past result off that page. `past` and
+ * `future` then paginate each side with `offset`, the future one unbounded.
  */
-async function fetchHomeMatchRows(firstPage: boolean, pastOffset: number, limit: number): Promise<HomeMatchRowPage> {
+async function fetchHomeMatchRows(mode: "first" | "past" | "future", offset: number, limit: number): Promise<HomeMatchRowPage> {
+  const firstPage = mode === "first";
+  const pastOffset = mode === "past" ? offset : 0;
+  const futureOffset = mode === "future" ? offset : 0;
   const now = new Date();
   const windowStart = new Date();
   windowStart.setUTCHours(0, 0, 0, 0);
@@ -118,20 +124,25 @@ async function fetchHomeMatchRows(firstPage: boolean, pastOffset: number, limit:
       .innerJoin(entrantA, eq(entrantA.id, matches.entrantAId))
       .innerJoin(entrantB, eq(entrantB.id, matches.entrantBId));
 
-  // One extra past row tells whether another page exists.
-  const [futureRows, pastFetched] = await Promise.all([
-    firstPage
-      ? baseQuery()
-          .where(and(gte(matches.scheduledAt, now), lte(matches.scheduledAt, windowEnd), visibleTournament))
+  // One extra row per side tells whether another page exists.
+  const [futureFetched, pastFetched] = await Promise.all([
+    mode === "past"
+      ? []
+      : baseQuery()
+          .where(and(gte(matches.scheduledAt, now), visibleTournament))
           .orderBy(asc(matches.scheduledAt), matches.id)
-          .limit(limit)
-      : [],
-    baseQuery()
-      .where(and(gte(matches.scheduledAt, windowStart), lt(matches.scheduledAt, now), visibleTournament))
-      .orderBy(desc(matches.scheduledAt), matches.id)
-      .limit(limit + 1)
-      .offset(pastOffset),
+          .limit(limit + 1)
+          .offset(futureOffset),
+    mode === "future"
+      ? []
+      : baseQuery()
+          .where(and(gte(matches.scheduledAt, windowStart), lt(matches.scheduledAt, now), visibleTournament))
+          .orderBy(desc(matches.scheduledAt), matches.id)
+          .limit(limit + 1)
+          .offset(pastOffset),
   ]);
+  const futureInWindow = firstPage ? futureFetched.filter((m) => m.scheduledAt && m.scheduledAt <= windowEnd) : futureFetched;
+  const futureRows = futureInWindow.slice(0, limit);
   const pastLimit = limit - futureRows.length;
   const pastRows = pastFetched.slice(0, pastLimit);
   const all = [...pastRows, ...futureRows];
@@ -175,15 +186,26 @@ async function fetchHomeMatchRows(firstPage: boolean, pastOffset: number, limit:
     });
   }
 
-  return { rows, nextOffset: pastOffset + pastRows.length, hasMore: pastFetched.length > pastLimit };
+  const futureNextOffset = futureOffset + futureRows.length;
+  const futureHasMore = futureFetched.length > futureRows.length;
+  if (mode === "future") return { rows, nextOffset: futureNextOffset, hasMore: futureHasMore, futureNextOffset, futureHasMore };
+  return { rows, nextOffset: pastOffset + pastRows.length, hasMore: pastFetched.length > pastLimit, futureNextOffset, futureHasMore };
 }
 
 const getCachedHomeMatchRows = unstable_cache(fetchHomeMatchRows, ["home-match-rows"], { revalidate: HOME_MATCHES_REVALIDATE_SECONDS });
 
-/** First page without `pastOffset`, then the previous page's `nextOffset`. Days are grouped client side, in the viewer's timezone. */
-export async function getHomeMatchPage(pastOffset?: number): Promise<HomeMatchPage> {
-  const page = await getCachedHomeMatchRows(pastOffset === undefined, pastOffset ?? 0, HOME_MATCH_PAGE_SIZE);
-  return { matches: page.rows.map((row) => ({ ...row, scheduledAt: new Date(row.scheduledAt) })), nextOffset: page.nextOffset, hasMore: page.hasMore };
+/** First page without arguments, then a direction with the previous chunk's `nextOffset`. Days are grouped client side, in the viewer's timezone. */
+export async function getHomeMatchPage(): Promise<HomeMatchPage>;
+export async function getHomeMatchPage(direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk>;
+export async function getHomeMatchPage(direction?: HomeMatchDirection, offset = 0): Promise<HomeMatchPage> {
+  const page = await getCachedHomeMatchRows(direction ?? "first", offset, HOME_MATCH_PAGE_SIZE);
+  return {
+    matches: page.rows.map((row) => ({ ...row, scheduledAt: new Date(row.scheduledAt) })),
+    nextOffset: page.nextOffset,
+    hasMore: page.hasMore,
+    futureNextOffset: page.futureNextOffset,
+    futureHasMore: page.futureHasMore,
+  };
 }
 
 export type HomeNewsItem = {
