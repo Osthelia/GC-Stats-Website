@@ -22,6 +22,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
+import { RosterLeftFields } from "@/components/admin/roster-left-fields";
 import { MemberSortSelect, sortMembers, type MemberSortKey } from "@/components/admin/member-sort-select";
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, type AddRosterMemberFieldErrors, type RosterEntryFieldErrors } from "@/actions/admin-teams";
@@ -46,6 +47,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>(member.role as (typeof ROSTER_ROLES)[number]);
   const [from, setFrom] = useState(member.since ?? today());
   const [until, setUntil] = useState(member.until ?? "");
+  const [hasLeft, setHasLeft] = useState(member.hasLeft);
   const [inactiveSince, setInactiveSince] = useState(member.inactiveSince ?? "");
   const [fieldErrors, setFieldErrors] = useState<RosterEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -56,15 +58,15 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
 
   async function handleSave() {
     setFieldErrors({});
-    const closeIds = until ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
+    const closeIds = hasLeft ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updateRosterMemberEntry(member.membershipId, role, from, until, inactiveSince, closeIds);
+      const result = await updateRosterMemberEntry(member.membershipId, role, from, until, hasLeft, inactiveSince, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...member, role, since: from, until: until || null, isCurrent: !until, inactiveSince: inactiveSince || null });
+      onSaved({ ...member, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null });
       toast.success(t("rosterAddSubmit"));
     });
   }
@@ -144,15 +146,16 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
                 </p>
               )}
             </div>
-            <div className="flex flex-col gap-1">
-              <Label className="text-[11px] text-muted-foreground">{t("rosterAddUntilLabel")}</Label>
-              <Input type="date" value={until} onChange={(e) => setUntil(e.target.value)} aria-invalid={!!fieldErrors.until} />
-              {err("until") && (
-                <p role="alert" className="text-xs text-destructive">
-                  {err("until")}
-                </p>
-              )}
-            </div>
+            <RosterLeftFields
+              idPrefix={`roster-row-${member.membershipId}`}
+              hasLeft={hasLeft}
+              until={until}
+              onChange={(left, date) => {
+                setHasLeft(left);
+                setUntil(date);
+              }}
+              error={err("until")}
+            />
           </div>
           <div className="flex flex-col gap-1">
             <Label className="text-[11px] text-muted-foreground">{t("rosterInactiveSinceLabel")}</Label>
@@ -200,6 +203,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>("player");
   const [from, setFrom] = useState(today());
   const [until, setUntil] = useState("");
+  const [hasLeft, setHasLeft] = useState(false);
   const [inactiveSince, setInactiveSince] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddRosterMemberFieldErrors>({});
   const [sortKey, setSortKey] = useState<MemberSortKey>("joined");
@@ -209,10 +213,10 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
 
   async function handleAdd() {
     setFieldErrors({});
-    const closeIds = person && !until ? await resolveConflicts(person.id, person.handle, teamId) : [];
+    const closeIds = person && !hasLeft ? await resolveConflicts(person.id, person.handle, teamId) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addTeamRosterMember(teamId, person?.id ?? null, role, from, until, inactiveSince || null, closeIds);
+      const result = await addTeamRosterMember(teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -220,6 +224,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
       setPerson(null);
       setFrom(today());
       setUntil("");
+      setHasLeft(false);
       setInactiveSince("");
       toast.success(t("rosterAddSubmit"));
       // Refresh from the server instead of patching local state by hand.
@@ -307,15 +312,16 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
                 </p>
               )}
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="roster-until">{t("rosterAddUntilLabel")}</Label>
-              <Input id="roster-until" type="date" value={until} onChange={(e) => setUntil(e.target.value)} aria-invalid={!!fieldErrors.until} />
-              {err("until") && (
-                <p role="alert" className="text-xs text-destructive">
-                  {err("until")}
-                </p>
-              )}
-            </div>
+            <RosterLeftFields
+              idPrefix="roster"
+              hasLeft={hasLeft}
+              until={until}
+              onChange={(left, date) => {
+                setHasLeft(left);
+                setUntil(date);
+              }}
+              error={err("until")}
+            />
             <div className="flex items-end">
               <Button variant="outline" disabled={isPending} onClick={handleAdd} className="w-full">
                 {t("rosterAddSubmit")}

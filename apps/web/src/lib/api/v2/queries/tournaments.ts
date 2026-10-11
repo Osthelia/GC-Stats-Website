@@ -520,7 +520,7 @@ export async function getTournamentStatsV2(tournamentId: number, filter: Tournam
   if (filter.nationality) conditions.push(eq(people.countryCode, filter.nationality));
   if (filter.role) {
     conditions.push(
-      sql`EXISTS (SELECT 1 FROM roster_memberships rm WHERE rm.person_id = ${mapPlayerStats.personId} AND rm.team_id = ${statsEntrantAlias.teamId} AND rm.role = ${filter.role} AND rm.period @> COALESCE(${maps.startedAt}, ${matches.scheduledAt})::date)`,
+      sql`EXISTS (SELECT 1 FROM roster_memberships rm WHERE rm.person_id = ${mapPlayerStats.personId} AND rm.team_id = ${statsEntrantAlias.teamId} AND rm.role = ${filter.role} AND NOT (rm.has_left AND upper_inf(rm.period)) AND rm.period @> COALESCE(${maps.startedAt}, ${matches.scheduledAt})::date)`,
     );
   }
 

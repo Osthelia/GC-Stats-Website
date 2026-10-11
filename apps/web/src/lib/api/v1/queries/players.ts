@@ -12,7 +12,7 @@
 import { and, desc, eq, gte, ilike, inArray, lt, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { people, rosterMemberships, teams, mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
-import { rangeIsOpen, rangeLower, rangeUpper } from "@/lib/daterange";
+import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { toApiPlayer, toApiTeam, type ApiPlayer, type ApiTeam } from "../entities";
 import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls, type ApiLogoHistoryResponse } from "../logo-response";
 import { escapeLike, exclusiveUpperBound, type MapsFilter, type StatsFilter } from "../params";
@@ -40,6 +40,7 @@ async function getCurrentTeamsByPersonId(personIds: number[]): Promise<Map<numbe
       personId: rosterMemberships.personId,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
       teamId: teams.id,
       name: teams.name,
       shortName: teams.shortName,
@@ -55,7 +56,7 @@ async function getCurrentTeamsByPersonId(personIds: number[]): Promise<Map<numbe
 
   for (const row of rows) {
     if (result.get(row.personId)) continue; // keep the first open player-role stint found
-    if (!PLAYER_ROSTER_ROLES.has(row.role) || !rangeIsOpen(row.period)) continue;
+    if (!PLAYER_ROSTER_ROLES.has(row.role) || row.hasLeft) continue;
     result.set(row.personId, toApiTeam({ id: row.teamId, name: row.name, shortName: row.shortName, countryCode: row.countryCode, socials: row.socials, bio: row.bio, vlrId: row.vlrId, isActive: row.isActive }));
   }
   return result;

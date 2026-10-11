@@ -30,7 +30,7 @@ import {
   organizations,
   newsRelations,
 } from "@gc-stats/db";
-import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
+import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getEntityMatches } from "@/lib/entity-matches";
 import type { HomeMatch } from "@/lib/home-data";
@@ -158,6 +158,7 @@ export async function getTeamRoster(
       secondaryCountryCode: people.secondaryCountryCode,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
       pronouns: people.pronouns,
     })
@@ -170,7 +171,7 @@ export async function getTeamRoster(
   const allFormers: TeamFormerMember[] = [];
 
   for (const r of rows) {
-    if (rangeIsOpen(r.period)) {
+    if (!r.hasLeft) {
       // A person can have several open roster_memberships rows (unclosed
       // migration data) — keep the one with a known "since", or the most
       // recent (rows come ordered by id desc) otherwise.

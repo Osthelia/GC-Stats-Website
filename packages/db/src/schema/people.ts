@@ -100,14 +100,17 @@ export const rosterMemberships = pgTable("roster_memberships", {
   teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
   role: text("role").notNull().default("player"), // 'player' | 'player-igl' | 'sub' | 'coach' | 'assistant coach' | 'performance coach' | 'analyst' | 'manager'
   period: daterange("period").notNull(),
+  // True once the person left the team. An open period with has_left = true means the end date is unknown.
+  hasLeft: boolean("has_left").notNull().default(false),
   // Nullable: still on the roster (period stays open) but currently inactive
   // (injury, break, ...) as of this date. Replaces V1's role-suffix
   // convention ('player-inactive' as a distinct role value + stint-merging
   // logic to display it) with a plain column — same information, no
   // parallel role vocabulary to keep in sync.
   inactiveSince: date("inactive_since"),
-  // EXCLUDE USING gist (person_id, period, role) added in drizzle/0000_squashed_baseline.sql
+  // EXCLUDE USING gist (person_id, team_id, role, period) added in drizzle/0000_squashed_baseline.sql
   // - same person can hold two DIFFERENT roles concurrently, not the same role twice overlapping.
+  // Entries left with an unknown end date (open period + has_left) are excluded from it, see 0042.
 });
 
 export const organizations = pgTable("organizations", {

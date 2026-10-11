@@ -34,7 +34,7 @@ import {
 } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
-import { rangeLower, rangeIsOpen, closeRange } from "@/lib/daterange";
+import { rangeLower, closeRange } from "@/lib/daterange";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 
 export type { PersonPickerResult } from "@/lib/person-search";
@@ -82,19 +82,19 @@ export async function mergePlayers(sourcePersonId: number, targetPersonId: numbe
   await db.transaction(async (tx) => {
     if (selection.teamHistory.length) {
       const entries = await tx
-        .select({ id: rosterMemberships.id, role: rosterMemberships.role, period: rosterMemberships.period })
+        .select({ id: rosterMemberships.id, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
         .from(rosterMemberships)
         .where(and(eq(rosterMemberships.personId, sourcePersonId), inArray(rosterMemberships.id, selection.teamHistory)));
 
       for (const entry of entries) {
-        if (rangeIsOpen(entry.period)) {
+        if (!entry.hasLeft) {
           const openElsewhere = await tx
             .select({ id: rosterMemberships.id, period: rosterMemberships.period })
             .from(rosterMemberships)
-            .where(and(eq(rosterMemberships.personId, targetPersonId), eq(rosterMemberships.role, entry.role), sql`${rosterMemberships.period} @> CURRENT_DATE`));
+            .where(and(eq(rosterMemberships.personId, targetPersonId), eq(rosterMemberships.role, entry.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
           const from = rangeLower(entry.period) ?? "";
           for (const row of openElsewhere) {
-            await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
+            await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
           }
         }
 

@@ -30,6 +30,7 @@ import type { PlayersListFilter } from "../params";
 import type { PaginationFilter, TeamMatchesFilter } from "../params";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
+import { rosterPeriodIsDated } from "@/lib/roster-sql";
 
 async function personExists(id: number): Promise<boolean> {
   const [row] = await db.select({ id: people.id, isGhost: people.isGhost }).from(people).where(eq(people.id, id)).limit(1);
@@ -63,6 +64,7 @@ async function getPlayerAchievementsV2(personId: number): Promise<ApiAchievement
         isNotNull(stageQualifications.placement),
         lte(stageQualifications.placement, 3),
         sql`${rosterMemberships.period} @> ${tournaments.endDate}`,
+        rosterPeriodIsDated,
       ),
     )
     .orderBy(desc(tournaments.endDate));
@@ -239,6 +241,7 @@ export async function getPlayerStaffTournamentsV2(personId: number, filter: Pagi
         eq(rosterMemberships.personId, personId),
         notInArray(rosterMemberships.role, [...PLAYER_ROSTER_ROLES]),
         sql`${rosterMemberships.period} && daterange(${tournaments.startDate}, ${tournaments.endDate}, '[]')`,
+        rosterPeriodIsDated,
       ),
     )
     .orderBy(desc(tournaments.endDate), desc(tournaments.startDate), desc(tournaments.id), desc(entrants.id));

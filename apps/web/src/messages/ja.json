@@ -2558,7 +2558,8 @@
           "processingFailed": "この画像を処理できませんでした。別のファイルを試すか、PNG または JPEG で書き出し直してください。",
           "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
-          "empty": "画像を選択してください。"
+          "empty": "画像を選択してください。",
+          "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。"
         },
         "fieldOrganization": "組織",
         "organizationPlaceholder": "組織を選択",
@@ -2769,7 +2770,8 @@
           "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
           "empty": "画像を選択してください。",
-          "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。"
+          "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。",
+          "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。"
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "数字の Discord ユーザー ID（開発者モードでプロフィールを右クリックし、ユーザーIDをコピー）。"
@@ -4865,6 +4867,11 @@
       "role": "ロール",
       "joined": "加入日",
       "left": "退団日"
+    },
+    "rosterLeft": {
+      "hasLeft": "チームを離脱済み",
+      "untilLabel": "脱退日",
+      "unknownHint": "終了日は不明です。わからない場合は空欄のままにしてください。"
     }
   },
   "dashboard": {

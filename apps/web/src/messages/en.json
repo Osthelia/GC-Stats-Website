@@ -2558,7 +2558,8 @@
           "processingFailed": "This image couldn't be processed. Try another file or export it again as PNG or JPEG.",
           "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
           "saveFailed": "The logo couldn't be saved. Try again in a moment.",
-          "empty": "Please choose an image."
+          "empty": "Please choose an image.",
+          "requiresLeft": "Pick the \"Has left the team\" box to set a leave date."
         },
         "fieldOrganization": "Organization",
         "organizationPlaceholder": "Select an organization",
@@ -2769,7 +2770,8 @@
           "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
           "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
-          "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+          "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits).",
+          "requiresLeft": "Pick the \"Has left the team\" box to set a leave date."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."
@@ -4865,6 +4867,11 @@
       "role": "Role",
       "joined": "Join date",
       "left": "Leave date"
+    },
+    "rosterLeft": {
+      "hasLeft": "Has left the team",
+      "untilLabel": "Left on",
+      "unknownHint": "End date unknown, leave empty if you don't know it."
     }
   },
   "dashboard": {

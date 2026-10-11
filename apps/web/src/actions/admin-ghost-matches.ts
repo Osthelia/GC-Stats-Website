@@ -91,6 +91,7 @@ export async function getTeamCurrentPlayers(teamId: number): Promise<{ id: numbe
         eq(rosterMemberships.teamId, teamId),
         inArray(rosterMemberships.role, ["player", "player-igl"]),
         sql`${rosterMemberships.period} @> CURRENT_DATE`,
+        eq(rosterMemberships.hasLeft, false),
       ),
     )
     .orderBy(asc(people.handle))

@@ -2558,7 +2558,8 @@
           "processingFailed": "无法处理此图片。请换一个文件，或重新导出为 PNG 或 JPEG。",
           "storageFailed": "无法将图片保存到存储。请稍后再试。",
           "saveFailed": "无法保存徽标。请稍后再试。",
-          "empty": "请选择一张图片。"
+          "empty": "请选择一张图片。",
+          "requiresLeft": "勾选“已离开战队”后才能填写离开日期。"
         },
         "fieldOrganization": "组织",
         "organizationPlaceholder": "选择组织",
@@ -2769,7 +2770,8 @@
           "storageFailed": "无法将图片保存到存储。请稍后再试。",
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
-          "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+          "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。",
+          "requiresLeft": "勾选“已离开战队”后才能填写离开日期。"
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"
@@ -4865,6 +4867,11 @@
       "role": "角色",
       "joined": "加入日期",
       "left": "离开日期"
+    },
+    "rosterLeft": {
+      "hasLeft": "已离开战队",
+      "untilLabel": "离开于",
+      "unknownHint": "结束日期未知，不知道时请留空。"
     }
   },
   "dashboard": {

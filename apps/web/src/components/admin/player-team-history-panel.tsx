@@ -21,6 +21,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TeamPicker } from "@/components/admin/team-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
+import { RosterLeftFields } from "@/components/admin/roster-left-fields";
 import {
   addPlayerTeamHistoryEntry,
   updatePlayerTeamHistoryEntry,
@@ -60,6 +61,7 @@ function TeamHistoryCard({
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>(entry.role as (typeof ROSTER_ROLES)[number]);
   const [from, setFrom] = useState(entry.since ?? today());
   const [until, setUntil] = useState(entry.until ?? "");
+  const [hasLeft, setHasLeft] = useState(entry.hasLeft);
   const [inactiveSince, setInactiveSince] = useState(entry.inactiveSince ?? "");
   const [fieldErrors, setFieldErrors] = useState<TeamHistoryEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -70,12 +72,12 @@ function TeamHistoryCard({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updatePlayerTeamHistoryEntry(entry.membershipId, role, from, until, inactiveSince);
+      const result = await updatePlayerTeamHistoryEntry(entry.membershipId, role, from, until, hasLeft, inactiveSince);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...entry, role, since: from, until: until || null, isCurrent: !until, inactiveSince: inactiveSince || null });
+      onSaved({ ...entry, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null });
       toast.success(t("historyAddSubmit"));
     });
   }
@@ -152,15 +154,17 @@ function TeamHistoryCard({
                 </p>
               )}
             </div>
-            <div className="flex flex-col gap-1">
-              <Label className="text-[11px] text-muted-foreground">{t("historyAddUntilLabel")}</Label>
-              <Input type="date" value={until} onChange={(e) => setUntil(e.target.value)} aria-invalid={!!fieldErrors.until} disabled={!canEdit} />
-              {err("until") && (
-                <p role="alert" className="text-xs text-destructive">
-                  {err("until")}
-                </p>
-              )}
-            </div>
+            <RosterLeftFields
+              idPrefix={`history-row-${entry.membershipId}`}
+              hasLeft={hasLeft}
+              until={until}
+              onChange={(left, date) => {
+                setHasLeft(left);
+                setUntil(date);
+              }}
+              error={err("until")}
+              disabled={!canEdit}
+            />
           </div>
           <div className="flex flex-col gap-1">
             <Label className="text-[11px] text-muted-foreground">{t("historyInactiveSinceLabel")}</Label>
@@ -215,6 +219,7 @@ export function PlayerTeamHistoryPanel({
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>("player");
   const [from, setFrom] = useState(today());
   const [until, setUntil] = useState("");
+  const [hasLeft, setHasLeft] = useState(false);
   const [inactiveSince, setInactiveSince] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddTeamHistoryFieldErrors>({});
 
@@ -223,7 +228,7 @@ export function PlayerTeamHistoryPanel({
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addPlayerTeamHistoryEntry(playerId, team?.id ?? null, role, from, until, inactiveSince || null);
+      const result = await addPlayerTeamHistoryEntry(playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -231,6 +236,7 @@ export function PlayerTeamHistoryPanel({
       setTeam(null);
       setFrom(today());
       setUntil("");
+      setHasLeft(false);
       setInactiveSince("");
       // No toast here: redundant with the reload below (which is itself the
       // visual feedback) and would get cut off before it could ever be seen.
@@ -326,15 +332,16 @@ export function PlayerTeamHistoryPanel({
                 </p>
               )}
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="history-until">{t("historyAddUntilLabel")}</Label>
-              <Input id="history-until" type="date" value={until} onChange={(e) => setUntil(e.target.value)} aria-invalid={!!fieldErrors.until} />
-              {err("until") && (
-                <p role="alert" className="text-xs text-destructive">
-                  {err("until")}
-                </p>
-              )}
-            </div>
+            <RosterLeftFields
+              idPrefix="history"
+              hasLeft={hasLeft}
+              until={until}
+              onChange={(left, date) => {
+                setHasLeft(left);
+                setUntil(date);
+              }}
+              error={err("until")}
+            />
             <div className="flex items-end">
               <Button variant="outline" disabled={isPending} onClick={handleAdd} className="w-full">
                 {t("historyAddSubmit")}

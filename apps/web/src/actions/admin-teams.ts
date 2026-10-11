@@ -240,9 +240,9 @@ export async function deleteRosterMembership(membershipId: number): Promise<Rost
 
 export type RosterConflict = { membershipId: number; teamId: number; teamName: string; role: string };
 
-/** Open (no end date) memberships of a person on other teams than `teamId`. */
+/** Current (not left) memberships of a person on other teams than `teamId`. */
 async function findOpenMembershipsElsewhere(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
-  const conditions = [eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), sql`upper_inf(${rosterMemberships.period})`];
+  const conditions = [eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), eq(rosterMemberships.hasLeft, false)];
   if (excludeMembershipId) conditions.push(ne(rosterMemberships.id, excludeMembershipId));
   return db
     .select({ membershipId: rosterMemberships.id, teamId: rosterMemberships.teamId, teamName: teams.name, role: rosterMemberships.role })
@@ -263,9 +263,9 @@ async function closeOpenMemberships(tx: Parameters<Parameters<typeof db.transact
   const rows = await tx
     .select({ id: rosterMemberships.id, period: rosterMemberships.period })
     .from(rosterMemberships)
-    .where(and(inArray(rosterMemberships.id, ids), eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), sql`upper_inf(${rosterMemberships.period})`));
+    .where(and(inArray(rosterMemberships.id, ids), eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), eq(rosterMemberships.hasLeft, false)));
   for (const row of rows) {
-    await tx.update(rosterMemberships).set({ period: closeRange(row.period, closeAt) }).where(eq(rosterMemberships.id, row.id));
+    await tx.update(rosterMemberships).set({ period: closeRange(row.period, closeAt), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
   }
 }
 
@@ -279,6 +279,7 @@ export async function addTeamRosterMember(
   role: string,
   from: string,
   until: string,
+  hasLeft: boolean,
   inactiveSince: string | null,
   closeMembershipIds: number[] = []
 ): Promise<AddRosterMemberResult> {
@@ -291,6 +292,7 @@ export async function addTeamRosterMember(
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
+  if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.from = fieldErrors.from ?? "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -302,12 +304,12 @@ export async function addTeamRosterMember(
   if (!team) return { ok: false, fieldErrors: { person: "teamNotFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
-  const isOngoing = !until;
+  const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, personId as number, teamId, from);
 
-    await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, inactiveSince: inactiveSince || null });
+    await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null });
     await logRosterChange(tx, { teamId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
@@ -324,7 +326,7 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * (current and history alike) carries editable role/joined_at/left_at
  * inputs directly, not just newly-added ones.
  */
-export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
+export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
@@ -333,6 +335,7 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
+  if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -341,12 +344,12 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   if (!membership) return { ok: false, fieldErrors: { role: "notFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
-  const isOngoing = !until;
+  const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
-    const values = { role, period, inactiveSince: inactiveSince || null };
+    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
     await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });

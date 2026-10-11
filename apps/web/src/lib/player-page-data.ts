@@ -33,7 +33,8 @@ import {
   organizationMemberships,
   productionCredits,
 } from "@gc-stats/db";
-import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
+import { rangeLower, rangeUpper } from "@/lib/daterange";
+import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getEntityMatches } from "@/lib/entity-matches";
 import type { HomeMatch } from "@/lib/home-data";
@@ -156,6 +157,7 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
       teamSecondaryCountryCode: teams.secondaryCountryCode,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
     })
     .from(rosterMemberships)
@@ -183,7 +185,7 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
     };
-    if (!rangeIsOpen(r.period)) {
+    if (r.hasLeft) {
       formers.push(entry);
       continue;
     }
@@ -257,6 +259,7 @@ export async function getPlayerAchievements(personId: number): Promise<{ items: 
         isNotNull(stageQualifications.placement),
         lte(stageQualifications.placement, 3),
         sql`${rosterMemberships.period} @> ${tournaments.endDate}`,
+        rosterPeriodIsDated,
       ),
     )
     .orderBy(desc(tournaments.endDate));

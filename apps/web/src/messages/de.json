@@ -2558,7 +2558,8 @@
           "processingFailed": "Dieses Bild konnte nicht verarbeitet werden. Versuche eine andere Datei oder exportiere es erneut als PNG oder JPEG.",
           "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
-          "empty": "Bitte wählen Sie ein Bild aus."
+          "empty": "Bitte wählen Sie ein Bild aus.",
+          "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben."
         },
         "fieldOrganization": "Organisation",
         "organizationPlaceholder": "Organisation auswählen",
@@ -2769,7 +2770,8 @@
           "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
-          "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+          "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern).",
+          "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren)."
@@ -4865,6 +4867,11 @@
       "role": "Rolle",
       "joined": "Beitrittsdatum",
       "left": "Austrittsdatum"
+    },
+    "rosterLeft": {
+      "hasLeft": "Hat das Team verlassen",
+      "untilLabel": "Verlassen am",
+      "unknownHint": "Enddatum unbekannt, leer lassen, wenn es nicht bekannt ist."
     }
   },
   "dashboard": {

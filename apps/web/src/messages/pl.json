@@ -2558,7 +2558,8 @@
           "processingFailed": "Nie udało się przetworzyć tego obrazu. Spróbuj innego pliku lub wyeksportuj go ponownie jako PNG albo JPEG.",
           "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
-          "empty": "Wybierz obraz."
+          "empty": "Wybierz obraz.",
+          "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia."
         },
         "fieldOrganization": "Organizacja",
         "organizationPlaceholder": "Wybierz organizację",
@@ -2769,7 +2770,8 @@
           "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
-          "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr)."
+          "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr).",
+          "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "Numeryczne ID użytkownika Discord (Tryb dewelopera, prawy klik na profil, Kopiuj ID użytkownika)."
@@ -4865,6 +4867,11 @@
       "role": "Rola",
       "joined": "Data dołączenia",
       "left": "Data odejścia"
+    },
+    "rosterLeft": {
+      "hasLeft": "Opuścił zespół",
+      "untilLabel": "Odejście",
+      "unknownHint": "Data zakończenia nieznana, zostaw puste, jeśli jej nie znasz."
     }
   },
   "dashboard": {

@@ -16,7 +16,7 @@ import { and, eq, inArray, ne, notInArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { teams, rosterMemberships, entrants, newsRelations, logos, activityLog, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
-import { rangeLower, rangeIsOpen, closeRange } from "@/lib/daterange";
+import { rangeLower, closeRange } from "@/lib/daterange";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
 
 export type { TeamPickerResult } from "@/lib/team-search";
@@ -64,12 +64,12 @@ export async function mergeTeams(sourceTeamId: number, targetTeamId: number, sel
   await db.transaction(async (tx) => {
     if (selection.roster.length) {
       const entries = await tx
-        .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, role: rosterMemberships.role, period: rosterMemberships.period })
+        .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
         .from(rosterMemberships)
         .where(and(eq(rosterMemberships.teamId, sourceTeamId), inArray(rosterMemberships.id, selection.roster)));
 
       for (const entry of entries) {
-        if (rangeIsOpen(entry.period)) {
+        if (!entry.hasLeft) {
           const openElsewhere = await tx
             .select({ id: rosterMemberships.id, period: rosterMemberships.period })
             .from(rosterMemberships)
@@ -78,12 +78,12 @@ export async function mergeTeams(sourceTeamId: number, targetTeamId: number, sel
                 eq(rosterMemberships.personId, entry.personId),
                 eq(rosterMemberships.role, entry.role),
                 ne(rosterMemberships.teamId, sourceTeamId),
-                sql`${rosterMemberships.period} @> CURRENT_DATE`
+                sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)
               )
             );
           const from = rangeLower(entry.period) ?? "";
           for (const row of openElsewhere) {
-            await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
+            await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
           }
         }
 

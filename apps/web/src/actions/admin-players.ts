@@ -288,6 +288,7 @@ export async function addPlayerTeamHistoryEntry(
   role: string,
   from: string,
   until: string,
+  hasLeft: boolean,
   inactiveSince: string | null
 ): Promise<AddTeamHistoryResult> {
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
@@ -299,6 +300,7 @@ export async function addPlayerTeamHistoryEntry(
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
+  if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -310,21 +312,21 @@ export async function addPlayerTeamHistoryEntry(
   if (!team) return { ok: false, fieldErrors: { team: "teamNotFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
-  const isOngoing = !until;
+  const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
     if (isOngoing) {
       const openElsewhere = await tx
         .select({ id: rosterMemberships.id, period: rosterMemberships.period })
         .from(rosterMemberships)
-        .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.role, role), sql`${rosterMemberships.period} @> CURRENT_DATE`));
+        .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.role, role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
 
       for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
+        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
       }
     }
 
-    await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, inactiveSince: inactiveSince || null });
+    await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null });
     await logRosterChange(tx, { teamId: teamId as number, personId, role, actorUserId, action: "Added" });
   });
 
@@ -336,7 +338,7 @@ export type TeamHistoryEntryFieldErrors = Partial<Record<TeamHistoryEntryField, 
 export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: TeamHistoryEntryFieldErrors };
 
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
-export async function updatePlayerTeamHistoryEntry(membershipId: number, role: string, from: string, until: string, inactiveSince: string): Promise<TeamHistoryEntryResult> {
+export async function updatePlayerTeamHistoryEntry(membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string): Promise<TeamHistoryEntryResult> {
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
   const fieldErrors: TeamHistoryEntryFieldErrors = {};
@@ -345,6 +347,7 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
+  if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -353,7 +356,7 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
   if (!membership) return { ok: false, fieldErrors: { role: "notFound" } };
 
   const period = until ? `[${from},${until})` : openRangeFrom(from);
-  const isOngoing = !until;
+  const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
     if (isOngoing) {
@@ -364,17 +367,17 @@ export async function updatePlayerTeamHistoryEntry(membershipId: number, role: s
           and(
             eq(rosterMemberships.personId, membership.personId),
             eq(rosterMemberships.role, role),
-            sql`${rosterMemberships.period} @> CURRENT_DATE`,
+            sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false),
             sql`${rosterMemberships.id} != ${membershipId}`
           )
         );
 
       for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from) }).where(eq(rosterMemberships.id, row.id));
+        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
       }
     }
 
-    const values = { role, period, inactiveSince: inactiveSince || null };
+    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
     await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });

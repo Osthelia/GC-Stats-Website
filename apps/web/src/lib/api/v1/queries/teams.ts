@@ -27,7 +27,6 @@ import {
   stageContainers,
   stages,
 } from "@gc-stats/db";
-import { rangeIsOpen } from "@/lib/daterange";
 import { toApiTeam, toApiTeamFromJoined, toApiPlayer, type ApiTeam, type ApiPlayer } from "../entities";
 import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls, type ApiLogoHistoryResponse } from "../logo-response";
 import { escapeLike, exclusiveUpperBound, type MapsFilter, type StatsFilter, type MatchHistoryFilter } from "../params";
@@ -108,6 +107,7 @@ export async function getTeamPlayers(teamId: number): Promise<ApiTeamPlayersResp
       isActive: people.isActive,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
     })
     .from(rosterMemberships)
     .innerJoin(people, eq(people.id, rosterMemberships.personId))
@@ -117,7 +117,7 @@ export async function getTeamPlayers(teamId: number): Promise<ApiTeamPlayersResp
   const history: ApiPlayer[] = [];
   for (const row of rows) {
     if (!PLAYER_ROSTER_ROLES.has(row.role)) continue;
-    (rangeIsOpen(row.period) ? current : history).push(toApiPlayer(row));
+    (row.hasLeft ? history : current).push(toApiPlayer(row));
   }
   return { current, history };
 }

@@ -2558,7 +2558,8 @@
           "processingFailed": "Cette image n'a pas pu être traitée. Essaie un autre fichier ou réexporte-la en PNG ou JPEG.",
           "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
           "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
-          "empty": "Merci de choisir une image."
+          "empty": "Merci de choisir une image.",
+          "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ."
         },
         "fieldOrganization": "Organisation",
         "organizationPlaceholder": "Sélectionner une organisation",
@@ -2769,7 +2770,8 @@
           "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
           "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
-          "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
+          "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres).",
+          "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "ID utilisateur Discord numérique (Mode développeur, clic droit sur le profil, Copier l'identifiant)."
@@ -4865,6 +4867,11 @@
       "role": "Rôle",
       "joined": "Date d'arrivée",
       "left": "Date de départ"
+    },
+    "rosterLeft": {
+      "hasLeft": "A quitté la team",
+      "untilLabel": "Parti le",
+      "unknownHint": "Date de fin inconnue, laisse vide si tu ne la connais pas."
     }
   },
   "dashboard": {

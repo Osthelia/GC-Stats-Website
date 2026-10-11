@@ -2558,7 +2558,8 @@
           "processingFailed": "Não foi possível processar esta imagem. Tente outro arquivo ou exporte-a novamente como PNG ou JPEG.",
           "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
-          "empty": "Escolha uma imagem."
+          "empty": "Escolha uma imagem.",
+          "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída."
         },
         "fieldOrganization": "Organização",
         "organizationPlaceholder": "Selecionar uma organização",
@@ -2769,7 +2770,8 @@
           "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
-          "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
+          "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos).",
+          "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "ID numérico de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário)."
@@ -4865,6 +4867,11 @@
       "role": "Função",
       "joined": "Data de entrada",
       "left": "Data de saída"
+    },
+    "rosterLeft": {
+      "hasLeft": "Saiu da equipe",
+      "untilLabel": "Saiu em",
+      "unknownHint": "Data de fim desconhecida, deixe vazio se não souber."
     }
   },
   "dashboard": {

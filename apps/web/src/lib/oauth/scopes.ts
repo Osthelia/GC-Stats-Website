@@ -73,7 +73,7 @@ export async function resolveOAuthClaims(userId: string, scopes: OAuthScope[]): 
     if (scopes.includes("teams")) {
       const rows = person
         ? await db
-            .select({ teamId: teams.id, teamName: teams.name, role: rosterMemberships.role, period: rosterMemberships.period })
+            .select({ teamId: teams.id, teamName: teams.name, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
             .from(rosterMemberships)
             .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))
             .where(eq(rosterMemberships.personId, person.id))
@@ -84,7 +84,7 @@ export async function resolveOAuthClaims(userId: string, scopes: OAuthScope[]): 
         role: r.role,
         since: rangeLower(r.period),
         until: rangeIsOpen(r.period) ? null : rangeUpper(r.period),
-        current: rangeIsOpen(r.period),
+        current: !r.hasLeft,
       }));
     }
 

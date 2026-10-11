@@ -2558,7 +2558,8 @@
           "processingFailed": "Impossibile elaborare questa immagine. Prova con un altro file o esportala di nuovo come PNG o JPEG.",
           "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
           "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
-          "empty": "Scegli un'immagine."
+          "empty": "Scegli un'immagine.",
+          "requiresLeft": "Seleziona « Ha lasciato il team » per indicare una data di uscita."
         },
         "fieldOrganization": "Organizzazione",
         "organizationPlaceholder": "Seleziona un'organizzazione",
@@ -2769,7 +2770,8 @@
           "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
           "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
-          "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+          "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre).",
+          "requiresLeft": "Seleziona « Ha lasciato il team » per indicare una data di uscita."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente)."
@@ -4865,6 +4867,11 @@
       "role": "Ruolo",
       "joined": "Data di ingresso",
       "left": "Data di uscita"
+    },
+    "rosterLeft": {
+      "hasLeft": "Ha lasciato il team",
+      "untilLabel": "Uscita il",
+      "unknownHint": "Data di fine sconosciuta, lascia vuoto se non la conosci."
     }
   },
   "dashboard": {

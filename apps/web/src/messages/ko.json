@@ -2558,7 +2558,8 @@
           "processingFailed": "이 이미지를 처리할 수 없습니다. 다른 파일을 사용하거나 PNG 또는 JPEG로 다시 내보내 주세요.",
           "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
-          "empty": "이미지를 선택해 주세요."
+          "empty": "이미지를 선택해 주세요.",
+          "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요."
         },
         "fieldOrganization": "조직",
         "organizationPlaceholder": "조직 선택",
@@ -2769,7 +2770,8 @@
           "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
-          "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
+          "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자).",
+          "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "숫자로 된 Discord 사용자 ID (개발자 모드에서 프로필 우클릭, 사용자 ID 복사)."
@@ -4865,6 +4867,11 @@
       "role": "역할",
       "joined": "합류일",
       "left": "탈퇴일"
+    },
+    "rosterLeft": {
+      "hasLeft": "팀을 떠남",
+      "untilLabel": "탈퇴일",
+      "unknownHint": "종료일을 알 수 없습니다. 모르면 비워 두세요."
     }
   },
   "dashboard": {

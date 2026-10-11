@@ -2558,7 +2558,8 @@
           "processingFailed": "Bu görsel işlenemedi. Başka bir dosya deneyin veya PNG ya da JPEG olarak yeniden dışa aktarın.",
           "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
-          "empty": "Lütfen bir görsel seçin."
+          "empty": "Lütfen bir görsel seçin.",
+          "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle."
         },
         "fieldOrganization": "Organizasyon",
         "organizationPlaceholder": "Bir organizasyon seç",
@@ -2769,7 +2770,8 @@
           "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
-          "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+          "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak).",
+          "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle."
         },
         "fieldDiscordId": "Discord (ID)",
         "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."
@@ -4865,6 +4867,11 @@
       "role": "Rol",
       "joined": "Katılma tarihi",
       "left": "Ayrılma tarihi"
+    },
+    "rosterLeft": {
+      "hasLeft": "Takımdan ayrıldı",
+      "untilLabel": "Ayrılış tarihi",
+      "unknownHint": "Bitiş tarihi bilinmiyor, bilmiyorsan boş bırak."
     }
   },
   "dashboard": {

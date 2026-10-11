@@ -77,9 +77,9 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
       const openElsewhere = await tx
         .select({ id: rosterMemberships.id, period: rosterMemberships.period })
         .from(rosterMemberships)
-        .where(and(eq(rosterMemberships.personId, subjectId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`));
+        .where(and(eq(rosterMemberships.personId, subjectId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
       for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.joined_at) }).where(eq(rosterMemberships.id, row.id));
+        await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.joined_at), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
       }
       await tx.insert(rosterMemberships).values({ personId: subjectId, teamId: v.team_id, role: v.role, period, inactiveSince: null });
     });
@@ -88,45 +88,47 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
 
   // --- Roster / team-history membership rows -------------------------------
   if (field === "membership_add") {
-    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; inactiveSince: string | null };
+    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
     const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, v.personId)).limit(1);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
     if (!person || !team) throw new Error("entityNotFound");
 
     const period = v.until ? `[${v.since},${v.until})` : openRangeFrom(v.since);
-    const isOngoing = !v.until;
+    const hasLeft = v.hasLeft ?? !!v.until;
+    const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
       if (isOngoing) {
         const openElsewhere = await tx
           .select({ id: rosterMemberships.id, period: rosterMemberships.period })
           .from(rosterMemberships)
-          .where(and(eq(rosterMemberships.personId, v.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`));
+          .where(and(eq(rosterMemberships.personId, v.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
         for (const row of openElsewhere) {
-          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since) }).where(eq(rosterMemberships.id, row.id));
+          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
         }
       }
-      await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, inactiveSince: v.inactiveSince });
+      await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince });
     });
     return;
   }
 
   if (field === "membership_edit") {
-    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; inactiveSince: string | null };
+    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
+    const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
     if (!membership) throw new Error("membershipNotFound");
 
     const period = v.until ? `[${v.since},${v.until})` : openRangeFrom(v.since);
-    const isOngoing = !v.until;
+    const hasLeft = v.hasLeft ?? (!!v.until || membership.hasLeft);
+    const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
       if (isOngoing) {
         const openElsewhere = await tx
           .select({ id: rosterMemberships.id, period: rosterMemberships.period })
           .from(rosterMemberships)
-          .where(and(eq(rosterMemberships.personId, membership.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, ne(rosterMemberships.id, v.membershipId)));
+          .where(and(eq(rosterMemberships.personId, membership.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false), ne(rosterMemberships.id, v.membershipId)));
         for (const row of openElsewhere) {
-          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since) }).where(eq(rosterMemberships.id, row.id));
+          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
         }
       }
       await tx.update(rosterMemberships).set({ role: v.role, period, inactiveSince: v.inactiveSince }).where(eq(rosterMemberships.id, v.membershipId));

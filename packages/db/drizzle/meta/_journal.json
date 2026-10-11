@@ -295,6 +295,13 @@
       "when": 1791624999828,
       "tag": "0041_entrant_qualification_point_type",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1791660071774,
+      "tag": "0042_roster_has_left",
+      "breakpoints": true
     }
   ]
 }

@@ -12,7 +12,7 @@
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { people, teams, rosterMemberships, entrants, matches, maps, mapPlayerStats, users } from "@gc-stats/db";
-import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
+import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
 
@@ -188,6 +188,7 @@ export type AdminPlayerTeamHistoryEntry = {
   since: string | null;
   until: string | null;
   isCurrent: boolean;
+  hasLeft: boolean;
   inactiveSince: string | null;
 };
 
@@ -202,6 +203,7 @@ export async function getAdminPlayerTeamHistory(personId: number): Promise<Admin
       teamSecondaryCountryCode: teams.secondaryCountryCode,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
     })
     .from(rosterMemberships)
@@ -213,6 +215,6 @@ export async function getAdminPlayerTeamHistory(personId: number): Promise<Admin
     ...r,
     since: rangeLower(r.period),
     until: rangeUpper(r.period),
-    isCurrent: rangeIsOpen(r.period),
+    isCurrent: !r.hasLeft,
   }));
 }

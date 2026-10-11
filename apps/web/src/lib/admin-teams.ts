@@ -13,7 +13,7 @@
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { teams, entrants, matches, rosterMemberships, people, teamNameHistory, organizations } from "@gc-stats/db";
-import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
+import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
 
@@ -190,6 +190,7 @@ export type AdminTeamRosterMember = {
   since: string | null;
   until: string | null;
   isCurrent: boolean;
+  hasLeft: boolean;
   inactiveSince: string | null;
 };
 
@@ -204,6 +205,7 @@ export async function getAdminTeamRoster(teamId: number): Promise<AdminTeamRoste
       secondaryCountryCode: people.secondaryCountryCode,
       role: rosterMemberships.role,
       period: rosterMemberships.period,
+      hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
     })
     .from(rosterMemberships)
@@ -215,6 +217,6 @@ export async function getAdminTeamRoster(teamId: number): Promise<AdminTeamRoste
     ...r,
     since: rangeLower(r.period),
     until: rangeUpper(r.period),
-    isCurrent: rangeIsOpen(r.period),
+    isCurrent: !r.hasLeft,
   }));
 }
