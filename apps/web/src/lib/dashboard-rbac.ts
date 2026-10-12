@@ -11,7 +11,7 @@
 
 import { eq, exists, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, teams, users, apiKeys, ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
+import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, teams, users, apiKeys, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
@@ -151,7 +151,6 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
       id: organizations.id,
       name: organizations.name,
       slug: organizations.slug,
-      maxPermissions: organizations.maxPermissions,
       isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
     })
     .from(organizations);
@@ -163,15 +162,15 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
     isOwner: true,
     isGlobalAdminOverride: true,
     isTeamLinked: r.isTeamLinked,
-    permissions: r.isTeamLinked ? applyLinkedPermissions(ceilingOf(r.maxPermissions)) : new Set<string>(ceilingOf(r.maxPermissions)),
+    permissions: r.isTeamLinked ? applyLinkedPermissions(ALL_ORGANIZATION_PERMISSIONS) : new Set<string>(ALL_ORGANIZATION_PERMISSIONS),
   }));
 }
 
-/** Real memberships plus the global admin override for every other organization — used everywhere /dashboard resolves "which organizations can this account reach" (picker, sidebar, org switcher, per-org access checks). A real membership always wins over the synthetic one for the same organization. */
+/** Real memberships plus the global admin override — used everywhere /dashboard resolves "which organizations can this account reach" (picker, sidebar, org switcher, per-org access checks). The override wins over a real membership for the same organization, so an admin is never capped by a role or the organization's ceiling. */
 async function getCombinedDashboardMemberships(userId: string): Promise<DashboardOrgMembership[]> {
   const [real, adminOverride] = await Promise.all([getDashboardMemberships(userId), getGlobalOrgAdminMemberships(userId)]);
-  const realIds = new Set(real.map((m) => m.organizationId));
-  return [...real, ...adminOverride.filter((m) => !realIds.has(m.organizationId))];
+  const overrideIds = new Set(adminOverride.map((m) => m.organizationId));
+  return [...real.filter((m) => !overrideIds.has(m.organizationId)), ...adminOverride];
 }
 
 /** Cheap "should the nav show the dashboard link" check — same grants as requireDashboardAccess (organization_access, isAuthor, a personal API key, or the global admin override), no permission detail needed. */
