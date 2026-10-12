@@ -68,7 +68,7 @@ export type {
 export async function updateDashboardOrganizationProfile(organizationId: number, input: OrganizationProfileInput): Promise<OrganizationProfileResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.profileEdit);
 
-  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validateOrganizationProfileInput(input);
+  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags } = validateOrganizationProfileInput(input);
 
   if (!fieldErrors.slug) {
     const [slugTaken] = await db
@@ -82,7 +82,7 @@ export async function updateDashboardOrganizationProfile(organizationId: number,
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [existing] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
-  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags };
+  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, liquipediaLink: liquipediaLink || null, socials, tags };
   await db.transaction(async (tx) => {
     await tx.update(organizations).set(values).where(eq(organizations.id, organizationId));
     const changes = existing ? diffChanges(existing, values) : {};

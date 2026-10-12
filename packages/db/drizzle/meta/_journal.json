@@ -309,6 +309,13 @@
       "when": 1791803915463,
       "tag": "0043_veto_system",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1791821378540,
+      "tag": "0044_organization_liquipedia_link",
+      "breakpoints": true
     }
   ]
 }

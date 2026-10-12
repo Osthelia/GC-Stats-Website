@@ -95,7 +95,7 @@ export async function updateOrganizationProfile(organizationId: number, input: O
   const actorUserId = await requireOrgActorId();
 
   const validated = validateOrganizationProfileInput(input);
-  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, socials, tags } = validated;
+  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags } = validated;
 
   const [existing] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -111,7 +111,7 @@ export async function updateOrganizationProfile(organizationId: number, input: O
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, socials, tags };
+  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, liquipediaLink: liquipediaLink || null, socials, tags };
   await db.transaction(async (tx) => {
     await tx.update(organizations).set(values).where(eq(organizations.id, organizationId));
     const changes = diffChanges(existing, values);

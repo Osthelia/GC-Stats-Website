@@ -21,6 +21,7 @@ import {
   TiktokIcon,
   WebsiteIcon,
 } from "@/components/icons/brand-icons";
+import { LiquipediaLinkPill } from "@/components/tournament/liquipedia-link-pill";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
 import type { AppLocale } from "@/i18n/routing";
@@ -173,8 +174,9 @@ export async function OrganizationHeader({
               </p>
             )}
 
-            {links.length > 0 && (
+            {(organization.liquipediaLink || links.length > 0) && (
               <div className="flex flex-wrap gap-2 pb-1 pt-1">
+                {organization.liquipediaLink && <LiquipediaLinkPill href={organization.liquipediaLink} label={t("liquipedia")} />}
                 {links.map((l) => {
                   const Icon = l.icon;
                   return (

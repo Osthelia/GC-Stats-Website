@@ -43,13 +43,14 @@ export function OrganizationEditForm({
   const [countryCode, setCountryCode] = useState(organization.countryCode ?? "");
   const [secondaryCountryCode, setSecondaryCountryCode] = useState(organization.secondaryCountryCode ?? "");
   const [bio, setBio] = useState(organization.bio ?? "");
+  const [liquipediaLink, setLiquipediaLink] = useState(organization.liquipediaLink ?? "");
   const [socials, setSocials] = useState<Record<string, string>>(organization.socials);
   const [tags, setTags] = useState<string[]>(organization.tags);
 
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, socials, tags });
+      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -100,6 +101,10 @@ export function OrganizationEditForm({
                   />
                 </FormField>
               </div>
+
+              <FormField label={t("fieldLiquipedia")} htmlFor="organization-liquipedia" error={err("liquipediaLink")}>
+                <Input id="organization-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
+              </FormField>
 
               <FormField label={t("fieldBio")} htmlFor="organization-bio" error={err("bio")}>
                 <Textarea id="organization-bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} maxLength={2000} aria-invalid={!!errors.bio} />

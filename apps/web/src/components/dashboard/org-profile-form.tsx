@@ -57,6 +57,12 @@ function ReadOnlyProfile({ organization }: { organization: AdminOrganizationProf
           <CardTitle>{t("sectionSocials")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-1.5 text-sm">
+          {organization.liquipediaLink && (
+            <div className="flex justify-between gap-2">
+              <span className="text-muted-foreground">{t("fieldLiquipedia")}</span>
+              <span className="truncate">{organization.liquipediaLink}</span>
+            </div>
+          )}
           {ORGANIZATION_SOCIAL_KEYS.filter((k) => organization.socials[k]).map((k) => (
             <div key={k} className="flex justify-between gap-2">
               <span className="text-muted-foreground">{t(`socialLabels.${k}`)}</span>
@@ -81,6 +87,7 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
   const [countryCode, setCountryCode] = useState(organization.countryCode ?? "");
   const [secondaryCountryCode, setSecondaryCountryCode] = useState(organization.secondaryCountryCode ?? "");
   const [bio, setBio] = useState(organization.bio ?? "");
+  const [liquipediaLink, setLiquipediaLink] = useState(organization.liquipediaLink ?? "");
   const [socials, setSocials] = useState<Record<string, string>>(organization.socials);
   const [tags, setTags] = useState<string[]>(organization.tags);
 
@@ -96,7 +103,7 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateDashboardOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, socials, tags });
+      const result = await updateDashboardOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -146,6 +153,10 @@ export function OrgProfileForm({ organization, canEdit }: { organization: AdminO
                 />
               </FormField>
             </div>
+
+            <FormField label={t("fieldLiquipedia")} htmlFor="dashboard-org-liquipedia" error={err("liquipediaLink")}>
+              <Input id="dashboard-org-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
+            </FormField>
 
             <FormField label={t("fieldBio")} htmlFor="dashboard-org-bio" error={err("bio")}>
               <Textarea id="dashboard-org-bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} maxLength={2000} aria-invalid={!!errors.bio} />

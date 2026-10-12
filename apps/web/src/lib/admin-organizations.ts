@@ -92,6 +92,7 @@ export type AdminOrganizationProfile = {
   countryCode: string | null;
   secondaryCountryCode: string | null;
   bio: string | null;
+  liquipediaLink: string | null;
   socials: Record<string, string>;
   maxPermissions: string[];
 };
@@ -107,6 +108,7 @@ export async function getAdminOrganization(id: number): Promise<AdminOrganizatio
     countryCode: row.countryCode,
     secondaryCountryCode: row.secondaryCountryCode,
     bio: row.bio,
+    liquipediaLink: row.liquipediaLink,
     socials: (row.socials as Record<string, string>) ?? {},
     maxPermissions: Array.isArray(row.maxPermissions) ? (row.maxPermissions as string[]) : [],
   };

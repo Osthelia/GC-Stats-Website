@@ -76,6 +76,7 @@ export type ApiOrganizationFullResponseV2 = {
   country_code: string | null;
   secondary_country_code: string | null;
   bio: string | null;
+  liquipedia_link: string | null;
   socials: Record<string, string>;
   logos: ApiThemedLogoUrls;
   members: ApiOrganizationMembersResponse;
@@ -101,6 +102,7 @@ async function buildOrganizationFullResponse(row: typeof organizations.$inferSel
     country_code: row.countryCode,
     secondary_country_code: row.secondaryCountryCode,
     bio: row.bio,
+    liquipedia_link: row.liquipediaLink,
     socials: (row.socials as Record<string, string>) ?? {},
     logos,
     members: { current: members.current.map(toApiOrganizationMember), formers: members.formers.map(toApiOrganizationMember) },

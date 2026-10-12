@@ -122,6 +122,7 @@ export const organizations = pgTable("organizations", {
   secondaryCountryCode: char("secondary_country_code", { length: 3 }),
   socials: jsonb("socials").notNull().default({}),
   bio: text("bio"),
+  liquipediaLink: text("liquipedia_link"),
   maxPermissions: jsonb("max_permissions"),
 });
 

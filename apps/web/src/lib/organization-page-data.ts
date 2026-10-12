@@ -44,6 +44,7 @@ export type OrganizationPageInfo = {
   countryCode: string | null;
   secondaryCountryCode: string | null;
   bio: string | null;
+  liquipediaLink: string | null;
   socials: Record<string, string>;
   logoUrl: string | null;
   logoUrlLight: string | null;
@@ -64,6 +65,7 @@ export const getOrganizationPageInfo = cache(async (id: number): Promise<Organiz
     countryCode: row.countryCode,
     secondaryCountryCode: row.secondaryCountryCode,
     bio: row.bio,
+    liquipediaLink: row.liquipediaLink,
     socials: (row.socials as Record<string, string>) ?? {},
     logoUrl: themed.dark,
     logoUrlLight: themed.light,
