@@ -20,6 +20,12 @@ import { IMPORT_SOCIAL_KEYS, liquipediaPageUrl, parsePlayerInfobox, parseTeamInf
 /** Start of every reason written by the import, used to spot requests still waiting for review. */
 export const LIQUIPEDIA_IMPORT_REASON = "Liquipedia import";
 const SEVERAL_ACCOUNTS_NOTE = "Several accounts found on Liquipedia for the same network, keep only one.";
+const SOURCE_WARNING = "⚠️ If any field (except the Liquipedia URL) is accepted, the Liquipedia source must be accepted too.";
+
+function buildReason(note?: string): string {
+  const head = note ? `${LIQUIPEDIA_IMPORT_REASON}. ${note}` : LIQUIPEDIA_IMPORT_REASON;
+  return `${head}\n${SOURCE_WARNING}`;
+}
 
 export type ImportItem = { field: string; oldValue: unknown; newValue: unknown };
 
@@ -112,7 +118,7 @@ async function planTeams(tournamentId: number, plan: ImportPlan): Promise<void> 
       continue;
     }
     const hasSeveral = extraAccounts.length > 0;
-    const reason = hasSeveral ? `${LIQUIPEDIA_IMPORT_REASON}. ${SEVERAL_ACCOUNTS_NOTE}` : LIQUIPEDIA_IMPORT_REASON;
+    const reason = buildReason(hasSeveral ? SEVERAL_ACCOUNTS_NOTE : undefined);
     plan.proposals.push({ subjectType: "team", subjectId: team.id, label, reason, items: mainItems });
     for (const extra of extraAccounts) {
       plan.proposals.push({ subjectType: "team", subjectId: team.id, label, reason, items: extra });
@@ -164,7 +170,7 @@ async function planPeople(tournamentId: number, plan: ImportPlan): Promise<void>
       plan.upToDate += 1;
       continue;
     }
-    plan.proposals.push({ subjectType: "person", subjectId: person.id, label, reason: LIQUIPEDIA_IMPORT_REASON, items: finalItems });
+    plan.proposals.push({ subjectType: "person", subjectId: person.id, label, reason: buildReason(), items: finalItems });
   }
 }
 
