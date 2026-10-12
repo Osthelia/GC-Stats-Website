@@ -2291,7 +2291,8 @@
           "staff": "Staff",
           "people": "People",
           "apiKeys": "API keys",
-          "logs": "Logs"
+          "logs": "Logs",
+          "veto": "Map veto"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Edit profile (name, socials, tags)",
@@ -2316,7 +2317,8 @@
           "organization_people_link_user": "Link a person to a user account",
           "organization_people_edit_profile": "Edit a person's profile (basic and advanced info)",
           "organization_api_keys_manage": "Manage the organization's API keys",
-          "organization_logs_view": "View the organization's logs"
+          "organization_logs_view": "View the organization's logs",
+          "organization_veto_manage": "Manage the live map veto of the organized tournaments"
         },
         "accessError": {
           "notFound": "Organization not found."
@@ -4874,6 +4876,119 @@
       "hasLeft": "Has left the team",
       "untilLabel": "Left on",
       "unknownHint": "End date unknown, leave empty if you don't know it."
+    },
+    "vetoManagement": {
+      "title": "Live map veto",
+      "subtitle": "Teams veto their maps from a private link, and the result fills the match as it happens.",
+      "openPage": "Live map veto",
+      "backToTournament": "Back to {name}",
+      "enableTitle": "Activation",
+      "enableDescription": "Once enabled, every team of the tournament gets a private veto link, and the organizer can manage the veto from its dashboard.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enableButton": "Enable the veto",
+      "disableButton": "Disable the veto",
+      "enabledSuccess": "Live veto enabled.",
+      "disabledSuccess": "Live veto disabled.",
+      "settingsTitle": "Settings",
+      "settingsDescription": "Rules applied to every match of the tournament.",
+      "firstMoverLabel": "Who starts the veto",
+      "mode": {
+        "coin_toss": "Coin toss decides",
+        "coin_toss_winner": "Coin toss winner decides",
+        "advantage": "Advantage team decides",
+        "predefined": "Predefined"
+      },
+      "modeHint": {
+        "coin_toss": "A coin toss picks the team that bans first.",
+        "coin_toss_winner": "A coin toss picks a winner, who chooses which team bans first.",
+        "advantage": "A team set with the advantage chooses which team bans first.",
+        "predefined": "The team of the chosen slot (team A or B of the match) always bans first."
+      },
+      "advantageLabel": "Team with the advantage",
+      "advantageNone": "Choose a team",
+      "slotLabel": "Team starting",
+      "slotA": "Team A",
+      "slotB": "Team B",
+      "timeoutLabel": "Time per action (seconds)",
+      "timeoutHint": "A team that runs out of time gets a random map or side. Between 10 and 600.",
+      "poolLabel": "Map pool",
+      "poolCount": "{count} selected, 7 are needed.",
+      "patchLabel": "Or use the maps of a patch",
+      "patchHint": "Used when no map is selected above, for example 11.07. The maps played on this patch are used.",
+      "saveButton": "Save",
+      "saving": "Saving...",
+      "saveSuccess": "Settings saved.",
+      "saveFailed": "Some fields are invalid.",
+      "linksTitle": "Team links",
+      "linksDescription": "Each team has one private link for the whole tournament. Anyone with the link can veto for the team, no account needed.",
+      "noEntrants": "No team in this tournament yet.",
+      "noLink": "No link yet",
+      "generate": "Generate",
+      "copyLink": "Copy link",
+      "copied": "Copied",
+      "copyFailed": "Could not copy the link.",
+      "regenerate": "Regenerate",
+      "regenerated": "New link generated, the old one no longer works.",
+      "regenerateTitle": "Regenerate this link?",
+      "regenerateDescription": "The current link of {team} stops working right away. Send the new link to the team.",
+      "cancel": "Cancel",
+      "matchesTitle": "Matches",
+      "matchesDescription": "Adjust the map pool of a match or reset a veto that was started.",
+      "noMatches": "No upcoming match.",
+      "teamsUnknown": "Teams not known yet",
+      "editPool": "Map pool",
+      "matchPoolHint": "Maps for this match only. Without a selection, the tournament pool is used.",
+      "useTournamentPool": "Use the tournament pool",
+      "poolSaved": "Map pool saved.",
+      "reset": "Reset",
+      "resetTitle": "Reset this veto?",
+      "resetDescription": "Every ban, pick and side already chosen is erased and the teams have to be ready again.",
+      "resetDone": "Veto reset.",
+      "status": {
+        "waiting": "Waiting",
+        "choosing": "Choosing who starts",
+        "running": "In progress",
+        "done": "Done"
+      },
+      "error": {
+        "notFound": "Not found.",
+        "firstMoverMode": {
+          "invalid": "Choose a valid option."
+        },
+        "advantageEntrantId": {
+          "required": "Choose the team with the advantage.",
+          "invalid": "This team is not in the tournament."
+        },
+        "predefinedSlot": {
+          "invalid": "Choose team A or B."
+        },
+        "actionTimeoutSeconds": {
+          "required": "Enter a time.",
+          "notInteger": "Enter a whole number of seconds.",
+          "outOfRange": "Enter between 10 and 600 seconds."
+        },
+        "mapPool": {
+          "required": "Select 7 maps, or give a patch.",
+          "invalidMap": "One of the maps is not valid.",
+          "duplicateMap": "A map is selected twice.",
+          "poolSize": "Select exactly 7 maps.",
+          "vetoRunning": "A veto is in progress, wait for it to end or reset it before changing the pool."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "Enter a patch like 11.07.",
+          "patchUnknown": "This patch does not give a pool of 7 maps, select them by hand."
+        },
+        "matchPool": {
+          "notFound": "Match not found.",
+          "invalidMap": "One of the maps is not valid.",
+          "duplicateMap": "A map is selected twice.",
+          "poolSize": "Select exactly 7 maps, or none to use the tournament pool.",
+          "vetoStarted": "The veto already started, reset it first."
+        }
+      },
+      "copyOverlay": "Overlay link",
+      "overlayCopied": "Overlay link copied, add it as a browser source."
     }
   },
   "dashboard": {
@@ -4903,7 +5018,8 @@
       "adminAccess": "Admin",
       "allAuthors": "All authors",
       "authorAdminSpace": "Authors",
-      "logs": "Logs"
+      "logs": "Logs",
+      "veto": "Map veto"
     },
     "switcher": {
       "selectOrganization": "Select an organization",
@@ -5662,6 +5778,12 @@
       "total": "{count, plural, one {# entry} other {# entries}}",
       "previous": "Previous page",
       "next": "Next page"
+    },
+    "veto": {
+      "title": "Map veto",
+      "subtitle": "Set up the live veto of the tournaments your organization organizes.",
+      "readOnlyHint": "You do not have the permission to manage the map veto.",
+      "noTournaments": "No tournament of your organization has the map veto enabled. A GC Stats admin enables it for you."
     }
   },
   "globalSearch": {
@@ -6354,5 +6476,68 @@
     "points": "Qualified via {label} points",
     "pointsUnknown": "Qualified via points",
     "iconLabel": "Qualification source"
+  },
+  "veto": {
+    "title": "Map veto",
+    "invalidLinkTitle": "Invalid veto link",
+    "invalidLinkHint": "This link is not valid or the veto is not enabled for this tournament. Ask the organizers for a new link.",
+    "noMatch": "No match to veto for now. This page updates by itself when your next match is ready.",
+    "you": "You",
+    "opponent": "Opponent",
+    "ready": "Ready",
+    "bestOf": "BO{count}",
+    "poolError": "The map pool of this match is not complete yet. Ask the organizers to set it.",
+    "waitingTitle": "Ready to veto?",
+    "waitingHint": "The veto starts when both teams are ready.",
+    "readyButton": "We are ready",
+    "cancelReady": "Not ready yet",
+    "chooseFirstTitle": "Who starts the veto?",
+    "chooseFirstHint": "You choose which team bans first.",
+    "weStart": "We start",
+    "opponentStarts": "{team} starts",
+    "waitingChoice": "{team} is choosing who starts the veto.",
+    "yourTurn": {
+      "ban": "Your turn: ban a map",
+      "pick": "Your turn: pick a map",
+      "side": "Your turn: choose your side"
+    },
+    "stepWaiting": {
+      "ban": "They are choosing a map to ban.",
+      "pick": "They are choosing a map to pick.",
+      "side": "They are choosing a side."
+    },
+    "theirTurn": "{team} is playing",
+    "attack": "Attack",
+    "defense": "Defense",
+    "toBeDecided": "To be decided",
+    "stepLabel": {
+      "ban": "Ban",
+      "pick": "Pick",
+      "side": "Side",
+      "decider": "Decider"
+    },
+    "vetoDone": "The veto is over. Good luck for your game!",
+    "gameFinishedHint": "Once your game is over, press this button to notify the GC Stats staff. This does not notify the tournament organizer.",
+    "gameFinishedButton": "The game is finished",
+    "staffNotified": "The GC Stats staff has been notified (not the tournament organizer).",
+    "previousMatch": "Previous match",
+    "nextMatch": "Next match",
+    "error": {
+      "unknown": "Something went wrong, try again.",
+      "network": "Connection problem, try again.",
+      "notFound": "This match is not available.",
+      "notAllowed": "You are not part of this match.",
+      "wrongPhase": "This action is not available right now.",
+      "notYourTurn": "It is not your turn.",
+      "wrongStep": "This is not the expected action.",
+      "mapUnavailable": "This map is not available.",
+      "invalidSide": "Invalid side.",
+      "noStep": "The veto is already over.",
+      "poolInvalid": "The map pool of this match is not complete.",
+      "alreadyNotified": "The staff has already been notified.",
+      "matchCompleted": "This match is already finished.",
+      "rateLimited": "Too many requests, slow down.",
+      "invalidRequest": "Invalid request."
+    }
   }
 }

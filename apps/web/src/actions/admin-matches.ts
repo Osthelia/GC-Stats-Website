@@ -28,6 +28,7 @@ import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data"
 import { detectStartingAttacker } from "@/lib/map-fetch/detect-start-side";
 import type { FetchMapError, TeamColorRoster } from "@/lib/map-fetch/types";
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
+import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 
@@ -291,24 +292,7 @@ export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Prom
       );
     }
 
-    // V1's MatchController::recomputeGameMaps: one map per pick/decider in
-    // veto order, reusing an existing map of the same name (keeps its stats
-    // and match id), dropping maps no longer in the veto.
-    const existingMaps = await tx.select({ id: maps.id, mapName: maps.mapName }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
-    const keptIds = new Set<number>();
-    const played = rows.filter((row) => row.type === "pick" || row.type === "decider");
-    for (const [index, row] of played.entries()) {
-      const existing = existingMaps.find((m) => m.mapName === row.mapName && !keptIds.has(m.id));
-      if (existing) {
-        await tx.update(maps).set({ order: index + 1 }).where(eq(maps.id, existing.id));
-        keptIds.add(existing.id);
-      } else {
-        const [created] = await tx.insert(maps).values({ matchId, mapName: row.mapName, order: index + 1, isCompleted: false }).returning({ id: maps.id });
-        if (created) keptIds.add(created.id);
-      }
-    }
-    const removedIds = existingMaps.filter((m) => !keptIds.has(m.id)).map((m) => m.id);
-    if (removedIds.length > 0) await tx.delete(maps).where(inArray(maps.id, removedIds));
+    await syncPlayedMapsFromVeto(tx, matchId, rows);
     await logActivity(
       { subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
       tx

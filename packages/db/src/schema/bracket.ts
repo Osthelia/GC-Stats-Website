@@ -46,6 +46,8 @@ export const tournaments = pgTable("tournaments", {
   pointTypeId: bigint("point_type_id", { mode: "number" }).references(() => pointTypes.id, { onDelete: "set null" }),
   // Organization shown as the tournament's organizer.
   organizerOrganizationId: bigint("organizer_organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
+  // Enabled by a site admin, then managed by the organizer from the dashboard.
+  vetoEnabled: boolean("veto_enabled").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index("tournaments_active_start_date_idx").on(t.active, t.startDate),
@@ -127,6 +129,8 @@ export const entrants = pgTable("entrants", {
   qualificationSourceType: text("qualification_source_type"), // 'tournament' | 'invite' | 'points'
   qualificationSourceTournamentId: bigint("qualification_source_tournament_id", { mode: "number" }).references(() => tournaments.id, { onDelete: "set null" }),
   qualificationSourcePointTypeId: bigint("qualification_source_point_type_id", { mode: "number" }).references(() => pointTypes.id, { onDelete: "set null" }),
+  // Secret of the team's public veto link, valid for the whole tournament.
+  vetoToken: text("veto_token").unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index("entrants_tournament_id_idx").on(t.tournamentId),
@@ -271,3 +275,33 @@ export const matchVetos = pgTable("match_vetos", {
 }, (t) => [
   index("match_vetos_match_id_idx").on(t.matchId),
 ]);
+
+// Who vetoes first: 'coin_toss' (the toss picks the team), 'coin_toss_winner' (the
+// toss winner picks the team), 'advantage' (the advantaged entrant picks), 'predefined' (slot a or b).
+export const tournamentVetoSettings = pgTable("tournament_veto_settings", {
+  tournamentId: bigint("tournament_id", { mode: "number" }).primaryKey().references(() => tournaments.id, { onDelete: "cascade" }),
+  firstMoverMode: text("first_mover_mode").notNull().default("coin_toss"),
+  advantageEntrantId: bigint("advantage_entrant_id", { mode: "number" }).references(() => entrants.id, { onDelete: "set null" }),
+  predefinedSlot: char("predefined_slot", { length: 1 }).notNull().default("a"), // 'a' | 'b'
+  actionTimeoutSeconds: integer("action_timeout_seconds").notNull().default(60),
+  // Default pool of every match: explicit maps, or the maps played on `mapPoolPatch` when the list is empty.
+  mapPool: text("map_pool").array().notNull().default([]),
+  mapPoolPatch: text("map_pool_patch"),
+});
+
+// Live state of one match's veto. The decisions themselves land in match_vetos as they are taken.
+export const matchVetoSessions = pgTable("match_veto_sessions", {
+  matchId: bigint("match_id", { mode: "number" }).primaryKey().references(() => matches.id, { onDelete: "cascade" }),
+  status: text("status").notNull().default("waiting"), // 'waiting' | 'running' | 'done'
+  readyA: boolean("ready_a").notNull().default(false),
+  readyB: boolean("ready_b").notNull().default(false),
+  coinTossWinnerId: bigint("coin_toss_winner_id", { mode: "number" }).references(() => entrants.id),
+  firstEntrantId: bigint("first_entrant_id", { mode: "number" }).references(() => entrants.id),
+  // Override of the tournament pool for this match, empty = tournament pool.
+  mapPool: text("map_pool").array().notNull().default([]),
+  stepStartedAt: timestamp("step_started_at", { withTimezone: true }),
+  staffNotifiedAt: timestamp("staff_notified_at", { withTimezone: true }),
+  // Bumped on every change, the clients poll on it.
+  version: integer("version").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});

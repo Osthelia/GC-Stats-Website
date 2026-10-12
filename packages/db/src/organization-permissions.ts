@@ -38,6 +38,7 @@ export const ORGANIZATION_PERMISSIONS = {
   peopleEditProfile: "organization.people.edit-profile",
   apiKeysManage: "organization.api-keys.manage",
   logsView: "organization.logs.view",
+  vetoManage: "organization.veto.manage",
 } as const;
 
 export type OrganizationPermissionName = (typeof ORGANIZATION_PERMISSIONS)[keyof typeof ORGANIZATION_PERMISSIONS];
@@ -53,6 +54,7 @@ export const ORGANIZATION_PERMISSION_GROUPS: { key: string; permissions: Organiz
   { key: "people", permissions: [ORGANIZATION_PERMISSIONS.peopleCreate, ORGANIZATION_PERMISSIONS.peopleLinkUser, ORGANIZATION_PERMISSIONS.peopleEditProfile] },
   { key: "apiKeys", permissions: [ORGANIZATION_PERMISSIONS.apiKeysManage] },
   { key: "logs", permissions: [ORGANIZATION_PERMISSIONS.logsView] },
+  { key: "veto", permissions: [ORGANIZATION_PERMISSIONS.vetoManage] },
 ];
 
 // Granted automatically to every dashboard access of an organization linked to

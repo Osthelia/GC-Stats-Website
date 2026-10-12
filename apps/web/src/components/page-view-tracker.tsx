@@ -24,6 +24,8 @@ export function PageViewTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // The veto link is a secret, never recorded.
+    if (pathname.startsWith("/veto/")) return;
     fetch("/api/track-page-view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

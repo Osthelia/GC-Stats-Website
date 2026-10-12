@@ -10,7 +10,7 @@
  */
 
 import type { ComponentType } from "react";
-import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText, Swords } from "lucide-react";
 import { ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 
 export type DashboardNavItem = {
@@ -61,6 +61,7 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
     items: [
       { href: (id) => `/dashboard/${id}/streams`, labelKey: "streams", icon: Radio, permission: ORGANIZATION_PERMISSIONS.streamsView },
       { href: (id) => `/dashboard/${id}/vods`, labelKey: "vods", icon: Film, permission: ORGANIZATION_PERMISSIONS.vodsLink },
+      { href: (id) => `/dashboard/${id}/veto`, labelKey: "veto", icon: Swords, permission: ORGANIZATION_PERMISSIONS.vetoManage },
     ],
   },
   {

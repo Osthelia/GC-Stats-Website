@@ -2291,7 +2291,8 @@
           "staff": "Staff",
           "people": "Personnes",
           "apiKeys": "Clés API",
-          "logs": "Logs"
+          "logs": "Logs",
+          "veto": "Veto des maps"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Éditer le profil (nom, socials, tags)",
@@ -2316,7 +2317,8 @@
           "organization_people_link_user": "Lier une personne à un compte utilisateur",
           "organization_people_edit_profile": "Éditer le profil d'une personne (infos de base et avancées)",
           "organization_api_keys_manage": "Gérer les clés API de l'organisation",
-          "organization_logs_view": "Voir les logs de l'organisation"
+          "organization_logs_view": "Voir les logs de l'organisation",
+          "organization_veto_manage": "Gérer le veto des maps en direct des tournois organisés"
         },
         "accessError": {
           "notFound": "Organisation introuvable."
@@ -4874,6 +4876,119 @@
       "hasLeft": "A quitté la team",
       "untilLabel": "Parti le",
       "unknownHint": "Date de fin inconnue, laisse vide si tu ne la connais pas."
+    },
+    "vetoManagement": {
+      "title": "Veto des maps en direct",
+      "subtitle": "Les équipes vetoent leurs maps depuis un lien privé, et le résultat remplit le match en direct.",
+      "openPage": "Veto des maps en direct",
+      "backToTournament": "Retour à {name}",
+      "enableTitle": "Activation",
+      "enableDescription": "Une fois activé, chaque équipe du tournoi reçoit un lien de veto privé, et l'organisateur peut gérer le veto depuis son dashboard.",
+      "enabled": "Activé",
+      "disabled": "Désactivé",
+      "enableButton": "Activer le veto",
+      "disableButton": "Désactiver le veto",
+      "enabledSuccess": "Veto en direct activé.",
+      "disabledSuccess": "Veto en direct désactivé.",
+      "settingsTitle": "Réglages",
+      "settingsDescription": "Règles appliquées à tous les matchs du tournoi.",
+      "firstMoverLabel": "Qui commence le veto",
+      "mode": {
+        "coin_toss": "Le coin toss décide",
+        "coin_toss_winner": "Le gagnant du coin toss décide",
+        "advantage": "L'équipe à l'avantage décide",
+        "predefined": "Prédéfini"
+      },
+      "modeHint": {
+        "coin_toss": "Un coin toss désigne l'équipe qui ban en premier.",
+        "coin_toss_winner": "Un coin toss désigne un gagnant, qui choisit quelle équipe ban en premier.",
+        "advantage": "Une équipe configurée à l'avantage choisit quelle équipe ban en premier.",
+        "predefined": "L'équipe du slot choisi (équipe A ou B du match) ban toujours en premier."
+      },
+      "advantageLabel": "Équipe à l'avantage",
+      "advantageNone": "Choisir une équipe",
+      "slotLabel": "Équipe qui commence",
+      "slotA": "Équipe A",
+      "slotB": "Équipe B",
+      "timeoutLabel": "Temps par action (secondes)",
+      "timeoutHint": "Une équipe qui n'a plus de temps reçoit une map ou un side au hasard. Entre 10 et 600.",
+      "poolLabel": "Map pool",
+      "poolCount": "{count} sélectionnées, 7 sont nécessaires.",
+      "patchLabel": "Ou utiliser les maps d'un patch",
+      "patchHint": "Utilisé quand aucune map n'est sélectionnée ci-dessus, par exemple 11.07. Les maps jouées sur ce patch sont utilisées.",
+      "saveButton": "Enregistrer",
+      "saving": "Enregistrement...",
+      "saveSuccess": "Réglages enregistrés.",
+      "saveFailed": "Certains champs sont invalides.",
+      "linksTitle": "Liens des équipes",
+      "linksDescription": "Chaque équipe a un lien privé unique pour tout le tournoi. Toute personne ayant le lien peut vetoer pour l'équipe, sans compte.",
+      "noEntrants": "Aucune équipe dans ce tournoi pour le moment.",
+      "noLink": "Pas encore de lien",
+      "generate": "Générer",
+      "copyLink": "Copier le lien",
+      "copied": "Copié",
+      "copyFailed": "Impossible de copier le lien.",
+      "regenerate": "Régénérer",
+      "regenerated": "Nouveau lien généré, l'ancien ne fonctionne plus.",
+      "regenerateTitle": "Régénérer ce lien ?",
+      "regenerateDescription": "Le lien actuel de {team} cesse de fonctionner immédiatement. Envoyez le nouveau lien à l'équipe.",
+      "cancel": "Annuler",
+      "matchesTitle": "Matchs",
+      "matchesDescription": "Ajustez le map pool d'un match ou réinitialisez un veto commencé.",
+      "noMatches": "Aucun match à venir.",
+      "teamsUnknown": "Équipes pas encore connues",
+      "editPool": "Map pool",
+      "matchPoolHint": "Maps pour ce match uniquement. Sans sélection, le pool du tournoi est utilisé.",
+      "useTournamentPool": "Utiliser le pool du tournoi",
+      "poolSaved": "Map pool enregistré.",
+      "reset": "Réinitialiser",
+      "resetTitle": "Réinitialiser ce veto ?",
+      "resetDescription": "Tous les bans, picks et sides déjà choisis sont effacés et les équipes doivent à nouveau se déclarer prêtes.",
+      "resetDone": "Veto réinitialisé.",
+      "status": {
+        "waiting": "En attente",
+        "choosing": "Choix de qui commence",
+        "running": "En cours",
+        "done": "Terminé"
+      },
+      "error": {
+        "notFound": "Introuvable.",
+        "firstMoverMode": {
+          "invalid": "Choisissez une option valide."
+        },
+        "advantageEntrantId": {
+          "required": "Choisissez l'équipe à l'avantage.",
+          "invalid": "Cette équipe n'est pas dans le tournoi."
+        },
+        "predefinedSlot": {
+          "invalid": "Choisissez l'équipe A ou B."
+        },
+        "actionTimeoutSeconds": {
+          "required": "Saisissez un temps.",
+          "notInteger": "Saisissez un nombre entier de secondes.",
+          "outOfRange": "Saisissez entre 10 et 600 secondes."
+        },
+        "mapPool": {
+          "required": "Sélectionnez 7 maps, ou indiquez un patch.",
+          "invalidMap": "Une des maps n'est pas valide.",
+          "duplicateMap": "Une map est sélectionnée deux fois.",
+          "poolSize": "Sélectionnez exactement 7 maps.",
+          "vetoRunning": "Un veto est en cours, attendez sa fin ou faites un reset avant de changer le pool."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "Saisissez un patch comme 11.07.",
+          "patchUnknown": "Ce patch ne donne pas un pool de 7 maps, sélectionnez-les à la main."
+        },
+        "matchPool": {
+          "notFound": "Match introuvable.",
+          "invalidMap": "Une des maps n'est pas valide.",
+          "duplicateMap": "Une map est sélectionnée deux fois.",
+          "poolSize": "Sélectionnez exactement 7 maps, ou aucune pour utiliser le pool du tournoi.",
+          "vetoStarted": "Le veto a déjà commencé, réinitialisez-le d'abord."
+        }
+      },
+      "copyOverlay": "Lien de l'overlay",
+      "overlayCopied": "Lien de l'overlay copié, ajoutez-le comme source navigateur."
     }
   },
   "dashboard": {
@@ -4903,7 +5018,8 @@
       "adminAccess": "Admin",
       "allAuthors": "Tous les auteurs",
       "authorAdminSpace": "Auteurs",
-      "logs": "Logs"
+      "logs": "Logs",
+      "veto": "Veto des maps"
     },
     "switcher": {
       "selectOrganization": "Choisir une organisation",
@@ -5662,6 +5778,12 @@
       "total": "{count, plural, one {# entrée} other {# entrées}}",
       "previous": "Page précédente",
       "next": "Page suivante"
+    },
+    "veto": {
+      "title": "Veto des maps",
+      "subtitle": "Configurez le veto en direct des tournois que votre organisation organise.",
+      "readOnlyHint": "Vous n'avez pas la permission de gérer le veto des maps.",
+      "noTournaments": "Aucun tournoi de votre organisation n'a le veto des maps activé. Un admin GC Stats l'active pour vous."
     }
   },
   "globalSearch": {
@@ -6354,5 +6476,68 @@
     "points": "Qualifié via les points {label}",
     "pointsUnknown": "Qualifié via les points",
     "iconLabel": "Source de qualification"
+  },
+  "veto": {
+    "title": "Veto des maps",
+    "invalidLinkTitle": "Lien de veto invalide",
+    "invalidLinkHint": "Ce lien n'est pas valide ou le veto n'est pas activé pour ce tournoi. Demandez un nouveau lien aux organisateurs.",
+    "noMatch": "Aucun match à vetoer pour le moment. Cette page se met à jour toute seule quand votre prochain match est prêt.",
+    "you": "Vous",
+    "opponent": "Adversaire",
+    "ready": "Prêt",
+    "bestOf": "BO{count}",
+    "poolError": "Le map pool de ce match n'est pas encore complet. Demandez aux organisateurs de le définir.",
+    "waitingTitle": "Prêts à vetoer ?",
+    "waitingHint": "Le veto démarre quand les deux équipes sont prêtes.",
+    "readyButton": "Nous sommes prêts",
+    "cancelReady": "Pas encore prêts",
+    "chooseFirstTitle": "Qui commence le veto ?",
+    "chooseFirstHint": "Vous choisissez quelle équipe ban en premier.",
+    "weStart": "Nous commençons",
+    "opponentStarts": "{team} commence",
+    "waitingChoice": "{team} choisit qui commence le veto.",
+    "yourTurn": {
+      "ban": "À vous : bannissez une map",
+      "pick": "À vous : choisissez une map",
+      "side": "À vous : choisissez votre side"
+    },
+    "stepWaiting": {
+      "ban": "L'adversaire choisit une map à bannir.",
+      "pick": "L'adversaire choisit une map à jouer.",
+      "side": "L'adversaire choisit un side."
+    },
+    "theirTurn": "{team} est en train de jouer",
+    "attack": "Attaque",
+    "defense": "Défense",
+    "toBeDecided": "À déterminer",
+    "stepLabel": {
+      "ban": "Ban",
+      "pick": "Pick",
+      "side": "Side",
+      "decider": "Decider"
+    },
+    "vetoDone": "Le veto est terminé. Bonne game !",
+    "gameFinishedHint": "Une fois votre game terminée, utilisez ce bouton pour prévenir le staff de GC Stats. Cela ne prévient pas l'organisateur du tournoi.",
+    "gameFinishedButton": "La game est finie",
+    "staffNotified": "Le staff GC Stats est prévenu (pas l'organisateur du tournoi).",
+    "previousMatch": "Match précédent",
+    "nextMatch": "Match suivant",
+    "error": {
+      "unknown": "Une erreur est survenue, réessayez.",
+      "network": "Problème de connexion, réessayez.",
+      "notFound": "Ce match n'est pas disponible.",
+      "notAllowed": "Vous ne participez pas à ce match.",
+      "wrongPhase": "Cette action n'est pas disponible pour le moment.",
+      "notYourTurn": "Ce n'est pas votre tour.",
+      "wrongStep": "Ce n'est pas l'action attendue.",
+      "mapUnavailable": "Cette map n'est pas disponible.",
+      "invalidSide": "Side invalide.",
+      "noStep": "Le veto est déjà terminé.",
+      "poolInvalid": "Le map pool de ce match n'est pas complet.",
+      "alreadyNotified": "Le staff a déjà été prévenu.",
+      "matchCompleted": "Ce match est déjà terminé.",
+      "rateLimited": "Trop de requêtes, ralentissez.",
+      "invalidRequest": "Requête invalide."
+    }
   }
 }

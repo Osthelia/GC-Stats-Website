@@ -8,6 +8,10 @@
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Swords } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { PERMISSIONS } from "@gc-stats/db";
 import { getAdminTournament, listPointTypeOptions } from "@/lib/admin-tournaments";
 import { listTournamentEntrants, listTournamentStages } from "@/lib/admin-tournament-detail";
@@ -41,6 +45,7 @@ export default async function AdminTournamentDetailPage({ params }: { params: Pr
   ]);
   if (!tournament) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
+  const tVeto = await getTranslations({ locale, namespace: "admin.vetoManagement" });
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,7 +55,11 @@ export default async function AdminTournamentDetailPage({ params }: { params: Pr
           <TournamentStagesOverview tournamentId={id} stages={stages} />
           <EntityLogoPanel namespace="admin.tournaments.logo" entityType="tournament" entityId={id} displayName={tournament.name} entries={logos} canEdit={canManage} />
         </div>
-        <div className="min-w-0 lg:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-5">
+          <Link href={`/admin/tournaments/${id}/veto`} className={buttonVariants({ variant: "outline" })}>
+            <Swords />
+            {tVeto("openPage")}
+          </Link>
           <TournamentEntrantsPanel tournamentId={id} entrants={entrants} pointTypeOptions={pointTypeOptions} canManage={canManage} />
         </div>
       </div>
