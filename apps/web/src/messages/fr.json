@@ -21,6 +21,8 @@
     "menu": "Menu"
   },
   "auth": {
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "login": {
       "title": "Connexion",
       "subtitle": "Un seul compte GC-Stats, quel que soit le moyen de connexion."

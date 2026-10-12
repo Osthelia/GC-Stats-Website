@@ -16,6 +16,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { registerWithPassword, type RegisterFieldErrors } from "@/actions/register";
 import { ProviderButtons } from "./provider-buttons";
 import { PasskeyIcon } from "@/components/icons/brand-icons";
+import { PasswordInput } from "@/components/ui/password-input";
 
 type Mode = "login" | "register";
 type FormErrorKey = "invalid-credentials" | "too-many-attempts" | "unknown" | null;
@@ -291,8 +292,7 @@ export function AuthForm({ mode, callbackUrl }: { mode: Mode; callbackUrl?: stri
             {t("passwordLabel")}
             <RequiredMark />
           </span>
-          <input
-            type="password"
+          <PasswordInput
             autoComplete={mode === "login" ? "current-password" : "new-password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -317,8 +317,7 @@ export function AuthForm({ mode, callbackUrl }: { mode: Mode; callbackUrl?: stri
               {t("passwordConfirmationLabel")}
               <RequiredMark />
             </span>
-            <input
-              type="password"
+            <PasswordInput
               autoComplete="new-password"
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}

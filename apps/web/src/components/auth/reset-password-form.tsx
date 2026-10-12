@@ -12,6 +12,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { resetPassword } from "@/actions/password-reset";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -64,8 +65,7 @@ export function ResetPasswordForm({ email, token }: { email: string | null; toke
                 {" *"}
               </span>
             </span>
-            <input
-              type="password"
+            <PasswordInput
               autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -79,8 +79,7 @@ export function ResetPasswordForm({ email, token }: { email: string | null; toke
                 {" *"}
               </span>
             </span>
-            <input
-              type="password"
+            <PasswordInput
               autoComplete="new-password"
               value={newPasswordConfirmation}
               onChange={(e) => setNewPasswordConfirmation(e.target.value)}

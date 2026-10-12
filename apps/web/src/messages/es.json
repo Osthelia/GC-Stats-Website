@@ -21,6 +21,8 @@
     "menu": "Menú"
   },
   "auth": {
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
     "login": {
       "title": "Iniciar sesión",
       "subtitle": "Una sola cuenta de GC-Stats, sin importar cómo inicies sesión."

@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { setPassword, removePassword } from "@/actions/account-settings";
 import { useConfirmClick } from "@/lib/use-confirm-click";
 import { SettingsCard } from "./settings-card";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -73,8 +74,7 @@ export function PasswordSettings({ hasPassword, canRemove }: { hasPassword: bool
         {hasPassword && (
           <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
             {t("currentLabel")}
-            <input
-              type="password"
+            <PasswordInput
               autoComplete="current-password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -84,8 +84,7 @@ export function PasswordSettings({ hasPassword, canRemove }: { hasPassword: bool
         )}
         <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
           {t("newLabel")}
-          <input
-            type="password"
+          <PasswordInput
             autoComplete="new-password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
@@ -94,8 +93,7 @@ export function PasswordSettings({ hasPassword, canRemove }: { hasPassword: bool
         </label>
         <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
           {t("confirmLabel")}
-          <input
-            type="password"
+          <PasswordInput
             autoComplete="new-password"
             value={newPasswordConfirmation}
             onChange={(e) => setNewPasswordConfirmation(e.target.value)}

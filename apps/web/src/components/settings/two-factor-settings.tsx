@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
 import { setupTwoFactor, confirmTwoFactor, disableTwoFactor, regenerateRecoveryCodes } from "@/actions/two-factor";
 import { SettingsCard } from "./settings-card";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -244,8 +245,7 @@ export function TwoFactorSettings({ hasPassword, enabled }: { hasPassword: boole
               <div className="flex flex-col gap-3 rounded-[10px] border border-neutral-800 p-4">
                 <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
                   {t("confirmPasswordLabel")}
-                  <input
-                    type="password"
+                  <PasswordInput
                     autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

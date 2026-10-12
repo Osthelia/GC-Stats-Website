@@ -12,6 +12,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
 import { requestEmailChange, resendEmailVerification } from "@/actions/account-settings";
 import { SettingsCard } from "./settings-card";
+import { PasswordInput } from "@/components/ui/password-input";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -121,8 +122,7 @@ export function EmailSettings({
               {t("currentPasswordLabel")}
               <span className="text-[#e08585]">*</span>
             </span>
-            <input
-              type="password"
+            <PasswordInput
               autoComplete="current-password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}

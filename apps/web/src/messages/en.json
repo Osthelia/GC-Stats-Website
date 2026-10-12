@@ -21,6 +21,8 @@
     "menu": "Menu"
   },
   "auth": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "login": {
       "title": "Log in",
       "subtitle": "One GC-Stats account, however you choose to sign in."
