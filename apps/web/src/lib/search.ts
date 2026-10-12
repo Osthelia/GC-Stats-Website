@@ -12,7 +12,7 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-import { and, eq, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { teams, people, tournaments, organizations, pageViews } from "@gc-stats/db";
 import { organizationHasNoTeam } from "@/lib/organization-team-link";
@@ -49,6 +49,10 @@ const MAX_TERM_LENGTH = 100;
 const EMPTY_RESULTS: SearchResults = { team: [], player: [], tournament: [], organization: [] };
 const POPULARITY_WINDOW_DAYS = 30;
 const POPULARITY_CAP = 200;
+// Above the max score (~1375), so an inactive entity always ranks below every active one.
+const INACTIVE_PENALTY = 1500;
+
+const inactivePenalty = (isActive: boolean) => (isActive ? 0 : INACTIVE_PENALTY);
 
 // `term` here is already accent-stripped AND special-char-stripped (see
 // searchGlobal's `base`) — folding the candidate name the same way lets
@@ -83,16 +87,16 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
 
   const [teamRows, playerRows, tournamentRows, organizationRows] = await Promise.all([
     db
-      .select({ id: teams.id, name: teams.name, shortName: teams.shortName, countryCode: teams.countryCode, secondaryCountryCode: teams.secondaryCountryCode })
+      .select({ id: teams.id, name: teams.name, shortName: teams.shortName, countryCode: teams.countryCode, secondaryCountryCode: teams.secondaryCountryCode, isActive: teams.isActive })
       .from(teams)
       .where(and(visibleTeam, or(...variants.flatMap((v) => [specialCharFoldedIlike(teams.name, v), specialCharFoldedIlike(teams.shortName, v)]))))
-      .orderBy(specialCharPrefixRank(teams.name, base))
+      .orderBy(desc(teams.isActive), specialCharPrefixRank(teams.name, base))
       .limit(candidateLimit),
     db
-      .select({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode })
+      .select({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode, isActive: people.isActive })
       .from(people)
       .where(and(visiblePerson, or(...variants.map((v) => specialCharFoldedIlike(people.handle, v)))))
-      .orderBy(specialCharPrefixRank(people.handle, base))
+      .orderBy(desc(people.isActive), specialCharPrefixRank(people.handle, base))
       .limit(candidateLimit),
     db
       .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region })
@@ -148,7 +152,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
   const team: SearchResultItem[] = teamRows
     .map((t) => {
       const views = viewsByUri.get(uriFor("team", t.id)) ?? 0;
-      const score = Math.max(scoreMatch(t.name, base, termLen, views), t.shortName ? scoreMatch(t.shortName, base, termLen, views) : 0);
+      const score = Math.max(scoreMatch(t.name, base, termLen, views), t.shortName ? scoreMatch(t.shortName, base, termLen, views) : 0) - inactivePenalty(t.isActive);
       return { row: t, score, views };
     })
     .sort((a, b) => b.score - a.score)
@@ -171,7 +175,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
   const player: SearchResultItem[] = playerRows
     .map((p) => {
       const views = viewsByUri.get(uriFor("player", p.id)) ?? 0;
-      return { row: p, score: scoreMatch(p.handle, base, termLen, views), views };
+      return { row: p, score: scoreMatch(p.handle, base, termLen, views) - inactivePenalty(p.isActive), views };
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, perTypeLimit)
