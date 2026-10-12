@@ -4430,6 +4430,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "ブラケット",
+          "noBrackets": "この大会にはまだブラケットがありません。",
+          "wikicodeTitle": "ブラケットのwikicode",
+          "wikicodeDescription": "ステージのLiquipedia wikicodeを貼り付けて、使われているブラケットテンプレートを読み取ります。",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "テンプレートを探す",
+          "noneFound": "ブラケットが見つかりません（このwikicodeにBracketテンプレートがありません）。",
+          "foundCount": "wikicodeに{count}件のブラケットが見つかりました",
+          "tableTitle": "{total}件中{missing}件のブラケットにテンプレートがありません",
+          "columnBracket": "GC Statsのブラケット",
+          "columnTemplate": "Liquipediaのテンプレート",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "{count}件のテンプレートを保存しました。",
+          "error": {
+            "required": "テンプレートは必須です。",
+            "tooLong": "テンプレートが長すぎます。",
+            "invalidChars": "テンプレートに使用できない文字が含まれています。",
+            "invalidFormat": "テンプレートはBracket/8U4L2DSL1Dの形式にしてください。",
+            "bracketNotInTournament": "このブラケットは大会に属していません。"
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "この大会の各チームを、フェーズごとにLiquipediaのページ名と紐付けます。",
         "backToTournament": "大会に戻る",
@@ -4476,7 +4498,48 @@
           "nameTaken": "この名前はすでに{team}に紐付けられています。",
           "teamNotInTournament": "このチームはこの大会に登録されていません。"
         },
-        "publicWikicodeButton": "試合のwikicode"
+        "publicWikicodeButton": "試合のwikicode",
+        "teamsTab": "チーム",
+        "people": {
+          "tab": "選手とスタッフ",
+          "wikicodeDescription": "大会の参加者ブロック(Person テンプレート)を貼り付けて、一致する名前を探します。",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "該当する人物が見つかりません(このwikicodeに Person テンプレートがありません)。",
+          "tableTitle": "{total}人中{missing}人に Liquipedia 名がありません",
+          "showLinked": "リンク済みの人物も表示する",
+          "allLinked": "この大会の全員に Liquipedia 名があります。",
+          "columnPerson": "GC Stats の人物",
+          "kind": {
+            "player": "選手",
+            "staff": "スタッフ"
+          },
+          "noPeople": "この大会に登録された選手やスタッフはまだいません。",
+          "saveSuccess": "{count, plural, other {# 件の Liquipedia 名を保存しました。}}",
+          "error": {
+            "nameTaken": "この名前はすでに {owner} にリンクされています。",
+            "personNotFound": "この人物は存在しません。"
+          },
+          "unmatched": {
+            "title": "人物が未設定の名前: {count}",
+            "description": "これらの名前はまだ誰とも対応していません。人物を選んでください。チームのスタッフが先に表示されます。",
+            "pick": "人物を選択",
+            "search": "人物を検索",
+            "noResults": "人物が見つかりません"
+          }
+        },
+        "import": {
+          "button": "Liquipediaからインポート",
+          "loading": "Liquipediaを読み込み中...",
+          "hint": "リンク済みの各チームと人物のLiquipediaページを読み込み、不足しているデータの変更リクエストを作成します。",
+          "created": "作成した変更リクエスト: {count}",
+          "upToDate": "すでに最新: {count}",
+          "alreadyPending": "すでに確認待ち: {count}",
+          "noPage": "Liquipediaのページが見つかりません: {names}",
+          "nothing": "インポートするものはありません。",
+          "errorUnreachable": "Liquipediaに接続できません。後でもう一度お試しください。",
+          "errorInvalid": "無効なトーナメントです。",
+          "errorBusy": "このトーナメントのインポートはすでに実行中です。"
+        }
       },
       "scoreBackfill": {
         "title": "マップからスコアを再計算",
@@ -5840,7 +5903,8 @@
         "1": "he/him",
         "2": "they/them"
       },
-      "reason": "この変更を提案する理由は何ですか？"
+      "reason": "この変更を提案する理由は何ですか？",
+      "liquipediaSourced": "Liquipediaから取得"
     },
     "addTag": "追加",
     "countryPlaceholder": "国を検索…",
@@ -6141,7 +6205,8 @@
     "mapsPickRatesEmpty": "このマップのエージェントデータはありません。",
     "mapsPickRatesShowMore": "すべて表示",
     "mapsPickRatesShowLess": "表示を減らす",
-    "factOrganizer": "主催者"
+    "factOrganizer": "主催者",
+    "vs": "vs"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6329,26 +6394,39 @@
       "embedHint": "OBSでこのURLをブラウザソースとして追加してください。背景は透過です。"
     }
   },
+  "liquipediaSource": {
+    "text": "このページの一部の情報は Liquipedia から取得しています。",
+    "link": "元の記事を見る"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
     "backToMatch": "試合に戻る",
     "utcNote": "日時はすべてUTCです。",
+    "tournamentTitle": "大会の Liquipedia wikicode",
+    "infoboxTab": "大会のインフォボックス",
+    "participantsHint": "チーム、選手、スタッフ",
+    "infoboxHint": "日程、賞金、SNS、マップ",
+    "matchesTitle": "試合",
+    "matchesHint": "試合をクリックすると wikicode を取得できます。",
+    "modalLoading": "wikicode を生成中",
+    "modalError": "wikicode を読み込めませんでした。",
+    "retry": "再試行",
     "unlinkedWarning": "Liquipedia名が未設定：{teams}。代わりにGC Statsの名前を使用しています。",
+    "unlinkedPeopleWarning": "{count}人にはまだ Liquipedia 名がありません。代わりに GC Stats のハンドルを使用します。",
+    "participantsTab": "参加者",
     "wikicode": "Wikicode",
     "copy": "コピー",
     "copied": "コピーしました",
     "copyError": "クリップボードにコピーできませんでした。",
     "stageLink": "{stage}のすべての試合を見る",
     "stageMetaTitle": "フェーズ別Liquipedia wikicode",
-    "stageTitle": "フェーズ別Liquipedia wikicode",
     "backToTournament": "大会に戻る",
     "noStages": "この大会にはまだフェーズがありません。",
     "stageSelector": "フェーズ",
-    "stageEmpty": "このフェーズにはまだ試合がありません。",
-    "stageMatchCount": "{count, plural, other {#試合}}",
-    "round": "ラウンド{round}",
-    "unknownDate": "日時未定"
+    "bracketTemplate": "Liquipediaのテンプレート",
+    "bracketHint": "ジェネレーターを開き、このテンプレートを入力して、結果をページに貼り付けてください。",
+    "bracketGenerator": "ジェネレーターを開く"
   },
   "matchPoster": {
     "title": "試合画像",

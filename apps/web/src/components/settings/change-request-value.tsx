@@ -21,7 +21,7 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
   const t = useTranslations("accountSettings.changeRequests.detail");
   const tField = useTranslations("suggestEdit.field");
 
-  if (field === "isActive") {
+  if (field === "isActive" || field === "liquipediaSourced") {
     if (value === null || value === undefined) return <span className="text-neutral-500">{t("noValue")}</span>;
     return <span>{value ? t("yes") : t("no")}</span>;
   }

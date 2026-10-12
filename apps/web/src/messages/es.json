@@ -4438,6 +4438,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "Brackets",
+          "noBrackets": "Este torneo aún no tiene bracket.",
+          "wikicodeTitle": "Wikicódigo del bracket",
+          "wikicodeDescription": "Pega el wikicódigo de Liquipedia de la fase para leer las plantillas de bracket que usa.",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "Buscar plantillas",
+          "noneFound": "No se encontró ningún bracket (no hay plantilla Bracket en este wikicódigo).",
+          "foundCount": "{count, plural, one {# bracket encontrado en el wikicódigo} other {# brackets encontrados en el wikicódigo}}",
+          "tableTitle": "{missing} de {total} brackets sin plantilla",
+          "columnBracket": "Bracket de GC Stats",
+          "columnTemplate": "Plantilla de Liquipedia",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "{count, plural, one {# plantilla guardada.} other {# plantillas guardadas.}}",
+          "error": {
+            "required": "La plantilla es obligatoria.",
+            "tooLong": "La plantilla es demasiado larga.",
+            "invalidChars": "La plantilla contiene caracteres no permitidos.",
+            "invalidFormat": "La plantilla debe parecerse a Bracket/8U4L2DSL1D.",
+            "bracketNotInTournament": "Este bracket no pertenece al torneo."
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "Vincula cada equipo de este torneo con el nombre de su página de Liquipedia, fase por fase.",
         "backToTournament": "Volver al torneo",
@@ -4484,7 +4506,48 @@
           "nameTaken": "Este nombre ya está vinculado a {team}.",
           "teamNotInTournament": "Este equipo no está inscrito en este torneo."
         },
-        "publicWikicodeButton": "Wikicode de los partidos"
+        "publicWikicodeButton": "Wikicode de los partidos",
+        "teamsTab": "Equipos",
+        "people": {
+          "tab": "Jugadores y staff",
+          "wikicodeDescription": "Pega el bloque de participantes del torneo (plantillas Person) para buscar los nombres correspondientes.",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "No se encontró ninguna persona (no hay plantilla Person en este wikicode).",
+          "tableTitle": "{missing} de {total} personas sin nombre de Liquipedia",
+          "showLinked": "Mostrar también las personas ya vinculadas",
+          "allLinked": "Todas las personas de este torneo ya tienen un nombre de Liquipedia.",
+          "columnPerson": "Persona de GC Stats",
+          "kind": {
+            "player": "Jugador",
+            "staff": "Staff"
+          },
+          "noPeople": "Todavía no hay jugadores ni staff inscritos en este torneo.",
+          "saveSuccess": "{count, plural, one {# nombre de Liquipedia guardado.} other {# nombres de Liquipedia guardados.}}",
+          "error": {
+            "nameTaken": "Este nombre ya está vinculado a {owner}.",
+            "personNotFound": "Esta persona no existe."
+          },
+          "unmatched": {
+            "title": "Nombres sin persona: {count}",
+            "description": "Estos nombres aún no coinciden con nadie. Elige la persona, el staff del equipo se sugiere primero.",
+            "pick": "Elegir una persona",
+            "search": "Buscar una persona",
+            "noResults": "Ninguna persona encontrada"
+          }
+        },
+        "import": {
+          "button": "Importar desde Liquipedia",
+          "loading": "Leyendo Liquipedia...",
+          "hint": "Lee la página de Liquipedia de cada equipo y persona vinculados, y abre solicitudes de cambio para los datos que faltan.",
+          "created": "Solicitudes de cambio creadas: {count}",
+          "upToDate": "Ya actualizado: {count}",
+          "alreadyPending": "Ya pendiente de revisión: {count}",
+          "noPage": "No se encontró página de Liquipedia para: {names}",
+          "nothing": "Nada que importar.",
+          "errorUnreachable": "No se pudo contactar con Liquipedia, inténtalo más tarde.",
+          "errorInvalid": "Torneo no válido.",
+          "errorBusy": "Ya hay una importación en curso para este torneo."
+        }
       },
       "scoreBackfill": {
         "title": "Recalcular marcadores desde los mapas",
@@ -5964,7 +6027,8 @@
         "1": "Él",
         "2": "Elle"
       },
-      "reason": "¿Por qué sugieres este cambio?"
+      "reason": "¿Por qué sugieres este cambio?",
+      "liquipediaSourced": "Tomado de Liquipedia"
     },
     "addTag": "Añadir",
     "countryPlaceholder": "Buscar un país…",
@@ -6265,7 +6329,8 @@
     "mapsPickRatesEmpty": "No hay datos de agentes en este mapa.",
     "mapsPickRatesShowMore": "Mostrar todo",
     "mapsPickRatesShowLess": "Mostrar menos",
-    "factOrganizer": "Organizador"
+    "factOrganizer": "Organizador",
+    "vs": "vs"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6453,26 +6518,39 @@
       "embedHint": "En OBS, añade una fuente de navegador con esta URL. El fondo es transparente."
     }
   },
+  "liquipediaSource": {
+    "text": "Parte de la información de esta página procede de Liquipedia.",
+    "link": "Ver el artículo original"
+  },
   "matchLiquipedia": {
     "metaTitle": "Wikicode de Liquipedia",
     "title": "Wikicode de Liquipedia",
     "backToMatch": "Volver al partido",
     "utcNote": "Todas las fechas están en UTC.",
+    "tournamentTitle": "Wikicode de Liquipedia del torneo",
+    "infoboxTab": "Infobox del torneo",
+    "participantsHint": "Equipos, jugadores y staff",
+    "infoboxHint": "Fechas, premios, redes y mapas",
+    "matchesTitle": "Partidos",
+    "matchesHint": "Haz clic en un partido para obtener su wikicode.",
+    "modalLoading": "Generando el wikicode",
+    "modalError": "No se pudo cargar el wikicode.",
+    "retry": "Reintentar",
     "unlinkedWarning": "Todavía no hay nombre de Liquipedia para: {teams}. Se usa su nombre en GC Stats en su lugar.",
+    "unlinkedPeopleWarning": "{count, plural, one {# persona no tiene} other {# personas no tienen}} todavía nombre de Liquipedia. Se usa su nick de GC Stats.",
+    "participantsTab": "Participantes",
     "wikicode": "Wikicode",
     "copy": "Copiar",
     "copied": "Copiado",
     "copyError": "No se pudo copiar al portapapeles.",
     "stageLink": "Ver todos los partidos de {stage}",
     "stageMetaTitle": "Wikicode de Liquipedia por fase",
-    "stageTitle": "Wikicode de Liquipedia por fase",
     "backToTournament": "Volver al torneo",
     "noStages": "Este torneo todavía no tiene fases.",
     "stageSelector": "Fase",
-    "stageEmpty": "Todavía no hay partidos en esta fase.",
-    "stageMatchCount": "{count, plural, one {# partido} other {# partidos}}",
-    "round": "Ronda {round}",
-    "unknownDate": "Fecha por confirmar"
+    "bracketTemplate": "Plantilla de Liquipedia",
+    "bracketHint": "Abre el generador, introduce esta plantilla y pega el resultado en la página.",
+    "bracketGenerator": "Abrir el generador"
   },
   "matchPoster": {
     "title": "Imagen del partido",

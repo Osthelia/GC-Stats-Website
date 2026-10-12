@@ -55,6 +55,7 @@ export type PlayerPageInfo = {
   bio: string | null;
   socials: Record<string, string>;
   liquipediaLink: string | null;
+  liquipediaSourced: boolean;
   isActive: boolean;
   logoUrl: string | null;
   logoUrlLight: string | null;
@@ -75,6 +76,7 @@ export const getPlayerPageInfo = cache(async (id: number): Promise<PlayerPageInf
         bio: people.bio,
         socials: people.socials,
         liquipediaLink: people.liquipediaLink,
+        liquipediaSourced: people.liquipediaSourced,
         isActive: people.isActive,
       })
       .from(people)
@@ -96,6 +98,7 @@ export const getPlayerPageInfo = cache(async (id: number): Promise<PlayerPageInf
     bio: row.bio,
     socials: (row.socials as Record<string, string>) ?? {},
     liquipediaLink: row.liquipediaLink,
+    liquipediaSourced: row.liquipediaSourced,
     isActive: row.isActive,
     logoUrl: themed.dark,
     logoUrlLight: themed.light,

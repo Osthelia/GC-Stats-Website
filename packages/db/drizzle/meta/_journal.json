@@ -316,6 +316,20 @@
       "when": 1791821378540,
       "tag": "0044_organization_liquipedia_link",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1791832144990,
+      "tag": "0045_liquipedia_person_names_and_source",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1791835386591,
+      "tag": "0046_liquipedia_bracket_template",
+      "breakpoints": true
     }
   ]
 }

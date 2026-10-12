@@ -4430,6 +4430,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "Bracket'ler",
+          "noBrackets": "Bu turnuvanın henüz bracket'i yok.",
+          "wikicodeTitle": "Bracket wikicode'u",
+          "wikicodeDescription": "Kullanılan bracket şablonlarını okumak için aşamanın Liquipedia wikicode'unu yapıştır.",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "Şablonları bul",
+          "noneFound": "Bracket bulunamadı (bu wikicode'da Bracket şablonu yok).",
+          "foundCount": "{count, plural, one {Wikicode'da # bracket bulundu} other {Wikicode'da # bracket bulundu}}",
+          "tableTitle": "{total} bracket'ten {missing} tanesinin şablonu yok",
+          "columnBracket": "GC Stats bracket'i",
+          "columnTemplate": "Liquipedia şablonu",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "{count, plural, one {# şablon kaydedildi.} other {# şablon kaydedildi.}}",
+          "error": {
+            "required": "Şablon zorunludur.",
+            "tooLong": "Şablon çok uzun.",
+            "invalidChars": "Şablon yasak karakterler içeriyor.",
+            "invalidFormat": "Şablon Bracket/8U4L2DSL1D gibi görünmelidir.",
+            "bracketNotInTournament": "Bu bracket turnuvaya ait değil."
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "Bu turnuvadaki her takımı, aşama aşama Liquipedia sayfa adına bağla.",
         "backToTournament": "Turnuvaya dön",
@@ -4476,7 +4498,48 @@
           "nameTaken": "Bu ad zaten {team} takımına bağlı.",
           "teamNotInTournament": "Bu takım bu turnuvaya kayıtlı değil."
         },
-        "publicWikicodeButton": "Maç wikicode'ları"
+        "publicWikicodeButton": "Maç wikicode'ları",
+        "teamsTab": "Takımlar",
+        "people": {
+          "tab": "Oyuncular ve staff",
+          "wikicodeDescription": "Eşleşen isimleri aramak için turnuvanın katılımcı bloğunu (Person şablonları) yapıştır.",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "Kimse bulunamadı (bu wikicode içinde Person şablonu yok).",
+          "tableTitle": "{total} kişiden {missing} tanesinin Liquipedia ismi yok",
+          "showLinked": "Zaten bağlı kişileri de göster",
+          "allLinked": "Bu turnuvadaki herkesin zaten bir Liquipedia ismi var.",
+          "columnPerson": "GC Stats kişisi",
+          "kind": {
+            "player": "Oyuncu",
+            "staff": "Staff"
+          },
+          "noPeople": "Bu turnuvaya henüz kayıtlı oyuncu veya staff yok.",
+          "saveSuccess": "{count, plural, one {# Liquipedia ismi kaydedildi.} other {# Liquipedia ismi kaydedildi.}}",
+          "error": {
+            "nameTaken": "Bu isim zaten {owner} ile bağlı.",
+            "personNotFound": "Bu kişi mevcut değil."
+          },
+          "unmatched": {
+            "title": "Kişisi olmayan isimler: {count}",
+            "description": "Bu isimler henüz kimseyle eşleşmedi. Kişiyi seç, takımın staff'ı önce önerilir.",
+            "pick": "Bir kişi seç",
+            "search": "Kişi ara",
+            "noResults": "Kişi bulunamadı"
+          }
+        },
+        "import": {
+          "button": "Liquipedia'dan içe aktar",
+          "loading": "Liquipedia okunuyor...",
+          "hint": "Bağlı her takımın ve kişinin Liquipedia sayfasını okur, eksik veriler için değişiklik talepleri açar.",
+          "created": "Oluşturulan değişiklik talepleri: {count}",
+          "upToDate": "Zaten güncel: {count}",
+          "alreadyPending": "Zaten incelemede bekleyen: {count}",
+          "noPage": "Şunlar için Liquipedia sayfası bulunamadı: {names}",
+          "nothing": "İçe aktarılacak bir şey yok.",
+          "errorUnreachable": "Liquipedia'ya ulaşılamadı, daha sonra tekrar dene.",
+          "errorInvalid": "Geçersiz turnuva.",
+          "errorBusy": "Bu turnuva için zaten bir içe aktarma sürüyor."
+        }
       },
       "scoreBackfill": {
         "title": "Skorları haritalardan yeniden hesapla",
@@ -5840,7 +5903,8 @@
         "1": "O (erkek)",
         "2": "Onlar"
       },
-      "reason": "Bu değişikliği neden öneriyorsunuz?"
+      "reason": "Bu değişikliği neden öneriyorsunuz?",
+      "liquipediaSourced": "Liquipedia'dan alındı"
     },
     "addTag": "Ekle",
     "countryPlaceholder": "Bir ülke ara…",
@@ -6141,7 +6205,8 @@
     "mapsPickRatesEmpty": "Bu harita için ajan verisi yok.",
     "mapsPickRatesShowMore": "Tümünü göster",
     "mapsPickRatesShowLess": "Daha az göster",
-    "factOrganizer": "Organizatör"
+    "factOrganizer": "Organizatör",
+    "vs": "vs"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6329,26 +6394,39 @@
       "embedHint": "OBS'de, bu URL ile bir Browser Source ekleyin. Arka plan şeffaftır."
     }
   },
+  "liquipediaSource": {
+    "text": "Bu sayfadaki bazı bilgiler Liquipedia'dan alınmıştır.",
+    "link": "Orijinal makaleye bak"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode'u",
     "title": "Liquipedia wikicode'u",
     "backToMatch": "Maça dön",
     "utcNote": "Tüm tarihler UTC'dir.",
+    "tournamentTitle": "Turnuvanın Liquipedia wikicode'u",
+    "infoboxTab": "Turnuva infobox'ı",
+    "participantsHint": "Takımlar, oyuncular ve staff",
+    "infoboxHint": "Tarihler, ödül havuzu, sosyal medya ve haritalar",
+    "matchesTitle": "Maçlar",
+    "matchesHint": "Wikicode'unu almak için bir maça tıkla.",
+    "modalLoading": "Wikicode hazırlanıyor",
+    "modalError": "Wikicode yüklenemedi.",
+    "retry": "Tekrar dene",
     "unlinkedWarning": "Henüz Liquipedia adı olmayanlar: {teams}. Bunun yerine GC Stats adları kullanılıyor.",
+    "unlinkedPeopleWarning": "{count} kişinin henüz Liquipedia ismi yok. Bunun yerine GC Stats takma adları kullanılır.",
+    "participantsTab": "Katılımcılar",
     "wikicode": "Wikicode",
     "copy": "Kopyala",
     "copied": "Kopyalandı",
     "copyError": "Panoya kopyalanamadı.",
     "stageLink": "{stage} aşamasının tüm maçlarını gör",
     "stageMetaTitle": "Aşamaya göre Liquipedia wikicode'u",
-    "stageTitle": "Aşamaya göre Liquipedia wikicode'u",
     "backToTournament": "Turnuvaya dön",
     "noStages": "Bu turnuvanın henüz bir aşaması yok.",
     "stageSelector": "Aşama",
-    "stageEmpty": "Bu aşamada henüz maç yok.",
-    "stageMatchCount": "{count, plural, one {# maç} other {# maç}}",
-    "round": "Tur {round}",
-    "unknownDate": "Tarih açıklanacak"
+    "bracketTemplate": "Liquipedia şablonu",
+    "bracketHint": "Oluşturucuyu aç, bu şablonu gir ve sonucu sayfaya yapıştır.",
+    "bracketGenerator": "Oluşturucuyu aç"
   },
   "matchPoster": {
     "title": "Maç görseli",

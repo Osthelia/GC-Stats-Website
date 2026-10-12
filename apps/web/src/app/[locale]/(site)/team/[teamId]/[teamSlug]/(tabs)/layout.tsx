@@ -9,6 +9,7 @@
 import { notFound } from "next/navigation";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getTeamPageInfo, getTeamAchievements } from "@/lib/team-page-data";
+import { LiquipediaSourceFooter } from "@/components/liquipedia-source-footer";
 import { TeamHeader } from "@/components/team/team-header";
 
 /** Header shared by every team tab, kept across tab changes instead of being rebuilt by each page. */
@@ -24,6 +25,7 @@ export default async function TeamTabsLayout({ children, params }: { children: R
     <div>
       <TeamHeader team={team} segment={`${team.id}/${slugify(team.name)}`} achievements={achievements} />
       {children}
+      <LiquipediaSourceFooter sourced={team.liquipediaSourced} href={team.liquipediaLink} />
     </div>
   );
 }

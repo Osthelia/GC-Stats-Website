@@ -26,8 +26,8 @@ import { logActivity } from "@/lib/activity-log";
 type ItemStatus = "approved" | "rejected" | "failed";
 export type ResolveItemResult = { ok: true; status: ItemStatus; applyError: string | null } | { ok: false; error: string };
 
-const TEAM_COLUMNS = ["name", "shortName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "isActive", "tags"] as const;
-const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "isActive", "aliases", "pronouns"] as const;
+const TEAM_COLUMNS = ["name", "shortName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "tags"] as const;
+const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "aliases", "pronouns"] as const;
 
 /**
  * Applies one already-validated change_request_items row to the live

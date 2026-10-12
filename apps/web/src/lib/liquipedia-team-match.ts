@@ -50,7 +50,7 @@ function bigrams(value: string): string[] {
 }
 
 /** Sørensen-Dice coefficient on character bigrams, 0..1. */
-function diceSimilarity(a: string, b: string): number {
+export function diceSimilarity(a: string, b: string): number {
   if (a === b) return 1;
   if (a.length < 2 || b.length < 2) return 0;
   const counts = new Map<string, number>();

@@ -4430,6 +4430,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "บราเคต",
+          "noBrackets": "ทัวร์นาเมนต์นี้ยังไม่มีบราเคต",
+          "wikicodeTitle": "wikicode ของบราเคต",
+          "wikicodeDescription": "วาง wikicode ของ Liquipedia ของช่วงนี้เพื่ออ่านเทมเพลตบราเคตที่ใช้",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "ค้นหาเทมเพลต",
+          "noneFound": "ไม่พบบราเคต (ไม่มีเทมเพลต Bracket ใน wikicode นี้)",
+          "foundCount": "พบบราเคต {count} รายการใน wikicode",
+          "tableTitle": "บราเคต {missing} จาก {total} รายการยังไม่มีเทมเพลต",
+          "columnBracket": "บราเคตของ GC Stats",
+          "columnTemplate": "เทมเพลต Liquipedia",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "บันทึกเทมเพลตแล้ว {count} รายการ",
+          "error": {
+            "required": "ต้องระบุเทมเพลต",
+            "tooLong": "เทมเพลตยาวเกินไป",
+            "invalidChars": "เทมเพลตมีอักขระที่ไม่อนุญาต",
+            "invalidFormat": "เทมเพลตต้องมีรูปแบบเช่น Bracket/8U4L2DSL1D",
+            "bracketNotInTournament": "บราเคตนี้ไม่ได้อยู่ในทัวร์นาเมนต์"
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "เชื่อมโยงแต่ละทีมในทัวร์นาเมนต์นี้กับชื่อหน้า Liquipedia ของทีม ทีละสเตจ",
         "backToTournament": "กลับไปที่ทัวร์นาเมนต์",
@@ -4476,7 +4498,48 @@
           "nameTaken": "ชื่อนี้เชื่อมโยงกับ {team} แล้ว",
           "teamNotInTournament": "ทีมนี้ไม่ได้ลงทะเบียนในทัวร์นาเมนต์นี้"
         },
-        "publicWikicodeButton": "wikicode ของแมตช์"
+        "publicWikicodeButton": "wikicode ของแมตช์",
+        "teamsTab": "ทีม",
+        "people": {
+          "tab": "ผู้เล่นและสตาฟ",
+          "wikicodeDescription": "วางบล็อกผู้เข้าร่วมของทัวร์นาเมนต์ (เทมเพลต Person) เพื่อค้นหาชื่อที่ตรงกัน",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "ไม่พบบุคคล (ไม่มีเทมเพลต Person ใน wikicode นี้)",
+          "tableTitle": "{missing} จาก {total} คนยังไม่มีชื่อ Liquipedia",
+          "showLinked": "แสดงคนที่เชื่อมโยงแล้วด้วย",
+          "allLinked": "ทุกคนในทัวร์นาเมนต์นี้มีชื่อ Liquipedia แล้ว",
+          "columnPerson": "บุคคลใน GC Stats",
+          "kind": {
+            "player": "ผู้เล่น",
+            "staff": "สตาฟ"
+          },
+          "noPeople": "ทัวร์นาเมนต์นี้ยังไม่มีผู้เล่นหรือสตาฟที่ลงทะเบียน",
+          "saveSuccess": "{count, plural, other {บันทึกชื่อ Liquipedia แล้ว # ชื่อ}}",
+          "error": {
+            "nameTaken": "ชื่อนี้เชื่อมโยงกับ {owner} อยู่แล้ว",
+            "personNotFound": "ไม่มีบุคคลนี้"
+          },
+          "unmatched": {
+            "title": "ชื่อที่ยังไม่มีบุคคล: {count}",
+            "description": "ชื่อเหล่านี้ยังไม่ตรงกับใครเลย เลือกบุคคล โดยสตาฟของทีมจะถูกแนะนำก่อน",
+            "pick": "เลือกบุคคล",
+            "search": "ค้นหาบุคคล",
+            "noResults": "ไม่พบบุคคล"
+          }
+        },
+        "import": {
+          "button": "นำเข้าจาก Liquipedia",
+          "loading": "กำลังอ่าน Liquipedia...",
+          "hint": "อ่านหน้า Liquipedia ของทุกทีมและบุคคลที่เชื่อมโยงไว้ แล้วสร้างคำขอแก้ไขสำหรับข้อมูลที่ขาด",
+          "created": "คำขอแก้ไขที่สร้าง: {count}",
+          "upToDate": "เป็นปัจจุบันแล้ว: {count}",
+          "alreadyPending": "รอการตรวจสอบอยู่แล้ว: {count}",
+          "noPage": "ไม่พบหน้า Liquipedia ของ: {names}",
+          "nothing": "ไม่มีอะไรให้นำเข้า",
+          "errorUnreachable": "เชื่อมต่อ Liquipedia ไม่ได้ โปรดลองใหม่ภายหลัง",
+          "errorInvalid": "ทัวร์นาเมนต์ไม่ถูกต้อง",
+          "errorBusy": "กำลังนำเข้าข้อมูลของทัวร์นาเมนต์นี้อยู่แล้ว"
+        }
       },
       "scoreBackfill": {
         "title": "คำนวณคะแนนใหม่จากแมพ",
@@ -5840,7 +5903,8 @@
         "1": "เขา (He/him)",
         "2": "พวกเขา (They/them)"
       },
-      "reason": "ทำไมคุณจึงเสนอการเปลี่ยนแปลงนี้?"
+      "reason": "ทำไมคุณจึงเสนอการเปลี่ยนแปลงนี้?",
+      "liquipediaSourced": "นำมาจาก Liquipedia"
     },
     "addTag": "เพิ่ม",
     "countryPlaceholder": "ค้นหาประเทศ…",
@@ -6141,7 +6205,8 @@
     "mapsPickRatesEmpty": "ไม่มีข้อมูลเอเจนต์สำหรับแมพนี้",
     "mapsPickRatesShowMore": "แสดงทั้งหมด",
     "mapsPickRatesShowLess": "แสดงน้อยลง",
-    "factOrganizer": "ผู้จัด"
+    "factOrganizer": "ผู้จัด",
+    "vs": "vs"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6329,26 +6394,39 @@
       "embedHint": "ใน OBS ให้เพิ่ม Browser Source ด้วย URL นี้ พื้นหลังโปร่งใส"
     }
   },
+  "liquipediaSource": {
+    "text": "ข้อมูลบางส่วนในหน้านี้มาจาก Liquipedia",
+    "link": "ดูบทความต้นฉบับ"
+  },
   "matchLiquipedia": {
     "metaTitle": "wikicode ของ Liquipedia",
     "title": "wikicode ของ Liquipedia",
     "backToMatch": "กลับไปที่แมตช์",
     "utcNote": "วันที่ทั้งหมดเป็นเวลา UTC",
+    "tournamentTitle": "Wikicode ของทัวร์นาเมนต์บน Liquipedia",
+    "infoboxTab": "อินโฟบ็อกซ์ของทัวร์นาเมนต์",
+    "participantsHint": "ทีม ผู้เล่น และสตาฟ",
+    "infoboxHint": "วันที่ เงินรางวัล โซเชียล และแผนที่",
+    "matchesTitle": "แมตช์",
+    "matchesHint": "คลิกที่แมตช์เพื่อรับ wikicode",
+    "modalLoading": "กำลังสร้าง wikicode",
+    "modalError": "ไม่สามารถโหลด wikicode ได้",
+    "retry": "ลองอีกครั้ง",
     "unlinkedWarning": "ยังไม่มีชื่อ Liquipedia สำหรับ: {teams} จึงใช้ชื่อบน GC Stats แทน",
+    "unlinkedPeopleWarning": "{count} คนยังไม่มีชื่อ Liquipedia จะใช้ชื่อใน GC Stats แทน",
+    "participantsTab": "ผู้เข้าร่วม",
     "wikicode": "Wikicode",
     "copy": "คัดลอก",
     "copied": "คัดลอกแล้ว",
     "copyError": "ไม่สามารถคัดลอกไปยังคลิปบอร์ดได้",
     "stageLink": "ดูทุกแมตช์ของ {stage}",
     "stageMetaTitle": "wikicode ของ Liquipedia แยกตามสเตจ",
-    "stageTitle": "wikicode ของ Liquipedia แยกตามสเตจ",
     "backToTournament": "กลับไปที่ทัวร์นาเมนต์",
     "noStages": "ทัวร์นาเมนต์นี้ยังไม่มีสเตจ",
     "stageSelector": "สเตจ",
-    "stageEmpty": "ยังไม่มีแมตช์ในสเตจนี้",
-    "stageMatchCount": "{count, plural, other {# แมตช์}}",
-    "round": "รอบ {round}",
-    "unknownDate": "รอประกาศวันที่"
+    "bracketTemplate": "เทมเพลต Liquipedia",
+    "bracketHint": "เปิดตัวสร้าง ใส่เทมเพลตนี้ แล้ววางผลลัพธ์ลงในหน้า",
+    "bracketGenerator": "เปิดตัวสร้าง"
   },
   "matchPoster": {
     "title": "รูปภาพแมตช์",

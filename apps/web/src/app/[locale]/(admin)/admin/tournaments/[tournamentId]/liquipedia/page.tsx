@@ -12,10 +12,10 @@ import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminTournament } from "@/lib/admin-tournaments";
-import { getTournamentLiquipediaStages } from "@/lib/admin-liquipedia";
+import { getTournamentLiquipediaStages, getTournamentLiquipediaPeople, getTournamentLiquipediaBrackets } from "@/lib/admin-liquipedia";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
-import { TournamentLiquipediaPanel } from "@/components/admin/tournament-liquipedia-panel";
+import { TournamentLiquipediaSections } from "@/components/admin/tournament-liquipedia-sections";
 import { AdminPublicLinkButton } from "@/components/admin/admin-public-link-button";
 import { slugify } from "@/lib/entity-id";
 
@@ -38,7 +38,7 @@ export default async function AdminTournamentLiquipediaPage({ params }: { params
   const tournament = await getAdminTournament(id);
   if (!tournament) notFound();
 
-  const stages = await getTournamentLiquipediaStages(id);
+  const [stages, people, brackets] = await Promise.all([getTournamentLiquipediaStages(id), getTournamentLiquipediaPeople(id), getTournamentLiquipediaBrackets(id)]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,7 +53,7 @@ export default async function AdminTournamentLiquipediaPage({ params }: { params
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <TournamentLiquipediaPanel tournamentId={id} stages={stages} canManage={hasAccess(access, PERMISSIONS.tournamentsManage)} />
+      <TournamentLiquipediaSections tournamentId={id} stages={stages} people={people} brackets={brackets} canManage={hasAccess(access, PERMISSIONS.tournamentsManage)} />
     </div>
   );
 }

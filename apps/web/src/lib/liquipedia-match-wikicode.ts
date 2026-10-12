@@ -21,15 +21,23 @@ export type WikicodeMap = {
 
 export type MatchWikicodeInput = {
   scheduledAt: Date | null;
-  online: boolean;
   bestOf: number;
   opponent1: string;
   opponent2: string;
+  /** Official Twitch / YouTube channel names, empty lists are left out. */
+  twitch: string[];
+  youtube: string[];
   veto: WikicodeVetoStep[];
   maps: WikicodeMap[];
 };
 
 const INDENT = "    ";
+
+/** `|twitch=A|twitch2=B`, or null when there is no channel. */
+function buildChannels(key: "twitch" | "youtube", names: string[]): string | null {
+  if (names.length === 0) return null;
+  return names.map((name, index) => `${key}${index === 0 ? "" : index + 1}=${name}`).join("|");
+}
 
 /** "September 9, 2026 - 19:20 {{Abbr/UTC}}" */
 export function formatLiquipediaDate(date: Date): string {
@@ -65,8 +73,10 @@ function buildMapVeto(veto: WikicodeVetoStep[]): string | null {
 
 export function buildMatchPageWikicode(input: MatchWikicodeInput): string {
   const winsNeeded = Math.ceil(input.bestOf / 2);
-  const lines = [`{{MatchPage|type=${input.online ? "Online" : "Offline"}`];
+  const lines = ["{{MatchPage"];
   lines.push(`|date=${input.scheduledAt ? formatLiquipediaDate(input.scheduledAt) : ""}`);
+  const channels = [buildChannels("twitch", input.twitch), buildChannels("youtube", input.youtube)].filter((c) => c !== null);
+  if (channels.length > 0) lines.push(`|${channels.join("|")}`);
   lines.push(`|opponent1={{TeamOpponent|${input.opponent1}}}`);
   lines.push(`|opponent2={{TeamOpponent|${input.opponent2}}}`);
 

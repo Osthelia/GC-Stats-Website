@@ -59,6 +59,7 @@ export type TeamPageInfo = {
   bio: string | null;
   socials: Record<string, string>;
   liquipediaLink: string | null;
+  liquipediaSourced: boolean;
   tags: string[];
   logoUrl: string | null;
   logoUrlLight: string | null;
@@ -80,6 +81,7 @@ export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | 
         bio: teams.bio,
         socials: teams.socials,
         liquipediaLink: teams.liquipediaLink,
+        liquipediaSourced: teams.liquipediaSourced,
         tags: teams.tags,
         organizationId: teams.organizationId,
       })
@@ -101,6 +103,7 @@ export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | 
     bio: row.bio,
     socials: (row.socials as Record<string, string>) ?? {},
     liquipediaLink: row.liquipediaLink,
+    liquipediaSourced: row.liquipediaSourced,
     organizationId: row.organizationId,
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
     logoUrl: themed.dark,

@@ -4430,6 +4430,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "对阵图",
+          "noBrackets": "该赛事还没有对阵图。",
+          "wikicodeTitle": "对阵图 wikicode",
+          "wikicodeDescription": "粘贴该阶段的 Liquipedia wikicode，以读取其使用的对阵图模板。",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "查找模板",
+          "noneFound": "未找到对阵图（此 wikicode 中没有 Bracket 模板）。",
+          "foundCount": "在 wikicode 中找到 {count} 个对阵图",
+          "tableTitle": "{total} 个对阵图中有 {missing} 个没有模板",
+          "columnBracket": "GC Stats 对阵图",
+          "columnTemplate": "Liquipedia 模板",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "已保存 {count} 个模板。",
+          "error": {
+            "required": "模板为必填项。",
+            "tooLong": "模板过长。",
+            "invalidChars": "模板包含不允许的字符。",
+            "invalidFormat": "模板必须形如 Bracket/8U4L2DSL1D。",
+            "bracketNotInTournament": "该对阵图不属于此赛事。"
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "按阶段将本赛事的每支战队与其 Liquipedia 页面名称关联。",
         "backToTournament": "返回赛事",
@@ -4476,7 +4498,48 @@
           "nameTaken": "该名称已关联到 {team}。",
           "teamNotInTournament": "该战队未报名本赛事。"
         },
-        "publicWikicodeButton": "比赛 wikicode"
+        "publicWikicodeButton": "比赛 wikicode",
+        "teamsTab": "战队",
+        "people": {
+          "tab": "选手和工作人员",
+          "wikicodeDescription": "粘贴赛事的参赛者区块(Person 模板)以查找匹配的名称。",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "未找到任何人员(此 wikicode 中没有 Person 模板)。",
+          "tableTitle": "{total} 人中有 {missing} 人没有 Liquipedia 名称",
+          "showLinked": "同时显示已关联的人员",
+          "allLinked": "此赛事的所有人员都已有 Liquipedia 名称。",
+          "columnPerson": "GC Stats 人员",
+          "kind": {
+            "player": "选手",
+            "staff": "工作人员"
+          },
+          "noPeople": "此赛事还没有登记的选手或工作人员。",
+          "saveSuccess": "{count, plural, other {已保存 # 个 Liquipedia 名称。}}",
+          "error": {
+            "nameTaken": "此名称已关联到 {owner}。",
+            "personNotFound": "该人员不存在。"
+          },
+          "unmatched": {
+            "title": "未关联人员的名称：{count}",
+            "description": "这些名称尚未匹配任何人。请选择人员，战队的工作人员会优先显示。",
+            "pick": "选择人员",
+            "search": "搜索人员",
+            "noResults": "未找到人员"
+          }
+        },
+        "import": {
+          "button": "从 Liquipedia 导入",
+          "loading": "正在读取 Liquipedia...",
+          "hint": "读取每个已关联战队和人员的 Liquipedia 页面，并为缺失的数据创建修改请求。",
+          "created": "已创建的修改请求：{count}",
+          "upToDate": "已是最新：{count}",
+          "alreadyPending": "已在等待审核：{count}",
+          "noPage": "未找到 Liquipedia 页面：{names}",
+          "nothing": "没有可导入的内容。",
+          "errorUnreachable": "无法连接 Liquipedia，请稍后再试。",
+          "errorInvalid": "无效的赛事。",
+          "errorBusy": "此赛事的导入已在进行中。"
+        }
       },
       "scoreBackfill": {
         "title": "根据地图重新计算比分",
@@ -5840,7 +5903,8 @@
         "1": "他",
         "2": "他们"
       },
-      "reason": "您为什么建议进行此项修改？"
+      "reason": "您为什么建议进行此项修改？",
+      "liquipediaSourced": "来自 Liquipedia"
     },
     "addTag": "添加",
     "countryPlaceholder": "搜索国家…",
@@ -6141,7 +6205,8 @@
     "mapsPickRatesEmpty": "该地图暂无特工数据。",
     "mapsPickRatesShowMore": "显示全部",
     "mapsPickRatesShowLess": "收起",
-    "factOrganizer": "主办方"
+    "factOrganizer": "主办方",
+    "vs": "对"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6329,26 +6394,39 @@
       "embedHint": "在 OBS 中添加一个浏览器源并使用此链接，背景为透明。"
     }
   },
+  "liquipediaSource": {
+    "text": "本页面的部分信息来自 Liquipedia。",
+    "link": "查看原文"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
     "backToMatch": "返回比赛",
     "utcNote": "所有时间均为 UTC。",
+    "tournamentTitle": "赛事的 Liquipedia wikicode",
+    "infoboxTab": "赛事信息框",
+    "participantsHint": "战队、选手和工作人员",
+    "infoboxHint": "日期、奖金、社交媒体和地图",
+    "matchesTitle": "比赛",
+    "matchesHint": "点击一场比赛以获取其 wikicode。",
+    "modalLoading": "正在生成 wikicode",
+    "modalError": "无法加载 wikicode。",
+    "retry": "重试",
     "unlinkedWarning": "以下战队还没有 Liquipedia 名称：{teams}。将使用其 GC Stats 名称代替。",
+    "unlinkedPeopleWarning": "{count} 人还没有 Liquipedia 名称,将改用其 GC Stats 昵称。",
+    "participantsTab": "参赛者",
     "wikicode": "Wikicode",
     "copy": "复制",
     "copied": "已复制",
     "copyError": "无法复制到剪贴板。",
     "stageLink": "查看 {stage} 的所有比赛",
     "stageMetaTitle": "按阶段查看 Liquipedia wikicode",
-    "stageTitle": "按阶段查看 Liquipedia wikicode",
     "backToTournament": "返回赛事",
     "noStages": "该赛事还没有阶段。",
     "stageSelector": "阶段",
-    "stageEmpty": "该阶段还没有比赛。",
-    "stageMatchCount": "{count, plural, other {# 场比赛}}",
-    "round": "第 {round} 轮",
-    "unknownDate": "日期待定"
+    "bracketTemplate": "Liquipedia 模板",
+    "bracketHint": "打开生成器，输入此模板，并将结果粘贴到页面中。",
+    "bracketGenerator": "打开生成器"
   },
   "matchPoster": {
     "title": "比赛图片",

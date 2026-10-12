@@ -4430,6 +4430,28 @@
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
+        "brackets": {
+          "tab": "الجداول",
+          "noBrackets": "لا يحتوي هذا البطولة على جدول بعد.",
+          "wikicodeTitle": "wikicode الجدول",
+          "wikicodeDescription": "الصق wikicode الخاص بـ Liquipedia للمرحلة لقراءة قوالب الجداول المستخدمة.",
+          "wikicodePlaceholder": "'{{Bracket|Bracket/8U4L2DSL1D|id=...|matchsection=Playoffs ...}}'",
+          "analyzeButton": "البحث عن القوالب",
+          "noneFound": "لم يُعثر على جدول (لا يوجد قالب Bracket في هذا الـ wikicode).",
+          "foundCount": "تم العثور على {count} جدول في الـ wikicode",
+          "tableTitle": "{missing} من {total} جداول بدون قالب",
+          "columnBracket": "جدول GC Stats",
+          "columnTemplate": "قالب Liquipedia",
+          "templatePlaceholder": "Bracket/8U4L2DSL1D",
+          "saveSuccess": "تم حفظ {count} قالب.",
+          "error": {
+            "required": "القالب مطلوب.",
+            "tooLong": "القالب طويل جدًا.",
+            "invalidChars": "يحتوي القالب على أحرف غير مسموح بها.",
+            "invalidFormat": "يجب أن يشبه القالب Bracket/8U4L2DSL1D.",
+            "bracketNotInTournament": "هذا الجدول لا ينتمي إلى البطولة."
+          }
+        },
         "title": "Liquipedia",
         "subtitle": "اربط كل فريق في هذه البطولة باسم صفحته على Liquipedia، مرحلة تلو الأخرى.",
         "backToTournament": "العودة إلى البطولة",
@@ -4476,7 +4498,48 @@
           "nameTaken": "هذا الاسم مرتبط بالفعل بـ {team}.",
           "teamNotInTournament": "هذا الفريق غير مسجّل في هذه البطولة."
         },
-        "publicWikicodeButton": "wikicode المباريات"
+        "publicWikicodeButton": "wikicode المباريات",
+        "teamsTab": "الفرق",
+        "people": {
+          "tab": "اللاعبون والطاقم",
+          "wikicodeDescription": "الصق كتلة المشاركين في البطولة (قوالب Person) للبحث عن الأسماء المطابقة.",
+          "wikicodePlaceholder": "'{{Persons|{{Person|Name}}}}'",
+          "noNamesFound": "لم يتم العثور على أي شخص (لا يوجد قالب Person في هذا الـ wikicode).",
+          "tableTitle": "{missing} من أصل {total} أشخاص بدون اسم Liquipedia",
+          "showLinked": "عرض الأشخاص المرتبطين أيضًا",
+          "allLinked": "جميع أشخاص هذه البطولة لديهم اسم Liquipedia بالفعل.",
+          "columnPerson": "شخص من GC Stats",
+          "kind": {
+            "player": "لاعب",
+            "staff": "طاقم"
+          },
+          "noPeople": "لا يوجد لاعبون أو طاقم مسجلون في هذه البطولة بعد.",
+          "saveSuccess": "{count, plural, one {تم حفظ اسم Liquipedia واحد.} two {تم حفظ اسمَي Liquipedia.} few {تم حفظ # أسماء Liquipedia.} many {تم حفظ # اسم Liquipedia.} other {تم حفظ # اسم Liquipedia.}}",
+          "error": {
+            "nameTaken": "هذا الاسم مرتبط بالفعل بـ {owner}.",
+            "personNotFound": "هذا الشخص غير موجود."
+          },
+          "unmatched": {
+            "title": "أسماء بلا شخص: {count}",
+            "description": "هذه الأسماء لا تطابق أحدًا بعد. اختر الشخص، ويُقترح طاقم الفريق أولًا.",
+            "pick": "اختر شخصًا",
+            "search": "ابحث عن شخص",
+            "noResults": "لم يتم العثور على أحد"
+          }
+        },
+        "import": {
+          "button": "استيراد من Liquipedia",
+          "loading": "جارٍ قراءة Liquipedia...",
+          "hint": "يقرأ صفحة Liquipedia لكل فريق وشخص مرتبط، ثم يفتح طلبات تعديل للبيانات الناقصة.",
+          "created": "طلبات التعديل المنشأة: {count}",
+          "upToDate": "محدّث بالفعل: {count}",
+          "alreadyPending": "في انتظار المراجعة بالفعل: {count}",
+          "noPage": "لم يتم العثور على صفحة Liquipedia لـ: {names}",
+          "nothing": "لا شيء للاستيراد.",
+          "errorUnreachable": "تعذّر الوصول إلى Liquipedia، حاول لاحقًا.",
+          "errorInvalid": "بطولة غير صالحة.",
+          "errorBusy": "هناك عملية استيراد جارية بالفعل لهذه البطولة."
+        }
       },
       "scoreBackfill": {
         "title": "إعادة حساب النتائج من الخرائط",
@@ -5840,7 +5903,8 @@
         "1": "هو",
         "2": "هم"
       },
-      "reason": "لماذا تقترح هذا التغيير؟"
+      "reason": "لماذا تقترح هذا التغيير؟",
+      "liquipediaSourced": "مأخوذ من Liquipedia"
     },
     "addTag": "إضافة",
     "countryPlaceholder": "ابحث عن بلد…",
@@ -6141,7 +6205,8 @@
     "mapsPickRatesEmpty": "لا توجد بيانات عن العملاء لهذه الخريطة.",
     "mapsPickRatesShowMore": "عرض الكل",
     "mapsPickRatesShowLess": "عرض أقل",
-    "factOrganizer": "المنظم"
+    "factOrganizer": "المنظم",
+    "vs": "ضد"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6329,26 +6394,39 @@
       "embedHint": "في OBS، أضف مصدر متصفح (Browser Source) بهذا الرابط. الخلفية شفافة."
     }
   },
+  "liquipediaSource": {
+    "text": "بعض المعلومات في هذه الصفحة مأخوذة من Liquipedia.",
+    "link": "عرض المقال الأصلي"
+  },
   "matchLiquipedia": {
     "metaTitle": "wikicode لـ Liquipedia",
     "title": "wikicode لـ Liquipedia",
     "backToMatch": "العودة إلى المباراة",
     "utcNote": "كل التواريخ بتوقيت UTC.",
+    "tournamentTitle": "Wikicode الخاص بالبطولة على Liquipedia",
+    "infoboxTab": "صندوق معلومات البطولة",
+    "participantsHint": "الفرق واللاعبون والطاقم",
+    "infoboxHint": "المواعيد وجائزة البطولة والشبكات الاجتماعية والخرائط",
+    "matchesTitle": "المباريات",
+    "matchesHint": "انقر على مباراة للحصول على wikicode الخاص بها.",
+    "modalLoading": "جارٍ إنشاء wikicode",
+    "modalError": "تعذّر تحميل wikicode.",
+    "retry": "إعادة المحاولة",
     "unlinkedWarning": "لا يوجد اسم Liquipedia بعد لـ: {teams}. يُستخدم اسمها على GC Stats بدلًا منه.",
+    "unlinkedPeopleWarning": "{count} أشخاص ليس لديهم اسم Liquipedia بعد. يُستخدم اسمهم في GC Stats بدلًا منه.",
+    "participantsTab": "المشاركون",
     "wikicode": "Wikicode",
     "copy": "نسخ",
     "copied": "تم النسخ",
     "copyError": "تعذّر النسخ إلى الحافظة.",
     "stageLink": "عرض كل مباريات {stage}",
     "stageMetaTitle": "wikicode لـ Liquipedia حسب المرحلة",
-    "stageTitle": "wikicode لـ Liquipedia حسب المرحلة",
     "backToTournament": "العودة إلى البطولة",
     "noStages": "لا تحتوي هذه البطولة على مراحل بعد.",
     "stageSelector": "المرحلة",
-    "stageEmpty": "لا توجد مباريات في هذه المرحلة بعد.",
-    "stageMatchCount": "{count, plural, zero {لا مباريات} one {مباراة واحدة} two {مباراتان} few {# مباريات} many {# مباراة} other {# مباراة}}",
-    "round": "الجولة {round}",
-    "unknownDate": "التاريخ سيُعلن لاحقًا"
+    "bracketTemplate": "قالب Liquipedia",
+    "bracketHint": "افتح المولّد وأدخل هذا القالب والصق النتيجة في الصفحة.",
+    "bracketGenerator": "فتح المولّد"
   },
   "matchPoster": {
     "title": "صورة المباراة",

@@ -261,6 +261,34 @@ export function countryFlagClass(code: string | null): string | null {
   return country ? `fi-${country.a2}` : null;
 }
 
+/** Flag code written in Liquipedia wikicode: alpha-2 ("uk" for the UK), null for international and the UK home nations. */
+export function liquipediaFlagCode(code: string | null): string | null {
+  if (!code || code === INTERNATIONAL_CODE) return null;
+  if (code === "GBR") return "uk";
+  const a2 = COUNTRIES.find((c) => c.code === code)?.a2;
+  return a2 && !a2.includes("-") ? a2 : null;
+}
+
+// Liquipedia names a few countries differently from the English names above.
+const COUNTRY_NAME_ALIASES: Record<string, string> = {
+  "united kingdom": "GBR",
+  uk: "GBR",
+  "united states of america": "USA",
+  "czech republic": "CZE",
+  russia: "RUS",
+  "south korea": "KOR",
+  "korea, republic of": "KOR",
+  turkey: "TUR",
+  "türkiye": "TUR",
+};
+
+/** Alpha-3 code of an English country name as written on Liquipedia, null when unknown. */
+export function countryCodeFromEnglishName(name: string): string | null {
+  const key = name.trim().toLowerCase();
+  if (!key) return null;
+  return COUNTRY_NAME_ALIASES[key] ?? COUNTRIES.find((c) => c.en.toLowerCase() === key)?.code ?? null;
+}
+
 export function isValidCountryCode(code: string): boolean {
   return code === INTERNATIONAL_CODE || COUNTRIES.some((c) => c.code === code);
 }

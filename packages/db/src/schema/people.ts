@@ -34,6 +34,8 @@ export const teams = pgTable("teams", {
   maxPermissions: jsonb("max_permissions"),
   tags: jsonb("tags"),
   liquipediaLink: text("liquipedia_link"),
+  // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
+  liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
   // Organization running this team: the org then has no public page of its own
   // (its members show as the team's staff) and gets an automatic /dashboard
   // access scoped to the streams of this team's matches. One org can own several teams.
@@ -88,7 +90,22 @@ export const people = pgTable("people", {
   isGhost: boolean("is_ghost").notNull().default(false),
   userId: text("user_id").unique().references(() => users.id, { onDelete: "set null" }),
   liquipediaLink: text("liquipedia_link"),
+  // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
+  liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
 });
+
+// Name used for a person in generated Liquipedia wikicode, one to one. A person can
+// be exported without owning a Liquipedia page, so this is not tied to `liquipedia_link`.
+export const liquipediaPersonNames = pgTable(
+  "liquipedia_person_names",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    personId: bigint("person_id", { mode: "number" }).notNull().unique().references(() => people.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("liquipedia_person_names_name_lower_unique").on(sql`lower(${t.name})`)]
+);
 
 // A team's real, continuous roster over time (players, but also
 // coach/manager/analyst - just a different `role` value, see DATABASES.MD

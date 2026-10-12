@@ -9,10 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, eq, inArray, isNotNull, or } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, stages, stageContainers, matches, entrants, matchVetos, maps, mapRoundsRaw, liquipediaTeamNames } from "@gc-stats/db";
-import { containerOrderBy } from "@/lib/bracket/container-order";
+import { tournaments, stages, stageContainers, matches, entrants, matchVetos, maps, mapRoundsRaw, liquipediaTeamNames, matchStreams, streamChannels } from "@gc-stats/db";
 import { buildMatchPageWikicode, type WikicodeMap, type WikicodeVetoStep } from "@/lib/liquipedia-match-wikicode";
 import { knownScheduledAt } from "@/lib/match-schedule";
 
@@ -37,8 +36,9 @@ export type LiquipediaMatchWikicode = {
   unlinkedTeams: string[];
 };
 
-function isOnline(location: string | null): boolean {
-  return !location?.trim() || /online/i.test(location);
+// International broadcasts are the English ones.
+function isInternationalLanguage(code: string): boolean {
+  return code.trim().toLowerCase().startsWith("en");
 }
 
 async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
@@ -62,7 +62,6 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
       tournamentId: tournaments.id,
       tournamentName: tournaments.name,
       tournamentIsGhost: tournaments.isGhost,
-      location: tournaments.location,
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
@@ -72,7 +71,7 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
   if (matchRows.length === 0) return [];
 
   const entrantIds = [...new Set(matchRows.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null))];
-  const [entrantRows, vetoRows, mapRows] = await Promise.all([
+  const [entrantRows, vetoRows, mapRows, streamRows] = await Promise.all([
     entrantIds.length
       ? db.select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, entrantIds))
       : Promise.resolve([]),
@@ -86,6 +85,12 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
       .from(maps)
       .where(inArray(maps.matchId, matchIds))
       .orderBy(asc(maps.matchId), asc(maps.order)),
+    db
+      .select({ matchId: matchStreams.matchId, name: streamChannels.name, platform: streamChannels.platform, languageCode: streamChannels.languageCode })
+      .from(matchStreams)
+      .innerJoin(streamChannels, eq(streamChannels.id, matchStreams.streamChannelId))
+      .where(and(inArray(matchStreams.matchId, matchIds), eq(streamChannels.type, "official"), eq(streamChannels.isActive, true)))
+      .orderBy(asc(streamChannels.id)),
   ]);
 
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
@@ -110,6 +115,7 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
     const entrantA = match.entrantAId;
     const entrantB = match.entrantBId;
     const matchVetoRows = vetoRows.filter((r) => r.matchId === match.id);
+    const channelsOf = (platform: string) => streamRows.filter((r) => r.matchId === match.id && r.platform === platform && isInternationalLanguage(r.languageCode)).map((r) => r.name);
 
     const veto: WikicodeVetoStep[] = matchVetoRows
       .filter((row) => (row.entrantId === entrantA || row.entrantId === entrantB) && (row.type === "ban" || row.type === "pick" || row.type === "decider"))
@@ -170,10 +176,11 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
       unlinkedTeams,
       wikicode: buildMatchPageWikicode({
         scheduledAt,
-        online: isOnline(match.location),
         bestOf: match.bestOf,
         opponent1: a.wiki,
         opponent2: b.wiki,
+        twitch: channelsOf("twitch"),
+        youtube: channelsOf("youtube"),
         veto,
         maps: wikicodeMaps,
       }),
@@ -184,28 +191,4 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
 export async function getLiquipediaMatchWikicode(matchId: number): Promise<LiquipediaMatchWikicode | null> {
   const [result] = await buildWikicodes([matchId]);
   return result ?? null;
-}
-
-export type LiquipediaStageOption = { id: number; name: string };
-
-/** Public stages of a tournament, in bracket order. */
-export async function getLiquipediaStageOptions(tournamentId: number): Promise<LiquipediaStageOption[]> {
-  return db
-    .select({ id: stages.id, name: stages.name })
-    .from(stages)
-    .where(and(eq(stages.tournamentId, tournamentId), eq(stages.active, true)))
-    .orderBy(asc(stages.sequenceOrder), asc(stages.id));
-}
-
-/** Every match of a stage that has at least one entrant, ordered by container, round, then date. */
-export async function getStageLiquipediaWikicodes(stageId: number): Promise<LiquipediaMatchWikicode[]> {
-  const rows = await db
-    .select({ id: matches.id })
-    .from(matches)
-    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-    .where(and(eq(stageContainers.stageId, stageId), or(isNotNull(matches.entrantAId), isNotNull(matches.entrantBId))))
-    .orderBy(...containerOrderBy, asc(matches.round), asc(matches.scheduledAt), asc(matches.displayOrder), asc(matches.id));
-  const order = new Map(rows.map((r, index) => [r.id, index]));
-  const result = await buildWikicodes(rows.map((r) => r.id));
-  return result.sort((x, y) => order.get(x.matchId)! - order.get(y.matchId)!);
 }

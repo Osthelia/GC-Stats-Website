@@ -1,0 +1,1 @@
+ALTER TABLE "stage_containers" ADD COLUMN IF NOT EXISTS "liquipedia_bracket_template" text;

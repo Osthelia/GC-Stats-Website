@@ -13,8 +13,10 @@ import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
 import { GOLD, RED, tint } from "@/lib/theme-colors";
 import { formatSideScore } from "@/lib/match-score-format";
+import { useBracketMatchAction } from "@/components/tournament/bracket-match-action";
 
 export type BracketMatchNodeData = {
+  matchId: number;
   containerName: string;
   round: number;
   label: string | null;
@@ -108,12 +110,12 @@ function SideRow({
 export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeData }) {
   const live = data.status === "live";
 
-  return (
-    <Link
-      href={data.matchHref}
-      className="nodrag nopan block w-56 overflow-hidden rounded-lg border border-neutral-800 transition-colors duration-150 hover:border-[#e4ae22]/50 hover:shadow-lg"
-      style={{ background: "var(--gcs-surface-3)" }}
-    >
+  const action = useBracketMatchAction();
+  const className = "nodrag nopan block w-56 overflow-hidden rounded-lg border border-neutral-800 transition-colors duration-150 hover:border-[#e4ae22]/50 hover:shadow-lg";
+  const style = { background: "var(--gcs-surface-3)" };
+
+  const content = (
+    <>
       <Handle type="target" position={Position.Left} id="a" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="target" position={Position.Left} id="b" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
 
@@ -141,6 +143,25 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
           distinct id per edge endpoint. */}
       <Handle type="source" position={Position.Right} id="winner" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="source" position={Position.Right} id="loser" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
+    </>
+  );
+
+  if (action) {
+    return (
+      <button
+        type="button"
+        onClick={() => action.onSelect({ id: data.matchId, teamA: data.entrantAName, teamB: data.entrantBName })}
+        className={`${className} cursor-pointer text-left active:scale-[0.98]`}
+        style={style}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={data.matchHref} className={className} style={style}>
+      {content}
     </Link>
   );
 }

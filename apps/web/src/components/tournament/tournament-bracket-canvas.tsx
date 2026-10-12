@@ -185,6 +185,7 @@ export function TournamentBracketCanvas({
             width: BRACKET_MATCH_NODE_WIDTH,
             height: BRACKET_MATCH_NODE_HEIGHT,
             data: {
+              matchId: m.id,
               containerName: container.name,
               round: m.round,
               label: m.label,

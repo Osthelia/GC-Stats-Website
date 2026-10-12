@@ -9,6 +9,7 @@
 import { notFound } from "next/navigation";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPlayerPageInfo, getPlayerAchievements, getPlayerTabAvailability } from "@/lib/player-page-data";
+import { LiquipediaSourceFooter } from "@/components/liquipedia-source-footer";
 import { PlayerHeader } from "@/components/player/player-header";
 
 /** Header shared by every player tab, kept across tab changes instead of being rebuilt by each page. */
@@ -24,6 +25,7 @@ export default async function PlayerTabsLayout({ children, params }: { children:
     <div>
       <PlayerHeader player={player} segment={`${player.id}/${slugify(player.handle)}`} achievements={achievements} availability={availability} />
       {children}
+      <LiquipediaSourceFooter sourced={player.liquipediaSourced} href={player.liquipediaLink} />
     </div>
   );
 }

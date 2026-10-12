@@ -9,9 +9,15 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { asc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, notInArray, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames } from "@gc-stats/db";
+import { rosterPeriodIsDated } from "@/lib/roster-sql";
+import type { PersonPickerResult } from "@/lib/person-search";
+import { groupBracketContainers } from "@/lib/bracket-group-containers";
+import { entrants, entrantMembers, mapPlayerStats, rosterMemberships, tournaments, people, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames, liquipediaPersonNames } from "@gc-stats/db";
+
+// Roster roles of people who play; every other role is staff.
+export const PLAYER_ROLES = ["player", "player-igl", "sub", "stand_in"];
 
 export type LiquipediaStageTeam = {
   teamId: number;
@@ -113,4 +119,196 @@ export async function findLiquipediaMappings(teamIds: number[], names: string[])
     .from(liquipediaTeamNames)
     .innerJoin(teams, eq(teams.id, liquipediaTeamNames.teamId))
     .where(or(...conditions));
+}
+
+export type LiquipediaTournamentPerson = {
+  personId: number;
+  handle: string;
+  /** Team the person plays or works for in this tournament. */
+  teamName: string;
+  /** Entrant the person appears under in this tournament. */
+  entrantId: number;
+  kind: "player" | "staff";
+  /** Exact roster role: player, stand_in, coach, manager, ... */
+  role: string;
+  countryCode: string | null;
+  liquipediaLink: string | null;
+  /** Handle, aliases and real name, used for matching. */
+  names: string[];
+  liquipediaName: string | null;
+};
+
+/**
+ * Everyone of a tournament's teams (players and staff), with their current Liquipedia name.
+ * Same sources as the public page: the locked roster, else the players with recorded stats,
+ * plus the staff the team had during the tournament dates.
+ */
+export async function getTournamentLiquipediaPeople(tournamentId: number): Promise<LiquipediaTournamentPerson[]> {
+  const [tournament] = await db.select({ startDate: tournaments.startDate, endDate: tournaments.endDate }).from(tournaments).where(eq(tournaments.id, tournamentId));
+  if (!tournament) return [];
+
+  const entrantRows = await db
+    .select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName })
+    .from(entrants)
+    .where(eq(entrants.tournamentId, tournamentId));
+  if (entrantRows.length === 0) return [];
+  const entrantIds = entrantRows.map((e) => e.id);
+  const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
+
+  const [memberRows, statRows, staffRows] = await Promise.all([
+    db.select({ entrantId: entrantMembers.entrantId, personId: entrantMembers.personId, role: entrantMembers.role }).from(entrantMembers).where(inArray(entrantMembers.entrantId, entrantIds)),
+    db
+      .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: mapPlayerStats.personId })
+      .from(mapPlayerStats)
+      .where(and(inArray(mapPlayerStats.entrantId, entrantIds), isNotNull(mapPlayerStats.personId))),
+    teamIds.length
+      ? db
+          .selectDistinct({ teamId: rosterMemberships.teamId, personId: rosterMemberships.personId, role: rosterMemberships.role })
+          .from(rosterMemberships)
+          .where(
+            and(
+              inArray(rosterMemberships.teamId, teamIds),
+              notInArray(rosterMemberships.role, PLAYER_ROLES),
+              rosterPeriodIsDated,
+              sql`${rosterMemberships.period} && daterange(${tournament.startDate}::date, ${tournament.endDate}::date, '[]')`
+            )
+          )
+      : Promise.resolve([]),
+  ]);
+
+  // person -> the entrant they appear under (first one wins)
+  const entrantOfPerson = new Map<number, number>();
+  const playerIds = new Set<number>();
+  // A player role wins over a staff one for someone who is both.
+  const roleOfPerson = new Map<number, string>();
+  const setRole = (personId: number, role: string) => {
+    const current = roleOfPerson.get(personId);
+    if (!current || (!PLAYER_ROLES.includes(current) && PLAYER_ROLES.includes(role))) roleOfPerson.set(personId, role);
+  };
+  const withMembers = new Set(memberRows.map((r) => r.entrantId));
+  for (const row of memberRows) {
+    setRole(row.personId, row.role);
+    if (PLAYER_ROLES.includes(row.role)) playerIds.add(row.personId);
+  }
+  for (const row of statRows) {
+    if (row.personId === null) continue;
+    setRole(row.personId, "player");
+    playerIds.add(row.personId);
+  }
+  for (const row of memberRows) if (!entrantOfPerson.has(row.personId)) entrantOfPerson.set(row.personId, row.entrantId);
+  for (const row of statRows) {
+    if (row.personId !== null && !withMembers.has(row.entrantId) && !entrantOfPerson.has(row.personId)) entrantOfPerson.set(row.personId, row.entrantId);
+  }
+  const entrantOfTeam = new Map(entrantRows.filter((e) => e.teamId !== null).map((e) => [e.teamId as number, e.id]));
+  for (const row of staffRows) {
+    const entrantId = entrantOfTeam.get(row.teamId);
+    if (entrantId === undefined) continue;
+    setRole(row.personId, row.role);
+    if (!entrantOfPerson.has(row.personId)) entrantOfPerson.set(row.personId, entrantId);
+  }
+  if (entrantOfPerson.size === 0) return [];
+
+  const personRows = await db
+    .select({
+      personId: people.id,
+      handle: people.handle,
+      aliases: people.aliases,
+      firstName: people.firstName,
+      lastName: people.lastName,
+      countryCode: people.countryCode,
+      liquipediaLink: people.liquipediaLink,
+      liquipediaName: liquipediaPersonNames.name,
+    })
+    .from(people)
+    .leftJoin(liquipediaPersonNames, eq(liquipediaPersonNames.personId, people.id))
+    .where(inArray(people.id, [...entrantOfPerson.keys()]));
+
+  const teamNameByEntrant = new Map(entrantRows.map((e) => [e.id, e.displayName]));
+  return personRows
+    .map((row) => {
+      const realName = [row.firstName, row.lastName].filter(Boolean).join(" ");
+      const aliases = Array.isArray(row.aliases) ? (row.aliases as string[]) : [];
+      return {
+        personId: row.personId,
+        handle: row.handle,
+        teamName: teamNameByEntrant.get(entrantOfPerson.get(row.personId)!) ?? "",
+        entrantId: entrantOfPerson.get(row.personId)!,
+        role: roleOfPerson.get(row.personId) ?? "player",
+        countryCode: row.countryCode,
+        liquipediaLink: row.liquipediaLink,
+        kind: playerIds.has(row.personId) ? ("player" as const) : ("staff" as const),
+        names: [row.handle, ...aliases, ...(realName ? [realName] : [])],
+        liquipediaName: row.liquipediaName,
+      };
+    })
+    .sort((x, y) => x.teamName.localeCompare(y.teamName) || x.handle.localeCompare(y.handle));
+}
+
+/** Person mappings touching either the given people or the given names (case-insensitive), for conflict checks. */
+export async function findLiquipediaPersonMappings(personIds: number[], names: string[]): Promise<{ personId: number; name: string; handle: string }[]> {
+  const lowered = [...new Set(names.map((n) => n.toLowerCase()))];
+  const conditions = [];
+  if (personIds.length > 0) conditions.push(inArray(liquipediaPersonNames.personId, personIds));
+  if (lowered.length > 0) conditions.push(inArray(sql`lower(${liquipediaPersonNames.name})`, lowered));
+  if (conditions.length === 0) return [];
+  return db
+    .select({ personId: liquipediaPersonNames.personId, name: liquipediaPersonNames.name, handle: people.handle })
+    .from(liquipediaPersonNames)
+    .innerJoin(people, eq(people.id, liquipediaPersonNames.personId))
+    .where(or(...conditions));
+}
+
+/** Staff the team ever had, by Liquipedia team name, for the person picker's first suggestions. */
+export async function findTeamStaffByLiquipediaName(teamName: string, limit: number): Promise<PersonPickerResult[]> {
+  const [team] = await db
+    .select({ teamId: liquipediaTeamNames.teamId })
+    .from(liquipediaTeamNames)
+    .where(sql`lower(${liquipediaTeamNames.name}) = ${teamName.trim().toLowerCase()}`)
+    .limit(1);
+  if (!team) return [];
+  return db
+    .selectDistinct({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode })
+    .from(rosterMemberships)
+    .innerJoin(people, eq(people.id, rosterMemberships.personId))
+    .where(and(eq(rosterMemberships.teamId, team.teamId), notInArray(rosterMemberships.role, PLAYER_ROLES)))
+    .orderBy(asc(people.handle))
+    .limit(limit);
+}
+
+export type LiquipediaBracketGroup = {
+  /** Id of the group's first container, stable key of the row. */
+  id: number;
+  stageName: string;
+  /** Group prefix of the container names ("Group A"), empty for the stage's single bracket. */
+  label: string;
+  containerNames: string[];
+  containerIds: number[];
+  template: string | null;
+};
+
+/** Physical brackets of a tournament (a double elimination spans several containers), with their Liquipedia template. */
+export async function getTournamentLiquipediaBrackets(tournamentId: number): Promise<LiquipediaBracketGroup[]> {
+  const stageRows = await db
+    .select({ id: stages.id, name: stages.name })
+    .from(stages)
+    .where(eq(stages.tournamentId, tournamentId))
+    .orderBy(asc(stages.sequenceOrder), asc(stages.id));
+  if (stageRows.length === 0) return [];
+
+  const containerRows = await db
+    .select({ id: stageContainers.id, stageId: stageContainers.stageId, name: stageContainers.name, template: stageContainers.liquipediaBracketTemplate })
+    .from(stageContainers)
+    .where(and(inArray(stageContainers.stageId, stageRows.map((s) => s.id)), eq(stageContainers.containerType, "bracket")))
+    .orderBy(asc(stageContainers.displayOrder), asc(stageContainers.id));
+
+  return stageRows.flatMap((stage) =>
+    groupBracketContainers(containerRows.filter((c) => c.stageId === stage.id)).map((group) => ({
+      id: group.containers[0]!.id,
+      stageName: stage.name,
+      label: group.label,
+      containerNames: group.containers.map((c) => c.name),
+      containerIds: group.containers.map((c) => c.id),
+      template: group.containers.find((c) => c.template)?.template ?? null,
+    }))
+  );
 }
