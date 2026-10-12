@@ -5074,6 +5074,9 @@
         "discord": "Discord"
       },
       "error": {
+        "consentRequired": "你必须接受照片权利与授权条件。",
+        "invalidType": "仅接受 JPG、PNG 或 WebP 格式的照片。",
+        "tooSmall": "这张照片太小（最短边至少 400 像素）。",
         "required": "此字段为必填项。",
         "tooLong": "此字段过长。",
         "invalid": "值无效。",

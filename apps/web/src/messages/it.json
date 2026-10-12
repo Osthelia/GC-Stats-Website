@@ -5074,6 +5074,9 @@
         "discord": "Discord"
       },
       "error": {
+        "consentRequired": "Devi accettare le condizioni su diritti e consenso della foto.",
+        "invalidType": "Sono accettate solo foto JPG, PNG o WebP.",
+        "tooSmall": "Questa foto è troppo piccola (minimo 400 px sul lato più corto).",
         "required": "Questo campo è obbligatorio.",
         "tooLong": "Questo campo è troppo lungo.",
         "invalid": "Valore non valido.",

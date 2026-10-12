@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ import { CountrySelect } from "@/components/admin/country-select";
 import { TagsInput } from "@/components/admin/tags-input";
 import { getPersonProfileForOrganization, updatePersonProfileForOrganization, uploadPersonPhotoForOrganization, type OrgPersonProfileFieldErrors } from "@/actions/dashboard-organizations";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
+import { PersonPhotoDialog } from "@/components/change-request/person-photo-dialog";
+import type { PhotoConsent } from "@/lib/change-request-fields";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
@@ -51,7 +53,8 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [photoConsent, setPhotoConsent] = useState<PhotoConsent | null>(null);
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!photoFile) {
@@ -93,6 +96,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
       if (photoFile) {
         const formData = new FormData();
         formData.set("file", photoFile);
+        if (photoConsent) formData.set("photoConsent", photoConsent);
         const upload = await uploadPersonPhotoForOrganization(organizationId, personId, formData);
         if (!upload.ok) {
           setFieldErrors({ photo: upload.error });
@@ -100,6 +104,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         }
         setPhotoUrl(null);
         setPhotoFile(null);
+        setPhotoConsent(null);
       }
       const result = await updatePersonProfileForOrganization(organizationId, personId, {
         handle: editHandle,
@@ -129,6 +134,18 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
       <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(true)}>
         {t("editProfileButton")}
       </Button>
+      {photoDialogOpen && (
+        <PersonPhotoDialog
+          variant="dashboard"
+          onClose={() => setPhotoDialogOpen(false)}
+          onConfirm={(file, consent) => {
+            setPhotoFile(file);
+            setPhotoConsent(consent);
+            setFieldErrors((prev) => ({ ...prev, photo: undefined }));
+            setPhotoDialogOpen(false);
+          }}
+        />
+      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -145,18 +162,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
                 <FormField label={t("editProfilePhotoLabel")} htmlFor="edit-person-photo" hint={t("editProfilePhotoNotes")} error={err("photo")}>
                   <div className="flex items-center gap-3">
                     <OrgLogoTile name={editHandle || handle} logoUrl={photoPreview ?? photoUrl} className="size-20 rounded-lg border text-xl" />
-                    <input
-                      id="edit-person-photo"
-                      ref={photoInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        setPhotoFile(e.target.files?.[0] ?? null);
-                        setFieldErrors((prev) => ({ ...prev, photo: undefined }));
-                      }}
-                    />
-                    <Button type="button" variant="outline" size="sm" disabled={isPending} onClick={() => photoInputRef.current?.click()} aria-invalid={!!fieldErrors.photo}>
+                    <Button id="edit-person-photo" type="button" variant="outline" size="sm" disabled={isPending} onClick={() => setPhotoDialogOpen(true)} aria-invalid={!!fieldErrors.photo}>
                       {photoPreview || photoUrl ? t("editProfilePhotoReplace") : t("editProfilePhotoChoose")}
                     </Button>
                   </div>

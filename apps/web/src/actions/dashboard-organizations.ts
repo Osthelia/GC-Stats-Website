@@ -31,6 +31,7 @@ import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { getEntityLogos, currentLogo, displayLogoUrl } from "@/lib/admin-logos";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
+import { PHOTO_ACCEPT, PHOTO_CONSENTS, PHOTO_MIN_SIDE } from "@/lib/change-request-fields";
 import {
   addOrganizationAccessEntry,
   updateOrganizationAccessRolesEntry,
@@ -368,6 +369,11 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
   const buffer = Buffer.from(await file.arrayBuffer());
   const validation = await validateImageBuffer(buffer);
   if (!validation.ok) return { ok: false, error: validation.error };
+  const rawConsent = formData.get("photoConsent");
+  const photoConsent = PHOTO_CONSENTS.find((c) => c === rawConsent);
+  if (!photoConsent) return { ok: false, error: "consentRequired" };
+  if (!PHOTO_ACCEPT.split(",").includes(file.type)) return { ok: false, error: "invalidType" };
+  if (Math.min(validation.width, validation.height) < PHOTO_MIN_SIDE) return { ok: false, error: "tooSmall" };
 
   const storedResult = await tryStoreLogoPair("person", buffer);
   if (!storedResult.ok) return { ok: false, error: storedResult.error };
@@ -384,7 +390,7 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
         await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
       }
       await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, period: openRangeFrom(today), theme: null, isVisible: true });
-      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId } }, tx);
+      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId, photoConsent, photoConsentAt: new Date().toISOString() } }, tx);
     });
   } catch (error) {
     await deleteLogoFiles("person", stored.id).catch(() => {});

@@ -5074,6 +5074,9 @@
         "discord": "Discord"
       },
       "error": {
+        "consentRequired": "写真の権利と同意の条件に同意する必要があります。",
+        "invalidType": "JPG、PNG、WebPの写真のみ使用できます。",
+        "tooSmall": "この写真は小さすぎます（短辺 400 px 以上が必要です）。",
         "required": "この項目は必須です。",
         "tooLong": "この項目は長すぎます。",
         "invalid": "無効な値です。",

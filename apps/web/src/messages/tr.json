@@ -5074,6 +5074,9 @@
         "discord": "Discord"
       },
       "error": {
+        "consentRequired": "Fotoğraf hakları ve onay koşullarını kabul etmelisiniz.",
+        "invalidType": "Yalnızca JPG, PNG veya WebP fotoğrafları kabul edilir.",
+        "tooSmall": "Bu fotoğraf çok küçük (en kısa kenarda en az 400 px).",
         "required": "Bu alan zorunludur.",
         "tooLong": "Bu alan çok uzun.",
         "invalid": "Geçersiz değer.",
