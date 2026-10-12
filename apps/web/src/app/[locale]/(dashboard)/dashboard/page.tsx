@@ -13,6 +13,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import { requireDashboardAccess } from "@/lib/dashboard-rbac";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
+import { AdminOrgList } from "@/components/dashboard/admin-org-list";
 import type { AppLocale } from "@/i18n/routing";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -114,19 +115,15 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("allOrganizations")}</h2>
             <p className="text-sm text-muted-foreground">{t("allOrganizationsSubtitle")}</p>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {adminMemberships.map((m) => (
-              <Link
-                key={m.organizationId}
-                href={`/dashboard/${m.organizationId}`}
-                className="flex items-center gap-3 rounded-lg border border-dashed bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-              >
-                <OrgLogoTile name={m.organizationName} logoUrl={logoUrls.get(m.organizationId)?.light ?? null} darkLogoUrl={logoUrls.get(m.organizationId)?.dark ?? null} className="size-10" />
-                <span className="min-w-0 flex-1 truncate font-medium">{m.organizationName}</span>
-                <span className="flex-none rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-600 dark:text-amber-400">{t("adminBadge")}</span>
-              </Link>
-            ))}
-          </div>
+          <AdminOrgList
+            organizations={adminMemberships.map((m) => ({
+              organizationId: m.organizationId,
+              organizationName: m.organizationName,
+              logoUrl: logoUrls.get(m.organizationId)?.light ?? null,
+              darkLogoUrl: logoUrls.get(m.organizationId)?.dark ?? null,
+              tags: m.organizationTags,
+            }))}
+          />
         </div>
       )}
     </div>

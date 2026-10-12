@@ -4895,6 +4895,8 @@
       "permissions": "角色与权限",
       "backToSite": "返回站点",
       "noOrganizationSelected": "请在右上角选择一个机构。",
+      "groupAdmin": "管理",
+      "allOrganizations": "所有机构",
       "authorSpace": "作者空间",
       "myArticles": "我的文章",
       "authorProfile": "作者资料",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "API 密钥空间",
       "allOrganizations": "所有机构",
       "allOrganizationsSubtitle": "作为站点管理员，您可以打开并管理任何机构的控制台。",
+      "searchPlaceholder": "搜索机构",
+      "filterTagAll": "全部",
+      "noResults": "未找到机构。",
       "adminBadge": "管理",
       "authorAdminSpace": "作者"
     },

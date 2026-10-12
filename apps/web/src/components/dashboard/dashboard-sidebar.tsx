@@ -9,7 +9,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, Building2, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import {
   DASHBOARD_AUTHOR_NAV_ITEMS,
   DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS,
   DASHBOARD_AUTHOR_ADMIN_HREF,
+  DASHBOARD_ALL_ORGANIZATIONS_HREF,
   DASHBOARD_API_KEY_NAV_ITEMS,
   isDashboardPathIn,
   type DashboardNavItem,
@@ -88,7 +89,7 @@ function NavGroup({ groupKey, label, children }: { groupKey: string; label: stri
 }
 
 /** Same visual identity as /admin, no wrapper theme class, just the shared shadcn tokens. Cross-organization switching now lives in the header (OrgSwitcher), so this sidebar only ever shows the active organization's own nav. */
-export function DashboardSidebar({ organizations }: { organizations: DashboardOrgSummary[] }) {
+export function DashboardSidebar({ organizations, isAuthorAdmin = false }: { organizations: DashboardOrgSummary[]; isAuthorAdmin?: boolean }) {
   const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
 
@@ -120,6 +121,21 @@ export function DashboardSidebar({ organizations }: { organizations: DashboardOr
         </div>
       </SidebarHeader>
       <SidebarContent className="gap-3">
+        {isAuthorAdmin && (
+          <SidebarGroup className="gap-1">
+            <SidebarGroupLabel className="truncate">{t("groupAdmin")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="gap-1.5">
+                <SidebarMenuItem>
+                  <SidebarMenuButton isActive={isDashboardPathIn(pathname, DASHBOARD_ALL_ORGANIZATIONS_HREF)} tooltip={t("allOrganizations")} render={<Link href={DASHBOARD_ALL_ORGANIZATIONS_HREF} />}>
+                    <Building2 className="size-3.5" />
+                    <span>{t("allOrganizations")}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         {individualSpace ? (
           <SidebarGroup className="gap-1">
             <SidebarGroupLabel className="truncate">{t(individualSpace.labelKey)}</SidebarGroupLabel>

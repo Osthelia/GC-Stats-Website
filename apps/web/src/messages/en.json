@@ -5012,6 +5012,8 @@
       "permissions": "Roles & permissions",
       "backToSite": "Back to site",
       "noOrganizationSelected": "Pick an organization in the top right.",
+      "groupAdmin": "Administration",
+      "allOrganizations": "All organizations",
       "authorSpace": "Author space",
       "myArticles": "My articles",
       "authorProfile": "Author profile",
@@ -5037,6 +5039,9 @@
       "apiKeySpace": "API key space",
       "allOrganizations": "All organizations",
       "allOrganizationsSubtitle": "As a site admin, you can open and manage any organization's dashboard.",
+      "searchPlaceholder": "Search an organization",
+      "filterTagAll": "All",
+      "noResults": "No organizations found.",
       "adminBadge": "Admin",
       "authorAdminSpace": "Authors"
     },

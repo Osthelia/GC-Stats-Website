@@ -5012,6 +5012,8 @@
       "permissions": "Roles y permisos",
       "backToSite": "Volver al sitio",
       "noOrganizationSelected": "Elige una organización arriba a la derecha.",
+      "groupAdmin": "Administración",
+      "allOrganizations": "Todas las organizaciones",
       "authorSpace": "Espacio de autor",
       "myArticles": "Mis artículos",
       "authorProfile": "Perfil de autor",
@@ -5037,6 +5039,9 @@
       "apiKeySpace": "Espacio de claves de API",
       "allOrganizations": "Todas las organizaciones",
       "allOrganizationsSubtitle": "Como admin del sitio, puedes abrir y gestionar el panel de control de cualquier organización.",
+      "searchPlaceholder": "Buscar una organización",
+      "filterTagAll": "Todos",
+      "noResults": "No se encontró ninguna organización.",
       "adminBadge": "Admin",
       "authorAdminSpace": "Autores"
     },

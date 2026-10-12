@@ -4895,6 +4895,8 @@
       "permissions": "บทบาทและสิทธิ์",
       "backToSite": "กลับไปที่เว็บไซต์",
       "noOrganizationSelected": "เลือกองค์กรที่มุมขวาบน",
+      "groupAdmin": "การดูแลระบบ",
+      "allOrganizations": "องค์กรทั้งหมด",
       "authorSpace": "พื้นที่ผู้เขียน",
       "myArticles": "บทความของฉัน",
       "authorProfile": "โปรไฟล์ผู้เขียน",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "พื้นที่ API key",
       "allOrganizations": "ทุกองค์กร",
       "allOrganizationsSubtitle": "ในฐานะผู้ดูแลเว็บไซต์ คุณสามารถเปิดและจัดการแดชบอร์ดขององค์กรใดก็ได้",
+      "searchPlaceholder": "ค้นหาองค์กร",
+      "filterTagAll": "ทั้งหมด",
+      "noResults": "ไม่พบองค์กร",
       "adminBadge": "ผู้ดูแล",
       "authorAdminSpace": "ผู้เขียน"
     },

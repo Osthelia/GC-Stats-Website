@@ -4895,6 +4895,8 @@
       "permissions": "Roller ve izinler",
       "backToSite": "Siteye dön",
       "noOrganizationSelected": "Sağ üstten bir organizasyon seçin.",
+      "groupAdmin": "Yönetim",
+      "allOrganizations": "Tüm organizasyonlar",
       "authorSpace": "Yazar alanı",
       "myArticles": "Yazılarım",
       "authorProfile": "Yazar profili",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "API anahtarı alanı",
       "allOrganizations": "Tüm organizasyonlar",
       "allOrganizationsSubtitle": "Site yöneticisi olarak, herhangi bir organizasyonun panelini açıp yönetebilirsiniz.",
+      "searchPlaceholder": "Organizasyon ara",
+      "filterTagAll": "Tümü",
+      "noResults": "Organizasyon bulunamadı.",
       "adminBadge": "Yönetici",
       "authorAdminSpace": "Yazarlar"
     },

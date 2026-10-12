@@ -4895,6 +4895,8 @@
       "permissions": "역할 및 권한",
       "backToSite": "사이트로 돌아가기",
       "noOrganizationSelected": "오른쪽 상단에서 조직을 선택하세요.",
+      "groupAdmin": "관리",
+      "allOrganizations": "모든 조직",
       "authorSpace": "작성자 공간",
       "myArticles": "내 기사",
       "authorProfile": "작성자 프로필",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "API 키 공간",
       "allOrganizations": "모든 조직",
       "allOrganizationsSubtitle": "사이트 관리자로서 모든 조직의 대시보드를 열고 관리할 수 있습니다.",
+      "searchPlaceholder": "조직 검색",
+      "filterTagAll": "전체",
+      "noResults": "조직을 찾을 수 없습니다.",
       "adminBadge": "관리자",
       "authorAdminSpace": "작성자"
     },

@@ -4895,6 +4895,8 @@
       "permissions": "Rollen & Berechtigungen",
       "backToSite": "Zurück zur Website",
       "noOrganizationSelected": "Wählen Sie oben rechts eine Organisation aus.",
+      "groupAdmin": "Verwaltung",
+      "allOrganizations": "Alle Organisationen",
       "authorSpace": "Autorenbereich",
       "myArticles": "Meine Artikel",
       "authorProfile": "Autorenprofil",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "API Schlüssel Bereich",
       "allOrganizations": "Alle Organisationen",
       "allOrganizationsSubtitle": "Als Site Admin können Sie das Dashboard jeder Organisation öffnen und verwalten.",
+      "searchPlaceholder": "Organisation suchen",
+      "filterTagAll": "Alle",
+      "noResults": "Keine Organisationen gefunden.",
       "adminBadge": "Admin",
       "authorAdminSpace": "Autoren"
     },

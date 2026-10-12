@@ -4895,6 +4895,8 @@
       "permissions": "الأدوار والصلاحيات",
       "backToSite": "العودة إلى الموقع",
       "noOrganizationSelected": "اختر منظمة من أعلى الصفحة.",
+      "groupAdmin": "الإدارة",
+      "allOrganizations": "كل المنظمات",
       "authorSpace": "مساحة الكاتب",
       "myArticles": "مقالاتي",
       "authorProfile": "ملف الكاتب",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "مساحة مفاتيح API",
       "allOrganizations": "كل المنظمات",
       "allOrganizationsSubtitle": "بصفتك مسؤولًا عن الموقع، يمكنك فتح لوحة تحكم أي منظمة وإدارتها.",
+      "searchPlaceholder": "ابحث عن منظمة",
+      "filterTagAll": "الكل",
+      "noResults": "لم يتم العثور على منظمات.",
       "adminBadge": "مسؤول",
       "authorAdminSpace": "الكتّاب"
     },

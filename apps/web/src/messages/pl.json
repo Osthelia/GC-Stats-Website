@@ -4895,6 +4895,8 @@
       "permissions": "Role i uprawnienia",
       "backToSite": "Wróć na stronę",
       "noOrganizationSelected": "Wybierz organizację w prawym górnym rogu.",
+      "groupAdmin": "Administracja",
+      "allOrganizations": "Wszystkie organizacje",
       "authorSpace": "Przestrzeń autora",
       "myArticles": "Moje artykuły",
       "authorProfile": "Profil autora",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "Przestrzeń kluczy API",
       "allOrganizations": "Wszystkie organizacje",
       "allOrganizationsSubtitle": "Jako administrator strony możesz otworzyć dashboard dowolnej organizacji i nim zarządzać.",
+      "searchPlaceholder": "Szukaj organizacji",
+      "filterTagAll": "Wszystkie",
+      "noResults": "Nie znaleziono organizacji.",
       "adminBadge": "Admin",
       "authorAdminSpace": "Autorzy"
     },

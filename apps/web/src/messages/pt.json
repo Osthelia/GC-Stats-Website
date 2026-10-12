@@ -4895,6 +4895,8 @@
       "permissions": "Cargos e permissões",
       "backToSite": "Voltar ao site",
       "noOrganizationSelected": "Escolha uma organização no canto superior direito.",
+      "groupAdmin": "Administração",
+      "allOrganizations": "Todas as organizações",
       "authorSpace": "Espaço do autor",
       "myArticles": "Meus artigos",
       "authorProfile": "Perfil de autor",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "Espaço de chaves de API",
       "allOrganizations": "Todas as organizações",
       "allOrganizationsSubtitle": "Como admin do site, você pode abrir e gerenciar o dashboard de qualquer organização.",
+      "searchPlaceholder": "Pesquisar uma organização",
+      "filterTagAll": "Todos",
+      "noResults": "Nenhuma organização encontrada.",
       "adminBadge": "Admin",
       "authorAdminSpace": "Autores"
     },

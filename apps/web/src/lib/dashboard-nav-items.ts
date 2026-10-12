@@ -86,6 +86,9 @@ export const DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS: { href: string; labelKey: string;
   { href: DASHBOARD_AUTHOR_ADMIN_HREF, labelKey: "allAuthors", icon: UsersRound },
 ];
 
+/** Admin view over every organization (/dashboard/organizations), same gate as the authors admin view. */
+export const DASHBOARD_ALL_ORGANIZATIONS_HREF = "/dashboard/organizations";
+
 /** Segment-aware match, since "/dashboard/authors" would otherwise also satisfy a plain startsWith("/dashboard/author"). */
 export function isDashboardPathIn(pathname: string, base: string): boolean {
   return pathname === base || pathname.startsWith(`${base}/`);
@@ -100,6 +103,7 @@ export const DASHBOARD_API_KEY_NAV_ITEMS: { href: string; labelKey: string; icon
 export function matchDashboardNavItemLabel(pathname: string): string {
   if (pathname === DASHBOARD_HOME_HREF) return "overview";
   if (isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF)) return "allAuthors";
+  if (isDashboardPathIn(pathname, DASHBOARD_ALL_ORGANIZATIONS_HREF)) return "allOrganizations";
   if (isDashboardPathIn(pathname, "/dashboard/author")) {
     const authorItem = DASHBOARD_AUTHOR_NAV_ITEMS.find((i) => pathname === i.href);
     return authorItem?.labelKey ?? "myArticles";

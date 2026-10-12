@@ -21,6 +21,7 @@ export type DashboardOrgMembership = {
   organizationId: number;
   organizationName: string;
   organizationSlug: string;
+  organizationTags: string[];
   /** Display name only — "Owner" (i18n'd by the caller, see admin.organizations.edit.role.owner) for the sentinel, otherwise this organization's own free-text role name(s), comma-joined when the grant holds several. */
   roleName: string;
   isOwner: boolean;
@@ -80,6 +81,7 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
       organizationId: organizations.id,
       organizationName: organizations.name,
       organizationSlug: organizations.slug,
+      tags: organizations.tags,
       maxPermissions: organizations.maxPermissions,
       accessId: organizationAccess.id,
       isOwner: organizationAccess.isOwner,
@@ -117,6 +119,7 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
       organizationId: r.organizationId,
       organizationName: r.organizationName,
       organizationSlug: r.organizationSlug,
+      organizationTags: Array.isArray(r.tags) ? (r.tags as string[]) : [],
       roleName: r.isOwner ? "owner" : (myRoles.map((mr) => mr.roleName).join(", ") || "-"),
       isOwner: r.isOwner,
       permissions: r.isTeamLinked ? applyLinkedPermissions(granted) : granted,
@@ -151,6 +154,7 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
       id: organizations.id,
       name: organizations.name,
       slug: organizations.slug,
+      tags: organizations.tags,
       isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
     })
     .from(organizations);
@@ -158,6 +162,7 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
     organizationId: r.id,
     organizationName: r.name,
     organizationSlug: r.slug,
+    organizationTags: Array.isArray(r.tags) ? (r.tags as string[]) : [],
     roleName: "admin",
     isOwner: true,
     isGlobalAdminOverride: true,
@@ -169,8 +174,14 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
 /** Real memberships plus the global admin override — used everywhere /dashboard resolves "which organizations can this account reach" (picker, sidebar, org switcher, per-org access checks). The override wins over a real membership for the same organization, so an admin is never capped by a role or the organization's ceiling. */
 async function getCombinedDashboardMemberships(userId: string): Promise<DashboardOrgMembership[]> {
   const [real, adminOverride] = await Promise.all([getDashboardMemberships(userId), getGlobalOrgAdminMemberships(userId)]);
+  const realById = new Map(real.map((m) => [m.organizationId, m]));
+  // An organization the admin also belongs to stays a regular entry (own role, no "admin" flag), only with the full admin permissions.
+  const merged = adminOverride.map((m) => {
+    const own = realById.get(m.organizationId);
+    return own ? { ...own, permissions: m.permissions } : m;
+  });
   const overrideIds = new Set(adminOverride.map((m) => m.organizationId));
-  return [...real.filter((m) => !overrideIds.has(m.organizationId)), ...adminOverride];
+  return [...real.filter((m) => !overrideIds.has(m.organizationId)), ...merged];
 }
 
 /** Cheap "should the nav show the dashboard link" check — same grants as requireDashboardAccess (organization_access, isAuthor, a personal API key, or the global admin override), no permission detail needed. */

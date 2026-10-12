@@ -4895,6 +4895,8 @@
       "permissions": "ロールと権限",
       "backToSite": "サイトに戻る",
       "noOrganizationSelected": "右上で組織を選択してください。",
+      "groupAdmin": "管理",
+      "allOrganizations": "すべての組織",
       "authorSpace": "執筆者スペース",
       "myArticles": "自分の記事",
       "authorProfile": "執筆者プロフィール",
@@ -4919,6 +4921,9 @@
       "apiKeySpace": "APIキースペース",
       "allOrganizations": "すべての組織",
       "allOrganizationsSubtitle": "サイト管理者として、すべての組織のダッシュボードを開いて管理できます。",
+      "searchPlaceholder": "組織を検索",
+      "filterTagAll": "すべて",
+      "noResults": "組織が見つかりません。",
       "adminBadge": "管理者",
       "authorAdminSpace": "著者"
     },
