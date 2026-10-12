@@ -5978,7 +5978,51 @@
       "themeLight": "Light",
       "themeDark": "Dark",
       "ongoing": "ongoing",
-      "hint": "Your image is uploaded right away but only replaces the live logo once staff approves this proposal. Editing or removing an existing entry is also just a proposal: nothing changes until then."
+      "hint": "Your image is uploaded right away but only replaces the live logo once staff approves this proposal. Editing or removing an existing entry is also just a proposal: nothing changes until then.",
+      "photo": {
+        "add": "Add a photo",
+        "change": "Change the photo",
+        "legalTitle": "Photo rights and consent",
+        "legalLead": "Before sending a photo, please confirm the following.",
+        "capacityLabel": "Who is uploading this photo?",
+        "capacity": {
+          "self": "I am the person in the photo",
+          "authorized": "I am acting for the person in the photo"
+        },
+        "capacityHint": {
+          "self": "It is my own profile.",
+          "authorized": "For example a manager, team staff or legal representative, with their authorization."
+        },
+        "legalCapacity": {
+          "self": "I am the person shown in this photo, this is my own profile, and I consent to the publication of my image on GC Stats.",
+          "authorized": "I am acting with the prior and express authorization of the person shown in this photo (or of their legal guardian), who consents to the publication of their image on GC Stats. I can provide proof of this authorization on request."
+        },
+        "legalRights": "I am the author of this photo or I hold the rights needed to use and share it (copyright and any permission from the photographer).",
+        "legalLicense": "I grant GC Stats a free, non exclusive, worldwide license, for as long as the profile exists, to store, resize, crop and display this photo on the website and in its related tools (widgets, API).",
+        "legalThirdParty": "This photo does not infringe the rights of any third party and contains nothing unlawful or offensive.",
+        "legalMinor": "If the person is under 18, their legal guardian has given consent to this publication.",
+        "legalWithdraw": "The person can ask for the removal of this photo at any time and keeps all their rights over their personal data. GC Stats may refuse or remove any photo that does not follow the rules. I am responsible for the accuracy of these statements.",
+        "legalLinks": "Your photo is personal data handled according to our <privacy>privacy policy</privacy>. To request the removal of a photo, use the <takedown>takedown page</takedown>.",
+        "legalCheckbox": {
+          "self": "I have read and accept these conditions, and I confirm that they are accurate.",
+          "authorized": "I have read and accept these conditions, and I confirm that they are accurate."
+        },
+        "cancel": "Cancel",
+        "accept": "Accept and continue",
+        "uploadTitle": "Add a photo",
+        "dropzone": "Click or drop a photo here",
+        "dropzoneHint": "JPG, PNG or WebP",
+        "checking": "Checking the photo…",
+        "rulesTitle": "Photo rules",
+        "ruleFace": "Face clearly visible and centered.",
+        "rulePose": "Professional pose.",
+        "ruleJersey": "Wearing the official jersey if possible.",
+        "technicalTitle": "Image requirements",
+        "ruleFormat": "Format: JPG, PNG or WebP.",
+        "ruleWeight": "Maximum weight: {max} MB.",
+        "ruleSize": "Minimum size: {min} px on the shortest side, a square photo is best.",
+        "confirm": "Use this photo"
+      }
     },
     "roster": {
       "roleOption": {
@@ -6059,6 +6103,9 @@
       "userLinkAlreadyYours": "This profile is already linked to your account.",
       "userLinkTaken": "This profile is already linked to another account.",
       "userLinkPending": "You already have an account link request pending review.",
+      "consentRequired": "You must accept the photo rights and consent conditions.",
+      "invalidType": "Only JPG, PNG or WebP photos are accepted.",
+      "tooSmall": "This photo is too small (400 px minimum on the shortest side).",
       "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
     },
     "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID).",

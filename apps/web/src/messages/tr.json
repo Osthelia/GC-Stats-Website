@@ -5854,7 +5854,51 @@
       "themeLight": "Açık",
       "themeDark": "Koyu",
       "ongoing": "devam ediyor",
-      "hint": "Görseliniz hemen yüklenir ancak bu öneri ekip tarafından onaylandığında canlı logonun yerini alır. Mevcut bir kaydı düzenlemek veya kaldırmak da yalnızca bir öneridir: o zamana kadar hiçbir şey değişmez."
+      "hint": "Görseliniz hemen yüklenir ancak bu öneri ekip tarafından onaylandığında canlı logonun yerini alır. Mevcut bir kaydı düzenlemek veya kaldırmak da yalnızca bir öneridir: o zamana kadar hiçbir şey değişmez.",
+      "photo": {
+        "add": "Fotoğraf ekle",
+        "change": "Fotoğrafı değiştir",
+        "legalTitle": "Fotoğraf hakları ve onay",
+        "legalLead": "Fotoğraf göndermeden önce lütfen aşağıdakileri onaylayın.",
+        "capacityLabel": "Bu fotoğrafı kim yüklüyor?",
+        "capacity": {
+          "self": "Fotoğraftaki kişi benim",
+          "authorized": "Fotoğraftaki kişi adına hareket ediyorum"
+        },
+        "capacityHint": {
+          "self": "Bu benim kendi profilim.",
+          "authorized": "Örneğin menajer, takım ekibinden biri veya yasal temsilci, kişinin izniyle."
+        },
+        "legalCapacity": {
+          "self": "Bu fotoğrafta görünen kişi benim, bu benim kendi profilim ve görüntümün GC Stats'ta yayımlanmasına onay veriyorum.",
+          "authorized": "Bu fotoğrafta görünen kişinin (veya yasal temsilcisinin) önceden ve açıkça verdiği izinle hareket ediyorum; kişi görüntüsünün GC Stats'ta yayımlanmasına onay vermektedir. İstenirse bu izni belgeleyebilirim."
+        },
+        "legalRights": "Bu fotoğrafın sahibiyim veya onu kullanmak ve paylaşmak için gerekli haklara sahibim (telif hakkı ve varsa fotoğrafçının izni).",
+        "legalLicense": "GC Stats'a, profil var olduğu sürece, bu fotoğrafı web sitesinde ve ilgili araçlarında (widget'lar, API) saklaması, yeniden boyutlandırması, kırpması ve göstermesi için ücretsiz, münhasır olmayan, dünya çapında bir lisans veriyorum.",
+        "legalThirdParty": "Bu fotoğraf üçüncü kişilerin haklarını ihlal etmez ve yasa dışı veya saldırgan hiçbir şey içermez.",
+        "legalMinor": "Kişi 18 yaşından küçükse, yasal temsilcisi bu yayına onay vermiştir.",
+        "legalWithdraw": "Kişi bu fotoğrafın kaldırılmasını istediği zaman talep edebilir ve kişisel verileri üzerindeki tüm haklarını korur. GC Stats kurallara uymayan her fotoğrafı reddedebilir veya kaldırabilir. Bu beyanların doğruluğundan ben sorumluyum.",
+        "legalLinks": "Fotoğrafınız, <privacy>gizlilik politikamıza</privacy> göre işlenen bir kişisel veridir. Bir fotoğrafın kaldırılmasını talep etmek için <takedown>kaldırma talebi sayfasını</takedown> kullanın.",
+        "legalCheckbox": {
+          "self": "Bu koşulları okudum, kabul ediyorum ve doğru olduklarını onaylıyorum.",
+          "authorized": "Bu koşulları okudum, kabul ediyorum ve doğru olduklarını onaylıyorum."
+        },
+        "cancel": "İptal",
+        "accept": "Kabul et ve devam et",
+        "uploadTitle": "Fotoğraf ekle",
+        "dropzone": "Tıklayın veya bir fotoğrafı buraya bırakın",
+        "dropzoneHint": "JPG, PNG veya WebP",
+        "checking": "Fotoğraf kontrol ediliyor…",
+        "rulesTitle": "Fotoğraf kuralları",
+        "ruleFace": "Yüz net görünür ve ortalanmış olmalı.",
+        "rulePose": "Profesyonel duruş.",
+        "ruleJersey": "Mümkünse resmi formayla.",
+        "technicalTitle": "Görsel gereksinimleri",
+        "ruleFormat": "Biçim: JPG, PNG veya WebP.",
+        "ruleWeight": "Maksimum boyut: {max} MB.",
+        "ruleSize": "Minimum boyut: en kısa kenarda {min} px, kare bir fotoğraf idealdir.",
+        "confirm": "Bu fotoğrafı kullan"
+      }
     },
     "roster": {
       "roleOption": {
@@ -5935,6 +5979,9 @@
       "userLinkAlreadyYours": "Bu profil zaten hesabına bağlı.",
       "userLinkTaken": "Bu profil zaten başka bir hesaba bağlı.",
       "userLinkPending": "İncelemede bekleyen bir hesap bağlama talebin zaten var.",
+      "consentRequired": "Fotoğraf hakları ve onay koşullarını kabul etmelisiniz.",
+      "invalidType": "Yalnızca JPG, PNG veya WebP fotoğrafları kabul edilir.",
+      "tooSmall": "Bu fotoğraf çok küçük (en kısa kenarda en az 400 px).",
       "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
     },
     "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala).",

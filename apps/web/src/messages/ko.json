@@ -5854,7 +5854,51 @@
       "themeLight": "라이트",
       "themeDark": "다크",
       "ongoing": "진행 중",
-      "hint": "이미지는 바로 업로드되지만, 스태프가 이 제안을 승인해야 실제 로고가 교체돼요. 기존 항목을 수정하거나 삭제하는 것도 제안일 뿐이며, 승인 전까지는 아무것도 변경되지 않아요."
+      "hint": "이미지는 바로 업로드되지만, 스태프가 이 제안을 승인해야 실제 로고가 교체돼요. 기존 항목을 수정하거나 삭제하는 것도 제안일 뿐이며, 승인 전까지는 아무것도 변경되지 않아요.",
+      "photo": {
+        "add": "사진 추가",
+        "change": "사진 변경",
+        "legalTitle": "사진 권리 및 동의",
+        "legalLead": "사진을 보내기 전에 아래 내용을 확인해 주세요.",
+        "capacityLabel": "이 사진을 누가 올리나요?",
+        "capacity": {
+          "self": "사진 속 본인입니다",
+          "authorized": "사진 속 인물을 대리하여 올립니다"
+        },
+        "capacityHint": {
+          "self": "제 프로필입니다.",
+          "authorized": "예: 매니저, 팀 스태프 또는 법정대리인(본인의 허락을 받은 경우)."
+        },
+        "legalCapacity": {
+          "self": "저는 이 사진 속 인물 본인이며, 제 프로필이고, GC Stats에 제 초상이 게시되는 것에 동의합니다.",
+          "authorized": "저는 이 사진 속 인물(또는 그 법정대리인)의 사전 및 명시적 허락을 받아 행동하며, 해당 인물은 GC Stats에 초상이 게시되는 것에 동의했습니다. 요청 시 이 허락을 증명할 수 있습니다."
+        },
+        "legalRights": "저는 이 사진의 촬영자이거나, 사진을 사용하고 공유하는 데 필요한 권리(저작권 및 촬영자의 허락)를 보유하고 있습니다.",
+        "legalLicense": "프로필이 존재하는 동안, GC Stats가 이 사진을 웹사이트와 관련 도구(위젯, API)에서 저장, 크기 조정, 자르기 및 표시하는 것을 무상, 비독점, 전 세계 범위로 허락합니다.",
+        "legalThirdParty": "이 사진은 제3자의 권리를 침해하지 않으며 불법적이거나 불쾌한 내용을 포함하지 않습니다.",
+        "legalMinor": "해당 인물이 18세 미만인 경우, 법정대리인이 이 게시에 동의했습니다.",
+        "legalWithdraw": "해당 인물은 언제든지 이 사진의 삭제를 요청할 수 있으며, 개인정보에 대한 모든 권리를 보유합니다. GC Stats는 규칙에 맞지 않는 사진을 거부하거나 삭제할 수 있습니다. 이 진술의 정확성에 대한 책임은 제게 있습니다.",
+        "legalLinks": "사진은 개인정보이며 <privacy>개인정보처리방침</privacy>에 따라 처리됩니다. 사진 삭제를 요청하려면 <takedown>삭제 요청 페이지</takedown>를 이용하세요.",
+        "legalCheckbox": {
+          "self": "이 조건을 읽었고 동의하며, 내용이 정확함을 확인합니다.",
+          "authorized": "이 조건을 읽었고 동의하며, 내용이 정확함을 확인합니다."
+        },
+        "cancel": "취소",
+        "accept": "동의하고 계속",
+        "uploadTitle": "사진 추가",
+        "dropzone": "클릭하거나 사진을 여기에 놓으세요",
+        "dropzoneHint": "JPG, PNG 또는 WebP",
+        "checking": "사진을 확인하는 중…",
+        "rulesTitle": "사진 규칙",
+        "ruleFace": "얼굴이 선명하게 보이고 중앙에 위치해야 합니다.",
+        "rulePose": "프로다운 자세.",
+        "ruleJersey": "가능하면 공식 유니폼 착용.",
+        "technicalTitle": "이미지 요건",
+        "ruleFormat": "형식: JPG, PNG 또는 WebP.",
+        "ruleWeight": "최대 용량: {max} MB.",
+        "ruleSize": "최소 크기: 짧은 변 기준 {min} px, 정사각형 사진이 가장 좋습니다.",
+        "confirm": "이 사진 사용"
+      }
     },
     "roster": {
       "roleOption": {
@@ -5935,6 +5979,9 @@
       "userLinkAlreadyYours": "이 프로필은 이미 내 계정에 연결되어 있습니다.",
       "userLinkTaken": "이 프로필은 이미 다른 계정에 연결되어 있습니다.",
       "userLinkPending": "검토 대기 중인 계정 연결 요청이 이미 있습니다.",
+      "consentRequired": "사진 권리 및 동의 조건에 동의해야 합니다.",
+      "invalidType": "JPG, PNG 또는 WebP 사진만 사용할 수 있습니다.",
+      "tooSmall": "사진이 너무 작습니다(짧은 변 기준 최소 400 px).",
       "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
     },
     "discordIdHint": "숫자로 된 Discord 사용자 ID (개발자 모드에서 프로필 우클릭, 사용자 ID 복사).",

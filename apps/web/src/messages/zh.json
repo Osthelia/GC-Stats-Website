@@ -5854,7 +5854,51 @@
       "themeLight": "浅色",
       "themeDark": "深色",
       "ongoing": "至今",
-      "hint": "您的图片会立即上传，但只有在团队批准此提议后才会替换线上商标。编辑或移除已有记录同样只是一项提议，在批准前不会有任何变化。"
+      "hint": "您的图片会立即上传，但只有在团队批准此提议后才会替换线上商标。编辑或移除已有记录同样只是一项提议，在批准前不会有任何变化。",
+      "photo": {
+        "add": "添加照片",
+        "change": "更换照片",
+        "legalTitle": "照片权利与授权",
+        "legalLead": "上传照片前，请确认以下内容。",
+        "capacityLabel": "谁在上传这张照片？",
+        "capacity": {
+          "self": "我就是照片中的人",
+          "authorized": "我代表照片中的人操作"
+        },
+        "capacityHint": {
+          "self": "这是我自己的资料。",
+          "authorized": "例如经纪人、战队工作人员或法定代理人，并已获得其授权。"
+        },
+        "legalCapacity": {
+          "self": "我就是这张照片中的人，这是我自己的资料，我同意在 GC Stats 上发布我的肖像。",
+          "authorized": "我已获得这张照片中人物（或其法定监护人）事先的明确授权，该人物同意在 GC Stats 上发布其肖像。应要求，我可以提供该授权的证明。"
+        },
+        "legalRights": "我是这张照片的作者，或拥有使用和分享它所需的权利（版权及摄影师的许可）。",
+        "legalLicense": "在资料存续期间，我授予 GC Stats 免费、非独占、全球范围的许可，用于在网站及相关工具（小组件、API）中存储、调整大小、裁剪和展示这张照片。",
+        "legalThirdParty": "这张照片不侵犯任何第三方的权利，也不含任何违法或冒犯性内容。",
+        "legalMinor": "如果当事人未满 18 岁，其法定监护人已同意此次发布。",
+        "legalWithdraw": "当事人可随时要求删除这张照片，并保留其个人数据的所有权利。GC Stats 可以拒绝或删除任何不符合规则的照片。我对上述声明的真实性负责。",
+        "legalLinks": "你的照片属于个人数据，将按照我们的<privacy>隐私政策</privacy>处理。如需申请删除照片，请使用<takedown>删除申请页面</takedown>。",
+        "legalCheckbox": {
+          "self": "我已阅读并接受这些条件，并确认其真实准确。",
+          "authorized": "我已阅读并接受这些条件，并确认其真实准确。"
+        },
+        "cancel": "取消",
+        "accept": "接受并继续",
+        "uploadTitle": "添加照片",
+        "dropzone": "点击或将照片拖放到此处",
+        "dropzoneHint": "JPG、PNG 或 WebP",
+        "checking": "正在检查照片…",
+        "rulesTitle": "照片规则",
+        "ruleFace": "面部清晰可见并居中。",
+        "rulePose": "专业的姿态。",
+        "ruleJersey": "如有可能，穿着官方球衣。",
+        "technicalTitle": "图片要求",
+        "ruleFormat": "格式：JPG、PNG 或 WebP。",
+        "ruleWeight": "最大大小：{max} MB。",
+        "ruleSize": "最小尺寸：最短边不少于 {min} 像素，正方形照片最佳。",
+        "confirm": "使用这张照片"
+      }
     },
     "roster": {
       "roleOption": {
@@ -5935,6 +5979,9 @@
       "userLinkAlreadyYours": "此资料已绑定到你的账户。",
       "userLinkTaken": "此资料已绑定到其他账户。",
       "userLinkPending": "你已有一个待审核的账户绑定请求。",
+      "consentRequired": "你必须接受照片权利与授权条件。",
+      "invalidType": "仅接受 JPG、PNG 或 WebP 格式的照片。",
+      "tooSmall": "这张照片太小（最短边至少 400 像素）。",
       "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
     },
     "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。",

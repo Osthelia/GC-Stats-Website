@@ -5854,7 +5854,51 @@
       "themeLight": "Claro",
       "themeDark": "Escuro",
       "ongoing": "em vigor",
-      "hint": "Sua imagem é enviada imediatamente, mas só substitui o logo exibido quando a staff aprovar esta proposta. Editar ou remover uma entrada existente também é apenas uma proposta: nada muda até lá."
+      "hint": "Sua imagem é enviada imediatamente, mas só substitui o logo exibido quando a staff aprovar esta proposta. Editar ou remover uma entrada existente também é apenas uma proposta: nada muda até lá.",
+      "photo": {
+        "add": "Adicionar uma foto",
+        "change": "Alterar a foto",
+        "legalTitle": "Direitos e consentimento sobre a foto",
+        "legalLead": "Antes de enviar uma foto, confirme os pontos a seguir.",
+        "capacityLabel": "Quem está enviando esta foto?",
+        "capacity": {
+          "self": "Sou a pessoa na foto",
+          "authorized": "Estou agindo em nome da pessoa na foto"
+        },
+        "capacityHint": {
+          "self": "É o meu próprio perfil.",
+          "authorized": "Por exemplo um manager, membro da equipe técnica de um time ou representante legal, com a sua autorização."
+        },
+        "legalCapacity": {
+          "self": "Sou a pessoa retratada nesta foto, este é o meu próprio perfil e consinto a publicação da minha imagem no GC Stats.",
+          "authorized": "Atuo com a autorização prévia e expressa da pessoa retratada nesta foto (ou do seu representante legal), que consente a publicação da sua imagem no GC Stats. Posso comprovar esta autorização mediante solicitação."
+        },
+        "legalRights": "Sou o autor desta foto ou detenho os direitos necessários para usá-la e compartilhá-la (direitos autorais e eventual autorização do fotógrafo).",
+        "legalLicense": "Concedo ao GC Stats uma licença gratuita, não exclusiva e mundial, enquanto o perfil existir, para armazenar, redimensionar, recortar e exibir esta foto no site e nas suas ferramentas associadas (widgets, API).",
+        "legalThirdParty": "Esta foto não viola os direitos de terceiros e não contém nada ilícito ou ofensivo.",
+        "legalMinor": "Se a pessoa tiver menos de 18 anos, o seu representante legal deu consentimento a esta publicação.",
+        "legalWithdraw": "A pessoa pode pedir a remoção desta foto a qualquer momento e mantém todos os seus direitos sobre os seus dados pessoais. O GC Stats pode recusar ou remover qualquer foto que não siga as regras. Sou responsável pela veracidade destas declarações.",
+        "legalLinks": "A sua foto é um dado pessoal tratado de acordo com a nossa <privacy>política de privacidade</privacy>. Para pedir a remoção de uma foto, use a <takedown>página de pedido de remoção</takedown>.",
+        "legalCheckbox": {
+          "self": "Li e aceito estas condições e confirmo que são verdadeiras.",
+          "authorized": "Li e aceito estas condições e confirmo que são verdadeiras."
+        },
+        "cancel": "Cancelar",
+        "accept": "Aceitar e continuar",
+        "uploadTitle": "Adicionar uma foto",
+        "dropzone": "Clique ou solte uma foto aqui",
+        "dropzoneHint": "JPG, PNG ou WebP",
+        "checking": "Verificando a foto…",
+        "rulesTitle": "Regras da foto",
+        "ruleFace": "Rosto claramente visível e centralizado.",
+        "rulePose": "Postura profissional.",
+        "ruleJersey": "Se possível, com a camisa oficial.",
+        "technicalTitle": "Requisitos da imagem",
+        "ruleFormat": "Formato: JPG, PNG ou WebP.",
+        "ruleWeight": "Peso máximo: {max} MB.",
+        "ruleSize": "Tamanho mínimo: {min} px no lado mais curto, o ideal é uma foto quadrada.",
+        "confirm": "Usar esta foto"
+      }
     },
     "roster": {
       "roleOption": {
@@ -5935,6 +5979,9 @@
       "userLinkAlreadyYours": "Este perfil já está vinculado à sua conta.",
       "userLinkTaken": "Este perfil já está vinculado a outra conta.",
       "userLinkPending": "Você já tem um pedido de vínculo de conta aguardando análise.",
+      "consentRequired": "Você deve aceitar as condições de direitos e consentimento da foto.",
+      "invalidType": "Apenas fotos JPG, PNG ou WebP são aceitas.",
+      "tooSmall": "Esta foto é muito pequena (mínimo de 400 px no lado mais curto).",
       "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
     },
     "discordIdHint": "ID numérico de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário).",

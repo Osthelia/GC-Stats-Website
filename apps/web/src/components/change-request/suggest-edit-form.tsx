@@ -27,7 +27,7 @@ import {
 import { PublicCountrySelect } from "@/components/forms/public-country-select";
 import { PublicSelect } from "@/components/forms/public-select";
 import { PublicTagsInput } from "@/components/forms/public-tags-input";
-import { LogoChangeSection } from "@/components/change-request/logo-change-section";
+import { LogoChangeSection, type LogoMeta } from "@/components/change-request/logo-change-section";
 import { MembershipHistorySection, type MembershipEntryView } from "@/components/change-request/membership-history-section";
 import { TeamNameHistorySection } from "@/components/change-request/team-name-history-section";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
@@ -98,7 +98,7 @@ export function SuggestEditForm({
   const [reason, setReason] = useState("");
   const [linkUser, setLinkUser] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoMeta, setLogoMeta] = useState({ theme: "", since: "", until: "" });
+  const [logoMeta, setLogoMeta] = useState<LogoMeta>({ theme: "", since: "", until: "" });
   const [logoOps, setLogoOps] = useState<LogoOperation[]>([]);
   const [membershipOps, setMembershipOps] = useState<MembershipOperation[]>([]);
   const [nameHistoryOps, setNameHistoryOps] = useState<NameHistoryOperation[]>([]);
@@ -131,6 +131,7 @@ export function SuggestEditForm({
       formData.set("logoTheme", logoMeta.theme);
       formData.set("logoSince", logoMeta.since);
       formData.set("logoUntil", logoMeta.until);
+      if (subjectType === "person" && logoMeta.consent) formData.set("photoConsent", logoMeta.consent);
     }
 
     const result = await submitChangeRequest(subjectType, subjectId, formData);
@@ -313,6 +314,7 @@ export function SuggestEditForm({
           </SectionCard>
 
           <LogoChangeSection
+            subjectType={subjectType}
             logos={logos}
             onFileChange={(file, meta) => {
               setLogoFile(file);

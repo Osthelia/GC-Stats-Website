@@ -13,7 +13,8 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import { PublicSelect } from "@/components/forms/public-select";
-import type { LogoOperation } from "@/lib/change-request-fields";
+import { PersonPhotoDialog } from "@/components/change-request/person-photo-dialog";
+import type { ChangeRequestSubjectType, LogoOperation, PhotoConsent } from "@/lib/change-request-fields";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-2.5 py-1.5 text-[12.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -23,6 +24,8 @@ const NO_THEME = "";
 function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+export type LogoMeta = { theme: string; since: string; until: string; consent?: PhotoConsent };
 
 type EditState = { theme: string; since: string; until: string; deleted: boolean };
 
@@ -35,12 +38,14 @@ type EditState = { theme: string; since: string; until: string; deleted: boolean
  * but only linked to a `logos` row once staff approves.
  */
 export function LogoChangeSection({
+  subjectType,
   logos,
   onFileChange,
   onOperationsChange,
 }: {
+  subjectType: ChangeRequestSubjectType;
   logos: AdminLogoEntry[];
-  onFileChange: (file: File | null, meta: { theme: string; since: string; until: string }) => void;
+  onFileChange: (file: File | null, meta: LogoMeta) => void;
   onOperationsChange: (ops: LogoOperation[]) => void;
 }) {
   const t = useTranslations("suggestEdit.logo");
@@ -50,6 +55,8 @@ export function LogoChangeSection({
   const [newTheme, setNewTheme] = useState(NO_THEME);
   const [newSince, setNewSince] = useState(today);
   const [newUntil, setNewUntil] = useState("");
+  const [photoDialogOpen, setPhotoDialogOpen] = useState(false);
+  const isPerson = subjectType === "person";
 
   const [edits, setEdits] = useState<Record<string, EditState>>(() =>
     Object.fromEntries(logos.map((l) => [l.id, { theme: l.theme ?? NO_THEME, since: l.since ?? today(), until: l.until ?? "", deleted: false }]))
@@ -62,13 +69,13 @@ export function LogoChangeSection({
     { value: "dark", label: t("themeDark") },
   ];
 
-  function handleFile(file: File | null) {
+  function handleFile(file: File | null, consent?: PhotoConsent) {
     setFileName(file?.name ?? null);
     setPreview((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return file ? URL.createObjectURL(file) : null;
     });
-    onFileChange(file, { theme: newTheme, since: newSince, until: newUntil });
+    onFileChange(file, { theme: newTheme, since: newSince, until: newUntil, consent });
   }
 
   function emitOps(next: Record<string, EditState>) {
@@ -146,62 +153,95 @@ export function LogoChangeSection({
         </div>
       )}
 
-      <div className="flex flex-col gap-2 border-t border-neutral-800 pt-4">
-        <span className="text-[13px] font-medium text-neutral-300">{t("addNew")}</span>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-4 py-2 text-[13.5px] font-semibold text-neutral-200 transition-colors hover:border-[#e4ae22]/60"
-          >
-            {t("choose")}
-          </button>
-          <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
-          <PublicSelect
-            value={newTheme}
-            onChange={(v) => {
-              setNewTheme(v);
-              if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: v, since: newSince, until: newUntil });
-            }}
-            options={themeOptions}
-          />
-          <input
-            type="date"
-            value={newSince}
-            onChange={(e) => {
-              setNewSince(e.target.value);
-              if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: e.target.value, until: newUntil });
-            }}
-            className={inputClass}
-          />
-          <input
-            type="date"
-            value={newUntil}
-            onChange={(e) => {
-              setNewUntil(e.target.value);
-              if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: newSince, until: e.target.value });
-            }}
-            className={inputClass}
-          />
-          {fileName && (
-            <div className="flex items-center gap-2">
-              {preview && <Image src={preview} alt="" width={28} height={28} className="h-7 w-7 rounded-md object-contain" unoptimized />}
-              <span className="truncate text-[13px] text-neutral-400">{fileName}</span>
-              <button
-                type="button"
-                onClick={() => {
-                  inputRef.current!.value = "";
-                  handleFile(null);
-                }}
-                className="text-[12px] text-neutral-500 underline hover:text-neutral-300"
-              >
-                {t("remove")}
-              </button>
-            </div>
-          )}
+      {isPerson ? (
+        <div className="flex flex-col gap-2 border-t border-neutral-800 pt-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPhotoDialogOpen(true)}
+              className="rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-4 py-2 text-[13.5px] font-semibold text-neutral-200 transition-all hover:border-[#e4ae22]/60 active:scale-[0.97]"
+            >
+              {fileName ? t("photo.change") : t("photo.add")}
+            </button>
+            {fileName && (
+              <div className="flex items-center gap-2">
+                {preview && <Image src={preview} alt="" width={28} height={28} className="h-7 w-7 rounded-md object-cover" unoptimized />}
+                <span className="truncate text-[13px] text-neutral-400">{fileName}</span>
+                <button type="button" onClick={() => handleFile(null)} className="text-[12px] text-neutral-500 underline transition-colors hover:text-neutral-300 active:opacity-70">
+                  {t("remove")}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col gap-2 border-t border-neutral-800 pt-4">
+          <span className="text-[13px] font-medium text-neutral-300">{t("addNew")}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-4 py-2 text-[13.5px] font-semibold text-neutral-200 transition-colors hover:border-[#e4ae22]/60"
+            >
+              {t("choose")}
+            </button>
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
+            <PublicSelect
+              value={newTheme}
+              onChange={(v) => {
+                setNewTheme(v);
+                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: v, since: newSince, until: newUntil });
+              }}
+              options={themeOptions}
+            />
+            <input
+              type="date"
+              value={newSince}
+              onChange={(e) => {
+                setNewSince(e.target.value);
+                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: e.target.value, until: newUntil });
+              }}
+              className={inputClass}
+            />
+            <input
+              type="date"
+              value={newUntil}
+              onChange={(e) => {
+                setNewUntil(e.target.value);
+                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: newSince, until: e.target.value });
+              }}
+              className={inputClass}
+            />
+            {fileName && (
+              <div className="flex items-center gap-2">
+                {preview && <Image src={preview} alt="" width={28} height={28} className="h-7 w-7 rounded-md object-contain" unoptimized />}
+                <span className="truncate text-[13px] text-neutral-400">{fileName}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    inputRef.current!.value = "";
+                    handleFile(null);
+                  }}
+                  className="text-[12px] text-neutral-500 underline hover:text-neutral-300"
+                >
+                  {t("remove")}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <p className="text-[12px] leading-relaxed text-neutral-500">{t("hint")}</p>
+
+      {photoDialogOpen && (
+        <PersonPhotoDialog
+          onClose={() => setPhotoDialogOpen(false)}
+          onConfirm={(file, consent) => {
+            handleFile(file, consent);
+            setPhotoDialogOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

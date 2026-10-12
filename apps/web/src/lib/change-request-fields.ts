@@ -98,6 +98,13 @@ export type NameHistoryOperation =
 
 export type LogoOperation = { type: "edit"; logoId: string; theme: string | null; since: string; until: string | null } | { type: "delete"; logoId: string };
 
+/** Rules for a person's photo, shared by the upload modal and the server validation. */
+export const PHOTO_MIN_SIDE = 400;
+export const PHOTO_MAX_MB = 10;
+export const PHOTO_CONSENTS = ["self", "authorized"] as const;
+export type PhotoConsent = (typeof PHOTO_CONSENTS)[number];
+export const PHOTO_ACCEPT = "image/jpeg,image/png,image/webp";
+
 export type ChangeRequestSubjectType = "team" | "person";
 
 export function fieldsForSubject(subjectType: ChangeRequestSubjectType): ChangeRequestFieldDef[] {

@@ -31,6 +31,9 @@ import {
   type MembershipOperation,
   type NameHistoryOperation,
   type LogoOperation,
+  PHOTO_ACCEPT,
+  PHOTO_CONSENTS,
+  PHOTO_MIN_SIDE,
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
 import { isDiscordUserId } from "@/lib/person-social-keys";
@@ -285,12 +288,19 @@ export async function submitChangeRequest(
 
   // --- New logo upload ----------------------------------------------------
   const logoFile = formData.get("logoFile");
+  const rawConsent = formData.get("photoConsent");
+  const photoConsent = PHOTO_CONSENTS.find((c) => c === rawConsent) ?? null;
   let logoBuffer: Buffer | null = null;
   if (logoFile instanceof File && logoFile.size > 0) {
     if (logoFile.size > MAX_IMAGE_BYTES) return { ok: false, fieldErrors: { logo: "tooLarge" } };
     const uploaded = Buffer.from(await logoFile.arrayBuffer());
     const validation = await validateImageBuffer(uploaded);
     if (!validation.ok) return { ok: false, fieldErrors: { logo: validation.error } };
+    if (subjectType === "person") {
+      if (!photoConsent) return { ok: false, fieldErrors: { logo: "consentRequired" } };
+      if (!PHOTO_ACCEPT.split(",").includes(logoFile.type)) return { ok: false, fieldErrors: { logo: "invalidType" } };
+      if (Math.min(validation.width, validation.height) < PHOTO_MIN_SIDE) return { ok: false, fieldErrors: { logo: "tooSmall" } };
+    }
     logoBuffer = uploaded;
   }
   const newLogoTheme = (formData.get("logoTheme")?.toString() ?? "") || null;
@@ -328,7 +338,13 @@ export async function submitChangeRequest(
     allItems.push({
       field: "logo",
       oldValue: liveLogo?.id ?? null,
-      newValue: { logoId: storedLogoId, theme: newLogoTheme, since: newLogoSince, until: newLogoUntil },
+      newValue: {
+        logoId: storedLogoId,
+        theme: newLogoTheme,
+        since: newLogoSince,
+        until: newLogoUntil,
+        ...(photoConsent && { photoConsent, photoConsentAt: new Date().toISOString() }),
+      },
     });
   }
 
