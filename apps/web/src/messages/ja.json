@@ -2561,14 +2561,16 @@
           "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
           "empty": "画像を選択してください。",
-          "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。"
+          "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。",
+          "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
         },
         "fieldOrganization": "組織",
         "organizationPlaceholder": "組織を選択",
         "organizationSearchPlaceholder": "組織を検索",
         "organizationNoResults": "組織が見つかりません",
         "organizationClear": "解除",
-        "organizationHint": "リンクされた組織は公開ページがなくなり、そのメンバーはこのチームのスタッフとして表示されます。組織はダッシュボードからこのチームの試合の配信を管理できます。"
+        "organizationHint": "リンクされた組織は公開ページがなくなり、そのメンバーはこのチームのスタッフとして表示されます。組織はダッシュボードからこのチームの試合の配信を管理できます。",
+        "discordHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。"
       },
       "merge": {
         "title": "チームを統合",
@@ -2772,11 +2774,11 @@
           "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
           "empty": "画像を選択してください。",
-          "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。",
+          "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。",
           "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。"
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "数字の Discord ユーザー ID（開発者モードでプロフィールを右クリックし、ユーザーIDをコピー）。"
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。"
       },
       "merge": {
         "title": "選手を統合",
@@ -5160,9 +5162,9 @@
         "storageFailed": "画像をストレージに保存できませんでした。しばらくしてからもう一度お試しください。",
         "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
         "empty": "ファイルが空です。",
-        "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。"
+        "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
       },
-      "discordIdHint": "数字の Discord ユーザー ID（開発者モードでプロフィールを右クリックし、ユーザーIDをコピー）。"
+      "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。"
     },
     "credits": {
       "title": "制作クレジット",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "ウェブサイト",
       "handle": "ハンドルネーム",
       "firstName": "名",
@@ -6056,9 +6058,9 @@
       "consentRequired": "写真の権利と同意の条件に同意する必要があります。",
       "invalidType": "JPG、PNG、WebPの写真のみ使用できます。",
       "tooSmall": "この写真は小さすぎます（短辺 400 px 以上が必要です）。",
-      "invalidDiscordId": "有効な Discord ID を入力してください（17〜20桁）。"
+      "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
     },
-    "discordIdHint": "数字の Discord ユーザー ID（開発者モードでプロフィールを右クリックし、ユーザーIDをコピー）。",
+    "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。",
     "useLinkedDiscord": "連携済みの Discord アカウントを使用"
   },
   "tournamentPage": {

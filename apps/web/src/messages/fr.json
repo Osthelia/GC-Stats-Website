@@ -2565,14 +2565,16 @@
           "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
           "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
-          "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ."
+          "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ.",
+          "invalidDiscordId": "Indiquez une ID utilisateur Discord valide (17 à 20 chiffres) ou une invitation de serveur (discord.gg/...)."
         },
         "fieldOrganization": "Organisation",
         "organizationPlaceholder": "Sélectionner une organisation",
         "organizationSearchPlaceholder": "Rechercher une organisation",
         "organizationNoResults": "Aucune organisation trouvée",
         "organizationClear": "Retirer",
-        "organizationHint": "Une organisation liée perd sa page publique : ses membres apparaissent comme le staff de cette team, et elle gère depuis le dashboard les streams des matchs de cette team."
+        "organizationHint": "Une organisation liée perd sa page publique : ses membres apparaissent comme le staff de cette team, et elle gère depuis le dashboard les streams des matchs de cette team.",
+        "discordHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur."
       },
       "merge": {
         "title": "Fusionner l'équipe",
@@ -2776,11 +2778,11 @@
           "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
           "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
           "empty": "Merci de choisir une image.",
-          "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres).",
+          "invalidDiscordId": "Indiquez une ID utilisateur Discord valide (17 à 20 chiffres) ou une invitation de serveur (discord.gg/...).",
           "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "ID utilisateur Discord numérique (Mode développeur, clic droit sur le profil, Copier l'identifiant)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur."
       },
       "merge": {
         "title": "Fusionner le joueur·se",
@@ -5278,9 +5280,9 @@
         "storageFailed": "L'image n'a pas pu être enregistrée sur le stockage. Réessaie dans un instant.",
         "saveFailed": "Le logo n'a pas pu être enregistré. Réessaie dans un instant.",
         "empty": "Le fichier est vide.",
-        "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
+        "invalidDiscordId": "Indiquez une ID utilisateur Discord valide (17 à 20 chiffres) ou une invitation de serveur (discord.gg/...)."
       },
-      "discordIdHint": "ID utilisateur Discord numérique (Mode développeur, clic droit sur le profil, Copier l'identifiant)."
+      "discordIdHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur."
     },
     "credits": {
       "title": "Crédits de production",
@@ -6009,7 +6011,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Site web",
       "handle": "Pseudo",
       "firstName": "Prénom",
@@ -6180,9 +6182,9 @@
       "consentRequired": "Vous devez accepter les conditions de droits et de consentement sur la photo.",
       "invalidType": "Seules les photos JPG, PNG ou WebP sont acceptées.",
       "tooSmall": "Cette photo est trop petite (400 px minimum sur le plus petit côté).",
-      "invalidDiscordId": "Indiquez une ID Discord valide (17 à 20 chiffres)."
+      "invalidDiscordId": "Indiquez une ID utilisateur Discord valide (17 à 20 chiffres) ou une invitation de serveur (discord.gg/...)."
     },
-    "discordIdHint": "ID utilisateur Discord numérique (Mode développeur, clic droit sur le profil, Copier l'identifiant).",
+    "discordIdHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur.",
     "useLinkedDiscord": "Utiliser mon compte Discord lié"
   },
   "tournamentPage": {

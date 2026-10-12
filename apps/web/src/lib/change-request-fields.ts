@@ -41,14 +41,12 @@ const TEAM_SOCIAL_FIELDS: ChangeRequestFieldDef[] = [
   { key: "socials.instagram", labelKey: "instagram", type: "url", maxLength: 300 },
   { key: "socials.youtube", labelKey: "youtube", type: "url", maxLength: 300 },
   { key: "socials.tiktok", labelKey: "tiktok", type: "url", maxLength: 300 },
-  { key: "socials.discord", labelKey: "discord", type: "url", maxLength: 300 },
+  { key: "socials.discord", labelKey: "discord", type: "discordId", maxLength: 300 },
   { key: "socials.website", labelKey: "website", type: "url", maxLength: 300 },
 ];
 
-// Mirrors PERSON_SOCIAL_KEYS: no "website" for a person, and Discord is a user ID rather than a link.
-const PERSON_SOCIAL_FIELDS: ChangeRequestFieldDef[] = TEAM_SOCIAL_FIELDS.filter((f) => f.key !== "socials.website").map((f) =>
-  f.key === "socials.discord" ? { ...f, type: "discordId", maxLength: 20 } : f
-);
+// Mirrors PERSON_SOCIAL_KEYS: no "website" for a person.
+const PERSON_SOCIAL_FIELDS: ChangeRequestFieldDef[] = TEAM_SOCIAL_FIELDS.filter((f) => f.key !== "socials.website");
 
 export const TEAM_CHANGE_REQUEST_FIELDS: ChangeRequestFieldDef[] = [
   { key: "name", labelKey: "name", type: "text", required: true, maxLength: 200 },

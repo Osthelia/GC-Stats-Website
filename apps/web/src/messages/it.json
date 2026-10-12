@@ -2561,14 +2561,16 @@
           "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
           "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
-          "requiresLeft": "Seleziona « Ha lasciato il team » per indicare una data di uscita."
+          "requiresLeft": "Seleziona « Ha lasciato il team » per indicare una data di uscita.",
+          "invalidDiscordId": "Inserisci un ID utente Discord valido (da 17 a 20 cifre) o un invito al server (discord.gg/...)."
         },
         "fieldOrganization": "Organizzazione",
         "organizationPlaceholder": "Seleziona un'organizzazione",
         "organizationSearchPlaceholder": "Cerca un'organizzazione",
         "organizationNoResults": "Nessuna organizzazione trovata",
         "organizationClear": "Rimuovi",
-        "organizationHint": "Un'organizzazione collegata perde la pagina pubblica: i suoi membri appaiono come staff di questo team e gestisce dalla dashboard gli stream delle partite di questo team."
+        "organizationHint": "Un'organizzazione collegata perde la pagina pubblica: i suoi membri appaiono come staff di questo team e gestisce dalla dashboard gli stream delle partite di questo team.",
+        "discordHint": "ID utente Discord (Modalità sviluppatore, clic destro sul profilo, Copia ID utente) o link di invito al server."
       },
       "merge": {
         "title": "Unisci team",
@@ -2772,11 +2774,11 @@
           "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
           "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
           "empty": "Scegli un'immagine.",
-          "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre).",
+          "invalidDiscordId": "Inserisci un ID utente Discord valido (da 17 a 20 cifre) o un invito al server (discord.gg/...).",
           "requiresLeft": "Seleziona « Ha lasciato il team » per indicare una data di uscita."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "ID utente Discord (Modalità sviluppatore, clic destro sul profilo, Copia ID utente) o link di invito al server."
       },
       "merge": {
         "title": "Unisci giocatrice",
@@ -5160,9 +5162,9 @@
         "storageFailed": "Impossibile salvare l'immagine nell'archivio. Riprova tra un attimo.",
         "saveFailed": "Impossibile salvare il logo. Riprova tra un attimo.",
         "empty": "Il file è vuoto.",
-        "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+        "invalidDiscordId": "Inserisci un ID utente Discord valido (da 17 a 20 cifre) o un invito al server (discord.gg/...)."
       },
-      "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente)."
+      "discordIdHint": "ID utente Discord (Modalità sviluppatore, clic destro sul profilo, Copia ID utente) o link di invito al server."
     },
     "credits": {
       "title": "Crediti di produzione",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Sito web",
       "handle": "Nickname",
       "firstName": "Nome",
@@ -6056,9 +6058,9 @@
       "consentRequired": "Devi accettare le condizioni su diritti e consenso della foto.",
       "invalidType": "Sono accettate solo foto JPG, PNG o WebP.",
       "tooSmall": "Questa foto è troppo piccola (minimo 400 px sul lato più corto).",
-      "invalidDiscordId": "Inserisci un ID Discord valido (da 17 a 20 cifre)."
+      "invalidDiscordId": "Inserisci un ID utente Discord valido (da 17 a 20 cifre) o un invito al server (discord.gg/...)."
     },
-    "discordIdHint": "ID utente Discord numerico (Modalità sviluppatore, clic destro sul profilo, Copia ID utente).",
+    "discordIdHint": "ID utente Discord (Modalità sviluppatore, clic destro sul profilo, Copia ID utente) o link di invito al server.",
     "useLinkedDiscord": "Usa il mio account Discord collegato"
   },
   "tournamentPage": {

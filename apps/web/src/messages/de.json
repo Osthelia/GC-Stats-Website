@@ -2561,14 +2561,16 @@
           "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
-          "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben."
+          "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben.",
+          "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein."
         },
         "fieldOrganization": "Organisation",
         "organizationPlaceholder": "Organisation auswählen",
         "organizationSearchPlaceholder": "Organisation suchen",
         "organizationNoResults": "Keine Organisation gefunden",
         "organizationClear": "Entfernen",
-        "organizationHint": "Eine verknüpfte Organisation verliert ihre öffentliche Seite: Ihre Mitglieder erscheinen als Staff dieses Teams, und sie verwaltet im Dashboard die Streams der Spiele dieses Teams."
+        "organizationHint": "Eine verknüpfte Organisation verliert ihre öffentliche Seite: Ihre Mitglieder erscheinen als Staff dieses Teams, und sie verwaltet im Dashboard die Streams der Spiele dieses Teams.",
+        "discordHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink."
       },
       "merge": {
         "title": "Team zusammenführen",
@@ -2772,11 +2774,11 @@
           "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
-          "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern).",
+          "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein.",
           "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink."
       },
       "merge": {
         "title": "Spieler:in zusammenführen",
@@ -5160,9 +5162,9 @@
         "storageFailed": "Das Bild konnte nicht im Speicher abgelegt werden. Versuche es gleich noch einmal.",
         "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
         "empty": "Die Datei ist leer.",
-        "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+        "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein."
       },
-      "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren)."
+      "discordIdHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink."
     },
     "credits": {
       "title": "Produktionsteam",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Website",
       "handle": "Benutzername",
       "firstName": "Vorname",
@@ -6056,9 +6058,9 @@
       "consentRequired": "Du musst die Bedingungen zu Rechten und Einwilligung für das Foto akzeptieren.",
       "invalidType": "Es werden nur Fotos im Format JPG, PNG oder WebP akzeptiert.",
       "tooSmall": "Dieses Foto ist zu klein (mindestens 400 px an der kürzesten Seite).",
-      "invalidDiscordId": "Gib eine gültige Discord ID ein (17 bis 20 Ziffern)."
+      "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein."
     },
-    "discordIdHint": "Numerische Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren).",
+    "discordIdHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink.",
     "useLinkedDiscord": "Mein verknüpftes Discord Konto verwenden"
   },
   "tournamentPage": {

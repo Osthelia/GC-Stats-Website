@@ -2561,14 +2561,16 @@
           "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
-          "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia."
+          "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia.",
+          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...)."
         },
         "fieldOrganization": "Organizacja",
         "organizationPlaceholder": "Wybierz organizację",
         "organizationSearchPlaceholder": "Szukaj organizacji",
         "organizationNoResults": "Nie znaleziono organizacji",
         "organizationClear": "Usuń",
-        "organizationHint": "Powiązana organizacja traci stronę publiczną: jej członkowie pojawiają się jako staff tej drużyny, a w panelu zarządza transmisjami meczów tej drużyny."
+        "organizationHint": "Powiązana organizacja traci stronę publiczną: jej członkowie pojawiają się jako staff tej drużyny, a w panelu zarządza transmisjami meczów tej drużyny.",
+        "discordHint": "Identyfikator użytkownika Discord (Tryb dewelopera, prawy klik na profilu, Kopiuj ID użytkownika) lub link z zaproszeniem na serwer."
       },
       "merge": {
         "title": "Scal drużynę",
@@ -2772,11 +2774,11 @@
           "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
-          "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr).",
+          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...).",
           "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "Numeryczne ID użytkownika Discord (Tryb dewelopera, prawy klik na profil, Kopiuj ID użytkownika)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Identyfikator użytkownika Discord (Tryb dewelopera, prawy klik na profilu, Kopiuj ID użytkownika) lub link z zaproszeniem na serwer."
       },
       "merge": {
         "title": "Scal zawodniczkę",
@@ -5160,9 +5162,9 @@
         "storageFailed": "Nie udało się zapisać obrazu w magazynie. Spróbuj ponownie za chwilę.",
         "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
         "empty": "Plik jest pusty.",
-        "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr)."
+        "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...)."
       },
-      "discordIdHint": "Numeryczne ID użytkownika Discord (Tryb dewelopera, prawy klik na profil, Kopiuj ID użytkownika)."
+      "discordIdHint": "Identyfikator użytkownika Discord (Tryb dewelopera, prawy klik na profilu, Kopiuj ID użytkownika) lub link z zaproszeniem na serwer."
     },
     "credits": {
       "title": "Wpisy produkcyjne",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Strona internetowa",
       "handle": "Nick",
       "firstName": "Imię",
@@ -6056,9 +6058,9 @@
       "consentRequired": "Musisz zaakceptować warunki dotyczące praw i zgody na zdjęcie.",
       "invalidType": "Akceptowane są tylko zdjęcia JPG, PNG lub WebP.",
       "tooSmall": "To zdjęcie jest zbyt małe (minimum 400 px na krótszym boku).",
-      "invalidDiscordId": "Podaj prawidłowe ID Discord (od 17 do 20 cyfr)."
+      "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...)."
     },
-    "discordIdHint": "Numeryczne ID użytkownika Discord (Tryb dewelopera, prawy klik na profil, Kopiuj ID użytkownika).",
+    "discordIdHint": "Identyfikator użytkownika Discord (Tryb dewelopera, prawy klik na profilu, Kopiuj ID użytkownika) lub link z zaproszeniem na serwer.",
     "useLinkedDiscord": "Użyj mojego połączonego konta Discord"
   },
   "tournamentPage": {

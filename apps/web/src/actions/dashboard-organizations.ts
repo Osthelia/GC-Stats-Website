@@ -25,7 +25,7 @@ import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { isValidCountryCode } from "@/lib/countries";
 import { isValidUrl } from "@/lib/admin-validation";
-import { PERSON_SOCIAL_KEYS, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
+import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { logActivity, diffChanges } from "@/lib/activity-log";
@@ -322,7 +322,7 @@ export async function updatePersonProfileForOrganization(organizationId: number,
     if (!value) continue;
     const error = personSocialError(key, value);
     if (error) socialErrors[key] = error;
-    else socials[key] = value;
+    else socials[key] = key === "discord" ? (normalizeDiscordValue(value) ?? value) : value;
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
 

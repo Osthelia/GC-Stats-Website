@@ -9,6 +9,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
+import { discordHref } from "@/lib/person-social-keys";
 import type { TeamPageInfo, TeamAchievement } from "@/lib/team-page-data";
 import { CountryBadge, hasCountryFlag } from "@/components/team/country-badge";
 import { AchievementsList } from "@/components/site/achievements-list";
@@ -76,11 +77,13 @@ export async function TeamHeader({
     if (key === "website" || !url) continue;
     const Icon = SOCIAL_ICONS[key];
     if (!Icon) continue;
+    const href = key === "discord" ? discordHref(url) : url;
+    if (!href) continue;
     links.push({
       key,
       label: key.charAt(0).toUpperCase() + key.slice(1),
       icon: Icon,
-      href: url,
+      href,
     });
   }
 

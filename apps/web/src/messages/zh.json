@@ -2561,14 +2561,16 @@
           "storageFailed": "无法将图片保存到存储。请稍后再试。",
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
-          "requiresLeft": "勾选“已离开战队”后才能填写离开日期。"
+          "requiresLeft": "勾选“已离开战队”后才能填写离开日期。",
+          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
         },
         "fieldOrganization": "组织",
         "organizationPlaceholder": "选择组织",
         "organizationSearchPlaceholder": "搜索组织",
         "organizationNoResults": "未找到组织",
         "organizationClear": "移除",
-        "organizationHint": "关联的组织将失去公开页面：其成员会显示为该战队的工作人员，并且可在后台管理该战队比赛的直播。"
+        "organizationHint": "关联的组织将失去公开页面：其成员会显示为该战队的工作人员，并且可在后台管理该战队比赛的直播。",
+        "discordHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。"
       },
       "merge": {
         "title": "合并战队",
@@ -2772,11 +2774,11 @@
           "storageFailed": "无法将图片保存到存储。请稍后再试。",
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
-          "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。",
+          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。",
           "requiresLeft": "勾选“已离开战队”后才能填写离开日期。"
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。"
       },
       "merge": {
         "title": "合并选手",
@@ -5160,9 +5162,9 @@
         "storageFailed": "无法将图片保存到存储。请稍后再试。",
         "saveFailed": "无法保存徽标。请稍后再试。",
         "empty": "文件为空。",
-        "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+        "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
       },
-      "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。"
+      "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。"
     },
     "credits": {
       "title": "制作署名",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "官网",
       "handle": "用户名",
       "firstName": "名",
@@ -6056,9 +6058,9 @@
       "consentRequired": "你必须接受照片权利与授权条件。",
       "invalidType": "仅接受 JPG、PNG 或 WebP 格式的照片。",
       "tooSmall": "这张照片太小（最短边至少 400 像素）。",
-      "invalidDiscordId": "请输入有效的 Discord ID（17 至 20 位数字）。"
+      "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
     },
-    "discordIdHint": "数字形式的 Discord 用户 ID（开启开发者模式，右键点击个人资料，复制用户 ID）。",
+    "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。",
     "useLinkedDiscord": "使用我已关联的 Discord 账号"
   },
   "tournamentPage": {

@@ -2561,14 +2561,16 @@
           "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
-          "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요."
+          "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요.",
+          "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요."
         },
         "fieldOrganization": "조직",
         "organizationPlaceholder": "조직 선택",
         "organizationSearchPlaceholder": "조직 검색",
         "organizationNoResults": "조직을 찾을 수 없습니다",
         "organizationClear": "해제",
-        "organizationHint": "연결된 조직은 공개 페이지가 사라지고, 구성원은 이 팀의 스태프로 표시됩니다. 조직은 대시보드에서 이 팀 경기의 스트림을 관리합니다."
+        "organizationHint": "연결된 조직은 공개 페이지가 사라지고, 구성원은 이 팀의 스태프로 표시됩니다. 조직은 대시보드에서 이 팀 경기의 스트림을 관리합니다.",
+        "discordHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크."
       },
       "merge": {
         "title": "팀 병합",
@@ -2772,11 +2774,11 @@
           "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
-          "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자).",
+          "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요.",
           "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "숫자로 된 Discord 사용자 ID (개발자 모드에서 프로필 우클릭, 사용자 ID 복사)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크."
       },
       "merge": {
         "title": "선수 병합",
@@ -5160,9 +5162,9 @@
         "storageFailed": "이미지를 저장소에 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
         "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
         "empty": "파일이 비어 있습니다.",
-        "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
+        "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요."
       },
-      "discordIdHint": "숫자로 된 Discord 사용자 ID (개발자 모드에서 프로필 우클릭, 사용자 ID 복사)."
+      "discordIdHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크."
     },
     "credits": {
       "title": "제작 크레딧",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "웹사이트",
       "handle": "핸들",
       "firstName": "이름",
@@ -6056,9 +6058,9 @@
       "consentRequired": "사진 권리 및 동의 조건에 동의해야 합니다.",
       "invalidType": "JPG, PNG 또는 WebP 사진만 사용할 수 있습니다.",
       "tooSmall": "사진이 너무 작습니다(짧은 변 기준 최소 400 px).",
-      "invalidDiscordId": "올바른 Discord ID를 입력하세요 (17~20자리 숫자)."
+      "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요."
     },
-    "discordIdHint": "숫자로 된 Discord 사용자 ID (개발자 모드에서 프로필 우클릭, 사용자 ID 복사).",
+    "discordIdHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크.",
     "useLinkedDiscord": "연동된 Discord 계정 사용"
   },
   "tournamentPage": {

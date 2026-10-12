@@ -238,7 +238,6 @@ export function SuggestEditForm({
           <input
             id={`field-${def.key}`}
             type="text"
-            inputMode="numeric"
             value={value}
             onChange={(e) => setValue(def.key, e.target.value)}
             aria-invalid={!!error}

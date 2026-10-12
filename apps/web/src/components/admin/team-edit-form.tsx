@@ -172,11 +172,18 @@ export function TeamEditForm({
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               {SOCIAL_KEYS.map((key) => (
-                <FormField key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} htmlFor={`team-social-${key}`}>
+                <FormField
+                  key={key}
+                  label={key.charAt(0).toUpperCase() + key.slice(1)}
+                  htmlFor={`team-social-${key}`}
+                  hint={key === "discord" ? t("discordHint") : undefined}
+                  error={key === "discord" && errors.discord ? t(`error.${errors.discord}`) : undefined}
+                >
                   <Input
                     id={`team-social-${key}`}
                     value={socials[key] ?? ""}
                     onChange={(e) => setSocials((prev) => ({ ...prev, [key]: e.target.value }))}
+                    aria-invalid={key === "discord" && !!errors.discord}
                   />
                 </FormField>
               ))}

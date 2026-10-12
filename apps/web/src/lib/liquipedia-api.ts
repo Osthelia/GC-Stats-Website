@@ -10,8 +10,10 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import packageJson from "../../package.json";
+
 const API_URL = "https://liquipedia.net/valorant/api.php";
-const USER_AGENT = process.env.GCS_LIQUIPEDIA_USER_AGENT ?? "GC-Stats/1.0 (https://github.com/Osthelia/GC-Stats-Website)";
+const USER_AGENT = process.env.GCS_LIQUIPEDIA_USER_AGENT ?? `GC-Stats/${packageJson.version} (https://github.com/Osthelia/GC-Stats-Website)`;
 const MAX_TITLES_PER_REQUEST = 50;
 const MIN_INTERVAL_MS = 2000;
 const FETCH_TIMEOUT_MS = 15000;

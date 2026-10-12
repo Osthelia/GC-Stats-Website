@@ -24,7 +24,7 @@ import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search"
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchTeamsQuery } from "@/lib/team-search";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
-import { PERSON_SOCIAL_KEYS, personSocialError } from "@/lib/person-social-keys";
+import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError } from "@/lib/person-social-keys";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 
@@ -138,7 +138,7 @@ export async function updatePlayerProfile(playerId: number, input: PlayerProfile
     if (!value) continue;
     const error = personSocialError(key, value);
     if (error) socialErrors[key] = error;
-    else socials[key] = value;
+    else socials[key] = key === "discord" ? (normalizeDiscordValue(value) ?? value) : value;
   }
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
 

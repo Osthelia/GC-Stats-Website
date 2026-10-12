@@ -2565,14 +2565,16 @@
           "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
           "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
-          "requiresLeft": "Pick the \"Has left the team\" box to set a leave date."
+          "requiresLeft": "Pick the \"Has left the team\" box to set a leave date.",
+          "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...)."
         },
         "fieldOrganization": "Organization",
         "organizationPlaceholder": "Select an organization",
         "organizationSearchPlaceholder": "Search an organization",
         "organizationNoResults": "No organization found",
         "organizationClear": "Remove",
-        "organizationHint": "A linked organization loses its public page: its members appear as this team's staff, and it manages the streams of this team's matches from the dashboard."
+        "organizationHint": "A linked organization loses its public page: its members appear as this team's staff, and it manages the streams of this team's matches from the dashboard.",
+        "discordHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link."
       },
       "merge": {
         "title": "Merge team",
@@ -2776,11 +2778,11 @@
           "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
           "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
-          "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits).",
+          "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...).",
           "requiresLeft": "Pick the \"Has left the team\" box to set a leave date."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link."
       },
       "merge": {
         "title": "Merge player",
@@ -5278,9 +5280,9 @@
         "storageFailed": "The image couldn't be saved to storage. Try again in a moment.",
         "saveFailed": "The logo couldn't be saved. Try again in a moment.",
         "empty": "The file is empty.",
-        "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+        "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...)."
       },
-      "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID)."
+      "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link."
     },
     "credits": {
       "title": "Production credits",
@@ -6009,7 +6011,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Website",
       "handle": "Handle",
       "firstName": "First name",
@@ -6180,9 +6182,9 @@
       "consentRequired": "You must accept the photo rights and consent conditions.",
       "invalidType": "Only JPG, PNG or WebP photos are accepted.",
       "tooSmall": "This photo is too small (400 px minimum on the shortest side).",
-      "invalidDiscordId": "Enter a valid Discord ID (17 to 20 digits)."
+      "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...)."
     },
-    "discordIdHint": "Numeric Discord user ID (Developer mode, right click on the profile, Copy User ID).",
+    "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link.",
     "useLinkedDiscord": "Use my linked Discord account"
   },
   "tournamentPage": {

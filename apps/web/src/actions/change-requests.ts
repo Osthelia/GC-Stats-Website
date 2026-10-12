@@ -36,7 +36,7 @@ import {
   PHOTO_MIN_SIDE,
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
-import { isDiscordUserId } from "@/lib/person-social-keys";
+import { normalizeDiscordValue } from "@/lib/person-social-keys";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -152,7 +152,7 @@ export async function submitChangeRequest(
       fieldErrors[def.key] = "invalidUrl";
       continue;
     }
-    if (trimmed.length > 0 && def.type === "discordId" && !isDiscordUserId(trimmed)) {
+    if (trimmed.length > 0 && def.type === "discordId" && !normalizeDiscordValue(trimmed) && trimmed !== readFieldValue(currentRow, def.key)) {
       fieldErrors[def.key] = "invalidDiscordId";
       continue;
     }
@@ -162,8 +162,9 @@ export async function submitChangeRequest(
     }
 
     const oldValue = readFieldValue(currentRow, def.key);
-    if (oldValue === trimmed) continue; // no actual change proposed for this field
-    items.push({ field: def.key, oldValue: oldValue || null, newValue: trimmed || null });
+    const newValue = def.type === "discordId" ? (normalizeDiscordValue(trimmed) ?? trimmed) : trimmed;
+    if (oldValue === newValue) continue; // no actual change proposed for this field
+    items.push({ field: def.key, oldValue: oldValue || null, newValue: newValue || null });
   }
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };

@@ -33,7 +33,7 @@ import { HeaderUtilityBar } from "@/components/site/header-utility-bar";
 import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { isViewerAdmin } from "@/lib/rbac";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
-import { discordUserUrl, isDiscordUserId } from "@/lib/person-social-keys";
+import { discordHref } from "@/lib/person-social-keys";
 
 const SOCIAL_ICONS: Record<
   string,
@@ -74,13 +74,14 @@ export async function PlayerHeader({
     if (!value) continue;
     const Icon = SOCIAL_ICONS[key];
     if (!Icon) continue;
-    // Legacy Discord usernames can't be linked to, only IDs can.
-    if (key === "discord" && !isDiscordUserId(value)) continue;
+    // Legacy Discord usernames can't be linked to, only IDs and invites can.
+    const href = key === "discord" ? discordHref(value) : value;
+    if (!href) continue;
     links.push({
       key,
       label: key.charAt(0).toUpperCase() + key.slice(1),
       icon: Icon,
-      href: key === "discord" ? discordUserUrl(value) : value,
+      href,
     });
   }
 

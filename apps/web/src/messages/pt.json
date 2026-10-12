@@ -2561,14 +2561,16 @@
           "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
-          "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída."
+          "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída.",
+          "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
         },
         "fieldOrganization": "Organização",
         "organizationPlaceholder": "Selecionar uma organização",
         "organizationSearchPlaceholder": "Pesquisar uma organização",
         "organizationNoResults": "Nenhuma organização encontrada",
         "organizationClear": "Remover",
-        "organizationHint": "Uma organização vinculada perde a página pública: os membros dela aparecem como staff desta equipe e ela gerencia no painel as transmissões das partidas desta equipe."
+        "organizationHint": "Uma organização vinculada perde a página pública: os membros dela aparecem como staff desta equipe e ela gerencia no painel as transmissões das partidas desta equipe.",
+        "discordHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor."
       },
       "merge": {
         "title": "Mesclar time",
@@ -2772,11 +2774,11 @@
           "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
-          "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos).",
+          "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...).",
           "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "ID numérico de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor."
       },
       "merge": {
         "title": "Mesclar jogadora",
@@ -5160,9 +5162,9 @@
         "storageFailed": "Não foi possível guardar a imagem no armazenamento. Tente novamente daqui a pouco.",
         "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
         "empty": "O arquivo está vazio.",
-        "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
+        "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
       },
-      "discordIdHint": "ID numérico de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário)."
+      "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor."
     },
     "credits": {
       "title": "Créditos de produção",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Site",
       "handle": "Nick",
       "firstName": "Nome",
@@ -6056,9 +6058,9 @@
       "consentRequired": "Você deve aceitar as condições de direitos e consentimento da foto.",
       "invalidType": "Apenas fotos JPG, PNG ou WebP são aceitas.",
       "tooSmall": "Esta foto é muito pequena (mínimo de 400 px no lado mais curto).",
-      "invalidDiscordId": "Informe um ID do Discord válido (17 a 20 dígitos)."
+      "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
     },
-    "discordIdHint": "ID numérico de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário).",
+    "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor.",
     "useLinkedDiscord": "Usar minha conta do Discord vinculada"
   },
   "tournamentPage": {

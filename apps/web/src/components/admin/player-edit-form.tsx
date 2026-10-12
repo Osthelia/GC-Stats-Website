@@ -221,7 +221,6 @@ export function PlayerEditForm({
                 >
                   <Input
                     id={`player-social-${key}`}
-                    inputMode={key === "discord" ? "numeric" : undefined}
                     value={socials[key] ?? ""}
                     onChange={(e) => setSocials((prev) => ({ ...prev, [key]: e.target.value }))}
                     aria-invalid={!!errors.socials?.[key]}

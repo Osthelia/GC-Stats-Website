@@ -16,6 +16,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, organizations, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
+import { normalizeDiscordValue } from "@/lib/person-social-keys";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { logActivity, diffChanges } from "@/lib/activity-log";
@@ -47,7 +48,7 @@ export type TeamProfileInput = {
   tags: string[];
 };
 
-export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio";
+export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio" | "discord";
 export type TeamProfileFieldErrors = Partial<Record<TeamProfileField, string>>;
 export type TeamProfileResult = { ok: true } | { ok: false; fieldErrors: TeamProfileFieldErrors };
 
@@ -102,12 +103,18 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
   const [existing] = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
 
+  // An unchanged legacy value stays accepted so unrelated edits are not blocked.
+  const discordInput = input.socials.discord?.trim() ?? "";
+  const discordValue = discordInput ? normalizeDiscordValue(discordInput) : null;
+  if (discordInput && !discordValue && discordInput !== (existing.socials as Record<string, string>).discord) fieldErrors.discord = "invalidDiscordId";
+
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const socials: Record<string, string> = {};
   for (const key of SOCIAL_KEYS) {
     const value = input.socials[key]?.trim();
-    if (value) socials[key] = value;
+    if (!value) continue;
+    socials[key] = key === "discord" ? (discordValue ?? value) : value;
   }
 
   const tags = [...new Set(input.tags.map((t) => t.trim()).filter(Boolean))];

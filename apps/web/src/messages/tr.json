@@ -2561,14 +2561,16 @@
           "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
-          "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle."
+          "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle.",
+          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
         },
         "fieldOrganization": "Organizasyon",
         "organizationPlaceholder": "Bir organizasyon seç",
         "organizationSearchPlaceholder": "Organizasyon ara",
         "organizationNoResults": "Organizasyon bulunamadı",
         "organizationClear": "Kaldır",
-        "organizationHint": "Bağlı bir organizasyon herkese açık sayfasını kaybeder: üyeleri bu takımın kadrosu olarak görünür ve panelden bu takımın maçlarının yayınlarını yönetir."
+        "organizationHint": "Bağlı bir organizasyon herkese açık sayfasını kaybeder: üyeleri bu takımın kadrosu olarak görünür ve panelden bu takımın maçlarının yayınlarını yönetir.",
+        "discordHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı."
       },
       "merge": {
         "title": "Takımı birleştir",
@@ -2772,11 +2774,11 @@
           "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
-          "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak).",
+          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin.",
           "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle."
         },
-        "fieldDiscordId": "Discord (ID)",
-        "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."
+        "fieldDiscordId": "Discord",
+        "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı."
       },
       "merge": {
         "title": "Oyuncuyu birleştir",
@@ -5160,9 +5162,9 @@
         "storageFailed": "Görsel depolamaya kaydedilemedi. Birazdan tekrar deneyin.",
         "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
         "empty": "Dosya boş.",
-        "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+        "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
       },
-      "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala)."
+      "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı."
     },
     "credits": {
       "title": "Prodüksiyon emeği geçenler",
@@ -5885,7 +5887,7 @@
       "instagram": "Instagram",
       "youtube": "YouTube",
       "tiktok": "TikTok",
-      "discord": "Discord (ID)",
+      "discord": "Discord",
       "website": "Web sitesi",
       "handle": "Kullanıcı adı",
       "firstName": "Ad",
@@ -6056,9 +6058,9 @@
       "consentRequired": "Fotoğraf hakları ve onay koşullarını kabul etmelisiniz.",
       "invalidType": "Yalnızca JPG, PNG veya WebP fotoğrafları kabul edilir.",
       "tooSmall": "Bu fotoğraf çok küçük (en kısa kenarda en az 400 px).",
-      "invalidDiscordId": "Geçerli bir Discord ID girin (17 ile 20 basamak)."
+      "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
     },
-    "discordIdHint": "Sayısal Discord kullanıcı kimliği (Geliştirici modu, profile sağ tıklayın, Kullanıcı ID'sini kopyala).",
+    "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı.",
     "useLinkedDiscord": "Bağlı Discord hesabımı kullan"
   },
   "tournamentPage": {

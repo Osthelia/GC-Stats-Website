@@ -242,7 +242,6 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
                     >
                       <Input
                         id={`edit-person-social-${key}`}
-                        inputMode={key === "discord" ? "numeric" : undefined}
                         value={socials[key] ?? ""}
                         onChange={(e) => setSocials((prev) => ({ ...prev, [key]: e.target.value }))}
                         aria-invalid={!!fieldErrors.socials?.[key]}
