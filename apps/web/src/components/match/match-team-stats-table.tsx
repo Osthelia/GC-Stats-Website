@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
 import { slugify } from "@/lib/entity-id";
+import { formatSideScore } from "@/lib/match-score-format";
 import { AgentIcon } from "@/components/match/agent-icon";
 import type { MatchMapPlayerRow, MatchSide } from "@/lib/match-page-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
@@ -39,6 +40,7 @@ export function MatchTeamStatsTable({
   b,
   teamAName,
   teamBName,
+  score,
 }: {
   statsA: MatchMapPlayerRow[];
   statsB: MatchMapPlayerRow[];
@@ -46,6 +48,7 @@ export function MatchTeamStatsTable({
   b: MatchSide;
   teamAName: string;
   teamBName: string;
+  score?: { a: number | null; b: number | null };
 }) {
   const t = useTranslations("matchPage");
   const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
@@ -64,7 +67,11 @@ export function MatchTeamStatsTable({
           </div>
           <span className="truncate text-sm font-black text-[var(--gcs-text)] italic">{teamAName}</span>
         </div>
-        <span className="shrink-0 px-2 font-mono text-[11px] font-bold tracking-[0.3em] text-neutral-600 uppercase">{t("vs")}</span>
+        <div className="flex shrink-0 items-center gap-3 px-2 font-mono text-[11px] font-bold tracking-[0.3em] uppercase">
+          {score && <span className="text-sm text-[var(--gcs-text)]">{formatSideScore(score.a, a.entrantId)}</span>}
+          <span className="text-neutral-600">{t("vs")}</span>
+          {score && <span className="text-sm text-[var(--gcs-text)]">{formatSideScore(score.b, b.entrantId)}</span>}
+        </div>
         <div className="flex min-w-0 items-center justify-end gap-2.5">
           <span className="truncate text-sm font-black text-[var(--gcs-text)] italic">{teamBName}</span>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>

@@ -69,7 +69,15 @@ export function MatchMapsTabs({
         <div className="space-y-12">
           {activeMap.note && <p className="text-center text-sm text-neutral-400 italic">{activeMap.note}</p>}
           <MatchRoundHistory rounds={roundsByMapId[activeMap.id] ?? []} a={a} b={b} />
-          <MatchTeamStatsTable statsA={activeMap.playersA} statsB={activeMap.playersB} a={a} b={b} teamAName={teamAName} teamBName={teamBName} />
+          <MatchTeamStatsTable
+            statsA={activeMap.playersA}
+            statsB={activeMap.playersB}
+            a={a}
+            b={b}
+            teamAName={teamAName}
+            teamBName={teamBName}
+            score={{ a: activeMap.teamAScore, b: activeMap.teamBScore }}
+          />
           <MatchPerformanceEconomy
             statsA={activeMap.playersA}
             statsB={activeMap.playersB}
