@@ -635,7 +635,7 @@ export async function getMatchMapsStatsBatch(
 
   for (const r of rounds) {
     roundsByMapId[r.mapId]?.push({
-      roundNumber: r.roundNumber,
+      roundNumber: r.roundNumber + 1,
       winningEntrantId: r.winningEntrantId,
       winType: r.winType,
     });
