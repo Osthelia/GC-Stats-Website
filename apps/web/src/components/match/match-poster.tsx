@@ -75,7 +75,7 @@ function agentsOf(p: MatchMapPlayerRow): string[] {
 }
 
 function TeamHead({ side, name, align }: { side: MatchSide; name: string; align: "left" | "right" }) {
-  const logo = <PosterLogo url={side.logoUrl} alt={name} size={80} />;
+  const logo = <PosterLogo url={side.logoUrl} alt={name} size={56} />;
   return (
     <div className="flex min-w-0 items-center gap-5">
       {align === "right" && logo}
@@ -117,27 +117,30 @@ function PosterHeader({ data, map, teamAName, teamBName }: { data: PosterData; m
 
       <div className="relative flex flex-col items-center gap-1 text-center">
         <span className="font-mono text-[18px] font-bold tracking-widest text-neutral-300 uppercase">{match.tournamentName}</span>
-        <span className="font-mono text-[15px]" style={{ color: splash ? MUTED : FAINT }}>{match.stageName}</span>
+        <span className="font-mono text-[15px]" style={{ color: splash ? "#d4d4d4" : FAINT }}>{match.stageName}</span>
       </div>
 
       <div className="relative mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
         <TeamHead side={match.a} name={teamAName} align="left" />
 
-        <div className="flex flex-col items-center gap-1">
-          {map && (
-            <span className="rounded-md px-3 py-0.5 font-mono text-[15px] font-black tracking-widest uppercase" style={{ background: GOLD, color: "#000" }}>
-              {map.mapName}
-            </span>
-          )}
-          <div className="flex items-center font-mono text-[68px] leading-none font-black tracking-tighter tabular-nums">
-            <span style={{ color: leadA ? GOLD : "#f2f2f2" }}>{scoreLabel(scoreA, match.a.entrantId, fallback)}</span>
-            <span className="mx-4 text-neutral-600">–</span>
-            <span style={{ color: leadB ? GOLD : "#f2f2f2" }}>{scoreLabel(scoreB, match.b.entrantId, fallback)}</span>
-          </div>
+        <div className="flex items-center font-mono text-[68px] leading-none font-black tracking-tighter tabular-nums">
+          <span style={{ color: leadA ? GOLD : "#f2f2f2" }}>{scoreLabel(scoreA, match.a.entrantId, fallback)}</span>
+          <span className="mx-4 text-neutral-600">–</span>
+          <span style={{ color: leadB ? GOLD : "#f2f2f2" }}>{scoreLabel(scoreB, match.b.entrantId, fallback)}</span>
         </div>
 
         <TeamHead side={match.b} name={teamBName} align="right" />
       </div>
+
+      {map && (
+        <div className="relative mt-3 flex justify-center">
+          <span
+            className="font-mono text-[22px] leading-none font-black tracking-widest text-white uppercase"
+          >
+            {map.mapName}
+          </span>
+        </div>
+      )}
 
       {!map && playedMaps.length > 0 && (
         <div className="relative mt-5 flex justify-center gap-4">
@@ -256,15 +259,16 @@ function RoundCell({ round, entrantId, color, numberBelow }: { round: MatchRound
   return (
     <div className="relative flex flex-col items-center gap-1">
       {!numberBelow && number}
+
       <div
-        className="flex aspect-square w-full max-w-[44px] items-center justify-center rounded-lg border"
+        className="flex aspect-square w-[44px] items-center justify-center rounded-lg border"
         style={won ? { borderColor: tint(color, 0.5), background: tint(color, 0.14) } : { borderColor: "rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.35)", opacity: 0.45 }}
       >
         {won && <img src={winTypeIconUrl(round.winType)} alt={round.winType ?? "timeout"} className="h-3/4 w-3/4 object-contain brightness-110" />}
       </div>
       {numberBelow && number}
-      {round.roundNumber === HALF_LENGTH && <div className="absolute top-0 -right-[7px] bottom-0 w-px bg-white/15" />}
-      {round.roundNumber === REGULATION_LENGTH && <div className="absolute top-0 -right-[7px] bottom-0 w-px" style={{ background: tint(GOLD, 0.5) }} />}
+      {round.roundNumber === HALF_LENGTH && <div className="absolute top-0 right-0 bottom-0 w-[2px] bg-white/30" />}
+      {round.roundNumber === REGULATION_LENGTH && <div className="absolute top-0 right-0 bottom-0 w-px" style={{ background: tint(GOLD, 0.5) }} />}
     </div>
   );
 }
@@ -276,13 +280,14 @@ function PosterRoundHistory({ rounds, a, b }: { rounds: MatchRound[]; a: MatchSi
   const lines: MatchRound[][] = [];
   for (let i = 0; i < rounds.length; i += lineSize) lines.push(rounds.slice(i, i + lineSize));
 
+  const wrapped = lines.length > 1;
   const row = (side: MatchSide, color: string, numberBelow: boolean) =>
     lines.map((line, i) => (
       <div key={i} className="flex items-center gap-5">
-        <div className={`flex h-[68px] w-[68px] flex-none items-center justify-center rounded-xl border ${i > 0 ? "invisible" : ""}`} style={{ borderColor: tint(color, 0.5), background: tint(color, 0.12) }}>
-          <PosterLogo url={side.logoUrl} alt={side.displayName} size={50} />
+        <div className={`flex h-[68px] w-[68px] flex-none items-center justify-center ${i > 0 ? "invisible" : ""}`}>
+          <PosterLogo url={side.logoUrl} alt={side.displayName} size={56} />
         </div>
-        <div className="grid min-w-0 flex-1 gap-[14px]" style={{ gridTemplateColumns: `repeat(${lineSize}, minmax(0, 1fr))`, alignItems: numberBelow ? "start" : "end" }}>
+        <div className="grid min-w-0 flex-1" style={{ gridTemplateColumns: `repeat(${wrapped ? lineSize : line.length}, minmax(0, 1fr))`, alignItems: numberBelow ? "start" : "end" }}>
           {line.map((round) => (
             <RoundCell key={round.roundNumber} round={round} entrantId={side.entrantId} color={color} numberBelow={numberBelow} />
           ))}
