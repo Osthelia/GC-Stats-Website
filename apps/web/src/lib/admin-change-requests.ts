@@ -12,11 +12,12 @@
 
 import { and, asc, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequests, changeRequestItems, teams, people, rosterMemberships, users } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
 import { logoUrl } from "@gc-stats/storage";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 import type { ChangeRequestSubjectType } from "@/lib/change-request-fields";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export const CHANGE_REQUESTS_PAGE_SIZE = 30;
 
@@ -45,15 +46,17 @@ export type AdminChangeRequestRow = {
   rejectedItems: number;
 };
 
-function originCondition(origin: ChangeRequestOrigin) {
+function originCondition(game: GameSlug, origin: ChangeRequestOrigin) {
+  const { changeRequests } = gameTables(game);
   return origin === "system" ? isNull(changeRequests.requestedBy) : isNotNull(changeRequests.requestedBy);
 }
 
-export async function getAdminChangeRequestCounts(origin: ChangeRequestOrigin | "" = ""): Promise<{ pending: number; approved: number; rejected: number }> {
+export async function getAdminChangeRequestCounts(game: GameSlug, origin: ChangeRequestOrigin | "" = ""): Promise<{ pending: number; approved: number; rejected: number }> {
+  const { changeRequests } = gameTables(game);
   const rows = await db
     .select({ status: changeRequests.status, count: sql<number>`count(*)::int` })
     .from(changeRequests)
-    .where(origin ? originCondition(origin) : undefined)
+    .where(origin ? originCondition(game, origin) : undefined)
     .groupBy(changeRequests.status);
   const result = { pending: 0, approved: 0, rejected: 0 };
   for (const row of rows) {
@@ -64,7 +67,8 @@ export async function getAdminChangeRequestCounts(origin: ChangeRequestOrigin | 
   return result;
 }
 
-export async function subjectLabels(subjectType: ChangeRequestSubjectType, ids: number[]): Promise<Map<number, string>> {
+export async function subjectLabels(game: GameSlug, subjectType: ChangeRequestSubjectType, ids: number[]): Promise<Map<number, string>> {
+  const { teams, people } = gameTables(game);
   const map = new Map<number, string>();
   if (ids.length === 0) return map;
   if (subjectType === "team") {
@@ -77,7 +81,7 @@ export async function subjectLabels(subjectType: ChangeRequestSubjectType, ids: 
   return map;
 }
 
-export async function listAdminChangeRequests(opts: {
+export async function listAdminChangeRequests(game: GameSlug, opts: {
   q: string;
   status: ChangeRequestStatus | "";
   origin: ChangeRequestOrigin | "";
@@ -85,6 +89,7 @@ export async function listAdminChangeRequests(opts: {
   direction: SortDirection;
   page: number;
 }): Promise<{ rows: AdminChangeRequestRow[]; total: number }> {
+  const { changeRequests, changeRequestItems, teams, people } = gameTables(game);
   const { q, status, origin, sort, direction, page } = opts;
 
   // Search matches the subject's current name/handle or the requester's
@@ -112,7 +117,7 @@ export async function listAdminChangeRequests(opts: {
 
   const conditions = [];
   if (status) conditions.push(eq(changeRequests.status, status));
-  if (origin) conditions.push(originCondition(origin));
+  if (origin) conditions.push(originCondition(game, origin));
   if (matchingIds !== null) {
     const usernameVariants = q ? typoVariants(q.toLowerCase()) : [];
     const [byUsername] = usernameVariants.length ? [await db.select({ id: users.id }).from(users).where(or(...usernameVariants.map((v) => foldedIlike(users.username, v))))] : [[]];
@@ -155,7 +160,7 @@ export async function listAdminChangeRequests(opts: {
 
   const teamIds = rows.filter((r) => r.subjectType === "team").map((r) => r.subjectId);
   const personIds = rows.filter((r) => r.subjectType === "person").map((r) => r.subjectId);
-  const [teamLabels, personLabels] = await Promise.all([subjectLabels("team", teamIds), subjectLabels("person", personIds)]);
+  const [teamLabels, personLabels] = await Promise.all([subjectLabels(game, "team", teamIds), subjectLabels(game, "person", personIds)]);
 
   const itemCounts = rows.length
     ? await db
@@ -228,7 +233,8 @@ export type AdminChangeRequestDetail = {
   items: AdminChangeRequestItem[];
 };
 
-export async function getAdminChangeRequestDetail(id: number): Promise<AdminChangeRequestDetail | null> {
+export async function getAdminChangeRequestDetail(game: GameSlug, id: number): Promise<AdminChangeRequestDetail | null> {
+  const { changeRequests, changeRequestItems, rosterMemberships } = gameTables(game);
   const [row] = await db
     .select({
       id: changeRequests.id,
@@ -264,7 +270,7 @@ export async function getAdminChangeRequestDetail(id: number): Promise<AdminChan
     .orderBy(asc(changeRequestItems.id));
 
   const subjectType = row.subjectType as ChangeRequestSubjectType;
-  const label = (await subjectLabels(subjectType, [row.subjectId])).get(row.subjectId) ?? null;
+  const label = (await subjectLabels(game, subjectType, [row.subjectId])).get(row.subjectId) ?? null;
 
   // --- Resolve "other side" names for roster ops + membership row fallback (delete ops only carry a membershipId) ---
   const otherPersonIds = new Set<number>();
@@ -298,8 +304,8 @@ export async function getAdminChangeRequestDetail(id: number): Promise<AdminChan
     }
   }
   const [personNames, teamNames, linkUsernames] = await Promise.all([
-    subjectLabels("person", [...otherPersonIds]),
-    subjectLabels("team", [...otherTeamIds]),
+    subjectLabels(game, "person", [...otherPersonIds]),
+    subjectLabels(game, "team", [...otherTeamIds]),
     linkUserIds.size > 0 ? db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, [...linkUserIds])) : Promise.resolve([]),
   ]);
   const usernameById = new Map(linkUsernames.map((u) => [u.id, u.username]));

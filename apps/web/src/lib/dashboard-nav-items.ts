@@ -24,6 +24,8 @@ export type DashboardNavItem = {
   permission?: string;
   /** Hidden for an organization linked to a team (no public profile, its staff comes from the team, no production credits). */
   hiddenForTeamLinked?: boolean;
+  /** Only exists for games with a veto system (Valorant), hidden while browsing another game. */
+  vetoOnly?: boolean;
 };
 
 // Mirrors admin-nav-items.ts's shape (top item + collapsible groups, shared
@@ -61,7 +63,7 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
     items: [
       { href: (id) => `/dashboard/${id}/streams`, labelKey: "streams", icon: Radio, permission: ORGANIZATION_PERMISSIONS.streamsView },
       { href: (id) => `/dashboard/${id}/vods`, labelKey: "vods", icon: Film, permission: ORGANIZATION_PERMISSIONS.vodsLink },
-      { href: (id) => `/dashboard/${id}/veto`, labelKey: "veto", icon: Swords, permission: ORGANIZATION_PERMISSIONS.vetoManage },
+      { href: (id) => `/dashboard/${id}/veto`, labelKey: "veto", icon: Swords, permission: ORGANIZATION_PERMISSIONS.vetoManage, vetoOnly: true },
     ],
   },
   {
@@ -90,6 +92,11 @@ export const DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS: { href: string; labelKey: string;
 export const DASHBOARD_ALL_ORGANIZATIONS_HREF = "/dashboard/organizations";
 
 /** Segment-aware match, since "/dashboard/authors" would otherwise also satisfy a plain startsWith("/dashboard/author"). */
+/** /dashboard/3/valorant/news is the section /dashboard/3/news of the Valorant game: drop the game segment so the nav items match. */
+export function stripDashboardGame(pathname: string): string {
+  return pathname.replace(new RegExp("^/dashboard/([0-9]+|author|authors/[0-9]+)/(valorant|lol)(?=/|$)"), "/dashboard/$1");
+}
+
 export function isDashboardPathIn(pathname: string, base: string): boolean {
   return pathname === base || pathname.startsWith(`${base}/`);
 }

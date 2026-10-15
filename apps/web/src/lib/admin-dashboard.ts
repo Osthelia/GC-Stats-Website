@@ -12,8 +12,9 @@
 import { and, asc, count, desc, eq, gte, inArray, isNull, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, entrants, tournaments, stageContainers, stages, activityLog, teams, people, users } from "@gc-stats/db";
+import { activityLog, users, gameTables } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import type { GameSlug } from "@gc-stats/db/game";
 
 const DASHBOARD_WIDGET_LIMIT = 5;
 
@@ -38,15 +39,19 @@ function resolvePage(requested: number, total: number) {
   return { page, totalPages, offset: (page - 1) * DASHBOARD_WIDGET_LIMIT };
 }
 
-const tournamentTabFilters: Record<DashboardTournamentTab, SQL> = {
+function tournamentTabFilters(game: GameSlug) {
+  const { tournaments } = gameTables(game);
+  return {
   live: eq(tournaments.status, "live"),
   upcoming: eq(tournaments.status, "upcoming"),
   inactive: eq(tournaments.active, false),
 };
+}
 
 /** Same 3 buckets as V1's admin dashboard tabs (live/upcoming/inactive), one paginated tab at a time. */
-export async function getDashboardTournaments(tab: DashboardTournamentTab, requestedPage: number): Promise<DashboardPage<DashboardTournamentRow>> {
-  const where = tournamentTabFilters[tab];
+export async function getDashboardTournaments(game: GameSlug, tab: DashboardTournamentTab, requestedPage: number): Promise<DashboardPage<DashboardTournamentRow>> {
+  const { tournaments } = gameTables(game);
+  const where = tournamentTabFilters(game)[tab];
   const [{ total } = { total: 0 }] = await db.select({ total: count() }).from(tournaments).where(where);
   const { page, totalPages, offset } = resolvePage(requestedPage, total);
   const rows = await db
@@ -74,7 +79,8 @@ export type DashboardMatchRow = {
 };
 
 /** Live matches always, then pending ones scheduled in the future or less than 7 days ago. Live first, then by date. */
-export async function getDashboardRecentMatches(requestedPage: number): Promise<DashboardPage<DashboardMatchRow>> {
+export async function getDashboardRecentMatches(game: GameSlug, requestedPage: number): Promise<DashboardPage<DashboardMatchRow>> {
+  const { matches, entrants, tournaments, stageContainers, stages } = gameTables(game);
   const entrantA = alias(entrants, "dash_entrant_a");
   const entrantB = alias(entrants, "dash_entrant_b");
 
@@ -119,7 +125,7 @@ export async function getDashboardRecentMatches(requestedPage: number): Promise<
     .offset(offset);
 
   const teamIds = [...new Set(rows.flatMap((r) => [r.aTeamId, r.bTeamId]).filter((id): id is number => id != null))];
-  const logos = await getCurrentLogoUrlsThemed("team", teamIds);
+  const logos = await getCurrentLogoUrlsThemed("team", teamIds, game);
 
   const mapped = rows.map((r) => ({
     id: r.id,
@@ -152,7 +158,8 @@ export type DashboardModificationRow = {
  * reading activity_log the same way (logName + subjectType). Rows are written
  * by the edit actions through lib/activity-log.ts.
  */
-export async function getDashboardModifications(subjectType: "team" | "player", requestedPage: number): Promise<DashboardPage<DashboardModificationRow>> {
+export async function getDashboardModifications(game: GameSlug, subjectType: "team" | "player", requestedPage: number): Promise<DashboardPage<DashboardModificationRow>> {
+  const { teams, people } = gameTables(game);
   const where = and(eq(activityLog.logName, subjectType), eq(activityLog.subjectType, subjectType));
   const [{ total } = { total: 0 }] = await db.select({ total: count() }).from(activityLog).where(where);
   const { page, totalPages, offset } = resolvePage(requestedPage, total);
@@ -180,7 +187,7 @@ export async function getDashboardModifications(subjectType: "team" | "player", 
         ? db.select({ id: teams.id, name: teams.name }).from(teams).where(inArray(teams.id, subjectIds))
         : db.select({ id: people.id, name: people.handle }).from(people).where(inArray(people.id, subjectIds))
       : Promise.resolve([]),
-    subjectIds.length ? getCurrentLogoUrlsThemed(subjectType === "team" ? "team" : "person", subjectIds) : Promise.resolve(new Map()),
+    subjectIds.length ? getCurrentLogoUrlsThemed(subjectType === "team" ? "team" : "person", subjectIds, game) : Promise.resolve(new Map()),
     actorUserIds.length ? db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, actorUserIds)) : Promise.resolve([]),
   ]);
   const subjectById = new Map(subjectRows.map((s) => [s.id, s.name]));

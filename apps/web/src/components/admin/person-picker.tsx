@@ -8,6 +8,7 @@
 
 "use client";
 
+import { useGame } from "@/lib/use-game";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDownIcon, Loader2Icon } from "lucide-react";
@@ -34,7 +35,7 @@ export function PersonPicker({
   placeholder,
   searchPlaceholder,
   noResultsLabel,
-  search = searchPeople,
+  search,
 }: {
   value: { id: number; handle: string; countryCode?: string | null; secondaryCountryCode?: string | null } | null;
   onChange: (person: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null) => void;
@@ -44,6 +45,7 @@ export function PersonPicker({
   /** Defaults to the admin-gated searchPeople action — /dashboard passes its own org-scoped search instead (a plain org member has no admin.access). */
   search?: (query: string) => Promise<PersonPickerResult[]>;
 }) {
+  const game = useGame();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PersonPickerResult[]>([]);
@@ -72,7 +74,7 @@ export function PersonPicker({
     const id = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      search(query).then((rows) => {
+      (search ?? ((q: string) => searchPeople(game, q)))(query).then((rows) => {
         if (id === requestId.current) {
           setResults(rows);
           setLoading(false);

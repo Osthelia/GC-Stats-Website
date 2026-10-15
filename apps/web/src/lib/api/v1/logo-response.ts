@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { getEntityLogos, getEntityLogosBatch, currentLogo, logoAt, type LogoEntityType, type AdminLogoEntry } from "@/lib/admin-logos";
+import { getEntityLogos, getEntityLogosBatch, currentLogo, logoAt, type LogoEntityType, type LogoScope, type AdminLogoEntry } from "@/lib/admin-logos";
 
 export type ApiLogoUrls = { url_200x200: string | null; url_full: string | null };
 export type ApiLogoEntry = { uuid: string; url_200x200: string | null; url_full: string | null; from: string | null; until: string | null };
@@ -24,8 +24,8 @@ function toApiLogoEntry(entry: AdminLogoEntry): ApiLogoEntry {
 }
 
 /** Current logo only (theme-agnostic preference, same resolution order as `currentLogo`) — used on team/player/tournament detail responses. */
-export async function getLogoUrls(entityType: LogoEntityType, entityId: number): Promise<ApiLogoUrls | null> {
-  const entries = await getEntityLogos(entityType, entityId);
+export async function getLogoUrls<T extends LogoEntityType>(entityType: T, entityId: number, ...scope: LogoScope<T>): Promise<ApiLogoUrls | null> {
+  const entries = await getEntityLogos(entityType, entityId, ...scope);
   const current = currentLogo(entries);
   return current ? toApiLogoUrls(current) : null;
 }
@@ -33,8 +33,8 @@ export async function getLogoUrls(entityType: LogoEntityType, entityId: number):
 export type ApiThemedLogoUrls = { dark: ApiLogoUrls | null; light: ApiLogoUrls | null };
 
 /** Both site themes, each with both resolutions — used by V2 entity responses (V1 stays theme-agnostic, see `getLogoUrls`). Falls back to the theme-agnostic entry for whichever theme has none of its own. */
-export async function getThemedLogoUrls(entityType: LogoEntityType, entityId: number): Promise<ApiThemedLogoUrls> {
-  const entries = await getEntityLogos(entityType, entityId);
+export async function getThemedLogoUrls<T extends LogoEntityType>(entityType: T, entityId: number, ...scope: LogoScope<T>): Promise<ApiThemedLogoUrls> {
+  const entries = await getEntityLogos(entityType, entityId, ...scope);
   const dark = currentLogo(entries, "dark");
   const light = currentLogo(entries, "light");
   return { dark: dark ? toApiLogoUrls(dark) : null, light: light ? toApiLogoUrls(light) : null };
@@ -47,8 +47,8 @@ export function themedApiLogoUrlsAt(entries: AdminLogoEntry[], atDate: string | 
   return { dark: dark ? toApiLogoUrls(dark) : null, light: light ? toApiLogoUrls(light) : null };
 }
 
-export async function getThemedLogoUrlsBatch(entityType: LogoEntityType, entityIds: number[]): Promise<Map<number, ApiThemedLogoUrls>> {
-  const batch = await getEntityLogosBatch(entityType, entityIds);
+export async function getThemedLogoUrlsBatch<T extends LogoEntityType>(entityType: T, entityIds: number[], ...scope: LogoScope<T>): Promise<Map<number, ApiThemedLogoUrls>> {
+  const batch = await getEntityLogosBatch(entityType, entityIds, ...scope);
   const map = new Map<number, ApiThemedLogoUrls>();
   for (const id of entityIds) {
     const entries = batch.get(id) ?? [];
@@ -59,8 +59,8 @@ export async function getThemedLogoUrlsBatch(entityType: LogoEntityType, entityI
   return map;
 }
 
-export async function getLogoUrlsBatch(entityType: LogoEntityType, entityIds: number[]): Promise<Map<number, ApiLogoUrls | null>> {
-  const batch = await getEntityLogosBatch(entityType, entityIds);
+export async function getLogoUrlsBatch<T extends LogoEntityType>(entityType: T, entityIds: number[], ...scope: LogoScope<T>): Promise<Map<number, ApiLogoUrls | null>> {
+  const batch = await getEntityLogosBatch(entityType, entityIds, ...scope);
   const map = new Map<number, ApiLogoUrls | null>();
   for (const id of entityIds) {
     const current = currentLogo(batch.get(id) ?? []);
@@ -70,8 +70,8 @@ export async function getLogoUrlsBatch(entityType: LogoEntityType, entityIds: nu
 }
 
 /** Mirrors the Rust API's `LogoHistoryResponse` (`current` + `history`, `/{id}/logos` and `/{id}/photos` endpoints). */
-export async function getLogoHistoryResponse(entityType: LogoEntityType, entityId: number): Promise<ApiLogoHistoryResponse> {
-  const entries = await getEntityLogos(entityType, entityId);
+export async function getLogoHistoryResponse<T extends LogoEntityType>(entityType: T, entityId: number, ...scope: LogoScope<T>): Promise<ApiLogoHistoryResponse> {
+  const entries = await getEntityLogos(entityType, entityId, ...scope);
   const current = currentLogo(entries);
   const history = entries.filter((e) => e !== current).map(toApiLogoEntry);
   return { current: current ? toApiLogoEntry(current) : null, history };

@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "ไม่พบผู้ใช้",
         "roleNotFound": "บทบาทที่เลือกบางรายการไม่มีอยู่แล้ว",
-        "selfDemote": "คุณไม่สามารถลบสิทธิ์ผู้ดูแลของตัวเองได้"
+        "selfDemote": "คุณไม่สามารถลบสิทธิ์ผู้ดูแลของตัวเองได้",
+        "gameNotFound": "ไม่มีเกมนี้"
       },
       "authMethods": {
         "heading": "การยืนยันตัวตน",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "เฉพาะเจ้าของเท่านั้นที่สามารถให้หรือแก้ไขบทบาทเจ้าของได้",
           "userNotFound": "ไม่พบบัญชี",
           "alreadyHasAccess": "บัญชีนี้มีสิทธิ์เข้าถึงองค์กรนี้อยู่แล้ว"
-        }
+        },
+        "fieldGames": "เกม"
       },
       "filterKindLabel": "ประเภทองค์กร",
       "filterKindAll": "ทุกองค์กร",
@@ -6489,5 +6491,10 @@
     "points": "ผ่านเข้ารอบจากคะแนน {label}",
     "pointsUnknown": "ผ่านเข้ารอบจากคะแนน",
     "iconLabel": "แหล่งที่มาของการผ่านเข้ารอบ"
+  },
+  "game": {
+    "switcherLabel": "เกม",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

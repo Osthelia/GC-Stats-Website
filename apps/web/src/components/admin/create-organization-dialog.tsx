@@ -15,6 +15,9 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { type GameSlug } from "@gc-stats/db/game";
+import { GameChips } from "@/components/admin/game-chips";
+import { useGame } from "@/lib/use-game";
 import { FormField } from "@/components/admin/form-field";
 import { createOrganization, type CreateOrganizationFieldErrors } from "@/actions/admin-organizations";
 
@@ -24,17 +27,20 @@ export function CreateOrganizationDialog() {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<CreateOrganizationFieldErrors>({});
+  const currentGame = useGame();
   const [name, setName] = useState("");
+  const [games, setGames] = useState<GameSlug[]>([currentGame]);
 
   function reset() {
     setName("");
+    setGames([currentGame]);
     setFieldErrors({});
   }
 
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createOrganization({ name });
+      const result = await createOrganization({ name, games });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -69,6 +75,9 @@ export function CreateOrganizationDialog() {
           <div className="flex flex-col gap-4 py-2">
             <FormField label={t("edit.fieldName")} htmlFor="create-organization-name" required error={err("name")}>
               <Input id="create-organization-name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!fieldErrors.name} />
+            </FormField>
+            <FormField label={t("edit.fieldGames")} htmlFor="create-organization-games" required error={err("games")}>
+              <GameChips id="create-organization-games" value={games} onChange={setGames} invalid={!!fieldErrors.games} />
             </FormField>
           </div>
 

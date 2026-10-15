@@ -11,6 +11,7 @@
 
 import { extractTemplate, parseTemplateParams } from "@/lib/wikicode-import";
 import { countryCodeFromEnglishName } from "@/lib/countries";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 
 /** Socials a Liquipedia infobox can give us, in the order they are proposed. */
 export const IMPORT_SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord"] as const;
@@ -31,9 +32,9 @@ export type ParsedTeamInfobox = {
   socials: Partial<Record<ImportSocialKey, string[]>>;
 };
 
-/** `https://liquipedia.net/valorant/Some_Page` for a canonical page title. */
-export function liquipediaPageUrl(title: string): string {
-  return `https://liquipedia.net/valorant/${encodeURI(title.replaceAll(" ", "_"))}`;
+/** `https://liquipedia.net/<wiki>/Some_Page` for a canonical page title. */
+export function liquipediaPageUrl(game: GameSlug, title: string): string {
+  return `https://liquipedia.net/${GAME_INFO[game].liquipediaWiki}/${encodeURI(title.replaceAll(" ", "_"))}`;
 }
 
 function clean(value: string | undefined): string {

@@ -100,3 +100,27 @@ export const PERMISSION_GROUPS: { key: string; permissions: PermissionName[] }[]
 ];
 
 export const ALL_PERMISSIONS: PermissionName[] = PERMISSION_GROUPS.flatMap((g) => g.permissions);
+
+/**
+ * Permissions over content that exists once per game (teams, players, tournaments, change
+ * requests, point types). A role assigned to a single game grants only these, for that game;
+ * every other permission needs the role to be assigned for all games.
+ */
+export const GAME_PERMISSIONS: readonly PermissionName[] = [
+  PERMISSIONS.teamsView,
+  PERMISSIONS.teamsCreate,
+  PERMISSIONS.teamsEdit,
+  PERMISSIONS.teamsDelete,
+  PERMISSIONS.teamsMerge,
+  PERMISSIONS.playersView,
+  PERMISSIONS.playersCreate,
+  PERMISSIONS.playersEdit,
+  PERMISSIONS.playersDelete,
+  PERMISSIONS.playersMerge,
+  PERMISSIONS.pointTypesView,
+  PERMISSIONS.pointTypesManage,
+  PERMISSIONS.changeRequestsView,
+  PERMISSIONS.changeRequestsManage,
+  PERMISSIONS.tournamentsView,
+  PERMISSIONS.tournamentsManage,
+];

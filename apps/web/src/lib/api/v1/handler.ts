@@ -11,7 +11,7 @@
 
 import { NextResponse, after } from "next/server";
 import { db } from "@gc-stats/db/client";
-import { apiRequestLog } from "@gc-stats/db";
+import { apiRequestLog, GameFeatureUnavailableError } from "@gc-stats/db";
 import { resolveApiKey } from "./auth";
 import { checkRateLimit } from "./rate-limit";
 
@@ -71,6 +71,10 @@ export async function withApiV1<T>(request: Request, endpointTemplate: string, h
     logRequest(request, endpointTemplate, key.id, startedAt, 200);
     return NextResponse.json(result);
   } catch (err) {
+    if (err instanceof GameFeatureUnavailableError) {
+      logRequest(request, endpointTemplate, key.id, startedAt, 404);
+      return NextResponse.json({ error: "Not available for this game" }, { status: 404 });
+    }
     if (err instanceof ApiV1Error) {
       logRequest(request, endpointTemplate, key.id, startedAt, err.status);
       return NextResponse.json({ error: err.message }, { status: err.status });

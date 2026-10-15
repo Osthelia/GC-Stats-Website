@@ -11,7 +11,7 @@
 
 import { and, desc, eq, gte, ilike, inArray, lt, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { people, rosterMemberships, teams, mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { toApiPlayer, toApiTeam, type ApiPlayer, type ApiTeam } from "../entities";
 import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls, type ApiLogoHistoryResponse } from "../logo-response";
@@ -20,8 +20,10 @@ import { fetchAvgStats, type ApiAvgStats } from "../avg-stats";
 import { fetchWeaponStats, type ApiWeaponStatsEntry } from "../weapon-stats";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
+import type { GameSlug } from "@gc-stats/db/game";
 
-async function personExists(id: number): Promise<boolean> {
+async function personExists(game: GameSlug, id: number): Promise<boolean> {
+  const { people } = gameTables(game);
   const [row] = await db.select({ id: people.id, isGhost: people.isGhost }).from(people).where(eq(people.id, id)).limit(1);
   rejectGhost(row, "player");
   return !!row;
@@ -30,7 +32,8 @@ async function personExists(id: number): Promise<boolean> {
 export const PLAYER_ROSTER_ROLES = new Set(["player", "player-igl", "sub"]);
 
 /** Batched "current team as a player" lookup — same theme-agnostic-first resolution isn't needed here (no theme concept on rosters), just the currently open player-role stint. */
-async function getCurrentTeamsByPersonId(personIds: number[]): Promise<Map<number, ApiTeam | null>> {
+async function getCurrentTeamsByPersonId(game: GameSlug, personIds: number[]): Promise<Map<number, ApiTeam | null>> {
+  const { rosterMemberships, teams } = gameTables(game);
   const result = new Map<number, ApiTeam | null>();
   for (const id of personIds) result.set(id, null);
   if (personIds.length === 0) return result;
@@ -64,12 +67,13 @@ async function getCurrentTeamsByPersonId(personIds: number[]): Promise<Map<numbe
 
 export type ApiPlayerFullResponse = ApiPlayer & { current_team: ApiTeam | null; photo: ApiLogoUrls | null };
 
-export async function searchPlayersByName(query: string): Promise<ApiPlayerFullResponse[]> {
+export async function searchPlayersByName(game: GameSlug, query: string): Promise<ApiPlayerFullResponse[]> {
+  const { people } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
-  const rows = await db.select().from(people).where(and(ilike(people.handle, pattern), visiblePerson)).limit(20);
+  const rows = await db.select().from(people).where(and(ilike(people.handle, pattern), visiblePerson(game))).limit(20);
 
   const ids = rows.map((r) => r.id);
-  const [teamsByPersonId, photos] = await Promise.all([getCurrentTeamsByPersonId(ids), getLogoUrlsBatch("person", ids)]);
+  const [teamsByPersonId, photos] = await Promise.all([getCurrentTeamsByPersonId(game, ids), getLogoUrlsBatch("person", ids, game)]);
 
   return rows.map((row) => ({
     ...toApiPlayer(row),
@@ -78,12 +82,13 @@ export async function searchPlayersByName(query: string): Promise<ApiPlayerFullR
   }));
 }
 
-export async function getPlayerById(id: number): Promise<ApiPlayerFullResponse | null> {
+export async function getPlayerById(game: GameSlug, id: number): Promise<ApiPlayerFullResponse | null> {
+  const { people } = gameTables(game);
   const [row] = await db.select().from(people).where(eq(people.id, id)).limit(1);
   rejectGhost(row, "player");
   if (!row) return null;
 
-  const [teamsByPersonId, photo] = await Promise.all([getCurrentTeamsByPersonId([id]), getLogoUrls("person", id)]);
+  const [teamsByPersonId, photo] = await Promise.all([getCurrentTeamsByPersonId(game, [id]), getLogoUrls("person", id, game)]);
 
   return { ...toApiPlayer(row), current_team: teamsByPersonId.get(id) ?? null, photo };
 }
@@ -99,8 +104,9 @@ export type ApiPlayerTeamHistory = {
 };
 
 /** Only player-role stints (not coach/manager/analyst) — same scope as V1's `player_team`, which never held staff. */
-export async function getPlayerTeamHistory(personId: number): Promise<ApiPlayerTeamHistory[] | null> {
-  if (!(await personExists(personId))) return null;
+export async function getPlayerTeamHistory(game: GameSlug, personId: number): Promise<ApiPlayerTeamHistory[] | null> {
+  const { rosterMemberships, teams } = gameTables(game);
+  if (!(await personExists(game, personId))) return null;
 
   const rows = await db
     .select({
@@ -130,14 +136,14 @@ export async function getPlayerTeamHistory(personId: number): Promise<ApiPlayerT
 }
 
 /** No existence gate — mirrors V1 (`/players/{id}/photos` never documented a 404, always 200 with an empty history). */
-export async function getPlayerPhotoHistory(personId: number): Promise<ApiLogoHistoryResponse> {
-  return getLogoHistoryResponse("person", personId);
+export async function getPlayerPhotoHistory(game: GameSlug, personId: number): Promise<ApiLogoHistoryResponse> {
+  return getLogoHistoryResponse("person", personId, game);
 }
 
 /** Average stats for the player, always broken down by side (atk/def). */
-export async function getPlayerStats(personId: number, filter: StatsFilter): Promise<ApiAvgStats | null> {
-  if (!(await personExists(personId))) return null;
-  return fetchAvgStats({ kind: "player", personId }, filter);
+export async function getPlayerStats(game: GameSlug, personId: number, filter: StatsFilter): Promise<ApiAvgStats | null> {
+  if (!(await personExists(game, personId))) return null;
+  return fetchAvgStats(game, { kind: "player", personId }, filter);
 }
 
 export type ApiAgentStatsEntry = {
@@ -179,8 +185,10 @@ type AgentRow = {
 };
 
 /** Per-agent stats and pickrate for the player across all recorded maps. */
-export async function getPlayerAgentStats(personId: number, filter: MapsFilter): Promise<ApiAgentStatsEntry[] | null> {
-  if (!(await personExists(personId))) return null;
+export async function getPlayerAgentStats(game: GameSlug, personId: number, filter: MapsFilter): Promise<ApiAgentStatsEntry[] | null> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { mapPlayerStats, maps } = valorantTablesOf(game);
+  if (!(await personExists(game, personId))) return null;
 
   const conditions = [eq(mapPlayerStats.personId, personId)];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
@@ -257,7 +265,7 @@ export async function getPlayerAgentStats(personId: number, filter: MapsFilter):
 }
 
 /** Weapon usage for the player — shared aggregation with `/teams/{id}/weapons` in `../weapon-stats.ts`. */
-export async function getPlayerWeapons(personId: number, filter: MapsFilter): Promise<ApiWeaponStatsEntry[] | null> {
-  if (!(await personExists(personId))) return null;
-  return fetchWeaponStats({ kind: "player", personId }, filter);
+export async function getPlayerWeapons(game: GameSlug, personId: number, filter: MapsFilter): Promise<ApiWeaponStatsEntry[] | null> {
+  if (!(await personExists(game, personId))) return null;
+  return fetchWeaponStats(game, { kind: "player", personId }, filter);
 }

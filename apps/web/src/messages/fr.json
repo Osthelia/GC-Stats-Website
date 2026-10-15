@@ -2108,7 +2108,8 @@
       "error": {
         "userNotFound": "Utilisateur introuvable.",
         "roleNotFound": "Un des rôles sélectionnés n'existe plus.",
-        "selfDemote": "Vous ne pouvez pas retirer votre propre accès admin."
+        "selfDemote": "Vous ne pouvez pas retirer votre propre accès admin.",
+        "gameNotFound": "Ce jeu n'existe pas."
       },
       "authMethods": {
         "heading": "Authentification",
@@ -2389,7 +2390,8 @@
           "ownerOnly": "Seul un propriétaire peut donner ou modifier le rôle propriétaire.",
           "userNotFound": "Compte introuvable.",
           "alreadyHasAccess": "Ce compte a déjà accès à cette organisation."
-        }
+        },
+        "fieldGames": "Jeux"
       },
       "filterKindLabel": "Type d'organisation",
       "filterKindAll": "Toutes les organisations",
@@ -6676,5 +6678,10 @@
       "rateLimited": "Trop de requêtes, ralentissez.",
       "invalidRequest": "Requête invalide."
     }
+  },
+  "game": {
+    "switcherLabel": "Jeu",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

@@ -13,15 +13,17 @@
 
 "use server";
 
+import { logoGameClause, logoGameOf } from "@/lib/admin-logos";
 import { and, eq, ne, isNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequests, changeRequestItems, teams, people, rosterMemberships, teamNameHistory, logos, PERMISSIONS } from "@gc-stats/db";
+import { logos, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { deleteLogoFiles } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 type ItemStatus = "approved" | "rejected" | "failed";
 export type ResolveItemResult = { ok: true; status: ItemStatus; applyError: string | null } | { ok: false; error: string };
@@ -38,7 +40,8 @@ const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secon
  * snapshot taken at submit time. Throws a plain Error with a short message
  * on failure — caught by the caller and stored in applyError.
  */
-async function applyChangeRequestItem(subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown): Promise<void> {
+async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown): Promise<void> {
+  const { teams, people, rosterMemberships, teamNameHistory } = gameTables(game);
   // --- Simple profile columns (including socials.<key>) -------------------
   if (field.startsWith("socials.")) {
     const key = field.slice("socials.".length);
@@ -176,12 +179,12 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
         const openElsewhere = await tx
           .select({ id: logos.id, period: logos.period })
           .from(logos)
-          .where(and(eq(logos.entityType, subjectType), eq(logos.entityId, subjectId), v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
+          .where(and(eq(logos.entityType, subjectType), logoGameClause(subjectType, game), eq(logos.entityId, subjectId), v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
         for (const row of openElsewhere) {
           await tx.update(logos).set({ period: closeRange(row.period, v.since) }).where(eq(logos.id, row.id));
         }
       }
-      await tx.insert(logos).values({ id: v.logoId, entityType: subjectType, entityId: subjectId, period, theme: v.theme, isVisible: true });
+      await tx.insert(logos).values({ id: v.logoId, entityType: subjectType, entityId: subjectId, game: logoGameOf(subjectType, game), period, theme: v.theme, isVisible: true });
     });
     return;
   }
@@ -199,6 +202,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
           .where(
             and(
               eq(logos.entityType, subjectType),
+              logoGameClause(subjectType, game),
               eq(logos.entityId, existing.entityId),
               v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme),
               ne(logos.id, v.logoId),
@@ -247,7 +251,8 @@ const STATUS_NOTIFICATION_TYPE: Record<"approved" | "rejected" | "partial", Noti
   partial: "change_request.partial",
 };
 
-async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId: string, requestedBy: string | null): Promise<void> {
+async function recomputeChangeRequestStatus(game: GameSlug, changeRequestId: number, actorUserId: string, requestedBy: string | null): Promise<void> {
+  const { changeRequests, changeRequestItems } = gameTables(game);
   const items = await db.select({ status: changeRequestItems.status }).from(changeRequestItems).where(eq(changeRequestItems.changeRequestId, changeRequestId));
   const pending = items.some((i) => i.status === "pending");
   if (pending) return; // still awaiting review, leave changeRequests.status as "pending"
@@ -257,7 +262,7 @@ async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId
   await db.update(changeRequests).set({ status, closedBy: actorUserId, closedAt: new Date() }).where(eq(changeRequests.id, changeRequestId));
 
   if (requestedBy) {
-    await notify({ recipientId: requestedBy, type: STATUS_NOTIFICATION_TYPE[status], authorId: actorUserId, link: `/settings/change-requests/${changeRequestId}`, data: { changeRequestId } });
+    await notify({ recipientId: requestedBy, type: STATUS_NOTIFICATION_TYPE[status], authorId: actorUserId, link: `/settings/change-requests/${game}/${changeRequestId}`, data: { changeRequestId, game } });
   }
 }
 
@@ -268,8 +273,9 @@ async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId
  * with the error recorded, rather than silently leaving it pending forever.
  * Recomputes the parent change_requests.status once every item is resolved.
  */
-export async function resolveChangeRequestItem(itemId: number, action: "approve" | "reject", note: string): Promise<ResolveItemResult> {
-  const access = await requireActorPermission(PERMISSIONS.changeRequestsManage);
+export async function resolveChangeRequestItem(game: GameSlug, itemId: number, action: "approve" | "reject", note: string): Promise<ResolveItemResult> {
+  const { changeRequests, changeRequestItems } = gameTables(game);
+  const access = await requireActorPermission(PERMISSIONS.changeRequestsManage, game);
 
   const [item] = await db.select().from(changeRequestItems).where(eq(changeRequestItems.id, itemId)).limit(1);
   if (!item) return { ok: false, error: "notFound" };
@@ -288,7 +294,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 
   if (action === "approve") {
     try {
-      await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue);
+      await applyChangeRequestItem(game, request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue);
       status = "approved";
       await logActivity({
         subject: request.subjectType === "team" ? "team" : "player",
@@ -317,7 +323,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
     })
     .where(eq(changeRequestItems.id, itemId));
 
-  await recomputeChangeRequestStatus(item.changeRequestId, access.userId, request.requestedBy);
+  await recomputeChangeRequestStatus(game, item.changeRequestId, access.userId, request.requestedBy);
 
   return { ok: true, status, applyError };
 }
@@ -325,8 +331,9 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 export type BulkResolveResult = { itemId: number; result: ResolveItemResult }[];
 
 /** Resolves every currently-pending item of one change request the same way — the "approve all"/"reject all" bulk action. */
-export async function resolveAllPendingItems(changeRequestId: number, action: "approve" | "reject", note = ""): Promise<BulkResolveResult> {
-  await requireActorPermission(PERMISSIONS.changeRequestsManage);
+export async function resolveAllPendingItems(game: GameSlug, changeRequestId: number, action: "approve" | "reject", note = ""): Promise<BulkResolveResult> {
+  const { changeRequestItems } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.changeRequestsManage, game);
 
   const pendingItems = await db
     .select({ id: changeRequestItems.id })
@@ -335,7 +342,7 @@ export async function resolveAllPendingItems(changeRequestId: number, action: "a
 
   const results: BulkResolveResult = [];
   for (const item of pendingItems) {
-    results.push({ itemId: item.id, result: await resolveChangeRequestItem(item.id, action, note) });
+    results.push({ itemId: item.id, result: await resolveChangeRequestItem(game, item.id, action, note) });
   }
   return results;
 }

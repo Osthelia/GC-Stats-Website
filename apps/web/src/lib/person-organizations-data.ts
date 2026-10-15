@@ -12,9 +12,10 @@
 
 import { desc, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { organizationMemberships, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type PersonOrganization = {
   membershipId: number;
@@ -30,7 +31,8 @@ export type PersonOrganization = {
 };
 
 /** Mirrors `getOrganizationMembers` (organization-page-data.ts), pivoted by person instead of by organization — the public "which organizations is this person part of" panel/tab on the player profile. */
-export async function getPersonOrganizations(personId: number): Promise<{ current: PersonOrganization[]; formers: PersonOrganization[] }> {
+export async function getPersonOrganizations(game: GameSlug, personId: number): Promise<{ current: PersonOrganization[]; formers: PersonOrganization[] }> {
+  const { organizationMemberships } = gameTables(game);
   const rows = await db
     .select({
       membershipId: organizationMemberships.id,

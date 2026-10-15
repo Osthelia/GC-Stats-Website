@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { RequiredMark } from "@/components/admin/required-mark";
 import { searchTournamentsForCredit, getMatchOptionsForCredit, getMapOptionsForCredit } from "@/actions/dashboard-production-credits";
 import type { ProductionCreditScope } from "@/lib/production-credit-validation";
+import { useGame } from "@/lib/use-game";
 
 export type SelectedTarget = {
   scope: ProductionCreditScope;
@@ -50,6 +51,7 @@ export function ProductionTargetPicker({
   onChange: (next: SelectedTarget[]) => void;
   error?: string;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.credits");
   const [path, setPath] = useState<Crumb[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
@@ -69,9 +71,9 @@ export function ProductionTargetPicker({
     const timeout = setTimeout(() => {
       const request: Promise<Row[]> =
         level === "tournament"
-          ? searchTournamentsForCredit(organizationId, filter).then((r) => r.map((x) => ({ id: x.id, label: x.name })))
+          ? searchTournamentsForCredit(game, organizationId, filter).then((r) => r.map((x) => ({ id: x.id, label: x.name })))
           : level === "match"
-            ? getMatchOptionsForCredit(organizationId, tournament!.id)
+            ? getMatchOptionsForCredit(game, organizationId, tournament!.id)
             : getMapOptionsForCredit(organizationId, match!.id);
       request.then((result) => {
         if (cancelled) return;

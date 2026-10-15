@@ -15,32 +15,33 @@ import { getLiquipediaMatchWikicode } from "@/lib/liquipedia-match-data";
 import { getTournamentParticipantsWikicode } from "@/lib/liquipedia-participants-data";
 import { getTournamentInfoboxWikicode } from "@/lib/liquipedia-infobox-data";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
+import { gameHasLiquipediaMatches, type GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaExportResult =
   | { ok: true; wikicode: string; unlinkedTeams: string[]; unlinkedPeopleCount: number }
   | { ok: false; error: "invalid" | "notFound" };
 
-async function visibleTournament(tournamentId: number): Promise<boolean> {
-  return Number.isInteger(tournamentId) && (await getPublicTournamentHeader(tournamentId)) !== null;
+async function visibleTournament(game: GameSlug, tournamentId: number): Promise<boolean> {
+  return Number.isInteger(tournamentId) && (await getPublicTournamentHeader(game, tournamentId)) !== null;
 }
 
-export async function loadMatchWikicode(tournamentId: number, matchId: number): Promise<LiquipediaExportResult> {
-  if (!Number.isInteger(tournamentId) || !Number.isInteger(matchId)) return { ok: false, error: "invalid" };
-  if (!(await visibleTournament(tournamentId))) return { ok: false, error: "notFound" };
-  const match = await getLiquipediaMatchWikicode(matchId);
+export async function loadMatchWikicode(game: GameSlug, tournamentId: number, matchId: number): Promise<LiquipediaExportResult> {
+  if (!gameHasLiquipediaMatches(game) || !Number.isInteger(tournamentId) || !Number.isInteger(matchId)) return { ok: false, error: "invalid" };
+  if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
+  const match = await getLiquipediaMatchWikicode(game, matchId);
   // The match must belong to the tournament whose page asked for it.
   if (!match || match.tournamentId !== tournamentId || match.tournamentIsGhost) return { ok: false, error: "notFound" };
   return { ok: true, wikicode: match.wikicode, unlinkedTeams: match.unlinkedTeams, unlinkedPeopleCount: 0 };
 }
 
-export async function loadParticipantsWikicode(tournamentId: number): Promise<LiquipediaExportResult> {
-  if (!(await visibleTournament(tournamentId))) return { ok: false, error: "notFound" };
-  const data = await getTournamentParticipantsWikicode(tournamentId);
+export async function loadParticipantsWikicode(game: GameSlug, tournamentId: number): Promise<LiquipediaExportResult> {
+  if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
+  const data = await getTournamentParticipantsWikicode(game, tournamentId);
   return { ok: true, wikicode: data.wikicode, unlinkedTeams: data.unlinkedTeams, unlinkedPeopleCount: data.unlinkedPeopleCount };
 }
 
-export async function loadInfoboxWikicode(tournamentId: number): Promise<LiquipediaExportResult> {
-  if (!(await visibleTournament(tournamentId))) return { ok: false, error: "notFound" };
-  const wikicode = await getTournamentInfoboxWikicode(tournamentId);
+export async function loadInfoboxWikicode(game: GameSlug, tournamentId: number): Promise<LiquipediaExportResult> {
+  if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
+  const wikicode = await getTournamentInfoboxWikicode(game, tournamentId);
   return wikicode ? { ok: true, wikicode, unlinkedTeams: [], unlinkedPeopleCount: 0 } : { ok: false, error: "notFound" };
 }

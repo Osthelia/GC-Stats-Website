@@ -11,8 +11,10 @@
  */
 
 import { and, eq, gte, inArray, isNotNull, lte, or } from "drizzle-orm";
+import { forEachGame } from "../for-each-game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { matches, entrants, entrantMembers, stageContainers, stages, tournaments, teams, people, matchPlayerPovs, matchStreams, streamChannels } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { getLiveStreams, type LiveStream } from "@/lib/twitch-client";
 
 /** Start checking this long before the scheduled kickoff. */
@@ -35,7 +37,8 @@ type Candidate = { login: string; entrantId: number; personId: number | null };
  * "Fetch map" not built), and entrant_members is already the source of
  * truth for "who played for this entrant in this tournament".
  */
-export async function detectPlayerPovStreams(): Promise<string> {
+async function detectPlayerPovStreamsForGame(game: GameSlug): Promise<string> {
+  const { matches } = gameTables(game);
   const now = new Date();
   const preMatchCutoff = new Date(now.getTime() + PRE_MATCH_WINDOW_MINUTES * 60 * 1000);
   const stalePendingCutoff = new Date(now.getTime() - MAX_PENDING_AGE_HOURS * 60 * 60 * 1000);
@@ -65,7 +68,7 @@ export async function detectPlayerPovStreams(): Promise<string> {
   if (eligibleMatches.length === 0) return "no match to check";
 
   const containerIds = [...new Set(eligibleMatches.map((m) => m.containerId))];
-  const tournamentByContainer = await getTournamentsByContainer(containerIds);
+  const tournamentByContainer = await getTournamentsByContainer(game, containerIds);
 
   const checkableMatches = eligibleMatches
     .map((match) => ({ match, tournament: tournamentByContainer.get(match.containerId) }))
@@ -74,11 +77,11 @@ export async function detectPlayerPovStreams(): Promise<string> {
   if (checkableMatches.length === 0) return "checked 0 match(es), recorded/updated 0 POV stream(s)";
 
   const entrantIds = [...new Set(checkableMatches.flatMap((m) => [m.match.entrantAId, m.match.entrantBId]).filter((id): id is number => id !== null))];
-  const candidatesByEntrant = await candidatesForEntrants(entrantIds);
+  const candidatesByEntrant = await candidatesForEntrants(game, entrantIds);
   const allLogins = [...new Set([...candidatesByEntrant.values()].flat().map((c) => c.login))];
   const liveStreams = allLogins.length ? await getLiveStreams(allLogins) : new Map<string, LiveStream>();
 
-  const streamLoginsByMatch = await getStreamLoginsByMatch(checkableMatches.map((m) => m.match.id));
+  const streamLoginsByMatch = await getStreamLoginsByMatch(game, checkableMatches.map((m) => m.match.id));
 
   let recorded = 0;
 
@@ -89,13 +92,14 @@ export async function detectPlayerPovStreams(): Promise<string> {
       .filter((id): id is number => id !== null)
       .flatMap((id) => candidatesByEntrant.get(id) ?? [])
       .filter((c) => !streamLogins?.has(c.login));
-    recorded += await recordLiveCandidates(match.id, candidates, liveStreams, tournament.playerPovPhrase as string);
+    recorded += await recordLiveCandidates(game, match.id, candidates, liveStreams, tournament.playerPovPhrase as string);
   }
 
   return `checked ${checkableMatches.length} match(es), recorded/updated ${recorded} POV stream(s)`;
 }
 
-async function getTournamentsByContainer(containerIds: number[]) {
+async function getTournamentsByContainer(game: GameSlug, containerIds: number[]) {
+  const { stageContainers, stages, tournaments } = gameTables(game);
   const rows = await db
     .select({ containerId: stageContainers.id, active: tournaments.active, playerPovPhrase: tournaments.playerPovPhrase })
     .from(stageContainers)
@@ -107,7 +111,8 @@ async function getTournamentsByContainer(containerIds: number[]) {
 }
 
 /** Logins Twitch des stream channels liés à chaque match. */
-async function getStreamLoginsByMatch(matchIds: number[]): Promise<Map<number, Set<string>>> {
+async function getStreamLoginsByMatch(game: GameSlug, matchIds: number[]): Promise<Map<number, Set<string>>> {
+  const { matchStreams, streamChannels } = gameTables(game);
   const byMatch = new Map<number, Set<string>>();
   if (matchIds.length === 0) return byMatch;
 
@@ -128,7 +133,8 @@ async function getStreamLoginsByMatch(matchIds: number[]): Promise<Map<number, S
   return byMatch;
 }
 
-async function recordLiveCandidates(matchId: number, candidates: Candidate[], liveStreams: Map<string, LiveStream>, phrase: string): Promise<number> {
+async function recordLiveCandidates(game: GameSlug, matchId: number, candidates: Candidate[], liveStreams: Map<string, LiveStream>, phrase: string): Promise<number> {
+  const { matchPlayerPovs } = gameTables(game);
   if (candidates.length === 0 || liveStreams.size === 0) return 0;
 
   const lowerPhrase = phrase.toLowerCase();
@@ -161,7 +167,8 @@ async function recordLiveCandidates(matchId: number, candidates: Candidate[], li
 }
 
 /** Batches Twitch login lookup across every entrant of every checkable match in this tick, keyed by entrant id. */
-async function candidatesForEntrants(entrantIds: number[]): Promise<Map<number, Candidate[]>> {
+async function candidatesForEntrants(game: GameSlug, entrantIds: number[]): Promise<Map<number, Candidate[]>> {
+  const { entrants, entrantMembers, teams, people } = gameTables(game);
   const candidatesByEntrant = new Map<number, Candidate[]>();
   const seenLoginByEntrant = new Map<number, Set<string>>();
   const push = (entrantId: number, candidate: Candidate) => {
@@ -204,4 +211,8 @@ async function candidatesForEntrants(entrantIds: number[]): Promise<Map<number, 
   }
 
   return candidatesByEntrant;
+}
+
+export function detectPlayerPovStreams(): Promise<string> {
+  return forEachGame(detectPlayerPovStreamsForGame);
 }

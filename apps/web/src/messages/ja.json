@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "ユーザーが見つかりません。",
         "roleNotFound": "選択されたロールのいずれかが存在しません。",
-        "selfDemote": "自分自身の管理者権限を削除することはできません。"
+        "selfDemote": "自分自身の管理者権限を削除することはできません。",
+        "gameNotFound": "このゲームは存在しません。"
       },
       "authMethods": {
         "heading": "認証",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "オーナーロールの付与または編集はオーナーのみ行えます。",
           "userNotFound": "アカウントが見つかりません。",
           "alreadyHasAccess": "このアカウントはすでにこの組織へのアクセス権を持っています。"
-        }
+        },
+        "fieldGames": "ゲーム"
       },
       "filterKindLabel": "組織の種類",
       "filterKindAll": "すべての組織",
@@ -6489,5 +6491,10 @@
     "points": "{label} ポイントで出場",
     "pointsUnknown": "ポイントで出場",
     "iconLabel": "出場経路"
+  },
+  "game": {
+    "switcherLabel": "ゲーム",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

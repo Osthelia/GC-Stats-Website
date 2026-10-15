@@ -15,6 +15,7 @@ import { ForumMessageItem } from "@/components/forum/forum-message-item";
 import { ForumPostGate } from "@/components/forum/forum-post-gate";
 import { ReplyForm } from "@/components/forum/reply-form";
 import { ForumReplyProvider } from "@/components/forum/forum-reply-context";
+import type { GameSlug } from "@gc-stats/db/game";
 import { ListPagination } from "@/components/filters/list-pagination";
 
 /**
@@ -23,13 +24,13 @@ import { ListPagination } from "@/components/filters/list-pagination";
  * pages (V1 mounts the same forum-thread component both ways, see
  * lib/forum-threads.ts).
  */
-export async function ForumThreadPanel({ threadId, page, buildHref }: { threadId: number; page: number; buildHref: (page: number) => string }) {
+export async function ForumThreadPanel({ threadId, page, buildHref, game }: { threadId: number; page: number; buildHref: (page: number) => string; game?: GameSlug }) {
   const t = await getTranslations("forum.thread");
   const session = await auth();
   const userId = session?.user?.id ?? null;
 
   const [{ messages, total }, pickerEmotes, status] = await Promise.all([
-    getForumMessagesPage(threadId, page, userId),
+    getForumMessagesPage(threadId, page, userId, game),
     getActiveEmotesForPicker(),
     getForumPostStatus(userId),
   ]);

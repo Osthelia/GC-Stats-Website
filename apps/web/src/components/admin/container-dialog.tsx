@@ -22,6 +22,7 @@ import { createContainer, updateContainer, type ContainerFieldErrors, type Conta
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
+import { useGame } from "@/lib/use-game";
 
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
@@ -100,6 +101,7 @@ export function ContainerDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -138,7 +140,7 @@ export function ContainerDialog({
             ...points,
           };
     startTransition(async () => {
-      const result = container ? await updateContainer(container.id, stageId, input) : await createContainer(stageId, input);
+      const result = container ? await updateContainer(game, container.id, stageId, input) : await createContainer(game, stageId, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

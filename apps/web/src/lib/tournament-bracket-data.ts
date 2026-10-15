@@ -13,7 +13,7 @@
 import { cache } from "react";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, teams, stages, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { listTournamentStages, type AdminContainerRow } from "@/lib/admin-tournament-detail";
 import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/admin-bracket-editor-data";
@@ -23,6 +23,7 @@ import { getStageFinalStandings } from "@/lib/bracket/final-standings";
 import { parseGroupConfig, isPointsConfigActive } from "@/lib/bracket/config-types";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type TournamentHeaderInfo = {
   id: number;
@@ -44,7 +45,8 @@ export type TournamentHeaderInfo = {
 };
 
 /** Deduplicated per request (page, header and metadata can all ask for it). */
-export const getPublicTournamentHeader = cache(async (id: number): Promise<TournamentHeaderInfo | null> => {
+export const getPublicTournamentHeader = cache(async (game: GameSlug, id: number): Promise<TournamentHeaderInfo | null> => {
+  const { tournaments } = gameTables(game);
   const [[row], logosByTournamentId] = await Promise.all([
     db
       .select({
@@ -64,8 +66,8 @@ export const getPublicTournamentHeader = cache(async (id: number): Promise<Tourn
         organizerOrganizationId: tournaments.organizerOrganizationId,
       })
       .from(tournaments)
-      .where(and(eq(tournaments.id, id), visibleTournament)),
-    getCurrentLogoUrlsThemed("tournament", [id]),
+      .where(and(eq(tournaments.id, id), visibleTournament(game))),
+    getCurrentLogoUrlsThemed("tournament", [id], game),
   ]);
   if (!row) return null;
   const { organizerOrganizationId, ...tournamentRow } = row;
@@ -89,7 +91,8 @@ export const getPublicTournamentHeader = cache(async (id: number): Promise<Tourn
 export type PublicStageLink = { name: string; liquipediaLink: string };
 
 /** Every active stage's Liquipedia link, for the header pills — shown on every tournament tab at all times, not just the currently viewed stage. */
-export async function getPublicTournamentStageLinks(tournamentId: number): Promise<PublicStageLink[]> {
+export async function getPublicTournamentStageLinks(game: GameSlug, tournamentId: number): Promise<PublicStageLink[]> {
+  const { stages } = gameTables(game);
   const rows = await db
     .select({ name: stages.name, liquipediaLink: stages.liquipediaLink })
     .from(stages)
@@ -195,16 +198,16 @@ export function pickDefaultStage<T extends { startDate: string | null; endDate: 
 
 /** Every public stage for the pills, but only the displayed one (`activeStageId`, else the one running today) gets its bracket built. */
 export async function getPublicTournamentStages(
-  tournamentId: number,
+  game: GameSlug, tournamentId: number,
   activeStageId: number | null,
 ): Promise<{ stages: PublicStageSummary[]; activeStage: PublicStage | null }> {
   // The active toggle is a public-visibility switch only — the admin
   // bracket viewer (getAdminTournamentStages) shows every stage regardless.
-  const stages = (await listTournamentStages(tournamentId)).filter((s) => s.active);
+  const stages = (await listTournamentStages(game, tournamentId)).filter((s) => s.active);
   const active = stages.find((s) => s.id === activeStageId) ?? pickDefaultStage(stages);
   return {
     stages: stages.map((s) => ({ id: s.id, name: s.name, sequenceOrder: s.sequenceOrder, status: s.status, startDate: s.startDate, endDate: s.endDate, liquipediaLink: s.liquipediaLink })),
-    activeStage: active ? await buildStageView(active) : null,
+    activeStage: active ? await buildStageView(game, active) : null,
   };
 }
 
@@ -214,20 +217,21 @@ export async function getPublicTournamentStages(
  * public "active" toggle, mirroring how the rest of admin (stage list,
  * editor) never hides inactive stages (SUIVI.md: "ne bloque jamais l'admin").
  */
-export async function getAdminTournamentStages(tournamentId: number): Promise<PublicStage[]> {
-  const stages = await listTournamentStages(tournamentId);
-  return buildStagesView(stages);
+export async function getAdminTournamentStages(game: GameSlug, tournamentId: number): Promise<PublicStage[]> {
+  const stages = await listTournamentStages(game, tournamentId);
+  return buildStagesView(game, stages);
 }
 
-async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentStages>>[number]): Promise<PublicStage> {
-  const editorData = await getStageEditorData(stage.id);
+async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof listTournamentStages>>[number]): Promise<PublicStage> {
+  const { teams } = gameTables(game);
+  const editorData = await getStageEditorData(game, stage.id);
   const entrantNameById = new Map(editorData?.entrants.map((e) => [e.id, e.displayName]) ?? []);
   const entrantTeamIdById = new Map(editorData?.entrants.map((e) => [e.id, e.teamId]) ?? []);
   const stageTeamIds = [...new Set([...entrantTeamIdById.values()].filter((id): id is number => id !== null))];
 
-  const finalStandingsPromise = getStageFinalStandings(db, stage.id);
+  const finalStandingsPromise = getStageFinalStandings(game, db, stage.id);
   const teamLogos: Map<number, { dark: string | null; light: string | null }> = stageTeamIds.length
-    ? await getCurrentLogoUrlsThemed("team", stageTeamIds)
+    ? await getCurrentLogoUrlsThemed("team", stageTeamIds, game)
     : new Map();
   const entrantLogos = (entrantId: number | null) => {
     const teamId = entrantId !== null ? (entrantTeamIdById.get(entrantId) ?? null) : null;
@@ -256,7 +260,7 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
       let graph: PublicStageContainer["graph"];
       if (!isGroup) {
         const containerEdges = (editorData?.edges ?? []).filter((e) => containerMatches.some((m) => m.id === e.fromMatchId));
-        const matchRules = await getMatchAdvancementRules(db, containerMatches.map((m) => m.id));
+        const matchRules = await getMatchAdvancementRules(game, db, containerMatches.map((m) => m.id));
         const matchById = new Map(resolvedMatches.map((m) => [m.id, m]));
         const qualifiers = matchRules.map((r): PublicMatchQualifier => {
           const m = matchById.get(r.sourceMatchId)!;
@@ -281,8 +285,8 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
       let qualificationRules: PublicStageContainer["qualificationRules"];
       if (isGroup) {
         const [ranked, advancementRules] = await Promise.all([
-          computeContainerStandings(db, container.id, container.config),
-          getContainerAdvancementRules(db, container.id),
+          computeContainerStandings(game, db, container.id, container.config),
+          getContainerAdvancementRules(game, db, container.id),
         ]);
         standings = ranked.map((r) => {
           const displayName = entrantNameById.get(Number(r.id)) ?? `#${r.id}`;
@@ -338,7 +342,7 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
   return { id: stage.id, name: stage.name, sequenceOrder: stage.sequenceOrder, status: stage.status, startDate: stage.startDate, endDate: stage.endDate, liquipediaLink: stage.liquipediaLink, containers, finalStandings };
 }
 
-async function buildStagesView(stages: Awaited<ReturnType<typeof listTournamentStages>>): Promise<PublicStage[]> {
+async function buildStagesView(game: GameSlug, stages: Awaited<ReturnType<typeof listTournamentStages>>): Promise<PublicStage[]> {
   if (stages.length === 0) return [];
-  return Promise.all(stages.map(buildStageView));
+  return Promise.all(stages.map((s) => buildStageView(game, s)));
 }

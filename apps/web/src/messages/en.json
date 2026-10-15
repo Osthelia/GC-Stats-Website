@@ -2108,7 +2108,8 @@
       "error": {
         "userNotFound": "User not found.",
         "roleNotFound": "One of the selected roles no longer exists.",
-        "selfDemote": "You cannot remove your own admin access."
+        "selfDemote": "You cannot remove your own admin access.",
+        "gameNotFound": "This game does not exist."
       },
       "authMethods": {
         "heading": "Authentication",
@@ -2389,7 +2390,8 @@
           "ownerOnly": "Only an owner can grant or edit the owner role.",
           "userNotFound": "Account not found.",
           "alreadyHasAccess": "This account already has access to this organization."
-        }
+        },
+        "fieldGames": "Games"
       },
       "filterKindLabel": "Organization type",
       "filterKindAll": "All organizations",
@@ -6676,5 +6678,10 @@
       "rateLimited": "Too many requests, slow down.",
       "invalidRequest": "Invalid request."
     }
+  },
+  "game": {
+    "switcherLabel": "Game",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

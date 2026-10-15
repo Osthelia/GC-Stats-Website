@@ -11,12 +11,13 @@
 
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { pickemStageSettings, pickemGroupPhasePoints, pickemMatchPicks, pickemStandingPicks, pickemGroups, pickemGroupMembers, matches, stageContainers, groupEntries, users } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
 import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/admin-bracket-editor-data";
 import { listTournamentStages } from "@/lib/admin-tournament-detail";
 import { computeContainerStandings } from "@/lib/bracket/standings";
 import { computeVirtualBracket, getPickableMatches } from "./bracket-fill";
 import { scoreBracketMatchPick, scoreStandingPick, DEFAULT_PICKEM_SCORING, type PhaseScoringConfig } from "./scoring";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type PickemStagePhase = { id: number; name: string; status: "pending" | "active" | "completed"; startDate: string | null; endDate: string | null };
 
@@ -36,8 +37,8 @@ function getStageBracketMatchesAndEdges(editorData: Awaited<ReturnType<typeof ge
 }
 
 /** Public-facing stage list for a tournament's pick'em tab — active (publicly visible) stages with pick'em enabled, in stage order. */
-export async function getPickemEnabledStages(tournamentId: number): Promise<PickemStagePhase[]> {
-  const stages = await listTournamentStages(tournamentId);
+export async function getPickemEnabledStages(game: GameSlug, tournamentId: number): Promise<PickemStagePhase[]> {
+  const stages = await listTournamentStages(game, tournamentId);
   return stages.filter((s) => s.active && s.pickemEnabled).map((s) => ({ id: s.id, name: s.name, status: s.status, startDate: s.startDate, endDate: s.endDate }));
 }
 
@@ -52,7 +53,8 @@ export type StagePickemStatus = {
 };
 
 /** Closes at the stage's own earliest match `scheduledAt` — computed here, never stored. */
-export async function getStagePickemStatus(stageId: number): Promise<StagePickemStatus> {
+export async function getStagePickemStatus(game: GameSlug, stageId: number): Promise<StagePickemStatus> {
+  const { pickemStageSettings, matches, stageContainers } = gameTables(game);
   const [settings] = await db.select().from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId));
   const [row] = await db
     .select({ earliest: sql<Date | null>`min(${matches.scheduledAt})` })
@@ -78,7 +80,8 @@ export async function getStagePickemStatus(stageId: number): Promise<StagePickem
   return { stageId, enabled, opensAt: opensAt ? opensAt.toISOString() : null, closesAt: closesAt ? closesAt.toISOString() : null, phase };
 }
 
-export async function getUserBracketPicks(userId: string, stageId: number): Promise<Map<number, number>> {
+export async function getUserBracketPicks(game: GameSlug, userId: string, stageId: number): Promise<Map<number, number>> {
+  const { pickemMatchPicks } = gameTables(game);
   const rows = await db
     .select({ matchId: pickemMatchPicks.matchId, entrantId: pickemMatchPicks.predictedWinnerEntrantId })
     .from(pickemMatchPicks)
@@ -87,7 +90,8 @@ export async function getUserBracketPicks(userId: string, stageId: number): Prom
 }
 
 /** containerId -> predictedRank -> entrantId */
-export async function getUserStandingPicks(userId: string, stageId: number): Promise<Map<number, Map<number, number>>> {
+export async function getUserStandingPicks(game: GameSlug, userId: string, stageId: number): Promise<Map<number, Map<number, number>>> {
+  const { pickemStandingPicks } = gameTables(game);
   const rows = await db
     .select({ containerId: pickemStandingPicks.containerId, entrantId: pickemStandingPicks.entrantId, predictedRank: pickemStandingPicks.predictedRank })
     .from(pickemStandingPicks)
@@ -129,15 +133,16 @@ export type PickFormData = {
  * together (not sliced per container) — see `computeVirtualBracket`'s
  * docstring for why a double/triple elimination stage needs that.
  */
-export async function getPickFormData(userId: string, stageId: number): Promise<PickFormData | null> {
-  const editorData = await getStageEditorData(stageId);
+export async function getPickFormData(game: GameSlug, userId: string, stageId: number): Promise<PickFormData | null> {
+  const { groupEntries } = gameTables(game);
+  const editorData = await getStageEditorData(game, stageId);
   if (!editorData) return null;
 
   const entrantNames: Record<number, string> = {};
   for (const e of editorData.entrants) entrantNames[e.id] = e.displayName;
 
-  const userMatchPicks = await getUserBracketPicks(userId, stageId);
-  const userStandingPicks = await getUserStandingPicks(userId, stageId);
+  const userMatchPicks = await getUserBracketPicks(game, userId, stageId);
+  const userStandingPicks = await getUserStandingPicks(game, userId, stageId);
 
   const groupContainerRows = editorData.containers.filter((c) => c.containerType === "group");
   const groupEntryRows = groupContainerRows.length
@@ -189,12 +194,13 @@ export type SavePicksResult = { ok: true } | { ok: false; error: string };
  * entrants the rest of the submission puts at that slot, and every group
  * container must get a full 1..N ranking, no gaps or duplicates.
  */
-export async function saveStagePicks(userId: string, stageId: number, input: SavePicksInput): Promise<SavePicksResult> {
-  const status = await getStagePickemStatus(stageId);
+export async function saveStagePicks(game: GameSlug, userId: string, stageId: number, input: SavePicksInput): Promise<SavePicksResult> {
+  const { pickemMatchPicks, pickemStandingPicks, groupEntries } = gameTables(game);
+  const status = await getStagePickemStatus(game, stageId);
   if (status.phase === "locked") return { ok: false, error: "locked" };
   if (status.phase !== "open") return { ok: false, error: "notOpen" };
 
-  const editorData = await getStageEditorData(stageId);
+  const editorData = await getStageEditorData(game, stageId);
   if (!editorData) return { ok: false, error: "stageNotFound" };
 
   const matchPickMap = new Map(input.matchPicks.map((p) => [p.matchId, p.entrantId]));
@@ -275,8 +281,9 @@ export type LeaderboardEntry = {
  * correct" signal, which depends on their predicted OPPONENT, never stored
  * directly).
  */
-export async function computeStageLeaderboard(stageId: number, config: PhaseScoringConfig, restrictToUserIds?: string[]): Promise<LeaderboardEntry[]> {
-  const editorData = await getStageEditorData(stageId);
+export async function computeStageLeaderboard(game: GameSlug, stageId: number, config: PhaseScoringConfig, restrictToUserIds?: string[]): Promise<LeaderboardEntry[]> {
+  const { pickemMatchPicks, pickemStandingPicks } = gameTables(game);
+  const editorData = await getStageEditorData(game, stageId);
   if (!editorData) return [];
 
   const matchPickRows = await db.select().from(pickemMatchPicks).where(eq(pickemMatchPicks.stageId, stageId));
@@ -296,7 +303,7 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
   const groupContainers = editorData.containers.filter((c) => c.containerType === "group" && c.status === "completed");
   const rankByContainerAndEntrant = new Map<number, Map<number, number>>();
   for (const c of groupContainers) {
-    const ranked = await computeContainerStandings(db, c.id, c.config);
+    const ranked = await computeContainerStandings(game, db, c.id, c.config);
     rankByContainerAndEntrant.set(c.id, new Map(ranked.map((r) => [Number(r.id), r.rank])));
   }
 
@@ -369,7 +376,8 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
 
 export type PickemGroupSummary = { id: number; name: string; scoringMode: "default" | "custom"; memberCount: number; isOwner: boolean };
 
-export async function getMyGroupsForTournament(userId: string, tournamentId: number): Promise<PickemGroupSummary[]> {
+export async function getMyGroupsForTournament(game: GameSlug, userId: string, tournamentId: number): Promise<PickemGroupSummary[]> {
+  const { pickemGroups, pickemGroupMembers } = gameTables(game);
   const groupRows = await db.select().from(pickemGroups).where(eq(pickemGroups.tournamentId, tournamentId));
   if (groupRows.length === 0) return [];
 
@@ -398,7 +406,8 @@ export type PickemGroupDetail = {
   members: { userId: string; username: string | null }[];
 };
 
-export async function getGroupDetail(groupId: number): Promise<PickemGroupDetail | null> {
+export async function getGroupDetail(game: GameSlug, groupId: number): Promise<PickemGroupDetail | null> {
+  const { pickemGroups, pickemGroupMembers } = gameTables(game);
   const [group] = await db.select().from(pickemGroups).where(eq(pickemGroups.id, groupId)).limit(1);
   if (!group) return null;
 
@@ -419,7 +428,8 @@ export async function getGroupDetail(groupId: number): Promise<PickemGroupDetail
   };
 }
 
-export async function getGroupPhaseScoringConfig(groupId: number, stageId: number): Promise<PhaseScoringConfig> {
+export async function getGroupPhaseScoringConfig(game: GameSlug, groupId: number, stageId: number): Promise<PhaseScoringConfig> {
+  const { pickemGroupPhasePoints } = gameTables(game);
   const [row] = await db.select().from(pickemGroupPhasePoints).where(and(eq(pickemGroupPhasePoints.groupId, groupId), eq(pickemGroupPhasePoints.stageId, stageId)));
   if (!row) return DEFAULT_PICKEM_SCORING;
   return {
@@ -442,17 +452,17 @@ export type PickemScopedLeaderboard = { scope: PickemScope; config: PhaseScoring
  * and a switchable leaderboard, both consistent with whichever scope the
  * viewer picked.
  */
-export async function getStageScoringScopes(stageId: number, tournamentId: number, userId: string | null): Promise<PickemScopedLeaderboard[]> {
-  const scopes: PickemScopedLeaderboard[] = [{ scope: { kind: "global" }, config: DEFAULT_PICKEM_SCORING, leaderboard: await computeStageLeaderboard(stageId, DEFAULT_PICKEM_SCORING) }];
+export async function getStageScoringScopes(game: GameSlug, stageId: number, tournamentId: number, userId: string | null): Promise<PickemScopedLeaderboard[]> {
+  const scopes: PickemScopedLeaderboard[] = [{ scope: { kind: "global" }, config: DEFAULT_PICKEM_SCORING, leaderboard: await computeStageLeaderboard(game, stageId, DEFAULT_PICKEM_SCORING) }];
   if (!userId) return scopes;
 
-  const groups = await getMyGroupsForTournament(userId, tournamentId);
+  const groups = await getMyGroupsForTournament(game, userId, tournamentId);
   for (const g of groups) {
-    const detail = await getGroupDetail(g.id);
+    const detail = await getGroupDetail(game, g.id);
     if (!detail) continue;
-    const config = g.scoringMode === "custom" ? await getGroupPhaseScoringConfig(g.id, stageId) : DEFAULT_PICKEM_SCORING;
+    const config = g.scoringMode === "custom" ? await getGroupPhaseScoringConfig(game, g.id, stageId) : DEFAULT_PICKEM_SCORING;
     const leaderboard = await computeStageLeaderboard(
-      stageId,
+      game, stageId,
       config,
       detail.members.map((m) => m.userId)
     );

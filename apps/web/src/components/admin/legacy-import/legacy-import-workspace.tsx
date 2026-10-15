@@ -29,6 +29,7 @@ import { GenerateLegacyShapeForm } from "@/components/admin/legacy-import/genera
 import { LegacyMatchPool } from "@/components/admin/legacy-import/legacy-match-pool";
 import { LegacyImportCanvas } from "@/components/admin/legacy-import/legacy-import-canvas";
 import type { EditorContainer, EditorMatch, EditorEdge } from "@/lib/admin-bracket-editor-data";
+import { useGame } from "@/lib/use-game";
 
 export function LegacyImportWorkspace({
   stageId,
@@ -47,6 +48,7 @@ export function LegacyImportWorkspace({
   targetEdges: EditorEdge[];
   entrants: { id: number; displayName: string }[];
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.legacyImport");
   const tEditor = useTranslations("admin.tournaments.editor");
   const router = useRouter();
@@ -80,34 +82,34 @@ export function LegacyImportWorkspace({
     if (selectedPoolMatchId === null) return;
     const sourceMatchId = selectedPoolMatchId;
     setSelectedPoolMatchId(null);
-    run(targetMatchId, () => assignLegacyMatchToSlot({ stageId, sourceMatchId, targetMatchId }), "assignSuccess");
+    run(targetMatchId, () => assignLegacyMatchToSlot(game, { stageId, sourceMatchId, targetMatchId }), "assignSuccess");
   }
 
   function handleUnassign(matchId: number) {
-    run(matchId, () => unassignLegacyMatch({ stageId, matchId }), "unassignSuccess");
+    run(matchId, () => unassignLegacyMatch(game, { stageId, matchId }), "unassignSuccess");
   }
 
   function handleDeleteEmpty(matchId: number) {
-    run(matchId, () => deleteLegacyTargetMatch({ stageId, matchId }), "deleteSlotSuccess");
+    run(matchId, () => deleteLegacyTargetMatch(game, { stageId, matchId }), "deleteSlotSuccess");
   }
 
   function handleMoveMatch(matchId: number, round: number, displayOrder: number | null) {
-    run(matchId, () => moveLegacyTargetMatch({ stageId, matchId, round, displayOrder }), "moveSuccess");
+    run(matchId, () => moveLegacyTargetMatch(game, { stageId, matchId, round, displayOrder }), "moveSuccess");
   }
 
   function handleConnectEdge(fromMatchId: number, fromResult: "winner" | "loser", toMatchId: number, toSlot: "a" | "b") {
-    run(toMatchId, () => connectLegacyEdge({ stageId, fromMatchId, fromResult, toMatchId, toSlot }), "connectSuccess");
+    run(toMatchId, () => connectLegacyEdge(game, { stageId, fromMatchId, fromResult, toMatchId, toSlot }), "connectSuccess");
   }
 
   function handleDisconnectEdge(fromMatchId: number, fromResult: "winner" | "loser", toMatchId: number, toSlot: "a" | "b") {
-    run(toMatchId, () => disconnectLegacyEdge({ stageId, fromMatchId, fromResult, toMatchId, toSlot }), "disconnectSuccess");
+    run(toMatchId, () => disconnectLegacyEdge(game, { stageId, fromMatchId, fromResult, toMatchId, toSlot }), "disconnectSuccess");
   }
 
   function handleAddMatch() {
     if (addContainerId === null) return;
     const round = Number(addRound) || 1;
     const bestOf = Number(addBestOf) || 1;
-    run(null, () => addLegacyTargetMatch({ stageId, containerId: addContainerId, round, bestOf }), "addMatchSuccess");
+    run(null, () => addLegacyTargetMatch(game, { stageId, containerId: addContainerId, round, bestOf }), "addMatchSuccess");
   }
 
   return (

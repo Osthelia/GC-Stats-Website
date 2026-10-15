@@ -95,6 +95,13 @@ const nextConfig = {
       },
     ];
   },
+  // The public API used to live at /api/v1... before the games existed: those URLs are Valorant.
+  async rewrites() {
+    return ["v1", "v2", "v3", "calendar", "widgets", "search", "match-poster"].map((segment) => ({
+      source: `/api/${segment}/:path*`,
+      destination: `/api/valorant/${segment}/:path*`,
+    }));
+  },
   experimental: {
     // Enables the forbidden()/unauthorized() functions and their
     // forbidden.tsx/unauthorized.tsx pages.

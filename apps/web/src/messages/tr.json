@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "Kullanıcı bulunamadı.",
         "roleNotFound": "Seçilen rollerden biri artık mevcut değil.",
-        "selfDemote": "Kendi yönetici erişiminizi kaldıramazsınız."
+        "selfDemote": "Kendi yönetici erişiminizi kaldıramazsınız.",
+        "gameNotFound": "Bu oyun mevcut değil."
       },
       "authMethods": {
         "heading": "Kimlik doğrulama",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "Sahip rolünü yalnızca bir sahip verebilir veya düzenleyebilir.",
           "userNotFound": "Hesap bulunamadı.",
           "alreadyHasAccess": "Bu hesabın bu organizasyona erişimi zaten var."
-        }
+        },
+        "fieldGames": "Oyunlar"
       },
       "filterKindLabel": "Organizasyon türü",
       "filterKindAll": "Tüm organizasyonlar",
@@ -6489,5 +6491,10 @@
     "points": "{label} puanları üzerinden katıldı",
     "pointsUnknown": "Puanlar üzerinden katıldı",
     "iconLabel": "Katılım kaynağı"
+  },
+  "game": {
+    "switcherLabel": "Oyun",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

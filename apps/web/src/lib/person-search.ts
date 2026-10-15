@@ -11,15 +11,19 @@
 
 import { and, eq, inArray, ne, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { people } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { typoVariants, stripSpecialChars } from "@/lib/search-typo";
 import { specialCharFoldedIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { scoreMatch } from "@/lib/search";
 import { ghostScopeClause, type GhostScope } from "@/lib/ghost-visibility";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type PersonPickerResult = { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null };
 
-const columns = { id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode };
+function columns(game: GameSlug) {
+  const { people } = gameTables(game);
+  return { id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode };
+}
 
 /**
  * Typo-tolerant people search backing PersonPicker — mirrors V1's
@@ -39,7 +43,8 @@ const columns = { id: people.id, handle: people.handle, countryCode: people.coun
  *
  * `ghosts` picks public people, ghost people or both.
  */
-export async function searchPeopleQuery(query: string, excludeId?: number, restrictToPersonIds?: number[], ghosts: GhostScope = "exclude"): Promise<PersonPickerResult[]> {
+export async function searchPeopleQuery(game: GameSlug, query: string, excludeId?: number, restrictToPersonIds?: number[], ghosts: GhostScope = "exclude"): Promise<PersonPickerResult[]> {
+  const { people } = gameTables(game);
   if (restrictToPersonIds && restrictToPersonIds.length === 0) return [];
 
   const q = query.trim();
@@ -49,7 +54,7 @@ export async function searchPeopleQuery(query: string, excludeId?: number, restr
 
   if (!q) {
     return db
-      .select(columns)
+      .select(columns(game))
       .from(people)
       .where(baseClauses.length ? and(...baseClauses) : undefined)
       .orderBy(people.handle)
@@ -68,7 +73,7 @@ export async function searchPeopleQuery(query: string, excludeId?: number, restr
 
   // Same matching and scoring as the public search, over a wider candidate pool re-ranked in memory.
   const rows = await db
-    .select(columns)
+    .select(columns(game))
     .from(people)
     .where(and(or(...clauses), ...baseClauses))
     .orderBy(specialCharPrefixRank(people.handle, base))

@@ -2108,7 +2108,8 @@
       "error": {
         "userNotFound": "Usuario no encontrado.",
         "roleNotFound": "Uno de los roles seleccionados ya no existe.",
-        "selfDemote": "No puedes quitarte tu propio acceso de admin."
+        "selfDemote": "No puedes quitarte tu propio acceso de admin.",
+        "gameNotFound": "Este juego no existe."
       },
       "authMethods": {
         "heading": "Autenticación",
@@ -2389,7 +2390,8 @@
           "ownerOnly": "Solo un propietario puede conceder o modificar el rol de propietario.",
           "userNotFound": "Cuenta no encontrada.",
           "alreadyHasAccess": "Esta cuenta ya tiene acceso a esta organización."
-        }
+        },
+        "fieldGames": "Juegos"
       },
       "filterKindLabel": "Tipo de organización",
       "filterKindAll": "Todas las organizaciones",
@@ -6676,5 +6678,10 @@
       "rateLimited": "Demasiadas peticiones, ve más despacio.",
       "invalidRequest": "Petición no válida."
     }
+  },
+  "game": {
+    "switcherLabel": "Juego",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

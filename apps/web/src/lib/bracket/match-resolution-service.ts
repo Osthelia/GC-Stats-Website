@@ -13,12 +13,13 @@
 import { eq } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTables } from "@gc-stats/db";
 import { resolveMatchInGraph } from "@gc-stats/bracket-engine";
 import { applyDownstreamPatches, hydrateOutgoingSubgraph, getMatch, type Tx } from "./repository";
 import { advanceSwissGroup, advanceRoundRobinGroup } from "./group-progression";
 import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "./qualification-resolution";
 import { parseGroupConfig } from "./config-types";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export class MatchResolutionValidationError extends Error {
   constructor(public readonly fieldErrors: Record<string, string>) {
@@ -54,8 +55,9 @@ export interface ResolveMatchInput {
  *      or match-outcome-based from a bracket) — the cross-container/
  *      cross-stage half of auto progression
  */
-export async function resolveMatch(input: ResolveMatchInput): Promise<void> {
-  const match = await getMatch(input.matchId);
+export async function resolveMatch(game: GameSlug, input: ResolveMatchInput): Promise<void> {
+  const { matches, stageContainers } = gameTables(game);
+  const match = await getMatch(game, input.matchId);
   if (!match) throw new MatchResolutionValidationError({ matchId: "notFound" });
   if (match.status === "completed") throw new MatchResolutionValidationError({ matchId: "alreadyCompleted" });
   if (match.entrantAId === null || match.entrantBId === null) {
@@ -80,7 +82,7 @@ export async function resolveMatch(input: ResolveMatchInput): Promise<void> {
 
   const loserId = input.winnerId === match.entrantAId ? match.entrantBId : match.entrantAId;
 
-  const { outgoingEdges, downstreamMatches } = await hydrateOutgoingSubgraph(input.matchId);
+  const { outgoingEdges, downstreamMatches } = await hydrateOutgoingSubgraph(game, input.matchId);
   const { patches } = resolveMatchInGraph({
     matchId: String(input.matchId),
     winnerId: String(input.winnerId),
@@ -95,54 +97,57 @@ export async function resolveMatch(input: ResolveMatchInput): Promise<void> {
       .set({ status: "completed", scoreA: input.scoreA, scoreB: input.scoreB, winnerId: input.winnerId, isForfeit })
       .where(eq(matches.id, input.matchId));
 
-    await applyDownstreamPatches(tx, patches);
+    await applyDownstreamPatches(game, tx, patches);
 
     const [container] = await tx.select().from(stageContainers).where(eq(stageContainers.id, match.containerId));
     if (!container) throw new Error(`resolveMatch: container ${match.containerId} not found`);
 
-    const justCompleted = await isContainerJustCompleted(tx, container, match.round, input.winnerId, loserId);
+    const justCompleted = await isContainerJustCompleted(game, tx, container, match.round, input.winnerId, loserId);
     if (justCompleted) {
-      await completeContainer(tx, container);
+      await completeContainer(game, tx, container);
     }
   });
 }
 
 async function isContainerJustCompleted(
-  tx: Tx,
-  container: typeof stageContainers.$inferSelect,
+  game: GameSlug, tx: Tx,
+  container: typeof valorantTables.stageContainers.$inferSelect,
   round: number,
   winnerId: number,
   loserId: number
 ): Promise<boolean> {
+  const { stageContainers } = gameTables(game);
   if (container.containerType === "group") {
     const config = parseGroupConfig(container.config);
     if (config.type === "swiss") {
-      const result = await advanceSwissGroup(tx, config, { containerId: container.id, round, winnerEntrantId: winnerId, loserEntrantId: loserId });
+      const result = await advanceSwissGroup(game, tx, config, { containerId: container.id, round, winnerEntrantId: winnerId, loserEntrantId: loserId });
       return result.completed;
     }
-    await advanceRoundRobinGroup(tx, { containerId: container.id, round, winnerEntrantId: winnerId, loserEntrantId: loserId });
-    return allMatchesCompleted(tx, container.id);
+    await advanceRoundRobinGroup(game, tx, { containerId: container.id, round, winnerEntrantId: winnerId, loserEntrantId: loserId });
+    return allMatchesCompleted(game, tx, container.id);
   }
   // Bracket-type container (single/double/triple elim, GSL): done once
   // every match row in it is completed. No reset-match voiding to worry
   // about — the generators never create one (2026-08-31 decision: a
   // bracket reset isn't a concept this project uses), so the grand final
   // is always the true terminal match.
-  return allMatchesCompleted(tx, container.id);
+  return allMatchesCompleted(game, tx, container.id);
 }
 
-async function allMatchesCompleted(tx: Tx, containerId: number): Promise<boolean> {
+async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number): Promise<boolean> {
+  const { matches } = gameTables(game);
   const rows = await tx.select().from(matches).where(eq(matches.containerId, containerId));
   return rows.length > 0 && rows.every((r) => r.status === "completed");
 }
 
-async function completeContainer(tx: Tx, container: typeof stageContainers.$inferSelect): Promise<void> {
+async function completeContainer(game: GameSlug, tx: Tx, container: typeof valorantTables.stageContainers.$inferSelect): Promise<void> {
+  const { stageContainers, stages } = gameTables(game);
   await tx.update(stageContainers).set({ status: "completed" }).where(eq(stageContainers.id, container.id));
 
   if (container.containerType === "group") {
-    await resolveContainerRankQualifications(tx, container);
+    await resolveContainerRankQualifications(game, tx, container);
   }
-  await resolveContainerMatchQualifications(tx, container.id);
+  await resolveContainerMatchQualifications(game, tx, container.id);
 
   const siblingContainers = await tx.select().from(stageContainers).where(eq(stageContainers.stageId, container.stageId));
   if (siblingContainers.every((c) => c.status === "completed")) {

@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "Nie znaleziono użytkownika.",
         "roleNotFound": "Jedna z wybranych ról już nie istnieje.",
-        "selfDemote": "Nie możesz odebrać sobie dostępu administratora."
+        "selfDemote": "Nie możesz odebrać sobie dostępu administratora.",
+        "gameNotFound": "Ta gra nie istnieje."
       },
       "authMethods": {
         "heading": "Uwierzytelnianie",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "Tylko właściciel może nadać lub zmienić rolę właściciela.",
           "userNotFound": "Nie znaleziono konta.",
           "alreadyHasAccess": "To konto ma już dostęp do tej organizacji."
-        }
+        },
+        "fieldGames": "Gry"
       },
       "filterKindLabel": "Typ organizacji",
       "filterKindAll": "Wszystkie organizacje",
@@ -6489,5 +6491,10 @@
     "points": "Awans przez punkty {label}",
     "pointsUnknown": "Awans przez punkty",
     "iconLabel": "Źródło kwalifikacji"
+  },
+  "game": {
+    "switcherLabel": "Gra",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

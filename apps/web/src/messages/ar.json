@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "المستخدم غير موجود.",
         "roleNotFound": "أحد الأدوار المحددة لم يعد موجودًا.",
-        "selfDemote": "لا يمكنك إزالة صلاحية الإدارة الخاصة بك."
+        "selfDemote": "لا يمكنك إزالة صلاحية الإدارة الخاصة بك.",
+        "gameNotFound": "هذه اللعبة غير موجودة."
       },
       "authMethods": {
         "heading": "المصادقة",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "المالك وحده يمكنه منح دور المالك أو تعديله.",
           "userNotFound": "الحساب غير موجود.",
           "alreadyHasAccess": "هذا الحساب لديه وصول إلى هذه المنظمة بالفعل."
-        }
+        },
+        "fieldGames": "الألعاب"
       },
       "filterKindLabel": "نوع المؤسسة",
       "filterKindAll": "كل المؤسسات",
@@ -6489,5 +6491,10 @@
     "points": "تأهل عبر نقاط {label}",
     "pointsUnknown": "تأهل عبر النقاط",
     "iconLabel": "مصدر التأهل"
+  },
+  "game": {
+    "switcherLabel": "اللعبة",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

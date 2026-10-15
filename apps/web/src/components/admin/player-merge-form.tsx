@@ -25,6 +25,7 @@ import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
 import type { PersonOrganization } from "@/lib/person-organizations-data";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import type { ProductionEntry } from "@/lib/production-credits-data";
+import { useGame } from "@/lib/use-game";
 
 export function PlayerMergeForm({
   playerId,
@@ -49,6 +50,7 @@ export function PlayerMergeForm({
   logoItems: AdminLogoEntry[];
   matchStatItems: MergeMapStatEntry[];
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.merge");
   const tRole = useTranslations("admin.players.edit");
   const tOrgRole = useTranslations("organizationPage.roleOptions");
@@ -160,7 +162,7 @@ export function PlayerMergeForm({
     setConfirmOpen(false);
 
     startTransition(async () => {
-      const result = await mergePlayers(playerId, target.id, {
+      const result = await mergePlayers(game, playerId, target.id, {
         teamHistory: [...teamHistory].map(Number),
         organizations: [...organizations].map(Number),
         productionCredits: [...production].map(Number),
@@ -194,7 +196,7 @@ export function PlayerMergeForm({
               placeholder={t("targetPlaceholder")}
               searchPlaceholder={t("targetSearchPlaceholder")}
               noResultsLabel={t("targetSearchEmpty")}
-              search={(query) => searchPlayerMergeTargets(playerId, query)}
+              search={(query) => searchPlayerMergeTargets(game, playerId, query)}
             />
           </div>
         </div>

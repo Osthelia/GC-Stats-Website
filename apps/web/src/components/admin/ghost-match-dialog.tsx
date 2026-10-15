@@ -38,6 +38,7 @@ import {
 } from "@/actions/admin-ghost-matches";
 import type { PersonPickerResult } from "@/lib/person-search";
 import { GHOST_MATCH_BEST_OF_VALUES, GHOST_MATCH_PLAYER_SLOTS } from "@/lib/ghost-match";
+import { useGame } from "@/lib/use-game";
 
 type Slot = { person: { id: number; handle: string } | null; handle: string };
 
@@ -114,6 +115,7 @@ function PlayerSlots({
 }
 
 export function GhostMatchDialog() {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.ghostMatch");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -146,21 +148,21 @@ export function GhostMatchDialog() {
   function pickGcTeam(team: { id: number; name: string } | null) {
     setGcTeam(team);
     if (!team) return;
-    startTransition(async () => setGcSlots(slotsFrom(await getTeamCurrentPlayers(team.id))));
+    startTransition(async () => setGcSlots(slotsFrom(await getTeamCurrentPlayers(game, team.id))));
   }
 
   function pickOpponentTeam(team: { id: number; name: string } | null) {
     setOpponentTeam(team);
     setOpponentTeamName("");
     if (!team) return;
-    startTransition(async () => setOpponentSlots(slotsFrom(await getGhostTeamLastPlayers(team.id))));
+    startTransition(async () => setOpponentSlots(slotsFrom(await getGhostTeamLastPlayers(game, team.id))));
   }
 
   function handleSubmit() {
     setFieldErrors({});
     const toInput = (slots: Slot[]) => slots.map((s) => ({ personId: s.person?.id ?? null, handle: s.handle }));
     startTransition(async () => {
-      const result = await createGhostMatch({
+      const result = await createGhostMatch(game, {
         tournamentName,
         stageName,
         scheduledAt: scheduledAt ?? "",
@@ -243,7 +245,7 @@ export function GhostMatchDialog() {
                       placeholder={t("opponentPickPlaceholder")}
                       searchPlaceholder={t("searchPlaceholder")}
                       noResultsLabel={t("noResults")}
-                      search={searchGhostTeams}
+                      search={(q) => searchGhostTeams(game, q)}
                     />
                   </div>
                   {opponentTeam && (
@@ -269,7 +271,7 @@ export function GhostMatchDialog() {
                 label={t("gcPlayers")}
                 slots={gcSlots}
                 onChange={setGcSlots}
-                search={searchPeopleIncludingGhosts}
+                search={(q) => searchPeopleIncludingGhosts(game, q)}
                 errors={fieldErrors.gcPlayers}
                 disabled={isPending}
               />
@@ -278,7 +280,7 @@ export function GhostMatchDialog() {
                 label={t("opponentPlayers")}
                 slots={opponentSlots}
                 onChange={setOpponentSlots}
-                search={searchGhostPeople}
+                search={(q) => searchGhostPeople(game, q)}
                 errors={fieldErrors.opponentPlayers}
                 disabled={isPending}
               />

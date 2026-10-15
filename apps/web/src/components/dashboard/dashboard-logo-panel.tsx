@@ -22,7 +22,6 @@ import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { uploadDashboardOrganizationLogo, deleteDashboardOrganizationLogo } from "@/actions/dashboard-organizations";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
-
 const NO_THEME = "__none__";
 
 /**

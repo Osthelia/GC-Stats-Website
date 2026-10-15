@@ -22,6 +22,7 @@ import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { TagsInput } from "@/components/admin/tags-input";
 import { updateTeamProfile, type TeamProfileFieldErrors } from "@/actions/admin-teams";
 import type { AdminTeamProfile } from "@/lib/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord", "website"] as const;
 
@@ -33,6 +34,7 @@ export function TeamEditForm({
   /** Rendered in the right column, below Socials — e.g. logo/name-history panels. */
   rightExtra?: React.ReactNode;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<TeamProfileFieldErrors>({});
@@ -52,7 +54,7 @@ export function TeamEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
+      const result = await updateTeamProfile(game, team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));

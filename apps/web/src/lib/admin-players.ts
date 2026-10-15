@@ -11,10 +11,11 @@
 
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { people, teams, rosterMemberships, entrants, matches, maps, mapPlayerStats, users } from "@gc-stats/db";
+import { users, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type PlayerSort = "name" | "country" | "team" | "lastActivity";
 export type SortDirection = "asc" | "desc";
@@ -36,27 +37,42 @@ export type AdminPlayerRow = {
 
 // `people` refers to the outer query's FROM table — same correlated-subquery
 // pattern as admin-teams.ts / V1's PlayerController::latestMatchSubquery().
-const currentTeamSql = sql<number | null>`(
+function currentTeamSql(game: GameSlug) {
+  const { people, rosterMemberships } = gameTables(game);
+  return sql<number | null>`(
   SELECT rm.team_id FROM ${rosterMemberships} rm
   WHERE rm.person_id = ${qualifiedColumn(people, "id")} AND rm.role = 'player' AND rm.period @> CURRENT_DATE
   LIMIT 1
 )`;
+}
 
 // `entrant_members` (tournament-locked roster) was never populated by the V1
 // migration, so real per-map stats are the only ground truth for "did this
 // person play this match" — same source as getPlayerMatches (player-page-data.ts).
-const lastActivitySql = sql<string | null>`(
+function lastActivitySql(game: GameSlug) {
+  const { people, matches, entrantMembers } = gameTables(game);
+  // Other games have no map stats: the locked tournament roster is what says the person played a match.
+  if (!gameHasMaps(game)) {
+    return sql<string | null>`(
+  SELECT MAX(m.scheduled_at) FROM ${entrantMembers} em
+  JOIN ${matches} m ON em.entrant_id IN (m.entrant_a_id, m.entrant_b_id)
+  WHERE em.person_id = ${qualifiedColumn(people, "id")}
+)`;
+  }
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
+  return sql<string | null>`(
   SELECT MAX(m.scheduled_at) FROM ${mapPlayerStats} mps
   JOIN ${maps} mp ON mp.id = mps.map_id
   JOIN ${matches} m ON m.id = mp.match_id
   WHERE mps.person_id = ${qualifiedColumn(people, "id")}
 )`;
+}
 
 const ACTIVE_WITHIN_DAYS: Record<Exclude<ActiveWithin, "">, number> = { "60d": 60, "120d": 120 };
 
 export const PLAYERS_PAGE_SIZE = 30;
 
-export async function listAdminPlayers(opts: {
+export async function listAdminPlayers(game: GameSlug, opts: {
   q: string;
   sort: PlayerSort;
   direction: SortDirection;
@@ -64,6 +80,7 @@ export async function listAdminPlayers(opts: {
   status: StatusFilter;
   page: number;
 }): Promise<{ rows: AdminPlayerRow[]; total: number }> {
+  const { people, teams } = gameTables(game);
   const { q, sort, direction, activeWithin, status, page } = opts;
   const conditions = [];
 
@@ -83,12 +100,12 @@ export async function listAdminPlayers(opts: {
 
   if (activeWithin) {
     const days = ACTIVE_WITHIN_DAYS[activeWithin];
-    conditions.push(sql`${lastActivitySql} >= NOW() - ${sql.raw(`INTERVAL '${days} days'`)}`);
+    conditions.push(sql`${lastActivitySql(game)} >= NOW() - ${sql.raw(`INTERVAL '${days} days'`)}`);
   }
 
-  const currentTeamNameSql = sql<string | null>`(SELECT t.name FROM ${teams} t WHERE t.id = ${currentTeamSql})`;
+  const currentTeamNameSql = sql<string | null>`(SELECT t.name FROM ${teams} t WHERE t.id = ${currentTeamSql(game)})`;
 
-  const sortCol = sort === "country" ? people.countryCode : sort === "team" ? currentTeamNameSql : sort === "lastActivity" ? lastActivitySql : people.handle;
+  const sortCol = sort === "country" ? people.countryCode : sort === "team" ? currentTeamNameSql : sort === "lastActivity" ? lastActivitySql(game) : people.handle;
   const orderBy = direction === "desc" ? desc(sortCol) : asc(sortCol);
   const where = conditions.length ? and(...conditions) : undefined;
 
@@ -102,9 +119,9 @@ export async function listAdminPlayers(opts: {
         isActive: people.isActive,
         isGhost: people.isGhost,
         vlrId: people.vlrId,
-        currentTeamId: currentTeamSql,
+        currentTeamId: currentTeamSql(game),
         currentTeamName: currentTeamNameSql,
-        lastActivityAt: lastActivitySql,
+        lastActivityAt: lastActivitySql(game),
       })
       .from(people)
       .where(where)
@@ -148,7 +165,8 @@ export type AdminPlayerProfile = {
 // Current team isn't a profile field — it's managed entirely from the
 // team-history panel (an open-ended stint *is* "current"), so getAdminPlayer
 // doesn't resolve/return one; see PlayerTeamHistoryPanel.
-export async function getAdminPlayer(id: number): Promise<AdminPlayerProfile | null> {
+export async function getAdminPlayer(game: GameSlug, id: number): Promise<AdminPlayerProfile | null> {
+  const { people } = gameTables(game);
   const [row] = await db
     .select({ person: people, linkedUserId: users.id, linkedUsername: users.username, linkedEmail: users.email })
     .from(people)
@@ -193,7 +211,8 @@ export type AdminPlayerTeamHistoryEntry = {
 };
 
 /** Every stint, not just the current team — same reasoning as admin-teams.ts::getAdminTeamRoster (join/left/inactive dates editable directly on already-listed entries too, current or past). */
-export async function getAdminPlayerTeamHistory(personId: number): Promise<AdminPlayerTeamHistoryEntry[]> {
+export async function getAdminPlayerTeamHistory(game: GameSlug, personId: number): Promise<AdminPlayerTeamHistoryEntry[]> {
+  const { teams, rosterMemberships } = gameTables(game);
   const rows = await db
     .select({
       membershipId: rosterMemberships.id,

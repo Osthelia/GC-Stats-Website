@@ -39,6 +39,7 @@ import { MatchNode, type MatchNodeData } from "@/components/admin/bracket-editor
 import { RoundHeaderNode, type RoundHeaderNodeData } from "@/components/admin/bracket-editor/round-header-node";
 import { GenerateTemplateForm } from "@/components/admin/bracket-editor/generate-template-form";
 import { DeletableEdge, type DeletableEdgeData } from "@/components/admin/bracket-editor/deletable-edge";
+import { useGame } from "@/lib/use-game";
 import { saveManualGraph, saveBracketInPlace, type EditorSlotSource } from "@/actions/admin-bracket-editor";
 import { layoutEditorGrid, snapToGrid, rowIndexFromY, type EditorLayoutOptions } from "@/lib/bracket-editor-layout";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
@@ -183,6 +184,7 @@ function BracketEditorCanvasInner({
   initialEdges: EditorEdge[];
   entrants: { id: number; displayName: string; seed: number | null }[];
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
   const [unlocked, setUnlocked] = useState(false);
@@ -514,7 +516,7 @@ function BracketEditorCanvasInner({
     };
     let result: Awaited<ReturnType<typeof saveManualGraph>>;
     try {
-      result = await (locked ? saveBracketInPlace : saveManualGraph)(payload);
+      result = await (locked ? saveBracketInPlace : saveManualGraph)(game, payload);
     } catch {
       toast.error(t("error.saveFailed"));
       return;

@@ -33,6 +33,7 @@ import { TeamNameHistorySection } from "@/components/change-request/team-name-hi
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import type { TeamNameHistoryEntry } from "@/lib/team-page-data";
 import type { UserLinkStatus } from "@/lib/user-link-request";
+import { useGame } from "@/lib/use-game";
 
 export type SuggestEditUserLink = { state: UserLinkStatus["state"]; previousHandle: string | null };
 
@@ -76,6 +77,7 @@ export function SuggestEditForm({
   /** Discord account linked to the viewer's own user account, offered as a one click fill for the Discord field. */
   linkedDiscordId?: string | null;
 }) {
+  const game = useGame();
   const t = useTranslations("suggestEdit");
   const fields = fieldsForSubject(subjectType);
   const textLikeFields = fields.filter((f) => f.type === "text" || f.type === "textarea" || f.type === "url" || f.type === "discordId" || f.type === "country" || f.type === "select");
@@ -134,7 +136,7 @@ export function SuggestEditForm({
       if (subjectType === "person" && logoMeta.consent) formData.set("photoConsent", logoMeta.consent);
     }
 
-    const result = await submitChangeRequest(subjectType, subjectId, formData);
+    const result = await submitChangeRequest(game, subjectType, subjectId, formData);
     setPending(false);
 
     if (!result.ok) {

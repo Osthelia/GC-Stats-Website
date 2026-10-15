@@ -12,22 +12,37 @@
 import { asc, eq, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { maps, matches, entrants, teams, mapPlayerStats, mapRoundsRaw, mapRoundPlayerLoadoutsRaw } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { toApiTeamFromJoined } from "../entities";
 import { resolveEntrantTeamIds } from "../entrant-teams";
 import { toApiGameMap, type ApiGameMap, type ApiTeamWithScore, type ApiMapPlayerStat } from "./matches";
+import type { GameSlug } from "@gc-stats/db/game";
 
-const entrantAAlias = alias(entrants, "map_full_entrant_a");
-const entrantBAlias = alias(entrants, "map_full_entrant_b");
-const teamAAlias = alias(teams, "map_full_team_a");
-const teamBAlias = alias(teams, "map_full_team_b");
+function entrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "map_full_entrant_a");
+}
+function entrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "map_full_entrant_b");
+}
+function teamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "map_full_team_a");
+}
+function teamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "map_full_team_b");
+}
 
 async function mapExists(id: number): Promise<boolean> {
+  const { maps } = valorantTables;
   const [row] = await db.select({ id: maps.id }).from(maps).where(eq(maps.id, id)).limit(1);
   return !!row;
 }
 
-async function getMapPlayerStats(mapId: number): Promise<ApiMapPlayerStat[]> {
+async function getMapPlayerStats(game: GameSlug, mapId: number): Promise<ApiMapPlayerStat[]> {
+  const { mapPlayerStats } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: mapPlayerStats.id,
@@ -47,7 +62,7 @@ async function getMapPlayerStats(mapId: number): Promise<ApiMapPlayerStat[]> {
     .from(mapPlayerStats)
     .where(eq(mapPlayerStats.mapId, mapId));
 
-  const teamByEntrant = await resolveEntrantTeamIds([...new Set(rows.map((r) => r.entrantId))]);
+  const teamByEntrant = await resolveEntrantTeamIds(game, [...new Set(rows.map((r) => r.entrantId))]);
 
   return rows.map((row) => ({
     id: row.id,
@@ -68,7 +83,9 @@ async function getMapPlayerStats(mapId: number): Promise<ApiMapPlayerStat[]> {
 
 export type ApiMapFullResponse = ApiGameMap & { player_stats: ApiMapPlayerStat[]; team_a: ApiTeamWithScore | null; team_b: ApiTeamWithScore | null };
 
-export async function getMapFullResponse(mapId: number): Promise<ApiMapFullResponse | null> {
+export async function getMapFullResponse(game: GameSlug, mapId: number): Promise<ApiMapFullResponse | null> {
+  const { matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const [row] = await db
     .select({
       id: maps.id,
@@ -79,15 +96,15 @@ export async function getMapFullResponse(mapId: number): Promise<ApiMapFullRespo
       teamBScore: maps.teamBScore,
       order: maps.order,
       isCompleted: maps.isCompleted,
-      teamA: teamAAlias,
-      teamB: teamBAlias,
+      teamA: teamAAlias(game),
+      teamB: teamBAlias(game),
     })
     .from(maps)
     .leftJoin(matches, eq(matches.id, maps.matchId))
-    .leftJoin(entrantAAlias, eq(entrantAAlias.id, matches.entrantAId))
-    .leftJoin(teamAAlias, eq(teamAAlias.id, entrantAAlias.teamId))
-    .leftJoin(entrantBAlias, eq(entrantBAlias.id, matches.entrantBId))
-    .leftJoin(teamBAlias, eq(teamBAlias.id, entrantBAlias.teamId))
+    .leftJoin(entrantAAlias(game), eq(entrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(teamAAlias(game), eq(teamAAlias(game).id, entrantAAlias(game).teamId))
+    .leftJoin(entrantBAlias(game), eq(entrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(teamBAlias(game), eq(teamBAlias(game).id, entrantBAlias(game).teamId))
     .where(eq(maps.id, mapId))
     .limit(1);
 
@@ -95,7 +112,7 @@ export async function getMapFullResponse(mapId: number): Promise<ApiMapFullRespo
 
   const teamA = toApiTeamFromJoined(row.teamA);
   const teamB = toApiTeamFromJoined(row.teamB);
-  const playerStats = await getMapPlayerStats(mapId);
+  const playerStats = await getMapPlayerStats(game, mapId);
 
   return {
     ...toApiGameMap(row),
@@ -118,7 +135,8 @@ export type ApiRoundPlayerStat = {
 
 export type ApiRoundFullResponse = { round_number: number; winning_team: number | null; win_type: string | null; player_stats: ApiRoundPlayerStat[] };
 
-export async function getMapRoundsResponse(mapId: number): Promise<ApiRoundFullResponse[] | null> {
+export async function getMapRoundsResponse(game: GameSlug, mapId: number): Promise<ApiRoundFullResponse[] | null> {
+  const { mapRoundsRaw, mapRoundPlayerLoadoutsRaw } = valorantTablesOf(game);
   if (!(await mapExists(mapId))) return null;
 
   const roundRows = await db
@@ -147,7 +165,7 @@ export async function getMapRoundsResponse(mapId: number): Promise<ApiRoundFullR
       : [];
 
   const entrantIds = [...new Set(roundRows.map((r) => r.winningEntrantId).filter((id): id is number => id != null))];
-  const teamByEntrant = await resolveEntrantTeamIds(entrantIds);
+  const teamByEntrant = await resolveEntrantTeamIds(game, entrantIds);
 
   const statsByRound = new Map<number, ApiRoundPlayerStat[]>();
   for (const row of loadoutRows) {

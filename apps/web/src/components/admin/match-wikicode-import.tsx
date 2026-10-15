@@ -20,11 +20,13 @@ import { Loader2Icon } from "lucide-react";
 import { LiquipediaImportFetchResults } from "@/components/admin/liquipedia-import-fetch-results";
 import { importMatchWikicode, type ImportMapFetch, type LiquipediaConflictResolution, type LiquipediaImportConflict } from "@/actions/admin-matches";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
 
 type Resolutions = Partial<Record<"1" | "2", LiquipediaConflictResolution>>;
 
 /** Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild the veto and sync the maps from it. */
 export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tournamentId: number; matchId: number; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.wikicode");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -40,7 +42,7 @@ export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tour
     setError(null);
     setFetches(null);
     startTransition(async () => {
-      const result = await importMatchWikicode(matchId, wikicode, chosen);
+      const result = await importMatchWikicode(game, matchId, wikicode, chosen);
       if (!result.ok) {
         if (result.error === "liquipediaConflict" && "conflicts" in result) {
           setResolutions({});

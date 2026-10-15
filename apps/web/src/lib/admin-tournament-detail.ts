@@ -12,20 +12,22 @@
 
 import { asc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, stages, stageContainers, matches, groupEntries, pickemStageSettings } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { containerOrderBy } from "@/lib/bracket/container-order";
 import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type AdminContainerOption = { id: number; name: string; stageName: string; containerType: "bracket" | "group" };
 
 /** Flat list of a tournament's containers (across all its stages), for pickers like the operations page's bulk-create target. */
-export async function listTournamentContainerOptions(tournamentId: number): Promise<AdminContainerOption[]> {
+export async function listTournamentContainerOptions(game: GameSlug, tournamentId: number): Promise<AdminContainerOption[]> {
+  const { stages, stageContainers } = gameTables(game);
   const rows = await db
     .select({ id: stageContainers.id, name: stageContainers.name, stageName: stages.name, containerType: stageContainers.containerType, stageOrder: stages.sequenceOrder })
     .from(stageContainers)
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .where(eq(stages.tournamentId, tournamentId))
-    .orderBy(asc(stages.sequenceOrder), ...containerOrderBy);
+    .orderBy(asc(stages.sequenceOrder), ...containerOrderBy(game));
   return rows.map(({ id, name, stageName, containerType }) => ({ id, name, stageName, containerType }));
 }
 
@@ -44,7 +46,8 @@ export type AdminEntrantRow = {
   qualificationSource: EntrantQualificationSource | null;
 };
 
-export async function listTournamentEntrants(tournamentId: number): Promise<AdminEntrantRow[]> {
+export async function listTournamentEntrants(game: GameSlug, tournamentId: number): Promise<AdminEntrantRow[]> {
+  const { entrants } = gameTables(game);
   const rows = await db
     .select({
       id: entrants.id,
@@ -60,7 +63,7 @@ export async function listTournamentEntrants(tournamentId: number): Promise<Admi
     .from(entrants)
     .where(eq(entrants.tournamentId, tournamentId))
     .orderBy(asc(entrants.seed), asc(entrants.id));
-  const sources = await resolveEntrantQualificationSources(db, tournamentId, rows);
+  const sources = await resolveEntrantQualificationSources(game, db, tournamentId, rows);
   return rows.map((r) => ({ ...r, qualificationSource: sources.get(r.id) ?? null }));
 }
 
@@ -93,14 +96,15 @@ export type AdminStageRow = {
   pickemOpensAt: string | null;
 };
 
-export async function listTournamentStages(tournamentId: number): Promise<AdminStageRow[]> {
+export async function listTournamentStages(game: GameSlug, tournamentId: number): Promise<AdminStageRow[]> {
+  const { stages, stageContainers, matches, groupEntries, pickemStageSettings } = gameTables(game);
   // Everything keyed off the tournament id through subqueries, so it all runs in one round trip.
   const tournamentStageIds = db.select({ id: stages.id }).from(stages).where(eq(stages.tournamentId, tournamentId));
   const tournamentContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds));
 
   const [stageRows, containerRows, matchCounts, groupEntryRows, pickemRows] = await Promise.all([
     db.select().from(stages).where(eq(stages.tournamentId, tournamentId)).orderBy(asc(stages.sequenceOrder), asc(stages.id)),
-    db.select().from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds)).orderBy(...containerOrderBy),
+    db.select().from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds)).orderBy(...containerOrderBy(game)),
     db
       .select({ containerId: matches.containerId, count: sql<number>`count(*)::int`, played: sql<number>`count(*) filter (where ${matches.status} in ('live', 'completed'))::int` })
       .from(matches)

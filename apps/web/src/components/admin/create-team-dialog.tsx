@@ -18,8 +18,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
 import { createTeam, type CreateTeamFieldErrors } from "@/actions/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 export function CreateTeamDialog() {
+  const game = useGame();
   const t = useTranslations("admin.teams");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -42,7 +44,7 @@ export function CreateTeamDialog() {
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createTeam({ name, shortName, countryCode, vlrId });
+      const result = await createTeam(game, { name, shortName, countryCode, vlrId });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

@@ -11,8 +11,9 @@
 
 import { desc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { vods, matches, maps, entrants, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { normalizeScheduledAt } from "@/lib/match-schedule";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrganizationVodRow = {
   id: number;
@@ -26,7 +27,9 @@ export type OrganizationVodRow = {
   scheduledAt: string | null;
 };
 
-export async function listOrganizationVodRows(organizationId: number): Promise<OrganizationVodRow[]> {
+export async function listOrganizationVodRows(game: GameSlug, organizationId: number): Promise<OrganizationVodRow[]> {
+  const { vods, matches, entrants, stageContainers, stages, tournaments } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -82,6 +85,7 @@ export type MatchMapOption = { id: number; label: string };
 
 /** Backs the "specific map" <Select> once a match is picked in the add-VOD form. */
 export async function getMatchMapOptions(matchId: number): Promise<MatchMapOption[]> {
+  const { maps } = valorantTables;
   const rows = await db.select({ id: maps.id, mapName: maps.mapName, order: maps.order }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
   return rows.map((m) => ({ id: m.id, label: `${m.mapName ?? "?"} (Map ${m.order})` }));
 }

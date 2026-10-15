@@ -12,13 +12,16 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { computeRoundSides } from "@gc-stats/map-stats-engine";
 import { getMatch } from "@/lib/riot-relay-client";
 import { resolveRiotRegion } from "./riot-region";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** The entrant (A or B) that started on attack, null when the map has no usable scores or the Riot match can't be read or matched. */
-export async function detectStartingAttacker(mapId: number): Promise<"a" | "b" | null> {
+export async function detectStartingAttacker(game: GameSlug, mapId: number): Promise<"a" | "b" | null> {
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const [row] = await db
     .select({ apiMatchId: maps.apiMatchId, teamAScore: maps.teamAScore, teamBScore: maps.teamBScore, region: tournaments.region })
     .from(maps)

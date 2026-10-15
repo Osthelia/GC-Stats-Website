@@ -13,11 +13,12 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, teams, tournaments, pointTypes, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { QUALIFICATION_MODES, type QualificationMode } from "@/lib/entrant-qualification-source";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -45,9 +46,9 @@ export type EntrantInput = {
   qualificationPointTypeId: number | null;
 };
 
-export async function searchSourceTournaments(query: string): Promise<TournamentPickerResult[]> {
+export async function searchSourceTournaments(game: GameSlug, query: string): Promise<TournamentPickerResult[]> {
   await requireTournamentsActor();
-  return searchTournamentsQuery(query);
+  return searchTournamentsQuery(game, query);
 }
 
 function qualificationColumns(input: EntrantInput) {
@@ -61,7 +62,8 @@ function qualificationColumns(input: EntrantInput) {
   };
 }
 
-async function validateEntrant(tournamentId: number, input: EntrantInput, excludeId?: number): Promise<EntrantFieldErrors> {
+async function validateEntrant(game: GameSlug, tournamentId: number, input: EntrantInput, excludeId?: number): Promise<EntrantFieldErrors> {
+  const { entrants, teams, tournaments, pointTypes } = gameTables(game);
   const fieldErrors: EntrantFieldErrors = {};
 
   if (input.kind !== "team" && input.kind !== "placeholder") fieldErrors.kind = "invalid";
@@ -121,13 +123,14 @@ async function validateEntrant(tournamentId: number, input: EntrantInput, exclud
   return fieldErrors;
 }
 
-export async function addEntrant(tournamentId: number, input: EntrantInput): Promise<EntrantResult> {
+export async function addEntrant(game: GameSlug, tournamentId: number, input: EntrantInput): Promise<EntrantResult> {
+  const { entrants, tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [tournament] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
   if (!tournament) return { ok: false, fieldErrors: { displayName: "tournamentNotFound" } };
 
-  const fieldErrors = await validateEntrant(tournamentId, input);
+  const fieldErrors = await validateEntrant(game, tournamentId, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const displayName = input.displayName.trim();
@@ -144,13 +147,14 @@ export async function addEntrant(tournamentId: number, input: EntrantInput): Pro
   return { ok: true, id: created.id };
 }
 
-export async function updateEntrant(id: number, tournamentId: number, input: EntrantInput): Promise<EntrantResult> {
+export async function updateEntrant(game: GameSlug, id: number, tournamentId: number, input: EntrantInput): Promise<EntrantResult> {
+  const { entrants } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existingRow] = await db.select().from(entrants).where(and(eq(entrants.id, id), eq(entrants.tournamentId, tournamentId))).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { displayName: "notFound" } };
 
-  const fieldErrors = await validateEntrant(tournamentId, input, id);
+  const fieldErrors = await validateEntrant(game, tournamentId, input, id);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const values = { kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName: input.displayName.trim(), seed: input.seed, ...qualificationColumns(input) };
@@ -174,7 +178,8 @@ export type QuickAddResult = { ok: true; id: number } | { ok: false; error: stri
  * checks the two things that would otherwise corrupt state silently
  * (tournament/team existence, duplicate attach).
  */
-export async function quickAttachTeamEntrant(tournamentId: number, teamId: number): Promise<QuickAddResult> {
+export async function quickAttachTeamEntrant(game: GameSlug, tournamentId: number, teamId: number): Promise<QuickAddResult> {
+  const { entrants, teams, tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [tournament] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
@@ -201,7 +206,8 @@ export async function quickAttachTeamEntrant(tournamentId: number, teamId: numbe
 }
 
 /** Same V1 shortcut as above, but for a team that doesn't exist yet — creates a bare team (name only) and attaches it in one step. */
-export async function quickCreateTeamEntrant(tournamentId: number, name: string): Promise<QuickAddResult> {
+export async function quickCreateTeamEntrant(game: GameSlug, tournamentId: number, name: string): Promise<QuickAddResult> {
+  const { entrants, teams, tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const trimmed = name.trim();
@@ -226,7 +232,8 @@ export async function quickCreateTeamEntrant(tournamentId: number, name: string)
 
 export type RemoveEntrantResult = { ok: true } | { ok: false; error: "notFound" | "inUse" };
 
-export async function removeEntrant(id: number, tournamentId: number): Promise<RemoveEntrantResult> {
+export async function removeEntrant(game: GameSlug, id: number, tournamentId: number): Promise<RemoveEntrantResult> {
+  const { entrants } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: entrants.id, displayName: entrants.displayName, teamId: entrants.teamId }).from(entrants).where(and(eq(entrants.id, id), eq(entrants.tournamentId, tournamentId))).limit(1);

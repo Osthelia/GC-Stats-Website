@@ -12,37 +12,26 @@
 
 "use server";
 
+import { logoGameClause } from "@/lib/admin-logos";
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import {
-  people,
-  rosterMemberships,
-  organizationMemberships,
-  productionCredits,
-  newsRelations,
   logos,
-  mapPlayerStats,
-  mapRoundsRaw,
-  mapRoundKillsRaw,
-  mapRoundDamagesRaw,
-  mapRoundPlayerLoadoutsRaw,
-  mapRoundPlayerPositionsRaw,
-  entrantMembers,
   activityLog,
-  PERMISSIONS,
-} from "@gc-stats/db";
+  PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { rangeLower, closeRange } from "@/lib/daterange";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { PersonPickerResult } from "@/lib/person-search";
 
 /** Typo-tolerant player search backing the player merge target picker — excludes the source player itself from results. */
-export async function searchPlayerMergeTargets(sourcePersonId: number, query: string): Promise<PersonPickerResult[]> {
-  await requireActorPermission(PERMISSIONS.playersMerge);
-  return searchPeopleQuery(query, sourcePersonId, undefined, "include");
+export async function searchPlayerMergeTargets(game: GameSlug, sourcePersonId: number, query: string): Promise<PersonPickerResult[]> {
+  await requireActorPermission(PERMISSIONS.playersMerge, game);
+  return searchPeopleQuery(game, query, sourcePersonId, undefined, "include");
 }
 
 export type PlayerMergeSelection = {
@@ -63,8 +52,10 @@ export type MergePlayersResult = { ok: true } | { ok: false; error: "samePlayer"
  * shape). $target's own profile fields are left untouched, $source itself
  * is never deleted here.
  */
-export async function mergePlayers(sourcePersonId: number, targetPersonId: number, selection: PlayerMergeSelection): Promise<MergePlayersResult> {
-  const access = await requireActorPermission(PERMISSIONS.playersMerge);
+export async function mergePlayers(game: GameSlug, sourcePersonId: number, targetPersonId: number, selection: PlayerMergeSelection): Promise<MergePlayersResult> {
+  const { people, rosterMemberships, organizationMemberships, productionCredits, newsRelations, entrantMembers } = gameTables(game);
+  const { mapPlayerStats, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundPlayerLoadoutsRaw, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
+  const access = await requireActorPermission(PERMISSIONS.playersMerge, game);
 
   if (sourcePersonId === targetPersonId) return { ok: false, error: "samePlayer" };
 
@@ -170,7 +161,7 @@ export async function mergePlayers(sourcePersonId: number, targetPersonId: numbe
       const result = await tx
         .update(logos)
         .set({ entityId: targetPersonId })
-        .where(and(eq(logos.entityType, "person"), eq(logos.entityId, sourcePersonId), inArray(logos.id, selection.logos)))
+        .where(and(eq(logos.entityType, "person"), logoGameClause("person", game), eq(logos.entityId, sourcePersonId), inArray(logos.id, selection.logos)))
         .returning({ id: logos.id });
       counts.logos = result.length;
     }

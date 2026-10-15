@@ -22,6 +22,7 @@ import { TeamPicker } from "@/components/admin/team-picker";
 import { AboutProjectLogo } from "@/components/admin/about-project-logo";
 import { copyTeamLogoToEmote, createEmote, updateEmote, uploadEmoteImage, type EmoteFieldErrors } from "@/actions/admin-emotes";
 import type { AdminEmoteRow } from "@/lib/admin-emotes";
+import { useGame } from "@/lib/use-game";
 
 type FormState = { name: string; imagePath: string; source: string; isActive: boolean };
 
@@ -45,6 +46,7 @@ export function EmoteDialog({
   /** Distinct sources already in DB (e.g. "twemoji", "teams") — shown as a hint, not a closed list: `source` is free text, see lib/emote-sources.ts. */
   existingSources: string[];
 }) {
+  const game = useGame();
   const t = useTranslations("admin.emotes");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -96,7 +98,7 @@ export function EmoteDialog({
     if (!picked) return;
 
     startCopyTeam(async () => {
-      const result = await copyTeamLogoToEmote(picked.id);
+      const result = await copyTeamLogoToEmote(game, picked.id);
       if (!result.ok) {
         setTeam(null);
         setTeamError(t(`error.${result.error}`));

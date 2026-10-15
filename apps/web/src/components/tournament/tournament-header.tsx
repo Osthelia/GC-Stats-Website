@@ -33,6 +33,7 @@ import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { ShareMenuButton } from "@/components/site/share-menu-button";
 import { isViewerAdmin } from "@/lib/rbac";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 const SOCIAL_ICONS: Record<
   string,
@@ -122,10 +123,12 @@ const TABS = [
 ] as const;
 
 export async function TournamentHeader({
+  game,
   tournament,
   basePath,
   activeTab,
 }: {
+  game: GameSlug;
   tournament: TournamentHeaderInfo;
   basePath: string;
   activeTab: (typeof TABS)[number];
@@ -136,7 +139,7 @@ export async function TournamentHeader({
     getTranslations("share"),
     getLocale(),
     isViewerAdmin(),
-    getPublicTournamentStageLinks(tournament.id),
+    getPublicTournamentStageLinks(game, tournament.id),
   ]);
   const regionMeta = REGIONS[normalizeRegion(tournament.region)];
 
@@ -388,7 +391,7 @@ export async function TournamentHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.map((tab) => ({
+          tabs={TABS.filter((tab) => (tab !== "maps" && tab !== "stats") || gameHasMaps(game)).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

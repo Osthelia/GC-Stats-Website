@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { createPointType, updatePointType, type PointTypeFieldErrors } from "@/actions/admin-point-types";
 import type { AdminPointTypeRow } from "@/lib/admin-point-types";
+import { useGame } from "@/lib/use-game";
 
 type FormState = { name: string; label: string; startDate: string; endDate: string };
 
@@ -30,6 +31,7 @@ function stateFromPointType(pointType: AdminPointTypeRow): FormState {
 }
 
 export function PointTypeDialog({ pointType, open, onOpenChange }: { pointType: AdminPointTypeRow | null; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.pointTypes");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -48,7 +50,7 @@ export function PointTypeDialog({ pointType, open, onOpenChange }: { pointType: 
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = pointType ? await updatePointType(pointType.id, form) : await createPointType(form);
+      const result = pointType ? await updatePointType(game, pointType.id, form) : await createPointType(game, form);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

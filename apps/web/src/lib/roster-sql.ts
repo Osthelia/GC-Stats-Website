@@ -7,7 +7,10 @@
  */
 
 import { sql } from "drizzle-orm";
-import { rosterMemberships } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
-/** Excludes entries that left on an unknown date (open period + has_left), which can't be placed on a given date. */
-export const rosterPeriodIsDated = sql`NOT (${rosterMemberships.hasLeft} AND upper_inf(${rosterMemberships.period}))`;
+export function rosterPeriodIsDated(game: GameSlug) {
+  const { rosterMemberships } = gameTables(game);
+  return sql`NOT (${rosterMemberships.hasLeft} AND upper_inf(${rosterMemberships.period}))`;
+}

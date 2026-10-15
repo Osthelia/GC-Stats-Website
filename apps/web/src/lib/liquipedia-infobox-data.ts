@@ -10,12 +10,14 @@
 
 import { and, eq, isNotNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, organizations, tournaments, tournamentVetoSettings } from "@gc-stats/db";
+import { organizations, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { buildInfoboxWikicode } from "@/lib/liquipedia-infobox-wikicode";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 const INFOBOX_SOCIAL_KEYS = ["twitter", "twitch", "discord", "youtube"];
 
-export async function getTournamentInfoboxWikicode(tournamentId: number): Promise<string | null> {
+export async function getTournamentInfoboxWikicode(game: GameSlug, tournamentId: number): Promise<string | null> {
+  const { entrants, tournaments } = gameTables(game);
   const [row] = await db
     .select({
       name: tournaments.name,
@@ -24,13 +26,19 @@ export async function getTournamentInfoboxWikicode(tournamentId: number): Promis
       prizePool: tournaments.prizePool,
       socials: tournaments.socials,
       organizer: organizations.name,
-      maps: tournamentVetoSettings.mapPool,
     })
     .from(tournaments)
     .leftJoin(organizations, eq(organizations.id, tournaments.organizerOrganizationId))
-    .leftJoin(tournamentVetoSettings, eq(tournamentVetoSettings.tournamentId, tournaments.id))
     .where(eq(tournaments.id, tournamentId));
   if (!row) return null;
+
+  // The map pool lives in the veto settings, which only games with maps have.
+  let maps: string[] = [];
+  if (gameHasMaps(game)) {
+    const { tournamentVetoSettings } = valorantTablesOf(game);
+    const [settings] = await db.select({ mapPool: tournamentVetoSettings.mapPool }).from(tournamentVetoSettings).where(eq(tournamentVetoSettings.tournamentId, tournamentId));
+    maps = settings?.mapPool ?? [];
+  }
 
   const teams = await db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), isNotNull(entrants.teamId)));
   const allSocials = (row.socials as Record<string, string>) ?? {};
@@ -44,6 +52,6 @@ export async function getTournamentInfoboxWikicode(tournamentId: number): Promis
     prizePool: row.prizePool,
     socials,
     teamCount: teams.length,
-    maps: row.maps ?? [],
+    maps,
   });
 }

@@ -18,8 +18,10 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UserPicker } from "@/components/admin/user-picker";
 import { linkUserToPlayer, unlinkUserFromPlayer } from "@/actions/admin-players";
 import type { AdminLinkedUser } from "@/lib/admin-players";
+import { useGame } from "@/lib/use-game";
 
 export function PlayerLinkedAccountCard({ playerId, linkedUser }: { playerId: number; linkedUser: AdminLinkedUser | null }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -31,7 +33,7 @@ export function PlayerLinkedAccountCard({ playerId, linkedUser }: { playerId: nu
     if (!picked) return;
     setError(null);
     startTransition(async () => {
-      const result = await linkUserToPlayer(playerId, picked.id);
+      const result = await linkUserToPlayer(game, playerId, picked.id);
       if (!result.ok) {
         setError(t(`error.${result.error}` as "error.invalid"));
         return;
@@ -50,7 +52,7 @@ export function PlayerLinkedAccountCard({ playerId, linkedUser }: { playerId: nu
   function confirmUnlink() {
     setUnlinkConfirmOpen(false);
     startTransition(async () => {
-      const result = await unlinkUserFromPlayer(playerId);
+      const result = await unlinkUserFromPlayer(game, playerId);
       if (!result.ok) {
         toast.error(t(`error.${result.error}` as "error.invalid"));
         return;

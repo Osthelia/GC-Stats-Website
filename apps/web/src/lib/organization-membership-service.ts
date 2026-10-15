@@ -14,10 +14,11 @@
 import { and, eq, ne, sql } from "drizzle-orm";
 import type { PgTransaction } from "drizzle-orm/pg-core";
 import { db, adminDb } from "@gc-stats/db/client";
-import { organizations, organizationMemberships, organizationAccess, organizationAccessRoles, organizationMemberRoleLinks, people } from "@gc-stats/db";
+import { organizations, organizationAccess, organizationAccessRoles, organizationMemberRoleLinks, gameTables } from "@gc-stats/db";
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import { logActivity, diffChanges, type ActivityChanges } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 type Db = typeof db | PgTransaction<any, any, any>;
 
@@ -28,7 +29,8 @@ type Db = typeof db | PgTransaction<any, any, any>;
  * this exact role, the person has a linked account, and that account doesn't
  * already have access here (never overwrites/escalates an existing grant).
  */
-export async function autoGrantAccessForMemberRole(tx: Db, organizationId: number, personId: number, role: string): Promise<void> {
+export async function autoGrantAccessForMemberRole(game: GameSlug, tx: Db, organizationId: number, personId: number, role: string): Promise<void> {
+  const { people } = gameTables(game);
   const [link] = await tx
     .select({ permissionRoleId: organizationMemberRoleLinks.permissionRoleId })
     .from(organizationMemberRoleLinks)
@@ -93,7 +95,8 @@ function validateEntryFields(role: string, from: string, until: string): Partial
  * requireActorPermission vs requireDashboardOrgActorPermission at each call
  * site.
  */
-export async function addOrganizationMemberEntry(organizationId: number, personId: number | null, role: string, from: string, until: string, actorUserId: string): Promise<AddMemberResult> {
+export async function addOrganizationMemberEntry(game: GameSlug, organizationId: number, personId: number | null, role: string, from: string, until: string, actorUserId: string): Promise<AddMemberResult> {
+  const { organizationMemberships, people } = gameTables(game);
   const fieldErrors: AddMemberFieldErrors = { ...validateEntryFields(role, from, until) };
   if (!personId) fieldErrors.person = "required";
 
@@ -131,7 +134,7 @@ export async function addOrganizationMemberEntry(organizationId: number, personI
     }
 
     await tx.insert(organizationMemberships).values({ personId: personId as number, organizationId, role, period });
-    if (isOngoing) await autoGrantAccessForMemberRole(tx, organizationId, personId as number, role);
+    if (isOngoing) await autoGrantAccessForMemberRole(game, tx, organizationId, personId as number, role);
     await logMemberChange(tx, { organizationId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
@@ -139,7 +142,8 @@ export async function addOrganizationMemberEntry(organizationId: number, personI
 }
 
 /** `expectedOrganizationId` scopes the lookup for /dashboard callers (a caller only allowed to manage one organization must not be able to touch another org's membership by guessing an id) — admin omits it. */
-export async function updateOrganizationMemberEntry(membershipId: number, role: string, from: string, until: string, actorUserId: string, expectedOrganizationId?: number): Promise<MemberEntryResult> {
+export async function updateOrganizationMemberEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, actorUserId: string, expectedOrganizationId?: number): Promise<MemberEntryResult> {
+  const { organizationMemberships } = gameTables(game);
   const fieldErrors: MemberEntryFieldErrors = validateEntryFields(role, from, until);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -171,14 +175,15 @@ export async function updateOrganizationMemberEntry(membershipId: number, role: 
     }
 
     await tx.update(organizationMemberships).set({ role, period }).where(eq(organizationMemberships.id, membershipId));
-    if (isOngoing) await autoGrantAccessForMemberRole(tx, membership.organizationId, membership.personId, role);
+    if (isOngoing) await autoGrantAccessForMemberRole(game, tx, membership.organizationId, membership.personId, role);
     await logMemberChange(tx, { organizationId: membership.organizationId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, { role, period }) });
   });
 
   return { ok: true };
 }
 
-export async function deleteOrganizationMembershipEntry(membershipId: number, actorUserId: string, expectedOrganizationId?: number): Promise<MembershipActionResult> {
+export async function deleteOrganizationMembershipEntry(game: GameSlug, membershipId: number, actorUserId: string, expectedOrganizationId?: number): Promise<MembershipActionResult> {
+  const { organizationMemberships } = gameTables(game);
   const [membership] = await db
     .select({ organizationId: organizationMemberships.organizationId, personId: organizationMemberships.personId, role: organizationMemberships.role })
     .from(organizationMemberships).where(eq(organizationMemberships.id, membershipId)).limit(1);
@@ -194,7 +199,8 @@ export async function deleteOrganizationMembershipEntry(membershipId: number, ac
 }
 
 /** Plain helper, not a server action: exporting it from a "use server" file made it a public endpoint. */
-export async function isPersonOrganizationMember(organizationId: number, personId: number): Promise<boolean> {
+export async function isPersonOrganizationMember(game: GameSlug, organizationId: number, personId: number): Promise<boolean> {
+  const { organizationMemberships } = gameTables(game);
   const [row] = await adminDb
     .select({ id: organizationMemberships.id })
     .from(organizationMemberships)

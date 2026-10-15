@@ -14,7 +14,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems, changeRequestMessages, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { tryStoreLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles } from "@gc-stats/storage";
 import { auth } from "@/auth";
 import { INTERNATIONAL_CODE } from "@/lib/countries";
@@ -37,6 +37,7 @@ import {
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -68,10 +69,11 @@ const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, st
  * text fields in one submission, same convention as actions/admin-logos.ts.
  */
 export async function submitChangeRequest(
-  subjectType: ChangeRequestSubjectType,
+  game: GameSlug, subjectType: ChangeRequestSubjectType,
   subjectId: number,
   formData: FormData
 ): Promise<SubmitChangeRequestResult> {
+  const { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems } = gameTables(game);
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { ok: false, fieldErrors: {}, formError: "unauthenticated" };
@@ -273,7 +275,7 @@ export async function submitChangeRequest(
     } catch {
       return { ok: false, fieldErrors: {}, formError: "invalidLogo" };
     }
-    const existingLogos = await getEntityLogos(subjectType, subjectId);
+    const existingLogos = await getEntityLogos(subjectType, subjectId, game);
     for (const op of ops) {
       const exists = existingLogos.some((l) => l.id === op.logoId);
       if (!exists) return { ok: false, fieldErrors: {}, formError: "invalidLogo" };
@@ -318,7 +320,7 @@ export async function submitChangeRequest(
   if (linkUser !== null && linkUser !== "true" && linkUser !== "false") return { ok: false, fieldErrors: { linkUser: "invalid" } };
   if (linkUser === "true") {
     if (subjectType !== "person") return { ok: false, fieldErrors: { linkUser: "invalid" } };
-    const status = await getUserLinkStatus(userId, subjectId);
+    const status = await getUserLinkStatus(game, userId, subjectId);
     if (status.state !== "available") return { ok: false, fieldErrors: { linkUser: USER_LINK_ERRORS[status.state] } };
     userLinkItems.push(buildUserLinkItem(userId, status.previousPersonId));
   }
@@ -335,7 +337,7 @@ export async function submitChangeRequest(
     const storedResult = await tryStoreLogoPair(subjectType, logoBuffer);
     if (!storedResult.ok) return { ok: false, fieldErrors: { logo: storedResult.error } };
     storedLogoId = storedResult.logo.id;
-    const liveLogo = currentLogo(await getEntityLogos(subjectType, subjectId));
+    const liveLogo = currentLogo(await getEntityLogos(subjectType, subjectId, game));
     allItems.push({
       field: "logo",
       oldValue: liveLogo?.id ?? null,
@@ -394,7 +396,8 @@ async function requireUserId(): Promise<string> {
  * or anyone with change-requests.manage — mirrors the same two-sided
  * conversation as news_messages, just without the approval workflow.
  */
-export async function postChangeRequestMessage(changeRequestId: number, body: string): Promise<ChangeRequestMessageActionResult> {
+export async function postChangeRequestMessage(game: GameSlug, changeRequestId: number, body: string): Promise<ChangeRequestMessageActionResult> {
+  const { changeRequests, changeRequestMessages } = gameTables(game);
   const userId = await requireUserId();
 
   const trimmed = body.trim();
@@ -404,7 +407,7 @@ export async function postChangeRequestMessage(changeRequestId: number, body: st
   const [request] = await db.select({ requestedBy: changeRequests.requestedBy, status: changeRequests.status }).from(changeRequests).where(eq(changeRequests.id, changeRequestId)).limit(1);
   if (!request) return { ok: false, error: "notFound" };
 
-  const access = await getGlobalAccess(userId);
+  const access = await getGlobalAccess(userId, game);
   const isOwner = request.requestedBy === userId;
   const isManager = hasAccess(access, PERMISSIONS.changeRequestsManage);
   if (!isOwner && !isManager) return { ok: false, error: "notAuthorized" };
@@ -413,14 +416,15 @@ export async function postChangeRequestMessage(changeRequestId: number, body: st
   await db.insert(changeRequestMessages).values({ changeRequestId, userId, type: "comment", body: trimmed });
 
   if (isManager && !isOwner && request.requestedBy) {
-    await notify({ recipientId: request.requestedBy, type: "change_request.comment", authorId: userId, link: `/settings/change-requests/${changeRequestId}`, data: { changeRequestId } });
+    await notify({ recipientId: request.requestedBy, type: "change_request.comment", authorId: userId, link: `/settings/change-requests/${game}/${changeRequestId}`, data: { changeRequestId, game } });
   }
 
   return { ok: true };
 }
 
 /** Only the request's own author can withdraw, and only while still pending — mirrors the pending-only edit window everywhere else in this flow. */
-export async function withdrawChangeRequest(changeRequestId: number): Promise<ChangeRequestMessageActionResult> {
+export async function withdrawChangeRequest(game: GameSlug, changeRequestId: number): Promise<ChangeRequestMessageActionResult> {
+  const { changeRequests } = gameTables(game);
   const userId = await requireUserId();
 
   const [request] = await db.select({ requestedBy: changeRequests.requestedBy, status: changeRequests.status }).from(changeRequests).where(eq(changeRequests.id, changeRequestId)).limit(1);

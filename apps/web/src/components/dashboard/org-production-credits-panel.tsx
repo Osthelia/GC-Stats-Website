@@ -33,6 +33,7 @@ import {
 import { searchPeopleForOrganization } from "@/actions/dashboard-organizations";
 import { PRODUCTION_CREDIT_ROLES, PRODUCTION_CREDIT_ROLE_OTHER } from "@/lib/production-credit-roles";
 import type { OrgProductionCredit } from "@/lib/production-credits-data";
+import { useGame } from "@/lib/use-game";
 
 /** credit.role is free text (see production-credit-roles.ts), splits it back into a known <Select> value plus the "other" free-text field the row should start with. */
 function decodeRole(role: string): { role: string; roleOther: string } {
@@ -65,6 +66,7 @@ function CreditRow({
   onSaved: (updated: OrgProductionCredit) => void;
   onDeleted: (creditId: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.credits");
   const [isPending, startTransition] = useTransition();
   const decoded = decodeRole(credit.role);
@@ -80,7 +82,7 @@ function CreditRow({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateProductionCredit(organizationId, credit.id, { role, roleOther, titleOverride });
+      const result = await updateProductionCredit(game, organizationId, credit.id, { role, roleOther, titleOverride });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -93,7 +95,7 @@ function CreditRow({
   function confirmDelete() {
     setDeleteConfirmOpen(false);
     startTransition(async () => {
-      const result = await deleteProductionCredit(organizationId, credit.id);
+      const result = await deleteProductionCredit(game, organizationId, credit.id);
       if (!result.ok) {
         toast.error(t("deleteError"));
         return;
@@ -208,6 +210,7 @@ function CreditRow({
 }
 
 function AddCreditForm({ organizationId, onAdded }: { organizationId: number; onAdded: () => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.credits");
   const [isPending, startTransition] = useTransition();
   const [person, setPerson] = useState<{ id: number; handle: string } | null>(null);
@@ -223,7 +226,7 @@ function AddCreditForm({ organizationId, onAdded }: { organizationId: number; on
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addProductionCredits(organizationId, {
+      const result = await addProductionCredits(game, organizationId, {
         personId: person?.id ?? null,
         role,
         roleOther,
@@ -257,7 +260,7 @@ function AddCreditForm({ organizationId, onAdded }: { organizationId: number; on
             placeholder={t("personPlaceholder")}
             searchPlaceholder={t("personSearchPlaceholder")}
             noResultsLabel={t("personNoResults")}
-            search={(q) => searchPeopleForOrganization(organizationId, q)}
+            search={(q) => searchPeopleForOrganization(game, organizationId, q)}
           />
           {err("person") && (
             <p role="alert" className="text-xs text-destructive">

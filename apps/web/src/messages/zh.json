@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "未找到该用户。",
         "roleNotFound": "其中一个所选角色已不存在。",
-        "selfDemote": "您不能移除自己的管理员权限。"
+        "selfDemote": "您不能移除自己的管理员权限。",
+        "gameNotFound": "该游戏不存在。"
       },
       "authMethods": {
         "heading": "身份验证",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "只有所有者才能授予或修改所有者角色。",
           "userNotFound": "未找到该账户。",
           "alreadyHasAccess": "该账户已拥有此机构的访问权限。"
-        }
+        },
+        "fieldGames": "游戏"
       },
       "filterKindLabel": "组织类型",
       "filterKindAll": "所有组织",
@@ -6489,5 +6491,10 @@
     "points": "通过 {label} 积分晋级",
     "pointsUnknown": "通过积分晋级",
     "iconLabel": "晋级来源"
+  },
+  "game": {
+    "switcherLabel": "游戏",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

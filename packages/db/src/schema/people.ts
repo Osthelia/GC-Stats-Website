@@ -1,139 +1,24 @@
 /**
  * GC-Stats — people module
  *
- * Teams (with name history), the unified `people` identity table (replaces
- * V1's separate players/staff), roster memberships, organizations and
- * their membership/roles/access/permissions tables, production credits,
- * and logos.
+ * Organizations and their access/roles/permissions tables, and logos. Teams,
+ * people, rosters and production credits exist once per game, see
+ * game-tables.ts.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql } from "drizzle-orm";
-import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, smallint, integer, char, timestamp, date, uuid, unique, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
-import { daterange, tstzrange } from "./custom-types";
+import { pgTable, bigserial, bigint, text, jsonb, boolean, char, uuid, unique, index } from "drizzle-orm/pg-core";
+import { tstzrange } from "./custom-types";
 import { users } from "./auth";
-
-export const teams = pgTable("teams", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  name: text("name").notNull(),
-  shortName: varchar("short_name", { length: 10 }),
-  countryCode: char("country_code", { length: 3 }),
-  // Second nationality — dual citizenship, same alpha-3/"INT" vocabulary as
-  // countryCode. Display fuses both flags diagonally (CountryFlag), never a
-  // second independent identifier.
-  secondaryCountryCode: char("secondary_country_code", { length: 3 }),
-  socials: jsonb("socials").notNull().default({}),
-  bio: text("bio"),
-  vlrId: integer("vlr_id"),
-  isActive: boolean("is_active").notNull().default(true),
-  // Out-of-coverage opponent (mix tournament): shown on its matches only.
-  isGhost: boolean("is_ghost").notNull().default(false),
-  maxPermissions: jsonb("max_permissions"),
-  tags: jsonb("tags"),
-  liquipediaLink: text("liquipedia_link"),
-  // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
-  liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
-  // Organization running this team: the org then has no public page of its own
-  // (its members show as the team's staff) and gets an automatic /dashboard
-  // access scoped to the streams of this team's matches. One org can own several teams.
-  organizationId: bigint("organization_id", { mode: "number" }).references((): AnyPgColumn => organizations.id, { onDelete: "set null" }),
-}, (t) => [
-  index("teams_organization_id_idx").on(t.organizationId),
-]);
-
-// Liquipedia page name <-> GC Stats team, strictly one to one: used to write
-// {{TeamOpponent|...}} in generated wikicode and to recognise teams on import.
-export const liquipediaTeamNames = pgTable(
-  "liquipedia_team_names",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    teamId: bigint("team_id", { mode: "number" }).notNull().unique().references(() => teams.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (t) => [uniqueIndex("liquipedia_team_names_name_lower_unique").on(sql`lower(${t.name})`)]
-);
-
-export const teamNameHistory = pgTable("team_name_history", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  period: daterange("period").notNull(),
-  isVisible: boolean("is_visible").notNull().default(true),
-}, (t) => [
-  index("team_name_history_team_id_idx").on(t.teamId),
-]);
-
-// Unified identity - see DATABASES.MD Â§3.2. Replaces the separate V1
-// `players`/`staff` tables: a person who competed and later casts/coaches
-// stays one row, one logo/photo history, one profile.
-export const people = pgTable("people", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  handle: text("handle").notNull(),
-  aliases: jsonb("aliases"),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  countryCode: char("country_code", { length: 3 }),
-  secondaryCountryCode: char("secondary_country_code", { length: 3 }),
-  pronouns: smallint("pronouns"),
-  birthDate: date("birth_date"),
-  bio: text("bio"),
-  socials: jsonb("socials").notNull().default({}),
-  valId: text("val_id").unique(), // Riot puuid - null for people who never played competitively
-  esportsValId: text("esports_val_id").unique(),
-  vlrId: integer("vlr_id"),
-  isActive: boolean("is_active").notNull().default(true),
-  // Out-of-coverage player (mix tournament): shown on its matches only.
-  isGhost: boolean("is_ghost").notNull().default(false),
-  userId: text("user_id").unique().references(() => users.id, { onDelete: "set null" }),
-  liquipediaLink: text("liquipedia_link"),
-  // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
-  liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
-});
-
-// Name used for a person in generated Liquipedia wikicode, one to one. A person can
-// be exported without owning a Liquipedia page, so this is not tied to `liquipedia_link`.
-export const liquipediaPersonNames = pgTable(
-  "liquipedia_person_names",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    personId: bigint("person_id", { mode: "number" }).notNull().unique().references(() => people.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (t) => [uniqueIndex("liquipedia_person_names_name_lower_unique").on(sql`lower(${t.name})`)]
-);
-
-// A team's real, continuous roster over time (players, but also
-// coach/manager/analyst - just a different `role` value, see DATABASES.MD
-// Â§3.2). NOT what determines who played a given tournament - see
-// entrant_members in bracket.ts for that.
-export const rosterMemberships = pgTable("roster_memberships", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
-  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
-  role: text("role").notNull().default("player"), // 'player' | 'player-igl' | 'sub' | 'coach' | 'assistant coach' | 'performance coach' | 'analyst' | 'manager'
-  period: daterange("period").notNull(),
-  // True once the person left the team. An open period with has_left = true means the end date is unknown.
-  hasLeft: boolean("has_left").notNull().default(false),
-  // Nullable: still on the roster (period stays open) but currently inactive
-  // (injury, break, ...) as of this date. Replaces V1's role-suffix
-  // convention ('player-inactive' as a distinct role value + stint-merging
-  // logic to display it) with a plain column — same information, no
-  // parallel role vocabulary to keep in sync.
-  inactiveSince: date("inactive_since"),
-  // EXCLUDE USING gist (person_id, team_id, role, period) added in drizzle/0000_squashed_baseline.sql
-  // - same person can hold two DIFFERENT roles concurrently, not the same role twice overlapping.
-  // Entries left with an unknown end date (open period + has_left) are excluded from it, see 0042.
-});
 
 export const organizations = pgTable("organizations", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
+  games: text("games").array().notNull().default([]), // game slugs the organization is listed on, see game.ts
   tags: text("tags").array().notNull().default([]), // e.g. {'tournament_organizer','production','media'} - GIN index in 0001
   countryCode: char("country_code", { length: 3 }),
   secondaryCountryCode: char("secondary_country_code", { length: 3 }),
@@ -141,22 +26,6 @@ export const organizations = pgTable("organizations", {
   bio: text("bio"),
   liquipediaLink: text("liquipedia_link"),
   maxPermissions: jsonb("max_permissions"),
-});
-
-// Purely a public "who's part of this org" credit roster (people, not
-// accounts) — mirrors a team roster, editable only from /admin. Carries NO
-// access/permission meaning: a person listed here (even role='owner') may
-// have no user account at all, or a user account with zero /dashboard
-// access. /dashboard access is a completely separate concept, see
-// organization_access below — deliberate split requested explicitly
-// (2026-09-13): "les membres... sont un visuel (comme player)".
-export const organizationMemberships = pgTable("organization_memberships", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
-  organizationId: bigint("organization_id", { mode: "number" }).notNull().references(() => organizations.id, { onDelete: "cascade" }),
-  role: text("role").notNull(), // 'admin' | 'caster' | 'observer' | 'producer' | 'editor' | ...
-  period: daterange("period").notNull(),
-  // EXCLUDE USING gist (person_id, organization_id, role, period) added in 0000_squashed_baseline.sql
 });
 
 // A custom, per-organization dashboard role — fully editable (create/rename/
@@ -248,26 +117,6 @@ export const organizationMemberRoleLinks = pgTable(
   (t) => [unique("organization_member_role_links_org_role_unique").on(t.organizationId, t.memberRole)]
 );
 
-// Replaces staff_assignments (Laravel morph, no FK integrity). Scope
-// discriminant is exactly-one-of the nullable FKs below, enforced by a
-// CHECK (num_nonnulls(...) = 1) added in drizzle/0000_squashed_baseline.sql -
-// same pattern as entrants.kind / stage_qualifications.
-export const productionCredits = pgTable("production_credits", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
-  organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
-  role: text("role").notNull(), // 'caster' | 'analyst' | 'host' | 'observer' | 'organizer' | 'producer' | 'editor' | 'photographer' | 'translator' | 'referee' | ...
-  titleOverride: text("title_override"),
-  tournamentId: bigint("tournament_id", { mode: "number" }), // FK added once tournaments exists (bracket.ts) - see 0000_squashed_baseline.sql
-  stageId: bigint("stage_id", { mode: "number" }),
-  containerId: bigint("container_id", { mode: "number" }),
-  matchId: bigint("match_id", { mode: "number" }),
-  mapId: bigint("map_id", { mode: "number" }),
-}, (t) => [
-  index("production_credits_tournament_id_idx").on(t.tournamentId),
-  index("production_credits_match_id_idx").on(t.matchId),
-]);
-
 // Polymorphic logo/photo history (Team, Person, Tournament, NewsAuthor,
 // NewsPublisher) - kept as type+id discriminant without a DB-level FK,
 // consistent with DATABASES.MD Â§6's default for peripheral polymorphism.
@@ -275,9 +124,11 @@ export const logos = pgTable("logos", {
   id: uuid("id").primaryKey().defaultRandom(),
   entityType: text("entity_type").notNull(), // 'team' | 'person' | 'tournament' | 'news_author' | 'news_publisher'
   entityId: bigint("entity_id", { mode: "number" }).notNull(),
+  // Game of a team, person or tournament logo; null for global entities (news authors, publishers).
+  game: text("game"),
   period: tstzrange("period").notNull(),
   theme: text("theme"), // 'light' | 'dark' | null = theme-agnostic
   isVisible: boolean("is_visible").notNull().default(true),
 }, (t) => [
-  index("logos_entity_idx").on(t.entityType, t.entityId),
+  index("logos_entity_idx").on(t.game, t.entityType, t.entityId),
 ]);

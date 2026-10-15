@@ -25,6 +25,7 @@ import { tournamentStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/st
 import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
+import { useGame } from "@/lib/use-game";
 
 /** Every logo needs a fallback (CLAUDE.md) — the site's default tournament icon, same as V1's `$tournament->logo` (always resolves to something, never a broken/missing image). */
 function TournamentLogoTile({ src, name }: { src: string | null; name: string }) {
@@ -46,6 +47,7 @@ export function TournamentDetailHeader({
   pointTypeOptions: { id: number; name: string; label: string }[];
   canManage: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments");
   const locale = useLocale();
   const router = useRouter();
@@ -58,7 +60,7 @@ export function TournamentDetailHeader({
   function handleToggleActive() {
     if (!window.confirm(tournament.active ? t("deactivateConfirm") : t("activateConfirm"))) return;
     startTransition(async () => {
-      const result = await toggleTournamentActive(tournament.id);
+      const result = await toggleTournamentActive(game, tournament.id);
       if (!result.ok) return;
       router.refresh();
       toast.success(result.active ? t("activateSuccess") : t("deactivateSuccess"));
@@ -68,7 +70,7 @@ export function TournamentDetailHeader({
   function handleDelete() {
     if (!window.confirm(t("deleteConfirm", { name: tournament.name }))) return;
     startTransition(async () => {
-      const result = await deleteTournament(tournament.id);
+      const result = await deleteTournament(game, tournament.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

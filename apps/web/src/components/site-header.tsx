@@ -26,9 +26,12 @@ import {
 import { defaultNewsLanguages } from "@/lib/news-languages-default";
 import { stripAccents } from "@/lib/search-typo";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
+import { GameSwitcher } from "@/components/site/game-switcher";
+import { useGame } from "@/lib/use-game";
 
 const NAV_ITEMS = ["matches", "tournaments"] as const;
 
+// Paths inside a game, completed with the game of the current page by the Link.
 const NAV_HREFS: Record<(typeof NAV_ITEMS)[number], string> = {
   matches: "/match",
   tournaments: "/tournaments",
@@ -46,6 +49,8 @@ export function SiteHeader({
   const t = useTranslations("nav");
   const tSettings = useTranslations("settings");
   const pathname = usePathname();
+  const game = useGame();
+  const homeHref = `/${game}`;
   const { status: sessionStatus } = useSession();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
@@ -74,9 +79,9 @@ export function SiteHeader({
   const navLinks = (
     <>
       <Link
-        href="/"
+        href={homeHref}
         className={
-          pathname === "/"
+          pathname === homeHref
             ? "text-[14.5px] font-semibold text-neutral-50"
             : "text-[14.5px] font-medium text-neutral-500 hover:text-neutral-50"
         }
@@ -84,7 +89,7 @@ export function SiteHeader({
         {t("home")}
       </Link>
       {NAV_ITEMS.map((item) => {
-        const href = NAV_HREFS[item];
+        const href = `/${game}${NAV_HREFS[item]}`;
         const active = pathname === href || pathname.startsWith(`${href}/`);
         return (
           <Link
@@ -108,8 +113,14 @@ export function SiteHeader({
       ref={rootRef}
       className="sticky top-0 z-[60] border-b border-neutral-800 bg-[var(--gcs-bg)]/90 backdrop-blur-xl"
     >
-      <div className="mx-auto flex h-[62px] max-w-[1400px] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9">
-        <Link href="/" className="flex flex-none items-center gap-2.5">
+      <div className="absolute inset-y-0 left-0 hidden items-center px-4 md:flex">
+        <GameSwitcher />
+      </div>
+
+      {/* Left padding keeps the content clear of the switcher on narrow desktops */}
+      <div className="mx-auto flex h-[62px] max-w-[1400px] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9 md:pl-[max(1.5rem,calc(11rem_-_(100vw_-_1400px)/2))]">
+
+        <Link href={homeHref} className="flex flex-none items-center gap-2.5">
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[#e4ae22] text-[13px] font-bold tracking-tight text-[#0e0e0e]">
             GC
           </div>
@@ -209,12 +220,15 @@ export function SiteHeader({
         >
           {mobilePanel === "menu" && (
             <>
+              <GameSwitcher className="mb-4 w-fit" />
               <div className="mb-4">
                 <GlobalSearch />
               </div>
 
               <nav className="mb-2 flex flex-col gap-0.5">
-                {NAV_ITEMS_WITH_HOME.map(({ key, href }) => (
+                {NAV_ITEMS_WITH_HOME.map(({ key, href: path }) => {
+                  const href = key === "home" ? homeHref : `/${game}${path}`;
+                  return (
                   <Link
                     key={key}
                     href={href}
@@ -229,7 +243,8 @@ export function SiteHeader({
                   >
                     {t(key)}
                   </Link>
-                ))}
+                  );
+                })}
               </nav>
 
               <div className="border-t border-neutral-800 pt-2">

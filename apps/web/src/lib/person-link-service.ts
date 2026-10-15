@@ -12,9 +12,10 @@
 
 import { and, eq, ne, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { people, users, organizationMemberships } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
 import { autoGrantAccessForMemberRole } from "@/lib/organization-membership-service";
 import { logActivity } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LinkUserResult = { ok: true } | { ok: false; error: string };
 
@@ -23,7 +24,8 @@ export type LinkUserResult = { ok: true } | { ok: false; error: string };
  * (actions/dashboard-organizations.ts, scoped to this organization's own
  * roster) — mirrors V1 PlayerController::linkUser (unique-elsewhere check).
  */
-export async function linkUserToPersonEntry(personId: number, userId: string, actorUserId: string): Promise<LinkUserResult> {
+export async function linkUserToPersonEntry(game: GameSlug, personId: number, userId: string, actorUserId: string): Promise<LinkUserResult> {
+  const { people, organizationMemberships } = gameTables(game);
   const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, error: "notFound" };
 
@@ -44,13 +46,14 @@ export async function linkUserToPersonEntry(personId: number, userId: string, ac
     .from(organizationMemberships)
     .where(and(eq(organizationMemberships.personId, personId), sql`${organizationMemberships.period} @> CURRENT_DATE`));
   for (const m of currentMemberships) {
-    await autoGrantAccessForMemberRole(db, m.organizationId, personId, m.role);
+    await autoGrantAccessForMemberRole(game, db, m.organizationId, personId, m.role);
   }
 
   return { ok: true };
 }
 
-export async function unlinkUserFromPersonEntry(personId: number, actorUserId: string): Promise<LinkUserResult> {
+export async function unlinkUserFromPersonEntry(game: GameSlug, personId: number, actorUserId: string): Promise<LinkUserResult> {
+  const { people } = gameTables(game);
   const [person] = await db.select({ id: people.id, userId: people.userId }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, error: "notFound" };
 

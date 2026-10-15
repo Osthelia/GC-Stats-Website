@@ -11,10 +11,12 @@
 
 import { inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { entrants } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Resolves entrant ids to their team id (a bye/TBD entrant has none) — shared by the matches/map endpoints that expose team_id at player/round granularity. */
-export async function resolveEntrantTeamIds(entrantIds: number[]): Promise<Map<number, number | null>> {
+export async function resolveEntrantTeamIds(game: GameSlug, entrantIds: number[]): Promise<Map<number, number | null>> {
+  const { entrants } = gameTables(game);
   if (entrantIds.length === 0) return new Map();
   const rows = await db
     .select({ id: entrants.id, teamId: entrants.teamId })

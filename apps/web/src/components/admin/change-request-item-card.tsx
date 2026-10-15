@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { resolveChangeRequestItem } from "@/actions/admin-change-requests";
 import { ChangeRequestValue } from "@/components/admin/change-request-item-value";
 import type { AdminChangeRequestItem } from "@/lib/admin-change-requests";
+import { useGame } from "@/lib/use-game";
 
 const STRUCTURAL_FIELDS = new Set([
   "membership_add",
@@ -62,6 +63,7 @@ const STATUS_STYLES: Record<AdminChangeRequestItem["status"], string> = {
 };
 
 export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: AdminChangeRequestItem; canManage: boolean; onResolved: (updated: AdminChangeRequestItem) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.changeRequests.detail");
   const tField = useTranslations("suggestEdit.field");
   const [note, setNote] = useState("");
@@ -69,7 +71,7 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
 
   function resolve(action: "approve" | "reject") {
     startTransition(async () => {
-      const result = await resolveChangeRequestItem(item.id, action, note);
+      const result = await resolveChangeRequestItem(game, item.id, action, note);
       if (!result.ok) {
         toast.error(t("actionError"));
         return;

@@ -12,7 +12,8 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { people, changeRequests, changeRequestItems } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type UserLinkStatus =
   | { state: "available"; previousPersonId: number | null }
@@ -24,7 +25,8 @@ export type UserLinkStatus =
 export type UserLinkItem = { field: "user_link"; oldValue: { previousPersonId: number | null }; newValue: { userId: string; previousPersonId: number | null } };
 
 /** Whether `userId` can request a link to `personId` right now. */
-export async function getUserLinkStatus(userId: string, personId: number): Promise<UserLinkStatus> {
+export async function getUserLinkStatus(game: GameSlug, userId: string, personId: number): Promise<UserLinkStatus> {
+  const { people, changeRequests, changeRequestItems } = gameTables(game);
   const [target] = await db.select({ userId: people.userId }).from(people).where(eq(people.id, personId)).limit(1);
   if (!target) return { state: "notFound" };
   if (target.userId === userId) return { state: "linkedToYou" };

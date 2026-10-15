@@ -2106,7 +2106,8 @@
       "error": {
         "userNotFound": "Benutzer:in nicht gefunden.",
         "roleNotFound": "Eine der ausgewählten Rollen existiert nicht mehr.",
-        "selfDemote": "Sie können sich Ihren eigenen Admin Zugriff nicht selbst entziehen."
+        "selfDemote": "Sie können sich Ihren eigenen Admin Zugriff nicht selbst entziehen.",
+        "gameNotFound": "Dieses Spiel existiert nicht."
       },
       "authMethods": {
         "heading": "Authentifizierung",
@@ -2385,7 +2386,8 @@
           "ownerOnly": "Nur ein:e Inhaber:in kann die Inhaber:innen Rolle gewähren oder bearbeiten.",
           "userNotFound": "Konto nicht gefunden.",
           "alreadyHasAccess": "Dieses Konto hat bereits Zugriff auf diese Organisation."
-        }
+        },
+        "fieldGames": "Spiele"
       },
       "filterKindLabel": "Organisationstyp",
       "filterKindAll": "Alle Organisationen",
@@ -6489,5 +6491,10 @@
     "points": "Über {label} Punkte qualifiziert",
     "pointsUnknown": "Über Punkte qualifiziert",
     "iconLabel": "Qualifikationsquelle"
+  },
+  "game": {
+    "switcherLabel": "Spiel",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

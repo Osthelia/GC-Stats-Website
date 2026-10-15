@@ -23,6 +23,8 @@ import { TagsInput } from "@/components/admin/tags-input";
 import { updatePlayerProfile, type PlayerProfileFieldErrors } from "@/actions/admin-players";
 import type { AdminPlayerProfile } from "@/lib/admin-players";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
+import { useGame } from "@/lib/use-game";
+
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
 export function PlayerEditForm({
@@ -35,6 +37,7 @@ export function PlayerEditForm({
   /** Rendered in the right column, below Socials — e.g. the logo panel. */
   rightExtra?: React.ReactNode;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<PlayerProfileFieldErrors>({});
@@ -57,7 +60,7 @@ export function PlayerEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updatePlayerProfile(player.id, {
+      const result = await updatePlayerProfile(game, player.id, {
         handle,
         aliases,
         firstName,
