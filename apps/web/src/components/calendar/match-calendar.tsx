@@ -5,6 +5,7 @@ import themePlugin from "@fullcalendar/react/themes/pulse"; // YOUR THEME
 import dayGridPlugin from "@fullcalendar/react/daygrid";
 import allLocales from '@fullcalendar/react/locales-all';
 import { useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import type { DatesSetInfo } from "@fullcalendar/react";
 
@@ -28,11 +29,17 @@ export default function MatchCalendar({ month, previousMonth, nextMonth, events 
   const { theme, timezone, clock24 } = useSiteSettings();
   const router = useRouter();
   const locale = useLocale();
+  const searchParams = useSearchParams();
+  const monthHref = useCallback((targetMonth: string) => {
+    const query = new URLSearchParams(searchParams.toString());
+    query.set("month", targetMonth);
+    return `/calendar?${query}`;
+  }, [searchParams]);
 
   useEffect(() => {
-    router.prefetch(`/calendar?month=${previousMonth}`);
-    router.prefetch(`/calendar?month=${nextMonth}`);
-  }, [router, previousMonth, nextMonth]);
+    router.prefetch(monthHref(previousMonth));
+    router.prefetch(monthHref(nextMonth));
+  }, [router, previousMonth, nextMonth, monthHref]);
 
   const handleDatesSet = useCallback((info: DatesSetInfo) => {
     // The grid can start in the preceding month. A week inside currentStart
@@ -40,9 +47,9 @@ export default function MatchCalendar({ month, previousMonth, nextMonth, events 
     const insideMonth = new Date(info.view.currentStart.getTime() + 7 * 86_400_000);
     const displayedMonth = insideMonth.toISOString().slice(0, 7);
     if (displayedMonth !== month) {
-      router.push(`/calendar?month=${displayedMonth}`, { scroll: false });
+      router.push(monthHref(displayedMonth), { scroll: false });
     }
-  }, [month, router]);
+  }, [month, router, monthHref]);
   
   return (
     <FullCalendar
