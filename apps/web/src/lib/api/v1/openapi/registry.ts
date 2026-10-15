@@ -119,7 +119,7 @@ const nameParams = z.object({ name: namePathParamSchema });
 
 registerRoute({
   method: "get",
-  path: "/v1/players/by-name/{name}",
+  path: "/valorant/v1/players/by-name/{name}",
   summary: "Search players by handle (V1)",
   tags: ["Players"],
   request: { params: nameParams },
@@ -128,7 +128,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}",
+  path: "/valorant/v1/players/{id}",
   summary: "Get a player by id (V1)",
   tags: ["Players"],
   request: { params: idParams },
@@ -138,7 +138,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}/teams",
+  path: "/valorant/v1/players/{id}/teams",
   summary: "Get a player's team history (V1)",
   tags: ["Players"],
   request: { params: idParams },
@@ -148,7 +148,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}/photos",
+  path: "/valorant/v1/players/{id}/photos",
   summary: "Get a player's photo history (V1)",
   tags: ["Players"],
   request: { params: idParams },
@@ -157,7 +157,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}/stats",
+  path: "/valorant/v1/players/{id}/stats",
   summary: "Get a player's average stats (V1)",
   tags: ["Players"],
   request: { params: idParams, query: statsFilterQuerySchema },
@@ -167,7 +167,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}/agents",
+  path: "/valorant/v1/players/{id}/agents",
   summary: "Get a player's per agent stats (V1)",
   tags: ["Players"],
   request: { params: idParams, query: mapsFilterQuerySchema },
@@ -177,7 +177,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/players/{id}/weapons",
+  path: "/valorant/v1/players/{id}/weapons",
   summary: "Get a player's weapon stats (V1)",
   tags: ["Players"],
   request: { params: idParams, query: mapsFilterQuerySchema },
@@ -187,7 +187,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/by-name/{name}",
+  path: "/valorant/v1/teams/by-name/{name}",
   summary: "Search teams by name (V1)",
   tags: ["Teams"],
   request: { params: nameParams },
@@ -196,7 +196,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}",
+  path: "/valorant/v1/teams/{id}",
   summary: "Get a team by id (V1)",
   tags: ["Teams"],
   request: { params: idParams },
@@ -206,7 +206,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/players",
+  path: "/valorant/v1/teams/{id}/players",
   summary: "Get a team's roster (V1)",
   tags: ["Teams"],
   request: { params: idParams },
@@ -216,7 +216,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/logos",
+  path: "/valorant/v1/teams/{id}/logos",
   summary: "Get a team's logo history (V1)",
   tags: ["Teams"],
   request: { params: idParams },
@@ -225,7 +225,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/vetos",
+  path: "/valorant/v1/teams/{id}/vetos",
   summary: "Get a team's map veto stats (V1)",
   tags: ["Teams"],
   request: { params: idParams, query: mapsFilterQuerySchema },
@@ -235,7 +235,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/maps",
+  path: "/valorant/v1/teams/{id}/maps",
   summary: "Get a team's map stats (V1)",
   tags: ["Teams"],
   request: { params: idParams, query: mapsFilterQuerySchema },
@@ -245,7 +245,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/weapons",
+  path: "/valorant/v1/teams/{id}/weapons",
   summary: "Get a team's weapon stats (V1)",
   tags: ["Teams"],
   request: { params: idParams, query: mapsFilterQuerySchema },
@@ -255,7 +255,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/stats",
+  path: "/valorant/v1/teams/{id}/stats",
   summary: "Get a team's average stats (V1)",
   tags: ["Teams"],
   request: { params: idParams, query: statsFilterQuerySchema },
@@ -265,7 +265,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/teams/{id}/matches",
+  path: "/valorant/v1/teams/{id}/matches",
   summary: "Get a team's match history (V1)",
   tags: ["Teams"],
   request: { params: idParams, query: matchHistoryFilterQuerySchema },
@@ -275,7 +275,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/tournaments/by-name/{name}",
+  path: "/valorant/v1/tournaments/by-name/{name}",
   summary: "Search tournaments by name (V1)",
   tags: ["Tournaments"],
   request: { params: nameParams },
@@ -284,7 +284,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/tournaments/{id}",
+  path: "/valorant/v1/tournaments/{id}",
   summary: "Get a tournament by id (V1)",
   tags: ["Tournaments"],
   request: { params: idParams },
@@ -294,7 +294,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/tournaments/{id}/logos",
+  path: "/valorant/v1/tournaments/{id}/logos",
   summary: "Get a tournament's logo history (V1)",
   tags: ["Tournaments"],
   request: { params: idParams },
@@ -303,7 +303,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/matches/{id}",
+  path: "/valorant/v1/matches/{id}",
   summary: "Get a match by id (V1)",
   tags: ["Matches"],
   request: { params: idParams },
@@ -313,7 +313,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/matches/{id}",
+  path: "/valorant/v2/matches/{id}",
   summary: "Get a match's full stats (V2)",
   tags: ["Matches"],
   request: { params: idParams },
@@ -323,7 +323,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v3/matches/{id}",
+  path: "/valorant/v3/matches/{id}",
   summary: "Get a match's full stats, encounters, radar chart widget link and pick'em votes (V3)",
   tags: ["Matches"],
   request: { params: idParams },
@@ -336,7 +336,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/map/{id}",
+  path: "/valorant/v1/map/{id}",
   summary: "Get a map by id (V1)",
   tags: ["Maps"],
   request: { params: idParams },
@@ -346,7 +346,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v1/map/{id}/rounds",
+  path: "/valorant/v1/map/{id}/rounds",
   summary: "Get a map's round by round breakdown (V1)",
   tags: ["Maps"],
   request: { params: idParams },
@@ -358,7 +358,7 @@ const RATELIMIT_COST_10 = "Ratelimit cost: 10 per call (bundles achievements, ro
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/{id}",
+  path: "/valorant/v2/teams/{id}",
   summary: "Get a team's full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Teams"],
@@ -369,7 +369,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/by-name/{name}",
+  path: "/valorant/v2/teams/by-name/{name}",
   summary: "Search teams by name, full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Teams"],
@@ -379,47 +379,47 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/{id}/matches",
+  path: "/valorant/v2/teams/{id}/matches",
   summary: "Get a team's match history (V2)",
   tags: ["Teams"],
   request: { params: idParams, query: teamMatchesFilterQuerySchema },
-  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /v1/teams/{id}/matches, with an added round_name filter."),
+  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /valorant/v1/teams/{id}/matches, with an added round_name filter."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/by-name/{name}/matches",
+  path: "/valorant/v2/teams/by-name/{name}/matches",
   summary: "Get a team's match history, resolved by name (V2)",
   tags: ["Teams"],
   request: { params: nameParams, query: teamMatchesFilterQuerySchema },
-  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /v2/teams/{id}/matches, for the first team whose name or short name starts with the given string."),
+  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /valorant/v2/teams/{id}/matches, for the first team whose name or short name starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/{id}/maps",
+  path: "/valorant/v2/teams/{id}/maps",
   summary: "Get a team's map stats (V2)",
   tags: ["Teams"],
   request: { params: idParams, query: teamMapsFilterQuerySchema },
-  response: jsonResponseSchema(z.array(ApiTeamMapEntrySchema), "Same as /v1/teams/{id}/maps, with added round_name and phase_id filters."),
+  response: jsonResponseSchema(z.array(ApiTeamMapEntrySchema), "Same as /valorant/v1/teams/{id}/maps, with added round_name and phase_id filters."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/teams/by-name/{name}/maps",
+  path: "/valorant/v2/teams/by-name/{name}/maps",
   summary: "Get a team's map stats, resolved by name (V2)",
   tags: ["Teams"],
   request: { params: nameParams, query: teamMapsFilterQuerySchema },
-  response: jsonResponseSchema(z.array(ApiTeamMapEntrySchema), "Same as /v2/teams/{id}/maps, for the first team whose name or short name starts with the given string."),
+  response: jsonResponseSchema(z.array(ApiTeamMapEntrySchema), "Same as /valorant/v2/teams/{id}/maps, for the first team whose name or short name starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/players/{id}",
+  path: "/valorant/v2/players/{id}",
   summary: "Get a player's full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Players"],
@@ -430,7 +430,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/players/by-name/{name}",
+  path: "/valorant/v2/players/by-name/{name}",
   summary: "Search players by handle, full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Players"],
@@ -440,7 +440,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/players/{id}/matches",
+  path: "/valorant/v2/players/{id}/matches",
   summary: "Get a player's match history (V2)",
   tags: ["Players"],
   request: { params: idParams, query: teamMatchesFilterQuerySchema },
@@ -450,17 +450,17 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/players/by-name/{name}/matches",
+  path: "/valorant/v2/players/by-name/{name}/matches",
   summary: "Get a player's match history, resolved by name (V2)",
   tags: ["Players"],
   request: { params: nameParams, query: teamMatchesFilterQuerySchema },
-  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /v2/players/{id}/matches, for the first player whose handle starts with the given string."),
+  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /valorant/v2/players/{id}/matches, for the first player whose handle starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/players/{id}/staff-tournaments",
+  path: "/valorant/v2/players/{id}/staff-tournaments",
   summary: "Get the tournaments a player followed as team staff (V2)",
   tags: ["Players"],
   request: { params: idParams, query: paginationQuerySchema },
@@ -470,37 +470,37 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/players/by-name/{name}/staff-tournaments",
+  path: "/valorant/v2/players/by-name/{name}/staff-tournaments",
   summary: "Get the tournaments a player followed as team staff, resolved by name (V2)",
   tags: ["Players"],
   request: { params: nameParams, query: paginationQuerySchema },
-  response: jsonResponseSchema(ApiPaginatedStaffTournamentsSchema, "Same as /v2/players/{id}/staff-tournaments, for the first player whose handle starts with the given string."),
+  response: jsonResponseSchema(ApiPaginatedStaffTournamentsSchema, "Same as /valorant/v2/players/{id}/staff-tournaments, for the first player whose handle starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/players/{id}/stats",
+  path: "/valorant/v2/players/{id}/stats",
   summary: "Get a player's average stats (V2)",
   tags: ["Players"],
   request: { params: idParams, query: statsFilterQuerySchema },
-  response: jsonResponseSchema(ApiAvgStatsSchema, "Same as /v1/players/{id}/stats."),
+  response: jsonResponseSchema(ApiAvgStatsSchema, "Same as /valorant/v1/players/{id}/stats."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/players/by-name/{name}/stats",
+  path: "/valorant/v2/players/by-name/{name}/stats",
   summary: "Get a player's average stats, resolved by name (V2)",
   tags: ["Players"],
   request: { params: nameParams, query: statsFilterQuerySchema },
-  response: jsonResponseSchema(ApiAvgStatsSchema, "Same as /v2/players/{id}/stats, for the first player whose handle starts with the given string."),
+  response: jsonResponseSchema(ApiAvgStatsSchema, "Same as /valorant/v2/players/{id}/stats, for the first player whose handle starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/{id}",
+  path: "/valorant/v2/tournaments/{id}",
   summary: "Get a tournament's full profile (V2)",
   tags: ["Tournaments"],
   request: { params: idParams },
@@ -510,7 +510,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/by-name/{name}",
+  path: "/valorant/v2/tournaments/by-name/{name}",
   summary: "Search tournaments by name, full profile (V2)",
   tags: ["Tournaments"],
   request: { params: nameParams },
@@ -519,7 +519,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/{id}/matches",
+  path: "/valorant/v2/tournaments/{id}/matches",
   summary: "Get a tournament's match history (V2)",
   tags: ["Tournaments"],
   request: { params: idParams, query: tournamentMatchesFilterQuerySchema },
@@ -529,17 +529,17 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/by-name/{name}/matches",
+  path: "/valorant/v2/tournaments/by-name/{name}/matches",
   summary: "Get a tournament's match history, resolved by name (V2)",
   tags: ["Tournaments"],
   request: { params: nameParams, query: tournamentMatchesFilterQuerySchema },
-  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /v2/tournaments/{id}/matches, for the first tournament whose name starts with the given string."),
+  response: jsonResponseSchema(ApiPaginatedTeamMatchesSchema, "Same as /valorant/v2/tournaments/{id}/matches, for the first tournament whose name starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/{id}/maps",
+  path: "/valorant/v2/tournaments/{id}/maps",
   summary: "Get a tournament's map pool stats (V2)",
   tags: ["Tournaments"],
   request: { params: idParams, query: tournamentScopeFilterQuerySchema },
@@ -549,17 +549,17 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/by-name/{name}/maps",
+  path: "/valorant/v2/tournaments/by-name/{name}/maps",
   summary: "Get a tournament's map pool stats, resolved by name (V2)",
   tags: ["Tournaments"],
   request: { params: nameParams, query: tournamentScopeFilterQuerySchema },
-  response: jsonResponseSchema(z.array(ApiTournamentMapEntrySchema), "Same as /v2/tournaments/{id}/maps, for the first tournament whose name starts with the given string."),
+  response: jsonResponseSchema(z.array(ApiTournamentMapEntrySchema), "Same as /valorant/v2/tournaments/{id}/maps, for the first tournament whose name starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/{id}/stats",
+  path: "/valorant/v2/tournaments/{id}/stats",
   summary: "Get a tournament's per player stats (V2)",
   tags: ["Tournaments"],
   request: { params: idParams, query: tournamentStatsFilterQuerySchema },
@@ -569,17 +569,17 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments/by-name/{name}/stats",
+  path: "/valorant/v2/tournaments/by-name/{name}/stats",
   summary: "Get a tournament's per player stats, resolved by name (V2)",
   tags: ["Tournaments"],
   request: { params: nameParams, query: tournamentStatsFilterQuerySchema },
-  response: jsonResponseSchema(z.array(ApiTournamentStatsEntrySchema), "Same as /v2/tournaments/{id}/stats, for the first tournament whose name starts with the given string."),
+  response: jsonResponseSchema(z.array(ApiTournamentStatsEntrySchema), "Same as /valorant/v2/tournaments/{id}/stats, for the first tournament whose name starts with the given string."),
   notFound: true,
 });
 
 registerRoute({
   method: "get",
-  path: "/v2/organization/{id}",
+  path: "/valorant/v2/organization/{id}",
   summary: "Get an organization's full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Organizations"],
@@ -590,7 +590,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/organization/by-name/{name}",
+  path: "/valorant/v2/organization/by-name/{name}",
   summary: "Search organizations by name, full profile (V2)",
   description: RATELIMIT_COST_10,
   tags: ["Organizations"],
@@ -600,7 +600,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/vods",
+  path: "/valorant/v2/vods",
   summary: "List VODs (V2)",
   tags: ["VODs"],
   request: { query: vodsFilterQuerySchema },
@@ -609,7 +609,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/news",
+  path: "/valorant/v2/news",
   summary: "List published news articles (V2)",
   tags: ["News"],
   request: { query: newsFilterQuerySchema },
@@ -618,7 +618,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/matches",
+  path: "/valorant/v2/matches",
   summary: "List matches (V2)",
   tags: ["Matches"],
   request: { query: matchesFilterQuerySchema },
@@ -627,7 +627,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/teams",
+  path: "/valorant/v2/teams",
   summary: "List teams (V2)",
   tags: ["Teams"],
   request: { query: teamsListFilterQuerySchema },
@@ -636,7 +636,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/players",
+  path: "/valorant/v2/players",
   summary: "List players (V2)",
   tags: ["Players"],
   request: { query: playersListFilterQuerySchema },
@@ -645,7 +645,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/tournaments",
+  path: "/valorant/v2/tournaments",
   summary: "List tournaments (V2)",
   tags: ["Tournaments"],
   request: { query: tournamentsListFilterQuerySchema },
@@ -654,7 +654,7 @@ registerRoute({
 
 registerRoute({
   method: "get",
-  path: "/v2/search",
+  path: "/valorant/v2/search",
   summary: "Search teams, players, tournaments and organizations (V2)",
   tags: ["Search"],
   request: { query: searchFilterQuerySchema },

@@ -3343,7 +3343,7 @@
     "parameters": {}
   },
   "paths": {
-    "/v1/players/by-name/{name}": {
+    "/valorant/v1/players/by-name/{name}": {
       "get": {
         "summary": "Search players by handle (V1)",
         "tags": [
@@ -3414,7 +3414,7 @@
         }
       }
     },
-    "/v1/players/{id}": {
+    "/valorant/v1/players/{id}": {
       "get": {
         "summary": "Get a player by id (V1)",
         "tags": [
@@ -3493,7 +3493,7 @@
         }
       }
     },
-    "/v1/players/{id}/teams": {
+    "/valorant/v1/players/{id}/teams": {
       "get": {
         "summary": "Get a player's team history (V1)",
         "tags": [
@@ -3575,7 +3575,7 @@
         }
       }
     },
-    "/v1/players/{id}/photos": {
+    "/valorant/v1/players/{id}/photos": {
       "get": {
         "summary": "Get a player's photo history (V1)",
         "tags": [
@@ -3644,7 +3644,7 @@
         }
       }
     },
-    "/v1/players/{id}/stats": {
+    "/valorant/v1/players/{id}/stats": {
       "get": {
         "summary": "Get a player's average stats (V1)",
         "tags": [
@@ -3768,7 +3768,7 @@
         }
       }
     },
-    "/v1/players/{id}/agents": {
+    "/valorant/v1/players/{id}/agents": {
       "get": {
         "summary": "Get a player's per agent stats (V1)",
         "tags": [
@@ -3885,7 +3885,7 @@
         }
       }
     },
-    "/v1/players/{id}/weapons": {
+    "/valorant/v1/players/{id}/weapons": {
       "get": {
         "summary": "Get a player's weapon stats (V1)",
         "tags": [
@@ -4002,7 +4002,7 @@
         }
       }
     },
-    "/v1/teams/by-name/{name}": {
+    "/valorant/v1/teams/by-name/{name}": {
       "get": {
         "summary": "Search teams by name (V1)",
         "tags": [
@@ -4073,7 +4073,7 @@
         }
       }
     },
-    "/v1/teams/{id}": {
+    "/valorant/v1/teams/{id}": {
       "get": {
         "summary": "Get a team by id (V1)",
         "tags": [
@@ -4152,7 +4152,7 @@
         }
       }
     },
-    "/v1/teams/{id}/players": {
+    "/valorant/v1/teams/{id}/players": {
       "get": {
         "summary": "Get a team's roster (V1)",
         "tags": [
@@ -4231,7 +4231,7 @@
         }
       }
     },
-    "/v1/teams/{id}/logos": {
+    "/valorant/v1/teams/{id}/logos": {
       "get": {
         "summary": "Get a team's logo history (V1)",
         "tags": [
@@ -4300,7 +4300,7 @@
         }
       }
     },
-    "/v1/teams/{id}/vetos": {
+    "/valorant/v1/teams/{id}/vetos": {
       "get": {
         "summary": "Get a team's map veto stats (V1)",
         "tags": [
@@ -4417,7 +4417,7 @@
         }
       }
     },
-    "/v1/teams/{id}/maps": {
+    "/valorant/v1/teams/{id}/maps": {
       "get": {
         "summary": "Get a team's map stats (V1)",
         "tags": [
@@ -4534,7 +4534,7 @@
         }
       }
     },
-    "/v1/teams/{id}/weapons": {
+    "/valorant/v1/teams/{id}/weapons": {
       "get": {
         "summary": "Get a team's weapon stats (V1)",
         "tags": [
@@ -4651,7 +4651,7 @@
         }
       }
     },
-    "/v1/teams/{id}/stats": {
+    "/valorant/v1/teams/{id}/stats": {
       "get": {
         "summary": "Get a team's average stats (V1)",
         "tags": [
@@ -4775,7 +4775,7 @@
         }
       }
     },
-    "/v1/teams/{id}/matches": {
+    "/valorant/v1/teams/{id}/matches": {
       "get": {
         "summary": "Get a team's match history (V1)",
         "tags": [
@@ -4948,7 +4948,7 @@
         }
       }
     },
-    "/v1/tournaments/by-name/{name}": {
+    "/valorant/v1/tournaments/by-name/{name}": {
       "get": {
         "summary": "Search tournaments by name (V1)",
         "tags": [
@@ -5019,7 +5019,7 @@
         }
       }
     },
-    "/v1/tournaments/{id}": {
+    "/valorant/v1/tournaments/{id}": {
       "get": {
         "summary": "Get a tournament by id (V1)",
         "tags": [
@@ -5098,7 +5098,7 @@
         }
       }
     },
-    "/v1/tournaments/{id}/logos": {
+    "/valorant/v1/tournaments/{id}/logos": {
       "get": {
         "summary": "Get a tournament's logo history (V1)",
         "tags": [
@@ -5167,7 +5167,7 @@
         }
       }
     },
-    "/v1/matches/{id}": {
+    "/valorant/v1/matches/{id}": {
       "get": {
         "summary": "Get a match by id (V1)",
         "tags": [
@@ -5246,7 +5246,7 @@
         }
       }
     },
-    "/v2/matches/{id}": {
+    "/valorant/v2/matches/{id}": {
       "get": {
         "summary": "Get a match's full stats (V2)",
         "tags": [
@@ -5325,7 +5325,7 @@
         }
       }
     },
-    "/v3/matches/{id}": {
+    "/valorant/v3/matches/{id}": {
       "get": {
         "summary": "Get a match's full stats, encounters, radar chart widget link and pick'em votes (V3)",
         "tags": [
@@ -5404,7 +5404,7 @@
         }
       }
     },
-    "/v1/map/{id}": {
+    "/valorant/v1/map/{id}": {
       "get": {
         "summary": "Get a map by id (V1)",
         "tags": [
@@ -5483,7 +5483,7 @@
         }
       }
     },
-    "/v1/map/{id}/rounds": {
+    "/valorant/v1/map/{id}/rounds": {
       "get": {
         "summary": "Get a map's round by round breakdown (V1)",
         "tags": [
@@ -5565,7 +5565,7 @@
         }
       }
     },
-    "/v2/teams/{id}": {
+    "/valorant/v2/teams/{id}": {
       "get": {
         "summary": "Get a team's full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -5645,7 +5645,7 @@
         }
       }
     },
-    "/v2/teams/by-name/{name}": {
+    "/valorant/v2/teams/by-name/{name}": {
       "get": {
         "summary": "Search teams by name, full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -5717,7 +5717,7 @@
         }
       }
     },
-    "/v2/teams/{id}/matches": {
+    "/valorant/v2/teams/{id}/matches": {
       "get": {
         "summary": "Get a team's match history (V2)",
         "tags": [
@@ -5848,7 +5848,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v1/teams/{id}/matches, with an added round_name filter.",
+            "description": "Same as /valorant/v1/teams/{id}/matches, with an added round_name filter.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5900,7 +5900,7 @@
         }
       }
     },
-    "/v2/teams/by-name/{name}/matches": {
+    "/valorant/v2/teams/by-name/{name}/matches": {
       "get": {
         "summary": "Get a team's match history, resolved by name (V2)",
         "tags": [
@@ -6030,7 +6030,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/teams/{id}/matches, for the first team whose name or short name starts with the given string.",
+            "description": "Same as /valorant/v2/teams/{id}/matches, for the first team whose name or short name starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6082,7 +6082,7 @@
         }
       }
     },
-    "/v2/teams/{id}/maps": {
+    "/valorant/v2/teams/{id}/maps": {
       "get": {
         "summary": "Get a team's map stats (V2)",
         "tags": [
@@ -6165,7 +6165,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v1/teams/{id}/maps, with added round_name and phase_id filters.",
+            "description": "Same as /valorant/v1/teams/{id}/maps, with added round_name and phase_id filters.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6220,7 +6220,7 @@
         }
       }
     },
-    "/v2/teams/by-name/{name}/maps": {
+    "/valorant/v2/teams/by-name/{name}/maps": {
       "get": {
         "summary": "Get a team's map stats, resolved by name (V2)",
         "tags": [
@@ -6302,7 +6302,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/teams/{id}/maps, for the first team whose name or short name starts with the given string.",
+            "description": "Same as /valorant/v2/teams/{id}/maps, for the first team whose name or short name starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6357,7 +6357,7 @@
         }
       }
     },
-    "/v2/players/{id}": {
+    "/valorant/v2/players/{id}": {
       "get": {
         "summary": "Get a player's full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -6437,7 +6437,7 @@
         }
       }
     },
-    "/v2/players/by-name/{name}": {
+    "/valorant/v2/players/by-name/{name}": {
       "get": {
         "summary": "Search players by handle, full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -6509,7 +6509,7 @@
         }
       }
     },
-    "/v2/players/{id}/matches": {
+    "/valorant/v2/players/{id}/matches": {
       "get": {
         "summary": "Get a player's match history (V2)",
         "tags": [
@@ -6692,7 +6692,7 @@
         }
       }
     },
-    "/v2/players/by-name/{name}/matches": {
+    "/valorant/v2/players/by-name/{name}/matches": {
       "get": {
         "summary": "Get a player's match history, resolved by name (V2)",
         "tags": [
@@ -6822,7 +6822,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/players/{id}/matches, for the first player whose handle starts with the given string.",
+            "description": "Same as /valorant/v2/players/{id}/matches, for the first player whose handle starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6874,7 +6874,7 @@
         }
       }
     },
-    "/v2/players/{id}/staff-tournaments": {
+    "/valorant/v2/players/{id}/staff-tournaments": {
       "get": {
         "summary": "Get the tournaments a player followed as team staff (V2)",
         "tags": [
@@ -6977,7 +6977,7 @@
         }
       }
     },
-    "/v2/players/by-name/{name}/staff-tournaments": {
+    "/valorant/v2/players/by-name/{name}/staff-tournaments": {
       "get": {
         "summary": "Get the tournaments a player followed as team staff, resolved by name (V2)",
         "tags": [
@@ -7027,7 +7027,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/players/{id}/staff-tournaments, for the first player whose handle starts with the given string.",
+            "description": "Same as /valorant/v2/players/{id}/staff-tournaments, for the first player whose handle starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7079,7 +7079,7 @@
         }
       }
     },
-    "/v2/players/{id}/stats": {
+    "/valorant/v2/players/{id}/stats": {
       "get": {
         "summary": "Get a player's average stats (V2)",
         "tags": [
@@ -7151,7 +7151,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v1/players/{id}/stats.",
+            "description": "Same as /valorant/v1/players/{id}/stats.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7203,7 +7203,7 @@
         }
       }
     },
-    "/v2/players/by-name/{name}/stats": {
+    "/valorant/v2/players/by-name/{name}/stats": {
       "get": {
         "summary": "Get a player's average stats, resolved by name (V2)",
         "tags": [
@@ -7274,7 +7274,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/players/{id}/stats, for the first player whose handle starts with the given string.",
+            "description": "Same as /valorant/v2/players/{id}/stats, for the first player whose handle starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7326,7 +7326,7 @@
         }
       }
     },
-    "/v2/tournaments/{id}": {
+    "/valorant/v2/tournaments/{id}": {
       "get": {
         "summary": "Get a tournament's full profile (V2)",
         "tags": [
@@ -7405,7 +7405,7 @@
         }
       }
     },
-    "/v2/tournaments/by-name/{name}": {
+    "/valorant/v2/tournaments/by-name/{name}": {
       "get": {
         "summary": "Search tournaments by name, full profile (V2)",
         "tags": [
@@ -7476,7 +7476,7 @@
         }
       }
     },
-    "/v2/tournaments/{id}/matches": {
+    "/valorant/v2/tournaments/{id}/matches": {
       "get": {
         "summary": "Get a tournament's match history (V2)",
         "tags": [
@@ -7648,7 +7648,7 @@
         }
       }
     },
-    "/v2/tournaments/by-name/{name}/matches": {
+    "/valorant/v2/tournaments/by-name/{name}/matches": {
       "get": {
         "summary": "Get a tournament's match history, resolved by name (V2)",
         "tags": [
@@ -7767,7 +7767,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/tournaments/{id}/matches, for the first tournament whose name starts with the given string.",
+            "description": "Same as /valorant/v2/tournaments/{id}/matches, for the first tournament whose name starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7819,7 +7819,7 @@
         }
       }
     },
-    "/v2/tournaments/{id}/maps": {
+    "/valorant/v2/tournaments/{id}/maps": {
       "get": {
         "summary": "Get a tournament's map pool stats (V2)",
         "tags": [
@@ -7957,7 +7957,7 @@
         }
       }
     },
-    "/v2/tournaments/by-name/{name}/maps": {
+    "/valorant/v2/tournaments/by-name/{name}/maps": {
       "get": {
         "summary": "Get a tournament's map pool stats, resolved by name (V2)",
         "tags": [
@@ -8039,7 +8039,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/tournaments/{id}/maps, for the first tournament whose name starts with the given string.",
+            "description": "Same as /valorant/v2/tournaments/{id}/maps, for the first tournament whose name starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -8094,7 +8094,7 @@
         }
       }
     },
-    "/v2/tournaments/{id}/stats": {
+    "/valorant/v2/tournaments/{id}/stats": {
       "get": {
         "summary": "Get a tournament's per player stats (V2)",
         "tags": [
@@ -8262,7 +8262,7 @@
         }
       }
     },
-    "/v2/tournaments/by-name/{name}/stats": {
+    "/valorant/v2/tournaments/by-name/{name}/stats": {
       "get": {
         "summary": "Get a tournament's per player stats, resolved by name (V2)",
         "tags": [
@@ -8374,7 +8374,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Same as /v2/tournaments/{id}/stats, for the first tournament whose name starts with the given string.",
+            "description": "Same as /valorant/v2/tournaments/{id}/stats, for the first tournament whose name starts with the given string.",
             "content": {
               "application/json": {
                 "schema": {
@@ -8429,7 +8429,7 @@
         }
       }
     },
-    "/v2/organization/{id}": {
+    "/valorant/v2/organization/{id}": {
       "get": {
         "summary": "Get an organization's full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -8509,7 +8509,7 @@
         }
       }
     },
-    "/v2/organization/by-name/{name}": {
+    "/valorant/v2/organization/by-name/{name}": {
       "get": {
         "summary": "Search organizations by name, full profile (V2)",
         "description": "Ratelimit cost: 10 per call (bundles achievements, roster, last matches and press in one response).",
@@ -8581,7 +8581,7 @@
         }
       }
     },
-    "/v2/vods": {
+    "/valorant/v2/vods": {
       "get": {
         "summary": "List VODs (V2)",
         "tags": [
@@ -8740,7 +8740,7 @@
         }
       }
     },
-    "/v2/news": {
+    "/valorant/v2/news": {
       "get": {
         "summary": "List published news articles (V2)",
         "tags": [
@@ -8899,7 +8899,7 @@
         }
       }
     },
-    "/v2/matches": {
+    "/valorant/v2/matches": {
       "get": {
         "summary": "List matches (V2)",
         "tags": [
@@ -9060,7 +9060,7 @@
         }
       }
     },
-    "/v2/teams": {
+    "/valorant/v2/teams": {
       "get": {
         "summary": "List teams (V2)",
         "tags": [
@@ -9187,7 +9187,7 @@
         }
       }
     },
-    "/v2/players": {
+    "/valorant/v2/players": {
       "get": {
         "summary": "List players (V2)",
         "tags": [
@@ -9314,7 +9314,7 @@
         }
       }
     },
-    "/v2/tournaments": {
+    "/valorant/v2/tournaments": {
       "get": {
         "summary": "List tournaments (V2)",
         "tags": [
@@ -9464,7 +9464,7 @@
         }
       }
     },
-    "/v2/search": {
+    "/valorant/v2/search": {
       "get": {
         "summary": "Search teams, players, tournaments and organizations (V2)",
         "tags": [

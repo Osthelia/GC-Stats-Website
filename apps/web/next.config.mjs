@@ -71,6 +71,10 @@ const nextConfig = {
         { "@cf-wasm/photon/workerd": "./stubs/photon-stub.js", "@cf-wasm/photon": "./stubs/photon-stub.js" },
   },
   allowedDevOrigins: ["localhost", "127.0.0.1"],
+  // Old endpoint kept temporarly
+  async rewrites() {
+    return [{ source: "/api/:version(v\\d+)/:path*", destination: "/api/valorant/:version/:path*" }];
+  },
   async headers() {
     return [
       {
