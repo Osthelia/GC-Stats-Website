@@ -37,7 +37,13 @@ export function liquipediaPageUrl(title: string): string {
 }
 
 function clean(value: string | undefined): string {
-  return (value ?? "").replace(/<!--[\s\S]*?-->/g, "").trim();
+  let sanitized = value ?? "";
+  let previous: string;
+  do {
+    previous = sanitized;
+    sanitized = sanitized.replace(/<!--[\s\S]*?-->/g, "");
+  } while (sanitized !== previous);
+  return sanitized.trim();
 }
 
 /** Account handle from a bare handle or a pasted profile URL. */
