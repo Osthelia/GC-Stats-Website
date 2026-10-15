@@ -17,25 +17,37 @@ const MAX_BYTES = 5 * 1024 * 1024;
 // The bucket serves everything as octet-stream, so the type comes from the extension.
 const IMAGE_TYPES: Record<string, string> = { webp: "image/webp", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", svg: "image/svg+xml" };
 
-export async function GET(request: Request) {
-  const base = process.env.S3_PUBLIC_URL?.replace(/\/+$/, "");
-  const target = new URL(request.url).searchParams.get("u");
-  if (!base || !target || !target.startsWith(`${base}/`)) return NextResponse.json({ error: "Forbidden asset" }, { status: 403 });
+function parseUrl(value: string | null | undefined): URL | null {
+  try {
+    return value ? new URL(value) : null;
+  } catch {
+    return null;
+  }
+}
 
-  // Rejects "..": a prefix check alone would let the path climb out of the bucket.
-  if (new URL(target).pathname.split("/").includes("..")) return NextResponse.json({ error: "Forbidden asset" }, { status: 403 });
+// Compares parsed URLs: the pathname is already normalized, so ".." cannot climb out of the bucket.
+function isInBucket(url: URL, bucket: URL): boolean {
+  const bucketPath = `${bucket.pathname.replace(/\/+$/, "")}/`;
+  return url.origin === bucket.origin && url.pathname.startsWith(bucketPath);
+}
+
+export async function GET(request: Request) {
+  const bucket = parseUrl(process.env.S3_PUBLIC_URL);
+  const target = parseUrl(new URL(request.url).searchParams.get("u"));
+  if (!bucket || !target || !isInBucket(target, bucket)) return NextResponse.json({ error: "Forbidden asset" }, { status: 403 });
 
   // Redirects are followed (a CDN may add one), but only a response still on the bucket is relayed.
-  const upstream = await fetch(target, { headers: { "User-Agent": "GCStats-PosterAsset", Accept: "image/*" } }).catch((error) => {
-    console.warn("[poster-asset] Fetch failed", target, error);
+  const upstream = await fetch(target.href, { headers: { "User-Agent": "GCStats-PosterAsset", Accept: "image/*" } }).catch((error) => {
+    console.warn("[poster-asset] Fetch failed", target.href, error);
     return null;
   });
-  if (!upstream?.ok || !upstream.url.startsWith(`${base}/`)) {
-    console.warn("[poster-asset] Upstream refused", target, upstream?.status, upstream?.url);
+  const upstreamUrl = parseUrl(upstream?.url);
+  if (!upstream?.ok || !upstreamUrl || !isInBucket(upstreamUrl, bucket)) {
+    console.warn("[poster-asset] Upstream refused", target.href, upstream?.status, upstream?.url);
     return NextResponse.json({ error: "Asset unavailable", upstreamStatus: upstream?.status ?? null }, { status: 502 });
   }
 
-  const type = IMAGE_TYPES[new URL(target).pathname.split(".").pop()?.toLowerCase() ?? ""];
+  const type = IMAGE_TYPES[target.pathname.split(".").pop()?.toLowerCase() ?? ""];
   if (!type) return NextResponse.json({ error: "Not an image" }, { status: 415 });
 
   const body = await upstream.arrayBuffer();
