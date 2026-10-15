@@ -37,7 +37,7 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
     query.set("month", targetMonth);
     return `/calendar?${query}`;
   }, [searchParams]);
-  const todayMonth = new Intl.DateTimeFormat(locale, {
+  const todayMonth = new Intl.DateTimeFormat("sv-SE", {
     timeZone: timezone,
     year: "numeric",
     month: "2-digit",
