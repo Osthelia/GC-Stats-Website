@@ -145,7 +145,7 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
           // Node and browsers can use different whitespace around date-range separators.
           return (view === "week" && end ? formatter.formatRange(start, end) : formatter.format(start)).replace(/\s+/g, " ");
         }}
-        contentHeight={view === "week" ? 400 : 1140}
+        contentHeight={view === "week" ? 400 : 1370}
         expandRows={true}
         fixedWeekCount={false}
         dayMaxEvents={true}
