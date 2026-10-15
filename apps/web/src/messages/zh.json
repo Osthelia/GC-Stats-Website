@@ -6457,6 +6457,8 @@
     "calendarCopied": "链接已复制"
   },
   "calendar": {
+    "showEvents": "事件",
+    "both": "两者",
     "filterTeamLabel": "队伍",
     "allTeams": "所有队伍",
     "searchTeams": "搜索队伍…",

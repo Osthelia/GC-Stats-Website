@@ -6581,6 +6581,8 @@
     "calendarCopied": "Enlace copiado"
   },
   "calendar": {
+    "showEvents": "Eventos",
+    "both": "Ambos",
     "filterTeamLabel": "Equipo",
     "allTeams": "Todos los equipos",
     "searchTeams": "Buscar equipos…",

@@ -6457,6 +6457,8 @@
     "calendarCopied": "링크가 복사되었습니다"
   },
   "calendar": {
+    "showEvents": "이벤트",
+    "both": "모두",
     "filterTeamLabel": "팀",
     "allTeams": "모든 팀",
     "searchTeams": "팀 검색…",

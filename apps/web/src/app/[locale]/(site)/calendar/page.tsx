@@ -13,7 +13,10 @@ export default async function CalendarPage({
   const params = await searchParams;
   const t = await getTranslations("tournamentsPage");
   const calendarT = await getTranslations("calendar");
+  const navT = await getTranslations("nav");
   const raw = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value) ?? "";
+  const requestedShow = raw(params.show);
+  const show = requestedShow === "matches" || requestedShow === "tournaments" ? requestedShow : "";
   const filters: CalendarFilters = {
     region: raw(params.region),
     category: raw(params.category),
@@ -31,13 +34,14 @@ export default async function CalendarPage({
     filters.teamId === undefined ? null : getCalendarTeam(filters.teamId),
   ]);
   // Deduplicate events across months.
-  const events = [...new Map(monthsEvents.flat().map((event) => [event.id, event])).values()];
+  const events = [...new Map(monthsEvents.flat().map((event) => [event.id, event])).values()]
+    .filter((event) => !show || event.allDay === (show === "tournaments"));
   const { region, category } = filters;
   const { regions, categories } = facets;
-  const buildHref = (overrides: Partial<Pick<CalendarFilters, "region" | "category">>) => {
+  const buildHref = (overrides: Partial<Pick<CalendarFilters, "region" | "category"> & { show: string }>) => {
     const query = new URLSearchParams({ month });
     if (filters.teamId !== undefined) query.set("team", String(filters.teamId));
-    for (const [key, value] of Object.entries({ region, category, ...overrides })) {
+    for (const [key, value] of Object.entries({ region, category, show, ...overrides })) {
       if (value) query.set(key, value);
     }
     return `/calendar?${query}`;
@@ -48,13 +52,30 @@ export default async function CalendarPage({
       <FilterBar
         mobileToggle={{
           label: t("filtersToggle"),
-          activeCount: [region, category, filters.teamId].filter(Boolean).length,
+          activeCount: [region, category, filters.teamId, show].filter(Boolean).length,
         }}
       >
         <FilterBarRow label={calendarT("filterTeamLabel")}>
           <CalendarTeamFilter selectedTeam={filters.teamId === undefined ? null : (
             selectedTeam ?? { id: filters.teamId, name: calendarT("teamUnavailable") }
           )} />
+        </FilterBarRow>
+        <FilterBarRow label={calendarT("showEvents")}>
+          <FilterPill
+            href={buildHref({ show: "" })}
+            active={!show}
+            label={calendarT("both")}
+          />
+          <FilterPill
+            href={buildHref({ show: "tournaments" })}
+            active={show === "tournaments"}
+            label={navT("tournaments")}
+          />
+          <FilterPill
+            href={buildHref({ show: "matches" })}
+            active={show === "matches"}
+            label={navT("matches")}
+          />
         </FilterBarRow>
         <FilterBarRow label={t("filterRegionLabel")}>
           <FilterPill

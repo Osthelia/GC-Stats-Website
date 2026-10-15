@@ -6457,6 +6457,8 @@
     "calendarCopied": "Bağlantı kopyalandı"
   },
   "calendar": {
+    "showEvents": "Etkinlikler",
+    "both": "İkisi de",
     "filterTeamLabel": "Takım",
     "allTeams": "Tüm takımlar",
     "searchTeams": "Takım ara…",

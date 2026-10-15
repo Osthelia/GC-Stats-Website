@@ -6457,6 +6457,8 @@
     "calendarCopied": "Link skopiowany"
   },
   "calendar": {
+    "showEvents": "Wydarzenia",
+    "both": "Oba",
     "filterTeamLabel": "Drużyna",
     "allTeams": "Wszystkie drużyny",
     "searchTeams": "Szukaj drużyn…",
