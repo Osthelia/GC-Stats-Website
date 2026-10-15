@@ -18,14 +18,14 @@ import { useSiteSettings } from "@/lib/site-settings";
 import type { CalendarEvent } from "@/lib/calendar-data";
 import { useRouter } from "@/i18n/navigation";
 
-type MatchCalendarProps = {
+type EventCalendarProps = {
   month: string;
   previousMonth: string;
   nextMonth: string;
   events: CalendarEvent[];
 };
 
-export default function MatchCalendar({ month, previousMonth, nextMonth, events }: MatchCalendarProps) {
+export default function EventCalendar({ month, previousMonth, nextMonth, events }: EventCalendarProps) {
   const { theme, timezone, clock24 } = useSiteSettings();
   const router = useRouter();
   const locale = useLocale();

@@ -1,4 +1,4 @@
-import MatchCalendar from "@/components/calendar/match-calendar";
+import EventCalendar from "@/components/calendar/event-calendar";
 import { getCalendarMonth, getCalendarTournamentFacets, isCalendarMonth, offsetCalendarMonth, type CalendarFilters } from "@/lib/calendar-data";
 import { getTranslations } from "next-intl/server";
 import { FilterPill } from "@/components/filters/filter-pill";
@@ -78,7 +78,7 @@ export default async function CalendarPage({
           ))}
         </FilterBarRow>
       </FilterBar>
-      <MatchCalendar month={month} previousMonth={previousMonth} nextMonth={nextMonth} events={events} />
+      <EventCalendar month={month} previousMonth={previousMonth} nextMonth={nextMonth} events={events} />
     </div>
   );
 }
