@@ -89,7 +89,7 @@ export const getCalendarMonth = unstable_cache(async (month: string, filters: Ca
       .leftJoin(entrantB, eq(entrantB.id, matches.entrantBId))
       .leftJoin(teamA, eq(teamA.id, entrantA.teamId))
       .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
-      .where(and(gte(matches.scheduledAt, start), lt(matches.scheduledAt, end), tournamentFilters))
+      .where(and(gte(matches.scheduledAt, start), lt(matches.scheduledAt, end), eq(stages.active, true), tournamentFilters))
       .orderBy(asc(matches.scheduledAt), asc(matches.id)),
     db.select({ id: tournaments.id, name: tournaments.name, start: tournaments.startDate, end: tournaments.endDate, region: tournaments.region })
       .from(tournaments)

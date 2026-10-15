@@ -77,6 +77,7 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
         const needLightText = event.extendedProps.region === "INT" || event.extendedProps.region === "CN";
         return {
           ...event,
+          // set the same color regardless of the theme since the var changes with dark/light mode
           contrastColor: theme === "dark" ? 
             (needLightText ? "var(--color-neutral-200)" : "var(--color-neutral-900)") 
             : !needLightText ? "var(--color-neutral-200)" : "var(--color-neutral-900)",
