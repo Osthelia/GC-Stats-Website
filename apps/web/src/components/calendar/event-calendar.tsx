@@ -129,7 +129,7 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
         datesSet={handleDatesSet}
         headerToolbar={false}
         locales={allLocales}
-        locale={locale}
+        locale={locale === "zh" ? "zh-cn" : locale}
         colorScheme={theme}
         timeZone={timezone}
         plugins={[themePlugin, dayGridPlugin]}
