@@ -62,7 +62,7 @@ export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffe
   try {
     encoded = await encodePair(buffer);
   } catch (error) {
-    console.error(`[logos] webp conversion failed (${entityType})`, error);
+    console.error("[logos] webp conversion failed (%s)", entityType, error);
     return { ok: false, error: "processingFailed" };
   }
 
@@ -71,7 +71,7 @@ export async function tryStoreLogoPair(entityType: LogoEntityType, buffer: Buffe
   try {
     await Promise.all([putObject(fullKey, encoded.full, "image/webp"), putObject(thumbKey, encoded.thumb, "image/webp")]);
   } catch (error) {
-    console.error(`[logos] storage upload failed (${entityType})`, error);
+    console.error("[logos] storage upload failed (%s)", entityType, error);
     await deleteObjects([fullKey, thumbKey]).catch(() => {});
     return { ok: false, error: "storageFailed" };
   }
@@ -85,7 +85,7 @@ export async function tryReplaceLogoFiles(entityType: LogoEntityType, id: string
   try {
     encoded = await encodePair(buffer);
   } catch (error) {
-    console.error(`[logos] webp conversion failed (${entityType})`, error);
+    console.error("[logos] webp conversion failed (%s)", entityType, error);
     return { ok: false, error: "processingFailed" };
   }
   try {
@@ -94,7 +94,7 @@ export async function tryReplaceLogoFiles(entityType: LogoEntityType, id: string
       putObject(logoKey(entityType, id, "200x200"), encoded.thumb, "image/webp"),
     ]);
   } catch (error) {
-    console.error(`[logos] storage upload failed (${entityType})`, error);
+    console.error("[logos] storage upload failed (%s)", entityType, error);
     return { ok: false, error: "storageFailed" };
   }
   return { ok: true };
