@@ -47,9 +47,13 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
   const periodHref = useCallback((targetDate: string, targetView = view) => {
     const query = new URLSearchParams(searchParams.toString());
     query.set("month", targetDate.slice(0, 7));
-    query.set("date", targetDate);
-    if (targetView === "week") query.set("view", "week");
-    else query.delete("view");
+    if (targetView === "week") {
+      query.set("date", targetDate);
+      query.set("view", "week");
+    } else {
+      query.delete("date");
+      query.delete("view");
+    }
     return `/calendar?${query}`;
   }, [searchParams, view]);
   const today = new Intl.DateTimeFormat("sv-SE", {
