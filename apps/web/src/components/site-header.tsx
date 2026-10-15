@@ -27,11 +27,12 @@ import { defaultNewsLanguages } from "@/lib/news-languages-default";
 import { stripAccents } from "@/lib/search-typo";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
 
-const NAV_ITEMS = ["matches", "tournaments"] as const;
+const NAV_ITEMS = ["matches", "tournaments", "calendar"] as const;
 
 const NAV_HREFS: Record<(typeof NAV_ITEMS)[number], string> = {
   matches: "/match",
   tournaments: "/tournaments",
+  calendar: "/calendar",
 };
 
 export function SiteHeader({
