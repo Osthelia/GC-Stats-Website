@@ -49,7 +49,7 @@ export type CalendarEvent = {
   end?: string;
   allDay: boolean;
   color: string;
-  extendedProps: { href: string };
+  extendedProps: { href: string, region?: string };
 };
 
 export function isCalendarMonth(value: string): boolean {
@@ -102,9 +102,7 @@ export const getCalendarMonth = unstable_cache(async (month: string, filters: Ca
     ...tournamentRows.map((tournament) => {
       const exclusiveEnd = new Date(`${tournament.end}T00:00:00Z`);
       exclusiveEnd.setUTCDate(exclusiveEnd.getUTCDate() + 1);
-      
       const regionMeta = REGIONS[normalizeRegion(tournament.region)];
-      const contrastColor = regionMeta.short === "INT" || regionMeta.short === "CN" ? "var(--color-neutral-200)" : "var(--color-neutral-900)"
 
       return {
         id: `tournament-${tournament.id}`,
@@ -114,8 +112,7 @@ export const getCalendarMonth = unstable_cache(async (month: string, filters: Ca
         end: exclusiveEnd.toISOString().slice(0, 10),
         allDay: true,
         color: regionMeta.color,
-        contrastColor,
-        extendedProps: { href: `/tournaments/${tournament.id}/${slugify(tournament.name, "tournament")}` },
+        extendedProps: { href: `/tournaments/${tournament.id}/${slugify(tournament.name, "tournament")}`, region: regionMeta.short },
       };
     }),
     ...matchRows.map((match) => ({

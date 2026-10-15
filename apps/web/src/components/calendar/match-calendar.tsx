@@ -71,7 +71,17 @@ export default function MatchCalendar({ month, previousMonth, nextMonth, events 
         minute: "2-digit",
         hour12: !clock24,
       }}
-      events={events}
+      events={events.map((event) => {
+        // skip match events
+        if (!event.allDay) return event
+        const needLightText = event.extendedProps.region === "INT" || event.extendedProps.region === "CN";
+        return {
+          ...event,
+          contrastColor: theme === "dark" ? 
+            (needLightText ? "var(--color-neutral-200)" : "var(--color-neutral-900)") 
+            : !needLightText ? "var(--color-neutral-200)" : "var(--color-neutral-900)",
+        }
+      })}
       eventClass="cursor-pointer"
       eventClick={(info) => {
         info.jsEvent.preventDefault();
