@@ -120,7 +120,7 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
         events={events.map((event) => {
           // skip match events
           if (!event.allDay) return event
-          const needLightText = event.extendedProps.region === "INT" || event.extendedProps.region === "CN";
+          const needLightText = event.extendedProps.region === "INT";
           return {
             ...event,
             // set the same color regardless of the theme since the var changes with dark/light mode
