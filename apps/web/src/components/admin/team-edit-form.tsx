@@ -23,6 +23,7 @@ import { TagsInput } from "@/components/admin/tags-input";
 import { updateTeamProfile, type TeamProfileFieldErrors } from "@/actions/admin-teams";
 import type { AdminTeamProfile } from "@/lib/admin-teams";
 import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord", "website"] as const;
 
@@ -109,9 +110,11 @@ export function TeamEditForm({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <FormField label={t("fieldVlrId")} htmlFor="team-vlr-id" error={err("vlrId")}>
-                  <Input id="team-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} />
-                </FormField>
+                {gameHasVlr(game) && (
+                  <FormField label={t("fieldVlrId")} htmlFor="team-vlr-id" error={err("vlrId")}>
+                    <Input id="team-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} />
+                  </FormField>
+                )}
                 <FormField label={t("fieldLiquipedia")} htmlFor="team-liquipedia" error={err("liquipediaLink")}>
                   <Input id="team-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
                 </FormField>

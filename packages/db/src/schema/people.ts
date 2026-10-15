@@ -1,18 +1,36 @@
 /**
  * GC-Stats — people module
  *
- * Organizations and their access/roles/permissions tables, and logos. Teams,
- * people, rosters and production credits exist once per game, see
- * game-tables.ts.
+ * The shared identity of a person, organizations and their access/roles/permissions
+ * tables, and logos. Teams, person profiles, rosters and production credits exist
+ * once per game, see game-tables.ts.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, bigserial, bigint, text, jsonb, boolean, char, uuid, unique, index } from "drizzle-orm/pg-core";
+import { pgTable, bigserial, bigint, text, jsonb, boolean, char, uuid, unique, index, smallint, date } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { tstzrange } from "./custom-types";
 import { users } from "./auth";
+
+// One identity per person, shared by every game. What only concerns a game (active/ghost flags,
+// Liquipedia page, Riot ids) lives in that game's `*_person_profiles`, see game-tables.ts.
+export const sharedPeople = pgTable("people", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  handle: text("handle").notNull(),
+  aliases: jsonb("aliases"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  countryCode: char("country_code", { length: 3 }),
+  secondaryCountryCode: char("secondary_country_code", { length: 3 }),
+  pronouns: smallint("pronouns"),
+  birthDate: date("birth_date"),
+  bio: text("bio"),
+  socials: jsonb("socials").notNull().default({}),
+  userId: text("user_id").unique().references(() => users.id, { onDelete: "set null" }),
+}, (t) => [index("people_handle_lower_idx").on(sql`lower(${t.handle})`)]);
 
 export const organizations = pgTable("organizations", {
   id: bigserial("id", { mode: "number" }).primaryKey(),

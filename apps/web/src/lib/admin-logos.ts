@@ -19,25 +19,26 @@ import type { GameSlug } from "@gc-stats/db/game";
 
 export type LogoEntityType = "team" | "person" | "organization" | "news-author" | "tournament";
 
-/** Entity types that exist once per game: their logos are looked up with the game too. */
-export type GameLogoEntityType = "team" | "person" | "tournament";
+/** Entity types that exist once per game: their logos are looked up with the game too. People are shared by every game, so is their photo. */
+export type GameLogoEntityType = "team" | "tournament";
 export type LogoScope<T extends LogoEntityType> = T extends GameLogoEntityType ? [game: GameSlug] : [];
 
 /** Where-condition on the logo's game: the game for per-game entities, none for the global ones. */
-function gameClause(scope: [GameSlug?]) {
-  return scope[0] ? eq(logos.game, scope[0]) : isNull(logos.game);
+function gameClause(entityType: LogoEntityType, scope: [GameSlug?]) {
+  const game = scope[0] && GAME_LOGO_ENTITY_TYPES.includes(entityType) ? scope[0] : null;
+  return game ? eq(logos.game, game) : isNull(logos.game);
 }
 
-const GAME_LOGO_ENTITY_TYPES: readonly LogoEntityType[] = ["team", "person", "tournament"];
+const GAME_LOGO_ENTITY_TYPES: readonly LogoEntityType[] = ["team", "tournament"];
 
-/** Game stored on a logo row: the game of a team, person or tournament, null for organizations and news authors. */
+/** Game stored on a logo row: the game of a team or tournament, null for people, organizations and news authors. */
 export function logoGameOf(entityType: LogoEntityType, game: GameSlug): GameSlug | null {
   return GAME_LOGO_ENTITY_TYPES.includes(entityType) ? game : null;
 }
 
 /** Where-condition keeping only the logos of this entity type in this game (all of them for the global types). */
 export function logoGameClause(entityType: LogoEntityType, game: GameSlug) {
-  return gameClause([logoGameOf(entityType, game) ?? undefined]);
+  return gameClause(entityType, [game]);
 }
 
 export type AdminLogoEntry = {
@@ -61,7 +62,7 @@ export async function getEntityLogos<T extends LogoEntityType>(entityType: T, en
   const rows = await db
     .select({ id: logos.id, period: logos.period, theme: logos.theme, isVisible: logos.isVisible })
     .from(logos)
-    .where(and(eq(logos.entityType, entityType), eq(logos.entityId, entityId), gameClause(scope as [GameSlug?])))
+    .where(and(eq(logos.entityType, entityType), eq(logos.entityId, entityId), gameClause(entityType, scope as [GameSlug?])))
     .orderBy(desc(logos.period));
 
   return rows.map((r) => ({
@@ -169,7 +170,7 @@ export async function getEntityLogosBatch<T extends LogoEntityType>(entityType: 
   const rows = await db
     .select({ id: logos.id, entityId: logos.entityId, period: logos.period, theme: logos.theme, isVisible: logos.isVisible })
     .from(logos)
-    .where(and(eq(logos.entityType, entityType), inArray(logos.entityId, entityIds), gameClause(scope as [GameSlug?])))
+    .where(and(eq(logos.entityType, entityType), inArray(logos.entityId, entityIds), gameClause(entityType, scope as [GameSlug?])))
     .orderBy(desc(logos.period));
 
   for (const r of rows) {

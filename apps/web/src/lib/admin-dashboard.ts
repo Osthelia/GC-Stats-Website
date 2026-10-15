@@ -160,7 +160,7 @@ export type DashboardModificationRow = {
  */
 export async function getDashboardModifications(game: GameSlug, subjectType: "team" | "player", requestedPage: number): Promise<DashboardPage<DashboardModificationRow>> {
   const { teams, people } = gameTables(game);
-  const where = and(eq(activityLog.logName, subjectType), eq(activityLog.subjectType, subjectType));
+  const where = and(eq(activityLog.logName, subjectType), eq(activityLog.subjectType, subjectType), sql`${activityLog.properties}->>'game' = ${game}`);
   const [{ total } = { total: 0 }] = await db.select({ total: count() }).from(activityLog).where(where);
   const { page, totalPages, offset } = resolvePage(requestedPage, total);
 
@@ -187,7 +187,7 @@ export async function getDashboardModifications(game: GameSlug, subjectType: "te
         ? db.select({ id: teams.id, name: teams.name }).from(teams).where(inArray(teams.id, subjectIds))
         : db.select({ id: people.id, name: people.handle }).from(people).where(inArray(people.id, subjectIds))
       : Promise.resolve([]),
-    subjectIds.length ? getCurrentLogoUrlsThemed(subjectType === "team" ? "team" : "person", subjectIds, game) : Promise.resolve(new Map()),
+    subjectIds.length ? (subjectType === "team" ? getCurrentLogoUrlsThemed("team", subjectIds, game) : getCurrentLogoUrlsThemed("person", subjectIds)) : Promise.resolve(new Map()),
     actorUserIds.length ? db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, actorUserIds)) : Promise.resolve([]),
   ]);
   const subjectById = new Map(subjectRows.map((s) => [s.id, s.name]));

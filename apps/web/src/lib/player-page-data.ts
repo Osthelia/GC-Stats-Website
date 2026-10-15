@@ -67,7 +67,7 @@ export const getPlayerPageInfo = cache(async (game: GameSlug, id: number): Promi
       .from(people)
       .where(and(eq(people.id, id), visiblePerson(game)))
       .limit(1),
-    getEntityLogos("person", id, game),
+    getEntityLogos("person", id),
   ]);
   if (!row) return null;
   const themed = themedLogoUrls(logoEntries, "person");

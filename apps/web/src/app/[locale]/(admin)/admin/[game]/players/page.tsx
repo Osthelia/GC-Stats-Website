@@ -69,7 +69,14 @@ export default async function AdminPlayersPage({
           <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-        {hasAccess(access, PERMISSIONS.playersCreate) && <CreatePlayerDialog />}
+        <div className="flex items-center gap-2">
+          {hasAccess(access, PERMISSIONS.playersMerge) && (
+            <Button variant="outline" render={<Link href="/admin/players/duplicates" />}>
+              {t("duplicatesLink")}
+            </Button>
+          )}
+          {hasAccess(access, PERMISSIONS.playersCreate) && <CreatePlayerDialog />}
+        </div>
       </div>
 
       <AdminSearchSortBar

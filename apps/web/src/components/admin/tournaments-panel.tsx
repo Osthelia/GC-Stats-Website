@@ -21,17 +21,18 @@ import { GhostMatchDialog } from "@/components/admin/ghost-match-dialog";
 import { GhostBadge } from "@/components/admin/ghost-badge";
 import { deleteTournament } from "@/actions/admin-tournaments";
 import { tournamentStatusBadgeClass } from "@/lib/status-colors";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentRow, SortDirection } from "@/lib/admin-tournaments";
 import { useGame } from "@/lib/use-game";
 
 /** Every logo needs a fallback (CLAUDE.md) — the site's default tournament icon, same as V1's `$tournament->logo` and the public site, rather than a generic broken-image glyph. */
 function TournamentLogo({ src, name }: { src: string | null; name: string }) {
+  const game = useGame();
   const [failed, setFailed] = useState(false);
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src && !failed ? src : DEFAULT_TOURNAMENT_LOGO} alt={name} className="size-8 shrink-0 rounded-md border object-contain" onError={() => setFailed(true)} />
+    <img src={src && !failed ? src : defaultTournamentLogo(game)} alt={name} className="size-8 shrink-0 rounded-md border object-contain" onError={() => setFailed(true)} />
   );
 }
 

@@ -7,6 +7,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { playerNotInGame } from "@/lib/person-games-data";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPlayerPageInfo } from "@/lib/player-page-data";
@@ -55,7 +56,7 @@ export default async function PlayerProductionPage({
       getTranslations("playerPage"),
       getTranslations("production"),
     ]);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
   const pagePath = `/player/${player.id}/${slugify(player.handle)}/production`;
 
   return (

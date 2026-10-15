@@ -41,7 +41,6 @@ import {
 } from "@/actions/dashboard-streams";
 import { useGame } from "@/lib/use-game";
 
-const NONE_MATCH = "__none__";
 
 function platformItems(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return Object.fromEntries(STREAM_PLATFORMS.map((p) => [p, t(`platform.${p}` as "platform.twitch")]));
@@ -327,7 +326,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
   const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [isPending, startTransition] = useTransition();
-  const [channelId, setChannelId] = useState<string>(channels[0] ? String(channels[0].id) : NONE_MATCH);
+  const [channelId, setChannelId] = useState<string | null>(channels[0] ? String(channels[0].id) : null);
   const [tournament, setTournament] = useState<EntityOption | null>(null);
   const [matchOptions, setMatchOptions] = useState<CreditMatchOption[]>([]);
   const [selectedMatchIds, setSelectedMatchIds] = useState<Set<number>>(new Set());
@@ -369,7 +368,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
 
   function handleLink() {
     setError(null);
-    if (channelId === NONE_MATCH || !tournament || selectedMatchIds.size === 0) return;
+    if (channelId === null || !tournament || selectedMatchIds.size === 0) return;
     startTransition(async () => {
       const result = await linkStreamChannelToMatches(game, organizationId, Number(channelId), tournament.id, [...selectedMatchIds]);
       if (!result.ok) {

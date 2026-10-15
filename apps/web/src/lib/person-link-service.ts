@@ -12,7 +12,8 @@
 
 import { and, eq, ne, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { users, gameTables } from "@gc-stats/db";
+import { users, sharedPeople, gameTables } from "@gc-stats/db";
+import { setPersonUser } from "@/lib/person-service";
 import { autoGrantAccessForMemberRole } from "@/lib/organization-membership-service";
 import { logActivity } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -32,11 +33,12 @@ export async function linkUserToPersonEntry(game: GameSlug, personId: number, us
   const [user] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId)).limit(1);
   if (!user) return { ok: false, error: "userNotFound" };
 
-  const [alreadyLinked] = await db.select({ id: people.id }).from(people).where(and(eq(people.userId, userId), ne(people.id, personId))).limit(1);
+  // One account links to one person, whatever the game.
+  const [alreadyLinked] = await db.select({ id: sharedPeople.id }).from(sharedPeople).where(and(eq(sharedPeople.userId, userId), ne(sharedPeople.id, personId))).limit(1);
   if (alreadyLinked) return { ok: false, error: "alreadyLinked" };
 
-  await db.update(people).set({ userId }).where(eq(people.id, personId));
-  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Linked account ${userId} to player #${personId}`, actorUserId, changes: { userId: { old: null, new: userId } } }, db);
+  await setPersonUser(db, personId, userId);
+  await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Linked account ${userId} to player #${personId}`, actorUserId, changes: { userId: { old: null, new: userId } } }, db);
 
   // Retroactively apply any opted-in member-role -> access-role link for
   // every organization this person is currently listed on, now that they
@@ -57,7 +59,7 @@ export async function unlinkUserFromPersonEntry(game: GameSlug, personId: number
   const [person] = await db.select({ id: people.id, userId: people.userId }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, error: "notFound" };
 
-  await db.update(people).set({ userId: null }).where(eq(people.id, personId));
-  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Unlinked account from player #${personId}`, actorUserId, changes: { userId: { old: person.userId, new: null } } }, db);
+  await setPersonUser(db, personId, null);
+  await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Unlinked account from player #${personId}`, actorUserId, changes: { userId: { old: person.userId, new: null } } }, db);
   return { ok: true };
 }

@@ -18,6 +18,7 @@ import { organizations, organizationAccess, organizationAccessRoles, organizatio
 import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import { logActivity, diffChanges, type ActivityChanges } from "@/lib/activity-log";
+import { ensureGameProfile, personExists } from "@/lib/person-service";
 import type { GameSlug } from "@gc-stats/db/game";
 
 type Db = typeof db | PgTransaction<any, any, any>;
@@ -67,15 +68,15 @@ export type MemberEntryResult = { ok: true } | { ok: false; fieldErrors: MemberE
 
 export type MembershipActionResult = { ok: true } | { ok: false; error: string };
 
-type MemberLogInput = { organizationId: number; personId: number; role: string; actorUserId: string; action: "Added" | "Updated" | "Removed"; changes?: ActivityChanges };
+type MemberLogInput = { game: GameSlug; organizationId: number; personId: number; role: string; actorUserId: string; action: "Added" | "Updated" | "Removed"; changes?: ActivityChanges };
 
 /** An organization roster edit is logged on the organization, and on the player so both histories show it. */
 async function logMemberChange(tx: Db, input: MemberLogInput): Promise<void> {
-  const { organizationId, personId, role, actorUserId, action, changes } = input;
+  const { game, organizationId, personId, role, actorUserId, action, changes } = input;
   const description = `${action} roster entry (${role}) of player #${personId} on organization #${organizationId}`;
   const properties = { section: "members", organizationId, personId, role };
   await logActivity({ subject: "organization", subjectId: organizationId, event: "updated", description, actorUserId, changes, properties }, tx);
-  await logActivity({ subject: "player", subjectId: personId, event: "updated", description, actorUserId, changes, properties }, tx);
+  await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description, actorUserId, changes, properties }, tx);
 }
 
 function validateEntryFields(role: string, from: string, until: string): Partial<Record<"role" | "from" | "until", string>> {
@@ -96,14 +97,13 @@ function validateEntryFields(role: string, from: string, until: string): Partial
  * site.
  */
 export async function addOrganizationMemberEntry(game: GameSlug, organizationId: number, personId: number | null, role: string, from: string, until: string, actorUserId: string): Promise<AddMemberResult> {
-  const { organizationMemberships, people } = gameTables(game);
+  const { organizationMemberships } = gameTables(game);
   const fieldErrors: AddMemberFieldErrors = { ...validateEntryFields(role, from, until) };
   if (!personId) fieldErrors.person = "required";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId as number)).limit(1);
-  if (!person) return { ok: false, fieldErrors: { person: "personNotFound" } };
+  if (!(await personExists(db, personId as number))) return { ok: false, fieldErrors: { person: "personNotFound" } };
 
   const [organization] = await db.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!organization) return { ok: false, fieldErrors: { person: "organizationNotFound" } };
@@ -112,6 +112,7 @@ export async function addOrganizationMemberEntry(game: GameSlug, organizationId:
   const isOngoing = !until;
 
   await db.transaction(async (tx) => {
+    await ensureGameProfile(tx, game, personId as number);
     // A person can't hold the same role on the same organization twice at
     // once (mirrors the EXCLUDE USING gist(person_id, organization_id, role,
     // period) constraint) — close whatever else is open for this (person,
@@ -135,7 +136,7 @@ export async function addOrganizationMemberEntry(game: GameSlug, organizationId:
 
     await tx.insert(organizationMemberships).values({ personId: personId as number, organizationId, role, period });
     if (isOngoing) await autoGrantAccessForMemberRole(game, tx, organizationId, personId as number, role);
-    await logMemberChange(tx, { organizationId, personId: personId as number, role, actorUserId, action: "Added" });
+    await logMemberChange(tx, { game, organizationId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
@@ -176,7 +177,7 @@ export async function updateOrganizationMemberEntry(game: GameSlug, membershipId
 
     await tx.update(organizationMemberships).set({ role, period }).where(eq(organizationMemberships.id, membershipId));
     if (isOngoing) await autoGrantAccessForMemberRole(game, tx, membership.organizationId, membership.personId, role);
-    await logMemberChange(tx, { organizationId: membership.organizationId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, { role, period }) });
+    await logMemberChange(tx, { game, organizationId: membership.organizationId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, { role, period }) });
   });
 
   return { ok: true };
@@ -193,7 +194,7 @@ export async function deleteOrganizationMembershipEntry(game: GameSlug, membersh
 
   await db.transaction(async (tx) => {
     await tx.delete(organizationMemberships).where(eq(organizationMemberships.id, membershipId));
-    await logMemberChange(tx, { ...membership, actorUserId, action: "Removed" });
+    await logMemberChange(tx, { game, ...membership, actorUserId, action: "Removed" });
   });
   return { ok: true };
 }

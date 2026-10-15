@@ -7,6 +7,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { playerNotInGame } from "@/lib/person-games-data";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import {
@@ -48,7 +49,7 @@ export default async function PlayerHistoryPage({
     getPlayerTeamHistory(game, id),
     getTranslations("playerPage"),
   ]);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
   const basePath = `${player.id}/${slugify(player.handle)}`;
 
   const totalPages = Math.max(

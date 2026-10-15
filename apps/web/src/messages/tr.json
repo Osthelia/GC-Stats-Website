@@ -1656,7 +1656,21 @@
     "productionTitle": "{player} · Prodüksiyon",
     "formerOrganizations": "Eski organizasyonlar",
     "noFormerOrganizations": "Kayıtlı eski organizasyon yok.",
-    "unknownDate": "Bilinmiyor"
+    "unknownDate": "Bilinmiyor",
+    "addGameProfile": {
+      "title": "{game} oyununda da mı?",
+      "description": "{game} profilini tek tıkla ekle. Adını, fotoğrafını ve bağlantılarını yeniden kullanır, tekrar doldurman gerekmez.",
+      "button": "{game} profilimi ekle",
+      "adding": "Ekleniyor...",
+      "done": "{game} profilin hazır.",
+      "open": "{game} profilimi gör",
+      "error": {
+        "unauthenticated": "Giriş yapmalısın.",
+        "notYours": "Bu oyuncu hesabına bağlı değil.",
+        "invalidGame": "Bu oyun mevcut değil."
+      }
+    },
+    "alsoOn": "{game} oyununda da"
   },
   "organizationPage": {
     "tabOverview": "Genel bakış",
@@ -2780,11 +2794,26 @@
           "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı."
+        "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı.",
+        "sectionGames": "Oyunlar",
+        "gamesHint": "Bir kişi, oyun başına bir profil. Ad, ülke, zamirler, biyografi, takma adlar, sosyal bağlantılar, fotoğraf ve bağlı hesap ortaktır, geri kalanı her oyuna aittir.",
+        "sharedHint": "Ad, ülke, zamirler, biyografi, takma adlar, sosyal bağlantılar ve fotoğraf bu kişinin diğer oyunlarıyla ortaktır.",
+        "gameCurrent": "Mevcut oyun",
+        "gameHasProfile": "Profili var",
+        "gameNoProfile": "Henüz profil yok",
+        "gameOpen": "Aç",
+        "gameAddButton": "{game} oyununa ekle",
+        "gameAdding": "Ekleniyor...",
+        "gameAddSuccess": "{game} oyununa eklendi.",
+        "gameAddError": {
+          "invalidGame": "Bu oyun mevcut değil.",
+          "notFound": "Bu oyuncu artık mevcut değil.",
+          "alreadyThere": "Bu oyuncunun bu oyunda zaten bir profili var."
+        }
       },
       "merge": {
         "title": "Oyuncuyu birleştir",
-        "description": "Bir hayatta kalan seçin ve her kategori için {name} verisinden tam olarak hangi öğelerin ona aktarılacağını belirleyin. {name} burada silinmez.",
+        "description": "Bir hayatta kalan seçin ve her kategori için {name} verisinden tam olarak hangi öğelerin ona aktarılacağını belirleyin.",
         "backToPlayer": "← Oyuncuya dön",
         "selectTarget": "Şununla birleştir",
         "targetPlaceholder": "Bir oyuncu seçin…",
@@ -2816,8 +2845,21 @@
           "samePlayer": "Birleştirme hedefi olarak farklı bir oyuncu seçin.",
           "sourceNotFound": "Oyuncu bulunamadı.",
           "targetNotFound": "Hedef oyuncu bulunamadı.",
-          "targetAlreadyLinked": "Hedef oyuncunun zaten bağlı bir hesabı var."
-        }
+          "targetAlreadyLinked": "Hedef oyuncunun zaten bağlı bir hesabı var.",
+          "sourceStillUsed": "Bu oyuncu hâlâ bu oyundaki katılımcılar veya maç istatistikleri tarafından kullanılıyor. Onları da seç ya da profili koru."
+        },
+        "removeSource": "Birleştirdikten sonra {game} oyunundan kaldır",
+        "removeSourceHint": "{name}, her şey taşındığında bu oyundan, başka hiçbir oyunda bu profil yoksa tamamen kaldırılır. Katılımcılar veya maç istatistikleri hâlâ kullanıyorsa reddedilir."
+      },
+      "duplicatesLink": "Olası kopyalar",
+      "duplicates": {
+        "title": "Olası kopyalar",
+        "description": "Aynı takma ada sahip ve her biri farklı bir oyunda bulunan kişiler. Tek profil tutmak için {game} profilini diğeriyle birleştir.",
+        "backToList": "Oyunculara dön",
+        "columnSource": "{game} içinde",
+        "columnTarget": "Diğer profil",
+        "merge": "Birleştir",
+        "empty": "Kopya bulunamadı."
       }
     },
     "finance": {
@@ -4941,6 +4983,9 @@
       "hasLeft": "Takımdan ayrıldı",
       "untilLabel": "Ayrılış tarihi",
       "unknownHint": "Bitiş tarihi bilinmiyor, bilmiyorsan boş bırak."
+    },
+    "personPicker": {
+      "notInGame": "Henüz {game} içinde değil"
     }
   },
   "dashboard": {
@@ -6026,11 +6071,11 @@
       "title": "Hesabın",
       "checkbox": "Bu benim: hesabımı {name} ile bağla",
       "hint": "Ekip, bu profili hesabına bağlamadan önce gerçekten sana ait olduğunu kontrol edecek.",
-      "replaces": "Hesabın şu anda {previous} ile bağlı: onaylandığında bu bağlantı değiştirilecek.",
       "state": {
         "linkedToYou": "Bu profil zaten hesabına bağlı.",
         "linkedToOther": "Bu profil zaten başka bir hesaba bağlı. Bir hata olduğunu düşünüyorsan ekiple iletişime geç.",
-        "pending": "İncelemede bekleyen bir hesap bağlama talebin zaten var."
+        "pending": "İncelemede bekleyen bir hesap bağlama talebin zaten var.",
+        "linkedToAnotherPerson": "Hesabın zaten başka bir oyuncuya bağlı. İki profil aynı kişiyse ekipten birleştirmesini iste."
       }
     },
     "error": {
@@ -6060,7 +6105,8 @@
       "consentRequired": "Fotoğraf hakları ve onay koşullarını kabul etmelisiniz.",
       "invalidType": "Yalnızca JPG, PNG veya WebP fotoğrafları kabul edilir.",
       "tooSmall": "Bu fotoğraf çok küçük (en kısa kenarda en az 400 px).",
-      "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
+      "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin.",
+      "userLinkOtherPerson": "Hesabın zaten başka bir oyuncuya bağlı. İki profil aynı kişiyse ekipten birleştirmesini iste."
     },
     "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı.",
     "useLinkedDiscord": "Bağlı Discord hesabımı kullan"

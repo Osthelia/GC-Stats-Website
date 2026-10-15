@@ -7,6 +7,7 @@
  */
 
 import { Suspense } from "react";
+import { playerNotInGame } from "@/lib/person-games-data";
 import type { GameSlug } from "@gc-stats/db/game";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -86,7 +87,7 @@ export default async function PlayerPage({
   if (id === null) notFound();
 
   const player = await getPlayerPageInfo(game, id);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
   const basePath = `${player.id}/${slugify(player.handle)}`;
 
   return (

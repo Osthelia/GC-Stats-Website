@@ -7,6 +7,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { playerNotInGame } from "@/lib/person-games-data";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import {
@@ -49,7 +50,7 @@ export default async function PlayerMatchesPage({
     getEntityMatchesFilterOptions(game, { kind: "player", id }),
     getTranslations("playerPage"),
   ]);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
   const basePath = `${player.id}/${slugify(player.handle)}`;
 
   const totalPages = Math.max(1, Math.ceil(total / ENTITY_MATCHES_PAGE_SIZE));

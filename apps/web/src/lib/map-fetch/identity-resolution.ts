@@ -73,10 +73,10 @@ export type PersistPuuidMappingResult = { ok: true } | { ok: false; error: { kin
  * claimed by another person (never overwrites an existing link) and reports
  * it as a conflict instead of throwing, including when the pre-check race
  * loses to a concurrent resolution and the unique constraint on
- * `people.valId`/`people.esportsValId` rejects the UPDATE.
+ * `personProfiles.valId`/`personProfiles.esportsValId` rejects the UPDATE.
  */
 export async function persistPuuidMapping(game: GameSlug, mapping: Map<string, number>, column: ValIdColumn): Promise<PersistPuuidMappingResult> {
-  const { people } = gameTables(game);
+  const { people, personProfiles } = gameTables(game);
   if (mapping.size === 0) return { ok: true };
   const col = column === "valId" ? people.valId : people.esportsValId;
 
@@ -90,9 +90,9 @@ export async function persistPuuidMapping(game: GameSlug, mapping: Map<string, n
     }
     try {
       if (column === "valId") {
-        await db.update(people).set({ valId: puuid }).where(eq(people.id, personId));
+        await db.update(personProfiles).set({ valId: puuid }).where(eq(personProfiles.personId, personId));
       } else {
-        await db.update(people).set({ esportsValId: puuid }).where(eq(people.id, personId));
+        await db.update(personProfiles).set({ esportsValId: puuid }).where(eq(personProfiles.personId, personId));
       }
     } catch (err) {
       console.warn(`[map-fetch] puuid mapping to person #${personId} failed (likely a concurrent conflict): ${err instanceof Error ? err.message : String(err)}`);

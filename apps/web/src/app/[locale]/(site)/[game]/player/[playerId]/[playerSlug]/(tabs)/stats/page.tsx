@@ -7,6 +7,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { playerNotInGame } from "@/lib/person-games-data";
 import { gameHasMaps } from "@gc-stats/db/game";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
@@ -48,7 +49,7 @@ export default async function PlayerStatsPage({
     getPlayerStatsFilterOptions(id),
     getTranslations("playerPage"),
   ]);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
   const basePath = `${player.id}/${slugify(player.handle)}`;
 
   const weaponColumns = buildWeaponColumns(rows);

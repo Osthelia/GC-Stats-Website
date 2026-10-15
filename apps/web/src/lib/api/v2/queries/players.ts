@@ -309,9 +309,8 @@ export type ApiPlayerFullResponseV2 = ApiPlayerV2 & {
 };
 
 async function buildPlayerFullResponse(game: GameSlug, row: typeof valorantTables.people.$inferSelect): Promise<ApiPlayerFullResponseV2> {
-  const { people } = gameTables(game);
   const [logos, achievements, lastMatches, history, lastTournaments, press] = await Promise.all([
-    getThemedLogoUrls("person", row.id, game),
+    getThemedLogoUrls("person", row.id),
     getPlayerAchievementsV2(game, row.id),
     getPlayerLastMatchesV2(game, row.id),
     getPlayerTeamHistoryV2(game, row.id),
@@ -528,7 +527,7 @@ export async function listPlayersV2(game: GameSlug, filter: PlayersListFilter): 
 
   const total = Number(countRow[0]?.total ?? 0);
   const totalPages = total > 0 ? Math.ceil(total / filter.perPage) : 0;
-  const logosByPersonId = await getThemedLogoUrlsBatch("person", rows.map((r) => r.id), game);
+  const logosByPersonId = await getThemedLogoUrlsBatch("person", rows.map((r) => r.id));
 
   return {
     page: filter.page,

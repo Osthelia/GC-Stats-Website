@@ -20,7 +20,7 @@ import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo
 import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, defaultTournamentLogo } from "@/lib/default-logos";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -126,7 +126,7 @@ export async function searchGlobal(game: GameSlug, rawTerm: string, opts: { perT
 
   const [teamLogos, personLogos, tournamentLogos, organizationLogos] = await Promise.all([
     getEntityLogosBatch("team", teamRows.map((t) => t.id), game),
-    getEntityLogosBatch("person", playerRows.map((p) => p.id), game),
+    getEntityLogosBatch("person", playerRows.map((p) => p.id)),
     getEntityLogosBatch("tournament", tournamentRows.map((t) => t.id), game),
     getEntityLogosBatch("organization", organizationRows.map((o) => o.id)),
   ]);
@@ -209,8 +209,8 @@ export async function searchGlobal(game: GameSlug, rawTerm: string, opts: { perT
       subtitle: t.region,
       countryCode: null,
       secondaryCountryCode: null,
-      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? DEFAULT_TOURNAMENT_LOGO,
-      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? DEFAULT_TOURNAMENT_LOGO,
+      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? defaultTournamentLogo(game),
+      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? defaultTournamentLogo(game),
       path: `tournaments/${t.id}/${slugify(t.name)}`,
       score,
       popularity: views,

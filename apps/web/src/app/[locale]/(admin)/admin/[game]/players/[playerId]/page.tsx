@@ -21,6 +21,8 @@ import { PlayerTeamHistoryPanel } from "@/components/admin/player-team-history-p
 import { EntityLogoPanel } from "@/components/admin/entity-logo-panel";
 import { PlayerLinkedAccountCard } from "@/components/admin/player-linked-account-card";
 import { PlayerDeleteButton } from "@/components/admin/player-delete-button";
+import { PlayerGamesCard } from "@/components/admin/player-games-card";
+import { getPersonGames } from "@/lib/person-games-data";
 import { GhostBadge } from "@/components/admin/ghost-badge";
 import { GhostPromoteButton } from "@/components/admin/ghost-promote-button";
 import { Button } from "@/components/ui/button";
@@ -48,10 +50,11 @@ export default async function AdminPlayerPage({
 
   const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.playersView, game);
   const t = await getTranslations({ locale, namespace: "admin.players.edit" });
-  const [player, history, logos] = await Promise.all([
+  const [player, history, logos, personGames] = await Promise.all([
     getAdminPlayer(game, id),
     getAdminPlayerTeamHistory(game, id),
-    getEntityLogos("person", id, game),
+    getEntityLogos("person", id),
+    getPersonGames(id),
   ]);
   if (!player) notFound();
 
@@ -94,6 +97,7 @@ export default async function AdminPlayerPage({
               entries={logos}
               canEdit={hasAccess(access, PERMISSIONS.playersEdit)}
             />
+            <PlayerGamesCard playerId={player.id} currentGame={game} games={personGames?.games ?? [game]} canAdd={hasAccess(access, PERMISSIONS.playersCreate)} />
             <PlayerLinkedAccountCard playerId={player.id} linkedUser={player.linkedUser} />
           </>
         }

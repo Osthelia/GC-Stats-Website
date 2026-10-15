@@ -20,6 +20,7 @@ import { parseEntityId } from "@/lib/entity-id";
 import { requireAdminPermission } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { PlayerMergeForm } from "@/components/admin/player-merge-form";
+import { getPersonSummary } from "@/lib/admin-player-duplicates";
 import { gameFromParams } from "@/lib/game";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; playerId: string }> }): Promise<Metadata> {
@@ -30,25 +31,29 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function AdminPlayerMergePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; playerId: string; game: string }>;
+  searchParams: Promise<{ target?: string }>;
 }) {
   const game = await gameFromParams(params);
   const { locale, playerId } = await params;
+  const targetId = parseEntityId((await searchParams).target ?? "");
   const id = parseEntityId(playerId);
   if (id === null) notFound();
 
   await requireAdminPermission(locale as AppLocale, PERMISSIONS.playersMerge, game);
   const t = await getTranslations({ locale, namespace: "admin.players.merge" });
 
-  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems] = await Promise.all([
+  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems, initialTarget] = await Promise.all([
     getAdminPlayer(game, id),
     getAdminPlayerTeamHistory(game, id),
     getPersonOrganizations(game, id),
     getPersonProductionsPage(game, id, { page: 1, sort: "date", direction: "desc", pageSize: 1000 }),
     getMergeablePlayerNews(game, id),
-    getEntityLogos("person", id, game),
+    getEntityLogos("person", id),
     getMergeablePlayerMapStats(game, id),
+    targetId !== null && targetId !== id ? getPersonSummary(targetId) : Promise.resolve(null),
   ]);
   if (!player) notFound();
 
@@ -72,6 +77,7 @@ export default async function AdminPlayerMergePage({
         newsItems={newsItems}
         logoItems={logoItems}
         matchStatItems={matchStatItems}
+        initialTarget={initialTarget}
       />
     </div>
   );

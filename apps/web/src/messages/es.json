@@ -1658,7 +1658,21 @@
     "productionTitle": "{player} · Producción",
     "formerOrganizations": "Antiguas organizaciones",
     "noFormerOrganizations": "No hay antiguas organizaciones registradas.",
-    "unknownDate": "Desconocida"
+    "unknownDate": "Desconocida",
+    "addGameProfile": {
+      "title": "¿También en {game}?",
+      "description": "Añade tu perfil de {game} con un clic. Reutiliza tu nombre, tu foto y tus enlaces, sin volver a rellenar nada.",
+      "button": "Añadir mi perfil de {game}",
+      "adding": "Añadiendo...",
+      "done": "Tu perfil de {game} está listo.",
+      "open": "Ver mi perfil de {game}",
+      "error": {
+        "unauthenticated": "Debes iniciar sesión.",
+        "notYours": "Este jugador no está vinculado a tu cuenta.",
+        "invalidGame": "Este juego no existe."
+      }
+    },
+    "alsoOn": "También en {game}"
   },
   "organizationPage": {
     "tabOverview": "Resumen",
@@ -2784,11 +2798,26 @@
           "requiresLeft": "Marca « Ha dejado el equipo » para indicar una fecha de salida."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "ID de usuario de Discord (Modo desarrollador, clic derecho en el perfil, Copiar ID de usuario) o enlace de invitación de servidor."
+        "discordIdHint": "ID de usuario de Discord (Modo desarrollador, clic derecho en el perfil, Copiar ID de usuario) o enlace de invitación de servidor.",
+        "sectionGames": "Juegos",
+        "gamesHint": "Una persona, un perfil por juego. El nombre, el país, los pronombres, la bio, los alias, las redes, la foto y la cuenta vinculada se comparten, el resto pertenece a cada juego.",
+        "sharedHint": "El nombre, el país, los pronombres, la bio, los alias, las redes y la foto se comparten con los otros juegos de esta persona.",
+        "gameCurrent": "Juego actual",
+        "gameHasProfile": "Tiene perfil",
+        "gameNoProfile": "Aún sin perfil",
+        "gameOpen": "Abrir",
+        "gameAddButton": "Añadir a {game}",
+        "gameAdding": "Añadiendo...",
+        "gameAddSuccess": "Añadido a {game}.",
+        "gameAddError": {
+          "invalidGame": "Este juego no existe.",
+          "notFound": "Este jugador ya no existe.",
+          "alreadyThere": "Este jugador ya tiene un perfil en este juego."
+        }
       },
       "merge": {
         "title": "Fusionar el jugador",
-        "description": "Elige el jugador que se conserva y, por categoría, exactamente qué elementos de los datos de {name} se trasladan a él. {name} no se elimina aquí.",
+        "description": "Elige el jugador que se conserva y, por categoría, exactamente qué elementos de los datos de {name} se trasladan a él.",
         "backToPlayer": "← Volver al jugador",
         "selectTarget": "Fusionar en",
         "targetPlaceholder": "Selecciona un jugador…",
@@ -2820,8 +2849,21 @@
           "samePlayer": "Elige otro jugador como destino de la fusión.",
           "sourceNotFound": "Jugador no encontrado.",
           "targetNotFound": "Jugador de destino no encontrado.",
-          "targetAlreadyLinked": "El jugador de destino ya tiene una cuenta vinculada."
-        }
+          "targetAlreadyLinked": "El jugador de destino ya tiene una cuenta vinculada.",
+          "sourceStillUsed": "Este jugador aún lo usan participantes o estadísticas de partidas de este juego. Selecciónalos también, o conserva el perfil."
+        },
+        "removeSource": "Quitar de {game} tras fusionar",
+        "removeSourceHint": "{name} se quita de este juego cuando todo se ha movido, y por completo si ningún otro juego tiene este perfil. Se rechaza si participantes o estadísticas de partidas lo siguen usando."
+      },
+      "duplicatesLink": "Posibles duplicados",
+      "duplicates": {
+        "title": "Posibles duplicados",
+        "description": "Personas con el mismo nombre que existen cada una en un juego distinto. Fusiona el perfil de {game} con el otro para quedarte con un único perfil.",
+        "backToList": "Volver a jugadores",
+        "columnSource": "En {game}",
+        "columnTarget": "Otro perfil",
+        "merge": "Fusionar",
+        "empty": "No se encontraron duplicados."
       }
     },
     "finance": {
@@ -5058,6 +5100,9 @@
       },
       "copyOverlay": "Enlace del overlay",
       "overlayCopied": "Enlace del overlay copiado, añádelo como fuente de navegador."
+    },
+    "personPicker": {
+      "notInGame": "Aún no está en {game}"
     }
   },
   "dashboard": {
@@ -6150,11 +6195,11 @@
       "title": "Tu cuenta",
       "checkbox": "Soy yo: vincular mi cuenta a {name}",
       "hint": "El staff comprobará que este perfil es realmente tuyo antes de vincularlo a tu cuenta.",
-      "replaces": "Tu cuenta está vinculada actualmente a {previous}: ese vínculo se sustituirá cuando se apruebe.",
       "state": {
         "linkedToYou": "Este perfil ya está vinculado a tu cuenta.",
         "linkedToOther": "Este perfil ya está vinculado a otra cuenta. Contacta con el staff si crees que es un error.",
-        "pending": "Ya tienes una solicitud de vinculación de cuenta pendiente de revisión."
+        "pending": "Ya tienes una solicitud de vinculación de cuenta pendiente de revisión.",
+        "linkedToAnotherPerson": "Tu cuenta ya está vinculada a otro jugador. Si ambos perfiles son la misma persona, pide al staff que los fusione."
       }
     },
     "error": {
@@ -6184,7 +6229,8 @@
       "consentRequired": "Debes aceptar las condiciones de derechos y consentimiento de la foto.",
       "invalidType": "Solo se aceptan fotos JPG, PNG o WebP.",
       "tooSmall": "Esta foto es demasiado pequeña (mínimo 400 px en el lado más corto).",
-      "invalidDiscordId": "Introduce un ID de usuario de Discord válido (de 17 a 20 dígitos) o una invitación de servidor (discord.gg/...)."
+      "invalidDiscordId": "Introduce un ID de usuario de Discord válido (de 17 a 20 dígitos) o una invitación de servidor (discord.gg/...).",
+      "userLinkOtherPerson": "Tu cuenta ya está vinculada a otro jugador. Si ambos perfiles son la misma persona, pide al staff que los fusione."
     },
     "discordIdHint": "ID de usuario de Discord (Modo desarrollador, clic derecho en el perfil, Copiar ID de usuario) o enlace de invitación de servidor.",
     "useLinkedDiscord": "Usar mi cuenta de Discord vinculada"

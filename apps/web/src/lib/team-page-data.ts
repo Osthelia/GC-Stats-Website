@@ -207,7 +207,7 @@ export async function getTeamRoster(
   // Photos only for the members actually rendered.
   if (photos) {
     const shown = [...current, ...formers];
-    const photosByPersonId = await getCurrentLogoUrlsThemed("person", [...new Set(shown.map((m) => m.personId))], game);
+    const photosByPersonId = await getCurrentLogoUrlsThemed("person", [...new Set(shown.map((m) => m.personId))]);
     for (const m of shown) {
       const photo = photosByPersonId.get(m.personId);
       m.photoUrl = photo?.dark ?? null;

@@ -16,20 +16,23 @@
 import { logoGameClause, logoGameOf } from "@/lib/admin-logos";
 import { and, eq, ne, isNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { logos, PERMISSIONS, gameTables } from "@gc-stats/db";
+import { logos, sharedPeople, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { deleteLogoFiles } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
+import { ensureGameProfile, personExists, updatePersonIdentity, updatePersonProfile, setPersonUser } from "@/lib/person-service";
 import type { GameSlug } from "@gc-stats/db/game";
 
 type ItemStatus = "approved" | "rejected" | "failed";
 export type ResolveItemResult = { ok: true; status: ItemStatus; applyError: string | null } | { ok: false; error: string };
 
 const TEAM_COLUMNS = ["name", "shortName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "tags"] as const;
-const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "aliases", "pronouns"] as const;
+// A person is a shared identity plus one profile per game, each part has its own table.
+const PERSON_IDENTITY_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "aliases", "pronouns"] as const;
+const PERSON_PROFILE_COLUMNS = ["liquipediaLink", "liquipediaSourced", "isActive"] as const;
 
 /**
  * Applies one already-validated change_request_items row to the live
@@ -45,7 +48,7 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
   // --- Simple profile columns (including socials.<key>) -------------------
   if (field.startsWith("socials.")) {
     const key = field.slice("socials.".length);
-    const table = subjectType === "team" ? teams : people;
+    const table = subjectType === "team" ? teams : sharedPeople;
     const [row] = await db.select({ socials: table.socials }).from(table).where(eq(table.id, subjectId)).limit(1);
     if (!row) throw new Error("subjectNotFound");
     const socials = { ...(row.socials as Record<string, unknown>), [key]: newValue ?? null };
@@ -53,14 +56,20 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
     return;
   }
 
-  const columns = subjectType === "team" ? (TEAM_COLUMNS as readonly string[]) : (PERSON_COLUMNS as readonly string[]);
-  if (columns.includes(field)) {
-    const table = subjectType === "team" ? teams : people;
-    const exists = (await db.select({ id: table.id }).from(table).where(eq(table.id, subjectId)).limit(1)).length > 0;
+  if (subjectType === "team" && (TEAM_COLUMNS as readonly string[]).includes(field)) {
+    const exists = (await db.select({ id: teams.id }).from(teams).where(eq(teams.id, subjectId)).limit(1)).length > 0;
+    if (!exists) throw new Error("subjectNotFound");
+    await db.update(teams).set({ [field]: newValue }).where(eq(teams.id, subjectId));
+    return;
+  }
+
+  if (subjectType === "person" && ((PERSON_IDENTITY_COLUMNS as readonly string[]).includes(field) || (PERSON_PROFILE_COLUMNS as readonly string[]).includes(field))) {
+    const exists = (await db.select({ id: people.id }).from(people).where(eq(people.id, subjectId)).limit(1)).length > 0;
     if (!exists) throw new Error("subjectNotFound");
     let value: unknown = newValue;
     if (field === "pronouns") value = newValue === null ? null : Number(newValue);
-    await db.update(table).set({ [field]: value }).where(eq(table.id, subjectId));
+    if ((PERSON_IDENTITY_COLUMNS as readonly string[]).includes(field)) await updatePersonIdentity(db, subjectId, { [field]: value });
+    else await updatePersonProfile(db, game, subjectId, { [field]: value });
     return;
   }
 
@@ -77,6 +86,7 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
 
     const period = openRangeFrom(v.joined_at);
     await db.transaction(async (tx) => {
+      await ensureGameProfile(tx, game, subjectId);
       const openElsewhere = await tx
         .select({ id: rosterMemberships.id, period: rosterMemberships.period })
         .from(rosterMemberships)
@@ -93,7 +103,7 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
   if (field === "membership_add") {
     const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, v.personId)).limit(1);
+    const person = await personExists(db, v.personId);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
     if (!person || !team) throw new Error("entityNotFound");
 
@@ -101,6 +111,7 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
     const hasLeft = v.hasLeft ?? !!v.until;
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
+      await ensureGameProfile(tx, game, v.personId);
       if (isOngoing) {
         const openElsewhere = await tx
           .select({ id: rosterMemberships.id, period: rosterMemberships.period })
@@ -231,13 +242,13 @@ async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "per
   if (field === "user_link") {
     const v = newValue as { userId: string; previousPersonId: number | null };
     await db.transaction(async (tx) => {
-      const [target] = await tx.select({ id: people.id, userId: people.userId }).from(people).where(eq(people.id, subjectId)).limit(1);
+      const [target] = await tx.select({ id: sharedPeople.id, userId: sharedPeople.userId }).from(sharedPeople).where(eq(sharedPeople.id, subjectId)).limit(1);
       if (!target) throw new Error("subjectNotFound");
       if (target.userId && target.userId !== v.userId) throw new Error("alreadyLinked");
       if (v.previousPersonId) {
-        await tx.update(people).set({ userId: null }).where(and(eq(people.id, v.previousPersonId), eq(people.userId, v.userId)));
+        await tx.update(sharedPeople).set({ userId: null }).where(and(eq(sharedPeople.id, v.previousPersonId), eq(sharedPeople.userId, v.userId)));
       }
-      await tx.update(people).set({ userId: v.userId }).where(eq(people.id, subjectId));
+      await setPersonUser(tx, subjectId, v.userId);
     });
     return;
   }

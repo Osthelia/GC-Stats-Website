@@ -36,6 +36,11 @@ export function gameHasLiquipediaMatches(game: GameSlug): boolean {
   return game === "valorant";
 }
 
+// VLR.gg only covers Valorant.
+export function gameHasVlr(game: GameSlug): boolean {
+  return game === "valorant";
+}
+
 export function gameHasVeto(game: GameSlug): boolean {
   return game === "valorant";
 }

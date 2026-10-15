@@ -73,7 +73,7 @@ export async function searchPlayersByName(game: GameSlug, query: string): Promis
   const rows = await db.select().from(people).where(and(ilike(people.handle, pattern), visiblePerson(game))).limit(20);
 
   const ids = rows.map((r) => r.id);
-  const [teamsByPersonId, photos] = await Promise.all([getCurrentTeamsByPersonId(game, ids), getLogoUrlsBatch("person", ids, game)]);
+  const [teamsByPersonId, photos] = await Promise.all([getCurrentTeamsByPersonId(game, ids), getLogoUrlsBatch("person", ids)]);
 
   return rows.map((row) => ({
     ...toApiPlayer(row),
@@ -88,7 +88,7 @@ export async function getPlayerById(game: GameSlug, id: number): Promise<ApiPlay
   rejectGhost(row, "player");
   if (!row) return null;
 
-  const [teamsByPersonId, photo] = await Promise.all([getCurrentTeamsByPersonId(game, [id]), getLogoUrls("person", id, game)]);
+  const [teamsByPersonId, photo] = await Promise.all([getCurrentTeamsByPersonId(game, [id]), getLogoUrls("person", id)]);
 
   return { ...toApiPlayer(row), current_team: teamsByPersonId.get(id) ?? null, photo };
 }
@@ -137,7 +137,7 @@ export async function getPlayerTeamHistory(game: GameSlug, personId: number): Pr
 
 /** No existence gate — mirrors V1 (`/players/{id}/photos` never documented a 404, always 200 with an empty history). */
 export async function getPlayerPhotoHistory(game: GameSlug, personId: number): Promise<ApiLogoHistoryResponse> {
-  return getLogoHistoryResponse("person", personId, game);
+  return getLogoHistoryResponse("person", personId);
 }
 
 /** Average stats for the player, always broken down by side (atk/def). */

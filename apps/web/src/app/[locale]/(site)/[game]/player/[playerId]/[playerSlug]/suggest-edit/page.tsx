@@ -7,6 +7,7 @@
  */
 
 import type { Metadata } from "next";
+import { playerNotInGame } from "@/lib/person-games-data";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -40,7 +41,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
   if (id === null) notFound();
 
   const player = await getPlayerPageInfo(game, id);
-  if (!player) notFound();
+  if (!player) return playerNotInGame(game, id);
 
   const basePath = `${player.id}/${slugify(player.handle)}`;
 
@@ -52,17 +53,12 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
 
   const [t, logos, teamHistory, [rawPerson], linkStatus, linkedDiscordId] = await Promise.all([
     getTranslations({ locale: locale as AppLocale, namespace: "suggestEdit" }),
-    getEntityLogos("person", id, game),
+    getEntityLogos("person", id),
     getPlayerTeamHistory(game, id),
     db.select({ pronouns: people.pronouns, aliases: people.aliases, isActive: people.isActive }).from(people).where(eq(people.id, id)).limit(1),
     getUserLinkStatus(game, userId, id),
     getLinkedDiscordId(userId),
   ]);
-
-  const previousPersonId = linkStatus.state === "available" ? linkStatus.previousPersonId : null;
-  const [previousPerson] = previousPersonId
-    ? await db.select({ handle: people.handle }).from(people).where(eq(people.id, previousPersonId)).limit(1)
-    : [];
 
   const membershipEntries: MembershipEntryView[] = [
     ...teamHistory.current.map((h) => ({
@@ -103,7 +99,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
         entityName={player.handle}
         logos={logos}
         membershipEntries={membershipEntries}
-        userLink={{ state: linkStatus.state, previousHandle: previousPerson?.handle ?? null }}
+        userLink={{ state: linkStatus.state }}
         linkedDiscordId={linkedDiscordId}
       />
     </div>

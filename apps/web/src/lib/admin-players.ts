@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql, eq, or, and, desc, asc } from "drizzle-orm";
+import { sql, eq, or, and, desc, asc, getViewSelectedFields } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { users, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
@@ -168,7 +168,7 @@ export type AdminPlayerProfile = {
 export async function getAdminPlayer(game: GameSlug, id: number): Promise<AdminPlayerProfile | null> {
   const { people } = gameTables(game);
   const [row] = await db
-    .select({ person: people, linkedUserId: users.id, linkedUsername: users.username, linkedEmail: users.email })
+    .select({ person: getViewSelectedFields(people), linkedUserId: users.id, linkedUsername: users.username, linkedEmail: users.email })
     .from(people)
     .leftJoin(users, eq(users.id, people.userId))
     .where(eq(people.id, id))

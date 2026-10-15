@@ -220,7 +220,7 @@ export async function quickCreateTeamEntrant(game: GameSlug, tournamentId: numbe
   const created = await db.transaction(async (tx) => {
     const [team] = await tx.insert(teams).values({ name: trimmed, socials: {}, isActive: true }).returning({ id: teams.id });
     if (!team) throw new Error("Insert returned no row");
-    await logActivity({ subject: "team", subjectId: team.id, event: "created", description: `Created team #${team.id} (${trimmed})`, actorUserId, properties: { tournamentId } }, tx);
+    await logActivity({ game, subject: "team", subjectId: team.id, event: "created", description: `Created team #${team.id} (${trimmed})`, actorUserId, properties: { tournamentId } }, tx);
     const [entrant] = await tx.insert(entrants).values({ tournamentId, kind: "team", teamId: team.id, displayName: trimmed, seed: null }).returning({ id: entrants.id });
     if (!entrant) throw new Error("Insert returned no row");
     await logEntrantChange(tx, tournamentId, actorUserId, `Added new team "${trimmed}" as entrant of tournament #${tournamentId}`, { entrant: { entrantId: entrant.id, displayName: trimmed, teamId: team.id } });

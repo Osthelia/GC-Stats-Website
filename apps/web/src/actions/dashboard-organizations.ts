@@ -26,6 +26,7 @@ import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search"
 import { isValidCountryCode } from "@/lib/countries";
 import { isValidUrl } from "@/lib/admin-validation";
 import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
+import { createPerson, updatePersonIdentity, updatePersonProfile } from "@/lib/person-service";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { logActivity, diffChanges } from "@/lib/activity-log";
@@ -132,7 +133,7 @@ export async function searchPeopleForOrganization(game: GameSlug, organizationId
  */
 export async function searchPeopleForNewOrganizationMember(game: GameSlug, organizationId: number, query: string): Promise<PersonPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return searchPeopleQuery(game, query);
+  return searchPeopleQuery(game, query, undefined, undefined, "exclude", "all");
 }
 
 export async function addDashboardOrganizationMember(game: GameSlug, organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
@@ -151,7 +152,6 @@ export type CreatePersonResult = { ok: true; id: number; handle: string } | { ok
  * fields relevant here (no team assignment, this isn't a roster).
  */
 export async function createPersonForOrganization(game: GameSlug, organizationId: number, handle: string, countryCode: string): Promise<CreatePersonResult> {
-  const { people } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleCreate);
 
   const fieldErrors: CreatePersonFieldErrors = {};
@@ -166,12 +166,8 @@ export async function createPersonForOrganization(game: GameSlug, organizationId
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const created = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .insert(people)
-      .values({ handle: trimmedHandle, countryCode: trimmedCountry || null, isActive: true })
-      .returning({ id: people.id, handle: people.handle });
-    if (!row) throw new Error("Insert returned no row");
-    await logActivity({ subject: "player", subjectId: row.id, event: "created", description: `Created player #${row.id} (${row.handle})`, actorUserId, properties: { organizationId } }, tx);
+    const row = { id: await createPerson(tx, game, { handle: trimmedHandle, countryCode: trimmedCountry || null }, { isActive: true }), handle: trimmedHandle };
+    await logActivity({ game, subject: "player", subjectId: row.id, event: "created", description: `Created player #${row.id} (${row.handle})`, actorUserId, properties: { organizationId } }, tx);
     return row;
   });
 
@@ -214,7 +210,7 @@ export type OrgPersonProfile = {
 
 /** Neutral (no theme) photo currently in effect for a person, shown by the profile dialog. */
 async function currentPersonPhotoUrl(game: GameSlug, personId: number): Promise<string | null> {
-  const entries = await getEntityLogos("person", personId, game);
+  const entries = await getEntityLogos("person", personId);
   return displayLogoUrl(currentLogo(entries.filter((e) => !e.theme)), "person");
 }
 
@@ -315,7 +311,7 @@ export async function updatePersonProfileForOrganization(game: GameSlug, organiz
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
-  if (!fieldErrors.vlrId && vlrIdValue !== null) {
+  if (game === "valorant" && !fieldErrors.vlrId && vlrIdValue !== null) {
     const [taken] = await db.select({ id: people.id }).from(people).where(and(eq(people.vlrId, vlrIdValue), ne(people.id, personId))).limit(1);
     if (taken) fieldErrors.vlrId = "taken";
   }
@@ -336,22 +332,22 @@ export async function updatePersonProfileForOrganization(game: GameSlug, organiz
   const aliases = [...new Set(input.aliases.map((a) => a.trim()).filter(Boolean))];
 
   const [existing] = await db.select().from(people).where(eq(people.id, personId)).limit(1);
-  const values = {
+  const identityValues = {
     handle,
     firstName: firstName || null,
     lastName: lastName || null,
     countryCode: countryCode || null,
     pronouns: pronounsValue,
-    vlrId: vlrIdValue,
-    liquipediaLink: liquipediaLink || null,
     aliases,
     socials,
   };
+  const profileValues = { liquipediaLink: liquipediaLink || null, ...(game === "valorant" ? { vlrId: vlrIdValue } : {}) };
   await db.transaction(async (tx) => {
-    await tx.update(people).set(values).where(eq(people.id, personId));
-    const changes = existing ? diffChanges(existing, values) : {};
+    await updatePersonIdentity(tx, personId, identityValues);
+    await updatePersonProfile(tx, game, personId, profileValues);
+    const changes = existing ? diffChanges(existing, { ...identityValues, ...profileValues }) : {};
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Updated player #${personId} (${handle})`, actorUserId, changes, properties: { organizationId } }, tx);
+      await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Updated player #${personId} (${handle})`, actorUserId, changes, properties: { organizationId } }, tx);
     }
   });
   // Match scoreboards show the current handle.
@@ -390,12 +386,12 @@ export async function uploadPersonPhotoForOrganization(game: GameSlug, organizat
       const openNeutral = await tx
         .select({ id: logos.id, period: logos.period })
         .from(logos)
-        .where(and(eq(logos.entityType, "person"), eq(logos.game, game), eq(logos.entityId, personId), isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
+        .where(and(eq(logos.entityType, "person"), isNull(logos.game), eq(logos.entityId, personId), isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
       for (const row of openNeutral) {
         await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
       }
-      await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, game, period: openRangeFrom(today), theme: null, isVisible: true });
-      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId, photoConsent, photoConsentAt: new Date().toISOString() } }, tx);
+      await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, game: null, period: openRangeFrom(today), theme: null, isVisible: true });
+      await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId, photoConsent, photoConsentAt: new Date().toISOString() } }, tx);
     });
   } catch (error) {
     await deleteLogoFiles("person", stored.id).catch(() => {});

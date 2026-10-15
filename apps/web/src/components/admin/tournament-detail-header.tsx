@@ -22,18 +22,19 @@ import { GhostBadge } from "@/components/admin/ghost-badge";
 import { toggleTournamentActive, deleteTournament } from "@/actions/admin-tournaments";
 import { slugify } from "@/lib/entity-id";
 import { tournamentStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
 import { useGame } from "@/lib/use-game";
 
 /** Every logo needs a fallback (CLAUDE.md) — the site's default tournament icon, same as V1's `$tournament->logo` (always resolves to something, never a broken/missing image). */
 function TournamentLogoTile({ src, name }: { src: string | null; name: string }) {
+  const game = useGame();
   const [failed, setFailed] = useState(false);
   return (
     <div className="flex size-24 shrink-0 items-center justify-center self-center overflow-hidden rounded-xl border bg-muted/40 md:size-28 md:self-start">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src && !failed ? src : DEFAULT_TOURNAMENT_LOGO} alt={name} className="size-full object-contain p-2" onError={() => setFailed(true)} />
+      <img src={src && !failed ? src : defaultTournamentLogo(game)} alt={name} className="size-full object-contain p-2" onError={() => setFailed(true)} />
     </div>
   );
 }

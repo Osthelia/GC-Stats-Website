@@ -12,17 +12,19 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables } from "@gc-stats/db";
+import { gameTables, sharedPeople } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type UserLinkStatus =
-  | { state: "available"; previousPersonId: number | null }
+  | { state: "available" }
   | { state: "linkedToYou" }
   | { state: "linkedToOther" }
+  // The account already belongs to another person: both rows are the same human, staff merges them.
+  | { state: "linkedToAnotherPerson" }
   | { state: "pending" }
   | { state: "notFound" };
 
-export type UserLinkItem = { field: "user_link"; oldValue: { previousPersonId: number | null }; newValue: { userId: string; previousPersonId: number | null } };
+export type UserLinkItem = { field: "user_link"; oldValue: { previousPersonId: null }; newValue: { userId: string; previousPersonId: null } };
 
 /** Whether `userId` can request a link to `personId` right now. */
 export async function getUserLinkStatus(game: GameSlug, userId: string, personId: number): Promise<UserLinkStatus> {
@@ -49,11 +51,12 @@ export async function getUserLinkStatus(game: GameSlug, userId: string, personId
     .limit(1);
   if (pendingRequest) return { state: "pending" };
 
-  // people.userId is unique: an existing link elsewhere is carried along and swapped on approval.
-  const [previous] = await db.select({ id: people.id }).from(people).where(eq(people.userId, userId)).limit(1);
-  return { state: "available", previousPersonId: previous?.id ?? null };
+  // An account links to one person for every game, never swapped silently.
+  const [linked] = await db.select({ id: sharedPeople.id }).from(sharedPeople).where(eq(sharedPeople.userId, userId)).limit(1);
+  if (linked) return { state: "linkedToAnotherPerson" };
+  return { state: "available" };
 }
 
-export function buildUserLinkItem(userId: string, previousPersonId: number | null): UserLinkItem {
-  return { field: "user_link", oldValue: { previousPersonId }, newValue: { userId, previousPersonId } };
+export function buildUserLinkItem(userId: string): UserLinkItem {
+  return { field: "user_link", oldValue: { previousPersonId: null }, newValue: { userId, previousPersonId: null } };
 }

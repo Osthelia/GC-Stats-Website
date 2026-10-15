@@ -15,7 +15,8 @@
 import { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables } from "@gc-stats/db";
+import { gameTables, sharedPeople } from "@gc-stats/db";
+import { ensureGameProfile } from "@/lib/person-service";
 import { getUserLinkStatus, buildUserLinkItem } from "@/lib/user-link-request";
 import { DEFAULT_GAME, isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { visiblePerson } from "@/lib/ghost-visibility";
@@ -42,6 +43,13 @@ export async function POST(request: Request) {
   const personId = body && typeof body.personId === "number" && Number.isInteger(body.personId) && body.personId > 0 ? body.personId : null;
   if (!personId) return oauthError(400, "invalid_request", "personId must be a positive integer.");
 
+  // The account already owns this person: the link exists for every game, only the game profile may be missing.
+  const [owned] = await db.select({ id: sharedPeople.id }).from(sharedPeople).where(and(eq(sharedPeople.id, personId), eq(sharedPeople.userId, token.userId))).limit(1);
+  if (owned) {
+    await ensureGameProfile(db, game, personId);
+    return NextResponse.json({ status: "already_linked" });
+  }
+
   const [target] = await db.select({ id: people.id }).from(people).where(and(eq(people.id, personId), visiblePerson(game))).limit(1);
   if (!target) return oauthError(404, "not_found", "No player with that id.");
 
@@ -49,8 +57,9 @@ export async function POST(request: Request) {
   if (status.state === "linkedToYou") return NextResponse.json({ status: "already_linked" });
   if (status.state === "linkedToOther") return oauthError(409, "already_linked", "This player is already linked to another account.");
   if (status.state === "pending") return oauthError(409, "request_pending", "A player link request for this account is already pending review.");
+  if (status.state === "linkedToAnotherPerson") return oauthError(409, "linked_to_another_player", "This account is already linked to another player. Ask staff to merge both profiles.");
   if (status.state === "notFound") return oauthError(404, "not_found", "No player with that id.");
-  const item = buildUserLinkItem(token.userId, status.previousPersonId);
+  const item = buildUserLinkItem(token.userId);
 
   const changeRequestId = await db.transaction(async (tx) => {
     const [row] = await tx

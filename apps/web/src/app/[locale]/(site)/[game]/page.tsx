@@ -36,7 +36,7 @@ async function HomeMatches({ game }: { game: GameSlug }) {
 }
 
 async function HomeTournaments({ locale, game }: { locale: AppLocale; game: GameSlug }) {
-  return <TournamentsPanel groups={await getHomeTournamentGroups(game, REGIONS, locale)} />;
+  return <TournamentsPanel groups={await getHomeTournamentGroups(game, REGIONS, locale)} game={game} />;
 }
 
 async function HomeNews({ locale, game }: { locale: AppLocale; game: GameSlug }) {

@@ -53,6 +53,7 @@ type Item = { field: string; oldValue: unknown; newValue: unknown };
 const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, string> = {
   linkedToYou: "userLinkAlreadyYours",
   linkedToOther: "userLinkTaken",
+  linkedToAnotherPerson: "userLinkOtherPerson",
   pending: "userLinkPending",
   notFound: "notFound",
 };
@@ -322,7 +323,7 @@ export async function submitChangeRequest(
     if (subjectType !== "person") return { ok: false, fieldErrors: { linkUser: "invalid" } };
     const status = await getUserLinkStatus(game, userId, subjectId);
     if (status.state !== "available") return { ok: false, fieldErrors: { linkUser: USER_LINK_ERRORS[status.state] } };
-    userLinkItems.push(buildUserLinkItem(userId, status.previousPersonId));
+    userLinkItems.push(buildUserLinkItem(userId));
   }
 
   const allItems = [...items, ...membershipItems, ...nameHistoryItems, ...logoHistoryItems, ...userLinkItems];

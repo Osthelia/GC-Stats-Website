@@ -226,6 +226,7 @@ export default async function TournamentsPage({
                     logoUrlLight={tour.logoUrlLight}
                     size={40}
                     bare
+                    game={game}
                   />
                   <div className="min-w-0 flex-1">
                     <h2 className="line-clamp-2 text-[15px] leading-snug font-bold tracking-tight break-words text-neutral-50">

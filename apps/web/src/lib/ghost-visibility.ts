@@ -42,7 +42,7 @@ export function visibleMatch(game: GameSlug) {
 )`;
 }
 
-export function ghostScopeClause(isGhostColumn: PgColumn, scope: GhostScope): SQL | undefined {
+export function ghostScopeClause(isGhostColumn: PgColumn | SQL, scope: GhostScope): SQL | undefined {
   if (scope === "include") return undefined;
-  return eq(isGhostColumn, scope === "only");
+  return sql`${isGhostColumn} = ${scope === "only"}`;
 }

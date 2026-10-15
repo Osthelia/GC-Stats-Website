@@ -20,7 +20,7 @@ const INACTIVITY_MONTHS = 12;
 
 /** A never active entity (no completed match) has a NULL last match, so the `<` comparison leaves it untouched. */
 async function deactivateInactiveEntitiesForGame(game: GameSlug): Promise<string> {
-  const { people, teams } = gameTables(game);
+  const { personProfiles, teams } = gameTables(game);
   const cutoff = new Date();
   cutoff.setUTCMonth(cutoff.getUTCMonth() - INACTIVITY_MONTHS);
   const cutoffIso = cutoff.toISOString();
@@ -51,40 +51,40 @@ async function deactivateInactiveEntitiesForGame(game: GameSlug): Promise<string
   const personMatches = sql`
     select 1 from ${gameTables(game).entrantMembers} em
     join ${gameTables(game).matches} m on em.entrant_id in (m.entrant_a_id, m.entrant_b_id)
-    where em.person_id = ${people.id} and m.status = 'completed'`;
+    where em.person_id = ${personProfiles.personId} and m.status = 'completed'`;
 
   const deactivatedPeople = await db
-    .update(people)
+    .update(personProfiles)
     .set({ isActive: false })
     .where(
       and(
-        eq(people.isActive, true),
+        eq(personProfiles.isActive, true),
         // Already had some activity ever
         sql`(
           exists (${personMatches})
-          or exists (select 1 from ${gameTables(game).rosterMemberships} where person_id = ${people.id})
-          or exists (select 1 from ${gameTables(game).organizationMemberships} where person_id = ${people.id})
-          or exists (select 1 from ${gameTables(game).productionCredits} where person_id = ${people.id})
+          or exists (select 1 from ${gameTables(game).rosterMemberships} where person_id = ${personProfiles.personId})
+          or exists (select 1 from ${gameTables(game).organizationMemberships} where person_id = ${personProfiles.personId})
+          or exists (select 1 from ${gameTables(game).productionCredits} where person_id = ${personProfiles.personId})
         )`,
         // No match within the year
         sql`not exists (${personMatches} and m.scheduled_at >= ${cutoffIso})`,
         // No team or organization entry within the year (period && [cutoff, ∞) : still open or ended since)
         sql`not exists (
           select 1 from ${gameTables(game).rosterMemberships} rm
-          where rm.person_id = ${people.id} and rm.period && daterange(${cutoffDate}::date, null)
+          where rm.person_id = ${personProfiles.personId} and rm.period && daterange(${cutoffDate}::date, null)
         )`,
         sql`not exists (
           select 1 from ${gameTables(game).organizationMemberships} om
-          where om.person_id = ${people.id} and om.period && daterange(${cutoffDate}::date, null)
+          where om.person_id = ${personProfiles.personId} and om.period && daterange(${cutoffDate}::date, null)
         )`,
         // No production within the year
         sql`not exists (
           select 1 from ${gameTables(game).productionCredits} pc ${creditTournamentJoins}
-          where pc.person_id = ${people.id} and t.end_date >= ${cutoffDate}::date
+          where pc.person_id = ${personProfiles.personId} and t.end_date >= ${cutoffDate}::date
         )`
       )
     )
-    .returning({ id: people.id });
+    .returning({ id: personProfiles.personId });
 
   return `deactivated ${deactivatedTeams.length} team(s) and ${deactivatedPeople.length} player(s) with no activity in ${INACTIVITY_MONTHS} months`;
 }

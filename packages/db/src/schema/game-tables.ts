@@ -10,17 +10,26 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql } from "drizzle-orm";
-import { pgTable, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql, eq } from "drizzle-orm";
+import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { daterange } from "./custom-types";
 import { users } from "./auth";
-import { organizations } from "./people";
+import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
 import { containerTypeEnum, matchStatusEnum, slotEnum, matchResultEnum, seedSourceEnum, entryStatusEnum, stageStatusEnum } from "./bracket";
 import { pickemScoringModeEnum, pickemRewardKindEnum } from "./pickem";
 import type { GameSlug } from "../game";
 
 type GamePrefix = "val" | "lol";
+
+// Riot (Valorant) and VLR ids, only the Valorant profile has them.
+function riotColumns() {
+  return {
+    valId: text("val_id").unique(), // Riot puuid, null for people who never played competitively
+    esportsValId: text("esports_val_id").unique(),
+    vlrId: integer("vlr_id"),
+  };
+}
 
 // `mapIdRef` is only given for Valorant, the only game with a maps table.
 export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: () => AnyPgColumn) {
@@ -75,32 +84,48 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     index(`${p}_team_name_history_team_id_idx`).on(t.teamId),
   ]);
 
-  // Unified identity - see DATABASES.MD Â§3.2. Replaces the separate V1
-  // `players`/`staff` tables: a person who competed and later casts/coaches
-  // stays one row, one logo/photo history, one profile.
-  const people = pgTable(`${p}_people` as `${P}_people`, {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    handle: text("handle").notNull(),
-    aliases: jsonb("aliases"),
-    firstName: text("first_name"),
-    lastName: text("last_name"),
-    countryCode: char("country_code", { length: 3 }),
-    secondaryCountryCode: char("secondary_country_code", { length: 3 }),
-    pronouns: smallint("pronouns"),
-    birthDate: date("birth_date"),
-    bio: text("bio"),
-    socials: jsonb("socials").notNull().default({}),
-    valId: text("val_id").unique(), // Riot puuid - null for people who never played competitively
-    esportsValId: text("esports_val_id").unique(),
-    vlrId: integer("vlr_id"),
+  // The identity is shared by every game (`people`), this is the part that only concerns this
+  // game. A row means the person exists in this game: public pages and searches of the game
+  // only list people who have one. Valorant alone has Riot and VLR ids.
+  const personProfiles = pgTable(`${p}_person_profiles` as `${P}_person_profiles`, {
+    personId: bigint("person_id", { mode: "number" }).primaryKey().references(() => sharedPeople.id, { onDelete: "cascade" }),
     isActive: boolean("is_active").notNull().default(true),
     // Out-of-coverage player (mix tournament): shown on its matches only.
     isGhost: boolean("is_ghost").notNull().default(false),
-    userId: text("user_id").unique().references(() => users.id, { onDelete: "set null" }),
     liquipediaLink: text("liquipedia_link"),
     // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
     liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
+    ...(p === "val" ? riotColumns() : ({} as ReturnType<typeof riotColumns>)),
   });
+
+  // Read model of a person in this game (identity + profile), same columns the old per-game
+  // people table had. Read only: writes go to `sharedPeople` and `personProfiles`.
+  const people = pgView(`${p}_people` as `${P}_people`).as((qb) =>
+    qb
+      .select({
+        id: sharedPeople.id,
+        handle: sharedPeople.handle,
+        aliases: sharedPeople.aliases,
+        firstName: sharedPeople.firstName,
+        lastName: sharedPeople.lastName,
+        countryCode: sharedPeople.countryCode,
+        secondaryCountryCode: sharedPeople.secondaryCountryCode,
+        pronouns: sharedPeople.pronouns,
+        birthDate: sharedPeople.birthDate,
+        bio: sharedPeople.bio,
+        socials: sharedPeople.socials,
+        userId: sharedPeople.userId,
+        isActive: personProfiles.isActive,
+        isGhost: personProfiles.isGhost,
+        liquipediaLink: personProfiles.liquipediaLink,
+        liquipediaSourced: personProfiles.liquipediaSourced,
+        valId: p === "val" ? personProfiles.valId : (sql<string | null>`NULL::text`.as("val_id") as unknown as typeof personProfiles.valId),
+        esportsValId: p === "val" ? personProfiles.esportsValId : (sql<string | null>`NULL::text`.as("esports_val_id") as unknown as typeof personProfiles.esportsValId),
+        vlrId: p === "val" ? personProfiles.vlrId : (sql<number | null>`NULL::integer`.as("vlr_id") as unknown as typeof personProfiles.vlrId),
+      })
+      .from(sharedPeople)
+      .innerJoin(personProfiles, eq(personProfiles.personId, sharedPeople.id))
+  );
 
   // Name used for a person in generated Liquipedia wikicode, one to one. A person can
   // be exported without owning a Liquipedia page, so this is not tied to `liquipedia_link`.
@@ -108,7 +133,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     `${p}_liquipedia_person_names` as `${P}_liquipedia_person_names`,
     {
       id: bigserial("id", { mode: "number" }).primaryKey(),
-      personId: bigint("person_id", { mode: "number" }).notNull().unique().references(() => people.id, { onDelete: "cascade" }),
+      personId: bigint("person_id", { mode: "number" }).notNull().unique().references(() => sharedPeople.id, { onDelete: "cascade" }),
       name: text("name").notNull(),
       updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
@@ -121,7 +146,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   // entrant_members in bracket.ts for that.
   const rosterMemberships = pgTable(`${p}_roster_memberships` as `${P}_roster_memberships`, {
     id: bigserial("id", { mode: "number" }).primaryKey(),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
     teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
     role: text("role").notNull().default("player"), // 'player' | 'player-igl' | 'sub' | 'coach' | 'assistant coach' | 'performance coach' | 'analyst' | 'manager'
     period: daterange("period").notNull(),
@@ -147,7 +172,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   // (2026-09-13): "les membres... sont un visuel (comme player)".
   const organizationMemberships = pgTable(`${p}_organization_memberships` as `${P}_organization_memberships`, {
     id: bigserial("id", { mode: "number" }).primaryKey(),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
     organizationId: bigint("organization_id", { mode: "number" }).notNull().references(() => organizations.id, { onDelete: "cascade" }),
     role: text("role").notNull(), // 'admin' | 'caster' | 'observer' | 'producer' | 'editor' | ...
     period: daterange("period").notNull(),
@@ -160,7 +185,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   // same pattern as entrants.kind / stage_qualifications.
   const productionCredits = pgTable(`${p}_production_credits` as `${P}_production_credits`, {
     id: bigserial("id", { mode: "number" }).primaryKey(),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
     organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
     role: text("role").notNull(), // 'caster' | 'analyst' | 'host' | 'observer' | 'organizer' | 'producer' | 'editor' | 'photographer' | 'translator' | 'referee' | ...
     titleOverride: text("title_override"),
@@ -268,7 +293,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     tournamentId: bigint("tournament_id", { mode: "number" }).notNull().references(() => tournaments.id, { onDelete: "cascade" }),
     kind: text("kind").notNull(), // 'team' | 'player' | 'placeholder' — GC-Stats only ever writes 'team'/'placeholder'
     teamId: bigint("team_id", { mode: "number" }).references(() => teams.id),
-    playerId: bigint("player_id", { mode: "number" }).references(() => people.id),
+    playerId: bigint("player_id", { mode: "number" }).references(() => sharedPeople.id),
     displayName: text("display_name").notNull(), // snapshot at registration time, survives a later team rename
     seed: integer("seed"),
     // When false, the source is derived from the qualification rules at read time
@@ -290,7 +315,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   const entrantMembers = pgTable(`${p}_entrant_members` as `${P}_entrant_members`, {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id, { onDelete: "cascade" }),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
     role: text("role").notNull().default("player"), // 'player' | 'stand_in' | 'coach' | 'manager' | 'analyst' | ...
     isStarter: boolean("is_starter").notNull().default(true),
   }, (t) => [
@@ -564,7 +589,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     id: bigserial("id", { mode: "number" }).primaryKey(),
     matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
     entrantId: bigint("entrant_id", { mode: "number" }).notNull(),
-    personId: bigint("person_id", { mode: "number" }).references(() => people.id, { onDelete: "cascade" }), // null = the team's own channel
+    personId: bigint("person_id", { mode: "number" }).references(() => sharedPeople.id, { onDelete: "cascade" }), // null = the team's own channel
     twitchLogin: text("twitch_login").notNull(),
     title: text("title"),
     url: text("url").notNull(),
@@ -685,14 +710,14 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     (t) => [unique(`${p}_pickem_rewards_user_stage_kind_unique`).on(t.userId, t.stageId, t.kind)]
   );
 
-  return { teams, liquipediaTeamNames, teamNameHistory, people, liquipediaPersonNames, rosterMemberships, organizationMemberships, productionCredits, pointTypes, tournaments, tournamentComponents, stages, stageContainers, entrants, entrantMembers, groupEntries, containerStandingsRules, matches, matchSeeds, bracketEdges, stageQualifications, qualificationResults, pointEntries, news, newsMessages, newsRelations, newsImages, changeRequests, changeRequestItems, changeRequestMessages, changeRequestDiscordNotices, streamChannels, matchStreams, vods, matchPlayerPovs, pickemStageSettings, pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, pickemMatchPicks, pickemStandingPicks, pickemRewards };
+  return { teams, liquipediaTeamNames, teamNameHistory, personProfiles, people, liquipediaPersonNames, rosterMemberships, organizationMemberships, productionCredits, pointTypes, tournaments, tournamentComponents, stages, stageContainers, entrants, entrantMembers, groupEntries, containerStandingsRules, matches, matchSeeds, bracketEdges, stageQualifications, qualificationResults, pointEntries, news, newsMessages, newsRelations, newsImages, changeRequests, changeRequestItems, changeRequestMessages, changeRequestDiscordNotices, streamChannels, matchStreams, vods, matchPlayerPovs, pickemStageSettings, pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, pickemMatchPicks, pickemStandingPicks, pickemRewards };
 }
 
 export type GameTables = ReturnType<typeof defineGameTables<"val">>;
 
 // Valorant only: maps, raw/aggregated stats from the Riot relay, and the veto system.
 export function defineValorantTables(g: GameTables) {
-  const { matches, entrants, people, tournaments } = g;
+  const { matches, entrants, tournaments } = g;
 
   // --- Maps (one per bracket-engine match, best-of-N) -----------------------
   const maps = pgTable("val_maps", {
@@ -734,8 +759,8 @@ export function defineValorantTables(g: GameTables) {
   const mapRoundKillsRaw = pgTable("val_map_round_kills_raw", {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     mapRoundId: bigint("map_round_id", { mode: "number" }).notNull().references(() => mapRoundsRaw.id, { onDelete: "cascade" }),
-    killerPersonId: bigint("killer_person_id", { mode: "number" }).references(() => people.id),
-    victimPersonId: bigint("victim_person_id", { mode: "number" }).notNull().references(() => people.id),
+    killerPersonId: bigint("killer_person_id", { mode: "number" }).references(() => sharedPeople.id),
+    victimPersonId: bigint("victim_person_id", { mode: "number" }).notNull().references(() => sharedPeople.id),
     timeMs: integer("time_ms").notNull(),
     weapon: text("weapon"), // display name, e.g. "Vandal" — see reference tables note above
     damageType: text("damage_type"), // Weapon | Ability | Bomb | Melee | Fall
@@ -748,8 +773,8 @@ export function defineValorantTables(g: GameTables) {
   const mapRoundDamagesRaw = pgTable("val_map_round_damages_raw", {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     mapRoundId: bigint("map_round_id", { mode: "number" }).notNull().references(() => mapRoundsRaw.id, { onDelete: "cascade" }),
-    attackerPersonId: bigint("attacker_person_id", { mode: "number" }).references(() => people.id),
-    receiverPersonId: bigint("receiver_person_id", { mode: "number" }).notNull().references(() => people.id),
+    attackerPersonId: bigint("attacker_person_id", { mode: "number" }).references(() => sharedPeople.id),
+    receiverPersonId: bigint("receiver_person_id", { mode: "number" }).notNull().references(() => sharedPeople.id),
     damage: integer("damage").notNull(),
     headshots: integer("headshots").notNull().default(0),
     bodyshots: integer("bodyshots").notNull().default(0),
@@ -780,7 +805,7 @@ export function defineValorantTables(g: GameTables) {
     mapId: bigint("map_id", { mode: "number" }).notNull().references(() => maps.id), // denormalized for indexed heatmap filtering
     eventType: text("event_type").notNull(), // 'kill' | 'plant' | 'defuse'
     mapRoundKillId: bigint("map_round_kill_id", { mode: "number" }).references(() => mapRoundKillsRaw.id, { onDelete: "set null" }),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id),
     role: text("role"), // 'killer' | 'victim' | 'bystander' | 'planter' | 'defuser'
     x: integer("x").notNull(),
     y: integer("y").notNull(),
@@ -794,7 +819,7 @@ export function defineValorantTables(g: GameTables) {
   const mapRoundPlayerLoadoutsRaw = pgTable("val_map_round_player_loadouts_raw", {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     mapRoundId: bigint("map_round_id", { mode: "number" }).notNull().references(() => mapRoundsRaw.id, { onDelete: "cascade" }),
-    personId: bigint("person_id", { mode: "number" }).notNull().references(() => people.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
     entrantId: bigint("entrant_id", { mode: "number" }).references(() => entrants.id),
     kills: integer("kills").notNull().default(0),
     assists: integer("assists").notNull().default(0),
@@ -811,7 +836,7 @@ export function defineValorantTables(g: GameTables) {
   const mapPlayerStats = pgTable("val_map_player_stats", {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     mapId: bigint("map_id", { mode: "number" }).notNull().references(() => maps.id, { onDelete: "cascade" }),
-    personId: bigint("person_id", { mode: "number" }).references(() => people.id),
+    personId: bigint("person_id", { mode: "number" }).references(() => sharedPeople.id),
     entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id),
     agentName: text("agent_name"), // display name, e.g. "Jett" — see reference tables note above
     valName: text("val_name"),
@@ -905,6 +930,7 @@ const valorantOnly = defineValorantTables(val);
 export const valTeams = val.teams;
 export const valLiquipediaTeamNames = val.liquipediaTeamNames;
 export const valTeamNameHistory = val.teamNameHistory;
+export const valPersonProfiles = val.personProfiles;
 export const valPeople = val.people;
 export const valLiquipediaPersonNames = val.liquipediaPersonNames;
 export const valRosterMemberships = val.rosterMemberships;
@@ -959,6 +985,7 @@ export const valMatchVetoSessions = valorantOnly.matchVetoSessions;
 export const lolTeams = lol.teams;
 export const lolLiquipediaTeamNames = lol.liquipediaTeamNames;
 export const lolTeamNameHistory = lol.teamNameHistory;
+export const lolPersonProfiles = lol.personProfiles;
 export const lolPeople = lol.people;
 export const lolLiquipediaPersonNames = lol.liquipediaPersonNames;
 export const lolRosterMemberships = lol.rosterMemberships;

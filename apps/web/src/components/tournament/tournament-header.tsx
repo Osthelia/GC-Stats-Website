@@ -10,7 +10,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
 import {
   getPublicTournamentStageLinks,
   type TournamentHeaderInfo,
@@ -249,11 +249,11 @@ export async function TournamentHeader({
             }}
           >
             <ThemedLogoImage
-              dark={tournament.logoUrl || DEFAULT_TOURNAMENT_LOGO}
+              dark={tournament.logoUrl || defaultTournamentLogo(game)}
               light={
                 tournament.logoUrlLight ||
                 tournament.logoUrl ||
-                DEFAULT_TOURNAMENT_LOGO
+                defaultTournamentLogo(game)
               }
               alt={tournament.name}
               width={84}
