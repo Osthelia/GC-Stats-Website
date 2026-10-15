@@ -11,16 +11,17 @@
 
 "use server";
 
-import { and, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { teams, people, rosterMemberships, teamNameHistory, organizations, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
-import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
+import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
+import { closeOpenMemberships } from "@/lib/roster-close";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
@@ -262,18 +263,6 @@ async function findOpenMembershipsElsewhere(personId: number, teamId: number, ex
 export async function getRosterConflicts(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
   await requireAdminActorId();
   return findOpenMembershipsElsewhere(personId, teamId, excludeMembershipId);
-}
-
-/** Closes the chosen memberships at `closeAt`, only if they are still open memberships of that person on other teams. */
-async function closeOpenMemberships(tx: Parameters<Parameters<typeof db.transaction>[0]>[0], ids: number[], personId: number, teamId: number, closeAt: string): Promise<void> {
-  if (ids.length === 0) return;
-  const rows = await tx
-    .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-    .from(rosterMemberships)
-    .where(and(inArray(rosterMemberships.id, ids), eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), eq(rosterMemberships.hasLeft, false)));
-  for (const row of rows) {
-    await tx.update(rosterMemberships).set({ period: closeRange(row.period, closeAt), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-  }
 }
 
 export type AddRosterMemberField = "person" | "role" | "from" | "until";

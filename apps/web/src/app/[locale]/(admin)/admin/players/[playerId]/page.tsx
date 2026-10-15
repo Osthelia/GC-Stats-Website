@@ -96,7 +96,7 @@ export default async function AdminPlayerPage({
         }
       />
 
-      <PlayerTeamHistoryPanel playerId={player.id} initialEntries={history} canEdit={hasAccess(access, PERMISSIONS.playersEdit)} />
+      <PlayerTeamHistoryPanel playerId={player.id} playerHandle={player.handle}initialEntries={history} canEdit={hasAccess(access, PERMISSIONS.playersEdit)} />
     </div>
   );
 }
