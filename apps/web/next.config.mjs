@@ -37,14 +37,12 @@ const nextConfig = {
   images: isCloudflareBuild ? { unoptimized: true } : undefined,
   // sharp ships native (.node) bindings — must stay a real require() on the
   // server, not get pulled into a webpack/turbopack bundle.
-  // pg-cloudflare and @cf-wasm/photon both have a "workerd" conditional
-  // export (real implementation vs. a Node/default no-op or a .wasm file
-  // Turbopack can't bundle at all) that Next's own file tracing/bundling
-  // can't see — bundling them ourselves resolves to the wrong condition (or
-  // fails outright on the .wasm import). Externalizing makes Next copy the
-  // whole package instead and defers actual resolution to wrangler's own
-  // bundling pass, which does understand the workerd condition and .wasm.
-  serverExternalPackages: isCloudflareBuild ? ["pg", "pg-cloudflare", "@cf-wasm/photon"] : ["sharp"],
+  // pg-cloudflare has a "workerd" conditional export (real implementation vs.
+  // a Node/default no-op) that Next's own file tracing/bundling can't see —
+  // bundling it ourselves resolves to the wrong condition. Externalizing
+  // makes Next copy the whole package instead and defers actual resolution to
+  // wrangler's own bundling pass, which does understand the workerd condition.
+  serverExternalPackages: isCloudflareBuild ? ["pg", "pg-cloudflare"] : ["sharp"],
   turbopack: {
     resolveAlias: isCloudflareBuild
       ? {
@@ -63,12 +61,7 @@ const nextConfig = {
           // Messages are fetched from static assets instead of bundled, see load-messages.cloudflare.ts.
           "@/i18n/load-messages": "./src/i18n/load-messages.cloudflare.ts",
         }
-      : // @cf-wasm/photon/workerd (packages/storage/src/image-cloudflare.ts,
-        // only reached at runtime when DEPLOY_TARGET=cloudflare) imports a
-        // .wasm file the way Wrangler expects, which Turbopack can't bundle
-        // for the Docker/Node target even behind a dynamic import — it still
-        // needs to compile the chunk.
-        { "@cf-wasm/photon/workerd": "./stubs/photon-stub.js", "@cf-wasm/photon": "./stubs/photon-stub.js" },
+      : {},
   },
   allowedDevOrigins: ["localhost", "127.0.0.1"],
   // Old endpoint kept temporarly
