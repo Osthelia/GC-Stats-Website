@@ -6457,6 +6457,12 @@
     "calendarCopied": "تم نسخ الرابط"
   },
   "calendar": {
+    "monthView": "الشهر",
+    "weekView": "الأسبوع",
+    "previousMonth": "الشهر السابق",
+    "nextMonth": "الشهر التالي",
+    "previousWeek": "الأسبوع السابق",
+    "nextWeek": "الأسبوع التالي",
     "showEvents": "الأحداث",
     "both": "كلاهما",
     "filterTeamLabel": "الفريق",

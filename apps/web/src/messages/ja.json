@@ -6457,6 +6457,12 @@
     "calendarCopied": "リンクをコピーしました"
   },
   "calendar": {
+    "monthView": "月",
+    "weekView": "週",
+    "previousMonth": "前の月",
+    "nextMonth": "次の月",
+    "previousWeek": "前の週",
+    "nextWeek": "次の週",
     "showEvents": "イベント",
     "both": "両方",
     "filterTeamLabel": "チーム",

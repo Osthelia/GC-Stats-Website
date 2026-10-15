@@ -6457,6 +6457,12 @@
     "calendarCopied": "Link skopiowany"
   },
   "calendar": {
+    "monthView": "Miesiąc",
+    "weekView": "Tydzień",
+    "previousMonth": "Poprzedni miesiąc",
+    "nextMonth": "Następny miesiąc",
+    "previousWeek": "Poprzedni tydzień",
+    "nextWeek": "Następny tydzień",
     "showEvents": "Wydarzenia",
     "both": "Oba",
     "filterTeamLabel": "Drużyna",

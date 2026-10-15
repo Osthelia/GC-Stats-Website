@@ -6457,6 +6457,12 @@
     "calendarCopied": "คัดลอกลิงก์แล้ว"
   },
   "calendar": {
+    "monthView": "เดือน",
+    "weekView": "สัปดาห์",
+    "previousMonth": "เดือนก่อนหน้า",
+    "nextMonth": "เดือนถัดไป",
+    "previousWeek": "สัปดาห์ก่อนหน้า",
+    "nextWeek": "สัปดาห์ถัดไป",
     "showEvents": "กิจกรรม",
     "both": "ทั้งสอง",
     "filterTeamLabel": "ทีม",

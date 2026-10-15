@@ -71,6 +71,12 @@ export function isCalendarMonth(value: string): boolean {
   return /^[1-9]\d{3}-(0[1-9]|1[0-2])$/.test(value);
 }
 
+export function isCalendarDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !isCalendarMonth(value.slice(0, 7))) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 export function offsetCalendarMonth(month: string, offset: number): string {
   const date = new Date(`${month}-01T00:00:00Z`);
   date.setUTCMonth(date.getUTCMonth() + offset);

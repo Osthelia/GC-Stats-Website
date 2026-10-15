@@ -6457,6 +6457,12 @@
     "calendarCopied": "Link kopiert"
   },
   "calendar": {
+    "monthView": "Monat",
+    "weekView": "Woche",
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
     "showEvents": "Tuniere",
     "both": "Beides",
     "filterTeamLabel": "Team",

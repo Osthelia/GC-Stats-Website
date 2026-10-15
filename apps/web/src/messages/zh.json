@@ -6457,6 +6457,12 @@
     "calendarCopied": "链接已复制"
   },
   "calendar": {
+    "monthView": "月",
+    "weekView": "周",
+    "previousMonth": "上个月",
+    "nextMonth": "下个月",
+    "previousWeek": "上一周",
+    "nextWeek": "下一周",
     "showEvents": "事件",
     "both": "两者",
     "filterTeamLabel": "队伍",

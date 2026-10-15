@@ -6457,6 +6457,12 @@
     "calendarCopied": "Bağlantı kopyalandı"
   },
   "calendar": {
+    "monthView": "Ay",
+    "weekView": "Hafta",
+    "previousMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "previousWeek": "Önceki hafta",
+    "nextWeek": "Sonraki hafta",
     "showEvents": "Etkinlikler",
     "both": "İkisi de",
     "filterTeamLabel": "Takım",

@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/react/daygrid";
 import allLocales from '@fullcalendar/react/locales-all';
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DatesSetInfo } from "@fullcalendar/react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -19,62 +19,77 @@ import './colors.css';
 import { useSiteSettings } from "@/lib/site-settings";
 import type { CalendarEvent } from "@/lib/calendar-data";
 import { useRouter } from "@/i18n/navigation";
+import { FilterPill } from "@/components/filters/filter-pill";
+
+function offsetDays(date: string, days: number) {
+  const result = new Date(`${date}T00:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  return result.toISOString().slice(0, 10);
+}
 
 type EventCalendarProps = {
   month: string;
+  date: string;
+  view: "month" | "week";
   previousMonth: string;
   nextMonth: string;
   events: CalendarEvent[];
 };
 
-export default function EventCalendar({ month, previousMonth, nextMonth, events }: EventCalendarProps) {
+export default function EventCalendar({ month, date, view, previousMonth, nextMonth, events }: EventCalendarProps) {
   const { theme, timezone, clock24 } = useSiteSettings();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("home");
+  const calendarT = useTranslations("calendar");
+  const [range, setRange] = useState<{ title: string; start: string; end: string } | null>(null);
   const searchParams = useSearchParams();
-  const monthHref = useCallback((targetMonth: string) => {
+  const periodHref = useCallback((targetDate: string, targetView = view) => {
     const query = new URLSearchParams(searchParams.toString());
-    query.set("month", targetMonth);
+    query.set("month", targetDate.slice(0, 7));
+    query.set("date", targetDate);
+    if (targetView === "week") query.set("view", "week");
+    else query.delete("view");
     return `/calendar?${query}`;
-  }, [searchParams]);
-  const todayMonth = new Intl.DateTimeFormat("sv-SE", {
+  }, [searchParams, view]);
+  const today = new Intl.DateTimeFormat("sv-SE", {
     timeZone: timezone,
     year: "numeric",
     month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
+  const previousDate = view === "week" ? offsetDays(date, -7) : `${previousMonth}-14`;
+  const nextDate = view === "week" ? offsetDays(date, 7) : `${nextMonth}-14`;
+  const isCurrentPeriod = view === "month" ? month === today.slice(0, 7)
+    : !!range && range.start <= today && today < range.end;
 
   useEffect(() => {
-    router.prefetch(monthHref(previousMonth));
-    router.prefetch(monthHref(nextMonth));
-  }, [router, previousMonth, nextMonth, monthHref]);
+    router.prefetch(periodHref(previousDate));
+    router.prefetch(periodHref(nextDate));
+  }, [router, previousDate, nextDate, periodHref]);
 
   const handleDatesSet = useCallback((info: DatesSetInfo) => {
-    // The grid can start in the preceding month. A week inside currentStart
-    // identifies the displayed month even across timezone boundary shifts.
-    const insideMonth = new Date(info.view.currentStart.getTime() + 7 * 86_400_000);
-    const displayedMonth = insideMonth.toISOString().slice(0, 7);
-    if (displayedMonth !== month) {
-      router.push(monthHref(displayedMonth), { scroll: false });
-    }
-  }, [month, router, monthHref]);
+    setRange({ title: info.view.title, start: info.startStr.slice(0, 10), end: info.endStr.slice(0, 10) });
+  }, []);
   
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         <h2 className="text-xl font-bold">
-          {new Intl.DateTimeFormat(locale, {
+          {range?.title ?? new Intl.DateTimeFormat(locale, {
             month: "long",
             year: "numeric",
             timeZone: "UTC",
-          }).format(new Date(`${month}-15T00:00:00Z`))}
+          }).format(new Date(`${date}T00:00:00Z`))}
         </h2>
-        <div className="flex justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <FilterPill href={periodHref(date, "month")} active={view === "month"} label={calendarT("monthView")} />
+          <FilterPill href={periodHref(date, "week")} active={view === "week"} label={calendarT("weekView")} />
           <Button
             variant="outline"
-            disabled={month === todayMonth}
+            disabled={isCurrentPeriod}
             onClick={() =>
-              router.push(monthHref(todayMonth), { scroll: false })
+              router.push(periodHref(today), { scroll: false })
             }
           >
             {t("today")}
@@ -82,9 +97,9 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
           <Button
             variant="outline"
             size="icon"
-            aria-label="Previous month"
+            aria-label={calendarT(view === "week" ? "previousWeek" : "previousMonth")}
             onClick={() =>
-              router.push(monthHref(previousMonth), { scroll: false })
+              router.push(periodHref(previousDate), { scroll: false })
             }
           >
             <ChevronLeft />
@@ -93,9 +108,9 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
           <Button
             variant="outline"
             size="icon"
-            aria-label="Next month"
+            aria-label={calendarT(view === "week" ? "nextWeek" : "nextMonth")}
             onClick={() =>
-              router.push(monthHref(nextMonth), { scroll: false })
+              router.push(periodHref(nextDate), { scroll: false })
             }
           >
             <ChevronRight />
@@ -103,8 +118,8 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
         </div>
       </div>
       <FullCalendar
-        key={month}
-        initialDate={`${month}-14`}
+        key={`${view}-${date}`}
+        initialDate={date}
         datesSet={handleDatesSet}
         headerToolbar={false}
         locales={allLocales}
@@ -112,8 +127,19 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
         colorScheme={theme}
         timeZone={timezone}
         plugins={[themePlugin, dayGridPlugin]}
-        initialView="dayGridMonth"
-        contentHeight={1140}
+        initialView={view === "week" ? "dayGridWeek" : "dayGridMonth"}
+        titleFormat={(info) => {
+          const formatter = new Intl.DateTimeFormat(locale, {
+            month: view === "week" ? "short" : "long",
+            day: view === "week" ? "numeric" : undefined,
+            year: "numeric", timeZone: "UTC",
+          });
+          const start = new Date(Date.UTC(info.start.year, info.start.month, info.start.day));
+          const end = info.end && new Date(Date.UTC(info.end.year, info.end.month, info.end.day));
+          // Node and browsers can use different whitespace around date-range separators.
+          return (view === "week" && end ? formatter.formatRange(start, end) : formatter.format(start)).replace(/\s+/g, " ");
+        }}
+        contentHeight={view === "week" ? 400 : 1140}
         expandRows={true}
         fixedWeekCount={false}
         dayMaxEvents={true}

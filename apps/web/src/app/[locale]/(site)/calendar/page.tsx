@@ -1,5 +1,5 @@
 import EventCalendar from "@/components/calendar/event-calendar";
-import { getCalendarMonth, getCalendarTeam, getCalendarTournamentFacets, isCalendarMonth, offsetCalendarMonth, parseCalendarTeamId, type CalendarFilters } from "@/lib/calendar-data";
+import { getCalendarMonth, getCalendarTeam, getCalendarTournamentFacets, isCalendarDate, isCalendarMonth, offsetCalendarMonth, parseCalendarTeamId, type CalendarFilters } from "@/lib/calendar-data";
 import { getTranslations } from "next-intl/server";
 import { FilterPill } from "@/components/filters/filter-pill";
 import { FilterBar, FilterBarRow } from "@/components/filters/filter-bar";
@@ -23,9 +23,14 @@ export default async function CalendarPage({
     teamId: parseCalendarTeamId(raw(params.team)),
   };
   const requestedMonth = raw(params.month);
-  const month = requestedMonth && isCalendarMonth(requestedMonth)
-    ? requestedMonth
-    : new Date().toISOString().slice(0, 7);
+  const view = raw(params.view) === "week" ? "week" : "month";
+  const requestedDate = raw(params.date);
+  const validDate = isCalendarDate(requestedDate) ? requestedDate : undefined;
+  const today = new Date().toISOString().slice(0, 10);
+  const month = view === "week" && validDate ? validDate.slice(0, 7)
+    : isCalendarMonth(requestedMonth) ? requestedMonth : today.slice(0, 7);
+  const date = validDate?.startsWith(month) ? validDate
+    : today.startsWith(month) ? today : `${month}-14`;
   const previousMonth = offsetCalendarMonth(month, -1);
   const nextMonth = offsetCalendarMonth(month, 1);
   const [monthsEvents, facets, selectedTeam] = await Promise.all([
@@ -40,6 +45,10 @@ export default async function CalendarPage({
   const { regions, categories } = facets;
   const buildHref = (overrides: Partial<Pick<CalendarFilters, "region" | "category"> & { show: string }>) => {
     const query = new URLSearchParams({ month });
+    if (view === "week") {
+      query.set("view", "week");
+      query.set("date", date);
+    }
     if (filters.teamId !== undefined) query.set("team", String(filters.teamId));
     for (const [key, value] of Object.entries({ region, category, show, ...overrides })) {
       if (value) query.set(key, value);
@@ -109,7 +118,7 @@ export default async function CalendarPage({
           ))}
         </FilterBarRow>
       </FilterBar>
-      <EventCalendar month={month} previousMonth={previousMonth} nextMonth={nextMonth} events={events} />
+      <EventCalendar month={month} date={date} view={view} previousMonth={previousMonth} nextMonth={nextMonth} events={events} />
     </div>
   );
 }

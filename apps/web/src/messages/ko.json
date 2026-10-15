@@ -6457,6 +6457,12 @@
     "calendarCopied": "링크가 복사되었습니다"
   },
   "calendar": {
+    "monthView": "월",
+    "weekView": "주",
+    "previousMonth": "이전 달",
+    "nextMonth": "다음 달",
+    "previousWeek": "이전 주",
+    "nextWeek": "다음 주",
     "showEvents": "이벤트",
     "both": "모두",
     "filterTeamLabel": "팀",

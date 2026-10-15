@@ -6457,6 +6457,12 @@
     "calendarCopied": "Link copiado"
   },
   "calendar": {
+    "monthView": "Mês",
+    "weekView": "Semana",
+    "previousMonth": "Mês anterior",
+    "nextMonth": "Próximo mês",
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Próxima semana",
     "showEvents": "Eventos",
     "both": "Ambos",
     "filterTeamLabel": "Equipe",
