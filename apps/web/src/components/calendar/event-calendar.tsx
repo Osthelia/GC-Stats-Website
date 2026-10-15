@@ -67,6 +67,12 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
   const isCurrentPeriod = view === "month" ? month === today.slice(0, 7)
     : !!range && range.start <= today && today < range.end;
 
+  const hasExplicitPeriod = searchParams.has("month");
+  const currentMonthDiffers = month !== today.slice(0, 7);
+  useEffect(() => {
+    if (!hasExplicitPeriod && currentMonthDiffers) router.replace(periodHref(today), { scroll: false });
+  }, [hasExplicitPeriod, currentMonthDiffers, router, periodHref, today]);
+  
   useEffect(() => {
     router.prefetch(periodHref(previousDate));
     router.prefetch(periodHref(nextDate));
