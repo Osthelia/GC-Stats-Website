@@ -149,6 +149,8 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
         expandRows={true}
         fixedWeekCount={false}
         dayMaxEvents={true}
+        eventOrder="-allDay,start,-duration,title"
+        eventOrderStrict={true}
         eventTimeFormat={{
           hour: "2-digit",
           minute: "2-digit",
