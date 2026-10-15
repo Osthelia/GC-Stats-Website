@@ -113,6 +113,10 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
         timeZone={timezone}
         plugins={[themePlugin, dayGridPlugin]}
         initialView="dayGridMonth"
+        contentHeight={1140}
+        expandRows={true}
+        fixedWeekCount={false}
+        dayMaxEvents={true}
         eventTimeFormat={{
           hour: "2-digit",
           minute: "2-digit",
