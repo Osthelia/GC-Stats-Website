@@ -75,16 +75,7 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <h2 className="text-xl font-bold">
-          {range?.title ?? new Intl.DateTimeFormat(locale, {
-            month: "long",
-            year: "numeric",
-            timeZone: "UTC",
-          }).format(new Date(`${date}T00:00:00Z`))}
-        </h2>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <FilterPill href={periodHref(date, "month")} active={view === "month"} label={calendarT("monthView")} />
-          <FilterPill href={periodHref(date, "week")} active={view === "week"} label={calendarT("weekView")} />
+        <div className="flex gap-4">
           <Button
             variant="outline"
             disabled={isCurrentPeriod}
@@ -104,7 +95,6 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
           >
             <ChevronLeft />
           </Button>
-
           <Button
             variant="outline"
             size="icon"
@@ -115,6 +105,18 @@ export default function EventCalendar({ month, date, view, previousMonth, nextMo
           >
             <ChevronRight />
           </Button>
+          <h2 className="text-xl font-bold">
+            {range?.title ?? new Intl.DateTimeFormat(locale, {
+              month: "long",
+              year: "numeric",
+              timeZone: "UTC",
+            }).format(new Date(`${date}T00:00:00Z`))}
+          </h2>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <FilterPill href={periodHref(date, "month")} active={view === "month"} label={calendarT("monthView")} />
+          <FilterPill href={periodHref(date, "week")} active={view === "week"} label={calendarT("weekView")} />
+          
         </div>
       </div>
       <FullCalendar
