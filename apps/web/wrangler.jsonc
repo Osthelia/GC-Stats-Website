@@ -63,6 +63,12 @@
           "id": "aed2896219d14ae2a8dd1d9b6344cd4b"
         }
       ],
+      "vpc_services": [
+        {
+          "binding": "RIOT_RELAY",
+          "service_id": "01a0e3ed-56fb-7691-a6f5-39c2c693c47d"
+        }
+      ],
       "services": [
         {
           "binding": "DISCORD_NOTIFICATIONS",
