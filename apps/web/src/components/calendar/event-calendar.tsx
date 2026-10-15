@@ -4,7 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import themePlugin from "@fullcalendar/react/themes/pulse"; // YOUR THEME
 import dayGridPlugin from "@fullcalendar/react/daygrid";
 import allLocales from '@fullcalendar/react/locales-all';
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import type { DatesSetInfo } from "@fullcalendar/react";
@@ -31,6 +31,7 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
   const { theme, timezone, clock24 } = useSiteSettings();
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations("home");
   const searchParams = useSearchParams();
   const monthHref = useCallback((targetMonth: string) => {
     const query = new URLSearchParams(searchParams.toString());
@@ -76,7 +77,7 @@ export default function EventCalendar({ month, previousMonth, nextMonth, events 
               router.push(monthHref(todayMonth), { scroll: false })
             }
           >
-            Today
+            {t("today")}
           </Button>
           <Button
             variant="outline"
