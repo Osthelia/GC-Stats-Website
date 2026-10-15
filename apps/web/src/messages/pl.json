@@ -6457,6 +6457,11 @@
     "calendarCopied": "Link skopiowany"
   },
   "calendar": {
+    "filterTeamLabel": "Drużyna",
+    "allTeams": "Wszystkie drużyny",
+    "searchTeams": "Szukaj drużyn…",
+    "teamSearchError": "Nie udało się wyszukać drużyn. Spróbuj ponownie.",
+    "teamUnavailable": "Drużyna niedostępna",
     "allName": "GC Stats, wszystkie mecze",
     "teamName": "Mecze {team} (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",

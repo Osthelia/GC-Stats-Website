@@ -6581,6 +6581,11 @@
     "calendarCopied": "Link copied"
   },
   "calendar": {
+    "filterTeamLabel": "Team",
+    "allTeams": "All teams",
+    "searchTeams": "Search teams…",
+    "teamSearchError": "Could not search teams. Please try again.",
+    "teamUnavailable": "Team unavailable",
     "allName": "GC Stats, all matches",
     "teamName": "{team} matches (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",

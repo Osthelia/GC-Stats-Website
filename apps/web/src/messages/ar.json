@@ -6457,6 +6457,11 @@
     "calendarCopied": "تم نسخ الرابط"
   },
   "calendar": {
+    "filterTeamLabel": "الفريق",
+    "allTeams": "جميع الفرق",
+    "searchTeams": "البحث عن فرق…",
+    "teamSearchError": "تعذر البحث عن الفرق. حاول مرة أخرى.",
+    "teamUnavailable": "الفريق غير متاح",
     "allName": "GC Stats، كل المباريات",
     "teamName": "مباريات {team} (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",

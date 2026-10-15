@@ -6457,6 +6457,11 @@
     "calendarCopied": "링크가 복사되었습니다"
   },
   "calendar": {
+    "filterTeamLabel": "팀",
+    "allTeams": "모든 팀",
+    "searchTeams": "팀 검색…",
+    "teamSearchError": "팀을 검색할 수 없습니다. 다시 시도하세요.",
+    "teamUnavailable": "사용할 수 없는 팀",
     "allName": "GC Stats, 전체 경기",
     "teamName": "{team} 경기 (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",

@@ -6457,6 +6457,11 @@
     "calendarCopied": "リンクをコピーしました"
   },
   "calendar": {
+    "filterTeamLabel": "チーム",
+    "allTeams": "すべてのチーム",
+    "searchTeams": "チームを検索…",
+    "teamSearchError": "チームを検索できませんでした。もう一度お試しください。",
+    "teamUnavailable": "チームを利用できません",
     "allName": "GC Stats、全試合",
     "teamName": "{team} の試合 (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",

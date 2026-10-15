@@ -1,7 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { and, asc, eq, gte, lt, sql } from "drizzle-orm";
+import { and, asc, eq, exists, gte, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { entrants, matches, teams, tournaments, stages, stageContainers } from "@gc-stats/db";
@@ -13,7 +13,22 @@ import { TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 export type CalendarFilters = {
   region: string;
   category: string;
+  teamId?: number;
 };
+
+export function parseCalendarTeamId(value: string): number | undefined {
+  if (!/^[1-9]\d*$/.test(value)) return undefined;
+  const id = Number(value);
+  return Number.isSafeInteger(id) ? id : undefined;
+}
+
+export async function getCalendarTeam(teamId: number) {
+  const [team] = await db.select({ id: teams.id, name: teams.name })
+    .from(teams)
+    .where(and(eq(teams.id, teamId), eq(teams.isGhost, false)))
+    .limit(1);
+  return team ?? null;
+}
 
 function getTournamentFilters(filters: CalendarFilters) {
   const conditions = [eq(tournaments.active, true), visibleTournament];
@@ -89,12 +104,30 @@ export const getCalendarMonth = unstable_cache(async (month: string, filters: Ca
       .leftJoin(entrantB, eq(entrantB.id, matches.entrantBId))
       .leftJoin(teamA, eq(teamA.id, entrantA.teamId))
       .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
-      .where(and(gte(matches.scheduledAt, start), lt(matches.scheduledAt, end), eq(stages.active, true), tournamentFilters))
+      .where(and(
+        gte(matches.scheduledAt, start), lt(matches.scheduledAt, end),
+        eq(stages.active, true), tournamentFilters,
+        filters.teamId === undefined ? undefined : or(
+          and(eq(entrantA.teamId, filters.teamId), eq(teamA.isGhost, false)),
+          and(eq(entrantB.teamId, filters.teamId), eq(teamB.isGhost, false)),
+        ),
+      ))
       .orderBy(asc(matches.scheduledAt), asc(matches.id)),
     db.select({ id: tournaments.id, name: tournaments.name, start: tournaments.startDate, end: tournaments.endDate, region: tournaments.region })
       .from(tournaments)
       // Overlap rather than start year: includes tournaments spanning months or years.
-      .where(and(lt(tournaments.startDate, to), gte(tournaments.endDate, from), tournamentFilters))
+      .where(and(
+        lt(tournaments.startDate, to), gte(tournaments.endDate, from), tournamentFilters,
+        filters.teamId === undefined ? undefined : exists(
+          db.select({ id: entrants.id }).from(entrants)
+            .innerJoin(teams, eq(teams.id, entrants.teamId))
+            .where(and(
+              eq(entrants.tournamentId, tournaments.id),
+              eq(entrants.teamId, filters.teamId),
+              eq(teams.isGhost, false),
+            )),
+        ),
+      ))
       .orderBy(asc(tournaments.startDate), asc(tournaments.id)),
   ]);
 

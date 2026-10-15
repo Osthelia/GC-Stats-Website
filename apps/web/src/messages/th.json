@@ -6457,6 +6457,11 @@
     "calendarCopied": "คัดลอกลิงก์แล้ว"
   },
   "calendar": {
+    "filterTeamLabel": "ทีม",
+    "allTeams": "ทุกทีม",
+    "searchTeams": "ค้นหาทีม…",
+    "teamSearchError": "ไม่สามารถค้นหาทีมได้ โปรดลองอีกครั้ง",
+    "teamUnavailable": "ทีมไม่พร้อมใช้งาน",
     "allName": "GC Stats, ทุกแมตช์",
     "teamName": "แมตช์ของ {team} (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",
