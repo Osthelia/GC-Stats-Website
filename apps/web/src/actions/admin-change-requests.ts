@@ -19,6 +19,7 @@ import { changeRequests, changeRequestItems, teams, people, rosterMemberships, t
 import { deleteLogoFiles } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
+import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
@@ -38,7 +39,7 @@ const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secon
  * snapshot taken at submit time. Throws a plain Error with a short message
  * on failure — caught by the caller and stored in applyError.
  */
-async function applyChangeRequestItem(subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown): Promise<void> {
+async function applyChangeRequestItem(subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown, closeMembershipIds: number[]): Promise<void> {
   // --- Simple profile columns (including socials.<key>) -------------------
   if (field.startsWith("socials.")) {
     const key = field.slice("socials.".length);
@@ -65,7 +66,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
   // suggest-edit form's membership_* ops above — see change-request-item-card.tsx
   // for how this shape was discovered in real prod data). subjectType is
   // always "person" here; moves the person onto their newly-detected team as
-  // of joined_at, closing whatever else is open for that (person, role) pair.
+  // of joined_at. Other open entries are closed only when the reviewer chose to.
   if (field === "roster") {
     const v = newValue as { role: string; team_id: number; joined_at: string; team_name?: string };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
@@ -74,13 +75,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
 
     const period = openRangeFrom(v.joined_at);
     await db.transaction(async (tx) => {
-      const openElsewhere = await tx
-        .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-        .from(rosterMemberships)
-        .where(and(eq(rosterMemberships.personId, subjectId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
-      for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.joined_at), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-      }
+      await closeOpenMemberships(tx, closeMembershipIds, subjectId, v.team_id, v.joined_at);
       await tx.insert(rosterMemberships).values({ personId: subjectId, teamId: v.team_id, role: v.role, period, inactiveSince: null });
     });
     return;
@@ -98,15 +93,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const hasLeft = v.hasLeft ?? !!v.until;
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
-      if (isOngoing) {
-        const openElsewhere = await tx
-          .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-          .from(rosterMemberships)
-          .where(and(eq(rosterMemberships.personId, v.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
-        for (const row of openElsewhere) {
-          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-        }
-      }
+      if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, v.personId, v.teamId, v.since);
       await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince });
     });
     return;
@@ -115,23 +102,15 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
   if (field === "membership_edit") {
     const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
+    const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
     if (!membership) throw new Error("membershipNotFound");
 
     const period = v.until ? `[${v.since},${v.until})` : openRangeFrom(v.since);
     const hasLeft = v.hasLeft ?? (!!v.until || membership.hasLeft);
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
-      if (isOngoing) {
-        const openElsewhere = await tx
-          .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-          .from(rosterMemberships)
-          .where(and(eq(rosterMemberships.personId, membership.personId), eq(rosterMemberships.role, v.role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false), ne(rosterMemberships.id, v.membershipId)));
-        for (const row of openElsewhere) {
-          await tx.update(rosterMemberships).set({ period: closeRange(row.period, v.since), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-        }
-      }
-      await tx.update(rosterMemberships).set({ role: v.role, period, inactiveSince: v.inactiveSince }).where(eq(rosterMemberships.id, v.membershipId));
+      if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, v.since);
+      await tx.update(rosterMemberships).set({ role: v.role, period, hasLeft, inactiveSince: v.inactiveSince }).where(eq(rosterMemberships.id, v.membershipId));
     });
     return;
   }
@@ -268,7 +247,7 @@ async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId
  * with the error recorded, rather than silently leaving it pending forever.
  * Recomputes the parent change_requests.status once every item is resolved.
  */
-export async function resolveChangeRequestItem(itemId: number, action: "approve" | "reject", note: string): Promise<ResolveItemResult> {
+export async function resolveChangeRequestItem(itemId: number, action: "approve" | "reject", note: string, closeMembershipIds: number[] = []): Promise<ResolveItemResult> {
   const access = await requireActorPermission(PERMISSIONS.changeRequestsManage);
 
   const [item] = await db.select().from(changeRequestItems).where(eq(changeRequestItems.id, itemId)).limit(1);
@@ -288,7 +267,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 
   if (action === "approve") {
     try {
-      await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue);
+      await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
       status = "approved";
       await logActivity({
         subject: request.subjectType === "team" ? "team" : "player",
@@ -320,6 +299,52 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
   await recomputeChangeRequestStatus(item.changeRequestId, access.userId, request.requestedBy);
 
   return { ok: true, status, applyError };
+}
+
+export type ItemRosterTarget = { handle: string; personId: number; teamId: number; excludeMembershipId?: number } | null;
+
+/** Person and team an item would put on a current roster entry, to look for other current entries before approving. Null when the item doesn't open one. */
+export async function getItemRosterTarget(itemId: number): Promise<ItemRosterTarget> {
+  await requireActorPermission(PERMISSIONS.changeRequestsManage);
+
+  const [row] = await db
+    .select({ field: changeRequestItems.field, newValue: changeRequestItems.newValue, subjectId: changeRequests.subjectId })
+    .from(changeRequestItems)
+    .innerJoin(changeRequests, eq(changeRequests.id, changeRequestItems.changeRequestId))
+    .where(eq(changeRequestItems.id, itemId))
+    .limit(1);
+  if (!row) return null;
+
+  let personId: number;
+  let teamId: number;
+  let excludeMembershipId: number | undefined;
+  let hasLeft = false;
+
+  if (row.field === "roster") {
+    const v = row.newValue as { team_id: number };
+    personId = row.subjectId;
+    teamId = v.team_id;
+  } else if (row.field === "membership_add") {
+    const v = row.newValue as { personId: number; teamId: number; hasLeft?: boolean; until: string | null };
+    personId = v.personId;
+    teamId = v.teamId;
+    hasLeft = v.hasLeft ?? !!v.until;
+  } else if (row.field === "membership_edit") {
+    const v = row.newValue as { membershipId: number; hasLeft?: boolean; until: string | null };
+    const [membership] = await db.select({ personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
+    if (!membership) return null;
+    personId = membership.personId;
+    teamId = membership.teamId;
+    excludeMembershipId = v.membershipId;
+    hasLeft = v.hasLeft ?? (!!v.until || membership.hasLeft);
+  } else {
+    return null;
+  }
+  if (hasLeft) return null;
+
+  const [person] = await db.select({ handle: people.handle }).from(people).where(eq(people.id, personId)).limit(1);
+  if (!person) return null;
+  return { handle: person.handle, personId, teamId, excludeMembershipId };
 }
 
 export type BulkResolveResult = { itemId: number; result: ResolveItemResult }[];

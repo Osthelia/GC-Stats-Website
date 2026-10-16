@@ -189,6 +189,7 @@ export async function submitChangeRequest(
         if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
+        if (typeof op.hasLeft !== "boolean" || (op.until && !op.hasLeft)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         // The fixed side (subject) must match this suggest-edit page — the picked side is trusted to exist (picker only offers real rows) but re-checked anyway.
         const fixedOk = subjectType === "team" ? op.teamId === subjectId : op.personId === subjectId;
@@ -201,11 +202,11 @@ export async function submitChangeRequest(
         membershipItems.push({
           field: "membership_add",
           oldValue: null,
-          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, inactiveSince: op.inactiveSince },
+          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince },
         });
       } else if (op.type === "edit" || op.type === "delete") {
         const [membership] = await db
-          .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, inactiveSince: rosterMemberships.inactiveSince })
+          .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft, inactiveSince: rosterMemberships.inactiveSince })
           .from(rosterMemberships)
           .where(eq(rosterMemberships.id, op.membershipId))
           .limit(1);
@@ -219,6 +220,7 @@ export async function submitChangeRequest(
           if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
+          if (typeof op.hasLeft !== "boolean" || (op.until && !op.hasLeft)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           membershipItems.push({
             field: "membership_edit",
@@ -227,9 +229,10 @@ export async function submitChangeRequest(
               role: membership.role,
               since: rangeLower(membership.period),
               until: rangeIsOpen(membership.period) ? null : rangeUpper(membership.period),
+              hasLeft: membership.hasLeft,
               inactiveSince: membership.inactiveSince,
             },
-            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, inactiveSince: op.inactiveSince },
+            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince },
           });
         }
       }

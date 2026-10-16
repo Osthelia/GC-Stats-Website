@@ -6004,7 +6004,9 @@
       "searchPlaceholder": "Szukaj…",
       "noResults": "Brak wyników.",
       "addRow": "Dodaj wiersz",
-      "hint": "Możesz zaproponować edycję lub usunięcie istniejącego wpisu oraz dodanie do 6 nowych. Wszystko jest sprawdzane przez zespół, zanim skład się zmieni."
+      "hint": "Możesz zaproponować edycję lub usunięcie istniejącego wpisu oraz dodanie do 6 nowych. Wszystko jest sprawdzane przez zespół, zanim skład się zmieni.",
+      "hasLeft": "Opuścił zespół",
+      "untilLabel": "Odejście"
     },
     "nameHistory": {
       "title": "Historia nazw",

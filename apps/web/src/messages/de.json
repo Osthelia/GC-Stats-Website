@@ -6004,7 +6004,9 @@
       "searchPlaceholder": "Suchen…",
       "noResults": "Keine Ergebnisse.",
       "addRow": "Zeile hinzufügen",
-      "hint": "Sie können das Bearbeiten oder Entfernen eines bestehenden Eintrags vorschlagen sowie bis zu 6 neue hinzufügen. Alles hier wird vom Team geprüft, bevor es das Roster verändert."
+      "hint": "Sie können das Bearbeiten oder Entfernen eines bestehenden Eintrags vorschlagen sowie bis zu 6 neue hinzufügen. Alles hier wird vom Team geprüft, bevor es das Roster verändert.",
+      "hasLeft": "Hat das Team verlassen",
+      "untilLabel": "Verlassen am"
     },
     "nameHistory": {
       "title": "Namensverlauf",
