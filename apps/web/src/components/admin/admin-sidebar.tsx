@@ -12,8 +12,10 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { GAMES } from "@gc-stats/db/game";
+import { withGame } from "@/lib/game-href";
 import { cn } from "@/lib/utils";
-import { ADMIN_TOP_ITEMS as TOP_ITEMS, ADMIN_NAV_GROUPS as NAV_GROUPS, type AdminNavItem as NavItem } from "@/lib/admin-nav-items";
+import { ADMIN_TOP_ITEMS as TOP_ITEMS, ADMIN_NAV_GROUPS as NAV_GROUPS, ADMIN_GAME_ITEMS as GAME_ITEMS, type AdminNavItem as NavItem } from "@/lib/admin-nav-items";
 import {
   Sidebar,
   SidebarContent,
@@ -87,13 +89,18 @@ function NavGroup({
 
 export function AdminSidebar({ permissions, isSuperAdmin }: { permissions: string[]; isSuperAdmin: boolean }) {
   const t = useTranslations("admin.nav");
+  const tGame = useTranslations("game");
   const pathname = usePathname();
 
-  const isActive = (item: NavItem) =>
-    item.exact ? pathname === item.href : pathname.startsWith(item.href);
+  // The dashboard lives at /admin/{game}.
+  const isDashboard = pathname === "/admin" || GAMES.some((game) => pathname === `/admin/${game}`);
+  const isActive = (item: NavItem, href = item.href) =>
+    item.href === "/admin" ? isDashboard : item.exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   const canSee = (item: NavItem) =>
     isSuperAdmin || ((!item.superAdminOnly) && (!item.permission || permissions.includes(item.permission)));
+
+  const visibleGameItems = GAME_ITEMS.filter(canSee);
 
   const visibleGroups = NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter(canSee) })).filter(
     (group) => group.items.length > 0
@@ -129,6 +136,29 @@ export function AdminSidebar({ permissions, isSuperAdmin }: { permissions: strin
           </SidebarGroupContent>
           <SidebarSeparator className="mt-3 mb-0 group-data-[collapsible=icon]:hidden" />
         </SidebarGroup>
+
+        {visibleGameItems.length > 0 &&
+          GAMES.map((game) => (
+            <NavGroup key={game} groupKey={`game_${game}`} label={tGame(game)}>
+              <SidebarMenu className="gap-1.5">
+                {visibleGameItems.map((item) => {
+                  const href = withGame(item.href, game);
+                  return (
+                    <SidebarMenuItem key={href}>
+                      <SidebarMenuButton
+                        isActive={isActive(item, href)}
+                        tooltip={`${tGame(game)}: ${t(item.labelKey)}`}
+                        render={<Link href={href} />}
+                      >
+                        <item.icon className="size-3.5" />
+                        <span>{t(item.labelKey)}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </NavGroup>
+          ))}
 
         {visibleGroups.map((group) => (
           <NavGroup key={group.key} groupKey={group.key} label={t(group.labelKey)}>

@@ -1656,7 +1656,21 @@
     "productionTitle": "{player} ・ プロダクション",
     "formerOrganizations": "元所属組織",
     "noFormerOrganizations": "元所属組織の記録はありません。",
-    "unknownDate": "不明"
+    "unknownDate": "不明",
+    "addGameProfile": {
+      "title": "{game}にも参加していますか？",
+      "description": "ワンクリックで{game}のプロフィールを追加できます。名前、写真、リンクを引き継ぐので、もう一度入力する必要はありません。",
+      "button": "{game}のプロフィールを追加",
+      "adding": "追加中...",
+      "done": "{game}のプロフィールを追加しました。",
+      "open": "{game}のプロフィールを見る",
+      "error": {
+        "unauthenticated": "ログインが必要です。",
+        "notYours": "このプレイヤーはあなたのアカウントに連携されていません。",
+        "invalidGame": "このゲームは存在しません。"
+      }
+    },
+    "alsoOn": "{game}にも出場"
   },
   "organizationPage": {
     "tabOverview": "概要",
@@ -2106,7 +2120,8 @@
       "error": {
         "userNotFound": "ユーザーが見つかりません。",
         "roleNotFound": "選択されたロールのいずれかが存在しません。",
-        "selfDemote": "自分自身の管理者権限を削除することはできません。"
+        "selfDemote": "自分自身の管理者権限を削除することはできません。",
+        "gameNotFound": "このゲームは存在しません。"
       },
       "authMethods": {
         "heading": "認証",
@@ -2385,7 +2400,8 @@
           "ownerOnly": "オーナーロールの付与または編集はオーナーのみ行えます。",
           "userNotFound": "アカウントが見つかりません。",
           "alreadyHasAccess": "このアカウントはすでにこの組織へのアクセス権を持っています。"
-        }
+        },
+        "fieldGames": "ゲーム"
       },
       "filterKindLabel": "組織の種類",
       "filterKindAll": "すべての組織",
@@ -2778,11 +2794,26 @@
           "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。"
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。"
+        "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。",
+        "sectionGames": "ゲーム",
+        "gamesHint": "1人につきゲームごとに1つのプロフィール。名前、国、代名詞、自己紹介、別名、SNS、写真、連携アカウントは共通で、それ以外はゲームごとに管理されます。",
+        "sharedHint": "名前、国、代名詞、自己紹介、別名、SNS、写真は、この人物の他のゲームと共通です。",
+        "gameCurrent": "現在のゲーム",
+        "gameHasProfile": "プロフィールあり",
+        "gameNoProfile": "プロフィールなし",
+        "gameOpen": "開く",
+        "gameAddButton": "{game}に追加",
+        "gameAdding": "追加中...",
+        "gameAddSuccess": "{game}に追加しました。",
+        "gameAddError": {
+          "invalidGame": "このゲームは存在しません。",
+          "notFound": "このプレイヤーは存在しません。",
+          "alreadyThere": "このプレイヤーはすでにこのゲームのプロフィールを持っています。"
+        }
       },
       "merge": {
         "title": "選手を統合",
-        "description": "統合先を選び、カテゴリごとに {name} のどのデータをそこへ移すかを選択します。{name} 自体はここでは削除されません。",
+        "description": "統合先を選び、カテゴリごとに {name} のどのデータをそこへ移すかを選択します。",
         "backToPlayer": "← 選手に戻る",
         "selectTarget": "統合先",
         "targetPlaceholder": "選手を選択…",
@@ -2814,8 +2845,21 @@
           "samePlayer": "統合先には別の選手を選択してください。",
           "sourceNotFound": "選手が見つかりません。",
           "targetNotFound": "統合先の選手が見つかりません。",
-          "targetAlreadyLinked": "統合先の選手にはすでに連携されたアカウントがあります。"
-        }
+          "targetAlreadyLinked": "統合先の選手にはすでに連携されたアカウントがあります。",
+          "sourceStillUsed": "このプレイヤーはこのゲームの参加者または試合統計でまだ使用されています。それらも選択するか、プロフィールを残してください。"
+        },
+        "removeSource": "統合後に{game}から削除",
+        "removeSourceHint": "すべて移動した後、{name}はこのゲームから削除され、他のゲームにこのプロフィールがない場合は完全に削除されます。参加者や試合統計がまだ使用している場合は拒否されます。"
+      },
+      "duplicatesLink": "重複の可能性",
+      "duplicates": {
+        "title": "重複の可能性",
+        "description": "同じハンドル名で、それぞれ別のゲームに存在する人物です。{game}のプロフィールをもう一方に統合すると、プロフィールが1つになります。",
+        "backToList": "プレイヤー一覧に戻る",
+        "columnSource": "{game}内",
+        "columnTarget": "もう一方のプロフィール",
+        "merge": "統合",
+        "empty": "重複は見つかりませんでした。"
       }
     },
     "finance": {
@@ -4939,6 +4983,9 @@
       "hasLeft": "チームを離脱済み",
       "untilLabel": "脱退日",
       "unknownHint": "終了日は不明です。わからない場合は空欄のままにしてください。"
+    },
+    "personPicker": {
+      "notInGame": "{game}にはまだありません"
     }
   },
   "dashboard": {
@@ -6026,11 +6073,11 @@
       "title": "あなたのアカウント",
       "checkbox": "これは私です：{name} にアカウントを連携する",
       "hint": "アカウントに連携する前に、スタッフがこのプロフィールが本当にあなたのものか確認します。",
-      "replaces": "あなたのアカウントは現在 {previous} に連携されています。承認されるとこの連携は置き換えられます。",
       "state": {
         "linkedToYou": "このプロフィールはすでにあなたのアカウントに連携されています。",
         "linkedToOther": "このプロフィールはすでに別のアカウントに連携されています。間違いだと思う場合はスタッフに連絡してください。",
-        "pending": "審査待ちのアカウント連携リクエストがすでにあります。"
+        "pending": "審査待ちのアカウント連携リクエストがすでにあります。",
+        "linkedToAnotherPerson": "あなたのアカウントはすでに別のプレイヤーに連携されています。2つのプロフィールが同一人物の場合は、スタッフに統合を依頼してください。"
       }
     },
     "error": {
@@ -6060,7 +6107,8 @@
       "consentRequired": "写真の権利と同意の条件に同意する必要があります。",
       "invalidType": "JPG、PNG、WebPの写真のみ使用できます。",
       "tooSmall": "この写真は小さすぎます（短辺 400 px 以上が必要です）。",
-      "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
+      "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。",
+      "userLinkOtherPerson": "あなたのアカウントはすでに別のプレイヤーに連携されています。2つのプロフィールが同一人物の場合は、スタッフに統合を依頼してください。"
     },
     "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。",
     "useLinkedDiscord": "連携済みの Discord アカウントを使用"
@@ -6491,5 +6539,10 @@
     "points": "{label} ポイントで出場",
     "pointsUnknown": "ポイントで出場",
     "iconLabel": "出場経路"
+  },
+  "game": {
+    "switcherLabel": "ゲーム",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

@@ -23,6 +23,7 @@ import { TagsInput } from "@/components/admin/tags-input";
 import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { createTournament, updateTournament, type TournamentFieldErrors, type TournamentInput } from "@/actions/admin-tournaments";
 import type { AdminTournamentDetailRow } from "@/lib/admin-tournaments";
+import { useGame } from "@/lib/use-game";
 
 const STATUS_VALUES = ["upcoming", "live", "finished"] as const;
 const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord", "website"] as const;
@@ -85,6 +86,7 @@ export function TournamentDialog({
   onOpenChange: (open: boolean) => void;
   onSaved?: (id: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -105,7 +107,7 @@ export function TournamentDialog({
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = tournament ? await updateTournament(tournament.id, form) : await createTournament(form);
+      const result = tournament ? await updateTournament(game, tournament.id, form) : await createTournament(game, form);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

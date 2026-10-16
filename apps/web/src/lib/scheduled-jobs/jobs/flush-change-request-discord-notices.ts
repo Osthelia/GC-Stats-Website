@@ -11,8 +11,10 @@
  */
 
 import { eq, lte } from "drizzle-orm";
+import { forEachGame } from "../for-each-game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { changeRequestDiscordNotices } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { sendChangeRequestDiscordDecision } from "@/lib/notify";
 
 /**
@@ -21,7 +23,8 @@ import { sendChangeRequestDiscordDecision } from "@/lib/notify";
  * Deletes the row before sending, conditioned on it still existing, so an
  * overlapping tick (Cloudflare Cron Triggers can overlap) can't send twice.
  */
-export async function flushChangeRequestDiscordNotices(): Promise<string> {
+async function flushChangeRequestDiscordNoticesForGame(game: GameSlug): Promise<string> {
+  const { changeRequestDiscordNotices } = gameTables(game);
   const due = await db.select({ changeRequestId: changeRequestDiscordNotices.changeRequestId }).from(changeRequestDiscordNotices).where(lte(changeRequestDiscordNotices.scheduledAt, new Date()));
   if (due.length === 0) return "no change request discord notice due";
 
@@ -30,8 +33,12 @@ export async function flushChangeRequestDiscordNotices(): Promise<string> {
     const claimed = await db.delete(changeRequestDiscordNotices).where(eq(changeRequestDiscordNotices.changeRequestId, changeRequestId)).returning({ changeRequestId: changeRequestDiscordNotices.changeRequestId });
     if (claimed.length === 0) continue;
 
-    if (await sendChangeRequestDiscordDecision(changeRequestId)) sent++;
+    if (await sendChangeRequestDiscordDecision(game, changeRequestId)) sent++;
   }
 
   return `sent ${sent}/${due.length} change request discord notice(s)`;
+}
+
+export function flushChangeRequestDiscordNotices(): Promise<string> {
+  return forEachGame(flushChangeRequestDiscordNoticesForGame);
 }

@@ -29,8 +29,10 @@ import { deleteContainer, moveContainer } from "@/actions/admin-containers";
 import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
 import { stageContainerStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
 import type { AdminStageRow, AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLast }: { stage: AdminStageRow; container: AdminContainerRow; tournamentId: number; entrants: AdminEntrantRow[]; isFirst: boolean; isLast: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -52,7 +54,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteContainer(container.id, stage.id, forceDelete);
+      const result = await deleteContainer(game, container.id, stage.id, forceDelete);
       if (!result.ok) {
         toast.error(t(`error.${result.error === "hasPlayedMatches" ? "hasPlayedMatchesForceHint" : result.error}`));
         return;
@@ -66,7 +68,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
   function handleMove(direction: "up" | "down") {
     setMoving(direction);
     startTransition(async () => {
-      const result = await moveContainer(container.id, stage.id, direction);
+      const result = await moveContainer(game, container.id, stage.id, direction);
       setMoving(null);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
@@ -79,7 +81,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
   function handleReset() {
     if (!window.confirm(t("resetContainerConfirm", { name: container.name }))) return;
     startTransition(async () => {
-      const result = await resetContainer(container.id, stage.id);
+      const result = await resetContainer(game, container.id, stage.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -91,7 +93,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
 
   function handleStartSwiss() {
     startTransition(async () => {
-      const result = await startSwissRound1(container.id);
+      const result = await startSwissRound1(game, container.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -189,6 +191,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
 }
 
 export function TournamentStagesPanel({ tournamentId, stages, entrants, canManage }: { tournamentId: number; stages: AdminStageRow[]; entrants: AdminEntrantRow[]; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [addingStage, setAddingStage] = useState(false);
@@ -200,7 +203,7 @@ export function TournamentStagesPanel({ tournamentId, stages, entrants, canManag
   function handleDeleteStage(stage: AdminStageRow) {
     if (!window.confirm(t("deleteConfirm", { name: stage.name }))) return;
     startTransition(async () => {
-      const result = await deleteStage(stage.id, tournamentId);
+      const result = await deleteStage(game, stage.id, tournamentId);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -213,7 +216,7 @@ export function TournamentStagesPanel({ tournamentId, stages, entrants, canManag
   function handleToggleActive(stage: AdminStageRow) {
     if (!window.confirm(stage.active ? t("deactivateConfirm") : t("activateConfirm"))) return;
     startTransition(async () => {
-      const result = await toggleStageActive(stage.id);
+      const result = await toggleStageActive(game, stage.id);
       if (!result.ok) return;
       router.refresh();
       toast.success(result.active ? t("activateSuccess") : t("deactivateSuccess"));

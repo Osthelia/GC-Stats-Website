@@ -22,6 +22,7 @@ import { computeVirtualBracket, getPickableMatches, getDownstreamMatchIds } from
 import type { PickFormData } from "@/lib/pickem/pickem-data";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
 import { PickemBracketCanvas } from "@/components/pickem/pickem-bracket-canvas";
+import { useGame } from "@/lib/use-game";
 
 const NO_SELECTION = "none";
 
@@ -35,6 +36,7 @@ const NO_SELECTION = "none";
  * same way the real page tabs its non-bracket containers.
  */
 export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: number; data: PickFormData; scoringConfig: PhaseScoringConfig }) {
+  const game = useGame();
   const t = useTranslations("pickemPage");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -86,7 +88,7 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     );
 
     startTransition(async () => {
-      const result = await submitStagePicks(stageId, { matchPicks: matchPicksInput, standingPicks: standingPicksInput });
+      const result = await submitStagePicks(game, stageId, { matchPicks: matchPicksInput, standingPicks: standingPicksInput });
       if (!result.ok) {
         toast.error(t(`saveError.${result.error}`));
         return;

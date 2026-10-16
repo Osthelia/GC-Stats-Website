@@ -29,7 +29,6 @@ import {
 } from "@/actions/dashboard-organizations";
 import type { OrganizationRoleSummary } from "@/lib/organization-roles-data";
 import type { OrganizationAccessGrant } from "@/lib/organization-access-data";
-
 /** Email is admin-only (see /admin/organizations), never sent to this dashboard component. */
 type DashboardAccessGrant = Omit<OrganizationAccessGrant, "email">;
 

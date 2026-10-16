@@ -15,24 +15,7 @@ import { and, desc, eq, gte, inArray, isNotNull, lte, sql, type SQLWrapper } fro
 import { db } from "@gc-stats/db/client";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import {
-  people,
-  teams,
-  rosterMemberships,
-  entrants,
-  matches,
-  tournaments,
-  stages,
-  stageContainers,
-  qualificationResults,
-  stageQualifications,
-  news,
-  organizations,
-  newsRelations,
-  maps,
-  mapPlayerStats,
-  organizationMemberships,
-  productionCredits,
-} from "@gc-stats/db";
+  organizations, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -43,6 +26,7 @@ import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
 import type { ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type PlayerPageInfo = {
   id: number;
@@ -62,7 +46,8 @@ export type PlayerPageInfo = {
 };
 
 /** Deduplicated per request: the tabs layout and the page both read it. */
-export const getPlayerPageInfo = cache(async (id: number): Promise<PlayerPageInfo | null> => {
+export const getPlayerPageInfo = cache(async (game: GameSlug, id: number): Promise<PlayerPageInfo | null> => {
+  const { people } = gameTables(game);
   const [[row], logoEntries] = await Promise.all([
     db
       .select({
@@ -80,7 +65,7 @@ export const getPlayerPageInfo = cache(async (id: number): Promise<PlayerPageInf
         isActive: people.isActive,
       })
       .from(people)
-      .where(and(eq(people.id, id), visiblePerson))
+      .where(and(eq(people.id, id), visiblePerson(game)))
       .limit(1),
     getEntityLogos("person", id),
   ]);
@@ -113,11 +98,17 @@ export type PlayerTabAvailability = {
 };
 
 /** `PlayerHeader` only shows a tab when it has something to show: existence checks in one round trip. */
-export async function getPlayerTabAvailability(personId: number): Promise<PlayerTabAvailability> {
+export async function getPlayerTabAvailability(game: GameSlug, personId: number): Promise<PlayerTabAvailability> {
+  const { people, rosterMemberships, organizationMemberships, productionCredits, entrantMembers } = gameTables(game);
   const exists = (sub: SQLWrapper) => sql<boolean>`exists(${sub})`.mapWith(Boolean);
   const [row] = await db
     .select({
-      hasMatches: exists(db.select({ one: sql`1` }).from(mapPlayerStats).where(eq(mapPlayerStats.personId, personId))),
+      // Valorant: the player has map stats. Other games have no map stats, a locked tournament roster is the trace of a match played.
+      hasMatches: exists(
+        gameHasMaps(game)
+          ? db.select({ one: sql`1` }).from(valorantTablesOf(game).mapPlayerStats).where(eq(valorantTablesOf(game).mapPlayerStats.personId, personId))
+          : db.select({ one: sql`1` }).from(entrantMembers).where(eq(entrantMembers.personId, personId)),
+      ),
       hasTeamHistory: exists(db.select({ one: sql`1` }).from(rosterMemberships).where(eq(rosterMemberships.personId, personId))),
       hasOrganization: exists(db.select({ one: sql`1` }).from(organizationMemberships).where(eq(organizationMemberships.personId, personId))),
       hasCredit: exists(db.select({ one: sql`1` }).from(productionCredits).where(eq(productionCredits.personId, personId))),
@@ -149,7 +140,8 @@ export type PlayerTeamHistoryEntry = {
 };
 
 /** Deduplicated per request: the overview reads it from two Suspense boundaries. */
-export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ current: PlayerTeamHistoryEntry[]; formers: PlayerTeamHistoryEntry[] }> => {
+export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: number): Promise<{ current: PlayerTeamHistoryEntry[]; formers: PlayerTeamHistoryEntry[] }> => {
+  const { teams, rosterMemberships } = gameTables(game);
   const rows = await db
     .select({
       membershipId: rosterMemberships.id,
@@ -168,7 +160,7 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
     .where(eq(rosterMemberships.personId, personId))
     .orderBy(desc(rosterMemberships.id));
 
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))]);
+  const logosByTeamId = await getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))], game);
 
   const currentByTeamId = new Map<number, PlayerTeamHistoryEntry>();
   const formers: PlayerTeamHistoryEntry[] = [];
@@ -207,14 +199,15 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
 });
 
 /** Handle only, for the `/player/{id}` redirect to the canonical URL. */
-export async function getPlayerHandle(id: number): Promise<string | null> {
-  const [row] = await db.select({ handle: people.handle }).from(people).where(and(eq(people.id, id), visiblePerson)).limit(1);
+export async function getPlayerHandle(game: GameSlug, id: number): Promise<string | null> {
+  const { people } = gameTables(game);
+  const [row] = await db.select({ handle: people.handle }).from(people).where(and(eq(people.id, id), visiblePerson(game))).limit(1);
   return row?.handle ?? null;
 }
 
 /** Overview tab: only played/in-progress matches, capped short. */
-export async function getPlayerRecentMatches(personId: number, limit = 10): Promise<HomeMatch[]> {
-  return getEntityMatches({ kind: "player", id: personId }, { statuses: ["completed", "live"], limit });
+export async function getPlayerRecentMatches(game: GameSlug, personId: number, limit = 10): Promise<HomeMatch[]> {
+  return getEntityMatches(game, { kind: "player", id: personId }, { statuses: ["completed", "live"], limit });
 }
 
 export type PlayerAchievement = {
@@ -234,7 +227,8 @@ export type PlayerAchievement = {
  * contains the tournament's end date) — entrant-level attribution isn't
  * possible here, see `getPlayerMatches` for why.
  */
-export async function getPlayerAchievements(personId: number): Promise<{ items: PlayerAchievement[]; titles: number; podiums: number }> {
+export async function getPlayerAchievements(game: GameSlug, personId: number): Promise<{ items: PlayerAchievement[]; titles: number; podiums: number }> {
+  const { teams, rosterMemberships, entrants, matches, tournaments, stages, stageContainers, qualificationResults, stageQualifications } = gameTables(game);
   const rows = await db
     .select({
       qualificationId: stageQualifications.id,
@@ -262,7 +256,7 @@ export async function getPlayerAchievements(personId: number): Promise<{ items: 
         isNotNull(stageQualifications.placement),
         lte(stageQualifications.placement, 3),
         sql`${rosterMemberships.period} @> ${tournaments.endDate}`,
-        rosterPeriodIsDated,
+        rosterPeriodIsDated(game),
       ),
     )
     .orderBy(desc(tournaments.endDate));
@@ -282,6 +276,7 @@ export async function getPlayerAchievements(personId: number): Promise<{ items: 
 
 /** Distinct agents/maps this person has stats for — feeds the stats page filter dropdowns (always shows every option, independent of the currently applied filters). */
 export async function getPlayerStatsFilterOptions(personId: number): Promise<{ agents: string[]; maps: string[] }> {
+  const { maps, mapPlayerStats } = valorantTables;
   const [agentRows, mapRows] = await Promise.all([
     db.selectDistinct({ agentName: mapPlayerStats.agentName }).from(mapPlayerStats).where(eq(mapPlayerStats.personId, personId)),
     db
@@ -299,6 +294,7 @@ export async function getPlayerStatsFilterOptions(personId: number): Promise<{ a
 
 /** Rows of the player stats page, as a subquery for `aggregateMapPlayerStatsSql`. */
 export function playerStatsScope(personId: number, filters: ParsedStatsFilters): SQLWrapper {
+  const { maps, mapPlayerStats } = valorantTables;
   const { from, to } = resolveDateBounds(filters);
 
   const conditions = [eq(mapPlayerStats.personId, personId)];
@@ -323,7 +319,8 @@ export type PlayerPressItem = {
 };
 
 /** Not customizable here (only the /news listing page exposes the language filter) — always the site-locale + English default rule. */
-export async function getPlayerPress(personId: number, locale: AppLocale, limit = 5): Promise<PlayerPressItem[]> {
+export async function getPlayerPress(game: GameSlug, personId: number, locale: AppLocale, limit = 5): Promise<PlayerPressItem[]> {
+  const { news, newsRelations } = gameTables(game);
   const languages = await resolveNewsLanguages(locale);
   const rows = await db
     .select({
@@ -336,7 +333,7 @@ export async function getPlayerPress(personId: number, locale: AppLocale, limit 
     .from(newsRelations)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
-    .where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId), isNewsPublishedCondition(), inArray(news.lang, languages)))
+    .where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId), isNewsPublishedCondition(game), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 

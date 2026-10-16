@@ -76,7 +76,7 @@ export async function listAdminUsers(opts: { q: string; sort: AdminUserSort; dir
       .select({ userId: userRoles.userId, roleId: roles.id, roleName: roles.name, roleIsSuperAdmin: roles.isSuperAdmin })
       .from(userRoles)
       .innerJoin(roles, and(eq(roles.id, userRoles.roleId), eq(roles.scopeType, "global")))
-      .where(and(inArray(userRoles.userId, [...byUser.keys()]), isNull(userRoles.scopeId)))
+      .where(and(inArray(userRoles.userId, [...byUser.keys()]), isNull(userRoles.scopeId), isNull(userRoles.game)))
       .orderBy(asc(roles.name));
 
     for (const row of roleRows) {
@@ -92,6 +92,6 @@ export async function getUserGlobalRoleIds(userId: string): Promise<number[]> {
     .select({ roleId: userRoles.roleId })
     .from(userRoles)
     .innerJoin(roles, eq(roles.id, userRoles.roleId))
-    .where(and(eq(userRoles.userId, userId), eq(roles.scopeType, "global"), isNull(userRoles.scopeId)));
+    .where(and(eq(userRoles.userId, userId), eq(roles.scopeType, "global"), isNull(userRoles.scopeId), isNull(userRoles.game)));
   return rows.map((r) => r.roleId);
 }

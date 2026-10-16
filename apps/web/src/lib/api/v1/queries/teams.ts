@@ -12,21 +12,7 @@
 import { and, desc, eq, gte, ilike, inArray, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import {
-  teams,
-  people,
-  rosterMemberships,
-  entrants,
-  matches,
-  matchVetos,
-  maps,
-  mapPlayerStats,
-  mapTeamRoundSummary,
-  mapRoundsRaw,
-  mapRoundPlayerLoadoutsRaw,
-  stageContainers,
-  stages,
-} from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { toApiTeam, toApiTeamFromJoined, toApiPlayer, type ApiTeam, type ApiPlayer } from "../entities";
 import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls, type ApiLogoHistoryResponse } from "../logo-response";
 import { escapeLike, exclusiveUpperBound, type MapsFilter, type StatsFilter, type MatchHistoryFilter } from "../params";
@@ -36,15 +22,18 @@ import { buildVetosByMatch, type ApiMatchVeto } from "./match-vetos";
 import { ECO_TIERS, loadoutTierFor, type EcoTierKey } from "@/lib/eco-tiers";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
+import type { GameSlug } from "@gc-stats/db/game";
 
-async function teamExists(id: number): Promise<boolean> {
+async function teamExists(game: GameSlug, id: number): Promise<boolean> {
+  const { teams } = gameTables(game);
   const [row] = await db.select({ id: teams.id, isGhost: teams.isGhost }).from(teams).where(eq(teams.id, id)).limit(1);
   rejectGhost(row, "team");
   return !!row;
 }
 
 /** A team can hold several `entrants` rows (one per tournament registration) — every map/match/veto stat is keyed by entrant, not team. */
-async function getTeamEntrantIds(teamId: number, tournamentId?: number): Promise<number[]> {
+async function getTeamEntrantIds(game: GameSlug, teamId: number, tournamentId?: number): Promise<number[]> {
+  const { entrants } = gameTables(game);
   const conditions = [eq(entrants.teamId, teamId)];
   if (tournamentId) conditions.push(eq(entrants.tournamentId, tournamentId));
   const rows = await db
@@ -54,7 +43,8 @@ async function getTeamEntrantIds(teamId: number, tournamentId?: number): Promise
   return rows.map((r) => r.id);
 }
 
-function matchDateConditions(filter: MapsFilter) {
+function matchDateConditions(game: GameSlug, filter: MapsFilter) {
+  const { matches } = gameTables(game);
   const conditions = [];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
@@ -63,26 +53,28 @@ function matchDateConditions(filter: MapsFilter) {
 
 export type ApiTeamResponse = ApiTeam & { logo: ApiLogoUrls | null };
 
-export async function searchTeamsByName(query: string): Promise<ApiTeamResponse[]> {
+export async function searchTeamsByName(game: GameSlug, query: string): Promise<ApiTeamResponse[]> {
+  const { teams } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
   const rows = await db
     .select()
     .from(teams)
-    .where(and(or(ilike(teams.name, pattern), ilike(teams.shortName, pattern)), visibleTeam))
+    .where(and(or(ilike(teams.name, pattern), ilike(teams.shortName, pattern)), visibleTeam(game)))
     .limit(10);
 
   const logos = await getLogoUrlsBatch(
     "team",
-    rows.map((r) => r.id),
+    rows.map((r) => r.id), game
   );
   return rows.map((row) => ({ ...toApiTeam(row), logo: logos.get(row.id) ?? null }));
 }
 
-export async function getTeamById(id: number): Promise<ApiTeamResponse | null> {
+export async function getTeamById(game: GameSlug, id: number): Promise<ApiTeamResponse | null> {
+  const { teams } = gameTables(game);
   const [row] = await db.select().from(teams).where(eq(teams.id, id)).limit(1);
   rejectGhost(row, "team");
   if (!row) return null;
-  const logo = await getLogoUrls("team", id);
+  const logo = await getLogoUrls("team", id, game);
   return { ...toApiTeam(row), logo };
 }
 
@@ -91,8 +83,9 @@ const PLAYER_ROSTER_ROLES = new Set(["player", "player-igl", "sub"]);
 export type ApiTeamPlayersResponse = { current: ApiPlayer[]; history: ApiPlayer[] };
 
 /** Only actual player roster slots — mirrors V1 (staff never joined a team's roster there, cf. SUIVI.md migration notes), excludes coach/manager/analyst. */
-export async function getTeamPlayers(teamId: number): Promise<ApiTeamPlayersResponse | null> {
-  if (!(await teamExists(teamId))) return null;
+export async function getTeamPlayers(game: GameSlug, teamId: number): Promise<ApiTeamPlayersResponse | null> {
+  const { people, rosterMemberships } = gameTables(game);
+  if (!(await teamExists(game, teamId))) return null;
 
   const rows = await db
     .select({
@@ -123,18 +116,20 @@ export async function getTeamPlayers(teamId: number): Promise<ApiTeamPlayersResp
 }
 
 /** No existence gate — mirrors V1 (`/teams/{id}/logos` never documented a 404, always 200 with an empty history). */
-export async function getTeamLogoHistory(teamId: number): Promise<ApiLogoHistoryResponse> {
-  return getLogoHistoryResponse("team", teamId);
+export async function getTeamLogoHistory(game: GameSlug, teamId: number): Promise<ApiLogoHistoryResponse> {
+  return getLogoHistoryResponse("team", teamId, game);
 }
 
 export type ApiTeamVetoEntry = { map_name: string; played: number; banned: number; pick: number; decider: number };
 
-export async function getTeamVetos(teamId: number, filter: MapsFilter): Promise<ApiTeamVetoEntry[] | null> {
-  if (!(await teamExists(teamId))) return null;
-  const entrantIds = await getTeamEntrantIds(teamId, filter.tournamentId);
+export async function getTeamVetos(game: GameSlug, teamId: number, filter: MapsFilter): Promise<ApiTeamVetoEntry[] | null> {
+  const { matches } = gameTables(game);
+  const { matchVetos, maps } = valorantTablesOf(game);
+  if (!(await teamExists(game, teamId))) return null;
+  const entrantIds = await getTeamEntrantIds(game, teamId, filter.tournamentId);
   if (entrantIds.length === 0) return [];
 
-  const dateConds = matchDateConditions(filter);
+  const dateConds = matchDateConditions(game, filter);
 
   const playedRows = await db
     .select({ mapName: maps.mapName, played: sql<number>`count(*)` })
@@ -211,12 +206,14 @@ type MapSideTally = { atkPlayed: number; atkWon: number; defPlayed: number; defW
 type MapNameAgg = MapSideTally & { mapName: string; timesPlayed: number; wins: number; eco: EcoTally; comps: Map<string, MapSideTally & { timesPlayed: number; wins: number }> };
 
 /** Maps played by the team (winrate + atk/def winrate), with the comps played on each map nested inside. */
-export async function getTeamMaps(teamId: number, filter: MapsFilter & { roundName?: string; stageId?: number }): Promise<ApiTeamMapEntry[] | null> {
-  if (!(await teamExists(teamId))) return null;
-  const entrantIds = await getTeamEntrantIds(teamId, filter.tournamentId);
+export async function getTeamMaps(game: GameSlug, teamId: number, filter: MapsFilter & { roundName?: string; stageId?: number }): Promise<ApiTeamMapEntry[] | null> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, mapRoundPlayerLoadoutsRaw } = valorantTablesOf(game);
+  if (!(await teamExists(game, teamId))) return null;
+  const entrantIds = await getTeamEntrantIds(game, teamId, filter.tournamentId);
   if (entrantIds.length === 0) return [];
 
-  const dateConds = matchDateConditions(filter);
+  const dateConds = matchDateConditions(game, filter);
   const conditions = [or(inArray(matches.entrantAId, entrantIds), inArray(matches.entrantBId, entrantIds)), eq(maps.isCompleted, true), ...dateConds];
   if (filter.roundName) conditions.push(eq(matches.label, filter.roundName));
   if (filter.stageId) conditions.push(eq(stages.id, filter.stageId));
@@ -363,10 +360,10 @@ export async function getTeamMaps(teamId: number, filter: MapsFilter & { roundNa
 }
 
 /** Weapon usage for the team — shared aggregation with `/players/{id}/weapons` in `../weapon-stats.ts`. */
-export async function getTeamWeapons(teamId: number, filter: MapsFilter): Promise<ApiWeaponStatsEntry[] | null> {
-  if (!(await teamExists(teamId))) return null;
-  const entrantIds = await getTeamEntrantIds(teamId, filter.tournamentId);
-  return fetchWeaponStats({ kind: "team", entrantIds }, filter);
+export async function getTeamWeapons(game: GameSlug, teamId: number, filter: MapsFilter): Promise<ApiWeaponStatsEntry[] | null> {
+  if (!(await teamExists(game, teamId))) return null;
+  const entrantIds = await getTeamEntrantIds(game, teamId, filter.tournamentId);
+  return fetchWeaponStats(game, { kind: "team", entrantIds }, filter);
 }
 
 export type ApiSituationEntry = { played: number; won: number; winrate: number };
@@ -390,10 +387,10 @@ async function fetchSituationsForSide(entrantIds: number[], filter: StatsFilter,
   const sideCol = side === "atk" ? sql`r.atk_entrant_id` : sql`r.def_entrant_id`;
   const result = await db.execute<AliveRow>(sql`
     SELECT r.id AS round_id, r.winning_entrant_id AS winning_entrant_id, a.atk_alive AS atk_alive, a.def_alive AS def_alive
-    FROM map_rounds_raw r
-    JOIN maps gm ON gm.id = r.map_id
-    JOIN matches m ON m.id = gm.match_id
-    LEFT JOIN map_round_alive_states_raw a ON a.map_round_id = r.id
+    FROM ${valorantTables.mapRoundsRaw} r
+    JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
+    JOIN ${valorantTables.matches} m ON m.id = gm.match_id
+    LEFT JOIN ${valorantTables.mapRoundAliveStatesRaw} a ON a.map_round_id = r.id
     WHERE ${sideCol} = ANY(${entrantIds}::bigint[])
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
@@ -446,9 +443,9 @@ async function fetchPostPlantForSide(entrantIds: number[], filter: StatsFilter, 
   const result = await db.execute<{ played: number; won: number }>(sql`
     SELECT COUNT(*)::int AS played,
       COALESCE(SUM(CASE WHEN r.winning_entrant_id = ANY(${entrantIds}::bigint[]) THEN 1 ELSE 0 END), 0)::int AS won
-    FROM map_rounds_raw r
-    JOIN maps gm ON gm.id = r.map_id
-    JOIN matches m ON m.id = gm.match_id
+    FROM ${valorantTables.mapRoundsRaw} r
+    JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
+    JOIN ${valorantTables.matches} m ON m.id = gm.match_id
     WHERE r.plant_site IS NOT NULL AND ${sideCol} = ANY(${entrantIds}::bigint[])
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
@@ -465,12 +462,12 @@ async function fetchTeamPostPlant(entrantIds: number[], filter: StatsFilter): Pr
 }
 
 /** Average stats for the team, always broken down by side (atk/def), plus XvY situations and post-plant performance. */
-export async function getTeamStats(teamId: number, filter: StatsFilter): Promise<ApiTeamStatsResponse | null> {
-  if (!(await teamExists(teamId))) return null;
-  const entrantIds = await getTeamEntrantIds(teamId, filter.tournamentId);
+export async function getTeamStats(game: GameSlug, teamId: number, filter: StatsFilter): Promise<ApiTeamStatsResponse | null> {
+  if (!(await teamExists(game, teamId))) return null;
+  const entrantIds = await getTeamEntrantIds(game, teamId, filter.tournamentId);
   const scope: EntityScope = { kind: "team", entrantIds };
 
-  const [avg, situations, postPlant] = await Promise.all([fetchAvgStats(scope, filter), fetchTeamSituations(entrantIds, filter), fetchTeamPostPlant(entrantIds, filter)]);
+  const [avg, situations, postPlant] = await Promise.all([fetchAvgStats(game, scope, filter), fetchTeamSituations(entrantIds, filter), fetchTeamPostPlant(entrantIds, filter)]);
 
   return { ...avg, situations, post_plant: postPlant };
 }
@@ -492,19 +489,32 @@ export type ApiTeamMatchEntry = {
 };
 export type ApiPaginatedTeamMatches = { page: number; per_page: number; total: number; total_pages: number; data: ApiTeamMatchEntry[] };
 
-const entrantAAlias = alias(entrants, "entrant_a");
-const entrantBAlias = alias(entrants, "entrant_b");
-const teamAAlias = alias(teams, "match_team_a");
-const teamBAlias = alias(teams, "match_team_b");
+function entrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_a");
+}
+function entrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_b");
+}
+function teamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "match_team_a");
+}
+function teamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "match_team_b");
+}
 
 /** Paginated match history for the team, most recent first, each with its vetoes in order. */
-export async function getTeamMatches(teamId: number, query: MatchHistoryFilter): Promise<ApiPaginatedTeamMatches | null> {
-  if (!(await teamExists(teamId))) return null;
+export async function getTeamMatches(game: GameSlug, teamId: number, query: MatchHistoryFilter): Promise<ApiPaginatedTeamMatches | null> {
+  const { entrants, matches, stageContainers, stages } = gameTables(game);
+  if (!(await teamExists(game, teamId))) return null;
 
-  const entrantIds = await getTeamEntrantIds(teamId, query.tournamentId);
+  const entrantIds = await getTeamEntrantIds(game, teamId, query.tournamentId);
   if (entrantIds.length === 0) return { page: query.page, per_page: query.perPage, total: 0, total_pages: 0, data: [] };
 
-  const conditions = [or(inArray(matches.entrantAId, entrantIds), inArray(matches.entrantBId, entrantIds)), ...matchDateConditions(query)];
+  const conditions = [or(inArray(matches.entrantAId, entrantIds), inArray(matches.entrantBId, entrantIds)), ...matchDateConditions(game, query)];
   if (query.status) conditions.push(eq(matches.status, query.status as "pending" | "live" | "completed"));
   if (query.roundName) conditions.push(eq(matches.label, query.roundName));
 
@@ -541,23 +551,23 @@ export async function getTeamMatches(teamId: number, query: MatchHistoryFilter):
       scoreB: matches.scoreB,
       stageId: stages.id,
       tournamentId: stages.tournamentId,
-      teamA: teamAAlias,
-      teamB: teamBAlias,
+      teamA: teamAAlias(game),
+      teamB: teamBAlias(game),
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(entrantAAlias, eq(entrantAAlias.id, matches.entrantAId))
-    .leftJoin(teamAAlias, eq(teamAAlias.id, entrantAAlias.teamId))
-    .leftJoin(entrantBAlias, eq(entrantBAlias.id, matches.entrantBId))
-    .leftJoin(teamBAlias, eq(teamBAlias.id, entrantBAlias.teamId))
+    .leftJoin(entrantAAlias(game), eq(entrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(teamAAlias(game), eq(teamAAlias(game).id, entrantAAlias(game).teamId))
+    .leftJoin(entrantBAlias(game), eq(entrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(teamBAlias(game), eq(teamBAlias(game).id, entrantBAlias(game).teamId))
     .where(and(...conditions))
     .orderBy(desc(matches.scheduledAt), desc(matches.id))
     .limit(query.perPage)
     .offset((query.page - 1) * query.perPage);
 
   const matchIds = rows.map((r) => r.id);
-  const vetosByMatch = await buildVetosByMatch(matchIds);
+  const vetosByMatch = await buildVetosByMatch(game, matchIds);
 
   const data: ApiTeamMatchEntry[] = rows.map((row) => {
     const teamA = toApiTeamFromJoined(row.teamA);

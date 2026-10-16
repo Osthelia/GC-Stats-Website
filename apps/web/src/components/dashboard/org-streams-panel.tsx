@@ -39,8 +39,8 @@ import {
   type StreamChannelFieldErrors,
   type CreditMatchOption,
 } from "@/actions/dashboard-streams";
+import { useGame } from "@/lib/use-game";
 
-const NONE_MATCH = "__none__";
 
 function platformItems(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return Object.fromEntries(STREAM_PLATFORMS.map((p) => [p, t(`platform.${p}` as "platform.twitch")]));
@@ -92,6 +92,7 @@ function ChannelRow({
   onSaved: (updated: OrganizationStreamChannelRow) => void;
   onDeleted: (id: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState<StreamChannelInput>({ name: channel.name, platform: channel.platform, type: channel.type, url: channel.url, languageCode: channel.languageCode, isActive: channel.isActive });
@@ -107,7 +108,7 @@ function ChannelRow({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateStreamChannel(organizationId, channel.id, form);
+      const result = await updateStreamChannel(game, organizationId, channel.id, form);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -120,7 +121,7 @@ function ChannelRow({
   function confirmDelete() {
     setDeleteConfirmOpen(false);
     startTransition(async () => {
-      const result = await deleteStreamChannel(organizationId, channel.id);
+      const result = await deleteStreamChannel(game, organizationId, channel.id);
       if (!result.ok) {
         toast.error(t("deleteError"));
         return;
@@ -226,6 +227,7 @@ function ChannelRow({
 }
 
 function AddChannelForm({ organizationId, languages, onAdded }: { organizationId: number; languages: NewsLanguageOption[]; onAdded: () => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState<StreamChannelInput>({ name: "", platform: STREAM_PLATFORMS[0], type: STREAM_CHANNEL_TYPES[0], url: "", languageCode: languages[0]?.code ?? "", isActive: true });
@@ -240,7 +242,7 @@ function AddChannelForm({ organizationId, languages, onAdded }: { organizationId
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createStreamChannel(organizationId, form);
+      const result = await createStreamChannel(game, organizationId, form);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -321,9 +323,10 @@ function AddChannelForm({ organizationId, languages, onAdded }: { organizationId
 }
 
 function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: number; channels: OrganizationStreamChannelRow[]; onAdded: () => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [isPending, startTransition] = useTransition();
-  const [channelId, setChannelId] = useState<string>(channels[0] ? String(channels[0].id) : NONE_MATCH);
+  const [channelId, setChannelId] = useState<string | null>(channels[0] ? String(channels[0].id) : null);
   const [tournament, setTournament] = useState<EntityOption | null>(null);
   const [matchOptions, setMatchOptions] = useState<CreditMatchOption[]>([]);
   const [selectedMatchIds, setSelectedMatchIds] = useState<Set<number>>(new Set());
@@ -342,7 +345,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
     }
     let cancelled = false;
     setLoadingMatches(true);
-    getMatchOptionsForStreamLink(organizationId, tournament.id).then((rows) => {
+    getMatchOptionsForStreamLink(game, organizationId, tournament.id).then((rows) => {
       if (cancelled) return;
       setMatchOptions(rows);
       setLoadingMatches(false);
@@ -365,9 +368,9 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
 
   function handleLink() {
     setError(null);
-    if (channelId === NONE_MATCH || !tournament || selectedMatchIds.size === 0) return;
+    if (channelId === null || !tournament || selectedMatchIds.size === 0) return;
     startTransition(async () => {
-      const result = await linkStreamChannelToMatches(organizationId, Number(channelId), tournament.id, [...selectedMatchIds]);
+      const result = await linkStreamChannelToMatches(game, organizationId, Number(channelId), tournament.id, [...selectedMatchIds]);
       if (!result.ok) {
         setError(t(`error.${result.error}` as "error.channelNotFound"));
         return;
@@ -409,7 +412,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
           <EntitySinglePicker
             value={tournament}
             onChange={setTournament}
-            search={(q) => searchTournamentsForStreamLink(organizationId, q).then((rows) => rows.map((r) => ({ id: r.id, label: r.name })))}
+            search={(q) => searchTournamentsForStreamLink(game, organizationId, q).then((rows) => rows.map((r) => ({ id: r.id, label: r.name })))}
             placeholder={t("tournamentPlaceholder")}
             searchPlaceholder={t("tournamentSearchPlaceholder")}
             noResultsLabel={t("tournamentNoResults")}
@@ -479,6 +482,7 @@ export function OrgStreamsPanel({
   canDelete: boolean;
   canLink: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [channels, setChannels] = useState(initialChannels);
   const [links, setLinks] = useState(initialLinks);
@@ -492,7 +496,7 @@ export function OrgStreamsPanel({
     const link = unlinking;
     setUnlinking(null);
     startTransition(async () => {
-      const result = await unlinkStreamChannelFromMatch(organizationId, link.channelId, link.matchId);
+      const result = await unlinkStreamChannelFromMatch(game, organizationId, link.channelId, link.matchId);
       if (!result.ok) {
         toast.error(t("unlinkError"));
         return;

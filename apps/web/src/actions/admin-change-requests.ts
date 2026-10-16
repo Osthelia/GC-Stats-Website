@@ -13,22 +13,27 @@
 
 "use server";
 
+import { logoGameClause, logoGameOf } from "@/lib/admin-logos";
 import { and, eq, ne, isNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequests, changeRequestItems, teams, people, rosterMemberships, teamNameHistory, logos, PERMISSIONS } from "@gc-stats/db";
+import { logos, sharedPeople, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { deleteLogoFiles } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
-import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
+import { ensureGameProfile, personExists, updatePersonIdentity, updatePersonProfile, setPersonUser } from "@/lib/person-service";
+import type { GameSlug } from "@gc-stats/db/game";
+import { closeOpenMemberships } from "@/lib/roster-close";
 
 type ItemStatus = "approved" | "rejected" | "failed";
 export type ResolveItemResult = { ok: true; status: ItemStatus; applyError: string | null } | { ok: false; error: string };
 
 const TEAM_COLUMNS = ["name", "shortName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "tags"] as const;
-const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "liquipediaLink", "liquipediaSourced", "isActive", "aliases", "pronouns"] as const;
+// A person is a shared identity plus one profile per game, each part has its own table.
+const PERSON_IDENTITY_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secondaryCountryCode", "bio", "aliases", "pronouns"] as const;
+const PERSON_PROFILE_COLUMNS = ["liquipediaLink", "liquipediaSourced", "isActive"] as const;
 
 /**
  * Applies one already-validated change_request_items row to the live
@@ -39,11 +44,12 @@ const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secon
  * snapshot taken at submit time. Throws a plain Error with a short message
  * on failure — caught by the caller and stored in applyError.
  */
-async function applyChangeRequestItem(subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown, closeMembershipIds: number[]): Promise<void> {
+async function applyChangeRequestItem(game: GameSlug, subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown, closeMembershipIds: number[]): Promise<void> {
+  const { teams, people, rosterMemberships, teamNameHistory } = gameTables(game);
   // --- Simple profile columns (including socials.<key>) -------------------
   if (field.startsWith("socials.")) {
     const key = field.slice("socials.".length);
-    const table = subjectType === "team" ? teams : people;
+    const table = subjectType === "team" ? teams : sharedPeople;
     const [row] = await db.select({ socials: table.socials }).from(table).where(eq(table.id, subjectId)).limit(1);
     if (!row) throw new Error("subjectNotFound");
     const socials = { ...(row.socials as Record<string, unknown>), [key]: newValue ?? null };
@@ -51,14 +57,20 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     return;
   }
 
-  const columns = subjectType === "team" ? (TEAM_COLUMNS as readonly string[]) : (PERSON_COLUMNS as readonly string[]);
-  if (columns.includes(field)) {
-    const table = subjectType === "team" ? teams : people;
-    const exists = (await db.select({ id: table.id }).from(table).where(eq(table.id, subjectId)).limit(1)).length > 0;
+  if (subjectType === "team" && (TEAM_COLUMNS as readonly string[]).includes(field)) {
+    const exists = (await db.select({ id: teams.id }).from(teams).where(eq(teams.id, subjectId)).limit(1)).length > 0;
+    if (!exists) throw new Error("subjectNotFound");
+    await db.update(teams).set({ [field]: newValue }).where(eq(teams.id, subjectId));
+    return;
+  }
+
+  if (subjectType === "person" && ((PERSON_IDENTITY_COLUMNS as readonly string[]).includes(field) || (PERSON_PROFILE_COLUMNS as readonly string[]).includes(field))) {
+    const exists = (await db.select({ id: people.id }).from(people).where(eq(people.id, subjectId)).limit(1)).length > 0;
     if (!exists) throw new Error("subjectNotFound");
     let value: unknown = newValue;
     if (field === "pronouns") value = newValue === null ? null : Number(newValue);
-    await db.update(table).set({ [field]: value }).where(eq(table.id, subjectId));
+    if ((PERSON_IDENTITY_COLUMNS as readonly string[]).includes(field)) await updatePersonIdentity(db, subjectId, { [field]: value });
+    else await updatePersonProfile(db, game, subjectId, { [field]: value });
     return;
   }
 
@@ -75,7 +87,8 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
 
     const period = openRangeFrom(v.joined_at);
     await db.transaction(async (tx) => {
-      await closeOpenMemberships(tx, closeMembershipIds, subjectId, v.team_id, v.joined_at);
+      await ensureGameProfile(tx, game, subjectId);
+      await closeOpenMemberships(game, tx, closeMembershipIds, subjectId, v.team_id, v.joined_at);
       await tx.insert(rosterMemberships).values({ personId: subjectId, teamId: v.team_id, role: v.role, period, inactiveSince: null });
     });
     return;
@@ -85,7 +98,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
   if (field === "membership_add") {
     const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, v.personId)).limit(1);
+    const person = await personExists(db, v.personId);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
     if (!person || !team) throw new Error("entityNotFound");
 
@@ -93,7 +106,8 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const hasLeft = v.hasLeft ?? !!v.until;
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
-      if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, v.personId, v.teamId, v.since);
+      await ensureGameProfile(tx, game, v.personId);
+      if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, v.personId, v.teamId, v.since);
       await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince });
     });
     return;
@@ -109,7 +123,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const hasLeft = v.hasLeft ?? (!!v.until || membership.hasLeft);
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
-      if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, v.since);
+      if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, membership.personId, membership.teamId, v.since);
       await tx.update(rosterMemberships).set({ role: v.role, period, hasLeft, inactiveSince: v.inactiveSince }).where(eq(rosterMemberships.id, v.membershipId));
     });
     return;
@@ -155,12 +169,12 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
         const openElsewhere = await tx
           .select({ id: logos.id, period: logos.period })
           .from(logos)
-          .where(and(eq(logos.entityType, subjectType), eq(logos.entityId, subjectId), v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
+          .where(and(eq(logos.entityType, subjectType), logoGameClause(subjectType, game), eq(logos.entityId, subjectId), v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
         for (const row of openElsewhere) {
           await tx.update(logos).set({ period: closeRange(row.period, v.since) }).where(eq(logos.id, row.id));
         }
       }
-      await tx.insert(logos).values({ id: v.logoId, entityType: subjectType, entityId: subjectId, period, theme: v.theme, isVisible: true });
+      await tx.insert(logos).values({ id: v.logoId, entityType: subjectType, entityId: subjectId, game: logoGameOf(subjectType, game), period, theme: v.theme, isVisible: true });
     });
     return;
   }
@@ -178,6 +192,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
           .where(
             and(
               eq(logos.entityType, subjectType),
+              logoGameClause(subjectType, game),
               eq(logos.entityId, existing.entityId),
               v.theme ? eq(logos.theme, v.theme) : isNull(logos.theme),
               ne(logos.id, v.logoId),
@@ -206,13 +221,13 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
   if (field === "user_link") {
     const v = newValue as { userId: string; previousPersonId: number | null };
     await db.transaction(async (tx) => {
-      const [target] = await tx.select({ id: people.id, userId: people.userId }).from(people).where(eq(people.id, subjectId)).limit(1);
+      const [target] = await tx.select({ id: sharedPeople.id, userId: sharedPeople.userId }).from(sharedPeople).where(eq(sharedPeople.id, subjectId)).limit(1);
       if (!target) throw new Error("subjectNotFound");
       if (target.userId && target.userId !== v.userId) throw new Error("alreadyLinked");
       if (v.previousPersonId) {
-        await tx.update(people).set({ userId: null }).where(and(eq(people.id, v.previousPersonId), eq(people.userId, v.userId)));
+        await tx.update(sharedPeople).set({ userId: null }).where(and(eq(sharedPeople.id, v.previousPersonId), eq(sharedPeople.userId, v.userId)));
       }
-      await tx.update(people).set({ userId: v.userId }).where(eq(people.id, subjectId));
+      await setPersonUser(tx, subjectId, v.userId);
     });
     return;
   }
@@ -226,7 +241,8 @@ const STATUS_NOTIFICATION_TYPE: Record<"approved" | "rejected" | "partial", Noti
   partial: "change_request.partial",
 };
 
-async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId: string, requestedBy: string | null): Promise<void> {
+async function recomputeChangeRequestStatus(game: GameSlug, changeRequestId: number, actorUserId: string, requestedBy: string | null): Promise<void> {
+  const { changeRequests, changeRequestItems } = gameTables(game);
   const items = await db.select({ status: changeRequestItems.status }).from(changeRequestItems).where(eq(changeRequestItems.changeRequestId, changeRequestId));
   const pending = items.some((i) => i.status === "pending");
   if (pending) return; // still awaiting review, leave changeRequests.status as "pending"
@@ -236,7 +252,7 @@ async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId
   await db.update(changeRequests).set({ status, closedBy: actorUserId, closedAt: new Date() }).where(eq(changeRequests.id, changeRequestId));
 
   if (requestedBy) {
-    await notify({ recipientId: requestedBy, type: STATUS_NOTIFICATION_TYPE[status], authorId: actorUserId, link: `/settings/change-requests/${changeRequestId}`, data: { changeRequestId } });
+    await notify({ recipientId: requestedBy, type: STATUS_NOTIFICATION_TYPE[status], authorId: actorUserId, link: `/settings/change-requests/${game}/${changeRequestId}`, data: { changeRequestId, game } });
   }
 }
 
@@ -247,8 +263,9 @@ async function recomputeChangeRequestStatus(changeRequestId: number, actorUserId
  * with the error recorded, rather than silently leaving it pending forever.
  * Recomputes the parent change_requests.status once every item is resolved.
  */
-export async function resolveChangeRequestItem(itemId: number, action: "approve" | "reject", note: string, closeMembershipIds: number[] = []): Promise<ResolveItemResult> {
-  const access = await requireActorPermission(PERMISSIONS.changeRequestsManage);
+export async function resolveChangeRequestItem(game: GameSlug, itemId: number, action: "approve" | "reject", note: string, closeMembershipIds: number[] = []): Promise<ResolveItemResult> {
+  const { changeRequests, changeRequestItems } = gameTables(game);
+  const access = await requireActorPermission(PERMISSIONS.changeRequestsManage, game);
 
   const [item] = await db.select().from(changeRequestItems).where(eq(changeRequestItems.id, itemId)).limit(1);
   if (!item) return { ok: false, error: "notFound" };
@@ -267,7 +284,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 
   if (action === "approve") {
     try {
-      await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
+      await applyChangeRequestItem(game, request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
       status = "approved";
       await logActivity({
         subject: request.subjectType === "team" ? "team" : "player",
@@ -296,7 +313,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
     })
     .where(eq(changeRequestItems.id, itemId));
 
-  await recomputeChangeRequestStatus(item.changeRequestId, access.userId, request.requestedBy);
+  await recomputeChangeRequestStatus(game, item.changeRequestId, access.userId, request.requestedBy);
 
   return { ok: true, status, applyError };
 }
@@ -304,8 +321,9 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 export type ItemRosterTarget = { handle: string; personId: number; teamId: number; excludeMembershipId?: number } | null;
 
 /** Person and team an item would put on a current roster entry, to look for other current entries before approving. Null when the item doesn't open one. */
-export async function getItemRosterTarget(itemId: number): Promise<ItemRosterTarget> {
-  await requireActorPermission(PERMISSIONS.changeRequestsManage);
+export async function getItemRosterTarget(game: GameSlug, itemId: number): Promise<ItemRosterTarget> {
+  const { changeRequests, changeRequestItems, rosterMemberships } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.changeRequestsManage, game);
 
   const [row] = await db
     .select({ field: changeRequestItems.field, newValue: changeRequestItems.newValue, subjectId: changeRequests.subjectId })
@@ -342,7 +360,7 @@ export async function getItemRosterTarget(itemId: number): Promise<ItemRosterTar
   }
   if (hasLeft) return null;
 
-  const [person] = await db.select({ handle: people.handle }).from(people).where(eq(people.id, personId)).limit(1);
+  const [person] = await db.select({ handle: sharedPeople.handle }).from(sharedPeople).where(eq(sharedPeople.id, personId)).limit(1);
   if (!person) return null;
   return { handle: person.handle, personId, teamId, excludeMembershipId };
 }
@@ -350,8 +368,9 @@ export async function getItemRosterTarget(itemId: number): Promise<ItemRosterTar
 export type BulkResolveResult = { itemId: number; result: ResolveItemResult }[];
 
 /** Resolves every currently-pending item of one change request the same way — the "approve all"/"reject all" bulk action. */
-export async function resolveAllPendingItems(changeRequestId: number, action: "approve" | "reject", note = ""): Promise<BulkResolveResult> {
-  await requireActorPermission(PERMISSIONS.changeRequestsManage);
+export async function resolveAllPendingItems(game: GameSlug, changeRequestId: number, action: "approve" | "reject", note = ""): Promise<BulkResolveResult> {
+  const { changeRequestItems } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.changeRequestsManage, game);
 
   const pendingItems = await db
     .select({ id: changeRequestItems.id })
@@ -360,7 +379,7 @@ export async function resolveAllPendingItems(changeRequestId: number, action: "a
 
   const results: BulkResolveResult = [];
   for (const item of pendingItems) {
-    results.push({ itemId: item.id, result: await resolveChangeRequestItem(item.id, action, note) });
+    results.push({ itemId: item.id, result: await resolveChangeRequestItem(game, item.id, action, note) });
   }
   return results;
 }

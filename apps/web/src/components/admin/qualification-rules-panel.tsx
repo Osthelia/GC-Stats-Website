@@ -19,6 +19,7 @@ import { deleteQualificationRule } from "@/actions/admin-bracket-qualifications"
 import type { AdminQualificationRule } from "@/lib/admin-bracket-qualifications";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 function sourceLabel(rule: AdminQualificationRule, t: ReturnType<typeof useTranslations>): string {
   if (rule.source.kind === "rank") {
@@ -52,6 +53,7 @@ export function QualificationRulesPanel({
   matches: AdminMatchListRow[];
   canManage: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.qualifications");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -71,7 +73,7 @@ export function QualificationRulesPanel({
   function handleDelete(rule: AdminQualificationRule) {
     if (!window.confirm(t("deleteConfirm"))) return;
     startTransition(async () => {
-      const result = await deleteQualificationRule(rule.id);
+      const result = await deleteQualificationRule(game, rule.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

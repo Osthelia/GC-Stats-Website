@@ -14,7 +14,7 @@
 import { eq, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 import { computeAliveTimeline, computeMapAggregates, computeRoundSides, type RiotMatchDto } from "@gc-stats/map-stats-engine";
 import { resolveAgentName, resolveEquipName, resolveMapName } from "@/lib/riot-content-client";
 import { buildAliveStateRows, buildDamageRows, buildKillRows, buildLoadoutRows, buildPlantDefusePositionRows, buildRoundRows, entrantIdForColor, type RawMapperContext } from "./raw-mapper";
@@ -29,6 +29,7 @@ import { buildAliveStateRows, buildDamageRows, buildKillRows, buildLoadoutRows, 
  * never interleaves across two transactions.
  */
 export async function storeMapData(match: RiotMatchDto, ctx: RawMapperContext): Promise<void> {
+  const { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } = valorantTables;
   await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(${ctx.mapId})`);
 

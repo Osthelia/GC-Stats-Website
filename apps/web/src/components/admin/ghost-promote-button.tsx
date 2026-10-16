@@ -15,9 +15,11 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { promoteGhostPlayer, promoteGhostTeam } from "@/actions/admin-ghost-matches";
+import { useGame } from "@/lib/use-game";
 
 /** Turns a ghost team or player into a regular public profile. */
 export function GhostPromoteButton({ kind, id, name }: { kind: "team" | "player"; id: number; name: string }) {
+  const game = useGame();
   const t = useTranslations("admin.ghost");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -25,7 +27,7 @@ export function GhostPromoteButton({ kind, id, name }: { kind: "team" | "player"
 
   function handlePromote() {
     startTransition(async () => {
-      const result = kind === "team" ? await promoteGhostTeam(id) : await promoteGhostPlayer(id);
+      const result = kind === "team" ? await promoteGhostTeam(game, id) : await promoteGhostPlayer(game, id);
       setConfirmOpen(false);
       if (!result.ok) {
         toast.error(t(`promoteError.${result.error}`));

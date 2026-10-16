@@ -11,11 +11,12 @@
 
 import { eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { pickemStageSettings, pickemRewards, stages, tournaments, groupEntries, users } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
 import { slugify } from "@/lib/entity-id";
 import { getStageEditorData } from "@/lib/admin-bracket-editor-data";
 import { computeStageLeaderboard } from "./pickem-data";
 import { DEFAULT_PICKEM_SCORING } from "./scoring";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 /**
  * Rewards are a permanent snapshot of a completed phase's PUBLIC (default
@@ -26,7 +27,8 @@ import { DEFAULT_PICKEM_SCORING } from "./scoring";
  * than a cron job), then never recomputed — a row already existing for the
  * stage is the "done" marker.
  */
-export async function ensureStageRewardsComputed(stageId: number): Promise<void> {
+export async function ensureStageRewardsComputed(game: GameSlug, stageId: number): Promise<void> {
+  const { pickemStageSettings, pickemRewards, stages, groupEntries } = gameTables(game);
   const [stage] = await db.select({ id: stages.id, status: stages.status }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage || stage.status !== "completed") return;
 
@@ -36,7 +38,7 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
   const [existing] = await db.select({ id: pickemRewards.id }).from(pickemRewards).where(eq(pickemRewards.stageId, stageId)).limit(1);
   if (existing) return;
 
-  const editorData = await getStageEditorData(stageId);
+  const editorData = await getStageEditorData(game, stageId);
   if (!editorData) return;
 
   const totalBracketMatches = editorData.matches.filter((m) => editorData.containers.find((c) => c.id === m.containerId)?.containerType === "bracket").length;
@@ -46,7 +48,7 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
     : 0;
   const hasAnyPickable = totalBracketMatches > 0 || totalStandingEntrants > 0;
 
-  const leaderboard = await computeStageLeaderboard(stageId, DEFAULT_PICKEM_SCORING);
+  const leaderboard = await computeStageLeaderboard(game, stageId, DEFAULT_PICKEM_SCORING);
   if (leaderboard.length === 0) return;
 
   const total = leaderboard.length;
@@ -77,21 +79,25 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
 export type UserRewardRow = { kind: "top1pct" | "top5pct" | "perfect"; tournamentId: number; tournamentName: string; tournamentHref: string; stageName: string; awardedAt: string };
 
 export async function getUserRewards(userId: string): Promise<UserRewardRow[]> {
-  const rows = await db
-    .select({ kind: pickemRewards.kind, awardedAt: pickemRewards.awardedAt, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
-    .from(pickemRewards)
-    .innerJoin(stages, eq(stages.id, pickemRewards.stageId))
-    .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-    .where(eq(pickemRewards.userId, userId));
-
-  return rows
-    .map((r) => ({ ...r, awardedAt: r.awardedAt.toISOString(), tournamentHref: `/tournaments/${r.tournamentId}/${slugify(r.tournamentName)}` }))
-    .sort((a, b) => b.awardedAt.localeCompare(a.awardedAt));
+  const perGame = await Promise.all(
+    GAMES.map(async (game) => {
+      const { pickemRewards, stages, tournaments } = gameTables(game);
+      const rows = await db
+        .select({ kind: pickemRewards.kind, awardedAt: pickemRewards.awardedAt, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })
+        .from(pickemRewards)
+        .innerJoin(stages, eq(stages.id, pickemRewards.stageId))
+        .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
+        .where(eq(pickemRewards.userId, userId));
+      return rows.map((r) => ({ ...r, awardedAt: r.awardedAt.toISOString(), tournamentHref: `/${game}/tournaments/${r.tournamentId}/${slugify(r.tournamentName)}` }));
+    })
+  );
+  return perGame.flat().sort((a, b) => b.awardedAt.localeCompare(a.awardedAt));
 }
 
 export type StageRewardRow = { userId: string; username: string | null; kind: "top1pct" | "top5pct" | "perfect" };
 
-export async function getStageRewards(stageId: number): Promise<StageRewardRow[]> {
+export async function getStageRewards(game: GameSlug, stageId: number): Promise<StageRewardRow[]> {
+  const { pickemRewards } = gameTables(game);
   const rows = await db
     .select({ userId: pickemRewards.userId, kind: pickemRewards.kind, username: users.username })
     .from(pickemRewards)

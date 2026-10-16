@@ -19,6 +19,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { LiquipediaWikicodeBlock } from "@/components/match/liquipedia-wikicode-block";
 import { BracketMatchActionProvider, type BracketMatchTarget } from "@/components/tournament/bracket-match-action";
 import { loadInfoboxWikicode, loadMatchWikicode, loadParticipantsWikicode, type LiquipediaExportResult } from "@/actions/liquipedia-export";
+import { useGame } from "@/lib/use-game";
+import { gameHasLiquipediaMatches } from "@gc-stats/db/game";
 
 type View = { kind: "participants" } | { kind: "infobox" } | { kind: "match"; match: BracketMatchTarget };
 type LoadState = { status: "loading" } | { status: "error" } | { status: "ready"; data: Extract<LiquipediaExportResult, { ok: true }> };
@@ -41,6 +43,8 @@ function BigButton({ icon, title, hint, onClick }: { icon: ReactNode; title: str
 }
 
 export function LiquipediaExportViewer({ tournamentId, children }: { tournamentId: number; children: ReactNode }) {
+  const game = useGame();
+  const matchExport = gameHasLiquipediaMatches(game);
   const t = useTranslations("matchLiquipedia");
   const tBracket = useTranslations("tournamentPage");
   const [view, setView] = useState<View | null>(null);
@@ -54,7 +58,7 @@ export function LiquipediaExportViewer({ tournamentId, children }: { tournamentI
     const id = ++requestId.current;
     setState({ status: "loading" });
     const request =
-      view.kind === "participants" ? loadParticipantsWikicode(tournamentId) : view.kind === "infobox" ? loadInfoboxWikicode(tournamentId) : loadMatchWikicode(tournamentId, view.match.id);
+      view.kind === "participants" ? loadParticipantsWikicode(game, tournamentId) : view.kind === "infobox" ? loadInfoboxWikicode(game, tournamentId) : loadMatchWikicode(game, tournamentId, view.match.id);
     request
       .then((result) => {
         if (id === requestId.current) setState(result.ok ? { status: "ready", data: result } : { status: "error" });
@@ -76,14 +80,18 @@ export function LiquipediaExportViewer({ tournamentId, children }: { tournamentI
           : "";
 
   return (
-    <BracketMatchActionProvider value={{ onSelect: selectMatch }}>
+    <BracketMatchActionProvider value={matchExport ? { onSelect: selectMatch } : null}>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <BigButton icon={<UsersIcon className="size-6" />} title={t("participantsTab")} hint={t("participantsHint")} onClick={() => setView({ kind: "participants" })} />
         <BigButton icon={<InfoIcon className="size-6" />} title={t("infoboxTab")} hint={t("infoboxHint")} onClick={() => setView({ kind: "infobox" })} />
       </div>
 
-      <h2 className="mt-8 text-sm font-black tracking-[0.2em] text-neutral-500 uppercase">{t("matchesTitle")}</h2>
-      <p className="mt-1 text-xs text-neutral-500">{t("matchesHint")}</p>
+      {matchExport && (
+        <>
+          <h2 className="mt-8 text-sm font-black tracking-[0.2em] text-neutral-500 uppercase">{t("matchesTitle")}</h2>
+          <p className="mt-1 text-xs text-neutral-500">{t("matchesHint")}</p>
+        </>
+      )}
       <div className="mt-4">{children}</div>
 
       <Dialog open={view !== null} onOpenChange={(open) => !open && setView(null)}>

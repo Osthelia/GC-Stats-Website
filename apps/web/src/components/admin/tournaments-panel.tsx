@@ -21,16 +21,18 @@ import { GhostMatchDialog } from "@/components/admin/ghost-match-dialog";
 import { GhostBadge } from "@/components/admin/ghost-badge";
 import { deleteTournament } from "@/actions/admin-tournaments";
 import { tournamentStatusBadgeClass } from "@/lib/status-colors";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
 import { cn } from "@/lib/utils";
 import type { AdminTournamentRow, SortDirection } from "@/lib/admin-tournaments";
+import { useGame } from "@/lib/use-game";
 
 /** Every logo needs a fallback (CLAUDE.md) — the site's default tournament icon, same as V1's `$tournament->logo` and the public site, rather than a generic broken-image glyph. */
 function TournamentLogo({ src, name }: { src: string | null; name: string }) {
+  const game = useGame();
   const [failed, setFailed] = useState(false);
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src && !failed ? src : DEFAULT_TOURNAMENT_LOGO} alt={name} className="size-8 shrink-0 rounded-md border object-contain" onError={() => setFailed(true)} />
+    <img src={src && !failed ? src : defaultTournamentLogo(game)} alt={name} className="size-8 shrink-0 rounded-md border object-contain" onError={() => setFailed(true)} />
   );
 }
 
@@ -45,6 +47,7 @@ export function TournamentsPanel({
   pointTypeOptions: { id: number; name: string; label: string }[];
   sortable: { pathname: string; sort: string; direction: SortDirection; query: Record<string, string> };
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments");
   const locale = useLocale();
   const router = useRouter();
@@ -57,7 +60,7 @@ export function TournamentsPanel({
   function handleDelete(tournament: AdminTournamentRow) {
     if (!window.confirm(t("deleteConfirm", { name: tournament.name }))) return;
     startTransition(async () => {
-      const result = await deleteTournament(tournament.id);
+      const result = await deleteTournament(game, tournament.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

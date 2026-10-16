@@ -9,11 +9,12 @@
 import type { MetadataRoute } from "next";
 import { and, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, teams, news } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
 import { slugify } from "@/lib/entity-id";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { routing } from "@/i18n/routing";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 /**
  * Native Next.js sitemap served on /sitemap.xml (replaces V1's
@@ -27,10 +28,14 @@ import { routing } from "@/i18n/routing";
 
 type ChangeFrequency = MetadataRoute.Sitemap[number]["changeFrequency"];
 
-const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: ChangeFrequency }> = [
+// Pages that exist once per game, listed under /{game}.
+const GAME_STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: ChangeFrequency }> = [
   { path: "", priority: 1, changeFrequency: "daily" },
   { path: "/tournaments", priority: 0.8, changeFrequency: "weekly" },
   { path: "/news", priority: 0.6, changeFrequency: "daily" },
+];
+
+const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: ChangeFrequency }> = [
   { path: "/about", priority: 0.5, changeFrequency: "daily" },
   { path: "/transparency", priority: 0.5, changeFrequency: "daily" },
   { path: "/finance", priority: 0.5, changeFrequency: "daily" },
@@ -49,30 +54,39 @@ const TOURNAMENT_TABS = ["", "/matches", "/stats"];
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
+  const base = siteUrl.endsWith("/") ? siteUrl.slice(0, -1) : siteUrl;
   const localize = (path: string) => localizedEntry(base, path);
+  const perGame = await Promise.all(GAMES.map((game) => gameEntries(game, localize)));
+  return [...STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(path), priority, changeFrequency })), ...perGame.flat()];
+}
+
+type Localize = (path: string) => ReturnType<typeof localizedEntry>;
+
+async function gameEntries(game: GameSlug, localize: Localize): Promise<MetadataRoute.Sitemap> {
+  const { tournaments, teams, news } = gameTables(game);
 
   const [tournamentRows, teamRows, newsRows] = await Promise.all([
     db
       .select({ id: tournaments.id, name: tournaments.name })
       .from(tournaments)
-      .where(and(eq(tournaments.active, true), visibleTournament))
+      .where(and(eq(tournaments.active, true), visibleTournament(game)))
       .orderBy(tournaments.id),
     db
       .select({ id: teams.id, name: teams.name })
       .from(teams)
-      .where(and(eq(teams.isActive, true), visibleTeam))
+      .where(and(eq(teams.isActive, true), visibleTeam(game)))
       .orderBy(teams.id),
-    db.select({ slug: news.slug, publishedAt: news.publishedAt }).from(news).where(isNewsPublishedCondition()).orderBy(news.slug),
+    db.select({ slug: news.slug, publishedAt: news.publishedAt }).from(news).where(isNewsPublishedCondition(game)).orderBy(news.slug),
   ]);
 
   return [
-    ...STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(path), priority, changeFrequency })),
+    ...GAME_STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(`/${game}${path}`), priority, changeFrequency })),
     ...tournamentRows.flatMap((t) =>
-      TOURNAMENT_TABS.map((tab) => ({ ...localize(`/tournaments/${t.id}/${slugify(t.name)}${tab}`), priority: 0.9, changeFrequency: "weekly" as const })),
+      TOURNAMENT_TABS.map((tab) => ({ ...localize(`/${game}/tournaments/${t.id}/${slugify(t.name)}${tab}`), priority: 0.9, changeFrequency: "weekly" as const })),
     ),
-    ...teamRows.map((t) => ({ ...localize(`/team/${t.id}/${slugify(t.name)}`), priority: 0.6, changeFrequency: "weekly" as const })),
-    ...newsRows.map((n) => ({ ...localize(`/news/${n.slug}`), priority: 0.7, changeFrequency: "monthly" as const, lastModified: n.publishedAt ?? undefined })),
+    ...teamRows.map((t) => ({ ...localize(`/${game}/team/${t.id}/${slugify(t.name)}`), priority: 0.6, changeFrequency: "weekly" as const })),
+    ...newsRows.map((n) => ({ ...localize(`/${game}/news/${n.slug}`), priority: 0.7, changeFrequency: "monthly" as const, lastModified: n.publishedAt ?? undefined })),
   ];
 }
 

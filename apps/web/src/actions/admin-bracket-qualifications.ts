@@ -14,19 +14,20 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageQualifications, stageContainers, matches, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { searchQualificationDestinationContainers as searchDestinationContainersQuery, type QualificationContainerSearchResult } from "@/lib/admin-bracket-qualifications";
 import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "@/lib/bracket/qualification-resolution";
 import type { Tx } from "@/lib/bracket/repository";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
 }
 
-export async function searchQualificationDestinationContainers(query: string): Promise<QualificationContainerSearchResult[]> {
-  await requireActorPermission(PERMISSIONS.tournamentsView);
-  return searchDestinationContainersQuery(query);
+export async function searchQualificationDestinationContainers(game: GameSlug, query: string): Promise<QualificationContainerSearchResult[]> {
+  await requireActorPermission(PERMISSIONS.tournamentsView, game);
+  return searchDestinationContainersQuery(game, query);
 }
 
 export type QualificationRuleField =
@@ -76,7 +77,8 @@ type ValidatedRule = {
   cashPrizeCurrency: string | null;
 };
 
-async function validateRule(input: QualificationRuleInput): Promise<{ fieldErrors: QualificationRuleFieldErrors } | { value: ValidatedRule }> {
+async function validateRule(game: GameSlug, input: QualificationRuleInput): Promise<{ fieldErrors: QualificationRuleFieldErrors } | { value: ValidatedRule }> {
+  const { stageContainers, matches } = gameTables(game);
   const fieldErrors: QualificationRuleFieldErrors = {};
 
   let sourceContainerId: number | null = null;
@@ -198,48 +200,52 @@ async function validateRule(input: QualificationRuleInput): Promise<{ fieldError
  * are `onConflictDoNothing` and `fillMatchSlotFromSeed` never overwrites a
  * slot that already holds a team.
  */
-async function resolveIfSourceAlreadyDecided(tx: Tx, value: { sourceContainerId: number | null; sourceMatchId: number | null }): Promise<void> {
+async function resolveIfSourceAlreadyDecided(game: GameSlug, tx: Tx, value: { sourceContainerId: number | null; sourceMatchId: number | null }): Promise<void> {
+  const { stageContainers, matches } = gameTables(game);
   if (value.sourceContainerId !== null) {
     const [container] = await tx.select().from(stageContainers).where(eq(stageContainers.id, value.sourceContainerId));
-    if (container && container.status === "completed") await resolveContainerRankQualifications(tx, container);
+    if (container && container.status === "completed") await resolveContainerRankQualifications(game, tx, container);
   } else if (value.sourceMatchId !== null) {
     const [match] = await tx.select().from(matches).where(eq(matches.id, value.sourceMatchId));
-    if (match && match.status === "completed") await resolveContainerMatchQualifications(tx, match.containerId);
+    if (match && match.status === "completed") await resolveContainerMatchQualifications(game, tx, match.containerId);
   }
 }
 
-export async function createQualificationRule(input: QualificationRuleInput): Promise<QualificationRuleResult> {
+export async function createQualificationRule(game: GameSlug, input: QualificationRuleInput): Promise<QualificationRuleResult> {
+  const { stageQualifications } = gameTables(game);
   await requireTournamentsActor();
 
-  const validated = await validateRule(input);
+  const validated = await validateRule(game, input);
   if ("fieldErrors" in validated) return { ok: false, fieldErrors: validated.fieldErrors };
 
   return db.transaction(async (tx) => {
     const [row] = await tx.insert(stageQualifications).values(validated.value).returning({ id: stageQualifications.id });
-    await resolveIfSourceAlreadyDecided(tx, validated.value);
+    await resolveIfSourceAlreadyDecided(game, tx, validated.value);
     return { ok: true, id: row!.id };
   });
 }
 
-export async function updateQualificationRule(id: number, input: QualificationRuleInput): Promise<QualificationRuleResult> {
+export async function updateQualificationRule(game: GameSlug, id: number, input: QualificationRuleInput): Promise<QualificationRuleResult> {
+  const { stageQualifications } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db.select().from(stageQualifications).where(eq(stageQualifications.id, id));
   if (!existing) return { ok: false, fieldErrors: { general: "notFound" } };
 
-  const validated = await validateRule(input);
+  const validated = await validateRule(game, input);
   if ("fieldErrors" in validated) return { ok: false, fieldErrors: validated.fieldErrors };
 
   await db.transaction(async (tx) => {
     await tx.update(stageQualifications).set(validated.value).where(eq(stageQualifications.id, id));
-    await resolveIfSourceAlreadyDecided(tx, validated.value);
+    await resolveIfSourceAlreadyDecided(game, tx, validated.value);
   });
   return { ok: true, id };
 }
 
 export type DeleteQualificationRuleResult = { ok: true } | { ok: false; error: string };
 
-export async function deleteQualificationRule(id: number): Promise<DeleteQualificationRuleResult> {
+export async function deleteQualificationRule(game: GameSlug, id: number): Promise<DeleteQualificationRuleResult> {
+  const { stageQualifications } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db.select().from(stageQualifications).where(eq(stageQualifications.id, id));

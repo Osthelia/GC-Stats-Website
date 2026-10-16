@@ -12,17 +12,30 @@
 import { and, desc, eq, gte, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { matches, entrants, teams, stageContainers, stages } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { exclusiveUpperBound } from "../../v1/params";
 import { toApiTeamFromJoined } from "../../v1/entities";
 import { buildVetosByMatch, type ApiMatchVeto } from "../../v1/queries/match-vetos";
 import type { ApiTeamWithScore } from "../../v1/queries/teams";
 import type { MatchesFilter } from "../params";
+import type { GameSlug } from "@gc-stats/db/game";
 
-const listEntrantAAlias = alias(entrants, "list_entrant_a");
-const listEntrantBAlias = alias(entrants, "list_entrant_b");
-const listTeamAAlias = alias(teams, "list_team_a");
-const listTeamBAlias = alias(teams, "list_team_b");
+function listEntrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "list_entrant_a");
+}
+function listEntrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "list_entrant_b");
+}
+function listTeamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "list_team_a");
+}
+function listTeamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "list_team_b");
+}
 
 export type ApiMatchListEntry = {
   id: number;
@@ -46,7 +59,8 @@ export type ApiPaginatedMatches = { page: number; per_page: number; total: numbe
  * note: never an unbounded scan over `matches`). `team_id` matches either
  * side, same convention as the vods listing's own `team_id` filter.
  */
-export async function getMatchesV2(filter: MatchesFilter): Promise<ApiPaginatedMatches> {
+export async function getMatchesV2(game: GameSlug, filter: MatchesFilter): Promise<ApiPaginatedMatches> {
+  const { matches, stageContainers, stages } = gameTables(game);
   const conditions = [];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
@@ -54,7 +68,7 @@ export async function getMatchesV2(filter: MatchesFilter): Promise<ApiPaginatedM
   if (filter.roundName) conditions.push(eq(matches.label, filter.roundName));
   if (filter.tournamentId) conditions.push(eq(stages.tournamentId, filter.tournamentId));
   if (filter.stageId) conditions.push(eq(stageContainers.stageId, filter.stageId));
-  if (filter.teamId) conditions.push(or(eq(listTeamAAlias.id, filter.teamId), eq(listTeamBAlias.id, filter.teamId)) ?? sql`false`);
+  if (filter.teamId) conditions.push(or(eq(listTeamAAlias(game).id, filter.teamId), eq(listTeamBAlias(game).id, filter.teamId)) ?? sql`false`);
   const where = conditions.length ? and(...conditions) : undefined;
 
   const [countRow] = await db
@@ -62,10 +76,10 @@ export async function getMatchesV2(filter: MatchesFilter): Promise<ApiPaginatedM
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(listEntrantAAlias, eq(listEntrantAAlias.id, matches.entrantAId))
-    .leftJoin(listTeamAAlias, eq(listTeamAAlias.id, listEntrantAAlias.teamId))
-    .leftJoin(listEntrantBAlias, eq(listEntrantBAlias.id, matches.entrantBId))
-    .leftJoin(listTeamBAlias, eq(listTeamBAlias.id, listEntrantBAlias.teamId))
+    .leftJoin(listEntrantAAlias(game), eq(listEntrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(listTeamAAlias(game), eq(listTeamAAlias(game).id, listEntrantAAlias(game).teamId))
+    .leftJoin(listEntrantBAlias(game), eq(listEntrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(listTeamBAlias(game), eq(listTeamBAlias(game).id, listEntrantBAlias(game).teamId))
     .where(where);
   const total = Number(countRow?.total ?? 0);
   const totalPages = total > 0 ? Math.ceil(total / filter.perPage) : 0;
@@ -83,22 +97,22 @@ export async function getMatchesV2(filter: MatchesFilter): Promise<ApiPaginatedM
       scoreB: matches.scoreB,
       stageId: stages.id,
       tournamentId: stages.tournamentId,
-      teamA: listTeamAAlias,
-      teamB: listTeamBAlias,
+      teamA: listTeamAAlias(game),
+      teamB: listTeamBAlias(game),
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(listEntrantAAlias, eq(listEntrantAAlias.id, matches.entrantAId))
-    .leftJoin(listTeamAAlias, eq(listTeamAAlias.id, listEntrantAAlias.teamId))
-    .leftJoin(listEntrantBAlias, eq(listEntrantBAlias.id, matches.entrantBId))
-    .leftJoin(listTeamBAlias, eq(listTeamBAlias.id, listEntrantBAlias.teamId))
+    .leftJoin(listEntrantAAlias(game), eq(listEntrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(listTeamAAlias(game), eq(listTeamAAlias(game).id, listEntrantAAlias(game).teamId))
+    .leftJoin(listEntrantBAlias(game), eq(listEntrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(listTeamBAlias(game), eq(listTeamBAlias(game).id, listEntrantBAlias(game).teamId))
     .where(where)
     .orderBy(desc(matches.scheduledAt), desc(matches.id))
     .limit(filter.perPage)
     .offset((filter.page - 1) * filter.perPage);
 
-  const vetosByMatch = await buildVetosByMatch(rows.map((r) => r.id));
+  const vetosByMatch = await buildVetosByMatch(game, rows.map((r) => r.id));
 
   const data: ApiMatchListEntry[] = rows.map((row) => {
     const teamA = toApiTeamFromJoined(row.teamA);

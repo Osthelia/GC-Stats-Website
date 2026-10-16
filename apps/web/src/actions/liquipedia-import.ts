@@ -14,9 +14,10 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequests, changeRequestItems, tournaments, users, PERMISSIONS } from "@gc-stats/db";
+import { users, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { planLiquipediaImport } from "@/lib/liquipedia-import";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaImportResult =
   | { ok: true; created: number; upToDate: number; alreadyPending: number; noPage: string[] }
@@ -25,23 +26,24 @@ export type LiquipediaImportResult =
 // Tournaments being imported right now, so a double submit cannot plan twice before the first insert.
 const runningImports = new Set<number>();
 
-export async function importLiquipediaData(tournamentId: number): Promise<LiquipediaImportResult> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function importLiquipediaData(game: GameSlug, tournamentId: number): Promise<LiquipediaImportResult> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   if (!Number.isInteger(tournamentId)) return { ok: false, error: "invalid" };
   if (runningImports.has(tournamentId)) return { ok: false, error: "busy" };
 
   runningImports.add(tournamentId);
   try {
-    return await runImport(tournamentId, access.userId);
+    return await runImport(game, tournamentId, access.userId);
   } finally {
     runningImports.delete(tournamentId);
   }
 }
 
-async function runImport(tournamentId: number, userId: string): Promise<LiquipediaImportResult> {
+async function runImport(game: GameSlug, tournamentId: number, userId: string): Promise<LiquipediaImportResult> {
+  const { changeRequests, changeRequestItems, tournaments } = gameTables(game);
   let plan;
   try {
-    plan = await planLiquipediaImport(tournamentId);
+    plan = await planLiquipediaImport(game, tournamentId);
   } catch {
     return { ok: false, error: "unreachable" };
   }

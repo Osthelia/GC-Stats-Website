@@ -16,7 +16,7 @@
 
 import { eq, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stages, stageContainers, matches, bracketEdges } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import {
   generateSingleElimination,
@@ -30,6 +30,7 @@ import {
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { requireTournamentsActor, type BracketFormat } from "./admin-bracket-editor";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type GenerateLegacyShapeInput = {
   stageId: number;
@@ -53,7 +54,8 @@ export type GenerateLegacyShapeResult = { ok: true } | { ok: false; error: strin
  * to avoid destabilizing that already-hardened path for a second, different
  * set of guarantees.
  */
-export async function generateLegacyBracketShape(input: GenerateLegacyShapeInput): Promise<GenerateLegacyShapeResult> {
+export async function generateLegacyBracketShape(game: GameSlug, input: GenerateLegacyShapeInput): Promise<GenerateLegacyShapeResult> {
+  const { stages, stageContainers } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
@@ -69,7 +71,7 @@ export async function generateLegacyBracketShape(input: GenerateLegacyShapeInput
   async function makeContainer(name: string, containerType: "bracket" | "group" = "bracket", config: Record<string, unknown> = {}) {
     const [row] = await db
       .insert(stageContainers)
-      .values({ stageId: input.stageId, name, containerType, config: { ...config, legacyImportTarget: true }, displayOrder: nextContainerDisplayOrder(input.stageId) })
+      .values({ stageId: input.stageId, name, containerType, config: { ...config, legacyImportTarget: true }, displayOrder: nextContainerDisplayOrder(game, input.stageId) })
       .returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;
@@ -127,14 +129,15 @@ export async function generateLegacyBracketShape(input: GenerateLegacyShapeInput
     throw new Error(`generateLegacyBracketShape: generator produced an invalid graph: ${validation.errors.join("; ")}`);
   }
 
-  await persistGeneratedGraph(containerIdMap, graph);
+  await persistGeneratedGraph(game, containerIdMap, graph);
 
   return { ok: true };
 }
 
 type MatchOwnership = { id: number; containerId: number; status: "pending" | "live" | "completed"; entrantAId: number | null; entrantBId: number | null; round: number; displayOrder: number | null; label: string | null; bestOf: number };
 
-async function loadMatchWithContainer(matchId: number, stageId: number): Promise<{ match: MatchOwnership; isTarget: boolean } | null> {
+async function loadMatchWithContainer(game: GameSlug, matchId: number, stageId: number): Promise<{ match: MatchOwnership; isTarget: boolean } | null> {
+  const { stageContainers, matches } = gameTables(game);
   const [row] = await db
     .select({
       id: matches.id,
@@ -167,14 +170,15 @@ export type AssignLegacyMatchResult = { ok: true } | { ok: false; error: string 
  * status='pending' with both slots empty) is deleted after any edges
  * pointing at it are repointed to the real match taking its place.
  */
-export async function assignLegacyMatchToSlot(input: AssignLegacyMatchInput): Promise<AssignLegacyMatchResult> {
+export async function assignLegacyMatchToSlot(game: GameSlug, input: AssignLegacyMatchInput): Promise<AssignLegacyMatchResult> {
+  const { matches, bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
   if (input.sourceMatchId === input.targetMatchId) return { ok: false, error: "sameMatch" };
 
-  const source = await loadMatchWithContainer(input.sourceMatchId, input.stageId);
+  const source = await loadMatchWithContainer(game, input.sourceMatchId, input.stageId);
   if (!source) return { ok: false, error: "notFound" };
-  const target = await loadMatchWithContainer(input.targetMatchId, input.stageId);
+  const target = await loadMatchWithContainer(game, input.targetMatchId, input.stageId);
   if (!target) return { ok: false, error: "notFound" };
 
   if (!target.isTarget) return { ok: false, error: "targetNotEmpty" };
@@ -201,10 +205,11 @@ export type UnassignLegacyMatchResult = { ok: true } | { ok: false; error: strin
 /** Reverse of assignLegacyMatchToSlot: sends a placed match back to the
  *  pool, leaving a fresh empty placeholder in the target slot it vacates so
  *  the generated shape stays complete and droppable. */
-export async function unassignLegacyMatch(input: UnassignLegacyMatchInput): Promise<UnassignLegacyMatchResult> {
+export async function unassignLegacyMatch(game: GameSlug, input: UnassignLegacyMatchInput): Promise<UnassignLegacyMatchResult> {
+  const { stageContainers, matches, bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
-  const placed = await loadMatchWithContainer(input.matchId, input.stageId);
+  const placed = await loadMatchWithContainer(game, input.matchId, input.stageId);
   if (!placed) return { ok: false, error: "notFound" };
   if (!placed.isTarget) return { ok: false, error: "notAssigned" };
 
@@ -237,7 +242,8 @@ export async function unassignLegacyMatch(input: UnassignLegacyMatchInput): Prom
 // nothing here may ever delete/recreate a match wholesale the way
 // saveManualGraph does. -------------------------------------------------
 
-async function isLegacyTargetContainer(containerId: number, stageId: number): Promise<boolean> {
+async function isLegacyTargetContainer(game: GameSlug, containerId: number, stageId: number): Promise<boolean> {
+  const { stageContainers } = gameTables(game);
   const [row] = await db
     .select({ config: stageContainers.config })
     .from(stageContainers)
@@ -253,12 +259,13 @@ export type AddLegacyTargetMatchResult = { ok: true } | { ok: false; error: stri
  *  the generated template is a starting point, this covers "I need one
  *  more round" or "there was an extra decider match" once the admin sees
  *  the real matches they're placing. */
-export async function addLegacyTargetMatch(input: AddLegacyTargetMatchInput): Promise<AddLegacyTargetMatchResult> {
+export async function addLegacyTargetMatch(game: GameSlug, input: AddLegacyTargetMatchInput): Promise<AddLegacyTargetMatchResult> {
+  const { matches } = gameTables(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(input.round) || input.round < 1) return { ok: false, error: "invalidRound" };
   if (!Number.isInteger(input.bestOf) || input.bestOf < 1) return { ok: false, error: "invalidBestOf" };
-  if (!(await isLegacyTargetContainer(input.containerId, input.stageId))) return { ok: false, error: "containerNotFound" };
+  if (!(await isLegacyTargetContainer(game, input.containerId, input.stageId))) return { ok: false, error: "containerNotFound" };
 
   await db.insert(matches).values({ containerId: input.containerId, round: input.round, bestOf: input.bestOf, status: "pending" });
   return { ok: true };
@@ -270,10 +277,11 @@ export type DeleteLegacyTargetMatchResult = { ok: true } | { ok: false; error: s
 /** Deletes an empty (TBD, never played) slot from a target container. A
  *  slot holding an already re-parented real match must go through
  *  unassignLegacyMatch first — this never deletes a real match. */
-export async function deleteLegacyTargetMatch(input: DeleteLegacyTargetMatchInput): Promise<DeleteLegacyTargetMatchResult> {
+export async function deleteLegacyTargetMatch(game: GameSlug, input: DeleteLegacyTargetMatchInput): Promise<DeleteLegacyTargetMatchResult> {
+  const { matches } = gameTables(game);
   await requireTournamentsActor();
 
-  const loaded = await loadMatchWithContainer(input.matchId, input.stageId);
+  const loaded = await loadMatchWithContainer(game, input.matchId, input.stageId);
   if (!loaded) return { ok: false, error: "notFound" };
   if (!loaded.isTarget) return { ok: false, error: "notAssigned" };
   if (loaded.match.status !== "pending" || loaded.match.entrantAId !== null || loaded.match.entrantBId !== null) {
@@ -291,12 +299,13 @@ export type MoveLegacyTargetMatchResult = { ok: true } | { ok: false; error: str
  *  allowed whether the slot is still TBD or already holds a re-parented
  *  real match (never touches entrants/score/container). Backs drag-to-move
  *  in the target canvas. */
-export async function moveLegacyTargetMatch(input: MoveLegacyTargetMatchInput): Promise<MoveLegacyTargetMatchResult> {
+export async function moveLegacyTargetMatch(game: GameSlug, input: MoveLegacyTargetMatchInput): Promise<MoveLegacyTargetMatchResult> {
+  const { matches } = gameTables(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(input.round) || input.round < 1) return { ok: false, error: "invalidRound" };
 
-  const loaded = await loadMatchWithContainer(input.matchId, input.stageId);
+  const loaded = await loadMatchWithContainer(game, input.matchId, input.stageId);
   if (!loaded) return { ok: false, error: "notFound" };
   if (!loaded.isTarget) return { ok: false, error: "notAssigned" };
 
@@ -311,13 +320,14 @@ export type ConnectLegacyEdgeResult = { ok: true } | { ok: false; error: string 
  *  resolveMatch is ever triggered here, cf. generateLegacyBracketShape doc
  *  comment). Replaces any existing edge already feeding the same target
  *  slot, mirroring the normal editor's onConnect behavior. */
-export async function connectLegacyEdge(input: ConnectLegacyEdgeInput): Promise<ConnectLegacyEdgeResult> {
+export async function connectLegacyEdge(game: GameSlug, input: ConnectLegacyEdgeInput): Promise<ConnectLegacyEdgeResult> {
+  const { bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
   if (input.fromMatchId === input.toMatchId) return { ok: false, error: "sameMatch" };
-  const from = await loadMatchWithContainer(input.fromMatchId, input.stageId);
+  const from = await loadMatchWithContainer(game, input.fromMatchId, input.stageId);
   if (!from) return { ok: false, error: "notFound" };
-  const to = await loadMatchWithContainer(input.toMatchId, input.stageId);
+  const to = await loadMatchWithContainer(game, input.toMatchId, input.stageId);
   if (!to) return { ok: false, error: "notFound" };
   if (!from.isTarget || !to.isTarget) return { ok: false, error: "notAssigned" };
 
@@ -331,10 +341,11 @@ export async function connectLegacyEdge(input: ConnectLegacyEdgeInput): Promise<
 export type DisconnectLegacyEdgeInput = { stageId: number; fromMatchId: number; fromResult: "winner" | "loser"; toMatchId: number; toSlot: "a" | "b" };
 export type DisconnectLegacyEdgeResult = { ok: true } | { ok: false; error: string };
 
-export async function disconnectLegacyEdge(input: DisconnectLegacyEdgeInput): Promise<DisconnectLegacyEdgeResult> {
+export async function disconnectLegacyEdge(game: GameSlug, input: DisconnectLegacyEdgeInput): Promise<DisconnectLegacyEdgeResult> {
+  const { bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
-  const to = await loadMatchWithContainer(input.toMatchId, input.stageId);
+  const to = await loadMatchWithContainer(game, input.toMatchId, input.stageId);
   if (!to || !to.isTarget) return { ok: false, error: "notFound" };
 
   await db

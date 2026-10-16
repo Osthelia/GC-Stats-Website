@@ -16,7 +16,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { organizations, users, PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity, diffChanges } from "@/lib/activity-log";
-import { validateOrganizationProfileInput, type OrganizationProfileInput, type OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
+import { validateOrganizationGames, validateOrganizationProfileInput, type OrganizationProfileInput, type OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
 import {
   addOrganizationAccessEntry,
   updateOrganizationAccessRolesEntry,
@@ -29,6 +29,7 @@ import {
   type AccessActionResult,
 } from "@/lib/organization-access-service";
 import { addOrganizationMemberEntry, updateOrganizationMemberEntry, deleteOrganizationMembershipEntry, type AddMemberResult, type MemberEntryResult, type MembershipActionResult } from "@/lib/organization-membership-service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
@@ -60,8 +61,8 @@ async function uniqueSlugFrom(name: string): Promise<string> {
   }
 }
 
-export type CreateOrganizationInput = { name: string };
-export type CreateOrganizationField = "name";
+export type CreateOrganizationInput = { name: string; games: string[] };
+export type CreateOrganizationField = "name" | "games";
 export type CreateOrganizationFieldErrors = Partial<Record<CreateOrganizationField, string>>;
 export type CreateOrganizationResult = { ok: true; id: number } | { ok: false; fieldErrors: CreateOrganizationFieldErrors };
 
@@ -74,12 +75,15 @@ export async function createOrganization(input: CreateOrganizationInput): Promis
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
 
+  const { games, error: gamesError } = validateOrganizationGames(input.games);
+  if (gamesError) fieldErrors.games = gamesError;
+
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const slug = await uniqueSlugFrom(name);
 
   const created = await db.transaction(async (tx) => {
-    const [row] = await tx.insert(organizations).values({ name, slug, tags: [], socials: {}, maxPermissions: [] }).returning({ id: organizations.id });
+    const [row] = await tx.insert(organizations).values({ name, slug, games, tags: [], socials: {}, maxPermissions: [] }).returning({ id: organizations.id });
     if (!row) throw new Error("Insert returned no row");
     await logActivity({ subject: "organization", subjectId: row.id, event: "created", description: `Created organization #${row.id} (${name})`, actorUserId }, tx);
     return row;
@@ -89,13 +93,18 @@ export async function createOrganization(input: CreateOrganizationInput): Promis
 }
 
 export type { OrganizationProfileInput, OrganizationProfileField, OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
-export type OrganizationProfileResult = { ok: true } | { ok: false; fieldErrors: OrganizationProfileFieldErrors };
+export type AdminOrganizationProfileInput = OrganizationProfileInput & { games: string[] };
+export type AdminOrganizationProfileFieldErrors = OrganizationProfileFieldErrors & { games?: string };
+export type OrganizationProfileResult = { ok: true } | { ok: false; fieldErrors: AdminOrganizationProfileFieldErrors };
 
-export async function updateOrganizationProfile(organizationId: number, input: OrganizationProfileInput): Promise<OrganizationProfileResult> {
+export async function updateOrganizationProfile(organizationId: number, input: AdminOrganizationProfileInput): Promise<OrganizationProfileResult> {
   const actorUserId = await requireOrgActorId();
 
   const validated = validateOrganizationProfileInput(input);
-  const { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags } = validated;
+  const { name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags } = validated;
+  const fieldErrors: AdminOrganizationProfileFieldErrors = validated.fieldErrors;
+  const { games, error: gamesError } = validateOrganizationGames(input.games);
+  if (gamesError) fieldErrors.games = gamesError;
 
   const [existing] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -111,7 +120,7 @@ export async function updateOrganizationProfile(organizationId: number, input: O
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, liquipediaLink: liquipediaLink || null, socials, tags };
+  const values = { name, slug, countryCode: countryCode || null, secondaryCountryCode: secondaryCountryCode || null, bio: bio || null, liquipediaLink: liquipediaLink || null, socials, tags, games };
   await db.transaction(async (tx) => {
     await tx.update(organizations).set(values).where(eq(organizations.id, organizationId));
     const changes = diffChanges(existing, values);
@@ -172,19 +181,19 @@ export type {
 } from "@/lib/organization-membership-service";
 
 /** "Owner" (V1's Publisher owner) is just a membership row with role='owner' — no separate table, see packages/db/src/schema/people.ts::organizationMemberships. Business logic lives in organization-membership-service.ts, shared with /dashboard's own member actions (actions/dashboard-organizations.ts) — this wrapper only owns the admin permission check. */
-export async function addOrganizationMember(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
-  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return addOrganizationMemberEntry(organizationId, personId, role, from, until, userId);
+export async function addOrganizationMember(game: GameSlug, organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess, game);
+  return addOrganizationMemberEntry(game, organizationId, personId, role, from, until, userId);
 }
 
-export async function updateOrganizationMember(membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
-  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return updateOrganizationMemberEntry(membershipId, role, from, until, userId);
+export async function updateOrganizationMember(game: GameSlug, membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess, game);
+  return updateOrganizationMemberEntry(game, membershipId, role, from, until, userId);
 }
 
-export async function deleteOrganizationMembership(membershipId: number): Promise<MembershipActionResult> {
-  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess);
-  return deleteOrganizationMembershipEntry(membershipId, userId);
+export async function deleteOrganizationMembership(game: GameSlug, membershipId: number): Promise<MembershipActionResult> {
+  const { userId } = await requireActorPermission(PERMISSIONS.organizationsManageAccess, game);
+  return deleteOrganizationMembershipEntry(game, membershipId, userId);
 }
 
 // --- Dashboard access (organization_access) --------------------------------

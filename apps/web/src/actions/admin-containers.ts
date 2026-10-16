@@ -14,11 +14,12 @@
 
 import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -107,7 +108,8 @@ function buildConfig(input: ContainerInput): Record<string, unknown> {
   };
 }
 
-export async function createContainer(stageId: number, input: ContainerInput): Promise<ContainerResult> {
+export async function createContainer(game: GameSlug, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+  const { stageContainers, stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select({ id: stages.id, tournamentId: stages.tournamentId }).from(stages).where(eq(stages.id, stageId)).limit(1);
@@ -118,7 +120,7 @@ export async function createContainer(stageId: number, input: ContainerInput): P
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
+    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(game, stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -134,7 +136,8 @@ export async function createContainer(stageId: number, input: ContainerInput): P
  * `group_entries` from those matches; group -> bracket drops the now
  * unused `group_entries`. The `legacyImportTarget` flag is preserved.
  */
-export async function updateContainer(id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+export async function updateContainer(game: GameSlug, id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+  const { stageContainers, groupEntries, matches, bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db
@@ -157,7 +160,7 @@ export async function updateContainer(id: number, stageId: number, input: Contai
     if (input.containerType === "group") {
       const containerMatchIds = tx.select({ id: matches.id }).from(matches).where(eq(matches.containerId, id));
       await tx.delete(bracketEdges).where(or(inArray(bracketEdges.fromMatchId, containerMatchIds), inArray(bracketEdges.toMatchId, containerMatchIds)));
-      await rebuildGroupEntriesFromMatches(tx, id);
+      await rebuildGroupEntriesFromMatches(game, tx, id);
     } else {
       await tx.delete(groupEntries).where(eq(groupEntries.containerId, id));
     }
@@ -170,7 +173,9 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
 
 /** Without `force`, refuses when a match is live or completed. With it, the
  *  container goes with every match, map and stat row underneath. */
-export async function deleteContainer(id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
+export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
+  const { stageContainers, matches } = gameTables(game);
+  const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
@@ -199,12 +204,13 @@ export async function deleteContainer(id: number, stageId: number, force: boolea
 export type MoveContainerResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "cannotMove" };
 
 /** Swaps a container with its neighbour, then renumbers the whole stage 1..n. */
-export async function moveContainer(id: number, stageId: number, direction: "up" | "down"): Promise<MoveContainerResult> {
+export async function moveContainer(game: GameSlug, id: number, stageId: number, direction: "up" | "down"): Promise<MoveContainerResult> {
+  const { stageContainers } = gameTables(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || (direction !== "up" && direction !== "down")) return { ok: false, error: "invalid" };
 
-  const siblings = await db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy);
+  const siblings = await db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy(game));
   const index = siblings.findIndex((c) => c.id === id);
   if (index === -1) return { ok: false, error: "notFound" };
 
@@ -230,7 +236,8 @@ export type AssignEntrantsResult = { ok: true } | { ok: false; error: "notFound"
  *  entrants already present are left untouched (onConflictDoNothing on the
  *  (containerId, entrantId) pair isn't a declared unique constraint, so
  *  duplicates are avoided by checking first instead). */
-export async function assignEntrantsToContainer(containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
+export async function assignEntrantsToContainer(game: GameSlug, containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
+  const { stageContainers, stages, entrants, groupEntries } = gameTables(game);
   await requireTournamentsActor();
 
   const [container] = await db
@@ -259,7 +266,8 @@ export async function assignEntrantsToContainer(containerId: number, entrantIds:
 
 export type RemoveGroupEntryResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function removeEntrantFromContainer(containerId: number, entrantId: number): Promise<RemoveGroupEntryResult> {
+export async function removeEntrantFromContainer(game: GameSlug, containerId: number, entrantId: number): Promise<RemoveGroupEntryResult> {
+  const { groupEntries } = gameTables(game);
   await requireTournamentsActor();
   const [existing] = await db
     .select({ id: groupEntries.id })

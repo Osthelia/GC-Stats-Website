@@ -1656,7 +1656,21 @@
     "productionTitle": "{player} · Produção",
     "formerOrganizations": "Organizações anteriores",
     "noFormerOrganizations": "Nenhuma organização anterior registrada.",
-    "unknownDate": "Desconhecida"
+    "unknownDate": "Desconhecida",
+    "addGameProfile": {
+      "title": "Também no {game}?",
+      "description": "Adicione seu perfil de {game} com um clique. Ele reaproveita seu nome, sua foto e seus links, sem preencher nada de novo.",
+      "button": "Adicionar meu perfil de {game}",
+      "adding": "Adicionando...",
+      "done": "Seu perfil de {game} está pronto.",
+      "open": "Ver meu perfil de {game}",
+      "error": {
+        "unauthenticated": "Você precisa estar conectado.",
+        "notYours": "Este jogador não está vinculado à sua conta.",
+        "invalidGame": "Este jogo não existe."
+      }
+    },
+    "alsoOn": "Também no {game}"
   },
   "organizationPage": {
     "tabOverview": "Visão geral",
@@ -2106,7 +2120,8 @@
       "error": {
         "userNotFound": "Usuário não encontrado.",
         "roleNotFound": "Um dos cargos selecionados não existe mais.",
-        "selfDemote": "Você não pode remover seu próprio acesso de admin."
+        "selfDemote": "Você não pode remover seu próprio acesso de admin.",
+        "gameNotFound": "Este jogo não existe."
       },
       "authMethods": {
         "heading": "Autenticação",
@@ -2385,7 +2400,8 @@
           "ownerOnly": "Apenas um proprietário pode conceder ou editar o cargo de proprietário.",
           "userNotFound": "Conta não encontrada.",
           "alreadyHasAccess": "Esta conta já tem acesso a esta organização."
-        }
+        },
+        "fieldGames": "Jogos"
       },
       "filterKindLabel": "Tipo de organização",
       "filterKindAll": "Todas as organizações",
@@ -2778,11 +2794,26 @@
           "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor."
+        "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor.",
+        "sectionGames": "Jogos",
+        "gamesHint": "Uma pessoa, um perfil por jogo. Nome, país, pronomes, bio, apelidos, redes, foto e conta vinculada são compartilhados, o resto pertence a cada jogo.",
+        "sharedHint": "Nome, país, pronomes, bio, apelidos, redes e foto são compartilhados com os outros jogos desta pessoa.",
+        "gameCurrent": "Jogo atual",
+        "gameHasProfile": "Tem um perfil",
+        "gameNoProfile": "Ainda sem perfil",
+        "gameOpen": "Abrir",
+        "gameAddButton": "Adicionar a {game}",
+        "gameAdding": "Adicionando...",
+        "gameAddSuccess": "Adicionado a {game}.",
+        "gameAddError": {
+          "invalidGame": "Este jogo não existe.",
+          "notFound": "Este jogador não existe mais.",
+          "alreadyThere": "Este jogador já tem um perfil neste jogo."
+        }
       },
       "merge": {
         "title": "Mesclar jogadora",
-        "description": "Escolha o perfil que permanece e, por categoria, exatamente quais itens dos dados de {name} transferir para ele. {name} em si não é excluído aqui.",
+        "description": "Escolha o perfil que permanece e, por categoria, exatamente quais itens dos dados de {name} transferir para ele.",
         "backToPlayer": "← Voltar para a jogadora",
         "selectTarget": "Mesclar em",
         "targetPlaceholder": "Selecionar uma jogadora…",
@@ -2814,8 +2845,21 @@
           "samePlayer": "Escolha uma jogadora diferente como destino da mesclagem.",
           "sourceNotFound": "Jogadora não encontrada.",
           "targetNotFound": "Jogadora de destino não encontrada.",
-          "targetAlreadyLinked": "A jogadora de destino já tem uma conta vinculada."
-        }
+          "targetAlreadyLinked": "A jogadora de destino já tem uma conta vinculada.",
+          "sourceStillUsed": "Este jogador ainda é usado por participantes ou estatísticas de partidas deste jogo. Selecione também esses itens, ou mantenha o perfil."
+        },
+        "removeSource": "Remover de {game} após unir",
+        "removeSourceHint": "{name} é removido deste jogo quando tudo for movido, e por completo se nenhum outro jogo tiver este perfil. Recusado se participantes ou estatísticas de partidas ainda o usarem."
+      },
+      "duplicatesLink": "Possíveis duplicados",
+      "duplicates": {
+        "title": "Possíveis duplicados",
+        "description": "Pessoas com o mesmo nome que existem cada uma em um jogo diferente. Una o perfil de {game} ao outro para manter um único perfil.",
+        "backToList": "Voltar aos jogadores",
+        "columnSource": "Em {game}",
+        "columnTarget": "Outro perfil",
+        "merge": "Unir",
+        "empty": "Nenhum duplicado encontrado."
       }
     },
     "finance": {
@@ -4939,6 +4983,9 @@
       "hasLeft": "Saiu da equipe",
       "untilLabel": "Saiu em",
       "unknownHint": "Data de fim desconhecida, deixe vazio se não souber."
+    },
+    "personPicker": {
+      "notInGame": "Ainda não está em {game}"
     }
   },
   "dashboard": {
@@ -6026,11 +6073,11 @@
       "title": "Sua conta",
       "checkbox": "Sou eu: vincular minha conta a {name}",
       "hint": "A equipe vai verificar se este perfil é realmente seu antes de vinculá-lo à sua conta.",
-      "replaces": "Sua conta está vinculada atualmente a {previous}: esse vínculo será substituído após a aprovação.",
       "state": {
         "linkedToYou": "Este perfil já está vinculado à sua conta.",
         "linkedToOther": "Este perfil já está vinculado a outra conta. Fale com a equipe se achar que é um erro.",
-        "pending": "Você já tem um pedido de vínculo de conta aguardando análise."
+        "pending": "Você já tem um pedido de vínculo de conta aguardando análise.",
+        "linkedToAnotherPerson": "Sua conta já está vinculada a outro jogador. Se os dois perfis são a mesma pessoa, peça à equipe para unir os dois perfis."
       }
     },
     "error": {
@@ -6060,7 +6107,8 @@
       "consentRequired": "Você deve aceitar as condições de direitos e consentimento da foto.",
       "invalidType": "Apenas fotos JPG, PNG ou WebP são aceitas.",
       "tooSmall": "Esta foto é muito pequena (mínimo de 400 px no lado mais curto).",
-      "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
+      "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...).",
+      "userLinkOtherPerson": "Sua conta já está vinculada a outro jogador. Se os dois perfis são a mesma pessoa, peça à equipe para unir os dois perfis."
     },
     "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor.",
     "useLinkedDiscord": "Usar minha conta do Discord vinculada"
@@ -6491,5 +6539,10 @@
     "points": "Classificado via pontos {label}",
     "pointsUnknown": "Classificado via pontos",
     "iconLabel": "Origem da classificação"
+  },
+  "game": {
+    "switcherLabel": "Jogo",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

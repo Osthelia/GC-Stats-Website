@@ -6,11 +6,12 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import type { GameSlug } from "@gc-stats/db/game";
 import { getTranslations } from "next-intl/server";
 import { TournamentListCard, type TournamentListCardItem } from "@/components/tournament/tournament-list-card";
 
 /** "Organized tournaments" section of the organization home, rendered only when the organization has some. */
-export async function OrganizationTournamentsPanel({ tournaments }: { tournaments: TournamentListCardItem[] }) {
+export async function OrganizationTournamentsPanel({ tournaments, game }: { tournaments: TournamentListCardItem[]; game: GameSlug }) {
   if (tournaments.length === 0) return null;
   const t = await getTranslations("organizationPage");
 
@@ -22,7 +23,7 @@ export async function OrganizationTournamentsPanel({ tournaments }: { tournament
       </div>
       <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:grid-cols-3">
         {tournaments.map((tournament) => (
-          <TournamentListCard key={tournament.id} tournament={tournament} />
+          <TournamentListCard key={tournament.id} tournament={tournament} game={game} />
         ))}
       </div>
     </div>

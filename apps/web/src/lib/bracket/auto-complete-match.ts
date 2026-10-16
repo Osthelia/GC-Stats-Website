@@ -14,8 +14,9 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, maps } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { resolveMatch } from "./match-resolution-service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Recomputes the series score from its completed maps. An undecided match
@@ -32,7 +33,9 @@ import { resolveMatch } from "./match-resolution-service";
  * inside it — `resolveMatch` opens its own transaction on a separate
  * connection, which would not see uncommitted writes from an outer one.
  */
-export async function maybeAutoCompleteMatchFromMaps(matchId: number): Promise<void> {
+export async function maybeAutoCompleteMatchFromMaps(game: GameSlug, matchId: number): Promise<void> {
+  const { matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return;
   if (match.entrantAId === null || match.entrantBId === null) return;
@@ -68,7 +71,7 @@ export async function maybeAutoCompleteMatchFromMaps(matchId: number): Promise<v
   }
 
   if (winnerId !== null) {
-    await resolveMatch({ matchId, winnerId, scoreA, scoreB });
+    await resolveMatch(game, { matchId, winnerId, scoreA, scoreB });
     return;
   }
 

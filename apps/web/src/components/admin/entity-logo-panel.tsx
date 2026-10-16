@@ -24,6 +24,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { FormField } from "@/components/admin/form-field";
 import { uploadEntityLogo, updateEntityLogo, deleteEntityLogo, type UploadLogoFieldErrors, type UpdateLogoFieldErrors } from "@/actions/admin-logos";
 import type { AdminLogoEntry, LogoEntityType } from "@/lib/admin-logos";
+import { useGame } from "@/lib/use-game";
 
 const NO_THEME = "none";
 
@@ -79,6 +80,7 @@ export function EntityLogoPanel({
   entries: AdminLogoEntry[];
   canEdit: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations(namespace);
   const [entries, setEntries] = useState(initialEntries);
   const [isPending, startTransition] = useTransition();
@@ -119,7 +121,7 @@ export function EntityLogoPanel({
     formData.set("until", until);
 
     startTransition(async () => {
-      const result = await uploadEntityLogo(entityType, entityId, formData);
+      const result = await uploadEntityLogo(game, entityType, entityId, formData);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -152,7 +154,7 @@ export function EntityLogoPanel({
     formData.set("until", editUntil);
 
     startTransition(async () => {
-      const result = await updateEntityLogo(entityType, editing.id, formData);
+      const result = await updateEntityLogo(game, entityType, editing.id, formData);
       if (!result.ok) {
         setEditFieldErrors(result.fieldErrors);
         return;
@@ -173,7 +175,7 @@ export function EntityLogoPanel({
 
   function handleDelete(id: string) {
     startTransition(async () => {
-      const result = await deleteEntityLogo(entityType, id);
+      const result = await deleteEntityLogo(game, entityType, id);
       if (!result.ok) {
         setConfirmDeleteId(null);
         toast.error(t(`logoDeleteError.${result.error}` as "logoDeleteError.notFound"));

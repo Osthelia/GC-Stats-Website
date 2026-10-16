@@ -17,6 +17,8 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { forumMessages, forumThreads, users } from "@gc-stats/db";
 import { getReactionSummaries, type ReactionSummary } from "@/lib/reactions";
 import { getUserFanTeam, getUserFanTeamsBatch, type UserFanTeam } from "@/lib/user-profile-data";
+import { getPreferredGame } from "@/lib/game";
+import type { GameSlug } from "@gc-stats/db/game";
 
 const PARENT_PREVIEW_LENGTH = 140;
 
@@ -148,7 +150,7 @@ export const getForumThread = cache(async (threadId: number): Promise<ForumThrea
     .limit(1);
   if (!row) return null;
 
-  const authorFanTeam = row.authorId ? await getUserFanTeam(row.authorId) : null;
+  const authorFanTeam = row.authorId ? await getUserFanTeam(row.authorId, await getPreferredGame()) : null;
   return { ...row, title: row.title ?? "", authorFanTeam };
 });
 
@@ -170,7 +172,8 @@ export type ForumMessageView = {
   parentPreview: string | null;
 };
 
-export async function getForumMessagesPage(threadId: number, page: number, userId: string | null): Promise<{ messages: ForumMessageView[]; total: number }> {
+/** `game` is the one of the page embedding the thread, the visitor's last browsed game otherwise (general threads). */
+export async function getForumMessagesPage(threadId: number, page: number, userId: string | null, game?: GameSlug): Promise<{ messages: ForumMessageView[]; total: number }> {
   const parentMessages = alias(forumMessages, "parent_messages");
   const parentUsers = alias(users, "parent_users");
 
@@ -207,7 +210,10 @@ export async function getForumMessagesPage(threadId: number, page: number, userI
       rows.map((r) => r.id),
       userId
     ),
-    getUserFanTeamsBatch(rows.map((r) => r.authorId).filter((id): id is string => id !== null)),
+    getUserFanTeamsBatch(
+      rows.map((r) => r.authorId).filter((id): id is string => id !== null),
+      game ?? (await getPreferredGame())
+    ),
   ]);
 
   return {

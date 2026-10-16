@@ -10,6 +10,8 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
+import type { GameSlug } from "@gc-stats/db/game";
+
 export const USER_SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord"] as const;
 
 // A social field must be a real link to that platform (mirrors the "team
@@ -41,8 +43,7 @@ export type UserProfileInput = {
   username: string;
   pronouns: string; // "" | "0" | "1" | "2"
   bio: string;
-  teamId: number | null;
-  teamTag: string;
+  fanTeams: Record<GameSlug, { teamId: number | null; teamTag: string }>;
   socials: Partial<Record<(typeof USER_SOCIAL_KEYS)[number], string>>;
 };
 

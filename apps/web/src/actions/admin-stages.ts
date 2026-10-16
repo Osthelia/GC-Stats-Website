@@ -13,9 +13,10 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stages, tournaments, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -58,7 +59,8 @@ function validateStage(input: StageInput): StageFieldErrors {
   return fieldErrors;
 }
 
-export async function createStage(tournamentId: number, input: StageInput): Promise<StageResult> {
+export async function createStage(game: GameSlug, tournamentId: number, input: StageInput): Promise<StageResult> {
+  const { stages, tournaments } = gameTables(game);
   await requireTournamentsActor();
 
   const [tournament] = await db.select({ id: tournaments.id }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
@@ -84,7 +86,8 @@ export async function createStage(tournamentId: number, input: StageInput): Prom
   return { ok: true, id: created.id };
 }
 
-export async function updateStage(id: number, tournamentId: number, input: StageInput): Promise<StageResult> {
+export async function updateStage(game: GameSlug, id: number, tournamentId: number, input: StageInput): Promise<StageResult> {
+  const { stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [existingRow] = await db.select({ id: stages.id }).from(stages).where(and(eq(stages.id, id), eq(stages.tournamentId, tournamentId))).limit(1);
@@ -110,7 +113,8 @@ export async function updateStage(id: number, tournamentId: number, input: Stage
 export type ToggleStageActiveResult = { ok: true; active: boolean } | { ok: false; error: "notFound" };
 
 /** Public-visibility toggle only (mirrors tournaments.active) — never gates admin editing, cf. SUIVI.md. */
-export async function toggleStageActive(id: number): Promise<ToggleStageActiveResult> {
+export async function toggleStageActive(game: GameSlug, id: number): Promise<ToggleStageActiveResult> {
+  const { stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db.select({ id: stages.id, active: stages.active }).from(stages).where(eq(stages.id, id)).limit(1);
@@ -124,7 +128,8 @@ export async function toggleStageActive(id: number): Promise<ToggleStageActiveRe
 
 export type DeleteStageResult = { ok: true } | { ok: false; error: "notFound" | "hasPlayedMatches" };
 
-export async function deleteStage(id: number, tournamentId: number): Promise<DeleteStageResult> {
+export async function deleteStage(game: GameSlug, id: number, tournamentId: number): Promise<DeleteStageResult> {
+  const { stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db.select({ id: stages.id }).from(stages).where(and(eq(stages.id, id), eq(stages.tournamentId, tournamentId))).limit(1);

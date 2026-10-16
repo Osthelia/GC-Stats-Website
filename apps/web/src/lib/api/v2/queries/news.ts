@@ -11,11 +11,12 @@
 
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { news, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { exclusiveUpperBound } from "../../v1/params";
 import { getThemedLogoUrlsBatch, type ApiThemedLogoUrls } from "../../v1/logo-response";
 import type { NewsFilter } from "../params";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiNewsOrganizationRef = { id: number; name: string; logos: ApiThemedLogoUrls };
 
@@ -40,15 +41,16 @@ export type ApiPaginatedNews = { page: number; per_page: number; total: number; 
  * the public news page), unlike team/player/org press which are already
  * scoped by the id in the path.
  */
-export async function getNewsV2(filter: NewsFilter): Promise<ApiPaginatedNews> {
-  const conditions = [isNewsPublishedCondition()];
+export async function getNewsV2(game: GameSlug, filter: NewsFilter): Promise<ApiPaginatedNews> {
+  const { news } = gameTables(game);
+  const conditions = [isNewsPublishedCondition(game)];
   if (filter.from) conditions.push(gte(news.publishedAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(news.publishedAt, exclusiveUpperBound(filter.to)));
   if (filter.lang) conditions.push(eq(news.lang, filter.lang));
   if (filter.organizationId) conditions.push(eq(news.organizationId, filter.organizationId));
-  if (filter.teamId) conditions.push(sql`EXISTS (SELECT 1 FROM news_relations nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'team' AND nr.relatable_id = ${filter.teamId})`);
-  if (filter.personId) conditions.push(sql`EXISTS (SELECT 1 FROM news_relations nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'person' AND nr.relatable_id = ${filter.personId})`);
-  if (filter.tournamentId) conditions.push(sql`EXISTS (SELECT 1 FROM news_relations nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'tournament' AND nr.relatable_id = ${filter.tournamentId})`);
+  if (filter.teamId) conditions.push(sql`EXISTS (SELECT 1 FROM ${gameTables(game).newsRelations} nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'team' AND nr.relatable_id = ${filter.teamId})`);
+  if (filter.personId) conditions.push(sql`EXISTS (SELECT 1 FROM ${gameTables(game).newsRelations} nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'person' AND nr.relatable_id = ${filter.personId})`);
+  if (filter.tournamentId) conditions.push(sql`EXISTS (SELECT 1 FROM ${gameTables(game).newsRelations} nr WHERE nr.news_id = ${news.id} AND nr.relatable_type = 'tournament' AND nr.relatable_id = ${filter.tournamentId})`);
   const where = and(...conditions);
 
   const [countRow] = await db.select({ total: sql<number>`count(*)` }).from(news).where(where);

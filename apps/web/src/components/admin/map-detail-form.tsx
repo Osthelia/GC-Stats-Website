@@ -23,6 +23,7 @@ import { MapPicker } from "@/components/admin/map-picker";
 import { updateMap, type MapInput, type MapFieldErrors } from "@/actions/admin-matches";
 import { MAP_UNKNOWN } from "@/lib/valorant-maps";
 import type { AdminMapRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 /**
  * "Basic info" + "Riot data" cards on the dedicated map admin page (5/12+7/12
@@ -30,6 +31,7 @@ import type { AdminMapRow } from "@/lib/admin-matches";
  * update the apiMatchId field in the left card.
  */
 export function MapDetailForm({ map, canManage, riotPlayers }: { map: AdminMapRow; canManage: boolean; riotPlayers?: ReactNode }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -50,7 +52,7 @@ export function MapDetailForm({ map, canManage, riotPlayers }: { map: AdminMapRo
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateMap(map.id, value);
+      const result = await updateMap(game, map.id, value);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         toast.error(t("mapSaveError"));

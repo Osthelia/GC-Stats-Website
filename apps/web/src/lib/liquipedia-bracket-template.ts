@@ -10,12 +10,14 @@
 
 import { inArray, isNotNull, and } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { stageContainers } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 
-export const LIQUIPEDIA_BRACKET_GENERATOR_URL = "https://liquipedia.net/valorant/Special:RunQuery/BracketCopyPaste";
+export const liquipediaBracketGeneratorUrl = (game: GameSlug) => `https://liquipedia.net/${GAME_INFO[game].liquipediaWiki}/Special:RunQuery/BracketCopyPaste`;
 
 /** Template of each container that has one. */
-export async function getBracketTemplates(containerIds: number[]): Promise<Map<number, string>> {
+export async function getBracketTemplates(game: GameSlug, containerIds: number[]): Promise<Map<number, string>> {
+  const { stageContainers } = gameTables(game);
   if (containerIds.length === 0) return new Map();
   const rows = await db
     .select({ id: stageContainers.id, template: stageContainers.liquipediaBracketTemplate })

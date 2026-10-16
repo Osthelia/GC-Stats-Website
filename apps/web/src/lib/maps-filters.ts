@@ -10,7 +10,8 @@
 
 import { eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type MapsFilters = { tournamentId: number | null; dateFrom: string; dateTo: string };
 
@@ -65,7 +66,9 @@ export function mapsFiltersHref(basePath: string, filters: MapsFilters, override
 }
 
 /** SQL conditions for a query already joining `maps` and `matches`. */
-export function mapsFilterConditions(filters: MapsFilters): SQL[] {
+export function mapsFilterConditions(game: GameSlug, filters: MapsFilters): SQL[] {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   // An unplayed map (decider of a decided series) is completed but has no score.
   const conditions: SQL[] = [isNotNull(maps.teamAScore), isNotNull(maps.teamBScore)];
   // A map without its own start time falls back to the match schedule.

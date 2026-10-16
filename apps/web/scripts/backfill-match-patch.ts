@@ -14,7 +14,7 @@
 
 import { and, asc, eq, isNotNull, isNull, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 import { getMatch } from "../src/lib/riot-relay-client";
 import { resolveRiotRegion } from "../src/lib/map-fetch/riot-region";
 
@@ -40,6 +40,8 @@ async function fetchPatch(region: NonNullable<ReturnType<typeof resolveRiotRegio
 }
 
 async function main() {
+  // Only Valorant matches have maps.
+  const { maps, matches, stageContainers, stages, tournaments } = valorantTables;
   const rows = await db
     .select({
       matchId: matches.id,

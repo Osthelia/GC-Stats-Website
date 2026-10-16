@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/admin/form-field";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { generateBracketFromTemplate, type BracketFormat } from "@/actions/admin-bracket-editor";
+import { useGame } from "@/lib/use-game";
 
 const FORMATS: BracketFormat[] = ["single_elimination", "double_elimination", "triple_elimination", "round_robin", "round_robin_double", "gsl_group"];
 
@@ -31,6 +32,7 @@ export function GenerateTemplateForm({
   seededEntrants: { id: number; seed: number }[];
   onGenerated: () => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.editor");
   const [format, setFormat] = useState<BracketFormat>("single_elimination");
   const [bestOf, setBestOf] = useState("1");
@@ -55,7 +57,7 @@ export function GenerateTemplateForm({
   function handleGenerate() {
     setConfirmOpen(false);
     startTransition(async () => {
-      const result = await generateBracketFromTemplate({
+      const result = await generateBracketFromTemplate(game, {
         stageId,
         format,
         bestOf: Number(bestOf),

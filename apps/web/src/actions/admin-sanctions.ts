@@ -13,11 +13,12 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { sanctions, users, teams, PERMISSIONS } from "@gc-stats/db";
+import { sanctions, users, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { SANCTION_TYPES, type SanctionType } from "@/lib/admin-sanctions";
 import { notify } from "@/lib/notify";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type SanctionField = "target" | "type" | "reason" | "startsAt" | "endsAt";
 export type SanctionFieldErrors = Partial<Record<SanctionField, string>>;
@@ -32,7 +33,8 @@ export type SanctionInput = {
   endsAt: string;
 };
 
-async function validateSanction(input: SanctionInput): Promise<SanctionFieldErrors> {
+async function validateSanction(game: GameSlug, input: SanctionInput): Promise<SanctionFieldErrors> {
+  const { teams } = gameTables(game);
   const fieldErrors: SanctionFieldErrors = {};
 
   if (!input.userId && !input.teamId) fieldErrors.target = "required";
@@ -64,10 +66,10 @@ async function validateSanction(input: SanctionInput): Promise<SanctionFieldErro
   return fieldErrors;
 }
 
-export async function createSanction(input: SanctionInput): Promise<SanctionResult> {
-  const access = await requireActorPermission(PERMISSIONS.sanctionsManage);
+export async function createSanction(game: GameSlug, input: SanctionInput): Promise<SanctionResult> {
+  const access = await requireActorPermission(PERMISSIONS.sanctionsManage, game);
 
-  const fieldErrors = await validateSanction(input);
+  const fieldErrors = await validateSanction(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [created] = await db

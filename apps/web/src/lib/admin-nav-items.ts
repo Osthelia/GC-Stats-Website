@@ -54,19 +54,17 @@ export type AdminNavItem = {
 // deux composants.
 export const ADMIN_TOP_ITEMS: AdminNavItem[] = [{ href: "/admin", labelKey: "dashboard", icon: LayoutDashboard, exact: true }];
 
+/** Content sections that exist once per game, listed under one sidebar category per game (hrefs are game-less, see withGame). */
+export const ADMIN_GAME_ITEMS: AdminNavItem[] = [
+  { href: "/admin/tournaments", labelKey: "tournaments", icon: Swords, exact: false, permission: PERMISSIONS.tournamentsView },
+  { href: "/admin/organizations", labelKey: "organizations", icon: Building2, exact: false, permission: PERMISSIONS.organizationsView },
+  { href: "/admin/teams", labelKey: "teams", icon: Shield, exact: false, permission: PERMISSIONS.teamsView },
+  { href: "/admin/players", labelKey: "players", icon: User, exact: false, permission: PERMISSIONS.playersView },
+  { href: "/admin/point-types", labelKey: "pointTypes", icon: Trophy, exact: false, permission: PERMISSIONS.pointTypesView },
+  { href: "/admin/change-requests", labelKey: "changeRequests", icon: FileEdit, exact: false, permission: PERMISSIONS.changeRequestsView },
+];
+
 export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavItem[] }[] = [
-  {
-    key: "content",
-    labelKey: "groupContent",
-    items: [
-      { href: "/admin/tournaments", labelKey: "tournaments", icon: Swords, exact: false, permission: PERMISSIONS.tournamentsView },
-      { href: "/admin/organizations", labelKey: "organizations", icon: Building2, exact: false, permission: PERMISSIONS.organizationsView },
-      { href: "/admin/teams", labelKey: "teams", icon: Shield, exact: false, permission: PERMISSIONS.teamsView },
-      { href: "/admin/players", labelKey: "players", icon: User, exact: false, permission: PERMISSIONS.playersView },
-      { href: "/admin/point-types", labelKey: "pointTypes", icon: Trophy, exact: false, permission: PERMISSIONS.pointTypesView },
-      { href: "/admin/change-requests", labelKey: "changeRequests", icon: FileEdit, exact: false, permission: PERMISSIONS.changeRequestsView },
-    ],
-  },
   {
     key: "moderation",
     labelKey: "groupModeration",
@@ -96,9 +94,11 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
 ];
 
 /** Flattened, in registration order — longest `href` first so a prefix match (e.g. a team detail page under /admin/teams/[id]) resolves to the most specific section rather than a shorter unrelated prefix. */
-export const ADMIN_NAV_ITEMS: AdminNavItem[] = [...ADMIN_TOP_ITEMS, ...ADMIN_NAV_GROUPS.flatMap((g) => g.items)].sort((a, b) => b.href.length - a.href.length);
+export const ADMIN_NAV_ITEMS: AdminNavItem[] = [...ADMIN_TOP_ITEMS, ...ADMIN_GAME_ITEMS, ...ADMIN_NAV_GROUPS.flatMap((g) => g.items)].sort((a, b) => b.href.length - a.href.length);
 
 /** Resolves any /admin/* pathname (including entity detail pages not themselves in the nav, e.g. /admin/teams/42) to the nav item for its section. */
-export function matchAdminNavItem(pathname: string): AdminNavItem | undefined {
+export function matchAdminNavItem(rawPathname: string): AdminNavItem | undefined {
+  // /admin/valorant/teams/42 is the section /admin/teams of the Valorant game.
+  const pathname = rawPathname.replace(new RegExp("^/admin/(valorant|lol)(?=/|$)"), "/admin");
   return ADMIN_NAV_ITEMS.find((item) => (item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`)));
 }

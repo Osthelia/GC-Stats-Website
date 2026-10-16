@@ -8,6 +8,8 @@
 
 "use client";
 
+import { useGame } from "@/lib/use-game";
+import { gameHasLiquipediaMatches } from "@gc-stats/db/game";
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -43,6 +45,7 @@ function compare(a: AdminMatchListRow, b: AdminMatchListRow, col: SortCol): numb
 
 export function TournamentMatchesPanel({ tournamentId, matches, canManage }: { tournamentId: number; matches: AdminMatchListRow[]; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.matches");
+  const game = useGame();
   const locale = useLocale();
   const [sort, setSort] = useState<SortCol>("container");
   const [direction, setDirection] = useState<Direction>("asc");
@@ -97,7 +100,7 @@ export function TournamentMatchesPanel({ tournamentId, matches, canManage }: { t
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{t("listHeading")}</h2>
         <div className="flex items-center gap-2">
-          {canManage && (
+          {canManage && gameHasLiquipediaMatches(game) && (
             <Link href={`/admin/tournaments/${tournamentId}/liquipedia-import`} className={buttonVariants({ variant: "outline" })}>
               {t("liquipediaImportButton")}
             </Link>

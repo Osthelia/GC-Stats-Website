@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { getRosterConflicts, type RosterConflict } from "@/actions/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 type Request = { handle: string; conflicts: RosterConflict[]; resolve: (ids: number[] | null) => void };
 
@@ -24,10 +25,11 @@ type Request = { handle: string; conflicts: RosterConflict[]; resolve: (ids: num
  * open), or null when the user cancels the save.
  */
 export function useRosterConflicts() {
+  const game = useGame();
   const [request, setRequest] = useState<Request | null>(null);
 
   const resolveConflicts = useCallback(async (personId: number, handle: string, teamId: number, excludeMembershipId?: number): Promise<number[] | null> => {
-    const conflicts = await getRosterConflicts(personId, teamId, excludeMembershipId);
+    const conflicts = await getRosterConflicts(game, personId, teamId, excludeMembershipId);
     if (conflicts.length === 0) return [];
     return new Promise((resolve) => setRequest({ handle, conflicts, resolve }));
   }, []);

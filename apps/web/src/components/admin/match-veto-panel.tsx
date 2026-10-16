@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { saveMatchVeto, type VetoRowInput } from "@/actions/admin-matches";
 import { MapPicker } from "@/components/admin/map-picker";
 import type { AdminMatchDetail, AdminVetoRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 const NONE = "none";
 const VETO_SLOTS = 7;
@@ -65,6 +66,7 @@ export function MatchVetoPanel({
   initialVetos: AdminVetoRow[];
   canManage: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.veto");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -130,7 +132,7 @@ export function MatchVetoPanel({
       });
     }
     startTransition(async () => {
-      const result = await saveMatchVeto(match.id, submitRows);
+      const result = await saveMatchVeto(game, match.id, submitRows);
       if (!result.ok) {
         setError(t(`error.${result.fieldErrors.rows}`));
         return;

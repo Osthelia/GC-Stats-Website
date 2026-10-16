@@ -12,9 +12,10 @@
 
 import { inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { teams, teamNameHistory } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { getEntityLogosBatch, themedLogoUrlsAt, type AdminLogoEntry, type ThemedLogoUrls } from "@/lib/admin-logos";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
+import type { GameSlug } from "@gc-stats/db/game";
 
 type NameHistoryEntry = { name: string; since: string | null; until: string | null; isVisible: boolean };
 
@@ -41,7 +42,8 @@ export type TeamDisplayResolver = {
  * history. Falls back to the current name/logo whenever the matching `team_name_history`/`logos`
  * row has been masked by an admin (`isVisible: false`), never surfacing a hidden identity.
  */
-export async function buildTeamDisplayResolver(teamIds: number[]): Promise<TeamDisplayResolver> {
+export async function buildTeamDisplayResolver(game: GameSlug, teamIds: number[]): Promise<TeamDisplayResolver> {
+  const { teams, teamNameHistory } = gameTables(game);
   const ids = [...new Set(teamIds)];
   if (ids.length === 0) {
     return { nameAt: (_teamId, _at, fallbackName) => fallbackName, logosAt: () => ({ dark: null, light: null }), shortNameOf: () => null, logoEntriesOf: () => [] };
@@ -53,7 +55,7 @@ export async function buildTeamDisplayResolver(teamIds: number[]): Promise<TeamD
       .from(teamNameHistory)
       .where(inArray(teamNameHistory.teamId, ids)),
     db.select({ id: teams.id, name: teams.name, shortName: teams.shortName }).from(teams).where(inArray(teams.id, ids)),
-    getEntityLogosBatch("team", ids),
+    getEntityLogosBatch("team", ids, game),
   ]);
 
   const currentNameById = new Map(currentRows.map((t) => [t.id, t.name]));

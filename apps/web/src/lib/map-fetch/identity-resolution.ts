@@ -13,8 +13,9 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { people, entrantMembers } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { resolveAgentName, type RiotContent } from "@/lib/riot-content-client";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ValIdColumn = "valId" | "esportsValId";
 
@@ -27,7 +28,8 @@ export interface RiotPlayerRef {
 }
 
 /** Which `people` rows already have a known Riot identity for these puuids, on the given column. */
-export async function findPersonIdsByPuuids(puuids: string[], column: ValIdColumn): Promise<Map<string, number>> {
+export async function findPersonIdsByPuuids(game: GameSlug, puuids: string[], column: ValIdColumn): Promise<Map<string, number>> {
+  const { people } = gameTables(game);
   if (puuids.length === 0) return new Map();
   const col = column === "valId" ? people.valId : people.esportsValId;
   const rows = await db
@@ -71,9 +73,10 @@ export type PersistPuuidMappingResult = { ok: true } | { ok: false; error: { kin
  * claimed by another person (never overwrites an existing link) and reports
  * it as a conflict instead of throwing, including when the pre-check race
  * loses to a concurrent resolution and the unique constraint on
- * `people.valId`/`people.esportsValId` rejects the UPDATE.
+ * `personProfiles.valId`/`personProfiles.esportsValId` rejects the UPDATE.
  */
-export async function persistPuuidMapping(mapping: Map<string, number>, column: ValIdColumn): Promise<PersistPuuidMappingResult> {
+export async function persistPuuidMapping(game: GameSlug, mapping: Map<string, number>, column: ValIdColumn): Promise<PersistPuuidMappingResult> {
+  const { people, personProfiles } = gameTables(game);
   if (mapping.size === 0) return { ok: true };
   const col = column === "valId" ? people.valId : people.esportsValId;
 
@@ -87,9 +90,9 @@ export async function persistPuuidMapping(mapping: Map<string, number>, column: 
     }
     try {
       if (column === "valId") {
-        await db.update(people).set({ valId: puuid }).where(eq(people.id, personId));
+        await db.update(personProfiles).set({ valId: puuid }).where(eq(personProfiles.personId, personId));
       } else {
-        await db.update(people).set({ esportsValId: puuid }).where(eq(people.id, personId));
+        await db.update(personProfiles).set({ esportsValId: puuid }).where(eq(personProfiles.personId, personId));
       }
     } catch (err) {
       console.warn(`[map-fetch] puuid mapping to person #${personId} failed (likely a concurrent conflict): ${err instanceof Error ? err.message : String(err)}`);
@@ -110,7 +113,8 @@ export function resolveTeamAColor(entrantAPersonIds: Set<number>, entrantBPerson
   return null;
 }
 
-export async function getEntrantPersonIds(entrantId: number): Promise<Set<number>> {
+export async function getEntrantPersonIds(game: GameSlug, entrantId: number): Promise<Set<number>> {
+  const { entrantMembers } = gameTables(game);
   const rows = await db.select({ personId: entrantMembers.personId }).from(entrantMembers).where(eq(entrantMembers.entrantId, entrantId));
   return new Set(rows.map((r) => r.personId));
 }

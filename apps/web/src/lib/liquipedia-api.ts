@@ -11,8 +11,9 @@
  */
 
 import packageJson from "../../package.json";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 
-const API_URL = "https://liquipedia.net/valorant/api.php";
+const apiUrl = (game: GameSlug) => `https://liquipedia.net/${GAME_INFO[game].liquipediaWiki}/api.php`;
 const USER_AGENT = process.env.GCS_LIQUIPEDIA_USER_AGENT ?? `GC-Stats/${packageJson.version} (https://github.com/Osthelia/GC-Stats-Website)`;
 const MAX_TITLES_PER_REQUEST = 50;
 const MIN_INTERVAL_MS = 2000;
@@ -36,10 +37,10 @@ async function throttle(): Promise<void> {
   if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
 }
 
-/** `https://liquipedia.net/valorant/Some_Page` -> `Some Page`; plain names are returned as is. */
+/** `https://liquipedia.net/<wiki>/Some_Page` -> `Some Page`; plain names are returned as is. */
 export function liquipediaTitleFromLink(linkOrName: string): string {
   const trimmed = linkOrName.trim();
-  const match = trimmed.match(/liquipedia\.net\/valorant\/([^?#]+)/i);
+  const match = trimmed.match(/liquipedia\.net\/[^/]+\/([^?#]+)/i);
   const raw = match?.[1] ?? trimmed;
   try {
     return decodeURIComponent(raw).replaceAll("_", " ");
@@ -56,7 +57,7 @@ type ApiResponse = {
   };
 };
 
-async function fetchBatch(titles: string[]): Promise<LiquipediaPage[]> {
+async function fetchBatch(game: GameSlug, titles: string[]): Promise<LiquipediaPage[]> {
   await throttle();
   const params = new URLSearchParams({
     action: "query",
@@ -68,7 +69,7 @@ async function fetchBatch(titles: string[]): Promise<LiquipediaPage[]> {
     formatversion: "1",
     titles: titles.join("|"),
   });
-  const response = await fetch(`${API_URL}?${params}`, { headers: { "User-Agent": USER_AGENT, "Accept-Encoding": "gzip" }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+  const response = await fetch(`${apiUrl(game)}?${params}`, { headers: { "User-Agent": USER_AGENT, "Accept-Encoding": "gzip" }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`Liquipedia API responded ${response.status}`);
   const data = (await response.json()) as ApiResponse;
 
@@ -89,11 +90,11 @@ async function fetchBatch(titles: string[]): Promise<LiquipediaPage[]> {
 }
 
 /** Fetches the wikitext of every title, 50 per request. Throws when Liquipedia is unreachable. */
-export async function fetchLiquipediaPages(titles: string[]): Promise<LiquipediaPage[]> {
+export async function fetchLiquipediaPages(game: GameSlug, titles: string[]): Promise<LiquipediaPage[]> {
   const unique = [...new Set(titles.map((t) => t.trim()).filter((t) => t.length > 0))];
   const result: LiquipediaPage[] = [];
   for (let i = 0; i < unique.length; i += MAX_TITLES_PER_REQUEST) {
-    result.push(...(await fetchBatch(unique.slice(i, i + MAX_TITLES_PER_REQUEST))));
+    result.push(...(await fetchBatch(game, unique.slice(i, i + MAX_TITLES_PER_REQUEST))));
   }
   return result;
 }

@@ -14,8 +14,10 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { deleteMatch } from "@/actions/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 export function MatchDeleteButton({ matchId, tournamentId }: { matchId: number; tournamentId: number }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -23,7 +25,7 @@ export function MatchDeleteButton({ matchId, tournamentId }: { matchId: number; 
   function handleDelete() {
     if (!window.confirm(t("deleteConfirm"))) return;
     startTransition(async () => {
-      const result = await deleteMatch(matchId);
+      const result = await deleteMatch(game, matchId);
       if (!result.ok) {
         toast.error(t(`deleteError.${result.error}`));
         return;

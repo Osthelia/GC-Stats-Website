@@ -14,12 +14,13 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { emotes, teams, PERMISSIONS } from "@gc-stats/db";
+import { emotes, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { validateImageBuffer, isSupportedEmoteMime, storeEmoteImage, copyTeamLogoAsEmote, deleteEmoteImageFile, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { currentLogo, getEntityLogos } from "@/lib/admin-logos";
 import { isValidUrl } from "@/lib/admin-validation";
 import { EMOTE_SOURCE_RE } from "@/lib/emote-sources";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireEmotesActor(): Promise<void> {
   // Re-checked here, not just relied on from the /admin layout guard — a
@@ -135,7 +136,8 @@ export type CopyTeamLogoResult =
   | { ok: false; error: "required" | "teamNotFound" | "teamNoLogo" };
 
 /** V1 behaviour: the emote gets a frozen copy of the team's current logo, source "teams". */
-export async function copyTeamLogoToEmote(teamId: number): Promise<CopyTeamLogoResult> {
+export async function copyTeamLogoToEmote(game: GameSlug, teamId: number): Promise<CopyTeamLogoResult> {
+  const { teams } = gameTables(game);
   await requireEmotesActor();
 
   if (!Number.isInteger(teamId) || teamId <= 0) return { ok: false, error: "required" };
@@ -143,7 +145,7 @@ export async function copyTeamLogoToEmote(teamId: number): Promise<CopyTeamLogoR
   const [team] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!team) return { ok: false, error: "teamNotFound" };
 
-  const logo = currentLogo(await getEntityLogos("team", team.id));
+  const logo = currentLogo(await getEntityLogos("team", team.id, game));
   if (!logo) return { ok: false, error: "teamNoLogo" };
 
   const stored = await copyTeamLogoAsEmote(logo.id);

@@ -13,27 +13,27 @@
 import { asc, eq, inArray, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import {
-  matches,
-  entrants,
-  teams,
-  stageContainers,
-  stages,
-  maps,
-  matchVetos,
-  mapPlayerStats,
-  mapRoundsRaw,
-  mapRoundPlayerLoadoutsRaw,
-  mapRoundDamagesRaw,
-  mapRoundKillsRaw,
-} from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { toApiTeamFromJoined, type ApiTeam } from "../entities";
 import { resolveEntrantTeamIds } from "../entrant-teams";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
-const entrantAAlias = alias(entrants, "match_full_entrant_a");
-const entrantBAlias = alias(entrants, "match_full_entrant_b");
-const teamAAlias = alias(teams, "match_full_team_a");
-const teamBAlias = alias(teams, "match_full_team_b");
+function entrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "match_full_entrant_a");
+}
+function entrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "match_full_entrant_b");
+}
+function teamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "match_full_team_a");
+}
+function teamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "match_full_team_b");
+}
 
 export type ApiMatchVeto = { match_id: number; team_id: number; map_name: string; type: string; order: number };
 export type ApiTeamWithScore = { team: ApiTeam; score: number | null };
@@ -73,7 +73,9 @@ export function toApiGameMap(row: MapRow): ApiGameMap {
   };
 }
 
-const MAP_COLUMNS = {
+function MAP_COLUMNS() {
+  const { maps } = valorantTables;
+  return {
   id: maps.id,
   matchId: maps.matchId,
   apiMatchId: maps.apiMatchId,
@@ -83,6 +85,7 @@ const MAP_COLUMNS = {
   order: maps.order,
   isCompleted: maps.isCompleted,
 };
+}
 
 export type ApiMatchCore = {
   id: number;
@@ -98,7 +101,8 @@ export type ApiMatchCore = {
   team_b: ApiTeamWithScore | null;
 };
 
-async function getMatchCore(matchId: number): Promise<ApiMatchCore | null> {
+async function getMatchCore(game: GameSlug, matchId: number): Promise<ApiMatchCore | null> {
+  const { matches, stageContainers, stages } = gameTables(game);
   const [row] = await db
     .select({
       id: matches.id,
@@ -112,16 +116,16 @@ async function getMatchCore(matchId: number): Promise<ApiMatchCore | null> {
       scoreB: matches.scoreB,
       stageId: stages.id,
       tournamentId: stages.tournamentId,
-      teamA: teamAAlias,
-      teamB: teamBAlias,
+      teamA: teamAAlias(game),
+      teamB: teamBAlias(game),
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(entrantAAlias, eq(entrantAAlias.id, matches.entrantAId))
-    .leftJoin(teamAAlias, eq(teamAAlias.id, entrantAAlias.teamId))
-    .leftJoin(entrantBAlias, eq(entrantBAlias.id, matches.entrantBId))
-    .leftJoin(teamBAlias, eq(teamBAlias.id, entrantBAlias.teamId))
+    .leftJoin(entrantAAlias(game), eq(entrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(teamAAlias(game), eq(teamAAlias(game).id, entrantAAlias(game).teamId))
+    .leftJoin(entrantBAlias(game), eq(entrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(teamBAlias(game), eq(teamBAlias(game).id, entrantBAlias(game).teamId))
     .where(eq(matches.id, matchId))
     .limit(1);
 
@@ -145,27 +149,31 @@ async function getMatchCore(matchId: number): Promise<ApiMatchCore | null> {
   };
 }
 
-async function getMatchVetosResolved(matchId: number): Promise<ApiMatchVeto[]> {
+async function getMatchVetosResolved(game: GameSlug, matchId: number): Promise<ApiMatchVeto[]> {
+  const { matchVetos } = valorantTablesOf(game);
   const vetoRows = await db
     .select({ entrantId: matchVetos.entrantId, mapName: matchVetos.mapName, type: matchVetos.type, order: matchVetos.order })
     .from(matchVetos)
     .where(eq(matchVetos.matchId, matchId))
     .orderBy(asc(matchVetos.order));
 
-  const teamByEntrant = await resolveEntrantTeamIds([...new Set(vetoRows.map((v) => v.entrantId))]);
+  const teamByEntrant = await resolveEntrantTeamIds(game, [...new Set(vetoRows.map((v) => v.entrantId))]);
 
   return vetoRows.map((v) => ({ match_id: matchId, team_id: teamByEntrant.get(v.entrantId) ?? 0, map_name: v.mapName, type: v.type, order: v.order }));
 }
 
 export type ApiMatchFullResponse = ApiMatchCore & { maps: ApiGameMap[]; vetos: ApiMatchVeto[] };
 
-export async function getMatchFullResponse(matchId: number): Promise<ApiMatchFullResponse | null> {
-  const core = await getMatchCore(matchId);
+export async function getMatchFullResponse(game: GameSlug, matchId: number): Promise<ApiMatchFullResponse | null> {
+  const core = await getMatchCore(game, matchId);
   if (!core) return null;
+  // Only Valorant matches have maps and a veto.
+  if (!gameHasMaps(game)) return { ...core, maps: [], vetos: [] };
+  const { maps } = valorantTablesOf(game);
 
   const [mapRows, vetos] = await Promise.all([
-    db.select(MAP_COLUMNS).from(maps).where(eq(maps.matchId, matchId)).orderBy(asc(maps.order)),
-    getMatchVetosResolved(matchId),
+    db.select(MAP_COLUMNS()).from(maps).where(eq(maps.matchId, matchId)).orderBy(asc(maps.order)),
+    getMatchVetosResolved(game, matchId),
   ]);
 
   return { ...core, maps: mapRows.map(toApiGameMap), vetos };
@@ -226,13 +234,14 @@ export type ApiMatchStatsResponse = ApiMatchCore & { vetos: ApiMatchVeto[]; maps
  * the RAW layer (same reasoning as `/teams/{id}/stats`'s XvY/post-plant
  * situations and `/teams/{id}/weapons`'s times_played).
  */
-export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchStatsResponse | null> {
-  const core = await getMatchCore(matchId);
+export async function getMatchStatsResponse(game: GameSlug, matchId: number): Promise<ApiMatchStatsResponse | null> {
+  const { maps, mapPlayerStats, mapRoundsRaw, mapRoundPlayerLoadoutsRaw, mapRoundDamagesRaw, mapRoundKillsRaw } = valorantTablesOf(game);
+  const core = await getMatchCore(game, matchId);
   if (!core) return null;
 
   const [mapRows, vetos] = await Promise.all([
-    db.select(MAP_COLUMNS).from(maps).where(eq(maps.matchId, matchId)).orderBy(asc(maps.order)),
-    getMatchVetosResolved(matchId),
+    db.select(MAP_COLUMNS()).from(maps).where(eq(maps.matchId, matchId)).orderBy(asc(maps.order)),
+    getMatchVetosResolved(game, matchId),
   ]);
 
   const mapIds = mapRows.map((m) => m.id);
@@ -281,7 +290,7 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
       [...playerStatRows.map((p) => p.entrantId), ...roundRows.flatMap((r) => [r.winningEntrantId, r.atkEntrantId, r.defEntrantId])].filter((id): id is number => id != null),
     ),
   ];
-  const teamByEntrant = await resolveEntrantTeamIds(entrantIds);
+  const teamByEntrant = await resolveEntrantTeamIds(game, entrantIds);
 
   const [loadoutRows, damageRows, killRows] =
     roundIds.length > 0

@@ -12,10 +12,11 @@
 
 import { and, eq, inArray, like } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequests, people, teams } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { fetchLiquipediaPages } from "@/lib/liquipedia-api";
 import { getTournamentLiquipediaPeople, getTournamentLiquipediaStages } from "@/lib/admin-liquipedia";
 import { IMPORT_SOCIAL_KEYS, liquipediaPageUrl, parsePlayerInfobox, parseTeamInfobox } from "@/lib/liquipedia-import-parse";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Start of every reason written by the import, used to spot requests still waiting for review. */
 export const LIQUIPEDIA_IMPORT_REASON = "Liquipedia import";
@@ -53,7 +54,8 @@ function isEmpty(value: string | null | undefined): boolean {
   return !value || !value.trim();
 }
 
-async function pendingImportSubjects(subjectType: "team" | "person", ids: number[]): Promise<Set<number>> {
+async function pendingImportSubjects(game: GameSlug, subjectType: "team" | "person", ids: number[]): Promise<Set<number>> {
+  const { changeRequests } = gameTables(game);
   if (ids.length === 0) return new Set();
   const rows = await db
     .select({ subjectId: changeRequests.subjectId })
@@ -68,16 +70,17 @@ function withSourcedMarker(items: ImportItem[], current: boolean): ImportItem[] 
   return tookData && !current ? [...items, { field: "liquipediaSourced", oldValue: false, newValue: true }] : items;
 }
 
-async function planTeams(tournamentId: number, plan: ImportPlan): Promise<void> {
-  const stageTeams = (await getTournamentLiquipediaStages(tournamentId)).flatMap((stage) => stage.teams);
+async function planTeams(game: GameSlug, tournamentId: number, plan: ImportPlan): Promise<void> {
+  const { teams } = gameTables(game);
+  const stageTeams = (await getTournamentLiquipediaStages(game, tournamentId)).flatMap((stage) => stage.teams);
   const mapped = new Map(stageTeams.filter((t) => t.liquipediaName).map((t) => [t.teamId, { label: t.displayName, name: t.liquipediaName! }]));
   if (mapped.size === 0) return;
 
   const ids = [...mapped.keys()];
   const [rows, pending, fetched] = await Promise.all([
     db.select().from(teams).where(inArray(teams.id, ids)),
-    pendingImportSubjects("team", ids),
-    fetchLiquipediaPages([...mapped.values()].map((m) => m.name)),
+    pendingImportSubjects(game, "team", ids),
+    fetchLiquipediaPages(game, [...mapped.values()].map((m) => m.name)),
   ]);
   const pages = new Map(fetched.map((p) => [p.requested, p]));
 
@@ -96,7 +99,7 @@ async function planTeams(tournamentId: number, plan: ImportPlan): Promise<void> 
 
     const socials = (team.socials ?? {}) as Socials;
     const items: ImportItem[] = [];
-    const link = liquipediaPageUrl(page.title);
+    const link = liquipediaPageUrl(game, page.title);
     if (isEmpty(team.liquipediaLink)) items.push({ field: "liquipediaLink", oldValue: team.liquipediaLink, newValue: link });
     if (isEmpty(team.countryCode) && infobox.countryCode) items.push({ field: "countryCode", oldValue: null, newValue: infobox.countryCode });
     if (isEmpty(socials["website"]) && infobox.website) items.push({ field: "socials.website", oldValue: null, newValue: infobox.website });
@@ -126,17 +129,18 @@ async function planTeams(tournamentId: number, plan: ImportPlan): Promise<void> 
   }
 }
 
-async function planPeople(tournamentId: number, plan: ImportPlan): Promise<void> {
+async function planPeople(game: GameSlug, tournamentId: number, plan: ImportPlan): Promise<void> {
+  const { people } = gameTables(game);
   const mapped = new Map(
-    (await getTournamentLiquipediaPeople(tournamentId)).filter((p) => p.liquipediaName).map((p) => [p.personId, { label: p.handle, name: p.liquipediaName! }])
+    (await getTournamentLiquipediaPeople(game, tournamentId)).filter((p) => p.liquipediaName).map((p) => [p.personId, { label: p.handle, name: p.liquipediaName! }])
   );
   if (mapped.size === 0) return;
 
   const ids = [...mapped.keys()];
   const [rows, pending, fetched] = await Promise.all([
     db.select().from(people).where(inArray(people.id, ids)),
-    pendingImportSubjects("person", ids),
-    fetchLiquipediaPages([...mapped.values()].map((m) => m.name)),
+    pendingImportSubjects(game, "person", ids),
+    fetchLiquipediaPages(game, [...mapped.values()].map((m) => m.name)),
   ]);
   const pages = new Map(fetched.map((p) => [p.requested, p]));
 
@@ -155,7 +159,7 @@ async function planPeople(tournamentId: number, plan: ImportPlan): Promise<void>
 
     const socials = (person.socials ?? {}) as Socials;
     const items: ImportItem[] = [];
-    const link = liquipediaPageUrl(page.title);
+    const link = liquipediaPageUrl(game, page.title);
     if (isEmpty(person.liquipediaLink)) items.push({ field: "liquipediaLink", oldValue: person.liquipediaLink, newValue: link });
     if (isEmpty(person.firstName) && infobox.firstName) items.push({ field: "firstName", oldValue: null, newValue: infobox.firstName });
     if (isEmpty(person.lastName) && infobox.lastName) items.push({ field: "lastName", oldValue: null, newValue: infobox.lastName });
@@ -175,9 +179,9 @@ async function planPeople(tournamentId: number, plan: ImportPlan): Promise<void>
 }
 
 /** Reads every mapped team and person of the tournament on Liquipedia and lists the change requests worth opening. */
-export async function planLiquipediaImport(tournamentId: number): Promise<ImportPlan> {
+export async function planLiquipediaImport(game: GameSlug, tournamentId: number): Promise<ImportPlan> {
   const plan: ImportPlan = { proposals: [], upToDate: 0, alreadyPending: 0, noPage: [] };
-  await planTeams(tournamentId, plan);
-  await planPeople(tournamentId, plan);
+  await planTeams(game, tournamentId, plan);
+  await planPeople(game, tournamentId, plan);
   return plan;
 }

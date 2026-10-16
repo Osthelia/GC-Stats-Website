@@ -11,13 +11,16 @@
  */
 
 import { and, eq, sql } from "drizzle-orm";
+import { forEachGame } from "../for-each-game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { people, teams } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 
 const INACTIVITY_MONTHS = 12;
 
 /** A never active entity (no completed match) has a NULL last match, so the `<` comparison leaves it untouched. */
-export async function deactivateInactiveEntities(): Promise<string> {
+async function deactivateInactiveEntitiesForGame(game: GameSlug): Promise<string> {
+  const { personProfiles, teams } = gameTables(game);
   const cutoff = new Date();
   cutoff.setUTCMonth(cutoff.getUTCMonth() - INACTIVITY_MONTHS);
   const cutoffIso = cutoff.toISOString();
@@ -30,8 +33,8 @@ export async function deactivateInactiveEntities(): Promise<string> {
       and(
         eq(teams.isActive, true),
         sql`(
-          select max(m.scheduled_at) from matches m
-          join entrants e on e.id in (m.entrant_a_id, m.entrant_b_id)
+          select max(m.scheduled_at) from ${gameTables(game).matches} m
+          join ${gameTables(game).entrants} e on e.id in (m.entrant_a_id, m.entrant_b_id)
           where e.team_id = ${teams.id} and m.status = 'completed'
         ) < ${cutoffIso}`
       )
@@ -40,48 +43,52 @@ export async function deactivateInactiveEntities(): Promise<string> {
 
   // Date of a production credit: the end of its tournament, resolved from whichever scope the credit targets
   const creditTournamentJoins = sql`
-    left join maps mp on mp.id = pc.map_id
-    left join matches mt on mt.id = coalesce(pc.match_id, mp.match_id)
-    left join stage_containers sc on sc.id = coalesce(pc.container_id, mt.container_id)
-    left join stages st on st.id = coalesce(pc.stage_id, sc.stage_id)
-    join tournaments t on t.id = coalesce(pc.tournament_id, st.tournament_id)`;
+    left join ${valorantTablesOf(game).maps} mp on mp.id = pc.map_id
+    left join ${gameTables(game).matches} mt on mt.id = coalesce(pc.match_id, mp.match_id)
+    left join ${gameTables(game).stageContainers} sc on sc.id = coalesce(pc.container_id, mt.container_id)
+    left join ${gameTables(game).stages} st on st.id = coalesce(pc.stage_id, sc.stage_id)
+    join ${gameTables(game).tournaments} t on t.id = coalesce(pc.tournament_id, st.tournament_id)`;
   const personMatches = sql`
-    select 1 from entrant_members em
-    join matches m on em.entrant_id in (m.entrant_a_id, m.entrant_b_id)
-    where em.person_id = ${people.id} and m.status = 'completed'`;
+    select 1 from ${gameTables(game).entrantMembers} em
+    join ${gameTables(game).matches} m on em.entrant_id in (m.entrant_a_id, m.entrant_b_id)
+    where em.person_id = ${personProfiles.personId} and m.status = 'completed'`;
 
   const deactivatedPeople = await db
-    .update(people)
+    .update(personProfiles)
     .set({ isActive: false })
     .where(
       and(
-        eq(people.isActive, true),
+        eq(personProfiles.isActive, true),
         // Already had some activity ever
         sql`(
           exists (${personMatches})
-          or exists (select 1 from roster_memberships where person_id = ${people.id})
-          or exists (select 1 from organization_memberships where person_id = ${people.id})
-          or exists (select 1 from production_credits where person_id = ${people.id})
+          or exists (select 1 from ${gameTables(game).rosterMemberships} where person_id = ${personProfiles.personId})
+          or exists (select 1 from ${gameTables(game).organizationMemberships} where person_id = ${personProfiles.personId})
+          or exists (select 1 from ${gameTables(game).productionCredits} where person_id = ${personProfiles.personId})
         )`,
         // No match within the year
         sql`not exists (${personMatches} and m.scheduled_at >= ${cutoffIso})`,
         // No team or organization entry within the year (period && [cutoff, ∞) : still open or ended since)
         sql`not exists (
-          select 1 from roster_memberships rm
-          where rm.person_id = ${people.id} and rm.period && daterange(${cutoffDate}::date, null)
+          select 1 from ${gameTables(game).rosterMemberships} rm
+          where rm.person_id = ${personProfiles.personId} and rm.period && daterange(${cutoffDate}::date, null)
         )`,
         sql`not exists (
-          select 1 from organization_memberships om
-          where om.person_id = ${people.id} and om.period && daterange(${cutoffDate}::date, null)
+          select 1 from ${gameTables(game).organizationMemberships} om
+          where om.person_id = ${personProfiles.personId} and om.period && daterange(${cutoffDate}::date, null)
         )`,
         // No production within the year
         sql`not exists (
-          select 1 from production_credits pc ${creditTournamentJoins}
-          where pc.person_id = ${people.id} and t.end_date >= ${cutoffDate}::date
+          select 1 from ${gameTables(game).productionCredits} pc ${creditTournamentJoins}
+          where pc.person_id = ${personProfiles.personId} and t.end_date >= ${cutoffDate}::date
         )`
       )
     )
-    .returning({ id: people.id });
+    .returning({ id: personProfiles.personId });
 
   return `deactivated ${deactivatedTeams.length} team(s) and ${deactivatedPeople.length} player(s) with no activity in ${INACTIVITY_MONTHS} months`;
+}
+
+export function deactivateInactiveEntities(): Promise<string> {
+  return forEachGame(deactivateInactiveEntitiesForGame);
 }

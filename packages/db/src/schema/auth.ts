@@ -162,7 +162,9 @@ export const userRoles = pgTable("user_roles", {
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   roleId: bigint("role_id", { mode: "number" }).notNull().references(() => roles.id, { onDelete: "cascade" }),
   scopeId: bigint("scope_id", { mode: "number" }), // team_id or publisher_id per roles.scopeType; null when scopeType='global'
-}, (t) => [unique("user_roles_user_role_scope_unique").on(t.userId, t.roleId, t.scopeId).nullsNotDistinct()]);
+  // Game this assignment is limited to (game content permissions only); null = every game.
+  game: text("game"),
+}, (t) => [unique("user_roles_user_role_scope_unique").on(t.userId, t.roleId, t.scopeId, t.game).nullsNotDistinct()]);
 
 // Owner is exactly one of userId (a personal key, /admin/api-keys) or
 // organizationId (an org-scoped key, /dashboard/{id}/api-keys) — CHECK

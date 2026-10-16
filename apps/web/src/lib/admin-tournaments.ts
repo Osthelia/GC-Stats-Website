@@ -13,10 +13,11 @@
 import { cache } from "react";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { tournaments, pointTypes, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, foldedArrayIlike } from "@/lib/db-search";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type TournamentSort = "name" | "startDate" | "status";
 export type SortDirection = "asc" | "desc";
@@ -29,7 +30,8 @@ export type AdminTournamentFilter = { field: string; value: string };
 /** "" = no filter on the `active` flag. */
 export type TournamentActiveFilter = "" | "active" | "inactive";
 
-function tournamentFilterColumn(field: string) {
+function tournamentFilterColumn(game: GameSlug, field: string) {
+  const { tournaments } = gameTables(game);
   switch (field as TournamentFilterField) {
     case "region":
       return tournaments.region;
@@ -59,7 +61,7 @@ export type AdminTournamentRow = {
 
 export const TOURNAMENTS_PAGE_SIZE = 30;
 
-export async function listAdminTournaments(opts: {
+export async function listAdminTournaments(game: GameSlug, opts: {
   q: string;
   sort: TournamentSort;
   direction: SortDirection;
@@ -67,6 +69,7 @@ export async function listAdminTournaments(opts: {
   filters?: AdminTournamentFilter[];
   active?: TournamentActiveFilter;
 }): Promise<{ rows: AdminTournamentRow[]; total: number }> {
+  const { tournaments } = gameTables(game);
   const { q, sort, direction, page, filters = [], active = "" } = opts;
   const conditions = [];
 
@@ -81,7 +84,7 @@ export async function listAdminTournaments(opts: {
   }
 
   for (const filter of filters) {
-    const column = tournamentFilterColumn(filter.field);
+    const column = tournamentFilterColumn(game, filter.field);
     if (!column || !filter.value.trim()) continue;
     conditions.push(ilike(column, `%${filter.value.trim()}%`));
   }
@@ -111,12 +114,13 @@ export async function listAdminTournaments(opts: {
     db.select({ total: sql<number>`count(*)` }).from(tournaments).where(where),
   ]);
 
-  const logoUrls = await getCurrentLogoUrls("tournament", rows.map((r) => r.id));
+  const logoUrls = await getCurrentLogoUrls("tournament", rows.map((r) => r.id), game);
 
   return { rows: rows.map((r) => ({ ...r, logoUrl: logoUrls.get(r.id) ?? null })), total: Number(totalRows[0]?.total ?? 0) };
 }
 
-export async function getAdminTournamentCounts(): Promise<{ total: number; upcoming: number; live: number; finished: number }> {
+export async function getAdminTournamentCounts(game: GameSlug): Promise<{ total: number; upcoming: number; live: number; finished: number }> {
+  const { tournaments } = gameTables(game);
   const rows = await db.select({ status: tournaments.status, count: sql<number>`count(*)::int` }).from(tournaments).groupBy(tournaments.status);
   const result = { total: 0, upcoming: 0, live: 0, finished: 0 };
   for (const row of rows) {
@@ -143,19 +147,21 @@ export type AdminTournamentDetailRow = AdminTournamentRow & {
 };
 
 // Cached per request: generateMetadata and the page both read it.
-export const getAdminTournament = cache(async (id: number): Promise<AdminTournamentDetailRow | null> => {
+export const getAdminTournament = cache(async (game: GameSlug, id: number): Promise<AdminTournamentDetailRow | null> => {
+  const { tournaments } = gameTables(game);
   const [[row], logoUrls] = await Promise.all([
     db
       .select({ tournament: tournaments, organizerName: organizations.name })
       .from(tournaments)
       .leftJoin(organizations, eq(organizations.id, tournaments.organizerOrganizationId))
       .where(eq(tournaments.id, id)),
-    getCurrentLogoUrls("tournament", [id]),
+    getCurrentLogoUrls("tournament", [id], game),
   ]);
   if (!row) return null;
   return { ...row.tournament, organizerOrganizationName: row.organizerName, logoUrl: logoUrls.get(id) ?? null, socials: (row.tournament.socials as Record<string, string>) ?? {} };
 });
 
-export async function listPointTypeOptions(): Promise<{ id: number; name: string; label: string }[]> {
+export async function listPointTypeOptions(game: GameSlug): Promise<{ id: number; name: string; label: string }[]> {
+  const { pointTypes } = gameTables(game);
   return db.select({ id: pointTypes.id, name: pointTypes.name, label: pointTypes.label }).from(pointTypes).orderBy(asc(pointTypes.name));
 }
