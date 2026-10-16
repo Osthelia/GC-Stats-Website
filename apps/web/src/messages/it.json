@@ -6051,7 +6051,9 @@
       "searchPlaceholder": "Cerca…",
       "noResults": "Nessun risultato.",
       "addRow": "Aggiungi una riga",
-      "hint": "Puoi proporre di modificare o rimuovere una voce esistente e di aggiungerne fino a 6 nuove. Tutto viene esaminato dallo staff prima di modificare il roster."
+      "hint": "Puoi proporre di modificare o rimuovere una voce esistente e di aggiungerne fino a 6 nuove. Tutto viene esaminato dallo staff prima di modificare il roster.",
+      "hasLeft": "Ha lasciato il team",
+      "untilLabel": "Uscita il"
     },
     "nameHistory": {
       "title": "Storico dei nomi",

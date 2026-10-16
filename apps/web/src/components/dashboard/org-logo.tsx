@@ -12,26 +12,42 @@ import { useState } from "react";
 import { Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const SAFE_PROTOCOLS = new Set(["http:", "https:", "blob:"]);
+
+// Allows same origin paths and http(s)/blob URLs only (no javascript: or data:).
+function toSafeImageSrc(src: string | null | undefined): string | null {
+  const value = src?.trim();
+  if (!value) return null;
+  if (value.startsWith("/")) return value.startsWith("//") || value.startsWith("/\\") ? null : value;
+  try {
+    const url = new URL(value);
+    return SAFE_PROTOCOLS.has(url.protocol) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Every logo needs a fallback (CLAUDE.md): the org's own initial when a name is known, a generic building icon otherwise (e.g. no organization selected yet in the header switcher). Shared by OrgSwitcher and the /dashboard org picker. */
 export function OrgLogoTile({ name, logoUrl, darkLogoUrl, className }: { name: string | null; logoUrl: string | null; darkLogoUrl?: string | null; className?: string }) {
   const [failed, setFailed] = useState(false);
-  const dark = darkLogoUrl ?? logoUrl;
+  const safeLogoUrl = toSafeImageSrc(logoUrl);
+  const safeDarkLogoUrl = toSafeImageSrc(darkLogoUrl ?? logoUrl);
 
-  if (logoUrl && !failed) {
+  if (safeLogoUrl && !failed) {
     const imgClass = cn("shrink-0 rounded-lg object-cover", className);
     // Thème sombre du dashboard (classe .dark) : on swap en CSS pour éviter tout flash
-    if (dark && dark !== logoUrl) {
+    if (safeDarkLogoUrl && safeDarkLogoUrl !== safeLogoUrl) {
       return (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoUrl} alt="" className={cn(imgClass, "dark:hidden")} onError={() => setFailed(true)} />
+          <img src={safeLogoUrl} alt="" className={cn(imgClass, "dark:hidden")} onError={() => setFailed(true)} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={dark} alt="" className={cn(imgClass, "hidden dark:block")} onError={() => setFailed(true)} />
+          <img src={safeDarkLogoUrl} alt="" className={cn(imgClass, "hidden dark:block")} onError={() => setFailed(true)} />
         </>
       );
     }
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={logoUrl} alt="" className={imgClass} onError={() => setFailed(true)} />;
+    return <img src={safeLogoUrl} alt="" className={imgClass} onError={() => setFailed(true)} />;
   }
 
   if (name) {

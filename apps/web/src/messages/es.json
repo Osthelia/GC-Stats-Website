@@ -6175,7 +6175,9 @@
       "searchPlaceholder": "Buscar…",
       "noResults": "Sin resultados.",
       "addRow": "Añadir una fila",
-      "hint": "Puedes proponer modificar o quitar una entrada existente, y añadir hasta 6 nuevas. Todo lo que hay aquí lo revisa el staff antes de cambiar el roster."
+      "hint": "Puedes proponer modificar o quitar una entrada existente, y añadir hasta 6 nuevas. Todo lo que hay aquí lo revisa el staff antes de cambiar el roster.",
+      "hasLeft": "Ha dejado el equipo",
+      "untilLabel": "Salida el"
     },
     "nameHistory": {
       "title": "Historial de nombres",

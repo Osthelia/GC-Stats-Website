@@ -6175,7 +6175,9 @@
       "searchPlaceholder": "Search…",
       "noResults": "No results.",
       "addRow": "Add a row",
-      "hint": "You can propose editing or removing an existing entry, and adding up to 6 new ones. Everything here is reviewed by staff before it changes the roster."
+      "hint": "You can propose editing or removing an existing entry, and adding up to 6 new ones. Everything here is reviewed by staff before it changes the roster.",
+      "hasLeft": "Has left the team",
+      "untilLabel": "Left on"
     },
     "nameHistory": {
       "title": "Name history",

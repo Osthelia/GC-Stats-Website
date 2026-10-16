@@ -6175,7 +6175,9 @@
       "searchPlaceholder": "Rechercher…",
       "noResults": "Aucun résultat.",
       "addRow": "Ajouter une ligne",
-      "hint": "Vous pouvez proposer de modifier ou retirer une entrée existante, et d'en ajouter jusqu'à 6 nouvelles. Tout ceci est relu par le staff avant de modifier l'effectif."
+      "hint": "Vous pouvez proposer de modifier ou retirer une entrée existante, et d'en ajouter jusqu'à 6 nouvelles. Tout ceci est relu par le staff avant de modifier l'effectif.",
+      "hasLeft": "A quitté la team",
+      "untilLabel": "Parti le"
     },
     "nameHistory": {
       "title": "Historique des noms",

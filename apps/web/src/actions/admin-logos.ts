@@ -128,7 +128,7 @@ export async function uploadEntityLogo(game: GameSlug, entityType: LogoEntityTyp
   } catch (error) {
     // Don't leave orphaned files in the bucket if the DB write failed.
     await deleteLogoFiles(entityType, stored.id).catch(() => {});
-    console.error(`[logos] database write failed (${entityType} #${entityId})`, error);
+    console.error("[logos] database write failed (%s #%d)", entityType, entityId, error);
     return { ok: false, fieldErrors: { file: "saveFailed" } };
   }
 

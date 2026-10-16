@@ -29,6 +29,7 @@ import {
   type TeamHistoryEntryFieldErrors,
 } from "@/actions/admin-players";
 import { deleteRosterMembership } from "@/actions/admin-teams";
+import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
 import { cn } from "@/lib/utils";
 import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
@@ -48,11 +49,15 @@ const roleItemsFor = (t: ReturnType<typeof useTranslations>) => Object.fromEntri
  */
 function TeamHistoryCard({
   entry,
+  playerId,
+  playerHandle,
   canEdit,
   onSaved,
   onDeleted,
 }: {
   entry: AdminPlayerTeamHistoryEntry;
+  playerId: number;
+  playerHandle: string;
   canEdit: boolean;
   onSaved: (updated: AdminPlayerTeamHistoryEntry) => void;
   onDeleted: (membershipId: number) => void;
@@ -67,14 +72,17 @@ function TeamHistoryCard({
   const [inactiveSince, setInactiveSince] = useState(entry.inactiveSince ?? "");
   const [fieldErrors, setFieldErrors] = useState<TeamHistoryEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
   const roleItems = roleItemsFor(t);
   const err = (field: keyof TeamHistoryEntryFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.invalid") : undefined);
 
-  function handleSave() {
+  async function handleSave() {
     setFieldErrors({});
+    const closeIds = hasLeft ? [] : await resolveConflicts(playerId, playerHandle, entry.teamId, entry.membershipId);
+    if (!closeIds) return;
     startTransition(async () => {
-      const result = await updatePlayerTeamHistoryEntry(game, entry.membershipId, role, from, until, hasLeft, inactiveSince);
+      const result = await updatePlayerTeamHistoryEntry(game, entry.membershipId, role, from, until, hasLeft, inactiveSince, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -201,16 +209,19 @@ function TeamHistoryCard({
         onConfirm={handleDelete}
         isPending={isPending}
       />
+      {conflictDialog}
     </div>
   );
 }
 
 export function PlayerTeamHistoryPanel({
   playerId,
+  playerHandle,
   initialEntries,
   canEdit,
 }: {
   playerId: number;
+  playerHandle: string;
   initialEntries: AdminPlayerTeamHistoryEntry[];
   canEdit: boolean;
 }) {
@@ -225,13 +236,16 @@ export function PlayerTeamHistoryPanel({
   const [hasLeft, setHasLeft] = useState(false);
   const [inactiveSince, setInactiveSince] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddTeamHistoryFieldErrors>({});
+  const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
   const roleItems = roleItemsFor(t);
 
-  function handleAdd() {
+  async function handleAdd() {
     setFieldErrors({});
+    const closeIds = team && !hasLeft ? await resolveConflicts(playerId, playerHandle, team.id) : [];
+    if (!closeIds) return;
     startTransition(async () => {
-      const result = await addPlayerTeamHistoryEntry(game, playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null);
+      const result = await addPlayerTeamHistoryEntry(game, playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -243,8 +257,7 @@ export function PlayerTeamHistoryPanel({
       setInactiveSince("");
       // No toast here: redundant with the reload below (which is itself the
       // visual feedback) and would get cut off before it could ever be seen.
-      // Same reasoning as team-roster-panel.tsx: a full refresh picks up any
-      // membership this add silently closed elsewhere.
+      // The refresh also picks up memberships closed through the conflict dialog.
       window.location.reload();
     });
   }
@@ -361,7 +374,7 @@ export function PlayerTeamHistoryPanel({
         {current.length > 0 && (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {current.map((entry) => (
-              <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
+              <TeamHistoryCard key={entry.membershipId} entry={entry} playerId={playerId} playerHandle={playerHandle} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
             ))}
           </div>
         )}
@@ -371,12 +384,13 @@ export function PlayerTeamHistoryPanel({
             <p className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">{t("historyPastTitle")}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {past.map((entry) => (
-                <TeamHistoryCard key={entry.membershipId} entry={entry} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
+                <TeamHistoryCard key={entry.membershipId} entry={entry} playerId={playerId} playerHandle={playerHandle} canEdit={canEdit} onSaved={handleEntrySaved} onDeleted={handleEntryDeleted} />
               ))}
             </div>
           </div>
         )}
       </CardContent>
+      {conflictDialog}
     </Card>
   );
 }

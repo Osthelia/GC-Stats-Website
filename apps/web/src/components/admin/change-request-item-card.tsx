@@ -13,7 +13,8 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { resolveChangeRequestItem } from "@/actions/admin-change-requests";
+import { resolveChangeRequestItem, getItemRosterTarget } from "@/actions/admin-change-requests";
+import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { ChangeRequestValue } from "@/components/admin/change-request-item-value";
 import type { AdminChangeRequestItem } from "@/lib/admin-change-requests";
 import { useGame } from "@/lib/use-game";
@@ -68,10 +69,20 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
   const tField = useTranslations("suggestEdit.field");
   const [note, setNote] = useState("");
   const [isPending, startTransition] = useTransition();
+  const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
-  function resolve(action: "approve" | "reject") {
+  async function resolve(action: "approve" | "reject") {
+    let closeIds: number[] = [];
+    if (action === "approve") {
+      const target = await getItemRosterTarget(game, item.id);
+      if (target) {
+        const answer = await resolveConflicts(target.personId, target.handle, target.teamId, target.excludeMembershipId);
+        if (!answer) return;
+        closeIds = answer;
+      }
+    }
     startTransition(async () => {
-      const result = await resolveChangeRequestItem(game, item.id, action, note);
+      const result = await resolveChangeRequestItem(game, item.id, action, note, closeIds);
       if (!result.ok) {
         toast.error(t("actionError"));
         return;
@@ -128,6 +139,7 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
           </div>
         </div>
       )}
+      {conflictDialog}
     </div>
   );
 }

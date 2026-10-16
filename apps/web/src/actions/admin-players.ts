@@ -11,14 +11,15 @@
 
 "use server";
 
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { users, sharedPeople, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorAccess, requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { isValidCountryCode } from "@/lib/countries";
-import { closeRange, isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
+import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
+import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
@@ -290,7 +291,8 @@ export async function addPlayerTeamHistoryEntry(
   from: string,
   until: string,
   hasLeft: boolean,
-  inactiveSince: string | null
+  inactiveSince: string | null,
+  closeMembershipIds: number[] = []
 ): Promise<AddTeamHistoryResult> {
   const { people, teams, rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
@@ -317,16 +319,7 @@ export async function addPlayerTeamHistoryEntry(
   const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
-    if (isOngoing) {
-      const openElsewhere = await tx
-        .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-        .from(rosterMemberships)
-        .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.role, role), sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false)));
-
-      for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-      }
-    }
+    if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, personId, teamId as number, from);
 
     await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null });
     await logRosterChange(tx, { game, teamId: teamId as number, personId, role, actorUserId, action: "Added" });
@@ -340,7 +333,7 @@ export type TeamHistoryEntryFieldErrors = Partial<Record<TeamHistoryEntryField, 
 export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: TeamHistoryEntryFieldErrors };
 
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
-export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string): Promise<TeamHistoryEntryResult> {
+export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<TeamHistoryEntryResult> {
   const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
@@ -362,23 +355,7 @@ export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId:
   const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
-    if (isOngoing) {
-      const openElsewhere = await tx
-        .select({ id: rosterMemberships.id, period: rosterMemberships.period })
-        .from(rosterMemberships)
-        .where(
-          and(
-            eq(rosterMemberships.personId, membership.personId),
-            eq(rosterMemberships.role, role),
-            sql`${rosterMemberships.period} @> CURRENT_DATE`, eq(rosterMemberships.hasLeft, false),
-            sql`${rosterMemberships.id} != ${membershipId}`
-          )
-        );
-
-      for (const row of openElsewhere) {
-        await tx.update(rosterMemberships).set({ period: closeRange(row.period, from), hasLeft: true }).where(eq(rosterMemberships.id, row.id));
-      }
-    }
+    if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
     const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));

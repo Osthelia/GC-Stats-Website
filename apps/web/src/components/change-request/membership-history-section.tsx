@@ -31,7 +31,7 @@ export type MembershipEntryView = {
   isCurrent: boolean;
 };
 
-type MembershipFields = { role: string; since: string; until: string; inactiveSince: string };
+type MembershipFields = { role: string; since: string; until: string; hasLeft: boolean; inactiveSince: string };
 type EditState = MembershipFields & { deleted: boolean };
 type AddDraft = MembershipFields & { uid: number; entity: { id: number; label: string } | null };
 
@@ -64,7 +64,7 @@ export function MembershipHistorySection({
 
   const [edits, setEdits] = useState<Record<number, EditState>>(() =>
     Object.fromEntries(
-      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", inactiveSince: e.inactiveSince ?? "", deleted: false }])
+      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", hasLeft: !e.isCurrent, inactiveSince: e.inactiveSince ?? "", deleted: false }])
     )
   );
   const [additions, setAdditions] = useState<AddDraft[]>([]);
@@ -85,6 +85,7 @@ export function MembershipHistorySection({
         edit.role !== entry.role ||
         edit.since !== (entry.since ?? today()) ||
         (edit.until || null) !== entry.until ||
+        edit.hasLeft !== !entry.isCurrent ||
         (edit.inactiveSince || null) !== entry.inactiveSince;
       if (changed) {
         ops.push({
@@ -93,6 +94,7 @@ export function MembershipHistorySection({
           role: edit.role,
           since: edit.since,
           until: edit.until || null,
+          hasLeft: edit.hasLeft,
           inactiveSince: edit.inactiveSince || null,
         });
       }
@@ -106,6 +108,7 @@ export function MembershipHistorySection({
         role: draft.role,
         since: draft.since,
         until: draft.until || null,
+        hasLeft: draft.hasLeft,
         inactiveSince: draft.inactiveSince || null,
       });
     }
@@ -120,7 +123,7 @@ export function MembershipHistorySection({
 
   function addRow() {
     if (additions.length >= MAX_MEMBERSHIP_ADDITIONS) return;
-    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", inactiveSince: "" }];
+    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", hasLeft: false, inactiveSince: "" }];
     setAdditions(next);
   }
 
@@ -145,8 +148,17 @@ export function MembershipHistorySection({
         <PublicSelect value={value.role} onChange={(v) => update({ role: v })} options={roleOptions} />
         <div className="grid grid-cols-2 gap-1.5">
           <input type="date" value={value.since} onChange={(e) => update({ since: e.target.value })} className={inputClass} />
-          <input type="date" value={value.until} onChange={(e) => update({ until: e.target.value })} className={inputClass} />
+          <input type="date" value={value.until} disabled={!value.hasLeft} onChange={(e) => update({ until: e.target.value })} aria-label={t("untilLabel")} className={`${inputClass} disabled:opacity-40`} />
         </div>
+        <label className="flex items-center gap-2 text-[12.5px] text-neutral-300">
+          <input
+            type="checkbox"
+            checked={value.hasLeft}
+            onChange={(e) => update({ hasLeft: e.target.checked, until: e.target.checked ? value.until : "" })}
+            className="h-4 w-4 accent-[#e4ae22]"
+          />
+          {t("hasLeft")}
+        </label>
         <input type="date" value={value.inactiveSince} onChange={(e) => update({ inactiveSince: e.target.value })} placeholder={t("inactiveSince")} className={inputClass} />
       </div>
     );

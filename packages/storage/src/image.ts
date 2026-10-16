@@ -24,8 +24,7 @@ export type WebpOptions = {
 
 // Cloudflare Workers can't run sharp (native bindings, see next.config.mjs's
 // turbopack.resolveAlias which stubs it out at build time on that target) —
-// dispatches to the Photon/WASM pipeline instead, see image-cloudflare.ts for
-// the accepted behavior differences (webp quality, crop, EXIF orientation).
+// dispatches to the Cloudflare Images binding instead, see image-cloudflare.ts.
 const isCloudflare = process.env.DEPLOY_TARGET === "cloudflare";
 
 export async function convertToWebp(input: Buffer, opts: WebpOptions): Promise<Buffer> {
@@ -57,7 +56,7 @@ export async function validateImageBuffer(buffer: Buffer): Promise<ImageValidati
   if (isCloudflare) {
     try {
       const { decodeDimensions } = await import("./image-cloudflare");
-      return decodeDimensions(buffer);
+      return await decodeDimensions(buffer);
     } catch (error) {
       console.error("[image] cloudflare decoder failed to load", error);
       return { ok: false, error: "processingFailed" };
