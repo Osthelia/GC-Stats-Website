@@ -1,7 +1,7 @@
 ﻿/**
  * GC-Stats - admin-organizations
  *
- * Admin queries for /admin/organizations: paginated list with member
+ * Admin queries for /admin/{game}/organizations: paginated list with member
  * counts, profile lookup, and full membership history per organization.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
@@ -9,13 +9,13 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, exists, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, exists, not, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, organizationMemberships, people, teams, users } from "@gc-stats/db";
-import { organizationHasNoTeam } from "@/lib/organization-team-link";
+import { organizations, users, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 export type OrganizationSort = "name" | "members";
 export type SortDirection = "asc" | "desc";
@@ -30,32 +30,49 @@ export type AdminOrganizationRow = {
   memberCount: number;
 };
 
-const memberCountSql = sql<number>`(
+// Members of the game.
+function memberCountSql(game: GameSlug) {
+  const { organizationMemberships } = gameTables(game);
+  return sql<number>`(
   SELECT COUNT(*) FROM ${organizationMemberships} om
   WHERE om.organization_id = ${qualifiedColumn(organizations, "id")} AND om.period @> CURRENT_DATE
 )`;
+}
+
+// Games the organization is explicitly listed on.
+function organizationOnGame(game: GameSlug) {
+  return sql`${game} = ANY(${organizations.games})`;
+}
+
+// Teams linked to the organization, in any game.
+function organizationHasTeamAnyGame() {
+  return or(...GAMES.map((game) => {
+    const { teams } = gameTables(game);
+    return exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id)));
+  }))!;
+}
 
 export const ORGANIZATIONS_PAGE_SIZE = 30;
 
 export type OrganizationKind = "standalone" | "team";
 
-export async function listAdminOrganizations(opts: { q: string; sort: OrganizationSort; direction: SortDirection; page: number; kind?: OrganizationKind }): Promise<{ rows: AdminOrganizationRow[]; total: number }> {
-  const { q, sort, direction, page, kind } = opts;
-  const conditions = [];
+export async function listAdminOrganizations(opts: { game: GameSlug; q: string; sort: OrganizationSort; direction: SortDirection; page: number; kind?: OrganizationKind }): Promise<{ rows: AdminOrganizationRow[]; total: number }> {
+  const { game, q, sort, direction, page, kind } = opts;
+  const conditions = [organizationOnGame(game)];
 
   // "team" = linked to at least one team (no public page), "standalone" = the others.
-  if (kind === "team") conditions.push(exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))));
-  if (kind === "standalone") conditions.push(organizationHasNoTeam());
+  if (kind === "team") conditions.push(organizationHasTeamAnyGame());
+  if (kind === "standalone") conditions.push(not(organizationHasTeamAnyGame()));
 
   if (q) {
     const numeric = /^\d+$/.test(q);
     const variants = typoVariants(q.toLowerCase());
     const clauses = variants.flatMap((v) => [foldedIlike(organizations.name, v), foldedIlike(organizations.slug, v)]);
     if (numeric) clauses.push(eq(organizations.id, Number(q)));
-    conditions.push(or(...clauses));
+    conditions.push(or(...clauses)!);
   }
 
-  const sortCol = sort === "members" ? memberCountSql : organizations.name;
+  const sortCol = sort === "members" ? memberCountSql(game) : organizations.name;
   const orderBy = direction === "desc" ? desc(sortCol) : asc(sortCol);
   const where = conditions.length ? and(...conditions) : undefined;
 
@@ -68,7 +85,7 @@ export async function listAdminOrganizations(opts: { q: string; sort: Organizati
         tags: organizations.tags,
         countryCode: organizations.countryCode,
         secondaryCountryCode: organizations.secondaryCountryCode,
-        memberCount: memberCountSql,
+        memberCount: memberCountSql(game),
       })
       .from(organizations)
       .where(where)
@@ -88,6 +105,7 @@ export type AdminOrganizationProfile = {
   id: number;
   name: string;
   slug: string;
+  games: GameSlug[];
   tags: string[];
   countryCode: string | null;
   secondaryCountryCode: string | null;
@@ -104,6 +122,7 @@ export async function getAdminOrganization(id: number): Promise<AdminOrganizatio
     id: row.id,
     name: row.name,
     slug: row.slug,
+    games: row.games.filter((g): g is GameSlug => (GAMES as readonly string[]).includes(g)),
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
     countryCode: row.countryCode,
     secondaryCountryCode: row.secondaryCountryCode,
@@ -129,7 +148,8 @@ export type AdminOrganizationMember = {
 };
 
 /** Every stint, not just currently active memberships — mirrors getAdminTeamRoster (past join/left dates stay visible). */
-export async function getAdminOrganizationMembers(organizationId: number): Promise<AdminOrganizationMember[]> {
+export async function getAdminOrganizationMembers(game: GameSlug, organizationId: number): Promise<AdminOrganizationMember[]> {
+  const { organizationMemberships, people } = gameTables(game);
   const rows = await db
     .select({
       membershipId: organizationMemberships.id,

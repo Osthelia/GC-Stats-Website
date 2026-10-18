@@ -10,13 +10,36 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { logos } from "@gc-stats/db";
 import { logoUrl } from "@gc-stats/storage";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LogoEntityType = "team" | "person" | "organization" | "news-author" | "tournament";
+
+/** Entity types that exist once per game: their logos are looked up with the game too. People are shared by every game, so is their photo. */
+export type GameLogoEntityType = "team" | "tournament";
+export type LogoScope<T extends LogoEntityType> = T extends GameLogoEntityType ? [game: GameSlug] : [];
+
+/** Where-condition on the logo's game: the game for per-game entities, none for the global ones. */
+function gameClause(entityType: LogoEntityType, scope: [GameSlug?]) {
+  const game = scope[0] && GAME_LOGO_ENTITY_TYPES.includes(entityType) ? scope[0] : null;
+  return game ? eq(logos.game, game) : isNull(logos.game);
+}
+
+const GAME_LOGO_ENTITY_TYPES: readonly LogoEntityType[] = ["team", "tournament"];
+
+/** Game stored on a logo row: the game of a team or tournament, null for people, organizations and news authors. */
+export function logoGameOf(entityType: LogoEntityType, game: GameSlug): GameSlug | null {
+  return GAME_LOGO_ENTITY_TYPES.includes(entityType) ? game : null;
+}
+
+/** Where-condition keeping only the logos of this entity type in this game (all of them for the global types). */
+export function logoGameClause(entityType: LogoEntityType, game: GameSlug) {
+  return gameClause(entityType, [game]);
+}
 
 export type AdminLogoEntry = {
   id: string;
@@ -35,11 +58,11 @@ export type AdminLogoEntry = {
  * the row itself, the URL is always rebuilt from entityType+id by
  * convention (mirrors V1's LogoUploadService, which does the same).
  */
-export async function getEntityLogos(entityType: LogoEntityType, entityId: number): Promise<AdminLogoEntry[]> {
+export async function getEntityLogos<T extends LogoEntityType>(entityType: T, entityId: number, ...scope: LogoScope<T>): Promise<AdminLogoEntry[]> {
   const rows = await db
     .select({ id: logos.id, period: logos.period, theme: logos.theme, isVisible: logos.isVisible })
     .from(logos)
-    .where(and(eq(logos.entityType, entityType), eq(logos.entityId, entityId)))
+    .where(and(eq(logos.entityType, entityType), eq(logos.entityId, entityId), gameClause(entityType, scope as [GameSlug?])))
     .orderBy(desc(logos.period));
 
   return rows.map((r) => ({
@@ -100,8 +123,8 @@ export function logoAt(entries: AdminLogoEntry[], atDate: string, theme?: string
  * theme) but never for the public site, which must vary the logo with the
  * viewer's dark/light choice — see `themedLogoUrls`/`getCurrentLogoUrlsThemed`.
  */
-export async function getCurrentLogoUrls(entityType: LogoEntityType, entityIds: number[]): Promise<Map<number, string | null>> {
-  const batch = await getEntityLogosBatch(entityType, entityIds);
+export async function getCurrentLogoUrls<T extends LogoEntityType>(entityType: T, entityIds: number[], ...scope: LogoScope<T>): Promise<Map<number, string | null>> {
+  const batch = await getEntityLogosBatch(entityType, entityIds, ...scope);
   const map = new Map<number, string | null>();
   for (const id of entityIds) map.set(id, displayLogoUrl(currentLogo(batch.get(id) ?? []), entityType));
   return map;
@@ -127,8 +150,8 @@ export function themedLogoUrlsAt(entries: AdminLogoEntry[], entityType: LogoEnti
 }
 
 /** Batched `themedLogoUrls` — the public-site counterpart to `getCurrentLogoUrls`. */
-export async function getCurrentLogoUrlsThemed(entityType: LogoEntityType, entityIds: number[]): Promise<Map<number, ThemedLogoUrls>> {
-  const batch = await getEntityLogosBatch(entityType, entityIds);
+export async function getCurrentLogoUrlsThemed<T extends LogoEntityType>(entityType: T, entityIds: number[], ...scope: LogoScope<T>): Promise<Map<number, ThemedLogoUrls>> {
+  const batch = await getEntityLogosBatch(entityType, entityIds, ...scope);
   const map = new Map<number, ThemedLogoUrls>();
   for (const id of entityIds) map.set(id, themedLogoUrls(batch.get(id) ?? [], entityType));
   return map;
@@ -140,14 +163,14 @@ export async function getCurrentLogoUrlsThemed(entityType: LogoEntityType, entit
  * (up to a few dozen rows across teams/people/organizations) without an
  * N+1 round-trip per candidate.
  */
-export async function getEntityLogosBatch(entityType: LogoEntityType, entityIds: number[]): Promise<Map<number, AdminLogoEntry[]>> {
+export async function getEntityLogosBatch<T extends LogoEntityType>(entityType: T, entityIds: number[], ...scope: LogoScope<T>): Promise<Map<number, AdminLogoEntry[]>> {
   const map = new Map<number, AdminLogoEntry[]>();
   if (entityIds.length === 0) return map;
 
   const rows = await db
     .select({ id: logos.id, entityId: logos.entityId, period: logos.period, theme: logos.theme, isVisible: logos.isVisible })
     .from(logos)
-    .where(and(eq(logos.entityType, entityType), inArray(logos.entityId, entityIds)))
+    .where(and(eq(logos.entityType, entityType), inArray(logos.entityId, entityIds), gameClause(entityType, scope as [GameSlug?])))
     .orderBy(desc(logos.period));
 
   for (const r of rows) {

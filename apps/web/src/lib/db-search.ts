@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql, getTableName } from "drizzle-orm";
+import { sql, getTableName, getViewName, is, View } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
-import type { PgTable } from "drizzle-orm/pg-core";
+import type { PgTable, PgView } from "drizzle-orm/pg-core";
 
 // Equal-length translate() maps — accent char -> its plain ASCII equivalent.
 // No pgcrypto/unaccent extension dependency: translate() is built-in.
@@ -80,6 +80,7 @@ export function specialCharPrefixRank(column: AnyPgColumn, pattern: string) {
  * have an `id` column), producing a real "ambiguous column" error from
  * Postgres, not just a cosmetic one.
  */
-export function qualifiedColumn(table: PgTable, columnName: string) {
-  return sql.raw(`"${getTableName(table)}"."${columnName}"`);
+export function qualifiedColumn(table: PgTable | PgView, columnName: string) {
+  const name = is(table, View) ? getViewName(table) : getTableName(table);
+  return sql.raw(`"${name}"."${columnName}"`);
 }

@@ -13,13 +13,14 @@
 import { cache } from "react";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { news, newsAuthors, newsRelations, organizations, teams, people, tournaments, users, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { newsAuthors, organizations, users, ORGANIZATION_PERMISSIONS, gameTables } from "@gc-stats/db";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { auth } from "@/auth";
 import { getDashboardMemberships, hasOrgPermission } from "@/lib/dashboard-rbac";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type PublicNewsListItem = {
   id: number;
@@ -37,9 +38,10 @@ export type PublicNewsListItem = {
 
 const PER_PAGE = 12;
 
-export async function getPublicNewsIndex(opts: { languages: string[]; page: number }): Promise<{ items: PublicNewsListItem[]; total: number; perPage: number }> {
+export async function getPublicNewsIndex(game: GameSlug, opts: { languages: string[]; page: number }): Promise<{ items: PublicNewsListItem[]; total: number; perPage: number }> {
+  const { news } = gameTables(game);
   const { languages, page } = opts;
-  const where = and(isNewsPublishedCondition(), inArray(news.lang, languages));
+  const where = and(isNewsPublishedCondition(game), inArray(news.lang, languages));
 
   const [rows, countRows] = await Promise.all([
     db
@@ -133,7 +135,8 @@ async function canPreviewUnpublishedNews(row: { organizationId: number | null; a
   return false;
 }
 
-export const getPublicNewsArticle = cache(async (slug: string): Promise<PublicNewsArticle | null> => {
+export const getPublicNewsArticle = cache(async (game: GameSlug, slug: string): Promise<PublicNewsArticle | null> => {
+  const { news, newsRelations, teams, people, tournaments } = gameTables(game);
   const [row] = await db.select().from(news).where(eq(news.slug, slug)).limit(1);
   if (!row) return null;
 
@@ -219,9 +222,10 @@ export type UserNewsArticle = PublicNewsListItem;
 const NEWS_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 export async function getUserNewsArticles(
-  username: string,
+  game: GameSlug, username: string,
   opts: { languages: string[]; dateFrom: string; dateTo: string; page: number }
 ): Promise<{ items: UserNewsArticle[]; total: number; perPage: number }> {
+  const { news } = gameTables(game);
   const [author] = await db
     .select({ id: newsAuthors.id })
     .from(newsAuthors)
@@ -230,7 +234,7 @@ export async function getUserNewsArticles(
     .limit(1);
   if (!author) return { items: [], total: 0, perPage: PER_PAGE };
 
-  const conditions = [eq(news.authorId, author.id), isNewsPublishedCondition(), inArray(news.lang, opts.languages)];
+  const conditions = [eq(news.authorId, author.id), isNewsPublishedCondition(game), inArray(news.lang, opts.languages)];
   // `dateTo` is inclusive of the whole day, hence `< dateTo + 1 day` rather than `<= dateTo` (publishedAt carries a time-of-day component).
   if (opts.dateFrom && NEWS_DATE_RE.test(opts.dateFrom)) conditions.push(gte(news.publishedAt, new Date(`${opts.dateFrom}T00:00:00.000Z`)));
   if (opts.dateTo && NEWS_DATE_RE.test(opts.dateTo)) {

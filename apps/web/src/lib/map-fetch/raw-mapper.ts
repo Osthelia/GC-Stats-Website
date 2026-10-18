@@ -11,7 +11,7 @@
  */
 
 import { computeRoundSides, extractPlantInfo, normalizeRoundKills, type RiotMatchDto, type RiotTeamId } from "@gc-stats/map-stats-engine";
-import type { mapRoundAliveStatesRaw, mapRoundDamagesRaw, mapRoundKillsRaw, mapRoundPlayerLoadoutsRaw, mapRoundPlayerPositionsRaw, mapRoundsRaw } from "@gc-stats/db";
+import type { valorantTables } from "@gc-stats/db";
 import { resolveEquipName, type RiotContent } from "@/lib/riot-content-client";
 
 export interface RawMapperContext {
@@ -54,12 +54,12 @@ function resolveKillWeaponDisplay(damageType: string, weaponOrAbility: string, c
   return null; // Bomb / Fall — no meaningful weapon
 }
 
-type NewRoundRow = typeof mapRoundsRaw.$inferInsert;
-type NewKillRow = typeof mapRoundKillsRaw.$inferInsert;
-type NewDamageRow = typeof mapRoundDamagesRaw.$inferInsert;
-type NewAliveStateRow = typeof mapRoundAliveStatesRaw.$inferInsert;
-type NewPositionRow = typeof mapRoundPlayerPositionsRaw.$inferInsert;
-type NewLoadoutRow = typeof mapRoundPlayerLoadoutsRaw.$inferInsert;
+type NewRoundRow = typeof valorantTables.mapRoundsRaw.$inferInsert;
+type NewKillRow = typeof valorantTables.mapRoundKillsRaw.$inferInsert;
+type NewDamageRow = typeof valorantTables.mapRoundDamagesRaw.$inferInsert;
+type NewAliveStateRow = typeof valorantTables.mapRoundAliveStatesRaw.$inferInsert;
+type NewPositionRow = typeof valorantTables.mapRoundPlayerPositionsRaw.$inferInsert;
+type NewLoadoutRow = typeof valorantTables.mapRoundPlayerLoadoutsRaw.$inferInsert;
 
 export function buildRoundRows(match: RiotMatchDto, ctx: RawMapperContext): NewRoundRow[] {
   const sidesByRound = computeRoundSides(match.roundResults, match.players);

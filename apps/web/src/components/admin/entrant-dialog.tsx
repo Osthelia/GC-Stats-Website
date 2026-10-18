@@ -22,6 +22,7 @@ import { TournamentPicker } from "@/components/admin/tournament-picker";
 import { addEntrant, updateEntrant, type EntrantFieldErrors, type EntrantInput } from "@/actions/admin-tournament-entrants";
 import { QUALIFICATION_MODES, type QualificationMode } from "@/lib/entrant-qualification-source";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 type FormState = {
   kind: "team" | "placeholder";
@@ -70,6 +71,7 @@ export function EntrantDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.entrants");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -97,7 +99,7 @@ export function EntrantDialog({
       qualificationPointTypeId: form.qualificationMode === "points" && form.qualificationPointTypeId ? Number(form.qualificationPointTypeId) : null,
     };
     startTransition(async () => {
-      const result = entrant ? await updateEntrant(entrant.id, tournamentId, input) : await addEntrant(tournamentId, input);
+      const result = entrant ? await updateEntrant(game, entrant.id, tournamentId, input) : await addEntrant(game, tournamentId, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

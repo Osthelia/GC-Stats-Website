@@ -15,13 +15,14 @@ import { after } from "next/server";
 import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { getTranslations } from "next-intl/server";
 import { adminDb } from "@gc-stats/db/client";
-import { notifications, users, changeRequestDiscordNotices } from "@gc-stats/db";
+import { notifications, users, gameTables } from "@gc-stats/db";
 import { sendEmail } from "@/lib/email/client";
 import { renderNotificationEmail } from "@/lib/email/notification-template";
 import { EMAIL_CATEGORIES, type EmailCategory, type NotificationType } from "@/lib/notification-categories";
 import { getLinkedDiscordId, hasJoinedDiscordGuild } from "@/lib/discord-guild-membership";
 import { sendDiscordNotification, type DiscordButton, type DiscordContainer, type DiscordEmbed } from "@/lib/discord-notifications-client";
 import { buildSanctionEmbed, buildReportEmbed, buildChangeRequestDecisionContainer, buildForumContainer, isForumContainerType } from "@/lib/discord-notification-format";
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
 
 export { EMAIL_CATEGORIES, type EmailCategory, type NotificationType };
 
@@ -151,7 +152,8 @@ async function sendDiscordDmToRecipient(recipientId: string, category: EmailCate
 const CHANGE_REQUEST_DISCORD_DEBOUNCE_MS = 2 * 60 * 1000;
 
 /** Upserts the pending notice, pushing scheduledAt forward on every call — see flush-change-request-discord-notices.ts for the other half. */
-async function scheduleChangeRequestDiscordNotice(changeRequestId: number): Promise<void> {
+async function scheduleChangeRequestDiscordNotice(game: GameSlug, changeRequestId: number): Promise<void> {
+  const { changeRequestDiscordNotices } = gameTables(game);
   const scheduledAt = new Date(Date.now() + CHANGE_REQUEST_DISCORD_DEBOUNCE_MS);
   await adminDb
     .insert(changeRequestDiscordNotices)
@@ -201,7 +203,8 @@ async function maybeSendDiscordDM(input: NotifyInput, notificationId: number): P
   try {
     if (input.type === "change_request.accepted" || input.type === "change_request.rejected" || input.type === "change_request.partial") {
       const changeRequestId = input.data?.changeRequestId;
-      if (typeof changeRequestId === "number") await scheduleChangeRequestDiscordNotice(changeRequestId);
+      const game = input.data?.game;
+      if (typeof changeRequestId === "number" && isGameSlug(game)) await scheduleChangeRequestDiscordNotice(game, changeRequestId);
       return;
     }
 
@@ -212,11 +215,11 @@ async function maybeSendDiscordDM(input: NotifyInput, notificationId: number): P
 }
 
 /** The flush side of the change request Discord debounce — rebuilds the container from the current DB state (every item's latest status), never from whichever resolution last fired. Called by the per-minute scheduled job. */
-export async function sendChangeRequestDiscordDecision(changeRequestId: number): Promise<boolean> {
+export async function sendChangeRequestDiscordDecision(game: GameSlug, changeRequestId: number): Promise<boolean> {
   try {
     const t = await getTranslations({ locale: "en" });
-    const link = `${APP_BASE_URL}/settings/change-requests/${changeRequestId}`;
-    const decision = await buildChangeRequestDecisionContainer(t, changeRequestId, link, t("notifications.discordButton"));
+    const link = `${APP_BASE_URL}/settings/change-requests/${game}/${changeRequestId}`;
+    const decision = await buildChangeRequestDecisionContainer(game, t, changeRequestId, link, t("notifications.discordButton"));
     if (!decision) return false;
 
     await sendDiscordDmToRecipient(decision.recipientId, "change_request", async () => ({ type: "container", container: decision.container }));
@@ -257,11 +260,11 @@ export async function markAllRead(userId: string): Promise<void> {
 /**
  * The debounced change request Discord container (see scheduleChangeRequestDiscordNotice)
  * coalesces several notify() calls into one message with a single button linking straight
- * to `/settings/change-requests/{id}`, not through `/open` — there is no single notification
+ * to `/settings/change-requests/{game}/{id}`, not through `/open` — there is no single notification
  * row to mark read on click. Called from that page instead, marking every matching row read
  * once the recipient actually opens it (ownership already checked by the caller).
  */
-export async function markChangeRequestNotificationsRead(userId: string, changeRequestId: number): Promise<void> {
+export async function markChangeRequestNotificationsRead(userId: string, game: GameSlug, changeRequestId: number): Promise<void> {
   await adminDb
     .update(notifications)
     .set({ readAt: new Date() })
@@ -271,6 +274,8 @@ export async function markChangeRequestNotificationsRead(userId: string, changeR
         isNull(notifications.readAt),
         sql`${notifications.type} in ('change_request.accepted', 'change_request.rejected', 'change_request.partial', 'change_request.comment')`,
         sql`(${notifications.data}->>'changeRequestId')::int = ${changeRequestId}`,
+        // Notifications from before the games existed carry no game: they are Valorant.
+        sql`coalesce(${notifications.data}->>'game', 'valorant') = ${game}`,
       ),
     );
 }

@@ -22,6 +22,7 @@ import { SanctionDialog } from "@/components/admin/sanction-dialog";
 import { resolveReport, type ReportFieldErrors } from "@/actions/admin-reports";
 import { hideForumMessage } from "@/actions/admin-forum";
 import type { AdminReportRow } from "@/lib/admin-reports";
+import { useGame } from "@/lib/use-game";
 
 export function ReportReviewDialog({
   report,
@@ -34,6 +35,7 @@ export function ReportReviewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.reports");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -54,7 +56,7 @@ export function ReportReviewDialog({
     if (!report) return;
     setFieldErrors({});
     startTransition(async () => {
-      const result = await resolveReport(report.id, action, note);
+      const result = await resolveReport(game, report.id, action, note);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

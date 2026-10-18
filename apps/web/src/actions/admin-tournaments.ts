@@ -14,10 +14,11 @@
 import { eq } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { tournaments, pointTypes, organizations, PERMISSIONS } from "@gc-stats/db";
+import { organizations, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { HOME_TOURNAMENTS_TAG, TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 import { logActivity, diffChanges } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -95,7 +96,8 @@ function isValidUrl(value: string): boolean {
   }
 }
 
-async function validateTournament(input: TournamentInput): Promise<TournamentFieldErrors> {
+async function validateTournament(game: GameSlug, input: TournamentInput): Promise<TournamentFieldErrors> {
+  const { pointTypes } = gameTables(game);
   const fieldErrors: TournamentFieldErrors = {};
 
   const name = input.name.trim();
@@ -180,10 +182,11 @@ function coreColumns(input: TournamentInput) {
   };
 }
 
-export async function createTournament(input: TournamentInput): Promise<TournamentResult> {
+export async function createTournament(game: GameSlug, input: TournamentInput): Promise<TournamentResult> {
+  const { tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
-  const fieldErrors = await validateTournament(input);
+  const fieldErrors = await validateTournament(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const values = coreColumns(input);
@@ -199,13 +202,14 @@ export async function createTournament(input: TournamentInput): Promise<Tourname
   return { ok: true, id: created.id };
 }
 
-export async function updateTournament(id: number, input: TournamentInput): Promise<TournamentResult> {
+export async function updateTournament(game: GameSlug, id: number, input: TournamentInput): Promise<TournamentResult> {
+  const { tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existingRow] = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { name: "notFound" } };
 
-  const fieldErrors = await validateTournament(input);
+  const fieldErrors = await validateTournament(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const values = coreColumns(input);
@@ -224,7 +228,8 @@ export async function updateTournament(id: number, input: TournamentInput): Prom
 
 export type ToggleActiveResult = { ok: true; active: boolean } | { ok: false; error: "notFound" };
 
-export async function toggleTournamentActive(id: number): Promise<ToggleActiveResult> {
+export async function toggleTournamentActive(game: GameSlug, id: number): Promise<ToggleActiveResult> {
+  const { tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: tournaments.id, active: tournaments.active }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
@@ -246,7 +251,8 @@ export async function toggleTournamentActive(id: number): Promise<ToggleActiveRe
 
 export type DeleteTournamentResult = { ok: true } | { ok: false; error: "notFound" | "hasPlayedMatches" };
 
-export async function deleteTournament(id: number): Promise<DeleteTournamentResult> {
+export async function deleteTournament(game: GameSlug, id: number): Promise<DeleteTournamentResult> {
+  const { tournaments } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: tournaments.id, name: tournaments.name }).from(tournaments).where(eq(tournaments.id, id)).limit(1);

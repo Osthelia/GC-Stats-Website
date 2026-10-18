@@ -10,10 +10,11 @@
  */
 
 import { and, eq, inArray } from "drizzle-orm";
-import { entrants, groupEntries, matches } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@gc-stats/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export interface ResolvedGroupMatch {
   containerId: number;
@@ -22,12 +23,14 @@ export interface ResolvedGroupMatch {
   loserEntrantId: number;
 }
 
-async function getGroupEntries(tx: Tx, containerId: number) {
+async function getGroupEntries(game: GameSlug, tx: Tx, containerId: number) {
+  const { groupEntries } = gameTables(game);
   return tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId));
 }
 
 /** Wins/losses bookkeeping shared by every group format (swiss, round robin). */
-export async function bumpRecordAfterMatch(tx: Tx, m: ResolvedGroupMatch): Promise<void> {
+export async function bumpRecordAfterMatch(game: GameSlug, tx: Tx, m: ResolvedGroupMatch): Promise<void> {
+  const { groupEntries } = gameTables(game);
   const [winnerEntry] = await tx
     .select()
     .from(groupEntries)
@@ -44,8 +47,9 @@ export async function bumpRecordAfterMatch(tx: Tx, m: ResolvedGroupMatch): Promi
   }
 }
 
-async function applyStatusThresholds(tx: Tx, containerId: number, config: SwissGroupConfig): Promise<void> {
-  const entries = await getGroupEntries(tx, containerId);
+async function applyStatusThresholds(game: GameSlug, tx: Tx, containerId: number, config: SwissGroupConfig): Promise<void> {
+  const { groupEntries } = gameTables(game);
+  const entries = await getGroupEntries(game, tx, containerId);
   for (const entry of entries) {
     if (entry.status !== "active") continue;
     if (config.qualifyAtWins !== null && entry.wins >= config.qualifyAtWins) {
@@ -56,7 +60,8 @@ async function applyStatusThresholds(tx: Tx, containerId: number, config: SwissG
   }
 }
 
-async function buildSwissHistory(tx: Tx, containerId: number): Promise<SwissHistoryEntry[]> {
+async function buildSwissHistory(game: GameSlug, tx: Tx, containerId: number): Promise<SwissHistoryEntry[]> {
+  const { matches } = gameTables(game);
   const rows = await tx
     .select()
     .from(matches)
@@ -66,9 +71,10 @@ async function buildSwissHistory(tx: Tx, containerId: number): Promise<SwissHist
     .map((r) => ({ round: r.round, aId: String(r.entrantAId), bId: String(r.entrantBId) }));
 }
 
-async function recomputeAndStoreBuchholz(tx: Tx, containerId: number): Promise<void> {
-  const entries = await getGroupEntries(tx, containerId);
-  const history = await buildSwissHistory(tx, containerId);
+async function recomputeAndStoreBuchholz(game: GameSlug, tx: Tx, containerId: number): Promise<void> {
+  const { groupEntries } = gameTables(game);
+  const entries = await getGroupEntries(game, tx, containerId);
+  const history = await buildSwissHistory(game, tx, containerId);
   const dtos: SwissEntrant[] = entries.map((e) => ({
     id: String(e.entrantId),
     seed: e.seed ?? 0,
@@ -88,7 +94,8 @@ async function recomputeAndStoreBuchholz(tx: Tx, containerId: number): Promise<v
   }
 }
 
-async function isRoundComplete(tx: Tx, containerId: number, round: number): Promise<boolean> {
+async function isRoundComplete(game: GameSlug, tx: Tx, containerId: number, round: number): Promise<boolean> {
+  const { matches } = gameTables(game);
   const rows = await tx
     .select()
     .from(matches)
@@ -103,9 +110,10 @@ async function isRoundComplete(tx: Tx, containerId: number, round: number): Prom
  * `group_entries` (wins+1, hadBye=true) since there's no opponent to
  * resolve a match against.
  */
-async function generateAndInsertNextSwissRound(tx: Tx, containerId: number, config: SwissGroupConfig, currentRound: number): Promise<void> {
-  const entries = (await getGroupEntries(tx, containerId)).filter((e) => e.status === "active");
-  const history = await buildSwissHistory(tx, containerId);
+async function generateAndInsertNextSwissRound(game: GameSlug, tx: Tx, containerId: number, config: SwissGroupConfig, currentRound: number): Promise<void> {
+  const { groupEntries, matches } = gameTables(game);
+  const entries = (await getGroupEntries(game, tx, containerId)).filter((e) => e.status === "active");
+  const history = await buildSwissHistory(game, tx, containerId);
   const dtos: SwissEntrant[] = entries.map((e) => ({
     id: String(e.entrantId),
     seed: e.seed ?? 0,
@@ -159,33 +167,34 @@ export interface SwissAdvanceResult {
  * generates the next round or reports the group is done (all active
  * entrants resolved, or `maxRounds` reached).
  */
-export async function advanceSwissGroup(tx: Tx, config: SwissGroupConfig, m: ResolvedGroupMatch): Promise<SwissAdvanceResult> {
-  await bumpRecordAfterMatch(tx, m);
-  await recomputeAndStoreBuchholz(tx, m.containerId);
-  await applyStatusThresholds(tx, m.containerId, config);
+export async function advanceSwissGroup(game: GameSlug, tx: Tx, config: SwissGroupConfig, m: ResolvedGroupMatch): Promise<SwissAdvanceResult> {
+  await bumpRecordAfterMatch(game, tx, m);
+  await recomputeAndStoreBuchholz(game, tx, m.containerId);
+  await applyStatusThresholds(game, tx, m.containerId, config);
 
-  if (!(await isRoundComplete(tx, m.containerId, m.round))) {
+  if (!(await isRoundComplete(game, tx, m.containerId, m.round))) {
     return { completed: false };
   }
 
-  const active = (await getGroupEntries(tx, m.containerId)).filter((e) => e.status === "active");
+  const active = (await getGroupEntries(game, tx, m.containerId)).filter((e) => e.status === "active");
   if (active.length === 0 || m.round >= config.maxRounds) {
     return { completed: true };
   }
 
-  await generateAndInsertNextSwissRound(tx, m.containerId, config, m.round);
+  await generateAndInsertNextSwissRound(game, tx, m.containerId, config, m.round);
   return { completed: false };
 }
 
 /** Round robin has no dynamic pairing — every match is already on the
  *  board (generated up-front). Just bookkeeping; completion is detected
  *  generically (every match row in the container is completed). */
-export async function advanceRoundRobinGroup(tx: Tx, m: ResolvedGroupMatch): Promise<void> {
-  await bumpRecordAfterMatch(tx, m);
+export async function advanceRoundRobinGroup(game: GameSlug, tx: Tx, m: ResolvedGroupMatch): Promise<void> {
+  await bumpRecordAfterMatch(game, tx, m);
 }
 
 /** Wins/losses per entrant from the container's completed matches (every entrant with a match is listed). */
-export async function recordsFromMatches(tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
+export async function recordsFromMatches(game: GameSlug, tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
+  const { matches } = gameTables(game);
   const containerMatches = await tx
     .select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, winnerId: matches.winnerId, status: matches.status })
     .from(matches)
@@ -212,17 +221,18 @@ export async function recordsFromMatches(tx: Tx, containerId: number): Promise<M
  * match participation, wins/losses from completed matches, Buchholz
  * recomputed via the engine. Any previous entries are replaced.
  */
-export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number): Promise<void> {
+export async function rebuildGroupEntriesFromMatches(game: GameSlug, tx: Tx, containerId: number): Promise<void> {
+  const { entrants, groupEntries } = gameTables(game);
   await tx.delete(groupEntries).where(eq(groupEntries.containerId, containerId));
 
-  const record = await recordsFromMatches(tx, containerId);
+  const record = await recordsFromMatches(game, tx, containerId);
   if (record.size === 0) return;
 
   const seedRows = await tx.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(inArray(entrants.id, [...record.keys()]));
   const seedById = new Map(seedRows.map((r) => [r.id, r.seed]));
 
   await tx.insert(groupEntries).values([...record].map(([entrantId, r]) => ({ containerId, entrantId, seed: seedById.get(entrantId) ?? null, wins: r.wins, losses: r.losses })));
-  await recomputeAndStoreBuchholz(tx, containerId);
+  await recomputeAndStoreBuchholz(game, tx, containerId);
 }
 
 /**
@@ -230,10 +240,11 @@ export async function rebuildGroupEntriesFromMatches(tx: Tx, containerId: number
  * matches (a bye counts as one win), then recomputes Buchholz. Used after
  * results are written outside the resolution flow (score backfill).
  */
-export async function syncGroupRecordsFromMatches(tx: Tx, containerId: number): Promise<void> {
-  const entries = await getGroupEntries(tx, containerId);
+export async function syncGroupRecordsFromMatches(game: GameSlug, tx: Tx, containerId: number): Promise<void> {
+  const { groupEntries } = gameTables(game);
+  const entries = await getGroupEntries(game, tx, containerId);
   if (entries.length === 0) return;
-  const record = await recordsFromMatches(tx, containerId);
+  const record = await recordsFromMatches(game, tx, containerId);
   for (const entry of entries) {
     const r = record.get(entry.entrantId) ?? { wins: 0, losses: 0 };
     const wins = r.wins + (entry.hadBye ? 1 : 0);
@@ -241,5 +252,5 @@ export async function syncGroupRecordsFromMatches(tx: Tx, containerId: number): 
       await tx.update(groupEntries).set({ wins, losses: r.losses }).where(eq(groupEntries.id, entry.id));
     }
   }
-  await recomputeAndStoreBuchholz(tx, containerId);
+  await recomputeAndStoreBuchholz(game, tx, containerId);
 }

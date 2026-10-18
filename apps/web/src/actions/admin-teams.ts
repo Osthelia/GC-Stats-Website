@@ -13,7 +13,7 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, people, rosterMemberships, teamNameHistory, organizations, PERMISSIONS } from "@gc-stats/db";
+import { organizations, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
@@ -21,6 +21,8 @@ import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
+import { ensureGameProfile, personExists } from "@/lib/person-service";
+import type { GameSlug } from "@gc-stats/db/game";
 import { closeOpenMemberships } from "@/lib/roster-close";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
@@ -62,7 +64,8 @@ function isValidUrl(value: string): boolean {
   }
 }
 
-export async function updateTeamProfile(teamId: number, input: TeamProfileInput): Promise<TeamProfileResult> {
+export async function updateTeamProfile(game: GameSlug, teamId: number, input: TeamProfileInput): Promise<TeamProfileResult> {
+  const { teams } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: TeamProfileFieldErrors = {};
@@ -138,7 +141,7 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
     await tx.update(teams).set(values).where(eq(teams.id, teamId));
     const changes = diffChanges(existing, values);
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "team", subjectId: teamId, event: "updated", description: `Updated team #${teamId} (${name})`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "team", subjectId: teamId, event: "updated", description: `Updated team #${teamId} (${name})`, actorUserId, changes }, tx);
     }
   });
 
@@ -148,7 +151,8 @@ export async function updateTeamProfile(teamId: number, input: TeamProfileInput)
 export type NameHistoryFieldErrors = Partial<Record<"name" | "from" | "until", string>>;
 export type NameHistoryResult = { ok: true } | { ok: false; fieldErrors: NameHistoryFieldErrors };
 
-export async function addTeamNameHistoryEntry(teamId: number, name: string, from: string, until: string): Promise<NameHistoryResult> {
+export async function addTeamNameHistoryEntry(game: GameSlug, teamId: number, name: string, from: string, until: string): Promise<NameHistoryResult> {
+  const { teams, teamNameHistory } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: NameHistoryFieldErrors = {};
@@ -174,7 +178,7 @@ export async function addTeamNameHistoryEntry(teamId: number, name: string, from
       isVisible: true,
     });
     await logActivity(
-      { subject: "team", subjectId: teamId, event: "updated", description: `Added name "${trimmedName}" to the history of team #${teamId}`, actorUserId, properties: { section: "nameHistory", name: trimmedName, from, until: until || null } },
+      { game, subject: "team", subjectId: teamId, event: "updated", description: `Added name "${trimmedName}" to the history of team #${teamId}`, actorUserId, properties: { section: "nameHistory", name: trimmedName, from, until: until || null } },
       tx
     );
   });
@@ -182,7 +186,8 @@ export async function addTeamNameHistoryEntry(teamId: number, name: string, from
   return { ok: true };
 }
 
-export async function deleteTeamNameHistoryEntry(entryId: number): Promise<RosterActionResult> {
+export async function deleteTeamNameHistoryEntry(game: GameSlug, entryId: number): Promise<RosterActionResult> {
+  const { teamNameHistory } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const [entry] = await db.select({ id: teamNameHistory.id, teamId: teamNameHistory.teamId, name: teamNameHistory.name }).from(teamNameHistory).where(eq(teamNameHistory.id, entryId)).limit(1);
@@ -191,14 +196,15 @@ export async function deleteTeamNameHistoryEntry(entryId: number): Promise<Roste
   await db.transaction(async (tx) => {
     await tx.delete(teamNameHistory).where(eq(teamNameHistory.id, entryId));
     await logActivity(
-      { subject: "team", subjectId: entry.teamId, event: "updated", description: `Removed name "${entry.name}" from the history of team #${entry.teamId}`, actorUserId, properties: { section: "nameHistory", name: entry.name } },
+      { game, subject: "team", subjectId: entry.teamId, event: "updated", description: `Removed name "${entry.name}" from the history of team #${entry.teamId}`, actorUserId, properties: { section: "nameHistory", name: entry.name } },
       tx
     );
   });
   return { ok: true };
 }
 
-export async function toggleTeamNameHistoryVisibility(entryId: number, isVisible: boolean): Promise<RosterActionResult> {
+export async function toggleTeamNameHistoryVisibility(game: GameSlug, entryId: number, isVisible: boolean): Promise<RosterActionResult> {
+  const { teamNameHistory } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const [entry] = await db
@@ -212,7 +218,7 @@ export async function toggleTeamNameHistoryVisibility(entryId: number, isVisible
     await tx.update(teamNameHistory).set({ isVisible }).where(eq(teamNameHistory.id, entryId));
     await logActivity(
       {
-        subject: "team",
+        game, subject: "team",
         subjectId: entry.teamId,
         event: "updated",
         description: `${isVisible ? "Showed" : "Hid"} name "${entry.name}" in the history of team #${entry.teamId}`,
@@ -229,7 +235,8 @@ export async function toggleTeamNameHistoryVisibility(entryId: number, isVisible
 export type RosterActionResult = { ok: true } | { ok: false; error: string };
 
 /** Hard delete (not "close the period") — for a mistaken entry, not for someone actually leaving the team (use updateRosterMemberEntry's `until` for that). Shared by both the team roster panel and the player-side team-history panel (same rosterMemberships row). */
-export async function deleteRosterMembership(membershipId: number): Promise<RosterActionResult> {
+export async function deleteRosterMembership(game: GameSlug, membershipId: number): Promise<RosterActionResult> {
+  const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const [membership] = await db
@@ -241,7 +248,7 @@ export async function deleteRosterMembership(membershipId: number): Promise<Rost
 
   await db.transaction(async (tx) => {
     await tx.delete(rosterMemberships).where(eq(rosterMemberships.id, membershipId));
-    await logRosterChange(tx, { ...membership, actorUserId, action: "Removed" });
+    await logRosterChange(tx, { game, ...membership, actorUserId, action: "Removed" });
   });
   return { ok: true };
 }
@@ -249,7 +256,8 @@ export async function deleteRosterMembership(membershipId: number): Promise<Rost
 export type RosterConflict = { membershipId: number; teamId: number; teamName: string; role: string };
 
 /** Current (not left) memberships of a person on other teams than `teamId`. */
-async function findOpenMembershipsElsewhere(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
+async function findOpenMembershipsElsewhere(game: GameSlug, personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
+  const { teams, rosterMemberships } = gameTables(game);
   const conditions = [eq(rosterMemberships.personId, personId), ne(rosterMemberships.teamId, teamId), eq(rosterMemberships.hasLeft, false)];
   if (excludeMembershipId) conditions.push(ne(rosterMemberships.id, excludeMembershipId));
   return db
@@ -260,9 +268,9 @@ async function findOpenMembershipsElsewhere(personId: number, teamId: number, ex
 }
 
 /** Called before saving a roster entry without end date, to ask whether the person's other current teams must be closed. */
-export async function getRosterConflicts(personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
+export async function getRosterConflicts(game: GameSlug, personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
   await requireAdminActorId();
-  return findOpenMembershipsElsewhere(personId, teamId, excludeMembershipId);
+  return findOpenMembershipsElsewhere(game, personId, teamId, excludeMembershipId);
 }
 
 export type AddRosterMemberField = "person" | "role" | "from" | "until";
@@ -270,7 +278,7 @@ export type AddRosterMemberFieldErrors = Partial<Record<AddRosterMemberField, st
 export type AddRosterMemberResult = { ok: true } | { ok: false; fieldErrors: AddRosterMemberFieldErrors };
 
 export async function addTeamRosterMember(
-  teamId: number,
+  game: GameSlug, teamId: number,
   personId: number | null,
   role: string,
   from: string,
@@ -279,6 +287,7 @@ export async function addTeamRosterMember(
   inactiveSince: string | null,
   closeMembershipIds: number[] = []
 ): Promise<AddRosterMemberResult> {
+  const { teams, rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: AddRosterMemberFieldErrors = {};
@@ -293,8 +302,7 @@ export async function addTeamRosterMember(
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId as number)).limit(1);
-  if (!person) return { ok: false, fieldErrors: { person: "personNotFound" } };
+  if (!(await personExists(db, personId as number))) return { ok: false, fieldErrors: { person: "personNotFound" } };
 
   const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!team) return { ok: false, fieldErrors: { person: "teamNotFound" } };
@@ -303,10 +311,11 @@ export async function addTeamRosterMember(
   const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
-    if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, personId as number, teamId, from);
+    await ensureGameProfile(tx, game, personId as number);
+    if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, personId as number, teamId, from);
 
     await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null });
-    await logRosterChange(tx, { teamId, personId: personId as number, role, actorUserId, action: "Added" });
+    await logRosterChange(tx, { game, teamId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
@@ -322,7 +331,8 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * (current and history alike) carries editable role/joined_at/left_at
  * inputs directly, not just newly-added ones.
  */
-export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
+export async function updateRosterMemberEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
+  const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
@@ -343,11 +353,11 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   const isOngoing = !hasLeft;
 
   await db.transaction(async (tx) => {
-    if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, from);
+    if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
     const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
-    await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
+    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });
 
   return { ok: true };
@@ -359,7 +369,8 @@ export type CreateTeamFieldErrors = Partial<Record<CreateTeamField, string>>;
 export type CreateTeamResult = { ok: true; id: number } | { ok: false; fieldErrors: CreateTeamFieldErrors };
 
 /** Quick-create from the admin teams list — mirrors createPlayer's shape (name required, everything else optional, full profile editable afterwards). */
-export async function createTeam(input: CreateTeamInput): Promise<CreateTeamResult> {
+export async function createTeam(game: GameSlug, input: CreateTeamInput): Promise<CreateTeamResult> {
+  const { teams } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.teamsCreate);
 
   const fieldErrors: CreateTeamFieldErrors = {};
@@ -390,7 +401,7 @@ export async function createTeam(input: CreateTeamInput): Promise<CreateTeamResu
       .values({ name, shortName: shortName || null, countryCode: countryCode || null, vlrId: vlrIdValue, isActive: true, socials: {}, tags: [] })
       .returning({ id: teams.id });
     if (!row) throw new Error("Insert returned no row");
-    await logActivity({ subject: "team", subjectId: row.id, event: "created", description: `Created team #${row.id} (${name})`, actorUserId }, tx);
+    await logActivity({ game, subject: "team", subjectId: row.id, event: "created", description: `Created team #${row.id} (${name})`, actorUserId }, tx);
     return row;
   });
 
@@ -407,7 +418,8 @@ export type DeleteTeamResult = { ok: true } | { ok: false; error: "notFound" | "
  * that's a real, expected outcome (not a bug) once real tournament data
  * exists.
  */
-export async function deleteTeam(teamId: number): Promise<DeleteTeamResult> {
+export async function deleteTeam(game: GameSlug, teamId: number): Promise<DeleteTeamResult> {
+  const { teams } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.teamsDelete);
 
   const [existing] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, teamId)).limit(1);
@@ -416,7 +428,7 @@ export async function deleteTeam(teamId: number): Promise<DeleteTeamResult> {
   try {
     await db.transaction(async (tx) => {
       await tx.delete(teams).where(eq(teams.id, teamId));
-      await logActivity({ subject: "team", subjectId: teamId, event: "deleted", description: `Deleted team #${teamId} (${existing.name})`, actorUserId }, tx);
+      await logActivity({ game, subject: "team", subjectId: teamId, event: "deleted", description: `Deleted team #${teamId} (${existing.name})`, actorUserId }, tx);
     });
   } catch (error) {
     if (isForeignKeyViolation(error)) return { ok: false, error: "inUse" };

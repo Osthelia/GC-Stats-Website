@@ -10,8 +10,9 @@
  */
 
 import { and, eq, inArray, or } from "drizzle-orm";
-import { stageQualifications, qualificationResults, stageContainers, matches } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import type { Tx } from "./repository";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type StageFinalStandingRow = {
   qualificationId: number;
@@ -32,7 +33,8 @@ export type StageFinalStandingRow = {
  * standings, since resolution already ran at match-completion time
  * (qualification-resolution.ts).
  */
-export async function getStageFinalStandings(tx: Tx, stageId: number): Promise<StageFinalStandingRow[]> {
+export async function getStageFinalStandings(game: GameSlug, tx: Tx, stageId: number): Promise<StageFinalStandingRow[]> {
+  const { stageQualifications, qualificationResults, stageContainers, matches } = gameTables(game);
   const containerRows = await tx.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId));
   const containerIds = containerRows.map((c) => c.id);
   const matchRows = containerIds.length ? await tx.select({ id: matches.id }).from(matches).where(inArray(matches.containerId, containerIds)) : [];

@@ -18,10 +18,12 @@ import { FormField } from "@/components/admin/form-field";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { generateLegacyBracketShape } from "@/actions/admin-legacy-bracket-import";
 import type { BracketFormat } from "@/actions/admin-bracket-editor";
+import { useGame } from "@/lib/use-game";
 
 const FORMATS: BracketFormat[] = ["single_elimination", "double_elimination", "triple_elimination", "round_robin", "round_robin_double", "gsl_group"];
 
 export function GenerateLegacyShapeForm({ stageId, onGenerated }: { stageId: number; onGenerated: () => void }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.legacyImport");
   const tEditor = useTranslations("admin.tournaments.editor");
   const [format, setFormat] = useState<BracketFormat>("single_elimination");
@@ -37,7 +39,7 @@ export function GenerateLegacyShapeForm({ stageId, onGenerated }: { stageId: num
   function handleGenerate() {
     setConfirmOpen(false);
     startTransition(async () => {
-      const result = await generateLegacyBracketShape({ stageId, format, bestOf: Number(bestOf), grandFinalBestOf: Number(grandFinalBestOf), slotCount: parsedSlotCount });
+      const result = await generateLegacyBracketShape(game, { stageId, format, bestOf: Number(bestOf), grandFinalBestOf: Number(grandFinalBestOf), slotCount: parsedSlotCount });
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

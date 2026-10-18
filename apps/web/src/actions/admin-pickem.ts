@@ -13,9 +13,10 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { pickemStageSettings, stages, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -25,7 +26,8 @@ export type StagePickemSettingsInput = { enabled: boolean; opensAt: string | nul
 export type StagePickemSettingsFieldErrors = Partial<Record<"opensAt", string>>;
 export type StagePickemSettingsResult = { ok: true } | { ok: false; fieldErrors: StagePickemSettingsFieldErrors };
 
-export async function updateStagePickemSettings(stageId: number, input: StagePickemSettingsInput): Promise<StagePickemSettingsResult> {
+export async function updateStagePickemSettings(game: GameSlug, stageId: number, input: StagePickemSettingsInput): Promise<StagePickemSettingsResult> {
+  const { pickemStageSettings, stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);

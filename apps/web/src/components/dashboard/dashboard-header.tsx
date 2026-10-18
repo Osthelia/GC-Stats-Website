@@ -12,7 +12,8 @@ import { useTranslations } from "next-intl";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
 import { usePathname } from "@/i18n/navigation";
-import { matchDashboardNavItemLabel } from "@/lib/dashboard-nav-items";
+import { matchDashboardNavItemLabel, stripDashboardGame } from "@/lib/dashboard-nav-items";
+import { DashboardGameSwitcher } from "@/components/dashboard/dashboard-game-switcher";
 import { OrgSwitcher, type DashboardOrgSwitcherItem } from "@/components/dashboard/org-switcher";
 
 export function DashboardHeader({
@@ -27,7 +28,7 @@ export function DashboardHeader({
   isAuthorAdmin?: boolean;
 }) {
   const t = useTranslations("dashboard.nav");
-  const pathname = usePathname();
+  const pathname = stripDashboardGame(usePathname());
 
   return (
     <header className="flex h-14 flex-none items-center gap-2 border-b px-4">
@@ -36,6 +37,7 @@ export function DashboardHeader({
         <span className="text-sm font-medium">{t(matchDashboardNavItemLabel(pathname))}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
+        <DashboardGameSwitcher />
         <OrgSwitcher organizations={organizations} isAuthor={isAuthor} hasApiKey={hasApiKey} isAuthorAdmin={isAuthorAdmin} />
         <HeaderAuthStatus isDashboard />
       </div>

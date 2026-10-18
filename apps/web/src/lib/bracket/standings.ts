@@ -10,12 +10,13 @@
  */
 
 import { and, eq, inArray } from "drizzle-orm";
-import { groupEntries, matches, maps as mapRows } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
 import type { Tx } from "./repository";
 import { parseGroupConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
 import { recordsFromMatches } from "./group-progression";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type GroupStandingsEntry = RankedStandingsEntry & { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
 
@@ -33,7 +34,8 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
  * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
  * round count and would otherwise skew the differential.
  */
-async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
+async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
+  const { matches } = gameTables(game);
   const stats = new Map<number, MapRecord>();
   const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
     if (entrantId === null) return;
@@ -50,7 +52,10 @@ async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number
   if (containerMatches.length === 0) return stats;
   const matchById = new Map(containerMatches.map((m) => [m.id, m]));
 
-  const containerMaps = await tx.select().from(mapRows).where(inArray(mapRows.matchId, containerMatches.map((m) => m.id)));
+  // Only Valorant matches have maps, other games score on the match itself.
+  const containerMaps = gameHasMaps(game)
+    ? await tx.select().from(valorantTablesOf(game).maps).where(inArray(valorantTablesOf(game).maps.matchId, containerMatches.map((m) => m.id)))
+    : [];
   for (const mp of containerMaps) {
     if (!mp.isCompleted || mp.teamAScore === null || mp.teamBScore === null) continue;
     const match = matchById.get(mp.matchId);
@@ -74,13 +79,14 @@ async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number
  *  matches its configured format (swiss vs round robin). Wins/losses are
  *  derived from the matches, and an entrant playing in the group without a
  *  `group_entries` row is still listed. */
-export async function computeContainerStandings(tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
+export async function computeContainerStandings(game: GameSlug, tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
+  const { groupEntries, matches } = gameTables(game);
   const config = parseGroupConfig(rawConfig);
   const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
-    recordsFromMatches(tx, containerId),
-    config.pointsConfig ? computeContainerPoints(tx, containerId, config.pointsConfig) : null,
-    computeMapRecord(tx, containerId),
+    recordsFromMatches(game, tx, containerId),
+    config.pointsConfig ? computeContainerPoints(game, tx, containerId, config.pointsConfig) : null,
+    computeMapRecord(game, tx, containerId),
     // Head to head input, only read by round robin.
     config.type === "swiss"
       ? []

@@ -1,8 +1,7 @@
 /**
  * GC-Stats — platform module
  *
- * Stream/VOD tables (stream_channels, match_streams, vods, match player
- * POVs), finance entries, the About page tables (sections, projects, team
+ * Finance entries, the About page tables (sections, projects, team
  * categories/settings), activity log, and page view tracking.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
@@ -10,55 +9,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, bigserial, bigint, text, char, boolean, integer, numeric, date, timestamp, jsonb, primaryKey, unique, index } from "drizzle-orm/pg-core";
-import { matches } from "./bracket";
-import { maps } from "./stats";
-import { people, organizations } from "./people";
+import { pgTable, bigserial, bigint, text, char, boolean, integer, numeric, date, timestamp, jsonb, primaryKey, index } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-
-export const streamChannels = pgTable("stream_channels", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
-  name: text("name").notNull(),
-  platform: text("platform").notNull(), // 'youtube' | 'twitch' | 'tiktok' | 'kick'
-  type: text("type").notNull().default("official"), // 'official' | 'watchparty'
-  url: text("url").notNull(),
-  languageCode: char("language_code", { length: 5 }).notNull(),
-  isActive: boolean("is_active").notNull().default(true),
-});
-
-export const matchStreams = pgTable(
-  "match_streams",
-  {
-    matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
-    streamChannelId: bigint("stream_channel_id", { mode: "number" }).notNull().references(() => streamChannels.id, { onDelete: "cascade" }),
-  },
-  (t) => [primaryKey({ columns: [t.matchId, t.streamChannelId] })]
-);
-
-export const vods = pgTable("vods", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
-  mapId: bigint("map_id", { mode: "number" }).references(() => maps.id, { onDelete: "set null" }), // null = whole-match VOD
-  organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
-  url: text("url").notNull(),
-  languageCode: char("language_code", { length: 5 }).notNull(),
-}, (t) => [
-  index("vods_match_id_idx").on(t.matchId),
-]);
-
-export const matchPlayerPovs = pgTable("match_player_povs", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
-  entrantId: bigint("entrant_id", { mode: "number" }).notNull(),
-  personId: bigint("person_id", { mode: "number" }).references(() => people.id, { onDelete: "cascade" }), // null = the team's own channel
-  twitchLogin: text("twitch_login").notNull(),
-  title: text("title"),
-  url: text("url").notNull(),
-  lastSeenLiveAt: timestamp("last_seen_live_at", { withTimezone: true }),
-}, (t) => [
-  unique("match_player_povs_match_login_unique").on(t.matchId, t.twitchLogin),
-]);
 
 export const financeEntries = pgTable("finance_entries", {
   id: bigserial("id", { mode: "number" }).primaryKey(),

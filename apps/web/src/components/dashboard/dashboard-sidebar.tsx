@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Building2, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { gameHasVeto } from "@gc-stats/db/game";
+import { useRouteGame } from "@/lib/use-game";
 import { cn } from "@/lib/utils";
 import {
   DASHBOARD_ORG_TOP_ITEMS,
@@ -22,6 +24,7 @@ import {
   DASHBOARD_ALL_ORGANIZATIONS_HREF,
   DASHBOARD_API_KEY_NAV_ITEMS,
   isDashboardPathIn,
+  stripDashboardGame,
   type DashboardNavItem,
 } from "@/lib/dashboard-nav-items";
 import {
@@ -91,7 +94,7 @@ function NavGroup({ groupKey, label, children }: { groupKey: string; label: stri
 /** Same visual identity as /admin, no wrapper theme class, just the shared shadcn tokens. Cross-organization switching now lives in the header (OrgSwitcher), so this sidebar only ever shows the active organization's own nav. */
 export function DashboardSidebar({ organizations, isAuthorAdmin = false }: { organizations: DashboardOrgSummary[]; isAuthorAdmin?: boolean }) {
   const t = useTranslations("dashboard.nav");
-  const pathname = usePathname();
+  const pathname = stripDashboardGame(usePathname());
 
   const isAuthorAdminSpace = isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF);
   const isAuthorSpace = isDashboardPathIn(pathname, "/dashboard/author");
@@ -107,7 +110,8 @@ export function DashboardSidebar({ organizations, isAuthorAdmin = false }: { org
   const activeOrgId = orgMatch ? Number(orgMatch[1]) : null;
   const activeOrg = organizations.find((o) => o.organizationId === activeOrgId) ?? null;
 
-  const canSee = (item: DashboardNavItem) => !!activeOrg && (!item.ownerOnly || activeOrg.isOwner) && (!item.permission || activeOrg.permissions.includes(item.permission)) && !(item.hiddenForTeamLinked && activeOrg.isTeamLinked);
+  const routeGame = useRouteGame();
+  const canSee = (item: DashboardNavItem) => !!activeOrg && !(item.vetoOnly && routeGame && !gameHasVeto(routeGame)) && (!item.ownerOnly || activeOrg.isOwner) && (!item.permission || activeOrg.permissions.includes(item.permission)) && !(item.hiddenForTeamLinked && activeOrg.isTeamLinked);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   const visibleGroups = activeOrg ? DASHBOARD_ORG_NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter(canSee) })).filter((group) => group.items.length > 0) : [];

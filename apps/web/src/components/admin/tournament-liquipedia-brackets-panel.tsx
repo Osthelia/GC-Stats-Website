@@ -24,6 +24,7 @@ import { saveLiquipediaBracketTemplates, type LiquipediaBracketRowError } from "
 import { parseBracketEntries, validateBracketTemplate, type BracketEntry } from "@/lib/liquipedia-bracket-wikicode";
 import type { LiquipediaBracketGroup } from "@/lib/admin-liquipedia";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
 
 function initialRows(brackets: LiquipediaBracketGroup[]): Record<number, RowState> {
   return Object.fromEntries(brackets.map((b) => [b.id, b.template ? { name: b.template, checked: false, confidence: "linked", score: null } : { name: "", checked: false, confidence: "none", score: null }]));
@@ -45,6 +46,7 @@ function suggestTemplate(bracket: LiquipediaBracketGroup, entries: BracketEntry[
 }
 
 export function TournamentLiquipediaBracketsPanel({ tournamentId, brackets, canManage }: { tournamentId: number; brackets: LiquipediaBracketGroup[]; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipedia");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -109,7 +111,7 @@ export function TournamentLiquipediaBracketsPanel({ tournamentId, brackets, canM
     }
 
     startTransition(async () => {
-      const result = await saveLiquipediaBracketTemplates(tournamentId, payload);
+      const result = await saveLiquipediaBracketTemplates(game, tournamentId, payload);
       if (!result.ok) {
         setRowErrors(result.rowErrors);
         if (result.error) setFormError(t(`error.${result.error}`));

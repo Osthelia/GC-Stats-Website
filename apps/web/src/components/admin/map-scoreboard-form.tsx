@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { updateMapPlayerStats, type MapPlayerStatInput, type MapPlayerStatFieldErrors } from "@/actions/admin-matches";
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
 import type { AdminRosterMember, AdminMapPlayerStatRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 let rowKeySeq = 0;
 function nextRowKey(): string {
@@ -230,6 +231,7 @@ export function MapScoreboardForm({
   initialStats: AdminMapPlayerStatRow[];
   canManage: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -240,7 +242,7 @@ export function MapScoreboardForm({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateMapPlayerStats(mapId, rowsA, rowsB);
+      const result = await updateMapPlayerStats(game, mapId, rowsA, rowsB);
       if (!result.ok) {
         if ("fieldErrors" in result) setFieldErrors(result.fieldErrors);
         toast.error(t("scoreboardSaveError"));

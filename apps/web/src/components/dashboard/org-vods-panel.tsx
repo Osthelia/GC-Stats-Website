@@ -37,6 +37,7 @@ import {
   type MatchMapOption,
   type VodFieldErrors,
 } from "@/actions/dashboard-vods";
+import { useGame } from "@/lib/use-game";
 
 const NONE_MATCH = "__none__";
 type Scope = "wholeMatch" | "map";
@@ -56,6 +57,7 @@ function VodRow({
   onSaved: (updated: OrganizationVodRow) => void;
   onDeleted: (id: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.vods");
   const [isPending, startTransition] = useTransition();
   const [url, setUrl] = useState(vod.url);
@@ -69,7 +71,7 @@ function VodRow({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateVod(organizationId, vod.id, { url, languageCode });
+      const result = await updateVod(game, organizationId, vod.id, { url, languageCode });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -82,7 +84,7 @@ function VodRow({
   function confirmDelete() {
     setDeleteConfirmOpen(false);
     startTransition(async () => {
-      const result = await deleteVod(organizationId, vod.id);
+      const result = await deleteVod(game, organizationId, vod.id);
       if (!result.ok) {
         toast.error(t("deleteError"));
         return;
@@ -154,6 +156,7 @@ function VodRow({
 }
 
 function AddVodForm({ organizationId, languages, onAdded }: { organizationId: number; languages: NewsLanguageOption[]; onAdded: () => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.vods");
   const [isPending, startTransition] = useTransition();
   const [tournament, setTournament] = useState<EntityOption | null>(null);
@@ -182,7 +185,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
     }
     let cancelled = false;
     setLoadingMatches(true);
-    getMatchOptionsForVod(organizationId, tournament.id).then((rows) => {
+    getMatchOptionsForVod(game, organizationId, tournament.id).then((rows) => {
       if (cancelled) return;
       setMatchOptions(rows);
       setLoadingMatches(false);
@@ -213,7 +216,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addVod(organizationId, {
+      const result = await addVod(game, organizationId, {
         tournamentId: tournament?.id ?? null,
         matchId,
         mapId: scope === "map" ? mapId : null,
@@ -248,7 +251,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
           <EntitySinglePicker
             value={tournament}
             onChange={setTournament}
-            search={(q) => searchTournamentsForVod(organizationId, q).then((rows) => rows.map((r) => ({ id: r.id, label: r.name })))}
+            search={(q) => searchTournamentsForVod(game, organizationId, q).then((rows) => rows.map((r) => ({ id: r.id, label: r.name })))}
             placeholder={t("tournamentPlaceholder")}
             searchPlaceholder={t("tournamentSearchPlaceholder")}
             noResultsLabel={t("tournamentNoResults")}

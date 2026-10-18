@@ -13,10 +13,11 @@ import { and, asc, eq, gte, inArray, isNotNull, or, type SQL } from "drizzle-orm
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { db } from "@gc-stats/db/client";
-import { entrants, matches, stageContainers, stages, teams, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { routing, type AppLocale } from "@/i18n/routing";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type CalendarScope = { kind: "all" } | { kind: "team"; teamId: number } | { kind: "tournament"; tournamentId: number };
 
@@ -68,14 +69,15 @@ export function parseCalendarId(value: string): number | null {
 }
 
 /** Builds the feed, null when the team/tournament doesn't exist (or isn't public). */
-export async function buildMatchCalendar(scope: CalendarScope, locale: AppLocale, origin: string): Promise<string | null> {
+export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, locale: AppLocale, origin: string): Promise<string | null> {
+  const { entrants, matches, stageContainers, stages, teams, tournaments } = gameTables(game);
   const t = await getTranslations({ locale, namespace: "calendar" });
 
   const conditions: SQL[] = [isNotNull(matches.scheduledAt), eq(tournaments.active, true), eq(stages.active, true)];
   let calendarName: string;
 
   if (scope.kind === "team") {
-    const [team] = await db.select({ name: teams.name }).from(teams).where(and(eq(teams.id, scope.teamId), visibleTeam)).limit(1);
+    const [team] = await db.select({ name: teams.name }).from(teams).where(and(eq(teams.id, scope.teamId), visibleTeam(game))).limit(1);
     if (!team) return null;
     calendarName = t("teamName", { team: team.name });
     const teamEntrants = db.select({ id: entrants.id }).from(entrants).where(eq(entrants.teamId, scope.teamId));
@@ -84,7 +86,7 @@ export async function buildMatchCalendar(scope: CalendarScope, locale: AppLocale
     const [tournament] = await db
       .select({ name: tournaments.name })
       .from(tournaments)
-      .where(and(eq(tournaments.id, scope.tournamentId), eq(tournaments.active, true), visibleTournament))
+      .where(and(eq(tournaments.id, scope.tournamentId), eq(tournaments.active, true), visibleTournament(game)))
       .limit(1);
     if (!tournament) return null;
     calendarName = t("tournamentName", { tournament: tournament.name });
@@ -93,7 +95,7 @@ export async function buildMatchCalendar(scope: CalendarScope, locale: AppLocale
     calendarName = t("allName");
     const since = new Date();
     since.setUTCDate(since.getUTCDate() - ALL_FEED_DAYS_PAST);
-    conditions.push(gte(matches.scheduledAt, since), visibleTournament);
+    conditions.push(gte(matches.scheduledAt, since), visibleTournament(game));
   }
 
   const rows = await db
@@ -122,7 +124,7 @@ export async function buildMatchCalendar(scope: CalendarScope, locale: AppLocale
     ? await db.select({ id: entrants.id, displayName: entrants.displayName, teamId: entrants.teamId }).from(entrants).where(inArray(entrants.id, entrantIds))
     : [];
   const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
-  const resolver = await buildTeamDisplayResolver(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null));
+  const resolver = await buildTeamDisplayResolver(game, entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null));
 
   const tbd = t("tbd");
   const sideName = (entrantId: number | null, at: Date) => {
@@ -178,10 +180,10 @@ export async function buildMatchCalendar(scope: CalendarScope, locale: AppLocale
 }
 
 /** Shared GET handler of the calendar routes. */
-export async function calendarResponse(request: Request, scope: CalendarScope | null): Promise<Response> {
+export async function calendarResponse(game: GameSlug, request: Request, scope: CalendarScope | null): Promise<Response> {
   if (!scope) return NextResponse.json({ error: "Invalid id, expected a positive number (optionally followed by .ics)." }, { status: 400 });
   const url = new URL(request.url);
-  const body = await buildMatchCalendar(scope, parseLocale(url.searchParams.get("lang")), url.origin);
+  const body = await buildMatchCalendar(game, scope, parseLocale(url.searchParams.get("lang")), url.origin);
   if (body === null) return NextResponse.json({ error: `${scope.kind === "team" ? "Team" : "Tournament"} not found.` }, { status: 404 });
   const filename = scope.kind === "all" ? "gc-stats-matches" : `gc-stats-${scope.kind}-${scope.kind === "team" ? scope.teamId : scope.tournamentId}`;
   return new Response(body, {

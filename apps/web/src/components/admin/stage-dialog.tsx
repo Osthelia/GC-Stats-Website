@@ -20,6 +20,7 @@ import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { createStage, updateStage, type StageFieldErrors } from "@/actions/admin-stages";
 import type { AdminStageRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
+import { useGame } from "@/lib/use-game";
 
 type FormState = { name: string; sequenceOrder: string; status: StageStatus; startDate: string; endDate: string; liquipediaLink: string };
 
@@ -36,6 +37,7 @@ export function StageDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -64,7 +66,7 @@ export function StageDialog({
       liquipediaLink: form.liquipediaLink,
     };
     startTransition(async () => {
-      const result = stage ? await updateStage(stage.id, tournamentId, input) : await createStage(tournamentId, input);
+      const result = stage ? await updateStage(game, stage.id, tournamentId, input) : await createStage(game, tournamentId, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

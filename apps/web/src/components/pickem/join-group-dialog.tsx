@@ -17,8 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { joinPickemGroupByCode } from "@/actions/pickem";
+import { useGame } from "@/lib/use-game";
 
 export function JoinGroupDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("pickemPage.groups");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -28,7 +30,7 @@ export function JoinGroupDialog({ open, onOpenChange }: { open: boolean; onOpenC
   function handleSubmit() {
     setError(null);
     startTransition(async () => {
-      const result = await joinPickemGroupByCode(code);
+      const result = await joinPickemGroupByCode(game, code);
       if (!result.ok) {
         setError(t(`joinError.${result.error}`));
         return;

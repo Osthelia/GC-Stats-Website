@@ -11,12 +11,13 @@
 
 import { and, desc, eq, ilike } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { organizations, news } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { getOrganizationMembers, getOrganizationStreamChannels, getOrganizationVods, type OrganizationMember, type OrganizationStreamChannel, type OrganizationVod } from "@/lib/organization-page-data";
 import { escapeLike } from "../../v1/params";
 import { getThemedLogoUrls, type ApiThemedLogoUrls } from "../../v1/logo-response";
 import type { ApiPressEntry } from "./teams";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiOrganizationMemberEntry = {
   membership_id: number;
@@ -57,11 +58,12 @@ function toApiOrganizationVod(vod: OrganizationVod): ApiOrganizationVodEntry {
 }
 
 /** No locale filter (unlike the site's `getOrganizationNews`) — same rule as team/player press, every published article is returned with its own `lang`. */
-async function getOrganizationPressV2(organizationId: number, organizationName: string, limit = 10): Promise<ApiPressEntry[]> {
+async function getOrganizationPressV2(game: GameSlug, organizationId: number, organizationName: string, limit = 10): Promise<ApiPressEntry[]> {
+  const { news } = gameTables(game);
   const rows = await db
     .select({ title: news.title, slug: news.slug, publishedAt: news.publishedAt, lang: news.lang })
     .from(news)
-    .where(and(eq(news.organizationId, organizationId), isNewsPublishedCondition()))
+    .where(and(eq(news.organizationId, organizationId), isNewsPublishedCondition(game)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
@@ -85,13 +87,13 @@ export type ApiOrganizationFullResponseV2 = {
   press: ApiPressEntry[];
 };
 
-async function buildOrganizationFullResponse(row: typeof organizations.$inferSelect): Promise<ApiOrganizationFullResponseV2> {
+async function buildOrganizationFullResponse(game: GameSlug, row: typeof organizations.$inferSelect): Promise<ApiOrganizationFullResponseV2> {
   const [logos, members, streamChannels, vods, press] = await Promise.all([
     getThemedLogoUrls("organization", row.id),
-    getOrganizationMembers(row.id),
-    getOrganizationStreamChannels(row.id, 50),
-    getOrganizationVods(row.id, 10),
-    getOrganizationPressV2(row.id, row.name),
+    getOrganizationMembers(game, row.id),
+    getOrganizationStreamChannels(game, row.id, 50),
+    getOrganizationVods(game, row.id, 10),
+    getOrganizationPressV2(game, row.id, row.name),
   ]);
 
   return {
@@ -112,15 +114,15 @@ async function buildOrganizationFullResponse(row: typeof organizations.$inferSel
   };
 }
 
-export async function getOrganizationByIdV2(id: number): Promise<ApiOrganizationFullResponseV2 | null> {
+export async function getOrganizationByIdV2(game: GameSlug, id: number): Promise<ApiOrganizationFullResponseV2 | null> {
   const [row] = await db.select().from(organizations).where(eq(organizations.id, id)).limit(1);
   if (!row) return null;
-  return buildOrganizationFullResponse(row);
+  return buildOrganizationFullResponse(game, row);
 }
 
-export async function searchOrganizationsByNameV2(query: string): Promise<ApiOrganizationFullResponseV2[]> {
+export async function searchOrganizationsByNameV2(game: GameSlug, query: string): Promise<ApiOrganizationFullResponseV2[]> {
   const pattern = `${escapeLike(query)}%`;
   const rows = await db.select().from(organizations).where(ilike(organizations.name, pattern)).orderBy(organizations.name).limit(10);
 
-  return Promise.all(rows.map(buildOrganizationFullResponse));
+  return Promise.all(rows.map((r) => buildOrganizationFullResponse(game, r)));
 }

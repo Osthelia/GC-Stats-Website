@@ -13,11 +13,13 @@
 
 import { and, eq, ne, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, teams } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import { getCurrentUserId } from "@/lib/session";
 import { diffChanges, logActivity } from "@/lib/activity-log";
 import { validateUserProfileInput, type UserProfileInput, type UserProfileFieldErrors } from "@/lib/user-profile-validation";
+import { GAMES, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { FAN_TEAM_COLUMNS } from "@/lib/fan-team-columns";
 
 async function requireUserId(): Promise<string> {
   const userId = await getCurrentUserId();
@@ -25,16 +27,28 @@ async function requireUserId(): Promise<string> {
   return userId;
 }
 
-// users.team_id ("fan of" a team) is a real column in the database, deliberately
-// absent from the Drizzle schema (schema/auth.ts) to avoid a circular import
-// with schema/people.ts (teams) — see the comment on `teams` there. Read/write
-// it with raw SQL instead of the query builder for that one column.
-async function getUserTeamId(userId: string): Promise<number | null> {
-  const result = await db.execute<{ team_id: number | null }>(sql`select team_id from users where id = ${userId} limit 1`);
-  return result.rows[0]?.team_id ?? null;
+// The fan team columns ("fan of" a team, one per game) are real columns in the
+// database, deliberately absent from the Drizzle schema (schema/auth.ts) to avoid
+// a circular import with the game tables. Read/write them with raw SQL instead
+// of the query builder.
+type FanTeamIds = Record<GameSlug, { teamId: number | null; teamTag: string }>;
+
+async function getUserFanTeamIds(userId: string): Promise<FanTeamIds> {
+  const select = GAMES.map((game) => sql`${sql.identifier(FAN_TEAM_COLUMNS[game].team)} as ${sql.identifier(`${game}_team`)}, ${sql.identifier(FAN_TEAM_COLUMNS[game].tag)} as ${sql.identifier(`${game}_tag`)}`);
+  const result = await db.execute<Record<string, string | number | null>>(sql`select ${sql.join(select, sql`, `)} from users where id = ${userId} limit 1`);
+  const row = result.rows[0];
+  const ids = {} as FanTeamIds;
+  for (const game of GAMES) {
+    // bigint columns come back from node-postgres as strings.
+    const teamId = row?.[`${game}_team`];
+    ids[game] = { teamId: teamId == null ? null : Number(teamId), teamTag: String(row?.[`${game}_tag`] ?? "") };
+  }
+  return ids;
 }
 
 export type MyProfileTeam = { id: number; name: string; countryCode: string | null; tags: string[] };
+
+export type MyFanTeam = { team: MyProfileTeam | null; teamTag: string };
 
 export type MyProfile = {
   name: string;
@@ -43,29 +57,36 @@ export type MyProfile = {
   bio: string;
   socials: Record<string, string>;
   image: string | null;
-  team: MyProfileTeam | null;
-  teamTag: string;
+  fanTeams: Record<GameSlug, MyFanTeam>;
 };
+
+async function loadFanTeam(game: GameSlug, teamId: number | null, teamTag: string): Promise<MyFanTeam> {
+  if (teamId === null) return { team: null, teamTag: "" };
+  const { teams } = gameTables(game);
+  const [row] = await db.select({ id: teams.id, name: teams.name, countryCode: teams.countryCode, tags: teams.tags }).from(teams).where(eq(teams.id, teamId)).limit(1);
+  if (!row) return { team: null, teamTag: "" };
+  return { team: { id: row.id, name: row.name, countryCode: row.countryCode, tags: (row.tags as string[] | null) ?? [] }, teamTag };
+}
 
 export async function getMyProfile(): Promise<MyProfile> {
   const userId = await requireUserId();
 
-  const [row, teamId] = await Promise.all([
+  const [row, fanIds] = await Promise.all([
     db
-      .select({ name: users.name, username: users.username, pronouns: users.pronouns, bio: users.bio, teamTag: users.teamTag, socials: users.socials, image: users.image })
+      .select({ name: users.name, username: users.username, pronouns: users.pronouns, bio: users.bio, socials: users.socials, image: users.image })
       .from(users)
       .where(eq(users.id, userId))
       .limit(1)
       .then((r) => r[0]),
-    getUserTeamId(userId),
+    getUserFanTeamIds(userId),
   ]);
   if (!row) throw new Error("User not found");
 
-  let team: MyProfileTeam | null = null;
-  if (teamId !== null) {
-    const [teamRow] = await db.select({ id: teams.id, name: teams.name, countryCode: teams.countryCode, tags: teams.tags }).from(teams).where(eq(teams.id, teamId)).limit(1);
-    if (teamRow) team = { id: teamRow.id, name: teamRow.name, countryCode: teamRow.countryCode, tags: (teamRow.tags as string[] | null) ?? [] };
-  }
+  const loaded = await Promise.all(GAMES.map((game) => loadFanTeam(game, fanIds[game].teamId, fanIds[game].teamTag)));
+  const fanTeams = {} as Record<GameSlug, MyFanTeam>;
+  GAMES.forEach((game, index) => {
+    fanTeams[game] = loaded[index]!;
+  });
 
   return {
     name: row.name ?? "",
@@ -74,13 +95,14 @@ export async function getMyProfile(): Promise<MyProfile> {
     bio: row.bio ?? "",
     socials: (row.socials as Record<string, string>) ?? {},
     image: row.image,
-    team,
-    teamTag: team ? (row.teamTag ?? "") : "",
+    fanTeams,
   };
 }
 
 /** Loads a team's own fan tags (App\Models\Team::tags in V1) — called after the client picks a team in the fan-team picker, before it can offer a tag to select. */
-export async function getTeamFanTags(teamId: number): Promise<string[]> {
+export async function getTeamFanTags(game: GameSlug, teamId: number): Promise<string[]> {
+  if (!isGameSlug(game)) return [];
+  const { teams } = gameTables(game);
   const [team] = await db.select({ tags: teams.tags }).from(teams).where(eq(teams.id, teamId)).limit(1);
   return (team?.tags as string[] | null) ?? [];
 }
@@ -92,23 +114,24 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
 
   const { fieldErrors, name, username, pronouns, bio, socials } = validateUserProfileInput(input);
 
-  // Fan team pick: the team must exist, and a chosen tag must be one of
+  // Fan team pick, per game: the team must exist in that game, and a chosen tag must be one of
   // that team's own tags (mirrors V1's ProfileSettingsController::updateFanTeam).
-  let teamId: number | null = null;
-  let teamTag: string | null = null;
-  if (input.teamId !== null) {
-    const [team] = await db.select({ id: teams.id, tags: teams.tags }).from(teams).where(and(eq(teams.id, input.teamId), visibleTeam)).limit(1);
+  const picks = {} as Record<GameSlug, { teamId: number | null; teamTag: string | null }>;
+  for (const game of GAMES) {
+    const { teams } = gameTables(game);
+    const pick = input.fanTeams[game] ?? { teamId: null, teamTag: "" };
+    picks[game] = { teamId: null, teamTag: null };
+    if (pick.teamId === null) continue;
+    const [team] = await db.select({ id: teams.id, tags: teams.tags }).from(teams).where(and(eq(teams.id, pick.teamId), visibleTeam(game))).limit(1);
     if (!team) {
-      fieldErrors.teamTag = "invalidTeam";
-    } else {
-      teamId = team.id;
-      const trimmedTag = input.teamTag.trim();
-      if (trimmedTag) {
-        const tags = (team.tags as string[] | null) ?? [];
-        if (!tags.includes(trimmedTag)) fieldErrors.teamTag = "invalidTeamTag";
-        else teamTag = trimmedTag;
-      }
+      fieldErrors[`teamTag.${game}`] = "invalidTeam";
+      continue;
     }
+    picks[game].teamId = team.id;
+    const trimmedTag = pick.teamTag.trim();
+    if (!trimmedTag) continue;
+    if (((team.tags as string[] | null) ?? []).includes(trimmedTag)) picks[game].teamTag = trimmedTag;
+    else fieldErrors[`teamTag.${game}`] = "invalidTeamTag";
   }
 
   if (!fieldErrors.username) {
@@ -118,19 +141,28 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const [current, currentTeamId] = await Promise.all([
-    db.select({ name: users.name, username: users.username, pronouns: users.pronouns, bio: users.bio, socials: users.socials, teamTag: users.teamTag }).from(users).where(eq(users.id, userId)).limit(1).then((r) => r[0]),
-    getUserTeamId(userId),
+  const [current, currentFan] = await Promise.all([
+    db.select({ name: users.name, username: users.username, pronouns: users.pronouns, bio: users.bio, socials: users.socials }).from(users).where(eq(users.id, userId)).limit(1).then((r) => r[0]),
+    getUserFanTeamIds(userId),
   ]);
+
+  const fanBefore: Record<string, unknown> = {};
+  const fanAfter: Record<string, unknown> = {};
+  for (const game of GAMES) {
+    fanBefore[`${game}TeamId`] = currentFan[game].teamId;
+    fanBefore[`${game}TeamTag`] = currentFan[game].teamTag || null;
+    fanAfter[`${game}TeamId`] = picks[game].teamId;
+    fanAfter[`${game}TeamTag`] = picks[game].teamTag;
+  }
 
   await db.transaction(async (tx) => {
     await tx.update(users).set({ name, username, pronouns, bio: bio || null, socials }).where(eq(users.id, userId));
-    await tx.execute(sql`update users set team_id = ${teamId}, team_tag = ${teamTag} where id = ${userId}`);
+    for (const game of GAMES) {
+      const columns = FAN_TEAM_COLUMNS[game];
+      await tx.execute(sql`update users set ${sql.identifier(columns.team)} = ${picks[game].teamId}, ${sql.identifier(columns.tag)} = ${picks[game].teamTag} where id = ${userId}`);
+    }
 
-    const changes = diffChanges(
-      { ...current, teamId: currentTeamId },
-      { name, username, pronouns, bio: bio || null, socials, teamId, teamTag }
-    );
+    const changes = diffChanges({ ...current, ...fanBefore }, { name, username, pronouns, bio: bio || null, socials, ...fanAfter });
     if (Object.keys(changes).length > 0) {
       await logActivity({ subject: "user", subjectId: userId, logName: "moderation", event: "updated", description: `Updated profile of user ${username}`, actorUserId: userId, changes, properties: { section: "profile" } }, tx);
     }

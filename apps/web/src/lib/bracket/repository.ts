@@ -13,8 +13,9 @@
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, bracketEdges, matchSeeds } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import type { BracketGraph, MatchNode, BracketEdge, SeedSource } from "@gc-stats/bracket-engine";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // Drizzle's transaction callback receives a `tx` handle distinct from `db`
 // (same shape, different type) — see packages/db/scripts/migrate-v1/id-map.ts
@@ -39,9 +40,10 @@ export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0] | typeof db
  * resolve `stage_qualifications`/further wiring afterward.
  */
 export async function persistGeneratedGraph(
-  containerIdMap: Record<string, number>,
+  game: GameSlug, containerIdMap: Record<string, number>,
   graph: BracketGraph
 ): Promise<{ matchIdMap: Map<string, number> }> {
+  const { matches, bracketEdges, matchSeeds } = gameTables(game);
   return db.transaction(async (tx) => {
     const matchIdMap = new Map<string, number>();
 
@@ -133,8 +135,9 @@ export interface HydratedMatch {
  * stringified for the pure engine functions (which only know string ids).
  */
 export async function hydrateOutgoingSubgraph(
-  matchId: number
+  game: GameSlug, matchId: number
 ): Promise<{ outgoingEdges: BracketEdge[]; downstreamMatches: MatchNode[] }> {
+  const { matches, bracketEdges } = gameTables(game);
   const edgeRows = await db.select().from(bracketEdges).where(eq(bracketEdges.fromMatchId, matchId));
   if (edgeRows.length === 0) {
     return { outgoingEdges: [], downstreamMatches: [] };
@@ -173,9 +176,10 @@ export async function hydrateOutgoingSubgraph(
  * goes live.
  */
 export async function applyDownstreamPatches(
-  tx: Tx,
+  game: GameSlug, tx: Tx,
   patches: { matchId: string; slot: "a" | "b"; entrantId: string; becomesReady: boolean }[]
 ): Promise<void> {
+  const { matches } = gameTables(game);
   for (const patch of patches) {
     const column = patch.slot === "a" ? { entrantAId: Number(patch.entrantId) } : { entrantBId: Number(patch.entrantId) };
     await tx.update(matches).set(column).where(eq(matches.id, Number(patch.matchId)));
@@ -183,11 +187,13 @@ export async function applyDownstreamPatches(
 }
 
 /** Every match currently in a given container, for round/standings bookkeeping. */
-export async function getContainerMatches(containerId: number) {
+export async function getContainerMatches(game: GameSlug, containerId: number) {
+  const { matches } = gameTables(game);
   return db.select().from(matches).where(eq(matches.containerId, containerId));
 }
 
-export async function getMatch(matchId: number) {
+export async function getMatch(game: GameSlug, matchId: number) {
+  const { matches } = gameTables(game);
   const [row] = await db.select().from(matches).where(eq(matches.id, matchId));
   return row ?? null;
 }
@@ -196,7 +202,8 @@ export async function getMatch(matchId: number) {
  *  standings rank out of a specific (group) container — how a completed
  *  group feeds a downstream bracket without a `bracketEdges` row (the group
  *  doesn't know who will hold rank N until it finishes). */
-export async function findGroupRankSeeds(tx: Tx, containerId: number, rank: number) {
+export async function findGroupRankSeeds(game: GameSlug, tx: Tx, containerId: number, rank: number) {
+  const { matchSeeds } = gameTables(game);
   return tx
     .select()
     .from(matchSeeds)
@@ -211,7 +218,8 @@ export async function findGroupRankSeeds(tx: Tx, containerId: number, rank: numb
 
 /** Every `match_seeds` row waiting on a specific `stage_qualifications` rule
  *  (the non-rank case: e.g. "loser of the 3rd place decider"). */
-export async function findQualificationSeeds(tx: Tx, qualificationId: number) {
+export async function findQualificationSeeds(game: GameSlug, tx: Tx, qualificationId: number) {
+  const { matchSeeds } = gameTables(game);
   return tx
     .select()
     .from(matchSeeds)
@@ -226,7 +234,8 @@ export async function findQualificationSeeds(tx: Tx, qualificationId: number) {
 /** Fills one slot of a match from a resolved seed (group rank or
  *  qualification) — the seed-driven counterpart to `applyDownstreamPatches`.
  *  A slot already holding a team is left untouched. */
-export async function fillMatchSlotFromSeed(tx: Tx, matchId: number, slot: "a" | "b", entrantId: number): Promise<void> {
+export async function fillMatchSlotFromSeed(game: GameSlug, tx: Tx, matchId: number, slot: "a" | "b", entrantId: number): Promise<void> {
+  const { matches } = gameTables(game);
   const [column, value] = slot === "a" ? [matches.entrantAId, { entrantAId: entrantId }] : [matches.entrantBId, { entrantBId: entrantId }];
   await tx.update(matches).set(value).where(and(eq(matches.id, matchId), isNull(column)));
 }

@@ -1659,7 +1659,21 @@
     "productionTitle": "{player} · Production",
     "formerOrganizations": "Former organizations",
     "noFormerOrganizations": "No former organizations recorded.",
-    "unknownDate": "Unknown"
+    "unknownDate": "Unknown",
+    "addGameProfile": {
+      "title": "Also on {game}?",
+      "description": "Add your {game} profile in one click. It reuses your name, photo and links, nothing to fill in again.",
+      "button": "Add my {game} profile",
+      "adding": "Adding...",
+      "done": "Your {game} profile is ready.",
+      "open": "See my {game} profile",
+      "error": {
+        "unauthenticated": "You need to be logged in.",
+        "notYours": "This player is not linked to your account.",
+        "invalidGame": "This game does not exist."
+      }
+    },
+    "alsoOn": "Also on {game}"
   },
   "organizationPage": {
     "tabOverview": "Overview",
@@ -2109,7 +2123,8 @@
       "error": {
         "userNotFound": "User not found.",
         "roleNotFound": "One of the selected roles no longer exists.",
-        "selfDemote": "You cannot remove your own admin access."
+        "selfDemote": "You cannot remove your own admin access.",
+        "gameNotFound": "This game does not exist."
       },
       "authMethods": {
         "heading": "Authentication",
@@ -2390,7 +2405,8 @@
           "ownerOnly": "Only an owner can grant or edit the owner role.",
           "userNotFound": "Account not found.",
           "alreadyHasAccess": "This account already has access to this organization."
-        }
+        },
+        "fieldGames": "Games"
       },
       "filterKindLabel": "Organization type",
       "filterKindAll": "All organizations",
@@ -2783,11 +2799,26 @@
           "requiresLeft": "Pick the \"Has left the team\" box to set a leave date."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link."
+        "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link.",
+        "sectionGames": "Games",
+        "gamesHint": "One person, one profile per game. Name, country, pronouns, bio, aliases, socials, photo and linked account are shared, the rest belongs to each game.",
+        "sharedHint": "Name, country, pronouns, bio, aliases, socials and photo are shared with the other games of this person.",
+        "gameCurrent": "Current game",
+        "gameHasProfile": "Has a profile",
+        "gameNoProfile": "No profile yet",
+        "gameOpen": "Open",
+        "gameAddButton": "Add to {game}",
+        "gameAdding": "Adding...",
+        "gameAddSuccess": "Added to {game}.",
+        "gameAddError": {
+          "invalidGame": "This game does not exist.",
+          "notFound": "This player no longer exists.",
+          "alreadyThere": "This player already has a profile in this game."
+        }
       },
       "merge": {
         "title": "Merge player",
-        "description": "Pick a survivor and, per category, exactly which items of {name}'s data to move into it. {name} itself isn't deleted here.",
+        "description": "Pick a survivor and, per category, exactly which items of {name}'s data to move into it.",
         "backToPlayer": "← Back to player",
         "selectTarget": "Merge into",
         "targetPlaceholder": "Select a player…",
@@ -2819,8 +2850,21 @@
           "samePlayer": "Pick a different player as the merge target.",
           "sourceNotFound": "Player not found.",
           "targetNotFound": "Target player not found.",
-          "targetAlreadyLinked": "The target player already has a linked account."
-        }
+          "targetAlreadyLinked": "The target player already has a linked account.",
+          "sourceStillUsed": "This player is still used by entrants or match stats of this game. Select them too, or keep the profile."
+        },
+        "removeSource": "Remove from {game} after merging",
+        "removeSourceHint": "{name} is removed from this game once everything is moved, and entirely when no other game has this profile. Refused if entrants or match stats still use it."
+      },
+      "duplicatesLink": "Possible duplicates",
+      "duplicates": {
+        "title": "Possible duplicates",
+        "description": "People with the same handle who each exist in a different game. Merge the {game} profile into the other one to keep a single profile.",
+        "backToList": "Back to players",
+        "columnSource": "In {game}",
+        "columnTarget": "Other profile",
+        "merge": "Merge",
+        "empty": "No duplicate found."
       }
     },
     "finance": {
@@ -5057,6 +5101,9 @@
       },
       "copyOverlay": "Overlay link",
       "overlayCopied": "Overlay link copied, add it as a browser source."
+    },
+    "personPicker": {
+      "notInGame": "Not in {game} yet"
     }
   },
   "dashboard": {
@@ -6151,11 +6198,11 @@
       "title": "Your account",
       "checkbox": "This is me: link my account to {name}",
       "hint": "Staff will check that this profile is really yours before linking it to your account.",
-      "replaces": "Your account is currently linked to {previous}: that link will be replaced once approved.",
       "state": {
         "linkedToYou": "This profile is already linked to your account.",
         "linkedToOther": "This profile is already linked to another account. Contact staff if you think it's a mistake.",
-        "pending": "You already have an account link request pending review."
+        "pending": "You already have an account link request pending review.",
+        "linkedToAnotherPerson": "Your account is already linked to another player. If both profiles are the same person, ask staff to merge them."
       }
     },
     "error": {
@@ -6185,7 +6232,8 @@
       "consentRequired": "You must accept the photo rights and consent conditions.",
       "invalidType": "Only JPG, PNG or WebP photos are accepted.",
       "tooSmall": "This photo is too small (400 px minimum on the shortest side).",
-      "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...)."
+      "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...).",
+      "userLinkOtherPerson": "Your account is already linked to another player. If both profiles are the same person, ask staff to merge them."
     },
     "discordIdHint": "Discord user ID (Developer mode, right click on the profile, Copy User ID) or a server invite link.",
     "useLinkedDiscord": "Use my linked Discord account"
@@ -6692,5 +6740,10 @@
       "rateLimited": "Too many requests, slow down.",
       "invalidRequest": "Invalid request."
     }
+  },
+  "game": {
+    "switcherLabel": "Game",
+    "valorant": "VALORANT",
+    "lol": "League of Legends"
   }
 }

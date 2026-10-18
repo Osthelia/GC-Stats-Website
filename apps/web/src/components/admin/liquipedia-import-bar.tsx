@@ -17,15 +17,17 @@ import { toast } from "sonner";
 import { DownloadIcon, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { importLiquipediaData, type LiquipediaImportResult } from "@/actions/liquipedia-import";
+import { useGame } from "@/lib/use-game";
 
 export function LiquipediaImportBar({ tournamentId }: { tournamentId: number }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipedia.import");
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<Extract<LiquipediaImportResult, { ok: true }> | null>(null);
 
   function handleImport() {
     startTransition(async () => {
-      const response = await importLiquipediaData(tournamentId);
+      const response = await importLiquipediaData(game, tournamentId);
       if (!response.ok) {
         setResult(null);
         toast.error(response.error === "unreachable" ? t("errorUnreachable") : response.error === "busy" ? t("errorBusy") : t("errorInvalid"));

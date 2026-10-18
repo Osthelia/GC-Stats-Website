@@ -25,6 +25,8 @@ import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
 import type { PersonOrganization } from "@/lib/person-organizations-data";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import type { ProductionEntry } from "@/lib/production-credits-data";
+import { GAME_INFO } from "@gc-stats/db/game";
+import { useGame } from "@/lib/use-game";
 
 export function PlayerMergeForm({
   playerId,
@@ -37,6 +39,7 @@ export function PlayerMergeForm({
   newsItems,
   logoItems,
   matchStatItems,
+  initialTarget = null,
 }: {
   playerId: number;
   playerHandle: string;
@@ -48,7 +51,9 @@ export function PlayerMergeForm({
   newsItems: MergeNewsEntry[];
   logoItems: AdminLogoEntry[];
   matchStatItems: MergeMapStatEntry[];
+  initialTarget?: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.merge");
   const tRole = useTranslations("admin.players.edit");
   const tOrgRole = useTranslations("organizationPage.roleOptions");
@@ -56,7 +61,7 @@ export function PlayerMergeForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [target, setTarget] = useState<{ id: number; handle: string } | null>(null);
+  const [target, setTarget] = useState<{ id: number; handle: string; countryCode?: string | null; secondaryCountryCode?: string | null } | null>(initialTarget);
   const [teamHistory, setTeamHistory] = useState<Set<string>>(new Set());
   const [organizations, setOrganizations] = useState<Set<string>>(new Set());
   const [production, setProduction] = useState<Set<string>>(new Set());
@@ -64,6 +69,7 @@ export function PlayerMergeForm({
   const [logosSel, setLogosSel] = useState<Set<string>>(new Set());
   const [matchStats, setMatchStats] = useState<Set<string>>(new Set());
   const [linkedAccount, setLinkedAccount] = useState(false);
+  const [removeSource, setRemoveSource] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const teamHistoryOptions: MergeCategoryItem[] = useMemo(
@@ -149,6 +155,7 @@ export function PlayerMergeForm({
   }
 
   const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + (linkedAccount ? 1 : 0);
+  const canSubmit = totalSelected > 0 || removeSource;
 
   function handleSubmit() {
     if (!target) return;
@@ -160,7 +167,7 @@ export function PlayerMergeForm({
     setConfirmOpen(false);
 
     startTransition(async () => {
-      const result = await mergePlayers(playerId, target.id, {
+      const result = await mergePlayers(game, playerId, target.id, {
         teamHistory: [...teamHistory].map(Number),
         organizations: [...organizations].map(Number),
         productionCredits: [...production].map(Number),
@@ -168,6 +175,7 @@ export function PlayerMergeForm({
         logos: [...logosSel],
         matchStats: [...matchStats].map(Number),
         linkedAccount,
+        removeSource,
       });
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
@@ -194,7 +202,7 @@ export function PlayerMergeForm({
               placeholder={t("targetPlaceholder")}
               searchPlaceholder={t("targetSearchPlaceholder")}
               noResultsLabel={t("targetSearchEmpty")}
-              search={(query) => searchPlayerMergeTargets(playerId, query)}
+              search={(query) => searchPlayerMergeTargets(game, playerId, query)}
             />
           </div>
         </div>
@@ -247,8 +255,16 @@ export function PlayerMergeForm({
           <p className="text-sm text-muted-foreground">{t("nothingToMove")}</p>
         )}
 
+        <div className="border-t pt-4">
+          <label className="flex cursor-pointer items-center gap-2">
+            <Checkbox checked={removeSource} onCheckedChange={(checked) => setRemoveSource(checked === true)} />
+            <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t("removeSource", { game: GAME_INFO[game].name })}</span>
+          </label>
+          <p className="mt-1 text-xs text-muted-foreground">{t("removeSourceHint", { name: playerHandle })}</p>
+        </div>
+
         <div className="flex items-center gap-3 border-t pt-4">
-          <Button onClick={handleSubmit} disabled={!target || isPending || totalSelected === 0}>
+          <Button onClick={handleSubmit} disabled={!target || isPending || !canSubmit}>
             {isPending ? (
               <>
                 <Loader2Icon className="size-3.5 animate-spin" />

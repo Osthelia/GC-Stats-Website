@@ -13,17 +13,7 @@ import { cache } from "react";
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import {
-  organizations,
-  organizationMemberships,
-  people,
-  news,
-  streamChannels,
-  vods,
-  matches,
-  entrants,
-  teams,
-  tournaments,
-} from "@gc-stats/db";
+  organizations, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper, rangeIsOpen } from "@/lib/daterange";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { visibleTournament } from "@/lib/ghost-visibility";
@@ -35,6 +25,7 @@ import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { PublicNewsListItem } from "@/lib/news-page-data";
 import type { AppLocale } from "@/i18n/routing";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrganizationPageInfo = {
   id: number;
@@ -115,7 +106,8 @@ const ROLE_ORDER = [
   "volunteer",
 ];
 
-export async function getOrganizationMembers(organizationId: number): Promise<{ current: OrganizationMember[]; formers: OrganizationMember[] }> {
+export async function getOrganizationMembers(game: GameSlug, organizationId: number): Promise<{ current: OrganizationMember[]; formers: OrganizationMember[] }> {
+  const { organizationMemberships, people } = gameTables(game);
   const rows = await db
     .select({
       membershipId: organizationMemberships.id,
@@ -170,7 +162,8 @@ export type OrganizationStreamChannel = {
   languageCode: string;
 };
 
-export async function getOrganizationStreamChannels(organizationId: number, limit = 5): Promise<OrganizationStreamChannel[]> {
+export async function getOrganizationStreamChannels(game: GameSlug, organizationId: number, limit = 5): Promise<OrganizationStreamChannel[]> {
+  const { streamChannels } = gameTables(game);
   return db
     .select({ id: streamChannels.id, name: streamChannels.name, platform: streamChannels.platform, type: streamChannels.type, url: streamChannels.url, languageCode: streamChannels.languageCode })
     .from(streamChannels)
@@ -187,7 +180,8 @@ export type OrganizationVod = {
   matchLabel: string;
 };
 
-export async function getOrganizationVods(organizationId: number, limit = 5): Promise<OrganizationVod[]> {
+export async function getOrganizationVods(game: GameSlug, organizationId: number, limit = 5): Promise<OrganizationVod[]> {
+  const { vods, matches, entrants, teams } = gameTables(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -231,12 +225,13 @@ export type OrganizationNewsItem = {
 };
 
 /** Same viewer language preference as `/news` (cookie-backed, see `resolveNewsLanguages`) — not just the site-locale + English default. */
-export async function getOrganizationNews(organizationId: number, organizationName: string, locale: AppLocale, limit = 5): Promise<OrganizationNewsItem[]> {
+export async function getOrganizationNews(game: GameSlug, organizationId: number, organizationName: string, locale: AppLocale, limit = 5): Promise<OrganizationNewsItem[]> {
+  const { news } = gameTables(game);
   const languages = await resolveNewsLanguages(locale);
   const rows = await db
     .select({ title: news.title, slug: news.slug, publishedAt: news.publishedAt, lang: news.lang })
     .from(news)
-    .where(and(eq(news.organizationId, organizationId), isNewsPublishedCondition(), inArray(news.lang, languages)))
+    .where(and(eq(news.organizationId, organizationId), isNewsPublishedCondition(game), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
@@ -248,11 +243,12 @@ const ORG_NEWS_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Paginated, filterable version of `getOrganizationNews` for the organization's own dedicated news tab (`/organization/{id}/{slug}/news`). */
 export async function getOrganizationNewsPage(
-  organizationId: number,
+  game: GameSlug, organizationId: number,
   organization: { name: string; logoUrl: string | null; logoUrlLight: string | null },
   opts: { languages: string[]; dateFrom: string; dateTo: string; page: number }
 ): Promise<{ items: PublicNewsListItem[]; total: number; perPage: number }> {
-  const conditions = [eq(news.organizationId, organizationId), isNewsPublishedCondition(), inArray(news.lang, opts.languages)];
+  const { news } = gameTables(game);
+  const conditions = [eq(news.organizationId, organizationId), isNewsPublishedCondition(game), inArray(news.lang, opts.languages)];
   // `dateTo` is inclusive of the whole day, hence `< dateTo + 1 day` rather than `<= dateTo` (publishedAt carries a time-of-day component).
   if (opts.dateFrom && ORG_NEWS_DATE_RE.test(opts.dateFrom)) conditions.push(gte(news.publishedAt, new Date(`${opts.dateFrom}T00:00:00.000Z`)));
   if (opts.dateTo && ORG_NEWS_DATE_RE.test(opts.dateTo)) {
@@ -287,15 +283,16 @@ export async function getOrganizationNewsPage(
 const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
 
 /** Public tournaments organized by the organization: live first, then most recent. */
-export async function getOrganizationTournaments(organizationId: number, locale: AppLocale): Promise<TournamentListCardItem[]> {
+export async function getOrganizationTournaments(game: GameSlug, organizationId: number, locale: AppLocale): Promise<TournamentListCardItem[]> {
+  const { tournaments } = gameTables(game);
   const rows = await db
     .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region, startDate: tournaments.startDate, endDate: tournaments.endDate })
     .from(tournaments)
-    .where(and(eq(tournaments.organizerOrganizationId, organizationId), eq(tournaments.active, true), visibleTournament))
+    .where(and(eq(tournaments.organizerOrganizationId, organizationId), eq(tournaments.active, true), visibleTournament(game)))
     .orderBy(sql`(${tournaments.status} = 'live') desc`, desc(tournaments.startDate), desc(tournaments.id));
   if (rows.length === 0) return [];
 
-  const logos = await getCurrentLogoUrlsThemed("tournament", rows.map((r) => r.id));
+  const logos = await getCurrentLogoUrlsThemed("tournament", rows.map((r) => r.id), game);
   const format = new Intl.DateTimeFormat(TOURNAMENT_DATE_LOCALES[locale], { day: "numeric", month: "short", year: "numeric" });
   const fmt = (d: string) => format.format(new Date(`${d.slice(0, 10)}T00:00:00`));
 

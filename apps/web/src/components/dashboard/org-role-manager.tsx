@@ -23,7 +23,6 @@ import { FormField } from "@/components/admin/form-field";
 import { cn } from "@/lib/utils";
 import { createOrganizationRole, renameOrganizationRole, deleteOrganizationRole, updateOrganizationRolePermissions, type RoleFieldErrors } from "@/actions/dashboard-organizations";
 import type { OrganizationRoleWithPermissions } from "@/lib/organization-roles-data";
-
 const OWNER_TAB = "owner";
 
 /** "organization.news.publish" -> "organization_news_publish", to key into admin.organizations.edit.accessPermissionNames, same i18n keys the admin ceiling editor already uses (dots can't nest in i18n paths), so the two share one translated permission-name catalog. */

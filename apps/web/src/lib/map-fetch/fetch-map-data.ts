@@ -14,7 +14,7 @@
 import { and, eq, isNull, or } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { getMatch, type RiotRelayRegion } from "@/lib/riot-relay-client";
 import { getRiotContent, resolveAgentName } from "@/lib/riot-content-client";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
@@ -22,13 +22,16 @@ import { findMissingPuuids, findPersonIdsByPuuids, getEntrantPersonIds, persistP
 import { resolveRiotRegion } from "./riot-region";
 import { storeMapData } from "./store-map-data";
 import type { FetchMapResult } from "./types";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export interface FetchMapOptions {
   puuidMapping?: Map<string, number>;
   teamAColor?: "Red" | "Blue";
 }
 
-export async function fetchMapData(mapId: number, options: FetchMapOptions = {}): Promise<FetchMapResult> {
+export async function fetchMapData(game: GameSlug, mapId: number, options: FetchMapOptions = {}): Promise<FetchMapResult> {
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const [row] = await db
     .select({
       mapId: maps.id,
@@ -73,12 +76,12 @@ export async function fetchMapData(mapId: number, options: FetchMapOptions = {})
 
   const manualMapping = options.puuidMapping ?? new Map<string, number>();
   if (manualMapping.size > 0) {
-    const persistResult = await persistPuuidMapping(manualMapping, column);
+    const persistResult = await persistPuuidMapping(game, manualMapping, column);
     if (!persistResult.ok) return { ok: false, error: persistResult.error };
   }
 
   const known = await findPersonIdsByPuuids(
-    playerRefs.map((p) => p.puuid),
+    game, playerRefs.map((p) => p.puuid),
     column
   );
 
@@ -87,7 +90,7 @@ export async function fetchMapData(mapId: number, options: FetchMapOptions = {})
     return { ok: false, error: { kind: "missingPuuids", players: missing } };
   }
 
-  const [entrantAPersonIds, entrantBPersonIds] = await Promise.all([getEntrantPersonIds(row.entrantAId), getEntrantPersonIds(row.entrantBId)]);
+  const [entrantAPersonIds, entrantBPersonIds] = await Promise.all([getEntrantPersonIds(game, row.entrantAId), getEntrantPersonIds(game, row.entrantBId)]);
   const teamAColor = options.teamAColor ?? resolveTeamAColor(entrantAPersonIds, entrantBPersonIds, playerRefs, known);
   if (!teamAColor) {
     const rosters = (["Red", "Blue"] as const).map((color) => ({
@@ -117,7 +120,7 @@ export async function fetchMapData(mapId: number, options: FetchMapOptions = {})
   }
 
   try {
-    await maybeAutoCompleteMatchFromMaps(row.matchId);
+    await maybeAutoCompleteMatchFromMaps(game, row.matchId);
   } catch (err) {
     console.warn(`[map-fetch] auto-complete failed for match #${row.matchId}: ${err instanceof Error ? err.message : String(err)}`);
   }

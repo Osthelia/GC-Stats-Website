@@ -13,8 +13,8 @@ import { desc, eq, asc, and, gte, lt, lte, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import { matches, entrants, tournaments, stageContainers, stages } from "@gc-stats/db";
-import { news, organizations } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import { organizations } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { normalizeRegion, type RegionKey } from "@/lib/tournament-regions";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -24,6 +24,7 @@ import { formatSideScore } from "@/lib/match-score-format";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { HOME_TOURNAMENTS_TAG } from "@/lib/cache-tags";
 import type { AppLocale } from "@/i18n/routing";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type MatchStatus = "live" | "upcoming" | "finished";
 
@@ -77,8 +78,14 @@ const HOME_WINDOW_DAYS_FUTURE = 2;
 const HOME_MATCH_PAGE_SIZE = 50;
 const HOME_MATCHES_REVALIDATE_SECONDS = 60;
 
-const entrantA = alias(entrants, "entrant_a");
-const entrantB = alias(entrants, "entrant_b");
+function entrantA(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_a");
+}
+function entrantB(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_b");
+}
 
 /**
  * One page of the home feed, locale independent so it can be cached once.
@@ -86,7 +93,8 @@ const entrantB = alias(entrants, "entrant_b");
  * busy live day can never push every past result off that page. `past` and
  * `future` then paginate each side with `offset`, the future one unbounded.
  */
-async function fetchHomeMatchRows(mode: "first" | "past" | "future", offset: number, limit: number): Promise<HomeMatchRowPage> {
+async function fetchHomeMatchRows(game: GameSlug, mode: "first" | "past" | "future", offset: number, limit: number): Promise<HomeMatchRowPage> {
+  const { matches, tournaments, stageContainers, stages } = gameTables(game);
   const firstPage = mode === "first";
   const pastOffset = mode === "past" ? offset : 0;
   const futureOffset = mode === "future" ? offset : 0;
@@ -112,31 +120,31 @@ async function fetchHomeMatchRows(mode: "first" | "past" | "future", offset: num
         tournamentName: tournaments.name,
         entrantAId: matches.entrantAId,
         entrantBId: matches.entrantBId,
-        aDisplayName: entrantA.displayName,
-        aTeamId: entrantA.teamId,
-        bDisplayName: entrantB.displayName,
-        bTeamId: entrantB.teamId,
+        aDisplayName: entrantA(game).displayName,
+        aTeamId: entrantA(game).teamId,
+        bDisplayName: entrantB(game).displayName,
+        bTeamId: entrantB(game).teamId,
       })
       .from(matches)
       .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
       .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-      .innerJoin(entrantA, eq(entrantA.id, matches.entrantAId))
-      .innerJoin(entrantB, eq(entrantB.id, matches.entrantBId));
+      .innerJoin(entrantA(game), eq(entrantA(game).id, matches.entrantAId))
+      .innerJoin(entrantB(game), eq(entrantB(game).id, matches.entrantBId));
 
   // One extra row per side tells whether another page exists.
   const [futureFetched, pastFetched] = await Promise.all([
     mode === "past"
       ? []
       : baseQuery()
-          .where(and(gte(matches.scheduledAt, now), visibleTournament))
+          .where(and(gte(matches.scheduledAt, now), visibleTournament(game)))
           .orderBy(asc(matches.scheduledAt), matches.id)
           .limit(limit + 1)
           .offset(futureOffset),
     mode === "future"
       ? []
       : baseQuery()
-          .where(and(gte(matches.scheduledAt, windowStart), lt(matches.scheduledAt, now), visibleTournament))
+          .where(and(gte(matches.scheduledAt, windowStart), lt(matches.scheduledAt, now), visibleTournament(game)))
           .orderBy(desc(matches.scheduledAt), matches.id)
           .limit(limit + 1)
           .offset(pastOffset),
@@ -148,7 +156,7 @@ async function fetchHomeMatchRows(mode: "first" | "past" | "future", offset: num
   const all = [...pastRows, ...futureRows];
 
   const teamIds = all.flatMap((m) => [m.aTeamId, m.bTeamId]).filter((id): id is number => id !== null);
-  const resolver = await buildTeamDisplayResolver(teamIds);
+  const resolver = await buildTeamDisplayResolver(game, teamIds);
 
   const side = (teamId: number | null, displayName: string, at: Date) => {
     if (!teamId) return { name: displayName, tag: "?", logoUrl: null, logoUrlLight: null };
@@ -195,10 +203,10 @@ async function fetchHomeMatchRows(mode: "first" | "past" | "future", offset: num
 const getCachedHomeMatchRows = unstable_cache(fetchHomeMatchRows, ["home-match-rows"], { revalidate: HOME_MATCHES_REVALIDATE_SECONDS });
 
 /** First page without arguments, then a direction with the previous chunk's `nextOffset`. Days are grouped client side, in the viewer's timezone. */
-export async function getHomeMatchPage(): Promise<HomeMatchPage>;
-export async function getHomeMatchPage(direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk>;
-export async function getHomeMatchPage(direction?: HomeMatchDirection, offset = 0): Promise<HomeMatchPage> {
-  const page = await getCachedHomeMatchRows(direction ?? "first", offset, HOME_MATCH_PAGE_SIZE);
+export async function getHomeMatchPage(game: GameSlug): Promise<HomeMatchPage>;
+export async function getHomeMatchPage(game: GameSlug, direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk>;
+export async function getHomeMatchPage(game: GameSlug, direction?: HomeMatchDirection, offset = 0): Promise<HomeMatchPage> {
+  const page = await getCachedHomeMatchRows(game, direction ?? "first", offset, HOME_MATCH_PAGE_SIZE);
   return {
     matches: page.rows.map((row) => ({ ...row, scheduledAt: new Date(row.scheduledAt) })),
     nextOffset: page.nextOffset,
@@ -219,7 +227,8 @@ export type HomeNewsItem = {
 };
 
 /** `languages`: the viewer's news languages (see `resolveNewsLanguages`). */
-export async function getHomeNews(locale: AppLocale, languages: string[]): Promise<{ featured: HomeNewsItem | null; items: HomeNewsItem[] }> {
+export async function getHomeNews(game: GameSlug, locale: AppLocale, languages: string[]): Promise<{ featured: HomeNewsItem | null; items: HomeNewsItem[] }> {
+  const { news } = gameTables(game);
   const rows = await db
     .select({
       title: news.title,
@@ -232,7 +241,7 @@ export async function getHomeNews(locale: AppLocale, languages: string[]): Promi
     })
     .from(news)
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
-    .where(and(isNewsPublishedCondition(), eq(news.showOnHome, true), inArray(news.lang, languages)))
+    .where(and(isNewsPublishedCondition(game), eq(news.showOnHome, true), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(6);
 
@@ -270,21 +279,22 @@ export type HomeTournament = {
 
 // Plain objects only (no Map): unstable_cache stores JSON.
 const getActiveHomeTournaments = unstable_cache(
-  async () => {
+  async (game: GameSlug) => {
+        const { tournaments } = gameTables(game);
     const rows = await db
       .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region, status: tournaments.status, startDate: tournaments.startDate, endDate: tournaments.endDate })
       .from(tournaments)
-      .where(and(eq(tournaments.active, true), visibleTournament, inArray(tournaments.status, ["live", "upcoming"])))
+      .where(and(eq(tournaments.active, true), visibleTournament(game), inArray(tournaments.status, ["live", "upcoming"])))
       .orderBy(asc(tournaments.startDate));
-    const logosByTournamentId = await getCurrentLogoUrlsThemed("tournament", rows.map((t) => t.id));
+    const logosByTournamentId = await getCurrentLogoUrlsThemed("tournament", rows.map((t) => t.id), game);
     return rows.map((t) => ({ ...t, logoUrl: logosByTournamentId.get(t.id)?.dark ?? null, logoUrlLight: logosByTournamentId.get(t.id)?.light ?? null }));
   },
   ["home-tournaments"],
   { revalidate: 300, tags: [HOME_TOURNAMENTS_TAG] }
 );
 
-export async function getHomeTournamentGroups(regions: Record<RegionKey, { label: string; color: string }>, locale: AppLocale): Promise<{ label: "ongoing" | "upcomingGroup"; items: HomeTournament[] }[]> {
-  const rows = await getActiveHomeTournaments();
+export async function getHomeTournamentGroups(game: GameSlug, regions: Record<RegionKey, { label: string; color: string }>, locale: AppLocale): Promise<{ label: "ongoing" | "upcomingGroup"; items: HomeTournament[] }[]> {
+  const rows = await getActiveHomeTournaments(game);
   const dateFormat = new Intl.DateTimeFormat(INTL_LOCALE[locale], { day: "numeric", month: "short" });
   const fmt = (d: string) => dateFormat.format(new Date(d));
 

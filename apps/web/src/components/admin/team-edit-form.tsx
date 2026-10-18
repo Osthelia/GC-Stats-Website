@@ -22,6 +22,8 @@ import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { TagsInput } from "@/components/admin/tags-input";
 import { updateTeamProfile, type TeamProfileFieldErrors } from "@/actions/admin-teams";
 import type { AdminTeamProfile } from "@/lib/admin-teams";
+import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 const SOCIAL_KEYS = ["twitter", "twitch", "instagram", "youtube", "tiktok", "discord", "website"] as const;
 
@@ -33,6 +35,7 @@ export function TeamEditForm({
   /** Rendered in the right column, below Socials — e.g. logo/name-history panels. */
   rightExtra?: React.ReactNode;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<TeamProfileFieldErrors>({});
@@ -52,7 +55,7 @@ export function TeamEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
+      const result = await updateTeamProfile(game, team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -107,9 +110,11 @@ export function TeamEditForm({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <FormField label={t("fieldVlrId")} htmlFor="team-vlr-id" error={err("vlrId")}>
-                  <Input id="team-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} />
-                </FormField>
+                {gameHasVlr(game) && (
+                  <FormField label={t("fieldVlrId")} htmlFor="team-vlr-id" error={err("vlrId")}>
+                    <Input id="team-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} />
+                  </FormField>
+                )}
                 <FormField label={t("fieldLiquipedia")} htmlFor="team-liquipedia" error={err("liquipediaLink")}>
                   <Input id="team-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
                 </FormField>

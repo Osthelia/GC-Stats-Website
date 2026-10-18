@@ -10,9 +10,10 @@
  */
 
 import { eq, inArray } from "drizzle-orm";
-import { matches, maps, mapRoundsRaw } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import type { Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Tallies the configurable points tiebreaker (2026-08-31 spec) for every
@@ -22,7 +23,9 @@ import type { StandingsPointsConfig } from "./config-types";
  * `matches.entrantAId`/`entrantBId` — the same convention used throughout
  * the match-detail data layer (`match-page-data.ts`), not invented here.
  */
-export async function computeContainerPoints(tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
+export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
+  const { matches } = gameTables(game);
+  const { maps, mapRoundsRaw } = valorantTablesOf(game);
   const points = new Map<number, number>();
   const add = (entrantId: number | null, amount: number | null) => {
     if (entrantId === null || amount === null) return;

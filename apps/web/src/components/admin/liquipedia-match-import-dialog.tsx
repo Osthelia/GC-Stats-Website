@@ -24,6 +24,7 @@ import { RequiredMark } from "@/components/admin/required-mark";
 import { LiquipediaImportFetchResults } from "@/components/admin/liquipedia-import-fetch-results";
 import { importMatchWikicode, type ImportMapFetch } from "@/actions/admin-matches";
 import type { BracketViewerMatchTarget } from "@/components/admin/bracket-viewer/bracket-viewer-match-action";
+import { useGame } from "@/lib/use-game";
 
 export function LiquipediaMatchImportDialog({ tournamentId, match, onClose }: { tournamentId: number; match: BracketViewerMatchTarget | null; onClose: () => void }) {
   return (
@@ -34,6 +35,7 @@ export function LiquipediaMatchImportDialog({ tournamentId, match, onClose }: { 
 }
 
 function ImportForm({ tournamentId, match, onClose }: { tournamentId: number; match: BracketViewerMatchTarget; onClose: () => void }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.wikicode");
   const tPage = useTranslations("admin.tournaments.liquipediaImportPage");
   const tMatches = useTranslations("admin.tournaments.matches");
@@ -51,7 +53,7 @@ function ImportForm({ tournamentId, match, onClose }: { tournamentId: number; ma
     setError(null);
     startTransition(async () => {
       // A Liquipedia name conflict is never asked here, the database entry wins.
-      const result = await importMatchWikicode(match.id, wikicode, { "1": "keep", "2": "keep" });
+      const result = await importMatchWikicode(game, match.id, wikicode, { "1": "keep", "2": "keep" });
       if (!result.ok) {
         setError(result.error === "liquipediaConflict" ? t("error.invalidResolution") : t(`error.${result.error}`));
         return;

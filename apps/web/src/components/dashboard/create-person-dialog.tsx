@@ -17,9 +17,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
 import { createPersonForOrganization, type CreatePersonFieldErrors } from "@/actions/dashboard-organizations";
+import { useGame } from "@/lib/use-game";
 
 /** Dashboard sibling of admin's CreatePlayerDialog, trimmed to handle+country (no team assignment, gated by the separate peopleCreate permission). */
 export function CreatePersonDialog({ organizationId, onCreated }: { organizationId: number; onCreated: (person: { id: number; handle: string }) => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.members");
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -36,7 +38,7 @@ export function CreatePersonDialog({ organizationId, onCreated }: { organization
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createPersonForOrganization(organizationId, handle, countryCode);
+      const result = await createPersonForOrganization(game, organizationId, handle, countryCode);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

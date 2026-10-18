@@ -14,10 +14,11 @@
 import crypto from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, tournaments, stages } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { auth } from "@/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { saveStagePicks, type SavePicksInput } from "@/lib/pickem/pickem-data";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -40,16 +41,17 @@ function generateJoinCode(): string {
   return code;
 }
 
-export async function submitStagePicks(stageId: number, input: SavePicksInput): Promise<ActionResult> {
+export async function submitStagePicks(game: GameSlug, stageId: number, input: SavePicksInput): Promise<ActionResult> {
   const userId = await requireUserId();
-  const result = await saveStagePicks(userId, stageId, input);
+  const result = await saveStagePicks(game, userId, stageId, input);
   if (!result.ok) return { ok: false, error: result.error };
   return { ok: true };
 }
 
 export type CreateGroupResult = ActionResult<{ id: number; joinCode: string }>;
 
-export async function createPickemGroup(tournamentId: number, name: string): Promise<CreateGroupResult> {
+export async function createPickemGroup(game: GameSlug, tournamentId: number, name: string): Promise<CreateGroupResult> {
+  const { pickemGroups, pickemGroupMembers, tournaments } = gameTables(game);
   const userId = await requireUserId();
 
   const trimmed = name.trim();
@@ -79,7 +81,8 @@ const JOIN_MAX_ATTEMPTS = 10;
 
 export type JoinGroupResult = ActionResult<{ groupId: number }>;
 
-export async function joinPickemGroupByCode(code: string): Promise<JoinGroupResult> {
+export async function joinPickemGroupByCode(game: GameSlug, code: string): Promise<JoinGroupResult> {
+  const { pickemGroups, pickemGroupMembers } = gameTables(game);
   const userId = await requireUserId();
 
   const normalized = code.trim().toUpperCase();
@@ -98,7 +101,8 @@ export async function joinPickemGroupByCode(code: string): Promise<JoinGroupResu
   return { ok: true, groupId: group.id };
 }
 
-export async function leavePickemGroup(groupId: number): Promise<ActionResult> {
+export async function leavePickemGroup(game: GameSlug, groupId: number): Promise<ActionResult> {
+  const { pickemGroups, pickemGroupMembers } = gameTables(game);
   const userId = await requireUserId();
 
   const [group] = await db.select({ ownerUserId: pickemGroups.ownerUserId }).from(pickemGroups).where(eq(pickemGroups.id, groupId)).limit(1);
@@ -109,7 +113,8 @@ export async function leavePickemGroup(groupId: number): Promise<ActionResult> {
   return { ok: true };
 }
 
-async function requireGroupOwner(groupId: number, userId: string): Promise<ActionResult<{ stageIds: number[] }>> {
+async function requireGroupOwner(game: GameSlug, groupId: number, userId: string): Promise<ActionResult<{ stageIds: number[] }>> {
+  const { pickemGroups, stages } = gameTables(game);
   const [group] = await db.select({ ownerUserId: pickemGroups.ownerUserId, tournamentId: pickemGroups.tournamentId }).from(pickemGroups).where(eq(pickemGroups.id, groupId)).limit(1);
   if (!group) return { ok: false, error: "notFound" };
   if (group.ownerUserId !== userId) return { ok: false, error: "forbidden" };
@@ -117,9 +122,10 @@ async function requireGroupOwner(groupId: number, userId: string): Promise<Actio
   return { ok: true, stageIds: stageRows.map((s) => s.id) };
 }
 
-export async function setGroupScoringMode(groupId: number, mode: "default" | "custom"): Promise<ActionResult> {
+export async function setGroupScoringMode(game: GameSlug, groupId: number, mode: "default" | "custom"): Promise<ActionResult> {
+  const { pickemGroups } = gameTables(game);
   const userId = await requireUserId();
-  const check = await requireGroupOwner(groupId, userId);
+  const check = await requireGroupOwner(game, groupId, userId);
   if (!check.ok) return check;
 
   await db.update(pickemGroups).set({ scoringMode: mode }).where(eq(pickemGroups.id, groupId));
@@ -139,9 +145,10 @@ function validatePhasePoints(input: GroupPhasePointsInput): GroupPhasePointsFiel
   return fieldErrors;
 }
 
-export async function setGroupPhasePoints(groupId: number, stageId: number, input: GroupPhasePointsInput): Promise<SetGroupPhasePointsResult> {
+export async function setGroupPhasePoints(game: GameSlug, groupId: number, stageId: number, input: GroupPhasePointsInput): Promise<SetGroupPhasePointsResult> {
+  const { pickemGroupPhasePoints } = gameTables(game);
   const userId = await requireUserId();
-  const check = await requireGroupOwner(groupId, userId);
+  const check = await requireGroupOwner(game, groupId, userId);
   if (!check.ok) return { ok: false, error: check.error };
   if (!check.stageIds.includes(stageId)) return { ok: false, error: "stageNotInTournament" };
 

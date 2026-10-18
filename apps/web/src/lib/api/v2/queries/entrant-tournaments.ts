@@ -11,10 +11,11 @@
 
 import { and, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matches, qualificationResults, stageQualifications, teams, tournaments } from "@gc-stats/db";
+import { valorantTables, gameTables } from "@gc-stats/db";
 import { toApiTeamFromJoined, type ApiTeam } from "../../v1/entities";
 import { getThemedLogoUrlsBatch, type ApiThemedLogoUrls } from "../../v1/logo-response";
 import { toApiTournamentV2, type ApiTournamentV2 } from "../entities";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiTournamentEntry = {
   tournament: ApiTournamentV2;
@@ -30,14 +31,15 @@ export type ApiTournamentEntry = {
 export type EntrantTournamentRow = {
   entrantId: number;
   entrantName: string;
-  tournament: typeof tournaments.$inferSelect;
-  team: typeof teams.$inferSelect | null;
+  tournament: typeof valorantTables.tournaments.$inferSelect;
+  team: typeof valorantTables.teams.$inferSelect | null;
 };
 
 export type WinLoss = { wins: number; losses: number };
 
 /** Entrant W/L on decided matches (`winner_id` set), every match of the entrant counted. */
-export async function getEntrantRecords(entrantIds: number[]): Promise<Map<number, WinLoss>> {
+export async function getEntrantRecords(game: GameSlug, entrantIds: number[]): Promise<Map<number, WinLoss>> {
+  const { matches } = gameTables(game);
   const record = new Map<number, WinLoss>();
   if (entrantIds.length === 0) return record;
 
@@ -60,7 +62,8 @@ export async function getEntrantRecords(entrantIds: number[]): Promise<Map<numbe
 }
 
 /** Best final placement per entrant (`destination_type = 'placement'`). */
-async function getBestPlacements(entrantIds: number[]): Promise<Map<number, { placement: number; label: string | null }>> {
+async function getBestPlacements(game: GameSlug, entrantIds: number[]): Promise<Map<number, { placement: number; label: string | null }>> {
+  const { qualificationResults, stageQualifications } = gameTables(game);
   const map = new Map<number, { placement: number; label: string | null }>();
   if (entrantIds.length === 0) return map;
 
@@ -79,21 +82,21 @@ async function getBestPlacements(entrantIds: number[]): Promise<Map<number, { pl
 }
 
 /** Builds the entries in `rows` order. `records` defaults to the entrant's full W/L (`getEntrantRecords`). */
-export async function buildTournamentEntries(rows: EntrantTournamentRow[], records?: Map<number, WinLoss>): Promise<ApiTournamentEntry[]> {
+export async function buildTournamentEntries(game: GameSlug, rows: EntrantTournamentRow[], records?: Map<number, WinLoss>): Promise<ApiTournamentEntry[]> {
   if (rows.length === 0) return [];
   const entrantIds = rows.map((r) => r.entrantId);
 
   const [recordByEntrant, placementByEntrant, logosByTournamentId] = await Promise.all([
-    records ?? getEntrantRecords(entrantIds),
-    getBestPlacements(entrantIds),
-    getThemedLogoUrlsBatch("tournament", [...new Set(rows.map((r) => r.tournament.id))]),
+    records ?? getEntrantRecords(game, entrantIds),
+    getBestPlacements(game, entrantIds),
+    getThemedLogoUrlsBatch("tournament", [...new Set(rows.map((r) => r.tournament.id))], game),
   ]);
 
   return rows.map((r) => {
     const placement = placementByEntrant.get(r.entrantId);
     const wl = recordByEntrant.get(r.entrantId) ?? { wins: 0, losses: 0 };
     return {
-      tournament: toApiTournamentV2(r.tournament),
+      tournament: toApiTournamentV2(game, r.tournament),
       logos: logosByTournamentId.get(r.tournament.id) ?? { dark: null, light: null },
       team: toApiTeamFromJoined(r.team),
       entrant_name: r.entrantName,

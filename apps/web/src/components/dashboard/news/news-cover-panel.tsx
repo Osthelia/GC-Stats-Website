@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { cn } from "@/lib/utils";
 import { uploadDashboardNewsImage, setDashboardNewsCover, deleteDashboardNewsImage } from "@/actions/dashboard-news";
+import { useGame } from "@/lib/use-game";
 
 export type NewsCoverImage = { id: string; url: string };
 
@@ -35,6 +36,7 @@ export function NewsCoverPanel({
   onImagesChange: (images: NewsCoverImage[]) => void;
   onCoverChange: (url: string | null) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.news.editor");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -50,7 +52,7 @@ export function NewsCoverPanel({
     formData.append("file", file);
 
     startTransition(async () => {
-      const result = await uploadDashboardNewsImage(organizationId, newsId, formData);
+      const result = await uploadDashboardNewsImage(game, organizationId, newsId, formData);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -62,7 +64,7 @@ export function NewsCoverPanel({
   function handleSetCover(imageId: string, url: string) {
     setBusyId(imageId);
     startTransition(async () => {
-      const result = await setDashboardNewsCover(organizationId, newsId, imageId);
+      const result = await setDashboardNewsCover(game, organizationId, newsId, imageId);
       setBusyId(null);
       if (!result.ok) {
         toast.error(t("error.notFound"));
@@ -75,7 +77,7 @@ export function NewsCoverPanel({
   function handleDelete(imageId: string) {
     setBusyId(imageId);
     startTransition(async () => {
-      const result = await deleteDashboardNewsImage(organizationId, newsId, imageId);
+      const result = await deleteDashboardNewsImage(game, organizationId, newsId, imageId);
       setBusyId(null);
       setConfirmDeleteId(null);
       if (!result.ok) {

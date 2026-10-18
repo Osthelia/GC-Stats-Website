@@ -12,10 +12,13 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: the page must show the import that just ran (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, mapPlayerStats } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import type { LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";
+import type { GameSlug } from "@gc-stats/db/game";
 
-export async function getTournamentImportStatuses(tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+export async function getTournamentImportStatuses(game: GameSlug, tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const mapRows = await db
     .select({ id: maps.id, matchId: maps.matchId, apiMatchId: maps.apiMatchId, teamAScore: maps.teamAScore, teamBScore: maps.teamBScore })
     .from(maps)

@@ -8,6 +8,9 @@
 
 "use client";
 
+import { useTranslations } from "next-intl";
+import { GAME_INFO } from "@gc-stats/db/game";
+import { useGame } from "@/lib/use-game";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDownIcon, Loader2Icon } from "lucide-react";
@@ -34,7 +37,7 @@ export function PersonPicker({
   placeholder,
   searchPlaceholder,
   noResultsLabel,
-  search = searchPeople,
+  search,
 }: {
   value: { id: number; handle: string; countryCode?: string | null; secondaryCountryCode?: string | null } | null;
   onChange: (person: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null) => void;
@@ -44,6 +47,8 @@ export function PersonPicker({
   /** Defaults to the admin-gated searchPeople action — /dashboard passes its own org-scoped search instead (a plain org member has no admin.access). */
   search?: (query: string) => Promise<PersonPickerResult[]>;
 }) {
+  const game = useGame();
+  const t = useTranslations("admin.personPicker");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PersonPickerResult[]>([]);
@@ -72,7 +77,7 @@ export function PersonPicker({
     const id = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      search(query).then((rows) => {
+      (search ?? ((q: string) => searchPeople(game, q)))(query).then((rows) => {
         if (id === requestId.current) {
           setResults(rows);
           setLoading(false);
@@ -135,7 +140,10 @@ export function PersonPicker({
                       <CountryFlag code={r.countryCode} secondaryCode={r.secondaryCountryCode} className="h-3 w-4" />
                       <span className="truncate">{r.handle}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-muted-foreground">#{r.id}</span>
+                    <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                      {r.inGame === false && <span className="rounded-full border border-border px-1.5 py-0.5">{t("notInGame", { game: GAME_INFO[game].shortName })}</span>}
+                      #{r.id}
+                    </span>
                   </button>
                 ))}
               {!loading && results.length === 0 && <p className="px-2 py-1.5 text-sm text-muted-foreground">{noResultsLabel}</p>}

@@ -11,6 +11,8 @@
 import { useEffect, useRef, useState } from "react";
 import { countryName } from "@/lib/countries";
 import type { SearchResultType } from "@/lib/search";
+import { useGame } from "@/lib/use-game";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Searchable team/player/tournament picker for the public site — hits the same
@@ -27,6 +29,7 @@ export function PublicEntityPicker({
   searchPlaceholder,
   noResultsLabel,
   excludeId,
+  game: gameOverride,
 }: {
   type: Extract<SearchResultType, "team" | "player" | "tournament">;
   value: { id: number; label: string } | null;
@@ -36,7 +39,11 @@ export function PublicEntityPicker({
   noResultsLabel: string;
   /** Excludes this id from the results, e.g. the team already picked on the opposite side of a head to head. */
   excludeId?: number;
+  /** Game searched, the one of the current page by default. */
+  game?: GameSlug;
 }) {
+  const routeGame = useGame();
+  const game = gameOverride ?? routeGame;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ id: number; title: string; countryCode: string | null }[]>([]);
@@ -57,7 +64,7 @@ export function PublicEntityPicker({
     const id = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(query)}`)
+      fetch(`/api/${game}/search?q=${encodeURIComponent(query)}`)
         .then((r) => r.json())
         .then((data) => {
           if (id !== requestId.current) return;
@@ -74,7 +81,7 @@ export function PublicEntityPicker({
         });
     }, 250);
     return () => clearTimeout(timeout);
-  }, [query, open, type]);
+  }, [query, open, type, game]);
 
   const visibleResults = excludeId != null ? results.filter((r) => r.id !== excludeId) : results;
 

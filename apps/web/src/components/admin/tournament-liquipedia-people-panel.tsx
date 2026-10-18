@@ -28,6 +28,7 @@ import { parsePersonEntries, suggestPersonMatches, type PersonEntry } from "@/li
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import type { LiquipediaTournamentPerson } from "@/lib/admin-liquipedia";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
 
 function initialRows(people: LiquipediaTournamentPerson[]): Record<number, RowState> {
   return Object.fromEntries(
@@ -41,6 +42,7 @@ function initialRows(people: LiquipediaTournamentPerson[]): Record<number, RowSt
 }
 
 export function TournamentLiquipediaPeoplePanel({ tournamentId, people, canManage }: { tournamentId: number; people: LiquipediaTournamentPerson[]; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipedia");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -133,7 +135,7 @@ export function TournamentLiquipediaPeoplePanel({ tournamentId, people, canManag
     }
 
     startTransition(async () => {
-      const result = await saveLiquipediaPersonNames(tournamentId, payload);
+      const result = await saveLiquipediaPersonNames(game, tournamentId, payload);
       if (!result.ok) {
         setRowErrors(result.rowErrors);
         if (result.error) setFormError(t(`error.${result.error}`));
@@ -236,7 +238,7 @@ export function TournamentLiquipediaPeoplePanel({ tournamentId, people, canManag
                     placeholder={t("people.unmatched.pick")}
                     searchPlaceholder={t("people.unmatched.search")}
                     noResultsLabel={t("people.unmatched.noResults")}
-                    search={(query) => searchLiquipediaPeople(query, entry.team)}
+                    search={(query) => searchLiquipediaPeople(game, query, entry.team)}
                   />
                 </div>
               ))}

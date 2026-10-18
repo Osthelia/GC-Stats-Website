@@ -14,7 +14,8 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import type { PersonPickerResult } from "@/lib/person-search";
 import { groupBracketContainers } from "@/lib/bracket-group-containers";
-import { entrants, entrantMembers, mapPlayerStats, rosterMemberships, tournaments, people, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames, liquipediaPersonNames } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 // Roster roles of people who play; every other role is staff.
 export const PLAYER_ROLES = ["player", "player-igl", "sub", "stand_in"];
@@ -29,7 +30,8 @@ export type LiquipediaStageTeam = {
 
 export type LiquipediaStage = { id: number; name: string; liquipediaLink: string | null; teams: LiquipediaStageTeam[] };
 
-export async function getTournamentLiquipediaStages(tournamentId: number): Promise<LiquipediaStage[]> {
+export async function getTournamentLiquipediaStages(game: GameSlug, tournamentId: number): Promise<LiquipediaStage[]> {
+  const { entrants, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames } = gameTables(game);
   const stageRows = await db
     .select({ id: stages.id, name: stages.name, liquipediaLink: stages.liquipediaLink })
     .from(stages)
@@ -108,7 +110,8 @@ export async function getTournamentLiquipediaStages(tournamentId: number): Promi
 }
 
 /** Mappings touching either the given teams or the given names (case-insensitive), for conflict checks. */
-export async function findLiquipediaMappings(teamIds: number[], names: string[]): Promise<{ teamId: number; name: string; teamName: string }[]> {
+export async function findLiquipediaMappings(game: GameSlug, teamIds: number[], names: string[]): Promise<{ teamId: number; name: string; teamName: string }[]> {
+  const { teams, liquipediaTeamNames } = gameTables(game);
   const lowered = [...new Set(names.map((n) => n.toLowerCase()))];
   const conditions = [];
   if (teamIds.length > 0) conditions.push(inArray(liquipediaTeamNames.teamId, teamIds));
@@ -143,7 +146,9 @@ export type LiquipediaTournamentPerson = {
  * Same sources as the public page: the locked roster, else the players with recorded stats,
  * plus the staff the team had during the tournament dates.
  */
-export async function getTournamentLiquipediaPeople(tournamentId: number): Promise<LiquipediaTournamentPerson[]> {
+export async function getTournamentLiquipediaPeople(game: GameSlug, tournamentId: number): Promise<LiquipediaTournamentPerson[]> {
+  const { entrants, entrantMembers, rosterMemberships, tournaments, people, liquipediaPersonNames } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
   const [tournament] = await db.select({ startDate: tournaments.startDate, endDate: tournaments.endDate }).from(tournaments).where(eq(tournaments.id, tournamentId));
   if (!tournament) return [];
 
@@ -157,10 +162,12 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
 
   const [memberRows, statRows, staffRows] = await Promise.all([
     db.select({ entrantId: entrantMembers.entrantId, personId: entrantMembers.personId, role: entrantMembers.role }).from(entrantMembers).where(inArray(entrantMembers.entrantId, entrantIds)),
-    db
-      .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: mapPlayerStats.personId })
-      .from(mapPlayerStats)
-      .where(and(inArray(mapPlayerStats.entrantId, entrantIds), isNotNull(mapPlayerStats.personId))),
+    gameHasMaps(game)
+      ? db
+          .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: mapPlayerStats.personId })
+          .from(mapPlayerStats)
+          .where(and(inArray(mapPlayerStats.entrantId, entrantIds), isNotNull(mapPlayerStats.personId)))
+      : Promise.resolve([] as { entrantId: number; personId: number | null }[]),
     teamIds.length
       ? db
           .selectDistinct({ teamId: rosterMemberships.teamId, personId: rosterMemberships.personId, role: rosterMemberships.role })
@@ -169,7 +176,7 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
             and(
               inArray(rosterMemberships.teamId, teamIds),
               notInArray(rosterMemberships.role, PLAYER_ROLES),
-              rosterPeriodIsDated,
+              rosterPeriodIsDated(game),
               sql`${rosterMemberships.period} && daterange(${tournament.startDate}::date, ${tournament.endDate}::date, '[]')`
             )
           )
@@ -245,7 +252,8 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
 }
 
 /** Person mappings touching either the given people or the given names (case-insensitive), for conflict checks. */
-export async function findLiquipediaPersonMappings(personIds: number[], names: string[]): Promise<{ personId: number; name: string; handle: string }[]> {
+export async function findLiquipediaPersonMappings(game: GameSlug, personIds: number[], names: string[]): Promise<{ personId: number; name: string; handle: string }[]> {
+  const { people, liquipediaPersonNames } = gameTables(game);
   const lowered = [...new Set(names.map((n) => n.toLowerCase()))];
   const conditions = [];
   if (personIds.length > 0) conditions.push(inArray(liquipediaPersonNames.personId, personIds));
@@ -259,7 +267,8 @@ export async function findLiquipediaPersonMappings(personIds: number[], names: s
 }
 
 /** Staff the team ever had, by Liquipedia team name, for the person picker's first suggestions. */
-export async function findTeamStaffByLiquipediaName(teamName: string, limit: number): Promise<PersonPickerResult[]> {
+export async function findTeamStaffByLiquipediaName(game: GameSlug, teamName: string, limit: number): Promise<PersonPickerResult[]> {
+  const { rosterMemberships, people, liquipediaTeamNames } = gameTables(game);
   const [team] = await db
     .select({ teamId: liquipediaTeamNames.teamId })
     .from(liquipediaTeamNames)
@@ -287,7 +296,8 @@ export type LiquipediaBracketGroup = {
 };
 
 /** Physical brackets of a tournament (a double elimination spans several containers), with their Liquipedia template. */
-export async function getTournamentLiquipediaBrackets(tournamentId: number): Promise<LiquipediaBracketGroup[]> {
+export async function getTournamentLiquipediaBrackets(game: GameSlug, tournamentId: number): Promise<LiquipediaBracketGroup[]> {
+  const { stages, stageContainers } = gameTables(game);
   const stageRows = await db
     .select({ id: stages.id, name: stages.name })
     .from(stages)

@@ -26,8 +26,10 @@ import {
   type NameHistoryFieldErrors,
 } from "@/actions/admin-teams";
 import type { AdminTeamNameHistoryEntry } from "@/lib/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: number; initialEntries: AdminTeamNameHistoryEntry[] }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const router = useRouter();
   const [entries, setEntries] = useState(initialEntries);
@@ -41,7 +43,7 @@ export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: numbe
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addTeamNameHistoryEntry(teamId, name, from, until);
+      const result = await addTeamNameHistoryEntry(game, teamId, name, from, until);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -56,7 +58,7 @@ export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: numbe
 
   function handleDelete(id: number) {
     startTransition(async () => {
-      const result = await deleteTeamNameHistoryEntry(id);
+      const result = await deleteTeamNameHistoryEntry(game, id);
       if (!result.ok) {
         setConfirmDeleteId(null);
         toast.error(t(`nameHistoryError.${result.error}` as "nameHistoryError.notFound"));
@@ -69,7 +71,7 @@ export function TeamNameHistoryPanel({ teamId, initialEntries }: { teamId: numbe
 
   function handleToggleVisibility(id: number, current: boolean) {
     startTransition(async () => {
-      const result = await toggleTeamNameHistoryVisibility(id, !current);
+      const result = await toggleTeamNameHistoryVisibility(game, id, !current);
       if (!result.ok) {
         toast.error(t(`nameHistoryError.${result.error}` as "nameHistoryError.notFound"));
         return;
