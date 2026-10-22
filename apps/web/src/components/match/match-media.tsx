@@ -7,16 +7,9 @@
  */
 
 import { getLocale, getTranslations } from "next-intl/server";
-import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon } from "@/components/icons/brand-icons";
+import { TwitchIcon, YoutubeIcon, STREAM_PLATFORM_ICONS, WebsiteIcon } from "@/components/icons/brand-icons";
 import { languageFlagClass } from "@/lib/countries";
 import type { MatchStream, MatchVod, MatchPlayerPov } from "@/lib/match-page-data";
-
-const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
-  twitch: TwitchIcon,
-  youtube: YoutubeIcon,
-  tiktok: TiktokIcon,
-  kick: KickIcon,
-};
 
 // Renders nothing when the language has no flag sprite, so no empty box is left in the link.
 function LanguageFlag({ code }: { code: string }) {
@@ -73,7 +66,7 @@ export async function MatchMedia({ streams: allStreams, vods, povs, isCompleted 
                   </a>
                 ))
               : streams.map((s) => {
-                  const Icon = PLATFORM_ICONS[s.platform] ?? TwitchIcon;
+                  const Icon = STREAM_PLATFORM_ICONS[s.platform] ?? WebsiteIcon;
                   return (
                     <a key={s.id} href={s.url} target="_blank" rel="noreferrer noopener" className={linkClassName}>
                       <Icon className="h-3.5 w-3.5 flex-none text-neutral-400" />
