@@ -723,7 +723,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   return { teams, liquipediaTeamNames, teamNameHistory, personProfiles, people, liquipediaPersonNames, rosterMemberships, organizationMemberships, productionCredits, pointTypes, tournaments, tournamentComponents, stages, stageContainers, entrants, entrantMembers, groupEntries, containerStandingsRules, matches, matchSeeds, bracketEdges, stageQualifications, qualificationResults, pointEntries, news, newsMessages, newsRelations, newsImages, changeRequests, changeRequestItems, changeRequestMessages, changeRequestDiscordNotices, streamChannels, matchStreams, vods, matchPlayerPovs, pickemStageSettings, pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, pickemMatchPicks, pickemStandingPicks, pickemRewards };
 }
 
-export type GameTables = ReturnType<typeof defineGameTables<"val">>;
+export type GameTables<P extends GamePrefix = "val"> = ReturnType<typeof defineGameTables<P>>;
 
 // Valorant only: maps, raw/aggregated stats from the Riot relay, and the veto system.
 export function defineValorantTables(g: GameTables) {
@@ -934,7 +934,7 @@ export type ValorantOnlyTables = ReturnType<typeof defineValorantTables>;
 
 // League of Legends only: one row per game of a series, and what happened in it. Match-V5
 // (Riot) fills them on import; games entered by hand only get the `lol_games` row.
-export function defineLeagueTables(g: GameTables) {
+export function defineLeagueTables(g: GameTables<"lol">) {
   const { matches, entrants } = g;
 
   // --- Games (one per game of a best-of-N series, the LoL counterpart of val_maps) -------
@@ -1058,7 +1058,7 @@ export function defineLeagueTables(g: GameTables) {
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
 
 const val = defineGameTables("val", (): AnyPgColumn => valorantOnly.maps.id);
-const lol = defineGameTables("lol") as unknown as GameTables;
+const lol = defineGameTables("lol");
 const valorantOnly = defineValorantTables(val);
 const leagueOnly = defineLeagueTables(lol);
 
@@ -1169,7 +1169,7 @@ export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
-export const leagueTables: GameTables & LeagueOnlyTables = { ...lol, ...leagueOnly };
+export const leagueTables: GameTables<"lol"> & LeagueOnlyTables = { ...lol, ...leagueOnly };
 
 /** Thrown when a feature only some games have (Valorant maps and veto, LoL series games) is used for a game without it. */
 export class GameFeatureUnavailableError extends Error {
@@ -1199,6 +1199,6 @@ export function leagueTablesOf(game: GameSlug): typeof leagueTables {
   return new Proxy(leagueTables, { get: (_target, name) => (typeof name === "string" ? unavailableTable : undefined) });
 }
 
-export function gameTables(game: GameSlug): GameTables {
+export function gameTables(game: GameSlug): GameTables<"val"> | GameTables<"lol"> {
   return game === "lol" ? leagueTables : valorantTables;
 }
