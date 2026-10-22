@@ -47,6 +47,13 @@ function emptyRow(defaultPersonId: string): ScoreboardRow {
   };
 }
 
+// Saved rows when present, otherwise one row per starter of the roster.
+function initialRows(stats: AdminMapPlayerStatRow[], entrantId: number, roster: AdminRosterMember[]): ScoreboardRow[] {
+  const existing = rowsFromExisting(stats, entrantId);
+  if (existing.length > 0) return existing;
+  return roster.filter((p) => p.isStarter).map((p) => emptyRow(String(p.id)));
+}
+
 function rowsFromExisting(stats: AdminMapPlayerStatRow[], entrantId: number): ScoreboardRow[] {
   return stats
     .filter((s) => s.entrantId === entrantId && s.personId != null)
@@ -106,8 +113,9 @@ function TeamScoreboardTable({
   }
 
   function addRow() {
-    if (roster.length === 0) return;
-    onChange([...rows, emptyRow(String(roster[0]!.id))]);
+    const next = roster.find((p) => !rows.some((r) => r.personId === String(p.id))) ?? roster[0];
+    if (!next) return;
+    onChange([...rows, emptyRow(String(next.id))]);
   }
 
   return (
@@ -234,8 +242,8 @@ export function MapScoreboardForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<MapPlayerStatFieldErrors>({});
-  const [rowsA, setRowsA] = useState<ScoreboardRow[]>(() => rowsFromExisting(initialStats, entrantAId));
-  const [rowsB, setRowsB] = useState<ScoreboardRow[]>(() => rowsFromExisting(initialStats, entrantBId));
+  const [rowsA, setRowsA] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantAId, rosterA));
+  const [rowsB, setRowsB] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantBId, rosterB));
 
   function handleSave() {
     setFieldErrors({});

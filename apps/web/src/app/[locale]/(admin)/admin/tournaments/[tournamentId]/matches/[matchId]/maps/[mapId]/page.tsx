@@ -55,7 +55,7 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
 
   const bothEntrantsSet = match.entrantAId !== null && match.entrantBId !== null;
   const [rosterA, rosterB, playerStats] = bothEntrantsSet
-    ? await Promise.all([getEntrantRoster(match.entrantAId!), getEntrantRoster(match.entrantBId!), getAdminMapPlayerStats(map.id)])
+    ? await Promise.all([getEntrantRoster(match.entrantAId!, match.scheduledAt), getEntrantRoster(match.entrantBId!, match.scheduledAt), getAdminMapPlayerStats(map.id)])
     : [[], [], []];
 
   return (

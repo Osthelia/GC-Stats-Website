@@ -11,10 +11,10 @@
  */
 
 import { cache } from "react";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, entrants, stageContainers, stages, maps, matchVetos, entrantMembers, people, mapPlayerStats } from "@gc-stats/db";
+import { matches, entrants, stageContainers, stages, maps, matchVetos, entrantMembers, people, mapPlayerStats, rosterMemberships, tournaments } from "@gc-stats/db";
 
 export type AdminMatchListRow = {
   id: number;
@@ -174,17 +174,48 @@ export const getAdminMap = cache(async (mapId: number): Promise<AdminMapRow | nu
   return row ?? null;
 });
 
-export type AdminRosterMember = { id: number; handle: string };
+export type AdminRosterMember = { id: number; handle: string; isStarter: boolean };
 
-/** Locked roster for this tournament entry (`entrant_members`, who played for this team in this tournament) — the player pool for the manual scoreboard form. */
-export async function getEntrantRoster(entrantId: number): Promise<AdminRosterMember[]> {
-  const rows = await db
-    .select({ id: people.id, handle: people.handle })
+const ROSTER_PLAYER_ROLES = ["player", "player-igl", "sub", "stand_in"];
+const ROSTER_BENCH_ROLES = ["sub", "stand_in"];
+
+/** Players of this tournament entry: the locked `entrant_members`, else the team roster at the match date (tournament dates when unscheduled). Player pool for the manual scoreboard form. */
+export async function getEntrantRoster(entrantId: number, playedAt: string | null): Promise<AdminRosterMember[]> {
+  const locked = await db
+    .select({ id: people.id, handle: people.handle, role: entrantMembers.role, isStarter: entrantMembers.isStarter })
     .from(entrantMembers)
     .innerJoin(people, eq(people.id, entrantMembers.personId))
-    .where(eq(entrantMembers.entrantId, entrantId))
+    .where(and(eq(entrantMembers.entrantId, entrantId), inArray(entrantMembers.role, ROSTER_PLAYER_ROLES)))
     .orderBy(asc(people.handle));
-  return rows;
+
+  const rows =
+    locked.length > 0
+      ? locked.map((r) => ({ ...r, isStarter: r.isStarter && !ROSTER_BENCH_ROLES.includes(r.role) }))
+      : (
+          await db
+            .select({ id: people.id, handle: people.handle, role: rosterMemberships.role })
+            .from(entrants)
+            .innerJoin(tournaments, eq(tournaments.id, entrants.tournamentId))
+            .innerJoin(rosterMemberships, eq(rosterMemberships.teamId, entrants.teamId))
+            .innerJoin(people, eq(people.id, rosterMemberships.personId))
+            .where(
+              and(
+                eq(entrants.id, entrantId),
+                inArray(rosterMemberships.role, ROSTER_PLAYER_ROLES),
+                playedAt
+                  ? sql`${rosterMemberships.period} @> ${playedAt}::timestamptz::date`
+                  : sql`${rosterMemberships.period} && daterange(${tournaments.startDate}::date, ${tournaments.endDate}::date, '[]')`
+              )
+            )
+            .orderBy(asc(people.handle))
+        ).map((r) => ({ ...r, isStarter: !ROSTER_BENCH_ROLES.includes(r.role) }));
+
+  const byPerson = new Map<number, AdminRosterMember>();
+  for (const r of rows) {
+    const seen = byPerson.get(r.id);
+    byPerson.set(r.id, { id: r.id, handle: r.handle, isStarter: (seen?.isStarter ?? false) || r.isStarter });
+  }
+  return [...byPerson.values()];
 }
 
 export type AdminMapPlayerStatRow = {
