@@ -21,11 +21,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PersonPicker } from "@/components/admin/person-picker";
+import { OrganizationPicker } from "@/components/admin/organization-picker";
 import { searchLiquipediaPeople } from "@/actions/admin-liquipedia";
 import { importBroadcastCredits, previewBroadcastImport, type BroadcastPreviewRow, type BroadcastRowError } from "@/actions/liquipedia-broadcast-import";
 import { cn } from "@/lib/utils";
 
-type Row = BroadcastPreviewRow & { checked: boolean };
+type Row = BroadcastPreviewRow & { checked: boolean; organization: { id: number; name: string } | null };
 
 export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { tournamentId: number; canManage: boolean }) {
   const t = useTranslations("admin.tournaments.liquipedia.talent");
@@ -49,7 +50,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
         setFormError(t(`error.${result.error}`));
         return;
       }
-      setRows(result.rows.map((row) => ({ ...row, checked: row.person !== null })));
+      setRows(result.rows.map((row) => ({ ...row, checked: row.person !== null, organization: null })));
     });
   }
 
@@ -63,7 +64,10 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
     setFormError(null);
     const selected = rows.filter((r) => r.checked);
     const localErrors: Record<string, BroadcastRowError> = {};
-    for (const row of selected) if (!row.person) localErrors[row.name] = "personRequired";
+    for (const row of selected) {
+      if (!row.person) localErrors[row.name] = "personRequired";
+      else if (!row.organization) localErrors[row.name] = "organizationRequired";
+    }
     if (Object.keys(localErrors).length > 0) {
       setRowErrors(localErrors);
       return;
@@ -72,7 +76,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
     startImport(async () => {
       const result = await importBroadcastCredits(
         tournamentId,
-        selected.map((r) => ({ name: r.name, personId: r.person?.id ?? null, credits: r.credits }))
+        selected.map((r) => ({ name: r.name, personId: r.person?.id ?? null, organizationId: r.organization?.id ?? null, credits: r.credits }))
       );
       if (!result.ok) {
         setRowErrors(result.rowErrors);
@@ -114,7 +118,9 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
       <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-base">{t("tableTitle")}</CardTitle>
-          <CardDescription>{t("tableDescription")}</CardDescription>
+          <CardDescription>
+            {t("tableDescription")} <span className="text-destructive">*</span> {t("organizationRequiredHint")}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {rows === null ? (
@@ -122,7 +128,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
           ) : (
             <div className="flex flex-col divide-y rounded-md border">
               {rows.map((row) => (
-                <div key={row.name} className="grid grid-cols-1 items-center gap-2 p-3 sm:grid-cols-[auto_1fr_1fr]">
+                <div key={row.name} className="grid grid-cols-1 items-center gap-2 p-3 sm:grid-cols-[auto_1fr_1fr_1fr]">
                   <button
                     type="button"
                     disabled={!canManage}
@@ -155,6 +161,13 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
                     searchPlaceholder={t("searchPerson")}
                     noResultsLabel={t("noResults")}
                     search={(query) => searchLiquipediaPeople(query, null)}
+                  />
+                  <OrganizationPicker
+                    value={row.organization}
+                    onChange={(organization) => updateRow(row.name, { organization })}
+                    placeholder={t("pickOrganization")}
+                    searchPlaceholder={t("searchOrganization")}
+                    noResultsLabel={t("noOrganizationResults")}
                   />
                 </div>
               ))}

@@ -4586,8 +4586,14 @@
             "personRequired": "请选择此人员对应的人。",
             "personNotFound": "此人不存在。",
             "invalidName": "Liquipedia 名称无效。",
-            "invalidCredits": "署名无效。"
-          }
+            "invalidCredits": "署名无效。",
+            "organizationRequired": "请选择此人员所属的组织。",
+            "organizationNotFound": "此组织不存在。"
+          },
+          "pickOrganization": "选择组织",
+          "searchOrganization": "搜索组织",
+          "noOrganizationResults": "未找到组织",
+          "organizationRequiredHint": "每位选中的人员都需要一个组织。"
         }
       },
       "scoreBackfill": {

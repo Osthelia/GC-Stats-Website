@@ -13,7 +13,7 @@
 
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { liquipediaPersonNames, people, productionCredits, tournaments, PERMISSIONS } from "@gc-stats/db";
+import { liquipediaPersonNames, organizations, people, productionCredits, tournaments, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { parseBroadcasterCards, type BroadcastCredit } from "@/lib/liquipedia-broadcast-wikicode";
@@ -86,9 +86,9 @@ export async function previewBroadcastImport(tournamentId: number, wikicode: str
   };
 }
 
-export type BroadcastImportRow = { name: string; personId: number | null; credits: BroadcastCredit[] };
+export type BroadcastImportRow = { name: string; personId: number | null; organizationId: number | null; credits: BroadcastCredit[] };
 
-export type BroadcastRowError = "personRequired" | "personNotFound" | "invalidName" | "invalidCredits";
+export type BroadcastRowError = "personRequired" | "personNotFound" | "organizationRequired" | "organizationNotFound" | "invalidName" | "invalidCredits";
 
 export type BroadcastImportResult =
   | { ok: true; created: number; skipped: number; mapped: number }
@@ -104,7 +104,7 @@ export async function importBroadcastCredits(tournamentId: number, rows: Broadca
   if (!tournament) return { ok: false, error: "tournamentNotFound", rowErrors: {} };
 
   const rowErrors: Record<string, BroadcastRowError> = {};
-  const cleaned: { name: string; personId: number; credits: BroadcastCredit[] }[] = [];
+  const cleaned: { name: string; personId: number; organizationId: number; credits: BroadcastCredit[] }[] = [];
   for (const row of rows) {
     const name = typeof row?.name === "string" ? row.name.trim() : "";
     if (!name) continue;
@@ -116,44 +116,51 @@ export async function importBroadcastCredits(tournamentId: number, rows: Broadca
       rowErrors[name] = "personRequired";
       continue;
     }
+    if (!Number.isInteger(row.organizationId)) {
+      rowErrors[name] = "organizationRequired";
+      continue;
+    }
     const credits = Array.isArray(row.credits) ? row.credits : [];
     const valid = credits.length > 0 && credits.length <= MAX_CREDITS_PER_ROW && credits.every((c) => typeof c?.role === "string" && c.role.trim() !== "" && c.role.length <= 100 && (c.title === null || (typeof c.title === "string" && c.title.length <= 150)));
     if (!valid) {
       rowErrors[name] = "invalidCredits";
       continue;
     }
-    cleaned.push({ name, personId: row.personId as number, credits: credits.map((c) => ({ role: c.role.trim(), title: c.title?.trim() || null })) });
+    cleaned.push({ name, personId: row.personId as number, organizationId: row.organizationId as number, credits: credits.map((c) => ({ role: c.role.trim(), title: c.title?.trim() || null })) });
   }
 
   const personIds = [...new Set(cleaned.map((r) => r.personId))];
   const found = new Set(personIds.length ? (await db.select({ id: people.id }).from(people).where(inArray(people.id, personIds))).map((p) => p.id) : []);
   for (const row of cleaned) if (!found.has(row.personId)) rowErrors[row.name] = "personNotFound";
+  const organizationIds = [...new Set(cleaned.map((r) => r.organizationId))];
+  const foundOrganizations = new Set(organizationIds.length ? (await db.select({ id: organizations.id }).from(organizations).where(inArray(organizations.id, organizationIds))).map((o) => o.id) : []);
+  for (const row of cleaned) if (!rowErrors[row.name] && !foundOrganizations.has(row.organizationId)) rowErrors[row.name] = "organizationNotFound";
   if (Object.keys(rowErrors).length > 0) return { ok: false, rowErrors };
   if (cleaned.length === 0) return { ok: false, error: "empty", rowErrors: {} };
 
   return db.transaction(async (tx) => {
     const existing = await tx
-      .select({ personId: productionCredits.personId, role: productionCredits.role, title: productionCredits.titleOverride })
+      .select({ personId: productionCredits.personId, organizationId: productionCredits.organizationId, role: productionCredits.role, title: productionCredits.titleOverride })
       .from(productionCredits)
       .where(and(eq(productionCredits.tournamentId, tournamentId), inArray(productionCredits.personId, personIds)));
-    const known = new Set(existing.map((c) => `${c.personId}:${c.role}:${c.title ?? ""}`));
+    const known = new Set(existing.map((c) => `${c.personId}:${c.organizationId}:${c.role}:${c.title ?? ""}`));
 
     const toInsert: (typeof productionCredits.$inferInsert)[] = [];
     let skipped = 0;
     for (const row of cleaned) {
       for (const credit of row.credits) {
-        const key = `${row.personId}:${credit.role}:${credit.title ?? ""}`;
+        const key = `${row.personId}:${row.organizationId}:${credit.role}:${credit.title ?? ""}`;
         if (known.has(key)) {
           skipped += 1;
           continue;
         }
         known.add(key);
-        toInsert.push({ personId: row.personId, role: credit.role, titleOverride: credit.title, tournamentId });
+        toInsert.push({ personId: row.personId, organizationId: row.organizationId, role: credit.role, titleOverride: credit.title, tournamentId });
       }
     }
     if (toInsert.length > 0) {
       await tx.insert(productionCredits).values(toInsert);
-      await logActivity({ subject: "credit", subjectId: null, event: "created", description: `Imported ${toInsert.length} production credit(s) from Liquipedia on tournament #${tournamentId}`, actorUserId: userId, properties: { tournamentId, personIds } }, tx);
+      await logActivity({ subject: "credit", subjectId: null, event: "created", description: `Imported ${toInsert.length} production credit(s) from Liquipedia on tournament #${tournamentId}`, actorUserId: userId, properties: { tournamentId, personIds, organizationIds } }, tx);
     }
 
     // Remember the Liquipedia page so the info import reads the profile, never taking a name or a person already mapped.

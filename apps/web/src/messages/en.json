@@ -4594,8 +4594,14 @@
             "personRequired": "Pick the person for this talent.",
             "personNotFound": "This person does not exist.",
             "invalidName": "Invalid Liquipedia name.",
-            "invalidCredits": "Invalid credits."
-          }
+            "invalidCredits": "Invalid credits.",
+            "organizationRequired": "Pick the organization for this talent.",
+            "organizationNotFound": "This organization does not exist."
+          },
+          "pickOrganization": "Pick an organization",
+          "searchOrganization": "Search an organization",
+          "noOrganizationResults": "No organization found",
+          "organizationRequiredHint": "Each selected talent needs an organization."
         }
       },
       "scoreBackfill": {

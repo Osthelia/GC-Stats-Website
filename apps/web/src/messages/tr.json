@@ -4586,8 +4586,14 @@
             "personRequired": "Bu yetenek için kişiyi seçin.",
             "personNotFound": "Bu kişi mevcut değil.",
             "invalidName": "Geçersiz Liquipedia adı.",
-            "invalidCredits": "Geçersiz krediler."
-          }
+            "invalidCredits": "Geçersiz krediler.",
+            "organizationRequired": "Bu yetenek için organizasyonu seçin.",
+            "organizationNotFound": "Bu organizasyon mevcut değil."
+          },
+          "pickOrganization": "Bir organizasyon seçin",
+          "searchOrganization": "Organizasyon ara",
+          "noOrganizationResults": "Organizasyon bulunamadı",
+          "organizationRequiredHint": "Seçilen her yetenek için bir organizasyon gerekir."
         }
       },
       "scoreBackfill": {

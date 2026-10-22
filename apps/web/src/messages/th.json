@@ -4586,8 +4586,14 @@
             "personRequired": "เลือกบุคคลสำหรับทาเลนต์นี้",
             "personNotFound": "ไม่มีบุคคลนี้",
             "invalidName": "ชื่อ Liquipedia ไม่ถูกต้อง",
-            "invalidCredits": "เครดิตไม่ถูกต้อง"
-          }
+            "invalidCredits": "เครดิตไม่ถูกต้อง",
+            "organizationRequired": "เลือกองค์กรสำหรับทาเลนต์นี้",
+            "organizationNotFound": "ไม่มีองค์กรนี้"
+          },
+          "pickOrganization": "เลือกองค์กร",
+          "searchOrganization": "ค้นหาองค์กร",
+          "noOrganizationResults": "ไม่พบองค์กร",
+          "organizationRequiredHint": "ทาเลนต์ที่เลือกแต่ละคนต้องมีองค์กร"
         }
       },
       "scoreBackfill": {

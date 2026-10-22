@@ -4586,8 +4586,14 @@
             "personRequired": "اختر الشخص المناسب لهذه الموهبة.",
             "personNotFound": "هذا الشخص غير موجود.",
             "invalidName": "اسم Liquipedia غير صالح.",
-            "invalidCredits": "اعتمادات غير صالحة."
-          }
+            "invalidCredits": "اعتمادات غير صالحة.",
+            "organizationRequired": "اختر المؤسسة لهذه الموهبة.",
+            "organizationNotFound": "هذه المؤسسة غير موجودة."
+          },
+          "pickOrganization": "اختر مؤسسة",
+          "searchOrganization": "ابحث عن مؤسسة",
+          "noOrganizationResults": "لم يتم العثور على مؤسسة",
+          "organizationRequiredHint": "تحتاج كل موهبة محددة إلى مؤسسة."
         }
       },
       "scoreBackfill": {

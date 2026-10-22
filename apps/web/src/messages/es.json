@@ -4594,8 +4594,14 @@
             "personRequired": "Elige la persona de este talento.",
             "personNotFound": "Esta persona no existe.",
             "invalidName": "Nombre de Liquipedia no válido.",
-            "invalidCredits": "Créditos no válidos."
-          }
+            "invalidCredits": "Créditos no válidos.",
+            "organizationRequired": "Elige la organización de este talento.",
+            "organizationNotFound": "Esta organización no existe."
+          },
+          "pickOrganization": "Elegir una organización",
+          "searchOrganization": "Buscar una organización",
+          "noOrganizationResults": "Ninguna organización encontrada",
+          "organizationRequiredHint": "Cada talento seleccionado necesita una organización."
         }
       },
       "scoreBackfill": {

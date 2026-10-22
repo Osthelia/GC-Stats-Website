@@ -4586,8 +4586,14 @@
             "personRequired": "このタレントの人物を選択してください。",
             "personNotFound": "この人物は存在しません。",
             "invalidName": "Liquipedia名が無効です。",
-            "invalidCredits": "クレジットが無効です。"
-          }
+            "invalidCredits": "クレジットが無効です。",
+            "organizationRequired": "このタレントの組織を選択してください。",
+            "organizationNotFound": "この組織は存在しません。"
+          },
+          "pickOrganization": "組織を選択",
+          "searchOrganization": "組織を検索",
+          "noOrganizationResults": "組織が見つかりません",
+          "organizationRequiredHint": "選択した各タレントに組織が必要です。"
         }
       },
       "scoreBackfill": {
