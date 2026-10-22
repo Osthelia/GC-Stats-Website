@@ -32,7 +32,7 @@ export default async function ForgotPasswordPage({ params }: { params: Promise<{
   const t = await getTranslations({ locale: locale as AppLocale, namespace: "auth.forgotPassword" });
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col items-center px-6 pt-20 pb-28">
+    <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col items-center px-6 pt-20 pb-28">
       <div className="mb-8 max-w-[420px] text-center">
         <h1 className="mb-2 text-[30px] font-bold tracking-tight text-neutral-50">{t("title")}</h1>
         <p className="text-[15px] leading-[1.6] text-neutral-400">{t("subtitle")}</p>

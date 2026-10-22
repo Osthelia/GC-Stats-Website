@@ -81,7 +81,7 @@ export default async function TournamentStatsPage({
     <div>
       <TournamentHeader tournament={tournament} basePath={basePath} activeTab="stats" />
 
-      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-7 pb-[70px]">
         <StatsFilterBar
           basePath={`/tournaments/${basePath}/stats`}
           filters={filters}

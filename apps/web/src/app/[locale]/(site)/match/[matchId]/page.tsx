@@ -151,7 +151,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const [teamAName, teamBName] = sideNames(match, t);
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] px-4 py-8 md:px-6">
+    <div className="mx-auto w-full max-w-[clamp(1500px,88vw,2400px)] px-4 py-8 md:px-6">
       <div className="flex flex-col items-start gap-6 lg:flex-row">
         <div className="order-2 w-full shrink-0 lg:order-1 lg:w-[360px]">
           <Suspense fallback={<SideCardSkeleton />}>

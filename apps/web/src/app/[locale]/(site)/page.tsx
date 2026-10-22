@@ -46,7 +46,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const locale = (await params).locale as AppLocale;
 
   return (
-    <div className="mx-auto max-w-[1550px] px-6 py-9 pb-[72px]">
+    <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-9 pb-[72px]">
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_420px]">
         <Suspense fallback={<MatchesSkeleton />}>
           <HomeMatches />

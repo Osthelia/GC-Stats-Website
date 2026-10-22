@@ -142,7 +142,7 @@ export async function TeamHeader({
         </Link>
       </HeaderUtilityBar>
 
-      <div className="relative mx-auto max-w-[1400px] px-6 pt-9">
+      <div className="relative mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pt-9">
         {/* Fixed bottom padding on the row itself (not a child's margin) — a
             row with no bio/socials must still leave the same gap before the
             tabs, otherwise the tab bar rides up flush against the logo. */}

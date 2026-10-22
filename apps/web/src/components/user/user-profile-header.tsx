@@ -91,7 +91,7 @@ export async function UserProfileHeader({
         <ReportUserButton userId={user.id} canReport={!!viewerId && !isOwnProfile} />
       </HeaderUtilityBar>
 
-      <div className="relative mx-auto max-w-[1400px] px-6 pt-9">
+      <div className="relative mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pt-9">
         <div className="flex flex-wrap items-start gap-6 pb-7">
           <div
             className="flex h-[118px] w-[118px] flex-none items-center justify-center overflow-hidden rounded-2xl border border-neutral-800"

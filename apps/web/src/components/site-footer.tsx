@@ -77,7 +77,7 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-neutral-800">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-6 pt-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-[clamp(1500px,88vw,2400px)] grid-cols-1 gap-10 px-6 pt-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
         <div className="min-w-0">
           <div className="mb-3 flex items-center gap-2.5">
             <div className="flex h-[26px] w-[26px] items-center justify-center rounded-lg bg-[#e4ae22] text-[11px] font-bold text-[#0e0e0e]">GC</div>
@@ -137,7 +137,7 @@ export function SiteFooter() {
         ))}
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-6 pb-10 pt-8">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pb-10 pt-8">
         <div className="flex flex-wrap items-center justify-between gap-5 border-t border-neutral-900 pt-5">
           <span className="flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
             <span>{t("copyright", { year: new Date().getFullYear(), version: packageJson.version })}</span>

@@ -53,7 +53,7 @@ export default async function TeamMatchesPage({
 
   return (
     <div>
-      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-7 pb-[70px]">
         <MatchFiltersBar
           basePath={matchesPath}
           filters={filters}

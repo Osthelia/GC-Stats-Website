@@ -109,7 +109,7 @@ export function SiteHeader({
       ref={rootRef}
       className="sticky top-0 z-[60] border-b border-neutral-800 bg-[var(--gcs-bg)]/90 backdrop-blur-xl"
     >
-      <div className="mx-auto flex h-[62px] max-w-[1400px] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9">
+      <div className="mx-auto flex h-[62px] max-w-[clamp(1500px,88vw,2400px)] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9">
         <Link href="/" className="flex flex-none items-center gap-2.5">
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[#e4ae22] text-[13px] font-bold tracking-tight text-[#0e0e0e]">
             GC

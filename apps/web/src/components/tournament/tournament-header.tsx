@@ -232,7 +232,7 @@ export async function TournamentHeader({
         )}
       </HeaderUtilityBar>
 
-      <div className="relative mx-auto max-w-[1400px] px-6 pt-14 md:pt-9">
+      <div className="relative mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pt-14 md:pt-9">
         {/* Fixed bottom padding on the row itself (not a child's margin) — a
             row with no description/tagline must still leave the same gap
             before the tabs, otherwise the tab bar rides up flush against
@@ -300,7 +300,7 @@ export async function TournamentHeader({
             </h1>
 
             {tournament.description && (
-              <p className="max-w-[620px] text-[14.5px] leading-relaxed text-neutral-400">
+              <p className="max-w-[680px] text-[16px] leading-relaxed text-neutral-400">
                 {tournament.description}
               </p>
             )}
@@ -361,11 +361,11 @@ export async function TournamentHeader({
                     key={f.key}
                     className="flex items-center justify-between gap-3 px-3 py-2.5"
                   >
-                    <span className="flex items-center gap-1.5 text-xs text-neutral-500">
+                    <span className="flex items-center gap-1.5 text-[13px] text-neutral-500">
                       <Icon className="h-3.5 w-3.5 flex-none" />
                       {f.label}
                     </span>
-                    <span className="truncate text-right text-[12.5px] font-semibold text-neutral-100">
+                    <span className="truncate text-right text-[14px] font-semibold text-neutral-100">
                       {f.value}
                     </span>
                   </div>
@@ -373,10 +373,10 @@ export async function TournamentHeader({
               })}
               {tournament.organizer && (
                 <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-                  <span className="text-xs text-neutral-500">{t("factOrganizer")}</span>
+                  <span className="text-[13px] text-neutral-500">{t("factOrganizer")}</span>
                   <Link
                     href={`/organization/${tournament.organizer.id}/${tournament.organizer.slug}`}
-                    className="flex min-w-0 items-center gap-2 text-[12.5px] font-semibold text-neutral-100 transition-colors hover:text-[#e4ae22] active:scale-[0.97]"
+                    className="flex min-w-0 items-center gap-2 text-[14px] font-semibold text-neutral-100 transition-colors hover:text-[#e4ae22] active:scale-[0.97]"
                   >
                     <OrgBadge name={tournament.organizer.name} logoUrl={tournament.organizer.logoUrl} logoUrlLight={tournament.organizer.logoUrlLight} size={22} />
                     <span className="truncate">{tournament.organizer.name}</span>

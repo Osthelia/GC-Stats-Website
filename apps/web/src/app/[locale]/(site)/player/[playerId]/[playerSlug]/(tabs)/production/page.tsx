@@ -57,7 +57,7 @@ export default async function PlayerProductionPage({
 
   return (
     <div>
-      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-7 pb-[70px]">
         <h1 className="mb-6 text-lg font-black tracking-tight text-neutral-50">
           {t("productionTitle", { player: player.handle })}
         </h1>

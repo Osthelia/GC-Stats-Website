@@ -82,11 +82,11 @@ export function TournamentTeamsPanel({
           const rosterShown = isRosterShown(p.entrantId);
           const hasRoster = p.roster.length > 0;
           const inner = p.teamId ? (
-            <Link href={`/team/${p.teamId}/${slugify(p.displayName)}`} className="truncate text-[11px] font-bold tracking-tight text-neutral-100 transition-colors hover:text-[#e4ae22]">
+            <Link href={`/team/${p.teamId}/${slugify(p.displayName)}`} className="truncate text-[13px] font-bold tracking-tight text-neutral-100 transition-colors hover:text-[#e4ae22]">
               {p.displayName}
             </Link>
           ) : (
-            <span className="truncate text-[11px] font-bold tracking-tight text-neutral-100">{p.displayName}</span>
+            <span className="truncate text-[13px] font-bold tracking-tight text-neutral-100">{p.displayName}</span>
           );
 
           return (
@@ -108,7 +108,7 @@ export function TournamentTeamsPanel({
                 {rosterShown && hasRoster && (
                   <div className="flex w-full flex-col items-center justify-center gap-1 rounded-lg py-2" style={{ background: "var(--gcs-surface-3)" }}>
                     {p.roster.map((player) => (
-                      <span key={player.personId} className="w-full truncate text-[11px] font-semibold leading-tight text-neutral-200">
+                      <span key={player.personId} className="w-full truncate text-[12px] font-semibold leading-tight text-neutral-200">
                         {player.handle}
                       </span>
                     ))}

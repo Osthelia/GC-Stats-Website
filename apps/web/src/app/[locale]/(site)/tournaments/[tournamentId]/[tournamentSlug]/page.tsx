@@ -114,7 +114,7 @@ export default async function TournamentPage({
   return (
     <div>
       <TournamentHeader tournament={tournament} basePath={basePath} activeTab="overview" />
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-6 py-7 pb-[70px]">
+      <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col gap-8 px-6 py-7 pb-[70px]">
         <Suspense fallback={<TournamentBodySkeleton />}>
           <TournamentBody id={id} basePath={basePath} activeStageId={activeStageId} t={t} />
         </Suspense>

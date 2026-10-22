@@ -58,7 +58,7 @@ export default async function PlayerStatsPage({
 
   return (
     <div>
-      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-7 pb-[70px]">
         <StatsFilterBar
           basePath={`/player/${basePath}/stats`}
           filters={filters}

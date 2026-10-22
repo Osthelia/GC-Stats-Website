@@ -65,7 +65,7 @@ export default async function WidgetDirectoryPage({ searchParams }: { searchPara
   const hasHeatmapQuery = heat.map != null || heat.side != null || heat.teamId != null || heat.playerId != null || heat.agent != null;
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-12">
+    <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-12">
       <div className="border-b border-neutral-800 pb-6 text-center">
         <h1 className="text-4xl font-black tracking-tighter text-neutral-50 uppercase">{t("title")}</h1>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-neutral-500 italic">{t("intro")}</p>

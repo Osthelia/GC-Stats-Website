@@ -55,7 +55,7 @@ export default async function TournamentPickemPage({
     <div>
       <TournamentHeader tournament={tournament} basePath={basePath} activeTab="pickem" />
 
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-6 px-6 py-7 pb-[70px]">
+      <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col gap-6 px-6 py-7 pb-[70px]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-bold">{t("heading")}</h1>
           <Link href={`/tournaments/${basePath}/pickem/groups`} className="text-sm font-medium text-primary hover:underline">
