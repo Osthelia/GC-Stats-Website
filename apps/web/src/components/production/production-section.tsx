@@ -27,6 +27,7 @@ export async function ProductionSection({
   eventColumnLabel,
   showPerson,
   showOrganization,
+  showTime,
   currentTournamentId,
 }: {
   page: ProductionPage;
@@ -36,6 +37,7 @@ export async function ProductionSection({
   eventColumnLabel: string;
   showPerson: boolean;
   showOrganization: boolean;
+  showTime?: boolean;
   currentTournamentId?: number;
 }) {
   const t = await getTranslations("production");
@@ -103,6 +105,7 @@ export async function ProductionSection({
         entries={page.items}
         showPerson={showPerson}
         showOrganization={showOrganization}
+        showTime={showTime}
         currentTournamentId={currentTournamentId}
         eventColumnLabel={eventColumnLabel}
         emptyLabel={hasFilter ? t("emptyFiltered") : undefined}

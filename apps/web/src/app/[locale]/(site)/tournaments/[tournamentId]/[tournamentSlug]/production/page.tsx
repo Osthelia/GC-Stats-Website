@@ -74,6 +74,7 @@ export default async function TournamentProductionPage({
           eventColumnLabel={tProduction("colEvent")}
           showPerson
           showOrganization
+          showTime={false}
           currentTournamentId={id}
         />
       </div>

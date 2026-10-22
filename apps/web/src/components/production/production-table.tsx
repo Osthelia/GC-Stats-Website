@@ -36,6 +36,7 @@ export async function ProductionTable({
   entries,
   showPerson = true,
   showOrganization = true,
+  showTime = true,
   /** When set, an entry targeting this exact tournament renders a shortened label ("Entire tournament" / bare match label) instead of repeating the tournament's own name, used on the tournament page only. */
   currentTournamentId,
   eventColumnLabel,
@@ -46,6 +47,7 @@ export async function ProductionTable({
   entries: ProductionEntry[];
   showPerson?: boolean;
   showOrganization?: boolean;
+  showTime?: boolean;
   currentTournamentId?: number;
   eventColumnLabel: string;
   eventSort: ProductionColumnSort;
@@ -162,7 +164,7 @@ export async function ProductionTable({
     e.date ? (
       <FormattedDate
         date={e.date}
-        mode="datetime"
+        mode={showTime ? "datetime" : "date"}
         className="font-mono text-[11px] whitespace-nowrap text-neutral-500"
       />
     ) : (
@@ -231,7 +233,7 @@ export async function ProductionTable({
         direction={dateSort.direction}
       />
     ),
-    width: "96px",
+    width: showTime ? "150px" : "96px",
     cell: dateCell,
   });
 
