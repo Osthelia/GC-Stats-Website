@@ -264,6 +264,8 @@ export async function getTournamentMatchOptionsForCredit(
     .select({
       id: matches.id,
       round: matches.round,
+      roundName: matches.label,
+      scheduledAt: matches.scheduledAt,
       entrantAId: matches.entrantAId,
       entrantBId: matches.entrantBId,
     })
@@ -296,7 +298,9 @@ export async function getTournamentMatchOptionsForCredit(
       m.entrantAId !== null ? (entrantById.get(m.entrantAId) ?? "TBD") : "TBD";
     const bName =
       m.entrantBId !== null ? (entrantById.get(m.entrantBId) ?? "TBD") : "TBD";
-    return { id: m.id, label: `${aName} vs ${bName} (R${m.round})` };
+    const round = m.roundName?.trim() || `R${m.round}`;
+    const date = m.scheduledAt ? ` · ${m.scheduledAt.toISOString().slice(0, 10)}` : "";
+    return { id: m.id, label: `${aName} vs ${bName} (${round})${date}` };
   });
 }
 
