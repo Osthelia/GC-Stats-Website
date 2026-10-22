@@ -12,7 +12,10 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
+import flagIconsCountries from "flag-icons/country.json";
 import type { AppLocale } from "@/i18n/routing";
+
+const FLAG_ICON_CODES = new Set<string>(flagIconsCountries.map((c) => c.code));
 
 export const INTERNATIONAL_CODE = "INT";
 
@@ -297,8 +300,9 @@ export function isValidCountryCode(code: string): boolean {
 // directly (not the alpha-3 codes above) — same flag-icons key as V1's
 // `App\Support\Countries::list()`, with the synthetic 'inter' sentinel
 // mapped to the UN flag (V1's fi-un special case).
-export function languageFlagClass(code: string | null | undefined): string {
+export function languageFlagClass(code: string | null | undefined): string | null {
   if (!code) return "fi-un";
   const trimmed = code.trim().toLowerCase();
-  return trimmed === "inter" ? "fi-un" : `fi-${trimmed}`;
+  if (trimmed === "inter") return "fi-un";
+  return FLAG_ICON_CODES.has(trimmed) ? `fi-${trimmed}` : null;
 }

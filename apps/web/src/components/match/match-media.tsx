@@ -18,6 +18,13 @@ const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.Re
   kick: KickIcon,
 };
 
+// Renders nothing when the language has no flag sprite, so no empty box is left in the link.
+function LanguageFlag({ code }: { code: string }) {
+  const flagClass = languageFlagClass(code);
+  if (!flagClass) return null;
+  return <span className={`fi ${flagClass} shrink-0 rounded-[2px]`} title={code} />;
+}
+
 function MediaDivider({ label }: { label: string }) {
   return (
     <div className="mt-6 mb-3 flex items-center justify-center gap-3">
@@ -49,7 +56,7 @@ export async function MatchMedia({ streams, vods, povs, isCompleted }: { streams
                   <a key={v.id} href={v.url} target="_blank" rel="noreferrer noopener" className={linkClassName}>
                     <YoutubeIcon className="h-3.5 w-3.5 flex-none text-neutral-400" />
                     {v.mapOrder != null ? t("vodMap", { n: v.mapOrder }) : t("vodFull")}
-                    <span className={`fi ${languageFlagClass(v.languageCode)} shrink-0 rounded-[2px]`} title={v.languageCode} />
+                    <LanguageFlag code={v.languageCode} />
                   </a>
                 ))
               : streams.map((s) => {
@@ -59,7 +66,7 @@ export async function MatchMedia({ streams, vods, povs, isCompleted }: { streams
                       <Icon className="h-3.5 w-3.5 flex-none text-neutral-400" />
                       {s.name}
                       {s.type === "watchparty" && <span className="rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-widest text-neutral-400 uppercase">{t("watchparty")}</span>}
-                      <span className={`fi ${languageFlagClass(s.languageCode)} shrink-0 rounded-[2px]`} title={s.languageCode} />
+                      <LanguageFlag code={s.languageCode} />
                     </a>
                   );
                 })}
