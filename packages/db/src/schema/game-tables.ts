@@ -1169,12 +1169,12 @@ export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
-export const lolTables: GameTables = lol;
+export const leagueTables: GameTables & LeagueOnlyTables = { ...lol, ...leagueOnly };
 
-/** Thrown when a feature only some games have (maps, stats, veto) is used for another game. */
+/** Thrown when a feature only some games have (Valorant maps and veto, LoL series games) is used for a game without it. */
 export class GameFeatureUnavailableError extends Error {
   constructor(game: GameSlug) {
-    super(`No maps, stats or veto data for ${game}`);
+    super(`This feature has no data for ${game}`);
   }
 }
 
@@ -1189,6 +1189,16 @@ export function valorantTablesOf(game: GameSlug): typeof valorantTables {
   return new Proxy(valorantTables, { get: (_target, name) => (typeof name === "string" ? unavailableTable : undefined) });
 }
 
+/**
+ * League of Legends only tables (series games and what was played in them). Same rules as
+ * valorantTablesOf: for another game they can be destructured, but any use of one throws.
+ */
+export function leagueTablesOf(game: GameSlug): typeof leagueTables {
+  if (game === "lol") return leagueTables;
+  const unavailableTable = new Proxy({}, { get: () => { throw new GameFeatureUnavailableError(game); } });
+  return new Proxy(leagueTables, { get: (_target, name) => (typeof name === "string" ? unavailableTable : undefined) });
+}
+
 export function gameTables(game: GameSlug): GameTables {
-  return game === "lol" ? lolTables : valorantTables;
+  return game === "lol" ? leagueTables : valorantTables;
 }
