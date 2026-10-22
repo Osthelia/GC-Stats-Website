@@ -24,11 +24,18 @@ import type { GameSlug } from "../game";
 type GamePrefix = "val" | "lol";
 
 // Riot (Valorant) and VLR ids, only the Valorant profile has them.
-function riotColumns() {
+function valPersonColumns() {
   return {
     valId: text("val_id").unique(), // Riot puuid, null for people who never played competitively
     esportsValId: text("esports_val_id").unique(),
     vlrId: integer("vlr_id"),
+  };
+}
+
+// Riot account id, only the League of Legends profile has it.
+function lolPersonColumns() {
+  return {
+    lolId: text("lol_id").unique(), // Riot puuid, null for people who never played competitively
   };
 }
 
@@ -96,7 +103,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     liquipediaLink: text("liquipedia_link"),
     // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
     liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
-    ...(p === "val" ? riotColumns() : ({} as ReturnType<typeof riotColumns>)),
+    ...(p === "val" ? valPersonColumns() : ({} as ReturnType<typeof valPersonColumns>)),
+    ...(p === "lol" ? lolPersonColumns() : ({} as ReturnType<typeof lolPersonColumns>)),
   });
 
   // Read model of a person in this game (identity + profile), same columns the old per-game
@@ -123,6 +131,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
         valId: p === "val" ? personProfiles.valId : (sql<string | null>`NULL::text`.as("val_id") as unknown as typeof personProfiles.valId),
         esportsValId: p === "val" ? personProfiles.esportsValId : (sql<string | null>`NULL::text`.as("esports_val_id") as unknown as typeof personProfiles.esportsValId),
         vlrId: p === "val" ? personProfiles.vlrId : (sql<number | null>`NULL::integer`.as("vlr_id") as unknown as typeof personProfiles.vlrId),
+        lolId: p === "lol" ? personProfiles.lolId : (sql<string | null>`NULL::text`.as("lol_id") as unknown as typeof personProfiles.lolId),
       })
       .from(sharedPeople)
       .innerJoin(personProfiles, eq(personProfiles.personId, sharedPeople.id))
@@ -935,8 +944,10 @@ export function defineLeagueTables(g: GameTables) {
     order: integer("order").notNull(),
     apiMatchId: text("api_match_id").unique(), // Riot match id, null for games entered by hand
     platformId: text("platform_id"), // Riot platform, e.g. "EUW1" — decides the API routing cluster
+    patch: text("patch"), // Riot gameVersion of this game
     startedAt: timestamp("started_at", { withTimezone: true }),
     durationSeconds: integer("duration_seconds"),
+    winnerEntrantId: bigint("winner_entrant_id", { mode: "number" }).references(() => entrants.id),
     isCompleted: boolean("is_completed").notNull().default(false),
     // Same meaning as on val_maps: the win came from a forfeit, not from playing the game out.
     isForfeit: boolean("is_forfeit").notNull().default(false),
