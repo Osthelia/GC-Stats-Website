@@ -14,7 +14,7 @@ import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type AdminMatchListRow = {
@@ -155,6 +155,34 @@ export async function listMatchMaps(matchId: number): Promise<AdminMapRow[]> {
     .from(maps)
     .where(eq(maps.matchId, matchId))
     .orderBy(asc(maps.order), asc(maps.id));
+}
+
+export type AdminLeagueGameRow = {
+  id: number;
+  order: number;
+  winnerEntrantId: number | null;
+  isCompleted: boolean;
+  isForfeit: boolean;
+  durationSeconds: number | null;
+  note: string | null;
+};
+
+/** The games of a LoL series, in order, for the admin match page. */
+export async function listLeagueMatchGames(matchId: number): Promise<AdminLeagueGameRow[]> {
+  const { games } = leagueTablesOf("lol");
+  return db
+    .select({
+      id: games.id,
+      order: games.order,
+      winnerEntrantId: games.winnerEntrantId,
+      isCompleted: games.isCompleted,
+      isForfeit: games.isForfeit,
+      durationSeconds: games.durationSeconds,
+      note: games.note,
+    })
+    .from(games)
+    .where(eq(games.matchId, matchId))
+    .orderBy(asc(games.order), asc(games.id));
 }
 
 /** Single map lookup for the dedicated admin map page (`.../matches/{matchId}/maps/{mapId}`). */
