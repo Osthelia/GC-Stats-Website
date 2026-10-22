@@ -5451,7 +5451,19 @@
         "twitch": "Twitch",
         "youtube": "YouTube",
         "tiktok": "TikTok",
-        "kick": "Kick"
+        "kick": "Kick",
+
+        "sooplive": "SOOP",
+
+        "naver": "Naver",
+
+        "bilibili": "Bilibili",
+
+        "qq": "QQ",
+
+        "weibo": "Weibo",
+
+        "other": "Otros"
       },
       "typeLabel": "Tipo",
       "type": {

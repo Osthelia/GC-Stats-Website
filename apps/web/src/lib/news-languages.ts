@@ -13,6 +13,7 @@
 import { asc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { unstable_cache } from "next/cache";
+import { getLocale } from "next-intl/server";
 import { db } from "@gc-stats/db/client";
 import { newsLanguages } from "@gc-stats/db";
 import { NEWS_LANGUAGES_COOKIE, parseNewsLanguagesCookie } from "@/lib/news-languages-cookie";
@@ -25,7 +26,7 @@ export { defaultNewsLanguages } from "@/lib/news-languages-default";
 export type NewsLanguageOption = { code: string; name: string };
 
 /** Active languages, in display order (editable from /admin), read by both the dashboard article language picker and the public news language filter, never a hardcoded list. */
-export const listActiveNewsLanguages = unstable_cache(
+const listStoredActiveNewsLanguages = unstable_cache(
   async (): Promise<NewsLanguageOption[]> =>
     db
       .select({ code: newsLanguages.code, name: newsLanguages.name })
@@ -35,6 +36,22 @@ export const listActiveNewsLanguages = unstable_cache(
   ["news-languages-active"],
   { revalidate: 3600, tags: [NEWS_LANGUAGES_TAG] }
 );
+
+// Language name in the viewer's locale, keeping the stored name for codes Intl doesn't know (e.g. "inter").
+function localizeLanguageName(code: string, storedName: string, locale: string): string {
+  try {
+    const name = new Intl.DisplayNames([locale], { type: "language" }).of(code);
+    if (!name || name === code) return storedName;
+    return name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);
+  } catch {
+    return storedName;
+  }
+}
+
+export async function listActiveNewsLanguages(): Promise<NewsLanguageOption[]> {
+  const [languages, locale] = await Promise.all([listStoredActiveNewsLanguages(), getLocale()]);
+  return languages.map((l) => ({ code: l.code, name: localizeLanguageName(l.code, l.name, locale) }));
+}
 
 /**
  * A viewer's effective news languages outside of `/news` itself (home feed,

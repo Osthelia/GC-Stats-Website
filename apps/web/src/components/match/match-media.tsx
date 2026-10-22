@@ -6,7 +6,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon } from "@/components/icons/brand-icons";
 import { languageFlagClass } from "@/lib/countries";
 import type { MatchStream, MatchVod, MatchPlayerPov } from "@/lib/match-page-data";
@@ -38,8 +38,21 @@ function MediaDivider({ label }: { label: string }) {
 const linkClassName =
   "flex items-center gap-2 rounded-lg border border-neutral-800 bg-white/[0.02] px-3 py-2 text-[12px] font-semibold text-neutral-200 transition-colors hover:border-neutral-700 hover:bg-white/[0.05]";
 
-export async function MatchMedia({ streams, vods, povs, isCompleted }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean }) {
-  const t = await getTranslations("matchPage");
+// Base language of a stored code, e.g. "en-US" -> "en" (char columns may be space padded).
+function baseLanguage(code: string): string {
+  return code.trim().toLowerCase().split(/[-_]/)[0] ?? "";
+}
+
+// English and the site language, or every stream when none matches.
+function filterStreamsByLocale(streams: MatchStream[], locale: string): MatchStream[] {
+  const accepted = new Set(["en", baseLanguage(locale)]);
+  const matching = streams.filter((s) => accepted.has(baseLanguage(s.languageCode)));
+  return matching.length > 0 ? matching : streams;
+}
+
+export async function MatchMedia({ streams: allStreams, vods, povs, isCompleted }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean }) {
+  const [t, locale] = await Promise.all([getTranslations("matchPage"), getLocale()]);
+  const streams = filterStreamsByLocale(allStreams, locale);
   const primaryCount = isCompleted ? vods.length : streams.length;
   if (primaryCount === 0 && povs.length === 0) return null;
 
