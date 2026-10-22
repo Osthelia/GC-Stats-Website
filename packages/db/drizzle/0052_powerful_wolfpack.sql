@@ -1,18 +1,3 @@
-CREATE TABLE "people" (
-	"id" bigserial PRIMARY KEY NOT NULL,
-	"handle" text NOT NULL,
-	"aliases" jsonb,
-	"first_name" text,
-	"last_name" text,
-	"country_code" char(3),
-	"secondary_country_code" char(3),
-	"pronouns" smallint,
-	"birth_date" date,
-	"bio" text,
-	"socials" jsonb DEFAULT '{}'::jsonb NOT NULL,
-	"user_id" text,
-	CONSTRAINT "people_user_id_unique" UNIQUE("user_id")
-);
 --> statement-breakpoint
 CREATE TABLE "lol_game_draft" (
 	"id" bigserial PRIMARY KEY NOT NULL,
