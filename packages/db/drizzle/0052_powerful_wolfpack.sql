@@ -90,7 +90,6 @@ CREATE TABLE "lol_games" (
 	"order" integer NOT NULL,
 	"api_match_id" text,
 	"platform_id" text,
-	"patch" text,
 	"started_at" timestamp with time zone,
 	"duration_seconds" integer,
 	"winner_entrant_id" bigint,

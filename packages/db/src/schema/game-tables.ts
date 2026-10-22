@@ -944,7 +944,6 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     order: integer("order").notNull(),
     apiMatchId: text("api_match_id").unique(), // Riot match id, null for games entered by hand
     platformId: text("platform_id"), // Riot platform, e.g. "EUW1" — decides the API routing cluster
-    patch: text("patch"), // Riot gameVersion of this game
     startedAt: timestamp("started_at", { withTimezone: true }),
     durationSeconds: integer("duration_seconds"),
     winnerEntrantId: bigint("winner_entrant_id", { mode: "number" }).references(() => entrants.id),
