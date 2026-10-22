@@ -16,7 +16,7 @@ import { GlobeIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSettings } from "@/lib/site-settings";
-import { TIMEZONES } from "@/lib/timezones";
+import { TIMEZONE_IDS } from "@/lib/timezones";
 import { isValidTimezone, timezoneLabel } from "@/lib/datetime-local";
 
 export function AdminTimezoneSelect() {
@@ -25,7 +25,7 @@ export function AdminTimezoneSelect() {
   const { adminTimezone, setAdminTimezone } = useSiteSettings();
 
   const items = useMemo(() => {
-    const ids = TIMEZONES.map((z) => z.id);
+    const ids = TIMEZONE_IDS;
     if (!ids.includes(adminTimezone)) ids.unshift(adminTimezone);
     return Object.fromEntries(ids.map((id) => [id, timezoneLabel(id, locale)]));
   }, [adminTimezone, locale]);

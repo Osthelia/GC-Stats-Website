@@ -162,6 +162,7 @@ export async function ProductionTable({
     e.date ? (
       <FormattedDate
         date={e.date}
+        mode="datetime"
         className="font-mono text-[11px] whitespace-nowrap text-neutral-500"
       />
     ) : (

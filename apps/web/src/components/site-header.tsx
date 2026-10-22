@@ -13,7 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing, localeDisplay, type AppLocale } from "@/i18n/routing";
-import { TIMEZONES } from "@/lib/timezones";
+import { getTimezones, timezoneOffset } from "@/lib/timezones";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { GlobalSearch } from "@/components/search/global-search";
@@ -463,7 +463,7 @@ function MobileSettingsPanel({
       "linear-gradient(90deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787)",
   };
   const currentOffset =
-    TIMEZONES.find((z) => z.id === timezone)?.offset ?? TIMEZONES[0]!.offset;
+    timezoneOffset(timezone);
 
   return (
     <div>
@@ -576,14 +576,15 @@ function MobileTimezonePanel({ onBack }: { onBack: () => void }) {
   const { timezone, setTimezone } = useSiteSettings();
   const [tzQuery, setTzQuery] = useState("");
 
+  const allZones = getTimezones();
   const query = stripAccents(tzQuery.trim().toLowerCase());
   const zones = query
-    ? TIMEZONES.filter(
+    ? allZones.filter(
         (z) =>
           stripAccents(z.id.replace(/_/g, " ").toLowerCase()).includes(query) ||
           z.offset.includes(query),
       )
-    : TIMEZONES;
+    : allZones;
 
   return (
     <div>
@@ -907,16 +908,17 @@ function SettingsPanelContent({
       "linear-gradient(90deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787)",
   };
 
+  const allZones = getTimezones();
   const query = stripAccents(tzQuery.trim().toLowerCase());
   const zones = query
-    ? TIMEZONES.filter(
+    ? allZones.filter(
         (z) =>
           stripAccents(z.id.replace(/_/g, " ").toLowerCase()).includes(query) ||
           z.offset.includes(query),
       )
-    : TIMEZONES;
+    : allZones;
   const currentOffset =
-    TIMEZONES.find((z) => z.id === timezone)?.offset ?? TIMEZONES[0]!.offset;
+    timezoneOffset(timezone);
 
   return (
     <>
