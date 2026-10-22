@@ -1058,7 +1058,7 @@ export function defineLeagueTables(g: GameTables<"lol">) {
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
 
 const val = defineGameTables("val", (): AnyPgColumn => valorantOnly.maps.id);
-const lol = defineGameTables("lol");
+const lol = defineGameTables("lol", (): AnyPgColumn => leagueOnly.games.id);
 const valorantOnly = defineValorantTables(val);
 const leagueOnly = defineLeagueTables(lol);
 
