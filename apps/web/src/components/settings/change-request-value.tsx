@@ -9,6 +9,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { rosterSourceTextKey } from "@/lib/roster-source";
 
 const PRONOUN_KEYS: Record<string, "0" | "1" | "2"> = { "0": "0", "1": "1", "2": "2" };
 
@@ -21,6 +22,7 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
   const t = useTranslations("accountSettings.changeRequests.detail");
   const tField = useTranslations("suggestEdit.field");
   const tLeft = useTranslations("admin.rosterLeft");
+  const tSource = useTranslations("admin.rosterSource");
 
   if (field === "isActive" || field === "liquipediaSourced") {
     if (value === null || value === undefined) return <span className="text-neutral-500">{t("noValue")}</span>;
@@ -59,7 +61,7 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
 
   if (field === "membership_add" || field === "membership_edit") {
     if (side === "old" && field === "membership_add") return <span className="text-neutral-500">{t("noValue")}</span>;
-    const v = value as { role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null } | null;
+    const v = value as { role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null } | null;
     if (!v) return <span className="text-neutral-500">{t("noValue")}</span>;
     return (
       <div className="flex flex-col text-[13px]">
@@ -74,6 +76,23 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
         </span>
         {v.hasLeft && <span className="text-neutral-500">{tLeft("hasLeft")}</span>}
         {v.inactiveSince && <span className="text-neutral-500">{t("inactiveSince", { date: v.inactiveSince })}</span>}
+        {(["join", "left"] as const).map((kind) => {
+          const source = kind === "join" ? v.joinSource : v.leftSource;
+          if (!source) return null;
+          const textKey = rosterSourceTextKey(source);
+          return (
+            <span key={kind} className="text-neutral-500">
+              {t(kind === "join" ? "joinSource" : "leftSource")}:{" "}
+              {textKey ? (
+                tSource(`option.${textKey}` as "option.none")
+              ) : (
+                <a href={source} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-2 transition-colors hover:text-neutral-300">
+                  {tSource("option.link")}
+                </a>
+              )}
+            </span>
+          );
+        })}
       </div>
     );
   }

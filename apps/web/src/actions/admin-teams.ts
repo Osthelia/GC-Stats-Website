@@ -22,6 +22,7 @@ import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 import { closeOpenMemberships } from "@/lib/roster-close";
+import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
@@ -265,7 +266,7 @@ export async function getRosterConflicts(personId: number, teamId: number, exclu
   return findOpenMembershipsElsewhere(personId, teamId, excludeMembershipId);
 }
 
-export type AddRosterMemberField = "person" | "role" | "from" | "until";
+export type AddRosterMemberField = "person" | "role" | "from" | "until" | "joinSource" | "leftSource";
 export type AddRosterMemberFieldErrors = Partial<Record<AddRosterMemberField, string>>;
 export type AddRosterMemberResult = { ok: true } | { ok: false; fieldErrors: AddRosterMemberFieldErrors };
 
@@ -277,6 +278,8 @@ export async function addTeamRosterMember(
   until: string,
   hasLeft: boolean,
   inactiveSince: string | null,
+  joinSource: string,
+  leftSource: string,
   closeMembershipIds: number[] = []
 ): Promise<AddRosterMemberResult> {
   const actorUserId = await requireAdminActorId();
@@ -290,6 +293,11 @@ export async function addTeamRosterMember(
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.from = fieldErrors.from ?? "invalidDate";
+  const joinSourceError = validateRosterSource(joinSource, "join", { allowSelfDeclared: true });
+  if (joinSourceError) fieldErrors.joinSource = joinSourceError;
+  const leftSourceError = validateRosterSource(leftSource, "left", { allowSelfDeclared: true });
+  if (leftSourceError) fieldErrors.leftSource = leftSourceError;
+  else if (leftSource.trim() && !hasLeft) fieldErrors.leftSource = "requiresLeft";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -305,14 +313,14 @@ export async function addTeamRosterMember(
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, personId as number, teamId, from);
 
-    await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null });
+    await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) });
     await logRosterChange(tx, { teamId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
 }
 
-export type RosterEntryField = "role" | "from" | "until" | "inactiveSince";
+export type RosterEntryField = "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type RosterEntryFieldErrors = Partial<Record<RosterEntryField, string>>;
 export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterEntryFieldErrors };
 
@@ -322,7 +330,7 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * (current and history alike) carries editable role/joined_at/left_at
  * inputs directly, not just newly-added ones.
  */
-export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
+export async function updateRosterMemberEntry(membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
@@ -333,6 +341,11 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
+  const joinSourceError = validateRosterSource(joinSource, "join", { allowSelfDeclared: true });
+  if (joinSourceError) fieldErrors.joinSource = joinSourceError;
+  const leftSourceError = validateRosterSource(leftSource, "left", { allowSelfDeclared: true });
+  if (leftSourceError) fieldErrors.leftSource = leftSourceError;
+  else if (leftSource.trim() && !hasLeft) fieldErrors.leftSource = "requiresLeft";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -345,7 +358,7 @@ export async function updateRosterMemberEntry(membershipId: number, role: string
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
-    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
+    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
     await logRosterChange(tx, { teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });

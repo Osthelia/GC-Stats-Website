@@ -190,6 +190,8 @@ export type AdminPlayerTeamHistoryEntry = {
   isCurrent: boolean;
   hasLeft: boolean;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
 };
 
 /** Every stint, not just the current team — same reasoning as admin-teams.ts::getAdminTeamRoster (join/left/inactive dates editable directly on already-listed entries too, current or past). */
@@ -205,6 +207,8 @@ export async function getAdminPlayerTeamHistory(personId: number): Promise<Admin
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
     })
     .from(rosterMemberships)
     .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))

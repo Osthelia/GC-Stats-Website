@@ -20,6 +20,7 @@ import { deleteLogoFiles } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
+import { ROSTER_SOURCE_TEXTS, normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
@@ -39,7 +40,33 @@ const PERSON_COLUMNS = ["handle", "firstName", "lastName", "countryCode", "secon
  * snapshot taken at submit time. Throws a plain Error with a short message
  * on failure — caught by the caller and stored in applyError.
  */
-async function applyChangeRequestItem(subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown, closeMembershipIds: number[]): Promise<void> {
+type RequestContext = { id: number; requestedBy: string | null };
+
+/** True when the request comes from the person themselves: their linked account, or a link to this person accepted in the same request. */
+async function isRequestedByPerson(request: RequestContext, personId: number): Promise<boolean> {
+  if (!request.requestedBy) return false;
+  const [person] = await db.select({ userId: people.userId }).from(people).where(eq(people.id, personId)).limit(1);
+  if (person?.userId === request.requestedBy) return true;
+
+  const links = await db
+    .select({ newValue: changeRequestItems.newValue })
+    .from(changeRequestItems)
+    .innerJoin(changeRequests, eq(changeRequests.id, changeRequestItems.changeRequestId))
+    .where(and(eq(changeRequestItems.changeRequestId, request.id), eq(changeRequestItems.field, "user_link"), eq(changeRequestItems.status, "approved"), eq(changeRequests.subjectType, "person"), eq(changeRequests.subjectId, personId)));
+  return links.some((link) => (link.newValue as { userId?: string } | null)?.userId === request.requestedBy);
+}
+
+type MembershipSources = { joinSource: string | null; leftSource: string | null };
+
+/** The given sources, with the player declaration for an empty one when the person made the request (a left source only exists once they left). */
+async function membershipSources(request: RequestContext, personId: number, given: { joinSource?: string | null; leftSource?: string | null }, hasLeft: boolean): Promise<MembershipSources> {
+  const joinSource = normalizeRosterSource(given.joinSource);
+  const leftSource = hasLeft ? normalizeRosterSource(given.leftSource) : null;
+  if (!(await isRequestedByPerson(request, personId))) return { joinSource, leftSource };
+  return { joinSource: joinSource ?? ROSTER_SOURCE_TEXTS.declaredByPlayer, leftSource: leftSource ?? (hasLeft ? ROSTER_SOURCE_TEXTS.declaredByPlayer : null) };
+}
+
+async function applyChangeRequestItem(request: RequestContext, subjectType: "team" | "person", subjectId: number, field: string, oldValue: unknown, newValue: unknown, closeMembershipIds: number[]): Promise<void> {
   // --- Simple profile columns (including socials.<key>) -------------------
   if (field.startsWith("socials.")) {
     const key = field.slice("socials.".length);
@@ -76,15 +103,16 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const period = openRangeFrom(v.joined_at);
     await db.transaction(async (tx) => {
       await closeOpenMemberships(tx, closeMembershipIds, subjectId, v.team_id, v.joined_at);
-      await tx.insert(rosterMemberships).values({ personId: subjectId, teamId: v.team_id, role: v.role, period, inactiveSince: null });
+      await tx.insert(rosterMemberships).values({ personId: subjectId, teamId: v.team_id, role: v.role, period, inactiveSince: null, ...(await membershipSources(request, subjectId, {}, false)) });
     });
     return;
   }
 
   // --- Roster / team-history membership rows -------------------------------
   if (field === "membership_add") {
-    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
+    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, v.personId)).limit(1);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
     if (!person || !team) throw new Error("entityNotFound");
@@ -94,14 +122,15 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
       if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, v.personId, v.teamId, v.since);
-      await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince });
+      await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince, ...(await membershipSources(request, v.personId, v, hasLeft)) });
     });
     return;
   }
 
   if (field === "membership_edit") {
-    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null };
+    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null };
     if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
     if (!membership) throw new Error("membershipNotFound");
 
@@ -110,7 +139,7 @@ async function applyChangeRequestItem(subjectType: "team" | "person", subjectId:
     const isOngoing = !hasLeft;
     await db.transaction(async (tx) => {
       if (isOngoing) await closeOpenMemberships(tx, closeMembershipIds, membership.personId, membership.teamId, v.since);
-      await tx.update(rosterMemberships).set({ role: v.role, period, hasLeft, inactiveSince: v.inactiveSince }).where(eq(rosterMemberships.id, v.membershipId));
+      await tx.update(rosterMemberships).set({ role: v.role, period, hasLeft, inactiveSince: v.inactiveSince, ...(await membershipSources(request, membership.personId, v, hasLeft)) }).where(eq(rosterMemberships.id, v.membershipId));
     });
     return;
   }
@@ -267,7 +296,7 @@ export async function resolveChangeRequestItem(itemId: number, action: "approve"
 
   if (action === "approve") {
     try {
-      await applyChangeRequestItem(request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
+      await applyChangeRequestItem({ id: request.id, requestedBy: request.requestedBy }, request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
       status = "approved";
       await logActivity({
         subject: request.subjectType === "team" ? "team" : "player",
@@ -354,9 +383,11 @@ export async function resolveAllPendingItems(changeRequestId: number, action: "a
   await requireActorPermission(PERMISSIONS.changeRequestsManage);
 
   const pendingItems = await db
-    .select({ id: changeRequestItems.id })
+    .select({ id: changeRequestItems.id, field: changeRequestItems.field })
     .from(changeRequestItems)
     .where(and(eq(changeRequestItems.changeRequestId, changeRequestId), eq(changeRequestItems.status, "pending")));
+  // Account links first, so the roster entries of the same request see the person as linked.
+  pendingItems.sort((a, b) => Number(b.field === "user_link") - Number(a.field === "user_link"));
 
   const results: BulkResolveResult = [];
   for (const item of pendingItems) {

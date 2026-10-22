@@ -473,7 +473,9 @@
             "notAuthorized": "この操作は行えません。",
             "resolved": "この変更リクエストは解決済みのため、ディスカッションは終了しています。"
           }
-        }
+        },
+        "joinSource": "加入のソース",
+        "leftSource": "退団のソース"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "データ",
     "transparency": "透明性",
     "finance": "財務",
-    "developers": "開発者"
+    "developers": "開発者",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "このロゴ項目はすでに存在しません。",
           "alreadyLinked": "この選手はすでに別のアカウントに連携されています。",
           "unknownField": "サポートされていないフィールドです。",
-          "unknown": "不明なエラーです。"
+          "unknown": "不明なエラーです。",
+          "invalidSource": "ソースのリンクは無効になっています。"
         },
         "oldValue": "現在の値",
         "newValue": "提案された値",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "リクエスト送信者に返信…",
           "send": "送信",
           "error": "エラーが発生しました。"
-        }
+        },
+        "requesterNoPlayer": "申請者に紐付けられたプレイヤーアカウントはありません。",
+        "requesterPlayerMatch": "紐付けられたプレイヤーアカウント: {handle}、編集対象のプロフィールです。",
+        "requesterPlayerOther": "紐付けられたプレイヤーアカウント: {handle}、編集対象とは別のプロフィールです。",
+        "requesterTeamMatch": "紐付けられたプレイヤーアカウント: {handle}、編集対象チームのロースターにいます。",
+        "requesterTeamOther": "紐付けられたプレイヤーアカウント: {handle}、編集対象チームのロースターにいません。",
+        "joinSource": "加入のソース",
+        "leftSource": "退団のソース"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "Liquipediaに接続できません。後でもう一度お試しください。",
           "errorInvalid": "無効なトーナメントです。",
           "errorBusy": "このトーナメントのインポートはすでに実行中です。"
+        },
+        "talent": {
+          "tab": "配信タレント",
+          "wikicodeTitle": "タレントのウィキコード",
+          "wikicodeDescription": "大会のLiquipediaページにあるTalentセクション（BroadcasterCardテンプレート）を貼り付けてください。",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "解析",
+          "analyzing": "解析中...",
+          "parsedCount": "{count, plural, other {# 人のタレントが見つかりました}}",
+          "tableTitle": "クレジットするタレント",
+          "tableDescription": "チェックしたタレントは、カードの役割で大会にクレジットされます。その後、LiquipediaインポートがそのページをLiquipediaから読み込みます。",
+          "empty": "ウィキコードを解析してタレントを一覧表示します。",
+          "alreadyCredited": "{count, plural, other {# 件のクレジットが大会に登録済み}}",
+          "pickPerson": "人物を選択",
+          "searchPerson": "人物を検索",
+          "noResults": "人物が見つかりません",
+          "checkedCount": "{count, plural, other {# 人のタレントを選択中}}",
+          "importButton": "クレジットをインポート",
+          "importing": "インポート中...",
+          "success": "{created, plural, other {#件のクレジットを作成}}、{skipped}件は既に存在します。",
+          "error": {
+            "invalid": "ウィキコードが無効です。",
+            "tooLong": "このウィキコードは長すぎます。",
+            "noCards": "役割が判別できるBroadcasterCardが見つかりません。",
+            "empty": "インポートするものがありません。",
+            "tooMany": "一度に多すぎるタレントです。",
+            "tournamentNotFound": "この大会は存在しません。",
+            "rows": "無効な行があります。"
+          },
+          "rowError": {
+            "personRequired": "このタレントの人物を選択してください。",
+            "personNotFound": "この人物は存在しません。",
+            "invalidName": "Liquipedia名が無効です。",
+            "invalidCredits": "クレジットが無効です。"
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "チームを離脱済み",
       "untilLabel": "脱退日",
       "unknownHint": "終了日は不明です。わからない場合は空欄のままにしてください。"
+    },
+    "rosterSource": {
+      "placeholder": "発表のリンク",
+      "error": {
+        "invalidUrl": "http:// または https:// で始まる有効なリンクを入力してください。",
+        "sourceTooLong": "このリンクは長すぎます（最大 500 文字）。",
+        "invalidSource": "この選択肢はここでは使えません。",
+        "requiresLeft": "退団のソースを設定するには、退団済みにしてください。"
+      },
+      "joinLabel": "加入のソース",
+      "leftLabel": "退団のソース",
+      "option": {
+        "none": "ソースなし",
+        "link": "発表のリンク",
+        "startedTournament": "大会で出場を開始",
+        "stoppedTournament": "大会から出場を停止",
+        "insideSource": "内部情報",
+        "declaredByPlayer": "選手本人が申告"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "行を追加",
       "hint": "既存の項目の編集や削除、最大6件までの新規追加を提案できます。ここでの変更はすべてスタッフの確認後にロスターへ反映されます。",
       "hasLeft": "チームを離脱済み",
-      "untilLabel": "脱退日"
+      "untilLabel": "脱退日",
+      "sourcePlaceholder": "発表のリンク",
+      "joinSourceLabel": "加入のソース",
+      "leftSourceLabel": "退団のソース",
+      "sourceOption": {
+        "none": "ソースなし",
+        "link": "発表のリンク",
+        "startedTournament": "大会で出場を開始",
+        "stoppedTournament": "大会から出場を停止",
+        "insideSource": "内部情報",
+        "declaredByPlayer": "選手本人が申告"
+      }
     },
     "nameHistory": {
       "title": "名称履歴",
@@ -6061,7 +6137,10 @@
       "consentRequired": "写真の権利と同意の条件に同意する必要があります。",
       "invalidType": "JPG、PNG、WebPの写真のみ使用できます。",
       "tooSmall": "この写真は小さすぎます（短辺 400 px 以上が必要です）。",
-      "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
+      "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。",
+      "sourceTooLong": "このリンクは長すぎます（最大 500 文字）。",
+      "invalidSource": "この選択肢はここでは使えません。",
+      "leftSourceRequiresLeft": "退団のソースには、メンバーを退団済みにする必要があります。"
     },
     "discordIdHint": "Discord ユーザー ID(開発者モード、プロフィールを右クリック、ユーザー ID をコピー)またはサーバー招待リンク。",
     "useLinkedDiscord": "連携済みの Discord アカウントを使用"
@@ -6431,7 +6510,9 @@
     "stageSelector": "フェーズ",
     "bracketTemplate": "Liquipediaのテンプレート",
     "bracketHint": "ジェネレーターを開き、このテンプレートを入力して、結果をページに貼り付けてください。",
-    "bracketGenerator": "ジェネレーターを開く"
+    "bracketGenerator": "ジェネレーターを開く",
+    "talentTab": "タレント",
+    "talentHint": "ホスト、キャスター、オブザーバー、制作クレジット"
   },
   "matchPoster": {
     "title": "試合画像",
@@ -6505,5 +6586,42 @@
     "points": "{label} ポイントで出場",
     "pointsUnknown": "ポイントで出場",
     "iconLabel": "出場経路"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "GC Stats のデータを Liquipedia のウィキコードに変換するツールです。",
+    "transfersTitle": "移籍",
+    "transfersHint": "月ごとの移籍ページをロースターの変更で補完します。",
+    "tournamentsTitle": "大会と試合",
+    "tournamentsHint": "大会を検索してウィキコードを出力し、そのページで試合を選びます。",
+    "tournamentPlaceholder": "大会を選択",
+    "tournamentSearchPlaceholder": "大会を検索",
+    "tournamentNoResults": "大会が見つかりません。"
+  },
+  "liquipediaTransfers": {
+    "title": "Liquipedia の移籍",
+    "back": "Liquipedia に戻る",
+    "subtitle": "月ごとの移籍ページのウィキコードを貼り付けてください。GC Stats がその月のロースター変更を新しい順に追加し、既存の行はそのまま残します。",
+    "wikicodeLabel": "移籍ページのウィキコード",
+    "wikicodePlaceholder": "ここにウィキコードを貼り付け",
+    "monthLabel": "月",
+    "monthHint": "空欄の場合、ページのタイトルまたは日付から月を読み取ります。",
+    "submit": "ページを補完する",
+    "submitting": "補完しています",
+    "summary": "{month} に追加された行: {count}",
+    "nothingToAdd": "追加するものはありません。{month} のロースター変更はすべてページに掲載済みです。",
+    "alreadyListed": "ページに掲載済み ({count} 件)、変更なし:",
+    "unlinkedTeams": "Liquipedia 名のないチーム、GC Stats の名前で出力 ({count}):",
+    "unlinkedPeople": "Liquipedia 名のない人物、ハンドル名で出力 ({count}):",
+    "missingSources": "利用できるソースのない変更、参照なしで出力 ({count}):",
+    "error": {
+      "required": "移籍ページのウィキコードを貼り付けてください。",
+      "tooLong": "このウィキコードは長すぎます（最大 300,000 文字）。",
+      "missingStart": "ウィキコードに Transfer Start テンプレートが必要です。",
+      "missingEnd": "ウィキコードの Transfer Start テンプレートの後に Transfer End テンプレートが必要です。",
+      "invalid": "有効な月を入力してください。",
+      "undetected": "ページから月を読み取れませんでした。月の欄で選択してください。",
+      "generic": "問題が発生しました。もう一度お試しください。"
+    }
   }
 }

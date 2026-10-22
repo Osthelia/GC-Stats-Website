@@ -144,6 +144,8 @@ export type PlayerTeamHistoryEntry = {
   since: string | null;
   until: string | null;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   teamLogoUrl: string | null;
   teamLogoUrlLight: string | null;
 };
@@ -162,6 +164,8 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
     })
     .from(rosterMemberships)
     .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))
@@ -185,6 +189,8 @@ export const getPlayerTeamHistory = cache(async (personId: number): Promise<{ cu
       since: rangeLower(r.period),
       until: rangeUpper(r.period),
       inactiveSince: r.inactiveSince,
+      joinSource: r.joinSource,
+      leftSource: r.leftSource,
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
     };

@@ -125,6 +125,9 @@ export const rosterMemberships = pgTable("roster_memberships", {
   // logic to display it) with a plain column — same information, no
   // parallel role vocabulary to keep in sync.
   inactiveSince: date("inactive_since"),
+  // Where the arrival / departure was announced: a link, or a plain text option (see lib/roster-source.ts). Converted to a Liquipedia reference in transfers.
+  joinSource: text("join_source"),
+  leftSource: text("left_source"),
   // EXCLUDE USING gist (person_id, team_id, role, period) added in drizzle/0000_squashed_baseline.sql
   // - same person can hold two DIFFERENT roles concurrently, not the same role twice overlapping.
   // Entries left with an unknown end date (open period + has_left) are excluded from it, see 0042.

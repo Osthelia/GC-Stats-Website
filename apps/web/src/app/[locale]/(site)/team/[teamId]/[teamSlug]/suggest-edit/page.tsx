@@ -63,6 +63,8 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       since: m.since,
       until: null,
       inactiveSince: m.inactiveSince,
+      joinSource: m.joinSource,
+      leftSource: m.leftSource,
       isCurrent: true,
     })),
     ...roster.formers.map((m) => ({
@@ -74,6 +76,8 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       since: m.since,
       until: m.until,
       inactiveSince: m.inactiveSince,
+      joinSource: m.joinSource,
+      leftSource: m.leftSource,
       isCurrent: false,
     })),
   ];

@@ -222,11 +222,28 @@ export type AdminChangeRequestDetail = {
   subjectId: number;
   subjectLabel: string | null;
   requestedByUsername: string | null;
+  /** Player profile linked to the requester's account, null when there is none (or no requester). */
+  requesterPlayer: { personId: number; handle: string; matchesSubject: boolean } | null;
   reason: string | null;
   status: ChangeRequestStatus;
   createdAt: string;
   items: AdminChangeRequestItem[];
 };
+
+/** Player linked to the requester's account, and whether it is the edited person (or, for a team, a member of it). */
+async function getRequesterPlayer(requestedBy: string | null, subjectType: "team" | "person", subjectId: number): Promise<AdminChangeRequestDetail["requesterPlayer"]> {
+  if (!requestedBy) return null;
+  const [player] = await db.select({ personId: people.id, handle: people.handle }).from(people).where(eq(people.userId, requestedBy)).limit(1);
+  if (!player) return null;
+  if (subjectType === "person") return { ...player, matchesSubject: player.personId === subjectId };
+
+  const [membership] = await db
+    .select({ id: rosterMemberships.id })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.personId, player.personId), eq(rosterMemberships.teamId, subjectId)))
+    .limit(1);
+  return { ...player, matchesSubject: Boolean(membership) };
+}
 
 export async function getAdminChangeRequestDetail(id: number): Promise<AdminChangeRequestDetail | null> {
   const [row] = await db
@@ -234,6 +251,7 @@ export async function getAdminChangeRequestDetail(id: number): Promise<AdminChan
       id: changeRequests.id,
       subjectType: changeRequests.subjectType,
       subjectId: changeRequests.subjectId,
+      requestedBy: changeRequests.requestedBy,
       requestedByUsername: users.username,
       reason: changeRequests.reason,
       status: changeRequests.status,
@@ -244,6 +262,8 @@ export async function getAdminChangeRequestDetail(id: number): Promise<AdminChan
     .where(eq(changeRequests.id, id))
     .limit(1);
   if (!row) return null;
+
+  const requesterPlayer = await getRequesterPlayer(row.requestedBy, row.subjectType === "team" ? "team" : "person", row.subjectId);
 
   const resolvedByAlias = users;
   const items = await db
@@ -310,6 +330,7 @@ export async function getAdminChangeRequestDetail(id: number): Promise<AdminChan
     subjectId: row.subjectId,
     subjectLabel: label,
     requestedByUsername: row.requestedByUsername,
+    requesterPlayer,
     reason: row.reason,
     status: row.status as ChangeRequestStatus,
     createdAt: row.createdAt.toISOString(),

@@ -473,7 +473,9 @@
             "notAuthorized": "Bunu yapamazsın.",
             "resolved": "Bu değişiklik talebi sonuçlandı, tartışma kapatıldı."
           }
-        }
+        },
+        "joinSource": "Katılım kaynağı",
+        "leftSource": "Ayrılık kaynağı"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "Veri",
     "transparency": "Şeffaflık",
     "finance": "Finans",
-    "developers": "Geliştiriciler"
+    "developers": "Geliştiriciler",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "Logo kaydı artık mevcut değil.",
           "alreadyLinked": "Bu oyuncu zaten başka bir hesaba bağlı.",
           "unknownField": "Desteklenmeyen alan.",
-          "unknown": "Bilinmeyen hata."
+          "unknown": "Bilinmeyen hata.",
+          "invalidSource": "Kaynak bağlantısı artık geçerli değil."
         },
         "oldValue": "Mevcut",
         "newValue": "Önerilen",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "Talep edene yanıt ver…",
           "send": "Gönder",
           "error": "Bir şeyler ters gitti."
-        }
+        },
+        "requesterNoPlayer": "Talep edenin hesabına bağlı oyuncu hesabı yok.",
+        "requesterPlayerMatch": "Bağlı oyuncu hesabı: {handle}, düzenlenen profil bu.",
+        "requesterPlayerOther": "Bağlı oyuncu hesabı: {handle}, düzenlenen profilden farklı bir profil.",
+        "requesterTeamMatch": "Bağlı oyuncu hesabı: {handle}, düzenlenen takımın rosterında.",
+        "requesterTeamOther": "Bağlı oyuncu hesabı: {handle}, düzenlenen takımın rosterında değil.",
+        "joinSource": "Katılım kaynağı",
+        "leftSource": "Ayrılık kaynağı"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "Liquipedia'ya ulaşılamadı, daha sonra tekrar dene.",
           "errorInvalid": "Geçersiz turnuva.",
           "errorBusy": "Bu turnuva için zaten bir içe aktarma sürüyor."
+        },
+        "talent": {
+          "tab": "Yayın yetenekleri",
+          "wikicodeTitle": "Yetenek wikicode'u",
+          "wikicodeDescription": "Turnuvanın Liquipedia sayfasındaki Talent bölümünü (BroadcasterCard şablonları) yapıştırın.",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "Analiz et",
+          "analyzing": "Analiz ediliyor...",
+          "parsedCount": "{count, plural, one {# yetenek bulundu} other {# yetenek bulundu}}",
+          "tableTitle": "Kredilendirilecek yetenekler",
+          "tableDescription": "İşaretlenen her yetenek, kartındaki rollerle turnuvada kredilendirilir. Liquipedia sayfası daha sonra Liquipedia içe aktarımı tarafından okunur.",
+          "empty": "Yetenekleri listelemek için bir wikicode analiz edin.",
+          "alreadyCredited": "{count, plural, one {# kredi turnuvada zaten var} other {# kredi turnuvada zaten var}}",
+          "pickPerson": "Bir kişi seçin",
+          "searchPerson": "Kişi ara",
+          "noResults": "Kişi bulunamadı",
+          "checkedCount": "{count, plural, one {# yetenek seçildi} other {# yetenek seçildi}}",
+          "importButton": "Kredileri içe aktar",
+          "importing": "İçe aktarılıyor...",
+          "success": "{created, plural, one {# kredi oluşturuldu} other {# kredi oluşturuldu}}, {skipped} zaten mevcut.",
+          "error": {
+            "invalid": "Geçersiz wikicode.",
+            "tooLong": "Bu wikicode çok uzun.",
+            "noCards": "Bilinen pozisyona sahip BroadcasterCard bulunamadı.",
+            "empty": "İçe aktarılacak bir şey yok.",
+            "tooMany": "Aynı anda çok fazla yetenek.",
+            "tournamentNotFound": "Bu turnuva mevcut değil.",
+            "rows": "Bazı satırlar geçersiz."
+          },
+          "rowError": {
+            "personRequired": "Bu yetenek için kişiyi seçin.",
+            "personNotFound": "Bu kişi mevcut değil.",
+            "invalidName": "Geçersiz Liquipedia adı.",
+            "invalidCredits": "Geçersiz krediler."
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "Takımdan ayrıldı",
       "untilLabel": "Ayrılış tarihi",
       "unknownHint": "Bitiş tarihi bilinmiyor, bilmiyorsan boş bırak."
+    },
+    "rosterSource": {
+      "placeholder": "Duyuru bağlantısı",
+      "error": {
+        "invalidUrl": "http:// veya https:// ile başlayan geçerli bir bağlantı girin.",
+        "sourceTooLong": "Bu bağlantı çok uzun (en fazla 500 karakter).",
+        "invalidSource": "Bu seçenek burada kullanılamaz.",
+        "requiresLeft": "Ayrılış kaynağı için üyeyi ayrıldı olarak işaretleyin."
+      },
+      "joinLabel": "Katılım kaynağı",
+      "leftLabel": "Ayrılık kaynağı",
+      "option": {
+        "none": "Kaynak yok",
+        "link": "Duyuru bağlantısı",
+        "startedTournament": "Bir turnuvada oynamaya başladı",
+        "stoppedTournament": "Bir turnuvadan itibaren oynamayı bıraktı",
+        "insideSource": "Dahili kaynak",
+        "declaredByPlayer": "Oyuncu tarafından bildirildi"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "Satır ekle",
       "hint": "Mevcut bir kaydı düzenlemeyi veya kaldırmayı önerebilir, en fazla 6 yeni kayıt ekleyebilirsiniz. Buradaki her şey kadroyu değiştirmeden önce ekip tarafından incelenir.",
       "hasLeft": "Takımdan ayrıldı",
-      "untilLabel": "Ayrılış tarihi"
+      "untilLabel": "Ayrılış tarihi",
+      "sourcePlaceholder": "Duyuru bağlantısı",
+      "joinSourceLabel": "Katılım kaynağı",
+      "leftSourceLabel": "Ayrılık kaynağı",
+      "sourceOption": {
+        "none": "Kaynak yok",
+        "link": "Duyuru bağlantısı",
+        "startedTournament": "Bir turnuvada oynamaya başladı",
+        "stoppedTournament": "Bir turnuvadan itibaren oynamayı bıraktı",
+        "insideSource": "Dahili kaynak",
+        "declaredByPlayer": "Oyuncu tarafından bildirildi"
+      }
     },
     "nameHistory": {
       "title": "İsim geçmişi",
@@ -6061,7 +6137,10 @@
       "consentRequired": "Fotoğraf hakları ve onay koşullarını kabul etmelisiniz.",
       "invalidType": "Yalnızca JPG, PNG veya WebP fotoğrafları kabul edilir.",
       "tooSmall": "Bu fotoğraf çok küçük (en kısa kenarda en az 400 px).",
-      "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
+      "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin.",
+      "sourceTooLong": "Bu bağlantı çok uzun (en fazla 500 karakter).",
+      "invalidSource": "Bu seçenek burada kullanılamaz.",
+      "leftSourceRequiresLeft": "Ayrılış kaynağı için üyenin ayrıldı olarak işaretlenmesi gerekir."
     },
     "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı.",
     "useLinkedDiscord": "Bağlı Discord hesabımı kullan"
@@ -6431,7 +6510,9 @@
     "stageSelector": "Aşama",
     "bracketTemplate": "Liquipedia şablonu",
     "bracketHint": "Oluşturucuyu aç, bu şablonu gir ve sonucu sayfaya yapıştır.",
-    "bracketGenerator": "Oluşturucuyu aç"
+    "bracketGenerator": "Oluşturucuyu aç",
+    "talentTab": "Yetenekler",
+    "talentHint": "Sunucular, anlatıcılar, gözlemciler ve yapım kredileri"
   },
   "matchPoster": {
     "title": "Maç görseli",
@@ -6505,5 +6586,42 @@
     "points": "{label} puanları üzerinden katıldı",
     "pointsUnknown": "Puanlar üzerinden katıldı",
     "iconLabel": "Katılım kaynağı"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "GC Stats verilerini Liquipedia wikicode biçimine dönüştüren araçlar.",
+    "transfersTitle": "Transferler",
+    "transfersHint": "Aylık transfer sayfasını roster değişiklikleriyle tamamlayın.",
+    "tournamentsTitle": "Turnuva ve maç",
+    "tournamentsHint": "Wikicode dışa aktarmak için bir turnuva arayın, sonra sayfasından bir maç seçin.",
+    "tournamentPlaceholder": "Bir turnuva seçin",
+    "tournamentSearchPlaceholder": "Turnuva ara",
+    "tournamentNoResults": "Turnuva bulunamadı."
+  },
+  "liquipediaTransfers": {
+    "title": "Liquipedia transferleri",
+    "back": "Liquipedia sayfasına dön",
+    "subtitle": "Aylık bir transfer sayfasının wikicode içeriğini yapıştırın. GC Stats o ayın roster değişikliklerini en yeniden en eskiye ekler ve mevcut satırlara dokunmaz.",
+    "wikicodeLabel": "Transfer sayfasının wikicode içeriği",
+    "wikicodePlaceholder": "Wikicode içeriğini buraya yapıştırın",
+    "monthLabel": "Ay",
+    "monthHint": "Boş bırakırsanız ay, sayfa başlığından veya tarihlerinden okunur.",
+    "submit": "Sayfayı tamamla",
+    "submitting": "Sayfa tamamlanıyor",
+    "summary": "{month} için eklenen satırlar: {count}",
+    "nothingToAdd": "Eklenecek bir şey yok, {month} ayının tüm roster değişiklikleri sayfada zaten var.",
+    "alreadyListed": "Sayfada zaten var ({count}), değiştirilmedi:",
+    "unlinkedTeams": "Liquipedia adı olmayan takımlar, GC Stats adıyla yazıldı ({count}):",
+    "unlinkedPeople": "Liquipedia adı olmayan kişiler, takma adlarıyla yazıldı ({count}):",
+    "missingSources": "Kullanılabilir kaynağı olmayan değişiklikler, referanssız bırakıldı ({count}):",
+    "error": {
+      "required": "Transfer sayfasının wikicode içeriğini yapıştırın.",
+      "tooLong": "Bu wikicode çok uzun (en fazla 300.000 karakter).",
+      "missingStart": "Wikicode içinde Transfer Start şablonu bulunmalı.",
+      "missingEnd": "Wikicode içinde Transfer Start şablonundan sonra Transfer End şablonu bulunmalı.",
+      "invalid": "Geçerli bir ay girin.",
+      "undetected": "Ay sayfadan okunamadı, ay alanından seçin.",
+      "generic": "Bir şeyler ters gitti, lütfen tekrar deneyin."
+    }
   }
 }

@@ -71,6 +71,8 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       since: h.since,
       until: null,
       inactiveSince: h.inactiveSince,
+      joinSource: h.joinSource,
+      leftSource: h.leftSource,
       isCurrent: true,
     })),
     ...teamHistory.formers.map((h) => ({
@@ -82,6 +84,8 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       since: h.since,
       until: h.until,
       inactiveSince: h.inactiveSince,
+      joinSource: h.joinSource,
+      leftSource: h.leftSource,
       isCurrent: false,
     })),
   ];

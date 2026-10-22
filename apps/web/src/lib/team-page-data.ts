@@ -123,6 +123,8 @@ export type TeamRosterMember = {
   since: string | null;
   isStaff: boolean;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
@@ -136,6 +138,8 @@ export type TeamFormerMember = {
   since: string | null;
   until: string | null;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
@@ -163,6 +167,8 @@ export async function getTeamRoster(
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
       pronouns: people.pronouns,
     })
     .from(rosterMemberships)
@@ -190,6 +196,8 @@ export async function getTeamRoster(
         since: rangeLower(r.period),
         isStaff: STAFF_ROLES.has(r.role),
         inactiveSince: r.inactiveSince,
+        joinSource: r.joinSource,
+        leftSource: r.leftSource,
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
@@ -203,6 +211,8 @@ export async function getTeamRoster(
         since: rangeLower(r.period),
         until: rangeUpper(r.period),
         inactiveSince: r.inactiveSince,
+        joinSource: r.joinSource,
+        leftSource: r.leftSource,
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,

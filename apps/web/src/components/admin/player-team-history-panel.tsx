@@ -22,6 +22,7 @@ import { TeamPicker } from "@/components/admin/team-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
 import { RosterLeftFields } from "@/components/admin/roster-left-fields";
+import { RosterSourceField } from "@/components/admin/roster-source-field";
 import {
   addPlayerTeamHistoryEntry,
   updatePlayerTeamHistoryEntry,
@@ -68,6 +69,8 @@ function TeamHistoryCard({
   const [until, setUntil] = useState(entry.until ?? "");
   const [hasLeft, setHasLeft] = useState(entry.hasLeft);
   const [inactiveSince, setInactiveSince] = useState(entry.inactiveSince ?? "");
+  const [joinSource, setJoinSource] = useState(entry.joinSource ?? "");
+  const [leftSource, setLeftSource] = useState(entry.leftSource ?? "");
   const [fieldErrors, setFieldErrors] = useState<TeamHistoryEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -80,12 +83,12 @@ function TeamHistoryCard({
     const closeIds = hasLeft ? [] : await resolveConflicts(playerId, playerHandle, entry.teamId, entry.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updatePlayerTeamHistoryEntry(entry.membershipId, role, from, until, hasLeft, inactiveSince, closeIds);
+      const result = await updatePlayerTeamHistoryEntry(entry.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...entry, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null });
+      onSaved({ ...entry, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null });
       toast.success(t("historyAddSubmit"));
     });
   }
@@ -183,6 +186,8 @@ function TeamHistoryCard({
               </p>
             )}
           </div>
+          <RosterSourceField id={`history-row-${entry.membershipId}-join-source`} kind="join" value={joinSource} onChange={setJoinSource} error={fieldErrors.joinSource} disabled={!canEdit} />
+          {hasLeft && <RosterSourceField id={`history-row-${entry.membershipId}-left-source`} kind="left" value={leftSource} onChange={setLeftSource} error={fieldErrors.leftSource} disabled={!canEdit} />}
         </div>
 
         {canEdit && (
@@ -232,6 +237,8 @@ export function PlayerTeamHistoryPanel({
   const [until, setUntil] = useState("");
   const [hasLeft, setHasLeft] = useState(false);
   const [inactiveSince, setInactiveSince] = useState("");
+  const [joinSource, setJoinSource] = useState("");
+  const [leftSource, setLeftSource] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddTeamHistoryFieldErrors>({});
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
@@ -242,7 +249,7 @@ export function PlayerTeamHistoryPanel({
     const closeIds = team && !hasLeft ? await resolveConflicts(playerId, playerHandle, team.id) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addPlayerTeamHistoryEntry(playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, closeIds);
+      const result = await addPlayerTeamHistoryEntry(playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -252,6 +259,8 @@ export function PlayerTeamHistoryPanel({
       setUntil("");
       setHasLeft(false);
       setInactiveSince("");
+      setJoinSource("");
+      setLeftSource("");
       // No toast here: redundant with the reload below (which is itself the
       // visual feedback) and would get cut off before it could ever be seen.
       // The refresh also picks up memberships closed through the conflict dialog.
@@ -355,6 +364,8 @@ export function PlayerTeamHistoryPanel({
               }}
               error={err("until")}
             />
+            <RosterSourceField id="history-source-join" kind="join" value={joinSource} onChange={setJoinSource} error={fieldErrors.joinSource} />
+            {hasLeft && <RosterSourceField id="history-source-left" kind="left" value={leftSource} onChange={setLeftSource} error={fieldErrors.leftSource} />}
             <div className="flex items-end">
               <Button variant="outline" disabled={isPending} onClick={handleAdd} className="w-full">
                 {t("historyAddSubmit")}

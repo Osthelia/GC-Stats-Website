@@ -473,7 +473,9 @@
             "notAuthorized": "Você não pode fazer isso.",
             "resolved": "Este pedido de alteração foi resolvido, a discussão está encerrada."
           }
-        }
+        },
+        "joinSource": "Fonte da chegada",
+        "leftSource": "Fonte da saída"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "Dados",
     "transparency": "Transparência",
     "finance": "Finanças",
-    "developers": "Desenvolvedores"
+    "developers": "Desenvolvedores",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "A entrada de logo não existe mais.",
           "alreadyLinked": "Esta jogadora já está vinculada a outra conta.",
           "unknownField": "Campo não suportado.",
-          "unknown": "Erro desconhecido."
+          "unknown": "Erro desconhecido.",
+          "invalidSource": "O link da fonte não é mais válido."
         },
         "oldValue": "Atual",
         "newValue": "Proposto",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "Responder ao solicitante…",
           "send": "Enviar",
           "error": "Algo deu errado."
-        }
+        },
+        "requesterNoPlayer": "Nenhuma conta de player vinculada ao solicitante.",
+        "requesterPlayerMatch": "Conta de player vinculada: {handle}, é o perfil editado.",
+        "requesterPlayerOther": "Conta de player vinculada: {handle}, um perfil diferente do editado.",
+        "requesterTeamMatch": "Conta de player vinculada: {handle}, no roster da equipe editada.",
+        "requesterTeamOther": "Conta de player vinculada: {handle}, fora do roster da equipe editada.",
+        "joinSource": "Fonte da chegada",
+        "leftSource": "Fonte da saída"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "Não foi possível contactar a Liquipedia, tenta mais tarde.",
           "errorInvalid": "Torneio inválido.",
           "errorBusy": "Já existe uma importação em curso para este torneio."
+        },
+        "talent": {
+          "tab": "Talentos de transmissão",
+          "wikicodeTitle": "Wikicode dos talentos",
+          "wikicodeDescription": "Cole a seção Talent (templates BroadcasterCard) da página da Liquipedia do torneio.",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "Analisar",
+          "analyzing": "Analisando...",
+          "parsedCount": "{count, plural, one {# talento encontrado} other {# talentos encontrados}}",
+          "tableTitle": "Talentos a creditar",
+          "tableDescription": "Cada talento marcado é creditado no torneio com as funções do seu cartão. A página dele na Liquipedia é então lida pela importação da Liquipedia.",
+          "empty": "Analise um wikicode para listar os talentos.",
+          "alreadyCredited": "{count, plural, one {# crédito já no torneio} other {# créditos já no torneio}}",
+          "pickPerson": "Escolher uma pessoa",
+          "searchPerson": "Procurar uma pessoa",
+          "noResults": "Nenhuma pessoa encontrada",
+          "checkedCount": "{count, plural, one {# talento selecionado} other {# talentos selecionados}}",
+          "importButton": "Importar créditos",
+          "importing": "Importando...",
+          "success": "{created, plural, one {# crédito criado} other {# créditos criados}}, {skipped} já existentes.",
+          "error": {
+            "invalid": "Wikicode inválido.",
+            "tooLong": "Este wikicode é longo demais.",
+            "noCards": "Nenhum BroadcasterCard com função conhecida encontrado.",
+            "empty": "Nada para importar.",
+            "tooMany": "Talentos demais de uma vez.",
+            "tournamentNotFound": "Este torneio não existe.",
+            "rows": "Algumas linhas são inválidas."
+          },
+          "rowError": {
+            "personRequired": "Escolha a pessoa deste talento.",
+            "personNotFound": "Esta pessoa não existe.",
+            "invalidName": "Nome da Liquipedia inválido.",
+            "invalidCredits": "Créditos inválidos."
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "Saiu da equipe",
       "untilLabel": "Saiu em",
       "unknownHint": "Data de fim desconhecida, deixe vazio se não souber."
+    },
+    "rosterSource": {
+      "placeholder": "Link do anúncio",
+      "error": {
+        "invalidUrl": "Informe um link válido começando com http:// ou https://.",
+        "sourceTooLong": "Este link é muito longo (máximo de 500 caracteres).",
+        "invalidSource": "Esta opção não está disponível aqui.",
+        "requiresLeft": "Marque o membro como saído para definir uma fonte de saída."
+      },
+      "joinLabel": "Fonte da chegada",
+      "leftLabel": "Fonte da saída",
+      "option": {
+        "none": "Sem fonte",
+        "link": "Link do anúncio",
+        "startedTournament": "Começou a jogar em um torneio",
+        "stoppedTournament": "Parou de jogar em um torneio",
+        "insideSource": "Fonte interna",
+        "declaredByPlayer": "Declarado pelo jogador"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "Adicionar uma linha",
       "hint": "Você pode propor editar ou remover uma entrada existente e adicionar até 6 novas. Tudo aqui é revisado pela staff antes de alterar o roster.",
       "hasLeft": "Saiu da equipe",
-      "untilLabel": "Saiu em"
+      "untilLabel": "Saiu em",
+      "sourcePlaceholder": "Link do anúncio",
+      "joinSourceLabel": "Fonte da chegada",
+      "leftSourceLabel": "Fonte da saída",
+      "sourceOption": {
+        "none": "Sem fonte",
+        "link": "Link do anúncio",
+        "startedTournament": "Começou a jogar em um torneio",
+        "stoppedTournament": "Parou de jogar em um torneio",
+        "insideSource": "Fonte interna",
+        "declaredByPlayer": "Declarado pelo jogador"
+      }
     },
     "nameHistory": {
       "title": "Histórico de nomes",
@@ -6061,7 +6137,10 @@
       "consentRequired": "Você deve aceitar as condições de direitos e consentimento da foto.",
       "invalidType": "Apenas fotos JPG, PNG ou WebP são aceitas.",
       "tooSmall": "Esta foto é muito pequena (mínimo de 400 px no lado mais curto).",
-      "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
+      "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...).",
+      "sourceTooLong": "Este link é muito longo (máximo de 500 caracteres).",
+      "invalidSource": "Esta opção não está disponível aqui.",
+      "leftSourceRequiresLeft": "Uma fonte de saída exige que o membro esteja marcado como saído."
     },
     "discordIdHint": "ID de usuário do Discord (Modo desenvolvedor, clique direito no perfil, Copiar ID do usuário) ou link de convite de servidor.",
     "useLinkedDiscord": "Usar minha conta do Discord vinculada"
@@ -6431,7 +6510,9 @@
     "stageSelector": "Fase",
     "bracketTemplate": "Template da Liquipedia",
     "bracketHint": "Abra o gerador, informe este template e cole o resultado na página.",
-    "bracketGenerator": "Abrir o gerador"
+    "bracketGenerator": "Abrir o gerador",
+    "talentTab": "Talentos",
+    "talentHint": "Hosts, casters, observers e créditos de produção"
   },
   "matchPoster": {
     "title": "Imagem da partida",
@@ -6505,5 +6586,42 @@
     "points": "Classificado via pontos {label}",
     "pointsUnknown": "Classificado via pontos",
     "iconLabel": "Origem da classificação"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "Ferramentas que transformam os dados do GC Stats em wikicode da Liquipedia.",
+    "transfersTitle": "Transferências",
+    "transfersHint": "Complete uma página mensal de transferências com as mudanças de roster.",
+    "tournamentsTitle": "Torneio e partida",
+    "tournamentsHint": "Busque um torneio para exportar o wikicode e escolha uma partida na página dele.",
+    "tournamentPlaceholder": "Selecione um torneio",
+    "tournamentSearchPlaceholder": "Buscar um torneio",
+    "tournamentNoResults": "Nenhum torneio encontrado."
+  },
+  "liquipediaTransfers": {
+    "title": "Transferências da Liquipedia",
+    "back": "Voltar para a Liquipedia",
+    "subtitle": "Cole o wikicode de uma página mensal de transferências. O GC Stats adiciona as mudanças de roster desse mês, da mais recente para a mais antiga, sem alterar as linhas existentes.",
+    "wikicodeLabel": "Wikicode da página de transferências",
+    "wikicodePlaceholder": "Cole o wikicode aqui",
+    "monthLabel": "Mês",
+    "monthHint": "Deixe vazio para ler o mês no título da página ou nas suas datas.",
+    "submit": "Completar a página",
+    "submitting": "Completando a página",
+    "summary": "Linhas adicionadas para {month}: {count}",
+    "nothingToAdd": "Nada a adicionar, todas as mudanças de roster de {month} já estão na página.",
+    "alreadyListed": "Já estão na página ({count}), sem alterações:",
+    "unlinkedTeams": "Equipes sem nome na Liquipedia, escritas com o nome do GC Stats ({count}):",
+    "unlinkedPeople": "Pessoas sem nome na Liquipedia, escritas com o nick ({count}):",
+    "missingSources": "Mudanças sem fonte utilizável, deixadas sem referência ({count}):",
+    "error": {
+      "required": "Cole o wikicode da página de transferências.",
+      "tooLong": "Este wikicode é muito longo (máximo de 300 000 caracteres).",
+      "missingStart": "O wikicode deve conter o modelo Transfer Start.",
+      "missingEnd": "O wikicode deve conter o modelo Transfer End depois do modelo Transfer Start.",
+      "invalid": "Informe um mês válido.",
+      "undetected": "Não foi possível ler o mês na página, escolha o mês no campo indicado.",
+      "generic": "Algo deu errado, tente novamente."
+    }
   }
 }

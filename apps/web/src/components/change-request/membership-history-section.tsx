@@ -14,6 +14,7 @@ import { CountryBadge } from "@/components/team/country-badge";
 import { PublicSelect } from "@/components/forms/public-select";
 import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
 import { ROSTER_ROLES, MAX_MEMBERSHIP_ADDITIONS, type MembershipOperation } from "@/lib/change-request-fields";
+import { PublicRosterSourceField } from "@/components/change-request/public-roster-source-field";
 import { rosterRoleStyles } from "@/lib/roster-roles";
 
 const inputClass =
@@ -28,10 +29,12 @@ export type MembershipEntryView = {
   since: string | null;
   until: string | null;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   isCurrent: boolean;
 };
 
-type MembershipFields = { role: string; since: string; until: string; hasLeft: boolean; inactiveSince: string };
+type MembershipFields = { role: string; since: string; until: string; hasLeft: boolean; inactiveSince: string; joinSource: string; leftSource: string };
 type EditState = MembershipFields & { deleted: boolean };
 type AddDraft = MembershipFields & { uid: number; entity: { id: number; label: string } | null };
 
@@ -64,7 +67,7 @@ export function MembershipHistorySection({
 
   const [edits, setEdits] = useState<Record<number, EditState>>(() =>
     Object.fromEntries(
-      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", hasLeft: !e.isCurrent, inactiveSince: e.inactiveSince ?? "", deleted: false }])
+      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", hasLeft: !e.isCurrent, inactiveSince: e.inactiveSince ?? "", joinSource: e.joinSource ?? "", leftSource: e.leftSource ?? "", deleted: false }])
     )
   );
   const [additions, setAdditions] = useState<AddDraft[]>([]);
@@ -86,7 +89,9 @@ export function MembershipHistorySection({
         edit.since !== (entry.since ?? today()) ||
         (edit.until || null) !== entry.until ||
         edit.hasLeft !== !entry.isCurrent ||
-        (edit.inactiveSince || null) !== entry.inactiveSince;
+        (edit.inactiveSince || null) !== entry.inactiveSince ||
+        (edit.joinSource.trim() || null) !== entry.joinSource ||
+        (edit.leftSource.trim() || null) !== entry.leftSource;
       if (changed) {
         ops.push({
           type: "edit",
@@ -96,6 +101,8 @@ export function MembershipHistorySection({
           until: edit.until || null,
           hasLeft: edit.hasLeft,
           inactiveSince: edit.inactiveSince || null,
+          joinSource: edit.joinSource.trim() || null,
+          leftSource: edit.hasLeft ? edit.leftSource.trim() || null : null,
         });
       }
     }
@@ -110,6 +117,8 @@ export function MembershipHistorySection({
         until: draft.until || null,
         hasLeft: draft.hasLeft,
         inactiveSince: draft.inactiveSince || null,
+        joinSource: draft.joinSource.trim() || null,
+        leftSource: draft.hasLeft ? draft.leftSource.trim() || null : null,
       });
     }
     onChange(ops);
@@ -123,7 +132,7 @@ export function MembershipHistorySection({
 
   function addRow() {
     if (additions.length >= MAX_MEMBERSHIP_ADDITIONS) return;
-    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", hasLeft: false, inactiveSince: "" }];
+    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", hasLeft: false, inactiveSince: "", joinSource: "", leftSource: "" }];
     setAdditions(next);
   }
 
@@ -154,12 +163,14 @@ export function MembershipHistorySection({
           <input
             type="checkbox"
             checked={value.hasLeft}
-            onChange={(e) => update({ hasLeft: e.target.checked, until: e.target.checked ? value.until : "" })}
+            onChange={(e) => update({ hasLeft: e.target.checked, until: e.target.checked ? value.until : "", leftSource: e.target.checked ? value.leftSource : "" })}
             className="h-4 w-4 accent-[#e4ae22]"
           />
           {t("hasLeft")}
         </label>
         <input type="date" value={value.inactiveSince} onChange={(e) => update({ inactiveSince: e.target.value })} placeholder={t("inactiveSince")} className={inputClass} />
+        <PublicRosterSourceField kind="join" value={value.joinSource} onChange={(v) => update({ joinSource: v })} />
+        {value.hasLeft && <PublicRosterSourceField kind="left" value={value.leftSource} onChange={(v) => update({ leftSource: v })} />}
       </div>
     );
   }

@@ -60,6 +60,7 @@ export function SiteFooter() {
         { label: t("contributeAddTournament"), href: "/help/add_tournament" },
         { label: t("contributeBecomePublisher"), href: "/become-publisher" },
         { label: t("contributeWidgets"), href: "/widget" },
+        { label: t("contributeLiquipedia"), href: "/liquipedia" },
       ],
     },
     {

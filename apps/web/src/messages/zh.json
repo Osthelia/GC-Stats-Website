@@ -473,7 +473,9 @@
             "notAuthorized": "您无权执行此操作。",
             "resolved": "此修改请求已处理完毕，讨论已关闭。"
           }
-        }
+        },
+        "joinSource": "加入来源",
+        "leftSource": "离队来源"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "数据",
     "transparency": "透明度",
     "finance": "财务",
-    "developers": "开发者"
+    "developers": "开发者",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "该商标记录已不存在。",
           "alreadyLinked": "该选手已绑定至另一个账户。",
           "unknownField": "不受支持的字段。",
-          "unknown": "未知错误。"
+          "unknown": "未知错误。",
+          "invalidSource": "来源链接已失效。"
         },
         "oldValue": "当前",
         "newValue": "建议修改为",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "回复申请人…",
           "send": "发送",
           "error": "出现了错误。"
-        }
+        },
+        "requesterNoPlayer": "申请者未关联选手账号。",
+        "requesterPlayerMatch": "已关联选手账号：{handle}，即被编辑的资料。",
+        "requesterPlayerOther": "已关联选手账号：{handle}，与被编辑的资料不同。",
+        "requesterTeamMatch": "已关联选手账号：{handle}，在被编辑队伍的阵容中。",
+        "requesterTeamOther": "已关联选手账号：{handle}，不在被编辑队伍的阵容中。",
+        "joinSource": "加入来源",
+        "leftSource": "离队来源"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "无法连接 Liquipedia，请稍后再试。",
           "errorInvalid": "无效的赛事。",
           "errorBusy": "此赛事的导入已在进行中。"
+        },
+        "talent": {
+          "tab": "转播人员",
+          "wikicodeTitle": "人员维基代码",
+          "wikicodeDescription": "粘贴赛事 Liquipedia 页面的 Talent 部分（BroadcasterCard 模板）。",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "分析",
+          "analyzing": "分析中...",
+          "parsedCount": "{count, plural, other {# 位人员已找到}}",
+          "tableTitle": "待署名的人员",
+          "tableDescription": "每位勾选的人员将按其卡片上的职位在赛事中署名。之后 Liquipedia 导入会读取其页面。",
+          "empty": "分析维基代码以列出人员。",
+          "alreadyCredited": "{count, plural, other {# 条署名已在赛事中}}",
+          "pickPerson": "选择一个人",
+          "searchPerson": "搜索人员",
+          "noResults": "未找到人员",
+          "checkedCount": "{count, plural, other {# 位人员已选择}}",
+          "importButton": "导入署名",
+          "importing": "导入中...",
+          "success": "{created, plural, other {已创建#条署名}}，{skipped} 条已存在。",
+          "error": {
+            "invalid": "维基代码无效。",
+            "tooLong": "此维基代码过长。",
+            "noCards": "未找到职位已知的 BroadcasterCard。",
+            "empty": "没有可导入的内容。",
+            "tooMany": "一次人员过多。",
+            "tournamentNotFound": "此赛事不存在。",
+            "rows": "部分行无效。"
+          },
+          "rowError": {
+            "personRequired": "请选择此人员对应的人。",
+            "personNotFound": "此人不存在。",
+            "invalidName": "Liquipedia 名称无效。",
+            "invalidCredits": "署名无效。"
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "已离开战队",
       "untilLabel": "离开于",
       "unknownHint": "结束日期未知，不知道时请留空。"
+    },
+    "rosterSource": {
+      "placeholder": "公告链接",
+      "error": {
+        "invalidUrl": "请输入以 http:// 或 https:// 开头的有效链接。",
+        "sourceTooLong": "此链接过长（最多 500 个字符）。",
+        "invalidSource": "此选项在此处不可用。",
+        "requiresLeft": "要设置离队来源，请先将成员标记为已离队。"
+      },
+      "joinLabel": "加入来源",
+      "leftLabel": "离队来源",
+      "option": {
+        "none": "无来源",
+        "link": "公告链接",
+        "startedTournament": "自某赛事起开始出场",
+        "stoppedTournament": "自某赛事起不再出场",
+        "insideSource": "内部消息",
+        "declaredByPlayer": "由选手本人申报"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "添加一行",
       "hint": "您可以提议编辑或移除现有记录，并最多新增 6 条记录，这里的所有内容都会经团队审核后才会改动名单。",
       "hasLeft": "已离开战队",
-      "untilLabel": "离开于"
+      "untilLabel": "离开于",
+      "sourcePlaceholder": "公告链接",
+      "joinSourceLabel": "加入来源",
+      "leftSourceLabel": "离队来源",
+      "sourceOption": {
+        "none": "无来源",
+        "link": "公告链接",
+        "startedTournament": "自某赛事起开始出场",
+        "stoppedTournament": "自某赛事起不再出场",
+        "insideSource": "内部消息",
+        "declaredByPlayer": "由选手本人申报"
+      }
     },
     "nameHistory": {
       "title": "曾用名历史",
@@ -6061,7 +6137,10 @@
       "consentRequired": "你必须接受照片权利与授权条件。",
       "invalidType": "仅接受 JPG、PNG 或 WebP 格式的照片。",
       "tooSmall": "这张照片太小（最短边至少 400 像素）。",
-      "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
+      "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。",
+      "sourceTooLong": "此链接过长（最多 500 个字符）。",
+      "invalidSource": "此选项在此处不可用。",
+      "leftSourceRequiresLeft": "离队来源要求成员已标记为离队。"
     },
     "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。",
     "useLinkedDiscord": "使用我已关联的 Discord 账号"
@@ -6431,7 +6510,9 @@
     "stageSelector": "阶段",
     "bracketTemplate": "Liquipedia 模板",
     "bracketHint": "打开生成器，输入此模板，并将结果粘贴到页面中。",
-    "bracketGenerator": "打开生成器"
+    "bracketGenerator": "打开生成器",
+    "talentTab": "转播人员",
+    "talentHint": "主持、解说、观察员和制作署名"
   },
   "matchPoster": {
     "title": "比赛图片",
@@ -6505,5 +6586,42 @@
     "points": "通过 {label} 积分晋级",
     "pointsUnknown": "通过积分晋级",
     "iconLabel": "晋级来源"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "将 GC Stats 数据转换为 Liquipedia 维基代码的工具。",
+    "transfersTitle": "转会",
+    "transfersHint": "用阵容变动补全每月转会页面。",
+    "tournamentsTitle": "赛事与比赛",
+    "tournamentsHint": "搜索赛事以导出维基代码，然后在其页面中选择比赛。",
+    "tournamentPlaceholder": "选择赛事",
+    "tournamentSearchPlaceholder": "搜索赛事",
+    "tournamentNoResults": "未找到赛事。"
+  },
+  "liquipediaTransfers": {
+    "title": "Liquipedia 转会",
+    "back": "返回 Liquipedia",
+    "subtitle": "粘贴每月转会页面的维基代码。GC Stats 会按从新到旧的顺序添加该月的阵容变动，并保持现有行不变。",
+    "wikicodeLabel": "转会页面的维基代码",
+    "wikicodePlaceholder": "在此粘贴维基代码",
+    "monthLabel": "月份",
+    "monthHint": "留空则从页面标题或日期中读取月份。",
+    "submit": "补全页面",
+    "submitting": "正在补全页面",
+    "summary": "{month} 新增的行数：{count}",
+    "nothingToAdd": "没有需要添加的内容，{month} 的所有阵容变动都已在页面上。",
+    "alreadyListed": "页面上已有 ({count})，保持不变：",
+    "unlinkedTeams": "没有 Liquipedia 名称的队伍，已使用 GC Stats 名称 ({count})：",
+    "unlinkedPeople": "没有 Liquipedia 名称的人员，已使用其昵称 ({count})：",
+    "missingSources": "没有可用来源的变动，未添加引用 ({count})：",
+    "error": {
+      "required": "请粘贴转会页面的维基代码。",
+      "tooLong": "此维基代码过长（最多 300,000 个字符）。",
+      "missingStart": "维基代码必须包含 Transfer Start 模板。",
+      "missingEnd": "维基代码必须在 Transfer Start 模板之后包含 Transfer End 模板。",
+      "invalid": "请输入有效的月份。",
+      "undetected": "无法从页面中读取月份，请在月份栏中选择。",
+      "generic": "出了点问题，请重试。"
+    }
   }
 }

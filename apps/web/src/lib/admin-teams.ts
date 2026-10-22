@@ -192,6 +192,8 @@ export type AdminTeamRosterMember = {
   isCurrent: boolean;
   hasLeft: boolean;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
 };
 
 /** Every stint, not just the current roster — join/left/inactive dates need to be visible directly on already-listed (past) members too, not just the currently active ones. */
@@ -207,6 +209,8 @@ export async function getAdminTeamRoster(teamId: number): Promise<AdminTeamRoste
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
     })
     .from(rosterMemberships)
     .innerJoin(people, eq(people.id, rosterMemberships.personId))

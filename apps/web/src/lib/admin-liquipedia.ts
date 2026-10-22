@@ -14,7 +14,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import type { PersonPickerResult } from "@/lib/person-search";
 import { groupBracketContainers } from "@/lib/bracket-group-containers";
-import { entrants, entrantMembers, mapPlayerStats, rosterMemberships, tournaments, people, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames, liquipediaPersonNames } from "@gc-stats/db";
+import { entrants, entrantMembers, mapPlayerStats, rosterMemberships, tournaments, people, stages, stageContainers, matches, groupEntries, teams, teamNameHistory, liquipediaTeamNames, liquipediaPersonNames, productionCredits } from "@gc-stats/db";
 
 // Roster roles of people who play; every other role is staff.
 export const PLAYER_ROLES = ["player", "player-igl", "sub", "stand_in"];
@@ -126,8 +126,8 @@ export type LiquipediaTournamentPerson = {
   handle: string;
   /** Team the person plays or works for in this tournament. */
   teamName: string;
-  /** Entrant the person appears under in this tournament. */
-  entrantId: number;
+  /** Entrant the person appears under in this tournament, null for broadcast talent. */
+  entrantId: number | null;
   kind: "player" | "staff";
   /** Exact roster role: player, stand_in, coach, manager, ... */
   role: string;
@@ -141,7 +141,7 @@ export type LiquipediaTournamentPerson = {
 /**
  * Everyone of a tournament's teams (players and staff), with their current Liquipedia name.
  * Same sources as the public page: the locked roster, else the players with recorded stats,
- * plus the staff the team had during the tournament dates.
+ * plus the staff the team had during the tournament dates and the people credited on the tournament.
  */
 export async function getTournamentLiquipediaPeople(tournamentId: number): Promise<LiquipediaTournamentPerson[]> {
   const [tournament] = await db.select({ startDate: tournaments.startDate, endDate: tournaments.endDate }).from(tournaments).where(eq(tournaments.id, tournamentId));
@@ -151,16 +151,17 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
     .select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName })
     .from(entrants)
     .where(eq(entrants.tournamentId, tournamentId));
-  if (entrantRows.length === 0) return [];
   const entrantIds = entrantRows.map((e) => e.id);
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
 
-  const [memberRows, statRows, staffRows] = await Promise.all([
-    db.select({ entrantId: entrantMembers.entrantId, personId: entrantMembers.personId, role: entrantMembers.role }).from(entrantMembers).where(inArray(entrantMembers.entrantId, entrantIds)),
-    db
-      .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: mapPlayerStats.personId })
-      .from(mapPlayerStats)
-      .where(and(inArray(mapPlayerStats.entrantId, entrantIds), isNotNull(mapPlayerStats.personId))),
+  const [memberRows, statRows, staffRows, creditRows] = await Promise.all([
+    entrantIds.length ? db.select({ entrantId: entrantMembers.entrantId, personId: entrantMembers.personId, role: entrantMembers.role }).from(entrantMembers).where(inArray(entrantMembers.entrantId, entrantIds)) : Promise.resolve([]),
+    entrantIds.length
+      ? db
+          .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: mapPlayerStats.personId })
+          .from(mapPlayerStats)
+          .where(and(inArray(mapPlayerStats.entrantId, entrantIds), isNotNull(mapPlayerStats.personId)))
+      : Promise.resolve([]),
     teamIds.length
       ? db
           .selectDistinct({ teamId: rosterMemberships.teamId, personId: rosterMemberships.personId, role: rosterMemberships.role })
@@ -174,6 +175,7 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
             )
           )
       : Promise.resolve([]),
+    db.selectDistinct({ personId: productionCredits.personId, role: productionCredits.role }).from(productionCredits).where(eq(productionCredits.tournamentId, tournamentId)),
   ]);
 
   // person -> the entrant they appear under (first one wins)
@@ -206,7 +208,16 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
     setRole(row.personId, row.role);
     if (!entrantOfPerson.has(row.personId)) entrantOfPerson.set(row.personId, entrantId);
   }
-  if (entrantOfPerson.size === 0) return [];
+  // Broadcast talent has no entrant, someone already on a team keeps their team role.
+  const talentIds = new Set<number>();
+  for (const row of creditRows) {
+    if (!roleOfPerson.has(row.personId)) {
+      setRole(row.personId, row.role);
+      talentIds.add(row.personId);
+    }
+  }
+  const personIds = [...new Set([...entrantOfPerson.keys(), ...talentIds])];
+  if (personIds.length === 0) return [];
 
   const personRows = await db
     .select({
@@ -221,7 +232,7 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
     })
     .from(people)
     .leftJoin(liquipediaPersonNames, eq(liquipediaPersonNames.personId, people.id))
-    .where(inArray(people.id, [...entrantOfPerson.keys()]));
+    .where(inArray(people.id, personIds));
 
   const teamNameByEntrant = new Map(entrantRows.map((e) => [e.id, e.displayName]));
   return personRows
@@ -231,8 +242,8 @@ export async function getTournamentLiquipediaPeople(tournamentId: number): Promi
       return {
         personId: row.personId,
         handle: row.handle,
-        teamName: teamNameByEntrant.get(entrantOfPerson.get(row.personId)!) ?? "",
-        entrantId: entrantOfPerson.get(row.personId)!,
+        teamName: teamNameByEntrant.get(entrantOfPerson.get(row.personId) ?? -1) ?? "",
+        entrantId: entrantOfPerson.get(row.personId) ?? null,
         role: roleOfPerson.get(row.personId) ?? "player",
         countryCode: row.countryCode,
         liquipediaLink: row.liquipediaLink,

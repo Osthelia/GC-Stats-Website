@@ -473,7 +473,9 @@
             "notAuthorized": "คุณไม่สามารถทำสิ่งนี้ได้",
             "resolved": "คำขอแก้ไขนี้ได้รับการดำเนินการแล้ว การสนทนาถูกปิด"
           }
-        }
+        },
+        "joinSource": "แหล่งที่มาของการเข้าร่วม",
+        "leftSource": "แหล่งที่มาของการออก"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "ข้อมูล",
     "transparency": "ความโปร่งใส",
     "finance": "การเงิน",
-    "developers": "นักพัฒนา"
+    "developers": "นักพัฒนา",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "รายการโลโก้ไม่มีอยู่แล้ว",
           "alreadyLinked": "ผู้เล่นนี้เชื่อมโยงกับบัญชีอื่นแล้ว",
           "unknownField": "ไม่รองรับช่องนี้",
-          "unknown": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ"
+          "unknown": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ",
+          "invalidSource": "ลิงก์แหล่งที่มาไม่ถูกต้องอีกต่อไป"
         },
         "oldValue": "ปัจจุบัน",
         "newValue": "ที่เสนอ",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "ตอบกลับผู้ขอ…",
           "send": "ส่ง",
           "error": "เกิดข้อผิดพลาด"
-        }
+        },
+        "requesterNoPlayer": "ผู้ขอไม่มีบัญชีผู้เล่นที่เชื่อมโยงไว้",
+        "requesterPlayerMatch": "บัญชีผู้เล่นที่เชื่อมโยง: {handle} ซึ่งเป็นโปรไฟล์ที่แก้ไข",
+        "requesterPlayerOther": "บัญชีผู้เล่นที่เชื่อมโยง: {handle} ซึ่งเป็นคนละโปรไฟล์กับที่แก้ไข",
+        "requesterTeamMatch": "บัญชีผู้เล่นที่เชื่อมโยง: {handle} อยู่ในโรสเตอร์ของทีมที่แก้ไข",
+        "requesterTeamOther": "บัญชีผู้เล่นที่เชื่อมโยง: {handle} ไม่อยู่ในโรสเตอร์ของทีมที่แก้ไข",
+        "joinSource": "แหล่งที่มาของการเข้าร่วม",
+        "leftSource": "แหล่งที่มาของการออก"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "เชื่อมต่อ Liquipedia ไม่ได้ โปรดลองใหม่ภายหลัง",
           "errorInvalid": "ทัวร์นาเมนต์ไม่ถูกต้อง",
           "errorBusy": "กำลังนำเข้าข้อมูลของทัวร์นาเมนต์นี้อยู่แล้ว"
+        },
+        "talent": {
+          "tab": "ทาเลนต์ถ่ายทอดสด",
+          "wikicodeTitle": "วิกิโค้ดของทาเลนต์",
+          "wikicodeDescription": "วางส่วน Talent (เทมเพลต BroadcasterCard) จากหน้า Liquipedia ของทัวร์นาเมนต์",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "วิเคราะห์",
+          "analyzing": "กำลังวิเคราะห์...",
+          "parsedCount": "{count, plural, other {# ทาเลนต์ที่พบ}}",
+          "tableTitle": "ทาเลนต์ที่จะให้เครดิต",
+          "tableDescription": "ทาเลนต์ที่เลือกจะได้รับเครดิตในทัวร์นาเมนต์ตามตำแหน่งบนการ์ด จากนั้นการนำเข้า Liquipedia จะอ่านหน้าของพวกเขา",
+          "empty": "วิเคราะห์วิกิโค้ดเพื่อแสดงรายการทาเลนต์",
+          "alreadyCredited": "{count, plural, other {# เครดิตที่มีอยู่แล้วในทัวร์นาเมนต์}}",
+          "pickPerson": "เลือกบุคคล",
+          "searchPerson": "ค้นหาบุคคล",
+          "noResults": "ไม่พบบุคคล",
+          "checkedCount": "{count, plural, other {# ทาเลนต์ที่เลือก}}",
+          "importButton": "นำเข้าเครดิต",
+          "importing": "กำลังนำเข้า...",
+          "success": "{created, plural, other {สร้างเครดิต # รายการ}} มี {skipped} รายการอยู่แล้ว",
+          "error": {
+            "invalid": "วิกิโค้ดไม่ถูกต้อง",
+            "tooLong": "วิกิโค้ดนี้ยาวเกินไป",
+            "noCards": "ไม่พบ BroadcasterCard ที่มีตำแหน่งที่รู้จัก",
+            "empty": "ไม่มีอะไรให้นำเข้า",
+            "tooMany": "ทาเลนต์มากเกินไปในครั้งเดียว",
+            "tournamentNotFound": "ไม่มีทัวร์นาเมนต์นี้",
+            "rows": "บางแถวไม่ถูกต้อง"
+          },
+          "rowError": {
+            "personRequired": "เลือกบุคคลสำหรับทาเลนต์นี้",
+            "personNotFound": "ไม่มีบุคคลนี้",
+            "invalidName": "ชื่อ Liquipedia ไม่ถูกต้อง",
+            "invalidCredits": "เครดิตไม่ถูกต้อง"
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "ออกจากทีมแล้ว",
       "untilLabel": "ออกเมื่อ",
       "unknownHint": "ไม่ทราบวันที่สิ้นสุด ปล่อยว่างไว้หากไม่ทราบ"
+    },
+    "rosterSource": {
+      "placeholder": "ลิงก์ประกาศ",
+      "error": {
+        "invalidUrl": "กรอกลิงก์ที่ถูกต้องซึ่งขึ้นต้นด้วย http:// หรือ https://",
+        "sourceTooLong": "ลิงก์นี้ยาวเกินไป (สูงสุด 500 ตัวอักษร)",
+        "invalidSource": "ตัวเลือกนี้ใช้ไม่ได้ที่นี่",
+        "requiresLeft": "ทำเครื่องหมายว่าสมาชิกออกแล้วเพื่อกำหนดแหล่งที่มาของการออก"
+      },
+      "joinLabel": "แหล่งที่มาของการเข้าร่วม",
+      "leftLabel": "แหล่งที่มาของการออก",
+      "option": {
+        "none": "ไม่มีแหล่งที่มา",
+        "link": "ลิงก์ประกาศ",
+        "startedTournament": "เริ่มลงเล่นในทัวร์นาเมนต์",
+        "stoppedTournament": "หยุดลงเล่นตั้งแต่ทัวร์นาเมนต์",
+        "insideSource": "แหล่งข่าวภายใน",
+        "declaredByPlayer": "ผู้เล่นแจ้งเอง"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "เพิ่มแถว",
       "hint": "คุณสามารถเสนอให้แก้ไขหรือนำรายการที่มีอยู่ออก และเพิ่มรายการใหม่ได้สูงสุด 6 รายการ ทุกอย่างจะผ่านการตรวจสอบจากสตาฟก่อนโรสเตอร์จะเปลี่ยน",
       "hasLeft": "ออกจากทีมแล้ว",
-      "untilLabel": "ออกเมื่อ"
+      "untilLabel": "ออกเมื่อ",
+      "sourcePlaceholder": "ลิงก์ประกาศ",
+      "joinSourceLabel": "แหล่งที่มาของการเข้าร่วม",
+      "leftSourceLabel": "แหล่งที่มาของการออก",
+      "sourceOption": {
+        "none": "ไม่มีแหล่งที่มา",
+        "link": "ลิงก์ประกาศ",
+        "startedTournament": "เริ่มลงเล่นในทัวร์นาเมนต์",
+        "stoppedTournament": "หยุดลงเล่นตั้งแต่ทัวร์นาเมนต์",
+        "insideSource": "แหล่งข่าวภายใน",
+        "declaredByPlayer": "ผู้เล่นแจ้งเอง"
+      }
     },
     "nameHistory": {
       "title": "ประวัติชื่อ",
@@ -6061,7 +6137,10 @@
       "consentRequired": "คุณต้องยอมรับเงื่อนไขสิทธิ์และความยินยอมเกี่ยวกับรูปภาพ",
       "invalidType": "รับเฉพาะรูปภาพ JPG, PNG หรือ WebP เท่านั้น",
       "tooSmall": "รูปภาพนี้เล็กเกินไป (ด้านสั้นที่สุดต้องไม่น้อยกว่า 400 px)",
-      "invalidDiscordId": "กรอก Discord User ID ที่ถูกต้อง (17 ถึง 20 หลัก) หรือลิงก์เชิญเซิร์ฟเวอร์ (discord.gg/...)"
+      "invalidDiscordId": "กรอก Discord User ID ที่ถูกต้อง (17 ถึง 20 หลัก) หรือลิงก์เชิญเซิร์ฟเวอร์ (discord.gg/...)",
+      "sourceTooLong": "ลิงก์นี้ยาวเกินไป (สูงสุด 500 ตัวอักษร)",
+      "invalidSource": "ตัวเลือกนี้ใช้ไม่ได้ที่นี่",
+      "leftSourceRequiresLeft": "แหล่งที่มาของการออกต้องทำเครื่องหมายว่าสมาชิกออกแล้ว"
     },
     "discordIdHint": "Discord User ID (โหมดนักพัฒนา, คลิกขวาที่โปรไฟล์, คัดลอก User ID) หรือลิงก์เชิญเซิร์ฟเวอร์",
     "useLinkedDiscord": "ใช้บัญชี Discord ที่เชื่อมต่อไว้"
@@ -6431,7 +6510,9 @@
     "stageSelector": "สเตจ",
     "bracketTemplate": "เทมเพลต Liquipedia",
     "bracketHint": "เปิดตัวสร้าง ใส่เทมเพลตนี้ แล้ววางผลลัพธ์ลงในหน้า",
-    "bracketGenerator": "เปิดตัวสร้าง"
+    "bracketGenerator": "เปิดตัวสร้าง",
+    "talentTab": "ทาเลนต์",
+    "talentHint": "พิธีกร คาสเตอร์ ออบเซิร์ฟเวอร์ และเครดิตการผลิต"
   },
   "matchPoster": {
     "title": "รูปภาพแมตช์",
@@ -6505,5 +6586,42 @@
     "points": "ผ่านเข้ารอบจากคะแนน {label}",
     "pointsUnknown": "ผ่านเข้ารอบจากคะแนน",
     "iconLabel": "แหล่งที่มาของการผ่านเข้ารอบ"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "เครื่องมือที่แปลงข้อมูล GC Stats เป็นวิกิโค้ดของ Liquipedia",
+    "transfersTitle": "การย้ายทีม",
+    "transfersHint": "เติมหน้าการย้ายทีมประจำเดือนด้วยการเปลี่ยนแปลงของโรสเตอร์",
+    "tournamentsTitle": "ทัวร์นาเมนต์และแมตช์",
+    "tournamentsHint": "ค้นหาทัวร์นาเมนต์เพื่อส่งออกวิกิโค้ด แล้วเลือกแมตช์ในหน้านั้น",
+    "tournamentPlaceholder": "เลือกทัวร์นาเมนต์",
+    "tournamentSearchPlaceholder": "ค้นหาทัวร์นาเมนต์",
+    "tournamentNoResults": "ไม่พบทัวร์นาเมนต์"
+  },
+  "liquipediaTransfers": {
+    "title": "การย้ายทีมของ Liquipedia",
+    "back": "กลับไปที่ Liquipedia",
+    "subtitle": "วางวิกิโค้ดของหน้าการย้ายทีมประจำเดือน GC Stats จะเพิ่มการเปลี่ยนแปลงโรสเตอร์ของเดือนนั้นเรียงจากใหม่ไปเก่า และไม่แตะต้องแถวที่มีอยู่",
+    "wikicodeLabel": "วิกิโค้ดของหน้าการย้ายทีม",
+    "wikicodePlaceholder": "วางวิกิโค้ดที่นี่",
+    "monthLabel": "เดือน",
+    "monthHint": "เว้นว่างไว้เพื่ออ่านเดือนจากชื่อหน้าหรือวันที่ในหน้า",
+    "submit": "เติมหน้า",
+    "submitting": "กำลังเติมหน้า",
+    "summary": "แถวที่เพิ่มสำหรับ {month}: {count}",
+    "nothingToAdd": "ไม่มีอะไรให้เพิ่ม การเปลี่ยนแปลงโรสเตอร์ของ {month} อยู่ในหน้าแล้วทั้งหมด",
+    "alreadyListed": "อยู่ในหน้าแล้ว ({count}) ไม่มีการแก้ไข:",
+    "unlinkedTeams": "ทีมที่ไม่มีชื่อบน Liquipedia เขียนด้วยชื่อใน GC Stats ({count}):",
+    "unlinkedPeople": "บุคคลที่ไม่มีชื่อบน Liquipedia เขียนด้วยแฮนเดิล ({count}):",
+    "missingSources": "การเปลี่ยนแปลงที่ไม่มีแหล่งที่มาที่ใช้ได้ ไม่ได้ใส่อ้างอิง ({count}):",
+    "error": {
+      "required": "วางวิกิโค้ดของหน้าการย้ายทีม",
+      "tooLong": "วิกิโค้ดนี้ยาวเกินไป (สูงสุด 300,000 ตัวอักษร)",
+      "missingStart": "วิกิโค้ดต้องมีเทมเพลต Transfer Start",
+      "missingEnd": "วิกิโค้ดต้องมีเทมเพลต Transfer End หลังเทมเพลต Transfer Start",
+      "invalid": "กรอกเดือนให้ถูกต้อง",
+      "undetected": "อ่านเดือนจากหน้าไม่ได้ โปรดเลือกในช่องเดือน",
+      "generic": "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
+    }
   }
 }

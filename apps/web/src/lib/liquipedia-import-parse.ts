@@ -103,7 +103,8 @@ function countryOf(value: string | undefined): string | null {
 }
 
 export function parsePlayerInfobox(wikitext: string): ParsedPlayerInfobox | null {
-  const template = extractTemplate(wikitext, "Infobox player");
+  // Broadcast talent pages use the person infobox
+  const template = extractTemplate(wikitext, "Infobox player") ?? extractTemplate(wikitext, "Infobox person");
   if (!template) return null;
   const params = parseTemplateParams(template);
 

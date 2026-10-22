@@ -82,8 +82,8 @@ export { ROSTER_ROLES };
 
 /** One roster_memberships row — team roster panel and player team-history panel are the same table, viewed from either fixed side. */
 export type MembershipOperation =
-  | { type: "add"; personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft: boolean; inactiveSince: string | null }
-  | { type: "edit"; membershipId: number; role: string; since: string; until: string | null; hasLeft: boolean; inactiveSince: string | null }
+  | { type: "add"; personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft: boolean; inactiveSince: string | null; joinSource: string | null; leftSource: string | null }
+  | { type: "edit"; membershipId: number; role: string; since: string; until: string | null; hasLeft: boolean; inactiveSince: string | null; joinSource: string | null; leftSource: string | null }
   | { type: "delete"; membershipId: number };
 
 /** Own guardrail against spam on a public form — admin has no such cap. */

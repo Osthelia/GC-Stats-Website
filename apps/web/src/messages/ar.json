@@ -473,7 +473,9 @@
             "notAuthorized": "لا يمكنك القيام بذلك.",
             "resolved": "تمت معالجة طلب التعديل هذا، والنقاش مغلق."
           }
-        }
+        },
+        "joinSource": "مصدر الانضمام",
+        "leftSource": "مصدر المغادرة"
       }
     }
   },
@@ -1844,7 +1846,8 @@
     "data": "البيانات",
     "transparency": "الشفافية",
     "finance": "الشؤون المالية",
-    "developers": "المطورون"
+    "developers": "المطورون",
+    "contributeLiquipedia": "Liquipedia"
   },
   "forum": {
     "overview": {
@@ -3390,7 +3393,8 @@
           "logoNotFound": "إدخال الشعار لم يعد موجودًا.",
           "alreadyLinked": "هذه اللاعبة مرتبطة بالفعل بحساب آخر.",
           "unknownField": "حقل غير مدعوم.",
-          "unknown": "خطأ غير معروف."
+          "unknown": "خطأ غير معروف.",
+          "invalidSource": "رابط المصدر لم يعد صالحاً."
         },
         "oldValue": "الحالي",
         "newValue": "المقترح",
@@ -3419,7 +3423,14 @@
           "replyPlaceholder": "رد على صاحب الطلب…",
           "send": "إرسال",
           "error": "حدث خطأ ما."
-        }
+        },
+        "requesterNoPlayer": "لا يوجد حساب لاعب مرتبط بمقدّم الطلب.",
+        "requesterPlayerMatch": "حساب اللاعب المرتبط: {handle}، وهو الملف المعدَّل.",
+        "requesterPlayerOther": "حساب اللاعب المرتبط: {handle}، وهو ملف مختلف عن المعدَّل.",
+        "requesterTeamMatch": "حساب اللاعب المرتبط: {handle}، ضمن تشكيلة الفريق المعدَّل.",
+        "requesterTeamOther": "حساب اللاعب المرتبط: {handle}، ليس ضمن تشكيلة الفريق المعدَّل.",
+        "joinSource": "مصدر الانضمام",
+        "leftSource": "مصدر المغادرة"
       }
     },
     "roles": {
@@ -4542,6 +4553,41 @@
           "errorUnreachable": "تعذّر الوصول إلى Liquipedia، حاول لاحقًا.",
           "errorInvalid": "بطولة غير صالحة.",
           "errorBusy": "هناك عملية استيراد جارية بالفعل لهذه البطولة."
+        },
+        "talent": {
+          "tab": "مواهب البث",
+          "wikicodeTitle": "ويكي كود المواهب",
+          "wikicodeDescription": "الصق قسم Talent (قوالب BroadcasterCard) من صفحة البطولة على Liquipedia.",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "تحليل",
+          "analyzing": "جارٍ التحليل...",
+          "parsedCount": "{count, plural, other {# موهبة تم العثور عليها}}",
+          "tableTitle": "المواهب المراد ذكرها",
+          "tableDescription": "تُذكر كل موهبة محددة في البطولة بأدوار بطاقتها. ثم يقرأ استيراد Liquipedia صفحتها.",
+          "empty": "حلل ويكي كود لعرض المواهب.",
+          "alreadyCredited": "{count, plural, other {# اعتماد موجود مسبقًا في البطولة}}",
+          "pickPerson": "اختر شخصًا",
+          "searchPerson": "ابحث عن شخص",
+          "noResults": "لم يتم العثور على أي شخص",
+          "checkedCount": "{count, plural, other {# موهبة محددة}}",
+          "importButton": "استيراد الاعتمادات",
+          "importing": "جارٍ الاستيراد...",
+          "success": "{created, plural, other {تم إنشاء # اعتماد}}، و{skipped} موجودة مسبقًا.",
+          "error": {
+            "invalid": "ويكي كود غير صالح.",
+            "tooLong": "هذا الويكي كود طويل جدًا.",
+            "noCards": "لم يتم العثور على BroadcasterCard بمنصب معروف.",
+            "empty": "لا شيء للاستيراد.",
+            "tooMany": "عدد المواهب كبير جدًا دفعة واحدة.",
+            "tournamentNotFound": "هذه البطولة غير موجودة.",
+            "rows": "بعض الصفوف غير صالحة."
+          },
+          "rowError": {
+            "personRequired": "اختر الشخص المناسب لهذه الموهبة.",
+            "personNotFound": "هذا الشخص غير موجود.",
+            "invalidName": "اسم Liquipedia غير صالح.",
+            "invalidCredits": "اعتمادات غير صالحة."
+          }
         }
       },
       "scoreBackfill": {
@@ -4940,6 +4986,25 @@
       "hasLeft": "غادر الفريق",
       "untilLabel": "تاريخ المغادرة",
       "unknownHint": "تاريخ الانتهاء غير معروف، اتركه فارغًا إذا كنت لا تعرفه."
+    },
+    "rosterSource": {
+      "placeholder": "رابط الإعلان",
+      "error": {
+        "invalidUrl": "أدخل رابطاً صالحاً يبدأ بـ http:// أو https://.",
+        "sourceTooLong": "هذا الرابط طويل جداً (الحد الأقصى 500 حرف).",
+        "invalidSource": "هذا الخيار غير متاح هنا.",
+        "requiresLeft": "علّم العضو كمغادر لتحديد مصدر المغادرة."
+      },
+      "joinLabel": "مصدر الانضمام",
+      "leftLabel": "مصدر المغادرة",
+      "option": {
+        "none": "بدون مصدر",
+        "link": "رابط الإعلان",
+        "startedTournament": "بدأ اللعب في بطولة",
+        "stoppedTournament": "توقف عن اللعب في بطولة",
+        "insideSource": "مصدر داخلي",
+        "declaredByPlayer": "أعلنه اللاعب نفسه"
+      }
     }
   },
   "dashboard": {
@@ -6007,7 +6072,18 @@
       "addRow": "إضافة صف",
       "hint": "يمكنك اقتراح تعديل إدخال موجود أو إزالته، وإضافة ما يصل إلى 6 إدخالات جديدة. يراجع الطاقم كل ذلك قبل أن تتغير التشكيلة.",
       "hasLeft": "غادر الفريق",
-      "untilLabel": "تاريخ المغادرة"
+      "untilLabel": "تاريخ المغادرة",
+      "sourcePlaceholder": "رابط الإعلان",
+      "joinSourceLabel": "مصدر الانضمام",
+      "leftSourceLabel": "مصدر المغادرة",
+      "sourceOption": {
+        "none": "بدون مصدر",
+        "link": "رابط الإعلان",
+        "startedTournament": "بدأ اللعب في بطولة",
+        "stoppedTournament": "توقف عن اللعب في بطولة",
+        "insideSource": "مصدر داخلي",
+        "declaredByPlayer": "أعلنه اللاعب نفسه"
+      }
     },
     "nameHistory": {
       "title": "سجل الأسماء",
@@ -6061,7 +6137,10 @@
       "consentRequired": "يجب قبول شروط حقوق الصورة والموافقة.",
       "invalidType": "يُقبل فقط صور بصيغة JPG أو PNG أو WebP.",
       "tooSmall": "هذه الصورة صغيرة جدًا (400 بكسل على الأقل على أقصر ضلع).",
-      "invalidDiscordId": "أدخل معرّف مستخدم Discord صالحًا (من 17 إلى 20 رقمًا) أو دعوة خادم (discord.gg/...)."
+      "invalidDiscordId": "أدخل معرّف مستخدم Discord صالحًا (من 17 إلى 20 رقمًا) أو دعوة خادم (discord.gg/...).",
+      "sourceTooLong": "هذا الرابط طويل جداً (الحد الأقصى 500 حرف).",
+      "invalidSource": "هذا الخيار غير متاح هنا.",
+      "leftSourceRequiresLeft": "يتطلب مصدر المغادرة تعليم العضو كمغادر."
     },
     "discordIdHint": "معرّف مستخدم Discord (وضع المطور، نقر بزر الماوس الأيمن على الملف الشخصي، نسخ معرّف المستخدم) أو رابط دعوة خادم.",
     "useLinkedDiscord": "استخدام حساب Discord المرتبط بي"
@@ -6431,7 +6510,9 @@
     "stageSelector": "المرحلة",
     "bracketTemplate": "قالب Liquipedia",
     "bracketHint": "افتح المولّد وأدخل هذا القالب والصق النتيجة في الصفحة.",
-    "bracketGenerator": "فتح المولّد"
+    "bracketGenerator": "فتح المولّد",
+    "talentTab": "المواهب",
+    "talentHint": "المقدمون والمعلقون والمراقبون واعتمادات الإنتاج"
   },
   "matchPoster": {
     "title": "صورة المباراة",
@@ -6505,5 +6586,42 @@
     "points": "تأهل عبر نقاط {label}",
     "pointsUnknown": "تأهل عبر النقاط",
     "iconLabel": "مصدر التأهل"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "أدوات تحوّل بيانات GC Stats إلى ويكي كود لـ Liquipedia.",
+    "transfersTitle": "الانتقالات",
+    "transfersHint": "أكمل صفحة الانتقالات الشهرية بتغييرات التشكيلة.",
+    "tournamentsTitle": "البطولة والمباراة",
+    "tournamentsHint": "ابحث عن بطولة لتصدير الويكي كود الخاص بها، ثم اختر مباراة من صفحتها.",
+    "tournamentPlaceholder": "اختر بطولة",
+    "tournamentSearchPlaceholder": "ابحث عن بطولة",
+    "tournamentNoResults": "لم يتم العثور على بطولة."
+  },
+  "liquipediaTransfers": {
+    "title": "انتقالات Liquipedia",
+    "back": "العودة إلى Liquipedia",
+    "subtitle": "الصق الويكي كود لصفحة الانتقالات الشهرية. يضيف GC Stats تغييرات التشكيلة لذلك الشهر من الأحدث إلى الأقدم دون المساس بالصفوف الموجودة.",
+    "wikicodeLabel": "الويكي كود لصفحة الانتقالات",
+    "wikicodePlaceholder": "الصق الويكي كود هنا",
+    "monthLabel": "الشهر",
+    "monthHint": "اتركه فارغاً لقراءة الشهر من عنوان الصفحة أو من تواريخها.",
+    "submit": "إكمال الصفحة",
+    "submitting": "جارٍ إكمال الصفحة",
+    "summary": "الصفوف المضافة لشهر {month}: {count}",
+    "nothingToAdd": "لا شيء لإضافته، جميع تغييرات التشكيلة لشهر {month} موجودة في الصفحة بالفعل.",
+    "alreadyListed": "موجودون في الصفحة بالفعل ({count})، دون تغيير:",
+    "unlinkedTeams": "فرق بلا اسم في Liquipedia، كُتبت باسمها في GC Stats ({count}):",
+    "unlinkedPeople": "أشخاص بلا اسم في Liquipedia، كُتبوا بلقبهم ({count}):",
+    "missingSources": "تغييرات بلا مصدر صالح للاستخدام، تُركت بلا مرجع ({count}):",
+    "error": {
+      "required": "الصق الويكي كود لصفحة الانتقالات.",
+      "tooLong": "هذا الويكي كود طويل جداً (الحد الأقصى 300,000 حرف).",
+      "missingStart": "يجب أن يحتوي الويكي كود على قالب Transfer Start.",
+      "missingEnd": "يجب أن يحتوي الويكي كود على قالب Transfer End بعد قالب Transfer Start.",
+      "invalid": "أدخل شهراً صالحاً.",
+      "undetected": "تعذر قراءة الشهر من الصفحة، اختره في حقل الشهر.",
+      "generic": "حدث خطأ ما، حاول مرة أخرى."
+    }
   }
 }
