@@ -13,6 +13,7 @@
 
 import { getLiquipediaMatchWikicode } from "@/lib/liquipedia-match-data";
 import { getTournamentParticipantsWikicode } from "@/lib/liquipedia-participants-data";
+import { getTournamentTalentWikicode } from "@/lib/liquipedia-talent-data";
 import { getTournamentInfoboxWikicode } from "@/lib/liquipedia-infobox-data";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
 
@@ -43,4 +44,10 @@ export async function loadInfoboxWikicode(tournamentId: number): Promise<Liquipe
   if (!(await visibleTournament(tournamentId))) return { ok: false, error: "notFound" };
   const wikicode = await getTournamentInfoboxWikicode(tournamentId);
   return wikicode ? { ok: true, wikicode, unlinkedTeams: [], unlinkedPeopleCount: 0 } : { ok: false, error: "notFound" };
+}
+
+export async function loadTalentWikicode(tournamentId: number): Promise<LiquipediaExportResult> {
+  if (!(await visibleTournament(tournamentId))) return { ok: false, error: "notFound" };
+  const data = await getTournamentTalentWikicode(tournamentId);
+  return data.creditCount > 0 ? { ok: true, wikicode: data.wikicode, unlinkedTeams: [], unlinkedPeopleCount: data.unlinkedPeopleCount } : { ok: false, error: "notFound" };
 }

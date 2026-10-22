@@ -98,6 +98,6 @@ export async function getTournamentParticipantsWikicode(tournamentId: number): P
     wikicode: buildTeamParticipantsWikicode(teams),
     teamCount: teams.length,
     unlinkedTeams,
-    unlinkedPeopleCount: people.filter((p) => !p.liquipediaName).length,
+    unlinkedPeopleCount: people.filter((p) => p.entrantId !== null && !p.liquipediaName).length,
   };
 }
