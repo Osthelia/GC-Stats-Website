@@ -29,7 +29,7 @@ export type MatchStatus = "live" | "upcoming" | "finished";
 
 const MATCH_STATUS: Record<string, MatchStatus> = { pending: "upcoming", live: "live", completed: "finished" };
 
-const INTL_LOCALE: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
+const INTL_LOCALE: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH", id: "id-ID", vi: "vi-VN", fil: "fil-PH", "zh-TW": "zh-TW" };
 
 // Display only — shortens "Game Changers <year>" to "GC <year>" (any year,
 // requested explicitly for the home feed, now reused anywhere else a

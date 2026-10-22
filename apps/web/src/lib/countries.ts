@@ -24,7 +24,18 @@ export const INTERNATIONAL_CODE = "INT";
 // alpha-3, so this is a parallel code carried purely for that lookup, not a
 // second identifier for the country (the alpha-3 `code` stays canonical,
 // same one used by DB columns and isValidCountryCode/countryName below).
-export type Country = { code: string; a2: string } & Record<AppLocale, string>;
+// Hand-written names; locales added later (id, vi, fil, zh-TW) are resolved through Intl in localizedName.
+type CountryNameLocale = Exclude<AppLocale, "id" | "vi" | "fil" | "zh-TW">;
+export type Country = { code: string; a2: string } & Record<CountryNameLocale, string>;
+
+function localizedName(country: Country, locale: AppLocale): string {
+  if (locale in country) return country[locale as CountryNameLocale];
+  try {
+    return new Intl.DisplayNames([locale], { type: "region" }).of(country.a2.toUpperCase()) ?? country.en;
+  } catch {
+    return country.en;
+  }
+}
 
 const INTERNATIONAL: Country = { code: INTERNATIONAL_CODE, a2: "", en: "International", fr: "International", es: "Internacional", pt: "Internacional", tr: "Uluslararası", ja: "インターナショナル", ko: "국제", de: "International", zh: "国际", it: "Internazionale", pl: "Międzynarodowa", ar: "دولي", th: "นานาชาติ" };
 
@@ -240,14 +251,15 @@ const COUNTRIES: Country[] = [
 /** International-code entry first, then every real ISO country sorted by the given locale name. */
 export function countryList(locale: AppLocale): Country[] {
   const intl: Country = INTERNATIONAL;
-  const sorted = [...COUNTRIES].sort((a, b) => a[locale].localeCompare(b[locale], locale));
+  const sorted = [...COUNTRIES].sort((a, b) => localizedName(a, locale).localeCompare(localizedName(b, locale), locale));
   return [intl, ...sorted];
 }
 
 export function countryName(code: string | null, locale: AppLocale): string | null {
   if (!code) return null;
-  if (code === INTERNATIONAL_CODE) return INTERNATIONAL[locale];
-  return COUNTRIES.find((c) => c.code === code)?.[locale] ?? code;
+  if (code === INTERNATIONAL_CODE) return localizedName(INTERNATIONAL, locale);
+  const country = COUNTRIES.find((c) => c.code === code);
+  return country ? localizedName(country, locale) : code;
 }
 
 /** "France" or, with a distinct second nationality, "France / Belgique". */
@@ -296,13 +308,31 @@ export function isValidCountryCode(code: string): boolean {
   return code === INTERNATIONAL_CODE || COUNTRIES.some((c) => c.code === code);
 }
 
-// Stream/VOD `language_code` columns store lowercase ISO alpha-2 codes
-// directly (not the alpha-3 codes above) — same flag-icons key as V1's
-// `App\Support\Countries::list()`, with the synthetic 'inter' sentinel
-// mapped to the UN flag (V1's fi-un special case).
+// Stream/VOD `language_code` is a language (optionally with a region, e.g. zh_CN),
+// not a country, so it is mapped to a flag-icons key. The synthetic 'inter'
+// sentinel maps to the UN flag.
+const LANGUAGE_FLAGS: Record<string, string> = {
+  en: "gb",
+  ja: "jp",
+  ko: "kr",
+  zh: "cn",
+  hans: "cn",
+  hant: "tw",
+  fil: "ph",
+  vi: "vn",
+  ar: "sa",
+  da: "dk",
+  el: "gr",
+  cs: "cz",
+  uk: "ua",
+  sv: "se",
+  he: "il",
+};
+
 export function languageFlagClass(code: string | null | undefined): string | null {
   if (!code) return "fi-un";
-  const trimmed = code.trim().toLowerCase();
-  if (trimmed === "inter") return "fi-un";
-  return FLAG_ICON_CODES.has(trimmed) ? `fi-${trimmed}` : null;
+  const [language = "", region] = code.trim().toLowerCase().split(/[-_]/);
+  if (language === "inter") return "fi-un";
+  const flag = (region && (FLAG_ICON_CODES.has(region) ? region : LANGUAGE_FLAGS[region])) || LANGUAGE_FLAGS[language] || language;
+  return FLAG_ICON_CODES.has(flag) ? `fi-${flag}` : null;
 }

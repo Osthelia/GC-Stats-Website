@@ -10,7 +10,7 @@ import { defineRouting } from "next-intl/routing";
 
 // Add a locale by adding its entry here plus a messages/<locale>.json file.
 export const routing = defineRouting({
-  locales: ["fr", "en", "es", "pt", "tr", "ja", "ko", "de", "zh", "it", "pl", "ar", "th"],
+  locales: ["fr", "en", "es", "pt", "tr", "ja", "ko", "de", "zh", "it", "pl", "ar", "th", "id", "vi", "fil", "zh-TW"],
   defaultLocale: "en",
   localePrefix: "always",
 });
@@ -31,6 +31,10 @@ export const localeDisplay: Record<AppLocale, { flag: string; name: string; code
   pl: { flag: "🇵🇱", name: "Polski", code: "PL" },
   ar: { flag: "🇸🇦", name: "العربية", code: "AR" },
   th: { flag: "🇹🇭", name: "ไทย", code: "TH" },
+  id: { flag: "🇮🇩", name: "Bahasa Indonesia", code: "ID" },
+  vi: { flag: "🇻🇳", name: "Tiếng Việt", code: "VI" },
+  fil: { flag: "🇵🇭", name: "Filipino", code: "FIL" },
+  "zh-TW": { flag: "🇹🇼", name: "繁體中文", code: "TW" },
 };
 
 // Locales written right to left, the root layout sets <html dir> from this.

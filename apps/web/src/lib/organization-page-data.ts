@@ -284,7 +284,7 @@ export async function getOrganizationNewsPage(
   return { items, total, perPage: ORG_NEWS_PAGE_SIZE };
 }
 
-const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
+const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH", id: "id-ID", vi: "vi-VN", fil: "fil-PH", "zh-TW": "zh-TW" };
 
 /** Public tournaments organized by the organization: live first, then most recent. */
 export async function getOrganizationTournaments(organizationId: number, locale: AppLocale): Promise<TournamentListCardItem[]> {

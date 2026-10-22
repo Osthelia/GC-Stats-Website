@@ -40,7 +40,8 @@ const listStoredActiveNewsLanguages = unstable_cache(
 // Language name in the viewer's locale, keeping the stored name for codes Intl doesn't know (e.g. "inter").
 function localizeLanguageName(code: string, storedName: string, locale: string): string {
   try {
-    const name = new Intl.DisplayNames([locale], { type: "language" }).of(code);
+    // Stored codes use underscores (zh_Hans), Intl only accepts BCP 47 hyphens.
+    const name = new Intl.DisplayNames([locale], { type: "language" }).of(code.replace("_", "-"));
     if (!name || name === code) return storedName;
     return name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);
   } catch {
