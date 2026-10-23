@@ -5439,7 +5439,8 @@
       "level": {
         "tournament": "Tournament",
         "match": "Match",
-        "map": "Map"
+        "map": "Map",
+        "game": "Game"
       },
       "matchSearchPlaceholder": "Search a match…",
       "mapSearchPlaceholder": "Search a map…",
@@ -5458,7 +5459,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Matches",
       "openMaps": "Maps",
-      "goBack": "Go back"
+      "goBack": "Go back",
+      "gameEmpty": "No games in this match.",
+      "gameSearchPlaceholder": "Search a game…",
+      "openGames": "Games"
     },
     "streams": {
       "title": "Stream channels",
@@ -5590,8 +5594,14 @@
         "matchNotInTournament": "This match doesn't belong to the selected tournament.",
         "mapNotFound": "Map not found.",
         "mapNotInMatch": "This map doesn't belong to the selected match.",
-        "notFound": "VOD not found."
-      }
+        "notFound": "VOD not found.",
+        "gameNotFound": "Game not found.",
+        "gameNotInMatch": "This game doesn't belong to the selected match."
+      },
+      "scopeGame": "Specific game",
+      "gameLabel": "Game",
+      "gamePlaceholder": "Select a game…",
+      "gameLoading": "Loading…"
     },
     "apiKeys": {
       "title": "API keys",

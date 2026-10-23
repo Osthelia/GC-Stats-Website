@@ -5321,7 +5321,8 @@
       "level": {
         "tournament": "대회",
         "match": "경기",
-        "map": "맵"
+        "map": "맵",
+        "game": "게임"
       },
       "matchSearchPlaceholder": "경기 검색…",
       "mapSearchPlaceholder": "맵 검색…",
@@ -5340,7 +5341,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "경기",
       "openMaps": "맵",
-      "goBack": "뒤로 가기"
+      "goBack": "뒤로 가기",
+      "gameEmpty": "이 매치에 게임이 없습니다.",
+      "gameSearchPlaceholder": "게임 검색…",
+      "openGames": "게임"
     },
     "streams": {
       "title": "스트림 채널",
@@ -5472,8 +5476,14 @@
         "matchNotInTournament": "이 매치는 선택한 토너먼트에 속하지 않습니다.",
         "mapNotFound": "맵을 찾을 수 없습니다.",
         "mapNotInMatch": "이 맵은 선택한 매치에 속하지 않습니다.",
-        "notFound": "VOD를 찾을 수 없습니다."
-      }
+        "notFound": "VOD를 찾을 수 없습니다.",
+        "gameNotFound": "게임을 찾을 수 없습니다.",
+        "gameNotInMatch": "이 게임은 선택한 매치에 속하지 않습니다."
+      },
+      "scopeGame": "특정 게임",
+      "gameLabel": "게임",
+      "gamePlaceholder": "게임 선택…",
+      "gameLoading": "불러오는 중…"
     },
     "apiKeys": {
       "title": "API 키",

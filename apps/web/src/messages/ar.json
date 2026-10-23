@@ -5321,7 +5321,8 @@
       "level": {
         "tournament": "بطولة",
         "match": "مباراة",
-        "map": "خريطة"
+        "map": "خريطة",
+        "game": "المباراة"
       },
       "matchSearchPlaceholder": "ابحث عن مباراة…",
       "mapSearchPlaceholder": "ابحث عن خريطة…",
@@ -5340,7 +5341,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "المباريات",
       "openMaps": "الخرائط",
-      "goBack": "رجوع"
+      "goBack": "رجوع",
+      "gameEmpty": "لا توجد مباريات في هذه المواجهة.",
+      "gameSearchPlaceholder": "ابحث عن مباراة…",
+      "openGames": "المباريات"
     },
     "streams": {
       "title": "قنوات البث",
@@ -5472,8 +5476,14 @@
         "matchNotInTournament": "هذه المباراة لا تنتمي إلى البطولة المحددة.",
         "mapNotFound": "الخريطة غير موجودة.",
         "mapNotInMatch": "هذه الخريطة لا تنتمي إلى المباراة المحددة.",
-        "notFound": "التسجيل غير موجود."
-      }
+        "notFound": "التسجيل غير موجود.",
+        "gameNotFound": "المباراة غير موجودة.",
+        "gameNotInMatch": "هذه المباراة لا تنتمي إلى المواجهة المختارة."
+      },
+      "scopeGame": "مباراة محددة",
+      "gameLabel": "المباراة",
+      "gamePlaceholder": "اختر مباراة…",
+      "gameLoading": "جارٍ التحميل…"
     },
     "apiKeys": {
       "title": "مفاتيح API",

@@ -19,7 +19,7 @@ import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
 import { containerTypeEnum, matchStatusEnum, slotEnum, matchResultEnum, seedSourceEnum, entryStatusEnum, stageStatusEnum } from "./bracket";
 import { pickemScoringModeEnum, pickemRewardKindEnum } from "./pickem";
-import type { GameSlug } from "../game";
+import { gameHasMaps, type GameSlug } from "../game";
 
 type GamePrefix = "val" | "lol";
 
@@ -1200,4 +1200,9 @@ export function leagueTablesOf(game: GameSlug): typeof leagueTables {
 
 export function gameTables(game: GameSlug): GameTables<"val"> | GameTables<"lol"> {
   return game === "lol" ? leagueTables : valorantTables;
+}
+
+/** The table a map reference points at: `val_maps` for Valorant, `lol_games` for LoL. Both have `id` and `match_id`. */
+export function seriesMapTableOf(game: GameSlug) {
+  return gameHasMaps(game) ? valorantTables.maps : leagueTables.games;
 }

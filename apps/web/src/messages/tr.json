@@ -5321,7 +5321,8 @@
       "level": {
         "tournament": "Turnuva",
         "match": "Maç",
-        "map": "Harita"
+        "map": "Harita",
+        "game": "Oyun"
       },
       "matchSearchPlaceholder": "Maç ara…",
       "mapSearchPlaceholder": "Harita ara…",
@@ -5340,7 +5341,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Maçlar",
       "openMaps": "Haritalar",
-      "goBack": "Geri dön"
+      "goBack": "Geri dön",
+      "gameEmpty": "Bu maçta oyun yok.",
+      "gameSearchPlaceholder": "Bir oyun ara…",
+      "openGames": "Oyunlar"
     },
     "streams": {
       "title": "Yayın kanalları",
@@ -5472,8 +5476,14 @@
         "matchNotInTournament": "Bu maç seçilen turnuvaya ait değil.",
         "mapNotFound": "Harita bulunamadı.",
         "mapNotInMatch": "Bu harita seçilen maça ait değil.",
-        "notFound": "VOD bulunamadı."
-      }
+        "notFound": "VOD bulunamadı.",
+        "gameNotFound": "Oyun bulunamadı.",
+        "gameNotInMatch": "Bu oyun seçilen maça ait değil."
+      },
+      "scopeGame": "Belirli oyun",
+      "gameLabel": "Oyun",
+      "gamePlaceholder": "Bir oyun seçin…",
+      "gameLoading": "Yükleniyor…"
     },
     "apiKeys": {
       "title": "API anahtarları",

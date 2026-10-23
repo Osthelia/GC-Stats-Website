@@ -13,7 +13,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { ORGANIZATION_PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
+import { ORGANIZATION_PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission as requireOrgActorPermission } from "@/lib/dashboard-rbac";
 
 /** Production credits do not exist for an organization linked to a team. */
@@ -26,7 +26,7 @@ import { logActivity, diffChanges } from "@/lib/activity-log";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
-import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import { getMatchMapOptions, listMapRefs, type MatchMapOption } from "@/lib/dashboard-vods-data";
 import { validateProductionCreditInput, validateRoleAndTitle, type ProductionCreditInput, type ProductionCreditFieldErrors, type ProductionCreditScope } from "@/lib/production-credit-validation";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -44,9 +44,9 @@ export async function getMatchOptionsForCredit(game: GameSlug, organizationId: n
   return getTournamentMatchOptionsForCredit(game, tournamentId);
 }
 
-export async function getMapOptionsForCredit(organizationId: number, matchId: number): Promise<MatchMapOption[]> {
+export async function getMapOptionsForCredit(game: GameSlug, organizationId: number, matchId: number): Promise<MatchMapOption[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return getMatchMapOptions(matchId);
+  return getMatchMapOptions(game, matchId);
 }
 
 export type { MatchMapOption };
@@ -62,7 +62,6 @@ export type ProductionCreditResult = { ok: true; created: number; skipped: numbe
  */
 export async function addProductionCredits(game: GameSlug, organizationId: number, input: ProductionCreditInput): Promise<ProductionCreditResult> {
   const { productionCredits, people, tournaments, matches } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const { fieldErrors, role, titleOverride } = validateProductionCreditInput(input);
@@ -81,7 +80,7 @@ export async function addProductionCredits(game: GameSlug, organizationId: numbe
   const [tournamentRows, matchRows, mapRows] = await Promise.all([
     tournamentIds.length ? db.select({ id: tournaments.id }).from(tournaments).where(inArray(tournaments.id, tournamentIds)) : [],
     matchIds.length ? db.select({ id: matches.id }).from(matches).where(inArray(matches.id, matchIds)) : [],
-    mapIds.length ? db.select({ id: maps.id }).from(maps).where(inArray(maps.id, mapIds)) : [],
+    listMapRefs(game, mapIds),
   ]);
   if (tournamentRows.length !== tournamentIds.length || matchRows.length !== matchIds.length || mapRows.length !== mapIds.length) {
     return { ok: false, fieldErrors: { targets: "targetNotFound" } };

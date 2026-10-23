@@ -5321,7 +5321,8 @@
       "level": {
         "tournament": "赛事",
         "match": "比赛",
-        "map": "地图"
+        "map": "地图",
+        "game": "对局"
       },
       "matchSearchPlaceholder": "搜索比赛…",
       "mapSearchPlaceholder": "搜索地图…",
@@ -5340,7 +5341,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "比赛",
       "openMaps": "地图",
-      "goBack": "返回"
+      "goBack": "返回",
+      "gameEmpty": "该比赛中没有对局。",
+      "gameSearchPlaceholder": "搜索对局…",
+      "openGames": "对局"
     },
     "streams": {
       "title": "直播频道",
@@ -5472,8 +5476,14 @@
         "matchNotInTournament": "此比赛不属于所选赛事。",
         "mapNotFound": "未找到该地图。",
         "mapNotInMatch": "此地图不属于所选比赛。",
-        "notFound": "未找到该录像。"
-      }
+        "notFound": "未找到该录像。",
+        "gameNotFound": "找不到该对局。",
+        "gameNotInMatch": "该对局不属于所选比赛。"
+      },
+      "scopeGame": "特定对局",
+      "gameLabel": "对局",
+      "gamePlaceholder": "选择对局…",
+      "gameLoading": "加载中…"
     },
     "apiKeys": {
       "title": "API 密钥",

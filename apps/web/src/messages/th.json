@@ -5321,7 +5321,8 @@
       "level": {
         "tournament": "ทัวร์นาเมนต์",
         "match": "แมตช์",
-        "map": "แมป"
+        "map": "แมป",
+        "game": "เกม"
       },
       "matchSearchPlaceholder": "ค้นหาแมตช์…",
       "mapSearchPlaceholder": "ค้นหาแมป…",
@@ -5340,7 +5341,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "แมตช์",
       "openMaps": "แมป",
-      "goBack": "ย้อนกลับ"
+      "goBack": "ย้อนกลับ",
+      "gameEmpty": "ไม่มีเกมในแมตช์นี้",
+      "gameSearchPlaceholder": "ค้นหาเกม…",
+      "openGames": "เกม"
     },
     "streams": {
       "title": "ช่องสตรีม",
@@ -5472,8 +5476,14 @@
         "matchNotInTournament": "แมตช์นี้ไม่ได้อยู่ในทัวร์นาเมนต์ที่เลือก",
         "mapNotFound": "ไม่พบแมพ",
         "mapNotInMatch": "แมพนี้ไม่ได้อยู่ในแมตช์ที่เลือก",
-        "notFound": "ไม่พบ VOD"
-      }
+        "notFound": "ไม่พบ VOD",
+        "gameNotFound": "ไม่พบเกม",
+        "gameNotInMatch": "เกมนี้ไม่ได้อยู่ในแมตช์ที่เลือก"
+      },
+      "scopeGame": "เกมที่เลือก",
+      "gameLabel": "เกม",
+      "gamePlaceholder": "เลือกเกม…",
+      "gameLoading": "กำลังโหลด…"
     },
     "apiKeys": {
       "title": "API key",

@@ -5439,7 +5439,8 @@
       "level": {
         "tournament": "Torneo",
         "match": "Partida",
-        "map": "Mapa"
+        "map": "Mapa",
+        "game": "Partida"
       },
       "matchSearchPlaceholder": "Buscar una partida…",
       "mapSearchPlaceholder": "Buscar un mapa…",
@@ -5458,7 +5459,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Partidas",
       "openMaps": "Mapas",
-      "goBack": "Volver"
+      "goBack": "Volver",
+      "gameEmpty": "No hay partidas en este match.",
+      "gameSearchPlaceholder": "Buscar una partida…",
+      "openGames": "Partidas"
     },
     "streams": {
       "title": "Canales de stream",
@@ -5590,8 +5594,14 @@
         "matchNotInTournament": "Este partido no pertenece al torneo seleccionado.",
         "mapNotFound": "Mapa no encontrado.",
         "mapNotInMatch": "Este mapa no pertenece al partido seleccionado.",
-        "notFound": "VOD no encontrado."
-      }
+        "notFound": "VOD no encontrado.",
+        "gameNotFound": "Partida no encontrada.",
+        "gameNotInMatch": "Esta partida no pertenece al match seleccionado."
+      },
+      "scopeGame": "Partida específica",
+      "gameLabel": "Partida",
+      "gamePlaceholder": "Selecciona una partida…",
+      "gameLoading": "Cargando…"
     },
     "apiKeys": {
       "title": "Claves de API",
