@@ -8,12 +8,12 @@
 
 "use client";
 
-import { useEffect, useRef, useState, type DragEvent } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "@/i18n/navigation";
-import { PHOTO_ACCEPT, PHOTO_MAX_MB, PHOTO_MIN_SIDE, type PhotoConsent } from "@/lib/change-request-fields";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
+import type { PhotoConsent } from "@/lib/change-request-fields";
 
 /** The public site and the dashboard use different design tokens, the logic and texts are shared. */
 const STYLES = {
@@ -75,22 +75,6 @@ const COMMON_POINTS = ["legalRights", "legalLicense", "legalThirdParty", "legalM
 const CAPACITIES: PhotoConsent[] = ["self", "authorized"];
 const RULES = ["ruleFace", "rulePose", "ruleJersey"] as const;
 
-function readDimensions(file: File): Promise<{ width: number; height: number } | null> {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(file);
-    const img = new window.Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(null);
-    };
-    img.src = url;
-  });
-}
-
 function RuleItem({ children, muted, styles }: { children: string; muted?: boolean; styles: Styles }) {
   return (
     <li className="flex gap-2">
@@ -114,46 +98,10 @@ export function PersonPhotoDialog({
   const primaryButton = `rounded-[9px] px-5 py-2.5 text-[14px] font-semibold transition-all active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 ${st.primary}`;
   const secondaryButton = `rounded-[9px] px-4 py-2.5 text-[14px] font-semibold transition-all active:scale-[0.97] ${st.secondary}`;
   const t = useTranslations("suggestEdit.logo.photo");
-  const tError = useTranslations("suggestEdit.error");
-  const inputRef = useRef<HTMLInputElement>(null);
   const [capacity, setCapacity] = useState<PhotoConsent | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [step, setStep] = useState<"consent" | "upload">("consent");
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [checking, setChecking] = useState(false);
-  const [dragging, setDragging] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
-
-  async function handleFile(next: File | null) {
-    if (!next) return;
-    setError(null);
-    setFile(null);
-    setPreview(null);
-    if (!PHOTO_ACCEPT.split(",").includes(next.type)) return setError("invalidType");
-    if (next.size > PHOTO_MAX_MB * 1024 * 1024) return setError("tooLarge");
-
-    setChecking(true);
-    const dims = await readDimensions(next);
-    setChecking(false);
-    if (!dims) return setError("invalidImage");
-    if (Math.min(dims.width, dims.height) < PHOTO_MIN_SIDE) return setError("tooSmall");
-
-    setFile(next);
-    setPreview(URL.createObjectURL(next));
-  }
-
-  function handleDrop(e: DragEvent<HTMLElement>) {
-    e.preventDefault();
-    setDragging(false);
-    void handleFile(e.dataTransfer.files?.[0] ?? null);
-  }
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>
@@ -235,48 +183,7 @@ export function PersonPhotoDialog({
             </DialogHeader>
 
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => inputRef.current?.click()}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragging(true);
-                  }}
-                  onDragLeave={() => setDragging(false)}
-                  onDrop={handleDrop}
-                  className={`flex aspect-square w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed p-4 text-center transition-all active:scale-[0.99] ${
-                    error ? st.errorBorder : dragging ? st.dropOn : st.drop
-                  }`}
-                >
-                  {checking ? (
-                    <span className={`text-[13px] ${st.fileName}`}>{t("checking")}</span>
-                  ) : preview ? (
-                    <Image src={preview} alt="" width={320} height={320} className="h-full w-full rounded-lg object-contain" unoptimized />
-                  ) : (
-                    <>
-                      <span className={`text-[14px] font-semibold ${st.dropTitle}`}>{t("dropzone")}</span>
-                      <span className={`text-[12px] ${st.small}`}>{t("dropzoneHint")}</span>
-                    </>
-                  )}
-                </button>
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept={PHOTO_ACCEPT}
-                  className="hidden"
-                  onChange={(e) => {
-                    void handleFile(e.target.files?.[0] ?? null);
-                    e.target.value = "";
-                  }}
-                />
-                {file && !error && <span className={`truncate text-[12.5px] ${st.fileName}`}>{file.name}</span>}
-                {error && (
-                  <span role="alert" className={`text-[12.5px] ${st.error}`}>
-                    {tError(error)}
-                  </span>
-                )}
-              </div>
+              <ImageUploadField id="person-photo-file" preset="photo" variant={variant === "public" ? "public" : "app"} file={file} onChange={setFile} />
 
               <div className="flex flex-col gap-3">
                 <h3 className={`text-[12px] font-semibold uppercase tracking-wide ${st.small}`}>{t("rulesTitle")}</h3>
@@ -285,12 +192,6 @@ export function PersonPhotoDialog({
                     <RuleItem key={key} styles={st}>{t(key)}</RuleItem>
                   ))}
                 </ul>
-                <h3 className={`mt-1 text-[12px] font-semibold uppercase tracking-wide ${st.small}`}>{t("technicalTitle")}</h3>
-                <ul className={`flex flex-col gap-2 text-[13.5px] leading-relaxed ${st.body}`}>
-                  <RuleItem muted styles={st}>{t("ruleFormat")}</RuleItem>
-                  <RuleItem muted styles={st}>{t("ruleWeight", { max: PHOTO_MAX_MB })}</RuleItem>
-                  <RuleItem muted styles={st}>{t("ruleSize", { min: PHOTO_MIN_SIDE })}</RuleItem>
-                </ul>
               </div>
             </div>
 
@@ -298,7 +199,7 @@ export function PersonPhotoDialog({
               <button type="button" onClick={onClose} className={secondaryButton}>
                 {t("cancel")}
               </button>
-              <button type="button" disabled={!file || !!error || checking} onClick={() => file && capacity && onConfirm(file, capacity)} className={primaryButton}>
+              <button type="button" disabled={!file} onClick={() => file && capacity && onConfirm(file, capacity)} className={primaryButton}>
                 {t("confirm")}
               </button>
             </div>

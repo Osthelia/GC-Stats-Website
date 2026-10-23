@@ -6832,5 +6832,37 @@
       "undetected": "The month could not be read from the page, pick it in the month field.",
       "generic": "Something went wrong, please try again."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Click or drop an image here",
+    "dropzoneHint": "Choose a file, then crop and zoom it before sending",
+    "checking": "Checking the image",
+    "constraintsTitle": "Image requirements",
+    "constraintFormats": "Formats: {formats}",
+    "constraintWeight": "Maximum weight: {max} MB",
+    "constraintMinSide": "Minimum size: {min} px on the shortest side",
+    "constraintRatio": "Ratio: {ratio} (you can crop and zoom after choosing)",
+    "constraintOutput": "Resized to {max} px on the longest side if larger",
+    "editCrop": "Edit crop",
+    "replace": "Replace",
+    "remove": "Remove",
+    "cropTitle": "Crop the image",
+    "cropDescription": "Move the image and zoom to choose the visible area.",
+    "cropDescriptionPadding": "Move the image and zoom to choose the visible area. Zoom out to add a transparent margin around it.",
+    "zoom": "Zoom",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "fit": "Fit the whole image",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "applying": "Applying",
+    "exportFailed": "The image could not be processed, try another file.",
+    "error": {
+      "invalidType": "Unsupported format, use {formats}.",
+      "tooLarge": "The file is too heavy, the maximum is {max} MB.",
+      "tooSmall": "The image is too small, the shortest side must be at least {min} px.",
+      "invalidImage": "This file is not a valid image."
+    }
   }
 }

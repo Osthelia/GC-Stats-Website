@@ -8,13 +8,13 @@
 
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { FormField } from "@/components/admin/form-field";
@@ -41,10 +41,9 @@ export function AuthorLogoPanel({
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   function handleUpload() {
-    const file = fileInputRef.current?.files?.[0];
     setError(null);
     if (!file) {
       setError("empty");
@@ -61,7 +60,7 @@ export function AuthorLogoPanel({
         return;
       }
       setOpen(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setFile(null);
       toast.success(t("logoUploadSuccess"));
       router.refresh();
     });
@@ -113,7 +112,7 @@ export function AuthorLogoPanel({
           setOpen(next);
           if (!next) {
             setError(null);
-            if (fileInputRef.current) fileInputRef.current.value = "";
+            setFile(null);
           }
         }}
       >
@@ -123,8 +122,8 @@ export function AuthorLogoPanel({
             <DialogDescription>{t("subtitle")}</DialogDescription>
           </DialogHeader>
 
-          <FormField label={t("logoUploadFileLabel")} htmlFor="author-logo-file" required error={error ? t(`error.${error}` as "error.empty") : undefined}>
-            <Input id="author-logo-file" ref={fileInputRef} type="file" accept="image/*" aria-invalid={!!error} />
+          <FormField label={t("logoUploadFileLabel")} htmlFor="author-logo-file" required>
+            <ImageUploadField id="author-logo-file" preset="logo" file={file} onChange={setFile} error={error ? t(`error.${error}` as "error.empty") : undefined} disabled={isPending} />
           </FormField>
 
           <DialogFooter>

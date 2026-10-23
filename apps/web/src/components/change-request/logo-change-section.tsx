@@ -8,11 +8,12 @@
 
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import { PublicSelect } from "@/components/forms/public-select";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import { PersonPhotoDialog } from "@/components/change-request/person-photo-dialog";
 import type { ChangeRequestSubjectType, LogoOperation, PhotoConsent } from "@/lib/change-request-fields";
 
@@ -49,7 +50,7 @@ export function LogoChangeSection({
   onOperationsChange: (ops: LogoOperation[]) => void;
 }) {
   const t = useTranslations("suggestEdit.logo");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [newFile, setNewFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [newTheme, setNewTheme] = useState(NO_THEME);
@@ -70,11 +71,14 @@ export function LogoChangeSection({
   ];
 
   function handleFile(file: File | null, consent?: PhotoConsent) {
-    setFileName(file?.name ?? null);
-    setPreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return file ? URL.createObjectURL(file) : null;
-    });
+    setNewFile(file);
+    if (isPerson) {
+      setFileName(file?.name ?? null);
+      setPreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return file ? URL.createObjectURL(file) : null;
+      });
+    }
     onFileChange(file, { theme: newTheme, since: newSince, until: newUntil, consent });
   }
 
@@ -177,20 +181,13 @@ export function LogoChangeSection({
       ) : (
         <div className="flex flex-col gap-2 border-t border-neutral-800 pt-4">
           <span className="text-[13px] font-medium text-neutral-300">{t("addNew")}</span>
+          <ImageUploadField id="logo-change-file" preset="logo" variant="public" file={newFile} onChange={(file) => handleFile(file)} />
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-4 py-2 text-[13.5px] font-semibold text-neutral-200 transition-colors hover:border-[#e4ae22]/60"
-            >
-              {t("choose")}
-            </button>
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
             <PublicSelect
               value={newTheme}
               onChange={(v) => {
                 setNewTheme(v);
-                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: v, since: newSince, until: newUntil });
+                if (newFile) onFileChange(newFile, { theme: v, since: newSince, until: newUntil });
               }}
               options={themeOptions}
             />
@@ -199,7 +196,7 @@ export function LogoChangeSection({
               value={newSince}
               onChange={(e) => {
                 setNewSince(e.target.value);
-                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: e.target.value, until: newUntil });
+                if (newFile) onFileChange(newFile, { theme: newTheme, since: e.target.value, until: newUntil });
               }}
               className={inputClass}
             />
@@ -208,26 +205,10 @@ export function LogoChangeSection({
               value={newUntil}
               onChange={(e) => {
                 setNewUntil(e.target.value);
-                if (fileName) onFileChange(inputRef.current?.files?.[0] ?? null, { theme: newTheme, since: newSince, until: e.target.value });
+                if (newFile) onFileChange(newFile, { theme: newTheme, since: newSince, until: e.target.value });
               }}
               className={inputClass}
             />
-            {fileName && (
-              <div className="flex items-center gap-2">
-                {preview && <Image src={preview} alt="" width={28} height={28} className="h-7 w-7 rounded-md object-contain" unoptimized />}
-                <span className="truncate text-[13px] text-neutral-400">{fileName}</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    inputRef.current!.value = "";
-                    handleFile(null);
-                  }}
-                  className="text-[12px] text-neutral-500 underline hover:text-neutral-300"
-                >
-                  {t("remove")}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}

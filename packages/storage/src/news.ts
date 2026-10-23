@@ -26,7 +26,7 @@ export type StoredNewsImage = { id: string; url: string };
 
 export async function storeNewsImage(buffer: Buffer): Promise<StoredNewsImage> {
   const id = randomUUID();
-  const webp = await convertToWebp(buffer, { width: MAX_WIDTH, quality: QUALITY, fit: "inside" });
+  const webp = await convertToWebp(buffer, { width: MAX_WIDTH, quality: QUALITY, fit: "inside", animated: true });
   const key = newsImageKey(id);
   await putObject(key, webp, "image/webp");
   return { id, url: publicUrl(key) };

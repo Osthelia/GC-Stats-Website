@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ImageOff } from "lucide-react";
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { HiddenBadge } from "@/components/admin/hidden-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -87,14 +88,14 @@ export function EntityLogoPanel({
   const [from, setFrom] = useState(todayIso);
   const [until, setUntil] = useState("");
   const [fieldErrors, setFieldErrors] = useState<UploadLogoFieldErrors>({});
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   const [editing, setEditing] = useState<AdminLogoEntry | null>(null);
   const [editTheme, setEditTheme] = useState(NO_THEME);
   const [editFrom, setEditFrom] = useState("");
   const [editUntil, setEditUntil] = useState("");
   const [editFieldErrors, setEditFieldErrors] = useState<UpdateLogoFieldErrors>({});
-  const editFileInputRef = useRef<HTMLInputElement>(null);
+  const [editFile, setEditFile] = useState<File | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const initials = displayName.trim().slice(0, 2).toUpperCase() || "?";
@@ -105,11 +106,10 @@ export function EntityLogoPanel({
     setFrom(todayIso());
     setUntil("");
     setFieldErrors({});
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    setFile(null);
   }
 
   function handleUpload() {
-    const file = fileInputRef.current?.files?.[0];
     setFieldErrors({});
 
     const formData = new FormData();
@@ -137,16 +137,15 @@ export function EntityLogoPanel({
     setEditFrom(entry.since ?? todayIso());
     setEditUntil(entry.until ?? "");
     setEditFieldErrors({});
-    if (editFileInputRef.current) editFileInputRef.current.value = "";
+    setEditFile(null);
   }
 
   function handleUpdate() {
     if (!editing) return;
-    const file = editFileInputRef.current?.files?.[0];
     setEditFieldErrors({});
 
     const formData = new FormData();
-    if (file) formData.set("file", file);
+    if (editFile) formData.set("file", editFile);
     formData.set("theme", editTheme === NO_THEME ? "" : editTheme);
     formData.set("from", editFrom);
     formData.set("until", editUntil);
@@ -157,7 +156,7 @@ export function EntityLogoPanel({
         setEditFieldErrors(result.fieldErrors);
         return;
       }
-      if (file) {
+      if (editFile) {
         // Same URL, new bytes — bust the cache for this one image right after reload (see s3.ts's cache-control).
         try {
           sessionStorage.setItem(`gcs_logo_bust_${editing.id}`, String(Date.now()));
@@ -260,8 +259,8 @@ export function EntityLogoPanel({
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
-            <FormField label={t("logoUploadFileLabel")} htmlFor="logo-upload-file" required error={err("file")}>
-              <Input id="logo-upload-file" ref={fileInputRef} type="file" accept="image/*" aria-invalid={!!fieldErrors.file} />
+            <FormField label={t("logoUploadFileLabel")} htmlFor="logo-upload-file" required>
+              <ImageUploadField id="logo-upload-file" preset="logo" file={file} onChange={setFile} error={err("file")} disabled={isPending} />
             </FormField>
 
             <FormField label={t("logoUploadThemeLabel")} htmlFor="logo-upload-theme" error={err("theme")}>
@@ -315,8 +314,8 @@ export function EntityLogoPanel({
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
-            <FormField label={t("logoEditFileLabel")} htmlFor="logo-edit-file" error={editErr("file")}>
-              <Input id="logo-edit-file" ref={editFileInputRef} type="file" accept="image/*" aria-invalid={!!editFieldErrors.file} />
+            <FormField label={t("logoEditFileLabel")} htmlFor="logo-edit-file">
+              <ImageUploadField id="logo-edit-file" preset="logo" file={editFile} onChange={setEditFile} error={editErr("file")} disabled={isPending} />
             </FormField>
 
             <FormField label={t("logoUploadThemeLabel")} htmlFor="logo-edit-theme" error={editErr("theme")}>

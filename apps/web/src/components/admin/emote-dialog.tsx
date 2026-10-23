@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { TeamPicker } from "@/components/admin/team-picker";
 import { AboutProjectLogo } from "@/components/admin/about-project-logo";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import { copyTeamLogoToEmote, createEmote, updateEmote, uploadEmoteImage, type EmoteFieldErrors } from "@/actions/admin-emotes";
 import type { AdminEmoteRow } from "@/lib/admin-emotes";
 
@@ -55,7 +56,7 @@ export function EmoteDialog({
   const [fieldErrors, setFieldErrors] = useState<EmoteFieldErrors>({});
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyState());
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -64,19 +65,18 @@ export function EmoteDialog({
       setUploadError(null);
       setTeam(null);
       setTeamError(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setUploadFile(null);
     }
   }, [open, emote]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
   function handleFileUpload() {
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) return;
+    if (!uploadFile) return;
     setUploadError(null);
 
     const formData = new FormData();
-    formData.set("file", file);
+    formData.set("file", uploadFile);
 
     startUpload(async () => {
       const result = await uploadEmoteImage(formData);
@@ -85,7 +85,7 @@ export function EmoteDialog({
         return;
       }
       set("imagePath", result.url);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setUploadFile(null);
       toast.success(t("uploadSuccess"));
     });
   }
@@ -140,10 +140,10 @@ export function EmoteDialog({
             </FormField>
           </div>
 
-          <FormField label={t("fieldUpload")} htmlFor="emote-upload-file" hint={t("fieldUploadHint")} error={uploadError ?? undefined}>
-            <div className="flex items-center gap-2">
-              <Input id="emote-upload-file" ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" aria-invalid={!!uploadError} className="flex-1" />
-              <Button type="button" variant="outline" size="sm" onClick={handleFileUpload} disabled={isUploading}>
+          <FormField label={t("fieldUpload")} htmlFor="emote-upload-file" hint={t("fieldUploadHint")}>
+            <div className="flex flex-col gap-2">
+              <ImageUploadField id="emote-upload-file" preset="emote" file={uploadFile} onChange={setUploadFile} error={uploadError ?? undefined} disabled={isUploading} />
+              <Button type="button" variant="outline" size="sm" className="self-start" onClick={handleFileUpload} disabled={isUploading || !uploadFile}>
                 {isUploading ? <Loader2 className="size-4 animate-spin" /> : t("uploadButton")}
               </Button>
             </div>

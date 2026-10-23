@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import ImageExtension from "@tiptap/extension-image";
@@ -35,6 +35,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { useImagePicker } from "@/components/forms/use-image-picker";
+import { formatLabel } from "@/lib/image-upload";
 
 function ToolbarButton({
   onClick,
@@ -90,7 +92,7 @@ export function NewsRichTextEditor({
   disabled?: boolean;
 }) {
   const t = useTranslations("dashboard.news.editor.toolbar");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const tImage = useTranslations("imageUpload");
   const [uploading, setUploading] = useState(false);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkValue, setLinkValue] = useState("");
@@ -123,12 +125,12 @@ export function NewsRichTextEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
+  const picker = useImagePicker({ preset: "article", onPick: (file) => void handleImagePick(file) });
+
   if (!editor) return null;
 
-  async function handleImagePick(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file || !onUploadImage || uploading) return;
+  async function handleImagePick(file: File) {
+    if (!onUploadImage || uploading) return;
     setUploading(true);
     try {
       const url = await onUploadImage(file);
@@ -190,14 +192,19 @@ export function NewsRichTextEditor({
         <ToolbarButton title={t("link")} active={editor.isActive("link")} onClick={openLinkDialog}>
           <Link2 className="size-3.5" />
         </ToolbarButton>
-        <ToolbarButton title={onUploadImage ? t("image") : t("imageDisabled")} disabled={!onUploadImage || uploading} onClick={() => fileInputRef.current?.click()}>
-          {uploading ? <Loader2Icon className="size-3.5 animate-spin" /> : <ImageIcon className="size-3.5" />}
+        <ToolbarButton title={onUploadImage ? t("image") : t("imageDisabled")} disabled={!onUploadImage || uploading || picker.checking} onClick={picker.openFilePicker}>
+          {uploading || picker.checking ? <Loader2Icon className="size-3.5 animate-spin" /> : <ImageIcon className="size-3.5" />}
         </ToolbarButton>
         <ToolbarButton title={t("code")} active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
           <Code className="size-3.5" />
         </ToolbarButton>
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
+        {picker.element}
       </div>
+      {picker.error && (
+        <p role="alert" className="border-b border-input px-3 py-1.5 text-xs text-destructive">
+          {tImage(`error.${picker.error}`, { max: picker.preset.maxMb, min: picker.preset.minSide, formats: picker.preset.accept.map(formatLabel).join(", ") })}
+        </p>
+      )}
       <EditorContent editor={editor} />
 
       <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>

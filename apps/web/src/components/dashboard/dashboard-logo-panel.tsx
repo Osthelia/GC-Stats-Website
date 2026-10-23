@@ -8,13 +8,13 @@
 
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ImageUploadField } from "@/components/forms/image-upload-field";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FormField } from "@/components/admin/form-field";
@@ -40,7 +40,7 @@ export function DashboardLogoPanel({ organizationId, displayName, entries: initi
   const [theme, setTheme] = useState(NO_THEME);
   const [error, setError] = useState<string | null>(null);
   const [removeConfirm, setRemoveConfirm] = useState<AdminLogoEntry | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   // Mirrors EntityLogoPanel's inline selection (not the currentLogo() helper from lib/admin-logos,
   // which also imports the db client: importing it here would pull server-only code into this client bundle).
@@ -52,7 +52,6 @@ export function DashboardLogoPanel({ organizationId, displayName, entries: initi
   const hasAny = light !== null || dark !== null;
 
   function handleUpload() {
-    const file = fileInputRef.current?.files?.[0];
     setError(null);
     if (!file) {
       setError("required");
@@ -71,7 +70,7 @@ export function DashboardLogoPanel({ organizationId, displayName, entries: initi
       }
       setOpen(false);
       setTheme(NO_THEME);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setFile(null);
       toast.success(t("logoUploadSuccess"));
       router.refresh();
     });
@@ -145,7 +144,7 @@ export function DashboardLogoPanel({ organizationId, displayName, entries: initi
           if (!next) {
             setError(null);
             setTheme(NO_THEME);
-            if (fileInputRef.current) fileInputRef.current.value = "";
+            setFile(null);
           }
         }}
       >
@@ -155,8 +154,8 @@ export function DashboardLogoPanel({ organizationId, displayName, entries: initi
             <DialogDescription>{t("logoUploadDialogDescription")}</DialogDescription>
           </DialogHeader>
 
-          <FormField label={t("logoUploadFileLabel")} htmlFor="dashboard-logo-file" required error={error ? t(`error.${error}` as "error.required") : undefined}>
-            <Input id="dashboard-logo-file" ref={fileInputRef} type="file" accept="image/*" aria-invalid={!!error} />
+          <FormField label={t("logoUploadFileLabel")} htmlFor="dashboard-logo-file" required>
+            <ImageUploadField id="dashboard-logo-file" preset="logo" file={file} onChange={setFile} error={error ? t(`error.${error}` as "error.required") : undefined} disabled={isPending} />
           </FormField>
 
           <FormField label={t("logoUploadThemeLabel")} htmlFor="dashboard-logo-theme">

@@ -6645,5 +6645,37 @@
       "undetected": "페이지에서 월을 읽을 수 없습니다. 월 입력란에서 선택하세요.",
       "generic": "문제가 발생했습니다. 다시 시도해 주세요."
     }
+  },
+  "imageUpload": {
+    "dropzone": "여기를 클릭하거나 이미지를 놓으세요",
+    "dropzoneHint": "파일을 고른 뒤 전송 전에 자르고 확대할 수 있어요",
+    "checking": "이미지 확인 중",
+    "constraintsTitle": "이미지 조건",
+    "constraintFormats": "형식: {formats}",
+    "constraintWeight": "최대 용량: {max} MB",
+    "constraintMinSide": "최소 크기: 짧은 변 {min} px 이상",
+    "constraintRatio": "비율: {ratio} (선택 후 자르기와 확대 가능)",
+    "constraintOutput": "더 크면 긴 변을 {max} px로 줄입니다",
+    "editCrop": "자르기 수정",
+    "replace": "바꾸기",
+    "remove": "삭제",
+    "cropTitle": "이미지 자르기",
+    "cropDescription": "이미지를 움직이고 확대해서 보일 영역을 고르세요.",
+    "cropDescriptionPadding": "이미지를 움직이고 확대해서 보일 영역을 고르세요. 축소하면 주위에 투명 여백이 생깁니다.",
+    "zoom": "확대/축소",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "fit": "이미지 전체 맞추기",
+    "reset": "초기화",
+    "cancel": "취소",
+    "apply": "적용",
+    "applying": "적용 중",
+    "exportFailed": "이미지를 처리할 수 없어요. 다른 파일을 시도하세요.",
+    "error": {
+      "invalidType": "지원하지 않는 형식이에요. {formats}을(를) 사용하세요.",
+      "tooLarge": "파일이 너무 커요. 최대 {max} MB입니다.",
+      "tooSmall": "이미지가 너무 작아요. 짧은 변이 최소 {min} px여야 해요.",
+      "invalidImage": "유효한 이미지 파일이 아니에요."
+    }
   }
 }

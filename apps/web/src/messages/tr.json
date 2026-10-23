@@ -6645,5 +6645,37 @@
       "undetected": "Ay sayfadan okunamadı, ay alanından seçin.",
       "generic": "Bir şeyler ters gitti, lütfen tekrar deneyin."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Buraya tıkla veya bir görsel bırak",
+    "dropzoneHint": "Bir dosya seç, göndermeden önce kırp ve yakınlaştır",
+    "checking": "Görsel kontrol ediliyor",
+    "constraintsTitle": "Görsel gereksinimleri",
+    "constraintFormats": "Biçimler: {formats}",
+    "constraintWeight": "En fazla boyut: {max} MB",
+    "constraintMinSide": "En küçük boyut: kısa kenarda {min} px",
+    "constraintRatio": "Oran: {ratio} (seçtikten sonra kırpabilir ve yakınlaştırabilirsin)",
+    "constraintOutput": "Daha büyükse uzun kenarı {max} px olacak şekilde küçültülür",
+    "editCrop": "Kırpmayı düzenle",
+    "replace": "Değiştir",
+    "remove": "Kaldır",
+    "cropTitle": "Görseli kırp",
+    "cropDescription": "Görünen alanı seçmek için görseli taşı ve yakınlaştır.",
+    "cropDescriptionPadding": "Görünen alanı seçmek için görseli taşı ve yakınlaştır. Çevresine şeffaf boşluk eklemek için uzaklaştır.",
+    "zoom": "Yakınlaştırma",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır",
+    "fit": "Görselin tamamını sığdır",
+    "reset": "Sıfırla",
+    "cancel": "İptal",
+    "apply": "Uygula",
+    "applying": "Uygulanıyor",
+    "exportFailed": "Görsel işlenemedi, başka bir dosya dene.",
+    "error": {
+      "invalidType": "Desteklenmeyen biçim, {formats} kullan.",
+      "tooLarge": "Dosya çok büyük, en fazla {max} MB olabilir.",
+      "tooSmall": "Görsel çok küçük, kısa kenar en az {min} px olmalı.",
+      "invalidImage": "Bu dosya geçerli bir görsel değil."
+    }
   }
 }

@@ -6826,5 +6826,37 @@
       "undetected": "Không thể đọc tháng từ trang, hãy chọn nó trong trường tháng.",
       "generic": "Đã xảy ra lỗi, vui lòng thử lại."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Nhấp hoặc thả ảnh vào đây",
+    "dropzoneHint": "Chọn tệp, rồi cắt và phóng to trước khi gửi",
+    "checking": "Đang kiểm tra ảnh",
+    "constraintsTitle": "Yêu cầu về ảnh",
+    "constraintFormats": "Định dạng: {formats}",
+    "constraintWeight": "Dung lượng tối đa: {max} MB",
+    "constraintMinSide": "Kích thước tối thiểu: {min} px ở cạnh ngắn nhất",
+    "constraintRatio": "Tỉ lệ: {ratio} (bạn có thể cắt và phóng to sau khi chọn)",
+    "constraintOutput": "Thu nhỏ còn {max} px ở cạnh dài nhất nếu lớn hơn",
+    "editCrop": "Sửa vùng cắt",
+    "replace": "Thay thế",
+    "remove": "Xóa",
+    "cropTitle": "Cắt ảnh",
+    "cropDescription": "Di chuyển ảnh và phóng to để chọn vùng hiển thị.",
+    "cropDescriptionPadding": "Di chuyển ảnh và phóng to để chọn vùng hiển thị. Thu nhỏ để thêm viền trong suốt xung quanh.",
+    "zoom": "Thu phóng",
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ",
+    "fit": "Vừa toàn bộ ảnh",
+    "reset": "Đặt lại",
+    "cancel": "Hủy",
+    "apply": "Áp dụng",
+    "applying": "Đang áp dụng",
+    "exportFailed": "Không xử lý được ảnh, hãy thử tệp khác.",
+    "error": {
+      "invalidType": "Định dạng không được hỗ trợ, hãy dùng {formats}.",
+      "tooLarge": "Tệp quá nặng, tối đa là {max} MB.",
+      "tooSmall": "Ảnh quá nhỏ, cạnh ngắn nhất phải có ít nhất {min} px.",
+      "invalidImage": "Tệp này không phải là ảnh hợp lệ."
+    }
   }
 }

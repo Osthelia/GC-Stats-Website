@@ -6826,5 +6826,37 @@
       "undetected": "Hindi mabasa ang buwan mula sa pahina, piliin ito sa field ng buwan.",
       "generic": "May nangyaring mali, pakisubukan muli."
     }
+  },
+  "imageUpload": {
+    "dropzone": "I-click o ihulog dito ang larawan",
+    "dropzoneHint": "Pumili ng file, saka i-crop at i-zoom bago ipadala",
+    "checking": "Sinusuri ang larawan",
+    "constraintsTitle": "Mga kinakailangan ng larawan",
+    "constraintFormats": "Mga format: {formats}",
+    "constraintWeight": "Pinakamalaking laki: {max} MB",
+    "constraintMinSide": "Pinakamaliit na sukat: {min} px sa pinakamaikling gilid",
+    "constraintRatio": "Ratio: {ratio} (puwede kang mag-crop at mag-zoom pagkatapos pumili)",
+    "constraintOutput": "Paliliitin sa {max} px sa pinakamahabang gilid kung mas malaki",
+    "editCrop": "I-edit ang crop",
+    "replace": "Palitan",
+    "remove": "Alisin",
+    "cropTitle": "I-crop ang larawan",
+    "cropDescription": "Ilipat ang larawan at mag-zoom para piliin ang makikitang bahagi.",
+    "cropDescriptionPadding": "Ilipat ang larawan at mag-zoom para piliin ang makikitang bahagi. Mag-zoom out para magdagdag ng transparent na palibot.",
+    "zoom": "Zoom",
+    "zoomIn": "Mag-zoom in",
+    "zoomOut": "Mag-zoom out",
+    "fit": "Isakto ang buong larawan",
+    "reset": "I-reset",
+    "cancel": "Kanselahin",
+    "apply": "Ilapat",
+    "applying": "Inilalapat",
+    "exportFailed": "Hindi napoproseso ang larawan, subukan ang ibang file.",
+    "error": {
+      "invalidType": "Hindi sinusuportahang format, gamitin ang {formats}.",
+      "tooLarge": "Masyadong mabigat ang file, ang maximum ay {max} MB.",
+      "tooSmall": "Masyadong maliit ang larawan, dapat hindi bababa sa {min} px ang pinakamaikling gilid.",
+      "invalidImage": "Hindi wasto ang larawang ito."
+    }
   }
 }

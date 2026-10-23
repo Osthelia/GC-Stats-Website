@@ -6832,5 +6832,37 @@
       "undetected": "Impossible de lire le mois dans la page, sélectionnez le mois dans le champ prévu.",
       "generic": "Une erreur est survenue, réessayez."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Clique ou dépose une image ici",
+    "dropzoneHint": "Choisis un fichier, puis recadre et zoome avant l'envoi",
+    "checking": "Vérification de l'image",
+    "constraintsTitle": "Contraintes de l'image",
+    "constraintFormats": "Formats : {formats}",
+    "constraintWeight": "Poids maximum : {max} Mo",
+    "constraintMinSide": "Taille minimale : {min} px sur le plus petit côté",
+    "constraintRatio": "Ratio : {ratio} (tu pourras recadrer et zoomer après le choix)",
+    "constraintOutput": "Réduite à {max} px sur le plus grand côté si elle est plus grande",
+    "editCrop": "Modifier le recadrage",
+    "replace": "Remplacer",
+    "remove": "Retirer",
+    "cropTitle": "Recadrer l'image",
+    "cropDescription": "Déplace l'image et zoome pour choisir la zone visible.",
+    "cropDescriptionPadding": "Déplace l'image et zoome pour choisir la zone visible. Dézoome pour ajouter une marge transparente autour.",
+    "zoom": "Zoom",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "fit": "Afficher toute l'image",
+    "reset": "Réinitialiser",
+    "cancel": "Annuler",
+    "apply": "Appliquer",
+    "applying": "Application",
+    "exportFailed": "L'image n'a pas pu être traitée, essaie un autre fichier.",
+    "error": {
+      "invalidType": "Format non pris en charge, utilise {formats}.",
+      "tooLarge": "Le fichier est trop lourd, le maximum est {max} Mo.",
+      "tooSmall": "L'image est trop petite, le plus petit côté doit faire au moins {min} px.",
+      "invalidImage": "Ce fichier n'est pas une image valide."
+    }
   }
 }

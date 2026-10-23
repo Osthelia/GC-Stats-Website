@@ -6645,5 +6645,37 @@
       "undetected": "Der Monat konnte nicht aus der Seite gelesen werden, wähle ihn im Monatsfeld aus.",
       "generic": "Etwas ist schiefgelaufen, bitte versuche es erneut."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Hier klicken oder ein Bild ablegen",
+    "dropzoneHint": "Wähle eine Datei, beschneide und zoome sie vor dem Senden",
+    "checking": "Bild wird geprüft",
+    "constraintsTitle": "Anforderungen an das Bild",
+    "constraintFormats": "Formate: {formats}",
+    "constraintWeight": "Maximale Größe: {max} MB",
+    "constraintMinSide": "Mindestgröße: {min} px an der kürzeren Seite",
+    "constraintRatio": "Seitenverhältnis: {ratio} (nach der Auswahl kannst du beschneiden und zoomen)",
+    "constraintOutput": "Auf {max} px an der längeren Seite verkleinert, falls größer",
+    "editCrop": "Zuschnitt bearbeiten",
+    "replace": "Ersetzen",
+    "remove": "Entfernen",
+    "cropTitle": "Bild zuschneiden",
+    "cropDescription": "Verschiebe das Bild und zoome, um den sichtbaren Bereich zu wählen.",
+    "cropDescriptionPadding": "Verschiebe das Bild und zoome, um den sichtbaren Bereich zu wählen. Verkleinere, um einen transparenten Rand hinzuzufügen.",
+    "zoom": "Zoom",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "fit": "Ganzes Bild einpassen",
+    "reset": "Zurücksetzen",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden",
+    "applying": "Wird angewendet",
+    "exportFailed": "Das Bild konnte nicht verarbeitet werden, versuche eine andere Datei.",
+    "error": {
+      "invalidType": "Nicht unterstütztes Format, nutze {formats}.",
+      "tooLarge": "Die Datei ist zu groß, das Maximum sind {max} MB.",
+      "tooSmall": "Das Bild ist zu klein, die kürzere Seite muss mindestens {min} px haben.",
+      "invalidImage": "Diese Datei ist kein gültiges Bild."
+    }
   }
 }

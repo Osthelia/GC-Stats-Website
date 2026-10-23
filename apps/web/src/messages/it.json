@@ -6645,5 +6645,37 @@
       "undetected": "Impossibile leggere il mese dalla pagina, selezionalo nel campo del mese.",
       "generic": "Qualcosa è andato storto, riprova."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Clicca o trascina qui un'immagine",
+    "dropzoneHint": "Scegli un file, poi ritaglialo e ingrandiscilo prima dell'invio",
+    "checking": "Controllo dell'immagine",
+    "constraintsTitle": "Requisiti dell'immagine",
+    "constraintFormats": "Formati: {formats}",
+    "constraintWeight": "Peso massimo: {max} MB",
+    "constraintMinSide": "Dimensione minima: {min} px sul lato più corto",
+    "constraintRatio": "Proporzioni: {ratio} (potrai ritagliare e ingrandire dopo la scelta)",
+    "constraintOutput": "Ridotta a {max} px sul lato più lungo se più grande",
+    "editCrop": "Modifica ritaglio",
+    "replace": "Sostituisci",
+    "remove": "Rimuovi",
+    "cropTitle": "Ritaglia l'immagine",
+    "cropDescription": "Sposta l'immagine e ingrandisci per scegliere l'area visibile.",
+    "cropDescriptionPadding": "Sposta l'immagine e ingrandisci per scegliere l'area visibile. Riduci lo zoom per aggiungere un margine trasparente intorno.",
+    "zoom": "Zoom",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci",
+    "fit": "Adatta tutta l'immagine",
+    "reset": "Reimposta",
+    "cancel": "Annulla",
+    "apply": "Applica",
+    "applying": "Applicazione",
+    "exportFailed": "Impossibile elaborare l'immagine, prova con un altro file.",
+    "error": {
+      "invalidType": "Formato non supportato, usa {formats}.",
+      "tooLarge": "Il file è troppo pesante, il massimo è {max} MB.",
+      "tooSmall": "L'immagine è troppo piccola, il lato più corto deve essere di almeno {min} px.",
+      "invalidImage": "Questo file non è un'immagine valida."
+    }
   }
 }

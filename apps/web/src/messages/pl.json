@@ -6645,5 +6645,37 @@
       "undetected": "Nie udało się odczytać miesiąca ze strony, wybierz go w polu miesiąca.",
       "generic": "Coś poszło nie tak, spróbuj ponownie."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Kliknij lub upuść tutaj obraz",
+    "dropzoneHint": "Wybierz plik, a przed wysłaniem przytnij go i powiększ",
+    "checking": "Sprawdzanie obrazu",
+    "constraintsTitle": "Wymagania dla obrazu",
+    "constraintFormats": "Formaty: {formats}",
+    "constraintWeight": "Maksymalny rozmiar: {max} MB",
+    "constraintMinSide": "Minimalny rozmiar: {min} px na krótszym boku",
+    "constraintRatio": "Proporcje: {ratio} (po wyborze możesz przyciąć i powiększyć)",
+    "constraintOutput": "Zmniejszany do {max} px na dłuższym boku, jeśli jest większy",
+    "editCrop": "Edytuj przycięcie",
+    "replace": "Zamień",
+    "remove": "Usuń",
+    "cropTitle": "Przytnij obraz",
+    "cropDescription": "Przesuń obraz i powiększ, aby wybrać widoczny obszar.",
+    "cropDescriptionPadding": "Przesuń obraz i powiększ, aby wybrać widoczny obszar. Pomniejsz, aby dodać przezroczysty margines.",
+    "zoom": "Powiększenie",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "fit": "Dopasuj cały obraz",
+    "reset": "Resetuj",
+    "cancel": "Anuluj",
+    "apply": "Zastosuj",
+    "applying": "Stosowanie",
+    "exportFailed": "Nie udało się przetworzyć obrazu, spróbuj innego pliku.",
+    "error": {
+      "invalidType": "Nieobsługiwany format, użyj {formats}.",
+      "tooLarge": "Plik jest za duży, maksimum to {max} MB.",
+      "tooSmall": "Obraz jest za mały, krótszy bok musi mieć co najmniej {min} px.",
+      "invalidImage": "Ten plik nie jest prawidłowym obrazem."
+    }
   }
 }

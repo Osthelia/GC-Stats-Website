@@ -8,14 +8,17 @@
 
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Loader2Icon, StarIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ImageConstraints } from "@/components/forms/image-upload-field";
+import { useImagePicker } from "@/components/forms/use-image-picker";
 import { cn } from "@/lib/utils";
+import { formatLabel } from "@/lib/image-upload";
 import { uploadDashboardNewsImage, setDashboardNewsCover, deleteDashboardNewsImage } from "@/actions/dashboard-news";
 
 export type NewsCoverImage = { id: string; url: string };
@@ -36,16 +39,12 @@ export function NewsCoverPanel({
   onCoverChange: (url: string | null) => void;
 }) {
   const t = useTranslations("dashboard.news.editor");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const tImage = useTranslations("imageUpload");
   const [isPending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-
+  function handleUpload(file: File) {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -58,6 +57,8 @@ export function NewsCoverPanel({
       onImagesChange([...images, { id: result.id, url: result.url }]);
     });
   }
+
+  const picker = useImagePicker({ preset: "cover", onPick: handleUpload });
 
   function handleSetCover(imageId: string, url: string) {
     setBusyId(imageId);
@@ -137,11 +138,17 @@ export function NewsCoverPanel({
         </div>
       )}
 
-      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
-      <Button type="button" variant="outline" size="sm" disabled={isPending} onClick={() => fileInputRef.current?.click()} className="w-fit">
-        {isPending ? <Loader2Icon className="size-3.5 animate-spin" /> : <UploadIcon className="size-3.5" />}
+      {picker.element}
+      <Button type="button" variant="outline" size="sm" disabled={isPending || picker.checking} onClick={picker.openFilePicker} className="w-fit">
+        {isPending || picker.checking ? <Loader2Icon className="size-3.5 animate-spin" /> : <UploadIcon className="size-3.5" />}
         {t("coverUploadButton")}
       </Button>
+      {picker.error && (
+        <p role="alert" className="text-xs text-destructive">
+          {tImage(`error.${picker.error}`, { max: picker.preset.maxMb, min: picker.preset.minSide, formats: picker.preset.accept.map(formatLabel).join(", ") })}
+        </p>
+      )}
+      <ImageConstraints preset="cover" />
 
       <ConfirmDialog
         open={confirmDeleteId !== null}

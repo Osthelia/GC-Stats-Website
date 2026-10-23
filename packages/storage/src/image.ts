@@ -20,6 +20,8 @@ export type WebpOptions = {
   quality: number;
   /** "cover" scales so the *shortest* side fills the box and crops the rest — mirrors V1's custom scaleByShortestSide() helper, which sharp does natively. */
   fit?: ImageFit;
+  /** Keeps every frame of an animated source (gif). Ignored on Cloudflare, which outputs a single frame. */
+  animated?: boolean;
 };
 
 // Cloudflare Workers can't run sharp (native bindings, see next.config.mjs's
@@ -33,7 +35,7 @@ export async function convertToWebp(input: Buffer, opts: WebpOptions): Promise<B
     return convertToWebpCloudflare(input, opts);
   }
 
-  let pipeline = sharp(input, { failOn: "error" }).rotate(); // auto-orient from EXIF before any resize
+  let pipeline = sharp(input, { failOn: "error", animated: opts.animated }).rotate(); // auto-orient from EXIF before any resize
   if (opts.width || opts.height) {
     // width-only (or height-only) call sites use fit:"inside" — no crop, just
     // a max-dimension cap, unlike the cover-thumbnail case below.

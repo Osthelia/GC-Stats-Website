@@ -6645,5 +6645,37 @@
       "undetected": "ページから月を読み取れませんでした。月の欄で選択してください。",
       "generic": "問題が発生しました。もう一度お試しください。"
     }
+  },
+  "imageUpload": {
+    "dropzone": "ここをクリックするか画像をドロップ",
+    "dropzoneHint": "ファイルを選び、送信前にトリミングとズームができます",
+    "checking": "画像を確認中",
+    "constraintsTitle": "画像の条件",
+    "constraintFormats": "形式：{formats}",
+    "constraintWeight": "最大サイズ：{max} MB",
+    "constraintMinSide": "最小サイズ：短い辺が {min} px 以上",
+    "constraintRatio": "比率：{ratio}（選択後にトリミングとズームができます）",
+    "constraintOutput": "大きい場合は長い辺を {max} px に縮小します",
+    "editCrop": "トリミングを編集",
+    "replace": "置き換え",
+    "remove": "削除",
+    "cropTitle": "画像をトリミング",
+    "cropDescription": "画像を動かしてズームし、表示する範囲を選んでください。",
+    "cropDescriptionPadding": "画像を動かしてズームし、表示する範囲を選んでください。縮小すると周囲に透明な余白が付きます。",
+    "zoom": "ズーム",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "fit": "画像全体を収める",
+    "reset": "リセット",
+    "cancel": "キャンセル",
+    "apply": "適用",
+    "applying": "適用中",
+    "exportFailed": "画像を処理できませんでした。別のファイルを試してください。",
+    "error": {
+      "invalidType": "対応していない形式です。{formats} を使用してください。",
+      "tooLarge": "ファイルが大きすぎます。上限は {max} MB です。",
+      "tooSmall": "画像が小さすぎます。短い辺は {min} px 以上必要です。",
+      "invalidImage": "有効な画像ファイルではありません。"
+    }
   }
 }

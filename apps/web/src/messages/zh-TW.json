@@ -6826,5 +6826,37 @@
       "undetected": "無法從頁面中讀取月份，請在月份欄中選擇。",
       "generic": "出了點問題，請重試。"
     }
+  },
+  "imageUpload": {
+    "dropzone": "點擊此處或拖入圖片",
+    "dropzoneHint": "選擇檔案，傳送前可以裁切和縮放",
+    "checking": "正在檢查圖片",
+    "constraintsTitle": "圖片要求",
+    "constraintFormats": "格式：{formats}",
+    "constraintWeight": "最大大小：{max} MB",
+    "constraintMinSide": "最小尺寸：短邊至少 {min} px",
+    "constraintRatio": "比例：{ratio}（選擇後可以裁切和縮放）",
+    "constraintOutput": "若更大，長邊會縮小到 {max} px",
+    "editCrop": "編輯裁切",
+    "replace": "取代",
+    "remove": "移除",
+    "cropTitle": "裁切圖片",
+    "cropDescription": "移動圖片並縮放，選擇可見區域。",
+    "cropDescriptionPadding": "移動圖片並縮放，選擇可見區域。縮小可在四周加入透明邊距。",
+    "zoom": "縮放",
+    "zoomIn": "放大",
+    "zoomOut": "縮小",
+    "fit": "符合整張圖片",
+    "reset": "重設",
+    "cancel": "取消",
+    "apply": "套用",
+    "applying": "套用中",
+    "exportFailed": "無法處理該圖片，請換一個檔案。",
+    "error": {
+      "invalidType": "不支援的格式，請使用 {formats}。",
+      "tooLarge": "檔案太大，最大為 {max} MB。",
+      "tooSmall": "圖片太小，短邊至少需要 {min} px。",
+      "invalidImage": "此檔案不是有效的圖片。"
+    }
   }
 }

@@ -6826,5 +6826,37 @@
       "undetected": "Bulan tidak dapat dibaca dari halaman, pilih di kolom bulan.",
       "generic": "Terjadi kesalahan, silakan coba lagi."
     }
+  },
+  "imageUpload": {
+    "dropzone": "Klik atau letakkan gambar di sini",
+    "dropzoneHint": "Pilih file, lalu potong dan perbesar sebelum dikirim",
+    "checking": "Memeriksa gambar",
+    "constraintsTitle": "Persyaratan gambar",
+    "constraintFormats": "Format: {formats}",
+    "constraintWeight": "Ukuran maksimum: {max} MB",
+    "constraintMinSide": "Ukuran minimum: {min} px pada sisi terpendek",
+    "constraintRatio": "Rasio: {ratio} (kamu bisa memotong dan memperbesar setelah memilih)",
+    "constraintOutput": "Diperkecil menjadi {max} px pada sisi terpanjang jika lebih besar",
+    "editCrop": "Ubah pemotongan",
+    "replace": "Ganti",
+    "remove": "Hapus",
+    "cropTitle": "Potong gambar",
+    "cropDescription": "Geser gambar dan perbesar untuk memilih area yang terlihat.",
+    "cropDescriptionPadding": "Geser gambar dan perbesar untuk memilih area yang terlihat. Perkecil untuk menambah margin transparan di sekelilingnya.",
+    "zoom": "Zoom",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil",
+    "fit": "Muat seluruh gambar",
+    "reset": "Atur ulang",
+    "cancel": "Batal",
+    "apply": "Terapkan",
+    "applying": "Menerapkan",
+    "exportFailed": "Gambar tidak dapat diproses, coba file lain.",
+    "error": {
+      "invalidType": "Format tidak didukung, gunakan {formats}.",
+      "tooLarge": "File terlalu besar, maksimumnya {max} MB.",
+      "tooSmall": "Gambar terlalu kecil, sisi terpendek minimal {min} px.",
+      "invalidImage": "File ini bukan gambar yang valid."
+    }
   }
 }
