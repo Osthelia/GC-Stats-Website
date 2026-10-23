@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "Brak zwycięzcy",
           "fieldCompleted": "Zakończona",
           "fieldForfeit": "Walkower",
-          "fieldDuration": "Czas trwania (sekundy)",
           "fieldNote": "Notatka",
           "fieldError": {
             "invalid": "Wpisz poprawną wartość.",

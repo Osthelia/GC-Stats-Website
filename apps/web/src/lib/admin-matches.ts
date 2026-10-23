@@ -164,7 +164,6 @@ export type AdminLeagueGameRow = {
   isCompleted: boolean;
   isForfeit: boolean;
   apiMatchId: string | null;
-  durationSeconds: number | null;
   note: string | null;
 };
 
@@ -179,7 +178,6 @@ export async function listLeagueMatchGames(matchId: number): Promise<AdminLeague
       isCompleted: games.isCompleted,
       isForfeit: games.isForfeit,
       apiMatchId: games.apiMatchId,
-      durationSeconds: games.durationSeconds,
       note: games.note,
     })
     .from(games)

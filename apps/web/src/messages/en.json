@@ -4514,7 +4514,6 @@
           "fieldWinnerNone": "No winner yet",
           "fieldCompleted": "Completed",
           "fieldForfeit": "Forfeit",
-          "fieldDuration": "Duration (seconds)",
           "fieldNote": "Note",
           "fieldError": {
             "invalid": "Enter a valid value.",

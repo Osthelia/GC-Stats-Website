@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "لا يوجد فائز بعد",
           "fieldCompleted": "مكتملة",
           "fieldForfeit": "انسحاب",
-          "fieldDuration": "المدة (بالثواني)",
           "fieldNote": "ملاحظة",
           "fieldError": {
             "invalid": "أدخل قيمة صحيحة.",

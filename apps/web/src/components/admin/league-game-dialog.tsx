@@ -34,12 +34,11 @@ type FormState = {
   winner: string;
   isCompleted: boolean;
   isForfeit: boolean;
-  durationSeconds: string;
   note: string;
 };
 
 function emptyState(nextOrder: number): FormState {
-  return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, durationSeconds: "", note: "" };
+  return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, note: "" };
 }
 
 function stateFromGame(game: AdminLeagueGameRow): FormState {
@@ -49,7 +48,6 @@ function stateFromGame(game: AdminLeagueGameRow): FormState {
     winner: game.winnerEntrantId !== null ? String(game.winnerEntrantId) : NO_WINNER,
     isCompleted: game.isCompleted,
     isForfeit: game.isForfeit,
-    durationSeconds: game.durationSeconds !== null ? String(game.durationSeconds) : "",
     note: game.note ?? "",
   };
 }
@@ -98,7 +96,6 @@ export function LeagueGameDialog({
       winnerEntrantId: form.winner === NO_WINNER ? "" : form.winner,
       isCompleted: form.isCompleted,
       isForfeit: form.isForfeit,
-      durationSeconds: form.durationSeconds,
       note: form.note,
     };
     startTransition(async () => {
@@ -141,12 +138,6 @@ export function LeagueGameDialog({
                   ))}
                 </SelectContent>
               </Select>
-            </FormField>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label={t("fieldDuration")} htmlFor="game-duration" error={fieldErr("durationSeconds")}>
-              <Input id="game-duration" type="number" min={0} value={form.durationSeconds} onChange={(e) => set("durationSeconds", e.target.value)} aria-invalid={!!fieldErrors.durationSeconds} />
             </FormField>
           </div>
 

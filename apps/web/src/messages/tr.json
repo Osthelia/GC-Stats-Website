@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "Henüz kazanan yok",
           "fieldCompleted": "Tamamlandı",
           "fieldForfeit": "Hükmen",
-          "fieldDuration": "Süre (saniye)",
           "fieldNote": "Not",
           "fieldError": {
             "invalid": "Geçerli bir değer girin.",

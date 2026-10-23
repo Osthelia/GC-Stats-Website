@@ -4514,7 +4514,6 @@
           "fieldWinnerNone": "Pas encore de vainqueur",
           "fieldCompleted": "Terminée",
           "fieldForfeit": "Forfait",
-          "fieldDuration": "Durée (secondes)",
           "fieldNote": "Note",
           "fieldError": {
             "invalid": "Saisis une valeur valide.",

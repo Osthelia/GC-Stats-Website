@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "아직 승자가 없습니다",
           "fieldCompleted": "완료",
           "fieldForfeit": "기권",
-          "fieldDuration": "시간(초)",
           "fieldNote": "메모",
           "fieldError": {
             "invalid": "올바른 값을 입력하세요.",

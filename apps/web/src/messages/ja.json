@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "まだ勝者がいません",
           "fieldCompleted": "終了",
           "fieldForfeit": "不戦勝",
-          "fieldDuration": "時間（秒）",
           "fieldNote": "メモ",
           "fieldError": {
             "invalid": "有効な値を入力してください。",

@@ -25,7 +25,7 @@ import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
 
-export type LeagueGameField = "order" | "apiMatchId" | "winnerEntrantId" | "isCompleted" | "durationSeconds" | "note";
+export type LeagueGameField = "order" | "apiMatchId" | "winnerEntrantId" | "isCompleted" | "note";
 export type LeagueGameFieldErrors = Partial<Record<LeagueGameField, string>>;
 export type LeagueGameInput = {
   order: string;
@@ -35,8 +35,6 @@ export type LeagueGameInput = {
   winnerEntrantId: string;
   isCompleted: boolean;
   isForfeit: boolean;
-  /** Seconds, "" when unknown. */
-  durationSeconds: string;
   note: string;
 };
 export type LeagueGameResult = { ok: true; id: number } | { ok: false; error: "notFound" } | { ok: false; fieldErrors: LeagueGameFieldErrors };
@@ -102,10 +100,6 @@ async function validateLeagueGameInput(game: GameSlug, input: LeagueGameInput, m
   if (isCompleted && winnerId === null) fieldErrors.winnerEntrantId = "winnerRequired";
   if (!isCompleted && winnerId !== null) fieldErrors.isCompleted = "notCompleted";
 
-  if (input.durationSeconds.trim() !== "") {
-    const seconds = Number(input.durationSeconds);
-    if (!Number.isInteger(seconds) || seconds < 0) fieldErrors.durationSeconds = "invalid";
-  }
   if (input.note.trim().length > 500) fieldErrors.note = "tooLong";
 
   return fieldErrors;
@@ -122,7 +116,6 @@ function leagueGameValues(input: LeagueGameInput) {
     winnerEntrantId: input.winnerEntrantId === "" ? null : Number(input.winnerEntrantId),
     isCompleted,
     isForfeit: input.isForfeit,
-    durationSeconds: input.durationSeconds.trim() === "" ? null : Number(input.durationSeconds),
     note: input.note.trim() || null,
   };
 }

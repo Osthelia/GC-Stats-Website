@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "ยังไม่มีผู้ชนะ",
           "fieldCompleted": "จบแล้ว",
           "fieldForfeit": "สละสิทธิ์",
-          "fieldDuration": "ระยะเวลา (วินาที)",
           "fieldNote": "หมายเหตุ",
           "fieldError": {
             "invalid": "กรอกค่าที่ถูกต้อง",

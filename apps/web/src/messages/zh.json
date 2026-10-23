@@ -4506,7 +4506,6 @@
           "fieldWinnerNone": "暂无胜者",
           "fieldCompleted": "已完成",
           "fieldForfeit": "弃权",
-          "fieldDuration": "时长（秒）",
           "fieldNote": "备注",
           "fieldError": {
             "invalid": "请输入有效的值。",
