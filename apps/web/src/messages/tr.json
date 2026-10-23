@@ -4514,8 +4514,12 @@
             "duplicateOrder": "Bu sıra başka bir oyun tarafından kullanılıyor.",
             "winnerRequired": "Tamamlanan bir oyunun kazananı olmalı.",
             "notAnEntrant": "Kazanan iki takımdan biri olmalı.",
-            "notCompleted": "Kazanan belirlemek için oyunu tamamlandı olarak işaretleyin."
-          }
+            "notCompleted": "Kazanan belirlemek için oyunu tamamlandı olarak işaretleyin.",
+            "invalidMatchId": "EUW1_6123456789 biçimini kullanın: bir platform kodu, bir alt çizgi, ardından maç numarası.",
+            "duplicateMatchId": "Başka bir oyun bu Riot maç kimliğini zaten kullanıyor."
+          },
+          "fieldApiMatchId": "Riot maç kimliği",
+          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır."
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"
       },
