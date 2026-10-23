@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "การสนทนา",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD เกม {n}"
   },
   "footer": {
     "tagline": "ทุกการแข่งขัน Game Changers อย่างเป็นทางการ ในที่เดียว",

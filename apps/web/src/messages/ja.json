@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "ディスカッション",
-    "watchparty": "ウォッチパーティー"
+    "watchparty": "ウォッチパーティー",
+    "vodGame": "ゲーム{n}のVOD"
   },
   "footer": {
     "tagline": "すべての公式Game Changers大会を、ここに集約。",

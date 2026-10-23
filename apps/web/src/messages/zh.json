@@ -1828,7 +1828,8 @@
     "teamTbd": "待定",
     "teamBye": "轮空",
     "discussion": "讨论",
-    "watchparty": "观赛派对"
+    "watchparty": "观赛派对",
+    "vodGame": "对局 {n} 录像"
   },
   "footer": {
     "tagline": "汇聚所有官方 Game Changers 赛事。",

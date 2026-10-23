@@ -1830,7 +1830,8 @@
     "teamTbd": "À déterminer",
     "teamBye": "BYE",
     "discussion": "Discussion",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD partie {n}"
   },
   "footer": {
     "tagline": "Toutes les compétitions officielles Game Changers, au même endroit.",

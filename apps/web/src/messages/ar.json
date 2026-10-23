@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "النقاش",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "تسجيل المباراة {n}"
   },
   "footer": {
     "tagline": "كل مسابقات Game Changers الرسمية في مكان واحد.",

@@ -1828,7 +1828,8 @@
     "teamTbd": "Belirlenecek",
     "teamBye": "BYE",
     "discussion": "Tartışma",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "Oyun {n} VOD"
   },
   "footer": {
     "tagline": "Tüm resmi Game Changers yarışmaları, tek bir yerde.",

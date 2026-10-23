@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "Freilos",
     "discussion": "Diskussion",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD Spiel {n}"
   },
   "footer": {
     "tagline": "Jeder offizielle Game Changers Wettbewerb, an einem Ort.",

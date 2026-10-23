@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Discussione",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD partita {n}"
   },
   "footer": {
     "tagline": "Tutte le competizioni ufficiali Game Changers, in un unico posto.",

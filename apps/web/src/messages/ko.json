@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "토론",
-    "watchparty": "워치파티"
+    "watchparty": "워치파티",
+    "vodGame": "게임 {n} VOD"
   },
   "footer": {
     "tagline": "모든 공식 Game Changers 대회를 한곳에서 만나보세요.",
