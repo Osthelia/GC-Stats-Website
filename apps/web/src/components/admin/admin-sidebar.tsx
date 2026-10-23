@@ -85,7 +85,33 @@ function NavGroup({
   );
 }
 
-export function AdminSidebar({ permissions, isSuperAdmin }: { permissions: string[]; isSuperAdmin: boolean }) {
+function NavItemLabel({ item, label, hasAlert, alertLabel }: { item: NavItem; label: string; hasAlert: boolean; alertLabel: string }) {
+  return (
+    <>
+      <span className="relative flex-none">
+        <item.icon className="size-3.5" />
+        {hasAlert && (
+          <span
+            role="img"
+            aria-label={alertLabel}
+            className="absolute -right-1 -top-1 size-2 rounded-full bg-red-500 ring-2 ring-sidebar"
+          />
+        )}
+      </span>
+      <span>{label}</span>
+    </>
+  );
+}
+
+export function AdminSidebar({
+  permissions,
+  isSuperAdmin,
+  hasPendingChangeRequests,
+}: {
+  permissions: string[];
+  isSuperAdmin: boolean;
+  hasPendingChangeRequests: boolean;
+}) {
   const t = useTranslations("admin.nav");
   const pathname = usePathname();
 
@@ -140,8 +166,12 @@ export function AdminSidebar({ permissions, isSuperAdmin }: { permissions: strin
                     tooltip={t(item.labelKey)}
                     render={<Link href={item.href} />}
                   >
-                    <item.icon className="size-3.5" />
-                    <span>{t(item.labelKey)}</span>
+                    <NavItemLabel
+                      item={item}
+                      label={t(item.labelKey)}
+                      hasAlert={item.href === "/admin/change-requests" && hasPendingChangeRequests}
+                      alertLabel={t("pendingChangeRequests")}
+                    />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

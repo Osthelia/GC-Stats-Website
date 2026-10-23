@@ -8,7 +8,9 @@
 
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { PERMISSIONS } from "@gc-stats/db";
 import { requireAdminAccess } from "@/lib/rbac";
+import { getAdminChangeRequestCounts } from "@/lib/admin-change-requests";
 import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
@@ -31,10 +33,17 @@ export default async function AdminLayout({
   const { locale } = await params;
   const access = await requireAdminAccess(locale as AppLocale);
 
+  const canSeeChangeRequests = access.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView);
+  const hasPendingChangeRequests = canSeeChangeRequests && (await getAdminChangeRequestCounts()).pending > 0;
+
   return (
     <NextIntlClientProvider>
       <SidebarProvider>
-        <AdminSidebar permissions={[...access.permissions]} isSuperAdmin={access.isSuperAdmin} />
+        <AdminSidebar
+          permissions={[...access.permissions]}
+          isSuperAdmin={access.isSuperAdmin}
+          hasPendingChangeRequests={hasPendingChangeRequests}
+        />
         <SidebarInset>
           <AdminHeader />
           <div className="flex-1 p-6">{children}</div>
