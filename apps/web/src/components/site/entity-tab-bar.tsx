@@ -72,7 +72,7 @@ export function EntityTabBar({
             ref={on ? activeRef : undefined}
             href={tab.href}
             aria-current={on ? "page" : undefined}
-            className={`flex-none whitespace-nowrap rounded-t-lg px-4 py-2.5 text-[13.5px] transition-all duration-200 active:opacity-70 ${on ? "" : "hover:-translate-y-0.5 hover:bg-white/5"}`}
+            className={`flex-none whitespace-nowrap rounded-t-lg px-4 py-2.5 text-[13.5px] transition-all duration-200 active:opacity-70 ${on ? "" : "hover:bg-white/5"}`}
             style={
               on
                 ? { background: GOLD, color: "#0b0b0c", fontWeight: 700 }

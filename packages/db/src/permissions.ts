@@ -50,6 +50,7 @@ export const PERMISSIONS = {
   organizationsEdit: "organizations.edit",
   organizationsManageAccess: "organizations.manage-access",
   organizationsDelete: "organizations.delete",
+  organizationsAccessDashboard: "organizations.access-dashboard",
   changeRequestsView: "change-requests.view",
   changeRequestsManage: "change-requests.manage",
   tournamentsView: "tournaments.view",
@@ -86,7 +87,7 @@ export const PERMISSION_GROUPS: { key: string; permissions: PermissionName[] }[]
   { key: "newsLanguages", permissions: [PERMISSIONS.newsLanguagesView, PERMISSIONS.newsLanguagesManage] },
   {
     key: "organizations",
-    permissions: [PERMISSIONS.organizationsView, PERMISSIONS.organizationsEdit, PERMISSIONS.organizationsManageAccess, PERMISSIONS.organizationsDelete],
+    permissions: [PERMISSIONS.organizationsView, PERMISSIONS.organizationsEdit, PERMISSIONS.organizationsManageAccess, PERMISSIONS.organizationsDelete, PERMISSIONS.organizationsAccessDashboard],
   },
   { key: "changeRequests", permissions: [PERMISSIONS.changeRequestsView, PERMISSIONS.changeRequestsManage] },
   { key: "tournaments", permissions: [PERMISSIONS.tournamentsView, PERMISSIONS.tournamentsManage] },

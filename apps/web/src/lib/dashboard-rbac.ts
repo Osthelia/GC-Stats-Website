@@ -132,10 +132,10 @@ export function hasOrgPermission(membership: DashboardOrgMembership, permission:
   return membership.permissions.has(permission);
 }
 
-/** True for a site admin who can jump into any organization's dashboard from /dashboard without an organization_access row (see getGlobalOrgAdminMemberships) — same gate as /admin/organizations' own access-granting panel (organizationsManageAccess), so nothing here grants an admin more than they could already give themselves manually. */
+/** True for a site admin who can jump into any organization's dashboard from /dashboard without an organization_access row (see getGlobalOrgAdminMemberships), gated by its own organizationsAccessDashboard permission. */
 async function hasGlobalOrgOverride(userId: string): Promise<boolean> {
   const globalAccess = await getGlobalAccess(userId);
-  return hasAccess(globalAccess, PERMISSIONS.organizationsManageAccess);
+  return hasAccess(globalAccess, PERMISSIONS.organizationsAccessDashboard);
 }
 
 /**
@@ -171,17 +171,11 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
   }));
 }
 
-/** Real memberships plus the global admin override — used everywhere /dashboard resolves "which organizations can this account reach" (picker, sidebar, org switcher, per-org access checks). The override wins over a real membership for the same organization, so an admin is never capped by a role or the organization's ceiling. */
+/** Real memberships plus the global admin override for the other organizations — used everywhere /dashboard resolves "which organizations can this account reach" (picker, sidebar, org switcher, per-org access checks). A real membership wins over the override, so an admin who belongs to an organization is capped by their own role and the organization's ceiling there. */
 async function getCombinedDashboardMemberships(userId: string): Promise<DashboardOrgMembership[]> {
   const [real, adminOverride] = await Promise.all([getDashboardMemberships(userId), getGlobalOrgAdminMemberships(userId)]);
-  const realById = new Map(real.map((m) => [m.organizationId, m]));
-  // An organization the admin also belongs to stays a regular entry (own role, no "admin" flag), only with the full admin permissions.
-  const merged = adminOverride.map((m) => {
-    const own = realById.get(m.organizationId);
-    return own ? { ...own, permissions: m.permissions } : m;
-  });
-  const overrideIds = new Set(adminOverride.map((m) => m.organizationId));
-  return [...real.filter((m) => !overrideIds.has(m.organizationId)), ...merged];
+  const realIds = new Set(real.map((m) => m.organizationId));
+  return [...real, ...adminOverride.filter((m) => !realIds.has(m.organizationId))];
 }
 
 /** Cheap "should the nav show the dashboard link" check — same grants as requireDashboardAccess (organization_access, isAuthor, a personal API key, or the global admin override), no permission detail needed. */
