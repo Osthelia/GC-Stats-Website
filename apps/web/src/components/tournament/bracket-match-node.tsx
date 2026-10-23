@@ -88,7 +88,7 @@ function SideRow({
       <span className="flex min-w-0 items-center gap-2">
         {name !== null && (
           <span className={isLoser ? "opacity-50" : undefined}>
-            <TeamBadge tag={name} logoUrl={logoUrl} logoUrlLight={logoUrlLight} size={18} />
+            <TeamBadge tag={name} logoUrl={logoUrl} logoUrlLight={logoUrlLight} size={18} unclipped />
           </span>
         )}
         <span
