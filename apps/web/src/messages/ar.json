@@ -4514,8 +4514,12 @@
             "duplicateOrder": "مباراة أخرى تستخدم هذا الترتيب بالفعل.",
             "winnerRequired": "المباراة المكتملة تحتاج إلى فائز.",
             "notAnEntrant": "يجب أن يكون الفائز أحد الفريقين.",
-            "notCompleted": "حدّد المباراة كمكتملة لتعيين فائز."
-          }
+            "notCompleted": "حدّد المباراة كمكتملة لتعيين فائز.",
+            "invalidMatchId": "استخدم الصيغة EUW1_6123456789: رمز المنصة، ثم شرطة سفلية، ثم رقم المباراة.",
+            "duplicateMatchId": "مباراة أخرى تستخدم معرّف مباراة Riot هذا بالفعل."
+          },
+          "fieldApiMatchId": "معرّف مباراة Riot",
+          "fieldApiMatchIdHint": "مثال: EUW1_6123456789. تُستخرج المنصة منه."
         },
         "liquipediaImportButton": "استيراد مباراة من Liquipedia"
       },

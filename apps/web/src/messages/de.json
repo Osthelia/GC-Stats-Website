@@ -4514,8 +4514,12 @@
             "duplicateOrder": "Ein anderes Spiel hat bereits diese Reihenfolge.",
             "winnerRequired": "Ein beendetes Spiel braucht einen Sieger.",
             "notAnEntrant": "Der Sieger muss eines der beiden Teams sein.",
-            "notCompleted": "Markiere das Spiel als beendet, um einen Sieger zu setzen."
-          }
+            "notCompleted": "Markiere das Spiel als beendet, um einen Sieger zu setzen.",
+            "invalidMatchId": "Verwende das Format EUW1_6123456789: einen Plattform-Code, einen Unterstrich, dann die Match-Nummer.",
+            "duplicateMatchId": "Ein anderes Spiel verwendet bereits diese Riot-Match-ID."
+          },
+          "fieldApiMatchId": "Riot-Match-ID",
+          "fieldApiMatchIdHint": "Zum Beispiel EUW1_6123456789. Die Plattform wird daraus gelesen."
         },
         "liquipediaImportButton": "Liquipedia Match Import"
       },

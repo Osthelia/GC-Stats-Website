@@ -4514,8 +4514,12 @@
             "duplicateOrder": "この順番は別のゲームで使われています。",
             "winnerRequired": "終了したゲームには勝者が必要です。",
             "notAnEntrant": "勝者は2チームのいずれかである必要があります。",
-            "notCompleted": "勝者を設定するにはゲームを終了として記録してください。"
-          }
+            "notCompleted": "勝者を設定するにはゲームを終了として記録してください。",
+            "invalidMatchId": "形式は EUW1_6123456789 です: プラットフォームコード、アンダースコア、試合番号の順に入力してください。",
+            "duplicateMatchId": "別のゲームがこの Riot マッチIDを使用しています。"
+          },
+          "fieldApiMatchId": "Riot マッチID",
+          "fieldApiMatchIdHint": "例: EUW1_6123456789。プラットフォームはここから取得されます。"
         },
         "liquipediaImportButton": "Liquipedia試合インポート"
       },

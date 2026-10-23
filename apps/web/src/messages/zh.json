@@ -4514,8 +4514,12 @@
             "duplicateOrder": "该顺序已被其他对局使用。",
             "winnerRequired": "已完成的对局需要胜者。",
             "notAnEntrant": "胜者必须是两支队伍之一。",
-            "notCompleted": "要设置胜者，请先将对局标记为已完成。"
-          }
+            "notCompleted": "要设置胜者，请先将对局标记为已完成。",
+            "invalidMatchId": "请使用 EUW1_6123456789 的格式：平台代码、下划线，然后是对局编号。",
+            "duplicateMatchId": "其他对局已使用该 Riot 对局 ID。"
+          },
+          "fieldApiMatchId": "Riot 对局 ID",
+          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台将从中读取。"
         },
         "liquipediaImportButton": "Liquipedia 比赛导入"
       },

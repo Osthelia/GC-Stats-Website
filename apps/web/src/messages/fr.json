@@ -4522,8 +4522,12 @@
             "duplicateOrder": "Une autre partie utilise déjà cet ordre.",
             "winnerRequired": "Une partie terminée a besoin d'un vainqueur.",
             "notAnEntrant": "Le vainqueur doit être l'une des deux équipes.",
-            "notCompleted": "Marque la partie comme terminée pour définir un vainqueur."
-          }
+            "notCompleted": "Marque la partie comme terminée pour définir un vainqueur.",
+            "invalidMatchId": "Utilise le format EUW1_6123456789 : un code de plateforme, un tiret bas, puis le numéro du match.",
+            "duplicateMatchId": "Une autre partie utilise déjà cet ID de match Riot."
+          },
+          "fieldApiMatchId": "ID de match Riot",
+          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite."
         },
         "liquipediaImportButton": "Import de match Liquipedia"
       },

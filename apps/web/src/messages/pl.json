@@ -4514,8 +4514,12 @@
             "duplicateOrder": "Inna gra ma już tę kolejność.",
             "winnerRequired": "Zakończona gra wymaga zwycięzcy.",
             "notAnEntrant": "Zwycięzcą musi być jedna z dwóch drużyn.",
-            "notCompleted": "Oznacz grę jako zakończoną, aby ustawić zwycięzcę."
-          }
+            "notCompleted": "Oznacz grę jako zakończoną, aby ustawić zwycięzcę.",
+            "invalidMatchId": "Użyj formatu EUW1_6123456789: kod platformy, podkreślnik, a potem numer meczu.",
+            "duplicateMatchId": "Inna gra używa już tego ID meczu Riot."
+          },
+          "fieldApiMatchId": "ID meczu Riot",
+          "fieldApiMatchIdHint": "Na przykład EUW1_6123456789. Platforma jest odczytywana z tego ID."
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"
       },

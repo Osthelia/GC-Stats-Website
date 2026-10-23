@@ -4514,8 +4514,12 @@
             "duplicateOrder": "이 순서는 이미 다른 게임에서 사용 중입니다.",
             "winnerRequired": "완료된 게임에는 승자가 필요합니다.",
             "notAnEntrant": "승자는 두 팀 중 하나여야 합니다.",
-            "notCompleted": "승자를 지정하려면 게임을 완료로 표시하세요."
-          }
+            "notCompleted": "승자를 지정하려면 게임을 완료로 표시하세요.",
+            "invalidMatchId": "EUW1_6123456789 형식을 사용하세요: 플랫폼 코드, 밑줄, 그다음 매치 번호.",
+            "duplicateMatchId": "다른 게임이 이 Riot 매치 ID를 이미 사용 중입니다."
+          },
+          "fieldApiMatchId": "Riot 매치 ID",
+          "fieldApiMatchIdHint": "예: EUW1_6123456789. 플랫폼은 이 값에서 읽습니다."
         },
         "liquipediaImportButton": "Liquipedia 경기 가져오기"
       },

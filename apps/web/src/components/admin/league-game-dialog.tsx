@@ -30,6 +30,7 @@ const NO_WINNER = "none";
 
 type FormState = {
   order: string;
+  apiMatchId: string;
   winner: string;
   isCompleted: boolean;
   isForfeit: boolean;
@@ -38,12 +39,13 @@ type FormState = {
 };
 
 function emptyState(nextOrder: number): FormState {
-  return { order: String(nextOrder), winner: NO_WINNER, isCompleted: false, isForfeit: false, durationSeconds: "", note: "" };
+  return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, durationSeconds: "", note: "" };
 }
 
 function stateFromGame(game: AdminLeagueGameRow): FormState {
   return {
     order: String(game.order),
+    apiMatchId: game.apiMatchId ?? "",
     winner: game.winnerEntrantId !== null ? String(game.winnerEntrantId) : NO_WINNER,
     isCompleted: game.isCompleted,
     isForfeit: game.isForfeit,
@@ -92,6 +94,7 @@ export function LeagueGameDialog({
     setFieldErrors({});
     const input: LeagueGameInput = {
       order: form.order,
+      apiMatchId: form.apiMatchId,
       winnerEntrantId: form.winner === NO_WINNER ? "" : form.winner,
       isCompleted: form.isCompleted,
       isForfeit: form.isForfeit,
@@ -141,6 +144,20 @@ export function LeagueGameDialog({
             </FormField>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label={t("fieldDuration")} htmlFor="game-duration" error={fieldErr("durationSeconds")}>
+              <Input id="game-duration" type="number" min={0} value={form.durationSeconds} onChange={(e) => set("durationSeconds", e.target.value)} aria-invalid={!!fieldErrors.durationSeconds} />
+            </FormField>
+          </div>
+
+          <FormField label={t("fieldApiMatchId")} htmlFor="game-api-match-id" hint={t("fieldApiMatchIdHint")} error={fieldErr("apiMatchId")}>
+            <Input id="game-api-match-id" className="font-mono text-xs" value={form.apiMatchId} onChange={(e) => set("apiMatchId", e.target.value)} aria-invalid={!!fieldErrors.apiMatchId} />
+          </FormField>
+
+          <FormField label={t("fieldNote")} htmlFor="game-note" error={fieldErr("note")}>
+            <Input id="game-note" maxLength={500} value={form.note} onChange={(e) => set("note", e.target.value)} aria-invalid={!!fieldErrors.note} />
+          </FormField>
+
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm">
               <Checkbox checked={form.isCompleted} onCheckedChange={(c) => set("isCompleted", c === true)} />
@@ -154,14 +171,6 @@ export function LeagueGameDialog({
               {t("fieldForfeit")}
             </label>
           </div>
-
-          <FormField label={t("fieldDuration")} htmlFor="game-duration" error={fieldErr("durationSeconds")}>
-            <Input id="game-duration" type="number" min={0} value={form.durationSeconds} onChange={(e) => set("durationSeconds", e.target.value)} aria-invalid={!!fieldErrors.durationSeconds} />
-          </FormField>
-
-          <FormField label={t("fieldNote")} htmlFor="game-note" error={fieldErr("note")}>
-            <Input id="game-note" maxLength={500} value={form.note} onChange={(e) => set("note", e.target.value)} aria-invalid={!!fieldErrors.note} />
-          </FormField>
         </div>
 
         <DialogFooter>

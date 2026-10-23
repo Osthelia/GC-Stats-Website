@@ -25,10 +25,12 @@ import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
 
-export type LeagueGameField = "order" | "winnerEntrantId" | "isCompleted" | "durationSeconds" | "note";
+export type LeagueGameField = "order" | "apiMatchId" | "winnerEntrantId" | "isCompleted" | "durationSeconds" | "note";
 export type LeagueGameFieldErrors = Partial<Record<LeagueGameField, string>>;
 export type LeagueGameInput = {
   order: string;
+  /** Riot match id, e.g. "EUW1_6123456789"; "" when the game was not played on Riot's servers. */
+  apiMatchId: string;
   /** Entrant id of the winner, "" when none yet. */
   winnerEntrantId: string;
   isCompleted: boolean;
@@ -39,6 +41,8 @@ export type LeagueGameInput = {
 };
 export type LeagueGameResult = { ok: true; id: number } | { ok: false; error: "notFound" } | { ok: false; fieldErrors: LeagueGameFieldErrors };
 export type DeleteLeagueGameResult = { ok: true } | { ok: false; error: "notFound" };
+
+const RIOT_MATCH_ID_RE = /^[A-Z0-9]+_\d+$/;
 
 async function requireTournamentsActor(game: GameSlug): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
@@ -76,6 +80,21 @@ async function validateLeagueGameInput(game: GameSlug, input: LeagueGameInput, m
     if (conflict) fieldErrors.order = "duplicateOrder";
   }
 
+  // A Riot match id is "<platform>_<number>", e.g. EUW1_6123456789. Unique, so one Riot game can't attach to two rows.
+  const apiMatchId = input.apiMatchId.trim();
+  if (apiMatchId !== "") {
+    if (!RIOT_MATCH_ID_RE.test(apiMatchId)) {
+      fieldErrors.apiMatchId = "invalidMatchId";
+    } else {
+      const [conflict] = await db
+        .select({ id: games.id })
+        .from(games)
+        .where(and(eq(games.apiMatchId, apiMatchId), currentGameId !== null ? ne(games.id, currentGameId) : undefined))
+        .limit(1);
+      if (conflict) fieldErrors.apiMatchId = "duplicateMatchId";
+    }
+  }
+
   // A forfeited game is always completed, and a completed game needs a winner (LoL has no draws).
   const isCompleted = input.isCompleted || input.isForfeit;
   const winnerId = input.winnerEntrantId === "" ? null : Number(input.winnerEntrantId);
@@ -94,8 +113,12 @@ async function validateLeagueGameInput(game: GameSlug, input: LeagueGameInput, m
 
 function leagueGameValues(input: LeagueGameInput) {
   const isCompleted = input.isCompleted || input.isForfeit;
+  const apiMatchId = input.apiMatchId.trim() || null;
   return {
     order: Number(input.order),
+    apiMatchId,
+    // The Riot platform is the prefix of the match id, so it is never entered separately.
+    platformId: apiMatchId ? apiMatchId.split("_")[0] : null,
     winnerEntrantId: input.winnerEntrantId === "" ? null : Number(input.winnerEntrantId),
     isCompleted,
     isForfeit: input.isForfeit,

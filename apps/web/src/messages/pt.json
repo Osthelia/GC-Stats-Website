@@ -4514,8 +4514,12 @@
             "duplicateOrder": "Outro jogo já usa esta ordem.",
             "winnerRequired": "Um jogo concluído precisa de um vencedor.",
             "notAnEntrant": "O vencedor deve ser um dos dois times.",
-            "notCompleted": "Marque o jogo como concluído para definir um vencedor."
-          }
+            "notCompleted": "Marque o jogo como concluído para definir um vencedor.",
+            "invalidMatchId": "Use o formato EUW1_6123456789: um código de plataforma, um sublinhado e depois o número da partida.",
+            "duplicateMatchId": "Outro jogo já usa este ID de partida da Riot."
+          },
+          "fieldApiMatchId": "ID da partida na Riot",
+          "fieldApiMatchIdHint": "Por exemplo EUW1_6123456789. A plataforma é obtida a partir dele."
         },
         "liquipediaImportButton": "Importar partida da Liquipedia"
       },
