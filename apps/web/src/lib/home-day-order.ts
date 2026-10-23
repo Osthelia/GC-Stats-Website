@@ -34,13 +34,16 @@ export function groupHomeDays(matches: HomeMatch[], opts: { timeZone: string; lo
   const todayMs = Date.parse(`${zonedDayKey(new Date(), timeZone)}T00:00:00Z`);
 
   const dayMap = new Map<string, HomeDay>();
+  const now = new Date();
   for (const match of matches) {
-    const dayKey = zonedDayKey(match.scheduledAt, timeZone);
+    // A live match belongs to today even if it started on a previous day.
+    const groupDate = match.status === "live" ? now : match.scheduledAt;
+    const dayKey = zonedDayKey(groupDate, timeZone);
     let day = dayMap.get(dayKey);
     if (!day) {
       const dayOffset = Math.round((Date.parse(`${dayKey}T00:00:00Z`) - todayMs) / 86_400_000);
-      const label = dayOffset === 0 ? todayText : dayOffset === 1 ? tomorrowText : weekdayFormat.format(match.scheduledAt);
-      day = { dayKey, label, date: dateFormat.format(match.scheduledAt), dayOffset, matches: [] };
+      const label = dayOffset === 0 ? todayText : dayOffset === 1 ? tomorrowText : weekdayFormat.format(groupDate);
+      day = { dayKey, label, date: dateFormat.format(groupDate), dayOffset, matches: [] };
       dayMap.set(dayKey, day);
     }
     day.matches.push(match);
