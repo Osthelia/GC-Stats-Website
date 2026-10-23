@@ -28,6 +28,7 @@ import {
   stageQualifications,
   news,
   organizations,
+  newsAuthors,
   newsRelations,
 } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
@@ -341,15 +342,17 @@ export async function getTeamPress(teamId: number, locale: AppLocale, limit = 5)
       title: news.title,
       slug: news.slug,
       publisher: organizations.name,
+      authorName: newsAuthors.name,
       publishedAt: news.publishedAt,
       lang: news.lang,
     })
     .from(newsRelations)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
+    .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
     .where(and(eq(newsRelations.relatableType, "team"), eq(newsRelations.relatableId, teamId), isNewsPublishedCondition(), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
-  return rows.map((r) => ({ ...r, publisher: r.publisher ?? "GC-Stats" }));
+  return rows.map(({ authorName, ...r }) => ({ ...r, publisher: r.publisher ?? authorName ?? "GCS" }));
 }

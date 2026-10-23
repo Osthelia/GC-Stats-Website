@@ -14,7 +14,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
 import { matches, entrants, tournaments, stageContainers, stages } from "@gc-stats/db";
-import { news, organizations } from "@gc-stats/db";
+import { news, newsAuthors, organizations } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { normalizeRegion, type RegionKey } from "@/lib/tournament-regions";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -229,9 +229,12 @@ export async function getHomeNews(locale: AppLocale, languages: string[]): Promi
       publishedAt: news.publishedAt,
       organizationId: news.organizationId,
       publisher: organizations.name,
+      authorId: newsAuthors.id,
+      authorName: newsAuthors.name,
     })
     .from(news)
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
+    .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
     .where(and(isNewsPublishedCondition(), eq(news.showOnHome, true), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(6);
@@ -240,14 +243,18 @@ export async function getHomeNews(locale: AppLocale, languages: string[]): Promi
     "organization",
     rows.map((r) => r.organizationId).filter((id): id is number => id !== null)
   );
+  const logosByAuthorId = await getCurrentLogoUrlsThemed(
+    "news-author",
+    rows.map((r) => (r.organizationId === null ? r.authorId : null)).filter((id): id is number => id !== null)
+  );
 
   const toItem = (r: (typeof rows)[number]): HomeNewsItem => ({
     title: r.title,
     slug: r.slug,
     excerpt: r.excerpt,
-    publisher: r.publisher ?? "GC-Stats",
-    publisherLogoUrl: r.organizationId ? (logosByOrgId.get(r.organizationId)?.dark ?? null) : null,
-    publisherLogoUrlLight: r.organizationId ? (logosByOrgId.get(r.organizationId)?.light ?? null) : null,
+    publisher: r.publisher ?? r.authorName ?? "GCS",
+    publisherLogoUrl: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.dark ?? null,
+    publisherLogoUrlLight: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.light ?? null,
     date: r.publishedAt ? r.publishedAt.toLocaleDateString(INTL_LOCALE[locale], { day: "numeric", month: "short", year: "numeric" }) : "",
   });
 
