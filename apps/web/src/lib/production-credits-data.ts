@@ -299,7 +299,7 @@ export async function getTournamentMatchOptionsForCredit(
     const bName =
       m.entrantBId !== null ? (entrantById.get(m.entrantBId) ?? "TBD") : "TBD";
     const round = m.roundName?.trim() || `R${m.round}`;
-    const date = m.scheduledAt ? ` · ${m.scheduledAt.toISOString().slice(0, 10)}` : "";
+    const date = m.scheduledAt ? ` · ${m.scheduledAt.toISOString().slice(0, 16).replace("T", " ")} UTC` : "";
     return { id: m.id, label: `${aName} vs ${bName} (${round})${date}` };
   });
 }
