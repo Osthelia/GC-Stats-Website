@@ -10,13 +10,12 @@ import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-l
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 
 /** `sizeClassName` replaces the fixed `size` box (responsive sizes); `size` stays the image's intrinsic size. */
-/** `unclipped` drops the rounded clipping so the logo is shown whole. */
-export function TeamBadge({ tag, size = 30, logoUrl, logoUrlLight, sizeClassName, unclipped = false }: { tag: string; size?: number; logoUrl?: string | null; logoUrlLight?: string | null; sizeClassName?: string; unclipped?: boolean }) {
+export function TeamBadge({ tag, size = 30, logoUrl, logoUrlLight, sizeClassName }: { tag: string; size?: number; logoUrl?: string | null; logoUrlLight?: string | null; sizeClassName?: string }) {
   const dark = logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
   const light = logoUrlLight ?? logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
   return (
     <span
-      className={`relative flex flex-none items-center justify-center ${unclipped ? "" : "overflow-hidden rounded-lg"} ${sizeClassName ?? ""}`}
+      className={`relative flex flex-none items-center justify-center ${sizeClassName ?? ""}`}
       style={sizeClassName ? undefined : { width: size, height: size }}
     >
       <ThemedLogoImage dark={dark} light={light} alt={tag} width={size} height={size} className="h-full w-full object-contain" />
