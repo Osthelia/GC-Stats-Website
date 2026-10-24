@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-export type SwissTiebreaker = "buchholz" | "round_diff" | "seed";
+import type { SwissTiebreaker } from "../standings/swiss";
 
 export interface SwissConfig {
   /** Entrant becomes "qualified" once wins reaches this. `null` = no cap (free-form Swiss). */
@@ -21,6 +21,7 @@ export interface SwissConfig {
   /** Best-of per round number, e.g. {1: 1, 5: 3} — falls back to 1 if unset. */
   roundFormat: Record<number, number>;
   /** Ordered tiebreaker chain used both for grouping order and pairing order. */
+  /** Pairing ignores `points`: it has no sort key for it, so it falls through to the next tiebreaker. */
   tiebreakers: SwissTiebreaker[];
 }
 

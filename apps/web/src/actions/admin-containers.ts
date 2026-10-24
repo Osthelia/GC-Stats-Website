@@ -18,7 +18,7 @@ import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
-import { defaultRoundRobinTiebreakers } from "@/lib/bracket/config-types";
+import { defaultRoundRobinTiebreakers, type GroupContainerConfig, type StandingsPointsConfig } from "@/lib/bracket/config-types";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -80,7 +80,7 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
   return fieldErrors;
 }
 
-function buildPointsConfig(input: PointsInput): Record<string, unknown> | null {
+function buildPointsConfig(input: PointsInput): StandingsPointsConfig | null {
   const active = POINTS_FIELDS.some((f) => input[f] !== null);
   if (!active) return null;
   return {
@@ -92,7 +92,7 @@ function buildPointsConfig(input: PointsInput): Record<string, unknown> | null {
   };
 }
 
-function buildConfig(game: GameSlug, input: ContainerInput): Record<string, unknown> {
+function buildConfig(game: GameSlug, input: ContainerInput): GroupContainerConfig | Record<string, never> {
   if (input.containerType === "bracket") return {};
   const pointsConfig = buildPointsConfig(input);
   if (input.groupFormat === "round_robin") {
@@ -102,7 +102,8 @@ function buildConfig(game: GameSlug, input: ContainerInput): Record<string, unkn
     type: "swiss",
     qualifyAtWins: input.qualifyAtWins,
     eliminateAtLosses: input.eliminateAtLosses,
-    maxRounds: input.maxRounds,
+    // Validated above, so never null here; the fallback matches parseGroupConfig's default and narrows the type.
+    maxRounds: input.maxRounds ?? 5,
     roundFormat: {},
     tiebreakers: pointsConfig ? ["points", "buchholz", "round_diff", "seed"] : ["buchholz", "round_diff", "seed"],
     pointsConfig,
