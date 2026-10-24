@@ -39,7 +39,8 @@ export async function TournamentStandingsTable({
   seriesUnit: "Map" | "Game";
 }) {
   const t = await getTranslations("tournamentPage");
-  const columnCount = showPoints ? 6 : 5;
+  const hasRounds = seriesUnit === "Map";
+  const columnCount = (showPoints ? 6 : 5) - (hasRounds ? 0 : 1);
   const hasQualificationRules = qualificationRules.length > 0;
 
   return (
@@ -52,7 +53,7 @@ export async function TournamentStandingsTable({
             <th className="px-4 py-2.5 text-center">{t("standingsMatches")}</th>
             <th className="px-4 py-2.5 text-center">{t(seriesUnit === "Game" ? "standingsGames" : "standingsMaps")}</th>
             {showPoints && <th className="px-4 py-2.5 text-right">{t("standingsPoints")}</th>}
-            <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>
+            {hasRounds && <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>}
           </tr>
         </thead>
         <tbody>
@@ -87,16 +88,18 @@ export async function TournamentStandingsTable({
                   {row.mapWins} <span className="text-neutral-600">-</span> {row.mapLosses}
                 </td>
                 {showPoints && <td className="px-4 py-2.5 text-right font-mono tabular-nums text-neutral-300">{row.points ?? 0}</td>}
-                <td className="px-4 py-2.5 text-right">
-                  <div className="flex flex-col items-end">
-                    <span className="font-mono text-xs tabular-nums" style={{ color: roundColor }}>
-                      {row.roundDiff > 0 ? `+${row.roundDiff}` : row.roundDiff}
-                    </span>
-                    <span className="font-mono text-[10px] text-neutral-600">
-                      {row.roundWins}W / {row.roundLosses}L
-                    </span>
-                  </div>
-                </td>
+                {hasRounds && (
+                  <td className="px-4 py-2.5 text-right">
+                    <div className="flex flex-col items-end">
+                      <span className="font-mono text-xs tabular-nums" style={{ color: roundColor }}>
+                        {row.roundDiff > 0 ? `+${row.roundDiff}` : row.roundDiff}
+                      </span>
+                      <span className="font-mono text-[10px] text-neutral-600">
+                        {row.roundWins}W / {row.roundLosses}L
+                      </span>
+                    </div>
+                  </td>
+                )}
               </tr>
             );
           })}
