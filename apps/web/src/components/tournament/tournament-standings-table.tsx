@@ -14,6 +14,11 @@ import type { PublicStandingsRow, PublicQualificationRule } from "@/lib/tourname
 const QUALIFIED = "#3fb950";
 const ELIMINATED = "#f2555a";
 
+/** Green for a positive round difference, red for a negative one, grey for level. */
+function roundColorOf(roundDiff: number): string {
+  return roundDiff > 0 ? QUALIFIED : roundDiff < 0 ? ELIMINATED : "var(--gcs-text-tertiary)";
+}
+
 /**
  * Single table, no second bordered card around it (explicit user request,
  * 2026-09-12: "un seul tableau, pas un tableau dans un container inutile")
@@ -40,7 +45,8 @@ export async function TournamentStandingsTable({
 }) {
   const t = await getTranslations("tournamentPage");
   const hasRounds = seriesUnit === "Map";
-  const columnCount = (showPoints ? 6 : 5) - (hasRounds ? 0 : 1);
+  // Rank, entrant, matches and maps/games are always shown; points and rounds are optional columns.
+  const columnCount = 4 + (showPoints ? 1 : 0) + (hasRounds ? 1 : 0);
   const hasQualificationRules = qualificationRules.length > 0;
 
   return (
@@ -60,7 +66,6 @@ export async function TournamentStandingsTable({
           {standings.map((row) => {
             const rule = qualificationRules.find((r) => row.rank >= r.rankFrom && row.rank <= r.rankTo);
             const borderColor = !hasQualificationRules ? "transparent" : rule ? QUALIFIED : ELIMINATED;
-            const roundColor = row.roundDiff > 0 ? "#3fb950" : row.roundDiff < 0 ? "#f2555a" : "var(--gcs-text-tertiary)";
             return (
               <tr
                 key={row.id}
@@ -91,7 +96,7 @@ export async function TournamentStandingsTable({
                 {hasRounds && (
                   <td className="px-4 py-2.5 text-right">
                     <div className="flex flex-col items-end">
-                      <span className="font-mono text-xs tabular-nums" style={{ color: roundColor }}>
+                      <span className="font-mono text-xs tabular-nums" style={{ color: roundColorOf(row.roundDiff) }}>
                         {row.roundDiff > 0 ? `+${row.roundDiff}` : row.roundDiff}
                       </span>
                       <span className="font-mono text-[10px] text-neutral-600">
