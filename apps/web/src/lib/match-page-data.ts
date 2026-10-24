@@ -27,7 +27,7 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, seriesMapTableOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver, type TeamDisplayResolver } from "@/lib/historical-team-display";
 import {
   ECO_TIERS,
@@ -976,7 +976,7 @@ export async function getMatchStreams(game: GameSlug, matchId: number): Promise<
 
 export async function getMatchVods(game: GameSlug, matchId: number): Promise<MatchVod[]> {
   const { vods } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
+  const mapTable = seriesMapTableOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -992,11 +992,12 @@ export async function getMatchVods(game: GameSlug, matchId: number): Promise<Mat
   const mapIds = rows
     .map((r) => r.mapId)
     .filter((id): id is number => id != null);
+  // map_id is a Valorant map or a LoL game of the series, so the order comes from the table of the game.
   const mapOrders = mapIds.length
     ? await db
-        .select({ id: maps.id, order: maps.order })
-        .from(maps)
-        .where(inArray(maps.id, mapIds))
+        .select({ id: mapTable.id, order: mapTable.order })
+        .from(mapTable)
+        .where(inArray(mapTable.id, mapIds))
     : [];
   const orderByMapId = new Map(mapOrders.map((m) => [m.id, m.order]));
 
