@@ -107,6 +107,10 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
   });
 
   const emptyRecord: MapRecord = { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
+  const gameDiffOf = (entrantId: number) => {
+    const rec = mapRecord.get(entrantId) ?? emptyRecord;
+    return rec.mapWins - rec.mapLosses;
+  };
   const roundDiffOf = (entrantId: number) => {
     const rec = mapRecord.get(entrantId) ?? emptyRecord;
     return rec.roundWins - rec.roundLosses;
@@ -147,6 +151,7 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
+      gameDiff: gameDiffOf(e.entrantId),
       headToHead,
       points: points?.get(e.entrantId) ?? 0,
     };

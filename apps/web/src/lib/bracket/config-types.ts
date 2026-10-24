@@ -47,7 +47,7 @@ export interface SwissGroupConfig {
 
 export interface RoundRobinGroupConfig {
   type: "round_robin";
-  tiebreakers: ("round_diff" | "head_to_head" | "seed")[];
+  tiebreakers: ("round_diff" | "game_diff" | "head_to_head" | "seed")[];
   pointsConfig: StandingsPointsConfig | null;
 }
 
