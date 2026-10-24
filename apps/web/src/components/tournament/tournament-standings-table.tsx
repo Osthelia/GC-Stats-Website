@@ -10,6 +10,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
 import type { PublicStandingsRow, PublicQualificationRule } from "@/lib/tournament-bracket-data";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 const QUALIFIED = "#3fb950";
 const ELIMINATED = "#f2555a";
@@ -36,15 +37,15 @@ export async function TournamentStandingsTable({
   standings,
   showPoints,
   qualificationRules = [],
-  seriesUnit,
+  game,
 }: {
   standings: PublicStandingsRow[];
   showPoints?: boolean;
   qualificationRules?: PublicQualificationRule[];
-  seriesUnit: "Map" | "Game";
+  game: GameSlug;
 }) {
   const t = await getTranslations("tournamentPage");
-  const hasRounds = seriesUnit === "Map";
+  const hasRounds = gameHasMaps(game);
   // Rank, entrant, matches and maps/games are always shown; points and rounds are optional columns.
   const columnCount = 4 + (showPoints ? 1 : 0) + (hasRounds ? 1 : 0);
   const hasQualificationRules = qualificationRules.length > 0;
@@ -57,7 +58,7 @@ export async function TournamentStandingsTable({
             <th className="px-4 py-2.5 text-center">{t("standingsRank")}</th>
             <th className="px-4 py-2.5">{t("standingsEntrant")}</th>
             <th className="px-4 py-2.5 text-center">{t("standingsMatches")}</th>
-            <th className="px-4 py-2.5 text-center">{t(seriesUnit === "Game" ? "standingsGames" : "standingsMaps")}</th>
+            <th className="px-4 py-2.5 text-center">{t(hasRounds ? "standingsMaps" : "standingsGames")}</th>
             {showPoints && <th className="px-4 py-2.5 text-right">{t("standingsPoints")}</th>}
             {hasRounds && <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>}
           </tr>
