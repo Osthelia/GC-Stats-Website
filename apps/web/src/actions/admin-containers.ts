@@ -18,6 +18,7 @@ import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
+import { defaultRoundRobinTiebreakers } from "@/lib/bracket/config-types";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -91,11 +92,11 @@ function buildPointsConfig(input: PointsInput): Record<string, unknown> | null {
   };
 }
 
-function buildConfig(input: ContainerInput): Record<string, unknown> {
+function buildConfig(game: GameSlug, input: ContainerInput): Record<string, unknown> {
   if (input.containerType === "bracket") return {};
   const pointsConfig = buildPointsConfig(input);
   if (input.groupFormat === "round_robin") {
-    return { type: "round_robin", tiebreakers: pointsConfig ? ["points", "round_diff", "head_to_head", "seed"] : ["round_diff", "head_to_head", "seed"], pointsConfig };
+    return { type: "round_robin", tiebreakers: defaultRoundRobinTiebreakers(game, pointsConfig !== null), pointsConfig };
   }
   return {
     type: "swiss",
@@ -120,7 +121,7 @@ export async function createContainer(game: GameSlug, stageId: number, input: Co
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(game, stageId) })
+    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(game, input), displayOrder: nextContainerDisplayOrder(game, stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -151,7 +152,7 @@ export async function updateContainer(game: GameSlug, id: number, stageId: numbe
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const legacyImportTarget = (existing.config as { legacyImportTarget?: boolean } | null)?.legacyImportTarget === true;
-  const config = legacyImportTarget ? { ...buildConfig(input), legacyImportTarget: true } : buildConfig(input);
+  const config = legacyImportTarget ? { ...buildConfig(game, input), legacyImportTarget: true } : buildConfig(game, input);
 
   await db.transaction(async (tx) => {
     await tx.update(stageContainers).set({ name: input.name.trim(), status: input.status, containerType: input.containerType, config }).where(eq(stageContainers.id, id));

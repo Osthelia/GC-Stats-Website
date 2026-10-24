@@ -13,6 +13,7 @@
  */
 
 import type { SwissTiebreaker } from "@gc-stats/bracket-engine";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 /**
  * Configurable points-based tiebreaker (2026-08-31, explicit user spec):
@@ -63,6 +64,11 @@ function parsePointsConfig(raw: unknown): StandingsPointsConfig | null {
     matchForfeitWin: c.matchForfeitWin ?? null,
     mapForfeitWin: c.mapForfeitWin ?? null,
   };
+}
+
+export function defaultRoundRobinTiebreakers(game: GameSlug, hasPoints: boolean): ("points" | "round_diff" | "game_diff" | "head_to_head" | "seed")[] {
+  const diff = gameHasMaps(game) ? "round_diff" : "game_diff";
+  return hasPoints ? ["points", diff, "head_to_head", "seed"] : [diff, "head_to_head", "seed"];
 }
 
 export function parseGroupConfig(config: unknown): GroupContainerConfig {
