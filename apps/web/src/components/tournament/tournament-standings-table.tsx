@@ -31,10 +31,12 @@ export async function TournamentStandingsTable({
   standings,
   showPoints,
   qualificationRules = [],
+  seriesUnit,
 }: {
   standings: PublicStandingsRow[];
   showPoints?: boolean;
   qualificationRules?: PublicQualificationRule[];
+  seriesUnit: "Map" | "Game";
 }) {
   const t = await getTranslations("tournamentPage");
   const columnCount = showPoints ? 6 : 5;
@@ -48,7 +50,7 @@ export async function TournamentStandingsTable({
             <th className="px-4 py-2.5 text-center">{t("standingsRank")}</th>
             <th className="px-4 py-2.5">{t("standingsEntrant")}</th>
             <th className="px-4 py-2.5 text-center">{t("standingsMatches")}</th>
-            <th className="px-4 py-2.5 text-center">{t("standingsMaps")}</th>
+            <th className="px-4 py-2.5 text-center">{t(seriesUnit === "Game" ? "standingsGames" : "standingsMaps")}</th>
             {showPoints && <th className="px-4 py-2.5 text-right">{t("standingsPoints")}</th>}
             <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>
           </tr>

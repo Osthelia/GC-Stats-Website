@@ -53,7 +53,7 @@ export async function TournamentOverview({ basePath, stages, activeStage }: { ba
     id: c.id,
     name: c.name,
     content: c.standings ? (
-      <TournamentStandingsTable standings={c.standings} showPoints={c.showPoints} qualificationRules={c.qualificationRules} />
+      <TournamentStandingsTable standings={c.standings} showPoints={c.showPoints} qualificationRules={c.qualificationRules} seriesUnit={c.seriesUnit} />
     ) : (
       <p className="rounded-lg border border-dashed border-neutral-800 px-3 py-6 text-center text-xs text-neutral-500">{t("containerNotStarted")}</p>
     ),

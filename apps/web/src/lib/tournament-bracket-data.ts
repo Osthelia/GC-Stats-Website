@@ -23,7 +23,7 @@ import { getStageFinalStandings } from "@/lib/bracket/final-standings";
 import { parseGroupConfig, isPointsConfigActive } from "@/lib/bracket/config-types";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
-import type { GameSlug } from "@gc-stats/db/game";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 
 export type TournamentHeaderInfo = {
   id: number;
@@ -154,6 +154,8 @@ export type PublicStageContainer = AdminContainerRow & {
   showPoints?: boolean;
   /** Rank-based advancement rules for this container (empty when none configured) — drives the standings table's qualification indicator + legend, mirrors V1. */
   qualificationRules?: PublicQualificationRule[];
+  /** "Map" (Valorant) or "Game" (LoL): names the map columns of the standings table. */
+  seriesUnit: (typeof GAME_INFO)[GameSlug]["seriesUnit"];
 };
 
 export type PublicStage = {
@@ -309,7 +311,7 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
         }));
       }
 
-      return { ...container, graph, matches, standings, showPoints, qualificationRules };
+      return { ...container, graph, matches, standings, showPoints, qualificationRules, seriesUnit: GAME_INFO[game].seriesUnit };
     }),
   );
 
