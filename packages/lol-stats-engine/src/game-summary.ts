@@ -1,0 +1,194 @@
+/**
+ * GC-Stats — lol game-summary module
+ *
+ * Pure mapping from one Match-V5 match to the summary rows of a LoL game:
+ * the game row, player stats, team stats and draft. No database access; the
+ * caller supplies the ids that the database assigns (game, entrants, people).
+ *
+ * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import type { RiotMatchDto, RiotParticipantDto, RiotTeamDto, RiotTeamId } from "./types";
+
+export type LeagueSide = "blue" | "red";
+
+export interface LeagueGameRow {
+  order: number;
+  apiMatchId: string;
+  platformId: string;
+  startedAt: Date;
+  durationSeconds: number;
+  winnerEntrantId: number;
+  isCompleted: true;
+  isForfeit: false;
+}
+
+export interface LeaguePlayerStatsRow {
+  gameId: number;
+  entrantId: number;
+  personId: number | null;
+  championName: string;
+  role: string | null;
+  kills: number;
+  deaths: number;
+  assists: number;
+  cs: number;
+  gold: number;
+  damage: number;
+  vision: number;
+  items: number[];
+  runes: { primary: number; keystone: number; secondary: number };
+  summoners: number[];
+}
+
+export interface LeagueTeamStatsRow {
+  gameId: number;
+  entrantId: number;
+  side: LeagueSide;
+  kills: number;
+  towers: number;
+  inhibitors: number;
+  dragons: number;
+  barons: number;
+  heralds: number;
+  grubs: number;
+  gold: number;
+  objectives: Record<string, { kills: number; first: boolean }>;
+}
+
+export interface LeagueDraftRow {
+  gameId: number;
+  entrantId: number;
+  championName: string;
+  type: "pick" | "ban";
+  order: number | null;
+}
+
+export interface LeagueGameSummary {
+  game: LeagueGameRow;
+  players: LeaguePlayerStatsRow[];
+  teams: LeagueTeamStatsRow[];
+  draft: LeagueDraftRow[];
+}
+
+export interface LeagueSummaryContext {
+  /** Game row id, already inserted by the store. */
+  gameId: number;
+  /** Game of the series this Riot game is (1-based). */
+  order: number;
+  /** Entrant id for each side, from the import's team choice. */
+  entrantIdBySide: Record<LeagueSide, number>;
+  /** Person id for each puuid; a missing puuid maps to null. */
+  personIdByPuuid: ReadonlyMap<string, number>;
+  /** Champion display name for a championId, e.g. 103 → "Ahri". */
+  championNameById: ReadonlyMap<number, string>;
+}
+
+const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
+
+/** Riot's `teamId`: 100 is blue, 200 is red. Games entered by hand have no side. */
+export function sideForTeamId(teamId: RiotTeamId): LeagueSide {
+  return SIDE_BY_TEAM_ID[teamId];
+}
+
+export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext): LeagueGameSummary {
+  const { info } = match;
+  const winningTeam = info.teams.find((team) => team.win);
+
+  const game: LeagueGameRow = {
+    order: ctx.order,
+    apiMatchId: match.metadata.matchId,
+    platformId: info.platformId,
+    startedAt: new Date(info.gameCreation),
+    durationSeconds: info.gameDuration,
+    winnerEntrantId: winningTeam ? ctx.entrantIdBySide[sideForTeamId(winningTeam.teamId)] : 0,
+    isCompleted: true,
+    // Riot's surrender votes are real games, not forfeits. Forfeits come from manual entry only.
+    isForfeit: false,
+  };
+
+  const players = info.participants.map((p) => buildPlayerRow(p, ctx));
+  const teams = info.teams.map((team) => buildTeamRow(team, info.participants, ctx));
+  const draft = info.teams.flatMap((team) => buildBanRows(team, ctx));
+  // Picks come from the participants: Match-V5 gives no pick order.
+  draft.push(...info.participants.map((p) => buildPickRow(p, ctx)));
+
+  return { game, players, teams, draft };
+}
+
+function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): LeaguePlayerStatsRow {
+  const side = sideForTeamId(p.teamId);
+  const primary = p.perks.styles[0];
+  const secondary = p.perks.styles[1];
+  return {
+    gameId: ctx.gameId,
+    entrantId: ctx.entrantIdBySide[side],
+    personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
+    championName: p.championName,
+    role: p.teamPosition === "" ? null : p.teamPosition,
+    kills: p.kills,
+    deaths: p.deaths,
+    assists: p.assists,
+    cs: p.totalMinionsKilled + p.neutralMinionsKilled,
+    gold: p.goldEarned,
+    damage: p.totalDamageDealtToChampions,
+    vision: p.visionScore,
+    // Slot order, empty slots dropped.
+    items: [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter((id) => id !== 0),
+    runes: {
+      primary: primary?.style ?? 0,
+      keystone: primary?.selections[0]?.perk ?? 0,
+      secondary: secondary?.style ?? 0,
+    },
+    summoners: [p.summoner1Id, p.summoner2Id],
+  };
+}
+
+function buildTeamRow(team: RiotTeamDto, participants: RiotParticipantDto[], ctx: LeagueSummaryContext): LeagueTeamStatsRow {
+  const side = sideForTeamId(team.teamId);
+  const own = participants.filter((p) => p.teamId === team.teamId);
+  const objectives = Object.fromEntries(
+    Object.entries(team.objectives)
+      .filter((entry): entry is [string, NonNullable<(typeof entry)[1]>] => entry[1] !== undefined)
+      .map(([name, o]) => [name, { kills: o.kills, first: o.first }]),
+  );
+  return {
+    gameId: ctx.gameId,
+    entrantId: ctx.entrantIdBySide[side],
+    side,
+    kills: own.reduce((sum, p) => sum + p.kills, 0),
+    towers: team.objectives.tower.kills,
+    inhibitors: team.objectives.inhibitor.kills,
+    dragons: team.objectives.dragon.kills,
+    barons: team.objectives.baron.kills,
+    heralds: team.objectives.riftHerald.kills,
+    grubs: team.objectives.horde.kills,
+    gold: own.reduce((sum, p) => sum + p.goldEarned, 0),
+    objectives,
+  };
+}
+
+function buildBanRows(team: RiotTeamDto, ctx: LeagueSummaryContext): LeagueDraftRow[] {
+  const side = sideForTeamId(team.teamId);
+  return team.bans
+    .filter((ban) => ban.championId > 0) // Riot uses -1 for an empty ban slot
+    .map((ban) => ({
+      gameId: ctx.gameId,
+      entrantId: ctx.entrantIdBySide[side],
+      championName: ctx.championNameById.get(ban.championId) ?? `champion-${ban.championId}`,
+      type: "ban" as const,
+      order: ban.pickTurn,
+    }));
+}
+
+function buildPickRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): LeagueDraftRow {
+  return {
+    gameId: ctx.gameId,
+    entrantId: ctx.entrantIdBySide[sideForTeamId(p.teamId)],
+    championName: p.championName,
+    type: "pick",
+    order: null,
+  };
+}
