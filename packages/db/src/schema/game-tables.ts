@@ -13,7 +13,7 @@
 
 import { sql, eq } from "drizzle-orm";
 import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
-import { daterange } from "./custom-types";
+import { bytea, daterange } from "./custom-types";
 import { users } from "./auth";
 import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
@@ -951,6 +951,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     // Same meaning as on val_maps: the win came from a forfeit, not from playing the game out.
     isForfeit: boolean("is_forfeit").notNull().default(false),
     note: text("note"),
+    source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
+    sourceUrl: text("source_url"), // page the game came from, for attribution
   }, (t) => [
     unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
   ]);
@@ -972,6 +974,13 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     items: jsonb("items").notNull().default([]), // item ids, in slot order
     runes: jsonb("runes").notNull().default({}), // keystone and secondary tree ids
     summoners: jsonb("summoners").notNull().default([]), // summoner spell ids
+    // Lane diffs at 10 and 15 minutes, player minus lane opponent. Null without an opponent or a frame.
+    goldDiff10: integer("gold_diff_10"),
+    goldDiff15: integer("gold_diff_15"),
+    xpDiff10: integer("xp_diff_10"),
+    xpDiff15: integer("xp_diff_15"),
+    csDiff10: integer("cs_diff_10"),
+    csDiff15: integer("cs_diff_15"),
   }, (t) => [
     index("lol_game_player_stats_entrant_id_idx").on(t.entrantId),
     index("lol_game_player_stats_person_id_idx").on(t.personId),
@@ -991,6 +1000,9 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     grubs: integer("grubs").notNull().default(0), // void grubs (Riot "horde")
     gold: integer("gold").notNull().default(0),
     objectives: jsonb("objectives").notNull().default({}), // { [riot objective name]: { kills, first } }
+    firstBlood: boolean("first_blood").notNull().default(false),
+    firstTower: boolean("first_tower").notNull().default(false),
+    objectiveTimings: jsonb("objective_timings").notNull().default({}), // { [objective kind]: first time in ms }
   }, (t) => [
     unique("lol_game_team_stats_game_side_unique").on(t.gameId, t.side),
     index("lol_game_team_stats_entrant_id_idx").on(t.entrantId),
@@ -1021,14 +1033,14 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     jungleCs: integer("jungle_cs").notNull(),
     x: integer("x").notNull(),
     y: integer("y").notNull(),
-    championStats: jsonb("champion_stats").notNull().default({}),
-    damageStats: jsonb("damage_stats").notNull().default({}),
+    damageToChampions: integer("damage_to_champions").notNull(),
+    damageTaken: integer("damage_taken").notNull(),
   }, (t) => [
     primaryKey({ columns: [t.gameId, t.personId, t.frame] }),
   ]);
 
-  // Riot's whole event stream in one table, every type included. Columns that only some types
-  // use are nullable, `data` keeps the rest of each payload.
+  // The event types worth querying, in one table (the list is in timeline-rows.ts). Columns that
+  // only some types use are nullable, `data` keeps the rest of each payload.
   const gameEventsRaw = pgTable("lol_game_events_raw", {
     gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
     seq: smallint("seq").notNull(), // Riot's order of events within the game
@@ -1051,7 +1063,15 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     check("lol_game_events_raw_kill_target_check", sql`${t.type} <> 'CHAMPION_KILL' OR ${t.targetPersonId} IS NOT NULL`),
   ]);
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw };
+  // The raw Match-V5 match and timeline as one gzipped JSON document. Stored as bytea, not jsonb
+  // (jsonb is larger than the JSON text).
+  const gameImports = pgTable("lol_game_imports", {
+    gameId: bigint("game_id", { mode: "number" }).primaryKey().references(() => games.id, { onDelete: "cascade" }),
+    payloadGzip: bytea("payload_gzip").notNull(), // gzip of { match, timeline }
+    importedAt: timestamp("imported_at", { withTimezone: true }).notNull().defaultNow(),
+  });
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, gameImports };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1165,6 +1185,7 @@ export const lolGamePlayerStats = leagueOnly.gamePlayerStats;
 export const lolGameTeamStats = leagueOnly.gameTeamStats;
 export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
 export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
+export const lolGameImports = leagueOnly.gameImports;
 export const lolGameDraft = leagueOnly.gameDraft;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };

@@ -28,8 +28,8 @@ export interface LeagueFrameRow {
   jungleCs: number;
   x: number;
   y: number;
-  championStats: Record<string, number>;
-  damageStats: Record<string, number>;
+  damageToChampions: number;
+  damageTaken: number;
 }
 
 export interface LeagueEventRow {
@@ -64,8 +64,35 @@ export interface LeagueTimelineContext {
   sideByParticipantId: Map<number, LeagueSide>;
 }
 
-/** Event fields that become their own columns. Everything else stays in `data`. */
+/**
+ * Event types stored as rows. The rest (wards, item destruction, level ups) is dropped: wards are
+ * counted in the summary, and the level is in the frames. The whole file stays in lol_game_imports,
+ * so a type added here later only needs the games reprocessed.
+ */
+const STORED_EVENT_TYPES = new Set([
+  "CHAMPION_KILL",
+  "CHAMPION_SPECIAL_KILL",
+  "ELITE_MONSTER_KILL",
+  "BUILDING_KILL",
+  "TURRET_PLATE_DESTROYED",
+  "DRAGON_SOUL_GIVEN",
+  "ITEM_PURCHASED",
+  "ITEM_SOLD",
+  "ITEM_UNDO",
+  "SKILL_LEVEL_UP",
+  "FEAT_UPDATE",
+  "OBJECTIVE_BOUNTY_PRESTART",
+  "OBJECTIVE_BOUNTY_FINISH",
+  "CHAMPION_TRANSFORM",
+  "PAUSE_START",
+  "PAUSE_END",
+  "GAME_END",
+]);
+
+/** Event fields that become their own columns, or are dropped. Everything else stays in `data`. */
 const COLUMN_FIELDS = new Set([
+  "victimDamageDealt", // kill damage arrays: too large for what pages query, dropped
+  "victimDamageReceived",
   "type",
   "timestamp",
   "participantId",
@@ -93,9 +120,10 @@ const COLUMN_FIELDS = new Set([
 export function buildTimelineRows(timeline: RiotTimelineDto | null, ctx: LeagueTimelineContext): LeagueTimelineRows {
   if (!timeline) return { frames: [], events: [] };
   const frames = timeline.info.frames.flatMap((frame, index) => buildFrameRows(frame, index, ctx));
+  // seq is Riot's position in the full stream, so skipped events leave gaps and the order holds.
   const events = timeline.info.frames
     .flatMap((frame) => frame.events)
-    .map((event, seq) => buildEventRow(event, seq, ctx));
+    .flatMap((event, seq) => (STORED_EVENT_TYPES.has(event.type) ? [buildEventRow(event, seq, ctx)] : []));
   return { frames, events };
 }
 
@@ -113,8 +141,8 @@ function buildFrameRows(frame: RiotTimelineFrameDto, index: number, ctx: LeagueT
     jungleCs: pf.jungleMinionsKilled,
     x: pf.position.x,
     y: pf.position.y,
-    championStats: pf.championStats,
-    damageStats: pf.damageStats,
+    damageToChampions: pf.damageStats.totalDamageDoneToChampions,
+    damageTaken: pf.damageStats.totalDamageTaken,
   }));
 }
 

@@ -29,13 +29,23 @@ const context: LeagueTimelineContext = {
   sideByParticipantId: new Map(match.info.participants.map((p) => [p.participantId, p.teamId === 100 ? "blue" : "red"])),
 };
 
-describe("buildTimelineRows (real LoL game: 50 frames, 2060 events)", () => {
+describe("buildTimelineRows (real LoL game: 50 frames, 633 of 2060 events stored)", () => {
   const rows = buildTimelineRows(timeline, context);
 
-  it("writes every frame and event, with events in Riot's order", () => {
+  it("writes every frame, with the damage totals the frame rows keep", () => {
     expect(rows.frames).toHaveLength(50 * 10);
-    expect(rows.events).toHaveLength(2060);
-    expect(rows.events.map((e) => e.seq)).toEqual(rows.events.map((_, i) => i));
+    const pf = timeline.info.frames[0]!.participantFrames["1"]!;
+    expect(rows.frames.find((f) => f.personId === 1 && f.frame === 0)).toMatchObject({
+      damageToChampions: pf.damageStats.totalDamageDoneToChampions,
+      damageTaken: pf.damageStats.totalDamageTaken,
+    });
+  });
+
+  it("writes only the listed event types, in Riot's order, keeping Riot's seq", () => {
+    expect(rows.events).toHaveLength(633);
+    expect(rows.events.some((e) => e.type === "WARD_PLACED" || e.type === "LEVEL_UP" || e.type === "ITEM_DESTROYED")).toBe(false);
+    const seqs = rows.events.map((e) => e.seq);
+    expect(seqs).toEqual([...seqs].sort((a, b) => a - b));
   });
 
   it("gives every champion kill a victim, and maps the first kill's killer, side and damage data", () => {
@@ -43,7 +53,8 @@ describe("buildTimelineRows (real LoL game: 50 frames, 2060 events)", () => {
     expect(kills).toHaveLength(41);
     expect(kills.every((e) => e.targetPersonId !== null)).toBe(true);
     expect(kills[0]).toMatchObject({ timeMs: 305983, personId: 7, targetPersonId: 2, side: "red", bounty: 300 });
-    expect(kills[0]?.data).toHaveProperty("victimDamageDealt");
+    expect(kills[0]?.data).toHaveProperty("killStreakLength");
+    expect(kills[0]?.data).not.toHaveProperty("victimDamageDealt");
     expect(kills[0]?.data).not.toHaveProperty("position");
   });
 
@@ -74,7 +85,7 @@ describe("buildTimelineRows (hand-written cases)", () => {
   });
 
   it("throws when a participant has no person, so a partial import never gets written", () => {
-    const timeline = minimalTimeline([{ type: "LEVEL_UP", timestamp: 1000, participantId: 10 }]);
+    const timeline = minimalTimeline([{ type: "ITEM_PURCHASED", timestamp: 1000, participantId: 10, itemId: 1001 }]);
     const ctx = { gameId: 1, personIdByParticipantId: map(participants.slice(0, 9)), sideByParticipantId: new Map<number, LeagueSide>() };
     expect(() => buildTimelineRows(timeline, ctx)).toThrow(/Riot participant 10 has no person/);
   });

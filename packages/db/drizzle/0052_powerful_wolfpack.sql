@@ -43,8 +43,8 @@ CREATE TABLE "lol_game_frames_raw" (
 	"jungle_cs" integer NOT NULL,
 	"x" integer NOT NULL,
 	"y" integer NOT NULL,
-	"champion_stats" jsonb DEFAULT '{}'::jsonb NOT NULL,
-	"damage_stats" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"damage_to_champions" integer NOT NULL,
+	"damage_taken" integer NOT NULL,
 	CONSTRAINT "lol_game_frames_raw_game_id_person_id_frame_pk" PRIMARY KEY("game_id","person_id","frame")
 );
 --> statement-breakpoint
@@ -64,7 +64,13 @@ CREATE TABLE "lol_game_player_stats" (
 	"vision" integer DEFAULT 0 NOT NULL,
 	"items" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"runes" jsonb DEFAULT '{}'::jsonb NOT NULL,
-	"summoners" jsonb DEFAULT '[]'::jsonb NOT NULL
+	"summoners" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"gold_diff_10" integer,
+	"gold_diff_15" integer,
+	"xp_diff_10" integer,
+	"xp_diff_15" integer,
+	"cs_diff_10" integer,
+	"cs_diff_15" integer
 );
 --> statement-breakpoint
 CREATE TABLE "lol_game_team_stats" (
@@ -81,9 +87,19 @@ CREATE TABLE "lol_game_team_stats" (
 	"grubs" integer DEFAULT 0 NOT NULL,
 	"gold" integer DEFAULT 0 NOT NULL,
 	"objectives" jsonb DEFAULT '{}'::jsonb NOT NULL,
+	"first_blood" boolean DEFAULT false NOT NULL,
+	"first_tower" boolean DEFAULT false NOT NULL,
+	"objective_timings" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	CONSTRAINT "lol_game_team_stats_game_side_unique" UNIQUE("game_id","side")
 );
 --> statement-breakpoint
+CREATE TABLE "lol_game_imports" (
+	"game_id" bigint PRIMARY KEY NOT NULL,
+	"payload_gzip" bytea NOT NULL,
+	"imported_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "lol_game_imports" ALTER COLUMN "payload_gzip" SET STORAGE EXTERNAL;--> statement-breakpoint
 CREATE TABLE "lol_games" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"match_id" bigint NOT NULL,
@@ -96,6 +112,8 @@ CREATE TABLE "lol_games" (
 	"is_completed" boolean DEFAULT false NOT NULL,
 	"is_forfeit" boolean DEFAULT false NOT NULL,
 	"note" text,
+	"source" text,
+	"source_url" text,
 	CONSTRAINT "lol_games_api_match_id_unique" UNIQUE("api_match_id"),
 	CONSTRAINT "lol_games_match_id_order_unique" UNIQUE("match_id","order")
 );
@@ -116,6 +134,7 @@ ALTER TABLE "lol_game_player_stats" ADD CONSTRAINT "lol_game_player_stats_entran
 ALTER TABLE "lol_game_player_stats" ADD CONSTRAINT "lol_game_player_stats_person_id_people_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."people"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_game_team_stats" ADD CONSTRAINT "lol_game_team_stats_game_id_lol_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."lol_games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_game_team_stats" ADD CONSTRAINT "lol_game_team_stats_entrant_id_lol_entrants_id_fk" FOREIGN KEY ("entrant_id") REFERENCES "public"."lol_entrants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "lol_game_imports" ADD CONSTRAINT "lol_game_imports_game_id_lol_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."lol_games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_match_id_lol_matches_id_fk" FOREIGN KEY ("match_id") REFERENCES "public"."lol_matches"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_winner_entrant_id_lol_entrants_id_fk" FOREIGN KEY ("winner_entrant_id") REFERENCES "public"."lol_entrants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "lol_game_player_stats_entrant_id_idx" ON "lol_game_player_stats" USING btree ("entrant_id");--> statement-breakpoint

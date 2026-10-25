@@ -102,6 +102,13 @@ export interface RiotTimelineParticipantDto {
   participantId: number;
 }
 
+/** Riot's per-frame damage totals. The two named fields are the ones the rows keep. */
+export interface RiotDamageStatsDto {
+  totalDamageDoneToChampions: number;
+  totalDamageTaken: number;
+  [stat: string]: number;
+}
+
 export interface RiotParticipantFrameDto {
   totalGold: number;
   currentGold: number;
@@ -111,7 +118,7 @@ export interface RiotParticipantFrameDto {
   jungleMinionsKilled: number;
   position: { x: number; y: number };
   championStats: Record<string, number>;
-  damageStats: Record<string, number>;
+  damageStats: RiotDamageStatsDto;
 }
 
 export interface RiotTimelineEventDto {

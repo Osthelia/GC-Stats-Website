@@ -1,5 +1,5 @@
 {
-  "id": "096308ab-71b7-4eff-aaef-3353702e0f91",
+  "id": "4f6dd541-4357-4679-b3ca-33b0ee6b25c4",
   "prevId": "0f23a087-46d9-4123-b792-da5890406082",
   "version": "7",
   "dialect": "postgresql",
@@ -2654,19 +2654,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "champion_stats": {
-          "name": "champion_stats",
-          "type": "jsonb",
+        "damage_to_champions": {
+          "name": "damage_to_champions",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
+          "notNull": true
         },
-        "damage_stats": {
-          "name": "damage_stats",
-          "type": "jsonb",
+        "damage_taken": {
+          "name": "damage_taken",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
+          "notNull": true
         }
       },
       "indexes": {},
@@ -2708,6 +2706,52 @@
           ]
         }
       },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lol_game_imports": {
+      "name": "lol_game_imports",
+      "schema": "",
+      "columns": {
+        "game_id": {
+          "name": "game_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "payload_gzip": {
+          "name": "payload_gzip",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imported_at": {
+          "name": "imported_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lol_game_imports_game_id_lol_games_id_fk": {
+          "name": "lol_game_imports_game_id_lol_games_id_fk",
+          "tableFrom": "lol_game_imports",
+          "tableTo": "lol_games",
+          "columnsFrom": [
+            "game_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -2822,6 +2866,42 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'::jsonb"
+        },
+        "gold_diff_10": {
+          "name": "gold_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gold_diff_15": {
+          "name": "gold_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "xp_diff_10": {
+          "name": "xp_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "xp_diff_15": {
+          "name": "xp_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cs_diff_10": {
+          "name": "cs_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cs_diff_15": {
+          "name": "cs_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -2993,6 +3073,27 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{}'::jsonb"
+        },
+        "first_blood": {
+          "name": "first_blood",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "first_tower": {
+          "name": "first_tower",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "objective_timings": {
+          "name": "objective_timings",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {
@@ -3123,6 +3224,18 @@
         },
         "note": {
           "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
