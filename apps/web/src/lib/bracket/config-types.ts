@@ -12,7 +12,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { SwissTiebreaker } from "@gc-stats/bracket-engine";
+import type { RoundRobinTiebreaker, SwissTiebreaker } from "@gc-stats/bracket-engine";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 /**
  * Configurable points-based tiebreaker (2026-08-31, explicit user spec):
@@ -47,7 +48,7 @@ export interface SwissGroupConfig {
 
 export interface RoundRobinGroupConfig {
   type: "round_robin";
-  tiebreakers: ("round_diff" | "head_to_head" | "seed")[];
+  tiebreakers: RoundRobinTiebreaker[];
   pointsConfig: StandingsPointsConfig | null;
 }
 
@@ -63,6 +64,11 @@ function parsePointsConfig(raw: unknown): StandingsPointsConfig | null {
     matchForfeitWin: c.matchForfeitWin ?? null,
     mapForfeitWin: c.mapForfeitWin ?? null,
   };
+}
+
+export function defaultRoundRobinTiebreakers(game: GameSlug, hasPoints: boolean): RoundRobinTiebreaker[] {
+  const diff = gameHasMaps(game) ? "round_diff" : "game_diff";
+  return hasPoints ? ["points", diff, "head_to_head", "seed"] : [diff, "head_to_head", "seed"];
 }
 
 export function parseGroupConfig(config: unknown): GroupContainerConfig {

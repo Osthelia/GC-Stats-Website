@@ -84,7 +84,7 @@ async function MatchExtras({ matchId, match, isCompleted, game }: { matchId: num
   ]);
   return (
     <>
-      <MatchMedia streams={streams} vods={vods} povs={povs} isCompleted={isCompleted} />
+      <MatchMedia streams={streams} vods={vods} povs={povs} isCompleted={isCompleted} game={game} />
       {gameHasMaps(game) && <MatchVetos steps={vetos} teamATag={teamATag} teamBTag={teamBTag} />}
     </>
   );

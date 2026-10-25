@@ -17,9 +17,11 @@ export type GameSlug = (typeof GAMES)[number];
 
 export const DEFAULT_GAME: GameSlug = "valorant";
 
-export const GAME_INFO: Record<GameSlug, { slug: GameSlug; name: string; shortName: string; tablePrefix: "val" | "lol"; liquipediaWiki: string }> = {
-  valorant: { slug: "valorant", name: "VALORANT", shortName: "VAL", tablePrefix: "val", liquipediaWiki: "valorant" },
-  lol: { slug: "lol", name: "League of Legends", shortName: "LoL", tablePrefix: "lol", liquipediaWiki: "leagueoflegends" },
+// seriesUnit names what a match is made of in the UI: a Valorant "Map", a LoL "Game". It is
+// the translation key segment for those labels (`field{seriesUnit}WinPoints`), so it stays English.
+export const GAME_INFO: Record<GameSlug, { slug: GameSlug; name: string; shortName: string; tablePrefix: "val" | "lol"; liquipediaWiki: string; seriesUnit: "Map" | "Game" }> = {
+  valorant: { slug: "valorant", name: "VALORANT", shortName: "VAL", tablePrefix: "val", liquipediaWiki: "valorant", seriesUnit: "Map" },
+  lol: { slug: "lol", name: "League of Legends", shortName: "LoL", tablePrefix: "lol", liquipediaWiki: "leagueoflegends", seriesUnit: "Game" },
 };
 
 export function isGameSlug(value: unknown): value is GameSlug {
@@ -43,4 +45,9 @@ export function gameHasVlr(game: GameSlug): boolean {
 
 export function gameHasVeto(game: GameSlug): boolean {
   return game === "valorant";
+}
+
+// A series is made of games stored in their own table (`lol_games`), not of maps.
+export function gameHasSeriesGames(game: GameSlug): boolean {
+  return game === "lol";
 }

@@ -1828,7 +1828,8 @@
     "teamTbd": "Belirlenecek",
     "teamBye": "BYE",
     "discussion": "Tartışma",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "Oyun {n} VOD"
   },
   "footer": {
     "tagline": "Tüm resmi Game Changers yarışmaları, tek bir yerde.",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "Maç galibiyetlerini sıralamada saymamak için boş bırakın.",
         "fieldMapWinPoints": "Harita galibiyeti başına puan",
         "fieldMapWinPointsHint": "Harita galibiyetlerini saymamak için boş bırakın.",
+        "fieldGameWinPoints": "Oyun galibiyeti başına puan",
+        "fieldGameWinPointsHint": "Oyun galibiyetlerini saymamak için boş bırakın.",
+        "fieldGameForfeitWinPoints": "Hükmen oyun galibiyeti başına puan",
+        "fieldGameForfeitWinPointsHint": "Oynanmadan hükmen kazanılan oyun galibiyeti için farklı bir değer.",
         "fieldRoundWinPoints": "Round galibiyeti başına puan",
         "fieldRoundWinPointsHint": "Round galibiyetlerini saymamak için boş bırakın.",
         "fieldMatchForfeitWinPoints": "Hükmen maç galibiyeti başına puan",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "Her segmentin ilk round'u son round'undan önce olmalıdır.",
             "mergeMapNotFound": "Bu harita artık mevcut değil."
           }
+        },
+        "games": {
+          "heading": "Oyunlar",
+          "description": "Bu seride oynanan oyunlar, sırasıyla.",
+          "empty": "Henüz oyun yok.",
+          "gameLabel": "Oyun {order}",
+          "winnerLabel": "Kazanan: {name}",
+          "noWinner": "Henüz kazanan yok",
+          "finished": "Tamamlandı",
+          "notFinished": "Tamamlanmadı",
+          "forfeit": "Hükmen",
+          "cancel": "İptal",
+          "save": "Kaydet",
+          "saving": "Kaydediliyor…",
+          "createButton": "Oyun ekle",
+          "createTitle": "Oyun ekle",
+          "editTitle": "Oyunu düzenle",
+          "dialogDescription": "Bu serideki bir oyunun sonucunu girin.",
+          "editButton": "Düzenle",
+          "deleteButton": "Sil",
+          "deleteTitle": "Oyunu sil",
+          "deleteConfirm": "{order}. oyun silinsin mi? Maç skoru kalan oyunlara göre yeniden hesaplanır.",
+          "deleteError": "Oyun silinemedi.",
+          "deleteSuccess": "Oyun silindi.",
+          "saveError": "Oyun kaydedilemedi.",
+          "saveSuccess": "Oyun kaydedildi.",
+          "fieldOrder": "Sıra",
+          "fieldWinner": "Kazanan",
+          "fieldWinnerNone": "Henüz kazanan yok",
+          "fieldCompleted": "Tamamlandı",
+          "fieldForfeit": "Hükmen",
+          "fieldNote": "Not",
+          "fieldError": {
+            "invalid": "Geçerli bir değer girin.",
+            "tooLong": "Çok uzun.",
+            "duplicateOrder": "Bu sıra başka bir oyun tarafından kullanılıyor.",
+            "winnerRequired": "Tamamlanan bir oyunun kazananı olmalı.",
+            "notAnEntrant": "Kazanan iki takımdan biri olmalı.",
+            "notCompleted": "Kazanan belirlemek için oyunu tamamlandı olarak işaretleyin.",
+            "invalidMatchId": "EUW1_6123456789 biçimini kullanın: bir platform kodu, bir alt çizgi, ardından maç numarası.",
+            "duplicateMatchId": "Başka bir oyun bu Riot maç kimliğini zaten kullanıyor."
+          },
+          "fieldApiMatchId": "Riot maç kimliği",
+          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır."
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "Turnuva",
         "match": "Maç",
-        "map": "Harita"
+        "map": "Harita",
+        "game": "Oyun"
       },
       "matchSearchPlaceholder": "Maç ara…",
       "mapSearchPlaceholder": "Harita ara…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Maçlar",
       "openMaps": "Haritalar",
-      "goBack": "Geri dön"
+      "goBack": "Geri dön",
+      "gameEmpty": "Bu maçta oyun yok.",
+      "gameSearchPlaceholder": "Bir oyun ara…",
+      "openGames": "Oyunlar"
     },
     "streams": {
       "title": "Yayın kanalları",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "Bu maç seçilen turnuvaya ait değil.",
         "mapNotFound": "Harita bulunamadı.",
         "mapNotInMatch": "Bu harita seçilen maça ait değil.",
-        "notFound": "VOD bulunamadı."
-      }
+        "notFound": "VOD bulunamadı.",
+        "gameNotFound": "Oyun bulunamadı.",
+        "gameNotInMatch": "Bu oyun seçilen maça ait değil."
+      },
+      "scopeGame": "Belirli oyun",
+      "gameLabel": "Oyun",
+      "gamePlaceholder": "Bir oyun seçin…",
+      "gameLoading": "Yükleniyor…"
     },
     "apiKeys": {
       "title": "API anahtarları",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "Tümünü göster",
     "mapsPickRatesShowLess": "Daha az göster",
     "factOrganizer": "Organizatör",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Oyunlar"
   },
   "pickemPage": {
     "heading": "Pick'em",

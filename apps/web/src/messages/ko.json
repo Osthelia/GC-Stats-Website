@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "토론",
-    "watchparty": "워치파티"
+    "watchparty": "워치파티",
+    "vodGame": "게임 {n} VOD"
   },
   "footer": {
     "tagline": "모든 공식 Game Changers 대회를 한곳에서 만나보세요.",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "순위 산정에 경기 승리를 반영하지 않으려면 비워 두세요.",
         "fieldMapWinPoints": "맵 승리당 포인트",
         "fieldMapWinPointsHint": "맵 승리를 반영하지 않으려면 비워 두세요.",
+        "fieldGameWinPoints": "게임 승리당 포인트",
+        "fieldGameWinPointsHint": "비워 두면 게임 승리를 집계하지 않습니다.",
+        "fieldGameForfeitWinPoints": "기권 게임 승리당 포인트",
+        "fieldGameForfeitWinPointsHint": "실제로 플레이하지 않고 기권으로 얻은 게임 승리에 대한 다른 값입니다.",
         "fieldRoundWinPoints": "라운드 승리당 포인트",
         "fieldRoundWinPointsHint": "라운드 승리를 반영하지 않으려면 비워 두세요.",
         "fieldMatchForfeitWinPoints": "몰수승 경기당 포인트",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "각 세그먼트의 시작 라운드는 종료 라운드보다 앞서야 합니다.",
             "mergeMapNotFound": "이 맵은 더 이상 존재하지 않습니다."
           }
+        },
+        "games": {
+          "heading": "게임",
+          "description": "이 시리즈에서 진행된 게임을 순서대로 표시합니다.",
+          "empty": "아직 게임이 없습니다.",
+          "gameLabel": "게임 {order}",
+          "winnerLabel": "승자: {name}",
+          "noWinner": "아직 승자가 없습니다",
+          "finished": "완료",
+          "notFinished": "미완료",
+          "forfeit": "기권",
+          "cancel": "취소",
+          "save": "저장",
+          "saving": "저장 중…",
+          "createButton": "게임 추가",
+          "createTitle": "게임 추가",
+          "editTitle": "게임 수정",
+          "dialogDescription": "이 시리즈의 게임 한 판 결과를 입력합니다.",
+          "editButton": "수정",
+          "deleteButton": "삭제",
+          "deleteTitle": "게임 삭제",
+          "deleteConfirm": "{order} 게임을 삭제할까요? 나머지 게임으로 매치 점수를 다시 계산합니다.",
+          "deleteError": "게임을 삭제하지 못했습니다.",
+          "deleteSuccess": "게임을 삭제했습니다.",
+          "saveError": "게임을 저장하지 못했습니다.",
+          "saveSuccess": "게임을 저장했습니다.",
+          "fieldOrder": "순서",
+          "fieldWinner": "승자",
+          "fieldWinnerNone": "아직 승자가 없습니다",
+          "fieldCompleted": "완료",
+          "fieldForfeit": "기권",
+          "fieldNote": "메모",
+          "fieldError": {
+            "invalid": "올바른 값을 입력하세요.",
+            "tooLong": "너무 깁니다.",
+            "duplicateOrder": "이 순서는 이미 다른 게임에서 사용 중입니다.",
+            "winnerRequired": "완료된 게임에는 승자가 필요합니다.",
+            "notAnEntrant": "승자는 두 팀 중 하나여야 합니다.",
+            "notCompleted": "승자를 지정하려면 게임을 완료로 표시하세요.",
+            "invalidMatchId": "EUW1_6123456789 형식을 사용하세요: 플랫폼 코드, 밑줄, 그다음 매치 번호.",
+            "duplicateMatchId": "다른 게임이 이 Riot 매치 ID를 이미 사용 중입니다."
+          },
+          "fieldApiMatchId": "Riot 매치 ID",
+          "fieldApiMatchIdHint": "예: EUW1_6123456789. 플랫폼은 이 값에서 읽습니다."
         },
         "liquipediaImportButton": "Liquipedia 경기 가져오기"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "대회",
         "match": "경기",
-        "map": "맵"
+        "map": "맵",
+        "game": "게임"
       },
       "matchSearchPlaceholder": "경기 검색…",
       "mapSearchPlaceholder": "맵 검색…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "경기",
       "openMaps": "맵",
-      "goBack": "뒤로 가기"
+      "goBack": "뒤로 가기",
+      "gameEmpty": "이 매치에 게임이 없습니다.",
+      "gameSearchPlaceholder": "게임 검색…",
+      "openGames": "게임"
     },
     "streams": {
       "title": "스트림 채널",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "이 매치는 선택한 토너먼트에 속하지 않습니다.",
         "mapNotFound": "맵을 찾을 수 없습니다.",
         "mapNotInMatch": "이 맵은 선택한 매치에 속하지 않습니다.",
-        "notFound": "VOD를 찾을 수 없습니다."
-      }
+        "notFound": "VOD를 찾을 수 없습니다.",
+        "gameNotFound": "게임을 찾을 수 없습니다.",
+        "gameNotInMatch": "이 게임은 선택한 매치에 속하지 않습니다."
+      },
+      "scopeGame": "특정 게임",
+      "gameLabel": "게임",
+      "gamePlaceholder": "게임 선택…",
+      "gameLoading": "불러오는 중…"
     },
     "apiKeys": {
       "title": "API 키",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "전체 보기",
     "mapsPickRatesShowLess": "간단히 보기",
     "factOrganizer": "주최자",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "게임"
   },
   "pickemPage": {
     "heading": "Pick'em",

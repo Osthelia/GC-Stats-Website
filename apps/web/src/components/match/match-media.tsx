@@ -9,6 +9,7 @@
 import { getTranslations } from "next-intl/server";
 import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon } from "@/components/icons/brand-icons";
 import { languageFlagClass } from "@/lib/countries";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 import type { MatchStream, MatchVod, MatchPlayerPov } from "@/lib/match-page-data";
 
 const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
@@ -31,7 +32,7 @@ function MediaDivider({ label }: { label: string }) {
 const linkClassName =
   "flex items-center gap-2 rounded-lg border border-neutral-800 bg-white/[0.02] px-3 py-2 text-[12px] font-semibold text-neutral-200 transition-colors hover:border-neutral-700 hover:bg-white/[0.05]";
 
-export async function MatchMedia({ streams, vods, povs, isCompleted }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean }) {
+export async function MatchMedia({ streams, vods, povs, isCompleted, game }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean; game: GameSlug }) {
   const t = await getTranslations("matchPage");
   const primaryCount = isCompleted ? vods.length : streams.length;
   if (primaryCount === 0 && povs.length === 0) return null;
@@ -48,7 +49,7 @@ export async function MatchMedia({ streams, vods, povs, isCompleted }: { streams
               ? vods.map((v) => (
                   <a key={v.id} href={v.url} target="_blank" rel="noreferrer noopener" className={linkClassName}>
                     <YoutubeIcon className="h-3.5 w-3.5 flex-none text-neutral-400" />
-                    {v.mapOrder != null ? t("vodMap", { n: v.mapOrder }) : t("vodFull")}
+                    {v.mapOrder != null ? t(`vod${GAME_INFO[game].seriesUnit}`, { n: v.mapOrder }) : t("vodFull")}
                     <span className={`fi ${languageFlagClass(v.languageCode)} shrink-0 rounded-[2px]`} title={v.languageCode} />
                   </a>
                 ))

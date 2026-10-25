@@ -1828,7 +1828,8 @@
     "teamTbd": "待定",
     "teamBye": "轮空",
     "discussion": "讨论",
-    "watchparty": "观赛派对"
+    "watchparty": "观赛派对",
+    "vodGame": "对局 {n} 录像"
   },
   "footer": {
     "tagline": "汇聚所有官方 Game Changers 赛事。",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "留空表示排名不计入比赛胜场积分。",
         "fieldMapWinPoints": "每张地图胜利积分",
         "fieldMapWinPointsHint": "留空表示不计入地图胜场积分。",
+        "fieldGameWinPoints": "每场比赛胜利积分",
+        "fieldGameWinPointsHint": "留空则不计算比赛胜利。",
+        "fieldGameForfeitWinPoints": "每场比赛弃权胜利积分",
+        "fieldGameForfeitWinPointsHint": "对弃权获得的比赛胜利使用不同的值（而非实际比赛）。",
         "fieldRoundWinPoints": "每回合胜利积分",
         "fieldRoundWinPointsHint": "留空表示不计入回合胜利积分。",
         "fieldMatchForfeitWinPoints": "因弃权获胜的比赛积分",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "每个分段的起始回合必须早于其结束回合。",
             "mergeMapNotFound": "该地图已不存在。"
           }
+        },
+        "games": {
+          "heading": "对局",
+          "description": "本系列赛中按顺序进行的对局。",
+          "empty": "暂无对局。",
+          "gameLabel": "第 {order} 局",
+          "winnerLabel": "胜者：{name}",
+          "noWinner": "暂无胜者",
+          "finished": "已完成",
+          "notFinished": "未完成",
+          "forfeit": "弃权",
+          "cancel": "取消",
+          "save": "保存",
+          "saving": "保存中…",
+          "createButton": "添加对局",
+          "createTitle": "添加对局",
+          "editTitle": "编辑对局",
+          "dialogDescription": "填写本系列赛中一局对局的结果。",
+          "editButton": "编辑",
+          "deleteButton": "删除",
+          "deleteTitle": "删除对局",
+          "deleteConfirm": "删除第 {order} 局？比赛比分将根据其余对局重新计算。",
+          "deleteError": "无法删除该对局。",
+          "deleteSuccess": "对局已删除。",
+          "saveError": "无法保存该对局。",
+          "saveSuccess": "对局已保存。",
+          "fieldOrder": "顺序",
+          "fieldWinner": "胜者",
+          "fieldWinnerNone": "暂无胜者",
+          "fieldCompleted": "已完成",
+          "fieldForfeit": "弃权",
+          "fieldNote": "备注",
+          "fieldError": {
+            "invalid": "请输入有效的值。",
+            "tooLong": "内容过长。",
+            "duplicateOrder": "该顺序已被其他对局使用。",
+            "winnerRequired": "已完成的对局需要胜者。",
+            "notAnEntrant": "胜者必须是两支队伍之一。",
+            "notCompleted": "要设置胜者，请先将对局标记为已完成。",
+            "invalidMatchId": "请使用 EUW1_6123456789 的格式：平台代码、下划线，然后是对局编号。",
+            "duplicateMatchId": "其他对局已使用该 Riot 对局 ID。"
+          },
+          "fieldApiMatchId": "Riot 对局 ID",
+          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台将从中读取。"
         },
         "liquipediaImportButton": "Liquipedia 比赛导入"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "赛事",
         "match": "比赛",
-        "map": "地图"
+        "map": "地图",
+        "game": "对局"
       },
       "matchSearchPlaceholder": "搜索比赛…",
       "mapSearchPlaceholder": "搜索地图…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "比赛",
       "openMaps": "地图",
-      "goBack": "返回"
+      "goBack": "返回",
+      "gameEmpty": "该比赛中没有对局。",
+      "gameSearchPlaceholder": "搜索对局…",
+      "openGames": "对局"
     },
     "streams": {
       "title": "直播频道",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "此比赛不属于所选赛事。",
         "mapNotFound": "未找到该地图。",
         "mapNotInMatch": "此地图不属于所选比赛。",
-        "notFound": "未找到该录像。"
-      }
+        "notFound": "未找到该录像。",
+        "gameNotFound": "找不到该对局。",
+        "gameNotInMatch": "该对局不属于所选比赛。"
+      },
+      "scopeGame": "特定对局",
+      "gameLabel": "对局",
+      "gamePlaceholder": "选择对局…",
+      "gameLoading": "加载中…"
     },
     "apiKeys": {
       "title": "API 密钥",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "显示全部",
     "mapsPickRatesShowLess": "收起",
     "factOrganizer": "主办方",
-    "vs": "对"
+    "vs": "对",
+    "standingsGames": "局数"
   },
   "pickemPage": {
     "heading": "Pick'em",

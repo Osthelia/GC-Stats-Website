@@ -30,6 +30,7 @@ import {
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { requireTournamentsActor, type BracketFormat } from "./admin-bracket-editor";
+import { defaultRoundRobinTiebreakers } from "@/lib/bracket/config-types";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type GenerateLegacyShapeInput = {
@@ -111,7 +112,7 @@ export async function generateLegacyBracketShape(game: GameSlug, input: Generate
       grandFinalBestOf: input.grandFinalBestOf,
     });
   } else if (input.format === "round_robin" || input.format === "round_robin_double") {
-    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: ["round_diff", "head_to_head", "seed"], pointsConfig: null });
+    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: defaultRoundRobinTiebreakers(game, false), pointsConfig: null });
     containerIdMap = { group: groupId };
     graph = generateRoundRobin({ containerId: "group", entrantCount, bestOf: input.bestOf, double: input.format === "round_robin_double" });
   } else {

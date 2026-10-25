@@ -13,9 +13,9 @@
 import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import {
-  organizations, gameTables, valorantTables } from "@gc-stats/db";
+import { organizations, gameTables, seriesMapTableOf } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import { listMapRefs } from "@/lib/series-map-refs";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrgProductionCredit = {
@@ -108,15 +108,10 @@ type MapTarget = Extract<ProductionTarget, { scope: "map" }>;
 
 /** Same as resolveMatchTargets for credits pointing at a map: the map's own label plus its match's "A vs B" and tournament. */
 export async function resolveMapTargets(game: GameSlug, mapIds: number[]) {
-    // Map credits only exist for Valorant: for another game map_id is always null, the joins on maps match nothing.
-  const { maps } = valorantTables;
   const result = new Map<number, { target: Omit<MapTarget, "scope">; scheduledAt: Date | null }>();
   if (mapIds.length === 0) return result;
 
-  const mapRows = await db
-    .select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName, order: maps.order })
-    .from(maps)
-    .where(inArray(maps.id, mapIds));
+  const mapRows = await listMapRefs(db, game, mapIds);
   const matchTargetById = await resolveMatchTargets(game, [...new Set(mapRows.map((m) => m.matchId))]);
 
   for (const m of mapRows) {
@@ -130,7 +125,7 @@ export async function resolveMapTargets(game: GameSlug, mapIds: number[]) {
         tournamentId: match.tournamentId,
         tournamentName: match.tournamentName,
         label: match.label,
-        mapLabel: `${m.mapName ?? "?"} (Map ${m.order})`,
+        mapLabel: m.label,
       },
     });
   }
@@ -524,11 +519,9 @@ async function paginateProductionRows(
   opts: ProductionPageOpts<"tournament" | "target" | "date">,
 ): Promise<ProductionPage> {
     const { productionCredits, tournaments, matches, entrants, stageContainers, stages } = gameTables(game);
-    // Map credits only exist for Valorant: for another game map_id is always null, the joins on maps match nothing.
-  const { maps } = valorantTables;
   const pageSize = opts.pageSize ?? DEFAULT_PAGE_SIZE;
 
-  const creditMaps = alias(maps, "prod_credit_maps");
+  const creditMaps = alias(seriesMapTableOf(game), "prod_credit_maps");
   const matchContainers = alias(stageContainers, "prod_match_containers");
   const matchStages = alias(stages, "prod_match_stages");
   const matchTournaments = alias(tournaments, "prod_match_tournaments");
@@ -638,8 +631,7 @@ export async function getTournamentProductionsPage(
   opts: ProductionPageOpts<TournamentProductionSort>,
 ): Promise<ProductionPage> {
     const { productionCredits, matches, stageContainers, stages } = gameTables(game);
-    // Map credits only exist for Valorant: for another game map_id is always null, the joins on maps match nothing.
-  const { maps } = valorantTables;
+  const mapTable = seriesMapTableOf(game);
   const tournamentMatchIds = db
     .select({ id: matches.id })
     .from(matches)
@@ -653,7 +645,7 @@ export async function getTournamentProductionsPage(
       inArray(productionCredits.matchId, tournamentMatchIds),
       inArray(
         productionCredits.mapId,
-        db.select({ id: maps.id }).from(maps).where(inArray(maps.matchId, tournamentMatchIds)),
+        db.select({ id: mapTable.id }).from(mapTable).where(inArray(mapTable.matchId, tournamentMatchIds)),
       ),
     )!,
     opts,

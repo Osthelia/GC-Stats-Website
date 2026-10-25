@@ -23,6 +23,7 @@ import { parseGroupConfig } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
 import { useGame } from "@/lib/use-game";
+import { GAME_INFO, gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
@@ -82,12 +83,14 @@ function stateFromContainer(container: AdminContainerRow): FormState {
   return base;
 }
 
-const POINTS_FIELDS: { key: keyof FormState & keyof PointsInput; labelKey: string; hintKey: string }[] = [
+// The map labels take the game's series unit ("Map" or "Game"), so LoL reads "Points per game win".
+// Round wins only exist for Valorant maps, so the field is left out for other games.
+const pointsFields = (seriesUnit: (typeof GAME_INFO)[GameSlug]["seriesUnit"]): { key: keyof FormState & keyof PointsInput; labelKey: string; hintKey: string; valorantOnly?: boolean }[] => [
   { key: "matchWinPoints", labelKey: "fieldMatchWinPoints", hintKey: "fieldMatchWinPointsHint" },
-  { key: "mapWinPoints", labelKey: "fieldMapWinPoints", hintKey: "fieldMapWinPointsHint" },
-  { key: "roundWinPoints", labelKey: "fieldRoundWinPoints", hintKey: "fieldRoundWinPointsHint" },
+  { key: "mapWinPoints", labelKey: `field${seriesUnit}WinPoints`, hintKey: `field${seriesUnit}WinPointsHint` },
+  { key: "roundWinPoints", labelKey: "fieldRoundWinPoints", hintKey: "fieldRoundWinPointsHint", valorantOnly: true },
   { key: "matchForfeitWinPoints", labelKey: "fieldMatchForfeitWinPoints", hintKey: "fieldMatchForfeitWinPointsHint" },
-  { key: "mapForfeitWinPoints", labelKey: "fieldMapForfeitWinPoints", hintKey: "fieldMapForfeitWinPointsHint" },
+  { key: "mapForfeitWinPoints", labelKey: `field${seriesUnit}ForfeitWinPoints`, hintKey: `field${seriesUnit}ForfeitWinPointsHint` },
 ];
 
 export function ContainerDialog({
@@ -102,6 +105,7 @@ export function ContainerDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const game = useGame();
+  const fields = pointsFields(GAME_INFO[game].seriesUnit).filter((field) => !field.valorantOnly || gameHasMaps(game));
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -122,7 +126,7 @@ export function ContainerDialog({
     const points: PointsInput = {
       matchWinPoints: form.matchWinPoints.trim() === "" ? null : Number(form.matchWinPoints),
       mapWinPoints: form.mapWinPoints.trim() === "" ? null : Number(form.mapWinPoints),
-      roundWinPoints: form.roundWinPoints.trim() === "" ? null : Number(form.roundWinPoints),
+      roundWinPoints: !gameHasMaps(game) || form.roundWinPoints.trim() === "" ? null : Number(form.roundWinPoints),
       matchForfeitWinPoints: form.matchForfeitWinPoints.trim() === "" ? null : Number(form.matchForfeitWinPoints),
       mapForfeitWinPoints: form.mapForfeitWinPoints.trim() === "" ? null : Number(form.mapForfeitWinPoints),
     };
@@ -216,7 +220,7 @@ export function ContainerDialog({
                   <p className="text-xs text-muted-foreground">{t("pointsSectionHint")}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  {POINTS_FIELDS.map(({ key, labelKey, hintKey }) => (
+                  {fields.map(({ key, labelKey, hintKey }) => (
                     <FormField key={key} label={t(labelKey)} htmlFor={`ctr-${key}`} error={err(key)} hint={t(hintKey)}>
                       <Input id={`ctr-${key}`} type="number" step="any" value={form[key]} onChange={(e) => set(key, e.target.value)} aria-invalid={!!fieldErrors[key]} />
                     </FormField>

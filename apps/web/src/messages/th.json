@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "การสนทนา",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD เกม {n}"
   },
   "footer": {
     "tagline": "ทุกการแข่งขัน Game Changers อย่างเป็นทางการ ในที่เดียว",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "เว้นว่างไว้หากไม่ต้องการนับการชนะแมตช์ในตาราง",
         "fieldMapWinPoints": "แต้มต่อการชนะแมพ",
         "fieldMapWinPointsHint": "เว้นว่างไว้หากไม่ต้องการนับการชนะแมพ",
+        "fieldGameWinPoints": "แต้มต่อการชนะเกม",
+        "fieldGameWinPointsHint": "เว้นว่างไว้เพื่อไม่นับการชนะเกม",
+        "fieldGameForfeitWinPoints": "แต้มต่อการชนะเกมจากการสละสิทธิ์",
+        "fieldGameForfeitWinPointsHint": "ค่าที่ต่างออกไปสำหรับการชนะเกมจากการสละสิทธิ์แทนการเล่นจริง",
         "fieldRoundWinPoints": "แต้มต่อการชนะรอบ",
         "fieldRoundWinPointsHint": "เว้นว่างไว้หากไม่ต้องการนับการชนะรอบ",
         "fieldMatchForfeitWinPoints": "แต้มต่อการชนะแมตช์ด้วยการสละสิทธิ์",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "รอบแรกของแต่ละเซกเมนต์ต้องอยู่ก่อนรอบสุดท้าย",
             "mergeMapNotFound": "แมพนี้ไม่มีอยู่แล้ว"
           }
+        },
+        "games": {
+          "heading": "เกม",
+          "description": "เกมที่เล่นในซีรีส์นี้ เรียงตามลำดับ",
+          "empty": "ยังไม่มีเกม",
+          "gameLabel": "เกมที่ {order}",
+          "winnerLabel": "ผู้ชนะ: {name}",
+          "noWinner": "ยังไม่มีผู้ชนะ",
+          "finished": "จบแล้ว",
+          "notFinished": "ยังไม่จบ",
+          "forfeit": "สละสิทธิ์",
+          "cancel": "ยกเลิก",
+          "save": "บันทึก",
+          "saving": "กำลังบันทึก…",
+          "createButton": "เพิ่มเกม",
+          "createTitle": "เพิ่มเกม",
+          "editTitle": "แก้ไขเกม",
+          "dialogDescription": "กรอกผลของเกมหนึ่งเกมในซีรีส์นี้",
+          "editButton": "แก้ไข",
+          "deleteButton": "ลบ",
+          "deleteTitle": "ลบเกม",
+          "deleteConfirm": "ลบเกมที่ {order} ใช่ไหม? คะแนนของแมตช์จะคำนวณใหม่จากเกมที่เหลือ",
+          "deleteError": "ไม่สามารถลบเกมได้",
+          "deleteSuccess": "ลบเกมแล้ว",
+          "saveError": "ไม่สามารถบันทึกเกมได้",
+          "saveSuccess": "บันทึกเกมแล้ว",
+          "fieldOrder": "ลำดับ",
+          "fieldWinner": "ผู้ชนะ",
+          "fieldWinnerNone": "ยังไม่มีผู้ชนะ",
+          "fieldCompleted": "จบแล้ว",
+          "fieldForfeit": "สละสิทธิ์",
+          "fieldNote": "หมายเหตุ",
+          "fieldError": {
+            "invalid": "กรอกค่าที่ถูกต้อง",
+            "tooLong": "ยาวเกินไป",
+            "duplicateOrder": "มีเกมอื่นที่ใช้ลำดับนี้อยู่แล้ว",
+            "winnerRequired": "เกมที่จบแล้วต้องมีผู้ชนะ",
+            "notAnEntrant": "ผู้ชนะต้องเป็นหนึ่งในสองทีม",
+            "notCompleted": "ทำเครื่องหมายว่าเกมจบแล้วก่อนเลือกผู้ชนะ",
+            "invalidMatchId": "ใช้รูปแบบ EUW1_6123456789: รหัสแพลตฟอร์ม เครื่องหมายขีดล่าง แล้วตามด้วยหมายเลขแมตช์",
+            "duplicateMatchId": "มีเกมอื่นที่ใช้รหัสแมตช์ Riot นี้อยู่แล้ว"
+          },
+          "fieldApiMatchId": "รหัสแมตช์ Riot",
+          "fieldApiMatchIdHint": "เช่น EUW1_6123456789 ระบบจะอ่านแพลตฟอร์มจากรหัสนี้"
         },
         "liquipediaImportButton": "นำเข้าแมตช์จาก Liquipedia"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "ทัวร์นาเมนต์",
         "match": "แมตช์",
-        "map": "แมป"
+        "map": "แมป",
+        "game": "เกม"
       },
       "matchSearchPlaceholder": "ค้นหาแมตช์…",
       "mapSearchPlaceholder": "ค้นหาแมป…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "แมตช์",
       "openMaps": "แมป",
-      "goBack": "ย้อนกลับ"
+      "goBack": "ย้อนกลับ",
+      "gameEmpty": "ไม่มีเกมในแมตช์นี้",
+      "gameSearchPlaceholder": "ค้นหาเกม…",
+      "openGames": "เกม"
     },
     "streams": {
       "title": "ช่องสตรีม",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "แมตช์นี้ไม่ได้อยู่ในทัวร์นาเมนต์ที่เลือก",
         "mapNotFound": "ไม่พบแมพ",
         "mapNotInMatch": "แมพนี้ไม่ได้อยู่ในแมตช์ที่เลือก",
-        "notFound": "ไม่พบ VOD"
-      }
+        "notFound": "ไม่พบ VOD",
+        "gameNotFound": "ไม่พบเกม",
+        "gameNotInMatch": "เกมนี้ไม่ได้อยู่ในแมตช์ที่เลือก"
+      },
+      "scopeGame": "เกมที่เลือก",
+      "gameLabel": "เกม",
+      "gamePlaceholder": "เลือกเกม…",
+      "gameLoading": "กำลังโหลด…"
     },
     "apiKeys": {
       "title": "API key",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "แสดงทั้งหมด",
     "mapsPickRatesShowLess": "แสดงน้อยลง",
     "factOrganizer": "ผู้จัด",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "เกม"
   },
   "pickemPage": {
     "heading": "Pick'em",

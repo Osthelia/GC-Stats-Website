@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "النقاش",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "تسجيل اللعبة {n}"
   },
   "footer": {
     "tagline": "كل مسابقات Game Changers الرسمية في مكان واحد.",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "اتركه فارغًا لعدم احتساب المباريات المربوحة في الترتيب.",
         "fieldMapWinPoints": "النقاط لكل فوز بخريطة",
         "fieldMapWinPointsHint": "اتركه فارغًا لعدم احتساب الخرائط المربوحة.",
+        "fieldGameWinPoints": "النقاط لكل فوز بمباراة",
+        "fieldGameWinPointsHint": "اتركه فارغًا لعدم احتساب الفوز بالمباريات.",
+        "fieldGameForfeitWinPoints": "النقاط لكل فوز بمباراة بالانسحاب",
+        "fieldGameForfeitWinPointsHint": "قيمة مختلفة لفوز بمباراة بالانسحاب بدلًا من المباراة الملعوبة.",
         "fieldRoundWinPoints": "النقاط لكل فوز بجولة",
         "fieldRoundWinPointsHint": "اتركه فارغًا لعدم احتساب الجولات المربوحة.",
         "fieldMatchForfeitWinPoints": "النقاط لكل فوز بمباراة بالانسحاب",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "يجب أن تسبق الجولة الأولى لكل مقطع جولته الأخيرة.",
             "mergeMapNotFound": "هذه الخريطة لم تعد موجودة."
           }
+        },
+        "games": {
+          "heading": "الألعاب",
+          "description": "الألعاب التي لُعبت في هذه السلسلة، بالترتيب.",
+          "empty": "لا توجد ألعاب بعد.",
+          "gameLabel": "اللعبة {order}",
+          "winnerLabel": "الفائز: {name}",
+          "noWinner": "لا يوجد فائز بعد",
+          "finished": "مكتملة",
+          "notFinished": "غير مكتملة",
+          "forfeit": "انسحاب",
+          "cancel": "إلغاء",
+          "save": "حفظ",
+          "saving": "جارٍ الحفظ…",
+          "createButton": "إضافة لعبة",
+          "createTitle": "إضافة لعبة",
+          "editTitle": "تعديل اللعبة",
+          "dialogDescription": "أدخل نتيجة لعبة واحدة من هذه السلسلة.",
+          "editButton": "تعديل",
+          "deleteButton": "حذف",
+          "deleteTitle": "حذف اللعبة",
+          "deleteConfirm": "هل تريد حذف اللعبة {order}؟ سيُعاد حساب نتيجة المواجهة من الألعاب المتبقية.",
+          "deleteError": "تعذّر حذف اللعبة.",
+          "deleteSuccess": "تم حذف اللعبة.",
+          "saveError": "تعذّر حفظ اللعبة.",
+          "saveSuccess": "تم حفظ اللعبة.",
+          "fieldOrder": "الترتيب",
+          "fieldWinner": "الفائز",
+          "fieldWinnerNone": "لا يوجد فائز بعد",
+          "fieldCompleted": "مكتملة",
+          "fieldForfeit": "انسحاب",
+          "fieldNote": "ملاحظة",
+          "fieldError": {
+            "invalid": "أدخل قيمة صحيحة.",
+            "tooLong": "طويل جدًا.",
+            "duplicateOrder": "لعبة أخرى تستخدم هذا الترتيب بالفعل.",
+            "winnerRequired": "اللعبة المكتملة تحتاج إلى فائز.",
+            "notAnEntrant": "يجب أن يكون الفائز أحد الفريقين.",
+            "notCompleted": "حدّد اللعبة كمكتملة لتعيين فائز.",
+            "invalidMatchId": "استخدم الصيغة EUW1_6123456789: رمز المنصة، ثم شرطة سفلية، ثم رقم المباراة.",
+            "duplicateMatchId": "مباراة أخرى تستخدم معرّف مباراة Riot هذا بالفعل."
+          },
+          "fieldApiMatchId": "معرّف مباراة Riot",
+          "fieldApiMatchIdHint": "مثال: EUW1_6123456789. تُستخرج المنصة منه."
         },
         "liquipediaImportButton": "استيراد مباراة من Liquipedia"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "بطولة",
         "match": "مباراة",
-        "map": "خريطة"
+        "map": "خريطة",
+        "game": "اللعبة"
       },
       "matchSearchPlaceholder": "ابحث عن مباراة…",
       "mapSearchPlaceholder": "ابحث عن خريطة…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "المباريات",
       "openMaps": "الخرائط",
-      "goBack": "رجوع"
+      "goBack": "رجوع",
+      "gameEmpty": "لا توجد ألعاب في هذه المواجهة.",
+      "gameSearchPlaceholder": "ابحث عن لعبة…",
+      "openGames": "الألعاب"
     },
     "streams": {
       "title": "قنوات البث",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "هذه المباراة لا تنتمي إلى البطولة المحددة.",
         "mapNotFound": "الخريطة غير موجودة.",
         "mapNotInMatch": "هذه الخريطة لا تنتمي إلى المباراة المحددة.",
-        "notFound": "التسجيل غير موجود."
-      }
+        "notFound": "التسجيل غير موجود.",
+        "gameNotFound": "اللعبة غير موجودة.",
+        "gameNotInMatch": "هذه اللعبة لا تنتمي إلى المواجهة المختارة."
+      },
+      "scopeGame": "لعبة محددة",
+      "gameLabel": "اللعبة",
+      "gamePlaceholder": "اختر لعبة…",
+      "gameLoading": "جارٍ التحميل…"
     },
     "apiKeys": {
       "title": "مفاتيح API",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "عرض الكل",
     "mapsPickRatesShowLess": "عرض أقل",
     "factOrganizer": "المنظم",
-    "vs": "ضد"
+    "vs": "ضد",
+    "standingsGames": "الألعاب"
   },
   "pickemPage": {
     "heading": "Pick'em",

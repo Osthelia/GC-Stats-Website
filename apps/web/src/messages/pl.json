@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Dyskusja",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD gry {n}"
   },
   "footer": {
     "tagline": "Wszystkie oficjalne rozgrywki Game Changers w jednym miejscu.",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "Zostaw puste, aby nie liczyć wygranych meczów w tabeli.",
         "fieldMapWinPoints": "Punkty za wygraną mapę",
         "fieldMapWinPointsHint": "Zostaw puste, aby nie liczyć wygranych map.",
+        "fieldGameWinPoints": "Punkty za wygraną grę",
+        "fieldGameWinPointsHint": "Pozostaw puste, aby nie liczyć wygranych gier.",
+        "fieldGameForfeitWinPoints": "Punkty za wygraną grę przez walkower",
+        "fieldGameForfeitWinPointsHint": "Inna wartość za wygraną grę przez walkower zamiast rozegranej.",
         "fieldRoundWinPoints": "Punkty za wygraną rundę",
         "fieldRoundWinPointsHint": "Zostaw puste, aby nie liczyć wygranych rund.",
         "fieldMatchForfeitWinPoints": "Punkty za mecz wygrany walkowerem",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "Pierwsza runda każdego segmentu musi być przed ostatnią.",
             "mergeMapNotFound": "Ta mapa już nie istnieje."
           }
+        },
+        "games": {
+          "heading": "Gry",
+          "description": "Gry rozegrane w tej serii, w kolejności.",
+          "empty": "Brak gier.",
+          "gameLabel": "Gra {order}",
+          "winnerLabel": "Zwycięzca: {name}",
+          "noWinner": "Brak zwycięzcy",
+          "finished": "Zakończona",
+          "notFinished": "Niezakończona",
+          "forfeit": "Walkower",
+          "cancel": "Anuluj",
+          "save": "Zapisz",
+          "saving": "Zapisywanie…",
+          "createButton": "Dodaj grę",
+          "createTitle": "Dodaj grę",
+          "editTitle": "Edytuj grę",
+          "dialogDescription": "Wpisz wynik jednej gry w tej serii.",
+          "editButton": "Edytuj",
+          "deleteButton": "Usuń",
+          "deleteTitle": "Usuń grę",
+          "deleteConfirm": "Usunąć grę {order}? Wynik meczu zostanie przeliczony na podstawie pozostałych gier.",
+          "deleteError": "Nie udało się usunąć gry.",
+          "deleteSuccess": "Gra usunięta.",
+          "saveError": "Nie udało się zapisać gry.",
+          "saveSuccess": "Gra zapisana.",
+          "fieldOrder": "Kolejność",
+          "fieldWinner": "Zwycięzca",
+          "fieldWinnerNone": "Brak zwycięzcy",
+          "fieldCompleted": "Zakończona",
+          "fieldForfeit": "Walkower",
+          "fieldNote": "Notatka",
+          "fieldError": {
+            "invalid": "Wpisz poprawną wartość.",
+            "tooLong": "Za długie.",
+            "duplicateOrder": "Inna gra ma już tę kolejność.",
+            "winnerRequired": "Zakończona gra wymaga zwycięzcy.",
+            "notAnEntrant": "Zwycięzcą musi być jedna z dwóch drużyn.",
+            "notCompleted": "Oznacz grę jako zakończoną, aby ustawić zwycięzcę.",
+            "invalidMatchId": "Użyj formatu EUW1_6123456789: kod platformy, podkreślnik, a potem numer meczu.",
+            "duplicateMatchId": "Inna gra używa już tego ID meczu Riot."
+          },
+          "fieldApiMatchId": "ID meczu Riot",
+          "fieldApiMatchIdHint": "Na przykład EUW1_6123456789. Platforma jest odczytywana z tego ID."
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "Turniej",
         "match": "Mecz",
-        "map": "Mapa"
+        "map": "Mapa",
+        "game": "Gra"
       },
       "matchSearchPlaceholder": "Szukaj meczu…",
       "mapSearchPlaceholder": "Szukaj mapy…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Mecze",
       "openMaps": "Mapy",
-      "goBack": "Wróć"
+      "goBack": "Wróć",
+      "gameEmpty": "Brak gier w tym meczu.",
+      "gameSearchPlaceholder": "Szukaj gry…",
+      "openGames": "Gry"
     },
     "streams": {
       "title": "Kanały streamingowe",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "Ten mecz nie należy do wybranego turnieju.",
         "mapNotFound": "Nie znaleziono mapy.",
         "mapNotInMatch": "Ta mapa nie należy do wybranego meczu.",
-        "notFound": "Nie znaleziono VOD."
-      }
+        "notFound": "Nie znaleziono VOD.",
+        "gameNotFound": "Nie znaleziono gry.",
+        "gameNotInMatch": "Ta gra nie należy do wybranego meczu."
+      },
+      "scopeGame": "Konkretna gra",
+      "gameLabel": "Gra",
+      "gamePlaceholder": "Wybierz grę…",
+      "gameLoading": "Ładowanie…"
     },
     "apiKeys": {
       "title": "Klucze API",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "Pokaż wszystkie",
     "mapsPickRatesShowLess": "Pokaż mniej",
     "factOrganizer": "Organizator",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Gry"
   },
   "pickemPage": {
     "heading": "Pick'em",

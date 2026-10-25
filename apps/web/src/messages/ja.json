@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "ディスカッション",
-    "watchparty": "ウォッチパーティー"
+    "watchparty": "ウォッチパーティー",
+    "vodGame": "ゲーム{n}のVOD"
   },
   "footer": {
     "tagline": "すべての公式Game Changers大会を、ここに集約。",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "順位表で試合勝利数を数えない場合は空欄のままにしてください。",
         "fieldMapWinPoints": "マップ勝利ごとのポイント",
         "fieldMapWinPointsHint": "マップ勝利数を数えない場合は空欄のままにしてください。",
+        "fieldGameWinPoints": "ゲーム勝利ごとのポイント",
+        "fieldGameWinPointsHint": "空欄にするとゲーム勝利を集計しません。",
+        "fieldGameForfeitWinPoints": "不戦勝によるゲーム勝利ごとのポイント",
+        "fieldGameForfeitWinPointsHint": "実際にプレイせず不戦勝で得たゲーム勝利に対する別の値。",
         "fieldRoundWinPoints": "ラウンド勝利ごとのポイント",
         "fieldRoundWinPointsHint": "ラウンド勝利数を数えない場合は空欄のままにしてください。",
         "fieldMatchForfeitWinPoints": "不戦勝による試合勝利ごとのポイント",
@@ -4471,6 +4476,50 @@
             "mergeInvalidRoundRange": "各セグメントの最初のラウンドは最後のラウンドより前である必要があります。",
             "mergeMapNotFound": "このマップはもう存在しません。"
           }
+        },
+        "games": {
+          "heading": "ゲーム",
+          "description": "このシリーズで行われたゲームを順番に表示します。",
+          "empty": "まだゲームがありません。",
+          "gameLabel": "ゲーム {order}",
+          "winnerLabel": "勝者: {name}",
+          "noWinner": "勝者はまだいません",
+          "finished": "終了",
+          "notFinished": "未終了",
+          "forfeit": "不戦勝",
+          "cancel": "キャンセル",
+          "save": "保存",
+          "saving": "保存中…",
+          "createButton": "ゲームを追加",
+          "createTitle": "ゲームを追加",
+          "editTitle": "ゲームを編集",
+          "dialogDescription": "このシリーズのゲーム1試合の結果を入力します。",
+          "editButton": "編集",
+          "deleteButton": "削除",
+          "deleteTitle": "ゲームを削除",
+          "deleteConfirm": "ゲーム {order} を削除しますか？ 残りのゲームから試合スコアを再計算します。",
+          "deleteError": "ゲームを削除できませんでした。",
+          "deleteSuccess": "ゲームを削除しました。",
+          "saveError": "ゲームを保存できませんでした。",
+          "saveSuccess": "ゲームを保存しました。",
+          "fieldOrder": "順番",
+          "fieldWinner": "勝者",
+          "fieldWinnerNone": "まだ勝者がいません",
+          "fieldCompleted": "終了",
+          "fieldForfeit": "不戦勝",
+          "fieldNote": "メモ",
+          "fieldError": {
+            "invalid": "有効な値を入力してください。",
+            "tooLong": "長すぎます。",
+            "duplicateOrder": "この順番は別のゲームで使われています。",
+            "winnerRequired": "終了したゲームには勝者が必要です。",
+            "notAnEntrant": "勝者は2チームのいずれかである必要があります。",
+            "notCompleted": "勝者を設定するにはゲームを終了として記録してください。",
+            "invalidMatchId": "形式は EUW1_6123456789 です: プラットフォームコード、アンダースコア、試合番号の順に入力してください。",
+            "duplicateMatchId": "別のゲームがこの Riot マッチIDを使用しています。"
+          },
+          "fieldApiMatchId": "Riot マッチID",
+          "fieldApiMatchIdHint": "例: EUW1_6123456789。プラットフォームはここから取得されます。"
         },
         "liquipediaImportButton": "Liquipedia試合インポート"
       },
@@ -5273,7 +5322,8 @@
       "level": {
         "tournament": "大会",
         "match": "試合",
-        "map": "マップ"
+        "map": "マップ",
+        "game": "ゲーム"
       },
       "matchSearchPlaceholder": "試合を検索…",
       "mapSearchPlaceholder": "マップを検索…",
@@ -5292,7 +5342,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "試合",
       "openMaps": "マップ",
-      "goBack": "戻る"
+      "goBack": "戻る",
+      "gameEmpty": "この試合にゲームがありません。",
+      "gameSearchPlaceholder": "ゲームを検索…",
+      "openGames": "ゲーム"
     },
     "streams": {
       "title": "配信チャンネル",
@@ -5424,8 +5477,14 @@
         "matchNotInTournament": "この試合は選択したトーナメントに属していません。",
         "mapNotFound": "マップが見つかりません。",
         "mapNotInMatch": "このマップは選択した試合に属していません。",
-        "notFound": "VODが見つかりません。"
-      }
+        "notFound": "VODが見つかりません。",
+        "gameNotFound": "ゲームが見つかりません。",
+        "gameNotInMatch": "このゲームは選択した試合に属していません。"
+      },
+      "scopeGame": "特定のゲーム",
+      "gameLabel": "ゲーム",
+      "gamePlaceholder": "ゲームを選択…",
+      "gameLoading": "読み込み中…"
     },
     "apiKeys": {
       "title": "APIキー",
@@ -6258,7 +6317,8 @@
     "mapsPickRatesShowMore": "すべて表示",
     "mapsPickRatesShowLess": "表示を減らす",
     "factOrganizer": "主催者",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "ゲーム"
   },
   "pickemPage": {
     "heading": "Pick'em",
