@@ -15,7 +15,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { organizations, gameTables, seriesMapTableOf } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
-import { listMapRefs } from "@/lib/dashboard-vods-data";
+import { listMapRefs } from "@/lib/series-map-refs";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrgProductionCredit = {
@@ -111,7 +111,7 @@ export async function resolveMapTargets(game: GameSlug, mapIds: number[]) {
   const result = new Map<number, { target: Omit<MapTarget, "scope">; scheduledAt: Date | null }>();
   if (mapIds.length === 0) return result;
 
-  const mapRows = await listMapRefs(game, mapIds);
+  const mapRows = await listMapRefs(db, game, mapIds);
   const matchTargetById = await resolveMatchTargets(game, [...new Set(mapRows.map((m) => m.matchId))]);
 
   for (const m of mapRows) {

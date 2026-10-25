@@ -26,7 +26,8 @@ import { logActivity, diffChanges } from "@/lib/activity-log";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
-import { getMatchMapOptions, listMapRefs, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import { listMapRefs } from "@/lib/series-map-refs";
 import { validateProductionCreditInput, validateRoleAndTitle, type ProductionCreditInput, type ProductionCreditFieldErrors, type ProductionCreditScope } from "@/lib/production-credit-validation";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -80,7 +81,7 @@ export async function addProductionCredits(game: GameSlug, organizationId: numbe
   const [tournamentRows, matchRows, mapRows] = await Promise.all([
     tournamentIds.length ? db.select({ id: tournaments.id }).from(tournaments).where(inArray(tournaments.id, tournamentIds)) : [],
     matchIds.length ? db.select({ id: matches.id }).from(matches).where(inArray(matches.id, matchIds)) : [],
-    listMapRefs(game, mapIds),
+    listMapRefs(db, game, mapIds),
   ]);
   if (tournamentRows.length !== tournamentIds.length || matchRows.length !== matchIds.length || mapRows.length !== mapIds.length) {
     return { ok: false, fieldErrors: { targets: "targetNotFound" } };

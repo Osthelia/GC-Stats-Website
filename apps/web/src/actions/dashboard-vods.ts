@@ -19,7 +19,8 @@ import { isValidUrl } from "@/lib/admin-validation";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
-import { getMatchMapOptions, listMapRefs, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import { listMapRefs } from "@/lib/series-map-refs";
 import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type { CreditMatchOption } from "@/lib/production-credits-data";
@@ -70,7 +71,7 @@ export async function addVod(game: GameSlug, organizationId: number, input: AddV
   if (matchTournamentId !== input.tournamentId) return { ok: false, fieldErrors: { match: "matchNotInTournament" } };
 
   if (input.mapId !== null) {
-    const [map] = await listMapRefs(game, [input.mapId]);
+    const [map] = await listMapRefs(db, game, [input.mapId]);
     // The error names the unit the form shows: "map" for Valorant, "game" for LoL.
     const unit = gameHasMaps(game) ? "map" : "game";
     if (!map) return { ok: false, fieldErrors: { map: `${unit}NotFound` } };
