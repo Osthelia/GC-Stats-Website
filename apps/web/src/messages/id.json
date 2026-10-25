@@ -4041,12 +4041,7 @@
         "subtitle": "Buat bracket dari templat, lalu sesuaikan dengan bebas: seret untuk menghubungkan pemenang/pecundang ke pertandingan berikutnya.",
         "backToTournament": "← Kembali ke turnamen",
         "legacyImportLink": "Impor pertandingan lama →",
-        "readOnlyNotice": "Tahap ini sudah dimulai: bracket tidak dapat lagi disunting di sini. Anda masih dapat melihatnya.",
-        "unlockButton": "Buka kunci penyuntingan",
-        "unlockTitle": "Sunting bracket yang sudah dimulai ini?",
-        "unlockConfirm": "Pertandingan yang sudah dimainkan atau langsung tetap dibekukan dan mempertahankan hasil serta statistiknya. Anda masih dapat mengubah pertandingan dan tautan lain, menambah pertandingan, dan menghapus pertandingan yang belum dimainkan.",
-        "unlockConfirmButton": "Buka kunci",
-        "unlockedWarning": "Penyuntingan dibuka: pertandingan yang dimainkan dan langsung dibekukan, selebihnya dapat diubah tanpa kehilangan hasil.",
+        "startedNotice": "Penyuntingan dibuka: pertandingan yang dimainkan dan langsung dibekukan, selebihnya dapat diubah tanpa kehilangan hasil.",
         "swissContainersNotice": "Grup Swiss tahap ini ({names}) dikelola dari halaman turnamen, bukan di editor ini: ronde Swiss dibuat secara dinamis setelah setiap hasil, tidak ada grafik tetap untuk digambar.",
         "templateFormat": "Format",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "Sebuah pertandingan tidak lagi cocok dengan bracket tersimpan, muat ulang halaman dan coba lagi.",
           "startedMatchChanged": "Pertandingan yang dimainkan atau langsung tidak dapat dipindahkan atau diubah best of.",
           "startedMatchDeleted": "Pertandingan yang dimainkan atau langsung tidak dapat dihapus.",
-          "startedEdgeChanged": "Tautan yang mengalir ke pertandingan yang dimainkan atau langsung tidak dapat diubah.",
           "entrantMismatch": "Salah satu peserta yang ditetapkan bukan bagian dari turnamen ini, muat ulang halaman dan coba lagi.",
           "bracketStarted": "Pertandingan di bracket ini sudah dimainkan, tidak dapat lagi disunting.",
           "saveFailed": "Penyimpanan gagal, muat ulang halaman dan coba lagi."

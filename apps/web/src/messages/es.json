@@ -4041,12 +4041,7 @@
         "subtitle": "Genera un bracket a partir de una plantilla y ajústalo libremente: conecta arrastrando a los ganadores/perdedores con los partidos siguientes.",
         "backToTournament": "← Volver al torneo",
         "legacyImportLink": "Importar partidos antiguos →",
-        "readOnlyNotice": "Esta fase ya ha empezado: el bracket ya no se puede editar aquí. Todavía puedes verlo.",
-        "unlockButton": "Desbloquear la edición",
-        "unlockTitle": "¿Editar este bracket ya iniciado?",
-        "unlockConfirm": "Los partidos ya jugados o en directo quedan bloqueados y conservan sus resultados y estadísticas. Aún puedes cambiar los demás partidos y enlaces, añadir partidos y eliminar los que no se han jugado.",
-        "unlockConfirmButton": "Desbloquear",
-        "unlockedWarning": "Edición desbloqueada: los partidos jugados o en directo están bloqueados, lo demás se puede cambiar sin perder resultados.",
+        "startedNotice": "Esta fase ha empezado: los partidos jugados o en directo están bloqueados, lo demás (partidos, enlaces) se puede cambiar sin perder resultados.",
         "swissContainersNotice": "Los grupos suizos de esta fase ({names}) se gestionan desde la página del torneo, no en este editor: una ronda suiza se genera dinámicamente tras cada resultado, no hay un grafo fijo que dibujar.",
         "templateFormat": "Formato",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "Un partido ya no coincide con el bracket guardado, recarga la página e inténtalo de nuevo.",
           "startedMatchChanged": "Un partido jugado o en directo no se puede mover ni cambiar su best of.",
           "startedMatchDeleted": "Un partido jugado o en directo no se puede eliminar.",
-          "startedEdgeChanged": "Los enlaces que alimentan un partido jugado o en directo no se pueden cambiar.",
           "entrantMismatch": "Uno de los participantes asignados no pertenece a este torneo, recarga la página y vuelve a intentarlo.",
           "bracketStarted": "Ya se han jugado partidos de este bracket, ya no se puede editar.",
           "saveFailed": "No se pudo guardar, recarga la página e inténtalo de nuevo."

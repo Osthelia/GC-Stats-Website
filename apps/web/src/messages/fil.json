@@ -4041,12 +4041,7 @@
         "subtitle": "Bumuo ng bracket mula sa template, pagkatapos ay ayusin ito nang malaya: i-drag para ikonekta ang mga nanalo/natalo sa mga susunod na laban.",
         "backToTournament": "← Bumalik sa torneo",
         "legacyImportLink": "Mag-import ng mga legacy na laban →",
-        "readOnlyNotice": "Nagsimula na ang stage na ito: hindi na maaaring i-edit dito ang bracket. Maaari mo pa rin itong tingnan.",
-        "unlockButton": "I-unlock ang pag-edit",
-        "unlockTitle": "I-edit ang nagsimulang bracket na ito?",
-        "unlockConfirm": "Ang mga laban na nalaro na o live ay mananatiling naka-freeze at pananatilihin ang kanilang mga resulta at estadistika. Maaari mo pa ring baguhin ang iba pang mga laban at link, magdagdag ng mga laban, at burahin ang mga laban na hindi pa nalalaro.",
-        "unlockConfirmButton": "I-unlock",
-        "unlockedWarning": "Naka-unlock ang pag-edit: naka-freeze ang mga nalaro at live na laban, lahat ng iba ay maaaring baguhin nang hindi nawawala ang mga resulta.",
+        "startedNotice": "Naka-unlock ang pag-edit: naka-freeze ang mga nalaro at live na laban, lahat ng iba ay maaaring baguhin nang hindi nawawala ang mga resulta.",
         "swissContainersNotice": "Ang mga Swiss group ng stage na ito ({names}) ay pinamamahalaan mula sa pahina ng torneo, hindi sa editor na ito: dynamic na nabubuo ang isang Swiss round pagkatapos ng bawat resulta, walang nakapirming graph na iguguhit.",
         "templateFormat": "Format",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "Hindi na tumutugma ang isang laban sa na-save na bracket, i-reload ang pahina at subukan muli.",
           "startedMatchChanged": "Hindi maaaring ilipat ang nalaro o live na laban, o baguhin ang best of nito.",
           "startedMatchDeleted": "Hindi maaaring burahin ang nalaro o live na laban.",
-          "startedEdgeChanged": "Hindi maaaring baguhin ang mga link na nagpapakain sa nalaro o live na laban.",
           "entrantMismatch": "Ang isa sa mga nakatalagang entrant ay hindi kabilang sa torneong ito, i-reload ang pahina at subukan muli.",
           "bracketStarted": "May mga laban sa bracket na ito na nalaro na, hindi na ito maaaring i-edit.",
           "saveFailed": "Nabigo ang pag-save, i-reload ang pahina at subukan muli."

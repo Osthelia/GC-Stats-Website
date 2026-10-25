@@ -448,9 +448,9 @@ const edgeKey = (from: string | number, result: string, to: string | number, slo
 /**
  * Diff-based save for a bracket that has already started: updates, adds and
  * removes matches and links without ever recreating a match, so results,
- * stats, vetos and schedules survive. Matches that are live or completed are
- * frozen (round, best of, slots and incoming links) and can't be deleted.
- * A new link from a completed match immediately fills its target slot.
+ * stats, vetos and schedules survive. Matches that are live or completed keep
+ * their round, best of and entrants and can't be deleted, but their links can
+ * be changed. A new link from a completed match fills a pending target slot.
  */
 export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   await requireTournamentsActor();
@@ -498,13 +498,6 @@ export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<S
 
   const oldEdgeKeys = new Set(edgeRows.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
   const newEdgeKeys = new Set(input.edges.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
-  for (const e of input.edges) {
-    if (!oldEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)) && isStarted(e.toMatchId)) return { ok: false, error: "startedEdgeChanged" };
-  }
-  for (const e of edgeRows) {
-    if (newEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot))) continue;
-    if (keptIds.has(String(e.toMatchId)) && isStarted(String(e.toMatchId))) return { ok: false, error: "startedEdgeChanged" };
-  }
 
   await db.transaction(async (tx) => {
     const removedIds = existing.filter((m) => !keptIds.has(String(m.id))).map((m) => m.id);
@@ -591,6 +584,8 @@ export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<S
       await tx.insert(bracketEdges).values({ fromMatchId: fromId, fromResult: e.fromResult, toMatchId: toId, toSlot: e.toSlot });
 
       const source = existingById.get(e.fromMatchId);
+      // A started target keeps the entrants it was played with.
+      if (isStarted(e.toMatchId)) continue;
       if (!source || source.status !== "completed" || source.winnerId === null) continue;
       const loserId = source.winnerId === source.entrantAId ? source.entrantBId : source.entrantAId;
       const entrantId = e.fromResult === "winner" ? source.winnerId : loserId;

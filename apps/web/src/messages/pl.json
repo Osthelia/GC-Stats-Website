@@ -4033,12 +4033,7 @@
         "subtitle": "Wygeneruj drabinkę z szablonu, a potem dowolnie ją dostosuj: przeciągaj połączenia zwycięzców/przegranych do kolejnych meczów.",
         "backToTournament": "← Wróć do turnieju",
         "legacyImportLink": "Importuj mecze z V1 →",
-        "readOnlyNotice": "Ten etap już się rozpoczął: drabinki nie można już tu edytować. Nadal możesz ją przeglądać.",
-        "unlockButton": "Odblokuj edycję",
-        "unlockTitle": "Edytować ten rozpoczęty bracket?",
-        "unlockConfirm": "Mecze już rozegrane lub trwające pozostają zablokowane i zachowują wyniki oraz statystyki. Nadal możesz zmieniać pozostałe mecze i powiązania, dodawać mecze i usuwać te jeszcze nierozegrane.",
-        "unlockConfirmButton": "Odblokuj",
-        "unlockedWarning": "Edycja odblokowana: mecze rozegrane i trwające są zablokowane, resztę można zmieniać bez utraty wyników.",
+        "startedNotice": "Edycja odblokowana: mecze rozegrane i trwające są zablokowane, resztę można zmieniać bez utraty wyników.",
         "swissContainersNotice": "Grupy w systemie szwajcarskim tego etapu ({names}) są zarządzane ze strony turnieju, nie w tym edytorze: runda szwajcarska generuje się dynamicznie po każdym wyniku, nie ma stałego schematu do narysowania.",
         "templateFormat": "Format",
         "format": {
@@ -4101,7 +4096,6 @@
           "matchMismatch": "Mecz nie pasuje już do zapisanej drabinki, odśwież stronę i spróbuj ponownie.",
           "startedMatchChanged": "Rozegranego lub trwającego meczu nie można przesunąć ani zmienić jego best of.",
           "startedMatchDeleted": "Rozegranego lub trwającego meczu nie można usunąć.",
-          "startedEdgeChanged": "Powiązań prowadzących do rozegranego lub trwającego meczu nie można zmieniać.",
           "entrantMismatch": "Jeden z przypisanych uczestników nie należy do tego turnieju, odśwież stronę i spróbuj ponownie.",
           "bracketStarted": "Mecze w tej drabince zostały już rozegrane, nie można jej już edytować.",
           "saveFailed": "Zapisywanie nie powiodło się, odśwież stronę i spróbuj ponownie."

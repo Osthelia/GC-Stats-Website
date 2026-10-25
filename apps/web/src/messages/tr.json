@@ -4033,12 +4033,7 @@
         "subtitle": "Bir şablondan braket oluşturun, ardından serbestçe düzenleyin: galipleri/mağlupları sürükleyerek bir sonraki maçlara bağlayın.",
         "backToTournament": "← Turnuvaya dön",
         "legacyImportLink": "Eski maçları içe aktar →",
-        "readOnlyNotice": "Bu aşama zaten başladı: braket artık burada düzenlenemez. Yine de görüntüleyebilirsiniz.",
-        "unlockButton": "Düzenlemenin kilidini aç",
-        "unlockTitle": "Başlamış bu braket düzenlensin mi?",
-        "unlockConfirm": "Oynanmış veya canlı maçlar dondurulmuş kalır, sonuçlarını ve istatistiklerini korur. Diğer maçları ve bağlantıları değiştirebilir, maç ekleyebilir ve henüz oynanmamış maçları silebilirsiniz.",
-        "unlockConfirmButton": "Kilidi aç",
-        "unlockedWarning": "Düzenleme kilidi açıldı: oynanmış ve canlı maçlar dondurulmuştur, geri kalan her şey sonuç kaybı olmadan değiştirilebilir.",
+        "startedNotice": "Düzenleme kilidi açıldı: oynanmış ve canlı maçlar dondurulmuştur, geri kalan her şey sonuç kaybı olmadan değiştirilebilir.",
         "swissContainersNotice": "Bu aşamanın İsviçre grupları ({names}) bu editörden değil, turnuva sayfasından yönetilir: her sonuçtan sonra bir İsviçre turu dinamik olarak oluşturulur, çizilecek sabit bir grafik yoktur.",
         "templateFormat": "Format",
         "format": {
@@ -4101,7 +4096,6 @@
           "matchMismatch": "Bir maç artık kayıtlı braketle eşleşmiyor, sayfayı yenileyip tekrar deneyin.",
           "startedMatchChanged": "Oynanmış veya canlı bir maç taşınamaz ve best of değeri değiştirilemez.",
           "startedMatchDeleted": "Oynanmış veya canlı bir maç silinemez.",
-          "startedEdgeChanged": "Oynanmış veya canlı bir maçı besleyen bağlantılar değiştirilemez.",
           "entrantMismatch": "Atanan katılımcılardan biri bu turnuvaya ait değil, sayfayı yeniden yükleyip tekrar deneyin.",
           "bracketStarted": "Bu bracket'teki maçlar zaten oynandı, artık düzenlenemez.",
           "saveFailed": "Kaydetme başarısız oldu, sayfayı yenileyip tekrar deneyin."

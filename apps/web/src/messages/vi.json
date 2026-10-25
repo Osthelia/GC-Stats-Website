@@ -4041,12 +4041,7 @@
         "subtitle": "Tạo một nhánh đấu từ một mẫu, rồi điều chỉnh tự do: kéo nối đội thắng/đội thua tới các trận đấu tiếp theo.",
         "backToTournament": "← Quay lại giải đấu",
         "legacyImportLink": "Nhập các trận đấu cũ →",
-        "readOnlyNotice": "Giai đoạn này đã bắt đầu: nhánh đấu không thể chỉnh sửa tại đây nữa. Bạn vẫn có thể xem.",
-        "unlockButton": "Mở khóa chỉnh sửa",
-        "unlockTitle": "Sửa nhánh đấu đã bắt đầu này?",
-        "unlockConfirm": "Các trận đấu đã chơi hoặc đang diễn ra vẫn bị đóng băng và giữ nguyên kết quả cùng thống kê. Bạn vẫn có thể đổi các trận đấu và liên kết khác, thêm trận đấu và xóa các trận đấu chưa chơi.",
-        "unlockConfirmButton": "Mở khóa",
-        "unlockedWarning": "Đã mở khóa chỉnh sửa: các trận đấu đã chơi và đang diễn ra bị đóng băng, mọi thứ khác có thể đổi mà không mất kết quả.",
+        "startedNotice": "Đã mở khóa chỉnh sửa: các trận đấu đã chơi và đang diễn ra bị đóng băng, mọi thứ khác có thể đổi mà không mất kết quả.",
         "swissContainersNotice": "Các bảng Swiss của giai đoạn này ({names}) được quản lý từ trang giải đấu, không phải trong trình chỉnh sửa này: một round Swiss được tạo động sau mỗi kết quả, không có đồ thị cố định để vẽ.",
         "templateFormat": "Thể thức",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "Một trận đấu không còn khớp với nhánh đấu đã lưu, hãy tải lại trang và thử lại.",
           "startedMatchChanged": "Không thể di chuyển một trận đấu đã chơi hoặc đang diễn ra, cũng như đổi best of của nó.",
           "startedMatchDeleted": "Không thể xóa một trận đấu đã chơi hoặc đang diễn ra.",
-          "startedEdgeChanged": "Không thể đổi các liên kết dẫn vào một trận đấu đã chơi hoặc đang diễn ra.",
           "entrantMismatch": "Một trong các đội tham gia được gán không thuộc giải đấu này, hãy tải lại trang và thử lại.",
           "bracketStarted": "Các trận đấu trong nhánh đấu này đã được chơi, không thể chỉnh sửa nữa.",
           "saveFailed": "Lưu thất bại, hãy tải lại trang và thử lại."

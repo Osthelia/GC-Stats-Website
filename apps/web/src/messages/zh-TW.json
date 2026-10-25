@@ -4041,12 +4041,7 @@
         "subtitle": "從模板生成對陣表，然後自由調整：拖拽連接獲勝方/失敗方到下一場比賽。",
         "backToTournament": "← 返回賽事",
         "legacyImportLink": "匯入歷史比賽 →",
-        "readOnlyNotice": "該階段已經開始，無法在此編輯對陣表，但仍可檢視。",
-        "unlockButton": "解鎖編輯",
-        "unlockTitle": "編輯這個已開始的對陣表？",
-        "unlockConfirm": "已結束或進行中的比賽會被凍結，並保留其結果和統計資料。你仍可修改其他比賽和連線、新增比賽，以及刪除尚未進行的比賽。",
-        "unlockConfirmButton": "解鎖",
-        "unlockedWarning": "編輯已解鎖：已結束和進行中的比賽被凍結，其餘內容可在不丟失結果的情況下修改。",
+        "startedNotice": "編輯已解鎖：已結束和進行中的比賽被凍結，其餘內容可在不丟失結果的情況下修改。",
         "swissContainersNotice": "該階段的瑞士輪小組（{names}）在賽事頁面管理，而非在此編輯器中：瑞士輪的每一輪都在結果出來後動態生成，沒有固定的圖結構可供繪製。",
         "templateFormat": "格式",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "有比賽與已儲存的對陣表不一致，請更新頁面後重試。",
           "startedMatchChanged": "已結束或進行中的比賽無法移動，也無法修改其賽制。",
           "startedMatchDeleted": "已結束或進行中的比賽無法刪除。",
-          "startedEdgeChanged": "通向已結束或進行中比賽的連線無法修改。",
           "entrantMismatch": "其中一個已分配的參賽方不屬於該賽事，請更新頁面後重試。",
           "bracketStarted": "此對陣圖中已有比賽進行，無法再編輯。",
           "saveFailed": "儲存失敗，請更新頁面後重試。"

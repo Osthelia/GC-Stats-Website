@@ -4041,12 +4041,7 @@
         "subtitle": "Générez un bracket depuis un modèle, puis ajustez-le librement : connectez les vainqueurs/perdants aux matchs suivants par glisser-déposer.",
         "backToTournament": "← Retour au tournoi",
         "legacyImportLink": "Importer des matchs historiques →",
-        "readOnlyNotice": "Ce stage a déjà démarré : le bracket n'est plus modifiable ici. Vous pouvez toujours le consulter.",
-        "unlockButton": "Déverrouiller l'édition",
-        "unlockTitle": "Modifier ce bracket déjà démarré ?",
-        "unlockConfirm": "Les matchs déjà joués ou en cours restent figés et gardent leurs résultats et stats. Vous pouvez toujours modifier les autres matchs et liens, ajouter des matchs et supprimer ceux pas encore joués.",
-        "unlockConfirmButton": "Déverrouiller",
-        "unlockedWarning": "Édition déverrouillée : les matchs joués ou en cours sont figés, le reste est modifiable sans perdre les résultats.",
+        "startedNotice": "Ce stage a démarré : les matchs joués ou en cours sont figés, le reste (matchs, liens) reste modifiable sans perdre les résultats.",
         "swissContainersNotice": "Les groupes Swiss de ce stage ({names}) se gèrent depuis la page du tournoi, pas dans cet éditeur : un round Swiss est généré dynamiquement à chaque résultat, il n'y a pas de graphe fixe à dessiner.",
         "templateFormat": "Format",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "Un match ne correspond plus au bracket enregistré, rechargez la page et réessayez.",
           "startedMatchChanged": "Un match joué ou en cours ne peut pas être déplacé ni voir son best of modifié.",
           "startedMatchDeleted": "Un match joué ou en cours ne peut pas être supprimé.",
-          "startedEdgeChanged": "Les liens qui alimentent un match joué ou en cours ne peuvent pas être modifiés.",
           "entrantMismatch": "Un des entrants assignés n'appartient pas à ce tournoi, rechargez la page et réessayez.",
           "bracketStarted": "Des matchs de ce bracket ont déjà été joués, il n'est plus modifiable.",
           "saveFailed": "L'enregistrement a échoué, rechargez la page et réessayez."

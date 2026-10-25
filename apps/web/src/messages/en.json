@@ -4041,12 +4041,7 @@
         "subtitle": "Generate a bracket from a template, then adjust it freely: drag-connect winners/losers to the next matches.",
         "backToTournament": "← Back to tournament",
         "legacyImportLink": "Import legacy matches →",
-        "readOnlyNotice": "This stage has already started: the bracket can no longer be edited here. You can still view it.",
-        "unlockButton": "Unlock editing",
-        "unlockTitle": "Edit this started bracket?",
-        "unlockConfirm": "Matches already played or live stay frozen and keep their results and stats. You can still change the other matches and links, add matches and delete matches not played yet.",
-        "unlockConfirmButton": "Unlock",
-        "unlockedWarning": "Editing unlocked: played and live matches are frozen, everything else can be changed without losing results.",
+        "startedNotice": "This stage has started: played and live matches are frozen, everything else (matches, links) can be changed without losing results.",
         "swissContainersNotice": "This stage's Swiss groups ({names}) are managed from the tournament page, not in this editor: a Swiss round is generated dynamically after each result, there's no fixed graph to draw.",
         "templateFormat": "Format",
         "format": {
@@ -4109,7 +4104,6 @@
           "matchMismatch": "A match no longer matches the saved bracket, reload the page and try again.",
           "startedMatchChanged": "A played or live match cannot be moved or have its best of changed.",
           "startedMatchDeleted": "A played or live match cannot be deleted.",
-          "startedEdgeChanged": "The links feeding a played or live match cannot be changed.",
           "entrantMismatch": "One of the assigned entrants does not belong to this tournament, reload the page and try again.",
           "bracketStarted": "Matches in this bracket have already been played, it can no longer be edited.",
           "saveFailed": "Saving failed, reload the page and try again."
