@@ -12,7 +12,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, pgEnum, bigserial, bigint, integer, text, varchar, jsonb, boolean, date, timestamp, numeric, char, unique, index } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, bigserial, bigint, integer, text, varchar, jsonb, boolean, date, timestamp, numeric, char, unique, index, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { teams, people, organizations } from "./people";
 
 export const pointTypes = pgTable("point_types", {
@@ -66,7 +66,7 @@ export const tournamentComponents = pgTable("tournament_components", {
 });
 
 // --- Bracket engine enums (shared vocabulary with TournamentPlatform) ----
-export const containerTypeEnum = pgEnum("container_type", ["bracket", "group"]);
+export const containerTypeEnum = pgEnum("container_type", ["bracket", "group", "set"]);
 // No "ready" state (unlike the shared bracket-engine's generic MatchStatus vocabulary):
 // V1's matches.status only ever had upcoming/live/finished, never a distinct
 // pre-live gate once both entrants were known — GC-Stats keeps that same
@@ -102,6 +102,8 @@ export const stageContainers = pgTable("stage_containers", {
   stageId: bigint("stage_id", { mode: "number" }).notNull().references(() => stages.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   containerType: containerTypeEnum("container_type").notNull(),
+  // Set (container_type 'set') holding this container, null for a container at the root of its stage.
+  parentId: bigint("parent_id", { mode: "number" }).references((): AnyPgColumn => stageContainers.id, { onDelete: "cascade" }),
   config: jsonb("config").notNull().default({}),
   status: stageStatusEnum("status").notNull().default("pending"),
   // Position within its stage, set by the admin (ties broken by id).
@@ -110,6 +112,7 @@ export const stageContainers = pgTable("stage_containers", {
   liquipediaBracketTemplate: text("liquipedia_bracket_template"),
 }, (t) => [
   index("stage_containers_stage_id_idx").on(t.stageId),
+  index("stage_containers_parent_id_idx").on(t.parentId),
 ]);
 
 // --- Entrants -------------------------------------------------------------

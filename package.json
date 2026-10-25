@@ -37,6 +37,6 @@
     }
   },
   "dependencies": {
-    "@osthelia/bracket-engine": "^1.0.0"
+    "@osthelia/bracket-engine": "^1.1.0"
   }
 }

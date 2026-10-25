@@ -19,6 +19,7 @@ import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression"
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
+import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -26,6 +27,7 @@ async function requireTournamentsActor(): Promise<void> {
 
 export type ContainerField =
   | "name"
+  | "parentId"
   | "status"
   | "containerType"
   | "qualifyAtWins"
@@ -51,8 +53,8 @@ export type PointsInput = {
 };
 
 export type ContainerInput =
-  | { name: string; status: StageStatus; containerType: "bracket" }
-  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
+  | { name: string; status: StageStatus; containerType: "bracket"; parentId: number | null }
+  | ({ name: string; status: StageStatus; containerType: "group"; parentId: number | null; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
 
 const POINTS_FIELDS: (keyof PointsInput)[] = ["matchWinPoints", "mapWinPoints", "roundWinPoints", "matchForfeitWinPoints", "mapForfeitWinPoints"];
 
@@ -107,6 +109,84 @@ function buildConfig(input: ContainerInput): Record<string, unknown> {
   };
 }
 
+/** Rows of a stage in the shape the set tree helpers read. */
+async function loadTreeRows(stageId: number): Promise<(TreeRow<number> & { name: string })[]> {
+  const rows = await db
+    .select({ id: stageContainers.id, parentId: stageContainers.parentId, containerType: stageContainers.containerType, status: stageContainers.status, name: stageContainers.name })
+    .from(stageContainers)
+    .where(eq(stageContainers.stageId, stageId))
+    .orderBy(...containerOrderBy);
+  return rows.map((r) => ({ id: r.id, parentId: r.parentId, isSet: r.containerType === "set", status: r.status, name: r.name }));
+}
+
+function validateSetName(name: string): ContainerFieldErrors {
+  const trimmed = name.trim();
+  if (!trimmed) return { name: "required" };
+  if (trimmed.length > 255) return { name: "tooLong" };
+  return {};
+}
+
+/** A set groups containers under one name. `parentId` nests it in another set of the same stage. */
+export async function createContainerSet(stageId: number, input: { name: string; parentId: number | null }): Promise<ContainerResult> {
+  await requireTournamentsActor();
+
+  const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
+  if (!stage) return { ok: false, fieldErrors: { name: "stageNotFound" } };
+
+  const fieldErrors = validateSetName(input.name);
+  if (input.parentId !== null) {
+    const parent = (await loadTreeRows(stageId)).find((r) => r.id === input.parentId);
+    if (!parent || !parent.isSet) fieldErrors.parentId = "invalid";
+  }
+  if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
+
+  const [created] = await db
+    .insert(stageContainers)
+    .values({ stageId, name: input.name.trim(), status: "pending", containerType: "set", parentId: input.parentId, config: {}, displayOrder: nextContainerDisplayOrder(stageId) })
+    .returning({ id: stageContainers.id });
+  if (!created) throw new Error("Insert returned no row");
+  return { ok: true, id: created.id };
+}
+
+export async function renameContainerSet(id: number, stageId: number, input: { name: string }): Promise<ContainerResult> {
+  await requireTournamentsActor();
+
+  const [existing] = await db
+    .select({ id: stageContainers.id })
+    .from(stageContainers)
+    .where(and(eq(stageContainers.id, id), eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "set")))
+    .limit(1);
+  if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
+
+  const fieldErrors = validateSetName(input.name);
+  if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
+
+  await db.update(stageContainers).set({ name: input.name.trim() }).where(eq(stageContainers.id, id));
+  return { ok: true, id };
+}
+
+export type MoveToSetResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "parentInvalid" };
+
+/** Moves a container into a set (or back to the root of its stage with a null parent), last among its new siblings unless an index is given. */
+export async function moveContainerToSet(id: number, stageId: number, parentId: number | null, index?: number): Promise<MoveToSetResult> {
+  await requireTournamentsActor();
+
+  if (!Number.isInteger(id) || !Number.isInteger(stageId) || (parentId !== null && !Number.isInteger(parentId))) return { ok: false, error: "invalid" };
+  if (index !== undefined && (!Number.isInteger(index) || index < 0)) return { ok: false, error: "invalid" };
+
+  const rows = await loadTreeRows(stageId);
+  const check = checkMove(rows, id, parentId);
+  if (check !== "ok") return { ok: false, error: check };
+
+  const ordered = placeAmongSiblings(rows, id, parentId, index);
+  await db.transaction(async (tx) => {
+    for (const [position, containerId] of ordered.entries()) {
+      await tx.update(stageContainers).set({ displayOrder: position + 1, ...(containerId === id ? { parentId } : {}) }).where(eq(stageContainers.id, containerId));
+    }
+  });
+  return { ok: true };
+}
+
 export async function createContainer(stageId: number, input: ContainerInput): Promise<ContainerResult> {
   await requireTournamentsActor();
 
@@ -114,11 +194,15 @@ export async function createContainer(stageId: number, input: ContainerInput): P
   if (!stage) return { ok: false, fieldErrors: { name: "stageNotFound" } };
 
   const fieldErrors = validateContainer(input);
+  if (input.parentId !== null) {
+    const parent = (await loadTreeRows(stageId)).find((r) => r.id === input.parentId);
+    if (!parent || !parent.isSet) fieldErrors.parentId = "invalid";
+  }
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
+    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, parentId: input.parentId, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -175,49 +259,24 @@ export async function deleteContainer(id: number, stageId: number, force: boolea
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
 
-  const [existing] = await db.select({ id: stageContainers.id }).from(stageContainers).where(and(eq(stageContainers.id, id), eq(stageContainers.stageId, stageId))).limit(1);
-  if (!existing) return { ok: false, error: "notFound" };
+  // A set goes with everything nested in it
+  const ids = subtreeOf(await loadTreeRows(stageId), id).map((r) => r.id);
+  if (ids.length === 0) return { ok: false, error: "notFound" };
 
   if (!force) {
     const [played] = await db
       .select({ id: matches.id })
       .from(matches)
-      .where(and(eq(matches.containerId, id), inArray(matches.status, ["live", "completed"])))
+      .where(and(inArray(matches.containerId, ids), inArray(matches.status, ["live", "completed"])))
       .limit(1);
     if (played) return { ok: false, error: "hasPlayedMatches" };
   }
 
   await db.transaction(async (tx) => {
     // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
-    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(eq(matches.containerId, id));
+    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(inArray(matches.containerId, ids));
     await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
-  });
-  return { ok: true };
-}
-
-export type MoveContainerResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "cannotMove" };
-
-/** Swaps a container with its neighbour, then renumbers the whole stage 1..n. */
-export async function moveContainer(id: number, stageId: number, direction: "up" | "down"): Promise<MoveContainerResult> {
-  await requireTournamentsActor();
-
-  if (!Number.isInteger(id) || !Number.isInteger(stageId) || (direction !== "up" && direction !== "down")) return { ok: false, error: "invalid" };
-
-  const siblings = await db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy);
-  const index = siblings.findIndex((c) => c.id === id);
-  if (index === -1) return { ok: false, error: "notFound" };
-
-  const target = direction === "up" ? index - 1 : index + 1;
-  if (target < 0 || target >= siblings.length) return { ok: false, error: "cannotMove" };
-
-  const ordered = siblings.map((c) => c.id);
-  [ordered[index], ordered[target]] = [ordered[target]!, ordered[index]!];
-
-  await db.transaction(async (tx) => {
-    for (const [position, containerId] of ordered.entries()) {
-      await tx.update(stageContainers).set({ displayOrder: position + 1 }).where(eq(stageContainers.id, containerId));
-    }
   });
   return { ok: true };
 }

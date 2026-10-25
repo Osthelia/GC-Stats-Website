@@ -234,7 +234,8 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
     return teamId !== null ? teamLogos.get(teamId) : undefined;
   };
   const containers: PublicStageContainer[] = await Promise.all(
-    stage.containers.map(async (container) => {
+    // A set only groups containers, it has nothing to show by itself
+    stage.containers.filter((c) => c.containerType !== "set").map(async (container) => {
       const isGroup = container.containerType === "group";
 
       const containerMatches = (editorData?.matches ?? []).filter((m) => m.containerId === container.id);

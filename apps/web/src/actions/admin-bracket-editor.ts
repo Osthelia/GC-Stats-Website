@@ -75,8 +75,8 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
   // Build the containers this format needs, get their real ids, then hand
   // the id map to the generator/repository — same shared function whether
   // this graph comes from a template or (eventually) the visual editor.
-  async function makeContainer(name: string, containerType: "bracket" | "group" = "bracket", config: Record<string, unknown> = {}) {
-    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, config, displayOrder: nextContainerDisplayOrder(input.stageId) }).returning({ id: stageContainers.id });
+  async function makeContainer(name: string, containerType: "bracket" | "group" | "set" = "bracket", config: Record<string, unknown> = {}, parentId: number | null = null) {
+    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, parentId, config, displayOrder: nextContainerDisplayOrder(input.stageId) }).returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;
   }
@@ -96,19 +96,21 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
     // (their auto-incremented id), so issuing these concurrently risked
     // Lower getting a lower id than Upper on some execution interleavings
     // — a real bug hit in this exact form (2026-08-31), not hypothetical.
-    const upperId = await makeContainer("Upper Bracket");
-    const lowerId = await makeContainer("Lower Bracket");
-    const gfId = await makeContainer("Grand Final");
+    const setId = await makeContainer("Double Elimination", "set");
+    const upperId = await makeContainer("Upper Bracket", "bracket", {}, setId);
+    const lowerId = await makeContainer("Lower Bracket", "bracket", {}, setId);
+    const gfId = await makeContainer("Grand Final", "bracket", {}, setId);
     containerIdMap = { upper: upperId, lower: lowerId, gf: gfId };
     tierByContainerId = { upper: "upper", lower: "lower" };
     graph = generateDoubleElimination({ upperContainerId: "upper", lowerContainerId: "lower", grandFinalContainerId: "gf", entrantCount, bestOf: input.bestOf, grandFinalBestOf: input.grandFinalBestOf });
   } else if (input.format === "triple_elimination") {
     // Sequential — same reasoning as double elimination above, this is the
     // format where the bug actually surfaced (Middle/Lower swapped).
-    const upperId = await makeContainer("Upper Bracket");
-    const middleId = await makeContainer("Middle Bracket");
-    const lowerId = await makeContainer("Lower Bracket");
-    const gfId = await makeContainer("Finals");
+    const setId = await makeContainer("Triple Elimination", "set");
+    const upperId = await makeContainer("Upper Bracket", "bracket", {}, setId);
+    const middleId = await makeContainer("Middle Bracket", "bracket", {}, setId);
+    const lowerId = await makeContainer("Lower Bracket", "bracket", {}, setId);
+    const gfId = await makeContainer("Finals", "bracket", {}, setId);
     containerIdMap = { upper: upperId, middle: middleId, lower: lowerId, gf: gfId };
     tierByContainerId = { upper: "upper", middle: "middle", lower: "lower" };
     graph = generateTripleElimination({

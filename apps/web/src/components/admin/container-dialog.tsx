@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { StageStatusSelect } from "@/components/admin/stage-status-select";
-import { createContainer, updateContainer, type ContainerFieldErrors, type ContainerInput, type PointsInput } from "@/actions/admin-containers";
+import { createContainer, updateContainer, moveContainerToSet, type ContainerFieldErrors, type ContainerInput, type PointsInput } from "@/actions/admin-containers";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
@@ -26,8 +26,14 @@ import type { StageStatus } from "@/lib/stage-status";
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
 
+// Select value standing for "no set", a container at the root of its stage
+const ROOT_VALUE = "root";
+
+export type SetOption = { id: number; label: string };
+
 type FormState = {
   name: string;
+  parentId: string;
   status: StageStatus;
   containerType: ContainerType;
   groupFormat: GroupFormat;
@@ -41,9 +47,10 @@ type FormState = {
   mapForfeitWinPoints: string;
 };
 
-function emptyState(): FormState {
+function emptyState(parentId: number | null = null): FormState {
   return {
     name: "",
+    parentId: parentId === null ? ROOT_VALUE : String(parentId),
     status: "pending",
     containerType: "bracket",
     groupFormat: "swiss",
@@ -61,8 +68,9 @@ function emptyState(): FormState {
 function stateFromContainer(container: AdminContainerRow): FormState {
   const base = emptyState();
   base.name = container.name;
+  base.parentId = container.parentId === null ? ROOT_VALUE : String(container.parentId);
   base.status = container.status;
-  base.containerType = container.containerType;
+  base.containerType = container.containerType === "group" ? "group" : "bracket";
   if (container.containerType !== "group") return base;
 
   const config = parseGroupConfig(container.config);
@@ -92,11 +100,17 @@ const POINTS_FIELDS: { key: keyof FormState & keyof PointsInput; labelKey: strin
 export function ContainerDialog({
   stageId,
   container,
+  sets = [],
+  defaultParentId = null,
   open,
   onOpenChange,
 }: {
   stageId: number;
   container?: AdminContainerRow | null;
+  /** Sets of the stage a container can be put in. */
+  sets?: SetOption[];
+  /** Set preselected when adding a container. */
+  defaultParentId?: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -108,10 +122,10 @@ export function ContainerDialog({
 
   useEffect(() => {
     if (open) {
-      setForm(container ? stateFromContainer(container) : emptyState());
+      setForm(container ? stateFromContainer(container) : emptyState(defaultParentId));
       setFieldErrors({});
     }
-  }, [open, container]);
+  }, [open, container, defaultParentId]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -124,13 +138,15 @@ export function ContainerDialog({
       matchForfeitWinPoints: form.matchForfeitWinPoints.trim() === "" ? null : Number(form.matchForfeitWinPoints),
       mapForfeitWinPoints: form.mapForfeitWinPoints.trim() === "" ? null : Number(form.mapForfeitWinPoints),
     };
+    const parentId = form.parentId === ROOT_VALUE ? null : Number(form.parentId);
     const input: ContainerInput =
       form.containerType === "bracket"
-        ? { name: form.name, status: form.status, containerType: "bracket" }
+        ? { name: form.name, status: form.status, containerType: "bracket", parentId }
         : {
             name: form.name,
             status: form.status,
             containerType: "group",
+            parentId,
             groupFormat: form.groupFormat,
             qualifyAtWins: form.groupFormat === "swiss" && form.qualifyAtWins.trim() !== "" ? Number(form.qualifyAtWins) : null,
             eliminateAtLosses: form.groupFormat === "swiss" && form.eliminateAtLosses.trim() !== "" ? Number(form.eliminateAtLosses) : null,
@@ -142,6 +158,13 @@ export function ContainerDialog({
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
+      }
+      if (container && parentId !== container.parentId) {
+        const moved = await moveContainerToSet(container.id, stageId, parentId);
+        if (!moved.ok) {
+          setFieldErrors({ parentId: moved.error === "parentInvalid" ? "parentInvalid" : "invalid" });
+          return;
+        }
       }
       onOpenChange(false);
       router.refresh();
@@ -163,6 +186,28 @@ export function ContainerDialog({
           <FormField label={t("fieldContainerName")} htmlFor="ctr-name" required error={err("name")}>
             <Input id="ctr-name" value={form.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!fieldErrors.name} />
           </FormField>
+
+          {sets.length > 0 && (
+            <FormField label={t("fieldParentSet")} htmlFor="ctr-parent" error={err("parentId")} hint={t("fieldParentSetHint")}>
+              <Select
+                items={{ [ROOT_VALUE]: t("parentSetNone"), ...Object.fromEntries(sets.map((s) => [String(s.id), s.label])) }}
+                value={form.parentId}
+                onValueChange={(v) => set("parentId", String(v))}
+              >
+                <SelectTrigger id="ctr-parent" className="w-full" aria-invalid={!!fieldErrors.parentId}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ROOT_VALUE}>{t("parentSetNone")}</SelectItem>
+                  {sets.map((s) => (
+                    <SelectItem key={s.id} value={String(s.id)}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormField>
+          )}
 
           <FormField label={t("fieldStatus")} htmlFor="ctr-status" required error={err("status")} hint={t("fieldStatusHint")}>
             <StageStatusSelect id="ctr-status" value={form.status} onChange={(status) => set("status", status)} invalid={!!fieldErrors.status} />

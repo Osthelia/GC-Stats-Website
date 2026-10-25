@@ -86,7 +86,7 @@ export const getStageEditorData = cache(async (stageId: number): Promise<StageEd
     stageName: stage.name,
     stageStatus: stage.status,
     tournamentId: stage.tournamentId,
-    containers: containerRows.map((c) => ({ id: c.id, name: c.name, containerType: c.containerType, config: c.config, status: c.status })),
+    containers: containerRows.flatMap((c) => (c.containerType === "set" ? [] : [{ id: c.id, name: c.name, containerType: c.containerType, config: c.config, status: c.status }])),
     matches: matchRows.map((m) => ({
       id: m.id,
       containerId: m.containerId,

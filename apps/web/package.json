@@ -19,11 +19,12 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
     "@base-ui/react": "^1.8.0",
+    "@dnd-kit/core": "^6.3.1",
     "@fullcalendar/react": "^7.1.2",
-    "@osthelia/bracket-engine": "*",
     "@gc-stats/db": "*",
     "@gc-stats/map-stats-engine": "*",
     "@gc-stats/storage": "*",
+    "@osthelia/bracket-engine": "*",
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.2",
     "@tiptap/extension-color": "^3.31.4",

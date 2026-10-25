@@ -32,16 +32,18 @@ export interface BracketContainerGroup<T> {
   containers: T[];
 }
 
-export function groupBracketContainers<T extends { name: string }>(containers: T[]): BracketContainerGroup<T>[] {
-  const prefixOf = (name: string) => {
-    const segments = name.split(" - ");
+/** A container inside a set is grouped by the set path; the name prefix only applies to containers without one (tournaments made before sets). */
+export function groupBracketContainers<T extends { name: string; setPath?: string | null }>(containers: T[]): BracketContainerGroup<T>[] {
+  const prefixOf = (c: T) => {
+    if (c.setPath) return c.setPath;
+    const segments = c.name.split(" - ");
     return segments.length > 1 ? segments.slice(0, -1).join(" - ") : "";
   };
 
   const order: string[] = [];
   const buckets = new Map<string, T[]>();
   for (const c of containers) {
-    const prefix = prefixOf(c.name);
+    const prefix = prefixOf(c);
     if (!buckets.has(prefix)) {
       buckets.set(prefix, []);
       order.push(prefix);
