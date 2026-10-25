@@ -12,7 +12,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { SwissTiebreaker } from "@gc-stats/bracket-engine";
+import type { SwissTiebreaker } from "@osthelia/bracket-engine";
 
 /**
  * Configurable points-based tiebreaker (2026-08-31, explicit user spec):

@@ -26,7 +26,7 @@ import {
   generateGslGroup,
   validateGraph,
   type BracketGraph,
-} from "@gc-stats/bracket-engine";
+} from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { requireTournamentsActor, type BracketFormat } from "./admin-bracket-editor";

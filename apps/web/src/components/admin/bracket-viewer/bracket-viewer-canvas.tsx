@@ -13,7 +13,7 @@ import { useMemo, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, type Node, type Edge } from "@xyflow/react";
 import { BracketViewerMatchNode, type BracketViewerMatchNodeData } from "@/components/admin/bracket-viewer/bracket-viewer-match-node";
 import { BracketViewerElbowEdge } from "@/components/admin/bracket-viewer/bracket-viewer-elbow-edge";
-import { layoutBracket } from "@/lib/bracket-layout";
+import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import type { PublicBracketMatch, PublicStageContainer } from "@/lib/tournament-bracket-data";
 

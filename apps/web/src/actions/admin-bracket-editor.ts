@@ -27,7 +27,7 @@ import {
   pairRound,
   type BracketGraph,
   type SwissEntrant,
-} from "@gc-stats/bracket-engine";
+} from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
@@ -92,7 +92,7 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
     graph = generateSingleElimination({ containerId: "bracket", entrantCount, bestOf: input.bestOf });
   } else if (input.format === "double_elimination") {
     // Sequential, not Promise.all: the bracket layout algorithm
-    // (lib/bracket-layout.ts) orders lanes by container creation order
+    // (layoutBracket of @osthelia/bracket-engine) orders lanes by container creation order
     // (their auto-incremented id), so issuing these concurrently risked
     // Lower getting a lower id than Upper on some execution interleavings
     // — a real bug hit in this exact form (2026-08-31), not hypothetical.

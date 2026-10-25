@@ -2,7 +2,7 @@
  * GC-Stats - bracket-editor-layout
  *
  * Grid layout for the admin bracket editor canvas only, distinct from
- * lib/bracket-layout.ts (public read-only display + initial editor load),
+ * layoutBracket of @osthelia/bracket-engine (public read-only display + initial editor load),
  * which merges a grand-final container's lane into its upper bracket's lane
  * using global topological depth as the column. That trick made the editor
  * ambiguous to drag in: a node's x position didn't correspond 1:1 to its own

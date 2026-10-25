@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { ReactFlow, ReactFlowProvider, Background, Controls, type Node, type Edge } from "@xyflow/react";
 import { PickemBracketMatchNode, PICKEM_BRACKET_MATCH_NODE_WIDTH, PICKEM_BRACKET_MATCH_NODE_HEIGHT, type PickemBracketMatchNodeData } from "@/components/pickem/pickem-bracket-match-node";
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
-import { layoutBracket } from "@/lib/bracket-layout";
+import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import { GOLD, RED } from "@/lib/theme-colors";
 import type { VirtualMatch } from "@/lib/pickem/bracket-fill";

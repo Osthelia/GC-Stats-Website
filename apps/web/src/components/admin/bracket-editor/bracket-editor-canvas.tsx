@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import type { BracketGraph, MatchNode as EngineMatchNode } from "@gc-stats/bracket-engine";
+import type { BracketGraph, MatchNode as EngineMatchNode } from "@osthelia/bracket-engine";
 import { MatchNode, type MatchNodeData } from "@/components/admin/bracket-editor/match-node";
 import { RoundHeaderNode, type RoundHeaderNodeData } from "@/components/admin/bracket-editor/round-header-node";
 import { GenerateTemplateForm } from "@/components/admin/bracket-editor/generate-template-form";

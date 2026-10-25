@@ -35,5 +35,8 @@
     "@node-minify/core": {
       "glob": "13.0.6"
     }
+  },
+  "dependencies": {
+    "@osthelia/bracket-engine": "^1.0.0"
   }
 }

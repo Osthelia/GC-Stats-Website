@@ -111,7 +111,7 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
   ]);
   if (stageRows.length === 0) return [];
 
-  // Array order is also the bracket layout's lane tie-break (lib/bracket-layout.ts).
+  // Array order is also the bracket layout's lane tie-break (layoutBracket of @osthelia/bracket-engine).
   const countByContainer = new Map(matchCounts.map((r) => [r.containerId, r.count]));
   const playedByContainer = new Map(matchCounts.map((r) => [r.containerId, r.played]));
 

@@ -11,7 +11,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { entrants, groupEntries, matches } from "@gc-stats/db";
-import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@gc-stats/bracket-engine";
+import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
 

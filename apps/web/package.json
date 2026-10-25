@@ -20,7 +20,7 @@
     "@auth/drizzle-adapter": "^1.11.3",
     "@base-ui/react": "^1.8.0",
     "@fullcalendar/react": "^7.1.2",
-    "@gc-stats/bracket-engine": "*",
+    "@osthelia/bracket-engine": "*",
     "@gc-stats/db": "*",
     "@gc-stats/map-stats-engine": "*",
     "@gc-stats/storage": "*",

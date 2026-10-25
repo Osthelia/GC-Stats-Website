@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { BracketGraph, MatchNode } from "@gc-stats/bracket-engine";
+import type { BracketGraph, MatchNode } from "@osthelia/bracket-engine";
 
 // Configurable match-label naming for generator-built elimination brackets
 // — kept out of the pure engine on purpose (labels are presentation, the

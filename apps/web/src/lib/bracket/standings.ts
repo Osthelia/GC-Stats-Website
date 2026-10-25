@@ -11,7 +11,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { groupEntries, matches, maps as mapRows } from "@gc-stats/db";
-import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
+import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import { parseGroupConfig } from "./config-types";
 import { computeContainerPoints } from "./points";

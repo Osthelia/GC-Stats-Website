@@ -32,7 +32,7 @@ import {
   type BracketQualifierNodeData,
 } from "@/components/tournament/bracket-qualifier-node";
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
-import { layoutBracket } from "@/lib/bracket-layout";
+import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import { GOLD, RED } from "@/lib/theme-colors";
 import type {
