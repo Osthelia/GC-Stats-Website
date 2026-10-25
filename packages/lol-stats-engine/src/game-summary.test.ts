@@ -1,0 +1,56 @@
+/**
+ * GC-Stats — game-summary.test module
+ *
+ * Unit tests for buildGameSummary and roleOf against a real exported LoL game
+ * (Match-V5 match + timeline, one game of a best-of-5).
+ *
+ * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+import { buildGameSummary, roleOf } from "./game-summary";
+import type { RiotMatchDto } from "./types";
+
+const fixturePath = fileURLToPath(new URL("./__fixtures__/lol-game-example.json", import.meta.url));
+const match: RiotMatchDto = JSON.parse(readFileSync(fixturePath, "utf-8")).match;
+
+const personIdByPuuid = new Map(match.info.participants.map((p) => [p.puuid, p.participantId]));
+const summary = buildGameSummary(match, {
+  gameId: 1,
+  order: 1,
+  entrantIdBySide: { blue: 10, red: 20 },
+  personIdByPuuid,
+  championNameById: new Map(),
+});
+
+describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () => {
+  it("builds the game row, the winner entrant and one player and team row per side", () => {
+    expect(summary.game).toMatchObject({ order: 1, apiMatchId: "LOLTMNT01_296476", durationSeconds: 2928, winnerEntrantId: 20 });
+    expect(summary.players).toHaveLength(10);
+    expect(summary.teams).toHaveLength(2);
+    expect(summary.teams.reduce((sum, t) => sum + t.kills, 0)).toBe(summary.players.reduce((sum, p) => sum + p.kills, 0));
+  });
+
+  it("writes a pick for every participant and a ban with its pick turn", () => {
+    expect(summary.draft.filter((d) => d.type === "pick")).toHaveLength(10);
+    expect(summary.draft.filter((d) => d.type === "ban").every((b) => b.order !== null)).toBe(true);
+  });
+});
+
+describe("roleOf", () => {
+  it("accepts the five lanes", () => {
+    for (const lane of ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]) {
+      expect(roleOf(lane)).toBe(lane);
+    }
+  });
+
+  it("drops empty and non-lane positions, so they never pair with an opponent", () => {
+    expect(roleOf("")).toBeNull();
+    expect(roleOf("AFK")).toBeNull();
+    expect(roleOf("Invalid")).toBeNull();
+  });
+});
