@@ -132,8 +132,9 @@ export type PublicFinalStandingRow = {
   points: number | null;
   cashPrizeAmount: string | null;
   cashPrizeCurrency: string | null;
-  entrantId: number;
-  displayName: string;
+  /** Null while the placement has no resolved team (displayName is then null too). */
+  entrantId: number | null;
+  displayName: string | null;
   shortName: string | null;
   teamHref: string | null;
   logoUrl: string | null;
@@ -292,7 +293,7 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
           return {
             ...r,
             displayName,
-            teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
+            teamHref: teamId !== null && displayName !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
             logoUrl: logos?.dark ?? null,
             logoUrlLight: logos?.light ?? null,
           };
@@ -311,14 +312,14 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
   );
 
   const finalStandingsRaw = await finalStandingsPromise;
-  const finalStandingTeamIds = [...new Set(finalStandingsRaw.map((r) => entrantTeamIdById.get(r.entrantId) ?? null).filter((id): id is number => id !== null))];
+  const finalStandingTeamIds = [...new Set(finalStandingsRaw.map((r) => (r.entrantId !== null ? (entrantTeamIdById.get(r.entrantId) ?? null) : null)).filter((id): id is number => id !== null))];
   const finalStandingTeamRows = finalStandingTeamIds.length
     ? await db.select({ id: teams.id, shortName: teams.shortName }).from(teams).where(inArray(teams.id, finalStandingTeamIds))
     : [];
   const shortNameByTeamId = new Map(finalStandingTeamRows.map((t) => [t.id, t.shortName]));
   const finalStandings: PublicFinalStandingRow[] = finalStandingsRaw.map((r) => {
-    const displayName = entrantNameById.get(r.entrantId) ?? `#${r.entrantId}`;
-    const teamId = entrantTeamIdById.get(r.entrantId) ?? null;
+    const displayName = r.entrantId !== null ? (entrantNameById.get(r.entrantId) ?? `#${r.entrantId}`) : null;
+    const teamId = r.entrantId !== null ? (entrantTeamIdById.get(r.entrantId) ?? null) : null;
     const logos = teamId !== null ? teamLogos.get(teamId) : null;
     return {
       qualificationId: r.qualificationId,
@@ -330,7 +331,7 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
       entrantId: r.entrantId,
       displayName,
       shortName: teamId !== null ? (shortNameByTeamId.get(teamId) ?? null) : null,
-      teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
+      teamHref: teamId !== null && displayName !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
       logoUrl: logos?.dark ?? null,
       logoUrlLight: logos?.light ?? null,
     };

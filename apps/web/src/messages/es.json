@@ -3985,7 +3985,8 @@
         "columnTeam": "Equipo",
         "columnPoints": "Puntos",
         "columnCashPrize": "Premio en metálico",
-        "noValue": "Ninguno"
+        "noValue": "Ninguno",
+        "tbd": "Por determinar"
       },
       "bracketViewerPage": {
         "title": "Bracket",

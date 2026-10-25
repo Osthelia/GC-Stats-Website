@@ -3977,7 +3977,8 @@
         "columnTeam": "Drużyna",
         "columnPoints": "Punkty",
         "columnCashPrize": "Nagroda pieniężna",
-        "noValue": "Brak"
+        "noValue": "Brak",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "Drabinka",

@@ -3977,7 +3977,8 @@
         "columnTeam": "الفريق",
         "columnPoints": "النقاط",
         "columnCashPrize": "الجائزة المالية",
-        "noValue": "لا شيء"
+        "noValue": "لا شيء",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "الشجرة",

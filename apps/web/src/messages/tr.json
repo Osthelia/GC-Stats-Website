@@ -3977,7 +3977,8 @@
         "columnTeam": "Takım",
         "columnPoints": "Puan",
         "columnCashPrize": "Para ödülü",
-        "noValue": "Yok"
+        "noValue": "Yok",
+        "tbd": "Belirlenecek"
       },
       "bracketViewerPage": {
         "title": "Braket",

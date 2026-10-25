@@ -37,11 +37,11 @@ export async function BracketViewerFinalStandings({ tournamentId, rows }: { tour
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.qualificationId + ":" + row.entrantId}>
+              <TableRow key={row.qualificationId + ":" + (row.entrantId ?? "tbd")}>
                 <TableCell className="text-sm font-medium">
                   {row.placement} · {row.placementLabel}
                 </TableCell>
-                <TableCell className="text-sm">{row.displayName}</TableCell>
+                <TableCell className={`text-sm ${row.displayName === null ? "text-muted-foreground" : ""}`}>{row.displayName ?? t("tbd")}</TableCell>
                 <TableCell className="text-right text-sm text-muted-foreground">{row.points ?? t("noValue")}</TableCell>
                 <TableCell className="text-right text-sm text-muted-foreground">
                   {row.cashPrizeAmount !== null && row.cashPrizeCurrency ? `${row.cashPrizeAmount} ${row.cashPrizeCurrency}` : t("noValue")}

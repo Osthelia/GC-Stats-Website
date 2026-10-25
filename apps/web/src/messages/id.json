@@ -3985,7 +3985,8 @@
         "columnTeam": "Tim",
         "columnPoints": "Poin",
         "columnCashPrize": "Hadiah uang",
-        "noValue": "Tidak ada"
+        "noValue": "Tidak ada",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "Bracket",

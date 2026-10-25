@@ -3977,7 +3977,8 @@
         "columnTeam": "ทีม",
         "columnPoints": "แต้ม",
         "columnCashPrize": "เงินรางวัล",
-        "noValue": "ไม่มี"
+        "noValue": "ไม่มี",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "สายการแข่งขัน",

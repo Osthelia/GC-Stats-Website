@@ -3985,7 +3985,8 @@
         "columnTeam": "Team",
         "columnPoints": "Mga puntos",
         "columnCashPrize": "Cash prize",
-        "noValue": "Wala"
+        "noValue": "Wala",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "Bracket",

@@ -3985,7 +3985,8 @@
         "columnTeam": "戰隊",
         "columnPoints": "積分",
         "columnCashPrize": "獎金",
-        "noValue": "無"
+        "noValue": "無",
+        "tbd": "待定"
       },
       "bracketViewerPage": {
         "title": "對陣表",

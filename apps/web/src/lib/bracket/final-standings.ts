@@ -15,7 +15,8 @@ import type { Tx } from "./repository";
 
 export type StageFinalStandingRow = {
   qualificationId: number;
-  entrantId: number;
+  /** Null while no team has been resolved to this placement yet. */
+  entrantId: number | null;
   rank: number | null;
   placement: number | null;
   placementLabel: string;
@@ -26,7 +27,7 @@ export type StageFinalStandingRow = {
 
 /**
  * The final result of a stage: one row per entrant that a `destinationType
- * = 'placement'` rule resolved to (grand final winner, bronze match loser,
+ * = 'placement'` rule resolved to (or one row with a null entrant while the rule has no result yet) (grand final winner, bronze match loser,
  * top-N-of-a-group tier, ...) — mirrors V1's `leaderboard.blade.php`, but
  * reads already-persisted `qualification_results` instead of recomputing
  * standings, since resolution already ran at match-completion time
@@ -50,19 +51,26 @@ export async function getStageFinalStandings(tx: Tx, stageId: number): Promise<S
   const ruleById = new Map(rules.map((r) => [r.id, r]));
 
   const rows: StageFinalStandingRow[] = [];
+  const resolvedRuleIds = new Set<number>();
+  const toRow = (rule: (typeof rules)[number], entrantId: number | null, rank: number | null): StageFinalStandingRow => ({
+    qualificationId: rule.id,
+    entrantId,
+    rank,
+    placement: rule.placement,
+    placementLabel: rule.placementLabel!,
+    points: rule.points,
+    cashPrizeAmount: rule.cashPrizeAmount,
+    cashPrizeCurrency: rule.cashPrizeCurrency,
+  });
   for (const result of results) {
     const rule = ruleById.get(result.qualificationId);
     if (!rule || rule.placement === null || rule.placementLabel === null) continue;
-    rows.push({
-      qualificationId: rule.id,
-      entrantId: result.entrantId,
-      rank: result.rank,
-      placement: rule.placement,
-      placementLabel: rule.placementLabel,
-      points: rule.points,
-      cashPrizeAmount: rule.cashPrizeAmount,
-      cashPrizeCurrency: rule.cashPrizeCurrency,
-    });
+    resolvedRuleIds.add(rule.id);
+    rows.push(toRow(rule, result.entrantId, result.rank));
+  }
+  for (const rule of rules) {
+    if (rule.placement === null || rule.placementLabel === null || resolvedRuleIds.has(rule.id)) continue;
+    rows.push(toRow(rule, null, null));
   }
 
   return rows.sort((a, b) => (a.placement ?? 999) - (b.placement ?? 999) || (a.rank ?? 0) - (b.rank ?? 0));

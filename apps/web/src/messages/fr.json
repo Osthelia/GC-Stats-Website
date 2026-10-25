@@ -3985,7 +3985,8 @@
         "columnTeam": "Équipe",
         "columnPoints": "Points",
         "columnCashPrize": "Cash prize",
-        "noValue": "Aucun"
+        "noValue": "Aucun",
+        "tbd": "À déterminer"
       },
       "bracketViewerPage": {
         "title": "Bracket",

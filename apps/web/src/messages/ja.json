@@ -3977,7 +3977,8 @@
         "columnTeam": "チーム",
         "columnPoints": "ポイント",
         "columnCashPrize": "賞金",
-        "noValue": "なし"
+        "noValue": "なし",
+        "tbd": "未定"
       },
       "bracketViewerPage": {
         "title": "ブラケット",

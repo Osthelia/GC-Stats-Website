@@ -57,13 +57,15 @@ export async function TournamentFinalStandings({ rows }: { rows: PublicFinalStan
         <div className="min-w-0 flex-1">
           {row.teamHref ? (
             <Link href={row.teamHref} className="group flex items-center gap-2">
-              <TeamBadge tag={row.shortName ?? row.displayName} logoUrl={row.logoUrl} logoUrlLight={row.logoUrlLight} size={20} />
+              <TeamBadge tag={row.shortName ?? row.displayName ?? ""} logoUrl={row.logoUrl} logoUrlLight={row.logoUrlLight} size={20} />
               <span className={`truncate text-[11px] font-bold uppercase transition-colors group-hover:text-[#e4ae22] md:text-xs ${podium ? "text-neutral-100" : "text-neutral-300"}`}>
                 {row.displayName}
               </span>
             </Link>
           ) : (
-            <span className={`truncate text-[11px] font-bold uppercase md:text-xs ${podium ? "text-neutral-100" : "text-neutral-300"}`}>{row.displayName}</span>
+            <span className={`truncate text-[11px] font-bold uppercase md:text-xs ${row.displayName === null ? "text-neutral-500" : podium ? "text-neutral-100" : "text-neutral-300"}`}>
+              {row.displayName ?? t("tbd")}
+            </span>
           )}
           <span className="block text-[10px] font-medium text-neutral-500">{row.placementLabel}</span>
         </div>
@@ -96,14 +98,14 @@ export async function TournamentFinalStandings({ rows }: { rows: PublicFinalStan
 
       <div className={`space-y-1.5 ${rest.length > 0 ? "mb-1.5" : ""}`}>
         {top3.map((row) => (
-          <Row key={row.qualificationId + ":" + row.entrantId} row={row} podium />
+          <Row key={row.qualificationId + ":" + (row.entrantId ?? "tbd")} row={row} podium />
         ))}
       </div>
 
       {rest.length > 0 && (
         <div className="divide-y divide-white/5 overflow-hidden rounded-lg border border-white/10">
           {rest.map((row) => (
-            <Row key={row.qualificationId + ":" + row.entrantId} row={row} podium={false} />
+            <Row key={row.qualificationId + ":" + (row.entrantId ?? "tbd")} row={row} podium={false} />
           ))}
         </div>
       )}

@@ -3977,7 +3977,8 @@
         "columnTeam": "Time",
         "columnPoints": "Pontos",
         "columnCashPrize": "Premiação",
-        "noValue": "Nenhum"
+        "noValue": "Nenhum",
+        "tbd": "A definir"
       },
       "bracketViewerPage": {
         "title": "Bracket",

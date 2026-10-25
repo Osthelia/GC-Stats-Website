@@ -3985,7 +3985,8 @@
         "columnTeam": "Đội",
         "columnPoints": "Điểm",
         "columnCashPrize": "Tiền thưởng",
-        "noValue": "Không có"
+        "noValue": "Không có",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "Nhánh đấu",

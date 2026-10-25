@@ -3977,7 +3977,8 @@
         "columnTeam": "팀",
         "columnPoints": "포인트",
         "columnCashPrize": "상금",
-        "noValue": "없음"
+        "noValue": "없음",
+        "tbd": "미정"
       },
       "bracketViewerPage": {
         "title": "브래킷",

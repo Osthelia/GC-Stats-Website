@@ -3977,7 +3977,8 @@
         "columnTeam": "战队",
         "columnPoints": "积分",
         "columnCashPrize": "奖金",
-        "noValue": "无"
+        "noValue": "无",
+        "tbd": "待定"
       },
       "bracketViewerPage": {
         "title": "对阵表",
