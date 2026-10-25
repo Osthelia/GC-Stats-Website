@@ -20,7 +20,7 @@ export interface LeagueGameRow {
   platformId: string;
   startedAt: Date;
   durationSeconds: number;
-  winnerEntrantId: number;
+  winnerEntrantId: number | null;
   isCompleted: true;
   isForfeit: false;
 }
@@ -81,9 +81,9 @@ export interface LeagueSummaryContext {
   /** Entrant id for each side, from the import's team choice. */
   entrantIdBySide: Record<LeagueSide, number>;
   /** Person id for each puuid; a missing puuid maps to null. */
-  personIdByPuuid: ReadonlyMap<string, number>;
+  personIdByPuuid: Map<string, number>;
   /** Champion display name for a championId, e.g. 103 → "Ahri". */
-  championNameById: ReadonlyMap<number, string>;
+  championNameById: Map<number, string>;
 }
 
 const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
@@ -103,7 +103,7 @@ export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext)
     platformId: info.platformId,
     startedAt: new Date(info.gameCreation),
     durationSeconds: info.gameDuration,
-    winnerEntrantId: winningTeam ? ctx.entrantIdBySide[sideForTeamId(winningTeam.teamId)] : 0,
+    winnerEntrantId: winningTeam ? ctx.entrantIdBySide[sideForTeamId(winningTeam.teamId)] : null,
     isCompleted: true,
     // Riot's surrender votes are real games, not forfeits. Forfeits come from manual entry only.
     isForfeit: false,

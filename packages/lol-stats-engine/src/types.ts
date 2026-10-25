@@ -137,6 +137,7 @@ export interface RiotTimelineEventDto {
   itemId?: number;
   skillSlot?: number;
   bounty?: number;
+  name?: string; // DRAGON_SOUL_GIVEN
   [field: string]: unknown;
 }
 
