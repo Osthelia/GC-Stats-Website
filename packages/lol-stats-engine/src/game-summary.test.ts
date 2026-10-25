@@ -42,13 +42,10 @@ describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () =>
 });
 
 describe("roleOf", () => {
-  it("accepts the five lanes", () => {
+  it("keeps the five lanes and drops empty and non-lane positions, so they never pair with an opponent", () => {
     for (const lane of ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]) {
       expect(roleOf(lane)).toBe(lane);
     }
-  });
-
-  it("drops empty and non-lane positions, so they never pair with an opponent", () => {
     expect(roleOf("")).toBeNull();
     expect(roleOf("AFK")).toBeNull();
     expect(roleOf("Invalid")).toBeNull();
