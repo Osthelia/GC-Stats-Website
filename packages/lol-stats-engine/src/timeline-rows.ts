@@ -79,7 +79,6 @@ const COLUMN_FIELDS = new Set([
   "monsterType",
   "monsterSubType",
   "buildingType",
-  "towerType",
   "laneType",
   "wardType",
   "killType",
@@ -161,7 +160,7 @@ function subtypeOf(event: RiotTimelineEventDto): string | null {
     case "ELITE_MONSTER_KILL":
       return [event.monsterType, event.monsterSubType].filter(Boolean).join(":") || null;
     case "BUILDING_KILL":
-      return event.towerType ?? event.buildingType ?? null;
+      return event.buildingType ?? null; // TOWER_BUILDING | INHIBITOR_BUILDING; towerType stays in data
     case "WARD_PLACED":
     case "WARD_KILL":
       return event.wardType ?? null;

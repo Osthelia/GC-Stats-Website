@@ -87,6 +87,12 @@ export interface LeagueSummaryContext {
 }
 
 const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
+const LANE_ROLES = new Set(["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]);
+
+/** A lane role from Riot's teamPosition. Anything else (empty, "AFK", "Invalid") is null, so it never pairs with a lane opponent. */
+export function roleOf(teamPosition: string): string | null {
+  return LANE_ROLES.has(teamPosition) ? teamPosition : null;
+}
 
 /** Riot's `teamId`: 100 is blue, 200 is red. Games entered by hand have no side. */
 export function sideForTeamId(teamId: RiotTeamId): LeagueSide {
@@ -127,7 +133,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     entrantId: ctx.entrantIdBySide[side],
     personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
     championName: p.championName,
-    role: p.teamPosition === "" ? null : p.teamPosition,
+    role: roleOf(p.teamPosition),
     kills: p.kills,
     deaths: p.deaths,
     assists: p.assists,
