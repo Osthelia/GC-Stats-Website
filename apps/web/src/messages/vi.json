@@ -815,7 +815,7 @@
       "name": "Lưu trữ website",
       "nameSecondary": "Cơ sở dữ liệu",
       "cdnTitle": "Lưu trữ & phân phối hình ảnh",
-      "cdnValue": "Cloudflare (CDN), dùng để lưu đệm và phân phối logo, ảnh đại diện và hình ảnh tin tức.",
+      "cdnValue": "Bunny.net (CDN), dùng để lưu đệm và phân phối logo, ảnh đại diện và hình ảnh tin tức.",
       "mailTitle": "Gửi email",
       "mailValue": "Infomaniak được dùng để gửi email giao dịch (xác thực và thông báo tài khoản)."
     },
@@ -867,13 +867,8 @@
     "hosting": {
       "title": "Lưu trữ & hạ tầng",
       "body": "Chúng tôi dựa vào một nhóm nhỏ nhà cung cấp để giữ GC Stats nhanh, ổn định và minh bạch. Dưới đây là chính xác ai lưu trữ phần nào, và chúng tôi không bao giờ bán lại dữ liệu đã thu thập.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Lưu trữ (Workers)",
-        "body": "Lưu trữ và triển khai website GC Stats trên mạng Workers của họ: thực thi tại biên trên toàn thế giới, và một bản triển khai xem trước cho mỗi thay đổi trước khi đưa lên chính thức."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Lưu đệm CSS/JS của chúng tôi, cũng như hình ảnh tuyển thủ, đội & giải đấu, trên các máy chủ khắp thế giới để giảm tải cho máy chủ của chính chúng tôi."
       },
@@ -887,7 +882,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Các máy chủ Infomaniak chạy các dịch vụ nội bộ và cơ sở dữ liệu của chúng tôi, được kết nối riêng tư với hạ tầng Cloudflare của chúng tôi (Workers VPC)."
+          "body": "Các máy chủ của Infomaniak (một cụm Kubernetes) chạy trang web GC Stats, các dịch vụ nội bộ và cơ sở dữ liệu của chúng tôi."
         },
         "database": {
           "title": "Cơ sở dữ liệu",
@@ -899,7 +894,7 @@
         },
         "domain": {
           "title": "Nhà đăng ký tên miền",
-          "body": "Đăng ký và quản lý tên miền của chúng tôi (bản thân các máy chủ tên miền do Cloudflare quản lý riêng)."
+          "body": "Đăng ký và quản lý tên miền của chúng tôi cùng vùng DNS của nó."
         },
         "quote": {
           "p1": "Infomaniak là một nhà cung cấp Thụy Sĩ có chung một số giá trị với tôi: quyền riêng tư, môi trường và sự tôn trọng khách hàng.",

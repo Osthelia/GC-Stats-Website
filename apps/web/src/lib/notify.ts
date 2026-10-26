@@ -239,8 +239,8 @@ async function notifyDiscordDmBlockedOnce(recipientId: string): Promise<void> {
   await notify({ recipientId, type: "discord.dm_blocked", link: "/settings/account" });
 }
 
-// Bell indicator reads/writes go through adminDb (caching disabled) so a mark-as-read
-// or a freshly created notification is never masked by Hyperdrive's stale cache.
+// Bell indicator reads/writes go through adminDb so a mark-as-read or a freshly
+// created notification is always visible right away.
 export async function markRead(notificationId: number, userId: string): Promise<boolean> {
   const rows = await adminDb
     .update(notifications)

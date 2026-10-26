@@ -39,12 +39,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    // "x-vercel-ip-country" only exists on Vercel; "cf-ipcountry" is Cloudflare's
-    // equivalent, set on every request once the site runs behind Cloudflare
-    // Workers (target deployment, see SUIVI.md "CI/CD") — recordPageView falls
-    // back to "UNK" if neither is present (local dev, other hosts).
-    const countryCode = request.headers.get("x-vercel-ip-country") ?? request.headers.get("cf-ipcountry");
-    await recordPageView(uri, countryCode);
+    await recordPageView(uri);
   } catch (error) {
     console.warn("[analytics] Failed to record page view", error);
   }

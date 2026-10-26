@@ -10,8 +10,7 @@
  */
 
 import { asc } from "drizzle-orm";
-// adminDb: the panel must reflect an edit right after router.refresh(), the
-// Hyperdrive-cached `db` would serve the pre-edit row for up to 60s.
+// adminDb: the panel must reflect an edit right after router.refresh().
 import { adminDb as db } from "@gc-stats/db/client";
 import { oauthClients } from "@gc-stats/db";
 import type { OAuthScope } from "@/lib/oauth/scopes";

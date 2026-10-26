@@ -16,7 +16,6 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { oauthClients, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { generateOpaqueToken, hashOpaqueToken } from "@/lib/oauth/token-crypto";
-import { invalidateOAuthClientCache } from "@/lib/oauth/client-auth";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
 import { OAUTH_SCOPES, type OAuthScope } from "@/lib/oauth/scopes";
 
@@ -124,7 +123,6 @@ export async function updateOAuthClient(id: number, input: OAuthClientInput): Pr
     })
     .where(eq(oauthClients.id, id));
 
-  invalidateOAuthClientCache(existing.clientId);
   return { ok: true };
 }
 
@@ -139,7 +137,6 @@ export async function regenerateOAuthClientSecret(id: number): Promise<Regenerat
 
   const plainSecret = generateOpaqueToken("gcs_cs_");
   await db.update(oauthClients).set({ clientSecretHash: hashOpaqueToken(plainSecret) }).where(eq(oauthClients.id, id));
-  invalidateOAuthClientCache(existing.clientId);
   return { ok: true, clientSecret: plainSecret };
 }
 
@@ -152,7 +149,6 @@ export async function toggleOAuthClientActive(id: number, isActive: boolean): Pr
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(oauthClients).set({ isActive }).where(eq(oauthClients.id, id));
-  invalidateOAuthClientCache(existing.clientId);
   if (!isActive) await revokeOAuthTokens({ clientId: id });
   return { ok: true };
 }
@@ -165,9 +161,8 @@ export async function deleteOAuthClient(id: number): Promise<DeleteOAuthClientRe
   const [existing] = await db.select({ clientId: oauthClients.clientId }).from(oauthClients).where(eq(oauthClients.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
-  // Revoked first so the access token cache is busted before the rows cascade away.
+  // Revoked first, before the rows cascade away with the client.
   await revokeOAuthTokens({ clientId: id });
   await db.delete(oauthClients).where(eq(oauthClients.id, id));
-  invalidateOAuthClientCache(existing.clientId);
   return { ok: true };
 }

@@ -10,7 +10,7 @@
  */
 
 import { eq, inArray } from "drizzle-orm";
-// adminDb: the page must show the import that just ran (Hyperdrive caches `db` for 60s).
+// adminDb: the page must show the import that just ran.
 import { adminDb as db } from "@gc-stats/db/client";
 import { maps, matches, stageContainers, stages, mapPlayerStats } from "@gc-stats/db";
 import type { LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";

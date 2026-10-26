@@ -128,9 +128,7 @@ export const pageViews = pgTable("page_views", {
   uri: text("uri").notNull(),
   viewedAt: date("viewed_at").notNull(),
   count: integer("count").notNull().default(0),
-  countryCode: char("country_code", { length: 3 }).notNull().default(""),
-  regionCode: char("region_code", { length: 4 }).notNull().default(""),
 }, (t) => [
-  primaryKey({ columns: [t.uri, t.viewedAt, t.regionCode, t.countryCode] }),
+  primaryKey({ columns: [t.uri, t.viewedAt] }),
   index("page_views_viewed_at_idx").on(t.viewedAt),
 ]);

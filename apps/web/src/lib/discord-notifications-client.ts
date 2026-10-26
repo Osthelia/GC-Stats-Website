@@ -2,11 +2,8 @@
  * GC-Stats - discord-notifications-client
  *
  * Client for Osthelia-DiscordNotificationsWorker (separate repo, shared
- * across services). On Cloudflare it's reached through the DISCORD_NOTIFICATIONS
- * Service Binding (wrangler.jsonc), a direct Worker-to-Worker call on
- * Cloudflare's internal network, the Worker has no public URL
- * (`workers_dev = false`). DISCORD_NOTIFICATIONS_WORKER_URL only applies to the
- * self-hosted Docker deploy, where the Worker would have to be reached directly.
+ * across services). Reached through DISCORD_NOTIFICATIONS_WORKER_URL, the
+ * in-cluster Service URL: the service has no public ingress.
  * The `type`/`embed`/`container` shapes mirror the Worker's own types, kept in
  * sync by hand since there is no shared package between the two repos.
  *
@@ -15,19 +12,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-
 const SERVICE_NAME = "gc-stats";
-const BINDING_BASE_URL = "http://discord-notifications";
-
-function resolveFetch(): typeof fetch {
-  if (process.env.DEPLOY_TARGET !== "cloudflare") return fetch;
-  const { env } = getCloudflareContext();
-  return env.DISCORD_NOTIFICATIONS.fetch.bind(env.DISCORD_NOTIFICATIONS) as typeof fetch;
-}
 
 function baseUrl(): string | null {
-  if (process.env.DEPLOY_TARGET === "cloudflare") return BINDING_BASE_URL;
   const url = process.env.DISCORD_NOTIFICATIONS_WORKER_URL;
   return url ? url.replace(/\/$/, "") : null;
 }
@@ -85,7 +72,7 @@ export async function sendDiscordNotification(input: DiscordNotificationInput): 
   if (!url || !workerKey) return { ok: false, error: "not_configured" };
 
   try {
-    const response = await resolveFetch()(`${url}/notify`, {
+    const response = await fetch(`${url}/notify`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${workerKey}` },
       body: JSON.stringify({ ...input, service: SERVICE_NAME }),

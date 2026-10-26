@@ -14,7 +14,6 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { pageViews } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
-import { REGIONS, type Region } from "@/lib/geo";
 
 const CHART_WINDOW_DAYS = 30;
 
@@ -22,50 +21,6 @@ function startOfWindow(days: number): string {
   const now = new Date();
   const startUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - (days - 1) * 86_400_000);
   return startUtc.toISOString().slice(0, 10);
-}
-
-export type AnalyticsOverview = {
-  /** Average views per day, per region, over the last 30 days. */
-  dailyAverages: Record<Region, number>;
-  chart: { labels: string[]; series: Record<Region, number[]> };
-};
-
-/**
- * Per-region daily view series (last 30 days) for /admin/analytics, plus the
- * derived daily average shown on the stat cards — mirrors the shape of
- * lib/api-key-stats.ts::getApiKeyStats's `daily` field, but bucketed by
- * region instead of by requests/errors since pageViews is day-granularity
- * (V1's hourly buckets don't apply to this schema).
- */
-export async function getAnalyticsOverview(): Promise<AnalyticsOverview> {
-  const since = startOfWindow(CHART_WINDOW_DAYS);
-
-  const rows = await db
-    .select({ date: pageViews.viewedAt, region: pageViews.regionCode, total: sql<number>`sum(${pageViews.count})` })
-    .from(pageViews)
-    .where(gte(pageViews.viewedAt, since))
-    .groupBy(pageViews.viewedAt, pageViews.regionCode);
-
-  const byKey = new Map(rows.map((r) => [`${r.date}|${r.region}`, Number(r.total)]));
-
-  const labels: string[] = [];
-  const series = Object.fromEntries(REGIONS.map((r) => [r, [] as number[]])) as Record<Region, number[]>;
-  const totals = Object.fromEntries(REGIONS.map((r) => [r, 0])) as Record<Region, number>;
-
-  const sinceMs = new Date(`${since}T00:00:00Z`).getTime();
-  for (let i = 0; i < CHART_WINDOW_DAYS; i++) {
-    const key = new Date(sinceMs + i * 86_400_000).toISOString().slice(0, 10);
-    labels.push(key);
-    for (const region of REGIONS) {
-      const value = byKey.get(`${key}|${region}`) ?? 0;
-      series[region].push(value);
-      totals[region] += value;
-    }
-  }
-
-  const dailyAverages = Object.fromEntries(REGIONS.map((r) => [r, Math.round((totals[r] / CHART_WINDOW_DAYS) * 10) / 10])) as Record<Region, number>;
-
-  return { dailyAverages, chart: { labels, series } };
 }
 
 export type TopPageSort = "page" | "views";

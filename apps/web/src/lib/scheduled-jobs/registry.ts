@@ -1,9 +1,9 @@
 ﻿/**
  * GC-Stats - registry
  *
- * Starts the in-process node-cron scheduler for the self-hosted Docker
- * deploy only. Cloudflare Workers dispatch the same jobs via Cron Triggers
- * instead (see jobs-list.ts), since node-cron cannot even be imported there.
+ * Starts the in-process node-cron scheduler, opt-in through
+ * ENABLE_IN_PROCESS_SCHEDULER=true (see instrumentation.ts). In the cluster the
+ * same jobs are dispatched by Kubernetes CronJobs (see jobs-list.ts).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -15,7 +15,7 @@ import { jobs, isNoopSummary } from "./jobs-list";
 
 let started = false;
 
-/** Starts the in-process scheduler once per server (single long-lived Node process, self-hosted Docker deploy only — see instrumentation.ts). Not used on Cloudflare Workers, which dispatch these jobs via Cron Triggers instead (see custom-worker.ts / jobs-list.ts). */
+/** Starts the in-process scheduler once per server (single Node process, local dev — see instrumentation.ts). */
 export function startScheduledJobs(): void {
   if (started) return;
   started = true;

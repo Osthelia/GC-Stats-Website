@@ -815,7 +815,7 @@
       "name": "Hosting ng website",
       "nameSecondary": "Database",
       "cdnTitle": "Imbakan at Paghahatid ng Larawan",
-      "cdnValue": "Cloudflare (CDN), ginagamit para i-cache at ihatid ang mga logo, avatar, at larawan ng balita.",
+      "cdnValue": "Bunny.net (CDN), ginagamit para i-cache at ihatid ang mga logo, avatar, at larawan ng balita.",
       "mailTitle": "Paghahatid ng Email",
       "mailValue": "Ginagamit ang Infomaniak para magpadala ng mga transactional na email (authentication at mga notification ng account)."
     },
@@ -867,13 +867,8 @@
     "hosting": {
       "title": "Hosting at Imprastraktura",
       "body": "Umaasa kami sa maliit na grupo ng mga provider para mapanatiling mabilis, maaasahan, at transparent ang GC Stats. Narito kung sino mismo ang nagho-host ng ano, nang hindi kailanman ibinebenta ang data na kinokolekta namin.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hosting (Workers)",
-        "body": "Nagho-host at nagde-deploy ng GC Stats website sa Workers network nito: edge execution sa buong mundo, at preview deployment para sa bawat pagbabago bago ito mag-live."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Nagka-cache ng aming CSS/JS, pati ng mga larawan ng manlalaro, team, at torneo, sa mga server sa buong mundo para gumaan ang karga ng aming sariling mga server."
       },
@@ -887,7 +882,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Mga server ng Infomaniak na nagpapatakbo ng aming mga internal na serbisyo at ng aming database, pribadong nakakonekta sa aming imprastraktura sa Cloudflare (Workers VPC)."
+          "body": "Mga server ng Infomaniak (isang Kubernetes cluster) na nagpapatakbo ng website ng GC Stats, ng aming mga internal na serbisyo, at ng aming database."
         },
         "database": {
           "title": "Database",
@@ -899,7 +894,7 @@
         },
         "domain": {
           "title": "Domain registrar",
-          "body": "Nagrerehistro at namamahala ng aming domain name (ang mga name server mismo ay hiwalay na pinamamahalaan ng Cloudflare)."
+          "body": "Nagrerehistro at namamahala sa aming domain name at sa DNS zone nito."
         },
         "quote": {
           "p1": "Ang Infomaniak ay isang Swiss na provider na may ilan sa mga pinahahalagahan ko: privacy, kapaligiran, at paggalang sa mga customer nito.",

@@ -815,7 +815,7 @@
       "name": "Hosting situs web",
       "nameSecondary": "Basis data",
       "cdnTitle": "Penyimpanan dan Pengiriman Gambar",
-      "cdnValue": "Cloudflare (CDN), digunakan untuk menyimpan cache dan mengirim logo, avatar, dan gambar berita.",
+      "cdnValue": "Bunny.net (CDN), digunakan untuk menyimpan cache dan mengirim logo, avatar, dan gambar berita.",
       "mailTitle": "Pengiriman Email",
       "mailValue": "Infomaniak digunakan untuk mengirim email transaksional (autentikasi dan notifikasi akun)."
     },
@@ -867,13 +867,8 @@
     "hosting": {
       "title": "Hosting dan Infrastruktur",
       "body": "Kami mengandalkan sejumlah kecil penyedia untuk menjaga GC Stats tetap cepat, andal, dan transparan. Berikut persisnya siapa yang menghosting apa, tanpa pernah menjual kembali data yang kami kumpulkan.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hosting (Workers)",
-        "body": "Menghosting dan mendeploy situs web GC Stats di jaringan Workers miliknya: eksekusi di edge di seluruh dunia, dan deployment pratinjau untuk setiap perubahan sebelum tayang."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Menyimpan cache CSS/JS kami, serta gambar pemain, tim, dan turnamen, di server di seluruh dunia untuk meringankan beban server kami sendiri."
       },
@@ -887,7 +882,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Server Infomaniak yang menjalankan layanan internal dan basis data kami, terhubung secara privat ke infrastruktur Cloudflare kami (Workers VPC)."
+          "body": "Server Infomaniak (klaster Kubernetes) yang menjalankan situs web GC Stats, layanan internal, dan basis data kami."
         },
         "database": {
           "title": "Basis data",
@@ -899,7 +894,7 @@
         },
         "domain": {
           "title": "Registrar domain",
-          "body": "Mendaftarkan dan mengelola nama domain kami (name server sendiri dikelola terpisah oleh Cloudflare)."
+          "body": "Mendaftarkan dan mengelola nama domain kami beserta zona DNS-nya."
         },
         "quote": {
           "p1": "Infomaniak adalah penyedia asal Swiss yang memiliki sebagian nilai yang sama dengan saya: privasi, lingkungan, dan penghormatan kepada pelanggannya.",

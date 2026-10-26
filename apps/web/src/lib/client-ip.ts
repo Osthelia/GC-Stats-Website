@@ -4,20 +4,15 @@
  * Best-effort client IP from proxy headers, used for auth throttling only,
  * never as an identity/security boundary on its own.
  *
- * On Cloudflare, `cf-connecting-ip` is set by the edge itself and overwritten
- * on every request, so a client can't forge it. `x-forwarded-for` has no such
- * guarantee here (nothing validates the request actually came through our
- * proxy first), so it's only trusted as a fallback for non-Cloudflare deploys.
+ * Traefik is the only proxy in front of the app and appends the address it saw
+ * to `x-forwarded-for`; everything left of that is whatever the client sent, so
+ * only the entry TRUSTED_PROXY_COUNT hops from the right is trusted.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 export function getClientIp(headers: Headers): string {
-  if (process.env.DEPLOY_TARGET === "cloudflare") {
-    return headers.get("cf-connecting-ip") ?? "unknown";
-  }
-
   // The leftmost entries are whatever the client sent. Each trusted proxy
   // appends the address it saw, so the real client sits TRUSTED_PROXY_COUNT
   // entries from the right.

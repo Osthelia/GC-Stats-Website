@@ -17,7 +17,6 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { apiKeys, users, organizations, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission, requireActorAccess } from "@/lib/rbac";
 import { generatePlainApiKey, hashApiKey } from "@/lib/api-key-crypto";
-import { invalidateApiKeyCache } from "@/lib/api/v1/auth";
 import { searchOrganizationsQuery, type OrganizationPickerResult } from "@/lib/organization-search";
 
 async function requireApiKeysActor(): Promise<void> {
@@ -124,7 +123,6 @@ export async function regenerateApiKey(id: number): Promise<RegenerateApiKeyResu
 
   const plainKey = generatePlainApiKey();
   await db.update(apiKeys).set({ keyHash: hashApiKey(plainKey) }).where(eq(apiKeys.id, id));
-  invalidateApiKeyCache(existing.keyHash);
   return { ok: true, plainKey };
 }
 
@@ -137,7 +135,6 @@ export async function toggleApiKeyActive(id: number, isActive: boolean): Promise
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(apiKeys).set({ isActive }).where(eq(apiKeys.id, id));
-  invalidateApiKeyCache(existing.keyHash);
   return { ok: true };
 }
 
@@ -150,6 +147,5 @@ export async function deleteApiKey(id: number): Promise<DeleteApiKeyResult> {
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.delete(apiKeys).where(eq(apiKeys.id, id));
-  invalidateApiKeyCache(existing.keyHash);
   return { ok: true };
 }

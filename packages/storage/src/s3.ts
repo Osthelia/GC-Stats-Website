@@ -12,7 +12,6 @@
  */
 
 import { S3Client, PutObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, CopyObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
-import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 
 let cachedClient: S3Client | null = null;
 
@@ -32,11 +31,6 @@ export function getS3Client(): S3Client {
       accessKeyId: requireEnv("S3_ACCESS_KEY_ID"),
       secretAccessKey: requireEnv("S3_SECRET_ACCESS_KEY"),
     },
-    // Workers can only make outbound calls through `fetch` (no raw TCP
-    // sockets) — the SDK's default Node handler opens keep-alive sockets via
-    // `node:http`, which nodejs_compat doesn't back with real sockets on
-    // Workers. Docker keeps the default handler (real pooled keep-alive).
-    requestHandler: process.env.DEPLOY_TARGET === "cloudflare" ? new FetchHttpHandler() : undefined,
   });
   return cachedClient;
 }

@@ -2,7 +2,7 @@
  * GC-Stats - revoke-tokens
  *
  * Revokes every live OAuth access/refresh token matching a user and/or
- * client, and busts the access token cache so revocation is immediate.
+ * client.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -12,7 +12,6 @@
 import { and, eq, isNull, type SQL } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { oauthAccessTokens, oauthRefreshTokens } from "@gc-stats/db";
-import { invalidateAccessTokenCache } from "@/lib/oauth/token-resolve";
 
 export async function revokeOAuthTokens(filter: { userId?: string; clientId?: number }): Promise<void> {
   if (filter.userId === undefined && filter.clientId === undefined) throw new Error("revokeOAuthTokens needs a filter");
@@ -29,12 +28,6 @@ export async function revokeOAuthTokens(filter: { userId?: string; clientId?: nu
   }
 
   const now = new Date();
-  const revoked = await db
-    .update(oauthAccessTokens)
-    .set({ revokedAt: now })
-    .where(and(...accessConditions))
-    .returning({ tokenHash: oauthAccessTokens.tokenHash });
+  await db.update(oauthAccessTokens).set({ revokedAt: now }).where(and(...accessConditions));
   await db.update(oauthRefreshTokens).set({ revokedAt: now }).where(and(...refreshConditions));
-
-  for (const { tokenHash } of revoked) invalidateAccessTokenCache(tokenHash);
 }

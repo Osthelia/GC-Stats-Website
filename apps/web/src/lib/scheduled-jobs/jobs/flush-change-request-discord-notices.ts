@@ -19,7 +19,7 @@ import { sendChangeRequestDiscordDecision } from "@/lib/notify";
  * Sends the debounced Discord decision notice for every change request whose
  * wait window has elapsed (see notify.ts's scheduleChangeRequestDiscordNotice).
  * Deletes the row before sending, conditioned on it still existing, so an
- * overlapping tick (Cloudflare Cron Triggers can overlap) can't send twice.
+ * overlapping tick (cron ticks can overlap) can't send twice.
  */
 export async function flushChangeRequestDiscordNotices(): Promise<string> {
   const due = await db.select({ changeRequestId: changeRequestDiscordNotices.changeRequestId }).from(changeRequestDiscordNotices).where(lte(changeRequestDiscordNotices.scheduledAt, new Date()));
