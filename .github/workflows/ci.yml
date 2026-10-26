@@ -28,8 +28,6 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run cf-typegen --workspace=apps/web
-
       - run: npm run typecheck
 
       - run: npm test

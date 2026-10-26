@@ -17,7 +17,6 @@ import { apiKeys } from "@gc-stats/db";
 import { requireApiKeyActor } from "@/lib/dashboard-rbac";
 import { logActivity } from "@/lib/activity-log";
 import { generatePlainApiKey, hashApiKey } from "@/lib/api-key-crypto";
-import { invalidateApiKeyCache } from "@/lib/api/v1/auth";
 import type { RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
 
 export type { RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
@@ -39,6 +38,5 @@ export async function regeneratePersonalApiKey(id: number): Promise<RegenerateAp
     await tx.update(apiKeys).set({ keyHash: hashApiKey(plainKey) }).where(eq(apiKeys.id, id));
     await logActivity({ subject: "apiKey", subjectId: id, event: "updated", description: `Regenerated personal API key #${id}`, actorUserId: userId, properties: { section: "regenerate" } }, tx);
   });
-  invalidateApiKeyCache(previousHash);
   return { ok: true, plainKey };
 }

@@ -29,9 +29,6 @@
     "@esbuild-kit/core-utils": {
       "esbuild": ">=0.25.0"
     },
-    "miniflare": {
-      "undici": "7.30.1"
-    },
     "@node-minify/core": {
       "glob": "13.0.6"
     }

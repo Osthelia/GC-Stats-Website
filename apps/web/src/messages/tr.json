@@ -813,7 +813,7 @@
       "name": "Site barındırma",
       "nameSecondary": "Veritabanı",
       "cdnTitle": "Görsel Depolama ve Dağıtım",
-      "cdnValue": "Cloudflare (CDN), logoları, avatarları ve haber görsellerini önbelleğe almak ve sunmak için kullanılır.",
+      "cdnValue": "Bunny.net (CDN), logoları, avatarları ve haber görsellerini önbelleğe almak ve sunmak için kullanılır.",
       "mailTitle": "E posta Gönderimi",
       "mailValue": "İşlemsel e-postaların gönderimi için Infomaniak kullanılır (kimlik doğrulama ve hesap bildirimleri)."
     },
@@ -865,13 +865,8 @@
     "hosting": {
       "title": "Barındırma ve Altyapı",
       "body": "GC Stats'ı hızlı, güvenilir ve şeffaf tutmak için az sayıda sağlayıcıya güveniyoruz. İşte topladığımız verileri hiçbir zaman yeniden satmadan, tam olarak neyin nerede barındırıldığı.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Barındırma (Workers)",
-        "body": "GC Stats web sitesini Workers ağında barındırır ve yayınlar: dünya genelinde uç nokta (edge) çalıştırma ve her değişiklik canlıya alınmadan önce bir önizleme dağıtımı."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Sunucularımızın yükünü hafifletmek için CSS/JS dosyalarımızı ve oyuncu, takım ve turnuva görsellerini dünya genelindeki sunucularda önbelleğe alır."
       },
@@ -885,7 +880,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "İç hizmetlerimizi ve veritabanımızı çalıştıran, Cloudflare altyapımıza özel olarak bağlı (Workers VPC) Infomaniak sunucuları."
+          "body": "GC Stats web sitesini, dahili hizmetlerimizi ve veritabanımızı çalıştıran Infomaniak sunucuları (bir Kubernetes kümesi)."
         },
         "database": {
           "title": "Veritabanı",
@@ -897,7 +892,7 @@
         },
         "domain": {
           "title": "Alan adı kayıt sağlayıcısı",
-          "body": "Alan adımızı kaydeder ve yönetir (isim sunucuları ayrıca Cloudflare tarafından yönetilmektedir)."
+          "body": "Alan adımızı ve DNS bölgesini kaydeder ve yönetir."
         },
         "quote": {
           "p1": "Infomaniak, benim bazı değerlerimi paylaşan İsviçreli bir sağlayıcı: gizlilik, çevre ve müşterilerine saygı.",

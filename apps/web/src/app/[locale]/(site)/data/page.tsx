@@ -328,7 +328,7 @@ export default function DataPage() {
 
       <TableCard index="24." title="Page_Views">
         <FieldGroup label={f("pageViews.titles.main")}>
-          <Row table="pageViews" names={["uri", "viewedAt", "count", "countryCode", "regionCode"]} />
+          <Row table="pageViews" names={["uri", "viewedAt", "count"]} />
         </FieldGroup>
       </TableCard>
 

@@ -813,7 +813,7 @@
       "name": "Hosting strony",
       "nameSecondary": "Baza danych",
       "cdnTitle": "Przechowywanie i dostarczanie obrazów",
-      "cdnValue": "Cloudflare (CDN), używany do buforowania i dostarczania logo, awatarów oraz obrazów z aktualności.",
+      "cdnValue": "Bunny.net (CDN), używany do buforowania i dostarczania logo, awatarów oraz obrazów z aktualności.",
       "mailTitle": "Wysyłka e-maili",
       "mailValue": "Do wysyłki e-maili transakcyjnych (uwierzytelnianie i powiadomienia o koncie) używamy Infomaniak."
     },
@@ -865,13 +865,8 @@
     "hosting": {
       "title": "Hosting i infrastruktura",
       "body": "Korzystamy z niewielkiej grupy dostawców, aby GC Stats był szybki, niezawodny i przejrzysty. Oto dokładnie, kto hostuje co, bez jakiejkolwiek odsprzedaży zbieranych przez nas danych.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hosting (Workers)",
-        "body": "Hostuje i wdraża stronę GC Stats w swojej sieci Workers: wykonywanie na brzegu sieci na całym świecie oraz wdrożenie podglądowe dla każdej zmiany przed publikacją."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Przechowuje w pamięci podręcznej nasze pliki CSS/JS oraz zdjęcia zawodniczek, drużyn i turniejów na serwerach na całym świecie, aby odciążyć nasze własne serwery."
       },
@@ -885,7 +880,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Serwery Infomaniak, na których działają nasze usługi wewnętrzne i baza danych, połączone prywatnie z naszą infrastrukturą Cloudflare (Workers VPC)."
+          "body": "Serwery Infomaniak (klaster Kubernetes), na których działa strona GC Stats, nasze usługi wewnętrzne i baza danych."
         },
         "database": {
           "title": "Baza danych",
@@ -897,7 +892,7 @@
         },
         "domain": {
           "title": "Rejestrator domeny",
-          "body": "Rejestruje naszą domenę i nią zarządza (same serwery nazw są zarządzane osobno przez Cloudflare)."
+          "body": "Rejestruje i zarządza naszą nazwą domeny oraz jej strefą DNS."
         },
         "quote": {
           "p1": "Infomaniak to szwajcarski dostawca, który podziela część moich wartości: prywatność, środowisko i szacunek dla klientów.",

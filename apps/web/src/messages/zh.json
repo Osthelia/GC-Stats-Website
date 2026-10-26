@@ -813,7 +813,7 @@
       "name": "网站托管",
       "nameSecondary": "数据库",
       "cdnTitle": "图片存储与分发",
-      "cdnValue": "Cloudflare（CDN），用于缓存和分发标志、头像及新闻图片。",
+      "cdnValue": "Bunny.net（CDN），用于缓存和分发标志、头像及新闻图片。",
       "mailTitle": "邮件发送",
       "mailValue": "我们使用 Infomaniak 发送事务性邮件（身份验证和账户通知）。"
     },
@@ -865,13 +865,8 @@
     "hosting": {
       "title": "托管与基础设施",
       "body": "我们依靠少数几家服务商，来保证 GC Stats 的速度、稳定性与透明度。以下明确列出了各项服务的托管方，我们绝不会转售所收集的数据。",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "托管（Workers）",
-        "body": "在其 Workers 网络上托管并部署 GC Stats 网站：全球边缘节点执行，且每次改动上线前都有预览部署。"
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "在全球各地的服务器上缓存我们的 CSS/JS，以及选手、战队和赛事图片，以减轻我们自身服务器的负载。"
       },
@@ -885,7 +880,7 @@
         },
         "publicCloud": {
           "title": "公有云",
-          "body": "Infomaniak 的服务器运行着我们的内部服务及数据库，并通过 Workers VPC 与我们的 Cloudflare 基础设施进行私密连接。"
+          "body": "运行 GC Stats 网站、内部服务和数据库的 Infomaniak 服务器(Kubernetes 集群)。"
         },
         "database": {
           "title": "数据库",
@@ -897,7 +892,7 @@
         },
         "domain": {
           "title": "域名注册商",
-          "body": "注册并管理我们的域名（名称服务器本身由 Cloudflare 单独管理）。"
+          "body": "注册并管理我们的域名及其 DNS 区域。"
         },
         "quote": {
           "p1": "Infomaniak 是一家瑞士服务商，与我的一些价值观不谋而合：隐私、环保，以及对客户的尊重。",

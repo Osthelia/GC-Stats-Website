@@ -8,11 +8,6 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "preview": "npm run cf-build && opennextjs-cloudflare preview",
-    "deploy": "npm run cf-build && opennextjs-cloudflare deploy",
-    "upload": "npm run cf-build && opennextjs-cloudflare upload",
-    "cf-build": "npm run cf-typegen && cross-env OPENNEXT_BUILD_TARGET=cloudflare opennextjs-cloudflare build && node scripts/copy-messages-assets.mjs",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "generate:openapi": "tsx scripts/generate-openapi.ts",
     "backfill:patch": "tsx --env-file=.env.local scripts/backfill-match-patch.ts"
   },
@@ -65,18 +60,15 @@
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",
-    "@opennextjs/cloudflare": "^1.20.8",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.4",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "cross-env": "^10.1.0",
     "shadcn": "^4.21.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^5.6.3",
-    "wrangler": "^4.147.0",
     "zod": "^4.6.5"
   }
 }

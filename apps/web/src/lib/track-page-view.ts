@@ -1,7 +1,7 @@
 ﻿/**
  * GC-Stats - track-page-view
  *
- * Records page views into the daily/region/country bucket, called from the
+ * Records page views into the daily bucket, called from the
  * public tracking endpoint on every client-side navigation. No Redis
  * buffer, a per-request upsert is cheap enough at day granularity.
  *
@@ -13,7 +13,6 @@
 import { sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { pageViews } from "@gc-stats/db";
-import { regionFromCountry } from "@/lib/geo";
 
 const MAX_URI_LENGTH = 512;
 
@@ -23,23 +22,21 @@ export function isTrackableUri(uri: unknown): uri is string {
 }
 
 /**
- * Upserts one page view into the daily/region/country bucket (see
+ * Upserts one page view into the daily bucket (see
  * packages/db/src/schema/platform.ts::pageViews) — called from
  * app/api/track-page-view/route.ts, fired by components/page-view-tracker.tsx
  * on every client-side navigation. No Redis buffer (V1 had one): V2's
  * pageViews is day-granularity, not hourly, so a per-request upsert is cheap
  * enough on its own.
  */
-export async function recordPageView(uri: string, countryCodeHeader: string | null): Promise<void> {
-  const countryCode = (countryCodeHeader ?? "UNK").toUpperCase().slice(0, 3);
-  const regionCode = regionFromCountry(countryCode);
+export async function recordPageView(uri: string): Promise<void> {
   const viewedAt = new Date().toISOString().slice(0, 10);
 
   await db
     .insert(pageViews)
-    .values({ uri, viewedAt, countryCode, regionCode, count: 1 })
+    .values({ uri, viewedAt, count: 1 })
     .onConflictDoUpdate({
-      target: [pageViews.uri, pageViews.viewedAt, pageViews.regionCode, pageViews.countryCode],
+      target: [pageViews.uri, pageViews.viewedAt],
       set: { count: sql`${pageViews.count} + 1` },
     });
 }

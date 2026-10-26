@@ -1,9 +1,8 @@
 /**
  * GC-Stats — image module
  *
- * Image processing helpers: converts uploads to webp (dispatching to the
- * Cloudflare/Photon pipeline when DEPLOY_TARGET=cloudflare, sharp
- * otherwise) and validates that an upload decodes as a real raster image.
+ * Image processing helpers: converts uploads to webp with sharp and validates
+ * that an upload decodes as a real raster image.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -20,21 +19,11 @@ export type WebpOptions = {
   quality: number;
   /** "cover" scales so the *shortest* side fills the box and crops the rest — mirrors V1's custom scaleByShortestSide() helper, which sharp does natively. */
   fit?: ImageFit;
-  /** Keeps every frame of an animated source (gif). Ignored on Cloudflare, which outputs a single frame. */
+  /** Keeps every frame of an animated source (gif). */
   animated?: boolean;
 };
 
-// Cloudflare Workers can't run sharp (native bindings, see next.config.mjs's
-// turbopack.resolveAlias which stubs it out at build time on that target) —
-// dispatches to the Cloudflare Images binding instead, see image-cloudflare.ts.
-const isCloudflare = process.env.DEPLOY_TARGET === "cloudflare";
-
 export async function convertToWebp(input: Buffer, opts: WebpOptions): Promise<Buffer> {
-  if (isCloudflare) {
-    const { convertToWebp: convertToWebpCloudflare } = await import("./image-cloudflare");
-    return convertToWebpCloudflare(input, opts);
-  }
-
   let pipeline = sharp(input, { failOn: "error", animated: opts.animated }).rotate(); // auto-orient from EXIF before any resize
   if (opts.width || opts.height) {
     // width-only (or height-only) call sites use fit:"inside" — no crop, just
@@ -54,16 +43,6 @@ export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 export async function validateImageBuffer(buffer: Buffer): Promise<ImageValidationResult> {
   if (buffer.byteLength === 0) return { ok: false, error: "empty" };
   if (buffer.byteLength > MAX_IMAGE_BYTES) return { ok: false, error: "tooLarge" };
-
-  if (isCloudflare) {
-    try {
-      const { decodeDimensions } = await import("./image-cloudflare");
-      return await decodeDimensions(buffer);
-    } catch (error) {
-      console.error("[image] cloudflare decoder failed to load", error);
-      return { ok: false, error: "processingFailed" };
-    }
-  }
 
   try {
     const metadata = await sharp(buffer).metadata();

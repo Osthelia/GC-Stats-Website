@@ -815,7 +815,7 @@
       "name": "Hébergement du site",
       "nameSecondary": "Base de données",
       "cdnTitle": "Stockage & diffusion des images",
-      "cdnValue": "Cloudflare (CDN), utilisé pour la mise en cache et la diffusion des logos, avatars et images de news.",
+      "cdnValue": "Bunny.net (CDN), utilisé pour la mise en cache et la diffusion des logos, avatars et images de news.",
       "mailTitle": "Envoi d'emails",
       "mailValue": "Infomaniak est utilisé pour l'envoi des emails transactionnels (authentification et notifications de compte)."
     },
@@ -867,13 +867,8 @@
     "hosting": {
       "title": "Hébergement & Infrastructure",
       "body": "Nous nous appuyons sur un nombre restreint de prestataires pour garder GC Stats rapide, fiable et transparent. Voici exactement qui héberge quoi, sans jamais revendre les données collectées.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hébergement (Workers)",
-        "body": "Héberge et déploie le site GC Stats sur son réseau Workers : exécution en périphérie partout dans le monde, et un déploiement de prévisualisation pour chaque changement avant sa mise en ligne."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Mise en cache de notre CSS/JS, ainsi que des images de joueuses, équipes & tournois, sur des serveurs partout dans le monde, afin d'alléger nos serveurs."
       },
@@ -887,7 +882,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Des serveurs Infomaniak qui font tourner nos services internes et notre base de données, connectés à notre infrastructure Cloudflare de façon privée (Workers VPC)."
+          "body": "Serveurs Infomaniak (un cluster Kubernetes) qui font tourner le site GC Stats, nos services internes et notre base de données."
         },
         "database": {
           "title": "Base de données",
@@ -899,7 +894,7 @@
         },
         "domain": {
           "title": "Registraire de domaine",
-          "body": "Enregistre et gère notre nom de domaine (les serveurs de noms sont gérés séparément par Cloudflare)."
+          "body": "Enregistre et gère notre nom de domaine et sa zone DNS."
         },
         "quote": {
           "p1": "Infomaniak est un hébergeur suisse qui partage certaines de mes valeurs : la vie privée, l'écologie, et un respect envers ses clients.",

@@ -1,9 +1,7 @@
 /**
  * GC-Stats - load-messages
  *
- * Loads a locale's messages. Aliased to load-messages.cloudflare.ts on the
- * Cloudflare build (see next.config.mjs) to keep translations out of the
- * Worker bundle.
+ * Loads a locale's messages.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0

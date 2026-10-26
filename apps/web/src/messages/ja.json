@@ -813,7 +813,7 @@
       "name": "サイトのホスティング",
       "nameSecondary": "データベース",
       "cdnTitle": "画像のストレージと配信",
-      "cdnValue": "Cloudflare（CDN）：ロゴ、アバター、ニュース画像のキャッシュと配信に使用しています。",
+      "cdnValue": "Bunny.net（CDN）：ロゴ、アバター、ニュース画像のキャッシュと配信に使用しています。",
       "mailTitle": "メール配信",
       "mailValue": "トランザクションメール（認証およびアカウント通知）の送信には Infomaniak を使用しています。"
     },
@@ -865,13 +865,8 @@
     "hosting": {
       "title": "ホスティングとインフラ",
       "body": "GC Statsを高速、安定、かつ透明に保つため、私たちは少数のプロバイダーを利用しています。誰が何をホストしているのか、収集したデータを転売することは一切ないという前提で、正確にご説明します。",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "ホスティング(Workers)",
-        "body": "GC Statsのウェブサイトを、Cloudflare Workersネットワーク上でホスティング、デプロイしています。世界中でのエッジ実行と、リリース前のすべての変更に対するプレビュー環境を提供します。"
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "私たちのCSS/JS、そして選手、チーム、トーナメントの画像を世界中のサーバーにキャッシュし、私たち自身のサーバーへの負荷を軽減しています。"
       },
@@ -885,7 +880,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "私たちの内部サービスとデータベースを稼働させるInfomaniakのサーバーで、Cloudflareインフラ(Workers VPC)とプライベートに接続されています。"
+          "body": "GC Statsのウェブサイト、社内サービス、データベースを稼働させるInfomaniakのサーバー(Kubernetesクラスター)です。"
         },
         "database": {
           "title": "データベース",
@@ -897,7 +892,7 @@
         },
         "domain": {
           "title": "ドメインレジストラ",
-          "body": "私たちのドメイン名の登録と管理を行っています(ネームサーバー自体はCloudflareが別途管理しています)。"
+          "body": "ドメイン名とそのDNSゾーンの登録・管理を行います。"
         },
         "quote": {
           "p1": "Infomaniakは、プライバシー、環境、そして顧客への敬意といった、私が大切にしている価値観の一部を共有しているスイスのプロバイダーです。",

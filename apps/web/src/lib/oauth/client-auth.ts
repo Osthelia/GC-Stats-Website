@@ -1,10 +1,9 @@
 ﻿/**
  * GC-Stats - client-auth
  *
- * Resolves and caches registered OAuth clients (/oauth/authorize,
- * /api/oauth/token) and verifies confidential client secrets. The in-memory
- * cache is bypassed on Cloudflare so an admin deactivating a client takes
- * effect immediately rather than waiting out the TTL.
+ * Resolves registered OAuth clients (/oauth/authorize, /api/oauth/token) and
+ * verifies confidential client secrets. Looked up on every call, never cached:
+ * an admin deactivating a client must take effect on every replica at once.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -16,7 +15,6 @@ import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { oauthClients } from "@gc-stats/db";
 import { hashOpaqueToken } from "@/lib/oauth/token-crypto";
-import { TtlCache } from "@/lib/ttl-cache";
 import type { OAuthScope } from "@/lib/oauth/scopes";
 
 export type ResolvedOAuthClient = {
@@ -30,18 +28,7 @@ export type ResolvedOAuthClient = {
   logoUrl: string | null;
 };
 
-// Same in-memory-cache-with-Cloudflare-bypass shape as lib/api/v1/auth.ts —
-// a client is looked up on every /oauth/authorize and /api/oauth/token call,
-// and admin actions must be able to invalidate it immediately (deactivating
-// a compromised client can't wait up to CACHE_TTL_MS).
-const CACHE_TTL_MS = 60_000;
-const cache = new TtlCache<ResolvedOAuthClient | null>(CACHE_TTL_MS, 1_000);
-const useCache = process.env.DEPLOY_TARGET !== "cloudflare";
-
 export async function resolveOAuthClient(clientId: string): Promise<ResolvedOAuthClient | null> {
-  const cached = useCache ? cache.get(clientId) : undefined;
-  if (cached !== undefined) return cached;
-
   const [row] = await db
     .select({
       id: oauthClients.id,
@@ -72,12 +59,7 @@ export async function resolveOAuthClient(clientId: string): Promise<ResolvedOAut
         }
       : null;
 
-  if (useCache) cache.set(clientId, resolved);
   return resolved;
-}
-
-export function invalidateOAuthClientCache(clientId: string): void {
-  cache.delete(clientId);
 }
 
 /** Confidential clients authenticate with their secret at /api/oauth/token — public clients rely on PKCE alone. */

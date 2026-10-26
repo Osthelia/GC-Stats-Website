@@ -1,12 +1,9 @@
 ﻿/**
  * GC-Stats - route
  *
- * Internal cron dispatch endpoint, triggered by custom-worker.ts's scheduled()
- * handler via an internal handler.fetch() call, never over the public network.
- * Going through a real route (instead of calling runJobsForCron directly from
- * scheduled()) is required on Cloudflare Workers: getCloudflareContext() only
- * works inside the request context that OpenNext's own fetch wrapper sets up,
- * which a bare scheduled() call never gets.
+ * Internal cron dispatch endpoint, called by the Kubernetes CronJobs (one per
+ * distinct cron expression, see gc-stats-cronjobs.yaml in the GitOps repo)
+ * with the CRON_SECRET bearer token. Runs every job matching the expression.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0

@@ -54,7 +54,6 @@ export default function TransparencyPage() {
           <SectionText>{t("hosting.body")}</SectionText>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <ProviderCard icon={icons.server} name={t("hosting.cloudflareHosting.name")} role={t("hosting.cloudflareHosting.role")} body={t("hosting.cloudflareHosting.body")} />
             <ProviderCard icon={icons.globe} name={t("hosting.cdn.name")} role={t("hosting.cdn.role")} body={t("hosting.cdn.body")} />
           </div>
 

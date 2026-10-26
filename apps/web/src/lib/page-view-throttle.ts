@@ -2,8 +2,7 @@
  * GC-Stats - page-view-throttle
  *
  * Rate limits the public, unauthenticated /api/track-page-view endpoint per
- * IP. In-memory on Docker, falls back to a Postgres-backed check on
- * Cloudflare where Workers isolates share no memory.
+ * IP, with the shared Postgres-backed counter (see rate-limit.ts).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0

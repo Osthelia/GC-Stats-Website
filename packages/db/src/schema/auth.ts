@@ -192,8 +192,8 @@ export const apiKeyReveals = pgTable("api_key_reveals", {
   supersededAt: timestamp("superseded_at", { withTimezone: true }),
 });
 
-// Fixed-window counter backing lib/auth-throttle.ts and lib/api/v1/rate-limit.ts
-// on Cloudflare Workers (Docker keeps the in-memory Map, single process).
+// Fixed-window counter backing lib/auth-throttle.ts and lib/api/v1/rate-limit.ts,
+// shared by every replica.
 // One row per throttle key (e.g. "login:email:x@y.com"), reset once `windowStart`
 // is older than the caller's window — see lib/rate-limit-db.ts.
 export const rateLimitCounters = pgTable("rate_limit_counters", {

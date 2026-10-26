@@ -12,7 +12,7 @@
  */
 
 import { eq, sql } from "drizzle-orm";
-// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+// adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
 import { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
 import { computeAliveTimeline, computeMapAggregates, computeRoundSides, type RiotMatchDto } from "@gc-stats/map-stats-engine";

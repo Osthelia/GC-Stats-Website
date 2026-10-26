@@ -815,7 +815,7 @@
       "name": "Website hosting",
       "nameSecondary": "Database",
       "cdnTitle": "Image Storage & Delivery",
-      "cdnValue": "Cloudflare (CDN), used to cache and deliver logos, avatars and news images.",
+      "cdnValue": "Bunny.net (CDN), used to cache and deliver logos, avatars and news images.",
       "mailTitle": "Email Delivery",
       "mailValue": "Infomaniak is used to send transactional emails (authentication and account notifications)."
     },
@@ -867,13 +867,8 @@
     "hosting": {
       "title": "Hosting & Infrastructure",
       "body": "We rely on a small set of providers to keep GC Stats fast, reliable and transparent. Here is exactly who hosts what, without ever reselling the data we collect.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hosting (Workers)",
-        "body": "Hosts and deploys the GC Stats website on its Workers network: edge execution around the world, and a preview deployment for every change before it goes live."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
         "body": "Caches our CSS/JS, as well as player, team & tournament images, on servers around the world to lighten the load on our own servers."
       },
@@ -887,7 +882,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Infomaniak servers that run our internal services and our database, connected privately to our Cloudflare infrastructure (Workers VPC)."
+          "body": "Infomaniak servers (a Kubernetes cluster) that run the GC Stats website, our internal services and our database."
         },
         "database": {
           "title": "Database",
@@ -899,7 +894,7 @@
         },
         "domain": {
           "title": "Domain registrar",
-          "body": "Registers and manages our domain name (the name servers themselves are managed separately by Cloudflare)."
+          "body": "Registers and manages our domain name and its DNS zone."
         },
         "quote": {
           "p1": "Infomaniak is a Swiss provider that shares some of my values: privacy, the environment, and respect for its customers.",
