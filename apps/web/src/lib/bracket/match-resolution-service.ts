@@ -17,7 +17,7 @@ import { matches, stageContainers, stages } from "@gc-stats/db";
 import { resolveMatchInGraph } from "@osthelia/bracket-engine";
 import { applyDownstreamPatches, hydrateOutgoingSubgraph, getMatch, type Tx } from "./repository";
 import { advanceSwissGroup, advanceRoundRobinGroup } from "./group-progression";
-import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "./qualification-resolution";
+import { resolveContainerRankQualifications, resolveContainerMatchQualifications, resolveMatchQualifications } from "./qualification-resolution";
 import { parseGroupConfig } from "./config-types";
 
 export class MatchResolutionValidationError extends Error {
@@ -49,10 +49,10 @@ export interface ResolveMatchInput {
  *   3. if the match belongs to a group container, updates that group's
  *      record-keeping (wins/losses, standings) and, for Swiss, either
  *      generates the next round or reports the group as decided
- *   4. once a container is fully decided, resolves whatever
- *      `stage_qualifications` rules feed off it (rank-based from a group,
- *      or match-outcome-based from a bracket) — the cross-container/
- *      cross-stage half of auto progression
+ *   4. resolves the `stage_qualifications` rules anchored on this match's
+ *      outcome right away, and once a container is fully decided, the
+ *      rank-based ones of a group (the cross-container/cross-stage half
+ *      of auto progression)
  */
 export async function resolveMatch(input: ResolveMatchInput): Promise<void> {
   const match = await getMatch(input.matchId);
@@ -96,6 +96,7 @@ export async function resolveMatch(input: ResolveMatchInput): Promise<void> {
       .where(eq(matches.id, input.matchId));
 
     await applyDownstreamPatches(tx, patches);
+    await resolveMatchQualifications(tx, input.matchId);
 
     const [container] = await tx.select().from(stageContainers).where(eq(stageContainers.id, match.containerId));
     if (!container) throw new Error(`resolveMatch: container ${match.containerId} not found`);

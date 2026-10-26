@@ -59,19 +59,29 @@ export async function resolveContainerRankQualifications(tx: Tx, container: type
 
 /**
  * Resolves `stage_qualifications` rules anchored on a specific match
- * outcome (e.g. "loser of the 3rd place decider") for every completed
- * match of a container that just finished.
+ * outcome (e.g. "loser of the 3rd place decider"). Runs as soon as the
+ * match completes, the outcome doesn't depend on the rest of its container.
  */
+export async function resolveMatchQualifications(tx: Tx, matchId: number): Promise<void> {
+  await resolveMatchOutcomeRules(tx, [matchId]);
+}
+
+/** Same as `resolveMatchQualifications`, for every completed match of a container. */
 export async function resolveContainerMatchQualifications(tx: Tx, containerId: number): Promise<void> {
-  const containerMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
-  const matchIds = containerMatches.map((m) => m.id);
+  const containerMatches = await tx.select({ id: matches.id }).from(matches).where(eq(matches.containerId, containerId));
+  await resolveMatchOutcomeRules(tx, containerMatches.map((m) => m.id));
+}
+
+async function resolveMatchOutcomeRules(tx: Tx, matchIds: number[]): Promise<void> {
   if (matchIds.length === 0) return;
 
   const rules = await tx.select().from(stageQualifications).where(inArray(stageQualifications.sourceMatchId, matchIds));
+  if (rules.length === 0) return;
+  const sourceMatches = await tx.select().from(matches).where(inArray(matches.id, matchIds));
 
   for (const rule of rules) {
     if (!rule.sourceMatchId || !rule.outcome) continue;
-    const match = containerMatches.find((m) => m.id === rule.sourceMatchId);
+    const match = sourceMatches.find((m) => m.id === rule.sourceMatchId);
     if (!match || match.status !== "completed" || match.winnerId === null) continue;
 
     const loserId = match.winnerId === match.entrantAId ? match.entrantBId : match.entrantAId;
