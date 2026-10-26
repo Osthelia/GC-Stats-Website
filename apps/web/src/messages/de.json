@@ -3874,20 +3874,40 @@
           "entrantNotFound": "Dieses Team ist nicht im Turnier registriert.",
           "entrantNotInGroup": "Dieses Team ist dieser Gruppe nicht zugewiesen.",
           "cannotMove": "Dieser Container kann nicht weiter verschoben werden.",
-          "parentInvalid": "Dieses Set kann hier nicht verwendet werden."
+          "parentInvalid": "Dieses Set kann hier nicht verwendet werden.",
+          "tiebreakersInvalid": "Verwende jeden Tiebreaker nur einmal, aus der angebotenen Liste.",
+          "pointsValue": "Gib eine ganze Zahl zwischen -1000 und 1000 ein."
         },
-        "pointsSectionTitle": "Punkte Tiebreaker (optional)",
-        "pointsSectionHint": "Jede Punkteart ist unabhängig. Leer lassen, um sie nicht zu verwenden. Angesammelte Punkte entscheiden bei Gleichstand vor Buchholz/Rundendifferenz.",
-        "fieldMatchWinPoints": "Punkte pro Match Sieg",
-        "fieldMatchWinPointsHint": "Leer lassen, um Match Siege nicht in der Tabelle zu zählen.",
-        "fieldMapWinPoints": "Punkte pro Map Sieg",
-        "fieldMapWinPointsHint": "Leer lassen, um Map Siege nicht zu zählen.",
-        "fieldRoundWinPoints": "Punkte pro Runden Sieg",
-        "fieldRoundWinPointsHint": "Leer lassen, um Runden Siege nicht zu zählen.",
-        "fieldMatchForfeitWinPoints": "Punkte pro Match Sieg durch Forfeit",
-        "fieldMatchForfeitWinPointsHint": "Ein abweichender Wert für einen Sieg durch Forfeit statt tatsächlich gespielt.",
-        "fieldMapForfeitWinPoints": "Punkte pro Map Sieg durch Forfeit",
-        "fieldMapForfeitWinPointsHint": "Ein abweichender Wert für einen Map Sieg durch Forfeit statt tatsächlich gespielt."
+        "tiebreakerOrder": {
+          "title": "Tiebreaker",
+          "hint": "Siege zählen immer zuerst. Gleichstände werden dann in dieser Reihenfolge aufgelöst, der letzte Eintrag ist der finale Ausweg.",
+          "wins": "Siege",
+          "moveUp": "Nach oben",
+          "moveDown": "Nach unten",
+          "remove": "Entfernen",
+          "options": {
+            "points": "Punkte",
+            "buchholz": "Buchholz",
+            "map_diff": "Mapdifferenz",
+            "round_diff": "Rundendifferenz",
+            "head_to_head": "Direkter Vergleich",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Punkte",
+          "hint": "Jedes gewonnene oder verlorene Match, jede Map und jede Runde bringt dem Team Punkte. Runden zählen nur auf Maps mit erfasstem Ergebnis.",
+          "enable": "Punkte verwenden",
+          "scopes": {
+            "match": "Match",
+            "map": "Jede Map",
+            "round": "Jede Runde",
+            "forfeit": "Forfeit (ersetzt die anderen)"
+          },
+          "win": "Gewonnen",
+          "loss": "Verloren",
+          "notUsed": "Punkte ordnen die Gruppe nur, wenn Punkte in den Tiebreakern steht."
+        }
       },
       "bracketPage": {
         "title": "Bracket Verwaltung",

@@ -20,7 +20,7 @@ import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/adm
 import { computeContainerStandings, type GroupStandingsEntry } from "@/lib/bracket/standings";
 import { getContainerAdvancementRules, getMatchAdvancementRules } from "@/lib/bracket/container-qualifications";
 import { getStageFinalStandings } from "@/lib/bracket/final-standings";
-import { parseGroupConfig, isPointsConfigActive } from "@/lib/bracket/config-types";
+import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
 
@@ -298,7 +298,7 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
             logoUrlLight: logos?.light ?? null,
           };
         });
-        showPoints = isPointsConfigActive(parseGroupConfig(container.config).pointsConfig);
+        showPoints = parseGroupConfig(container.config).pointsConfig !== null;
         qualificationRules = advancementRules.map((r) => ({
           rankFrom: r.rankFrom,
           rankTo: r.rankTo,

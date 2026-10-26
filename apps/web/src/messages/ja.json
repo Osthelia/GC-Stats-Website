@@ -3874,20 +3874,40 @@
           "entrantNotFound": "このチームはトーナメントに登録されていません。",
           "entrantNotInGroup": "このチームはこのグループに割り当てられていません。",
           "cannotMove": "このコンテナはこれ以上移動できません。",
-          "parentInvalid": "このセットはここでは使用できません。"
+          "parentInvalid": "このセットはここでは使用できません。",
+          "tiebreakersInvalid": "各タイブレーカーは提示されたリストから一度だけ使用してください。",
+          "pointsValue": "-1000から1000までの整数を入力してください。"
         },
-        "pointsSectionTitle": "タイブレーク用ポイント（任意）",
-        "pointsSectionHint": "各ポイントタイプは独立しています。使用しない場合は空欄のままにしてください。獲得ポイントはブフホルツ/ラウンド差より先にタイブレークに使われます。",
-        "fieldMatchWinPoints": "試合勝利ごとのポイント",
-        "fieldMatchWinPointsHint": "順位表で試合勝利数を数えない場合は空欄のままにしてください。",
-        "fieldMapWinPoints": "マップ勝利ごとのポイント",
-        "fieldMapWinPointsHint": "マップ勝利数を数えない場合は空欄のままにしてください。",
-        "fieldRoundWinPoints": "ラウンド勝利ごとのポイント",
-        "fieldRoundWinPointsHint": "ラウンド勝利数を数えない場合は空欄のままにしてください。",
-        "fieldMatchForfeitWinPoints": "不戦勝による試合勝利ごとのポイント",
-        "fieldMatchForfeitWinPointsHint": "実際にプレイされた勝利とは異なる値。",
-        "fieldMapForfeitWinPoints": "不戦勝によるマップ勝利ごとのポイント",
-        "fieldMapForfeitWinPointsHint": "実際にプレイされたマップ勝利とは異なる値。"
+        "tiebreakerOrder": {
+          "title": "タイブレーカー",
+          "hint": "勝利数が常に最優先です。同点はこの順序で判定され、最後の項目が最終手段になります。",
+          "wins": "勝利数",
+          "moveUp": "上へ",
+          "moveDown": "下へ",
+          "remove": "削除",
+          "options": {
+            "points": "ポイント",
+            "buchholz": "Buchholz",
+            "map_diff": "マップ差",
+            "round_diff": "ラウンド差",
+            "head_to_head": "直接対決",
+            "seed": "シード"
+          }
+        },
+        "pointsConfig": {
+          "title": "ポイント",
+          "hint": "勝ったまたは負けた各試合、マップ、ラウンドがチームにポイントを与えます。ラウンドはスコアが記録されたマップでのみ数えられます。",
+          "enable": "ポイントを使用",
+          "scopes": {
+            "match": "試合",
+            "map": "各マップ",
+            "round": "各ラウンド",
+            "forfeit": "不戦（他を置き換える）"
+          },
+          "win": "勝ち",
+          "loss": "負け",
+          "notUsed": "ポイントはタイブレーカーにポイントが含まれる場合のみグループを並べ替えます。"
+        }
       },
       "bracketPage": {
         "title": "ブラケット管理",

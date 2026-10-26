@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GC-Stats — stats module
  *
  * Match maps and the raw/aggregated game stats layers ingested from the
@@ -33,9 +33,7 @@ export const maps = pgTable("maps", {
   isCompleted: boolean("is_completed").notNull().default(false),
   startedAt: timestamp("started_at", { withTimezone: true }),
   note: text("note"),
-  // Same purpose as matches.isForfeit, one level down — a map-win point
-  // value can differ from a map-forfeit-win value in a group container's
-  // points tiebreaker (apps/web/src/lib/bracket/points.ts).
+  // A forfeited map has no real rounds, the group standings and points skip its score.
   isForfeit: boolean("is_forfeit").notNull().default(false),
 }, (t) => [
   index("maps_match_id_idx").on(t.matchId),

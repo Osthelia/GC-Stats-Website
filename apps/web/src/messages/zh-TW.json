@@ -3882,20 +3882,40 @@
           "entrantNotFound": "該隊伍未報名此賽事。",
           "entrantNotInGroup": "該隊伍未分配到此小組。",
           "cannotMove": "此容器無法再移動。",
-          "parentInvalid": "此集合無法在此處使用。"
+          "parentInvalid": "此集合無法在此處使用。",
+          "tiebreakersInvalid": "每個決勝規則只能從所列選項中使用一次。",
+          "pointsValue": "請輸入 -1000 到 1000 之間的整數。"
         },
-        "pointsSectionTitle": "積分同分判定（可選）",
-        "pointsSectionHint": "每種積分類型相互獨立，留空表示不使用。累計積分會在 Buchholz/輪次差之前用於判定同分名次。",
-        "fieldMatchWinPoints": "每場比賽勝利積分",
-        "fieldMatchWinPointsHint": "留空表示排名不計入比賽勝場積分。",
-        "fieldMapWinPoints": "每張地圖勝利積分",
-        "fieldMapWinPointsHint": "留空表示不計入地圖勝場積分。",
-        "fieldRoundWinPoints": "每回合勝利積分",
-        "fieldRoundWinPointsHint": "留空表示不計入回合勝利積分。",
-        "fieldMatchForfeitWinPoints": "因棄權獲勝的比賽積分",
-        "fieldMatchForfeitWinPointsHint": "相較於實際進行的勝利，棄權獲勝可設定不同的分值。",
-        "fieldMapForfeitWinPoints": "因棄權獲勝的地圖積分",
-        "fieldMapForfeitWinPointsHint": "相較於實際進行的勝利，棄權獲勝可設定不同的分值。"
+        "tiebreakerOrder": {
+          "title": "決勝規則",
+          "hint": "勝場始終優先計算。平手隨後依此順序判定，最後一項為最終依據。",
+          "wins": "勝場",
+          "moveUp": "上移",
+          "moveDown": "下移",
+          "remove": "移除",
+          "options": {
+            "points": "積分",
+            "buchholz": "Buchholz",
+            "map_diff": "地圖差",
+            "round_diff": "回合差",
+            "head_to_head": "直接對戰",
+            "seed": "種子"
+          }
+        },
+        "pointsConfig": {
+          "title": "積分",
+          "hint": "每場勝負的比賽、地圖和回合都會為隊伍帶來積分。回合僅在已記錄比分的地圖上計算。",
+          "enable": "使用積分",
+          "scopes": {
+            "match": "比賽",
+            "map": "每張地圖",
+            "round": "每個回合",
+            "forfeit": "棄權（取代其他項）"
+          },
+          "win": "勝",
+          "loss": "負",
+          "notUsed": "僅當積分位於決勝規則中時，積分才會影響小組排名。"
+        }
       },
       "bracketPage": {
         "title": "對陣表管理",

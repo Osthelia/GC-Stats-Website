@@ -1,65 +1,81 @@
 ﻿/**
  * GC-Stats - points
  *
- * Tallies the configurable points tiebreaker (match/map/round wins, with
- * separate forfeit values) used by the group standings calculation.
+ * Tallies the points tiebreaker of a group: match, map and round won or
+ * lost, a forfeited match being worth the forfeit values alone.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, inArray } from "drizzle-orm";
-import { matches, maps, mapRoundsRaw } from "@gc-stats/db";
+import { and, eq, inArray } from "drizzle-orm";
+import { groupEntries, matches, maps } from "@gc-stats/db";
 import type { Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
 
-/**
- * Tallies the configurable points tiebreaker (2026-08-31 spec) for every
- * entrant with at least one completed match in `containerId`: match wins,
- * map wins, and round wins, each with a separate (optional) value for a
- * forfeited win. `maps.teamAScore`/`teamBScore` map to
- * `matches.entrantAId`/`entrantBId` — the same convention used throughout
- * the match-detail data layer (`match-page-data.ts`), not invented here.
- */
+// What the points need of a completed match
+export interface PointsMatch {
+  entrantAId: number | null;
+  entrantBId: number | null;
+  winnerId: number | null;
+  // Maps won by each side
+  scoreA: number | null;
+  scoreB: number | null;
+  // Rounds won by each side over the played maps, null when no map was recorded
+  roundsA: number | null;
+  roundsB: number | null;
+  forfeit: boolean;
+}
+
+/** Points of one entrant over its completed matches, a bye counting as a match won. */
+export function entrantPoints(config: StandingsPointsConfig, entrantId: number, played: readonly PointsMatch[], hadBye: boolean): number {
+  let total = hadBye ? config.matchWin : 0;
+  for (const m of played) {
+    const isA = m.entrantAId === entrantId;
+    if (!isA && m.entrantBId !== entrantId) continue;
+    const won = m.winnerId === entrantId;
+    if (m.forfeit) {
+      total += won ? config.forfeitWin : config.forfeitLoss;
+      continue;
+    }
+    total += won ? config.matchWin : config.matchLoss;
+    const mapsWon = isA ? [m.scoreA, m.scoreB] : [m.scoreB, m.scoreA];
+    if (mapsWon[0] !== null && mapsWon[1] !== null) total += mapsWon[0]! * config.mapWin + mapsWon[1]! * config.mapLoss;
+    const rounds = isA ? [m.roundsA, m.roundsB] : [m.roundsB, m.roundsA];
+    if (rounds[0] !== null && rounds[1] !== null) total += rounds[0]! * config.roundWin + rounds[1]! * config.roundLoss;
+  }
+  return total;
+}
+
+/** Points of every entrant of a group. Rounds come from the map scores, forfeited maps excluded. */
 export async function computeContainerPoints(tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
-  const points = new Map<number, number>();
-  const add = (entrantId: number | null, amount: number | null) => {
-    if (entrantId === null || amount === null) return;
-    points.set(entrantId, (points.get(entrantId) ?? 0) + amount);
-  };
+  const [completed, entries] = await Promise.all([
+    tx.select().from(matches).where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
+    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+  ]);
 
-  const completedMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
-  const finished = completedMatches.filter((m) => m.status === "completed" && m.winnerId !== null);
-
-  if (config.matchWin !== null || config.matchForfeitWin !== null) {
-    for (const m of finished) {
-      add(m.winnerId, m.isForfeit ? config.matchForfeitWin : config.matchWin);
+  const rounds = new Map<number, { a: number; b: number }>();
+  if (completed.length > 0) {
+    const mapRows = await tx.select().from(maps).where(inArray(maps.matchId, completed.map((m) => m.id)));
+    for (const mp of mapRows) {
+      if (!mp.isCompleted || mp.isForfeit || mp.teamAScore === null || mp.teamBScore === null) continue;
+      const cur = rounds.get(mp.matchId) ?? { a: 0, b: 0 };
+      rounds.set(mp.matchId, { a: cur.a + mp.teamAScore, b: cur.b + mp.teamBScore });
     }
   }
 
-  const needsMapData = config.mapWin !== null || config.mapForfeitWin !== null || config.roundWin !== null;
-  if (!needsMapData || finished.length === 0) return points;
-
-  const matchById = new Map(finished.map((m) => [m.id, m]));
-  const mapRows = await tx.select().from(maps).where(inArray(maps.matchId, finished.map((m) => m.id)));
-  const completedMaps = mapRows.filter((mp) => mp.isCompleted && mp.teamAScore !== null && mp.teamBScore !== null);
-
-  if (config.mapWin !== null || config.mapForfeitWin !== null) {
-    for (const mp of completedMaps) {
-      const match = matchById.get(mp.matchId);
-      if (!match) continue;
-      const winnerId = mp.teamAScore! > mp.teamBScore! ? match.entrantAId : mp.teamBScore! > mp.teamAScore! ? match.entrantBId : null;
-      add(winnerId, mp.isForfeit ? config.mapForfeitWin : config.mapWin);
-    }
-  }
-
-  if (config.roundWin !== null && completedMaps.length > 0) {
-    const roundRows = await tx.select({ winningEntrantId: mapRoundsRaw.winningEntrantId }).from(mapRoundsRaw).where(inArray(mapRoundsRaw.mapId, completedMaps.map((mp) => mp.id)));
-    for (const r of roundRows) {
-      add(r.winningEntrantId, config.roundWin);
-    }
-  }
-
-  return points;
+  const played: PointsMatch[] = completed.map((m) => ({
+    entrantAId: m.entrantAId,
+    entrantBId: m.entrantBId,
+    winnerId: m.winnerId,
+    scoreA: m.scoreA,
+    scoreB: m.scoreB,
+    roundsA: rounds.get(m.id)?.a ?? null,
+    roundsB: rounds.get(m.id)?.b ?? null,
+    forfeit: m.isForfeit,
+  }));
+  const hadBye = new Map(entries.map((e) => [e.entrantId, e.hadBye]));
+  const ids = new Set([...hadBye.keys(), ...played.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null)]);
+  return new Map([...ids].map((id) => [id, entrantPoints(config, id, played, hadBye.get(id) ?? false)]));
 }

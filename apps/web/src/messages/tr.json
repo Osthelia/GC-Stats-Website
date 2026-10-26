@@ -3874,20 +3874,40 @@
           "entrantNotFound": "Bu takım turnuvaya kayıtlı değil.",
           "entrantNotInGroup": "Bu takım bu gruba atanmamış.",
           "cannotMove": "Bu konteyner daha fazla taşınamaz.",
-          "parentInvalid": "Bu küme burada kullanılamaz."
+          "parentInvalid": "Bu küme burada kullanılamaz.",
+          "tiebreakersInvalid": "Her eşitlik bozucuyu önerilen listeden yalnızca bir kez kullanın.",
+          "pointsValue": "-1000 ile 1000 arasında bir tam sayı girin."
         },
-        "pointsSectionTitle": "Puan eşitlik bozucu (isteğe bağlı)",
-        "pointsSectionHint": "Her puan türü bağımsızdır, kullanmamak için boş bırakın. Biriken puanlar, Buchholz/tur farkından önce eşitlikleri bozar.",
-        "fieldMatchWinPoints": "Maç galibiyeti başına puan",
-        "fieldMatchWinPointsHint": "Maç galibiyetlerini sıralamada saymamak için boş bırakın.",
-        "fieldMapWinPoints": "Harita galibiyeti başına puan",
-        "fieldMapWinPointsHint": "Harita galibiyetlerini saymamak için boş bırakın.",
-        "fieldRoundWinPoints": "Round galibiyeti başına puan",
-        "fieldRoundWinPointsHint": "Round galibiyetlerini saymamak için boş bırakın.",
-        "fieldMatchForfeitWinPoints": "Hükmen maç galibiyeti başına puan",
-        "fieldMatchForfeitWinPointsHint": "Gerçekten oynanan yerine hükmen kazanılan bir galibiyet için farklı bir değer.",
-        "fieldMapForfeitWinPoints": "Hükmen harita galibiyeti başına puan",
-        "fieldMapForfeitWinPointsHint": "Gerçekten oynanan yerine hükmen kazanılan bir harita galibiyeti için farklı bir değer."
+        "tiebreakerOrder": {
+          "title": "Eşitlik bozucular",
+          "hint": "Galibiyetler her zaman önce sayılır. Eşitlikler ardından bu sırayla bozulur, gösterilen son kriter nihai çözümdür.",
+          "wins": "Galibiyetler",
+          "moveUp": "Yukarı taşı",
+          "moveDown": "Aşağı taşı",
+          "remove": "Kaldır",
+          "options": {
+            "points": "Puan",
+            "buchholz": "Buchholz",
+            "map_diff": "Harita farkı",
+            "round_diff": "Raunt farkı",
+            "head_to_head": "İkili averaj",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Puan",
+          "hint": "Kazanılan veya kaybedilen her maç, harita ve raunt takıma puan kazandırır. Rauntlar yalnızca skoru girilmiş haritalarda sayılır.",
+          "enable": "Puan kullan",
+          "scopes": {
+            "match": "Maç",
+            "map": "Her harita",
+            "round": "Her raunt",
+            "forfeit": "Hükmen (diğerlerinin yerine geçer)"
+          },
+          "win": "Kazanıldı",
+          "loss": "Kaybedildi",
+          "notUsed": "Puanlar, Puan eşitlik bozucular arasında olduğunda grubu sıralar."
+        }
       },
       "bracketPage": {
         "title": "Braket yönetimi",

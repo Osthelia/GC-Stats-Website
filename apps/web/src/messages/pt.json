@@ -3874,20 +3874,40 @@
           "entrantNotFound": "Este time não está inscrito no torneio.",
           "entrantNotInGroup": "Este time não está atribuído a este grupo.",
           "cannotMove": "Este contêiner não pode ser movido mais.",
-          "parentInvalid": "Este conjunto não pode ser usado aqui."
+          "parentInvalid": "Este conjunto não pode ser usado aqui.",
+          "tiebreakersInvalid": "Use cada desempate uma única vez, da lista oferecida.",
+          "pointsValue": "Use um número inteiro entre -1000 e 1000."
         },
-        "pointsSectionTitle": "Desempate por pontos (opcional)",
-        "pointsSectionHint": "Cada tipo de ponto é independente: deixe em branco para não usá-lo. Os pontos acumulados desempatam antes do Buchholz/saldo de rounds.",
-        "fieldMatchWinPoints": "Pontos por vitória em partida",
-        "fieldMatchWinPointsHint": "Deixe em branco para não contar vitórias em partidas na classificação.",
-        "fieldMapWinPoints": "Pontos por vitória em mapa",
-        "fieldMapWinPointsHint": "Deixe em branco para não contar vitórias em mapas.",
-        "fieldRoundWinPoints": "Pontos por round vencido",
-        "fieldRoundWinPointsHint": "Deixe em branco para não contar rounds vencidos.",
-        "fieldMatchForfeitWinPoints": "Pontos por vitória em partida por W.O.",
-        "fieldMatchForfeitWinPointsHint": "Um valor diferente para uma vitória por W.O. em vez de uma vitória jogada.",
-        "fieldMapForfeitWinPoints": "Pontos por vitória em mapa por W.O.",
-        "fieldMapForfeitWinPointsHint": "Um valor diferente para uma vitória de mapa por W.O. em vez de uma vitória jogada."
+        "tiebreakerOrder": {
+          "title": "Desempates",
+          "hint": "As vitórias contam sempre primeiro. Os empates são depois resolvidos nesta ordem, o último mostrado é o recurso final.",
+          "wins": "Vitórias",
+          "moveUp": "Subir",
+          "moveDown": "Descer",
+          "remove": "Remover",
+          "options": {
+            "points": "Pontos",
+            "buchholz": "Buchholz",
+            "map_diff": "Diferença de mapas",
+            "round_diff": "Diferença de rounds",
+            "head_to_head": "Confronto direto",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Pontos",
+          "hint": "Cada partida, mapa e round ganho ou perdido dá pontos à equipe. Os rounds só contam nos mapas com placar registrado.",
+          "enable": "Usar pontos",
+          "scopes": {
+            "match": "Partida",
+            "map": "Cada mapa",
+            "round": "Cada round",
+            "forfeit": "W.O. (substitui os outros)"
+          },
+          "win": "Ganho",
+          "loss": "Perdido",
+          "notUsed": "Os pontos só ordenam o grupo se Pontos estiver nos desempates."
+        }
       },
       "bracketPage": {
         "title": "Gestão do bracket",

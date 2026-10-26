@@ -3882,20 +3882,40 @@
           "entrantNotFound": "This team isn't registered in the tournament.",
           "entrantNotInGroup": "This team isn't assigned to this group.",
           "cannotMove": "This container can't be moved further.",
-          "parentInvalid": "This set can't be used here."
+          "parentInvalid": "This set can't be used here.",
+          "tiebreakersInvalid": "Use each tiebreaker once, from the list offered.",
+          "pointsValue": "Use a whole number between -1000 and 1000."
         },
-        "pointsSectionTitle": "Points tiebreaker (optional)",
-        "pointsSectionHint": "Each point type is independent: leave blank to not use it. Accumulated points break ties before Buchholz/round diff.",
-        "fieldMatchWinPoints": "Points per match win",
-        "fieldMatchWinPointsHint": "Leave blank to not count match wins in the standings.",
-        "fieldMapWinPoints": "Points per map win",
-        "fieldMapWinPointsHint": "Leave blank to not count map wins.",
-        "fieldRoundWinPoints": "Points per round win",
-        "fieldRoundWinPointsHint": "Leave blank to not count round wins.",
-        "fieldMatchForfeitWinPoints": "Points per match win by forfeit",
-        "fieldMatchForfeitWinPointsHint": "A different value for a win by forfeit rather than actually played.",
-        "fieldMapForfeitWinPoints": "Points per map win by forfeit",
-        "fieldMapForfeitWinPointsHint": "A different value for a map win by forfeit rather than actually played."
+        "tiebreakerOrder": {
+          "title": "Tiebreakers",
+          "hint": "Wins always count first. Ties are then broken in this order, the last one shown is the final fallback.",
+          "wins": "Wins",
+          "moveUp": "Move up",
+          "moveDown": "Move down",
+          "remove": "Remove",
+          "options": {
+            "points": "Points",
+            "buchholz": "Buchholz",
+            "map_diff": "Map difference",
+            "round_diff": "Round difference",
+            "head_to_head": "Head to head",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Points",
+          "hint": "Each match, map and round won or lost gives points to the team. Rounds count only on maps with a recorded score.",
+          "enable": "Use points",
+          "scopes": {
+            "match": "Match",
+            "map": "Each map",
+            "round": "Each round",
+            "forfeit": "Forfeit (replaces the others)"
+          },
+          "win": "Won",
+          "loss": "Lost",
+          "notUsed": "Points only order the group once Points is in the tiebreakers."
+        }
       },
       "bracketPage": {
         "title": "Bracket management",

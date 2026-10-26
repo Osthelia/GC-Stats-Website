@@ -3882,20 +3882,40 @@
           "entrantNotFound": "Đội này chưa đăng ký trong giải đấu.",
           "entrantNotInGroup": "Đội này chưa được gán vào bảng này.",
           "cannotMove": "Không thể di chuyển vùng chứa này thêm nữa.",
-          "parentInvalid": "Không thể dùng bộ này ở đây."
+          "parentInvalid": "Không thể dùng bộ này ở đây.",
+          "tiebreakersInvalid": "Chỉ dùng mỗi tiêu chí một lần, từ danh sách có sẵn.",
+          "pointsValue": "Nhập số nguyên từ -1000 đến 1000."
         },
-        "pointsSectionTitle": "Tiêu chí phụ theo điểm (tùy chọn)",
-        "pointsSectionHint": "Mỗi loại điểm độc lập: để trống nếu không dùng. Điểm tích lũy được dùng để phân định trước Buchholz/chênh lệch round.",
-        "fieldMatchWinPoints": "Điểm mỗi trận thắng",
-        "fieldMatchWinPointsHint": "Để trống để không tính các trận thắng vào bảng xếp hạng.",
-        "fieldMapWinPoints": "Điểm mỗi bản đồ thắng",
-        "fieldMapWinPointsHint": "Để trống để không tính các bản đồ thắng.",
-        "fieldRoundWinPoints": "Điểm mỗi round thắng",
-        "fieldRoundWinPointsHint": "Để trống để không tính các round thắng.",
-        "fieldMatchForfeitWinPoints": "Điểm mỗi trận thắng do đối thủ bỏ cuộc",
-        "fieldMatchForfeitWinPointsHint": "Một giá trị khác cho trận thắng do đối thủ bỏ cuộc thay vì thi đấu thật.",
-        "fieldMapForfeitWinPoints": "Điểm mỗi bản đồ thắng do đối thủ bỏ cuộc",
-        "fieldMapForfeitWinPointsHint": "Một giá trị khác cho bản đồ thắng do đối thủ bỏ cuộc thay vì thi đấu thật."
+        "tiebreakerOrder": {
+          "title": "Tiêu chí phụ",
+          "hint": "Số trận thắng luôn được tính trước. Sau đó các trường hợp bằng nhau được phân định theo thứ tự này, mục cuối cùng là tiêu chí sau cùng.",
+          "wins": "Số trận thắng",
+          "moveUp": "Lên",
+          "moveDown": "Xuống",
+          "remove": "Xóa",
+          "options": {
+            "points": "Điểm",
+            "buchholz": "Buchholz",
+            "map_diff": "Hiệu số map",
+            "round_diff": "Hiệu số round",
+            "head_to_head": "Đối đầu",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Điểm",
+          "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số.",
+          "enable": "Dùng điểm",
+          "scopes": {
+            "match": "Trận",
+            "map": "Mỗi map",
+            "round": "Mỗi round",
+            "forfeit": "Xử thua (thay thế các mục khác)"
+          },
+          "win": "Thắng",
+          "loss": "Thua",
+          "notUsed": "Điểm chỉ xếp hạng bảng khi Điểm nằm trong các tiêu chí phụ."
+        }
       },
       "bracketPage": {
         "title": "Quản lý nhánh đấu",

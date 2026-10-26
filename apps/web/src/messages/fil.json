@@ -3882,20 +3882,40 @@
           "entrantNotFound": "Hindi rehistrado sa torneo ang team na ito.",
           "entrantNotInGroup": "Hindi nakatalaga sa group na ito ang team na ito.",
           "cannotMove": "Hindi na maililipat pa ang container na ito.",
-          "parentInvalid": "Hindi magagamit ang set na ito rito."
+          "parentInvalid": "Hindi magagamit ang set na ito rito.",
+          "tiebreakersInvalid": "Gamitin ang bawat tiebreaker nang isang beses lang, mula sa listahan.",
+          "pointsValue": "Maglagay ng buong numero mula -1000 hanggang 1000."
         },
-        "pointsSectionTitle": "Tiebreaker ng puntos (opsyonal)",
-        "pointsSectionHint": "Hiwalay ang bawat uri ng puntos: iwanang blangko para hindi ito gamitin. Ang naipong puntos ay bumabasag ng tabla bago ang Buchholz/round diff.",
-        "fieldMatchWinPoints": "Puntos bawat panalo sa laban",
-        "fieldMatchWinPointsHint": "Iwanang blangko para hindi bilangin ang mga panalo sa laban sa standings.",
-        "fieldMapWinPoints": "Puntos bawat panalo sa mapa",
-        "fieldMapWinPointsHint": "Iwanang blangko para hindi bilangin ang mga panalo sa mapa.",
-        "fieldRoundWinPoints": "Puntos bawat panalo sa round",
-        "fieldRoundWinPointsHint": "Iwanang blangko para hindi bilangin ang mga panalo sa round.",
-        "fieldMatchForfeitWinPoints": "Puntos bawat panalo sa laban sa pamamagitan ng forfeit",
-        "fieldMatchForfeitWinPointsHint": "Ibang value para sa panalo sa pamamagitan ng forfeit kaysa sa aktwal na nalaro.",
-        "fieldMapForfeitWinPoints": "Puntos bawat panalo sa mapa sa pamamagitan ng forfeit",
-        "fieldMapForfeitWinPointsHint": "Ibang value para sa panalo sa mapa sa pamamagitan ng forfeit kaysa sa aktwal na nalaro."
+        "tiebreakerOrder": {
+          "title": "Mga tiebreaker",
+          "hint": "Laging unang binibilang ang mga panalo. Pagkatapos, binabasag ang tabla ayon sa ayos na ito, ang huli ang pangwakas na batayan.",
+          "wins": "Mga panalo",
+          "moveUp": "Itaas",
+          "moveDown": "Ibaba",
+          "remove": "Alisin",
+          "options": {
+            "points": "Puntos",
+            "buchholz": "Buchholz",
+            "map_diff": "Diperensya ng map",
+            "round_diff": "Diperensya ng round",
+            "head_to_head": "Head to head",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Puntos",
+          "hint": "Bawat match, map at round na naipanalo o natalo ay nagbibigay ng puntos sa team. Binibilang lang ang mga round sa mga map na may naitalang score.",
+          "enable": "Gumamit ng puntos",
+          "scopes": {
+            "match": "Match",
+            "map": "Bawat map",
+            "round": "Bawat round",
+            "forfeit": "Forfeit (pumapalit sa iba)"
+          },
+          "win": "Panalo",
+          "loss": "Talo",
+          "notUsed": "Inaayos lang ng puntos ang grupo kapag nasa mga tiebreaker ang Puntos."
+        }
       },
       "bracketPage": {
         "title": "Pamamahala ng bracket",

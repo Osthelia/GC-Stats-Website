@@ -20,6 +20,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
+import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type PointsField } from "@/lib/bracket/config-types";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -33,30 +34,29 @@ export type ContainerField =
   | "qualifyAtWins"
   | "eliminateAtLosses"
   | "maxRounds"
-  | "matchWinPoints"
-  | "mapWinPoints"
-  | "roundWinPoints"
-  | "matchForfeitWinPoints"
-  | "mapForfeitWinPoints";
+  | "tiebreakers"
+  | `points.${PointsField}`;
 export type ContainerFieldErrors = Partial<Record<ContainerField, string>>;
 export type ContainerResult = { ok: true; id: number } | { ok: false; fieldErrors: ContainerFieldErrors };
 
-/** Every point value is independently optional (2026-08-31, explicit user
- *  spec) — `null` means "don't award points for this dimension" — shared by
- *  both group formats since either can use a points-based tiebreaker. */
-export type PointsInput = {
-  matchWinPoints: number | null;
-  mapWinPoints: number | null;
-  roundWinPoints: number | null;
-  matchForfeitWinPoints: number | null;
-  mapForfeitWinPoints: number | null;
-};
+/** Null turns the points off, a null value inside is a field left empty. */
+export type PointsInput = Record<PointsField, number | null> | null;
 
 export type ContainerInput =
   | { name: string; status: StageStatus; containerType: "bracket"; parentId: number | null }
-  | ({ name: string; status: StageStatus; containerType: "group"; parentId: number | null; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
-
-const POINTS_FIELDS: (keyof PointsInput)[] = ["matchWinPoints", "mapWinPoints", "roundWinPoints", "matchForfeitWinPoints", "mapForfeitWinPoints"];
+  | {
+      name: string;
+      status: StageStatus;
+      containerType: "group";
+      parentId: number | null;
+      groupFormat: "swiss" | "round_robin";
+      qualifyAtWins: number | null;
+      eliminateAtLosses: number | null;
+      maxRounds: number | null;
+      // Ordered, wins always count first
+      tiebreakers: string[];
+      pointsConfig: PointsInput;
+    };
 
 function validateContainer(input: ContainerInput): ContainerFieldErrors {
   const fieldErrors: ContainerFieldErrors = {};
@@ -71,40 +71,35 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
       if (input.eliminateAtLosses !== null && (!Number.isInteger(input.eliminateAtLosses) || input.eliminateAtLosses < 1)) fieldErrors.eliminateAtLosses = "invalid";
       if (!Number.isInteger(input.maxRounds) || (input.maxRounds ?? 0) < 1) fieldErrors.maxRounds = "invalid";
     }
-    for (const field of POINTS_FIELDS) {
-      const value = input[field];
-      if (value !== null && !Number.isFinite(value)) fieldErrors[field] = "invalid";
+    const allowed: readonly string[] = input.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS;
+    const tiebreakers: unknown = input.tiebreakers;
+    if (!Array.isArray(tiebreakers) || tiebreakers.some((tb) => !allowed.includes(tb)) || new Set(tiebreakers).size !== tiebreakers.length) {
+      fieldErrors.tiebreakers = "tiebreakersInvalid";
+    }
+    if (input.pointsConfig !== null) {
+      for (const field of POINTS_FIELDS) {
+        const value: unknown = input.pointsConfig?.[field] ?? null;
+        if (value === null) fieldErrors[`points.${field}`] = "required";
+        else if (typeof value !== "number" || !Number.isInteger(value) || Math.abs(value) > MAX_POINTS) fieldErrors[`points.${field}`] = "pointsValue";
+      }
     }
   }
 
   return fieldErrors;
 }
 
-function buildPointsConfig(input: PointsInput): Record<string, unknown> | null {
-  const active = POINTS_FIELDS.some((f) => input[f] !== null);
-  if (!active) return null;
-  return {
-    matchWin: input.matchWinPoints,
-    mapWin: input.mapWinPoints,
-    roundWin: input.roundWinPoints,
-    matchForfeitWin: input.matchForfeitWinPoints,
-    mapForfeitWin: input.mapForfeitWinPoints,
-  };
-}
-
 function buildConfig(input: ContainerInput): Record<string, unknown> {
   if (input.containerType === "bracket") return {};
-  const pointsConfig = buildPointsConfig(input);
-  if (input.groupFormat === "round_robin") {
-    return { type: "round_robin", tiebreakers: pointsConfig ? ["points", "round_diff", "head_to_head", "seed"] : ["round_diff", "head_to_head", "seed"], pointsConfig };
-  }
+  const { tiebreakers } = input;
+  const pointsConfig = input.pointsConfig && Object.fromEntries(POINTS_FIELDS.map((f) => [f, input.pointsConfig![f]]));
+  if (input.groupFormat === "round_robin") return { type: "round_robin", tiebreakers, pointsConfig };
   return {
     type: "swiss",
     qualifyAtWins: input.qualifyAtWins,
     eliminateAtLosses: input.eliminateAtLosses,
     maxRounds: input.maxRounds,
     roundFormat: {},
-    tiebreakers: pointsConfig ? ["points", "buchholz", "round_diff", "seed"] : ["buchholz", "round_diff", "seed"],
+    tiebreakers,
     pointsConfig,
   };
 }

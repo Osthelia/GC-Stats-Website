@@ -33,7 +33,7 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
  * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
  * round count and would otherwise skew the differential.
  */
-async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
+export async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
   const stats = new Map<number, MapRecord>();
   const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
     if (entrantId === null) return;
@@ -108,6 +108,10 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
     const rec = mapRecord.get(entrantId) ?? emptyRecord;
     return rec.roundWins - rec.roundLosses;
   };
+  const mapDiffOf = (entrantId: number) => {
+    const rec = mapRecord.get(entrantId) ?? emptyRecord;
+    return rec.mapWins - rec.mapLosses;
+  };
   const withMapRecord = (ranked: RankedStandingsEntry[]): GroupStandingsEntry[] =>
     ranked.map((r) => {
       const rec = mapRecord.get(Number(r.id)) ?? emptyRecord;
@@ -122,6 +126,7 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
+      mapDiff: mapDiffOf(e.entrantId),
       points: points?.get(e.entrantId) ?? 0,
     }));
     return withMapRecord(createSwissStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
@@ -144,6 +149,7 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
+      mapDiff: mapDiffOf(e.entrantId),
       headToHead,
       points: points?.get(e.entrantId) ?? 0,
     };

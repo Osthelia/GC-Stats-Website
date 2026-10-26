@@ -3878,20 +3878,40 @@
           "entrantNotFound": "Questo team non è iscritto al torneo.",
           "entrantNotInGroup": "Questo team non è assegnato a questo gruppo.",
           "cannotMove": "Questo contenitore non può essere spostato oltre.",
-          "parentInvalid": "Questo insieme non può essere usato qui."
+          "parentInvalid": "Questo insieme non può essere usato qui.",
+          "tiebreakersInvalid": "Usa ogni spareggio una sola volta, dall'elenco proposto.",
+          "pointsValue": "Usa un numero intero tra -1000 e 1000."
         },
-        "pointsSectionTitle": "Spareggio a punti",
-        "pointsSectionHint": "Ogni tipo di punto è indipendente: lascia vuoto per non usarlo. I punti accumulati decidono gli spareggi prima di Buchholz/differenza round.",
-        "fieldMatchWinPoints": "Punti per match vinto",
-        "fieldMatchWinPointsHint": "Lascia vuoto per non contare i match vinti in classifica.",
-        "fieldMapWinPoints": "Punti per mappa vinta",
-        "fieldMapWinPointsHint": "Lascia vuoto per non contare le mappe vinte.",
-        "fieldRoundWinPoints": "Punti per round vinto",
-        "fieldRoundWinPointsHint": "Lascia vuoto per non contare i round vinti.",
-        "fieldMatchForfeitWinPoints": "Punti per match vinto a tavolino",
-        "fieldMatchForfeitWinPointsHint": "Un valore diverso per una vittoria a tavolino rispetto a una giocata davvero.",
-        "fieldMapForfeitWinPoints": "Punti per mappa vinta a tavolino",
-        "fieldMapForfeitWinPointsHint": "Un valore diverso per una mappa vinta a tavolino rispetto a una giocata davvero."
+        "tiebreakerOrder": {
+          "title": "Spareggi",
+          "hint": "Le vittorie contano sempre per prime. I pareggi vengono poi risolti in questo ordine, l'ultimo mostrato è il criterio finale.",
+          "wins": "Vittorie",
+          "moveUp": "Sposta su",
+          "moveDown": "Sposta giù",
+          "remove": "Rimuovi",
+          "options": {
+            "points": "Punti",
+            "buchholz": "Buchholz",
+            "map_diff": "Differenza mappe",
+            "round_diff": "Differenza round",
+            "head_to_head": "Scontro diretto",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Punti",
+          "hint": "Ogni match, mappa e round vinto o perso dà punti alla squadra. I round contano solo sulle mappe con un punteggio registrato.",
+          "enable": "Usa i punti",
+          "scopes": {
+            "match": "Match",
+            "map": "Ogni mappa",
+            "round": "Ogni round",
+            "forfeit": "Forfait (sostituisce gli altri)"
+          },
+          "win": "Vinto",
+          "loss": "Perso",
+          "notUsed": "I punti ordinano il gruppo solo se Punti è tra gli spareggi."
+        }
       },
       "bracketPage": {
         "title": "Gestione bracket",

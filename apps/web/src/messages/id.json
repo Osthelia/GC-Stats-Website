@@ -3882,20 +3882,40 @@
           "entrantNotFound": "Tim ini tidak terdaftar di turnamen.",
           "entrantNotInGroup": "Tim ini tidak ditetapkan ke grup ini.",
           "cannotMove": "Kontainer ini tidak dapat dipindahkan lebih jauh.",
-          "parentInvalid": "Set ini tidak dapat digunakan di sini."
+          "parentInvalid": "Set ini tidak dapat digunakan di sini.",
+          "tiebreakersInvalid": "Gunakan setiap tiebreaker sekali saja, dari daftar yang tersedia.",
+          "pointsValue": "Gunakan bilangan bulat antara -1000 dan 1000."
         },
-        "pointsSectionTitle": "Pemecah seri berdasarkan poin (opsional)",
-        "pointsSectionHint": "Setiap jenis poin independen: biarkan kosong untuk tidak memakainya. Poin terkumpul memecah seri sebelum Buchholz/selisih ronde.",
-        "fieldMatchWinPoints": "Poin per kemenangan pertandingan",
-        "fieldMatchWinPointsHint": "Biarkan kosong agar kemenangan pertandingan tidak dihitung di klasemen.",
-        "fieldMapWinPoints": "Poin per kemenangan peta",
-        "fieldMapWinPointsHint": "Biarkan kosong agar kemenangan peta tidak dihitung.",
-        "fieldRoundWinPoints": "Poin per kemenangan ronde",
-        "fieldRoundWinPointsHint": "Biarkan kosong agar kemenangan ronde tidak dihitung.",
-        "fieldMatchForfeitWinPoints": "Poin per kemenangan pertandingan karena walkover",
-        "fieldMatchForfeitWinPointsHint": "Nilai berbeda untuk kemenangan karena walkover dibanding sungguh dimainkan.",
-        "fieldMapForfeitWinPoints": "Poin per kemenangan peta karena walkover",
-        "fieldMapForfeitWinPointsHint": "Nilai berbeda untuk kemenangan peta karena walkover dibanding sungguh dimainkan."
+        "tiebreakerOrder": {
+          "title": "Tiebreaker",
+          "hint": "Kemenangan selalu dihitung lebih dulu. Hasil imbang lalu ditentukan dengan urutan ini, yang terakhir menjadi penentu akhir.",
+          "wins": "Kemenangan",
+          "moveUp": "Naikkan",
+          "moveDown": "Turunkan",
+          "remove": "Hapus",
+          "options": {
+            "points": "Poin",
+            "buchholz": "Buchholz",
+            "map_diff": "Selisih map",
+            "round_diff": "Selisih ronde",
+            "head_to_head": "Head to head",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Poin",
+          "hint": "Setiap match, map, dan ronde yang dimenangkan atau dikalahkan memberi poin kepada tim. Ronde hanya dihitung pada map dengan skor tercatat.",
+          "enable": "Gunakan poin",
+          "scopes": {
+            "match": "Match",
+            "map": "Setiap map",
+            "round": "Setiap ronde",
+            "forfeit": "Forfeit (menggantikan yang lain)"
+          },
+          "win": "Menang",
+          "loss": "Kalah",
+          "notUsed": "Poin hanya mengurutkan grup jika Poin ada di tiebreaker."
+        }
       },
       "bracketPage": {
         "title": "Manajemen bracket",

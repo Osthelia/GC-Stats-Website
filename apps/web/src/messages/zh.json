@@ -3874,20 +3874,40 @@
           "entrantNotFound": "该队伍未报名此赛事。",
           "entrantNotInGroup": "该队伍未分配到此小组。",
           "cannotMove": "此容器无法再移动。",
-          "parentInvalid": "此集合无法在此处使用。"
+          "parentInvalid": "此集合无法在此处使用。",
+          "tiebreakersInvalid": "每个决胜规则只能从所列选项中使用一次。",
+          "pointsValue": "请输入 -1000 到 1000 之间的整数。"
         },
-        "pointsSectionTitle": "积分同分判定（可选）",
-        "pointsSectionHint": "每种积分类型相互独立，留空表示不使用。累计积分会在 Buchholz/轮次差之前用于判定同分名次。",
-        "fieldMatchWinPoints": "每场比赛胜利积分",
-        "fieldMatchWinPointsHint": "留空表示排名不计入比赛胜场积分。",
-        "fieldMapWinPoints": "每张地图胜利积分",
-        "fieldMapWinPointsHint": "留空表示不计入地图胜场积分。",
-        "fieldRoundWinPoints": "每回合胜利积分",
-        "fieldRoundWinPointsHint": "留空表示不计入回合胜利积分。",
-        "fieldMatchForfeitWinPoints": "因弃权获胜的比赛积分",
-        "fieldMatchForfeitWinPointsHint": "相较于实际进行的胜利，弃权获胜可设置不同的分值。",
-        "fieldMapForfeitWinPoints": "因弃权获胜的地图积分",
-        "fieldMapForfeitWinPointsHint": "相较于实际进行的胜利，弃权获胜可设置不同的分值。"
+        "tiebreakerOrder": {
+          "title": "决胜规则",
+          "hint": "胜场始终优先计算。平局随后按此顺序判定，最后一项为最终依据。",
+          "wins": "胜场",
+          "moveUp": "上移",
+          "moveDown": "下移",
+          "remove": "移除",
+          "options": {
+            "points": "积分",
+            "buchholz": "Buchholz",
+            "map_diff": "地图差",
+            "round_diff": "回合差",
+            "head_to_head": "相互战绩",
+            "seed": "种子"
+          }
+        },
+        "pointsConfig": {
+          "title": "积分",
+          "hint": "每场胜负的比赛、地图和回合都会为队伍带来积分。回合仅在已记录比分的地图上计算。",
+          "enable": "使用积分",
+          "scopes": {
+            "match": "比赛",
+            "map": "每张地图",
+            "round": "每个回合",
+            "forfeit": "弃权（取代其他项）"
+          },
+          "win": "胜",
+          "loss": "负",
+          "notUsed": "仅当积分位于决胜规则中时，积分才会影响小组排名。"
+        }
       },
       "bracketPage": {
         "title": "对阵表管理",

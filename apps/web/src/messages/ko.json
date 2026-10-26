@@ -3874,20 +3874,40 @@
           "entrantNotFound": "이 팀은 토너먼트에 등록되어 있지 않습니다.",
           "entrantNotInGroup": "이 팀은 이 그룹에 배정되어 있지 않습니다.",
           "cannotMove": "이 컨테이너는 더 이상 이동할 수 없습니다.",
-          "parentInvalid": "이 세트는 여기에서 사용할 수 없습니다."
+          "parentInvalid": "이 세트는 여기에서 사용할 수 없습니다.",
+          "tiebreakersInvalid": "제시된 목록에서 각 타이브레이커를 한 번만 사용하세요.",
+          "pointsValue": "-1000에서 1000 사이의 정수를 입력하세요."
         },
-        "pointsSectionTitle": "포인트 타이브레이커 (선택 항목)",
-        "pointsSectionHint": "각 포인트 유형은 독립적으로 작동합니다. 사용하지 않으려면 비워 두세요. 누적 포인트는 Buchholz/라운드 득실보다 먼저 동점을 가릅니다.",
-        "fieldMatchWinPoints": "경기 승리당 포인트",
-        "fieldMatchWinPointsHint": "순위 산정에 경기 승리를 반영하지 않으려면 비워 두세요.",
-        "fieldMapWinPoints": "맵 승리당 포인트",
-        "fieldMapWinPointsHint": "맵 승리를 반영하지 않으려면 비워 두세요.",
-        "fieldRoundWinPoints": "라운드 승리당 포인트",
-        "fieldRoundWinPointsHint": "라운드 승리를 반영하지 않으려면 비워 두세요.",
-        "fieldMatchForfeitWinPoints": "몰수승 경기당 포인트",
-        "fieldMatchForfeitWinPointsHint": "실제 경기 승리와 몰수승에 다른 값을 적용합니다.",
-        "fieldMapForfeitWinPoints": "몰수승 맵당 포인트",
-        "fieldMapForfeitWinPointsHint": "실제 맵 승리와 몰수승에 다른 값을 적용합니다."
+        "tiebreakerOrder": {
+          "title": "타이브레이커",
+          "hint": "승수가 항상 먼저 계산됩니다. 동점은 이 순서로 가려지며, 마지막 항목이 최종 기준입니다.",
+          "wins": "승수",
+          "moveUp": "위로",
+          "moveDown": "아래로",
+          "remove": "제거",
+          "options": {
+            "points": "포인트",
+            "buchholz": "Buchholz",
+            "map_diff": "맵 득실",
+            "round_diff": "라운드 득실",
+            "head_to_head": "상대 전적",
+            "seed": "시드"
+          }
+        },
+        "pointsConfig": {
+          "title": "포인트",
+          "hint": "이기거나 진 각 경기, 맵, 라운드가 팀에 포인트를 줍니다. 라운드는 점수가 기록된 맵에서만 계산됩니다.",
+          "enable": "포인트 사용",
+          "scopes": {
+            "match": "경기",
+            "map": "각 맵",
+            "round": "각 라운드",
+            "forfeit": "몰수 (다른 항목 대체)"
+          },
+          "win": "승리",
+          "loss": "패배",
+          "notUsed": "포인트는 타이브레이커에 포인트가 있을 때만 그룹 순위에 반영됩니다."
+        }
       },
       "bracketPage": {
         "title": "브래킷 관리",

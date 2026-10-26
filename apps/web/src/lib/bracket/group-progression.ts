@@ -14,6 +14,7 @@ import { entrants, groupEntries, matches } from "@gc-stats/db";
 import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
+import { computeMapRecord } from "./standings";
 
 export interface ResolvedGroupMatch {
   containerId: number;
@@ -106,6 +107,7 @@ async function isRoundComplete(tx: Tx, containerId: number, round: number): Prom
 async function generateAndInsertNextSwissRound(tx: Tx, containerId: number, config: SwissGroupConfig, currentRound: number): Promise<void> {
   const entries = (await getGroupEntries(tx, containerId)).filter((e) => e.status === "active");
   const history = await buildSwissHistory(tx, containerId);
+  const mapRecord = config.tiebreakers.includes("map_diff") ? await computeMapRecord(tx, containerId) : null;
   const dtos: SwissEntrant[] = entries.map((e) => ({
     id: String(e.entrantId),
     seed: e.seed ?? 0,
@@ -113,6 +115,7 @@ async function generateAndInsertNextSwissRound(tx: Tx, containerId: number, conf
     losses: e.losses,
     buchholz: e.buchholz,
     roundDiff: e.roundDiff,
+    mapDiff: (mapRecord?.get(e.entrantId)?.mapWins ?? 0) - (mapRecord?.get(e.entrantId)?.mapLosses ?? 0),
     hadBye: e.hadBye,
     status: e.status,
   }));

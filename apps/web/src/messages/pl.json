@@ -3874,20 +3874,40 @@
           "entrantNotFound": "Ta drużyna nie jest zapisana do turnieju.",
           "entrantNotInGroup": "Ta drużyna nie jest przypisana do tej grupy.",
           "cannotMove": "Tego kontenera nie można przesunąć dalej.",
-          "parentInvalid": "Tego zestawu nie można tu użyć."
+          "parentInvalid": "Tego zestawu nie można tu użyć.",
+          "tiebreakersInvalid": "Użyj każdego tiebreakera tylko raz, z podanej listy.",
+          "pointsValue": "Podaj liczbę całkowitą od -1000 do 1000."
         },
-        "pointsSectionTitle": "Rozstrzyganie remisów punktami",
-        "pointsSectionHint": "Każdy rodzaj punktów jest niezależny: zostaw puste, aby go nie używać. Zgromadzone punkty rozstrzygają remisy przed Buchholzem/różnicą rund.",
-        "fieldMatchWinPoints": "Punkty za wygrany mecz",
-        "fieldMatchWinPointsHint": "Zostaw puste, aby nie liczyć wygranych meczów w tabeli.",
-        "fieldMapWinPoints": "Punkty za wygraną mapę",
-        "fieldMapWinPointsHint": "Zostaw puste, aby nie liczyć wygranych map.",
-        "fieldRoundWinPoints": "Punkty za wygraną rundę",
-        "fieldRoundWinPointsHint": "Zostaw puste, aby nie liczyć wygranych rund.",
-        "fieldMatchForfeitWinPoints": "Punkty za mecz wygrany walkowerem",
-        "fieldMatchForfeitWinPointsHint": "Inna wartość dla zwycięstwa walkowerem niż dla faktycznie rozegranego meczu.",
-        "fieldMapForfeitWinPoints": "Punkty za mapę wygraną walkowerem",
-        "fieldMapForfeitWinPointsHint": "Inna wartość dla mapy wygranej walkowerem niż dla faktycznie rozegranej."
+        "tiebreakerOrder": {
+          "title": "Tiebreakery",
+          "hint": "Zwycięstwa zawsze liczą się najpierw. Remisy są następnie rozstrzygane w tej kolejności, ostatni pokazany jest ostatecznym kryterium.",
+          "wins": "Zwycięstwa",
+          "moveUp": "W górę",
+          "moveDown": "W dół",
+          "remove": "Usuń",
+          "options": {
+            "points": "Punkty",
+            "buchholz": "Buchholz",
+            "map_diff": "Różnica map",
+            "round_diff": "Różnica rund",
+            "head_to_head": "Bezpośrednie starcie",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Punkty",
+          "hint": "Każdy wygrany lub przegrany mecz, mapa i runda daje drużynie punkty. Rundy liczą się tylko na mapach z zapisanym wynikiem.",
+          "enable": "Używaj punktów",
+          "scopes": {
+            "match": "Mecz",
+            "map": "Każda mapa",
+            "round": "Każda runda",
+            "forfeit": "Walkower (zastępuje pozostałe)"
+          },
+          "win": "Wygrana",
+          "loss": "Przegrana",
+          "notUsed": "Punkty porządkują grupę tylko wtedy, gdy Punkty są w tiebreakerach."
+        }
       },
       "bracketPage": {
         "title": "Zarządzanie drabinką",
