@@ -298,7 +298,8 @@ async function buildStageView(stage: Awaited<ReturnType<typeof listTournamentSta
             logoUrlLight: logos?.light ?? null,
           };
         });
-        showPoints = parseGroupConfig(container.config).pointsConfig !== null;
+        const groupConfig = parseGroupConfig(container.config);
+        showPoints = groupConfig.type === "swiss" && groupConfig.pointsConfig !== null;
         qualificationRules = advancementRules.map((r) => ({
           rankFrom: r.rankFrom,
           rankTo: r.rankTo,

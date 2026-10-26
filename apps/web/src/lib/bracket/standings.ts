@@ -154,5 +154,9 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
       points: points?.get(e.entrantId) ?? 0,
     };
   });
-  return withMapRecord(createRoundRobinStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
+  const ranked = createRoundRobinStandings({ tiebreakers: config.tiebreakers }).recompute(dtos);
+  if (!points) return withMapRecord(ranked);
+
+  const byPoints = [...ranked].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+  return withMapRecord(byPoints.map((r, i) => ({ ...r, rank: i + 1 })));
 }
