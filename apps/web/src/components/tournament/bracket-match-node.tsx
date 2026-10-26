@@ -11,7 +11,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
-import { GOLD, RED, tint } from "@/lib/theme-colors";
+import { GOLD, RED } from "@/lib/theme-colors";
 import { formatSideScore } from "@/lib/match-score-format";
 import { useBracketMatchAction } from "@/components/tournament/bracket-match-action";
 
@@ -113,7 +113,7 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
   const action = useBracketMatchAction();
   const className = `nodrag nopan block w-56 overflow-hidden rounded-lg border transition-colors duration-150 hover:shadow-lg ${live ? "" : "border-neutral-800 hover:border-[#e4ae22]/50"}`;
   const style = live
-    ? { background: "var(--gcs-surface-3)", borderColor: RED, boxShadow: `0 0 8px ${tint(RED, 0.25)}` }
+    ? { background: "var(--gcs-surface-3)", borderColor: RED }
     : { background: "var(--gcs-surface-3)" };
 
   const content = (
@@ -121,7 +121,7 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
       <Handle type="target" position={Position.Left} id="a" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="target" position={Position.Left} id="b" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
 
-      <div className="flex items-center justify-between gap-2 border-b border-neutral-800 bg-black/20 px-2.5" style={{ height: HEADER_HEIGHT, ...(live && { background: tint(RED, 0.16), borderColor: tint(RED, 0.5) }) }}>
+      <div className="flex items-center justify-between gap-2 border-b border-neutral-800 bg-black/20 px-2.5" style={{ height: HEADER_HEIGHT }}>
         <span className="truncate text-[10px] font-semibold tracking-wide text-neutral-500 uppercase">{data.label ?? `${data.containerName} · R${data.round}`}</span>
         {live && (
           <span className="relative flex h-2 w-2">
