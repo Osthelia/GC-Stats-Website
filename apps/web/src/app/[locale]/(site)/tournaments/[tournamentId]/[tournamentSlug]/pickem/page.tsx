@@ -6,6 +6,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -18,6 +19,7 @@ import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { PickemLeaderboardTable } from "@/components/pickem/pickem-leaderboard-table";
 import { PickemStatusMessage } from "@/components/pickem/pickem-status-message";
 import { PickemStageBoard, type PickemScopeTabInput } from "@/components/pickem/pickem-stage-board";
+import { PageLoading } from "@/components/site/page-loading";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 
@@ -84,7 +86,10 @@ export default async function TournamentPickemPage({
               </div>
             )}
 
-            <PickemStageSection stageId={activeStage.id} tournamentId={id} userId={userId} />
+            {/* Keyed so the loader shows again on every stage change, the header stays in place. */}
+            <Suspense key={activeStage.id} fallback={<PageLoading />}>
+              <PickemStageSection stageId={activeStage.id} tournamentId={id} userId={userId} />
+            </Suspense>
           </>
         )}
       </div>
@@ -106,7 +111,7 @@ async function PickemStageSection({ stageId, tournamentId, userId }: { stageId: 
   const [scopes, rewards, pickFormData] = await Promise.all([
     getStageScoringScopes(stageId, tournamentId, userId),
     getStageRewards(stageId),
-    status.phase === "open" && userId ? getPickFormData(userId, stageId) : Promise.resolve(null),
+    (status.phase === "open" || status.phase === "locked") && userId ? getPickFormData(userId, stageId, status) : Promise.resolve(null),
   ]);
 
   const rewardsByUserId = new Map<string, string[]>();
@@ -123,14 +128,21 @@ async function PickemStageSection({ stageId, tournamentId, userId }: { stageId: 
     content: <PickemLeaderboardTable entries={s.leaderboard} rewardsByUserId={rewardsByUserId} currentUserId={userId} />,
   }));
 
+  // Once locked, the form only comes back read-only when the user actually made picks.
+  const hasPicks =
+    !!pickFormData &&
+    (Object.keys(pickFormData.initialMatchPicks).length > 0 || Object.keys(pickFormData.initialGroupMatchPicks).length > 0 || Object.keys(pickFormData.initialStandingPicks).length > 0);
+  const isLocked = status.phase === "locked";
+  const formData = isLocked && !hasPicks ? null : pickFormData;
+
   const leftFallback =
     status.phase === "notOpenYet" && status.opensAt ? (
       <PickemStatusMessage opensAt={status.opensAt} />
-    ) : status.phase === "locked" ? (
-      <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t("statusLocked")}</p>
+    ) : isLocked ? (
+      <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t(userId ? "statusLockedNoPicks" : status.groupPickMode === "matches" ? "statusLockedStageCompleted" : "statusLocked")}</p>
     ) : status.phase === "open" && !userId ? (
       <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t("statusLoginRequired")}</p>
     ) : null;
 
-  return <PickemStageBoard stageId={stageId} pickFormData={pickFormData} leftFallback={leftFallback} scopeTabs={scopeTabs} />;
+  return <PickemStageBoard stageId={stageId} pickFormData={formData} readOnly={isLocked} leftFallback={leftFallback} scopeTabs={scopeTabs} />;
 }

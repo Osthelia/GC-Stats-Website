@@ -3852,11 +3852,17 @@
           "fieldEnabled": "Aktifkan pick'em untuk tahap ini",
           "fieldOpensAt": "Dibuka pada",
           "fieldOpensAtHint": "Ditutup otomatis pada pertandingan terjadwal paling awal di tahap ini.",
+          "fieldGroupPickMode": "Prediksi fase grup",
+          "groupPickModeStandings": "Klasemen akhir",
+          "groupPickModeMatches": "Pemenang setiap pertandingan",
+          "groupPickModeStandingsHint": "Pengguna mengurutkan setiap tim di grup. Ditutup pada pertandingan pertama fase.",
+          "groupPickModeMatchesHint": "Pengguna memilih pemenang setiap pertandingan. Setiap prediksi terkunci saat pertandingannya dimulai, babak Swiss terbuka begitu pasangannya diundi.",
           "cancel": "Batal",
           "save": "Simpan",
           "saving": "Menyimpan…",
           "saveSuccess": "Pengaturan pick'em diperbarui.",
           "error": {
+            "hasPicks": "Pengguna sudah membuat prediksi dengan mode saat ini, mode tidak bisa diubah lagi.",
             "required": "Kolom ini wajib diisi.",
             "invalid": "Nilai tidak valid.",
             "stageNotFound": "Tahap tidak ditemukan."
@@ -6470,6 +6476,21 @@
     "noPhaseConfigured": "Pick'em belum dibuka untuk fase mana pun di turnamen ini.",
     "statusNotOpenYet": "Prediksi dibuka pada <date></date>.",
     "statusLocked": "Prediksi dikunci, pertandingan pertama fase ini sudah dimulai.",
+    "statusLockedNoPicks": "Prediksi sudah dikunci, kamu tidak membuat prediksi untuk fase ini.",
+    "statusLockedStageCompleted": "Prediksi sudah ditutup, fase ini telah selesai.",
+    "lockedPicksHint": "Prediksi sudah dikunci. Ini prediksimu, dicocokkan dengan hasil setiap pertandingan selesai.",
+    "lockedBracketHint": "Prediksi bracket terkunci, pertandingan pertamanya sudah dimulai. Prediksi pertandingan grup tetap terbuka hingga setiap pertandingan dimulai.",
+    "groupMatchHint": "Pilih pemenang setiap pertandingan. Prediksimu langsung disimpan dan terkunci saat pertandingan dimulai. Klik pilihanmu lagi untuk menghapusnya.",
+    "groupMatchNone": "Belum ada pertandingan yang diundi.",
+    "groupMatchNextRounds": "Babak berikutnya muncul di sini begitu pasangannya diundi.",
+    "groupMatchLocked": "Prediksi untuk pertandingan ini sudah ditutup.",
+    "pickCorrect": "Prediksi benar",
+    "pickWrong": "Prediksi salah",
+    "standingActualRank": "Peringkat sebenarnya #{rank}",
+    "guessInvalid": "Prediksi mustahil, tidak ada tim yang diprediksi bisa mencapai pertandingan ini.",
+    "guessInvalidBadge": "Mustahil",
+    "pickUnreachableBadge": "Tersingkir",
+    "pickUnreachable": "Tim ini tidak bisa lagi mencapai pertandingan ini.",
     "statusLoginRequired": "Masuk untuk membuat prediksi Anda.",
     "leaderboardTitle": "Papan peringkat",
     "overallLeaderboardTitle": "Papan peringkat keseluruhan",
@@ -6506,6 +6527,8 @@
       "invalidPick": "Salah satu prediksi tidak valid.",
       "duplicateRank": "Peringkat yang sama diprediksi dua kali.",
       "incompleteStandingPicks": "Setiap tim di grup harus diberi peringkat.",
+      "matchLocked": "Pertandingan ini sudah dimulai, prediksinya terkunci.",
+      "matchNotFound": "Pertandingan tidak ditemukan.",
       "duplicateEntrant": "Tim yang sama diberi peringkat dua kali.",
       "invalidRank": "Peringkat belum lengkap."
     },
@@ -6560,6 +6583,7 @@
         "fieldOutcomeCorrect": "Poin, hasil benar",
         "fieldAdvancement": "Poin per ronde, kemajuan",
         "fieldStanding": "Poin, peringkat klasemen benar",
+        "fieldGroupMatch": "Poin, pemenang pertandingan grup benar",
         "save": "Simpan",
         "saving": "Menyimpan…",
         "pointsSaveSuccess": "Poin diperbarui.",
@@ -6567,7 +6591,8 @@
           "notFound": "Grup tidak ditemukan.",
           "forbidden": "Hanya pemilik grup yang dapat melakukan ini.",
           "stageNotInTournament": "Fase ini bukan bagian dari turnamen ini.",
-          "invalid": "Nilai tidak valid."
+          "invalid": "Nilai tidak valid.",
+          "notEven": "Harus berupa angka genap."
         }
       }
     }

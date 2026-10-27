@@ -3852,11 +3852,17 @@
           "fieldEnabled": "為此階段啟用 Pick'em",
           "fieldOpensAt": "開放時間",
           "fieldOpensAtHint": "將在該階段最早的預定比賽開始時自動關閉。",
+          "fieldGroupPickMode": "小組賽預測",
+          "groupPickModeStandings": "最終排名",
+          "groupPickModeMatches": "每場比賽的勝者",
+          "groupPickModeStandingsHint": "使用者為小組內所有隊伍排名。在本階段首場比賽開始時關閉。",
+          "groupPickModeMatchesHint": "使用者選擇每場比賽的勝者。每個預測在其比賽開始時鎖定，瑞士輪在對戰確定後開放。",
           "cancel": "取消",
           "save": "儲存",
           "saving": "儲存中…",
           "saveSuccess": "Pick'em 設定已更新。",
           "error": {
+            "hasPicks": "已有使用者以目前模式進行預測，無法再變更。",
             "required": "此欄位為必填項。",
             "invalid": "值無效。",
             "stageNotFound": "未找到該階段。"
@@ -6470,6 +6476,21 @@
     "noPhaseConfigured": "該賽事尚未開放任何階段的 Pick'em。",
     "statusNotOpenYet": "預測將於 <date></date> 開放。",
     "statusLocked": "預測已鎖定，本階段首場比賽已經開始。",
+    "statusLockedNoPicks": "預測已鎖定，你沒有為此階段做出任何預測。",
+    "statusLockedStageCompleted": "預測已關閉，本階段已結束。",
+    "lockedPicksHint": "預測已鎖定。以下是你的預測，隨比賽結束與結果對照。",
+    "lockedBracketHint": "淘汰賽首場比賽已開始，淘汰賽預測已鎖定。小組賽預測在每場比賽開始前仍可進行。",
+    "groupMatchHint": "選擇每場比賽的勝者。你的預測會立即儲存，並在比賽開始時鎖定。再次點擊你的選擇可將其取消。",
+    "groupMatchNone": "尚未確定對戰。",
+    "groupMatchNextRounds": "後續輪次的對戰確定後將顯示在這裡。",
+    "groupMatchLocked": "本場比賽的預測已關閉。",
+    "pickCorrect": "預測正確",
+    "pickWrong": "預測錯誤",
+    "standingActualRank": "實際排名 #{rank}",
+    "guessInvalid": "不可能的預測，預測的兩支隊伍都無法進入這場比賽。",
+    "guessInvalidBadge": "不可能",
+    "pickUnreachableBadge": "無法晉級",
+    "pickUnreachable": "這支隊伍已無法進入這場比賽。",
     "statusLoginRequired": "登入後即可進行預測。",
     "leaderboardTitle": "排行榜",
     "overallLeaderboardTitle": "總排行榜",
@@ -6506,6 +6527,8 @@
       "invalidPick": "其中一項預測無效。",
       "duplicateRank": "同一名次被預測了兩次。",
       "incompleteStandingPicks": "小組內的每支戰隊都必須排定名次。",
+      "matchLocked": "本場比賽已經開始，預測已鎖定。",
+      "matchNotFound": "找不到比賽。",
       "duplicateEntrant": "同一戰隊被排定了兩次名次。",
       "invalidRank": "排名尚未填寫完整。"
     },
@@ -6560,6 +6583,7 @@
         "fieldOutcomeCorrect": "結果預測正確得分",
         "fieldAdvancement": "每輪晉級得分",
         "fieldStanding": "名次預測正確得分",
+        "fieldGroupMatch": "小組賽勝者預測正確得分",
         "save": "儲存",
         "saving": "儲存中…",
         "pointsSaveSuccess": "分值已更新。",
@@ -6567,7 +6591,8 @@
           "notFound": "未找到該小組。",
           "forbidden": "只有小組建立者可以執行此操作。",
           "stageNotInTournament": "該階段不屬於此賽事。",
-          "invalid": "值無效。"
+          "invalid": "值無效。",
+          "notEven": "必須是偶數。"
         }
       }
     }

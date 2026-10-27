@@ -3844,11 +3844,17 @@
           "fieldEnabled": "Pick'em für diese Phase aktivieren",
           "fieldOpensAt": "Öffnet am",
           "fieldOpensAtHint": "Schließt automatisch beim frühesten geplanten Match der Phase.",
+          "fieldGroupPickMode": "Vorhersagen der Gruppenphase",
+          "groupPickModeStandings": "Endplatzierung",
+          "groupPickModeMatches": "Sieger jedes Matches",
+          "groupPickModeStandingsHint": "Nutzer ordnen jedes Team der Gruppe. Schließt beim ersten Match der Phase.",
+          "groupPickModeMatchesHint": "Nutzer wählen den Sieger jedes Matches. Jede Vorhersage wird beim Start ihres Matches gesperrt, Swiss Runden öffnen, sobald ihre Paarungen ausgelost sind.",
           "cancel": "Abbrechen",
           "save": "Speichern",
           "saving": "Speichern…",
           "saveSuccess": "Pick'em Einstellungen aktualisiert.",
           "error": {
+            "hasPicks": "Nutzer haben bereits mit dem aktuellen Modus vorhergesagt, er kann nicht mehr geändert werden.",
             "required": "Dieses Feld ist erforderlich.",
             "invalid": "Ungültiger Wert.",
             "stageNotFound": "Phase nicht gefunden."
@@ -6352,6 +6358,21 @@
     "noPhaseConfigured": "Pick'em ist für keine Phase dieses Turniers geöffnet.",
     "statusNotOpenYet": "Vorhersagen öffnen am <date></date>.",
     "statusLocked": "Vorhersagen sind gesperrt, das erste Match dieser Phase hat begonnen.",
+    "statusLockedNoPicks": "Die Tipps sind gesperrt, du hast für diese Phase keine abgegeben.",
+    "statusLockedStageCompleted": "Vorhersagen sind geschlossen, diese Phase ist beendet.",
+    "lockedPicksHint": "Die Tipps sind gesperrt. Hier sind deine, abgeglichen mit den Ergebnissen, sobald die Spiele enden.",
+    "lockedBracketHint": "Bracket Vorhersagen sind gesperrt, das erste Match hat begonnen. Vorhersagen für Gruppenmatches bleiben bis zum Start des jeweiligen Matches offen.",
+    "groupMatchHint": "Wähle den Sieger jedes Matches. Deine Vorhersage wird sofort gespeichert und beim Start des Matches gesperrt. Klicke erneut auf deine Wahl, um sie zu entfernen.",
+    "groupMatchNone": "Noch keine Paarungen ausgelost.",
+    "groupMatchNextRounds": "Die nächsten Runden erscheinen hier, sobald ihre Paarungen ausgelost sind.",
+    "groupMatchLocked": "Die Vorhersagen für dieses Match sind geschlossen.",
+    "pickCorrect": "Richtiger Tipp",
+    "pickWrong": "Falscher Tipp",
+    "standingActualRank": "Tatsächlicher Platz #{rank}",
+    "guessInvalid": "Unmöglicher Tipp, keines der getippten Teams kann dieses Spiel erreichen.",
+    "guessInvalidBadge": "Unmöglich",
+    "pickUnreachableBadge": "Raus",
+    "pickUnreachable": "Dieses Team kann dieses Spiel nicht mehr erreichen.",
     "statusLoginRequired": "Melden Sie sich an, um Ihre Vorhersagen abzugeben.",
     "leaderboardTitle": "Bestenliste",
     "overallLeaderboardTitle": "Gesamte Bestenliste",
@@ -6388,6 +6409,8 @@
       "invalidPick": "Eine der Vorhersagen ist ungültig.",
       "duplicateRank": "Derselbe Rang wurde zweimal vorhergesagt.",
       "incompleteStandingPicks": "Jedes Team der Gruppe muss eingeordnet werden.",
+      "matchLocked": "Dieses Match hat bereits begonnen, die Vorhersage ist gesperrt.",
+      "matchNotFound": "Match nicht gefunden.",
       "duplicateEntrant": "Dasselbe Team wurde zweimal eingeordnet.",
       "invalidRank": "Die Rangfolge ist nicht vollständig."
     },
@@ -6442,6 +6465,7 @@
         "fieldOutcomeCorrect": "Punkte, Ergebnis korrekt",
         "fieldAdvancement": "Punkte pro Runde, Weiterkommen",
         "fieldStanding": "Punkte, Platzierung korrekt",
+        "fieldGroupMatch": "Punkte, Sieger eines Gruppenmatches korrekt",
         "save": "Speichern",
         "saving": "Speichern…",
         "pointsSaveSuccess": "Punkte aktualisiert.",
@@ -6449,7 +6473,8 @@
           "notFound": "Gruppe nicht gefunden.",
           "forbidden": "Nur der Besitzer der Gruppe kann dies tun.",
           "stageNotInTournament": "Diese Phase gehört nicht zu diesem Turnier.",
-          "invalid": "Ungültiger Wert."
+          "invalid": "Ungültiger Wert.",
+          "notEven": "Muss eine gerade Zahl sein."
         }
       }
     }

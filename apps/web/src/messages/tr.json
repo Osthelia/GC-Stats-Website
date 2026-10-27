@@ -3844,11 +3844,17 @@
           "fieldEnabled": "Bu aşama için pick'em'i etkinleştir",
           "fieldOpensAt": "Açılış",
           "fieldOpensAtHint": "Aşamanın en erken planlanan maçında otomatik olarak kapanır.",
+          "fieldGroupPickMode": "Grup aşaması tahminleri",
+          "groupPickModeStandings": "Final sıralaması",
+          "groupPickModeMatches": "Her maçın kazananı",
+          "groupPickModeStandingsHint": "Kullanıcılar gruptaki her takımı sıralar. Aşamanın ilk maçında kapanır.",
+          "groupPickModeMatchesHint": "Kullanıcılar her maçın kazananını seçer. Her tahmin maçı başladığında kilitlenir, İsviçre turları eşleşmeleri çekilince açılır.",
           "cancel": "İptal",
           "save": "Kaydet",
           "saving": "Kaydediliyor…",
           "saveSuccess": "Pick'em ayarları güncellendi.",
           "error": {
+            "hasPicks": "Kullanıcılar mevcut modla zaten tahmin yaptı, artık değiştirilemez.",
             "required": "Bu alan zorunludur.",
             "invalid": "Geçersiz değer.",
             "stageNotFound": "Aşama bulunamadı."
@@ -6352,6 +6358,21 @@
     "noPhaseConfigured": "Bu turnuvanın henüz hiçbir aşaması için Pick'em açık değil.",
     "statusNotOpenYet": "Tahminler <date></date> tarihinde açılıyor.",
     "statusLocked": "Tahminler kilitlendi, bu aşamanın ilk maçı başladı.",
+    "statusLockedNoPicks": "Tahminler kilitlendi, bu aşama için hiç tahmin yapmadın.",
+    "statusLockedStageCompleted": "Tahminler kapandı, bu aşama sona erdi.",
+    "lockedPicksHint": "Tahminler kilitlendi. İşte tahminlerin, maçlar bittikçe sonuçlarla karşılaştırılıyor.",
+    "lockedBracketHint": "Bracket tahminleri kilitlendi, ilk maçı başladı. Grup maçı tahminleri her maç başlayana kadar açık kalır.",
+    "groupMatchHint": "Her maçın kazananını seç. Tahminin hemen kaydedilir ve maç başladığında kilitlenir. Kaldırmak için seçimine tekrar tıkla.",
+    "groupMatchNone": "Henüz eşleşme çekilmedi.",
+    "groupMatchNextRounds": "Sonraki turlar, eşleşmeleri çekilir çekilmez burada görünür.",
+    "groupMatchLocked": "Bu maç için tahminler kapandı.",
+    "pickCorrect": "Doğru tahmin",
+    "pickWrong": "Yanlış tahmin",
+    "standingActualRank": "Gerçek sıra #{rank}",
+    "guessInvalid": "İmkânsız tahmin, öngörülen takımların hiçbiri bu maça ulaşamaz.",
+    "guessInvalidBadge": "İmkânsız",
+    "pickUnreachableBadge": "Ulaşamaz",
+    "pickUnreachable": "Bu takım artık bu maça ulaşamaz.",
     "statusLoginRequired": "Tahminlerinizi yapmak için giriş yapın.",
     "leaderboardTitle": "Sıralama tablosu",
     "overallLeaderboardTitle": "Genel sıralama tablosu",
@@ -6388,6 +6409,8 @@
       "invalidPick": "Tahminlerden biri geçersiz.",
       "duplicateRank": "Aynı sıra iki kez tahmin edildi.",
       "incompleteStandingPicks": "Grubun her takımı sıralanmalıdır.",
+      "matchLocked": "Bu maç zaten başladı, tahmini kilitlendi.",
+      "matchNotFound": "Maç bulunamadı.",
       "duplicateEntrant": "Aynı takım iki kez sıralandı.",
       "invalidRank": "Sıralama tamamlanmadı."
     },
@@ -6442,6 +6465,7 @@
         "fieldOutcomeCorrect": "Puan, doğru sonuç",
         "fieldAdvancement": "Raund başına puan, ilerleme",
         "fieldStanding": "Puan, doğru sıralama",
+        "fieldGroupMatch": "Puan, grup maçı kazananı doğru",
         "save": "Kaydet",
         "saving": "Kaydediliyor…",
         "pointsSaveSuccess": "Puanlar güncellendi.",
@@ -6449,7 +6473,8 @@
           "notFound": "Grup bulunamadı.",
           "forbidden": "Bunu yalnızca grup sahibi yapabilir.",
           "stageNotInTournament": "Bu aşama bu turnuvaya ait değil.",
-          "invalid": "Geçersiz değer."
+          "invalid": "Geçersiz değer.",
+          "notEven": "Çift sayı olmalıdır."
         }
       }
     }

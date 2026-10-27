@@ -3844,11 +3844,17 @@
           "fieldEnabled": "تفعيل Pick'em لهذه المرحلة",
           "fieldOpensAt": "يُفتح في",
           "fieldOpensAtHint": "يُغلق تلقائيًا عند أقرب مباراة مجدولة في المرحلة.",
+          "fieldGroupPickMode": "توقعات دور المجموعات",
+          "groupPickModeStandings": "الترتيب النهائي",
+          "groupPickModeMatches": "الفائز في كل مباراة",
+          "groupPickModeStandingsHint": "يرتب المستخدمون كل فرق المجموعة. يُغلق عند أول مباراة في المرحلة.",
+          "groupPickModeMatchesHint": "يختار المستخدمون الفائز في كل مباراة. يُقفل كل توقع عند بداية مباراته، وتُفتح الجولات السويسرية فور تحديد مواجهاتها.",
           "cancel": "إلغاء",
           "save": "حفظ",
           "saving": "جارٍ الحفظ…",
           "saveSuccess": "تم تحديث إعدادات Pick'em.",
           "error": {
+            "hasPicks": "قام مستخدمون بالفعل بتوقعات بالوضع الحالي، لم يعد بالإمكان تغييره.",
             "required": "هذا الحقل مطلوب.",
             "invalid": "قيمة غير صالحة.",
             "stageNotFound": "المرحلة غير موجودة."
@@ -6352,6 +6358,21 @@
     "noPhaseConfigured": "لم يُفتح Pick'em لأي مرحلة من هذه البطولة بعد.",
     "statusNotOpenYet": "تُفتح التوقعات في <date></date>.",
     "statusLocked": "التوقعات مغلقة، فقد بدأت أول مباراة في هذه المرحلة.",
+    "statusLockedNoPicks": "التوقعات مقفلة، لم تقم بأي توقع لهذه المرحلة.",
+    "statusLockedStageCompleted": "التوقعات مغلقة، انتهت هذه المرحلة.",
+    "lockedPicksHint": "التوقعات مقفلة. هذه توقعاتك، تتم مقارنتها بالنتائج مع انتهاء المباريات.",
+    "lockedBracketHint": "توقعات الشجرة مقفلة، فقد بدأت مباراتها الأولى. تبقى توقعات مباريات المجموعات مفتوحة حتى بداية كل مباراة.",
+    "groupMatchHint": "اختر الفائز في كل مباراة. يُحفظ توقعك فورًا ويُقفل عند بداية المباراة. انقر على اختيارك مرة أخرى لإزالته.",
+    "groupMatchNone": "لم تُحدد أي مواجهات بعد.",
+    "groupMatchNextRounds": "تظهر الجولات التالية هنا فور تحديد مواجهاتها.",
+    "groupMatchLocked": "التوقعات مغلقة لهذه المباراة.",
+    "pickCorrect": "توقع صحيح",
+    "pickWrong": "توقع خاطئ",
+    "standingActualRank": "الترتيب الفعلي #{rank}",
+    "guessInvalid": "توقع مستحيل، لا يمكن لأي من الفريقين المتوقعين الوصول إلى هذه المباراة.",
+    "guessInvalidBadge": "مستحيل",
+    "pickUnreachableBadge": "خارج المنافسة",
+    "pickUnreachable": "لم يعد بإمكان هذا الفريق الوصول إلى هذه المباراة.",
     "statusLoginRequired": "سجّل الدخول لتقديم توقعاتك.",
     "leaderboardTitle": "الترتيب",
     "overallLeaderboardTitle": "الترتيب العام",
@@ -6388,6 +6409,8 @@
       "invalidPick": "أحد التوقعات غير صالح.",
       "duplicateRank": "تم توقع المركز نفسه مرتين.",
       "incompleteStandingPicks": "يجب ترتيب كل فرق المجموعة.",
+      "matchLocked": "بدأت هذه المباراة بالفعل، توقعها مقفل.",
+      "matchNotFound": "المباراة غير موجودة.",
       "duplicateEntrant": "تم ترتيب الفريق نفسه مرتين.",
       "invalidRank": "الترتيب غير مكتمل."
     },
@@ -6442,6 +6465,7 @@
         "fieldOutcomeCorrect": "النقاط، نتيجة صحيحة",
         "fieldAdvancement": "النقاط لكل جولة، التأهل",
         "fieldStanding": "النقاط، مركز صحيح في الترتيب",
+        "fieldGroupMatch": "نقاط، الفائز الصحيح في مباراة المجموعة",
         "save": "حفظ",
         "saving": "جارٍ الحفظ…",
         "pointsSaveSuccess": "تم تحديث النقاط.",
@@ -6449,7 +6473,8 @@
           "notFound": "المجموعة غير موجودة.",
           "forbidden": "لا يمكن القيام بذلك إلا لمالك المجموعة.",
           "stageNotInTournament": "هذه المرحلة لا تنتمي إلى هذه البطولة.",
-          "invalid": "قيمة غير صالحة."
+          "invalid": "قيمة غير صالحة.",
+          "notEven": "يجب أن يكون عددًا زوجيًا."
         }
       }
     }

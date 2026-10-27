@@ -3844,11 +3844,17 @@
           "fieldEnabled": "Ativar o pick'em para esta fase",
           "fieldOpensAt": "Abre em",
           "fieldOpensAtHint": "Fecha automaticamente na primeira partida agendada da fase.",
+          "fieldGroupPickMode": "Previsões da fase de grupos",
+          "groupPickModeStandings": "Classificação final",
+          "groupPickModeMatches": "Vencedor de cada partida",
+          "groupPickModeStandingsHint": "Os usuários ordenam todas as equipes do grupo. Fecha na primeira partida da fase.",
+          "groupPickModeMatchesHint": "Os usuários escolhem o vencedor de cada partida. Cada previsão fica bloqueada quando sua partida começa, as rodadas suíças abrem assim que seus confrontos são sorteados.",
           "cancel": "Cancelar",
           "save": "Salvar",
           "saving": "Salvando…",
           "saveSuccess": "Configurações do pick'em atualizadas.",
           "error": {
+            "hasPicks": "Usuários já fizeram previsões com o modo atual, ele não pode mais ser alterado.",
             "required": "Este campo é obrigatório.",
             "invalid": "Valor inválido.",
             "stageNotFound": "Fase não encontrada."
@@ -6352,6 +6358,21 @@
     "noPhaseConfigured": "O pick'em ainda não está aberto para nenhuma fase deste torneio.",
     "statusNotOpenYet": "Os palpites abrem em <date></date>.",
     "statusLocked": "Os palpites estão encerrados, a primeira partida desta fase já começou.",
+    "statusLockedNoPicks": "Os palpites estão bloqueados, você não fez nenhum para esta fase.",
+    "statusLockedStageCompleted": "As previsões estão encerradas, esta fase terminou.",
+    "lockedPicksHint": "Os palpites estão bloqueados. Aqui estão os seus, conferidos conforme as partidas terminam.",
+    "lockedBracketHint": "As previsões do bracket estão bloqueadas, a primeira partida já começou. As previsões das partidas de grupo continuam abertas até cada partida começar.",
+    "groupMatchHint": "Escolha o vencedor de cada partida. Sua previsão é salva na hora e fica bloqueada quando a partida começa. Clique de novo na sua escolha para removê-la.",
+    "groupMatchNone": "Nenhum confronto sorteado ainda.",
+    "groupMatchNextRounds": "As próximas rodadas aparecem aqui assim que seus confrontos forem sorteados.",
+    "groupMatchLocked": "As previsões estão encerradas para esta partida.",
+    "pickCorrect": "Palpite correto",
+    "pickWrong": "Palpite errado",
+    "standingActualRank": "Posição real #{rank}",
+    "guessInvalid": "Palpite impossível, nenhuma das equipes previstas pode chegar a esta partida.",
+    "guessInvalidBadge": "Impossível",
+    "pickUnreachableBadge": "Fora",
+    "pickUnreachable": "Esta equipe não pode mais chegar a esta partida.",
     "statusLoginRequired": "Entre para fazer seus palpites.",
     "leaderboardTitle": "Ranking",
     "overallLeaderboardTitle": "Ranking geral",
@@ -6388,6 +6409,8 @@
       "invalidPick": "Um dos palpites é inválido.",
       "duplicateRank": "A mesma posição foi escolhida duas vezes.",
       "incompleteStandingPicks": "Todos os times do grupo devem ser classificados.",
+      "matchLocked": "Esta partida já começou, sua previsão está bloqueada.",
+      "matchNotFound": "Partida não encontrada.",
       "duplicateEntrant": "O mesmo time foi classificado duas vezes.",
       "invalidRank": "A classificação não está completa."
     },
@@ -6442,6 +6465,7 @@
         "fieldOutcomeCorrect": "Pontos, resultado correto",
         "fieldAdvancement": "Pontos por rodada, avanço",
         "fieldStanding": "Pontos, posição correta",
+        "fieldGroupMatch": "Pontos, vencedor de partida de grupo correto",
         "save": "Salvar",
         "saving": "Salvando…",
         "pointsSaveSuccess": "Pontos atualizados.",
@@ -6449,7 +6473,8 @@
           "notFound": "Grupo não encontrado.",
           "forbidden": "Apenas o dono do grupo pode fazer isso.",
           "stageNotInTournament": "Esta fase não pertence a este torneio.",
-          "invalid": "Valor inválido."
+          "invalid": "Valor inválido.",
+          "notEven": "Deve ser um número par."
         }
       }
     }

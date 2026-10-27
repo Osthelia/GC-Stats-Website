@@ -3852,11 +3852,17 @@
           "fieldEnabled": "Enable pick'em for this stage",
           "fieldOpensAt": "Opens at",
           "fieldOpensAtHint": "Closes automatically at the stage's earliest scheduled match.",
+          "fieldGroupPickMode": "Group stage predictions",
+          "groupPickModeStandings": "Final standings",
+          "groupPickModeMatches": "Winner of each match",
+          "groupPickModeStandingsHint": "Users rank every team of the group. Closes at the stage's first match.",
+          "groupPickModeMatchesHint": "Users pick the winner of each match. Each prediction locks when its match starts, Swiss rounds open as their matchups are drawn.",
           "cancel": "Cancel",
           "save": "Save",
           "saving": "Saving…",
           "saveSuccess": "Pick'em settings updated.",
           "error": {
+            "hasPicks": "Users already made predictions with the current mode, it can't be changed anymore.",
             "required": "This field is required.",
             "invalid": "Invalid value.",
             "stageNotFound": "Stage not found."
@@ -6476,6 +6482,21 @@
     "noPhaseConfigured": "Pick'em isn't open for any phase of this tournament yet.",
     "statusNotOpenYet": "Predictions open on <date></date>.",
     "statusLocked": "Predictions are locked, this phase's first match has started.",
+    "statusLockedNoPicks": "Predictions are locked, you didn't make any for this phase.",
+    "statusLockedStageCompleted": "Predictions are closed, this phase is over.",
+    "lockedPicksHint": "Predictions are locked. Here are yours, checked against the results as matches finish.",
+    "lockedBracketHint": "Bracket predictions are locked, its first match has started. Group match predictions stay open until each match starts.",
+    "groupMatchHint": "Pick the winner of each match. Your prediction is saved right away and locks when the match starts. Click your pick again to remove it.",
+    "groupMatchNone": "No matchups drawn yet.",
+    "groupMatchNextRounds": "The next rounds appear here as soon as their matchups are drawn.",
+    "groupMatchLocked": "Predictions are closed for this match.",
+    "pickCorrect": "Correct prediction",
+    "pickWrong": "Wrong prediction",
+    "standingActualRank": "Actual rank #{rank}",
+    "guessInvalid": "Impossible guess, neither predicted team can reach this match.",
+    "guessInvalidBadge": "Impossible",
+    "pickUnreachableBadge": "Can't reach",
+    "pickUnreachable": "This team can no longer reach this match.",
     "statusLoginRequired": "Log in to make your predictions.",
     "leaderboardTitle": "Leaderboard",
     "overallLeaderboardTitle": "Overall leaderboard",
@@ -6512,6 +6533,8 @@
       "invalidPick": "One of the predictions is invalid.",
       "duplicateRank": "The same rank was predicted twice.",
       "incompleteStandingPicks": "Every team of the group must be ranked.",
+      "matchLocked": "This match has already started, its prediction is locked.",
+      "matchNotFound": "Match not found.",
       "duplicateEntrant": "The same team was ranked twice.",
       "invalidRank": "The ranking isn't complete."
     },
@@ -6566,6 +6589,7 @@
         "fieldOutcomeCorrect": "Points, outcome correct",
         "fieldAdvancement": "Points per round, advancement",
         "fieldStanding": "Points, standing rank correct",
+        "fieldGroupMatch": "Points, group match winner correct",
         "save": "Save",
         "saving": "Saving…",
         "pointsSaveSuccess": "Points updated.",
@@ -6573,7 +6597,8 @@
           "notFound": "Group not found.",
           "forbidden": "Only the group's owner can do this.",
           "stageNotInTournament": "This phase doesn't belong to this tournament.",
-          "invalid": "Invalid value."
+          "invalid": "Invalid value.",
+          "notEven": "Must be an even number."
         }
       }
     }

@@ -97,6 +97,7 @@ export type AdminStageRow = {
   containers: AdminContainerRow[];
   pickemEnabled: boolean;
   pickemOpensAt: string | null;
+  pickemGroupPickMode: "standings" | "matches";
 };
 
 /** Display order is kept per parent, so the flat list is walked as a tree (a set is followed by what is inside it). */
@@ -154,6 +155,7 @@ export async function listTournamentStages(tournamentId: number): Promise<AdminS
     liquipediaLink: stage.liquipediaLink,
     pickemEnabled: pickemByStage.get(stage.id)?.enabled ?? false,
     pickemOpensAt: pickemByStage.get(stage.id)?.opensAt.toISOString() ?? null,
+    pickemGroupPickMode: pickemByStage.get(stage.id)?.groupPickMode ?? "standings",
     containers: inTreeOrder(containerRows.filter((c) => c.stageId === stage.id))
       .map((c) => ({
         id: c.id,

@@ -3852,11 +3852,17 @@
           "fieldEnabled": "Bật pick'em cho giai đoạn này",
           "fieldOpensAt": "Mở lúc",
           "fieldOpensAtHint": "Tự động đóng vào trận đấu được lên lịch sớm nhất của giai đoạn.",
+          "fieldGroupPickMode": "Dự đoán vòng bảng",
+          "groupPickModeStandings": "Xếp hạng cuối cùng",
+          "groupPickModeMatches": "Đội thắng của mỗi trận",
+          "groupPickModeStandingsHint": "Người dùng xếp hạng mọi đội trong bảng. Đóng khi trận đầu tiên của giai đoạn bắt đầu.",
+          "groupPickModeMatchesHint": "Người dùng chọn đội thắng của mỗi trận. Mỗi dự đoán bị khóa khi trận của nó bắt đầu, các vòng Thụy Sĩ mở ngay khi cặp đấu được bốc thăm.",
           "cancel": "Hủy",
           "save": "Lưu",
           "saving": "Đang lưu…",
           "saveSuccess": "Đã cập nhật cài đặt pick'em.",
           "error": {
+            "hasPicks": "Người dùng đã dự đoán với chế độ hiện tại, không thể thay đổi nữa.",
             "required": "Trường này là bắt buộc.",
             "invalid": "Giá trị không hợp lệ.",
             "stageNotFound": "Không tìm thấy giai đoạn."
@@ -6470,6 +6476,21 @@
     "noPhaseConfigured": "Pick'em chưa mở cho bất kỳ giai đoạn nào của giải đấu này.",
     "statusNotOpenYet": "Dự đoán mở vào <date></date>.",
     "statusLocked": "Dự đoán đã bị khóa, trận đấu đầu tiên của giai đoạn này đã bắt đầu.",
+    "statusLockedNoPicks": "Dự đoán đã bị khóa, bạn chưa dự đoán gì cho giai đoạn này.",
+    "statusLockedStageCompleted": "Đã đóng dự đoán, giai đoạn này đã kết thúc.",
+    "lockedPicksHint": "Dự đoán đã bị khóa. Đây là dự đoán của bạn, được đối chiếu với kết quả khi các trận kết thúc.",
+    "lockedBracketHint": "Dự đoán nhánh đấu đã bị khóa vì trận đầu tiên đã bắt đầu. Dự đoán các trận vòng bảng vẫn mở cho đến khi từng trận bắt đầu.",
+    "groupMatchHint": "Chọn đội thắng của mỗi trận. Dự đoán của bạn được lưu ngay và bị khóa khi trận đấu bắt đầu. Nhấn lại vào lựa chọn của bạn để bỏ chọn.",
+    "groupMatchNone": "Chưa có cặp đấu nào được bốc thăm.",
+    "groupMatchNextRounds": "Các vòng tiếp theo sẽ hiện ở đây ngay khi cặp đấu được bốc thăm.",
+    "groupMatchLocked": "Đã đóng dự đoán cho trận này.",
+    "pickCorrect": "Dự đoán đúng",
+    "pickWrong": "Dự đoán sai",
+    "standingActualRank": "Hạng thực tế #{rank}",
+    "guessInvalid": "Dự đoán bất khả thi, không đội nào được dự đoán có thể vào trận này.",
+    "guessInvalidBadge": "Bất khả thi",
+    "pickUnreachableBadge": "Bị loại",
+    "pickUnreachable": "Đội này không thể vào trận này nữa.",
     "statusLoginRequired": "Đăng nhập để đưa ra dự đoán của bạn.",
     "leaderboardTitle": "Bảng xếp hạng",
     "overallLeaderboardTitle": "Bảng xếp hạng chung",
@@ -6506,6 +6527,8 @@
       "invalidPick": "Một trong các dự đoán không hợp lệ.",
       "duplicateRank": "Cùng một hạng đã được dự đoán hai lần.",
       "incompleteStandingPicks": "Mọi đội trong bảng phải được xếp hạng.",
+      "matchLocked": "Trận này đã bắt đầu, dự đoán đã bị khóa.",
+      "matchNotFound": "Không tìm thấy trận đấu.",
       "duplicateEntrant": "Cùng một đội đã được xếp hạng hai lần.",
       "invalidRank": "Bảng xếp hạng chưa đầy đủ."
     },
@@ -6560,6 +6583,7 @@
         "fieldOutcomeCorrect": "Điểm, đúng kết quả",
         "fieldAdvancement": "Điểm mỗi round, đi tiếp",
         "fieldStanding": "Điểm, đúng hạng",
+        "fieldGroupMatch": "Điểm, đoán đúng đội thắng trận vòng bảng",
         "save": "Lưu",
         "saving": "Đang lưu…",
         "pointsSaveSuccess": "Đã cập nhật điểm.",
@@ -6567,7 +6591,8 @@
           "notFound": "Không tìm thấy nhóm.",
           "forbidden": "Chỉ chủ nhóm mới có thể thực hiện thao tác này.",
           "stageNotInTournament": "Giai đoạn này không thuộc giải đấu này.",
-          "invalid": "Giá trị không hợp lệ."
+          "invalid": "Giá trị không hợp lệ.",
+          "notEven": "Phải là số chẵn."
         }
       }
     }

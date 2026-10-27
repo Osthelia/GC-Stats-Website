@@ -3844,11 +3844,17 @@
           "fieldEnabled": "Włącz pick'em dla tego etapu",
           "fieldOpensAt": "Otwarcie",
           "fieldOpensAtHint": "Zamyka się automatycznie przy najwcześniejszym zaplanowanym meczu etapu.",
+          "fieldGroupPickMode": "Typowanie fazy grupowej",
+          "groupPickModeStandings": "Końcowa klasyfikacja",
+          "groupPickModeMatches": "Zwycięzca każdego meczu",
+          "groupPickModeStandingsHint": "Użytkownicy ustalają kolejność wszystkich drużyn grupy. Zamyka się przy pierwszym meczu fazy.",
+          "groupPickModeMatchesHint": "Użytkownicy wybierają zwycięzcę każdego meczu. Każdy typ blokuje się w chwili rozpoczęcia meczu, rundy szwajcarskie otwierają się po rozlosowaniu ich par.",
           "cancel": "Anuluj",
           "save": "Zapisz",
           "saving": "Zapisywanie…",
           "saveSuccess": "Ustawienia pick'em zaktualizowane.",
           "error": {
+            "hasPicks": "Użytkownicy już typowali w obecnym trybie, nie można go już zmienić.",
             "required": "To pole jest wymagane.",
             "invalid": "Nieprawidłowa wartość.",
             "stageNotFound": "Nie znaleziono etapu."
@@ -6352,6 +6358,21 @@
     "noPhaseConfigured": "Pick'em nie jest jeszcze otwarty dla żadnej fazy tego turnieju.",
     "statusNotOpenYet": "Typowanie otwiera się <date></date>.",
     "statusLocked": "Typowanie jest zamknięte, pierwszy mecz tej fazy już się rozpoczął.",
+    "statusLockedNoPicks": "Typy są zablokowane, nie wytypowałeś niczego w tej fazie.",
+    "statusLockedStageCompleted": "Typowanie jest zamknięte, ta faza się zakończyła.",
+    "lockedPicksHint": "Typy są zablokowane. Oto twoje, porównywane z wynikami po zakończeniu meczów.",
+    "lockedBracketHint": "Typy drabinki są zablokowane, jej pierwszy mecz już się rozpoczął. Typy meczów grupowych pozostają otwarte do rozpoczęcia każdego meczu.",
+    "groupMatchHint": "Wybierz zwycięzcę każdego meczu. Twój typ zapisuje się od razu i blokuje się w chwili rozpoczęcia meczu. Kliknij swój wybór ponownie, aby go usunąć.",
+    "groupMatchNone": "Nie rozlosowano jeszcze żadnych par.",
+    "groupMatchNextRounds": "Kolejne rundy pojawią się tutaj, gdy tylko zostaną rozlosowane ich pary.",
+    "groupMatchLocked": "Typowanie tego meczu jest zamknięte.",
+    "pickCorrect": "Trafny typ",
+    "pickWrong": "Nietrafny typ",
+    "standingActualRank": "Rzeczywiste miejsce #{rank}",
+    "guessInvalid": "Niemożliwy typ, żadna z przewidywanych drużyn nie może dotrzeć do tego meczu.",
+    "guessInvalidBadge": "Niemożliwy",
+    "pickUnreachableBadge": "Odpadła",
+    "pickUnreachable": "Ta drużyna nie może już dotrzeć do tego meczu.",
     "statusLoginRequired": "Zaloguj się, aby typować.",
     "leaderboardTitle": "Ranking",
     "overallLeaderboardTitle": "Ranking ogólny",
@@ -6388,6 +6409,8 @@
       "invalidPick": "Jeden z typów jest nieprawidłowy.",
       "duplicateRank": "To samo miejsce zostało wytypowane dwa razy.",
       "incompleteStandingPicks": "Wszystkie drużyny grupy muszą zostać sklasyfikowane.",
+      "matchLocked": "Ten mecz już się rozpoczął, jego typ jest zablokowany.",
+      "matchNotFound": "Nie znaleziono meczu.",
       "duplicateEntrant": "Ta sama drużyna została sklasyfikowana dwa razy.",
       "invalidRank": "Klasyfikacja jest niekompletna."
     },
@@ -6442,6 +6465,7 @@
         "fieldOutcomeCorrect": "Punkty, trafiony wynik",
         "fieldAdvancement": "Punkty za rundę, awans",
         "fieldStanding": "Punkty, trafione miejsce w tabeli",
+        "fieldGroupMatch": "Punkty, poprawny zwycięzca meczu grupowego",
         "save": "Zapisz",
         "saving": "Zapisywanie…",
         "pointsSaveSuccess": "Punkty zaktualizowane.",
@@ -6449,7 +6473,8 @@
           "notFound": "Nie znaleziono grupy.",
           "forbidden": "Tylko właściciel grupy może to zrobić.",
           "stageNotInTournament": "Ta faza nie należy do tego turnieju.",
-          "invalid": "Nieprawidłowa wartość."
+          "invalid": "Nieprawidłowa wartość.",
+          "notEven": "Musi być liczbą parzystą."
         }
       }
     }

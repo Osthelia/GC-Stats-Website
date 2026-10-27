@@ -28,11 +28,14 @@ export type PickemScopeTabInput = { id: number; label: string; config: PhaseScor
 export function PickemStageBoard({
   stageId,
   pickFormData,
+  readOnly = false,
   leftFallback,
   scopeTabs,
 }: {
   stageId: number;
   pickFormData: PickFormData | null;
+  /** Locked phase: the user's saved picks, checked against the real results. */
+  readOnly?: boolean;
   leftFallback: ReactNode;
   scopeTabs: PickemScopeTabInput[];
 }) {
@@ -42,7 +45,7 @@ export function PickemStageBoard({
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-      <div className="lg:col-span-8">{pickFormData && activeScope ? <PickemPickForm stageId={stageId} data={pickFormData} scoringConfig={activeScope.config} /> : leftFallback}</div>
+      <div className="lg:col-span-8">{pickFormData && activeScope ? <PickemPickForm stageId={stageId} data={pickFormData} scoringConfig={activeScope.config} readOnly={readOnly} /> : leftFallback}</div>
 
       <div className="flex flex-col gap-2 lg:col-span-4">
         <h2 className="text-lg font-semibold">{t("leaderboardTitle")}</h2>

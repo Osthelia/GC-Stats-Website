@@ -10,6 +10,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,11 +18,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TournamentContainerTabs, type TournamentContainerTab } from "@/components/tournament/tournament-container-tabs";
 import { groupBracketContainers } from "@/lib/bracket-group-containers";
-import { submitStagePicks } from "@/actions/pickem";
-import { computeVirtualBracket, getPickableMatches, getDownstreamMatchIds } from "@/lib/pickem/bracket-fill";
+import { submitStagePicks, submitGroupMatchPick } from "@/actions/pickem";
+import { computeVirtualBracket, getPickableMatches, getDownstreamMatchIds, getReachableEntrants } from "@/lib/pickem/bracket-fill";
 import type { PickFormData } from "@/lib/pickem/pickem-data";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
 import { PickemBracketCanvas } from "@/components/pickem/pickem-bracket-canvas";
+import { PickemGroupMatchList } from "@/components/pickem/pickem-group-match-list";
+import { PickOutcomeIcon, OUTCOME_COLORS, type PickOutcome } from "@/components/pickem/pick-outcome-icon";
+import { tint } from "@/lib/theme-colors";
 
 const NO_SELECTION = "none";
 
@@ -33,13 +37,21 @@ const NO_SELECTION = "none";
  * (`groupBracketContainers`) — the exact same helper/component, not a
  * lookalike. Group/Swiss standing-pick containers get their own tabs the
  * same way the real page tabs its non-bracket containers.
+ *
+ * In matches group mode, group containers list their matches instead, each
+ * pick saved on click (`submitGroupMatchPick`), the save button only covers
+ * the bracket.
  */
-export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: number; data: PickFormData; scoringConfig: PhaseScoringConfig }) {
+export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false }: { stageId: number; data: PickFormData; scoringConfig: PhaseScoringConfig; readOnly?: boolean }) {
   const t = useTranslations("pickemPage");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [matchPicks, setMatchPicks] = useState<Record<number, number>>(data.initialMatchPicks);
   const [standingPicks, setStandingPicks] = useState<Record<number, Record<number, number>>>(data.initialStandingPicks);
+  const [groupMatchPicks, setGroupMatchPicks] = useState<Record<number, number>>(data.initialGroupMatchPicks);
+  const [savingMatchIds, setSavingMatchIds] = useState<ReadonlySet<number>>(new Set());
+  const matchesMode = data.groupPickMode === "matches";
+  const bracketReadOnly = readOnly || data.bracketLocked;
   // Whether the user already had predictions saved when the page loaded — while pick'em stays open, they can always come back and change them (full delete+reinsert on save, see `saveStagePicks`), this only changes the button/toast wording so it's clear an edit is being saved, not a first submission.
   const hasExistingPicks = Object.keys(data.initialMatchPicks).length > 0 || Object.keys(data.initialStandingPicks).length > 0;
 
@@ -47,10 +59,11 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
   const predictedGroupRank = (containerId: number, rank: number): number | null => standingPicks[containerId]?.[rank] ?? null;
 
   const virtual = useMemo(
-    () => computeVirtualBracket(data.bracketMatches, data.bracketEdges, matchPicksMap, predictedGroupRank),
+    () => computeVirtualBracket(data.bracketMatches, data.bracketEdges, matchPicksMap, predictedGroupRank, { guessOnly: bracketReadOnly }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data.bracketMatches, data.bracketEdges, matchPicksMap, standingPicks]
+    [data.bracketMatches, data.bracketEdges, matchPicksMap, standingPicks, bracketReadOnly]
   );
+  const reachableEntrants = useMemo(() => (bracketReadOnly ? getReachableEntrants(data.bracketMatches, data.bracketEdges) : null), [data.bracketMatches, data.bracketEdges, bracketReadOnly]);
   const pickableMatchIds = useMemo(() => new Set(getPickableMatches(virtual).map((m) => m.matchId)), [virtual]);
 
   function pickWinner(matchId: number, entrantId: number) {
@@ -79,6 +92,35 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     });
   }
 
+  async function pickGroupMatch(matchId: number, entrantId: number | null) {
+    const previous = groupMatchPicks[matchId];
+    const setPick = (id: number | null | undefined) =>
+      setGroupMatchPicks((prev) => {
+        const next = { ...prev };
+        if (id === null || id === undefined) delete next[matchId];
+        else next[matchId] = id;
+        return next;
+      });
+    const setSaving = (saving: boolean) =>
+      setSavingMatchIds((prev) => {
+        const next = new Set(prev);
+        if (saving) next.add(matchId);
+        else next.delete(matchId);
+        return next;
+      });
+
+    setPick(entrantId);
+    setSaving(true);
+    const result = await submitGroupMatchPick(stageId, matchId, entrantId);
+    setSaving(false);
+    if (!result.ok) {
+      setPick(previous);
+      toast.error(t(`saveError.${result.error}`));
+      // A match that just locked shows up as such.
+      if (result.error === "matchLocked" || result.error === "locked") router.refresh();
+    }
+  }
+
   function handleSubmit() {
     const matchPicksInput = Object.entries(matchPicks).map(([matchId, entrantId]) => ({ matchId: Number(matchId), entrantId }));
     const standingPicksInput = Object.entries(standingPicks).flatMap(([containerId, ranks]) =>
@@ -96,7 +138,7 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     });
   }
 
-  const groupsComplete = data.groupContainers.every((c) => {
+  const groupsComplete = matchesMode || data.groupContainers.every((c) => {
     const picked = standingPicks[c.containerId] ?? {};
     return Object.keys(picked).length === c.entrants.length;
   });
@@ -104,12 +146,51 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
   const canSubmit = groupsComplete && bracketComplete;
 
   const groupTabs: TournamentContainerTab[] = data.groupContainers.map((container) => {
+    if (matchesMode) {
+      return {
+        id: container.containerId,
+        name: container.name,
+        content: (
+          <PickemGroupMatchList
+            container={container}
+            matches={data.groupMatches.filter((m) => m.containerId === container.containerId)}
+            entrantNames={data.entrantNames}
+            picks={groupMatchPicks}
+            savingMatchIds={savingMatchIds}
+            pointsPerMatch={scoringConfig.groupMatchPoints}
+            onPick={pickGroupMatch}
+          />
+        ),
+      };
+    }
     const picked = standingPicks[container.containerId] ?? {};
     const usedEntrantIds = new Set(Object.values(picked));
+    const actualRanks = data.actualStandingRanks[container.containerId];
     return {
       id: container.containerId,
       name: container.name,
-      content: (
+      content: readOnly ? (
+        <Card>
+          <CardContent className="flex flex-col gap-2 pt-6">
+            {container.entrants.map((_, index) => {
+              const rank = index + 1;
+              const entrantId = picked[rank] ?? null;
+              const actualRank = entrantId !== null ? (actualRanks?.[entrantId] ?? null) : null;
+              const outcome: PickOutcome = actualRank === null ? "pending" : actualRank === rank ? "correct" : "wrong";
+              return (
+                <div key={rank} className="flex items-center gap-3">
+                  <span className="w-10 flex-none text-sm font-semibold text-muted-foreground">#{rank}</span>
+                  <div className="flex h-9 flex-1 items-center gap-2 rounded-md border px-3 text-sm" style={outcome === "pending" ? undefined : { borderColor: tint(OUTCOME_COLORS[outcome], 0.45), background: tint(OUTCOME_COLORS[outcome], 0.08) }}>
+                    <span className="flex-1 truncate font-medium">{entrantId !== null ? (data.entrantNames[entrantId] ?? `#${entrantId}`) : "-"}</span>
+                    {outcome === "wrong" && <span className="text-xs text-muted-foreground">{t("standingActualRank", { rank: actualRank! })}</span>}
+                    <PickOutcomeIcon outcome={outcome} />
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      ) : (
         <Card>
           <CardContent className="flex flex-col gap-2 pt-6">
             {container.entrants.map((_, index) => {
@@ -144,11 +225,21 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
     };
   });
 
+  // Matches mode saves group picks on click, the button is only for the bracket.
+  const hasSubmittablePicks = !readOnly && (matchesMode ? data.bracketContainers.length > 0 && !data.bracketLocked : true);
+
   const bracketGroups = groupBracketContainers(data.bracketContainers);
   const matchContainerById = useMemo(() => new Map(data.bracketMatches.map((m) => [m.id, m.containerId])), [data.bracketMatches]);
 
   return (
     <div className="flex flex-col gap-6">
+      {(readOnly || (matchesMode && data.bracketLocked && data.bracketContainers.length > 0)) && (
+        <p className="flex items-center gap-2 rounded-lg border px-4 py-3 text-sm text-muted-foreground">
+          <Lock className="h-4 w-4 flex-none" />
+          {t(readOnly ? "lockedPicksHint" : "lockedBracketHint")}
+        </p>
+      )}
+
       {bracketGroups.length > 0 && (
         <div className="flex flex-col gap-3 rounded-xl border border-neutral-800 p-4" style={{ background: "var(--gcs-surface-2)" }}>
           {bracketGroups.length > 1 ? (
@@ -168,6 +259,8 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
                       selectedWinners={matchPicksMap}
                       scoringConfig={scoringConfig}
                       disabled={isPending}
+                      readOnly={bracketReadOnly}
+                      reachableEntrants={reachableEntrants}
                       onPick={pickWinner}
                     />
                   ),
@@ -184,6 +277,8 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
               selectedWinners={matchPicksMap}
               scoringConfig={scoringConfig}
               disabled={isPending}
+              readOnly={bracketReadOnly}
+              reachableEntrants={reachableEntrants}
               onPick={pickWinner}
             />
           )}
@@ -192,12 +287,14 @@ export function PickemPickForm({ stageId, data, scoringConfig }: { stageId: numb
 
       {groupTabs.length > 0 && <TournamentContainerTabs tabs={groupTabs} />}
 
-      <div className="flex items-center justify-end gap-3">
-        <span className="text-sm text-muted-foreground">{t(canSubmit ? "editableHint" : "incompleteHint")}</span>
-        <Button onClick={handleSubmit} disabled={isPending || !canSubmit}>
-          {isPending ? t("saving") : t(hasExistingPicks ? "updateButton" : "saveButton")}
-        </Button>
-      </div>
+      {hasSubmittablePicks && (
+        <div className="flex items-center justify-end gap-3">
+          <span className="text-sm text-muted-foreground">{t(canSubmit ? "editableHint" : "incompleteHint")}</span>
+          <Button onClick={handleSubmit} disabled={isPending || !canSubmit}>
+            {isPending ? t("saving") : t(hasExistingPicks ? "updateButton" : "saveButton")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

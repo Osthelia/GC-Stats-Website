@@ -30,7 +30,7 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
   const [stage] = await db.select({ id: stages.id, status: stages.status }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage || stage.status !== "completed") return;
 
-  const [settings] = await db.select({ enabled: pickemStageSettings.enabled }).from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId)).limit(1);
+  const [settings] = await db.select({ enabled: pickemStageSettings.enabled, groupPickMode: pickemStageSettings.groupPickMode }).from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId)).limit(1);
   if (!settings?.enabled) return;
 
   const [existing] = await db.select({ id: pickemRewards.id }).from(pickemRewards).where(eq(pickemRewards.stageId, stageId)).limit(1);
@@ -39,12 +39,15 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
   const editorData = await getStageEditorData(stageId);
   if (!editorData) return;
 
-  const totalBracketMatches = editorData.matches.filter((m) => editorData.containers.find((c) => c.id === m.containerId)?.containerType === "bracket").length;
-  const groupContainerIds = editorData.containers.filter((c) => c.containerType === "group").map((c) => c.id);
+  // Matches mode: every group match is a match pick, there are no standings to rank.
+  const matchesMode = settings.groupPickMode === "matches";
+  const pickedContainerTypes = new Set(matchesMode ? ["bracket", "group"] : ["bracket"]);
+  const totalPickableMatches = editorData.matches.filter((m) => pickedContainerTypes.has(editorData.containers.find((c) => c.id === m.containerId)?.containerType ?? "")).length;
+  const groupContainerIds = matchesMode ? [] : editorData.containers.filter((c) => c.containerType === "group").map((c) => c.id);
   const totalStandingEntrants = groupContainerIds.length
     ? (await db.select({ containerId: groupEntries.containerId }).from(groupEntries).where(inArray(groupEntries.containerId, groupContainerIds))).length
     : 0;
-  const hasAnyPickable = totalBracketMatches > 0 || totalStandingEntrants > 0;
+  const hasAnyPickable = totalPickableMatches > 0 || totalStandingEntrants > 0;
 
   const leaderboard = await computeStageLeaderboard(stageId, DEFAULT_PICKEM_SCORING);
   if (leaderboard.length === 0) return;
@@ -61,8 +64,8 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
 
     const isPerfect =
       hasAnyPickable &&
-      entry.totalMatchPicks === totalBracketMatches &&
-      entry.correctMatchPicks === totalBracketMatches &&
+      entry.totalMatchPicks === totalPickableMatches &&
+      entry.correctMatchPicks === totalPickableMatches &&
       entry.totalStandingPicks === totalStandingEntrants &&
       entry.correctStandingPicks === totalStandingEntrants;
     if (isPerfect) rows.push({ userId: entry.userId, stageId, kind: "perfect" });
