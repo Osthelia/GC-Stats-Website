@@ -4839,6 +4839,7 @@
         "neverFetched": "Jeszcze nie odczytano",
         "success": "{count, plural, one {pobrano # mecz} few {pobrano # mecze} many {pobrano # meczów} other {pobrano # meczów}}",
         "error": {
+          "gameClaimed": "Te gry należą już do innego turnieju, więc nie można ich tutaj powiązać.",
           "invalidBasePage": "Użyj nazwy strony bez znaków # < > [ ] | { } i bez / na początku lub końcu.",
           "notFound": "Nie znaleziono turnieju.",
           "notLinked": "Najpierw zapisz stronę bazową.",

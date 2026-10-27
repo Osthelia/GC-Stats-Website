@@ -13,7 +13,7 @@
 import { eq } from "drizzle-orm";
 import { lolLeaguepediaGames, lolLeaguepediaTournaments } from "@gc-stats/db";
 import { db } from "@gc-stats/db/client";
-import { fetchLeaguepediaCargo, type CargoQuery, type CargoRow, type LeaguepediaResult } from "./leaguepedia-client";
+import { fetchLeaguepediaCargo, type CargoQuery, type CargoRow, type LeaguepediaError } from "./leaguepedia-client";
 
 export type LeaguepediaGameRow = Omit<typeof lolLeaguepediaGames.$inferInsert, "id" | "tournamentId">;
 
@@ -67,14 +67,35 @@ export function gameRowFromCargo(row: CargoRow): LeaguepediaGameRow {
   };
 }
 
+/** A game can be listed under one tournament only. `gameClaimed`: one of its games is already listed under another. */
+export type GameListError = LeaguepediaError | { kind: "gameClaimed" };
+
+const GAME_ID_CONSTRAINT = "lol_leaguepedia_games_leaguepedia_game_id_unique";
+
 /** Reads the tournament's game list from Leaguepedia and replaces its rows. The result is the number of games. */
-export async function refreshGameList(tournamentId: number, overviewPage: string): Promise<LeaguepediaResult<number>> {
+export async function refreshGameList(tournamentId: number, overviewPage: string): Promise<{ ok: true; data: number } | { ok: false; error: GameListError }> {
   const result = await fetchLeaguepediaCargo(buildGameListQuery(overviewPage));
   if (!result.ok) return result;
 
   const games = result.data.map(gameRowFromCargo);
-  await replaceGameList(tournamentId, overviewPage, games);
+  try {
+    await replaceGameList(tournamentId, overviewPage, games);
+  } catch (err) {
+    // Two base pages can overlap (Equal Esports Cup 2026 and Equal Esports Cup 2026/Playoffs), so a game can be listed by both. The transaction is rolled back.
+    if (!isUniqueViolation(err, GAME_ID_CONSTRAINT)) throw err;
+    console.warn(`[leaguepedia] a game of tournament ${tournamentId} is already listed under another tournament`);
+    return { ok: false, error: { kind: "gameClaimed" } };
+  }
   return { ok: true, data: games.length };
+}
+
+/** Drizzle wraps the driver's error, so the Postgres code and constraint can sit on the error or on one of its causes. */
+function isUniqueViolation(err: unknown, constraint: string): boolean {
+  for (let current: unknown = err; current; current = (current as { cause?: unknown }).cause) {
+    const { code, constraint: name } = current as { code?: string; constraint?: string };
+    if (code === "23505" && name === constraint) return true;
+  }
+  return false;
 }
 
 /** One transaction: the tournament's link is set and stamped, and its game rows are replaced. */

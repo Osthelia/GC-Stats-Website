@@ -4839,6 +4839,7 @@
         "neverFetched": "Henüz okunmadı",
         "success": "{count, plural, one {# maç getirildi} other {# maç getirildi}}",
         "error": {
+          "gameClaimed": "Bu maçlar zaten başka bir turnuvaya ait, bu yüzden buradan bağlanamaz.",
           "invalidBasePage": "# < > [ ] | { } içermeyen ve başında veya sonunda / bulunmayan bir sayfa adı kullanın.",
           "notFound": "Turnuva bulunamadı.",
           "notLinked": "Önce bir temel sayfa kaydedin.",

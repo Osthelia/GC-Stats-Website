@@ -4839,6 +4839,7 @@
         "neverFetched": "まだ取得していません",
         "success": "{count, plural, other {# 試合を取得しました}}",
         "error": {
+          "gameClaimed": "これらのゲームは既に別の大会に属しているため、ここでは紐づけできません。",
           "invalidBasePage": "# < > [ ] | { } を含まず、先頭と末尾に / がないページ名を使ってください。",
           "notFound": "大会が見つかりません。",
           "notLinked": "先にベースページを保存してください。",

@@ -4839,6 +4839,7 @@
         "neverFetched": "尚未获取",
         "success": "已获取 {count, plural, other {# 场比赛}}",
         "error": {
+          "gameClaimed": "这些对局已属于另一个赛事，无法在此关联。",
           "invalidBasePage": "页面名称不能包含 # < > [ ] | { } ，且不能以 / 开头或结尾。",
           "notFound": "未找到该赛事。",
           "notLinked": "请先保存基础页面。",

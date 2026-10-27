@@ -4839,6 +4839,7 @@
         "neverFetched": "아직 가져오지 않음",
         "success": "{count, plural, other {경기 #개를 가져왔습니다}}",
         "error": {
+          "gameClaimed": "이 게임들은 이미 다른 토너먼트에 속해 있어 여기서 연결할 수 없습니다.",
           "invalidBasePage": "# < > [ ] | { } 를 포함하지 않고, 앞뒤에 / 가 없는 페이지 이름을 사용하세요.",
           "notFound": "대회를 찾을 수 없습니다.",
           "notLinked": "먼저 기본 페이지를 저장하세요.",

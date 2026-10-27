@@ -4843,6 +4843,7 @@
         "neverFetched": "Not fetched yet",
         "success": "{count, plural, one {# game} other {# games}} fetched",
         "error": {
+          "gameClaimed": "These games already belong to another tournament, so they cannot be linked here.",
           "invalidBasePage": "Use a page name without # < > [ ] | { }, and no leading or trailing /.",
           "notFound": "Tournament not found.",
           "notLinked": "Save a base page first.",

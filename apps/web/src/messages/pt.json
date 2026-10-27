@@ -4839,6 +4839,7 @@
         "neverFetched": "Ainda não lido",
         "success": "{count, plural, one {# partida carregada} other {# partidas carregadas}}",
         "error": {
+          "gameClaimed": "Estes jogos já pertencem a outro torneio, por isso não podem ser vinculados aqui.",
           "invalidBasePage": "Use um nome de página sem # < > [ ] | { } e sem / no início ou no fim.",
           "notFound": "Torneio não encontrado.",
           "notLinked": "Salve uma página base primeiro.",

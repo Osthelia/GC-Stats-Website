@@ -17,8 +17,7 @@ import { PERMISSIONS, lolTournaments } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguepedia";
-import { refreshGameList } from "@/lib/leaguepedia-games";
-import type { LeaguepediaError } from "@/lib/leaguepedia-client";
+import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
 import { getAdminMatch } from "@/lib/admin-matches";
 import { prepareLeaguepediaGame, commitLeaguepediaGame, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-leaguepedia-game";
 import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
@@ -28,7 +27,7 @@ import { updateTag } from "next/cache";
 
 export type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 
-export type LeaguepediaLinkError = "invalidBasePage" | "notFound" | "notLinked" | "missingConfig" | "fetch";
+export type LeaguepediaLinkError = "invalidBasePage" | "notFound" | "notLinked" | "missingConfig" | "fetch" | "gameClaimed";
 
 export type LeaguepediaLinkResult = { ok: true; games: number } | { ok: false; error: LeaguepediaLinkError };
 
@@ -116,6 +115,7 @@ export async function commitLeaguepediaGameForMatch(tournamentId: number, matchI
   return result;
 }
 
-function fetchError(error: LeaguepediaError): LeaguepediaLinkError {
-  return error.kind === "missingConfig" ? "missingConfig" : "fetch";
+function fetchError(error: GameListError): LeaguepediaLinkError {
+  if (error.kind === "missingConfig") return "missingConfig";
+  return error.kind === "gameClaimed" ? "gameClaimed" : "fetch";
 }
