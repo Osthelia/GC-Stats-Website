@@ -1,8 +1,8 @@
 /**
  * GC-Stats — index module
  *
- * Package entrypoint: re-exports the S3 client helpers and the image,
- * logo, news, and emote storage modules.
+ * Package entrypoint: re-exports the S3 client helpers, the image, logo, news and
+ * emote storage modules, and the LoL imports bucket.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -15,11 +15,14 @@ export {
   publicUrl,
   tryPublicUrl,
   putObject,
+  getObject,
   deleteObject,
   deleteObjects,
   objectExists,
   copyObjectWithinBucket,
 } from "./s3";
+export { getLolImportsBucket, lolImportKey, storeLolImport, readLolImport, lolImportExists, gzipJson, gunzipJson } from "./lol-imports";
+export type { LolImportPayload } from "./lol-imports";
 export { convertToWebp, validateImageBuffer, MAX_IMAGE_BYTES } from "./image";
 export type { ImageFit, WebpOptions, ImageValidationError, ImageValidationResult } from "./image";
 export { LOGO_FOLDERS, storeLogoPair, replaceLogoFiles, tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, logoUrl } from "./logos";

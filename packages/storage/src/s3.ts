@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { S3Client, PutObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, CopyObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand, DeleteObjectsCommand, CopyObjectCommand, HeadObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { FetchHttpHandler } from "@smithy/fetch-http-handler";
 
 let cachedClient: S3Client | null = null;
@@ -41,8 +41,8 @@ export function getS3Client(): S3Client {
   return cachedClient;
 }
 
-export function getBucket(): string {
-  return requireEnv("S3_BUCKET");
+export function getBucket(bucketName: string = "S3_BUCKET"): string {
+  return requireEnv(bucketName);
 }
 
 /** Public read URL for a key — bucket's own public endpoint, or a CDN in front of it (mirrors V1's BunnyCDN pull zone). Throws if unconfigured — call after an actual upload, where S3 must already be set up. */
@@ -57,10 +57,11 @@ export function tryPublicUrl(key: string): string | null {
   return base ? `${base}/${key}` : null;
 }
 
-export async function putObject(key: string, body: Buffer, contentType: string): Promise<void> {
+/** `bucket` defaults to S3_BUCKET; pass another bucket (e.g. the LoL imports bucket) to write there instead. */
+export async function putObject(key: string, body: Buffer, contentType: string, bucket: string = getBucket()): Promise<void> {
   await getS3Client().send(
     new PutObjectCommand({
-      Bucket: getBucket(),
+      Bucket: bucket,
       Key: key,
       Body: body,
       ContentType: contentType,
@@ -81,9 +82,21 @@ export async function deleteObjects(keys: string[]): Promise<void> {
   await getS3Client().send(new DeleteObjectsCommand({ Bucket: getBucket(), Delete: { Objects: keys.map((Key) => ({ Key })) } }));
 }
 
-export async function objectExists(key: string): Promise<boolean> {
+/** The object's bytes, or null when the key does not exist. */
+export async function getObject(key: string, bucket: string = getBucket()): Promise<Uint8Array | null> {
   try {
-    await getS3Client().send(new HeadObjectCommand({ Bucket: getBucket(), Key: key }));
+    const response = await getS3Client().send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    return (await response.Body?.transformToByteArray()) ?? null;
+  } catch (err) {
+    const status = (err as { $metadata?: { httpStatusCode?: number } })?.$metadata?.httpStatusCode;
+    if (status === 404) return null;
+    throw err;
+  }
+}
+
+export async function objectExists(key: string, bucket: string = getBucket()): Promise<boolean> {
+  try {
+    await getS3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
     return true;
   } catch (err) {
     const status = (err as { $metadata?: { httpStatusCode?: number } })?.$metadata?.httpStatusCode;
