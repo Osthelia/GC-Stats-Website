@@ -1,9 +1,10 @@
 /**
  * GC-Stats - import-game
  *
- * Entry point for one LoL game import: checks the uploaded match and timeline, loads the Data Dragon
- * champion names, then stores the game. The upload action calls this and does nothing else with the
- * data. Like fetchMapData for Valorant, it is the only place that gathers the inputs for the store.
+ * Entry point for one LoL game import: checks the match and timeline, keeps the raw pair in the LoL
+ * imports bucket (when the game has a source), loads the Data Dragon champion names, then stores the
+ * game. The upload action and the Leaguepedia fetch both call this and do nothing else with the data.
+ * Like fetchMapData for Valorant, it is the only place that gathers the inputs for the store.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -11,6 +12,7 @@
  */
 
 import { validateImport } from "@gc-stats/lol-stats-engine";
+import { storeLolImport } from "@gc-stats/storage";
 import { getDataDragonCatalog } from "@/lib/data-dragon-client";
 import { storeGameData, type StoreGameInput } from "./store-game-data";
 
@@ -32,6 +34,11 @@ export type ImportGameResult = { ok: true; gameId: number } | { ok: false; error
 export async function importGame(input: ImportGameInput): Promise<ImportGameResult> {
   const validation = validateImport(input.match, input.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
+
+  // The raw pair is written before the store, so a store that fails (an unmapped player, say) still keeps the file.
+  if (input.source) {
+    await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
+  }
 
   const catalog = await getDataDragonCatalog();
   const { gameId } = await storeGameData({
