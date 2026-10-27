@@ -172,4 +172,5 @@ CREATE TABLE "external_api_sessions" (
 --> statement-breakpoint
 ALTER TABLE "lol_leaguepedia_games" ADD CONSTRAINT "lol_leaguepedia_games_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_leaguepedia_tournaments" ADD CONSTRAINT "lol_leaguepedia_tournaments_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "lol_leaguepedia_games_tournament_id_idx" ON "lol_leaguepedia_games" USING btree ("tournament_id");
+CREATE INDEX "lol_leaguepedia_games_tournament_id_idx" ON "lol_leaguepedia_games" USING btree ("tournament_id");--> statement-breakpoint
+ALTER TABLE "lol_games" ADD COLUMN "role_overrides" jsonb DEFAULT '{}'::jsonb NOT NULL;

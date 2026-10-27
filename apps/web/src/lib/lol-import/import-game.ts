@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { validateImport } from "@gc-stats/lol-stats-engine";
+import { resolvePlayerRoles, validateImport } from "@gc-stats/lol-stats-engine";
 import { storeLolImport } from "@gc-stats/storage";
 import { getDataDragonCatalog } from "@/lib/data-dragon-client";
 import { storeGameData, type StoreGameInput } from "./store-game-data";
@@ -26,6 +26,10 @@ export interface ImportGameInput {
   source: StoreGameInput["source"];
   entrantIdBySide: StoreGameInput["entrantIdBySide"];
   personIdByPuuid: StoreGameInput["personIdByPuuid"];
+  /** The admin's role overrides by puuid. Players without one get the inferred role. */
+  roleOverrides?: Record<string, string | null>;
+  /** The game being edited, when the save replaces it. */
+  replaceGameId?: number | null;
 }
 
 export type ImportGameResult = { ok: true; gameId: number } | { ok: false; error: { kind: "invalidUpload"; errors: string[] } };
@@ -50,6 +54,9 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
     entrantIdBySide: input.entrantIdBySide,
     personIdByPuuid: input.personIdByPuuid,
     championNameById: catalog.championNameById,
+    roleByParticipantId: resolvePlayerRoles(validation.match, validation.timeline, input.roleOverrides ?? {}),
+    roleOverrides: input.roleOverrides ?? {},
+    replaceGameId: input.replaceGameId ?? null,
   });
   return { ok: true, gameId };
 }

@@ -1,5 +1,5 @@
 {
-  "id": "27c95f09-08e6-4bfa-99cf-e171356a221c",
+  "id": "7df11bb7-c5ec-4f45-abfc-c97410eb3d91",
   "prevId": "0f23a087-46d9-4123-b792-da5890406082",
   "version": "7",
   "dialect": "postgresql",
@@ -3187,6 +3187,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "role_overrides": {
+          "name": "role_overrides",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {},

@@ -66,3 +66,14 @@ describe("roleOf", () => {
     expect(roleOf("Invalid")).toBeNull();
   });
 });
+
+describe("summoner spells and the rune page", () => {
+  it("keeps both summoner spells and the whole rune page of every player", () => {
+    const raw = match.info.participants[0]!;
+    const row = summary.players.find((p) => p.personId === raw.participantId)!;
+    expect(row.summoners).toEqual([raw.spell1Id, raw.spell2Id]);
+    expect(row.runes.primaryPerks).toEqual(raw.perks.styles[0]!.selections.map((s) => s.perk));
+    expect(row.runes.subPerks).toEqual(raw.perks.styles[1]!.selections.map((s) => s.perk));
+    expect(row.runes.statPerks).toEqual(raw.perks.statPerks);
+  });
+});

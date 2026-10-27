@@ -20,7 +20,16 @@ export interface RiotMatchMetadataDto {
 }
 
 export interface RiotPerkSelectionDto {
-  perk: number;
+  perk: number; // rune id
+  var1?: number;
+  var2?: number;
+  var3?: number;
+}
+
+export interface RiotStatPerksDto {
+  offense: number;
+  flex: number;
+  defense: number;
 }
 
 export interface RiotPerkStyleDto {
@@ -30,6 +39,8 @@ export interface RiotPerkStyleDto {
 
 export interface RiotParticipantDto {
   puuid: string;
+  riotIdGameName?: string; // shown in the import preview, e.g. "SLYA Pivotless"
+  riotIdTagline?: string;
   participantId: number; // 1–10
   teamId: RiotTeamId;
   teamPosition: string; // TOP | JUNGLE | MIDDLE | BOTTOM | UTILITY | "" when unknown
@@ -50,9 +61,9 @@ export interface RiotParticipantDto {
   item4: number;
   item5: number;
   item6: number;
-  perks: { styles: RiotPerkStyleDto[] };
-  summoner1Id: number;
-  summoner2Id: number;
+  perks: { styles: RiotPerkStyleDto[]; statPerks?: RiotStatPerksDto };
+  spell1Id: number; // summoner spell ids, e.g. 4 Flash, 14 Ignite
+  spell2Id: number;
   win: boolean;
   gameEndedInSurrender?: boolean;
   gameEndedInEarlySurrender?: boolean;

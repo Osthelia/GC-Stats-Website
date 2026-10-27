@@ -22,7 +22,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
-import { fetchLeaguepediaGameForMatch } from "@/actions/admin-leaguepedia";
+import { prepareLeaguepediaGameForMatch, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { LeaguepediaGamePreview } from "@/components/admin/leaguepedia-game-preview";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 import { useGame } from "@/lib/use-game";
@@ -46,7 +47,9 @@ function emptyState(nextOrder: number): FormState {
   return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, note: "", leaguepediaGameId: NO_LEAGUEPEDIA };
 }
 
-function stateFromGame(game: AdminLeagueGameRow): FormState {
+// The Leaguepedia game this row came from, found by its Riot match id. Empty for games entered by hand.
+function stateFromGame(game: AdminLeagueGameRow, leaguepediaGames: LeaguepediaGameOption[]): FormState {
+  const leaguepedia = game.apiMatchId ? leaguepediaGames.find((g) => g.riotMatchId === game.apiMatchId) : undefined;
   return {
     order: String(game.order),
     apiMatchId: game.apiMatchId ?? "",
@@ -54,7 +57,7 @@ function stateFromGame(game: AdminLeagueGameRow): FormState {
     isCompleted: game.isCompleted,
     isForfeit: game.isForfeit,
     note: game.note ?? "",
-    leaguepediaGameId: NO_LEAGUEPEDIA,
+    leaguepediaGameId: leaguepedia?.leaguepediaGameId ?? NO_LEAGUEPEDIA,
   };
 }
 
@@ -84,13 +87,15 @@ export function LeagueGameDialog({
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<LeagueGameFieldErrors>({});
   const [form, setForm] = useState<FormState>(emptyState(nextOrder));
+  const [preview, setPreview] = useState<LeaguepediaPreview | null>(null);
 
   useEffect(() => {
     if (open) {
-      setForm(editing ? stateFromGame(editing) : emptyState(nextOrder));
+      setForm(editing ? stateFromGame(editing, leaguepediaGames) : emptyState(nextOrder));
       setFieldErrors({});
+      setPreview(null);
     }
-  }, [open, editing, nextOrder]);
+  }, [open, editing, nextOrder, leaguepediaGames]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
   const fieldErr = (field: keyof LeagueGameFieldErrors) => (fieldErrors[field] ? t(`fieldError.${fieldErrors[field]}`) : undefined);
@@ -103,9 +108,15 @@ export function LeagueGameDialog({
   const orderedLeaguepediaGames = [...leaguepediaGames].sort((a, b) => Number(isSeriesGame(b)) - Number(isSeriesGame(a)));
   const leaguepediaLabel = (g: LeaguepediaGameOption) => {
     const date = g.playedAt ? new Date(g.playedAt).toLocaleDateString(locale) : "";
-    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("leaguepedia.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("leaguepedia.noData")].filter(Boolean).join(" · ");
+    // A game already stored is greyed out, except the one being edited, which keeps its own Leaguepedia game.
+    const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "leaguepedia.alreadyStoredHere" : "leaguepedia.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
+    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("leaguepedia.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("leaguepedia.noData"), stored].filter(Boolean).join(" · ");
   };
-  const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({ id: g.leaguepediaGameId, label: leaguepediaLabel(g), disabled: !g.hasData }));
+  const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({
+    id: g.leaguepediaGameId,
+    label: leaguepediaLabel(g),
+    disabled: !g.hasData || (g.storedAs !== null && g.storedAs.gameId !== editing?.id),
+  }));
   const selectedLeaguepedia = leaguepediaGames.find((g) => g.leaguepediaGameId === form.leaguepediaGameId) ?? null;
 
   function selectLeaguepediaGame(id: string) {
@@ -114,17 +125,39 @@ export function LeagueGameDialog({
     setForm((prev) => ({ ...prev, leaguepediaGameId: id, apiMatchId: picked?.riotMatchId ?? prev.apiMatchId }));
   }
 
-  function handleLeaguepedia(mode: "fetch" | "renew" | "reprocess") {
+  // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
+  function handlePrepare(mode: "fetch" | "renew" | "reprocess") {
     startTransition(async () => {
-      const result = await fetchLeaguepediaGameForMatch(tournamentId, matchId, { leaguepediaGameId: form.leaguepediaGameId, order: Number(form.order), mode });
+      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { leaguepediaGameId: form.leaguepediaGameId, mode });
       if (!result.ok) {
         toast.error(t(`leaguepedia.error.${result.error.kind}`, { count: result.error.kind === "missingPlayers" ? result.error.count : 0 }));
         return;
       }
-      onOpenChange(false);
-      router.refresh();
-      toast.success(t("leaguepedia.success"));
+      setPreview(result.preview);
     });
+  }
+
+  if (preview) {
+    return (
+      <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{t("leaguepedia.previewTitle")}</DialogTitle>
+            <DialogDescription>{t("leaguepedia.previewDescription")}</DialogDescription>
+          </DialogHeader>
+          <LeaguepediaGamePreview
+            tournamentId={tournamentId}
+            matchId={matchId}
+            gameId={editing?.id ?? null}
+            leaguepediaGameId={form.leaguepediaGameId}
+            order={Number(form.order)}
+            preview={preview}
+            onBack={() => setPreview(null)}
+            onSaved={() => onOpenChange(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   function handleSave() {
@@ -199,13 +232,13 @@ export function LeagueGameDialog({
 
           {selectedLeaguepedia?.hasData && (
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => handleLeaguepedia("fetch")} disabled={isPending}>
+              <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
                 {isPending ? t("leaguepedia.fetching") : t("leaguepedia.fetch")}
               </Button>
-              <Button variant="outline" onClick={() => handleLeaguepedia("renew")} disabled={isPending}>
+              <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
                 {t("leaguepedia.renew")}
               </Button>
-              <Button variant="outline" onClick={() => handleLeaguepedia("reprocess")} disabled={isPending}>
+              <Button variant="outline" onClick={() => handlePrepare("reprocess")} disabled={isPending}>
                 {t("leaguepedia.reprocess")}
               </Button>
             </div>

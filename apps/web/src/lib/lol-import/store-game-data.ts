@@ -26,7 +26,6 @@ import {
   computeFirstTower,
   computeLaneDiffs,
   computeObjectiveTimings,
-  roleOf,
   sideForTeamId,
   type LanePlayer,
   type LeagueSide,
@@ -50,7 +49,13 @@ export interface StoreGameInput {
   entrantIdBySide: Record<LeagueSide, number>;
   /** Person for every Riot puuid in the game. Every participant must be mapped. */
   personIdByPuuid: Map<string, number>;
+  /** The game being edited: its row is replaced in place, so a manual game becomes the Riot game without a second row. */
+  replaceGameId?: number | null;
   championNameById: Map<number, string>;
+  /** The role of each participant: inferred from the positions, or the admin's override (resolvePlayerRoles). */
+  roleByParticipantId: Map<number, string | null>;
+  /** The admin's role overrides by puuid, kept on the game so a re-import keeps them. */
+  roleOverrides: Record<string, string | null>;
 }
 
 export async function storeGameData(input: StoreGameInput): Promise<{ gameId: number }> {
@@ -70,6 +75,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     entrantIdBySide: input.entrantIdBySide,
     personIdByPuuid,
     championNameById: input.championNameById,
+    roleByParticipantId: input.roleByParticipantId,
   });
 
   const timelineContext = (gameId: number): LeagueTimelineContext => ({
@@ -81,7 +87,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
   const lanePlayers: LanePlayer[] = match.info.participants.map((p) => ({
     personId: personIdByPuuid.get(p.puuid)!,
     side: sideForTeamId(p.teamId),
-    role: roleOf(p.teamPosition),
+    role: input.roleByParticipantId.get(p.participantId) ?? null,
   }));
 
   // The game row does not need its own id, so its fields come from a first pass.
@@ -89,12 +95,20 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     ...buildGameSummary(match, summaryContext(0)).game,
     matchId: input.matchId,
     source: input.source,
+    roleOverrides: input.roleOverrides,
   };
 
   const gameId = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${apiMatchId}))`);
 
-    const [existing] = await tx.select({ id: games.id, matchId: games.matchId }).from(games).where(eq(games.apiMatchId, apiMatchId)).limit(1);
+    const [byRiotId] = await tx.select({ id: games.id, matchId: games.matchId }).from(games).where(eq(games.apiMatchId, apiMatchId)).limit(1);
+    let existing = byRiotId;
+    if (input.replaceGameId != null) {
+      const [target] = await tx.select({ id: games.id, matchId: games.matchId }).from(games).where(eq(games.id, input.replaceGameId)).limit(1);
+      if (!target || target.matchId !== input.matchId) throw new Error(`Game ${input.replaceGameId} is not a game of this series`);
+      if (byRiotId && byRiotId.id !== target.id) throw new Error(`Riot match ${apiMatchId} is already attached to another game`);
+      existing = target;
+    }
     if (existing && existing.matchId !== input.matchId) {
       throw new Error(`Riot match ${apiMatchId} is already attached to another series`);
     }

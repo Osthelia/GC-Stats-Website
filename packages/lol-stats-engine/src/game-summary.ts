@@ -39,7 +39,9 @@ export interface LeaguePlayerStatsRow {
   damage: number;
   vision: number;
   items: number[];
-  runes: { primary: number; keystone: number; secondary: number };
+  /** The whole rune page: both trees with every selected rune, in order, and the stat shards. */
+  runes: { primaryStyle: number; primaryPerks: number[]; subStyle: number; subPerks: number[]; statPerks: { offense: number; flex: number; defense: number } | null };
+  /** The two summoner spell ids (Flash, Ignite...), in the order the player took them. */
   summoners: number[];
 }
 
@@ -84,6 +86,8 @@ export interface LeagueSummaryContext {
   personIdByPuuid: Map<string, number>;
   /** Champion display name for a championId, e.g. 103 → "Ahri". */
   championNameById: Map<number, string>;
+  /** The role of each participant, from resolvePlayerRoles. Without it the role is Riot's teamPosition. */
+  roleByParticipantId?: Map<number, string | null>;
 }
 
 const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
@@ -92,6 +96,11 @@ const LANE_ROLES = new Set(["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]);
 /** A lane role from Riot's teamPosition. Anything else (empty, "AFK", "Invalid") is null, so it never pairs with a lane opponent. */
 export function roleOf(teamPosition: string): string | null {
   return LANE_ROLES.has(teamPosition) ? teamPosition : null;
+}
+
+/** The role the stats use: the resolved one when the caller gave it (inference, admin override), else Riot's teamPosition. */
+function playerRole(p: RiotParticipantDto, ctx: LeagueSummaryContext): string | null {
+  return ctx.roleByParticipantId?.has(p.participantId) ? ctx.roleByParticipantId.get(p.participantId)! : roleOf(p.teamPosition);
 }
 
 /** Riot's `teamId`: 100 is blue, 200 is red. Games entered by hand have no side. */
@@ -133,7 +142,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     entrantId: ctx.entrantIdBySide[side],
     personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
     championName: championDisplayName(p, ctx),
-    role: roleOf(p.teamPosition),
+    role: playerRole(p, ctx),
     kills: p.kills,
     deaths: p.deaths,
     assists: p.assists,
@@ -144,11 +153,13 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     // Slot order, empty slots dropped.
     items: [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter((id) => id !== 0),
     runes: {
-      primary: primary?.style ?? 0,
-      keystone: primary?.selections[0]?.perk ?? 0,
-      secondary: secondary?.style ?? 0,
+      primaryStyle: primary?.style ?? 0,
+      primaryPerks: primary?.selections.map((s) => s.perk) ?? [],
+      subStyle: secondary?.style ?? 0,
+      subPerks: secondary?.selections.map((s) => s.perk) ?? [],
+      statPerks: p.perks.statPerks ?? null,
     },
-    summoners: [p.summoner1Id, p.summoner2Id],
+    summoners: [p.spell1Id, p.spell2Id],
   };
 }
 

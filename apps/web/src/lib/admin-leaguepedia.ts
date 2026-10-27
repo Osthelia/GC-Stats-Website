@@ -11,7 +11,7 @@
  */
 
 import { eq, sql } from "drizzle-orm";
-import { lolLeaguepediaGames, lolLeaguepediaTournaments } from "@gc-stats/db";
+import { lolGames, lolLeaguepediaGames, lolLeaguepediaTournaments } from "@gc-stats/db";
 import { db } from "@gc-stats/db/client";
 
 export interface LeaguepediaLinkStatus {
@@ -39,6 +39,8 @@ export interface LeaguepediaGameOption {
   gameInMatch: number;
   playedAt: string | null;
   hasData: boolean;
+  /** The game this Riot match is already stored as, null when it is not stored yet. */
+  storedAs: { gameId: number; matchId: number; order: number } | null;
 }
 
 /** The tournament's Leaguepedia games, in the order of the list. */
@@ -54,11 +56,19 @@ export async function listLeaguepediaGameOptions(tournamentId: number): Promise<
       gameInMatch: lolLeaguepediaGames.gameInMatch,
       playedAt: lolLeaguepediaGames.playedAt,
       hasData: lolLeaguepediaGames.hasData,
+      storedGameId: lolGames.id,
+      storedMatchId: lolGames.matchId,
+      storedOrder: lolGames.order,
     })
     .from(lolLeaguepediaGames)
+    .leftJoin(lolGames, eq(lolGames.apiMatchId, lolLeaguepediaGames.riotMatchId))
     .where(eq(lolLeaguepediaGames.tournamentId, tournamentId))
     .orderBy(lolLeaguepediaGames.playedAt, lolLeaguepediaGames.gameInMatch);
-  return rows.map((row) => ({ ...row, playedAt: row.playedAt?.toISOString() ?? null }));
+  return rows.map(({ storedGameId, storedMatchId, storedOrder, playedAt, ...row }) => ({
+    ...row,
+    playedAt: playedAt?.toISOString() ?? null,
+    storedAs: storedGameId === null ? null : { gameId: storedGameId, matchId: storedMatchId as number, order: storedOrder as number },
+  }));
 }
 
 const MAX_BASE_PAGE_LENGTH = 200;

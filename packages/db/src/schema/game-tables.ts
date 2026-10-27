@@ -952,6 +952,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     isForfeit: boolean("is_forfeit").notNull().default(false),
     note: text("note"),
     source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
+    // The admin's role per puuid, where it differs from the inferred one. Kept so a re-import keeps it.
+    roleOverrides: jsonb("role_overrides").$type<Record<string, string | null>>().notNull().default({}),
   }, (t) => [
     unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
   ]);
@@ -971,8 +973,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     damage: integer("damage").notNull().default(0), // damage dealt to champions
     vision: integer("vision").notNull().default(0), // Riot visionScore
     items: jsonb("items").notNull().default([]), // item ids, in slot order
-    runes: jsonb("runes").notNull().default({}), // keystone and secondary tree ids
-    summoners: jsonb("summoners").notNull().default([]), // summoner spell ids
+    runes: jsonb("runes").notNull().default({}), // the whole rune page: primary and secondary trees with their runes, and the stat shards
+    summoners: jsonb("summoners").notNull().default([]), // the two summoner spell ids (4 Flash, 14 Ignite...)
     // Lane diffs at 10 and 15 minutes, player minus lane opponent. Null without an opponent or a frame.
     goldDiff10: integer("gold_diff_10"),
     goldDiff15: integer("gold_diff_15"),
