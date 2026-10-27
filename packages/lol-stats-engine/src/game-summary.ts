@@ -132,7 +132,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     gameId: ctx.gameId,
     entrantId: ctx.entrantIdBySide[side],
     personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
-    championName: p.championName,
+    championName: championDisplayName(p, ctx),
     role: roleOf(p.teamPosition),
     kills: p.kills,
     deaths: p.deaths,
@@ -189,11 +189,16 @@ function buildBanRows(team: RiotTeamDto, ctx: LeagueSummaryContext): LeagueDraft
     }));
 }
 
+/** Display name ("Jarvan IV") from the catalog, or Riot's internal name ("JarvanIV") when the id is unknown. */
+function championDisplayName(p: RiotParticipantDto, ctx: LeagueSummaryContext): string {
+  return ctx.championNameById.get(p.championId) ?? p.championName;
+}
+
 function buildPickRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): LeagueDraftRow {
   return {
     gameId: ctx.gameId,
     entrantId: ctx.entrantIdBySide[sideForTeamId(p.teamId)],
-    championName: p.championName,
+    championName: championDisplayName(p, ctx),
     type: "pick",
     order: null,
   };

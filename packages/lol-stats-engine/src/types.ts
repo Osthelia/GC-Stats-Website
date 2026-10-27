@@ -33,7 +33,8 @@ export interface RiotParticipantDto {
   participantId: number; // 1–10
   teamId: RiotTeamId;
   teamPosition: string; // TOP | JUNGLE | MIDDLE | BOTTOM | UTILITY | "" when unknown
-  championName: string;
+  championId: number; // Riot's numeric champion id; the display name comes from Data Dragon
+  championName: string; // Riot's internal id, e.g. "JarvanIV"; the fallback when the id is unknown
   kills: number;
   deaths: number;
   assists: number;

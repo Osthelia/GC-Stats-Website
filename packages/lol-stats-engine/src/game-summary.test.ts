@@ -41,6 +41,21 @@ describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () =>
   });
 });
 
+describe("champion names", () => {
+  it("uses the catalog display name for picks and players, and Riot's name when the id is unknown", () => {
+    const named = buildGameSummary(match, {
+      gameId: 1,
+      order: 1,
+      entrantIdBySide: { blue: 10, red: 20 },
+      personIdByPuuid,
+      championNameById: new Map([[59, "Jarvan IV"]]),
+    });
+    expect(named.draft.find((d) => d.type === "pick" && d.entrantId === 10 && d.championName === "Jarvan IV")).toBeDefined();
+    expect(named.players.map((p) => p.championName)).toContain("Jarvan IV");
+    expect(named.players.map((p) => p.championName)).toContain("Ahri"); // no catalog entry: Riot's name, same as its display name
+  });
+});
+
 describe("roleOf", () => {
   it("keeps the five lanes and drops empty and non-lane positions, so they never pair with an opponent", () => {
     for (const lane of ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]) {
