@@ -13,7 +13,7 @@
 
 import { missingChampionIds, resolvePlayerRoles, validateImport } from "@gc-stats/lol-stats-engine";
 import { storeLolImport } from "@gc-stats/storage";
-import { getChampionCatalog } from "@/lib/data-dragon-client";
+import { getChampionCatalog, storeMissingIcons } from "@/lib/data-dragon-client";
 import { storeGameData, type StoreGameInput } from "./store-game-data";
 
 export interface ImportGameInput {
@@ -70,5 +70,7 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
     roleOverrides: input.roleOverrides ?? {},
     replaceGameId: input.replaceGameId ?? null,
   });
+  // After the store: a missing icon never stops a game from being stored, and never throws.
+  await storeMissingIcons(validation.match, names.catalog);
   return { ok: true, gameId };
 }
