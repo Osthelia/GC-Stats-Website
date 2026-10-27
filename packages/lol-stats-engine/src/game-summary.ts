@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { championNameOf } from "./champion-catalog";
 import type { RiotMatchDto, RiotParticipantDto, RiotTeamDto, RiotTeamId } from "./types";
 
 export type LeagueSide = "blue" | "red";
@@ -84,7 +85,7 @@ export interface LeagueSummaryContext {
   entrantIdBySide: Record<LeagueSide, number>;
   /** Person id for each puuid; a missing puuid maps to null. */
   personIdByPuuid: Map<string, number>;
-  /** Champion display name for a championId, e.g. 103 → "Ahri". */
+  /** Champion display name for a championId, e.g. 103 → "Ahri". Must name every champion of the game (see missingChampionIds). */
   championNameById: Map<number, string>;
   /** The role of each participant, from resolvePlayerRoles. Without it the role is Riot's teamPosition. */
   roleByParticipantId?: Map<number, string | null>;
@@ -141,7 +142,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     gameId: ctx.gameId,
     entrantId: ctx.entrantIdBySide[side],
     personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
-    championName: championDisplayName(p, ctx),
+    championName: championNameOf(ctx.championNameById, p.championId),
     role: playerRole(p, ctx),
     kills: p.kills,
     deaths: p.deaths,
@@ -194,22 +195,17 @@ function buildBanRows(team: RiotTeamDto, ctx: LeagueSummaryContext): LeagueDraft
     .map((ban) => ({
       gameId: ctx.gameId,
       entrantId: ctx.entrantIdBySide[side],
-      championName: ctx.championNameById.get(ban.championId) ?? `champion-${ban.championId}`,
+      championName: championNameOf(ctx.championNameById, ban.championId),
       type: "ban" as const,
       order: ban.pickTurn,
     }));
-}
-
-/** Display name ("Jarvan IV") from the catalog, or Riot's internal name ("JarvanIV") when the id is unknown. */
-function championDisplayName(p: RiotParticipantDto, ctx: LeagueSummaryContext): string {
-  return ctx.championNameById.get(p.championId) ?? p.championName;
 }
 
 function buildPickRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): LeagueDraftRow {
   return {
     gameId: ctx.gameId,
     entrantId: ctx.entrantIdBySide[sideForTeamId(p.teamId)],
-    championName: championDisplayName(p, ctx),
+    championName: championNameOf(ctx.championNameById, p.championId),
     type: "pick",
     order: null,
   };

@@ -4552,7 +4552,9 @@
               "lolIdConflict": "Un compte Riot est déjà lié à une autre personne.",
               "sidesInvalid": "Choisissez deux participants différents pour bleu et rouge.",
               "roleInvalid": "Un rôle de la modification n'est pas valide.",
-              "orderTaken": "Le match {order} de cette série est déjà enregistré avec d'autres données. Choisissez un autre numéro et enregistrez à nouveau."
+              "orderTaken": "Le match {order} de cette série est déjà enregistré avec d'autres données. Choisissez un autre numéro et enregistrez à nouveau.",
+              "dataDragonUnavailable": "Les noms des champions sont indisponibles pour le moment. Réessayez plus tard.",
+              "unknownChampions": "ID de champion inconnus : {ids}"
             },
             "searchPlaceholder": "Rechercher par équipe, match ou date",
             "noResults": "Aucun match ne correspond",

@@ -4544,7 +4544,9 @@
               "lolIdConflict": "この Riot アカウントは既に別の人物に紐づいています。",
               "sidesInvalid": "ブルーとレッドには異なる2人の参加者を選んでください。",
               "roleInvalid": "変更内容のロールが無効です。",
-              "orderTaken": "このシリーズの {order} 試合目は既に別のデータで保存されています。別の試合番号を選んで再度保存してください。"
+              "orderTaken": "このシリーズの {order} 試合目は既に別のデータで保存されています。別の試合番号を選んで再度保存してください。",
+              "dataDragonUnavailable": "チャンピオン名は現在取得できません。しばらくしてから再度お試しください。",
+              "unknownChampions": "不明なチャンピオンID: {ids}"
             },
             "searchPlaceholder": "チーム・試合・日付で検索",
             "noResults": "一致する試合はありません",

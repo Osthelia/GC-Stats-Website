@@ -166,7 +166,12 @@ export function LeagueGameDialog({
     startTransition(async () => {
       const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { leaguepediaGameId: form.leaguepediaGameId, mode });
       if (!result.ok) {
-        toast.error(t(`leaguepedia.error.${result.error.kind}`, { count: result.error.kind === "missingPlayers" ? result.error.count : 0 }));
+        toast.error(
+          t(`leaguepedia.error.${result.error.kind}`, {
+            count: result.error.kind === "missingPlayers" ? result.error.count : 0,
+            ids: result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "",
+          })
+        );
         return;
       }
       setPreview(result.preview);

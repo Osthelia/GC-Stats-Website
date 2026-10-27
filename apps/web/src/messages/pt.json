@@ -4544,7 +4544,9 @@
               "lolIdConflict": "Uma conta da Riot já está vinculada a outra pessoa.",
               "sidesInvalid": "Escolha dois participantes diferentes para azul e vermelho.",
               "roleInvalid": "Uma função da alteração não é válida.",
-              "orderTaken": "A partida {order} desta série já está salva com outros dados. Escolha outro número de partida e salve novamente."
+              "orderTaken": "A partida {order} desta série já está salva com outros dados. Escolha outro número de partida e salve novamente.",
+              "dataDragonUnavailable": "Os nomes dos campeões estão indisponíveis no momento. Tente novamente mais tarde.",
+              "unknownChampions": "IDs de campeão desconhecidos: {ids}"
             },
             "searchPlaceholder": "Pesquisar por equipe, partida ou data",
             "noResults": "Nenhuma partida corresponde",

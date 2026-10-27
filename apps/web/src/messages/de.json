@@ -4544,7 +4544,9 @@
               "lolIdConflict": "Ein Riot-Konto ist bereits mit einer anderen Person verknüpft.",
               "sidesInvalid": "Wähle für Blau und Rot zwei verschiedene Teilnehmer.",
               "roleInvalid": "Eine Rolle in der Änderung ist ungültig.",
-              "orderTaken": "Spiel {order} dieser Serie ist bereits mit anderen Daten gespeichert. Wähle eine andere Spielnummer und speichere erneut."
+              "orderTaken": "Spiel {order} dieser Serie ist bereits mit anderen Daten gespeichert. Wähle eine andere Spielnummer und speichere erneut.",
+              "dataDragonUnavailable": "Die Champion-Namen sind gerade nicht verfügbar. Versuche es später erneut.",
+              "unknownChampions": "Unbekannte Champion-IDs: {ids}"
             },
             "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",
             "noResults": "Keine Spiele gefunden",

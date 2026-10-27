@@ -1096,7 +1096,18 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     check("lol_leaguepedia_games_winner_check", sql`${t.winner} IN (1, 2)`),
   ]);
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames };
+  // --- Data Dragon catalog (champion and item names per version) ---------------------------
+  // A Data Dragon version never changes once published, so a stored row is never fetched again. Imports read
+  // the names from here, so they do not depend on Data Dragon being reachable at import time.
+  const dataDragonCatalogs = pgTable("lol_data_dragon_catalogs", {
+    version: text("version").primaryKey(), // e.g. "15.18.1"
+    // By numeric champion id. `key` is Data Dragon's internal id ("MonkeyKing"), the one its image URLs use.
+    champions: jsonb("champions").$type<Record<string, { name: string; key: string }>>().notNull(),
+    items: jsonb("items").$type<Record<string, string>>().notNull(), // by numeric item id
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+  });
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames, dataDragonCatalogs };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1213,6 +1224,7 @@ export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
 export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
 export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
+export const lolDataDragonCatalogs = leagueOnly.dataDragonCatalogs;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
 export const leagueTables: GameTables<"lol"> & LeagueOnlyTables = { ...lol, ...leagueOnly };

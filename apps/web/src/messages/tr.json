@@ -4544,7 +4544,9 @@
               "lolIdConflict": "Bir Riot hesabı zaten başka bir kişiye bağlı.",
               "sidesInvalid": "Mavi ve kırmızı için iki farklı katılımcı seçin.",
               "roleInvalid": "Değişiklikteki bir rol geçersiz.",
-              "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin."
+              "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin.",
+              "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
+              "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}"
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",
             "noResults": "Eşleşen maç yok",

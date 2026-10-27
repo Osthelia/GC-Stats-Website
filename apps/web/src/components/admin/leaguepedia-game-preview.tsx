@@ -96,8 +96,9 @@ export function LeaguepediaGamePreview({
       });
       if (!result.ok) {
         const count = result.error.kind === "missingPlayers" ? result.error.count : 0;
+        const ids = result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "";
         const description = result.error.kind === "storeFailed" ? result.error.message : result.error.kind === "invalidUpload" ? result.error.errors.join("; ") : undefined;
-        toast.error(t(`leaguepedia.error.${result.error.kind}`, { count, order }), { description });
+        toast.error(t(`leaguepedia.error.${result.error.kind}`, { count, order, ids }), { description });
         return;
       }
       onSaved();

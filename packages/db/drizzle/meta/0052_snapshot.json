@@ -1,5 +1,5 @@
 {
-  "id": "7df11bb7-c5ec-4f45-abfc-c97410eb3d91",
+  "id": "f2fc3e40-fec5-4a73-b319-05ac9a0eee1e",
   "prevId": "0f23a087-46d9-4123-b792-da5890406082",
   "version": "7",
   "dialect": "postgresql",
@@ -2044,6 +2044,44 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lol_data_dragon_catalogs": {
+      "name": "lol_data_dragon_catalogs",
+      "schema": "",
+      "columns": {
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "champions": {
+          "name": "champions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "items": {
+          "name": "items",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

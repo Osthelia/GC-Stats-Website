@@ -4548,7 +4548,9 @@
               "lolIdConflict": "Un account Riot è già collegato a un'altra persona.",
               "sidesInvalid": "Scegli due partecipanti diversi per blu e rosso.",
               "roleInvalid": "Un ruolo della modifica non è valido.",
-              "orderTaken": "La partita {order} di questa serie è già salvata con altri dati. Scegli un altro numero di partita e salva di nuovo."
+              "orderTaken": "La partita {order} di questa serie è già salvata con altri dati. Scegli un altro numero di partita e salva di nuovo.",
+              "dataDragonUnavailable": "I nomi dei campioni non sono disponibili al momento. Riprova più tardi.",
+              "unknownChampions": "ID campione sconosciuti: {ids}"
             },
             "searchPlaceholder": "Cerca per squadra, partita o data",
             "noResults": "Nessuna partita corrisponde",

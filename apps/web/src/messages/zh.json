@@ -4544,7 +4544,9 @@
               "lolIdConflict": "该 Riot 账号已关联到其他人员。",
               "sidesInvalid": "蓝方和红方需要选择两个不同的参赛方。",
               "roleInvalid": "变更中的位置无效。",
-              "orderTaken": "本系列的第 {order} 局已有其他数据。请选择其他局数后重新保存。"
+              "orderTaken": "本系列的第 {order} 局已有其他数据。请选择其他局数后重新保存。",
+              "dataDragonUnavailable": "暂时无法获取英雄名称，请稍后再试。",
+              "unknownChampions": "未知的英雄 ID：{ids}"
             },
             "searchPlaceholder": "按队伍、局数或日期搜索",
             "noResults": "没有匹配的比赛",

@@ -4544,7 +4544,9 @@
               "lolIdConflict": "Konto Riot jest już połączone z inną osobą.",
               "sidesInvalid": "Wybierz dwóch różnych uczestników dla niebieskiego i czerwonego.",
               "roleInvalid": "Jedna z ról w zmianie jest nieprawidłowa.",
-              "orderTaken": "Mecz {order} tej serii jest już zapisany z innymi danymi. Wybierz inny numer meczu i zapisz ponownie."
+              "orderTaken": "Mecz {order} tej serii jest już zapisany z innymi danymi. Wybierz inny numer meczu i zapisz ponownie.",
+              "dataDragonUnavailable": "Nazwy mistrzów są teraz niedostępne. Spróbuj ponownie później.",
+              "unknownChampions": "Nieznane identyfikatory mistrzów: {ids}"
             },
             "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
             "noResults": "Brak pasujących meczów",

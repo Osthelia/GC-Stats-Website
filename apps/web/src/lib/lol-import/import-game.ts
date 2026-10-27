@@ -1,19 +1,19 @@
 /**
  * GC-Stats - import-game
  *
- * Entry point for one LoL game import: checks the match and timeline, keeps the raw pair in the LoL
- * imports bucket (when the game has a source), loads the Data Dragon champion names, then stores the
- * game. The upload action and the Leaguepedia fetch both call this and do nothing else with the data.
- * Like fetchMapData for Valorant, it is the only place that gathers the inputs for the store.
+ * Entry point for one LoL game import: checks the match and timeline, loads the champion names of its patch
+ * and checks that they name every champion of the game, keeps the raw pair in the LoL imports bucket (when
+ * the game has a source), then stores the game. The Leaguepedia fetch is the caller. Like fetchMapData for
+ * Valorant, it is the only place that gathers the inputs for the store.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { resolvePlayerRoles, validateImport } from "@gc-stats/lol-stats-engine";
+import { missingChampionIds, resolvePlayerRoles, validateImport } from "@gc-stats/lol-stats-engine";
 import { storeLolImport } from "@gc-stats/storage";
-import { getDataDragonCatalog } from "@/lib/data-dragon-client";
+import { getChampionCatalog } from "@/lib/data-dragon-client";
 import { storeGameData, type StoreGameInput } from "./store-game-data";
 
 export interface ImportGameInput {
@@ -32,19 +32,26 @@ export interface ImportGameInput {
   replaceGameId?: number | null;
 }
 
-export type ImportGameResult = { ok: true; gameId: number } | { ok: false; error: { kind: "invalidUpload"; errors: string[] } };
+export type ImportGameError = { kind: "invalidUpload"; errors: string[] } | { kind: "dataDragonUnavailable" } | { kind: "unknownChampions"; ids: number[] };
+
+export type ImportGameResult = { ok: true; gameId: number } | { ok: false; error: ImportGameError };
 
 /** Store errors (unmapped participant, game already in another series) are thrown, as storeGameData does. */
 export async function importGame(input: ImportGameInput): Promise<ImportGameResult> {
   const validation = validateImport(input.match, input.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
 
+  // Checked before anything is written: a game whose champions are not named would be stored with placeholders.
+  const names = await getChampionCatalog(validation.match.info.gameVersion);
+  if (!names.ok) return { ok: false, error: { kind: "dataDragonUnavailable" } };
+  const missing = missingChampionIds(validation.match, names.catalog.championNameById);
+  if (missing.length > 0) return { ok: false, error: { kind: "unknownChampions", ids: missing } };
+
   // The raw pair is written before the store, so a store that fails (an unmapped player, say) still keeps the file.
   if (input.source) {
     await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
   }
 
-  const catalog = await getDataDragonCatalog();
   const { gameId } = await storeGameData({
     matchId: input.matchId,
     order: input.order,
@@ -53,7 +60,7 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
     source: input.source,
     entrantIdBySide: input.entrantIdBySide,
     personIdByPuuid: input.personIdByPuuid,
-    championNameById: catalog.championNameById,
+    championNameById: names.catalog.championNameById,
     roleByParticipantId: resolvePlayerRoles(validation.match, validation.timeline, input.roleOverrides ?? {}),
     roleOverrides: input.roleOverrides ?? {},
     replaceGameId: input.replaceGameId ?? null,

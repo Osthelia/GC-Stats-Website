@@ -173,4 +173,10 @@ CREATE TABLE "external_api_sessions" (
 ALTER TABLE "lol_leaguepedia_games" ADD CONSTRAINT "lol_leaguepedia_games_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_leaguepedia_tournaments" ADD CONSTRAINT "lol_leaguepedia_tournaments_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "lol_leaguepedia_games_tournament_id_idx" ON "lol_leaguepedia_games" USING btree ("tournament_id");--> statement-breakpoint
-ALTER TABLE "lol_games" ADD COLUMN "role_overrides" jsonb DEFAULT '{}'::jsonb NOT NULL;
+ALTER TABLE "lol_games" ADD COLUMN "role_overrides" jsonb DEFAULT '{}'::jsonb NOT NULL;--> statement-breakpoint
+CREATE TABLE "lol_data_dragon_catalogs" (
+	"version" text PRIMARY KEY NOT NULL,
+	"champions" jsonb NOT NULL,
+	"items" jsonb NOT NULL,
+	"fetched_at" timestamp with time zone DEFAULT now() NOT NULL
+);

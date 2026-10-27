@@ -4552,7 +4552,9 @@
               "lolIdConflict": "A Riot account is already linked to another person.",
               "sidesInvalid": "Choose two different entrants for blue and red.",
               "roleInvalid": "A role in the change is not valid.",
-              "orderTaken": "Game {order} of this series is already stored with other data. Choose another game number and save again."
+              "orderTaken": "Game {order} of this series is already stored with other data. Choose another game number and save again.",
+              "dataDragonUnavailable": "Champion names are unavailable right now, try again later.",
+              "unknownChampions": "Unknown champion id(s): {ids}"
             },
             "searchPlaceholder": "Search by team, game or date",
             "noResults": "No games match",

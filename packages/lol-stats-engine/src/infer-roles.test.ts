@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { buildGameSummary, roleOf } from "./game-summary";
 import { inferRoles, LEAGUE_ROLES, resolvePlayerRoles } from "./infer-roles";
+import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto, RiotTimelineDto } from "./types";
 
 const fixturePath = fileURLToPath(new URL("./__fixtures__/lol-game-stage4-2026.json", import.meta.url));
@@ -76,7 +77,7 @@ describe("resolvePlayerRoles", () => {
       order: 1,
       entrantIdBySide: { blue: 10, red: 20 },
       personIdByPuuid: new Map(match.info.participants.map((p) => [p.puuid, p.participantId])),
-      championNameById: new Map(),
+      championNameById: namesForEveryChampion(match),
       roleByParticipantId: roles,
     });
     expect(summary.players.find((p) => p.championName === "Ambessa")?.role).toBe("MIDDLE");

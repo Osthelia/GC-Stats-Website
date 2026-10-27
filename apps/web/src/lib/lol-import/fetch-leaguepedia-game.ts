@@ -17,9 +17,20 @@ import { and, eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolEntrants, lolGames, lolLeaguepediaGames, lolMatches, lolPeople, lolPersonProfiles } from "@gc-stats/db";
-import { inferRoles, LEAGUE_ROLES, resolvePlayerRoles, roleOf, sideForTeamId, validateImport, type LeagueSide, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
+import {
+  championNameOf,
+  inferRoles,
+  LEAGUE_ROLES,
+  missingChampionIds,
+  resolvePlayerRoles,
+  roleOf,
+  sideForTeamId,
+  validateImport,
+  type LeagueSide,
+  type RiotMatchDto,
+} from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport } from "@gc-stats/storage";
-import { getDataDragonCatalog } from "@/lib/data-dragon-client";
+import { getChampionCatalog } from "@/lib/data-dragon-client";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { importGame } from "./import-game";
@@ -39,6 +50,8 @@ export type LeaguepediaGameError =
   | { kind: "missingPlayers"; count: number }
   | { kind: "lolIdConflict"; puuid: string }
   | { kind: "invalidUpload"; errors: string[] }
+  | { kind: "dataDragonUnavailable" }
+  | { kind: "unknownChampions"; ids: number[] }
   | { kind: "storeFailed"; message: string };
 
 export interface PreviewPlayer {
@@ -125,7 +138,12 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   // The raw pair is kept before anything else, so the commit can read it back without asking Leaguepedia again.
   if (!loaded.fromBucket) await storeLolImport("leaguepedia", listed.riotMatchId, { match: validation.match, timeline: validation.timeline });
 
-  const catalog = await getDataDragonCatalog();
+  // The preview shows champion names, so a game the catalog cannot name is refused here, before anyone links players to it.
+  const names = await getChampionCatalog(validation.match.info.gameVersion);
+  if (!names.ok) return { ok: false, error: { kind: "dataDragonUnavailable" } };
+  const catalog = names.catalog;
+  const missing = missingChampionIds(validation.match, catalog.championNameById);
+  if (missing.length > 0) return { ok: false, error: { kind: "unknownChampions", ids: missing } };
   const riotMatch = validation.match;
   const roleOverrides = await savedRoleOverrides(listed.riotMatchId);
   const inferred = inferRoles(riotMatch, validation.timeline);
@@ -163,7 +181,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
           role: effective.get(p.participantId) ?? null,
           inferredRole: inferred?.get(p.participantId) ?? roleOf(p.teamPosition),
           riotRole: p.teamPosition || null,
-          championName: catalog.championNameById.get(p.championId) ?? p.championName,
+          championName: championNameOf(catalog.championNameById, p.championId),
           kills: p.kills,
           deaths: p.deaths,
           assists: p.assists,
@@ -227,7 +245,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
       roleOverrides: input.roleOverrides,
       replaceGameId: input.gameId,
     });
-    if (!stored.ok) return { ok: false, error: { kind: "invalidUpload", errors: stored.error.errors } };
+    if (!stored.ok) return { ok: false, error: stored.error };
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
     console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);

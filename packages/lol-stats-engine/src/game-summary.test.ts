@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { buildGameSummary, roleOf } from "./game-summary";
+import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto } from "./types";
 
 const fixturePath = fileURLToPath(new URL("./__fixtures__/lol-game-example.json", import.meta.url));
@@ -24,7 +25,7 @@ const summary = buildGameSummary(match, {
   order: 1,
   entrantIdBySide: { blue: 10, red: 20 },
   personIdByPuuid,
-  championNameById: new Map(),
+  championNameById: namesForEveryChampion(match),
 });
 
 describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () => {
@@ -42,17 +43,30 @@ describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () =>
 });
 
 describe("champion names", () => {
-  it("uses the catalog display name for picks and players, and Riot's name when the id is unknown", () => {
+  it("uses the catalog display name for picks and players", () => {
+    const names = namesForEveryChampion(match);
+    names.set(59, "Jarvan IV");
     const named = buildGameSummary(match, {
       gameId: 1,
       order: 1,
       entrantIdBySide: { blue: 10, red: 20 },
       personIdByPuuid,
-      championNameById: new Map([[59, "Jarvan IV"]]),
+      championNameById: names,
     });
     expect(named.draft.find((d) => d.type === "pick" && d.entrantId === 10 && d.championName === "Jarvan IV")).toBeDefined();
     expect(named.players.map((p) => p.championName)).toContain("Jarvan IV");
-    expect(named.players.map((p) => p.championName)).toContain("Ahri"); // no catalog entry: Riot's name, same as its display name
+  });
+
+  it("throws for a champion the catalog does not name, instead of storing Riot's internal name or a placeholder", () => {
+    const build = () =>
+      buildGameSummary(match, {
+        gameId: 1,
+        order: 1,
+        entrantIdBySide: { blue: 10, red: 20 },
+        personIdByPuuid,
+        championNameById: new Map(),
+      });
+    expect(build).toThrow("No champion name for champion id");
   });
 });
 

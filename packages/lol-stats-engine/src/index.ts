@@ -10,6 +10,7 @@
  */
 
 export * from "./types";
+export * from "./champion-catalog";
 export * from "./game-summary";
 export * from "./infer-roles";
 export * from "./timeline-rows";
