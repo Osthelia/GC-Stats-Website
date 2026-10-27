@@ -6586,6 +6586,10 @@
     "text": "本页面的部分信息来自 Liquipedia。",
     "link": "查看原文"
   },
+  "leaguepediaSource": {
+    "text": "本页面的部分对局数据来自 Leaguepedia（CC BY-SA）。原始页面：",
+    "game": "第 {order} 局"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",

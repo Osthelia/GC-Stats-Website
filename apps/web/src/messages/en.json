@@ -6710,6 +6710,10 @@
     "text": "Some information on this page comes from Liquipedia.",
     "link": "See the original article"
   },
+  "leaguepediaSource": {
+    "text": "Some game data on this page comes from Leaguepedia (CC BY-SA). See the original pages:",
+    "game": "Game {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",

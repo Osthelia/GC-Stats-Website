@@ -6586,6 +6586,10 @@
     "text": "Bu sayfadaki bazı bilgiler Liquipedia'dan alınmıştır.",
     "link": "Orijinal makaleye bak"
   },
+  "leaguepediaSource": {
+    "text": "Bu sayfadaki bazı maç verileri Leaguepedia'dan alınmıştır (CC BY-SA). Orijinal sayfalar:",
+    "game": "Oyun {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode'u",
     "title": "Liquipedia wikicode'u",

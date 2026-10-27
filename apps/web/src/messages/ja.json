@@ -6586,6 +6586,10 @@
     "text": "このページの一部の情報は Liquipedia から取得しています。",
     "link": "元の記事を見る"
   },
+  "leaguepediaSource": {
+    "text": "このページの一部のゲームデータは Leaguepedia から取得しています（CC BY-SA）。元のページ：",
+    "game": "ゲーム {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",

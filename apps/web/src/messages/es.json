@@ -6710,6 +6710,10 @@
     "text": "Parte de la información de esta página procede de Liquipedia.",
     "link": "Ver el artículo original"
   },
+  "leaguepediaSource": {
+    "text": "Parte de los datos de las partidas de esta página procede de Leaguepedia (CC BY-SA). Páginas originales:",
+    "game": "Partida {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Wikicode de Liquipedia",
     "title": "Wikicode de Liquipedia",

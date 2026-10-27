@@ -6586,6 +6586,10 @@
     "text": "이 페이지의 일부 정보는 Liquipedia에서 가져왔습니다.",
     "link": "원문 보기"
   },
+  "leaguepediaSource": {
+    "text": "이 페이지의 일부 게임 데이터는 Leaguepedia에서 가져왔습니다 (CC BY-SA). 원문 페이지:",
+    "game": "게임 {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
