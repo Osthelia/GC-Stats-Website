@@ -66,7 +66,7 @@ export interface LeagueTimelineContext {
 
 /**
  * Event types stored as rows. The rest (wards, item destruction, level ups) is dropped: wards are
- * counted in the summary, and the level is in the frames. The whole file stays in lol_game_imports,
+ * counted in the summary, and the level is in the frames. The raw file stays in the LoL imports bucket,
  * so a type added here later only needs the games reprocessed.
  */
 const STORED_EVENT_TYPES = new Set([

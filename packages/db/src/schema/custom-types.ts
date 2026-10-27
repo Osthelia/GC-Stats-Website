@@ -1,8 +1,8 @@
 /**
  * GC-Stats — custom-types module
  *
- * Drizzle custom column types for Postgres types drizzle-orm/pg-core has no
- * builder for: the range types (daterange, tstzrange) and bytea.
+ * Drizzle custom column types for Postgres range types (daterange,
+ * tstzrange), which drizzle-orm/pg-core has no built-in builder for.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -23,18 +23,5 @@ export const daterange = customType<{ data: string }>({
 export const tstzrange = customType<{ data: string }>({
   dataType() {
     return "tstzrange";
-  },
-});
-
-// Raw bytes, e.g. a gzipped file. Node and Workers both return a Buffer/Uint8Array from pg.
-export const bytea = customType<{ data: Uint8Array; driverData: Buffer }>({
-  dataType() {
-    return "bytea";
-  },
-  toDriver(value) {
-    return Buffer.from(value);
-  },
-  fromDriver(value) {
-    return new Uint8Array(value);
   },
 });

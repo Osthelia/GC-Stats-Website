@@ -1,5 +1,5 @@
 {
-  "id": "4f6dd541-4357-4679-b3ca-33b0ee6b25c4",
+  "id": "681f7cbd-a35b-43f7-b11e-3197672320f0",
   "prevId": "0f23a087-46d9-4123-b792-da5890406082",
   "version": "7",
   "dialect": "postgresql",
@@ -2711,52 +2711,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.lol_game_imports": {
-      "name": "lol_game_imports",
-      "schema": "",
-      "columns": {
-        "game_id": {
-          "name": "game_id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "payload_gzip": {
-          "name": "payload_gzip",
-          "type": "bytea",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "imported_at": {
-          "name": "imported_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "lol_game_imports_game_id_lol_games_id_fk": {
-          "name": "lol_game_imports_game_id_lol_games_id_fk",
-          "tableFrom": "lol_game_imports",
-          "tableTo": "lol_games",
-          "columnsFrom": [
-            "game_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.lol_game_player_stats": {
       "name": "lol_game_player_stats",
       "schema": "",
@@ -3230,12 +3184,6 @@
         },
         "source": {
           "name": "source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source_url": {
-          "name": "source_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false

@@ -13,7 +13,7 @@
 
 import { sql, eq } from "drizzle-orm";
 import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
-import { bytea, daterange } from "./custom-types";
+import { daterange } from "./custom-types";
 import { users } from "./auth";
 import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
@@ -952,7 +952,6 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     isForfeit: boolean("is_forfeit").notNull().default(false),
     note: text("note"),
     source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
-    sourceUrl: text("source_url"), // page the game came from, for attribution
   }, (t) => [
     unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
   ]);
@@ -1063,15 +1062,7 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     check("lol_game_events_raw_kill_target_check", sql`${t.type} <> 'CHAMPION_KILL' OR ${t.targetPersonId} IS NOT NULL`),
   ]);
 
-  // The raw Match-V5 match and timeline as one gzipped JSON document. Stored as bytea, not jsonb
-  // (jsonb is larger than the JSON text).
-  const gameImports = pgTable("lol_game_imports", {
-    gameId: bigint("game_id", { mode: "number" }).primaryKey().references(() => games.id, { onDelete: "cascade" }),
-    payloadGzip: bytea("payload_gzip").notNull(), // gzip of { match, timeline }
-    importedAt: timestamp("imported_at", { withTimezone: true }).notNull().defaultNow(),
-  });
-
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, gameImports };
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1185,7 +1176,6 @@ export const lolGamePlayerStats = leagueOnly.gamePlayerStats;
 export const lolGameTeamStats = leagueOnly.gameTeamStats;
 export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
 export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
-export const lolGameImports = leagueOnly.gameImports;
 export const lolGameDraft = leagueOnly.gameDraft;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };

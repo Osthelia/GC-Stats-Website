@@ -2,8 +2,9 @@
  * GC-Stats - store-game-data
  *
  * Writes one LoL game of a series: the game row, its summary rows (players,
- * teams, draft), the derived timeline stats on those rows, the raw frame and
- * event rows, and the raw match and timeline gzipped. A re-import replaces
+ * teams, draft), the derived timeline stats on those rows, and the raw frame
+ * and event rows. The raw match and timeline JSON are not stored here: they
+ * go to the LoL imports bucket (PR 6b). A re-import replaces
  * everything the game had before. One transaction, guarded by an advisory lock
  * on the Riot match id, so two imports of the same game never interleave. The
  * series auto-complete runs after the commit, as for Valorant, so a failed
@@ -44,8 +45,8 @@ export interface StoreGameInput {
   match: RiotMatchDto;
   /** null after a chronobreak: the summary is still written, the raw timeline rows are not. */
   timeline: RiotTimelineDto | null;
-  /** Where the game came from, as the admin entered it. null when no source was given. */
-  source: { site: "leaguepedia" | "riot"; url: string } | null;
+  /** Where the game came from. null when unknown (games entered by hand). */
+  source: "leaguepedia" | "riot" | null;
   entrantIdBySide: Record<LeagueSide, number>;
   /** Person for every Riot puuid in the game. Every participant must be mapped. */
   personIdByPuuid: Map<string, number>;
@@ -61,7 +62,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     throw new Error(`Game ${apiMatchId} has ${unmapped.length} participant(s) without a person; map them before storing`);
   }
 
-  const { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, gameImports } = leagueTablesOf("lol");
+  const { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw } = leagueTablesOf("lol");
 
   const summaryContext = (gameId: number): LeagueSummaryContext => ({
     gameId,
@@ -87,11 +88,8 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
   const gameFields = {
     ...buildGameSummary(match, summaryContext(0)).game,
     matchId: input.matchId,
-    source: input.source?.site ?? null,
-    sourceUrl: input.source?.url ?? null,
+    source: input.source,
   };
-
-  const payloadGzip = await gzipJson({ match, timeline });
 
   const gameId = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${apiMatchId}))`);
@@ -139,11 +137,6 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 
-    await tx
-      .insert(gameImports)
-      .values({ gameId: id, payloadGzip })
-      .onConflictDoUpdate({ target: gameImports.gameId, set: { payloadGzip, importedAt: sql`now()` } });
-
     return id;
   });
 
@@ -154,10 +147,4 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
   }
 
   return { gameId };
-}
-
-/** The match and timeline as gzipped JSON. Web streams, so it runs the same on Node and on Workers. */
-async function gzipJson(value: unknown): Promise<Uint8Array> {
-  const compressed = new Blob([JSON.stringify(value)]).stream().pipeThrough(new CompressionStream("gzip"));
-  return new Uint8Array(await new Response(compressed).arrayBuffer());
 }

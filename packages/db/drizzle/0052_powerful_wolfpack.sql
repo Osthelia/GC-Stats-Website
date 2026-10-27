@@ -93,13 +93,6 @@ CREATE TABLE "lol_game_team_stats" (
 	CONSTRAINT "lol_game_team_stats_game_side_unique" UNIQUE("game_id","side")
 );
 --> statement-breakpoint
-CREATE TABLE "lol_game_imports" (
-	"game_id" bigint PRIMARY KEY NOT NULL,
-	"payload_gzip" bytea NOT NULL,
-	"imported_at" timestamp with time zone DEFAULT now() NOT NULL
-);
---> statement-breakpoint
-ALTER TABLE "lol_game_imports" ALTER COLUMN "payload_gzip" SET STORAGE EXTERNAL;--> statement-breakpoint
 CREATE TABLE "lol_games" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"match_id" bigint NOT NULL,
@@ -113,7 +106,6 @@ CREATE TABLE "lol_games" (
 	"is_forfeit" boolean DEFAULT false NOT NULL,
 	"note" text,
 	"source" text,
-	"source_url" text,
 	CONSTRAINT "lol_games_api_match_id_unique" UNIQUE("api_match_id"),
 	CONSTRAINT "lol_games_match_id_order_unique" UNIQUE("match_id","order")
 );
@@ -134,7 +126,6 @@ ALTER TABLE "lol_game_player_stats" ADD CONSTRAINT "lol_game_player_stats_entran
 ALTER TABLE "lol_game_player_stats" ADD CONSTRAINT "lol_game_player_stats_person_id_people_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."people"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_game_team_stats" ADD CONSTRAINT "lol_game_team_stats_game_id_lol_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."lol_games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_game_team_stats" ADD CONSTRAINT "lol_game_team_stats_entrant_id_lol_entrants_id_fk" FOREIGN KEY ("entrant_id") REFERENCES "public"."lol_entrants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "lol_game_imports" ADD CONSTRAINT "lol_game_imports_game_id_lol_games_id_fk" FOREIGN KEY ("game_id") REFERENCES "public"."lol_games"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_match_id_lol_matches_id_fk" FOREIGN KEY ("match_id") REFERENCES "public"."lol_matches"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_winner_entrant_id_lol_entrants_id_fk" FOREIGN KEY ("winner_entrant_id") REFERENCES "public"."lol_entrants"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "lol_game_player_stats_entrant_id_idx" ON "lol_game_player_stats" USING btree ("entrant_id");--> statement-breakpoint
