@@ -4,7 +4,7 @@
  * Reads wiki pages from Leaguepedia (lol.fandom.com), where the LoL game data comes from. The login
  * and the request policy follow leaguepedia-v5-export: a bot login (`Name@BotName`), the session
  * cookie kept between requests, `assert=user` on every query, one request at a time with a pause
- * between them, 429 and maxlag waited out by Retry-After (3 retries), and any other HTTP or network
+ * between them, 429 and maxlag retried after Retry-After (3 retries, never a wait over 30 s), and any other HTTP or network
  * failure stops at once. The cookie is stored encrypted in `external_api_sessions`, because a Worker
  * keeps nothing between requests. Never throws: failures come back as typed errors.
  *
@@ -25,7 +25,7 @@ const FETCH_TIMEOUT_MS = 15000;
 const REQUEST_DELAY_MS = 500;
 const MAXLAG_SECONDS = 5;
 const MAX_RATE_LIMIT_RETRIES = 3;
-const DEFAULT_RATE_LIMIT_WAIT_MS = 30000;
+const MAX_RATE_LIMIT_WAIT_MS = 30000;
 const CARGO_PAGE_SIZE = 500;
 
 export type LeaguepediaError =
@@ -236,21 +236,15 @@ async function callApi<T>(config: BotConfig, cookie: string, params: Record<stri
     const response = await send(method, body, headers);
 
     if (response.status === 429) {
-      if (retries < MAX_RATE_LIMIT_RETRIES) {
-        await sleep(retryAfterMs(response));
-        continue;
-      }
-      throw new LeaguepediaFailure({ kind: "rateLimited" });
+      await waitBeforeRetry(response, retries);
+      continue;
     }
     if (!response.ok) throw new LeaguepediaFailure({ kind: "httpError", status: response.status });
 
     const json = await readJson<T>(response);
     if (json.error?.code === "maxlag") {
-      if (retries < MAX_RATE_LIMIT_RETRIES) {
-        await sleep(retryAfterMs(response));
-        continue;
-      }
-      throw new LeaguepediaFailure({ kind: "rateLimited" });
+      await waitBeforeRetry(response, retries);
+      continue;
     }
     if (json.error) throw new LeaguepediaFailure({ kind: "apiError", code: json.error.code });
 
@@ -301,15 +295,25 @@ function toPage(page: QueryPage): LeaguepediaPage {
   return { title: page.title, wikitext };
 }
 
-/** Retry-After as milliseconds: seconds or an HTTP date. 30 s when missing or unreadable. */
+/**
+ * Waits out a 429 or maxlag before the next try. Gives up with rateLimited when the retries are used up, or when
+ * the server asks for longer than MAX_RATE_LIMIT_WAIT_MS: that wait is not worth the stalled request and queue.
+ */
+async function waitBeforeRetry(response: Response, retries: number): Promise<void> {
+  const wait = retryAfterMs(response);
+  if (retries >= MAX_RATE_LIMIT_RETRIES || wait > MAX_RATE_LIMIT_WAIT_MS) throw new LeaguepediaFailure({ kind: "rateLimited" });
+  await sleep(wait);
+}
+
+/** Retry-After as milliseconds: seconds or an HTTP date. MAX_RATE_LIMIT_WAIT_MS when missing or unreadable. */
 function retryAfterMs(response: Response): number {
   const header = response.headers.get("retry-after");
-  if (header === null) return DEFAULT_RATE_LIMIT_WAIT_MS;
+  if (header === null) return MAX_RATE_LIMIT_WAIT_MS;
   const seconds = Number(header);
   if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1000;
   const date = Date.parse(header);
   if (!Number.isNaN(date)) return Math.max(0, date - Date.now());
-  return DEFAULT_RATE_LIMIT_WAIT_MS;
+  return MAX_RATE_LIMIT_WAIT_MS;
 }
 
 /** Carries the response's Set-Cookie values into a `Cookie` header value. Attributes (Path, Expires, ...) are dropped. */
