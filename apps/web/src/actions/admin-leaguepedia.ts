@@ -81,7 +81,7 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
 export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, LeaguepediaGameError } from "@/lib/lol-import/fetch-leaguepedia-game";
 
 export type PrepareGameInput = { leaguepediaGameId: string; mode: LeaguepediaGameMode };
-export type CommitGameInput = { gameId: number | null; leaguepediaGameId: string; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
+export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; leaguepediaGameId: string; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
 
 /** The match, when it exists and belongs to the tournament in the URL. */
 async function matchOfTournament(tournamentId: number, matchId: number) {
@@ -108,9 +108,9 @@ export async function commitLeaguepediaGameForMatch(tournamentId: number, matchI
       subject: "match",
       subjectId: matchId,
       event: "updated",
-      description: `Stored game ${input.order} of match #${matchId} from Leaguepedia`,
+      description: `Stored game ${input.order} of match #${matchId} from Leaguepedia (${input.mode})`,
       actorUserId,
-      properties: { leaguepediaGameId: input.leaguepediaGameId, gameId: result.gameId, linkedAccounts: input.mappings.length },
+      properties: { mode: input.mode, leaguepediaGameId: input.leaguepediaGameId, gameId: result.gameId, linkedAccounts: input.mappings.length },
     });
   }
   return result;

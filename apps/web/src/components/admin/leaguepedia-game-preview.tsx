@@ -86,6 +86,7 @@ export function LeaguepediaGamePreview({
       // Only the roles the admin changed from the inferred ones are kept; the others keep following the inference.
       const roleOverrides = Object.fromEntries(preview.players.filter((p) => (roles[p.puuid] ?? null) !== p.inferredRole).map((p) => [p.puuid, roles[p.puuid] ?? null]));
       const result = await commitLeaguepediaGameForMatch(tournamentId, matchId, {
+        mode: preview.mode,
         gameId,
         leaguepediaGameId,
         order,

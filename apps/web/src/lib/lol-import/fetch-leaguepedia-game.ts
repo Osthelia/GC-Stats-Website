@@ -61,6 +61,8 @@ export interface PreviewPlayer {
 
 export interface LeaguepediaPreview {
   leaguepediaGameId: string;
+  /** How the game was loaded: fetch, renew or reprocess. Carried to the save for the activity log. */
+  mode: LeaguepediaGameMode;
   riotMatchId: string;
   teams: { blue: string | null; red: string | null };
   winner: LeagueSide | null;
@@ -91,6 +93,8 @@ export interface PlayerMapping {
 }
 
 export interface CommitInput {
+  /** How the game was loaded, for the activity log. */
+  mode: LeaguepediaGameMode;
   tournamentId: number;
   matchId: number;
   /** The game being edited, null when a new game is created. */
@@ -142,6 +146,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
     ok: true,
     preview: {
       leaguepediaGameId: listed.leaguepediaGameId,
+      mode: input.mode,
       riotMatchId: listed.riotMatchId,
       teams: { blue: listed.blue, red: listed.red },
       winner: winnerTeam ? sideForTeamId(winnerTeam.teamId) : null,
