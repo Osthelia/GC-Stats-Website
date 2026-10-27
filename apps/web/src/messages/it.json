@@ -4550,7 +4550,8 @@
               "roleInvalid": "Un ruolo della modifica non è valido.",
               "orderTaken": "La partita {order} di questa serie è già salvata con altri dati. Scegli un altro numero di partita e salva di nuovo.",
               "dataDragonUnavailable": "I nomi dei campioni non sono disponibili al momento. Riprova più tardi.",
-              "unknownChampions": "ID campione sconosciuti: {ids}"
+              "unknownChampions": "ID campione sconosciuti: {ids}",
+              "storageUnavailable": "Impossibile raggiungere lo storage degli import LoL. Controlla la configurazione e riprova."
             },
             "searchPlaceholder": "Cerca per squadra, partita o data",
             "noResults": "Nessuna partita corrisponde",

@@ -4546,7 +4546,8 @@
               "roleInvalid": "変更内容のロールが無効です。",
               "orderTaken": "このシリーズの {order} 試合目は既に別のデータで保存されています。別の試合番号を選んで再度保存してください。",
               "dataDragonUnavailable": "チャンピオン名は現在取得できません。しばらくしてから再度お試しください。",
-              "unknownChampions": "不明なチャンピオンID: {ids}"
+              "unknownChampions": "不明なチャンピオンID: {ids}",
+              "storageUnavailable": "LoL インポート用のストレージに接続できません。設定を確認して、もう一度お試しください。"
             },
             "searchPlaceholder": "チーム・試合・日付で検索",
             "noResults": "一致する試合はありません",

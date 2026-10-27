@@ -4546,7 +4546,8 @@
               "roleInvalid": "Değişiklikteki bir rol geçersiz.",
               "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin.",
               "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
-              "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}"
+              "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
+              "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin."
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",
             "noResults": "Eşleşen maç yok",

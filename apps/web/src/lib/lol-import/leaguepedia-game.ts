@@ -24,7 +24,8 @@ export type LeaguepediaGameError =
   | { kind: "statsPageMissing" }
   | { kind: "notMatchJson" }
   | { kind: "wrongGame" }
-  | { kind: "timelineMissing" };
+  | { kind: "timelineMissing" }
+  | { kind: "storageUnavailable" };
 
 export type LeaguepediaGameResult = { ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: LeaguepediaGameError };
 
@@ -37,7 +38,14 @@ const DATA_VERSION = "2";
 
 export async function loadLeaguepediaGame(riotMatchId: string, mode: LeaguepediaGameMode): Promise<LeaguepediaGameResult> {
   if (mode !== "renew") {
-    const stored = await readLolImport("leaguepedia", riotMatchId);
+    let stored: LolImportPayload | null;
+    try {
+      stored = await readLolImport("leaguepedia", riotMatchId);
+    } catch (err) {
+      // A bucket that cannot be read is not a game that is missing: fetching from Leaguepedia would hide the setup problem.
+      console.error(`[leaguepedia] could not read game ${riotMatchId} from the imports bucket`, err);
+      return { ok: false, error: { kind: "storageUnavailable" } };
+    }
     if (stored) return { ok: true, payload: stored, fromBucket: true };
     if (mode === "reprocess") return { ok: false, error: { kind: "notInBucket" } };
   }

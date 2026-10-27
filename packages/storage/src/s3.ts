@@ -88,8 +88,8 @@ export async function getObject(key: string, bucket: string = getBucket()): Prom
     const response = await getS3Client().send(new GetObjectCommand({ Bucket: bucket, Key: key }));
     return (await response.Body?.transformToByteArray()) ?? null;
   } catch (err) {
-    const status = (err as { $metadata?: { httpStatusCode?: number } })?.$metadata?.httpStatusCode;
-    if (status === 404) return null;
+    const { name, $metadata } = err as { name?: string; $metadata?: { httpStatusCode?: number } };
+    if (name === "NoSuchKey" || ($metadata?.httpStatusCode === 404 && name !== "NoSuchBucket")) return null;
     throw err;
   }
 }

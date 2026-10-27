@@ -4554,7 +4554,8 @@
               "roleInvalid": "A role in the change is not valid.",
               "orderTaken": "Game {order} of this series is already stored with other data. Choose another game number and save again.",
               "dataDragonUnavailable": "Champion names are unavailable right now, try again later.",
-              "unknownChampions": "Unknown champion id(s): {ids}"
+              "unknownChampions": "Unknown champion id(s): {ids}",
+              "storageUnavailable": "The LoL imports bucket could not be reached. Check its configuration, then try again."
             },
             "searchPlaceholder": "Search by team, game or date",
             "noResults": "No games match",

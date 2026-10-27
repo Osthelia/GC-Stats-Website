@@ -29,7 +29,7 @@ import {
   type LeagueSide,
   type RiotMatchDto,
 } from "@gc-stats/lol-stats-engine";
-import { storeLolImport, readLolImport } from "@gc-stats/storage";
+import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
@@ -52,6 +52,7 @@ export type LeaguepediaGameError =
   | { kind: "invalidUpload"; errors: string[] }
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
+  | { kind: "storageUnavailable" }
   | { kind: "storeFailed"; message: string };
 
 export interface PreviewPlayer {
@@ -136,7 +137,14 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
 
   // The raw pair is kept before anything else, so the commit can read it back without asking Leaguepedia again.
-  if (!loaded.fromBucket) await storeLolImport("leaguepedia", listed.riotMatchId, { match: validation.match, timeline: validation.timeline });
+  if (!loaded.fromBucket) {
+    try {
+      await storeLolImport("leaguepedia", listed.riotMatchId, { match: validation.match, timeline: validation.timeline });
+    } catch (err) {
+      console.error(`[leaguepedia] could not store game ${listed.riotMatchId} in the imports bucket`, err);
+      return { ok: false, error: { kind: "storageUnavailable" } };
+    }
+  }
 
   // The preview shows champion names, so a game the catalog cannot name is refused here, before anyone links players to it.
   const names = await getChampionCatalog(validation.match.info.gameVersion);
@@ -205,7 +213,13 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
   const entrantIds = new Set([match.entrantAId, match.entrantBId]);
   if (blue === red || !entrantIds.has(blue) || !entrantIds.has(red)) return { ok: false, error: { kind: "sidesInvalid" } };
 
-  const stored = await readLolImport("leaguepedia", listed.riotMatchId);
+  let stored: LolImportPayload | null;
+  try {
+    stored = await readLolImport("leaguepedia", listed.riotMatchId);
+  } catch (err) {
+    console.error(`[leaguepedia] could not read game ${listed.riotMatchId} from the imports bucket`, err);
+    return { ok: false, error: { kind: "storageUnavailable" } };
+  }
   if (!stored) return { ok: false, error: { kind: "notInBucket" } };
   const validation = validateImport(stored.match, stored.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
@@ -377,6 +391,8 @@ function loadError(error: { kind: string; error?: { kind: string } }): Leagueped
   switch (error.kind) {
     case "notInBucket":
       return { kind: "notInBucket" };
+    case "storageUnavailable":
+      return { kind: "storageUnavailable" };
     case "leaguepedia":
       return error.error?.kind === "missingConfig" ? { kind: "missingConfig" } : { kind: "fetch" };
     default:

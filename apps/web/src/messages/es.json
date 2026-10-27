@@ -4554,7 +4554,8 @@
               "roleInvalid": "Un rol del cambio no es válido.",
               "orderTaken": "La partida {order} de esta serie ya está guardada con otros datos. Elige otro número de partida y guarda de nuevo.",
               "dataDragonUnavailable": "Los nombres de campeones no están disponibles en este momento. Inténtalo más tarde.",
-              "unknownChampions": "IDs de campeón desconocidos: {ids}"
+              "unknownChampions": "IDs de campeón desconocidos: {ids}",
+              "storageUnavailable": "No se pudo acceder al almacenamiento de importaciones de LoL. Revisa la configuración e inténtalo de nuevo."
             },
             "searchPlaceholder": "Buscar por equipo, partida o fecha",
             "noResults": "Ninguna partida coincide",

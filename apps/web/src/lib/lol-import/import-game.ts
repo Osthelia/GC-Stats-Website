@@ -32,7 +32,7 @@ export interface ImportGameInput {
   replaceGameId?: number | null;
 }
 
-export type ImportGameError = { kind: "invalidUpload"; errors: string[] } | { kind: "dataDragonUnavailable" } | { kind: "unknownChampions"; ids: number[] };
+export type ImportGameError = { kind: "invalidUpload"; errors: string[] } | { kind: "dataDragonUnavailable" } | { kind: "unknownChampions"; ids: number[] } | { kind: "storageUnavailable" };
 
 export type ImportGameResult = { ok: true; gameId: number } | { ok: false; error: ImportGameError };
 
@@ -49,7 +49,12 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
 
   // The raw pair is written before the store, so a store that fails (an unmapped player, say) still keeps the file.
   if (input.source) {
-    await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
+    try {
+      await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
+    } catch (err) {
+      console.error(`[lol-import] could not store game ${validation.match.metadata.matchId} in the imports bucket`, err);
+      return { ok: false, error: { kind: "storageUnavailable" } };
+    }
   }
 
   const { gameId } = await storeGameData({
