@@ -4551,7 +4551,8 @@
               "orderTaken": "La partita {order} di questa serie è già salvata con altri dati. Scegli un altro numero di partita e salva di nuovo.",
               "dataDragonUnavailable": "I nomi dei campioni non sono disponibili al momento. Riprova più tardi.",
               "unknownChampions": "ID campione sconosciuti: {ids}",
-              "storageUnavailable": "Impossibile raggiungere lo storage degli import LoL. Controlla la configurazione e riprova."
+              "storageUnavailable": "Impossibile raggiungere lo storage degli import LoL. Controlla la configurazione e riprova.",
+              "duplicateAccount": "Lo stesso account Riot è collegato due volte. Collega ogni account una sola volta."
             },
             "searchPlaceholder": "Cerca per squadra, partita o data",
             "noResults": "Nessuna partita corrisponde",

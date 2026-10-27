@@ -4547,7 +4547,8 @@
               "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin.",
               "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
               "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
-              "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin."
+              "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
+              "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın."
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",
             "noResults": "Eşleşen maç yok",

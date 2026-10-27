@@ -4547,7 +4547,8 @@
               "orderTaken": "本系列的第 {order} 局已有其他数据。请选择其他局数后重新保存。",
               "dataDragonUnavailable": "暂时无法获取英雄名称，请稍后再试。",
               "unknownChampions": "未知的英雄 ID：{ids}",
-              "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。"
+              "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。",
+              "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。"
             },
             "searchPlaceholder": "按队伍、局数或日期搜索",
             "noResults": "没有匹配的比赛",

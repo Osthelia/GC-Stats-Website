@@ -4555,7 +4555,8 @@
               "orderTaken": "La partida {order} de esta serie ya está guardada con otros datos. Elige otro número de partida y guarda de nuevo.",
               "dataDragonUnavailable": "Los nombres de campeones no están disponibles en este momento. Inténtalo más tarde.",
               "unknownChampions": "IDs de campeón desconocidos: {ids}",
-              "storageUnavailable": "No se pudo acceder al almacenamiento de importaciones de LoL. Revisa la configuración e inténtalo de nuevo."
+              "storageUnavailable": "No se pudo acceder al almacenamiento de importaciones de LoL. Revisa la configuración e inténtalo de nuevo.",
+              "duplicateAccount": "La misma cuenta de Riot está vinculada dos veces. Vincula cada cuenta una sola vez."
             },
             "searchPlaceholder": "Buscar por equipo, partida o fecha",
             "noResults": "Ninguna partida coincide",

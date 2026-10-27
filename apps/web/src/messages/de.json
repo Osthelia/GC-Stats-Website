@@ -4547,7 +4547,8 @@
               "orderTaken": "Spiel {order} dieser Serie ist bereits mit anderen Daten gespeichert. Wähle eine andere Spielnummer und speichere erneut.",
               "dataDragonUnavailable": "Die Champion-Namen sind gerade nicht verfügbar. Versuche es später erneut.",
               "unknownChampions": "Unbekannte Champion-IDs: {ids}",
-              "storageUnavailable": "Der Speicher für LoL-Importe konnte nicht erreicht werden. Prüfe die Konfiguration und versuche es erneut."
+              "storageUnavailable": "Der Speicher für LoL-Importe konnte nicht erreicht werden. Prüfe die Konfiguration und versuche es erneut.",
+              "duplicateAccount": "Dasselbe Riot-Konto ist doppelt verknüpft. Verknüpfe jedes Konto nur einmal."
             },
             "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",
             "noResults": "Keine Spiele gefunden",

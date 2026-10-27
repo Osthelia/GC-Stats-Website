@@ -4547,7 +4547,8 @@
               "orderTaken": "Mecz {order} tej serii jest już zapisany z innymi danymi. Wybierz inny numer meczu i zapisz ponownie.",
               "dataDragonUnavailable": "Nazwy mistrzów są teraz niedostępne. Spróbuj ponownie później.",
               "unknownChampions": "Nieznane identyfikatory mistrzów: {ids}",
-              "storageUnavailable": "Nie udało się połączyć z magazynem importów LoL. Sprawdź konfigurację i spróbuj ponownie."
+              "storageUnavailable": "Nie udało się połączyć z magazynem importów LoL. Sprawdź konfigurację i spróbuj ponownie.",
+              "duplicateAccount": "To samo konto Riot jest powiązane dwa razy. Powiąż każde konto tylko raz."
             },
             "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
             "noResults": "Brak pasujących meczów",

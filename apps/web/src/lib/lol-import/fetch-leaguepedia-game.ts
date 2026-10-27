@@ -49,6 +49,7 @@ export type LeaguepediaGameError =
   | { kind: "orderTaken"; order: number }
   | { kind: "missingPlayers"; count: number }
   | { kind: "lolIdConflict"; puuid: string }
+  | { kind: "duplicateAccount" }
   | { kind: "invalidUpload"; errors: string[] }
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
@@ -237,6 +238,9 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
   const mappingByPuuid = new Map(input.mappings.map((m) => [m.puuid, m]));
   const unmapped = puuids.filter((puuid) => !linked.has(puuid) && !isMapped(mappingByPuuid.get(puuid)));
   if (unmapped.length > 0) return { ok: false, error: { kind: "missingPlayers", count: unmapped.length } };
+
+  // The same account twice in one save would race its own link, so it is refused before anything is written.
+  if (new Set(input.mappings.map((m) => m.puuid)).size !== input.mappings.length) return { ok: false, error: { kind: "duplicateAccount" } };
 
   for (const puuid of puuids) {
     const mapping = mappingByPuuid.get(puuid);
