@@ -23,6 +23,7 @@ import { LeagueGameDialog, type LeagueGameEntrant } from "@/components/admin/lea
 import { deleteLeagueGame } from "@/actions/admin-lol-games";
 import { mapCompletedBadgeClass } from "@/lib/status-colors";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
+import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 import { useGame } from "@/lib/use-game";
 
 export type MatchGameView = AdminLeagueGameRow & { winnerName: string | null };
@@ -59,12 +60,14 @@ export function MatchGamesPanel({
   matchId,
   games,
   entrants,
+  leaguepediaGames,
   canManage,
 }: {
   tournamentId: number;
   matchId: number;
   games: MatchGameView[];
   entrants: LeagueGameEntrant[];
+  leaguepediaGames: LeaguepediaGameOption[];
   canManage: boolean;
 }) {
   const game = useGame();
@@ -115,6 +118,7 @@ export function MatchGamesPanel({
         tournamentId={tournamentId}
         matchId={matchId}
         entrants={entrants}
+        leaguepediaGames={leaguepediaGames}
         editing={editing}
         nextOrder={games.length + 1}
         open={creating || editing !== null}

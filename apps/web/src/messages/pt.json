@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "Outro jogo já usa este ID de partida da Riot."
           },
           "fieldApiMatchId": "ID da partida na Riot",
-          "fieldApiMatchIdHint": "Por exemplo EUW1_6123456789. A plataforma é obtida a partir dele."
+          "fieldApiMatchIdHint": "Por exemplo EUW1_6123456789. A plataforma é obtida a partir dele.",
+          "leaguepedia": {
+            "label": "Partida da Leaguepedia",
+            "none": "Nenhuma",
+            "noData": "sem dados",
+            "gameNumber": "Partida {number}",
+            "fetch": "Carregar da Leaguepedia",
+            "fetching": "Carregando…",
+            "renew": "Renovar",
+            "reprocess": "Reprocessar",
+            "success": "Partida salva da Leaguepedia",
+            "error": {
+              "noData": "Esta partida não tem dados V5 na Leaguepedia.",
+              "notInBucket": "Esta partida ainda não está no armazenamento. Carregue-a primeiro.",
+              "pageInvalid": "As páginas da Leaguepedia desta partida não são dados de partida válidos.",
+              "fetch": "Não foi possível ler a Leaguepedia. Tente novamente mais tarde.",
+              "missingConfig": "O login do bot da Leaguepedia não está configurado neste servidor.",
+              "sidesUnresolved": "As duas equipes desta partida não correspondem aos dois participantes da série.",
+              "missingPlayers": "{count, plural, one {# jogador ainda não está vinculado a uma pessoa} other {# jogadores ainda não estão vinculados a uma pessoa}}",
+              "invalidUpload": "Os dados da partida não passaram nas verificações de importação.",
+              "storeFailed": "Não foi possível salvar a partida.",
+              "invalidOrder": "O número da partida deve ser um inteiro de 1 ou mais."
+            },
+            "searchPlaceholder": "Pesquisar por equipe, partida ou data",
+            "noResults": "Nenhuma partida corresponde"
+          }
         },
         "liquipediaImportButton": "Importar partida da Liquipedia"
       },

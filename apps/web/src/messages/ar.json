@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "مباراة أخرى تستخدم معرّف مباراة Riot هذا بالفعل."
           },
           "fieldApiMatchId": "معرّف مباراة Riot",
-          "fieldApiMatchIdHint": "مثال: EUW1_6123456789. تُستخرج المنصة منه."
+          "fieldApiMatchIdHint": "مثال: EUW1_6123456789. تُستخرج المنصة منه.",
+          "leaguepedia": {
+            "label": "مباراة Leaguepedia",
+            "none": "لا شيء",
+            "noData": "لا توجد بيانات",
+            "gameNumber": "المباراة {number}",
+            "fetch": "جلب من Leaguepedia",
+            "fetching": "جارٍ الجلب…",
+            "renew": "تجديد",
+            "reprocess": "إعادة المعالجة",
+            "success": "تم حفظ المباراة من Leaguepedia",
+            "error": {
+              "noData": "لا تحتوي هذه المباراة على بيانات V5 في Leaguepedia.",
+              "notInBucket": "هذه المباراة غير موجودة في التخزين بعد. اجلبها أولاً.",
+              "pageInvalid": "صفحات Leaguepedia لهذه المباراة ليست بيانات مباراة صالحة.",
+              "fetch": "تعذرت قراءة Leaguepedia. حاول مرة أخرى لاحقاً.",
+              "missingConfig": "تسجيل دخول بوت Leaguepedia غير مُعد على هذا الخادم.",
+              "sidesUnresolved": "الفريقان في هذه المباراة لا يطابقان المشاركين الاثنين في السلسلة.",
+              "missingPlayers": "{count, plural, zero {لا يوجد لاعبون غير مرتبطين} one {لاعب واحد غير مرتبط بشخص بعد} two {لاعبان غير مرتبطين بشخص بعد} few {# لاعبين غير مرتبطين بشخص بعد} many {# لاعباً غير مرتبط بشخص بعد} other {# لاعب غير مرتبط بشخص بعد}}",
+              "invalidUpload": "لم تجتز بيانات المباراة فحوص الاستيراد.",
+              "storeFailed": "تعذر حفظ المباراة.",
+              "invalidOrder": "يجب أن يكون رقم المباراة عدداً صحيحاً أكبر من أو يساوي 1."
+            },
+            "searchPlaceholder": "ابحث بالفريق أو المباراة أو التاريخ",
+            "noResults": "لا توجد مباريات مطابقة"
+          }
         },
         "liquipediaImportButton": "استيراد مباراة من Liquipedia"
       },

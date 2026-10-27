@@ -4527,7 +4527,32 @@
             "duplicateMatchId": "Otra partida ya usa este ID de partida de Riot."
           },
           "fieldApiMatchId": "ID de partida de Riot",
-          "fieldApiMatchIdHint": "Por ejemplo EUW1_6123456789. La plataforma se toma de este valor."
+          "fieldApiMatchIdHint": "Por ejemplo EUW1_6123456789. La plataforma se toma de este valor.",
+          "leaguepedia": {
+            "label": "Partida de Leaguepedia",
+            "none": "Ninguna",
+            "noData": "sin datos",
+            "gameNumber": "Partida {number}",
+            "fetch": "Cargar desde Leaguepedia",
+            "fetching": "Cargando…",
+            "renew": "Renovar",
+            "reprocess": "Reprocesar",
+            "success": "Partida guardada desde Leaguepedia",
+            "error": {
+              "noData": "Esta partida no tiene datos V5 en Leaguepedia.",
+              "notInBucket": "Esta partida aún no está en el almacén. Cárgala primero.",
+              "pageInvalid": "Las páginas de Leaguepedia de esta partida no son datos de partida válidos.",
+              "fetch": "No se pudo leer Leaguepedia. Inténtalo más tarde.",
+              "missingConfig": "El inicio de sesión del bot de Leaguepedia no está configurado en este servidor.",
+              "sidesUnresolved": "Los dos equipos de esta partida no coinciden con los dos participantes de la serie.",
+              "missingPlayers": "{count, plural, one {# jugador aún no está vinculado a una persona} other {# jugadores aún no están vinculados a una persona}}",
+              "invalidUpload": "Los datos de la partida no pasaron las comprobaciones de importación.",
+              "storeFailed": "No se pudo guardar la partida.",
+              "invalidOrder": "El número de partida debe ser un entero de 1 o más."
+            },
+            "searchPlaceholder": "Buscar por equipo, partida o fecha",
+            "noResults": "Ninguna partida coincide"
+          }
         },
         "liquipediaImportButton": "Importar partido de Liquipedia"
       },

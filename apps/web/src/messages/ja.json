@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "別のゲームがこの Riot マッチIDを使用しています。"
           },
           "fieldApiMatchId": "Riot マッチID",
-          "fieldApiMatchIdHint": "例: EUW1_6123456789。プラットフォームはここから取得されます。"
+          "fieldApiMatchIdHint": "例: EUW1_6123456789。プラットフォームはここから取得されます。",
+          "leaguepedia": {
+            "label": "Leaguepedia の試合",
+            "none": "なし",
+            "noData": "データなし",
+            "gameNumber": "{number} 試合目",
+            "fetch": "Leaguepedia から取得",
+            "fetching": "取得中…",
+            "renew": "再取得",
+            "reprocess": "再処理",
+            "success": "Leaguepedia から試合を保存しました",
+            "error": {
+              "noData": "この試合には Leaguepedia に V5 データがありません。",
+              "notInBucket": "この試合はまだストレージにありません。先に取得してください。",
+              "pageInvalid": "この試合の Leaguepedia ページは有効な試合データではありません。",
+              "fetch": "Leaguepedia を読み込めませんでした。しばらくしてから再度お試しください。",
+              "missingConfig": "このサーバーでは Leaguepedia のボットログインが設定されていません。",
+              "sidesUnresolved": "この試合の2チームが、シリーズの2つの参加者と一致しません。",
+              "missingPlayers": "{count, plural, other {# 人のプレイヤーがまだ人物に紐づけられていません}}",
+              "invalidUpload": "試合データがインポートの検証を通過しませんでした。",
+              "storeFailed": "試合を保存できませんでした。",
+              "invalidOrder": "試合番号は 1 以上の整数にしてください。"
+            },
+            "searchPlaceholder": "チーム・試合・日付で検索",
+            "noResults": "一致する試合はありません"
+          }
         },
         "liquipediaImportButton": "Liquipedia試合インポート"
       },

@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "Ein anderes Spiel verwendet bereits diese Riot-Match-ID."
           },
           "fieldApiMatchId": "Riot-Match-ID",
-          "fieldApiMatchIdHint": "Zum Beispiel EUW1_6123456789. Die Plattform wird daraus gelesen."
+          "fieldApiMatchIdHint": "Zum Beispiel EUW1_6123456789. Die Plattform wird daraus gelesen.",
+          "leaguepedia": {
+            "label": "Leaguepedia-Spiel",
+            "none": "Keins",
+            "noData": "keine Daten",
+            "gameNumber": "Spiel {number}",
+            "fetch": "Von Leaguepedia laden",
+            "fetching": "Lade…",
+            "renew": "Erneuern",
+            "reprocess": "Neu verarbeiten",
+            "success": "Spiel aus Leaguepedia gespeichert",
+            "error": {
+              "noData": "Dieses Spiel hat keine V5-Daten auf Leaguepedia.",
+              "notInBucket": "Dieses Spiel ist noch nicht im Speicher. Lade es zuerst.",
+              "pageInvalid": "Die Leaguepedia-Seiten dieses Spiels sind keine gültigen Matchdaten.",
+              "fetch": "Leaguepedia konnte nicht gelesen werden. Versuche es später erneut.",
+              "missingConfig": "Der Leaguepedia-Bot-Login ist auf diesem Server nicht eingerichtet.",
+              "sidesUnresolved": "Die beiden Teams dieses Spiels passen nicht zu den beiden Teilnehmern der Serie.",
+              "missingPlayers": "{count, plural, one {# Spieler ist noch keiner Person zugeordnet} other {# Spieler sind noch keiner Person zugeordnet}}",
+              "invalidUpload": "Die Spieldaten haben die Importprüfung nicht bestanden.",
+              "storeFailed": "Das Spiel konnte nicht gespeichert werden.",
+              "invalidOrder": "Die Spielnummer muss eine ganze Zahl von 1 oder mehr sein."
+            },
+            "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",
+            "noResults": "Keine Spiele gefunden"
+          }
         },
         "liquipediaImportButton": "Liquipedia Match Import"
       },

@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "Başka bir oyun bu Riot maç kimliğini zaten kullanıyor."
           },
           "fieldApiMatchId": "Riot maç kimliği",
-          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır."
+          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır.",
+          "leaguepedia": {
+            "label": "Leaguepedia maçı",
+            "none": "Yok",
+            "noData": "veri yok",
+            "gameNumber": "Maç {number}",
+            "fetch": "Leaguepedia'dan getir",
+            "fetching": "Getiriliyor…",
+            "renew": "Yenile",
+            "reprocess": "Yeniden işle",
+            "success": "Maç Leaguepedia'dan kaydedildi",
+            "error": {
+              "noData": "Bu maçın Leaguepedia'da V5 verisi yok.",
+              "notInBucket": "Bu maç henüz depoda yok. Önce getirin.",
+              "pageInvalid": "Bu maçın Leaguepedia sayfaları geçerli maç verisi değil.",
+              "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin.",
+              "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+              "sidesUnresolved": "Bu maçın iki takımı, serinin iki katılımcısıyla eşleşmiyor.",
+              "missingPlayers": "{count, plural, one {# oyuncu henüz bir kişiye bağlanmadı} other {# oyuncu henüz bir kişiye bağlanmadı}}",
+              "invalidUpload": "Maç verisi içe aktarma kontrollerinden geçemedi.",
+              "storeFailed": "Maç kaydedilemedi.",
+              "invalidOrder": "Maç numarası 1 veya daha büyük bir tam sayı olmalı."
+            },
+            "searchPlaceholder": "Takım, maç veya tarihe göre ara",
+            "noResults": "Eşleşen maç yok"
+          }
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"
       },

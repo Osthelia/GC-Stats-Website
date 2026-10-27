@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "Inna gra używa już tego ID meczu Riot."
           },
           "fieldApiMatchId": "ID meczu Riot",
-          "fieldApiMatchIdHint": "Na przykład EUW1_6123456789. Platforma jest odczytywana z tego ID."
+          "fieldApiMatchIdHint": "Na przykład EUW1_6123456789. Platforma jest odczytywana z tego ID.",
+          "leaguepedia": {
+            "label": "Mecz Leaguepedia",
+            "none": "Brak",
+            "noData": "brak danych",
+            "gameNumber": "Mecz {number}",
+            "fetch": "Pobierz z Leaguepedia",
+            "fetching": "Pobieranie…",
+            "renew": "Odnów",
+            "reprocess": "Przetwórz ponownie",
+            "success": "Mecz zapisany z Leaguepedia",
+            "error": {
+              "noData": "Ten mecz nie ma danych V5 na Leaguepedia.",
+              "notInBucket": "Tego meczu nie ma jeszcze w magazynie. Najpierw go pobierz.",
+              "pageInvalid": "Strony Leaguepedia tego meczu nie zawierają poprawnych danych meczu.",
+              "fetch": "Nie udało się odczytać Leaguepedia. Spróbuj ponownie później.",
+              "missingConfig": "Logowanie bota Leaguepedia nie jest skonfigurowane na tym serwerze.",
+              "sidesUnresolved": "Drużyny tego meczu nie pasują do dwóch uczestników serii.",
+              "missingPlayers": "{count, plural, one {# gracz nie jest jeszcze przypisany do osoby} few {# graczy nie jest jeszcze przypisanych do osoby} many {# graczy nie jest jeszcze przypisanych do osoby} other {# graczy nie jest jeszcze przypisanych do osoby}}",
+              "invalidUpload": "Dane meczu nie przeszły kontroli importu.",
+              "storeFailed": "Nie udało się zapisać meczu.",
+              "invalidOrder": "Numer meczu musi być liczbą całkowitą, co najmniej 1."
+            },
+            "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
+            "noResults": "Brak pasujących meczów"
+          }
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"
       },

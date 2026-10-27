@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "มีเกมอื่นที่ใช้รหัสแมตช์ Riot นี้อยู่แล้ว"
           },
           "fieldApiMatchId": "รหัสแมตช์ Riot",
-          "fieldApiMatchIdHint": "เช่น EUW1_6123456789 ระบบจะอ่านแพลตฟอร์มจากรหัสนี้"
+          "fieldApiMatchIdHint": "เช่น EUW1_6123456789 ระบบจะอ่านแพลตฟอร์มจากรหัสนี้",
+          "leaguepedia": {
+            "label": "การแข่งขันจาก Leaguepedia",
+            "none": "ไม่มี",
+            "noData": "ไม่มีข้อมูล",
+            "gameNumber": "เกมที่ {number}",
+            "fetch": "ดึงจาก Leaguepedia",
+            "fetching": "กำลังดึง…",
+            "renew": "ดึงใหม่",
+            "reprocess": "ประมวลผลใหม่",
+            "success": "บันทึกเกมจาก Leaguepedia แล้ว",
+            "error": {
+              "noData": "เกมนี้ไม่มีข้อมูล V5 บน Leaguepedia",
+              "notInBucket": "เกมนี้ยังไม่อยู่ในที่เก็บ กรุณาดึงก่อน",
+              "pageInvalid": "หน้า Leaguepedia ของเกมนี้ไม่ใช่ข้อมูลการแข่งขันที่ถูกต้อง",
+              "fetch": "ไม่สามารถอ่าน Leaguepedia ได้ โปรดลองใหม่ภายหลัง",
+              "missingConfig": "ยังไม่ได้ตั้งค่าการล็อกอินบอทของ Leaguepedia บนเซิร์ฟเวอร์นี้",
+              "sidesUnresolved": "สองทีมของเกมนี้ไม่ตรงกับผู้เข้าแข่งขันสองฝ่ายของซีรีส์",
+              "missingPlayers": "ผู้เล่น {count} คนยังไม่ได้เชื่อมกับบุคคล",
+              "invalidUpload": "ข้อมูลเกมไม่ผ่านการตรวจสอบการนำเข้า",
+              "storeFailed": "ไม่สามารถบันทึกเกมได้",
+              "invalidOrder": "หมายเลขเกมต้องเป็นจำนวนเต็มตั้งแต่ 1 ขึ้นไป"
+            },
+            "searchPlaceholder": "ค้นหาตามทีม เกม หรือวันที่",
+            "noResults": "ไม่พบการแข่งขันที่ตรงกัน"
+          }
         },
         "liquipediaImportButton": "นำเข้าแมตช์จาก Liquipedia"
       },

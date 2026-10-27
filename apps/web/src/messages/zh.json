@@ -4519,7 +4519,32 @@
             "duplicateMatchId": "其他对局已使用该 Riot 对局 ID。"
           },
           "fieldApiMatchId": "Riot 对局 ID",
-          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台将从中读取。"
+          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台将从中读取。",
+          "leaguepedia": {
+            "label": "Leaguepedia 比赛",
+            "none": "无",
+            "noData": "无数据",
+            "gameNumber": "第 {number} 局",
+            "fetch": "从 Leaguepedia 获取",
+            "fetching": "获取中…",
+            "renew": "更新",
+            "reprocess": "重新处理",
+            "success": "已从 Leaguepedia 保存该局",
+            "error": {
+              "noData": "该局在 Leaguepedia 上没有 V5 数据。",
+              "notInBucket": "该局尚未在存储中，请先获取。",
+              "pageInvalid": "该局的 Leaguepedia 页面不是有效的比赛数据。",
+              "fetch": "无法读取 Leaguepedia，请稍后重试。",
+              "missingConfig": "本服务器未配置 Leaguepedia 机器人登录。",
+              "sidesUnresolved": "该局的两支队伍与本系列的两个参赛方不匹配。",
+              "missingPlayers": "{count, plural, other {# 名选手尚未关联到人员}}",
+              "invalidUpload": "比赛数据未通过导入检查。",
+              "storeFailed": "无法保存该局。",
+              "invalidOrder": "局数必须是大于等于 1 的整数。"
+            },
+            "searchPlaceholder": "按队伍、局数或日期搜索",
+            "noResults": "没有匹配的比赛"
+          }
         },
         "liquipediaImportButton": "Liquipedia 比赛导入"
       },

@@ -4527,7 +4527,32 @@
             "duplicateMatchId": "Une autre partie utilise déjà cet ID de match Riot."
           },
           "fieldApiMatchId": "ID de match Riot",
-          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite."
+          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite.",
+          "leaguepedia": {
+            "label": "Match Leaguepedia",
+            "none": "Aucun",
+            "noData": "pas de données",
+            "gameNumber": "Match {number}",
+            "fetch": "Charger depuis Leaguepedia",
+            "fetching": "Chargement…",
+            "renew": "Renouveler",
+            "reprocess": "Retraiter",
+            "success": "Match enregistré depuis Leaguepedia",
+            "error": {
+              "noData": "Ce match n'a pas de données V5 sur Leaguepedia.",
+              "notInBucket": "Ce match n'est pas encore dans le stockage. Chargez-le d'abord.",
+              "pageInvalid": "Les pages Leaguepedia de ce match ne sont pas des données de match valides.",
+              "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard.",
+              "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
+              "sidesUnresolved": "Les deux équipes de ce match ne correspondent pas aux deux participants de la série.",
+              "missingPlayers": "{count, plural, one {# joueur n'est pas encore lié à une personne} other {# joueurs ne sont pas encore liés à une personne}}",
+              "invalidUpload": "Les données du match n'ont pas passé les contrôles d'import.",
+              "storeFailed": "Le match n'a pas pu être enregistré.",
+              "invalidOrder": "Le numéro du match doit être un entier égal ou supérieur à 1."
+            },
+            "searchPlaceholder": "Rechercher par équipe, match ou date",
+            "noResults": "Aucun match ne correspond"
+          }
         },
         "liquipediaImportButton": "Import de match Liquipedia"
       },

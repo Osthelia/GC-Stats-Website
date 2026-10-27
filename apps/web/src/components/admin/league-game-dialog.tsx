@@ -11,7 +11,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -20,13 +20,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
+import { fetchLeaguepediaGameForMatch } from "@/actions/admin-leaguepedia";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
+import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 import { useGame } from "@/lib/use-game";
 
 export type LeagueGameEntrant = { id: number; name: string };
 
 const NO_WINNER = "none";
+const NO_LEAGUEPEDIA = "none";
 
 type FormState = {
   order: string;
@@ -35,10 +39,11 @@ type FormState = {
   isCompleted: boolean;
   isForfeit: boolean;
   note: string;
+  leaguepediaGameId: string;
 };
 
 function emptyState(nextOrder: number): FormState {
-  return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, note: "" };
+  return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, note: "", leaguepediaGameId: NO_LEAGUEPEDIA };
 }
 
 function stateFromGame(game: AdminLeagueGameRow): FormState {
@@ -49,6 +54,7 @@ function stateFromGame(game: AdminLeagueGameRow): FormState {
     isCompleted: game.isCompleted,
     isForfeit: game.isForfeit,
     note: game.note ?? "",
+    leaguepediaGameId: NO_LEAGUEPEDIA,
   };
 }
 
@@ -56,6 +62,7 @@ export function LeagueGameDialog({
   tournamentId,
   matchId,
   entrants,
+  leaguepediaGames,
   editing,
   nextOrder,
   open,
@@ -64,12 +71,14 @@ export function LeagueGameDialog({
   tournamentId: number;
   matchId: number;
   entrants: LeagueGameEntrant[];
+  leaguepediaGames: LeaguepediaGameOption[];
   editing: AdminLeagueGameRow | null;
   nextOrder: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
   const game = useGame();
+  const locale = useLocale();
   const t = useTranslations("admin.tournaments.matches.games");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -87,6 +96,36 @@ export function LeagueGameDialog({
   const fieldErr = (field: keyof LeagueGameFieldErrors) => (fieldErrors[field] ? t(`fieldError.${fieldErrors[field]}`) : undefined);
 
   const winnerItems: Record<string, string> = { [NO_WINNER]: t("fieldWinnerNone"), ...Object.fromEntries(entrants.map((e) => [String(e.id), e.name])) };
+
+  // Games between the two entrants of this series come first; the rest of the list follows, so a naming difference never hides a game.
+  const entrantNames = new Set(entrants.map((e) => e.name.trim().toLowerCase()));
+  const isSeriesGame = (g: LeaguepediaGameOption) => entrantNames.has((g.team1 ?? "").trim().toLowerCase()) && entrantNames.has((g.team2 ?? "").trim().toLowerCase());
+  const orderedLeaguepediaGames = [...leaguepediaGames].sort((a, b) => Number(isSeriesGame(b)) - Number(isSeriesGame(a)));
+  const leaguepediaLabel = (g: LeaguepediaGameOption) => {
+    const date = g.playedAt ? new Date(g.playedAt).toLocaleDateString(locale) : "";
+    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("leaguepedia.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("leaguepedia.noData")].filter(Boolean).join(" · ");
+  };
+  const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({ id: g.leaguepediaGameId, label: leaguepediaLabel(g), disabled: !g.hasData }));
+  const selectedLeaguepedia = leaguepediaGames.find((g) => g.leaguepediaGameId === form.leaguepediaGameId) ?? null;
+
+  function selectLeaguepediaGame(id: string) {
+    const picked = leaguepediaGames.find((g) => g.leaguepediaGameId === id);
+    // Picking a game sets its Riot match id, as the field below would.
+    setForm((prev) => ({ ...prev, leaguepediaGameId: id, apiMatchId: picked?.riotMatchId ?? prev.apiMatchId }));
+  }
+
+  function handleLeaguepedia(mode: "fetch" | "renew" | "reprocess") {
+    startTransition(async () => {
+      const result = await fetchLeaguepediaGameForMatch(tournamentId, matchId, { leaguepediaGameId: form.leaguepediaGameId, order: Number(form.order), mode });
+      if (!result.ok) {
+        toast.error(t(`leaguepedia.error.${result.error.kind}`, { count: result.error.kind === "missingPlayers" ? result.error.count : 0 }));
+        return;
+      }
+      onOpenChange(false);
+      router.refresh();
+      toast.success(t("leaguepedia.success"));
+    });
+  }
 
   function handleSave() {
     setFieldErrors({});
@@ -141,9 +180,36 @@ export function LeagueGameDialog({
             </FormField>
           </div>
 
+          <FormField label={t("leaguepedia.label")} htmlFor="game-leaguepedia">
+            <LeaguepediaGamePicker
+              id="game-leaguepedia"
+              value={form.leaguepediaGameId === NO_LEAGUEPEDIA ? null : form.leaguepediaGameId}
+              options={leaguepediaOptions}
+              onChange={(id) => selectLeaguepediaGame(id ?? NO_LEAGUEPEDIA)}
+              placeholder={t("leaguepedia.none")}
+              noneLabel={t("leaguepedia.none")}
+              searchPlaceholder={t("leaguepedia.searchPlaceholder")}
+              noResultsLabel={t("leaguepedia.noResults")}
+            />
+          </FormField>
+
           <FormField label={t("fieldApiMatchId")} htmlFor="game-api-match-id" hint={t("fieldApiMatchIdHint")} error={fieldErr("apiMatchId")}>
             <Input id="game-api-match-id" className="font-mono text-xs" value={form.apiMatchId} onChange={(e) => set("apiMatchId", e.target.value)} aria-invalid={!!fieldErrors.apiMatchId} />
           </FormField>
+
+          {selectedLeaguepedia?.hasData && (
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => handleLeaguepedia("fetch")} disabled={isPending}>
+                {isPending ? t("leaguepedia.fetching") : t("leaguepedia.fetch")}
+              </Button>
+              <Button variant="outline" onClick={() => handleLeaguepedia("renew")} disabled={isPending}>
+                {t("leaguepedia.renew")}
+              </Button>
+              <Button variant="outline" onClick={() => handleLeaguepedia("reprocess")} disabled={isPending}>
+                {t("leaguepedia.reprocess")}
+              </Button>
+            </div>
+          )}
 
           <FormField label={t("fieldNote")} htmlFor="game-note" error={fieldErr("note")}>
             <Input id="game-note" maxLength={500} value={form.note} onChange={(e) => set("note", e.target.value)} aria-invalid={!!fieldErrors.note} />

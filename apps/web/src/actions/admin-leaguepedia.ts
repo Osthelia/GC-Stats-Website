@@ -19,6 +19,13 @@ import { logActivity } from "@/lib/activity-log";
 import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguepedia";
 import { refreshGameList } from "@/lib/leaguepedia-games";
 import type { LeaguepediaError } from "@/lib/leaguepedia-client";
+import { getAdminMatch } from "@/lib/admin-matches";
+import { fetchLeaguepediaGameIntoMatch, type FetchLeaguepediaGameResult } from "@/lib/lol-import/fetch-leaguepedia-game";
+import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
+import { matchTag } from "@/lib/cache-tags";
+import { updateTag } from "next/cache";
+
+export type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 
 export type LeaguepediaLinkError = "invalidBasePage" | "notFound" | "notLinked" | "missingConfig" | "fetch";
 
@@ -68,6 +75,29 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
     actorUserId,
   });
   return { ok: true, games: result.data };
+}
+
+export type FetchGameInput = { leaguepediaGameId: string; order: number; mode: LeaguepediaGameMode };
+
+/** Stores a Leaguepedia game as game `order` of the series: fetch, renew or reprocess (see leaguepedia-game.ts). */
+export async function fetchLeaguepediaGameForMatch(tournamentId: number, matchId: number, input: FetchGameInput): Promise<FetchLeaguepediaGameResult> {
+  const actorUserId = await requireLolActor();
+  const match = await getAdminMatch("lol", matchId);
+  if (!match || match.tournamentId !== tournamentId) return { ok: false, error: { kind: "noData" } };
+
+  const result = await fetchLeaguepediaGameIntoMatch({ tournamentId, matchId, ...input });
+  if (result.ok) {
+    updateTag(matchTag(matchId));
+    await logActivity({
+      subject: "match",
+      subjectId: matchId,
+      event: "updated",
+      description: `${input.mode === "renew" ? "Renewed" : input.mode === "reprocess" ? "Reprocessed" : "Fetched"} game ${input.order} of match #${matchId} from Leaguepedia`,
+      actorUserId,
+      properties: { leaguepediaGameId: input.leaguepediaGameId, fromBucket: result.fromBucket },
+    });
+  }
+  return result;
 }
 
 function fetchError(error: LeaguepediaError): LeaguepediaLinkError {

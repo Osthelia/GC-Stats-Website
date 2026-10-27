@@ -29,6 +29,38 @@ export async function getLeaguepediaLinkStatus(tournamentId: number): Promise<Le
   return { overviewPage: link?.overviewPage ?? null, gamesFetchedAt: link?.gamesFetchedAt ?? null, gameCount: counted?.count ?? 0 };
 }
 
+export interface LeaguepediaGameOption {
+  leaguepediaGameId: string;
+  riotMatchId: string | null;
+  team1: string | null;
+  team2: string | null;
+  blue: string | null;
+  red: string | null;
+  gameInMatch: number;
+  playedAt: string | null;
+  hasData: boolean;
+}
+
+/** The tournament's Leaguepedia games, in the order of the list. */
+export async function listLeaguepediaGameOptions(tournamentId: number): Promise<LeaguepediaGameOption[]> {
+  const rows = await db
+    .select({
+      leaguepediaGameId: lolLeaguepediaGames.leaguepediaGameId,
+      riotMatchId: lolLeaguepediaGames.riotMatchId,
+      team1: lolLeaguepediaGames.team1,
+      team2: lolLeaguepediaGames.team2,
+      blue: lolLeaguepediaGames.blue,
+      red: lolLeaguepediaGames.red,
+      gameInMatch: lolLeaguepediaGames.gameInMatch,
+      playedAt: lolLeaguepediaGames.playedAt,
+      hasData: lolLeaguepediaGames.hasData,
+    })
+    .from(lolLeaguepediaGames)
+    .where(eq(lolLeaguepediaGames.tournamentId, tournamentId))
+    .orderBy(lolLeaguepediaGames.playedAt, lolLeaguepediaGames.gameInMatch);
+  return rows.map((row) => ({ ...row, playedAt: row.playedAt?.toISOString() ?? null }));
+}
+
 const MAX_BASE_PAGE_LENGTH = 200;
 // Characters a MediaWiki page title cannot hold.
 const FORBIDDEN_IN_TITLE = /[#<>[\]|{}]/;
