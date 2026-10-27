@@ -4573,7 +4573,11 @@
             "roleNone": "Rol yok",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "bu serinin {order}. maçı olarak kayıtlı",
-            "alreadyStoredElsewhere": "başka bir seride kayıtlı"
+            "alreadyStoredElsewhere": "başka bir seride kayıtlı",
+            "refreshGames": "Maç listesini yenile",
+            "refreshCooldown": "Bir saatten kısa süre önce yenilendi. Daha sonra tekrar deneyin.",
+            "refreshed": "Maç listesi yenilendi ({count} maç)",
+            "refreshError": "Maç listesi yenilenemedi. Daha sonra tekrar deneyin."
           }
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"

@@ -4573,7 +4573,11 @@
             "roleNone": "Brak roli",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "zapisany jako mecz {order} tej serii",
-            "alreadyStoredElsewhere": "zapisany w innej serii"
+            "alreadyStoredElsewhere": "zapisany w innej serii",
+            "refreshGames": "Odśwież listę gier",
+            "refreshCooldown": "Odświeżono mniej niż godzinę temu. Spróbuj ponownie później.",
+            "refreshed": "Lista gier odświeżona (gier: {count})",
+            "refreshError": "Nie udało się odświeżyć listy gier. Spróbuj ponownie później."
           }
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"

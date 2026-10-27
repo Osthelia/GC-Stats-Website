@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { LeagueGameDialog, type LeagueGameEntrant } from "@/components/admin/league-game-dialog";
+import { LeagueGameDialog, type LeagueGameEntrant, type LeaguepediaLinkView } from "@/components/admin/league-game-dialog";
 import { deleteLeagueGame } from "@/actions/admin-lol-games";
 import { mapCompletedBadgeClass } from "@/lib/status-colors";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
@@ -61,6 +61,7 @@ export function MatchGamesPanel({
   games,
   entrants,
   leaguepediaGames,
+  leaguepediaLink,
   canManage,
 }: {
   tournamentId: number;
@@ -68,6 +69,7 @@ export function MatchGamesPanel({
   games: MatchGameView[];
   entrants: LeagueGameEntrant[];
   leaguepediaGames: LeaguepediaGameOption[];
+  leaguepediaLink: LeaguepediaLinkView;
   canManage: boolean;
 }) {
   const game = useGame();
@@ -119,6 +121,7 @@ export function MatchGamesPanel({
         matchId={matchId}
         entrants={entrants}
         leaguepediaGames={leaguepediaGames}
+        leaguepediaLink={leaguepediaLink}
         editing={editing}
         nextOrder={games.length + 1}
         open={creating || editing !== null}

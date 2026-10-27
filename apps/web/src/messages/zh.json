@@ -4573,7 +4573,11 @@
             "roleNone": "无位置",
             "riotRole": "Riot：{role}",
             "alreadyStoredHere": "已保存为本系列第 {order} 局",
-            "alreadyStoredElsewhere": "已保存在其他系列中"
+            "alreadyStoredElsewhere": "已保存在其他系列中",
+            "refreshGames": "刷新对局列表",
+            "refreshCooldown": "不到一小时前刚刷新过，请稍后再试。",
+            "refreshed": "对局列表已刷新（{count} 场）",
+            "refreshError": "无法刷新对局列表，请稍后再试。"
           }
         },
         "liquipediaImportButton": "Liquipedia 比赛导入"

@@ -4581,7 +4581,11 @@
             "roleNone": "Aucun rôle",
             "riotRole": "Riot : {role}",
             "alreadyStoredHere": "enregistré comme match {order} de cette série",
-            "alreadyStoredElsewhere": "enregistré dans une autre série"
+            "alreadyStoredElsewhere": "enregistré dans une autre série",
+            "refreshGames": "Actualiser la liste des parties",
+            "refreshCooldown": "Actualisée il y a moins d'une heure. Réessayez plus tard.",
+            "refreshed": "Liste des parties actualisée ({count} parties)",
+            "refreshError": "La liste des parties n'a pas pu être actualisée. Réessayez plus tard."
           }
         },
         "liquipediaImportButton": "Import de match Liquipedia"

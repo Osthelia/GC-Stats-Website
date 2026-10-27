@@ -4573,7 +4573,11 @@
             "roleNone": "Sem função",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "salva como partida {order} desta série",
-            "alreadyStoredElsewhere": "salva em outra série"
+            "alreadyStoredElsewhere": "salva em outra série",
+            "refreshGames": "Atualizar lista de jogos",
+            "refreshCooldown": "Atualizada há menos de uma hora. Tente novamente mais tarde.",
+            "refreshed": "Lista de jogos atualizada ({count} jogos)",
+            "refreshError": "Não foi possível atualizar a lista de jogos. Tente novamente mais tarde."
           }
         },
         "liquipediaImportButton": "Importar partida da Liquipedia"

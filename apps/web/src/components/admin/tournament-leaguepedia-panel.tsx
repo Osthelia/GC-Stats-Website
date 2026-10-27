@@ -14,6 +14,7 @@
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { Loader2Icon } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,11 +33,14 @@ export function TournamentLeaguepediaPanel({ tournamentId, status, canManage }: 
   const t = useTranslations("admin.tournaments.leaguepedia");
   const locale = useLocale();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  // Separate transitions, so the refresh button shows its spinner and the save button does not.
+  const [isSaving, startSaving] = useTransition();
+  const [isRefreshing, startRefreshing] = useTransition();
+  const isPending = isSaving || isRefreshing;
   const [basePage, setBasePage] = useState(status.overviewPage ?? "");
 
-  function run(action: () => Promise<LeaguepediaLinkResult>) {
-    startTransition(async () => {
+  function run(start: typeof startSaving, action: () => Promise<LeaguepediaLinkResult>) {
+    start(async () => {
       const result = await action();
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
@@ -67,10 +71,11 @@ export function TournamentLeaguepediaPanel({ tournamentId, status, canManage }: 
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => run(() => saveLeaguepediaBasePage(tournamentId, basePage))} disabled={!canManage || isPending || basePage.trim() === ""}>
-            {isPending ? t("saving") : t("save")}
+          <Button onClick={() => run(startSaving, () => saveLeaguepediaBasePage(tournamentId, basePage))} disabled={!canManage || isPending || basePage.trim() === ""}>
+            {isSaving ? t("saving") : t("save")}
           </Button>
-          <Button variant="outline" onClick={() => run(() => refreshLeaguepediaGameList(tournamentId))} disabled={!canManage || isPending || !status.overviewPage}>
+          <Button variant="outline" onClick={() => run(startRefreshing, () => refreshLeaguepediaGameList(tournamentId))} disabled={!canManage || isPending || !status.overviewPage}>
+            {isRefreshing ? <Loader2Icon className="animate-spin" /> : null}
             {t("refresh")}
           </Button>
         </div>

@@ -13,25 +13,32 @@
 import { useEffect, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { Loader2Icon } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { FormField } from "@/components/admin/form-field";
 import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
-import { prepareLeaguepediaGameForMatch, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
 import { LeaguepediaGamePreview } from "@/components/admin/leaguepedia-game-preview";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
+import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/use-game";
 
 export type LeagueGameEntrant = { id: number; name: string };
 
+/** The tournament's Leaguepedia link: whether a base page is set, and when the game list was last read (ISO). */
+export type LeaguepediaLinkView = { linked: boolean; fetchedAt: string | null };
+
 const NO_WINNER = "none";
 const NO_LEAGUEPEDIA = "none";
+const GAME_LIST_COOLDOWN_MS = 60 * 60 * 1000;
 
 type FormState = {
   order: string;
@@ -66,6 +73,7 @@ export function LeagueGameDialog({
   matchId,
   entrants,
   leaguepediaGames,
+  leaguepediaLink,
   editing,
   nextOrder,
   open,
@@ -75,6 +83,7 @@ export function LeagueGameDialog({
   matchId: number;
   entrants: LeagueGameEntrant[];
   leaguepediaGames: LeaguepediaGameOption[];
+  leaguepediaLink: LeaguepediaLinkView;
   editing: AdminLeagueGameRow | null;
   nextOrder: number;
   open: boolean;
@@ -85,17 +94,21 @@ export function LeagueGameDialog({
   const t = useTranslations("admin.tournaments.matches.games");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  // Its own transition, so the refresh shows its spinner and the save button does not.
+  const [isRefreshing, startRefreshing] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<LeagueGameFieldErrors>({});
   const [form, setForm] = useState<FormState>(emptyState(nextOrder));
   const [preview, setPreview] = useState<LeaguepediaPreview | null>(null);
 
+  // Opening the dialog or switching game resets the form. A new game list (after a refresh) must not wipe what was typed.
   useEffect(() => {
     if (open) {
       setForm(editing ? stateFromGame(editing, leaguepediaGames) : emptyState(nextOrder));
       setFieldErrors({});
       setPreview(null);
     }
-  }, [open, editing, nextOrder, leaguepediaGames]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editing, nextOrder]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
   const fieldErr = (field: keyof LeagueGameFieldErrors) => (fieldErrors[field] ? t(`fieldError.${fieldErrors[field]}`) : undefined);
@@ -118,12 +131,35 @@ export function LeagueGameDialog({
     disabled: !g.hasData || (g.storedAs !== null && g.storedAs.gameId !== editing?.id),
   }));
   const selectedLeaguepedia = leaguepediaGames.find((g) => g.leaguepediaGameId === form.leaguepediaGameId) ?? null;
+  const onCooldown = leaguepediaLink.fetchedAt !== null && Date.now() - new Date(leaguepediaLink.fetchedAt).getTime() < GAME_LIST_COOLDOWN_MS;
 
   function selectLeaguepediaGame(id: string) {
     const picked = leaguepediaGames.find((g) => g.leaguepediaGameId === id);
     // Picking a game sets its Riot match id, as the field below would.
     setForm((prev) => ({ ...prev, leaguepediaGameId: id, apiMatchId: picked?.riotMatchId ?? prev.apiMatchId }));
   }
+
+  // Reads the game list again. The cooldown is checked here as well as shown, so a click can't start a second read.
+  function handleRefreshGames() {
+    if (onCooldown || isRefreshing) return;
+    startRefreshing(async () => {
+      const result = await refreshLeaguepediaGameList(tournamentId);
+      if (!result.ok) {
+        toast.error(t("leaguepedia.refreshError"));
+        return;
+      }
+      router.refresh();
+      toast.success(t("leaguepedia.refreshed", { count: result.games }));
+    });
+  }
+
+  const refreshBlocked = onCooldown || isRefreshing;
+  const refreshGamesButton = (
+    <Button variant="outline" size="sm" aria-disabled={refreshBlocked} onClick={handleRefreshGames} className={cn(refreshBlocked && "cursor-not-allowed opacity-50")}>
+      {isRefreshing ? <Loader2Icon className="animate-spin" /> : null}
+      {isRefreshing ? t("leaguepedia.fetching") : t("leaguepedia.refreshGames")}
+    </Button>
+  );
 
   // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
   function handlePrepare(mode: "fetch" | "renew" | "reprocess") {
@@ -225,6 +261,19 @@ export function LeagueGameDialog({
               noResultsLabel={t("leaguepedia.noResults")}
             />
           </FormField>
+
+          {form.leaguepediaGameId === NO_LEAGUEPEDIA && leaguepediaLink.linked && (
+            <div>
+              {onCooldown ? (
+                <Tooltip>
+                  <TooltipTrigger render={refreshGamesButton} />
+                  <TooltipContent>{t("leaguepedia.refreshCooldown")}</TooltipContent>
+                </Tooltip>
+              ) : (
+                refreshGamesButton
+              )}
+            </div>
+          )}
 
           <FormField label={t("fieldApiMatchId")} htmlFor="game-api-match-id" hint={t("fieldApiMatchIdHint")} error={fieldErr("apiMatchId")}>
             <Input id="game-api-match-id" className="font-mono text-xs" value={form.apiMatchId} onChange={(e) => set("apiMatchId", e.target.value)} aria-invalid={!!fieldErrors.apiMatchId} />

@@ -4581,7 +4581,11 @@
             "roleNone": "No role",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "stored as game {order} of this series",
-            "alreadyStoredElsewhere": "stored in another series"
+            "alreadyStoredElsewhere": "stored in another series",
+            "refreshGames": "Refresh game list",
+            "refreshCooldown": "Refreshed less than an hour ago. Try again later.",
+            "refreshed": "Game list refreshed ({count} games)",
+            "refreshError": "The game list could not be refreshed. Try again later."
           }
         },
         "liquipediaImportButton": "Liquipedia Match Import"

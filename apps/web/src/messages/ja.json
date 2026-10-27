@@ -4573,7 +4573,11 @@
             "roleNone": "ロールなし",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "このシリーズの {order} 試合目として保存済み",
-            "alreadyStoredElsewhere": "別のシリーズで保存済み"
+            "alreadyStoredElsewhere": "別のシリーズで保存済み",
+            "refreshGames": "ゲーム一覧を更新",
+            "refreshCooldown": "1時間以内に更新済みです。しばらくしてから再度お試しください。",
+            "refreshed": "ゲーム一覧を更新しました（{count} 件）",
+            "refreshError": "ゲーム一覧を更新できませんでした。しばらくしてから再度お試しください。"
           }
         },
         "liquipediaImportButton": "Liquipedia試合インポート"

@@ -4573,7 +4573,11 @@
             "roleNone": "بلا دور",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "محفوظة كمباراة {order} في هذه السلسلة",
-            "alreadyStoredElsewhere": "محفوظة في سلسلة أخرى"
+            "alreadyStoredElsewhere": "محفوظة في سلسلة أخرى",
+            "refreshGames": "تحديث قائمة المباريات",
+            "refreshCooldown": "تم التحديث منذ أقل من ساعة. حاول لاحقًا.",
+            "refreshed": "تم تحديث قائمة المباريات ({count} مباراة)",
+            "refreshError": "تعذّر تحديث قائمة المباريات. حاول لاحقًا."
           }
         },
         "liquipediaImportButton": "استيراد مباراة من Liquipedia"

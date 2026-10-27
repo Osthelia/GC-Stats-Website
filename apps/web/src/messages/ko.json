@@ -4573,7 +4573,11 @@
             "roleNone": "역할 없음",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "이 시리즈의 {order}번째 경기로 저장됨",
-            "alreadyStoredElsewhere": "다른 시리즈에 저장됨"
+            "alreadyStoredElsewhere": "다른 시리즈에 저장됨",
+            "refreshGames": "게임 목록 새로고침",
+            "refreshCooldown": "1시간 이내에 새로고침했습니다. 나중에 다시 시도하세요.",
+            "refreshed": "게임 목록을 새로고침했습니다 ({count}개)",
+            "refreshError": "게임 목록을 새로고침하지 못했습니다. 나중에 다시 시도하세요."
           }
         },
         "liquipediaImportButton": "Liquipedia 경기 가져오기"

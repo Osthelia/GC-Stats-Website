@@ -4573,7 +4573,11 @@
             "roleNone": "Keine Rolle",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "als Spiel {order} dieser Serie gespeichert",
-            "alreadyStoredElsewhere": "in einer anderen Serie gespeichert"
+            "alreadyStoredElsewhere": "in einer anderen Serie gespeichert",
+            "refreshGames": "Spielliste aktualisieren",
+            "refreshCooldown": "Zuletzt vor weniger als einer Stunde aktualisiert. Versuche es später erneut.",
+            "refreshed": "Spielliste aktualisiert ({count} Spiele)",
+            "refreshError": "Die Spielliste konnte nicht aktualisiert werden. Versuche es später erneut."
           }
         },
         "liquipediaImportButton": "Liquipedia Match Import"

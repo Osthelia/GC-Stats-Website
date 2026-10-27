@@ -4573,7 +4573,11 @@
             "roleNone": "ไม่มีบทบาท",
             "riotRole": "Riot: {role}",
             "alreadyStoredHere": "บันทึกเป็นเกมที่ {order} ของซีรีส์นี้แล้ว",
-            "alreadyStoredElsewhere": "บันทึกในซีรีส์อื่นแล้ว"
+            "alreadyStoredElsewhere": "บันทึกในซีรีส์อื่นแล้ว",
+            "refreshGames": "รีเฟรชรายการเกม",
+            "refreshCooldown": "รีเฟรชไปแล้วภายในหนึ่งชั่วโมงที่ผ่านมา โปรดลองอีกครั้งภายหลัง",
+            "refreshed": "รีเฟรชรายการเกมแล้ว ({count} เกม)",
+            "refreshError": "ไม่สามารถรีเฟรชรายการเกมได้ โปรดลองอีกครั้งภายหลัง"
           }
         },
         "liquipediaImportButton": "นำเข้าแมตช์จาก Liquipedia"
