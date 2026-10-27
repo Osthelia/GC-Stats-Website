@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { getObject, objectExists, putObject } from "./s3";
+import { getBucket, getObject, putObject } from "./s3";
 
 /** What is stored for one game. Untyped: the caller validates it before use (validateImport). */
 export interface LolImportPayload {
@@ -26,12 +26,6 @@ export type LolImportSource = "leaguepedia" | "riot";
 // object key, so nothing else can end up in a path.
 const RIOT_MATCH_ID = /^[A-Z0-9]+_[0-9]+$/;
 
-export function getLolImportsBucket(): string {
-  const bucket = process.env.S3_LOL_IMPORTS_BUCKET;
-  if (!bucket) throw new Error("Missing required env var S3_LOL_IMPORTS_BUCKET for @gc-stats/storage");
-  return bucket;
-}
-
 /**
  * The source is part of the key. Leaguepedia and Riot deliver the same Match-V5 format for the same
  * match id, so without it a later Riot fetch would overwrite the Leaguepedia file.
@@ -43,18 +37,14 @@ export function lolImportKey(source: LolImportSource, riotMatchId: string): stri
 
 export async function storeLolImport(source: LolImportSource, riotMatchId: string, payload: LolImportPayload): Promise<void> {
   const body = await gzipJson(payload);
-  await putObject(lolImportKey(source, riotMatchId), Buffer.from(body), "application/gzip", getLolImportsBucket());
+  await putObject(lolImportKey(source, riotMatchId), Buffer.from(body), "application/gzip", getBucket("S3_LOL_IMPORTS_BUCKET"));
 }
 
 /** The stored payload, or null when the game has not been stored yet. */
 export async function readLolImport(source: LolImportSource, riotMatchId: string): Promise<LolImportPayload | null> {
-  const bytes = await getObject(lolImportKey(source, riotMatchId), getLolImportsBucket());
+  const bytes = await getObject(lolImportKey(source, riotMatchId), getBucket("S3_LOL_IMPORTS_BUCKET"));
   if (!bytes) return null;
   return (await gunzipJson(bytes)) as LolImportPayload;
-}
-
-export async function lolImportExists(source: LolImportSource, riotMatchId: string): Promise<boolean> {
-  return objectExists(lolImportKey(source, riotMatchId), getLolImportsBucket());
 }
 
 /** Web streams, so it runs the same on Node and on Workers. */
