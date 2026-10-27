@@ -12,7 +12,7 @@
 
 import { eq, sql } from "drizzle-orm";
 import { lolGames, lolLeaguepediaGames, lolLeaguepediaTournaments } from "@gc-stats/db";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 
 export interface LeaguepediaLinkStatus {
   overviewPage: string | null;
