@@ -15,7 +15,7 @@
 
 import { eq } from "drizzle-orm";
 import { externalApiSessions } from "@gc-stats/db";
-import { db } from "@gc-stats/db/client";
+import { adminDb as db } from "@gc-stats/db/client";
 import packageJson from "../../package.json";
 import { decrypt, encrypt } from "./encryption";
 
@@ -97,6 +97,10 @@ interface ApiCall<T> {
   cookie: string;
 }
 
+interface Session {
+  cookie: string | null;
+}
+
 /** Internal: thrown inside the client and turned into a typed error at the public boundary. */
 class LeaguepediaFailure extends Error {
   constructor(readonly error: LeaguepediaError) {
@@ -120,12 +124,12 @@ export function fetchLeaguepediaPages(titles: string[]): Promise<LeaguepediaResu
     const config = botConfig();
     if (!config) return { ok: false, error: { kind: "missingConfig" } };
     try {
-      // The API may cut a large answer short and send `continue`; the same titles are asked again from there.
+      const session: Session = { cookie: await readStoredCookie() };
       const pages = new Map<string, LeaguepediaPage>();
       let continueParams: Record<string, string> = {};
       let previous: string | null = null;
       for (;;) {
-        const body = await queryWithSession<QueryPagesBody>(config, {
+        const body = await queryWithSession<QueryPagesBody>(config, session, {
           action: "query",
           prop: "revisions",
           rvprop: "content",
@@ -157,9 +161,10 @@ export function fetchLeaguepediaCargo(query: CargoQuery, pageSize = CARGO_PAGE_S
     const config = botConfig();
     if (!config) return { ok: false, error: { kind: "missingConfig" } };
     try {
+      const session: Session = { cookie: await readStoredCookie() };
       const rows: CargoRow[] = [];
       for (let offset = 0; ; offset += pageSize) {
-        const body = await queryWithSession<CargoBody>(config, {
+        const body = await queryWithSession<CargoBody>(config, session, {
           action: "cargoquery",
           tables: query.tables,
           fields: query.fields,
@@ -191,18 +196,17 @@ function botConfig(): BotConfig | null {
   };
 }
 
-/** Uses the stored session. Logs in only when there is none, or when the API says the session is not logged in. */
-async function queryWithSession<T>(config: BotConfig, params: Record<string, string>): Promise<ApiBody<T>> {
-  const stored = await readStoredCookie();
-  if (stored !== null) {
+/** Query the api with the stored cookie or logs in when there is none */
+async function queryWithSession<T>(config: BotConfig, session: Session, params: Record<string, string>): Promise<ApiBody<T>> {
+  if (session.cookie !== null) {
     try {
-      return (await callApi<T>(config, stored, { ...params, assert: "user" }, "GET")).body;
+      return (await callApi<T>(config, session.cookie, { ...params, assert: "user" }, "GET")).body;
     } catch (err) {
       if (!isAssertUserFailed(err)) throw err;
     }
   }
-  const cookie = await logIn(config);
-  return (await callApi<T>(config, cookie, { ...params, assert: "user" }, "GET")).body;
+  session.cookie = await logIn(config);
+  return (await callApi<T>(config, session.cookie, { ...params, assert: "user" }, "GET")).body;
 }
 
 /** Login to leaguepedia and save the cookie */
