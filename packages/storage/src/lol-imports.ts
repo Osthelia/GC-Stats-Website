@@ -2,7 +2,7 @@
  * GC-Stats — lol-imports module
  *
  * The raw Riot Match-V5 match and timeline of each LoL game, gzipped in their own bucket
- * (S3_LOL_IMPORTS_BUCKET), keyed by the Riot match id. This is the record that a new stat is
+ * (S3_LOL_IMPORTS_BUCKET), keyed by source and Riot match id. This is the record that a new stat is
  * computed from, so a game can be reprocessed without asking Leaguepedia again. Separate from the
  * logos and news bucket: the data is public on Leaguepedia, so no access control is needed.
  *
@@ -19,6 +19,9 @@ export interface LolImportPayload {
   timeline: unknown;
 }
 
+/** Same values as lol_games.source. */
+export type LolImportSource = "leaguepedia" | "riot";
+
 // Riot match ids look like "LOLTMNT01_296476" or "EUW1_123". Checked before the id becomes an
 // object key, so nothing else can end up in a path.
 const RIOT_MATCH_ID = /^[A-Z0-9]+_[0-9]+$/;
@@ -29,25 +32,29 @@ export function getLolImportsBucket(): string {
   return bucket;
 }
 
-export function lolImportKey(riotMatchId: string): string {
+/**
+ * The source is part of the key. Leaguepedia and Riot deliver the same Match-V5 format for the same
+ * match id, so without it a later Riot fetch would overwrite the Leaguepedia file.
+ */
+export function lolImportKey(source: LolImportSource, riotMatchId: string): string {
   if (!RIOT_MATCH_ID.test(riotMatchId)) throw new Error(`Not a Riot match id: ${JSON.stringify(riotMatchId)}`);
-  return `${riotMatchId}.json.gz`;
+  return `${source}/${riotMatchId}.json.gz`;
 }
 
-export async function storeLolImport(riotMatchId: string, payload: LolImportPayload): Promise<void> {
+export async function storeLolImport(source: LolImportSource, riotMatchId: string, payload: LolImportPayload): Promise<void> {
   const body = await gzipJson(payload);
-  await putObject(lolImportKey(riotMatchId), Buffer.from(body), "application/gzip", getLolImportsBucket());
+  await putObject(lolImportKey(source, riotMatchId), Buffer.from(body), "application/gzip", getLolImportsBucket());
 }
 
 /** The stored payload, or null when the game has not been stored yet. */
-export async function readLolImport(riotMatchId: string): Promise<LolImportPayload | null> {
-  const bytes = await getObject(lolImportKey(riotMatchId), getLolImportsBucket());
+export async function readLolImport(source: LolImportSource, riotMatchId: string): Promise<LolImportPayload | null> {
+  const bytes = await getObject(lolImportKey(source, riotMatchId), getLolImportsBucket());
   if (!bytes) return null;
   return (await gunzipJson(bytes)) as LolImportPayload;
 }
 
-export async function lolImportExists(riotMatchId: string): Promise<boolean> {
-  return objectExists(lolImportKey(riotMatchId), getLolImportsBucket());
+export async function lolImportExists(source: LolImportSource, riotMatchId: string): Promise<boolean> {
+  return objectExists(lolImportKey(source, riotMatchId), getLolImportsBucket());
 }
 
 /** Web streams, so it runs the same on Node and on Workers. */

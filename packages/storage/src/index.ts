@@ -22,7 +22,7 @@ export {
   copyObjectWithinBucket,
 } from "./s3";
 export { getLolImportsBucket, lolImportKey, storeLolImport, readLolImport, lolImportExists, gzipJson, gunzipJson } from "./lol-imports";
-export type { LolImportPayload } from "./lol-imports";
+export type { LolImportPayload, LolImportSource } from "./lol-imports";
 export { convertToWebp, validateImageBuffer, MAX_IMAGE_BYTES } from "./image";
 export type { ImageFit, WebpOptions, ImageValidationError, ImageValidationResult } from "./image";
 export { LOGO_FOLDERS, storeLogoPair, replaceLogoFiles, tryStoreLogoPair, tryReplaceLogoFiles, deleteLogoFiles, logoUrl } from "./logos";
