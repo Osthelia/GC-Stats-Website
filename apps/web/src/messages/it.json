@@ -4762,7 +4762,28 @@
         "wikicodeLabel": "Wikicode di Liquipedia",
         "importingHint": "Importazione e recupero dei dati Riot in corso, può volerci un momento.",
         "close": "Chiudi"
-      }
+      },
+      "leaguepedia": {
+        "title": "Partite Leaguepedia",
+        "description": "La lista delle partite viene dalle tabelle Cargo di Leaguepedia, per la pagina base e tutte le pagine sotto di essa.",
+        "basePageLabel": "Pagina base Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Salvando si leggono le partite da Leaguepedia. Se la lettura fallisce, non si salva nulla.",
+        "save": "Salva e carica partite",
+        "saving": "Caricamento…",
+        "refresh": "Aggiorna da Leaguepedia",
+        "lastFetched": "Ultima lettura {date} · {count, plural, one {# partita} other {# partite}}",
+        "neverFetched": "Non ancora letto",
+        "success": "{count, plural, one {# partita caricata} other {# partite caricate}}",
+        "error": {
+          "invalidBasePage": "Usa un nome di pagina senza # < > [ ] | { } e senza / all'inizio o alla fine.",
+          "notFound": "Torneo non trovato.",
+          "notLinked": "Salva prima una pagina base.",
+          "missingConfig": "Il login del bot Leaguepedia non è configurato su questo server.",
+          "fetch": "Impossibile leggere Leaguepedia. Riprova più tardi."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Segnalazioni",

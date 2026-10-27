@@ -4762,7 +4762,28 @@
       "activeFilterLabel": "活跃状态",
       "activeFilterAny": "所有赛事",
       "activeFilterActive": "活跃",
-      "activeFilterInactive": "不活跃"
+      "activeFilterInactive": "不活跃",
+      "leaguepedia": {
+        "title": "Leaguepedia 比赛",
+        "description": "比赛列表来自 Leaguepedia 的 Cargo 表，包括基础页面及其下的所有页面。",
+        "basePageLabel": "Leaguepedia 基础页面",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "保存时会从 Leaguepedia 读取比赛。读取失败则不会保存任何内容。",
+        "save": "保存并获取比赛",
+        "saving": "获取中…",
+        "refresh": "从 Leaguepedia 刷新",
+        "lastFetched": "上次获取 {date} · {count, plural, other {# 场比赛}}",
+        "neverFetched": "尚未获取",
+        "success": "已获取 {count, plural, other {# 场比赛}}",
+        "error": {
+          "invalidBasePage": "页面名称不能包含 # < > [ ] | { } ，且不能以 / 开头或结尾。",
+          "notFound": "未找到该赛事。",
+          "notLinked": "请先保存基础页面。",
+          "missingConfig": "本服务器未配置 Leaguepedia 机器人登录。",
+          "fetch": "无法读取 Leaguepedia，请稍后重试。"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "举报",

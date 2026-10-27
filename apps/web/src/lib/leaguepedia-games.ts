@@ -77,6 +77,19 @@ export async function refreshGameList(tournamentId: number, overviewPage: string
   return { ok: true, data: games.length };
 }
 
+export type StaleRefresh = { kind: "notLinked" } | { kind: "fresh" } | { kind: "refreshed"; result: LeaguepediaResult<number> };
+
+/**
+ * Refreshes the list only when the tournament has a base page and its list is older than `maxAgeMs`. The
+ * game dialog calls this when a series has no Leaguepedia game, so a new game shows up without a manual refresh.
+ */
+export async function refreshGameListIfStale(tournamentId: number, maxAgeMs: number): Promise<StaleRefresh> {
+  const [link] = await db.select().from(lolLeaguepediaTournaments).where(eq(lolLeaguepediaTournaments.tournamentId, tournamentId));
+  if (!link) return { kind: "notLinked" };
+  if (link.gamesFetchedAt && Date.now() - link.gamesFetchedAt.getTime() < maxAgeMs) return { kind: "fresh" };
+  return { kind: "refreshed", result: await refreshGameList(tournamentId, link.overviewPage) };
+}
+
 /** One transaction: the tournament's link is set and stamped, and its game rows are replaced. */
 async function replaceGameList(tournamentId: number, overviewPage: string, games: LeaguepediaGameRow[]): Promise<void> {
   const gamesFetchedAt = new Date();

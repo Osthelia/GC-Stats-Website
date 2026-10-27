@@ -4762,7 +4762,28 @@
       "activeFilterLabel": "Aktivite",
       "activeFilterAny": "Tüm turnuvalar",
       "activeFilterActive": "Aktif",
-      "activeFilterInactive": "Pasif"
+      "activeFilterInactive": "Pasif",
+      "leaguepedia": {
+        "title": "Leaguepedia maçları",
+        "description": "Maç listesi, temel sayfa ve altındaki tüm sayfalar için Leaguepedia Cargo tablolarından gelir.",
+        "basePageLabel": "Leaguepedia temel sayfası",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Kaydetme, maçları Leaguepedia'dan okur. Okuma başarısız olursa hiçbir şey kaydedilmez.",
+        "save": "Kaydet ve maçları getir",
+        "saving": "Getiriliyor…",
+        "refresh": "Leaguepedia'dan yenile",
+        "lastFetched": "Son okuma {date} · {count, plural, one {# maç} other {# maç}}",
+        "neverFetched": "Henüz okunmadı",
+        "success": "{count, plural, one {# maç getirildi} other {# maç getirildi}}",
+        "error": {
+          "invalidBasePage": "# < > [ ] | { } içermeyen ve başında veya sonunda / bulunmayan bir sayfa adı kullanın.",
+          "notFound": "Turnuva bulunamadı.",
+          "notLinked": "Önce bir temel sayfa kaydedin.",
+          "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+          "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Bildirimler",

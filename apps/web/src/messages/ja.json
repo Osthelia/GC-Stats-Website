@@ -4762,7 +4762,28 @@
       "activeFilterLabel": "アクティビティ",
       "activeFilterAny": "すべての大会",
       "activeFilterActive": "アクティブ",
-      "activeFilterInactive": "非アクティブ"
+      "activeFilterInactive": "非アクティブ",
+      "leaguepedia": {
+        "title": "Leaguepedia の試合",
+        "description": "試合一覧は、ベースページとその配下のすべてのページについて Leaguepedia の Cargo テーブルから取得します。",
+        "basePageLabel": "Leaguepedia のベースページ",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "保存すると Leaguepedia から試合を読み込みます。読み込みに失敗した場合は何も保存されません。",
+        "save": "保存して試合を取得",
+        "saving": "取得中…",
+        "refresh": "Leaguepedia から更新",
+        "lastFetched": "最終取得 {date} · {count, plural, other {# 試合}}",
+        "neverFetched": "まだ取得していません",
+        "success": "{count, plural, other {# 試合を取得しました}}",
+        "error": {
+          "invalidBasePage": "# < > [ ] | { } を含まず、先頭と末尾に / がないページ名を使ってください。",
+          "notFound": "大会が見つかりません。",
+          "notLinked": "先にベースページを保存してください。",
+          "missingConfig": "このサーバーでは Leaguepedia のボットログインが設定されていません。",
+          "fetch": "Leaguepedia を読み込めませんでした。しばらくしてから再度お試しください。"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "通報",

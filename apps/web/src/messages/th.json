@@ -4762,7 +4762,28 @@
       "activeFilterLabel": "กิจกรรม",
       "activeFilterAny": "ทัวร์นาเมนต์ทั้งหมด",
       "activeFilterActive": "ใช้งานอยู่",
-      "activeFilterInactive": "ไม่ได้ใช้งาน"
+      "activeFilterInactive": "ไม่ได้ใช้งาน",
+      "leaguepedia": {
+        "title": "การแข่งขันจาก Leaguepedia",
+        "description": "รายการการแข่งขันมาจากตาราง Cargo ของ Leaguepedia สำหรับหน้าหลักและทุกหน้าที่อยู่ภายใต้หน้านั้น",
+        "basePageLabel": "หน้าหลักของ Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "การบันทึกจะอ่านการแข่งขันจาก Leaguepedia หากการอ่านล้มเหลว จะไม่มีการบันทึกใด ๆ",
+        "save": "บันทึกและดึงการแข่งขัน",
+        "saving": "กำลังดึง…",
+        "refresh": "รีเฟรชจาก Leaguepedia",
+        "lastFetched": "ดึงล่าสุด {date} · {count, plural, other {# การแข่งขัน}}",
+        "neverFetched": "ยังไม่ได้ดึง",
+        "success": "ดึงแล้ว {count, plural, other {# การแข่งขัน}}",
+        "error": {
+          "invalidBasePage": "ใช้ชื่อหน้าที่ไม่มี # < > [ ] | { } และไม่มี / ขึ้นต้นหรือลงท้าย",
+          "notFound": "ไม่พบรายการแข่งขันนี้",
+          "notLinked": "กรุณาบันทึกหน้าหลักก่อน",
+          "missingConfig": "ยังไม่ได้ตั้งค่าการล็อกอินบอทของ Leaguepedia บนเซิร์ฟเวอร์นี้",
+          "fetch": "ไม่สามารถอ่าน Leaguepedia ได้ โปรดลองใหม่ภายหลัง"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "การรายงาน",

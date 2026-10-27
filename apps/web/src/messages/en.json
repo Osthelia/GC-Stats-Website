@@ -4766,7 +4766,28 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "Importing and fetching Riot data, this can take a moment.",
         "close": "Close"
-      }
+      },
+      "leaguepedia": {
+        "title": "Leaguepedia games",
+        "description": "The game list comes from Leaguepedia's Cargo tables, for the base page and every page under it.",
+        "basePageLabel": "Leaguepedia base page",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Saving reads the games from Leaguepedia. If the read fails, nothing is saved.",
+        "save": "Save and fetch games",
+        "saving": "Fetching…",
+        "refresh": "Refresh from Leaguepedia",
+        "lastFetched": "Last fetched {date} · {count, plural, one {# game} other {# games}}",
+        "neverFetched": "Not fetched yet",
+        "success": "{count, plural, one {# game} other {# games}} fetched",
+        "error": {
+          "invalidBasePage": "Use a page name without # < > [ ] | { }, and no leading or trailing /.",
+          "notFound": "Tournament not found.",
+          "notLinked": "Save a base page first.",
+          "missingConfig": "The Leaguepedia bot login is not set up on this server.",
+          "fetch": "Leaguepedia could not be read. Try again later."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Reports",

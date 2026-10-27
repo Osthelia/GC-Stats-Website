@@ -4762,7 +4762,28 @@
       "activeFilterLabel": "Aktivität",
       "activeFilterAny": "Alle Turniere",
       "activeFilterActive": "Aktiv",
-      "activeFilterInactive": "Inaktiv"
+      "activeFilterInactive": "Inaktiv",
+      "leaguepedia": {
+        "title": "Leaguepedia-Spiele",
+        "description": "Die Spielliste kommt aus den Cargo-Tabellen von Leaguepedia, für die Basisseite und alle Seiten darunter.",
+        "basePageLabel": "Leaguepedia-Basisseite",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Beim Speichern werden die Spiele von Leaguepedia gelesen. Bei einem Fehler wird nichts gespeichert.",
+        "save": "Speichern und Spiele laden",
+        "saving": "Lade…",
+        "refresh": "Von Leaguepedia aktualisieren",
+        "lastFetched": "Zuletzt geladen {date} · {count, plural, one {# Spiel} other {# Spiele}}",
+        "neverFetched": "Noch nicht geladen",
+        "success": "{count, plural, one {# Spiel} other {# Spiele}} geladen",
+        "error": {
+          "invalidBasePage": "Verwende einen Seitennamen ohne # < > [ ] | { } und ohne führendes oder abschließendes /.",
+          "notFound": "Turnier nicht gefunden.",
+          "notLinked": "Speichere zuerst eine Basisseite.",
+          "missingConfig": "Der Leaguepedia-Bot-Login ist auf diesem Server nicht eingerichtet.",
+          "fetch": "Leaguepedia konnte nicht gelesen werden. Versuche es später erneut."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Meldungen",
