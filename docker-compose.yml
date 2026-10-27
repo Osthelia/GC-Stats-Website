@@ -135,9 +135,11 @@ services:
     profiles: ["dev"]
 
   # Dev only, one-off: creates S3_BUCKET and S3_LOL_IMPORTS_BUCKET on the dev
-  # server and makes their objects publicly readable (like the prod buckets
-  # behind S3_PUBLIC_URL), with RustFS's own CLI `rc`. Runs with
-  # `--profile dev up`, safe to re-run. Pin RC_IMAGE like RUSTFS_IMAGE if needed.
+  # server. S3_BUCKET's objects are publicly readable (like the prod bucket
+  # behind S3_PUBLIC_URL); S3_LOL_IMPORTS_BUCKET stays private, so its anonymous
+  # access is set to none, which also undoes a public setting from an earlier run.
+  # Uses RustFS's own CLI `rc`. Runs with `--profile dev up`, safe to re-run.
+  # Pin RC_IMAGE like RUSTFS_IMAGE if needed.
   s3-init:
     image: ${RC_IMAGE:-rustfs/rc:latest}
     depends_on:
@@ -146,17 +148,19 @@ services:
     environment:
       S3_KEY: ${S3_ACCESS_KEY_ID:-gcsdevaccess}
       S3_SECRET: ${S3_SECRET_ACCESS_KEY:-gcsdevsecretkey}
-      BUCKETS: ${S3_BUCKET:-gcs-dev} ${S3_LOL_IMPORTS_BUCKET:-gcs-lol-imports-dev}
+      PUBLIC_BUCKET: ${S3_BUCKET:-gcs-dev}
+      PRIVATE_BUCKET: ${S3_LOL_IMPORTS_BUCKET:-gcs-lol-imports-dev}
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         set -e
         until rc alias set dev http://s3:9000 "$$S3_KEY" "$$S3_SECRET" > /dev/null; do echo "waiting for s3..."; sleep 1; done
-        for b in $$BUCKETS; do
-          rc mb "dev/$$b" --ignore-existing
-          rc bucket anonymous set download "dev/$$b"
-          echo "bucket ready: $$b"
-        done
+        rc mb "dev/$$PUBLIC_BUCKET" --ignore-existing
+        rc bucket anonymous set download "dev/$$PUBLIC_BUCKET"
+        echo "bucket ready (public): $$PUBLIC_BUCKET"
+        rc mb "dev/$$PRIVATE_BUCKET" --ignore-existing
+        rc bucket anonymous set none "dev/$$PRIVATE_BUCKET"
+        echo "bucket ready (private): $$PRIVATE_BUCKET"
     profiles: ["dev"]
 
 volumes:
