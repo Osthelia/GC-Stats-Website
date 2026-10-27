@@ -135,3 +135,41 @@ ALTER TABLE "lol_vods" ADD CONSTRAINT "lol_vods_map_id_lol_games_id_fk" FOREIGN 
 ALTER TABLE "lol_production_credits" ADD CONSTRAINT "lol_production_credits_map_id_fkey" FOREIGN KEY ("map_id") REFERENCES "public"."lol_games"("id") ON DELETE CASCADE;--> statement-breakpoint
 CREATE VIEW "public"."lol_people" AS (select "people"."id", "people"."handle", "people"."aliases", "people"."first_name", "people"."last_name", "people"."country_code", "people"."secondary_country_code", "people"."pronouns", "people"."birth_date", "people"."bio", "people"."socials", "people"."user_id", "lol_person_profiles"."is_active", "lol_person_profiles"."is_ghost", "lol_person_profiles"."liquipedia_link", "lol_person_profiles"."liquipedia_sourced", NULL::text as "val_id", NULL::text as "esports_val_id", NULL::integer as "vlr_id", "lol_person_profiles"."lol_id" from "people" inner join "lol_person_profiles" on "lol_person_profiles"."person_id" = "people"."id");--> statement-breakpoint
 CREATE VIEW "public"."val_people" AS (select "people"."id", "people"."handle", "people"."aliases", "people"."first_name", "people"."last_name", "people"."country_code", "people"."secondary_country_code", "people"."pronouns", "people"."birth_date", "people"."bio", "people"."socials", "people"."user_id", "val_person_profiles"."is_active", "val_person_profiles"."is_ghost", "val_person_profiles"."liquipedia_link", "val_person_profiles"."liquipedia_sourced", "val_person_profiles"."val_id", "val_person_profiles"."esports_val_id", "val_person_profiles"."vlr_id", NULL::text as "lol_id" from "people" inner join "val_person_profiles" on "val_person_profiles"."person_id" = "people"."id");
+--> statement-breakpoint
+CREATE TABLE "lol_leaguepedia_games" (
+	"id" bigserial PRIMARY KEY NOT NULL,
+	"tournament_id" bigint NOT NULL,
+	"leaguepedia_game_id" text NOT NULL,
+	"leaguepedia_match_id" text NOT NULL,
+	"overview_page" text NOT NULL,
+	"game_in_match" integer NOT NULL,
+	"team1" text,
+	"team2" text,
+	"blue" text,
+	"red" text,
+	"winner" smallint,
+	"played_at" timestamp with time zone,
+	"riot_match_id" text,
+	"riot_version" text,
+	"has_data" boolean DEFAULT false NOT NULL,
+	"is_remake" boolean DEFAULT false NOT NULL,
+	"is_chronobreak" boolean DEFAULT false NOT NULL,
+	CONSTRAINT "lol_leaguepedia_games_leaguepedia_game_id_unique" UNIQUE("leaguepedia_game_id"),
+	CONSTRAINT "lol_leaguepedia_games_winner_check" CHECK ("lol_leaguepedia_games"."winner" IN (1, 2))
+);
+--> statement-breakpoint
+CREATE TABLE "lol_leaguepedia_tournaments" (
+	"tournament_id" bigint PRIMARY KEY NOT NULL,
+	"overview_page" text NOT NULL,
+	"games_fetched_at" timestamp with time zone
+);
+--> statement-breakpoint
+CREATE TABLE "external_api_sessions" (
+	"service" text PRIMARY KEY NOT NULL,
+	"cookie_encrypted" text NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "lol_leaguepedia_games" ADD CONSTRAINT "lol_leaguepedia_games_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "lol_leaguepedia_tournaments" ADD CONSTRAINT "lol_leaguepedia_tournaments_tournament_id_lol_tournaments_id_fk" FOREIGN KEY ("tournament_id") REFERENCES "public"."lol_tournaments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "lol_leaguepedia_games_tournament_id_idx" ON "lol_leaguepedia_games" USING btree ("tournament_id");

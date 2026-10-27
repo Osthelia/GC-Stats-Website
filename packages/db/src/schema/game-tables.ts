@@ -935,7 +935,7 @@ export type ValorantOnlyTables = ReturnType<typeof defineValorantTables>;
 // League of Legends only: one row per game of a series, and what happened in it. Match-V5
 // (Riot) fills them on import; games entered by hand only get the `lol_games` row.
 export function defineLeagueTables(g: GameTables<"lol">) {
-  const { matches, entrants } = g;
+  const { matches, entrants, tournaments } = g;
 
   // --- Games (one per game of a best-of-N series, the LoL counterpart of val_maps) -------
   const games = pgTable("lol_games", {
@@ -1062,7 +1062,39 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     check("lol_game_events_raw_kill_target_check", sql`${t.type} <> 'CHAMPION_KILL' OR ${t.targetPersonId} IS NOT NULL`),
   ]);
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw };
+  // --- Leaguepedia (imports from the wiki) ---------------------------------------------
+  // The tournament's base page on Leaguepedia, e.g. "LoL Game Changers/2025 Season". Sub-pages are included.
+  const leaguepediaTournaments = pgTable("lol_leaguepedia_tournaments", {
+    tournamentId: bigint("tournament_id", { mode: "number" }).primaryKey().references(() => tournaments.id, { onDelete: "cascade" }),
+    overviewPage: text("overview_page").notNull(),
+    gamesFetchedAt: timestamp("games_fetched_at", { withTimezone: true }), // when the game list was last read from Leaguepedia
+  });
+
+  // The game list of a linked tournament, replaced as a whole on each refresh.
+  const leaguepediaGames = pgTable("lol_leaguepedia_games", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    tournamentId: bigint("tournament_id", { mode: "number" }).notNull().references(() => tournaments.id, { onDelete: "cascade" }),
+    leaguepediaGameId: text("leaguepedia_game_id").notNull().unique(), // MSG.GameId
+    leaguepediaMatchId: text("leaguepedia_match_id").notNull(),
+    overviewPage: text("overview_page").notNull(),
+    gameInMatch: integer("game_in_match").notNull(),
+    team1: text("team1"), // the series' teams, as Leaguepedia names them
+    team2: text("team2"),
+    blue: text("blue"),
+    red: text("red"),
+    winner: smallint("winner"), // 1 | 2, null before the game is played
+    playedAt: timestamp("played_at", { withTimezone: true }),
+    riotMatchId: text("riot_match_id"), // null when Leaguepedia has no JSON for the game
+    riotVersion: text("riot_version"),
+    hasData: boolean("has_data").notNull().default(false),
+    isRemake: boolean("is_remake").notNull().default(false),
+    isChronobreak: boolean("is_chronobreak").notNull().default(false),
+  }, (t) => [
+    index("lol_leaguepedia_games_tournament_id_idx").on(t.tournamentId),
+    check("lol_leaguepedia_games_winner_check", sql`${t.winner} IN (1, 2)`),
+  ]);
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1177,6 +1209,8 @@ export const lolGameTeamStats = leagueOnly.gameTeamStats;
 export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
 export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
+export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
+export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
 export const leagueTables: GameTables<"lol"> & LeagueOnlyTables = { ...lol, ...leagueOnly };
