@@ -24,10 +24,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { FormField } from "@/components/admin/form-field";
 import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
-import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
-import { LeaguepediaGamePreview } from "@/components/admin/leaguepedia-game-preview";
+import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type GameRef, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
+import { isTournamentRealmMatchId, riotCluster } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/use-game";
 
@@ -161,10 +162,14 @@ export function LeagueGameDialog({
     </Button>
   );
 
+  // The picked Leaguepedia game, or else the Riot match id typed in the field below.
+  const gameRef: GameRef =
+    form.leaguepediaGameId === NO_LEAGUEPEDIA ? { source: "riot", riotMatchId: form.apiMatchId } : { source: "leaguepedia", leaguepediaGameId: form.leaguepediaGameId };
+
   // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
   function handlePrepare(mode: "fetch" | "renew" | "reprocess") {
     startTransition(async () => {
-      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { leaguepediaGameId: form.leaguepediaGameId, mode });
+      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { game: gameRef, mode });
       if (!result.ok) {
         toast.error(
           t(`leaguepedia.error.${result.error.kind}`, {
@@ -190,7 +195,7 @@ export function LeagueGameDialog({
             tournamentId={tournamentId}
             matchId={matchId}
             gameId={editing?.id ?? null}
-            leaguepediaGameId={form.leaguepediaGameId}
+            game={gameRef}
             order={Number(form.order)}
             preview={preview}
             onBack={() => setPreview(null)}
@@ -296,6 +301,23 @@ export function LeagueGameDialog({
                 {t("leaguepedia.reprocess")}
               </Button>
             </div>
+          )}
+
+          {form.leaguepediaGameId === NO_LEAGUEPEDIA && riotCluster(form.apiMatchId) !== null && (
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
+                {isPending ? t("leaguepedia.fetching") : t("leaguepedia.riotFetch")}
+              </Button>
+              <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
+                {t("leaguepedia.renew")}
+              </Button>
+              <Button variant="outline" onClick={() => handlePrepare("reprocess")} disabled={isPending}>
+                {t("leaguepedia.reprocess")}
+              </Button>
+            </div>
+          )}
+          {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealmMatchId(form.apiMatchId) && (
+            <p className="text-xs text-muted-foreground">{t("leaguepedia.riotTournamentRealm")}</p>
           )}
 
           <FormField label={t("fieldNote")} htmlFor="game-note" error={fieldErr("note")}>

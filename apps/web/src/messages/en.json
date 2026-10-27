@@ -4556,7 +4556,9 @@
               "dataDragonUnavailable": "Champion names are unavailable right now, try again later.",
               "unknownChampions": "Unknown champion id(s): {ids}",
               "storageUnavailable": "The LoL imports bucket could not be reached. Check its configuration, then try again.",
-              "duplicateAccount": "The same Riot account is linked twice. Link each account only once."
+              "duplicateAccount": "The same Riot account is linked twice. Link each account only once.",
+              "riotUnavailable": "Riot's data could not be read right now. Try again later.",
+              "tournamentRealm": "This game was played on the tournament realm. Fetch it from Leaguepedia instead."
             },
             "searchPlaceholder": "Search by team, game or date",
             "noResults": "No games match",
@@ -4589,7 +4591,10 @@
             "refreshGames": "Refresh game list",
             "refreshCooldown": "Refreshed less than an hour ago. Try again later.",
             "refreshed": "Game list refreshed ({count} games)",
-            "refreshError": "The game list could not be refreshed. Try again later."
+            "refreshError": "The game list could not be refreshed. Try again later.",
+            "riotFetch": "Fetch from Riot",
+            "riotSuccess": "Game stored from Riot",
+            "riotTournamentRealm": "This game was played on the tournament realm, so it can't be fetched from the Riot API."
           }
         },
         "liquipediaImportButton": "Liquipedia Match Import"

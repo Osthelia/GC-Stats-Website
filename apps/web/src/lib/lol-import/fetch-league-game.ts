@@ -1,7 +1,8 @@
 /**
- * GC-Stats - fetch-leaguepedia-game
+ * GC-Stats - fetch-league-game
  *
- * One Leaguepedia game in two steps. `prepare` loads the game (bucket or Leaguepedia), checks it, keeps
+ * One game in two steps, from a Leaguepedia list entry or a Riot match id. `prepare` loads the game (bucket or
+ * its source), checks it, keeps
  * the raw pair in the bucket and returns a preview: teams, winner, players, champions, and the entrant
  * sides suggested from the mapped players or the team names. Nothing else is written. `commit` takes the
  * admin's choices (which person each unknown Riot account is, and which entrant is blue and red), writes
@@ -20,9 +21,11 @@ import { lolEntrants, lolGames, lolLeaguepediaGames, lolMatches, lolPeople, lolP
 import {
   championNameOf,
   inferRoles,
+  isTournamentRealmMatchId,
   LEAGUE_ROLES,
   missingChampionIds,
   resolvePlayerRoles,
+  riotCluster,
   roleOf,
   sideForTeamId,
   validateImport,
@@ -31,10 +34,15 @@ import {
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
+import { getLolMatch, getLolTimeline, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { importGame } from "./import-game";
 import { loadLeaguepediaGame, type LeaguepediaGameMode } from "./leaguepedia-game";
+
+/** Where a game comes from: a Leaguepedia list entry, or a Riot match id that RiotRelay serves. */
+export type GameRef = { source: "leaguepedia"; leaguepediaGameId: string } | { source: "riot"; riotMatchId: string };
 
 export type LeaguepediaGameError =
   | { kind: "noData" }
@@ -54,6 +62,8 @@ export type LeaguepediaGameError =
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
   | { kind: "storageUnavailable" }
+  | { kind: "riotUnavailable" }
+  | { kind: "tournamentRealm" }
   | { kind: "storeFailed"; message: string };
 
 export interface PreviewPlayer {
@@ -75,7 +85,7 @@ export interface PreviewPlayer {
 }
 
 export interface LeaguepediaPreview {
-  leaguepediaGameId: string;
+  game: GameRef;
   /** How the game was loaded: fetch, renew or reprocess. Carried to the save for the activity log. */
   mode: LeaguepediaGameMode;
   riotMatchId: string;
@@ -96,7 +106,7 @@ export type PrepareResult = { ok: true; preview: LeaguepediaPreview } | { ok: fa
 export interface PrepareInput {
   tournamentId: number;
   matchId: number;
-  leaguepediaGameId: string;
+  game: GameRef;
   mode: LeaguepediaGameMode;
 }
 
@@ -114,7 +124,7 @@ export interface CommitInput {
   matchId: number;
   /** The game being edited, null when a new game is created. */
   gameId: number | null;
-  leaguepediaGameId: string;
+  game: GameRef;
   order: number;
   entrantIdBySide: Record<LeagueSide, number>;
   mappings: PlayerMapping[];
@@ -125,24 +135,24 @@ export interface CommitInput {
 export type CommitResult = { ok: true; gameId: number } | { ok: false; error: LeaguepediaGameError };
 
 export async function prepareLeaguepediaGame(input: PrepareInput): Promise<PrepareResult> {
-  const listed = await findListedGame(input.tournamentId, input.leaguepediaGameId);
-  if (!listed) return { ok: false, error: { kind: "noData" } };
+  const resolved = await resolveGame(input.tournamentId, input.game);
+  if (!resolved) return { ok: false, error: { kind: "noData" } };
 
   const match = await findMatchEntrants(input.matchId);
   if (!match) return { ok: false, error: { kind: "sidesUnresolved" } };
 
-  const loaded = await loadLeaguepediaGame(listed.riotMatchId, input.mode);
-  if (!loaded.ok) return { ok: false, error: loadError(loaded.error) };
+  const loaded = await loadGame(resolved.riotMatchId, input.game, input.mode);
+  if (!loaded.ok) return { ok: false, error: loaded.error };
 
   const validation = validateImport(loaded.payload.match, loaded.payload.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
 
-  // The raw pair is kept before anything else, so the commit can read it back without asking Leaguepedia again.
+  // The raw pair is kept before anything else, so the commit can read it back without asking the source again.
   if (!loaded.fromBucket) {
     try {
-      await storeLolImport("leaguepedia", listed.riotMatchId, { match: validation.match, timeline: validation.timeline });
+      await storeLolImport(input.game.source, resolved.riotMatchId, { match: validation.match, timeline: validation.timeline });
     } catch (err) {
-      console.error(`[leaguepedia] could not store game ${listed.riotMatchId} in the imports bucket`, err);
+      console.error(`[${input.game.source}] could not store game ${resolved.riotMatchId} in the imports bucket`, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
   }
@@ -154,7 +164,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   const missing = missingChampionIds(validation.match, catalog.championNameById);
   if (missing.length > 0) return { ok: false, error: { kind: "unknownChampions", ids: missing } };
   const riotMatch = validation.match;
-  const roleOverrides = await savedRoleOverrides(listed.riotMatchId);
+  const roleOverrides = await savedRoleOverrides(resolved.riotMatchId);
   const inferred = inferRoles(riotMatch, validation.timeline);
   const effective = resolvePlayerRoles(riotMatch, validation.timeline, roleOverrides);
   const puuids = riotMatch.info.participants.map((p) => p.puuid);
@@ -163,7 +173,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   const rosterA = await getEntrantPersonIds("lol", match.entrantAId);
   const rosterB = await getEntrantPersonIds("lol", match.entrantBId);
   const entrantNames = new Map(match.entrants.map((e) => [e.id, e.name]));
-  const suggestion = suggestSides({ blue: listed.blue, red: listed.red }, riotMatch, linked, rosterA, rosterB, match.entrants, {
+  const suggestion = suggestSides({ blue: resolved.blue, red: resolved.red }, riotMatch, linked, rosterA, rosterB, match.entrants, {
     a: match.entrantAId,
     b: match.entrantBId,
   });
@@ -172,10 +182,10 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   return {
     ok: true,
     preview: {
-      leaguepediaGameId: listed.leaguepediaGameId,
+      game: input.game,
       mode: input.mode,
-      riotMatchId: listed.riotMatchId,
-      teams: { blue: listed.blue, red: listed.red },
+      riotMatchId: resolved.riotMatchId,
+      teams: { blue: resolved.blue, red: resolved.red },
       winner: winnerTeam ? sideForTeamId(winnerTeam.teamId) : null,
       durationSeconds: riotMatch.info.gameDuration,
       entrants: [match.entrantAId, match.entrantBId].map((id) => ({ id, name: entrantNames.get(id) ?? "" })),
@@ -205,8 +215,8 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
 export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitResult> {
   if (!Number.isInteger(input.order) || input.order < 1) return { ok: false, error: { kind: "invalidOrder" } };
 
-  const listed = await findListedGame(input.tournamentId, input.leaguepediaGameId);
-  if (!listed) return { ok: false, error: { kind: "noData" } };
+  const resolved = await resolveGame(input.tournamentId, input.game);
+  if (!resolved) return { ok: false, error: { kind: "noData" } };
 
   const match = await findMatchEntrants(input.matchId);
   if (!match) return { ok: false, error: { kind: "sidesUnresolved" } };
@@ -216,9 +226,9 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
 
   let stored: LolImportPayload | null;
   try {
-    stored = await readLolImport("leaguepedia", listed.riotMatchId);
+    stored = await readLolImport(input.game.source, resolved.riotMatchId);
   } catch (err) {
-    console.error(`[leaguepedia] could not read game ${listed.riotMatchId} from the imports bucket`, err);
+    console.error(`[${input.game.source}] could not read game ${resolved.riotMatchId} from the imports bucket`, err);
     return { ok: false, error: { kind: "storageUnavailable" } };
   }
   if (!stored) return { ok: false, error: { kind: "notInBucket" } };
@@ -257,7 +267,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
       order: input.order,
       match: validation.match,
       timeline: validation.timeline,
-      source: "leaguepedia",
+      source: input.game.source,
       entrantIdBySide: input.entrantIdBySide,
       personIdByPuuid,
       roleOverrides: input.roleOverrides,
@@ -330,6 +340,40 @@ async function findListedGame(tournamentId: number, leaguepediaGameId: string) {
   return { ...listed, riotMatchId: listed.riotMatchId };
 }
 
+/** The Riot match id and the team names of a game. A Riot game has no list entry, so it has no team names. */
+async function resolveGame(tournamentId: number, game: GameRef): Promise<{ riotMatchId: string; blue: string | null; red: string | null } | null> {
+  if (game.source === "riot") return { riotMatchId: game.riotMatchId, blue: null, red: null };
+  const listed = await findListedGame(tournamentId, game.leaguepediaGameId);
+  return listed ? { riotMatchId: listed.riotMatchId, blue: listed.blue, red: listed.red } : null;
+}
+
+/** The match and timeline of a game, from its source. Both sources keep the raw pair in their own bucket prefix. */
+async function loadGame(
+  riotMatchId: string,
+  game: GameRef,
+  mode: LeaguepediaGameMode
+): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: LeaguepediaGameError }> {
+  if (game.source === "riot") {
+    const loaded = await loadRiotGame(riotMatchId, mode);
+    return loaded.ok ? loaded : { ok: false, error: riotLoadError(loaded.error) };
+  }
+  const loaded = await loadLeaguepediaGame(riotMatchId, mode);
+  return loaded.ok ? loaded : { ok: false, error: loadError(loaded.error) };
+}
+
+function riotLoadError(error: RiotGameError): LeaguepediaGameError {
+  switch (error.kind) {
+    case "tournamentRealm":
+      return { kind: "tournamentRealm" };
+    case "notInBucket":
+      return { kind: "notInBucket" };
+    case "storageUnavailable":
+      return { kind: "storageUnavailable" };
+    case "riotUnavailable":
+      return error.error.kind === "missingConfig" ? { kind: "missingConfig" } : { kind: "riotUnavailable" };
+  }
+}
+
 async function findMatchEntrants(matchId: number) {
   const [match] = await db.select({ entrantAId: lolMatches.entrantAId, entrantBId: lolMatches.entrantBId }).from(lolMatches).where(eq(lolMatches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
@@ -389,6 +433,40 @@ export function sidesFromNames(
   const red = idOf(names.red);
   if (blue === null || red === null || blue === red) return null;
   return { blue, red };
+}
+
+type RiotGameError = { kind: "tournamentRealm" } | { kind: "notInBucket" } | { kind: "storageUnavailable" } | { kind: "riotUnavailable"; error: RiotRelayError };
+
+type RiotGameResult = { ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: RiotGameError };
+
+/**
+ * The match and timeline of a Riot game, from the LoL imports bucket (riot/<id>) or from RiotRelay. A tournament-realm
+ * game is refused before any request, because the public API does not serve it and the request would only use up rate limit.
+ * fetch: the bucket, or RiotRelay when the game is not there. renew: RiotRelay, always. reprocess: the bucket only.
+ */
+async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Promise<RiotGameResult> {
+  if (isTournamentRealmMatchId(riotMatchId)) return { ok: false, error: { kind: "tournamentRealm" } };
+  const cluster = riotCluster(riotMatchId);
+  if (cluster === null) return { ok: false, error: { kind: "riotUnavailable", error: { kind: "invalidRequest" } } };
+
+  if (mode !== "renew") {
+    let stored: LolImportPayload | null;
+    try {
+      stored = await readLolImport("riot", riotMatchId);
+    } catch (err) {
+      // A bucket that cannot be read is not a game that is missing: fetching from Riot would hide the setup problem.
+      console.error(`[riot] could not read game ${riotMatchId} from the imports bucket`, err);
+      return { ok: false, error: { kind: "storageUnavailable" } };
+    }
+    if (stored) return { ok: true, payload: stored, fromBucket: true };
+    if (mode === "reprocess") return { ok: false, error: { kind: "notInBucket" } };
+  }
+
+  const match = mode === "renew" ? await renewLolMatch(cluster, riotMatchId) : await getLolMatch(cluster, riotMatchId);
+  if (!match.ok) return { ok: false, error: { kind: "riotUnavailable", error: match.error } };
+  const timeline = mode === "renew" ? await renewLolTimeline(cluster, riotMatchId) : await getLolTimeline(cluster, riotMatchId);
+  if (!timeline.ok) return { ok: false, error: { kind: "riotUnavailable", error: timeline.error } };
+  return { ok: true, payload: { match: match.data, timeline: timeline.data }, fromBucket: false };
 }
 
 function loadError(error: { kind: string; error?: { kind: string } }): LeaguepediaGameError {

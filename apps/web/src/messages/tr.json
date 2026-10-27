@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
               "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
               "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
-              "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın."
+              "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın.",
+              "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin.",
+              "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın."
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",
             "noResults": "Eşleşen maç yok",
@@ -4581,7 +4583,10 @@
             "refreshGames": "Maç listesini yenile",
             "refreshCooldown": "Bir saatten kısa süre önce yenilendi. Daha sonra tekrar deneyin.",
             "refreshed": "Maç listesi yenilendi ({count} maç)",
-            "refreshError": "Maç listesi yenilenemedi. Daha sonra tekrar deneyin."
+            "refreshError": "Maç listesi yenilenemedi. Daha sonra tekrar deneyin.",
+            "riotFetch": "Riot'tan al",
+            "riotSuccess": "Maç Riot'tan kaydedildi",
+            "riotTournamentRealm": "Bu maç turnuva realm'inde oynandı, bu yüzden Riot API'sinden alınamaz."
           }
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"

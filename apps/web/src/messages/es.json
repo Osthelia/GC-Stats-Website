@@ -4556,7 +4556,9 @@
               "dataDragonUnavailable": "Los nombres de campeones no están disponibles en este momento. Inténtalo más tarde.",
               "unknownChampions": "IDs de campeón desconocidos: {ids}",
               "storageUnavailable": "No se pudo acceder al almacenamiento de importaciones de LoL. Revisa la configuración e inténtalo de nuevo.",
-              "duplicateAccount": "La misma cuenta de Riot está vinculada dos veces. Vincula cada cuenta una sola vez."
+              "duplicateAccount": "La misma cuenta de Riot está vinculada dos veces. Vincula cada cuenta una sola vez.",
+              "riotUnavailable": "No se pudieron leer los datos de Riot en este momento. Inténtalo más tarde.",
+              "tournamentRealm": "Esta partida se jugó en el reino de torneos. Obtenla de Leaguepedia en su lugar."
             },
             "searchPlaceholder": "Buscar por equipo, partida o fecha",
             "noResults": "Ninguna partida coincide",
@@ -4589,7 +4591,10 @@
             "refreshGames": "Actualizar lista de partidas",
             "refreshCooldown": "Se actualizó hace menos de una hora. Inténtalo más tarde.",
             "refreshed": "Lista de partidas actualizada ({count} partidas)",
-            "refreshError": "No se pudo actualizar la lista de partidas. Inténtalo más tarde."
+            "refreshError": "No se pudo actualizar la lista de partidas. Inténtalo más tarde.",
+            "riotFetch": "Obtener de Riot",
+            "riotSuccess": "Partida guardada desde Riot",
+            "riotTournamentRealm": "Esta partida se jugó en el reino de torneos, así que no se puede obtener de la API de Riot."
           }
         },
         "liquipediaImportButton": "Importar partido de Liquipedia"

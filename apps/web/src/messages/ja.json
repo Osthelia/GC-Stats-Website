@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "チャンピオン名は現在取得できません。しばらくしてから再度お試しください。",
               "unknownChampions": "不明なチャンピオンID: {ids}",
               "storageUnavailable": "LoL インポート用のストレージに接続できません。設定を確認して、もう一度お試しください。",
-              "duplicateAccount": "同じ Riot アカウントが2回紐づけられています。アカウントごとに1回だけ紐づけてください。"
+              "duplicateAccount": "同じ Riot アカウントが2回紐づけられています。アカウントごとに1回だけ紐づけてください。",
+              "riotUnavailable": "Riot のデータを現在読み込めません。しばらくしてから再度お試しください。",
+              "tournamentRealm": "このゲームはトーナメントレルムで行われました。代わりに Leaguepedia から取得してください。"
             },
             "searchPlaceholder": "チーム・試合・日付で検索",
             "noResults": "一致する試合はありません",
@@ -4581,7 +4583,10 @@
             "refreshGames": "ゲーム一覧を更新",
             "refreshCooldown": "1時間以内に更新済みです。しばらくしてから再度お試しください。",
             "refreshed": "ゲーム一覧を更新しました（{count} 件）",
-            "refreshError": "ゲーム一覧を更新できませんでした。しばらくしてから再度お試しください。"
+            "refreshError": "ゲーム一覧を更新できませんでした。しばらくしてから再度お試しください。",
+            "riotFetch": "Riot から取得",
+            "riotSuccess": "Riot から保存しました",
+            "riotTournamentRealm": "このゲームはトーナメントレルムで行われたため、Riot API から取得することはできません。"
           }
         },
         "liquipediaImportButton": "Liquipedia試合インポート"

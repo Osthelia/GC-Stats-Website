@@ -1,5 +1,5 @@
 /**
- * GC-Stats - leaguepedia-game-preview
+ * GC-Stats - league-game-preview
  *
  * The second step of a Leaguepedia game: the teams, winner, players and champions, the role of each player
  * (inferred from the positions, changeable by the admin), the entrant for blue and red, and a link to a
@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
-import { commitLeaguepediaGameForMatch, type LeaguepediaPreview, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
+import { commitLeaguepediaGameForMatch, type GameRef, type LeaguepediaPreview, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
 import { cn } from "@/lib/utils";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
@@ -36,7 +36,7 @@ export function LeaguepediaGamePreview({
   tournamentId,
   matchId,
   gameId,
-  leaguepediaGameId,
+  game,
   order,
   preview,
   onBack,
@@ -46,7 +46,8 @@ export function LeaguepediaGamePreview({
   matchId: number;
   /** The game being edited, null when creating one. */
   gameId: number | null;
-  leaguepediaGameId: string;
+  /** Where the game comes from, as the admin picked it. Saved with the game. */
+  game: GameRef;
   order: number;
   preview: LeaguepediaPreview;
   onBack: () => void;
@@ -88,7 +89,7 @@ export function LeaguepediaGamePreview({
       const result = await commitLeaguepediaGameForMatch(tournamentId, matchId, {
         mode: preview.mode,
         gameId,
-        leaguepediaGameId,
+        game,
         order,
         entrantIdBySide: { blue: sides.blue!, red: sides.red! },
         mappings: mappingList,
@@ -103,7 +104,7 @@ export function LeaguepediaGamePreview({
       }
       onSaved();
       router.refresh();
-      toast.success(t("leaguepedia.success"));
+      toast.success(t(game.source === "riot" ? "leaguepedia.riotSuccess" : "leaguepedia.success"));
     });
   }
 

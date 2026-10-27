@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "챔피언 이름을 지금은 가져올 수 없습니다. 나중에 다시 시도하세요.",
               "unknownChampions": "알 수 없는 챔피언 ID: {ids}",
               "storageUnavailable": "LoL 가져오기 저장소에 연결할 수 없습니다. 설정을 확인한 뒤 다시 시도하세요.",
-              "duplicateAccount": "같은 Riot 계정이 두 번 연결되었습니다. 계정마다 한 번만 연결하세요."
+              "duplicateAccount": "같은 Riot 계정이 두 번 연결되었습니다. 계정마다 한 번만 연결하세요.",
+              "riotUnavailable": "지금은 Riot 데이터를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+              "tournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되었습니다. 대신 Leaguepedia에서 가져오세요."
             },
             "searchPlaceholder": "팀, 경기 또는 날짜로 검색",
             "noResults": "일치하는 경기가 없습니다",
@@ -4581,7 +4583,10 @@
             "refreshGames": "게임 목록 새로고침",
             "refreshCooldown": "1시간 이내에 새로고침했습니다. 나중에 다시 시도하세요.",
             "refreshed": "게임 목록을 새로고침했습니다 ({count}개)",
-            "refreshError": "게임 목록을 새로고침하지 못했습니다. 나중에 다시 시도하세요."
+            "refreshError": "게임 목록을 새로고침하지 못했습니다. 나중에 다시 시도하세요.",
+            "riotFetch": "Riot에서 가져오기",
+            "riotSuccess": "Riot에서 게임을 저장했습니다",
+            "riotTournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되어 Riot API에서 가져올 수 없습니다."
           }
         },
         "liquipediaImportButton": "Liquipedia 경기 가져오기"

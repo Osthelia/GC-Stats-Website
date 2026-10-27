@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "暂时无法获取英雄名称，请稍后再试。",
               "unknownChampions": "未知的英雄 ID：{ids}",
               "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。",
-              "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。"
+              "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。",
+              "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。",
+              "tournamentRealm": "该对局在赛事服务器进行，请改从 Leaguepedia 获取。"
             },
             "searchPlaceholder": "按队伍、局数或日期搜索",
             "noResults": "没有匹配的比赛",
@@ -4581,7 +4583,10 @@
             "refreshGames": "刷新对局列表",
             "refreshCooldown": "不到一小时前刚刷新过，请稍后再试。",
             "refreshed": "对局列表已刷新（{count} 场）",
-            "refreshError": "无法刷新对局列表，请稍后再试。"
+            "refreshError": "无法刷新对局列表，请稍后再试。",
+            "riotFetch": "从 Riot 获取",
+            "riotSuccess": "已从 Riot 保存对局",
+            "riotTournamentRealm": "该对局在赛事服务器进行，无法从 Riot API 获取。"
           }
         },
         "liquipediaImportButton": "Liquipedia 比赛导入"

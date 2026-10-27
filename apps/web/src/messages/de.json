@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "Die Champion-Namen sind gerade nicht verfügbar. Versuche es später erneut.",
               "unknownChampions": "Unbekannte Champion-IDs: {ids}",
               "storageUnavailable": "Der Speicher für LoL-Importe konnte nicht erreicht werden. Prüfe die Konfiguration und versuche es erneut.",
-              "duplicateAccount": "Dasselbe Riot-Konto ist doppelt verknüpft. Verknüpfe jedes Konto nur einmal."
+              "duplicateAccount": "Dasselbe Riot-Konto ist doppelt verknüpft. Verknüpfe jedes Konto nur einmal.",
+              "riotUnavailable": "Die Daten von Riot konnten gerade nicht gelesen werden. Versuche es später erneut.",
+              "tournamentRealm": "Dieses Spiel wurde im Turnier-Realm gespielt. Rufe es stattdessen von Leaguepedia ab."
             },
             "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",
             "noResults": "Keine Spiele gefunden",
@@ -4581,7 +4583,10 @@
             "refreshGames": "Spielliste aktualisieren",
             "refreshCooldown": "Zuletzt vor weniger als einer Stunde aktualisiert. Versuche es später erneut.",
             "refreshed": "Spielliste aktualisiert ({count} Spiele)",
-            "refreshError": "Die Spielliste konnte nicht aktualisiert werden. Versuche es später erneut."
+            "refreshError": "Die Spielliste konnte nicht aktualisiert werden. Versuche es später erneut.",
+            "riotFetch": "Von Riot abrufen",
+            "riotSuccess": "Spiel von Riot gespeichert",
+            "riotTournamentRealm": "Dieses Spiel wurde im Turnier-Realm gespielt und kann nicht über die Riot-API abgerufen werden."
           }
         },
         "liquipediaImportButton": "Liquipedia Match Import"

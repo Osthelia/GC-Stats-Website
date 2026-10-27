@@ -4548,7 +4548,9 @@
               "dataDragonUnavailable": "Nazwy mistrzów są teraz niedostępne. Spróbuj ponownie później.",
               "unknownChampions": "Nieznane identyfikatory mistrzów: {ids}",
               "storageUnavailable": "Nie udało się połączyć z magazynem importów LoL. Sprawdź konfigurację i spróbuj ponownie.",
-              "duplicateAccount": "To samo konto Riot jest powiązane dwa razy. Powiąż każde konto tylko raz."
+              "duplicateAccount": "To samo konto Riot jest powiązane dwa razy. Powiąż każde konto tylko raz.",
+              "riotUnavailable": "Nie udało się teraz odczytać danych Riot. Spróbuj ponownie później.",
+              "tournamentRealm": "Ta gra odbyła się w realmie turniejowym. Pobierz ją z Leaguepedia."
             },
             "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
             "noResults": "Brak pasujących meczów",
@@ -4581,7 +4583,10 @@
             "refreshGames": "Odśwież listę gier",
             "refreshCooldown": "Odświeżono mniej niż godzinę temu. Spróbuj ponownie później.",
             "refreshed": "Lista gier odświeżona (gier: {count})",
-            "refreshError": "Nie udało się odświeżyć listy gier. Spróbuj ponownie później."
+            "refreshError": "Nie udało się odświeżyć listy gier. Spróbuj ponownie później.",
+            "riotFetch": "Pobierz z Riot",
+            "riotSuccess": "Gra zapisana z Riot",
+            "riotTournamentRealm": "Ta gra odbyła się w realmie turniejowym, więc nie można jej pobrać z API Riot."
           }
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"

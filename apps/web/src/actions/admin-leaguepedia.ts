@@ -19,7 +19,7 @@ import { logActivity } from "@/lib/activity-log";
 import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguepedia";
 import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
 import { getAdminMatch } from "@/lib/admin-matches";
-import { prepareLeaguepediaGame, commitLeaguepediaGame, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-leaguepedia-game";
+import { prepareLeaguepediaGame, commitLeaguepediaGame, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
 import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 import { matchTag } from "@/lib/cache-tags";
@@ -77,10 +77,10 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
   return { ok: true, games: result.data };
 }
 
-export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, LeaguepediaGameError } from "@/lib/lol-import/fetch-leaguepedia-game";
+export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
 
-export type PrepareGameInput = { leaguepediaGameId: string; mode: LeaguepediaGameMode };
-export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; leaguepediaGameId: string; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
+export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode };
+export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
 
 /** The match, when it exists and belongs to the tournament in the URL. */
 async function matchOfTournament(tournamentId: number, matchId: number) {
@@ -107,9 +107,9 @@ export async function commitLeaguepediaGameForMatch(tournamentId: number, matchI
       subject: "match",
       subjectId: matchId,
       event: "updated",
-      description: `Stored game ${input.order} of match #${matchId} from Leaguepedia (${input.mode})`,
+      description: `Stored game ${input.order} of match #${matchId} from ${input.game.source === "riot" ? "Riot" : "Leaguepedia"} (${input.mode})`,
       actorUserId,
-      properties: { mode: input.mode, leaguepediaGameId: input.leaguepediaGameId, gameId: result.gameId, linkedAccounts: input.mappings.length },
+      properties: { mode: input.mode, source: input.game.source, gameId: result.gameId, linkedAccounts: input.mappings.length },
     });
   }
   return result;
