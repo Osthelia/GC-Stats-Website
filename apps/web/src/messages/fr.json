@@ -4897,6 +4897,7 @@
           "invalidBasePage": "Utilisez un nom de page sans # < > [ ] | { }, ni / au début ou à la fin.",
           "notFound": "Tournoi introuvable.",
           "notLinked": "Enregistrez d'abord une page de base.",
+          "cooldown": "La liste des parties a été lue il y a moins d'une heure. Réessaie plus tard.",
           "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
           "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard."
         }

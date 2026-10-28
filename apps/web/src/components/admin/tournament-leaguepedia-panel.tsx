@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { saveLeaguepediaBasePage, refreshLeaguepediaGameList, type LeaguepediaLinkResult } from "@/actions/admin-leaguepedia";
+import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 
 export interface LeaguepediaPanelStatus {
   overviewPage: string | null;
@@ -74,7 +75,7 @@ export function TournamentLeaguepediaPanel({ tournamentId, status, canManage }: 
           <Button onClick={() => run(startSaving, () => saveLeaguepediaBasePage(tournamentId, basePage))} disabled={!canManage || isPending || basePage.trim() === ""}>
             {isSaving ? t("saving") : t("save")}
           </Button>
-          <Button variant="outline" onClick={() => run(startRefreshing, () => refreshLeaguepediaGameList(tournamentId))} disabled={!canManage || isPending || !status.overviewPage}>
+          <Button variant="outline" onClick={() => run(startRefreshing, () => refreshLeaguepediaGameList(tournamentId))} disabled={!canManage || isPending || !status.overviewPage || isGameListOnCooldown(status.gamesFetchedAt)}>
             {isRefreshing ? <Loader2Icon className="animate-spin" /> : null}
             {t("refresh")}
           </Button>

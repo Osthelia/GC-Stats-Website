@@ -4893,6 +4893,7 @@
           "invalidBasePage": "Użyj nazwy strony bez znaków # < > [ ] | { } i bez / na początku lub końcu.",
           "notFound": "Nie znaleziono turnieju.",
           "notLinked": "Najpierw zapisz stronę bazową.",
+          "cooldown": "Lista gier została odczytana mniej niż godzinę temu. Spróbuj później.",
           "missingConfig": "Logowanie bota Leaguepedia nie jest skonfigurowane na tym serwerze.",
           "fetch": "Nie udało się odczytać Leaguepedia. Spróbuj ponownie później."
         }

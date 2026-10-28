@@ -25,6 +25,7 @@ import { FormField } from "@/components/admin/form-field";
 import { SearchablePicker } from "@/components/admin/searchable-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
 import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type GameRef, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
@@ -39,7 +40,6 @@ export type LeaguepediaLinkView = { linked: boolean; fetchedAt: string | null };
 
 const NO_WINNER = "none";
 const NO_LEAGUEPEDIA = "none";
-const GAME_LIST_COOLDOWN_MS = 60 * 60 * 1000;
 
 type FormState = {
   order: string;
@@ -132,7 +132,7 @@ export function LeagueGameDialog({
     disabled: !g.hasData || (g.storedAs !== null && g.storedAs.gameId !== editing?.id),
   }));
   const selectedLeaguepedia = leaguepediaGames.find((g) => g.leaguepediaGameId === form.leaguepediaGameId) ?? null;
-  const onCooldown = leaguepediaLink.fetchedAt !== null && Date.now() - new Date(leaguepediaLink.fetchedAt).getTime() < GAME_LIST_COOLDOWN_MS;
+  const onCooldown = isGameListOnCooldown(leaguepediaLink.fetchedAt);
 
   function selectLeaguepediaGame(id: string) {
     const picked = leaguepediaGames.find((g) => g.leaguepediaGameId === id);
@@ -140,7 +140,7 @@ export function LeagueGameDialog({
     setForm((prev) => ({ ...prev, leaguepediaGameId: id, apiMatchId: picked?.riotMatchId ?? prev.apiMatchId }));
   }
 
-  // Reads the game list again. The cooldown is checked here as well as shown, so a click can't start a second read.
+  // Reads the game list again. The server refuses a read inside the cooldown too, so this only saves the round trip.
   function handleRefreshGames() {
     if (onCooldown || isRefreshing) return;
     startRefreshing(async () => {

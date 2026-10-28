@@ -4893,6 +4893,7 @@
           "invalidBasePage": "页面名称不能包含 # < > [ ] | { } ，且不能以 / 开头或结尾。",
           "notFound": "未找到该赛事。",
           "notLinked": "请先保存基础页面。",
+          "cooldown": "比赛列表在一小时内刚刚读取过，请稍后再试。",
           "missingConfig": "本服务器未配置 Leaguepedia 机器人登录。",
           "fetch": "无法读取 Leaguepedia，请稍后重试。"
         }

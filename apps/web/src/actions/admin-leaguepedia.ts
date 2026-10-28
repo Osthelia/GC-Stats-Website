@@ -18,6 +18,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguepedia";
 import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
+import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { getAdminMatch } from "@/lib/admin-matches";
 import { prepareLeaguepediaGame, commitLeaguepediaGame, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
 import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
@@ -27,7 +28,7 @@ import { updateTag } from "next/cache";
 
 export type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 
-export type LeaguepediaLinkError = "invalidBasePage" | "notFound" | "notLinked" | "missingConfig" | "fetch" | "gameClaimed";
+export type LeaguepediaLinkError = "invalidBasePage" | "notFound" | "notLinked" | "cooldown" | "missingConfig" | "fetch" | "gameClaimed";
 
 export type LeaguepediaLinkResult = { ok: true; games: number } | { ok: false; error: LeaguepediaLinkError };
 
@@ -59,11 +60,12 @@ export async function saveLeaguepediaBasePage(tournamentId: number, basePage: st
   return { ok: true, games: result.data };
 }
 
-/** Reads the game list again from the saved base page. */
+/** Reads the game list again from the saved base page, at most once an hour (the Leaguepedia bot account is rate limited). */
 export async function refreshLeaguepediaGameList(tournamentId: number): Promise<LeaguepediaLinkResult> {
   const actorUserId = await requireLolActor();
-  const { overviewPage } = await getLeaguepediaLinkStatus(tournamentId);
+  const { overviewPage, gamesFetchedAt } = await getLeaguepediaLinkStatus(tournamentId);
   if (!overviewPage) return { ok: false, error: "notLinked" };
+  if (isGameListOnCooldown(gamesFetchedAt)) return { ok: false, error: "cooldown" };
 
   const result = await refreshGameList(tournamentId, overviewPage);
   if (!result.ok) return { ok: false, error: fetchError(result.error) };

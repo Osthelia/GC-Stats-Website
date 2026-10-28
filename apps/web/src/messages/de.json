@@ -4893,6 +4893,7 @@
           "invalidBasePage": "Verwende einen Seitennamen ohne # < > [ ] | { } und ohne führendes oder abschließendes /.",
           "notFound": "Turnier nicht gefunden.",
           "notLinked": "Speichere zuerst eine Basisseite.",
+          "cooldown": "Die Spieleliste wurde vor weniger als einer Stunde gelesen. Versuche es später erneut.",
           "missingConfig": "Der Leaguepedia-Bot-Login ist auf diesem Server nicht eingerichtet.",
           "fetch": "Leaguepedia konnte nicht gelesen werden. Versuche es später erneut."
         }

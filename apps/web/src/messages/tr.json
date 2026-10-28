@@ -4893,6 +4893,7 @@
           "invalidBasePage": "# < > [ ] | { } içermeyen ve başında veya sonunda / bulunmayan bir sayfa adı kullanın.",
           "notFound": "Turnuva bulunamadı.",
           "notLinked": "Önce bir temel sayfa kaydedin.",
+          "cooldown": "Oyun listesi bir saatten kısa süre önce okundu. Daha sonra tekrar dene.",
           "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
           "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin."
         }
