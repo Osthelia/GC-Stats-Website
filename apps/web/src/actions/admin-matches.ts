@@ -38,12 +38,12 @@ async function requireTournamentsActor(): Promise<string> {
   return access.userId;
 }
 
-type MapLogInput = { mapId: number; matchId: number; actorUserId: string; description: string; event?: "created" | "updated" | "deleted"; changes?: ActivityChanges; properties?: Record<string, unknown> };
+type MapLogInput = { game: GameSlug; mapId: number; matchId: number; actorUserId: string; description: string; event?: "created" | "updated" | "deleted"; changes?: ActivityChanges; properties?: Record<string, unknown> };
 
 /** Map edits are logged on the map itself, with its match in the properties. */
 function logMapChange(client: ActivityLogClient, input: MapLogInput) {
-  const { mapId, matchId, actorUserId, description, event = "updated", changes, properties } = input;
-  return logActivity({ subject: "map", subjectId: mapId, event, description, actorUserId, changes, properties: { matchId, ...properties } }, client);
+  const { game, mapId, matchId, actorUserId, description, event = "updated", changes, properties } = input;
+  return logActivity({ game, subject: "map", subjectId: mapId, event, description, actorUserId, changes, properties: { matchId, ...properties } }, client);
 }
 
 // --- Match details (non-result fields) -------------------------------------
@@ -136,7 +136,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
     await tx.update(matches).set(values).where(eq(matches.id, matchId));
     const changes = diffChanges(existing, values);
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
     }
   });
   updateTag(matchTag(matchId));
@@ -157,7 +157,7 @@ export async function deleteMatch(game: GameSlug, matchId: number): Promise<Dele
 
   await db.transaction(async (tx) => {
     await tx.delete(matches).where(eq(matches.id, matchId));
-    await logActivity({ subject: "match", subjectId: matchId, event: "deleted", description: `Deleted match #${matchId}`, actorUserId }, tx);
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "deleted", description: `Deleted match #${matchId}`, actorUserId }, tx);
   });
   return { ok: true };
 }
@@ -198,6 +198,7 @@ export async function reportMatchResult(game: GameSlug, matchId: number, input: 
     throw err;
   }
   await logActivity({
+    game,
     subject: "match",
     subjectId: matchId,
     event: "updated",
@@ -227,7 +228,7 @@ export async function saveMatchLiveScore(game: GameSlug, matchId: number, input:
     await tx.update(matches).set({ scoreA, scoreB }).where(eq(matches.id, matchId));
     const changes = diffChanges(match, { scoreA, scoreB });
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
     }
   });
   updateTag(matchTag(matchId));
@@ -300,7 +301,7 @@ export async function saveMatchVeto(game: GameSlug, matchId: number, rows: VetoR
 
     await syncPlayedMapsFromVeto(tx, matchId, rows);
     await logActivity(
-      { subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
+      { game, subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
       tx
     );
   });
@@ -405,8 +406,8 @@ export async function addMap(game: GameSlug, matchId: number, input: MapInput): 
       })
       .returning({ id: maps.id });
     if (!row) throw new Error("Insert returned no row");
-    await logMapChange(tx, { mapId: row.id, matchId, actorUserId, event: "created", description: `Added map ${input.mapName} to match #${matchId}`, properties: { mapName: input.mapName, order: Number(input.order) } });
-    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Added map ${input.mapName} to match #${matchId}`, actorUserId, properties: { section: "maps", mapId: row.id } }, tx);
+    await logMapChange(tx, { game, mapId: row.id, matchId, actorUserId, event: "created", description: `Added map ${input.mapName} to match #${matchId}`, properties: { mapName: input.mapName, order: Number(input.order) } });
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Added map ${input.mapName} to match #${matchId}`, actorUserId, properties: { section: "maps", mapId: row.id } }, tx);
     return row;
   });
   await syncMatchScoreFromMaps(game, matchId);
@@ -439,7 +440,7 @@ export async function updateMap(game: GameSlug, mapId: number, input: MapInput):
     await tx.update(maps).set(values).where(eq(maps.id, mapId));
     const changes = diffChanges(existing, values);
     if (Object.keys(changes).length > 0) {
-      await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Updated map #${mapId} of match #${existing.matchId}`, changes });
+      await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, description: `Updated map #${mapId} of match #${existing.matchId}`, changes });
     }
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
@@ -459,8 +460,8 @@ export async function deleteMap(game: GameSlug, mapId: number): Promise<DeleteMa
 
   await db.transaction(async (tx) => {
     await tx.delete(maps).where(eq(maps.id, mapId));
-    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, event: "deleted", description: `Deleted map ${existing.mapName} of match #${existing.matchId}` });
-    await logActivity({ subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
+    await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, event: "deleted", description: `Deleted map ${existing.mapName} of match #${existing.matchId}` });
+    await logActivity({ game, subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
   updateTag(matchTag(existing.matchId));
@@ -482,7 +483,7 @@ export async function resetMap(game: GameSlug, mapId: number): Promise<ResetMapR
     await tx.delete(mapTeamRoundSummary).where(eq(mapTeamRoundSummary.mapId, mapId));
     await tx.delete(mapRoundsRaw).where(eq(mapRoundsRaw.mapId, mapId)); // cascades to kills/loadouts/positions
     await tx.update(maps).set({ teamAScore: null, teamBScore: null, isCompleted: false, isForfeit: false }).where(eq(maps.id, mapId));
-    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
+    await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
   updateTag(matchTag(existing.matchId));
@@ -577,7 +578,7 @@ export async function updateMapPlayerStats(game: GameSlug, mapId: number, player
   await db.transaction(async (tx) => {
     await tx.delete(mapPlayerStats).where(eq(mapPlayerStats.mapId, mapId));
     if (rowsToInsert.length > 0) await tx.insert(mapPlayerStats).values(rowsToInsert);
-    await logMapChange(tx, { mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
+    await logMapChange(tx, { game, mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
   });
   updateTag(matchTag(map.matchId));
 
@@ -806,7 +807,7 @@ export async function importMatchWikicode(
 
     const staleMapIds = existingMaps.filter((m) => m.order > playOrder.length && !hasData(m)).map((m) => m.id);
     if (staleMapIds.length > 0) await tx.delete(maps).where(inArray(maps.id, staleMapIds));
-    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
   });
   updateTag(matchTag(matchId));
 
@@ -844,7 +845,7 @@ async function fetchImportedMaps(game: GameSlug, matchId: number, orders: number
         if (teamAColor) result = await runFetchMapData(game, row.id, { teamAColor });
       }
       if (result.ok) {
-        await logMapChange(db, { mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
+        await logMapChange(db, { game, mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
         outcomes.push({ ...base, status: "fetched" });
       } else {
         outcomes.push({ ...base, status: "needsStep", reason: result.error.kind });

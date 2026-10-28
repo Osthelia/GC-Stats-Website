@@ -49,6 +49,7 @@ export async function saveLeaguepediaBasePage(tournamentId: number, basePage: st
   if (!result.ok) return { ok: false, error: fetchError(result.error) };
 
   await logActivity({
+    game: "lol",
     subject: "tournament",
     subjectId: tournamentId,
     event: "updated",
@@ -68,6 +69,7 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
   if (!result.ok) return { ok: false, error: fetchError(result.error) };
 
   await logActivity({
+    game: "lol",
     subject: "tournament",
     subjectId: tournamentId,
     event: "updated",
@@ -104,6 +106,7 @@ export async function commitLeaguepediaGameForMatch(tournamentId: number, matchI
   if (result.ok) {
     updateTag(matchTag(matchId));
     await logActivity({
+      game: "lol",
       subject: "match",
       subjectId: matchId,
       event: "updated",

@@ -88,7 +88,7 @@ export async function bulkPatchMatches(game: GameSlug, tournamentId: number, inp
       .returning({ id: matches.id });
     if (rows.length > 0) {
       await logActivity(
-        { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set patch "${patch}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkPatch", patch, matchIds: rows.map((r) => r.id) } },
+        { game, subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set patch "${patch}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkPatch", patch, matchIds: rows.map((r) => r.id) } },
         tx
       );
     }
@@ -143,7 +143,7 @@ export async function bulkCreateMatches(game: GameSlug, tournamentId: number, in
   const created = await db.transaction(async (tx) => {
     const inserted = await tx.insert(matches).values(rows).returning({ id: matches.id });
     await logActivity(
-      { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Created ${inserted.length} matches in tournament #${tournamentId}`, actorUserId, properties: { section: "bulkCreate", containerId, round, matchIds: inserted.map((r) => r.id) } },
+      { game, subject: "tournament", subjectId: tournamentId, event: "updated", description: `Created ${inserted.length} matches in tournament #${tournamentId}`, actorUserId, properties: { section: "bulkCreate", containerId, round, matchIds: inserted.map((r) => r.id) } },
       tx
     );
     return inserted;
@@ -194,7 +194,7 @@ export async function bulkSetMatchStatus(game: GameSlug, tournamentId: number, m
       .returning({ id: matches.id });
     if (rows.length > 0) {
       await logActivity(
-        { subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set status "${status}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkStatus", status, matchIds: rows.map((r) => r.id) } },
+        { game, subject: "tournament", subjectId: tournamentId, event: "updated", description: `Set status "${status}" on ${rows.length} matches of tournament #${tournamentId}`, actorUserId, properties: { section: "bulkStatus", status, matchIds: rows.map((r) => r.id) } },
         tx
       );
     }
