@@ -15,7 +15,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { leagueTablesOf } from "@gc-stats/db";
@@ -28,6 +28,7 @@ import {
   computeObjectiveTimings,
   draftDiffers,
   firstPickSideOf,
+  patchOf,
   sideForTeamId,
   type LanePlayer,
   type LeagueSide,
@@ -69,7 +70,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     throw new Error(`Game ${apiMatchId} has ${unmapped.length} participant(s) without a person; map them before storing`);
   }
 
-  const { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw } = leagueTablesOf("lol");
+  const { matches, games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw } = leagueTablesOf("lol");
 
   const summaryContext = (gameId: number): LeagueSummaryContext => ({
     gameId,
@@ -169,6 +170,9 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       );
       await tx.update(games).set({ draftImportDiffers: differs }).where(eq(games.id, id));
     }
+    // The series' patch, when no one has set one: the game version's patch (Riot's, e.g. "16.20").
+    const gamePatch = patchOf(match.info.gameVersion);
+    if (gamePatch) await tx.update(matches).set({ patch: gamePatch }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 
