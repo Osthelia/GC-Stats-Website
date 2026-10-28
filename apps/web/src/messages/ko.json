@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "이 맵은 더 이상 존재하지 않습니다."
           }
         },
+        "draft": {
+          "metaTitle": "드래프트",
+          "title": "{order}번 게임 드래프트",
+          "backToMatch": "매치로 돌아가기",
+          "description": "이 게임의 밴과 픽 순서입니다. 사용되지 않은 단계는 비워 두세요.",
+          "differsWarning": "가져온 데이터가 저장된 드래프트와 다릅니다. 다시 가져오기에서 다른 챔피언이 발견되었습니다. 내용을 확인하고 저장하면 현재 드래프트가 유지됩니다.",
+          "blueSide": "블루 진영",
+          "blueLockedHint": "가져오기에서 정해집니다 (Riot의 블루 팀).",
+          "firstPickLockedHint": "가져오기로 설정됩니다 (첫 밴을 한 진영).",
+          "firstPick": "퍼스트 픽",
+          "phase": {
+            "ban1": "밴 1 단계",
+            "pick1": "픽 1 단계",
+            "ban2": "밴 2 단계",
+            "pick2": "픽 2 단계"
+          },
+          "side": {
+            "blue": "블루",
+            "red": "레드"
+          },
+          "type": {
+            "ban": "밴",
+            "pick": "픽"
+          },
+          "noChampion": "챔피언 없음",
+          "searchPlaceholder": "챔피언 검색",
+          "noResults": "일치하는 챔피언이 없습니다",
+          "unplacedTitle": "아직 배치되지 않은 픽",
+          "save": "드래프트 저장",
+          "saving": "저장 중…",
+          "saved": "드래프트를 저장했습니다",
+          "error": {
+            "notFound": "이 게임을 찾을 수 없습니다.",
+            "entrantsUnset": "먼저 매치의 두 팀을 설정해야 합니다.",
+            "blueNotAnEntrant": "블루 진영은 매치의 두 팀 중 하나여야 합니다.",
+            "blueLocked": "가져온 게임의 블루 진영은 가져오기에서 정해집니다.",
+            "firstPickLocked": "가져온 게임의 첫 픽은 가져오기로 설정됩니다.",
+            "invalidFirstPick": "퍼스트 픽은 블루 또는 레드여야 합니다.",
+            "invalidStep": "{step} 단계가 없거나 두 번 지정되었습니다.",
+            "unknownChampion": "{championName}은(는) 챔피언 목록에 없습니다.",
+            "duplicateChampion": "{championName}이(가) 드래프트에 두 번 이상 있습니다."
+          }
+        },
         "games": {
           "heading": "게임",
           "description": "이 시리즈에서 진행된 게임을 순서대로 표시합니다.",
@@ -4486,6 +4529,8 @@
           "noWinner": "아직 승자가 없습니다",
           "finished": "완료",
           "notFinished": "미완료",
+          "draftButton": "드래프트",
+          "draftDiffers": "가져온 데이터가 저장된 드래프트와 다릅니다",
           "forfeit": "기권",
           "cancel": "취소",
           "save": "저장",

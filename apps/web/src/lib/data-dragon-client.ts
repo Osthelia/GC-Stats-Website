@@ -128,6 +128,14 @@ async function fallbackFromDatabase(patch: string): Promise<DataDragonCatalog | 
   return version === null ? null : loadStored(version);
 }
 
+/** Picks Champion names from given patch. if none is given from the newest Patch */
+export async function getChampionNamesForPatch(patch: string | null): Promise<string[]> {
+  const stored = await storedVersions();
+  const version = patch === null ? newestVersion(stored) : pickStoredVersion(stored, patch);
+  const catalog = version === null ? null : await loadStored(version);
+  return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
+}
+
 async function storedVersions(): Promise<string[]> {
   const rows = await db.select({ version: lolDataDragonCatalogs.version }).from(lolDataDragonCatalogs);
   return rows.map((row) => row.version);

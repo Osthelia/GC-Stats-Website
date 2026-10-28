@@ -11,9 +11,15 @@
  */
 
 import { championNameOf } from "./champion-catalog";
+import { banStepForPickTurn } from "./league-draft";
 import type { RiotMatchDto, RiotParticipantDto, RiotTeamDto, RiotTeamId } from "./types";
 
 export type LeagueSide = "blue" | "red";
+
+/** The side that is not `side`: red for blue, blue for red. */
+export function otherSide(side: LeagueSide): LeagueSide {
+  return side === "blue" ? "red" : "blue";
+}
 
 export interface LeagueGameRow {
   order: number;
@@ -109,6 +115,12 @@ export function sideForTeamId(teamId: RiotTeamId): LeagueSide {
   return SIDE_BY_TEAM_ID[teamId];
 }
 
+/** The side with the first pick: the team that made ban turn 1 (the first pick follows the first ban). Null when there are no bans. */
+export function firstPickSideOf(match: RiotMatchDto): LeagueSide | null {
+  const opener = match.info.teams.find((team) => team.bans.some((ban) => ban.pickTurn === 1 && ban.championId > 0));
+  return opener ? sideForTeamId(opener.teamId) : null;
+}
+
 export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext): LeagueGameSummary {
   const { info } = match;
   const winningTeam = info.teams.find((team) => team.win);
@@ -197,7 +209,8 @@ function buildBanRows(team: RiotTeamDto, ctx: LeagueSummaryContext): LeagueDraft
       entrantId: ctx.entrantIdBySide[side],
       championName: championNameOf(ctx.championNameById, ban.championId),
       type: "ban" as const,
-      order: ban.pickTurn,
+      // The draft step of the ban, so bans and placed picks share the same 1–20 order (see league-draft).
+      order: banStepForPickTurn(ban.pickTurn),
     }));
 }
 

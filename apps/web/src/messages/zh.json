@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "该地图已不存在。"
           }
         },
+        "draft": {
+          "metaTitle": "选角",
+          "title": "第 {order} 局的选角",
+          "backToMatch": "返回比赛",
+          "description": "本局的禁用与选用顺序。未使用的步骤请留空。",
+          "differsWarning": "导入结果与已保存的选角不一致：重新导入时发现了不同的英雄。请检查选角并保存，以保留您的版本。",
+          "blueSide": "蓝方",
+          "blueLockedHint": "由导入决定（Riot 的蓝队）。",
+          "firstPickLockedHint": "由导入设置（进行第一次禁用的一方）。",
+          "firstPick": "先选",
+          "phase": {
+            "ban1": "禁用阶段 1",
+            "pick1": "选用阶段 1",
+            "ban2": "禁用阶段 2",
+            "pick2": "选用阶段 2"
+          },
+          "side": {
+            "blue": "蓝方",
+            "red": "红方"
+          },
+          "type": {
+            "ban": "禁用",
+            "pick": "选用"
+          },
+          "noChampion": "无英雄",
+          "searchPlaceholder": "搜索英雄",
+          "noResults": "没有匹配的英雄",
+          "unplacedTitle": "尚未放置的选用",
+          "save": "保存选角",
+          "saving": "保存中…",
+          "saved": "选角已保存",
+          "error": {
+            "notFound": "找不到该对局。",
+            "entrantsUnset": "请先设定比赛的两支队伍。",
+            "blueNotAnEntrant": "蓝方必须是比赛两支队伍之一。",
+            "blueLocked": "导入对局的蓝方由导入决定。",
+            "firstPickLocked": "导入的比赛的首选由导入设置。",
+            "invalidFirstPick": "先选必须是蓝方或红方。",
+            "invalidStep": "第 {step} 步不存在或被重复指定。",
+            "unknownChampion": "{championName} 不在英雄列表中。",
+            "duplicateChampion": "{championName} 在选角中出现了不止一次。"
+          }
+        },
         "games": {
           "heading": "对局",
           "description": "本系列赛中按顺序进行的对局。",
@@ -4486,6 +4529,8 @@
           "noWinner": "暂无胜者",
           "finished": "已完成",
           "notFinished": "未完成",
+          "draftButton": "选角",
+          "draftDiffers": "导入结果与已保存的选角不一致",
           "forfeit": "弃权",
           "cancel": "取消",
           "save": "保存",

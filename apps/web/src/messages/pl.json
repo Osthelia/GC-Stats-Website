@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "Ta mapa już nie istnieje."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft gry {order}",
+          "backToMatch": "Wróć do meczu",
+          "description": "Kolejność banów i picków tej gry. Zostaw krok pusty, jeśli nie został użyty.",
+          "differsWarning": "Import nie zgadza się z zapisanym draftem: ponowny import znalazł innych mistrzów. Sprawdź draft i zapisz, aby zachować swój.",
+          "blueSide": "Strona niebieska",
+          "blueLockedHint": "Ustawiane przez import (niebieska drużyna Riot).",
+          "firstPickLockedHint": "Ustawia import (strona, która wykonała pierwszy ban).",
+          "firstPick": "Pierwszy pick",
+          "phase": {
+            "ban1": "Faza banów 1",
+            "pick1": "Faza picków 1",
+            "ban2": "Faza banów 2",
+            "pick2": "Faza picków 2"
+          },
+          "side": {
+            "blue": "Niebieska",
+            "red": "Czerwona"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Brak mistrza",
+          "searchPlaceholder": "Szukaj mistrzów",
+          "noResults": "Brak pasujących mistrzów",
+          "unplacedTitle": "Picki jeszcze nieumieszczone",
+          "save": "Zapisz draft",
+          "saving": "Zapisywanie…",
+          "saved": "Draft zapisany",
+          "error": {
+            "notFound": "Nie znaleziono tej gry.",
+            "entrantsUnset": "Najpierw ustaw obie drużyny meczu.",
+            "blueNotAnEntrant": "Strona niebieska musi być jedną z dwóch drużyn meczu.",
+            "blueLocked": "Stronę niebieską importowanej gry ustala import.",
+            "firstPickLocked": "Pierwszy pick importowanej gry ustawia import.",
+            "invalidFirstPick": "Pierwszy pick musi być niebieski lub czerwony.",
+            "invalidStep": "Krok {step} nie istnieje albo jest podany dwa razy.",
+            "unknownChampion": "{championName} nie ma na liście mistrzów.",
+            "duplicateChampion": "{championName} występuje w drafcie więcej niż raz."
+          }
+        },
         "games": {
           "heading": "Gry",
           "description": "Gry rozegrane w tej serii, w kolejności.",
@@ -4486,6 +4529,8 @@
           "noWinner": "Brak zwycięzcy",
           "finished": "Zakończona",
           "notFinished": "Niezakończona",
+          "draftButton": "Draft",
+          "draftDiffers": "Import nie zgadza się z zapisanym draftem",
           "forfeit": "Walkower",
           "cancel": "Anuluj",
           "save": "Zapisz",

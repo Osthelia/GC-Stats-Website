@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { LeagueSide } from "./game-summary";
+import { otherSide, type LeagueSide } from "./game-summary";
 import type { LeagueFrameRow, LeagueTimelineRows } from "./timeline-rows";
 
 export interface LanePlayer {
@@ -103,6 +103,3 @@ export function computeObjectiveTimings(rows: LeagueTimelineRows): ObjectiveTimi
   return timings;
 }
 
-function otherSide(side: LeagueSide): LeagueSide {
-  return side === "blue" ? "red" : "blue";
-}

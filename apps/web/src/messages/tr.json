@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "Bu harita artık mevcut değil."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "{order}. oyunun draftı",
+          "backToMatch": "Maça dön",
+          "description": "Bu oyunun ban ve pick sırası. Kullanılmayan adımları boş bırakın.",
+          "differsWarning": "İçe aktarma kayıtlı draft ile uyuşmuyor: yeniden içe aktarmada farklı şampiyonlar bulundu. Draftı gözden geçirip kaydederek kendi draftınızı koruyun.",
+          "blueSide": "Mavi taraf",
+          "blueLockedHint": "İçe aktarma tarafından belirlenir (Riot'un mavi takımı).",
+          "firstPickLockedHint": "İçe aktarma tarafından belirlenir (ilk ban'ı yapan taraf).",
+          "firstPick": "İlk pick",
+          "phase": {
+            "ban1": "Ban aşaması 1",
+            "pick1": "Pick aşaması 1",
+            "ban2": "Ban aşaması 2",
+            "pick2": "Pick aşaması 2"
+          },
+          "side": {
+            "blue": "Mavi",
+            "red": "Kırmızı"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Şampiyon yok",
+          "searchPlaceholder": "Şampiyon ara",
+          "noResults": "Eşleşen şampiyon yok",
+          "unplacedTitle": "Henüz yerleştirilmemiş pickler",
+          "save": "Draftı kaydet",
+          "saving": "Kaydediliyor…",
+          "saved": "Draft kaydedildi",
+          "error": {
+            "notFound": "Bu oyun bulunamadı.",
+            "entrantsUnset": "Önce maçın iki takımı belirlenmelidir.",
+            "blueNotAnEntrant": "Mavi taraf, maçın iki takımından biri olmalıdır.",
+            "blueLocked": "İçe aktarılan oyunun mavi tarafı içe aktarma tarafından belirlenir.",
+            "firstPickLocked": "İçe aktarılan bir oyunun ilk pick'i içe aktarma tarafından belirlenir.",
+            "invalidFirstPick": "İlk pick mavi ya da kırmızı olmalıdır.",
+            "invalidStep": "{step}. adım yok ya da iki kez verilmiş.",
+            "unknownChampion": "{championName} şampiyon listesinde yok.",
+            "duplicateChampion": "{championName} draftta birden fazla kez var."
+          }
+        },
         "games": {
           "heading": "Oyunlar",
           "description": "Bu seride oynanan oyunlar, sırasıyla.",
@@ -4486,6 +4529,8 @@
           "noWinner": "Henüz kazanan yok",
           "finished": "Tamamlandı",
           "notFinished": "Tamamlanmadı",
+          "draftButton": "Draft",
+          "draftDiffers": "İçe aktarma kayıtlı draft ile uyuşmuyor",
           "forfeit": "Hükmen",
           "cancel": "İptal",
           "save": "Kaydet",

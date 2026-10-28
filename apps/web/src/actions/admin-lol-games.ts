@@ -19,11 +19,13 @@ import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, leagueTablesOf } from "@gc-stats/db";
 import { gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
+import { draftProblem, draftStep, stepSide, type DraftEntry, type DraftProblem, type LeagueSide } from "@gc-stats/lol-stats-engine";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
+import { getChampionNamesForPatch } from "@/lib/data-dragon-client";
 
 export type LeagueGameField = "order" | "apiMatchId" | "winnerEntrantId" | "isCompleted" | "note";
 export type LeagueGameFieldErrors = Partial<Record<LeagueGameField, string>>;
@@ -175,6 +177,91 @@ export async function updateLeagueGame(game: GameSlug, tournamentId: number, mat
   updateTag(matchTag(matchId));
 
   return { ok: true, id: gameId };
+}
+
+export type LeagueDraftInput = {
+  /** Entrant id of the blue side. Fixed for an imported game: Riot's blue team decides it. */
+  blueEntrantId: number;
+  /** The filled steps. A step left out is empty, which is normal for a skipped ban. */
+  steps: DraftEntry[];
+  /** Picks that are not placed on a step yet, by team. */
+  unplacedPicks: { side: LeagueSide; championName: string }[];
+  /** The side with the first pick. It sets which side makes each step (see stepSide): the first ban and the first pick are its. */
+  firstPick: LeagueSide;
+};
+export type LeagueDraftError =
+  | { kind: "notFound" }
+  | { kind: "entrantsUnset" }
+  | { kind: "blueNotAnEntrant" }
+  | { kind: "blueLocked" }
+  | { kind: "firstPickLocked" }
+  | { kind: "invalidFirstPick" }
+  | { kind: "draftProblem"; problem: DraftProblem };
+export type LeagueDraftResult = { ok: true } | { ok: false; error: LeagueDraftError };
+
+/**
+ * Saves the draft of one game. One transaction replaces its draft rows and marks the draft as edited by hand, so a
+ * re-import keeps it and only compares it.
+ */
+export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, matchId: number, gameId: number, input: LeagueDraftInput): Promise<LeagueDraftResult> {
+  if (!gameHasSeriesGames(game)) return { ok: false, error: { kind: "notFound" } };
+  const actorUserId = await requireTournamentsActor(game);
+  const match = await loadMatchOfTournament(game, tournamentId, matchId);
+  if (!match) return { ok: false, error: { kind: "notFound" } };
+  if (match.entrantAId === null || match.entrantBId === null) return { ok: false, error: { kind: "entrantsUnset" } };
+
+  const { games, gameTeamStats, gameDraft } = leagueTablesOf(game);
+  const [existing] = await db
+    .select({ id: games.id, order: games.order, source: games.source, draftFirstPick: games.draftFirstPick })
+    .from(games)
+    .where(and(eq(games.id, gameId), eq(games.matchId, matchId)))
+    .limit(1);
+  if (!existing) return { ok: false, error: { kind: "notFound" } };
+
+  const entrantAId = match.entrantAId;
+  const entrantBId = match.entrantBId;
+
+  // check that side and firstpick are not changed if they are imported
+  if (input.blueEntrantId !== entrantAId && input.blueEntrantId !== entrantBId) return { ok: false, error: { kind: "blueNotAnEntrant" } };
+  if (input.firstPick !== "blue" && input.firstPick !== "red") return { ok: false, error: { kind: "invalidFirstPick" } };
+  if (existing.source !== null) {
+    const [blueTeam] = await db
+      .select({ entrantId: gameTeamStats.entrantId })
+      .from(gameTeamStats)
+      .where(and(eq(gameTeamStats.gameId, gameId), eq(gameTeamStats.side, "blue")))
+      .limit(1);
+    if (blueTeam && blueTeam.entrantId !== input.blueEntrantId) return { ok: false, error: { kind: "blueLocked" } };
+    if (existing.draftFirstPick !== null && input.firstPick !== existing.draftFirstPick) return { ok: false, error: { kind: "firstPickLocked" } };
+  }
+
+  const problem = draftProblem({
+    steps: input.steps,
+    unplacedPicks: input.unplacedPicks.map((pick) => pick.championName),
+    knownChampions: new Set(await getChampionNamesForPatch(match.patch)),
+  });
+  if (problem) return { ok: false, error: { kind: "draftProblem", problem } };
+
+  const entrantOf = (side: LeagueSide): number => (side === "blue" ? input.blueEntrantId : input.blueEntrantId === entrantAId ? entrantBId : entrantAId);
+  const stepRows = input.steps.flatMap((entry) => {
+    const step = draftStep(entry.step);
+    return step ? [{ 
+      gameId, 
+      entrantId: entrantOf(stepSide(step, input.firstPick)), 
+      championName: entry.championName, 
+      type: step.type, order: step.step 
+    }] : [];
+  });
+  const pickRows = input.unplacedPicks.map((pick) => ({ gameId, entrantId: entrantOf(pick.side), championName: pick.championName, type: "pick", order: null }));
+
+  await db.transaction(async (tx) => {
+    await tx.delete(gameDraft).where(eq(gameDraft.gameId, gameId));
+    const rows = [...stepRows, ...pickRows];
+    if (rows.length > 0) await tx.insert(gameDraft).values(rows);
+    await tx.update(games).set({ draftEditedAt: new Date(), draftImportDiffers: false, draftFirstPick: input.firstPick }).where(eq(games.id, gameId));
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Edited the draft of game ${existing.order} of match #${matchId}`, actorUserId, properties: { section: "draft", gameId, steps: stepRows.length, unplacedPicks: pickRows.length, firstPick: input.firstPick } }, tx);
+  });
+  updateTag(matchTag(matchId));
+  return { ok: true };
 }
 
 export async function deleteLeagueGame(game: GameSlug, tournamentId: number, matchId: number, gameId: number): Promise<DeleteLeagueGameResult> {

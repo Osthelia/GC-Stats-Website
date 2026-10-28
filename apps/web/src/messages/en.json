@@ -4485,6 +4485,49 @@
             "mergeMapNotFound": "This map no longer exists."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft of game {order}",
+          "backToMatch": "Back to match",
+          "description": "The ban and pick order of this game. Leave a step empty when it was not used.",
+          "differsWarning": "The import disagrees with the saved draft: a re-import found other champions. Review the draft and save to keep yours.",
+          "blueSide": "Blue side",
+          "blueLockedHint": "Set by the import (Riot's blue team).",
+          "firstPickLockedHint": "Set by the import (the side that made the first ban).",
+          "firstPick": "First pick",
+          "phase": {
+            "ban1": "Ban phase 1",
+            "pick1": "Pick phase 1",
+            "ban2": "Ban phase 2",
+            "pick2": "Pick phase 2"
+          },
+          "side": {
+            "blue": "Blue",
+            "red": "Red"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "No champion",
+          "searchPlaceholder": "Search champions",
+          "noResults": "No champions match",
+          "unplacedTitle": "Picks not placed yet",
+          "save": "Save draft",
+          "saving": "Saving…",
+          "saved": "Draft saved",
+          "error": {
+            "notFound": "This game could not be found.",
+            "entrantsUnset": "Both teams of the match must be set first.",
+            "blueNotAnEntrant": "The blue side must be one of the two teams of the match.",
+            "blueLocked": "The blue side of an imported game is set by the import.",
+            "firstPickLocked": "The first pick of an imported game is set by the import.",
+            "invalidFirstPick": "The first pick must be blue or red.",
+            "invalidStep": "Step {step} does not exist or is given twice.",
+            "unknownChampion": "{championName} is not in the champion list.",
+            "duplicateChampion": "{championName} is in the draft more than once."
+          }
+        },
         "games": {
           "heading": "Games",
           "description": "The games played in this series, in order.",
@@ -4494,6 +4537,8 @@
           "noWinner": "No winner yet",
           "finished": "Finished",
           "notFinished": "Not finished",
+          "draftButton": "Draft",
+          "draftDiffers": "Import differs from the saved draft",
           "forfeit": "Forfeit",
           "cancel": "Cancel",
           "save": "Save",

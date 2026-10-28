@@ -12,7 +12,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { buildGameSummary, roleOf } from "./game-summary";
+import { buildGameSummary, firstPickSideOf, roleOf } from "./game-summary";
 import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto } from "./types";
 
@@ -39,6 +39,25 @@ describe("buildGameSummary (real LoL game: 10 players, 2 teams, red won)", () =>
   it("writes a pick for every participant and a ban with its pick turn", () => {
     expect(summary.draft.filter((d) => d.type === "pick")).toHaveLength(10);
     expect(summary.draft.filter((d) => d.type === "ban").every((b) => b.order !== null)).toBe(true);
+  });
+});
+
+describe("firstPickSideOf", () => {
+  it("is the side that made ban turn 1: blue in this game", () => {
+    expect(firstPickSideOf(match)).toBe("blue");
+  });
+
+  it("is red when red made ban turn 1", () => {
+    const flipped: RiotMatchDto = {
+      ...match,
+      info: { ...match.info, teams: match.info.teams.map((t) => ({ ...t, bans: t.bans.map((b) => ({ ...b, pickTurn: b.pickTurn === 1 ? 2 : b.pickTurn === 2 ? 1 : b.pickTurn })) })) },
+    };
+    expect(firstPickSideOf(flipped)).toBe("red");
+  });
+
+  it("is null when no ban was made", () => {
+    const noBans: RiotMatchDto = { ...match, info: { ...match.info, teams: match.info.teams.map((t) => ({ ...t, bans: [] })) } };
+    expect(firstPickSideOf(noBans)).toBeNull();
   });
 });
 

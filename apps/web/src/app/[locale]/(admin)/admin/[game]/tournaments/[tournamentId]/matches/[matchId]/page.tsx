@@ -102,9 +102,11 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm tracking-wide text-muted-foreground uppercase">{t("infoHeading")}</CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/veto`} />}>
-                  {t("vetoNavButton")}
-                </Button>
+                {!gameHasSeriesGames(game) && (
+                  <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/veto`} />}>
+                    {t("vetoNavButton")}
+                  </Button>
+                )}
                 <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/edit`} />}>
                   {t("editButton")}
                 </Button>

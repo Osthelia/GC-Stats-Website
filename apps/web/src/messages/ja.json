@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "このマップはもう存在しません。"
           }
         },
+        "draft": {
+          "metaTitle": "ドラフト",
+          "title": "ゲーム {order} のドラフト",
+          "backToMatch": "試合に戻る",
+          "description": "このゲームの BAN と PICK の順序です。使われなかったステップは空のままにしてください。",
+          "differsWarning": "インポートが保存済みのドラフトと一致しません。再インポートで別のチャンピオンが見つかりました。内容を確認して保存すると、現在のドラフトが残ります。",
+          "blueSide": "ブルー側",
+          "blueLockedHint": "インポートで決まります（Riot のブルーチーム）。",
+          "firstPickLockedHint": "インポートで設定されます（最初のBANを行ったサイド）。",
+          "firstPick": "ファーストピック",
+          "phase": {
+            "ban1": "BAN フェーズ 1",
+            "pick1": "PICK フェーズ 1",
+            "ban2": "BAN フェーズ 2",
+            "pick2": "PICK フェーズ 2"
+          },
+          "side": {
+            "blue": "ブルー",
+            "red": "レッド"
+          },
+          "type": {
+            "ban": "BAN",
+            "pick": "PICK"
+          },
+          "noChampion": "チャンピオンなし",
+          "searchPlaceholder": "チャンピオンを検索",
+          "noResults": "一致するチャンピオンがいません",
+          "unplacedTitle": "未配置の PICK",
+          "save": "ドラフトを保存",
+          "saving": "保存中…",
+          "saved": "ドラフトを保存しました",
+          "error": {
+            "notFound": "このゲームが見つかりません。",
+            "entrantsUnset": "先に試合の両チームを設定してください。",
+            "blueNotAnEntrant": "ブルー側は試合の2チームのどちらかである必要があります。",
+            "blueLocked": "インポートしたゲームのブルー側はインポートで決まります。",
+            "firstPickLocked": "インポートした試合の最初のピックはインポートで設定されます。",
+            "invalidFirstPick": "ファーストピックはブルーかレッドである必要があります。",
+            "invalidStep": "ステップ {step} は存在しないか、重複しています。",
+            "unknownChampion": "{championName} はチャンピオン一覧にありません。",
+            "duplicateChampion": "{championName} がドラフト内に複数あります。"
+          }
+        },
         "games": {
           "heading": "ゲーム",
           "description": "このシリーズで行われたゲームを順番に表示します。",
@@ -4486,6 +4529,8 @@
           "noWinner": "勝者はまだいません",
           "finished": "終了",
           "notFinished": "未終了",
+          "draftButton": "ドラフト",
+          "draftDiffers": "インポートが保存済みドラフトと一致しません",
           "forfeit": "不戦勝",
           "cancel": "キャンセル",
           "save": "保存",

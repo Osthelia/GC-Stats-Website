@@ -4481,6 +4481,49 @@
             "mergeMapNotFound": "Questa mappa non esiste più."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft della partita {order}",
+          "backToMatch": "Torna alla partita",
+          "description": "L'ordine di ban e pick di questa partita. Lascia vuoto un passo se non è stato usato.",
+          "differsWarning": "L'import non coincide con la draft salvata: una reimportazione ha trovato altri campioni. Controlla la draft e salva per tenere la tua.",
+          "blueSide": "Lato blu",
+          "blueLockedHint": "Stabilito dall'import (squadra blu di Riot).",
+          "firstPickLockedHint": "Impostato dall'import (il lato che ha fatto il primo ban).",
+          "firstPick": "Primo pick",
+          "phase": {
+            "ban1": "Fase di ban 1",
+            "pick1": "Fase di pick 1",
+            "ban2": "Fase di ban 2",
+            "pick2": "Fase di pick 2"
+          },
+          "side": {
+            "blue": "Blu",
+            "red": "Rosso"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Nessun campione",
+          "searchPlaceholder": "Cerca campioni",
+          "noResults": "Nessun campione corrisponde",
+          "unplacedTitle": "Pick non ancora piazzati",
+          "save": "Salva draft",
+          "saving": "Salvataggio…",
+          "saved": "Draft salvata",
+          "error": {
+            "notFound": "Questa partita non è stata trovata.",
+            "entrantsUnset": "Prima devono essere definite entrambe le squadre della partita.",
+            "blueNotAnEntrant": "Il lato blu deve essere una delle due squadre della partita.",
+            "blueLocked": "Il lato blu di una partita importata è stabilito dall'import.",
+            "firstPickLocked": "Il primo pick di una partita importata è impostato dall'import.",
+            "invalidFirstPick": "Il primo pick deve essere blu o rosso.",
+            "invalidStep": "Il passo {step} non esiste o è indicato due volte.",
+            "unknownChampion": "{championName} non è nella lista dei campioni.",
+            "duplicateChampion": "{championName} compare più di una volta nella draft."
+          }
+        },
         "games": {
           "heading": "Partite",
           "description": "Le partite giocate in questa serie, in ordine.",
@@ -4490,6 +4533,8 @@
           "noWinner": "Nessun vincitore ancora",
           "finished": "Conclusa",
           "notFinished": "Non conclusa",
+          "draftButton": "Draft",
+          "draftDiffers": "L'import non coincide con la draft salvata",
           "forfeit": "Forfeit",
           "cancel": "Annulla",
           "save": "Salva",

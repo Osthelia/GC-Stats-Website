@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "Diese Map existiert nicht mehr."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft von Spiel {order}",
+          "backToMatch": "Zurück zum Match",
+          "description": "Die Reihenfolge der Bans und Picks dieses Spiels. Lass einen Schritt leer, wenn er nicht genutzt wurde.",
+          "differsWarning": "Der Import weicht von der gespeicherten Draft ab: Ein erneuter Import fand andere Champions. Prüfe die Draft und speichere, um deine zu behalten.",
+          "blueSide": "Blue-Seite",
+          "blueLockedHint": "Wird durch den Import festgelegt (Riots Blue-Team).",
+          "firstPickLockedHint": "Wird durch den Import festgelegt (die Seite mit dem ersten Ban).",
+          "firstPick": "First Pick",
+          "phase": {
+            "ban1": "Ban-Phase 1",
+            "pick1": "Pick-Phase 1",
+            "ban2": "Ban-Phase 2",
+            "pick2": "Pick-Phase 2"
+          },
+          "side": {
+            "blue": "Blue",
+            "red": "Red"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Kein Champion",
+          "searchPlaceholder": "Champions suchen",
+          "noResults": "Kein Champion passt",
+          "unplacedTitle": "Noch nicht platzierte Picks",
+          "save": "Draft speichern",
+          "saving": "Wird gespeichert…",
+          "saved": "Draft gespeichert",
+          "error": {
+            "notFound": "Dieses Spiel wurde nicht gefunden.",
+            "entrantsUnset": "Beide Teams des Matches müssen zuerst festgelegt sein.",
+            "blueNotAnEntrant": "Die Blue-Seite muss eines der beiden Teams des Matches sein.",
+            "blueLocked": "Die Blue-Seite eines importierten Spiels wird durch den Import festgelegt.",
+            "firstPickLocked": "Der First Pick eines importierten Spiels wird durch den Import festgelegt.",
+            "invalidFirstPick": "Der First Pick muss Blue oder Red sein.",
+            "invalidStep": "Schritt {step} existiert nicht oder ist doppelt angegeben.",
+            "unknownChampion": "{championName} steht nicht in der Champion-Liste.",
+            "duplicateChampion": "{championName} ist mehr als einmal in der Draft."
+          }
+        },
         "games": {
           "heading": "Spiele",
           "description": "Die Spiele dieser Serie, in Reihenfolge.",
@@ -4486,6 +4529,8 @@
           "noWinner": "Noch kein Sieger",
           "finished": "Beendet",
           "notFinished": "Nicht beendet",
+          "draftButton": "Draft",
+          "draftDiffers": "Import weicht von der gespeicherten Draft ab",
           "forfeit": "Forfait",
           "cancel": "Abbrechen",
           "save": "Speichern",

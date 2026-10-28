@@ -11,11 +11,12 @@
  */
 
 import { cache } from "react";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
+import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
 export type AdminMatchListRow = {
   id: number;
@@ -165,6 +166,8 @@ export type AdminLeagueGameRow = {
   isForfeit: boolean;
   apiMatchId: string | null;
   note: string | null;
+  /** A re-import found champions in the import that the saved draft does not have. */
+  draftImportDiffers: boolean;
 };
 
 /** The games of a LoL series, in order, for the admin match page. */
@@ -179,6 +182,7 @@ export async function listLeagueMatchGames(matchId: number): Promise<AdminLeague
       isForfeit: games.isForfeit,
       apiMatchId: games.apiMatchId,
       note: games.note,
+      draftImportDiffers: games.draftImportDiffers,
     })
     .from(games)
     .where(eq(games.matchId, matchId))
@@ -289,4 +293,75 @@ export async function listMatchVetos(matchId: number): Promise<AdminVetoRow[]> {
     side: (r.side as "atk" | "def" | null) ?? null,
     sidePickedByEntrantId: r.sidePickedByEntrantId,
   }));
+}
+
+export interface LeagueDraftView {
+  gameId: number;
+  order: number;
+  imported: boolean;
+  draftEditedAt: string | null;
+  /** Set by a re-import when the imported champions no longer match the saved draft. */
+  draftImportDiffers: boolean;
+  blueEntrantId: number | null;
+  /** The side with the first pick. Blue by default; it can differ from the blue side. */
+  firstPick: LeagueSide;
+  /** True when the import set the first pick (the side of Riot's first ban): it cannot be edited by hand. */
+  firstPickLocked: boolean;
+  steps: { step: number; championName: string }[];
+  unplacedPicks: { side: LeagueSide; championName: string }[];
+}
+
+/** The draft of a game of the series, or null when the game is not part of it. */
+export async function getLeagueGameDraft(matchId: number, gameId: number, entrants: { entrantAId: number | null; entrantBId: number | null }): Promise<LeagueDraftView | null> {
+  const { games, gameTeamStats, gameDraft } = leagueTablesOf("lol");
+  const [game] = await db
+    .select({
+      id: games.id,
+      order: games.order,
+      source: games.source,
+      draftEditedAt: games.draftEditedAt,
+      draftImportDiffers: games.draftImportDiffers,
+      draftFirstPick: games.draftFirstPick,
+    })
+    .from(games)
+    .where(and(eq(games.id, gameId), eq(games.matchId, matchId)))
+    .limit(1);
+  if (!game) return null;
+
+  const rows = await db
+    .select({ entrantId: gameDraft.entrantId, type: gameDraft.type, championName: gameDraft.championName, order: gameDraft.order })
+    .from(gameDraft)
+    .where(eq(gameDraft.gameId, gameId));
+
+  // An import's blue side is Riot's blue team. By hand, step 1 is the first ban, made by the first-pick side, so blue
+  // is that entrant when blue has the first pick, else the other one. Without a saved draft it is entrant A.
+  const firstPick: LeagueSide = game.draftFirstPick === "red" ? "red" : "blue";
+  let blueEntrantId: number | null = null;
+  if (game.source !== null) {
+    const [blueTeam] = await db
+      .select({ entrantId: gameTeamStats.entrantId })
+      .from(gameTeamStats)
+      .where(and(eq(gameTeamStats.gameId, gameId), eq(gameTeamStats.side, "blue")))
+      .limit(1);
+    blueEntrantId = blueTeam?.entrantId ?? null;
+  }
+  if (blueEntrantId === null) {
+    const firstPickEntrantId = rows.find((row) => row.order === 1)?.entrantId;
+    const otherEntrantId = firstPickEntrantId === entrants.entrantAId ? entrants.entrantBId : entrants.entrantAId;
+    blueEntrantId = firstPickEntrantId === undefined ? entrants.entrantAId : firstPick === "blue" ? firstPickEntrantId : otherEntrantId;
+  }
+  const sideOf = (entrantId: number): LeagueSide => (entrantId === blueEntrantId ? "blue" : "red");
+
+  return {
+    gameId: game.id,
+    order: game.order,
+    imported: game.source !== null,
+    draftEditedAt: game.draftEditedAt?.toISOString() ?? null,
+    draftImportDiffers: game.draftImportDiffers,
+    blueEntrantId,
+    firstPick,
+    firstPickLocked: game.source !== null && game.draftFirstPick !== null,
+    steps: rows.flatMap((row) => (row.order === null ? [] : [{ step: row.order, championName: row.championName }])),
+    unplacedPicks: rows.flatMap((row) => (row.order === null && row.type === "pick" ? [{ side: sideOf(row.entrantId), championName: row.championName }] : [])),
+  };
 }
