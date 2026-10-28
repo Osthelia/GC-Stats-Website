@@ -1,5 +1,5 @@
 {
-  "id": "096308ab-71b7-4eff-aaef-3353702e0f91",
+  "id": "f2fc3e40-fec5-4a73-b319-05ac9a0eee1e",
   "prevId": "0f23a087-46d9-4123-b792-da5890406082",
   "version": "7",
   "dialect": "postgresql",
@@ -2050,6 +2050,44 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.lol_data_dragon_catalogs": {
+      "name": "lol_data_dragon_catalogs",
+      "schema": "",
+      "columns": {
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "champions": {
+          "name": "champions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "items": {
+          "name": "items",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.lol_entrant_members": {
       "name": "lol_entrant_members",
       "schema": "",
@@ -2412,7 +2450,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "lol_game_draft_order_check": {
+          "name": "lol_game_draft_order_check",
+          "value": "\"lol_game_draft\".\"order\" IS NULL OR \"lol_game_draft\".\"order\" BETWEEN 1 AND 20"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.lol_game_events_raw": {
@@ -2654,19 +2697,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "champion_stats": {
-          "name": "champion_stats",
-          "type": "jsonb",
+        "damage_to_champions": {
+          "name": "damage_to_champions",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
+          "notNull": true
         },
-        "damage_stats": {
-          "name": "damage_stats",
-          "type": "jsonb",
+        "damage_taken": {
+          "name": "damage_taken",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
+          "notNull": true
         }
       },
       "indexes": {},
@@ -2822,6 +2863,42 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'::jsonb"
+        },
+        "gold_diff_10": {
+          "name": "gold_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gold_diff_15": {
+          "name": "gold_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "xp_diff_10": {
+          "name": "xp_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "xp_diff_15": {
+          "name": "xp_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cs_diff_10": {
+          "name": "cs_diff_10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cs_diff_15": {
+          "name": "cs_diff_15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -2993,6 +3070,27 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{}'::jsonb"
+        },
+        "first_blood": {
+          "name": "first_blood",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "first_tower": {
+          "name": "first_tower",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "objective_timings": {
+          "name": "objective_timings",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
         }
       },
       "indexes": {
@@ -3126,6 +3224,44 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role_overrides": {
+          "name": "role_overrides",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "draft_edited_at": {
+          "name": "draft_edited_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "draft_import_differs": {
+          "name": "draft_import_differs",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "draft_first_pick": {
+          "name": "draft_first_pick",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "draft_blue_entrant_id": {
+          "name": "draft_blue_entrant_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -3155,6 +3291,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "lol_games_draft_blue_entrant_id_lol_entrants_id_fk": {
+          "name": "lol_games_draft_blue_entrant_id_lol_entrants_id_fk",
+          "tableFrom": "lol_games",
+          "tableTo": "lol_entrants",
+          "columnsFrom": [
+            "draft_blue_entrant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -3176,7 +3325,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "lol_games_draft_first_pick_check": {
+          "name": "lol_games_draft_first_pick_check",
+          "value": "\"lol_games\".\"draft_first_pick\" IN ('blue', 'red')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.lol_group_entries": {
@@ -3288,6 +3442,212 @@
           "tableTo": "lol_entrants",
           "columnsFrom": [
             "entrant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lol_leaguepedia_games": {
+      "name": "lol_leaguepedia_games",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tournament_id": {
+          "name": "tournament_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leaguepedia_game_id": {
+          "name": "leaguepedia_game_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "leaguepedia_match_id": {
+          "name": "leaguepedia_match_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "overview_page": {
+          "name": "overview_page",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_in_match": {
+          "name": "game_in_match",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team1": {
+          "name": "team1",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team2": {
+          "name": "team2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "blue": {
+          "name": "blue",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "red": {
+          "name": "red",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "winner": {
+          "name": "winner",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "played_at": {
+          "name": "played_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "riot_match_id": {
+          "name": "riot_match_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "riot_version": {
+          "name": "riot_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_data": {
+          "name": "has_data",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_remake": {
+          "name": "is_remake",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "is_chronobreak": {
+          "name": "is_chronobreak",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "lol_leaguepedia_games_tournament_id_idx": {
+          "name": "lol_leaguepedia_games_tournament_id_idx",
+          "columns": [
+            {
+              "expression": "tournament_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "lol_leaguepedia_games_tournament_id_lol_tournaments_id_fk": {
+          "name": "lol_leaguepedia_games_tournament_id_lol_tournaments_id_fk",
+          "tableFrom": "lol_leaguepedia_games",
+          "tableTo": "lol_tournaments",
+          "columnsFrom": [
+            "tournament_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "lol_leaguepedia_games_leaguepedia_game_id_unique": {
+          "name": "lol_leaguepedia_games_leaguepedia_game_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "leaguepedia_game_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "lol_leaguepedia_games_winner_check": {
+          "name": "lol_leaguepedia_games_winner_check",
+          "value": "\"lol_leaguepedia_games\".\"winner\" IN (1, 2)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.lol_leaguepedia_tournaments": {
+      "name": "lol_leaguepedia_tournaments",
+      "schema": "",
+      "columns": {
+        "tournament_id": {
+          "name": "tournament_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "overview_page": {
+          "name": "overview_page",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "games_fetched_at": {
+          "name": "games_fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lol_leaguepedia_tournaments_tournament_id_lol_tournaments_id_fk": {
+          "name": "lol_leaguepedia_tournaments_tournament_id_lol_tournaments_id_fk",
+          "tableFrom": "lol_leaguepedia_tournaments",
+          "tableTo": "lol_tournaments",
+          "columnsFrom": [
+            "tournament_id"
           ],
           "columnsTo": [
             "id"
@@ -13832,6 +14192,38 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.external_api_sessions": {
+      "name": "external_api_sessions",
+      "schema": "",
+      "columns": {
+        "service": {
+          "name": "service",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cookie_encrypted": {
+          "name": "cookie_encrypted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,

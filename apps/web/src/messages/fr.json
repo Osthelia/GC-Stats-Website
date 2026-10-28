@@ -4485,6 +4485,49 @@
             "mergeMapNotFound": "Cette map n'existe plus."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft de la partie {order}",
+          "backToMatch": "Retour au match",
+          "description": "L'ordre des bans et des picks de cette partie. Laissez une étape vide si elle n'a pas été utilisée.",
+          "differsWarning": "L'import ne correspond pas à la draft enregistrée : une réimportation a trouvé d'autres champions. Vérifiez la draft et enregistrez pour garder la vôtre.",
+          "blueSide": "Côté bleu",
+          "blueLockedHint": "Défini par l'import (équipe bleue de Riot).",
+          "firstPickLockedHint": "Défini par l'import (le camp qui a fait le premier ban).",
+          "firstPick": "Premier pick",
+          "phase": {
+            "ban1": "Phase de bans 1",
+            "pick1": "Phase de picks 1",
+            "ban2": "Phase de bans 2",
+            "pick2": "Phase de picks 2"
+          },
+          "side": {
+            "blue": "Bleu",
+            "red": "Rouge"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Aucun champion",
+          "searchPlaceholder": "Rechercher des champions",
+          "noResults": "Aucun champion ne correspond",
+          "unplacedTitle": "Picks non placés",
+          "save": "Enregistrer la draft",
+          "saving": "Enregistrement…",
+          "saved": "Draft enregistrée",
+          "error": {
+            "notFound": "Cette partie est introuvable.",
+            "entrantsUnset": "Les deux équipes du match doivent d'abord être définies.",
+            "blueNotAnEntrant": "Le côté bleu doit être l'une des deux équipes du match.",
+            "blueLocked": "Le côté bleu d'une partie importée est défini par l'import.",
+            "firstPickLocked": "Le premier pick d'une partie importée est défini par l'import.",
+            "invalidFirstPick": "Le premier pick doit être bleu ou rouge.",
+            "invalidStep": "L'étape {step} n'existe pas ou est donnée deux fois.",
+            "unknownChampion": "{championName} n'est pas dans la liste des champions.",
+            "duplicateChampion": "{championName} apparaît plus d'une fois dans la draft."
+          }
+        },
         "games": {
           "heading": "Parties",
           "description": "Les parties jouées dans cette série, dans l'ordre.",
@@ -4494,6 +4537,8 @@
           "noWinner": "Pas encore de vainqueur",
           "finished": "Terminée",
           "notFinished": "Non terminée",
+          "draftButton": "Draft",
+          "draftDiffers": "L'import ne correspond pas à la draft enregistrée",
           "forfeit": "Forfait",
           "cancel": "Annuler",
           "save": "Enregistrer",
@@ -4527,7 +4572,75 @@
             "duplicateMatchId": "Une autre partie utilise déjà cet ID de match Riot."
           },
           "fieldApiMatchId": "ID de match Riot",
-          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite."
+          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite.",
+          "leaguepedia": {
+            "label": "Match Leaguepedia",
+            "none": "Aucun",
+            "noData": "pas de données",
+            "gameNumber": "Match {number}",
+            "fetch": "Charger depuis Leaguepedia",
+            "fetching": "Chargement…",
+            "renew": "Renouveler",
+            "reprocess": "Retraiter",
+            "success": "Match enregistré depuis Leaguepedia",
+            "error": {
+              "noData": "Ce match n'a pas de données V5 sur Leaguepedia.",
+              "notInBucket": "Ce match n'est pas encore dans le stockage. Chargez-le d'abord.",
+              "pageInvalid": "Les pages Leaguepedia de ce match ne sont pas des données de match valides.",
+              "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard.",
+              "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
+              "sidesUnresolved": "Les deux équipes de ce match ne correspondent pas aux deux participants de la série.",
+              "missingPlayers": "{count, plural, one {# joueur n'est pas encore lié à une personne} other {# joueurs ne sont pas encore liés à une personne}}",
+              "invalidUpload": "Les données du match n'ont pas passé les contrôles d'import.",
+              "storeFailed": "Le match n'a pas pu être enregistré.",
+              "invalidOrder": "Le numéro du match doit être un entier égal ou supérieur à 1.",
+              "lolIdConflict": "Un compte Riot est déjà lié à une autre personne.",
+              "sidesInvalid": "Choisissez deux participants différents pour bleu et rouge.",
+              "roleInvalid": "Un rôle de la modification n'est pas valide.",
+              "orderTaken": "Le match {order} de cette série est déjà enregistré avec d'autres données. Choisissez un autre numéro et enregistrez à nouveau.",
+              "dataDragonUnavailable": "Les noms des champions sont indisponibles pour le moment. Réessayez plus tard.",
+              "unknownChampions": "ID de champion inconnus : {ids}",
+              "storageUnavailable": "Le stockage des imports LoL est injoignable. Vérifiez sa configuration, puis réessayez.",
+              "duplicateAccount": "Le même compte Riot est lié deux fois. Liez chaque compte une seule fois.",
+              "riotUnavailable": "Les données de Riot n'ont pas pu être lues pour le moment. Réessayez plus tard.",
+              "tournamentRealm": "Cette partie a été jouée sur le royaume du tournoi. Récupérez-la plutôt depuis Leaguepedia."
+            },
+            "searchPlaceholder": "Rechercher par équipe, match ou date",
+            "noResults": "Aucun match ne correspond",
+            "previewTitle": "Vérifier le match",
+            "previewDescription": "Choisissez le participant de chaque côté, et liez chaque joueur qui ne l'est pas encore.",
+            "back": "Retour",
+            "saveGame": "Enregistrer le match",
+            "sideBlue": "Bleu",
+            "sideRed": "Rouge",
+            "sidesTitle": "Côtés",
+            "blueSide": "Côté bleu",
+            "redSide": "Côté rouge",
+            "chooseEntrant": "Choisir un participant",
+            "suggestedPlayers": "Suggestion d'après les joueurs liés",
+            "suggestedNames": "Suggestion d'après les noms d'équipe",
+            "winnerLabel": "Vainqueur : {name}",
+            "noWinner": "Aucun vainqueur",
+            "lengthLabel": "Durée : {minutes} min",
+            "playersTitle": "Joueurs",
+            "notLinked": "Pas encore lié",
+            "linkExisting": "Lier un existant",
+            "createNew": "Créer",
+            "newHandle": "Nom de la nouvelle personne",
+            "unresolvedHint": "Liez ou créez une personne pour chaque joueur non encore lié.",
+            "roleLabel": "Rôle",
+            "roleNone": "Aucun rôle",
+            "riotRole": "Riot : {role}",
+            "alreadyStoredHere": "enregistré comme match {order} de cette série",
+            "alreadyStoredElsewhere": "enregistré dans une autre série",
+            "refreshGames": "Actualiser la liste des parties",
+            "refreshCooldown": "Actualisée il y a moins d'une heure. Réessayez plus tard.",
+            "refreshed": "Liste des parties actualisée ({count} parties)",
+            "refreshError": "La liste des parties n'a pas pu être actualisée. Réessayez plus tard.",
+            "riotFetch": "Récupérer depuis Riot",
+            "riotSuccess": "Partie enregistrée depuis Riot",
+            "riotTournamentRealm": "Cette partie a été jouée sur le royaume du tournoi, elle ne peut donc pas être récupérée depuis l'API de Riot."
+          }
         },
         "liquipediaImportButton": "Import de match Liquipedia"
       },
@@ -4766,7 +4879,30 @@
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Import et récupération des données Riot en cours, cela peut prendre un moment.",
         "close": "Fermer"
-      }
+      },
+      "leaguepedia": {
+        "title": "Matchs Leaguepedia",
+        "description": "La liste des matchs vient des tables Cargo de Leaguepedia, pour la page de base et toutes les pages en dessous.",
+        "basePageLabel": "Page de base Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "L'enregistrement lit les matchs sur Leaguepedia. Rien n'est enregistré si la lecture échoue.",
+        "save": "Enregistrer et charger les matchs",
+        "saving": "Chargement…",
+        "refresh": "Actualiser depuis Leaguepedia",
+        "lastFetched": "Dernière lecture {date} · {count, plural, one {# match} other {# matchs}}",
+        "neverFetched": "Pas encore lu",
+        "success": "{count, plural, one {# match chargé} other {# matchs chargés}}",
+        "error": {
+          "gameClaimed": "Ces parties appartiennent déjà à un autre tournoi, elles ne peuvent donc pas être liées ici.",
+          "invalidBasePage": "Utilisez un nom de page sans # < > [ ] | { }, ni / au début ou à la fin.",
+          "notFound": "Tournoi introuvable.",
+          "notLinked": "Enregistrez d'abord une page de base.",
+          "cooldown": "La liste des parties a été lue il y a moins d'une heure. Réessaie plus tard.",
+          "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
+          "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Signalements",
@@ -6633,6 +6769,10 @@
   "liquipediaSource": {
     "text": "Certaines informations de cette page proviennent de Liquipedia.",
     "link": "Voir l'article d'origine"
+  },
+  "leaguepediaSource": {
+    "text": "Certaines données de parties de cette page proviennent de Leaguepedia (CC BY-SA). Pages d'origine :",
+    "game": "Partie {order}"
   },
   "matchLiquipedia": {
     "metaTitle": "Wikicode Liquipedia",
