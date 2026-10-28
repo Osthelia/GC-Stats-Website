@@ -115,10 +115,13 @@ export function sideForTeamId(teamId: RiotTeamId): LeagueSide {
   return SIDE_BY_TEAM_ID[teamId];
 }
 
-/** The side with the first pick: the team that made ban turn 1 (the first pick follows the first ban). Null when there are no bans. */
+/** Returns the side that has first pick from the ban turns stored in the match */
 export function firstPickSideOf(match: RiotMatchDto): LeagueSide | null {
-  const opener = match.info.teams.find((team) => team.bans.some((ban) => ban.pickTurn === 1 && ban.championId > 0));
-  return opener ? sideForTeamId(opener.teamId) : null;
+  for (const turn of [1, 3, 5]) {
+    const owner = match.info.teams.find((team) => team.bans.some((ban) => ban.pickTurn === turn && ban.championId > 0));
+    if (owner) return sideForTeamId(owner.teamId);
+  }
+  return null;
 }
 
 export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext): LeagueGameSummary {

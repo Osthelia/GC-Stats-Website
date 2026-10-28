@@ -47,6 +47,22 @@ describe("firstPickSideOf", () => {
     expect(firstPickSideOf(match)).toBe("blue");
   });
 
+  it("still finds the side when its first ban was skipped, from turn 3", () => {
+    const skipped: RiotMatchDto = {
+      ...match,
+      info: { ...match.info, teams: match.info.teams.map((t) => ({ ...t, bans: t.bans.map((b) => (b.pickTurn === 1 ? { ...b, championId: -1 } : b)) })) },
+    };
+    expect(firstPickSideOf(skipped)).toBe("blue");
+  });
+
+  it("does not take the other side from turns 7 and 9", () => {
+    const onlyLaterTurns: RiotMatchDto = {
+      ...match,
+      info: { ...match.info, teams: match.info.teams.map((t) => ({ ...t, bans: t.bans.filter((b) => b.pickTurn === 7 || b.pickTurn === 9) })) },
+    };
+    expect(firstPickSideOf(onlyLaterTurns)).toBeNull();
+  });
+
   it("is red when red made ban turn 1", () => {
     const flipped: RiotMatchDto = {
       ...match,
