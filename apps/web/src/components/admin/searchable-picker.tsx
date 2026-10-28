@@ -90,6 +90,15 @@ export function SearchablePicker({
     closeToTrigger();
   }
 
+  // Where the highlight starts for a search: on the first champion that matches and can be chosen, so Enter picks it.
+  // The none row only when nothing can be picked, so Enter never clears a champion while searching by accident.
+  function startingRow(search: string): number {
+    const needle = search.trim().toLowerCase();
+    if (!needle) return 0;
+    const firstEnabled = options.filter((o) => o.label.toLowerCase().includes(needle)).findIndex((o) => !o.disabled);
+    return firstEnabled === -1 ? 0 : firstEnabled + 1;
+  }
+
   // The row the arrow keys land on: the next one that can be chosen, or the current one when there is none.
   function nextEnabled(from: number, delta: 1 | -1): number {
     for (let i = from + delta; i >= 0 && i < rows.length; i += delta) {
@@ -130,7 +139,7 @@ export function SearchablePicker({
           if (event.key.length !== 1 || event.key === " " || event.ctrlKey || event.metaKey || event.altKey) return;
           event.preventDefault();
           setQuery(event.key);
-          setActive(0);
+          setActive(startingRow(event.key));
           setOpen(true);
         }}
         className="flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
@@ -159,7 +168,7 @@ export function SearchablePicker({
                 value={query}
                 onChange={(e) => {
                   setQuery(e.target.value);
-                  setActive(0);
+                  setActive(startingRow(e.target.value));
                 }}
                 onKeyDown={onKeyDown}
               />
