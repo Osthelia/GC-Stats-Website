@@ -131,6 +131,7 @@ export function LeagueGameDialog({
     disabled: !g.hasData || (g.storedAs !== null && g.storedAs.gameId !== editing?.id),
   }));
   const selectedLeaguepedia = leaguepediaGames.find((g) => g.leaguepediaGameId === form.leaguepediaGameId) ?? null;
+  const fetchSource = selectedLeaguepedia?.hasData ? "leaguepedia" : form.leaguepediaGameId === NO_LEAGUEPEDIA && riotCluster(form.apiMatchId) !== null ? "riot" : null;
   const onCooldown = isGameListOnCooldown(leaguepediaLink.fetchedAt);
 
   function selectLeaguepediaGame(id: string) {
@@ -288,24 +289,10 @@ export function LeagueGameDialog({
             <Input id="game-api-match-id" className="font-mono text-xs" value={form.apiMatchId} onChange={(e) => set("apiMatchId", e.target.value)} aria-invalid={!!fieldErrors.apiMatchId} />
           </FormField>
 
-          {selectedLeaguepedia?.hasData && (
+          {fetchSource !== null && (
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
-                {isPending ? t("leaguepedia.fetching") : t("leaguepedia.fetch")}
-              </Button>
-              <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
-                {t("leaguepedia.renew")}
-              </Button>
-              <Button variant="outline" onClick={() => handlePrepare("reprocess")} disabled={isPending}>
-                {t("leaguepedia.reprocess")}
-              </Button>
-            </div>
-          )}
-
-          {form.leaguepediaGameId === NO_LEAGUEPEDIA && riotCluster(form.apiMatchId) !== null && (
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
-                {isPending ? t("leaguepedia.fetching") : t("leaguepedia.riotFetch")}
+                {isPending ? t("leaguepedia.fetching") : t(fetchSource === "riot" ? "leaguepedia.riotFetch" : "leaguepedia.fetch")}
               </Button>
               <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
                 {t("leaguepedia.renew")}
