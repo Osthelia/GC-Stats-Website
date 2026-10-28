@@ -170,7 +170,8 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       );
       await tx.update(games).set({ draftImportDiffers: differs }).where(eq(games.id, id));
     }
-    // The series' patch, when no one has set one: the game version's patch (Riot's, e.g. "16.20").
+
+    // set patch if the match has no patch set
     const gamePatch = patchOf(match.info.gameVersion);
     if (gamePatch) await tx.update(matches).set({ patch: gamePatch }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
