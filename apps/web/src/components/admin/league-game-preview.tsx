@@ -23,7 +23,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { commitLeaguepediaGameForMatch, type GameRef, type LeaguepediaPreview, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
-import { cn } from "@/lib/utils";
+import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
 type PersonChoice = { id: number; handle: string };
@@ -190,7 +190,7 @@ function PlayerRow({
     <div className="grid grid-cols-1 gap-2 rounded-lg border p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="min-w-0 text-sm">
         <div className="flex items-center gap-2">
-          <span className={cn("rounded px-1.5 text-[10px] font-semibold uppercase", player.side === "blue" ? "bg-sky-500/15 text-sky-400" : "bg-rose-500/15 text-rose-400")}>{sideLabel}</span>
+          <LolSideBadge side={player.side} label={sideLabel}  />
           <span className="truncate font-medium">{player.riotId}</span>
         </div>
         <div className="text-xs text-muted-foreground">
