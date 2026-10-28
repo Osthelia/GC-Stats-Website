@@ -272,6 +272,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
       personIdByPuuid,
       roleOverrides: input.roleOverrides,
       replaceGameId: input.gameId,
+      rawStored: true,
     });
     if (!stored.ok) return { ok: false, error: stored.error };
     return { ok: true, gameId: stored.gameId };

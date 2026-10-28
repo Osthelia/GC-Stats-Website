@@ -30,6 +30,8 @@ export interface ImportGameInput {
   roleOverrides?: Record<string, string | null>;
   /** The game being edited, when the save replaces it. */
   replaceGameId?: number | null;
+  /** The raw pair is already in the imports bucket, read back from there by the commit, so it is not written again. */
+  rawStored?: boolean;
 }
 
 export type ImportGameError = { kind: "invalidUpload"; errors: string[] } | { kind: "dataDragonUnavailable" } | { kind: "unknownChampions"; ids: number[] } | { kind: "storageUnavailable" };
@@ -48,7 +50,7 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
   if (missing.length > 0) return { ok: false, error: { kind: "unknownChampions", ids: missing } };
 
   // The raw pair is written before the store, so a store that fails (an unmapped player, say) still keeps the file.
-  if (input.source) {
+  if (input.source && !input.rawStored) {
     try {
       await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
     } catch (err) {
