@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
+import { SearchablePicker } from "@/components/admin/searchable-picker";
 import { saveLeagueGameDraft, type LeagueDraftError } from "@/actions/admin-lol-games";
 import type { LeagueDraftView } from "@/lib/admin-matches";
 import { LEAGUE_DRAFT_STEPS, draftStep, stepSide, type DraftPhase, type LeagueSide } from "@gc-stats/lol-stats-engine";
@@ -158,14 +158,14 @@ export function LeagueGameDraftEditor({
                 {LEAGUE_DRAFT_STEPS.filter((s) => s.phase === phase && stepSide(s, firstPick) === side).map((s) => {
                   const current = steps[s.step] ?? null;
                   const usedElsewhere = new Set(Object.entries(steps).filter(([step]) => Number(step) !== s.step).map(([, name]) => name));
-                  const options = champions.filter((name) => !usedElsewhere.has(name)).map((name) => ({ id: name, label: name, disabled: false }));
+                  const options = champions.map((name) => ({ id: name, label: name, disabled: usedElsewhere.has(name) }));
                   return (
                     <div key={s.step} className="flex flex-row items-center gap-3">
                       <span className="w-15 text-sm">
                         {t(`type.${s.type}`)} {typeNumber(s.step)}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <LeaguepediaGamePicker
+                        <SearchablePicker
                           value={current}
                           options={options}
                           onChange={(id) => setStep(s.step, id)}

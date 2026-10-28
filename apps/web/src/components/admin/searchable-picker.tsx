@@ -1,8 +1,9 @@
 /**
- * GC-Stats - leaguepedia-game-picker
+ * GC-Stats - searchable-picker
  *
- * Searchable dropdown for a Leaguepedia game. The options are already loaded, so the filter runs in the
- * browser (the same portaled pattern as OrganizationPicker, without the server search).
+ * Searchable dropdown over options that are already loaded, so the filter runs in the browser (the same portaled
+ * pattern as OrganizationPicker, without the server search). Arrow keys move through the options, Enter picks one,
+ * and Escape or Tab closes the list.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -18,13 +19,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAnchorRect } from "@/hooks/use-anchor-rect";
 
-export interface LeaguepediaPickerOption {
+export interface SearchablePickerOption {
   id: string;
   label: string;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
-export function LeaguepediaGamePicker({
+export function SearchablePicker({
   id,
   value,
   options,
@@ -37,7 +38,7 @@ export function LeaguepediaGamePicker({
   id?: string;
   /** The chosen option's id, or null for none. */
   value: string | null;
-  options: LeaguepediaPickerOption[];
+  options: SearchablePickerOption[];
   onChange: (id: string | null) => void;
   placeholder: string;
   noneLabel: string;
@@ -75,7 +76,7 @@ export function LeaguepediaGamePicker({
   const label = options.find((o) => o.id === value)?.label ?? null;
   const needle = query.trim().toLowerCase();
   const matches = needle ? options.filter((o) => o.label.toLowerCase().includes(needle)) : options;
-  const rows: { id: string | null; label: string; disabled: boolean }[] = [{ id: null, label: noneLabel, disabled: false }, ...matches];
+  const rows: { id: string | null; label: string; disabled?: boolean }[] = [{ id: null, label: noneLabel }, ...matches];
 
   // Closing gives the focus back to the select. Otherwise the search box unmounts with the focus, and Tab starts again at the top of the page.
   function closeToTrigger() {

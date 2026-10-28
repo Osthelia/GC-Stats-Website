@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { FormField } from "@/components/admin/form-field";
-import { LeaguepediaGamePicker } from "@/components/admin/leaguepedia-game-picker";
+import { SearchablePicker } from "@/components/admin/searchable-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
 import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type GameRef, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
 import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
@@ -260,7 +260,7 @@ export function LeagueGameDialog({
           </div>
 
           <FormField label={t("leaguepedia.label")} htmlFor="game-leaguepedia">
-            <LeaguepediaGamePicker
+            <SearchablePicker
               id="game-leaguepedia"
               value={form.leaguepediaGameId === NO_LEAGUEPEDIA ? null : form.leaguepediaGameId}
               options={leaguepediaOptions}
