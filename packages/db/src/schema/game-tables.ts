@@ -954,8 +954,15 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
     // The admin's role per puuid, where it differs from the inferred one. Kept so a re-import keeps it.
     roleOverrides: jsonb("role_overrides").$type<Record<string, string | null>>().notNull().default({}),
+    // When an admin last saved the draft by hand. Set: a re-import keeps the draft and only compares it.
+    draftEditedAt: timestamp("draft_edited_at", { withTimezone: true }),
+    // Set by a re-import when the imported draft names other champions than the saved one.
+    draftImportDiffers: boolean("draft_import_differs").notNull().default(false),
+    // The side with the first pick, which can differ from the blue side. Null: blue (the table's default).
+    draftFirstPick: text("draft_first_pick"),
   }, (t) => [
     unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
+    check("lol_games_draft_first_pick_check", sql`${t.draftFirstPick} IN ('blue', 'red')`),
   ]);
 
   const gamePlayerStats = pgTable("lol_game_player_stats", {
@@ -1019,6 +1026,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
   }, (t) => [
     // A champion can be picked or banned only once per game.
     unique("lol_game_draft_game_champion_unique").on(t.gameId, t.championName),
+    // A ban or a placed pick is one of the 20 draft steps. Null: a pick not placed yet.
+    check("lol_game_draft_order_check", sql`${t.order} IS NULL OR ${t.order} BETWEEN 1 AND 20`),
   ]);
 
   const gameFramesRaw = pgTable("lol_game_frames_raw", {

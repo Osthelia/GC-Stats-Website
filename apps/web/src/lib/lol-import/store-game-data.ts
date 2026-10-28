@@ -26,6 +26,8 @@ import {
   computeFirstTower,
   computeLaneDiffs,
   computeObjectiveTimings,
+  draftDiffers,
+  firstPickSideOf,
   sideForTeamId,
   type LanePlayer,
   type LeagueSide,
@@ -96,15 +98,20 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     matchId: input.matchId,
     source: input.source,
     roleOverrides: input.roleOverrides,
+    draftFirstPick: firstPickSideOf(match),
   };
 
   const gameId = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${apiMatchId}))`);
 
-    const [byRiotId] = await tx.select({ id: games.id, matchId: games.matchId }).from(games).where(eq(games.apiMatchId, apiMatchId)).limit(1);
+    const [byRiotId] = await tx.select({ id: games.id, matchId: games.matchId, draftEditedAt: games.draftEditedAt }).from(games).where(eq(games.apiMatchId, apiMatchId)).limit(1);
     let existing = byRiotId;
     if (input.replaceGameId != null) {
-      const [target] = await tx.select({ id: games.id, matchId: games.matchId }).from(games).where(eq(games.id, input.replaceGameId)).limit(1);
+      const [target] = await tx
+        .select({ id: games.id, matchId: games.matchId, draftEditedAt: games.draftEditedAt })
+        .from(games)
+        .where(eq(games.id, input.replaceGameId))
+        .limit(1);
       if (!target || target.matchId !== input.matchId) throw new Error(`Game ${input.replaceGameId} is not a game of this series`);
       if (byRiotId && byRiotId.id !== target.id) throw new Error(`Riot match ${apiMatchId} is already attached to another game`);
       existing = target;
@@ -113,6 +120,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       throw new Error(`Riot match ${apiMatchId} is already attached to another series`);
     }
 
+    const keepDraft = existing !== undefined && existing.draftEditedAt !== null;
     let id: number;
     if (existing) {
       id = existing.id;
@@ -120,7 +128,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       // A re-import is a full replacement of what the game had before.
       await tx.delete(gameEventsRaw).where(eq(gameEventsRaw.gameId, id));
       await tx.delete(gameFramesRaw).where(eq(gameFramesRaw.gameId, id));
-      await tx.delete(gameDraft).where(eq(gameDraft.gameId, id));
+      if (!keepDraft) await tx.delete(gameDraft).where(eq(gameDraft.gameId, id));
       await tx.delete(gameTeamStats).where(eq(gameTeamStats.gameId, id));
       await tx.delete(gamePlayerStats).where(eq(gamePlayerStats.gameId, id));
     } else {
@@ -147,7 +155,20 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
 
     if (players.length) await tx.insert(gamePlayerStats).values(players);
     if (teams.length) await tx.insert(gameTeamStats).values(teams);
-    if (summary.draft.length) await tx.insert(gameDraft).values(summary.draft);
+    if (summary.draft.length && !keepDraft) await tx.insert(gameDraft).values(summary.draft);
+    if (keepDraft) {
+      // The admin's draft stays. The flag tells the admin whether the import still names the same champions.
+      const saved = await tx
+        .select({ entrantId: gameDraft.entrantId, type: gameDraft.type, championName: gameDraft.championName })
+        .from(gameDraft)
+        .where(eq(gameDraft.gameId, id));
+      const sideOf = (entrantId: number): LeagueSide => (entrantId === input.entrantIdBySide.blue ? "blue" : "red");
+      const differs = draftDiffers(
+        summary.draft.map((d) => ({ side: sideOf(d.entrantId), type: d.type, championName: d.championName })),
+        saved.map((d) => ({ side: sideOf(d.entrantId), type: d.type === "ban" ? "ban" : "pick", championName: d.championName }))
+      );
+      await tx.update(games).set({ draftImportDiffers: differs }).where(eq(games.id, id));
+    }
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 

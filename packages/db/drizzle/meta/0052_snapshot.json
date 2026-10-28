@@ -2450,7 +2450,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "lol_game_draft_order_check": {
+          "name": "lol_game_draft_order_check",
+          "value": "\"lol_game_draft\".\"order\" IS NULL OR \"lol_game_draft\".\"order\" BETWEEN 1 AND 20"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.lol_game_events_raw": {
@@ -3232,6 +3237,25 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{}'::jsonb"
+        },
+        "draft_edited_at": {
+          "name": "draft_edited_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "draft_import_differs": {
+          "name": "draft_import_differs",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "draft_first_pick": {
+          "name": "draft_first_pick",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -3282,7 +3306,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "lol_games_draft_first_pick_check": {
+          "name": "lol_games_draft_first_pick_check",
+          "value": "\"lol_games\".\"draft_first_pick\" IN ('blue', 'red')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.lol_group_entries": {

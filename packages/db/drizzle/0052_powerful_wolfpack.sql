@@ -180,3 +180,13 @@ CREATE TABLE "lol_data_dragon_catalogs" (
 	"items" jsonb NOT NULL,
 	"fetched_at" timestamp with time zone DEFAULT now() NOT NULL
 );
+--> statement-breakpoint
+ALTER TABLE "lol_games" ADD COLUMN "draft_edited_at" timestamp with time zone;
+--> statement-breakpoint
+ALTER TABLE "lol_games" ADD COLUMN "draft_import_differs" boolean DEFAULT false NOT NULL;
+--> statement-breakpoint
+ALTER TABLE "lol_game_draft" ADD CONSTRAINT "lol_game_draft_order_check" CHECK ("lol_game_draft"."order" IS NULL OR "lol_game_draft"."order" BETWEEN 1 AND 20);
+--> statement-breakpoint
+ALTER TABLE "lol_games" ADD COLUMN "draft_first_pick" text;
+--> statement-breakpoint
+ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_draft_first_pick_check" CHECK ("lol_games"."draft_first_pick" IN ('blue', 'red'));
