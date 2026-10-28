@@ -165,6 +165,8 @@ export type AdminLeagueGameRow = {
   isCompleted: boolean;
   isForfeit: boolean;
   apiMatchId: string | null;
+  /** Where the game came from: "leaguepedia" or "riot". Null for a game entered by hand. */
+  source: string | null;
   note: string | null;
   /** A re-import found champions in the import that the saved draft does not have. */
   draftImportDiffers: boolean;
@@ -181,6 +183,7 @@ export async function listLeagueMatchGames(matchId: number): Promise<AdminLeague
       isCompleted: games.isCompleted,
       isForfeit: games.isForfeit,
       apiMatchId: games.apiMatchId,
+      source: games.source,
       note: games.note,
       draftImportDiffers: games.draftImportDiffers,
     })

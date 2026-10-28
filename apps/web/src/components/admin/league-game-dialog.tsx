@@ -55,9 +55,8 @@ function emptyState(nextOrder: number): FormState {
   return { order: String(nextOrder), apiMatchId: "", winner: NO_WINNER, isCompleted: false, isForfeit: false, note: "", leaguepediaGameId: NO_LEAGUEPEDIA };
 }
 
-// The Leaguepedia game this row came from, found by its Riot match id. Empty for games entered by hand.
 function stateFromGame(game: AdminLeagueGameRow, leaguepediaGames: LeaguepediaGameOption[]): FormState {
-  const leaguepedia = game.apiMatchId ? leaguepediaGames.find((g) => g.riotMatchId === game.apiMatchId) : undefined;
+  const leaguepedia = game.source === "leaguepedia" && game.apiMatchId ? leaguepediaGames.find((g) => g.riotMatchId === game.apiMatchId) : undefined;
   return {
     order: String(game.order),
     apiMatchId: game.apiMatchId ?? "",
