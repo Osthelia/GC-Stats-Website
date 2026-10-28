@@ -14,31 +14,36 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { LeagueGameDialog, type LeagueGameEntrant } from "@/components/admin/league-game-dialog";
+import { LeagueGameDialog, type LeagueGameEntrant, type LeaguepediaLinkView } from "@/components/admin/league-game-dialog";
 import { deleteLeagueGame } from "@/actions/admin-lol-games";
 import { mapCompletedBadgeClass } from "@/lib/status-colors";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
+import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
 import { useGame } from "@/lib/use-game";
 
 export type MatchGameView = AdminLeagueGameRow & { winnerName: string | null };
 
 type PanelTranslations = ReturnType<typeof useTranslations>;
 
-function GameRow({ game, canManage, onEdit, onDelete, t }: { game: MatchGameView; canManage: boolean; onEdit: () => void; onDelete: () => void; t: PanelTranslations }) {
+function GameRow({ game, canManage, draftHref, onEdit, onDelete, t }: { game: MatchGameView; canManage: boolean; draftHref: string; onEdit: () => void; onDelete: () => void; t: PanelTranslations }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
       <div className="min-w-0">
         <div className="text-sm font-semibold">{t("gameLabel", { order: game.order })}</div>
         <div className="text-xs text-muted-foreground">{game.winnerName ? t("winnerLabel", { name: game.winnerName }) : t("noWinner")}</div>
+        {game.draftImportDiffers && <div className="text-xs font-semibold text-amber-500">{t("draftDiffers")}</div>}
       </div>
       <div className="flex shrink-0 items-center gap-2">
         {game.isForfeit && <span className="text-xs font-semibold text-destructive">{t("forfeit")}</span>}
         <Badge className={mapCompletedBadgeClass(game.isCompleted)}>{game.isCompleted ? t("finished") : t("notFinished")}</Badge>
+        <Button variant="outline" size="sm" render={<Link href={draftHref} />}>
+          {t("draftButton")}
+        </Button>
         {canManage && (
           <>
             <Button variant="outline" size="sm" onClick={onEdit}>
@@ -59,12 +64,16 @@ export function MatchGamesPanel({
   matchId,
   games,
   entrants,
+  leaguepediaGames,
+  leaguepediaLink,
   canManage,
 }: {
   tournamentId: number;
   matchId: number;
   games: MatchGameView[];
   entrants: LeagueGameEntrant[];
+  leaguepediaGames: LeaguepediaGameOption[];
+  leaguepediaLink: LeaguepediaLinkView;
   canManage: boolean;
 }) {
   const game = useGame();
@@ -105,7 +114,15 @@ export function MatchGamesPanel({
         ) : (
           <div className="flex flex-col gap-2">
             {games.map((g) => (
-              <GameRow key={g.id} game={g} canManage={canManage} onEdit={() => setEditing(g)} onDelete={() => setDeleting(g)} t={t} />
+              <GameRow
+                key={g.id}
+                game={g}
+                canManage={canManage}
+                draftHref={`/admin/tournaments/${tournamentId}/matches/${matchId}/games/${g.id}/draft`}
+                onEdit={() => setEditing(g)}
+                onDelete={() => setDeleting(g)}
+                t={t}
+              />
             ))}
           </div>
         )}
@@ -115,6 +132,8 @@ export function MatchGamesPanel({
         tournamentId={tournamentId}
         matchId={matchId}
         entrants={entrants}
+        leaguepediaGames={leaguepediaGames}
+        leaguepediaLink={leaguepediaLink}
         editing={editing}
         nextOrder={games.length + 1}
         open={creating || editing !== null}

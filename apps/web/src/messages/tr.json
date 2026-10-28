@@ -4477,6 +4477,49 @@
             "mergeMapNotFound": "Bu harita artık mevcut değil."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "{order}. oyunun draftı",
+          "backToMatch": "Maça dön",
+          "description": "Bu oyunun ban ve pick sırası. Kullanılmayan adımları boş bırakın.",
+          "differsWarning": "İçe aktarma kayıtlı draft ile uyuşmuyor: yeniden içe aktarmada farklı şampiyonlar bulundu. Draftı gözden geçirip kaydederek kendi draftınızı koruyun.",
+          "blueSide": "Mavi taraf",
+          "blueLockedHint": "İçe aktarma tarafından belirlenir (Riot'un mavi takımı).",
+          "firstPickLockedHint": "İçe aktarma tarafından belirlenir (ilk ban'ı yapan taraf).",
+          "firstPick": "İlk pick",
+          "phase": {
+            "ban1": "Ban aşaması 1",
+            "pick1": "Pick aşaması 1",
+            "ban2": "Ban aşaması 2",
+            "pick2": "Pick aşaması 2"
+          },
+          "side": {
+            "blue": "Mavi",
+            "red": "Kırmızı"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Şampiyon yok",
+          "searchPlaceholder": "Şampiyon ara",
+          "noResults": "Eşleşen şampiyon yok",
+          "unplacedTitle": "Henüz yerleştirilmemiş pickler",
+          "save": "Draftı kaydet",
+          "saving": "Kaydediliyor…",
+          "saved": "Draft kaydedildi",
+          "error": {
+            "notFound": "Bu oyun bulunamadı.",
+            "entrantsUnset": "Önce maçın iki takımı belirlenmelidir.",
+            "blueNotAnEntrant": "Mavi taraf, maçın iki takımından biri olmalıdır.",
+            "blueLocked": "İçe aktarılan oyunun mavi tarafı içe aktarma tarafından belirlenir.",
+            "firstPickLocked": "İçe aktarılan bir oyunun ilk pick'i içe aktarma tarafından belirlenir.",
+            "invalidFirstPick": "İlk pick mavi ya da kırmızı olmalıdır.",
+            "invalidStep": "{step}. adım yok ya da iki kez verilmiş.",
+            "unknownChampion": "{championName} şampiyon listesinde yok.",
+            "duplicateChampion": "{championName} draftta birden fazla kez var."
+          }
+        },
         "games": {
           "heading": "Oyunlar",
           "description": "Bu seride oynanan oyunlar, sırasıyla.",
@@ -4486,6 +4529,8 @@
           "noWinner": "Henüz kazanan yok",
           "finished": "Tamamlandı",
           "notFinished": "Tamamlanmadı",
+          "draftButton": "Draft",
+          "draftDiffers": "İçe aktarma kayıtlı draft ile uyuşmuyor",
           "forfeit": "Hükmen",
           "cancel": "İptal",
           "save": "Kaydet",
@@ -4519,7 +4564,75 @@
             "duplicateMatchId": "Başka bir oyun bu Riot maç kimliğini zaten kullanıyor."
           },
           "fieldApiMatchId": "Riot maç kimliği",
-          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır."
+          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır.",
+          "leaguepedia": {
+            "label": "Leaguepedia maçı",
+            "none": "Yok",
+            "noData": "veri yok",
+            "gameNumber": "Maç {number}",
+            "fetch": "Leaguepedia'dan getir",
+            "fetching": "Getiriliyor…",
+            "renew": "Yenile",
+            "reprocess": "Yeniden işle",
+            "success": "Maç Leaguepedia'dan kaydedildi",
+            "error": {
+              "noData": "Bu maçın Leaguepedia'da V5 verisi yok.",
+              "notInBucket": "Bu maç henüz depoda yok. Önce getirin.",
+              "pageInvalid": "Bu maçın Leaguepedia sayfaları geçerli maç verisi değil.",
+              "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin.",
+              "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+              "sidesUnresolved": "Bu maçın iki takımı, serinin iki katılımcısıyla eşleşmiyor.",
+              "missingPlayers": "{count, plural, one {# oyuncu henüz bir kişiye bağlanmadı} other {# oyuncu henüz bir kişiye bağlanmadı}}",
+              "invalidUpload": "Maç verisi içe aktarma kontrollerinden geçemedi.",
+              "storeFailed": "Maç kaydedilemedi.",
+              "invalidOrder": "Maç numarası 1 veya daha büyük bir tam sayı olmalı.",
+              "lolIdConflict": "Bir Riot hesabı zaten başka bir kişiye bağlı.",
+              "sidesInvalid": "Mavi ve kırmızı için iki farklı katılımcı seçin.",
+              "roleInvalid": "Değişiklikteki bir rol geçersiz.",
+              "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin.",
+              "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
+              "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
+              "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
+              "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın.",
+              "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin.",
+              "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın."
+            },
+            "searchPlaceholder": "Takım, maç veya tarihe göre ara",
+            "noResults": "Eşleşen maç yok",
+            "previewTitle": "Maçı kontrol edin",
+            "previewDescription": "Her taraf için katılımcıyı seçin ve henüz bağlı olmayan her oyuncuyu bağlayın.",
+            "back": "Geri",
+            "saveGame": "Maçı kaydet",
+            "sideBlue": "Mavi",
+            "sideRed": "Kırmızı",
+            "sidesTitle": "Taraflar",
+            "blueSide": "Mavi taraf",
+            "redSide": "Kırmızı taraf",
+            "chooseEntrant": "Bir katılımcı seçin",
+            "suggestedPlayers": "Bağlı oyunculardan önerildi",
+            "suggestedNames": "Takım adlarından önerildi",
+            "winnerLabel": "Kazanan: {name}",
+            "noWinner": "Kazanan yok",
+            "lengthLabel": "Süre: {minutes} dk",
+            "playersTitle": "Oyuncular",
+            "notLinked": "Henüz bağlı değil",
+            "linkExisting": "Mevcut olanı bağla",
+            "createNew": "Yeni oluştur",
+            "newHandle": "Yeni kişinin adı",
+            "unresolvedHint": "Henüz bağlı olmayan her oyuncu için bir kişi bağlayın veya oluşturun.",
+            "roleLabel": "Rol",
+            "roleNone": "Rol yok",
+            "riotRole": "Riot: {role}",
+            "alreadyStoredHere": "bu serinin {order}. maçı olarak kayıtlı",
+            "alreadyStoredElsewhere": "başka bir seride kayıtlı",
+            "refreshGames": "Maç listesini yenile",
+            "refreshCooldown": "Bir saatten kısa süre önce yenilendi. Daha sonra tekrar deneyin.",
+            "refreshed": "Maç listesi yenilendi ({count} maç)",
+            "refreshError": "Maç listesi yenilenemedi. Daha sonra tekrar deneyin.",
+            "riotFetch": "Riot'tan al",
+            "riotSuccess": "Maç Riot'tan kaydedildi",
+            "riotTournamentRealm": "Bu maç turnuva realm'inde oynandı, bu yüzden Riot API'sinden alınamaz."
+          }
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"
       },
@@ -4762,7 +4875,30 @@
       "activeFilterLabel": "Aktivite",
       "activeFilterAny": "Tüm turnuvalar",
       "activeFilterActive": "Aktif",
-      "activeFilterInactive": "Pasif"
+      "activeFilterInactive": "Pasif",
+      "leaguepedia": {
+        "title": "Leaguepedia maçları",
+        "description": "Maç listesi, temel sayfa ve altındaki tüm sayfalar için Leaguepedia Cargo tablolarından gelir.",
+        "basePageLabel": "Leaguepedia temel sayfası",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Kaydetme, maçları Leaguepedia'dan okur. Okuma başarısız olursa hiçbir şey kaydedilmez.",
+        "save": "Kaydet ve maçları getir",
+        "saving": "Getiriliyor…",
+        "refresh": "Leaguepedia'dan yenile",
+        "lastFetched": "Son okuma {date} · {count, plural, one {# maç} other {# maç}}",
+        "neverFetched": "Henüz okunmadı",
+        "success": "{count, plural, one {# maç getirildi} other {# maç getirildi}}",
+        "error": {
+          "gameClaimed": "Bu maçlar zaten başka bir turnuvaya ait, bu yüzden buradan bağlanamaz.",
+          "invalidBasePage": "# < > [ ] | { } içermeyen ve başında veya sonunda / bulunmayan bir sayfa adı kullanın.",
+          "notFound": "Turnuva bulunamadı.",
+          "notLinked": "Önce bir temel sayfa kaydedin.",
+          "cooldown": "Oyun listesi bir saatten kısa süre önce okundu. Daha sonra tekrar dene.",
+          "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+          "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Bildirimler",
@@ -6509,6 +6645,10 @@
   "liquipediaSource": {
     "text": "Bu sayfadaki bazı bilgiler Liquipedia'dan alınmıştır.",
     "link": "Orijinal makaleye bak"
+  },
+  "leaguepediaSource": {
+    "text": "Bu sayfadaki bazı maç verileri Leaguepedia'dan alınmıştır (CC BY-SA). Orijinal sayfalar:",
+    "game": "Oyun {order}"
   },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode'u",
