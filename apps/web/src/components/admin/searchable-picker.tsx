@@ -125,6 +125,14 @@ export function SearchablePicker({
           setActive(0);
           setOpen((o) => !o);
         }}
+        onKeyDown={(event) => {
+          // A typed letter or digit opens the list with it as the search. Space is left to the button, which opens the list too.
+          if (event.key.length !== 1 || event.key === " " || event.ctrlKey || event.metaKey || event.altKey) return;
+          event.preventDefault();
+          setQuery(event.key);
+          setActive(0);
+          setOpen(true);
+        }}
         className="flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
       >
         <span className={cn("truncate", !label && "text-muted-foreground")}>{label ?? placeholder}</span>
