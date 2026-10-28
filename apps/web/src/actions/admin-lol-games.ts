@@ -257,7 +257,7 @@ export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, 
     await tx.delete(gameDraft).where(eq(gameDraft.gameId, gameId));
     const rows = [...stepRows, ...pickRows];
     if (rows.length > 0) await tx.insert(gameDraft).values(rows);
-    await tx.update(games).set({ draftEditedAt: new Date(), draftImportDiffers: false, draftFirstPick: input.firstPick }).where(eq(games.id, gameId));
+    await tx.update(games).set({ draftEditedAt: new Date(), draftImportDiffers: false, draftFirstPick: input.firstPick, draftBlueEntrantId: input.blueEntrantId }).where(eq(games.id, gameId));
     await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Edited the draft of game ${existing.order} of match #${matchId}`, actorUserId, properties: { section: "draft", gameId, steps: stepRows.length, unplacedPicks: pickRows.length, firstPick: input.firstPick } }, tx);
   });
   updateTag(matchTag(matchId));

@@ -3256,6 +3256,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "draft_blue_entrant_id": {
+          "name": "draft_blue_entrant_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -3284,6 +3290,19 @@
             "id"
           ],
           "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "lol_games_draft_blue_entrant_id_lol_entrants_id_fk": {
+          "name": "lol_games_draft_blue_entrant_id_lol_entrants_id_fk",
+          "tableFrom": "lol_games",
+          "tableTo": "lol_entrants",
+          "columnsFrom": [
+            "draft_blue_entrant_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },

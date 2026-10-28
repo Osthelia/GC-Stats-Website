@@ -948,18 +948,16 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     durationSeconds: integer("duration_seconds"),
     winnerEntrantId: bigint("winner_entrant_id", { mode: "number" }).references(() => entrants.id),
     isCompleted: boolean("is_completed").notNull().default(false),
-    // Same meaning as on val_maps: the win came from a forfeit, not from playing the game out.
     isForfeit: boolean("is_forfeit").notNull().default(false),
     note: text("note"),
     source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
     // The admin's role per puuid, where it differs from the inferred one. Kept so a re-import keeps it.
     roleOverrides: jsonb("role_overrides").$type<Record<string, string | null>>().notNull().default({}),
-    // When an admin last saved the draft by hand. Set: a re-import keeps the draft and only compares it.
     draftEditedAt: timestamp("draft_edited_at", { withTimezone: true }),
     // Set by a re-import when the imported draft names other champions than the saved one.
     draftImportDiffers: boolean("draft_import_differs").notNull().default(false),
-    // The side with the first pick, which can differ from the blue side. Null: blue (the table's default).
     draftFirstPick: text("draft_first_pick"),
+    draftBlueEntrantId: bigint("draft_blue_entrant_id", { mode: "number" }).references(() => entrants.id, { onDelete: "set null" }),
   }, (t) => [
     unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
     check("lol_games_draft_first_pick_check", sql`${t.draftFirstPick} IN ('blue', 'red')`),

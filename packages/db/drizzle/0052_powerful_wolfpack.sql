@@ -190,3 +190,5 @@ ALTER TABLE "lol_game_draft" ADD CONSTRAINT "lol_game_draft_order_check" CHECK (
 ALTER TABLE "lol_games" ADD COLUMN "draft_first_pick" text;
 --> statement-breakpoint
 ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_draft_first_pick_check" CHECK ("lol_games"."draft_first_pick" IN ('blue', 'red'));
+ALTER TABLE "lol_games" ADD COLUMN "draft_blue_entrant_id" bigint;--> statement-breakpoint
+ALTER TABLE "lol_games" ADD CONSTRAINT "lol_games_draft_blue_entrant_id_lol_entrants_id_fk" FOREIGN KEY ("draft_blue_entrant_id") REFERENCES "public"."lol_entrants"("id") ON DELETE set null ON UPDATE no action;
