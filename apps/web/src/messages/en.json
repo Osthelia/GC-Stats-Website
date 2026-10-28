@@ -1830,7 +1830,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Discussion",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "Game {n} VOD"
   },
   "footer": {
     "tagline": "Every official Game Changers competition, in one place.",
@@ -3901,6 +3902,10 @@
         "fieldMatchWinPointsHint": "Leave blank to not count match wins in the standings.",
         "fieldMapWinPoints": "Points per map win",
         "fieldMapWinPointsHint": "Leave blank to not count map wins.",
+        "fieldGameWinPoints": "Points per game win",
+        "fieldGameWinPointsHint": "Leave blank to not count game wins.",
+        "fieldGameForfeitWinPoints": "Points per game win by forfeit",
+        "fieldGameForfeitWinPointsHint": "A different value for a game win by forfeit rather than actually played.",
         "fieldRoundWinPoints": "Points per round win",
         "fieldRoundWinPointsHint": "Leave blank to not count round wins.",
         "fieldMatchForfeitWinPoints": "Points per match win by forfeit",
@@ -4480,6 +4485,163 @@
             "mergeMapNotFound": "This map no longer exists."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft of game {order}",
+          "backToMatch": "Back to match",
+          "description": "The ban and pick order of this game. Leave a step empty when it was not used.",
+          "differsWarning": "The import disagrees with the saved draft: a re-import found other champions. Review the draft and save to keep yours.",
+          "blueSide": "Blue side",
+          "blueLockedHint": "Set by the import (Riot's blue team).",
+          "firstPickLockedHint": "Set by the import (the side that made the first ban).",
+          "firstPick": "First pick",
+          "phase": {
+            "ban1": "Ban phase 1",
+            "pick1": "Pick phase 1",
+            "ban2": "Ban phase 2",
+            "pick2": "Pick phase 2"
+          },
+          "side": {
+            "blue": "Blue",
+            "red": "Red"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "No champion",
+          "searchPlaceholder": "Search champions",
+          "noResults": "No champions match",
+          "unplacedTitle": "Picks not placed yet",
+          "save": "Save draft",
+          "saving": "Saving…",
+          "saved": "Draft saved",
+          "error": {
+            "notFound": "This game could not be found.",
+            "entrantsUnset": "Both teams of the match must be set first.",
+            "blueNotAnEntrant": "The blue side must be one of the two teams of the match.",
+            "blueLocked": "The blue side of an imported game is set by the import.",
+            "firstPickLocked": "The first pick of an imported game is set by the import.",
+            "invalidFirstPick": "The first pick must be blue or red.",
+            "invalidStep": "Step {step} does not exist or is given twice.",
+            "unknownChampion": "{championName} is not in the champion list.",
+            "duplicateChampion": "{championName} is in the draft more than once."
+          }
+        },
+        "games": {
+          "heading": "Games",
+          "description": "The games played in this series, in order.",
+          "empty": "No games yet.",
+          "gameLabel": "Game {order}",
+          "winnerLabel": "Winner: {name}",
+          "noWinner": "No winner yet",
+          "finished": "Finished",
+          "notFinished": "Not finished",
+          "draftButton": "Draft",
+          "draftDiffers": "Import differs from the saved draft",
+          "forfeit": "Forfeit",
+          "cancel": "Cancel",
+          "save": "Save",
+          "saving": "Saving…",
+          "createButton": "Add game",
+          "createTitle": "Add game",
+          "editTitle": "Edit game",
+          "dialogDescription": "Enter the result of one game of this series.",
+          "editButton": "Edit",
+          "deleteButton": "Delete",
+          "deleteTitle": "Delete game",
+          "deleteConfirm": "Delete game {order}? The match score is recalculated from the remaining games.",
+          "deleteError": "The game could not be deleted.",
+          "deleteSuccess": "Game deleted.",
+          "saveError": "The game could not be saved.",
+          "saveSuccess": "Game saved.",
+          "fieldOrder": "Order",
+          "fieldWinner": "Winner",
+          "fieldWinnerNone": "No winner yet",
+          "fieldCompleted": "Completed",
+          "fieldForfeit": "Forfeit",
+          "fieldNote": "Note",
+          "fieldError": {
+            "invalid": "Enter a valid value.",
+            "tooLong": "Too long.",
+            "duplicateOrder": "Another game already uses this order.",
+            "winnerRequired": "A completed game needs a winner.",
+            "notAnEntrant": "The winner must be one of the two teams.",
+            "notCompleted": "Mark the game as completed to set a winner.",
+            "invalidMatchId": "Use the format EUW1_6123456789: a platform code, an underscore, then the match number.",
+            "duplicateMatchId": "Another game already uses this Riot match ID."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "For example EUW1_6123456789. The platform is read from it.",
+          "leaguepedia": {
+            "label": "Leaguepedia game",
+            "none": "None",
+            "noData": "no data",
+            "gameNumber": "Game {number}",
+            "fetch": "Fetch from Leaguepedia",
+            "fetching": "Fetching…",
+            "renew": "Renew",
+            "reprocess": "Reprocess",
+            "success": "Game stored from Leaguepedia",
+            "error": {
+              "noData": "This game has no V5 data on Leaguepedia.",
+              "notInBucket": "This game is not in the bucket yet. Fetch it first.",
+              "pageInvalid": "Leaguepedia's pages for this game are not valid match data.",
+              "fetch": "Leaguepedia could not be read. Try again later.",
+              "missingConfig": "The Leaguepedia bot login is not set up on this server.",
+              "sidesUnresolved": "The two teams of this game do not match the two entrants of the series.",
+              "missingPlayers": "{count, plural, one {# player is not linked to a person yet} other {# players are not linked to a person yet}}",
+              "invalidUpload": "The game data did not pass the import checks.",
+              "storeFailed": "The game could not be stored.",
+              "invalidOrder": "The game number must be a whole number, 1 or more.",
+              "lolIdConflict": "A Riot account is already linked to another person.",
+              "sidesInvalid": "Choose two different entrants for blue and red.",
+              "roleInvalid": "A role in the change is not valid.",
+              "orderTaken": "Game {order} of this series is already stored with other data. Choose another game number and save again.",
+              "dataDragonUnavailable": "Champion names are unavailable right now, try again later.",
+              "unknownChampions": "Unknown champion id(s): {ids}",
+              "storageUnavailable": "The LoL imports bucket could not be reached. Check its configuration, then try again.",
+              "duplicateAccount": "The same Riot account is linked twice. Link each account only once.",
+              "riotUnavailable": "Riot's data could not be read right now. Try again later.",
+              "tournamentRealm": "This game was played on the tournament realm. Fetch it from Leaguepedia instead."
+            },
+            "searchPlaceholder": "Search by team, game or date",
+            "noResults": "No games match",
+            "previewTitle": "Check the game",
+            "previewDescription": "Choose the entrant for each side, and link every player who is not linked yet.",
+            "back": "Back",
+            "saveGame": "Save game",
+            "sideBlue": "Blue",
+            "sideRed": "Red",
+            "sidesTitle": "Sides",
+            "blueSide": "Blue side",
+            "redSide": "Red side",
+            "chooseEntrant": "Choose an entrant",
+            "suggestedPlayers": "Suggested from the linked players",
+            "suggestedNames": "Suggested from the team names",
+            "winnerLabel": "Winner: {name}",
+            "noWinner": "No winner",
+            "lengthLabel": "Length: {minutes} min",
+            "playersTitle": "Players",
+            "notLinked": "Not linked yet",
+            "linkExisting": "Link existing",
+            "createNew": "Create new",
+            "newHandle": "Name of the new person",
+            "unresolvedHint": "Link or create a person for every player who is not linked yet.",
+            "roleLabel": "Role",
+            "roleNone": "No role",
+            "riotRole": "Riot: {role}",
+            "alreadyStoredHere": "stored as game {order} of this series",
+            "alreadyStoredElsewhere": "stored in another series",
+            "refreshGames": "Refresh game list",
+            "refreshCooldown": "Refreshed less than an hour ago. Try again later.",
+            "refreshed": "Game list refreshed ({count} games)",
+            "refreshError": "The game list could not be refreshed. Try again later.",
+            "riotFetch": "Fetch from Riot",
+            "riotSuccess": "Game stored from Riot",
+            "riotTournamentRealm": "This game was played on the tournament realm, so it can't be fetched from the Riot API."
+          }
+        },
         "liquipediaImportButton": "Liquipedia Match Import"
       },
       "liquipediaButton": "Liquipedia",
@@ -4717,7 +4879,30 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "Importing and fetching Riot data, this can take a moment.",
         "close": "Close"
-      }
+      },
+      "leaguepedia": {
+        "title": "Leaguepedia games",
+        "description": "The game list comes from Leaguepedia's Cargo tables, for the base page and every page under it.",
+        "basePageLabel": "Leaguepedia base page",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Saving reads the games from Leaguepedia. If the read fails, nothing is saved.",
+        "save": "Save and fetch games",
+        "saving": "Fetching…",
+        "refresh": "Refresh from Leaguepedia",
+        "lastFetched": "Last fetched {date} · {count, plural, one {# game} other {# games}}",
+        "neverFetched": "Not fetched yet",
+        "success": "{count, plural, one {# game} other {# games}} fetched",
+        "error": {
+          "gameClaimed": "These games already belong to another tournament, so they cannot be linked here.",
+          "invalidBasePage": "Use a page name without # < > [ ] | { }, and no leading or trailing /.",
+          "notFound": "Tournament not found.",
+          "notLinked": "Save a base page first.",
+          "cooldown": "The game list was read less than an hour ago. Try again later.",
+          "missingConfig": "The Leaguepedia bot login is not set up on this server.",
+          "fetch": "Leaguepedia could not be read. Try again later."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Reports",
@@ -5391,7 +5576,8 @@
       "level": {
         "tournament": "Tournament",
         "match": "Match",
-        "map": "Map"
+        "map": "Map",
+        "game": "Game"
       },
       "matchSearchPlaceholder": "Search a match…",
       "mapSearchPlaceholder": "Search a map…",
@@ -5410,7 +5596,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Matches",
       "openMaps": "Maps",
-      "goBack": "Go back"
+      "goBack": "Go back",
+      "gameEmpty": "No games in this match.",
+      "gameSearchPlaceholder": "Search a game…",
+      "openGames": "Games"
     },
     "streams": {
       "title": "Stream channels",
@@ -5542,8 +5731,14 @@
         "matchNotInTournament": "This match doesn't belong to the selected tournament.",
         "mapNotFound": "Map not found.",
         "mapNotInMatch": "This map doesn't belong to the selected match.",
-        "notFound": "VOD not found."
-      }
+        "notFound": "VOD not found.",
+        "gameNotFound": "Game not found.",
+        "gameNotInMatch": "This game doesn't belong to the selected match."
+      },
+      "scopeGame": "Specific game",
+      "gameLabel": "Game",
+      "gamePlaceholder": "Select a game…",
+      "gameLoading": "Loading…"
     },
     "apiKeys": {
       "title": "API keys",
@@ -6382,7 +6577,8 @@
     "mapsPickRatesShowMore": "Show all",
     "mapsPickRatesShowLess": "Show less",
     "factOrganizer": "Organizer",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Games"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6573,6 +6769,10 @@
   "liquipediaSource": {
     "text": "Some information on this page comes from Liquipedia.",
     "link": "See the original article"
+  },
+  "leaguepediaSource": {
+    "text": "Some game data on this page comes from Leaguepedia (CC BY-SA). See the original pages:",
+    "game": "Game {order}"
   },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",

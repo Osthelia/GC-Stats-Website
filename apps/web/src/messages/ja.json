@@ -1828,7 +1828,8 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "ディスカッション",
-    "watchparty": "ウォッチパーティー"
+    "watchparty": "ウォッチパーティー",
+    "vodGame": "ゲーム{n}のVOD"
   },
   "footer": {
     "tagline": "すべての公式Game Changers大会を、ここに集約。",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "順位表で試合勝利数を数えない場合は空欄のままにしてください。",
         "fieldMapWinPoints": "マップ勝利ごとのポイント",
         "fieldMapWinPointsHint": "マップ勝利数を数えない場合は空欄のままにしてください。",
+        "fieldGameWinPoints": "ゲーム勝利ごとのポイント",
+        "fieldGameWinPointsHint": "空欄にするとゲーム勝利を集計しません。",
+        "fieldGameForfeitWinPoints": "不戦勝によるゲーム勝利ごとのポイント",
+        "fieldGameForfeitWinPointsHint": "実際にプレイせず不戦勝で得たゲーム勝利に対する別の値。",
         "fieldRoundWinPoints": "ラウンド勝利ごとのポイント",
         "fieldRoundWinPointsHint": "ラウンド勝利数を数えない場合は空欄のままにしてください。",
         "fieldMatchForfeitWinPoints": "不戦勝による試合勝利ごとのポイント",
@@ -4472,6 +4477,163 @@
             "mergeMapNotFound": "このマップはもう存在しません。"
           }
         },
+        "draft": {
+          "metaTitle": "ドラフト",
+          "title": "ゲーム {order} のドラフト",
+          "backToMatch": "試合に戻る",
+          "description": "このゲームの BAN と PICK の順序です。使われなかったステップは空のままにしてください。",
+          "differsWarning": "インポートが保存済みのドラフトと一致しません。再インポートで別のチャンピオンが見つかりました。内容を確認して保存すると、現在のドラフトが残ります。",
+          "blueSide": "ブルー側",
+          "blueLockedHint": "インポートで決まります（Riot のブルーチーム）。",
+          "firstPickLockedHint": "インポートで設定されます（最初のBANを行ったサイド）。",
+          "firstPick": "ファーストピック",
+          "phase": {
+            "ban1": "BAN フェーズ 1",
+            "pick1": "PICK フェーズ 1",
+            "ban2": "BAN フェーズ 2",
+            "pick2": "PICK フェーズ 2"
+          },
+          "side": {
+            "blue": "ブルー",
+            "red": "レッド"
+          },
+          "type": {
+            "ban": "BAN",
+            "pick": "PICK"
+          },
+          "noChampion": "チャンピオンなし",
+          "searchPlaceholder": "チャンピオンを検索",
+          "noResults": "一致するチャンピオンがいません",
+          "unplacedTitle": "未配置の PICK",
+          "save": "ドラフトを保存",
+          "saving": "保存中…",
+          "saved": "ドラフトを保存しました",
+          "error": {
+            "notFound": "このゲームが見つかりません。",
+            "entrantsUnset": "先に試合の両チームを設定してください。",
+            "blueNotAnEntrant": "ブルー側は試合の2チームのどちらかである必要があります。",
+            "blueLocked": "インポートしたゲームのブルー側はインポートで決まります。",
+            "firstPickLocked": "インポートした試合の最初のピックはインポートで設定されます。",
+            "invalidFirstPick": "ファーストピックはブルーかレッドである必要があります。",
+            "invalidStep": "ステップ {step} は存在しないか、重複しています。",
+            "unknownChampion": "{championName} はチャンピオン一覧にありません。",
+            "duplicateChampion": "{championName} がドラフト内に複数あります。"
+          }
+        },
+        "games": {
+          "heading": "ゲーム",
+          "description": "このシリーズで行われたゲームを順番に表示します。",
+          "empty": "まだゲームがありません。",
+          "gameLabel": "ゲーム {order}",
+          "winnerLabel": "勝者: {name}",
+          "noWinner": "勝者はまだいません",
+          "finished": "終了",
+          "notFinished": "未終了",
+          "draftButton": "ドラフト",
+          "draftDiffers": "インポートが保存済みドラフトと一致しません",
+          "forfeit": "不戦勝",
+          "cancel": "キャンセル",
+          "save": "保存",
+          "saving": "保存中…",
+          "createButton": "ゲームを追加",
+          "createTitle": "ゲームを追加",
+          "editTitle": "ゲームを編集",
+          "dialogDescription": "このシリーズのゲーム1試合の結果を入力します。",
+          "editButton": "編集",
+          "deleteButton": "削除",
+          "deleteTitle": "ゲームを削除",
+          "deleteConfirm": "ゲーム {order} を削除しますか？ 残りのゲームから試合スコアを再計算します。",
+          "deleteError": "ゲームを削除できませんでした。",
+          "deleteSuccess": "ゲームを削除しました。",
+          "saveError": "ゲームを保存できませんでした。",
+          "saveSuccess": "ゲームを保存しました。",
+          "fieldOrder": "順番",
+          "fieldWinner": "勝者",
+          "fieldWinnerNone": "まだ勝者がいません",
+          "fieldCompleted": "終了",
+          "fieldForfeit": "不戦勝",
+          "fieldNote": "メモ",
+          "fieldError": {
+            "invalid": "有効な値を入力してください。",
+            "tooLong": "長すぎます。",
+            "duplicateOrder": "この順番は別のゲームで使われています。",
+            "winnerRequired": "終了したゲームには勝者が必要です。",
+            "notAnEntrant": "勝者は2チームのいずれかである必要があります。",
+            "notCompleted": "勝者を設定するにはゲームを終了として記録してください。",
+            "invalidMatchId": "形式は EUW1_6123456789 です: プラットフォームコード、アンダースコア、試合番号の順に入力してください。",
+            "duplicateMatchId": "別のゲームがこの Riot マッチIDを使用しています。"
+          },
+          "fieldApiMatchId": "Riot マッチID",
+          "fieldApiMatchIdHint": "例: EUW1_6123456789。プラットフォームはここから取得されます。",
+          "leaguepedia": {
+            "label": "Leaguepedia の試合",
+            "none": "なし",
+            "noData": "データなし",
+            "gameNumber": "{number} 試合目",
+            "fetch": "Leaguepedia から取得",
+            "fetching": "取得中…",
+            "renew": "再取得",
+            "reprocess": "再処理",
+            "success": "Leaguepedia から試合を保存しました",
+            "error": {
+              "noData": "この試合には Leaguepedia に V5 データがありません。",
+              "notInBucket": "この試合はまだストレージにありません。先に取得してください。",
+              "pageInvalid": "この試合の Leaguepedia ページは有効な試合データではありません。",
+              "fetch": "Leaguepedia を読み込めませんでした。しばらくしてから再度お試しください。",
+              "missingConfig": "このサーバーでは Leaguepedia のボットログインが設定されていません。",
+              "sidesUnresolved": "この試合の2チームが、シリーズの2つの参加者と一致しません。",
+              "missingPlayers": "{count, plural, other {# 人のプレイヤーがまだ人物に紐づけられていません}}",
+              "invalidUpload": "試合データがインポートの検証を通過しませんでした。",
+              "storeFailed": "試合を保存できませんでした。",
+              "invalidOrder": "試合番号は 1 以上の整数にしてください。",
+              "lolIdConflict": "この Riot アカウントは既に別の人物に紐づいています。",
+              "sidesInvalid": "ブルーとレッドには異なる2人の参加者を選んでください。",
+              "roleInvalid": "変更内容のロールが無効です。",
+              "orderTaken": "このシリーズの {order} 試合目は既に別のデータで保存されています。別の試合番号を選んで再度保存してください。",
+              "dataDragonUnavailable": "チャンピオン名は現在取得できません。しばらくしてから再度お試しください。",
+              "unknownChampions": "不明なチャンピオンID: {ids}",
+              "storageUnavailable": "LoL インポート用のストレージに接続できません。設定を確認して、もう一度お試しください。",
+              "duplicateAccount": "同じ Riot アカウントが2回紐づけられています。アカウントごとに1回だけ紐づけてください。",
+              "riotUnavailable": "Riot のデータを現在読み込めません。しばらくしてから再度お試しください。",
+              "tournamentRealm": "このゲームはトーナメントレルムで行われました。代わりに Leaguepedia から取得してください。"
+            },
+            "searchPlaceholder": "チーム・試合・日付で検索",
+            "noResults": "一致する試合はありません",
+            "previewTitle": "試合を確認",
+            "previewDescription": "各サイドの参加者を選び、まだ紐づいていないプレイヤーを紐づけてください。",
+            "back": "戻る",
+            "saveGame": "試合を保存",
+            "sideBlue": "ブルー",
+            "sideRed": "レッド",
+            "sidesTitle": "サイド",
+            "blueSide": "ブルーサイド",
+            "redSide": "レッドサイド",
+            "chooseEntrant": "参加者を選択",
+            "suggestedPlayers": "紐づけ済みプレイヤーからの候補",
+            "suggestedNames": "チーム名からの候補",
+            "winnerLabel": "勝者: {name}",
+            "noWinner": "勝者なし",
+            "lengthLabel": "試合時間: {minutes} 分",
+            "playersTitle": "プレイヤー",
+            "notLinked": "未紐づけ",
+            "linkExisting": "既存に紐づけ",
+            "createNew": "新規作成",
+            "newHandle": "新しい人物の名前",
+            "unresolvedHint": "まだ紐づいていない各プレイヤーに、人物を紐づけるか作成してください。",
+            "roleLabel": "ロール",
+            "roleNone": "ロールなし",
+            "riotRole": "Riot: {role}",
+            "alreadyStoredHere": "このシリーズの {order} 試合目として保存済み",
+            "alreadyStoredElsewhere": "別のシリーズで保存済み",
+            "refreshGames": "ゲーム一覧を更新",
+            "refreshCooldown": "1時間以内に更新済みです。しばらくしてから再度お試しください。",
+            "refreshed": "ゲーム一覧を更新しました（{count} 件）",
+            "refreshError": "ゲーム一覧を更新できませんでした。しばらくしてから再度お試しください。",
+            "riotFetch": "Riot から取得",
+            "riotSuccess": "Riot から保存しました",
+            "riotTournamentRealm": "このゲームはトーナメントレルムで行われたため、Riot API から取得することはできません。"
+          }
+        },
         "liquipediaImportButton": "Liquipedia試合インポート"
       },
       "liquipediaButton": "Liquipedia",
@@ -4713,7 +4875,30 @@
       "activeFilterLabel": "アクティビティ",
       "activeFilterAny": "すべての大会",
       "activeFilterActive": "アクティブ",
-      "activeFilterInactive": "非アクティブ"
+      "activeFilterInactive": "非アクティブ",
+      "leaguepedia": {
+        "title": "Leaguepedia の試合",
+        "description": "試合一覧は、ベースページとその配下のすべてのページについて Leaguepedia の Cargo テーブルから取得します。",
+        "basePageLabel": "Leaguepedia のベースページ",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "保存すると Leaguepedia から試合を読み込みます。読み込みに失敗した場合は何も保存されません。",
+        "save": "保存して試合を取得",
+        "saving": "取得中…",
+        "refresh": "Leaguepedia から更新",
+        "lastFetched": "最終取得 {date} · {count, plural, other {# 試合}}",
+        "neverFetched": "まだ取得していません",
+        "success": "{count, plural, other {# 試合を取得しました}}",
+        "error": {
+          "gameClaimed": "これらのゲームは既に別の大会に属しているため、ここでは紐づけできません。",
+          "invalidBasePage": "# < > [ ] | { } を含まず、先頭と末尾に / がないページ名を使ってください。",
+          "notFound": "大会が見つかりません。",
+          "notLinked": "先にベースページを保存してください。",
+          "cooldown": "試合リストは1時間以内に読み込まれています。後でもう一度お試しください。",
+          "missingConfig": "このサーバーでは Leaguepedia のボットログインが設定されていません。",
+          "fetch": "Leaguepedia を読み込めませんでした。しばらくしてから再度お試しください。"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "通報",
@@ -5273,7 +5458,8 @@
       "level": {
         "tournament": "大会",
         "match": "試合",
-        "map": "マップ"
+        "map": "マップ",
+        "game": "ゲーム"
       },
       "matchSearchPlaceholder": "試合を検索…",
       "mapSearchPlaceholder": "マップを検索…",
@@ -5292,7 +5478,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "試合",
       "openMaps": "マップ",
-      "goBack": "戻る"
+      "goBack": "戻る",
+      "gameEmpty": "この試合にゲームがありません。",
+      "gameSearchPlaceholder": "ゲームを検索…",
+      "openGames": "ゲーム"
     },
     "streams": {
       "title": "配信チャンネル",
@@ -5424,8 +5613,14 @@
         "matchNotInTournament": "この試合は選択したトーナメントに属していません。",
         "mapNotFound": "マップが見つかりません。",
         "mapNotInMatch": "このマップは選択した試合に属していません。",
-        "notFound": "VODが見つかりません。"
-      }
+        "notFound": "VODが見つかりません。",
+        "gameNotFound": "ゲームが見つかりません。",
+        "gameNotInMatch": "このゲームは選択した試合に属していません。"
+      },
+      "scopeGame": "特定のゲーム",
+      "gameLabel": "ゲーム",
+      "gamePlaceholder": "ゲームを選択…",
+      "gameLoading": "読み込み中…"
     },
     "apiKeys": {
       "title": "APIキー",
@@ -6258,7 +6453,8 @@
     "mapsPickRatesShowMore": "すべて表示",
     "mapsPickRatesShowLess": "表示を減らす",
     "factOrganizer": "主催者",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "ゲーム"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6449,6 +6645,10 @@
   "liquipediaSource": {
     "text": "このページの一部の情報は Liquipedia から取得しています。",
     "link": "元の記事を見る"
+  },
+  "leaguepediaSource": {
+    "text": "このページの一部のゲームデータは Leaguepedia から取得しています（CC BY-SA）。元のページ：",
+    "game": "ゲーム {order}"
   },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",

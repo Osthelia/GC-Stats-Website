@@ -12,7 +12,7 @@
 import type { StandingsCalculator, StandingsEntry, RankedStandingsEntry } from "./types";
 import { assignRanks } from "./types";
 
-export type RoundRobinTiebreaker = "points" | "round_diff" | "head_to_head" | "seed";
+export type RoundRobinTiebreaker = "points" | "round_diff" | "game_diff" | "head_to_head" | "seed";
 
 export interface RoundRobinStandingsConfig {
   tiebreakers: RoundRobinTiebreaker[];
@@ -34,6 +34,7 @@ function compare(a: StandingsEntry, b: StandingsEntry, tiebreakers: RoundRobinTi
   for (const tb of tiebreakers) {
     if (tb === "points" && (a.points ?? 0) !== (b.points ?? 0)) return (b.points ?? 0) - (a.points ?? 0);
     if (tb === "round_diff" && a.roundDiff !== b.roundDiff) return b.roundDiff - a.roundDiff;
+    if (tb === "game_diff" && (a.gameDiff ?? 0) !== (b.gameDiff ?? 0)) return (b.gameDiff ?? 0) - (a.gameDiff ?? 0);
     if (tb === "head_to_head") {
       // Pairwise only: on a 3+ way circular tie (A > B > C > A) the result is
       // arbitrary but deterministic (sort order dependent), not incorrect.

@@ -10,9 +10,15 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
 import type { PublicStandingsRow, PublicQualificationRule } from "@/lib/tournament-bracket-data";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 const QUALIFIED = "#3fb950";
 const ELIMINATED = "#f2555a";
+
+/** Green for a positive round difference, red for a negative one, grey for level. */
+function roundColorOf(roundDiff: number): string {
+  return roundDiff > 0 ? QUALIFIED : roundDiff < 0 ? ELIMINATED : "var(--gcs-text-tertiary)";
+}
 
 /**
  * Single table, no second bordered card around it (explicit user request,
@@ -31,13 +37,17 @@ export async function TournamentStandingsTable({
   standings,
   showPoints,
   qualificationRules = [],
+  game,
 }: {
   standings: PublicStandingsRow[];
   showPoints?: boolean;
   qualificationRules?: PublicQualificationRule[];
+  game: GameSlug;
 }) {
   const t = await getTranslations("tournamentPage");
-  const columnCount = showPoints ? 6 : 5;
+  const hasRounds = gameHasMaps(game);
+  // Rank, entrant, matches and maps/games are always shown; points and rounds are optional columns.
+  const columnCount = 4 + (showPoints ? 1 : 0) + (hasRounds ? 1 : 0);
   const hasQualificationRules = qualificationRules.length > 0;
 
   return (
@@ -48,16 +58,15 @@ export async function TournamentStandingsTable({
             <th className="px-4 py-2.5 text-center">{t("standingsRank")}</th>
             <th className="px-4 py-2.5">{t("standingsEntrant")}</th>
             <th className="px-4 py-2.5 text-center">{t("standingsMatches")}</th>
-            <th className="px-4 py-2.5 text-center">{t("standingsMaps")}</th>
+            <th className="px-4 py-2.5 text-center">{t(hasRounds ? "standingsMaps" : "standingsGames")}</th>
             {showPoints && <th className="px-4 py-2.5 text-right">{t("standingsPoints")}</th>}
-            <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>
+            {hasRounds && <th className="px-4 py-2.5 text-right">{t("standingsRounds")}</th>}
           </tr>
         </thead>
         <tbody>
           {standings.map((row) => {
             const rule = qualificationRules.find((r) => row.rank >= r.rankFrom && row.rank <= r.rankTo);
             const borderColor = !hasQualificationRules ? "transparent" : rule ? QUALIFIED : ELIMINATED;
-            const roundColor = row.roundDiff > 0 ? "#3fb950" : row.roundDiff < 0 ? "#f2555a" : "var(--gcs-text-tertiary)";
             return (
               <tr
                 key={row.id}
@@ -85,16 +94,18 @@ export async function TournamentStandingsTable({
                   {row.mapWins} <span className="text-neutral-600">-</span> {row.mapLosses}
                 </td>
                 {showPoints && <td className="px-4 py-2.5 text-right font-mono tabular-nums text-neutral-300">{row.points ?? 0}</td>}
-                <td className="px-4 py-2.5 text-right">
-                  <div className="flex flex-col items-end">
-                    <span className="font-mono text-xs tabular-nums" style={{ color: roundColor }}>
-                      {row.roundDiff > 0 ? `+${row.roundDiff}` : row.roundDiff}
-                    </span>
-                    <span className="font-mono text-[10px] text-neutral-600">
-                      {row.roundWins}W / {row.roundLosses}L
-                    </span>
-                  </div>
-                </td>
+                {hasRounds && (
+                  <td className="px-4 py-2.5 text-right">
+                    <div className="flex flex-col items-end">
+                      <span className="font-mono text-xs tabular-nums" style={{ color: roundColorOf(row.roundDiff) }}>
+                        {row.roundDiff > 0 ? `+${row.roundDiff}` : row.roundDiff}
+                      </span>
+                      <span className="font-mono text-[10px] text-neutral-600">
+                        {row.roundWins}W / {row.roundLosses}L
+                      </span>
+                    </div>
+                  </td>
+                )}
               </tr>
             );
           })}

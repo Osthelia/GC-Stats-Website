@@ -108,7 +108,9 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
   const entrantIdsWithLockedRoster = new Set(lockedRows.map((r) => r.entrantId));
   const fallbackEntrantIds = entrantIds.filter((id) => !entrantIdsWithLockedRoster.has(id));
 
-  const fallbackRows = fallbackEntrantIds.length
+  // Valorant only: the fallback reads the players of the Valorant maps. LoL has no fallback yet.
+  // TODO: once the Riot import fills lol_game_player_stats, fall back to those rows for LoL teams without a locked roster.
+  const fallbackRows = fallbackEntrantIds.length && gameHasMaps(game)
     ? await db
         .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: people.id, handle: people.handle })
         .from(mapPlayerStats)

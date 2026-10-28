@@ -7,7 +7,7 @@
  */
 
 import { Suspense } from "react";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
 import { notFound } from "next/navigation";
 import {
   getMatchHeader,
@@ -22,6 +22,7 @@ import {
   getMatchStreams,
   getMatchVods,
   getMatchPlayerPovs,
+  getLeaguepediaSourceGames,
   type MatchHeader as MatchHeaderData,
 } from "@/lib/match-page-data";
 import type { Metadata } from "next";
@@ -37,6 +38,7 @@ import { MatchH2hGraph } from "@/components/match/match-h2h-graph";
 import { MatchMedia } from "@/components/match/match-media";
 import { findOrCreateThreadFor } from "@/lib/forum-threads";
 import { ForumThreadPanel } from "@/components/forum/forum-thread-panel";
+import { LeaguepediaSourceFooter } from "@/components/leaguepedia-source-footer";
 import { gameFromParams } from "@/lib/game";
 
 function SideCardSkeleton() {
@@ -84,7 +86,7 @@ async function MatchExtras({ matchId, match, isCompleted, game }: { matchId: num
   ]);
   return (
     <>
-      <MatchMedia streams={streams} vods={vods} povs={povs} isCompleted={isCompleted} />
+      <MatchMedia streams={streams} vods={vods} povs={povs} isCompleted={isCompleted} game={game} />
       {gameHasMaps(game) && <MatchVetos steps={vetos} teamATag={teamATag} teamBTag={teamBTag} />}
     </>
   );
@@ -116,6 +118,10 @@ async function MatchStatsSection({ matchId, match, teamAName, teamBName, game }:
       bestOf={match.bestOf}
     />
   );
+}
+
+async function MatchLeaguepediaSource({ matchId }: { matchId: number }) {
+  return <LeaguepediaSourceFooter games={await getLeaguepediaSourceGames(matchId)} />;
 }
 
 async function MatchDiscussion({ game, matchId, page }: { game: GameSlug; matchId: number; page: number }) {
@@ -194,6 +200,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
           <MatchDiscussion game={game} matchId={matchId} page={discussionPage} />
         </Suspense>
       </div>
+
+      {gameHasSeriesGames(game) && (
+        <Suspense fallback={null}>
+          <MatchLeaguepediaSource matchId={matchId} />
+        </Suspense>
+      )}
     </div>
   );
 }

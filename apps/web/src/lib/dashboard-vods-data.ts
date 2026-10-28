@@ -11,8 +11,9 @@
 
 import { desc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { normalizeScheduledAt } from "@/lib/match-schedule";
+import { listMapRefs, mapLabel, selectSeriesMaps } from "@/lib/series-map-refs";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrganizationVodRow = {
@@ -29,7 +30,6 @@ export type OrganizationVodRow = {
 
 export async function listOrganizationVodRows(game: GameSlug, organizationId: number): Promise<OrganizationVodRow[]> {
   const { vods, matches, entrants, stageContainers, stages, tournaments } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -58,13 +58,11 @@ export async function listOrganizationVodRows(game: GameSlug, organizationId: nu
   const entrantById = new Map(entrantRows.map((e) => [e.id, e.displayName]));
 
   const mapIds = rows.map((r) => r.mapId).filter((id): id is number => id !== null);
-  const mapRows = mapIds.length ? await db.select({ id: maps.id, mapName: maps.mapName, order: maps.order }).from(maps).where(inArray(maps.id, mapIds)) : [];
-  const mapById = new Map(mapRows.map((m) => [m.id, m]));
+  const mapLabelById = new Map((await listMapRefs(db, game, mapIds)).map((m) => [m.id, m.label]));
 
   return rows.map((r) => {
     const aName = r.entrantAId !== null ? (entrantById.get(r.entrantAId) ?? "TBD") : "TBD";
     const bName = r.entrantBId !== null ? (entrantById.get(r.entrantBId) ?? "TBD") : "TBD";
-    const map = r.mapId !== null ? mapById.get(r.mapId) : undefined;
     return {
       id: r.id,
       url: r.url,
@@ -75,7 +73,7 @@ export async function listOrganizationVodRows(game: GameSlug, organizationId: nu
       matchLabel: `${aName} vs ${bName} (R${r.round})`,
       tournamentName: r.tournamentName,
       mapId: r.mapId,
-      mapLabel: map ? `${map.mapName ?? "?"} (Map ${map.order})` : null,
+      mapLabel: r.mapId !== null ? (mapLabelById.get(r.mapId) ?? null) : null,
       scheduledAt: normalizeScheduledAt(r.scheduledAt),
     };
   });
@@ -83,9 +81,8 @@ export async function listOrganizationVodRows(game: GameSlug, organizationId: nu
 
 export type MatchMapOption = { id: number; label: string };
 
-/** Backs the "specific map" <Select> once a match is picked in the add-VOD form. */
-export async function getMatchMapOptions(matchId: number): Promise<MatchMapOption[]> {
-  const { maps } = valorantTables;
-  const rows = await db.select({ id: maps.id, mapName: maps.mapName, order: maps.order }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
-  return rows.map((m) => ({ id: m.id, label: `${m.mapName ?? "?"} (Map ${m.order})` }));
+/** Backs the "specific map" <Select> once a match is picked: its maps (Valorant) or games (LoL). */
+export async function getMatchMapOptions(game: GameSlug, matchId: number): Promise<MatchMapOption[]> {
+  const rows = await selectSeriesMaps(db, game, (t) => eq(t.matchId, matchId));
+  return rows.map((m) => ({ id: m.id, label: mapLabel(game, m.mapName, m.order) }));
 }

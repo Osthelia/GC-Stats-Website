@@ -13,7 +13,7 @@
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
 import type { BracketGraph, MatchNode, BracketEdge, SeedSource } from "@gc-stats/bracket-engine";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -238,4 +238,77 @@ export async function fillMatchSlotFromSeed(game: GameSlug, tx: Tx, matchId: num
   const { matches } = gameTables(game);
   const [column, value] = slot === "a" ? [matches.entrantAId, { entrantAId: entrantId }] : [matches.entrantBId, { entrantBId: entrantId }];
   await tx.update(matches).set(value).where(and(eq(matches.id, matchId), isNull(column)));
+}
+
+/** A map of a series: a Valorant map, or a LoL game (`lol_games`). */
+export type MatchMapResult = {
+  /** Row id in the game's own table (`val_maps` or `lol_games`). */
+  id: number;
+  matchId: number;
+  order: number;
+  /** "a" / "b" when that side won a completed game; null if not decided yet or a draw. */
+  winner: "a" | "b" | null;
+  isCompleted: boolean;
+  isForfeit: boolean;
+  /** Valorant round scores, null when not scored. Always null for LoL, which has no rounds. A forfeited map keeps its stored placeholder score, so callers skip rounds of forfeits. */
+  roundsA: number | null;
+  roundsB: number | null;
+};
+
+/**
+ * Maps of the given matches, in no particular order. `winner` is only set
+ * for completed maps: a Valorant map is won by its higher score, a LoL game
+ * by its `winner_entrant_id`, mapped to side A or B of its match.
+ */
+export async function listMatchMapResults(game: GameSlug, tx: Tx, matchIds: number[]): Promise<MatchMapResult[]> {
+  if (matchIds.length === 0) return [];
+  return game === "lol" ? listLeagueGames(tx, matchIds) : listValorantMaps(game, tx, matchIds);
+}
+
+async function listLeagueGames(tx: Tx, matchIds: number[]): Promise<MatchMapResult[]> {
+  const { games, matches } = leagueTablesOf("lol");
+  const rows = await tx
+    .select({ game: games, entrantAId: matches.entrantAId, entrantBId: matches.entrantBId })
+    .from(games)
+    .innerJoin(matches, eq(games.matchId, matches.id))
+    .where(inArray(games.matchId, matchIds));
+  return rows.map(({ game, entrantAId, entrantBId }) => ({
+    id: game.id,
+    matchId: game.matchId,
+    order: game.order,
+    winner: game.isCompleted ? sideOf(game.winnerEntrantId, entrantAId, entrantBId) : null,
+    isCompleted: game.isCompleted,
+    isForfeit: game.isForfeit,
+    roundsA: null,
+    roundsB: null,
+  }));
+}
+
+async function listValorantMaps(game: GameSlug, tx: Tx, matchIds: number[]): Promise<MatchMapResult[]> {
+  const { maps } = valorantTablesOf(game);
+  const rows = await tx.select().from(maps).where(inArray(maps.matchId, matchIds));
+  return rows.map((m) => {
+    let winner: MatchMapResult["winner"] = null;
+    if (m.isCompleted && m.teamAScore !== null && m.teamBScore !== null) {
+      if (m.teamAScore > m.teamBScore) winner = "a";
+      else if (m.teamBScore > m.teamAScore) winner = "b";
+    }
+    return {
+      id: m.id,
+      matchId: m.matchId,
+      order: m.order,
+      winner,
+      isCompleted: m.isCompleted,
+      isForfeit: m.isForfeit,
+      roundsA: m.teamAScore,
+      roundsB: m.teamBScore,
+    };
+  });
+}
+
+function sideOf(winnerEntrantId: number | null, entrantAId: number | null, entrantBId: number | null): "a" | "b" | null {
+  if (winnerEntrantId === null) return null;
+  if (winnerEntrantId === entrantAId) return "a";
+  if (winnerEntrantId === entrantBId) return "b";
+  return null;
 }

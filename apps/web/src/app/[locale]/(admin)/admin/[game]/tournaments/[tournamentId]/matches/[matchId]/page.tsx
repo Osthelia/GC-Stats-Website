@@ -10,17 +10,21 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
+import { gameHasMaps, gameHasSeriesGames } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAdminMatch, listMatchMaps } from "@/lib/admin-matches";
+import { getAdminMatch, listLeagueMatchGames, listMatchMaps } from "@/lib/admin-matches";
 import { listTournamentEntrants } from "@/lib/admin-tournament-detail";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
 import { MatchVsBanner } from "@/components/admin/match-vs-banner";
 import { MatchDeleteButton } from "@/components/admin/match-delete-button";
 import { MatchMapsPanel } from "@/components/admin/match-maps-panel";
+import { MatchGamesPanel, type MatchGameView } from "@/components/admin/match-games-panel";
+import { getLeaguepediaLinkStatus, listLeaguepediaGameOptions } from "@/lib/admin-leaguepedia";
+import type { LeagueGameEntrant } from "@/components/admin/league-game-dialog";
 import { AdminPublicLinkButton } from "@/components/admin/admin-public-link-button";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import { FormattedDate } from "@/components/formatted-date";
@@ -44,18 +48,27 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
   const id = Number(matchId);
   if (!Number.isInteger(tournId) || !Number.isInteger(id)) notFound();
 
-  const [access, t, match, entrants, mapRows] = await Promise.all([
+  // Maps are Valorant rows and LoL games are lol_games rows: each query only runs for the game that has it.
+  const [access, t, match, entrants, mapRows, gameRows, leaguepediaGames, leaguepediaStatus] = await Promise.all([
     requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView, game),
     getTranslations("admin.tournaments.matches"),
     getAdminMatch(game, id),
     listTournamentEntrants(game, tournId),
-    listMatchMaps(id),
+    gameHasMaps(game) ? listMatchMaps(id) : Promise.resolve([]),
+    gameHasSeriesGames(game) ? listLeagueMatchGames(id) : Promise.resolve([]),
+    gameHasSeriesGames(game) ? listLeaguepediaGameOptions(tournId) : Promise.resolve([]),
+    gameHasSeriesGames(game) ? getLeaguepediaLinkStatus(tournId) : Promise.resolve(null),
   ]);
   if (!match || match.tournamentId !== tournId) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
+  const leaguepediaLink = leaguepediaStatus && { linked: leaguepediaStatus.overviewPage !== null, fetchedAt: leaguepediaStatus.gamesFetchedAt?.toISOString() ?? null };
 
   const entrantAName = entrants.find((e) => e.id === match.entrantAId)?.displayName ?? t("entrantNone");
   const entrantBName = entrants.find((e) => e.id === match.entrantBId)?.displayName ?? t("entrantNone");
+  const games: MatchGameView[] = gameRows.map((g) => ({ ...g, winnerName: entrants.find((e) => e.id === g.winnerEntrantId)?.displayName ?? null }));
+  const matchEntrants: LeagueGameEntrant[] = [match.entrantAId, match.entrantBId]
+    .filter((entrantId): entrantId is number => entrantId !== null)
+    .map((entrantId) => ({ id: entrantId, name: entrants.find((e) => e.id === entrantId)?.displayName ?? t("entrantNone") }));
 
 
   const infoRows: { label: string; value: React.ReactNode }[] = [
@@ -89,9 +102,11 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <CardTitle className="text-sm tracking-wide text-muted-foreground uppercase">{t("infoHeading")}</CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/veto`} />}>
-                  {t("vetoNavButton")}
-                </Button>
+                {!gameHasSeriesGames(game) && (
+                  <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/veto`} />}>
+                    {t("vetoNavButton")}
+                  </Button>
+                )}
                 <Button variant="outline" render={<Link href={`/admin/tournaments/${tournId}/matches/${id}/edit`} />}>
                   {t("editButton")}
                 </Button>
@@ -115,7 +130,10 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
 
         {/* Preview cards only, linking to the dedicated .../maps/{mapId} page for full editing/Fetch/Renew/Merge. */}
         <div className="lg:col-span-5">
-          <MatchMapsPanel tournamentId={tournId} matchId={id} maps={mapRows} canManage={canManage} />
+          {gameHasMaps(game) && <MatchMapsPanel tournamentId={tournId} matchId={id} maps={mapRows} canManage={canManage} />}
+          {gameHasSeriesGames(game) && leaguepediaLink && (
+            <MatchGamesPanel tournamentId={tournId} matchId={id} games={games} entrants={matchEntrants} leaguepediaGames={leaguepediaGames} leaguepediaLink={leaguepediaLink} canManage={canManage} />
+          )}
         </div>
       </div>
     </div>

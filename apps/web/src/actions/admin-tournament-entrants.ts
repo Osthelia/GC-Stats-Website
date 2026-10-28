@@ -26,8 +26,8 @@ async function requireTournamentsActor(): Promise<string> {
 }
 
 /** Entrant edits are logged on the tournament. */
-function logEntrantChange(client: ActivityLogClient, tournamentId: number, actorUserId: string, description: string, extra: { changes?: ActivityChanges; entrant: Record<string, unknown> }) {
-  return logActivity({ subject: "tournament", subjectId: tournamentId, event: "updated", description, actorUserId, changes: extra.changes, properties: { section: "entrants", ...extra.entrant } }, client);
+function logEntrantChange(client: ActivityLogClient, game: GameSlug, tournamentId: number, actorUserId: string, description: string, extra: { changes?: ActivityChanges; entrant: Record<string, unknown> }) {
+  return logActivity({ game, subject: "tournament", subjectId: tournamentId, event: "updated", description, actorUserId, changes: extra.changes, properties: { section: "entrants", ...extra.entrant } }, client);
 }
 
 export type EntrantField = "kind" | "teamId" | "displayName" | "seed" | "qualificationMode" | "qualificationTournamentId" | "qualificationPointTypeId";
@@ -140,7 +140,7 @@ export async function addEntrant(game: GameSlug, tournamentId: number, input: En
       .values({ tournamentId, kind: input.kind, teamId: input.kind === "team" ? input.teamId : null, displayName, seed: input.seed, ...qualificationColumns(input) })
       .returning({ id: entrants.id });
     if (!row) throw new Error("Insert returned no row");
-    await logEntrantChange(tx, tournamentId, actorUserId, `Added entrant "${displayName}" to tournament #${tournamentId}`, { entrant: { entrantId: row.id, displayName, teamId: input.teamId } });
+    await logEntrantChange(tx, game, tournamentId, actorUserId, `Added entrant "${displayName}" to tournament #${tournamentId}`, { entrant: { entrantId: row.id, displayName, teamId: input.teamId } });
     return row;
   });
 
@@ -162,7 +162,7 @@ export async function updateEntrant(game: GameSlug, id: number, tournamentId: nu
     await tx.update(entrants).set(values).where(eq(entrants.id, id));
     const changes = diffChanges(existingRow, values);
     if (Object.keys(changes).length > 0) {
-      await logEntrantChange(tx, tournamentId, actorUserId, `Updated entrant "${values.displayName}" of tournament #${tournamentId}`, { changes, entrant: { entrantId: id } });
+      await logEntrantChange(tx, game, tournamentId, actorUserId, `Updated entrant "${values.displayName}" of tournament #${tournamentId}`, { changes, entrant: { entrantId: id } });
     }
   });
 
@@ -198,7 +198,7 @@ export async function quickAttachTeamEntrant(game: GameSlug, tournamentId: numbe
   const created = await db.transaction(async (tx) => {
     const [row] = await tx.insert(entrants).values({ tournamentId, kind: "team", teamId, displayName: team.name, seed: null }).returning({ id: entrants.id });
     if (!row) throw new Error("Insert returned no row");
-    await logEntrantChange(tx, tournamentId, actorUserId, `Added entrant "${team.name}" to tournament #${tournamentId}`, { entrant: { entrantId: row.id, displayName: team.name, teamId } });
+    await logEntrantChange(tx, game, tournamentId, actorUserId, `Added entrant "${team.name}" to tournament #${tournamentId}`, { entrant: { entrantId: row.id, displayName: team.name, teamId } });
     return row;
   });
 
@@ -223,7 +223,7 @@ export async function quickCreateTeamEntrant(game: GameSlug, tournamentId: numbe
     await logActivity({ game, subject: "team", subjectId: team.id, event: "created", description: `Created team #${team.id} (${trimmed})`, actorUserId, properties: { tournamentId } }, tx);
     const [entrant] = await tx.insert(entrants).values({ tournamentId, kind: "team", teamId: team.id, displayName: trimmed, seed: null }).returning({ id: entrants.id });
     if (!entrant) throw new Error("Insert returned no row");
-    await logEntrantChange(tx, tournamentId, actorUserId, `Added new team "${trimmed}" as entrant of tournament #${tournamentId}`, { entrant: { entrantId: entrant.id, displayName: trimmed, teamId: team.id } });
+    await logEntrantChange(tx, game, tournamentId, actorUserId, `Added new team "${trimmed}" as entrant of tournament #${tournamentId}`, { entrant: { entrantId: entrant.id, displayName: trimmed, teamId: team.id } });
     return entrant;
   });
 
@@ -242,7 +242,7 @@ export async function removeEntrant(game: GameSlug, id: number, tournamentId: nu
   try {
     await db.transaction(async (tx) => {
       await tx.delete(entrants).where(eq(entrants.id, id));
-      await logEntrantChange(tx, tournamentId, actorUserId, `Removed entrant "${existing.displayName}" from tournament #${tournamentId}`, { entrant: { entrantId: id, displayName: existing.displayName, teamId: existing.teamId } });
+      await logEntrantChange(tx, game, tournamentId, actorUserId, `Removed entrant "${existing.displayName}" from tournament #${tournamentId}`, { entrant: { entrantId: id, displayName: existing.displayName, teamId: existing.teamId } });
     });
   } catch (err) {
     const code = (err as { cause?: { code?: string } }).cause?.code;

@@ -3,7 +3,8 @@
  *
  * Tables that exist once per game (`val_*` and `lol_*`), built by one
  * factory so both games share the exact same columns. Valorant also owns
- * the maps/stats and veto tables, LoL has no equivalent.
+ * the maps/stats and veto tables, LoL owns its series games and what was
+ * played in them (`lol_games`, players, teams, draft).
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -11,23 +12,30 @@
  */
 
 import { sql, eq } from "drizzle-orm";
-import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
 import { daterange } from "./custom-types";
 import { users } from "./auth";
 import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
 import { containerTypeEnum, matchStatusEnum, slotEnum, matchResultEnum, seedSourceEnum, entryStatusEnum, stageStatusEnum } from "./bracket";
 import { pickemScoringModeEnum, pickemRewardKindEnum } from "./pickem";
-import type { GameSlug } from "../game";
+import { gameHasMaps, type GameSlug } from "../game";
 
 type GamePrefix = "val" | "lol";
 
 // Riot (Valorant) and VLR ids, only the Valorant profile has them.
-function riotColumns() {
+function valPersonColumns() {
   return {
     valId: text("val_id").unique(), // Riot puuid, null for people who never played competitively
     esportsValId: text("esports_val_id").unique(),
     vlrId: integer("vlr_id"),
+  };
+}
+
+// Riot account id, only the League of Legends profile has it.
+function lolPersonColumns() {
+  return {
+    lolId: text("lol_id").unique(), // Riot puuid, null for people who never played competitively
   };
 }
 
@@ -95,7 +103,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     liquipediaLink: text("liquipedia_link"),
     // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
     liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
-    ...(p === "val" ? riotColumns() : ({} as ReturnType<typeof riotColumns>)),
+    ...(p === "val" ? valPersonColumns() : ({} as ReturnType<typeof valPersonColumns>)),
+    ...(p === "lol" ? lolPersonColumns() : ({} as ReturnType<typeof lolPersonColumns>)),
   });
 
   // Read model of a person in this game (identity + profile), same columns the old per-game
@@ -122,6 +131,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
         valId: p === "val" ? personProfiles.valId : (sql<string | null>`NULL::text`.as("val_id") as unknown as typeof personProfiles.valId),
         esportsValId: p === "val" ? personProfiles.esportsValId : (sql<string | null>`NULL::text`.as("esports_val_id") as unknown as typeof personProfiles.esportsValId),
         vlrId: p === "val" ? personProfiles.vlrId : (sql<number | null>`NULL::integer`.as("vlr_id") as unknown as typeof personProfiles.vlrId),
+        lolId: p === "lol" ? personProfiles.lolId : (sql<string | null>`NULL::text`.as("lol_id") as unknown as typeof personProfiles.lolId),
       })
       .from(sharedPeople)
       .innerJoin(personProfiles, eq(personProfiles.personId, sharedPeople.id))
@@ -713,7 +723,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   return { teams, liquipediaTeamNames, teamNameHistory, personProfiles, people, liquipediaPersonNames, rosterMemberships, organizationMemberships, productionCredits, pointTypes, tournaments, tournamentComponents, stages, stageContainers, entrants, entrantMembers, groupEntries, containerStandingsRules, matches, matchSeeds, bracketEdges, stageQualifications, qualificationResults, pointEntries, news, newsMessages, newsRelations, newsImages, changeRequests, changeRequestItems, changeRequestMessages, changeRequestDiscordNotices, streamChannels, matchStreams, vods, matchPlayerPovs, pickemStageSettings, pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, pickemMatchPicks, pickemStandingPicks, pickemRewards };
 }
 
-export type GameTables = ReturnType<typeof defineGameTables<"val">>;
+export type GameTables<P extends GamePrefix = "val"> = ReturnType<typeof defineGameTables<P>>;
 
 // Valorant only: maps, raw/aggregated stats from the Riot relay, and the veto system.
 export function defineValorantTables(g: GameTables) {
@@ -922,9 +932,197 @@ export function defineValorantTables(g: GameTables) {
 
 export type ValorantOnlyTables = ReturnType<typeof defineValorantTables>;
 
+// League of Legends only: one row per game of a series, and what happened in it. Match-V5
+// (Riot) fills them on import; games entered by hand only get the `lol_games` row.
+export function defineLeagueTables(g: GameTables<"lol">) {
+  const { matches, entrants, tournaments } = g;
+
+  // --- Games (one per game of a best-of-N series, the LoL counterpart of val_maps) -------
+  const games = pgTable("lol_games", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
+    order: integer("order").notNull(),
+    apiMatchId: text("api_match_id").unique(), // Riot match id, null for games entered by hand
+    platformId: text("platform_id"), // Riot platform, e.g. "EUW1" — decides the API routing cluster
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    durationSeconds: integer("duration_seconds"),
+    winnerEntrantId: bigint("winner_entrant_id", { mode: "number" }).references(() => entrants.id),
+    isCompleted: boolean("is_completed").notNull().default(false),
+    isForfeit: boolean("is_forfeit").notNull().default(false),
+    note: text("note"),
+    source: text("source"), // 'leaguepedia' | 'riot', null for games entered by hand
+    // The admin's role per puuid, where it differs from the inferred one. Kept so a re-import keeps it.
+    roleOverrides: jsonb("role_overrides").$type<Record<string, string | null>>().notNull().default({}),
+    draftEditedAt: timestamp("draft_edited_at", { withTimezone: true }),
+    // Set by a re-import when the imported draft names other champions than the saved one.
+    draftImportDiffers: boolean("draft_import_differs").notNull().default(false),
+    draftFirstPick: text("draft_first_pick"),
+    draftBlueEntrantId: bigint("draft_blue_entrant_id", { mode: "number" }).references(() => entrants.id, { onDelete: "set null" }),
+  }, (t) => [
+    unique("lol_games_match_id_order_unique").on(t.matchId, t.order),
+    check("lol_games_draft_first_pick_check", sql`${t.draftFirstPick} IN ('blue', 'red')`),
+  ]);
+
+  const gamePlayerStats = pgTable("lol_game_player_stats", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
+    entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id),
+    personId: bigint("person_id", { mode: "number" }).references(() => sharedPeople.id),
+    championName: text("champion_name").notNull(), // display name, e.g. "Ahri"
+    role: text("role"), // Riot teamPosition: TOP | JUNGLE | MIDDLE | BOTTOM | UTILITY, null if unknown
+    kills: integer("kills").notNull().default(0),
+    deaths: integer("deaths").notNull().default(0),
+    assists: integer("assists").notNull().default(0),
+    cs: integer("cs").notNull().default(0), // minions + jungle monsters killed
+    gold: integer("gold").notNull().default(0),
+    damage: integer("damage").notNull().default(0), // damage dealt to champions
+    vision: integer("vision").notNull().default(0), // Riot visionScore
+    items: jsonb("items").notNull().default([]), // item ids, in slot order
+    runes: jsonb("runes").notNull().default({}), // the whole rune page: primary and secondary trees with their runes, and the stat shards
+    summoners: jsonb("summoners").notNull().default([]), // the two summoner spell ids (4 Flash, 14 Ignite...)
+    // Lane diffs at 10 and 15 minutes, player minus lane opponent. Null without an opponent or a frame.
+    goldDiff10: integer("gold_diff_10"),
+    goldDiff15: integer("gold_diff_15"),
+    xpDiff10: integer("xp_diff_10"),
+    xpDiff15: integer("xp_diff_15"),
+    csDiff10: integer("cs_diff_10"),
+    csDiff15: integer("cs_diff_15"),
+  }, (t) => [
+    index("lol_game_player_stats_entrant_id_idx").on(t.entrantId),
+    index("lol_game_player_stats_person_id_idx").on(t.personId),
+  ]);
+
+  const gameTeamStats = pgTable("lol_game_team_stats", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
+    entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id),
+    side: text("side").notNull(), // 'blue' | 'red'
+    kills: integer("kills").notNull().default(0),
+    towers: integer("towers").notNull().default(0),
+    inhibitors: integer("inhibitors").notNull().default(0),
+    dragons: integer("dragons").notNull().default(0),
+    barons: integer("barons").notNull().default(0),
+    heralds: integer("heralds").notNull().default(0),
+    grubs: integer("grubs").notNull().default(0), // void grubs (Riot "horde")
+    gold: integer("gold").notNull().default(0),
+    objectives: jsonb("objectives").notNull().default({}), // { [riot objective name]: { kills, first } }
+    firstBlood: boolean("first_blood").notNull().default(false),
+    firstTower: boolean("first_tower").notNull().default(false),
+    objectiveTimings: jsonb("objective_timings").notNull().default({}), // { [objective kind]: first time in ms }
+  }, (t) => [
+    unique("lol_game_team_stats_game_side_unique").on(t.gameId, t.side),
+    index("lol_game_team_stats_entrant_id_idx").on(t.entrantId),
+  ]);
+
+  const gameDraft = pgTable("lol_game_draft", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
+    entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id),
+    championName: text("champion_name").notNull(),
+    type: text("type").notNull(), // 'pick' | 'ban'
+    order: integer("order"),
+  }, (t) => [
+    // A champion can be picked or banned only once per game.
+    unique("lol_game_draft_game_champion_unique").on(t.gameId, t.championName),
+    // A ban or a placed pick is one of the 20 draft steps. Null: a pick not placed yet.
+    check("lol_game_draft_order_check", sql`${t.order} IS NULL OR ${t.order} BETWEEN 1 AND 20`),
+  ]);
+
+  const gameFramesRaw = pgTable("lol_game_frames_raw", {
+    gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id),
+    frame: smallint("frame").notNull(), // one per frameInterval, so about one per minute
+    timeMs: integer("time_ms").notNull(),
+    totalGold: integer("total_gold").notNull(),
+    currentGold: integer("current_gold").notNull(),
+    xp: integer("xp").notNull(),
+    level: smallint("level").notNull(),
+    cs: integer("cs").notNull(),
+    jungleCs: integer("jungle_cs").notNull(),
+    x: integer("x").notNull(),
+    y: integer("y").notNull(),
+    damageToChampions: integer("damage_to_champions").notNull(),
+    damageTaken: integer("damage_taken").notNull(),
+  }, (t) => [
+    primaryKey({ columns: [t.gameId, t.personId, t.frame] }),
+  ]);
+
+  // The event types worth querying, in one table (the list is in timeline-rows.ts). Columns that
+  // only some types use are nullable, `data` keeps the rest of each payload.
+  const gameEventsRaw = pgTable("lol_game_events_raw", {
+    gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
+    seq: smallint("seq").notNull(), // Riot's order of events within the game
+    timeMs: integer("time_ms").notNull(),
+    type: text("type").notNull(), // CHAMPION_KILL, WARD_PLACED, ... new Riot types need no migration
+    personId: bigint("person_id", { mode: "number" }).references(() => sharedPeople.id), // actor (killerId / participantId / creatorId), null for minions, towers and monsters
+    targetPersonId: bigint("target_person_id", { mode: "number" }).references(() => sharedPeople.id), // victimId
+    assistantPersonIds: bigint("assistant_person_ids", { mode: "number" }).array(),
+    side: text("side"), // 'blue' | 'red', from teamId / killerTeamId (100 / 200)
+    x: integer("x"), // null when the event has no position
+    y: integer("y"),
+    subtype: text("subtype"), // monster, building, tower, ward, kill, transform or soul type, depending on the event
+    lane: text("lane"),
+    itemId: integer("item_id"),
+    skillSlot: smallint("skill_slot"),
+    bounty: integer("bounty"),
+    data: jsonb("data").notNull().default({}), // the rest of the payload, e.g. kill damage arrays, feats, undo before/after
+  }, (t) => [
+    primaryKey({ columns: [t.gameId, t.seq] }),
+    check("lol_game_events_raw_kill_target_check", sql`${t.type} <> 'CHAMPION_KILL' OR ${t.targetPersonId} IS NOT NULL`),
+  ]);
+
+  // --- Leaguepedia (imports from the wiki) ---------------------------------------------
+  // The tournament's base page on Leaguepedia, e.g. "LoL Game Changers/2025 Season". Sub-pages are included.
+  const leaguepediaTournaments = pgTable("lol_leaguepedia_tournaments", {
+    tournamentId: bigint("tournament_id", { mode: "number" }).primaryKey().references(() => tournaments.id, { onDelete: "cascade" }),
+    overviewPage: text("overview_page").notNull(),
+    gamesFetchedAt: timestamp("games_fetched_at", { withTimezone: true }), // when the game list was last read from Leaguepedia
+  });
+
+  // The game list of a linked tournament, replaced as a whole on each refresh.
+  const leaguepediaGames = pgTable("lol_leaguepedia_games", {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    tournamentId: bigint("tournament_id", { mode: "number" }).notNull().references(() => tournaments.id, { onDelete: "cascade" }),
+    leaguepediaGameId: text("leaguepedia_game_id").notNull().unique(), // MSG.GameId
+    leaguepediaMatchId: text("leaguepedia_match_id").notNull(),
+    overviewPage: text("overview_page").notNull(),
+    gameInMatch: integer("game_in_match").notNull(),
+    team1: text("team1"), // the series' teams, as Leaguepedia names them
+    team2: text("team2"),
+    blue: text("blue"),
+    red: text("red"),
+    winner: smallint("winner"), // 1 | 2, null before the game is played
+    playedAt: timestamp("played_at", { withTimezone: true }),
+    riotMatchId: text("riot_match_id"), // null when Leaguepedia has no JSON for the game
+    riotVersion: text("riot_version"),
+    hasData: boolean("has_data").notNull().default(false),
+    isRemake: boolean("is_remake").notNull().default(false),
+    isChronobreak: boolean("is_chronobreak").notNull().default(false),
+  }, (t) => [
+    index("lol_leaguepedia_games_tournament_id_idx").on(t.tournamentId),
+    check("lol_leaguepedia_games_winner_check", sql`${t.winner} IN (1, 2)`),
+  ]);
+
+  // --- Data Dragon catalog (champion and item names per version) ---------------------------
+  // A Data Dragon version never changes once published, so a stored row is never fetched again. Imports read
+  // the names from here, so they do not depend on Data Dragon being reachable at import time.
+  const dataDragonCatalogs = pgTable("lol_data_dragon_catalogs", {
+    version: text("version").primaryKey(), // e.g. "15.18.1"
+    // By numeric champion id. `key` is Data Dragon's internal id ("MonkeyKing"), the one its image URLs use.
+    champions: jsonb("champions").$type<Record<string, { name: string; key: string }>>().notNull(),
+    items: jsonb("items").$type<Record<string, string>>().notNull(), // by numeric item id
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+  });
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames, dataDragonCatalogs };
+}
+
+export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
+
 const val = defineGameTables("val", (): AnyPgColumn => valorantOnly.maps.id);
-const lol = defineGameTables("lol") as unknown as GameTables;
+const lol = defineGameTables("lol", (): AnyPgColumn => leagueOnly.games.id);
 const valorantOnly = defineValorantTables(val);
+const leagueOnly = defineLeagueTables(lol);
 
 // drizzle-kit only discovers tables exported at module level.
 export const valTeams = val.teams;
@@ -1025,14 +1223,23 @@ export const lolPickemGroupPhasePoints = lol.pickemGroupPhasePoints;
 export const lolPickemMatchPicks = lol.pickemMatchPicks;
 export const lolPickemStandingPicks = lol.pickemStandingPicks;
 export const lolPickemRewards = lol.pickemRewards;
+export const lolGames = leagueOnly.games;
+export const lolGamePlayerStats = leagueOnly.gamePlayerStats;
+export const lolGameTeamStats = leagueOnly.gameTeamStats;
+export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
+export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
+export const lolGameDraft = leagueOnly.gameDraft;
+export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
+export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
+export const lolDataDragonCatalogs = leagueOnly.dataDragonCatalogs;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
-export const lolTables: GameTables = lol;
+export const leagueTables: GameTables<"lol"> & LeagueOnlyTables = { ...lol, ...leagueOnly };
 
-/** Thrown when a feature only some games have (maps, stats, veto) is used for another game. */
+/** Thrown when a feature only some games have (Valorant maps and veto, LoL series games) is used for a game without it. */
 export class GameFeatureUnavailableError extends Error {
   constructor(game: GameSlug) {
-    super(`No maps, stats or veto data for ${game}`);
+    super(`This feature has no data for ${game}`);
   }
 }
 
@@ -1047,6 +1254,21 @@ export function valorantTablesOf(game: GameSlug): typeof valorantTables {
   return new Proxy(valorantTables, { get: (_target, name) => (typeof name === "string" ? unavailableTable : undefined) });
 }
 
-export function gameTables(game: GameSlug): GameTables {
-  return game === "lol" ? lolTables : valorantTables;
+/**
+ * League of Legends only tables (series games and what was played in them). Same rules as
+ * valorantTablesOf: for another game they can be destructured, but any use of one throws.
+ */
+export function leagueTablesOf(game: GameSlug): typeof leagueTables {
+  if (game === "lol") return leagueTables;
+  const unavailableTable = new Proxy({}, { get: () => { throw new GameFeatureUnavailableError(game); } });
+  return new Proxy(leagueTables, { get: (_target, name) => (typeof name === "string" ? unavailableTable : undefined) });
+}
+
+export function gameTables(game: GameSlug): GameTables<"val"> | GameTables<"lol"> {
+  return game === "lol" ? leagueTables : valorantTables;
+}
+
+/** The table a map reference points at: `val_maps` for Valorant, `lol_games` for LoL. Both have `id` and `match_id`. */
+export function seriesMapTableOf(game: GameSlug) {
+  return gameHasMaps(game) ? valorantTables.maps : leagueTables.games;
 }

@@ -1828,7 +1828,8 @@
     "teamTbd": "待定",
     "teamBye": "轮空",
     "discussion": "讨论",
-    "watchparty": "观赛派对"
+    "watchparty": "观赛派对",
+    "vodGame": "对局 {n} 录像"
   },
   "footer": {
     "tagline": "汇聚所有官方 Game Changers 赛事。",
@@ -3893,6 +3894,10 @@
         "fieldMatchWinPointsHint": "留空表示排名不计入比赛胜场积分。",
         "fieldMapWinPoints": "每张地图胜利积分",
         "fieldMapWinPointsHint": "留空表示不计入地图胜场积分。",
+        "fieldGameWinPoints": "每场比赛胜利积分",
+        "fieldGameWinPointsHint": "留空则不计算比赛胜利。",
+        "fieldGameForfeitWinPoints": "每场比赛弃权胜利积分",
+        "fieldGameForfeitWinPointsHint": "对弃权获得的比赛胜利使用不同的值（而非实际比赛）。",
         "fieldRoundWinPoints": "每回合胜利积分",
         "fieldRoundWinPointsHint": "留空表示不计入回合胜利积分。",
         "fieldMatchForfeitWinPoints": "因弃权获胜的比赛积分",
@@ -4472,6 +4477,163 @@
             "mergeMapNotFound": "该地图已不存在。"
           }
         },
+        "draft": {
+          "metaTitle": "选角",
+          "title": "第 {order} 局的选角",
+          "backToMatch": "返回比赛",
+          "description": "本局的禁用与选用顺序。未使用的步骤请留空。",
+          "differsWarning": "导入结果与已保存的选角不一致：重新导入时发现了不同的英雄。请检查选角并保存，以保留您的版本。",
+          "blueSide": "蓝方",
+          "blueLockedHint": "由导入决定（Riot 的蓝队）。",
+          "firstPickLockedHint": "由导入设置（进行第一次禁用的一方）。",
+          "firstPick": "先选",
+          "phase": {
+            "ban1": "禁用阶段 1",
+            "pick1": "选用阶段 1",
+            "ban2": "禁用阶段 2",
+            "pick2": "选用阶段 2"
+          },
+          "side": {
+            "blue": "蓝方",
+            "red": "红方"
+          },
+          "type": {
+            "ban": "禁用",
+            "pick": "选用"
+          },
+          "noChampion": "无英雄",
+          "searchPlaceholder": "搜索英雄",
+          "noResults": "没有匹配的英雄",
+          "unplacedTitle": "尚未放置的选用",
+          "save": "保存选角",
+          "saving": "保存中…",
+          "saved": "选角已保存",
+          "error": {
+            "notFound": "找不到该对局。",
+            "entrantsUnset": "请先设定比赛的两支队伍。",
+            "blueNotAnEntrant": "蓝方必须是比赛两支队伍之一。",
+            "blueLocked": "导入对局的蓝方由导入决定。",
+            "firstPickLocked": "导入的比赛的首选由导入设置。",
+            "invalidFirstPick": "先选必须是蓝方或红方。",
+            "invalidStep": "第 {step} 步不存在或被重复指定。",
+            "unknownChampion": "{championName} 不在英雄列表中。",
+            "duplicateChampion": "{championName} 在选角中出现了不止一次。"
+          }
+        },
+        "games": {
+          "heading": "对局",
+          "description": "本系列赛中按顺序进行的对局。",
+          "empty": "暂无对局。",
+          "gameLabel": "第 {order} 局",
+          "winnerLabel": "胜者：{name}",
+          "noWinner": "暂无胜者",
+          "finished": "已完成",
+          "notFinished": "未完成",
+          "draftButton": "选角",
+          "draftDiffers": "导入结果与已保存的选角不一致",
+          "forfeit": "弃权",
+          "cancel": "取消",
+          "save": "保存",
+          "saving": "保存中…",
+          "createButton": "添加对局",
+          "createTitle": "添加对局",
+          "editTitle": "编辑对局",
+          "dialogDescription": "填写本系列赛中一局对局的结果。",
+          "editButton": "编辑",
+          "deleteButton": "删除",
+          "deleteTitle": "删除对局",
+          "deleteConfirm": "删除第 {order} 局？比赛比分将根据其余对局重新计算。",
+          "deleteError": "无法删除该对局。",
+          "deleteSuccess": "对局已删除。",
+          "saveError": "无法保存该对局。",
+          "saveSuccess": "对局已保存。",
+          "fieldOrder": "顺序",
+          "fieldWinner": "胜者",
+          "fieldWinnerNone": "暂无胜者",
+          "fieldCompleted": "已完成",
+          "fieldForfeit": "弃权",
+          "fieldNote": "备注",
+          "fieldError": {
+            "invalid": "请输入有效的值。",
+            "tooLong": "内容过长。",
+            "duplicateOrder": "该顺序已被其他对局使用。",
+            "winnerRequired": "已完成的对局需要胜者。",
+            "notAnEntrant": "胜者必须是两支队伍之一。",
+            "notCompleted": "要设置胜者，请先将对局标记为已完成。",
+            "invalidMatchId": "请使用 EUW1_6123456789 的格式：平台代码、下划线，然后是对局编号。",
+            "duplicateMatchId": "其他对局已使用该 Riot 对局 ID。"
+          },
+          "fieldApiMatchId": "Riot 对局 ID",
+          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台将从中读取。",
+          "leaguepedia": {
+            "label": "Leaguepedia 比赛",
+            "none": "无",
+            "noData": "无数据",
+            "gameNumber": "第 {number} 局",
+            "fetch": "从 Leaguepedia 获取",
+            "fetching": "获取中…",
+            "renew": "更新",
+            "reprocess": "重新处理",
+            "success": "已从 Leaguepedia 保存该局",
+            "error": {
+              "noData": "该局在 Leaguepedia 上没有 V5 数据。",
+              "notInBucket": "该局尚未在存储中，请先获取。",
+              "pageInvalid": "该局的 Leaguepedia 页面不是有效的比赛数据。",
+              "fetch": "无法读取 Leaguepedia，请稍后重试。",
+              "missingConfig": "本服务器未配置 Leaguepedia 机器人登录。",
+              "sidesUnresolved": "该局的两支队伍与本系列的两个参赛方不匹配。",
+              "missingPlayers": "{count, plural, other {# 名选手尚未关联到人员}}",
+              "invalidUpload": "比赛数据未通过导入检查。",
+              "storeFailed": "无法保存该局。",
+              "invalidOrder": "局数必须是大于等于 1 的整数。",
+              "lolIdConflict": "该 Riot 账号已关联到其他人员。",
+              "sidesInvalid": "蓝方和红方需要选择两个不同的参赛方。",
+              "roleInvalid": "变更中的位置无效。",
+              "orderTaken": "本系列的第 {order} 局已有其他数据。请选择其他局数后重新保存。",
+              "dataDragonUnavailable": "暂时无法获取英雄名称，请稍后再试。",
+              "unknownChampions": "未知的英雄 ID：{ids}",
+              "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。",
+              "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。",
+              "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。",
+              "tournamentRealm": "该对局在赛事服务器进行，请改从 Leaguepedia 获取。"
+            },
+            "searchPlaceholder": "按队伍、局数或日期搜索",
+            "noResults": "没有匹配的比赛",
+            "previewTitle": "检查比赛",
+            "previewDescription": "为每一方选择参赛方，并关联尚未关联的每位选手。",
+            "back": "返回",
+            "saveGame": "保存比赛",
+            "sideBlue": "蓝方",
+            "sideRed": "红方",
+            "sidesTitle": "阵营",
+            "blueSide": "蓝方阵营",
+            "redSide": "红方阵营",
+            "chooseEntrant": "选择参赛方",
+            "suggestedPlayers": "根据已关联选手推荐",
+            "suggestedNames": "根据队伍名称推荐",
+            "winnerLabel": "胜方：{name}",
+            "noWinner": "无胜方",
+            "lengthLabel": "时长：{minutes} 分钟",
+            "playersTitle": "选手",
+            "notLinked": "尚未关联",
+            "linkExisting": "关联已有人员",
+            "createNew": "新建",
+            "newHandle": "新人员的名称",
+            "unresolvedHint": "为每位尚未关联的选手关联或新建一个人员。",
+            "roleLabel": "位置",
+            "roleNone": "无位置",
+            "riotRole": "Riot：{role}",
+            "alreadyStoredHere": "已保存为本系列第 {order} 局",
+            "alreadyStoredElsewhere": "已保存在其他系列中",
+            "refreshGames": "刷新对局列表",
+            "refreshCooldown": "不到一小时前刚刷新过，请稍后再试。",
+            "refreshed": "对局列表已刷新（{count} 场）",
+            "refreshError": "无法刷新对局列表，请稍后再试。",
+            "riotFetch": "从 Riot 获取",
+            "riotSuccess": "已从 Riot 保存对局",
+            "riotTournamentRealm": "该对局在赛事服务器进行，无法从 Riot API 获取。"
+          }
+        },
         "liquipediaImportButton": "Liquipedia 比赛导入"
       },
       "liquipediaButton": "Liquipedia",
@@ -4713,7 +4875,30 @@
       "activeFilterLabel": "活跃状态",
       "activeFilterAny": "所有赛事",
       "activeFilterActive": "活跃",
-      "activeFilterInactive": "不活跃"
+      "activeFilterInactive": "不活跃",
+      "leaguepedia": {
+        "title": "Leaguepedia 比赛",
+        "description": "比赛列表来自 Leaguepedia 的 Cargo 表，包括基础页面及其下的所有页面。",
+        "basePageLabel": "Leaguepedia 基础页面",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "保存时会从 Leaguepedia 读取比赛。读取失败则不会保存任何内容。",
+        "save": "保存并获取比赛",
+        "saving": "获取中…",
+        "refresh": "从 Leaguepedia 刷新",
+        "lastFetched": "上次获取 {date} · {count, plural, other {# 场比赛}}",
+        "neverFetched": "尚未获取",
+        "success": "已获取 {count, plural, other {# 场比赛}}",
+        "error": {
+          "gameClaimed": "这些对局已属于另一个赛事，无法在此关联。",
+          "invalidBasePage": "页面名称不能包含 # < > [ ] | { } ，且不能以 / 开头或结尾。",
+          "notFound": "未找到该赛事。",
+          "notLinked": "请先保存基础页面。",
+          "cooldown": "比赛列表在一小时内刚刚读取过，请稍后再试。",
+          "missingConfig": "本服务器未配置 Leaguepedia 机器人登录。",
+          "fetch": "无法读取 Leaguepedia，请稍后重试。"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "举报",
@@ -5273,7 +5458,8 @@
       "level": {
         "tournament": "赛事",
         "match": "比赛",
-        "map": "地图"
+        "map": "地图",
+        "game": "对局"
       },
       "matchSearchPlaceholder": "搜索比赛…",
       "mapSearchPlaceholder": "搜索地图…",
@@ -5292,7 +5478,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "比赛",
       "openMaps": "地图",
-      "goBack": "返回"
+      "goBack": "返回",
+      "gameEmpty": "该比赛中没有对局。",
+      "gameSearchPlaceholder": "搜索对局…",
+      "openGames": "对局"
     },
     "streams": {
       "title": "直播频道",
@@ -5424,8 +5613,14 @@
         "matchNotInTournament": "此比赛不属于所选赛事。",
         "mapNotFound": "未找到该地图。",
         "mapNotInMatch": "此地图不属于所选比赛。",
-        "notFound": "未找到该录像。"
-      }
+        "notFound": "未找到该录像。",
+        "gameNotFound": "找不到该对局。",
+        "gameNotInMatch": "该对局不属于所选比赛。"
+      },
+      "scopeGame": "特定对局",
+      "gameLabel": "对局",
+      "gamePlaceholder": "选择对局…",
+      "gameLoading": "加载中…"
     },
     "apiKeys": {
       "title": "API 密钥",
@@ -6258,7 +6453,8 @@
     "mapsPickRatesShowMore": "显示全部",
     "mapsPickRatesShowLess": "收起",
     "factOrganizer": "主办方",
-    "vs": "对"
+    "vs": "对",
+    "standingsGames": "局数"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6449,6 +6645,10 @@
   "liquipediaSource": {
     "text": "本页面的部分信息来自 Liquipedia。",
     "link": "查看原文"
+  },
+  "leaguepediaSource": {
+    "text": "本页面的部分对局数据来自 Leaguepedia（CC BY-SA）。原始页面：",
+    "game": "第 {order} 局"
   },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",

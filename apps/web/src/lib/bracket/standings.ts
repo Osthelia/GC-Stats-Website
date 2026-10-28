@@ -1,22 +1,22 @@
 ﻿/**
  * GC-Stats - standings
  *
- * Computes ranked group standings (swiss, round robin) with map/round
- * records read at request time from `maps`, not trusted from `group_entries`.
+ * Computes ranked group standings (swiss, round robin) with game/round
+ * records read at request time from the series maps, not trusted from `group_entries`.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray } from "drizzle-orm";
-import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { and, eq } from "drizzle-orm";
+import { gameTables } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
-import type { Tx } from "./repository";
+import { listMatchMapResults, type Tx } from "./repository";
 import { parseGroupConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
 import { recordsFromMatches } from "./group-progression";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type GroupStandingsEntry = RankedStandingsEntry & { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
 
@@ -24,8 +24,8 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
 
 /**
  * Per-entrant map record (win/loss) and round win/loss totals, computed
- * read-time from `maps` (same `matches.entrantAId`/`entrantBId` <->
- * `maps.teamAScore`/`teamBScore` convention as `points.ts`) rather than
+ * read-time from the series maps (same `matches.entrantAId`/`entrantBId` <->
+ * `teamAScore`/`teamBScore` of a Valorant map, as in `points.ts`) rather than
  * trusted from `group_entries` — that column is match-level bookkeeping
  * only (never updated with map/round data, cf. group-progression.ts) and,
  * for historically-migrated containers, was reconstructed at 0 anyway
@@ -52,24 +52,21 @@ async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Pr
   if (containerMatches.length === 0) return stats;
   const matchById = new Map(containerMatches.map((m) => [m.id, m]));
 
-  // Only Valorant matches have maps, other games score on the match itself.
-  const containerMaps = gameHasMaps(game)
-    ? await tx.select().from(valorantTablesOf(game).maps).where(inArray(valorantTablesOf(game).maps.matchId, containerMatches.map((m) => m.id)))
-    : [];
-  for (const mp of containerMaps) {
-    if (!mp.isCompleted || mp.teamAScore === null || mp.teamBScore === null) continue;
-    const match = matchById.get(mp.matchId);
+  const mapResults = await listMatchMapResults(game, tx, containerMatches.map((m) => m.id));
+  for (const map of mapResults) {
+    const match = matchById.get(map.matchId);
     if (!match) continue;
-    if (mp.teamAScore > mp.teamBScore) {
+    if (map.winner === "a") {
       bump(match.entrantAId, { mapWins: 1 });
       bump(match.entrantBId, { mapLosses: 1 });
-    } else if (mp.teamBScore > mp.teamAScore) {
+    } else if (map.winner === "b") {
       bump(match.entrantBId, { mapWins: 1 });
       bump(match.entrantAId, { mapLosses: 1 });
     }
-    if (!mp.isForfeit) {
-      bump(match.entrantAId, { roundWins: mp.teamAScore, roundLosses: mp.teamBScore });
-      bump(match.entrantBId, { roundWins: mp.teamBScore, roundLosses: mp.teamAScore });
+    // Rounds only exist for Valorant maps, and a forfeit's score is not a real round count.
+    if (map.isCompleted && !map.isForfeit && map.roundsA !== null && map.roundsB !== null) {
+      bump(match.entrantAId, { roundWins: map.roundsA, roundLosses: map.roundsB });
+      bump(match.entrantBId, { roundWins: map.roundsB, roundLosses: map.roundsA });
     }
   }
   return stats;
@@ -110,6 +107,10 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
   });
 
   const emptyRecord: MapRecord = { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
+  const gameDiffOf = (entrantId: number) => {
+    const rec = mapRecord.get(entrantId) ?? emptyRecord;
+    return rec.mapWins - rec.mapLosses;
+  };
   const roundDiffOf = (entrantId: number) => {
     const rec = mapRecord.get(entrantId) ?? emptyRecord;
     return rec.roundWins - rec.roundLosses;
@@ -150,6 +151,7 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
+      gameDiff: gameDiffOf(e.entrantId),
       headToHead,
       points: points?.get(e.entrantId) ?? 0,
     };

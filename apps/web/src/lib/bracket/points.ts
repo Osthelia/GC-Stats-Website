@@ -11,7 +11,7 @@
 
 import { eq, inArray } from "drizzle-orm";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
-import type { Tx } from "./repository";
+import { listMatchMapResults, type Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -25,7 +25,6 @@ import type { GameSlug } from "@gc-stats/db/game";
  */
 export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
   const { matches } = gameTables(game);
-  const { maps, mapRoundsRaw } = valorantTablesOf(game);
   const points = new Map<number, number>();
   const add = (entrantId: number | null, amount: number | null) => {
     if (entrantId === null || amount === null) return;
@@ -45,20 +44,22 @@ export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId
   if (!needsMapData || finished.length === 0) return points;
 
   const matchById = new Map(finished.map((m) => [m.id, m]));
-  const mapRows = await tx.select().from(maps).where(inArray(maps.matchId, finished.map((m) => m.id)));
-  const completedMaps = mapRows.filter((mp) => mp.isCompleted && mp.teamAScore !== null && mp.teamBScore !== null);
+  const mapResults = await listMatchMapResults(game, tx, finished.map((m) => m.id));
 
   if (config.mapWin !== null || config.mapForfeitWin !== null) {
-    for (const mp of completedMaps) {
-      const match = matchById.get(mp.matchId);
-      if (!match) continue;
-      const winnerId = mp.teamAScore! > mp.teamBScore! ? match.entrantAId : mp.teamBScore! > mp.teamAScore! ? match.entrantBId : null;
-      add(winnerId, mp.isForfeit ? config.mapForfeitWin : config.mapWin);
+    for (const map of mapResults) {
+      const match = matchById.get(map.matchId);
+      if (!match || map.winner === null) continue;
+      const winnerId = map.winner === "a" ? match.entrantAId : match.entrantBId;
+      add(winnerId, map.isForfeit ? config.mapForfeitWin : config.mapWin);
     }
   }
 
-  if (config.roundWin !== null && completedMaps.length > 0) {
-    const roundRows = await tx.select({ winningEntrantId: mapRoundsRaw.winningEntrantId }).from(mapRoundsRaw).where(inArray(mapRoundsRaw.mapId, completedMaps.map((mp) => mp.id)));
+  // Round wins only exist for Valorant maps: a LoL game has no round scores, so it is filtered out here.
+  const scoredMapIds = mapResults.filter((map) => map.isCompleted && map.roundsA !== null && map.roundsB !== null).map((map) => map.id);
+  if (config.roundWin !== null && scoredMapIds.length > 0) {
+    const { mapRoundsRaw } = valorantTablesOf(game);
+    const roundRows = await tx.select({ winningEntrantId: mapRoundsRaw.winningEntrantId }).from(mapRoundsRaw).where(inArray(mapRoundsRaw.mapId, scoredMapIds));
     for (const r of roundRows) {
       add(r.winningEntrantId, config.roundWin);
     }

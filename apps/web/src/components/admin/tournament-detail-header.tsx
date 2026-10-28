@@ -155,6 +155,11 @@ export function TournamentDetailHeader({
           <Button variant="outline" render={<Link href={`/admin/tournaments/${tournament.id}/liquipedia`} />}>
             {t("liquipediaButton")}
           </Button>
+          {game === "lol" && (
+            <Button variant="outline" render={<Link href={`/admin/tournaments/${tournament.id}/leaguepedia`} />}>
+              {t("leaguepediaButton")}
+            </Button>
+          )}
           {canManage && (
             <Button variant="outline" disabled={isPending} onClick={handleDelete} className="text-destructive hover:text-destructive">
               {t("deleteButton")}
