@@ -99,8 +99,8 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     matchId: input.matchId,
     source: input.source,
     roleOverrides: input.roleOverrides,
-    draftFirstPick: firstPickSideOf(match),
   };
+  const importedFirstPick = { draftFirstPick: firstPickSideOf(match) };
 
   const gameId = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${apiMatchId}))`);
@@ -125,7 +125,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     let id: number;
     if (existing) {
       id = existing.id;
-      await tx.update(games).set(gameFields).where(eq(games.id, id));
+      await tx.update(games).set(keepDraft ? gameFields : { ...gameFields, ...importedFirstPick }).where(eq(games.id, id));
       // A re-import is a full replacement of what the game had before.
       await tx.delete(gameEventsRaw).where(eq(gameEventsRaw.gameId, id));
       await tx.delete(gameFramesRaw).where(eq(gameFramesRaw.gameId, id));
@@ -133,7 +133,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       await tx.delete(gameTeamStats).where(eq(gameTeamStats.gameId, id));
       await tx.delete(gamePlayerStats).where(eq(gamePlayerStats.gameId, id));
     } else {
-      const [inserted] = await tx.insert(games).values(gameFields).returning({ id: games.id });
+      const [inserted] = await tx.insert(games).values({ ...gameFields, ...importedFirstPick }).returning({ id: games.id });
       id = inserted!.id;
     }
 
