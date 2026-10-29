@@ -1132,7 +1132,8 @@
               "ที่อยู่ IP",
               "หน้าที่ร้องขอ",
               "เบราว์เซอร์",
-              "วันที่และเวลา"
+              "วันที่และเวลา",
+              "การใช้งานพอร์ทัล OpenData (บัญชี, ที่อยู่ IP ที่แฮชแล้ว, ชุดข้อมูล) ลบหลัง 30 วัน"
             ]
           }
         },
@@ -1654,8 +1655,6 @@
     "product": "ผลิตภัณฑ์",
     "productAllMatches": "แมตช์ทั้งหมด",
     "productTournaments": "ทัวร์นาเมนต์",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "เร็วๆ นี้",
     "productForum": "ฟอรัม",
     "contribute": "ร่วมพัฒนา",
     "contributeEditPage": "แก้ไขหน้า",
@@ -1677,7 +1676,8 @@
     "transparency": "ความโปร่งใส",
     "finance": "การเงิน",
     "developers": "นักพัฒนา",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1878,7 +1878,8 @@
       "sanctions": "บทลงโทษ",
       "activityLog": "บันทึกกิจกรรม",
       "analytics": "สถิติการใช้งาน",
-      "oauthClients": "ไคลเอนต์ OAuth"
+      "oauthClients": "ไคลเอนต์ OAuth",
+      "settings": "การตั้งค่า"
     },
     "dashboard": {
       "title": "แดชบอร์ด",
@@ -3309,7 +3310,8 @@
         "sanctions": "บทลงโทษ",
         "activityLog": "บันทึกกิจกรรม",
         "analytics": "สถิติการใช้งาน",
-        "oauthClients": "ไคลเอนต์ OAuth"
+        "oauthClients": "ไคลเอนต์ OAuth",
+        "settings": "การตั้งค่า"
       },
       "permissionNames": {
         "admin_access": "เข้าถึงแผงผู้ดูแล",
@@ -3358,7 +3360,9 @@
         "activity_log_view": "ดูบันทึกกิจกรรม",
         "analytics_view": "ดูสถิติการใช้งาน",
         "oauth_clients_view": "ดูไคลเอนต์ OAuth",
-        "oauth_clients_manage": "สร้าง แก้ไข หรือลบไคลเอนต์ OAuth"
+        "oauth_clients_manage": "สร้าง แก้ไข หรือลบไคลเอนต์ OAuth",
+        "settings_view": "ดูการตั้งค่าและการติดตาม OpenData",
+        "settings_manage": "แก้ไขการตั้งค่า"
       },
       "create": {
         "button": "บทบาทใหม่",
@@ -4879,6 +4883,133 @@
         "stoppedTournament": "หยุดลงเล่นตั้งแต่ทัวร์นาเมนต์",
         "insideSource": "แหล่งข่าวภายใน",
         "declaredByPlayer": "ผู้เล่นแจ้งเอง"
+      }
+    },
+    "settings": {
+      "title": "การตั้งค่า",
+      "subtitle": "การตั้งค่าทั้งเว็บไซต์",
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก...",
+      "saveSuccess": "บันทึกการตั้งค่าแล้ว",
+      "saveError": "บางช่องไม่ถูกต้อง",
+      "saveFailed": "บันทึกไม่สำเร็จ โปรดโหลดหน้าใหม่แล้วลองอีกครั้ง",
+      "error": {
+        "required": "ต้องกรอกช่องนี้",
+        "invalid": "ค่าไม่ถูกต้อง",
+        "outOfRange": "ต้องเป็นจำนวนเต็มระหว่าง {min} ถึง {max}"
+      },
+      "opendata": {
+        "title": "พอร์ทัล OpenData",
+        "description": "ชุดข้อมูลสาธารณะ (ทัวร์นาเมนต์ ทีม ผู้เล่น แมตช์) ที่เรียกดูและดาวน์โหลดเป็น JSON ได้",
+        "publicPortal": "พอร์ทัลสาธารณะ",
+        "monitoring": "การติดตาม",
+        "enabled": "เปิดใช้พอร์ทัล",
+        "enabledHint": "เมื่อปิด พอร์ทัลและ API จะตอบว่าบริการไม่พร้อมใช้งาน",
+        "requireAccount": "ต้องมีบัญชี",
+        "requireAccountHint": "เฉพาะผู้ใช้ที่เข้าสู่ระบบเท่านั้นที่เรียกดูและดาวน์โหลดข้อมูลได้",
+        "browsePerMinute": "หน้าตารางต่อนาที",
+        "browsePerMinuteHint": "ต่อบัญชี หรือต่อที่อยู่ IP สำหรับผู้เยี่ยมชม ระหว่าง {min} ถึง {max}",
+        "exportsPerHour": "การส่งออกทั้งหมดต่อชั่วโมง",
+        "exportsPerHourHint": "ต่อบัญชี หรือต่อที่อยู่ IP สำหรับผู้เยี่ยมชม ระหว่าง {min} ถึง {max}",
+        "propagationHint": "ทุกเซิร์ฟเวอร์จะใช้การเปลี่ยนแปลงภายใน 15 วินาที"
+      }
+    },
+    "opendataMonitoring": {
+      "title": "การติดตาม OpenData",
+      "subtitle": "การใช้งานพอร์ทัล OpenData และผลกระทบต่อภาระของเว็บไซต์",
+      "backToSettings": "การตั้งค่า",
+      "rangeLabel": "ช่วงเวลา",
+      "range": {
+        "1h": "1 ชั่วโมง",
+        "24h": "24 ชั่วโมง",
+        "7d": "7 วัน"
+      },
+      "refresh": "รีเฟรช",
+      "verdict": {
+        "healthy": "พอร์ทัลไม่สร้างภาระให้เว็บไซต์",
+        "strained": "พอร์ทัลเริ่มใช้ทรัพยากรมาก",
+        "overloaded": "ต้องชะลอพอร์ทัลเพื่อปกป้องเว็บไซต์"
+      },
+      "verdictHint": {
+        "healthy": "ไม่มีแรงกดดันด้านภาระ ไม่มีคำขอที่ถูกปฏิเสธ",
+        "strained": "ติดตามแนวโน้ม: ลดขีดจำกัดหรือบังคับให้มีบัญชีหากยังเพิ่มขึ้น",
+        "overloaded": "มีคำขอถูกปฏิเสธขณะที่เว็บไซต์มีภาระสูง ควรพิจารณาลดขีดจำกัดหรือบังคับให้มีบัญชี"
+      },
+      "reasons": {
+        "shed": "ปฏิเสธ {shed} คำขอเพื่อให้เว็บไซต์ตอบสนองได้ดี",
+        "critical": "เว็บไซต์มีภาระถึงระดับวิกฤต",
+        "elevated": "เว็บไซต์มีภาระสูง {share} ของเวลา",
+        "rateLimited": "คำขอจำนวนมากถึงขีดจำกัด",
+        "slow": "ตอบสนองช้า (เปอร์เซ็นไทล์ที่ 95 ที่ {p95} ms)"
+      },
+      "configState": "พอร์ทัล: {enabled} · ต้องมีบัญชี: {requireAccount} · ขีดจำกัด: {browse} หน้าต่อนาที, {exports} การส่งออกต่อชั่วโมง",
+      "on": "เปิด",
+      "off": "ปิด",
+      "stats": {
+        "requests": "คำขอ",
+        "clients": "ไคลเอนต์",
+        "exports": "การส่งออก",
+        "cacheHitRate": "อัตราแคช",
+        "p95": "เวลาเปอร์เซ็นไทล์ที่ 95",
+        "avgQueue": "รอเฉลี่ย",
+        "rateLimited": "ถูกจำกัด",
+        "shed": "ถูกปฏิเสธ (ภาระ)",
+        "errors": "ข้อผิดพลาด",
+        "authRequired": "ถูกปฏิเสธ (ไม่มีบัญชี)",
+        "rowsServed": "แถวที่ส่งคืน",
+        "elevatedShare": "เวลาที่มีภาระ"
+      },
+      "requestsChart": "คำขอ",
+      "requestsChartHint": "ที่ส่งคืน ถูกจำกัด ถูกปฏิเสธเพราะภาระของเว็บไซต์ และข้อผิดพลาด",
+      "pressureChart": "ภาระของเว็บไซต์",
+      "pressureChartHint": "ความหน่วงของ event loop (เตือนตั้งแต่ {elevated} ms วิกฤตตั้งแต่ {critical} ms) คิวรีของเว็บไซต์ที่รอการเชื่อมต่อฐานข้อมูล และคิวรี OpenData ที่กำลังทำงาน",
+      "instances": "เซิร์ฟเวอร์",
+      "instancesHint": "ตัวอย่างล่าสุดของแต่ละเซิร์ฟเวอร์ OpenData รัน {normal} คิวรีพร้อมกันต่อเซิร์ฟเวอร์ {elevated} เมื่อมีภาระ และไม่รันเลยเมื่อภาระวิกฤต",
+      "instancesEmpty": "ไม่มีตัวอย่างล่าสุด",
+      "columns": {
+        "instance": "เซิร์ฟเวอร์",
+        "level": "ภาระ",
+        "lag": "ความหน่วง",
+        "poolWaiting": "คิวรีที่รอ",
+        "inFlight": "OpenData ที่ทำงาน",
+        "queued": "OpenData ในคิว",
+        "sampledAt": "เวลาเก็บตัวอย่าง",
+        "dataset": "ชุดข้อมูล",
+        "requests": "ส่งคืน / คำขอ",
+        "cacheHit": "แคช",
+        "avg": "เฉลี่ย",
+        "p95": "เปอร์เซ็นไทล์ที่ 95",
+        "rows": "แถว",
+        "consumer": "ไคลเอนต์",
+        "exports": "การส่งออก",
+        "rateLimited": "ถูกจำกัด",
+        "shed": "ถูกปฏิเสธ",
+        "lastSeen": "เห็นล่าสุด"
+      },
+      "level": {
+        "normal": "ปกติ",
+        "elevated": "สูง",
+        "critical": "วิกฤต"
+      },
+      "kind": {
+        "browse": "ตาราง",
+        "export": "ส่งออก"
+      },
+      "datasets": "ตามชุดข้อมูล",
+      "consumers": "ไคลเอนต์ที่ใช้งานมากที่สุด",
+      "consumersHint": "ผู้เยี่ยมชมที่ไม่มีบัญชีจะถูกจัดกลุ่มตามแฮชของที่อยู่ IP",
+      "noRequests": "ไม่มีคำขอในช่วงเวลานี้",
+      "anonymous": "ผู้เยี่ยมชม {hash}",
+      "charts": {
+        "empty": "ไม่มีคำขอในช่วงเวลานี้",
+        "noSamples": "ไม่มีตัวอย่างภาระในช่วงเวลานี้",
+        "served": "ส่งคืน",
+        "rateLimited": "ถูกจำกัด",
+        "shed": "ถูกปฏิเสธ",
+        "errors": "ข้อผิดพลาด",
+        "lag": "ความหน่วง (ms)",
+        "poolWaiting": "คิวรีที่รอ",
+        "inFlight": "OpenData ที่ทำงาน"
       }
     }
   },
@@ -6535,6 +6666,171 @@
       "tooLarge": "ไฟล์ใหญ่เกินไป สูงสุด {max} MB",
       "tooSmall": "รูปภาพเล็กเกินไป ด้านที่สั้นที่สุดต้องมีอย่างน้อย {min} px",
       "invalidImage": "ไฟล์นี้ไม่ใช่รูปภาพที่ถูกต้อง"
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "ทัวร์นาเมนต์ ทีม ผู้เล่น และแมตช์สาธารณะทั้งหมดของ GC Stats เรียกดู เรียงลำดับ และดาวน์โหลดเป็น JSON ได้อย่างอิสระ",
+    "rowCount": "{count, plural, other {# แถว}}",
+    "columnCount": "{count, plural, other {# คอลัมน์}}",
+    "explore": "สำรวจ",
+    "allDatasets": "ชุดข้อมูลทั้งหมด",
+    "datasets": {
+      "tournaments": {
+        "name": "ทัวร์นาเมนต์",
+        "description": "ทัวร์นาเมนต์ที่เผยแพร่ทั้งหมด: วันที่ สถานะ ภูมิภาค หมวดหมู่ เงินรางวัล ผู้จัด และจำนวนทีม"
+      },
+      "teams": {
+        "name": "ทีม",
+        "description": "ทีมทั้งหมดพร้อมประเทศ จำนวนผู้เล่นปัจจุบัน จำนวนแมตช์ ประวัติ และโซเชียล"
+      },
+      "players": {
+        "name": "ผู้เล่น",
+        "description": "ผู้เล่นและทีมงานทั้งหมดพร้อมประเทศ ทีมและบทบาทปัจจุบัน ประวัติ และโซเชียล"
+      },
+      "matches": {
+        "name": "แมตช์",
+        "description": "แมตช์ทั้งหมดพร้อมทัวร์นาเมนต์ รอบ ทีม คะแนน สถานะ และเวลา"
+      }
+    },
+    "usage": {
+      "title": "การใช้ข้อมูล",
+      "publicOnly": "เปิดเผยเฉพาะข้อมูลที่เป็นสาธารณะบนเว็บไซต์อยู่แล้ว: ไม่มีบัญชี ข้อมูลติดต่อ หรือช่องข้อมูลส่วนตัว",
+      "terms": "ข้อมูลอยู่ภายใต้เงื่อนไขเดียวกับเว็บไซต์ ใช้ได้เฉพาะตามที่<terms>ข้อกำหนดการใช้งาน</terms>ของเราอนุญาตเท่านั้น",
+      "freshness": "ตารางรีเฟรชทุกนาที การส่งออกทั้งหมดทุก 10 นาที",
+      "limits": "ขีดจำกัด: {browse} หน้าตารางต่อนาที และ {exports} การส่งออกทั้งหมดต่อชั่วโมง ต่อบัญชีหรือต่อที่อยู่ IP",
+      "accountOnly": "ขณะนี้พอร์ทัลเปิดให้เฉพาะผู้ใช้ที่เข้าสู่ระบบ",
+      "priority": "เว็บไซต์มีลำดับความสำคัญเสมอ: เมื่อมีภาระสูง พอร์ทัลจะช้าลงและอาจตอบว่าไม่ว่างสักครู่"
+    },
+    "api": {
+      "title": "API",
+      "intro": "ตารางและการส่งออกใช้ JSON API สาธารณะที่คุณเรียกใช้ได้โดยตรง:",
+      "datasets": "ชุดข้อมูล: {list}",
+      "paramPerPage": "per_page: {sizes}",
+      "paramSort": "sort: คอลัมน์ใดก็ได้ของชุดข้อมูล, direction: asc หรือ desc",
+      "paramQ": "q: ค้นหาข้อความ สูงสุด 100 ตัวอักษร",
+      "paramFilter": "f.คอลัมน์: กรองตามคอลัมน์ใดก็ได้ (เช่น f.region=EMEA) ข้อความจับคู่บางส่วน ตัวเลข สถานะ และ true/false จับคู่ตรงทั้งหมด ใช้ร่วมกันได้สูงสุด {max} ตัวกรอง",
+      "errors": "ข้อผิดพลาดจะส่งคืนออบเจ็กต์ JSON ที่มีรหัสข้อผิดพลาด สถานะ 400, 401, 429 หรือ 503 และส่วนหัว Retry-After ที่บอกว่าเมื่อใดจะลองใหม่ได้"
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData ไม่พร้อมใช้งานชั่วคราว",
+        "text": "ขณะนี้พอร์ทัลปิดอยู่ โปรดกลับมาใหม่ภายหลัง"
+      },
+      "accountRequired": {
+        "title": "เข้าสู่ระบบเพื่อเข้าถึงข้อมูล",
+        "text": "ขณะนี้พอร์ทัล OpenData เปิดให้เฉพาะผู้ใช้ที่เข้าสู่ระบบ การสร้างบัญชีไม่มีค่าใช้จ่าย"
+      },
+      "login": "เข้าสู่ระบบ",
+      "register": "สร้างบัญชี"
+    },
+    "download": {
+      "label": "ดาวน์โหลด JSON",
+      "labelFiltered": "ดาวน์โหลดรายการที่เลือก",
+      "preparing": "กำลังเตรียม...",
+      "success": "เริ่มดาวน์โหลดแล้ว"
+    },
+    "errors": {
+      "not_found": "ไม่มีชุดข้อมูลนี้",
+      "bad_request": "พารามิเตอร์คำขอไม่ถูกต้อง",
+      "disabled": "พอร์ทัล OpenData ไม่พร้อมใช้งานชั่วคราว",
+      "account_required": "เข้าสู่ระบบเพื่อเข้าถึงข้อมูล",
+      "rate_limited": "คำขอมากเกินไป โปรดช้าลง",
+      "busy": "เว็บไซต์มีภาระสูง ข้อมูลจะกลับมาในไม่กี่วินาที",
+      "internal_error": "เกิดข้อผิดพลาด โปรดลองอีกครั้ง",
+      "network": "ข้อผิดพลาดเครือข่าย ตรวจสอบการเชื่อมต่อของคุณ"
+    },
+    "retryIn": "(ลองใหม่ใน {seconds} วิ)",
+    "retry": "ลองอีกครั้ง",
+    "searchLabel": "ค้นหา",
+    "searchPlaceholder": {
+      "tournaments": "ชื่อ ภูมิภาค หมวดหมู่...",
+      "teams": "ชื่อหรือแท็ก...",
+      "players": "ชื่อในเกม ชื่อ ทีม...",
+      "matches": "ทัวร์นาเมนต์ รอบ ทีม..."
+    },
+    "clearSearch": "ล้างการค้นหา",
+    "filters": {
+      "button": "กรอง",
+      "title": "กรองตามคอลัมน์",
+      "column": "คอลัมน์",
+      "value": "ค่า",
+      "valuePlaceholder": "ค่าที่ต้องการค้นหา...",
+      "addAnother": "เพิ่มตัวกรองอีก",
+      "apply": "ใช้",
+      "clear": "ล้าง",
+      "integerRequired": "คอลัมน์นี้ต้องเป็นจำนวนเต็ม"
+    },
+    "perPage": "{count} ต่อหน้า",
+    "columnsPicker": "คอลัมน์",
+    "showAllColumns": "แสดงทั้งหมด",
+    "resetColumns": "รีเซ็ต",
+    "rowsRange": "{from} ถึง {to} จาก {total} แถว",
+    "loading": "กำลังโหลด...",
+    "noResults": "ไม่มีแถว",
+    "noResultsFor": "ไม่มีแถวที่ตรงกับ \"{q}\"",
+    "noResultsFiltered": "ไม่มีแถวที่ตรงกับตัวกรองเหล่านี้",
+    "pagination": "การแบ่งหน้า",
+    "firstPage": "หน้าแรก",
+    "previousPage": "หน้าก่อนหน้า",
+    "nextPage": "หน้าถัดไป",
+    "lastPage": "หน้าสุดท้าย",
+    "pageOf": "หน้า {page} จาก {total}",
+    "yes": "ใช่",
+    "no": "ไม่",
+    "openLink": "เปิด",
+    "status": {
+      "upcoming": "กำลังจะมาถึง",
+      "live": "ถ่ายทอดสด",
+      "finished": "จบแล้ว",
+      "pending": "กำหนดการ",
+      "completed": "จบแล้ว"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "ชื่อ",
+      "status": "สถานะ",
+      "start_date": "เริ่ม",
+      "end_date": "สิ้นสุด",
+      "region": "ภูมิภาค",
+      "category": "หมวดหมู่",
+      "location": "สถานที่",
+      "prize_pool": "เงินรางวัล",
+      "teams_count": "ทีม",
+      "organizer_id": "ID ผู้จัด",
+      "organizer_name": "ผู้จัด",
+      "liquipedia_link": "Liquipedia",
+      "socials": "โซเชียล",
+      "short_name": "แท็ก",
+      "country_code": "ประเทศ",
+      "secondary_country_code": "ประเทศที่สอง",
+      "is_active": "ใช้งาน",
+      "players_count": "ผู้เล่น",
+      "matches_count": "แมตช์",
+      "bio": "ประวัติ",
+      "vlr_id": "VLR ID",
+      "handle": "ชื่อในเกม",
+      "first_name": "ชื่อจริง",
+      "last_name": "นามสกุล",
+      "current_team_id": "ID ทีม",
+      "current_team_name": "ทีมปัจจุบัน",
+      "current_role": "บทบาท",
+      "scheduled_at": "วันที่",
+      "tournament_id": "ID ทัวร์นาเมนต์",
+      "tournament_name": "ทัวร์นาเมนต์",
+      "stage_name": "รอบ",
+      "bracket_name": "สายการแข่งขัน",
+      "round": "รอบที่",
+      "best_of": "Best of",
+      "team_a_id": "ID ทีม A",
+      "team_a_name": "ทีม A",
+      "score_a": "คะแนน A",
+      "score_b": "คะแนน B",
+      "team_b_id": "ID ทีม B",
+      "team_b_name": "ทีม B",
+      "winner_team_id": "ID ผู้ชนะ",
+      "is_forfeit": "สละสิทธิ์",
+      "patch": "แพตช์"
     }
   }
 }

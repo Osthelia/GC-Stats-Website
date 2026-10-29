@@ -1134,7 +1134,8 @@
               "IP address",
               "Hiniling na page",
               "Browser",
-              "Petsa at oras"
+              "Petsa at oras",
+              "Paggamit ng OpenData portal (account, naka-hash na IP address, dataset), binubura pagkalipas ng 30 araw"
             ]
           }
         },
@@ -1656,8 +1657,6 @@
     "product": "Produkto",
     "productAllMatches": "Lahat ng laban",
     "productTournaments": "Mga Torneo",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "Malapit na",
     "productForum": "Forum",
     "contribute": "Mag-ambag",
     "contributeEditPage": "Mag-edit ng pahina",
@@ -1679,7 +1678,8 @@
     "transparency": "Transparency",
     "finance": "Pananalapi",
     "developers": "Mga Developer",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1880,7 +1880,8 @@
       "sanctions": "Mga Parusa",
       "activityLog": "Activity log",
       "analytics": "Analytics",
-      "oauthClients": "Mga OAuth client"
+      "oauthClients": "Mga OAuth client",
+      "settings": "Configuration"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3313,7 +3314,8 @@
         "sanctions": "Mga Parusa",
         "activityLog": "Activity log",
         "analytics": "Analytics",
-        "oauthClients": "Mga OAuth client"
+        "oauthClients": "Mga OAuth client",
+        "settings": "Configuration"
       },
       "permissionNames": {
         "admin_access": "I-access ang admin panel",
@@ -3362,7 +3364,9 @@
         "activity_log_view": "Tingnan ang activity log",
         "analytics_view": "Tingnan ang analytics",
         "oauth_clients_view": "Tingnan ang mga OAuth client",
-        "oauth_clients_manage": "Gumawa, mag-edit, o magbura ng mga OAuth client"
+        "oauth_clients_manage": "Gumawa, mag-edit, o magbura ng mga OAuth client",
+        "settings_view": "Tingnan ang configuration at ang monitoring ng OpenData",
+        "settings_manage": "Baguhin ang configuration"
       },
       "create": {
         "button": "Bagong tungkulin",
@@ -4996,6 +5000,133 @@
         "stoppedTournament": "Tumigil maglaro sa isang torneo",
         "insideSource": "Panloob na pinagmulan",
         "declaredByPlayer": "Idineklara ng manlalaro"
+      }
+    },
+    "settings": {
+      "title": "Configuration",
+      "subtitle": "Mga pangkalahatang setting ng site.",
+      "save": "I-save",
+      "saving": "Sine-save...",
+      "saveSuccess": "Na-save ang mga setting",
+      "saveError": "May mga field na hindi valid",
+      "saveFailed": "Nabigo ang pag-save, i-reload ang pahina at subukan muli.",
+      "error": {
+        "required": "Kailangan ang field na ito.",
+        "invalid": "Hindi valid na value.",
+        "outOfRange": "Dapat ay buong numero mula {min} hanggang {max}."
+      },
+      "opendata": {
+        "title": "OpenData portal",
+        "description": "Mga pampublikong dataset (torneo, team, player, laban) na puwedeng i-browse at i-download bilang JSON.",
+        "publicPortal": "Pampublikong portal",
+        "monitoring": "Monitoring",
+        "enabled": "Naka-on ang portal",
+        "enabledHint": "Kapag naka-off, sasagot ang portal at ang API nito na hindi available ang serbisyo.",
+        "requireAccount": "Kailangan ng account",
+        "requireAccountHint": "Mga naka-sign in na user lang ang puwedeng mag-browse at mag-download ng data.",
+        "browsePerMinute": "Mga pahina ng table bawat minuto",
+        "browsePerMinuteHint": "Bawat account, o bawat IP address para sa mga bisita. Mula {min} hanggang {max}.",
+        "exportsPerHour": "Buong export bawat oras",
+        "exportsPerHourHint": "Bawat account, o bawat IP address para sa mga bisita. Mula {min} hanggang {max}.",
+        "propagationHint": "Ina-apply ng bawat server ang pagbabago sa loob ng 15 segundo."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData monitoring",
+      "subtitle": "Paggamit ng OpenData portal at ang epekto nito sa load ng site.",
+      "backToSettings": "Configuration",
+      "rangeLabel": "Panahon",
+      "range": {
+        "1h": "1 oras",
+        "24h": "24 oras",
+        "7d": "7 araw"
+      },
+      "refresh": "I-refresh",
+      "verdict": {
+        "healthy": "Hindi nagpapabigat ang portal sa site",
+        "strained": "Nagiging mabigat ang portal",
+        "overloaded": "Kinailangang pabagalin ang portal para protektahan ang site"
+      },
+      "verdictHint": {
+        "healthy": "Walang pressure sa load, walang tinanggihang request.",
+        "strained": "Bantayan ang trend: babaan ang mga limit o hingin ang account kung patuloy itong tumataas.",
+        "overloaded": "May mga request na tinanggihan habang mabigat ang load ng site. Pag-isipang babaan ang mga limit o hingin ang account."
+      },
+      "reasons": {
+        "shed": "{shed} request ang tinanggihan para manatiling mabilis ang site",
+        "critical": "Umabot ang site sa kritikal na antas ng load",
+        "elevated": "Mataas ang load ng site sa {share} ng oras",
+        "rateLimited": "Maraming request ang umabot sa limit",
+        "slow": "Mabagal na sagot (95th percentile sa {p95} ms)"
+      },
+      "configState": "Portal: {enabled} · Kailangan ng account: {requireAccount} · Mga limit: {browse} pahina bawat minuto, {exports} export bawat oras",
+      "on": "naka-on",
+      "off": "naka-off",
+      "stats": {
+        "requests": "Mga request",
+        "clients": "Mga client",
+        "exports": "Mga export",
+        "cacheHitRate": "Cache hit rate",
+        "p95": "Oras sa 95th percentile",
+        "avgQueue": "Average na paghihintay",
+        "rateLimited": "Na-limit",
+        "shed": "Tinanggihan (load)",
+        "errors": "Mga error",
+        "authRequired": "Tinanggihan (walang account)",
+        "rowsServed": "Mga row na naibigay",
+        "elevatedShare": "Oras na mabigat ang load"
+      },
+      "requestsChart": "Mga request",
+      "requestsChartHint": "Naibigay, na-limit, tinanggihan dahil sa load ng site, at mga error.",
+      "pressureChart": "Load ng site",
+      "pressureChartHint": "Delay ng event loop (babala mula {elevated} ms, kritikal mula {critical} ms), mga query ng site na naghihintay ng koneksyon sa database, mga tumatakbong OpenData query.",
+      "instances": "Mga server",
+      "instancesHint": "Pinakahuling sample ng bawat server. Nagpapatakbo ang OpenData ng {normal} query nang sabay bawat server, {elevated} kapag mabigat, wala kapag kritikal.",
+      "instancesEmpty": "Walang bagong sample.",
+      "columns": {
+        "instance": "Server",
+        "level": "Load",
+        "lag": "Delay",
+        "poolWaiting": "Naghihintay na query",
+        "inFlight": "Tumatakbong OpenData",
+        "queued": "OpenData sa pila",
+        "sampledAt": "Oras ng sample",
+        "dataset": "Dataset",
+        "requests": "Naibigay / request",
+        "cacheHit": "Cache",
+        "avg": "Average",
+        "p95": "95th percentile",
+        "rows": "Mga row",
+        "consumer": "Client",
+        "exports": "Mga export",
+        "rateLimited": "Na-limit",
+        "shed": "Tinanggihan",
+        "lastSeen": "Huling nakita"
+      },
+      "level": {
+        "normal": "Normal",
+        "elevated": "Mataas",
+        "critical": "Kritikal"
+      },
+      "kind": {
+        "browse": "table",
+        "export": "export"
+      },
+      "datasets": "Ayon sa dataset",
+      "consumers": "Mga nangungunang client",
+      "consumersHint": "Ang mga bisitang walang account ay pinagsasama ayon sa hash ng kanilang IP address.",
+      "noRequests": "Walang request sa panahong ito.",
+      "anonymous": "Bisita {hash}",
+      "charts": {
+        "empty": "Walang request sa panahong ito.",
+        "noSamples": "Walang sample ng load sa panahong ito.",
+        "served": "Naibigay",
+        "rateLimited": "Na-limit",
+        "shed": "Tinanggihan",
+        "errors": "Mga error",
+        "lag": "Delay (ms)",
+        "poolWaiting": "Naghihintay na query",
+        "inFlight": "Tumatakbong OpenData"
       }
     }
   },
@@ -6722,6 +6853,171 @@
       "tooLarge": "Masyadong mabigat ang file, ang maximum ay {max} MB.",
       "tooSmall": "Masyadong maliit ang larawan, dapat hindi bababa sa {min} px ang pinakamaikling gilid.",
       "invalidImage": "Hindi wasto ang larawang ito."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "Lahat ng pampublikong torneo, team, player at laban ng GC Stats, malayang i-browse, i-sort at i-download bilang JSON.",
+    "rowCount": "{count, plural, one {# row} other {# row}}",
+    "columnCount": "{count, plural, one {# column} other {# column}}",
+    "explore": "Tuklasin",
+    "allDatasets": "Lahat ng dataset",
+    "datasets": {
+      "tournaments": {
+        "name": "Mga torneo",
+        "description": "Lahat ng nailathalang torneo: petsa, status, rehiyon, kategorya, prize pool, organizer at bilang ng team."
+      },
+      "teams": {
+        "name": "Mga team",
+        "description": "Lahat ng team kasama ang bansa, kasalukuyang bilang ng player, bilang ng laban, bio at socials."
+      },
+      "players": {
+        "name": "Mga player",
+        "description": "Lahat ng player at staff kasama ang bansa, kasalukuyang team at role, bio at socials."
+      },
+      "matches": {
+        "name": "Mga laban",
+        "description": "Lahat ng laban kasama ang torneo, stage, mga team, score, status at iskedyul."
+      }
+    },
+    "usage": {
+      "title": "Paggamit ng data",
+      "publicOnly": "Data na pampubliko na sa site lang ang ibinibigay: walang account, contact o pribadong field.",
+      "terms": "Sakop ang data ng parehong mga kondisyon ng site: magagamit lang ito ayon sa pinapayagan ng aming <terms>mga tuntunin ng paggamit</terms>.",
+      "freshness": "Nire-refresh ang mga table bawat minuto, ang buong export bawat 10 minuto.",
+      "limits": "Mga limit: {browse} pahina ng table bawat minuto at {exports} buong export bawat oras, bawat account o bawat IP address.",
+      "accountOnly": "Bukas lang ngayon ang portal sa mga naka-sign in na user.",
+      "priority": "Laging inuuna ang site: kapag mabigat ang load nito, bumabagal ang portal at maaaring sumagot na abala ito nang ilang segundo."
+    },
+    "api": {
+      "title": "API",
+      "intro": "Gumagamit ang mga table at export ng pampublikong JSON API na puwede mong tawagan nang direkta:",
+      "datasets": "Mga dataset: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: anumang column ng dataset, direction: asc o desc.",
+      "paramQ": "q: paghahanap ng text, hanggang 100 character.",
+      "paramFilter": "f.column: sinasala ang anumang column (hal. f.region=EMEA). Bahagyang tugma para sa text, eksaktong tugma para sa numero, status at true/false. Hanggang {max} filter, pinagsasama.",
+      "errors": "Nagbabalik ang mga error ng JSON object na may error code, status na 400, 401, 429 o 503, at Retry-After header na nagsasabi kung kailan susubok muli."
+    },
+    "access": {
+      "disabled": {
+        "title": "Pansamantalang hindi available ang OpenData",
+        "text": "Naka-off ang portal sa ngayon. Bumalik ka mamaya."
+      },
+      "accountRequired": {
+        "title": "Mag-sign in para ma-access ang data",
+        "text": "Bukas lang ngayon ang OpenData portal sa mga naka-sign in na user. Libre ang paggawa ng account."
+      },
+      "login": "Mag-sign in",
+      "register": "Gumawa ng account"
+    },
+    "download": {
+      "label": "I-download ang JSON",
+      "labelFiltered": "I-download ang napili",
+      "preparing": "Inihahanda...",
+      "success": "Nagsimula na ang download"
+    },
+    "errors": {
+      "not_found": "Walang ganitong dataset.",
+      "bad_request": "Hindi valid ang mga parameter ng request.",
+      "disabled": "Pansamantalang hindi available ang OpenData portal.",
+      "account_required": "Mag-sign in para ma-access ang data.",
+      "rate_limited": "Masyadong maraming request, dahan-dahan lang.",
+      "busy": "Napakabigat ng load ng site, babalik ang data sa ilang segundo.",
+      "internal_error": "May nangyaring mali, subukan muli.",
+      "network": "Error sa network, tingnan ang iyong koneksyon."
+    },
+    "retryIn": "(subukan muli sa {seconds} s)",
+    "retry": "Subukan muli",
+    "searchLabel": "Maghanap",
+    "searchPlaceholder": {
+      "tournaments": "Pangalan, rehiyon, kategorya...",
+      "teams": "Pangalan o tag...",
+      "players": "Handle, pangalan, team...",
+      "matches": "Torneo, stage, team..."
+    },
+    "clearSearch": "I-clear ang paghahanap",
+    "filters": {
+      "button": "Filter",
+      "title": "I-filter ayon sa column",
+      "column": "Column",
+      "value": "Value",
+      "valuePlaceholder": "Value na itutugma...",
+      "addAnother": "Magdagdag ng isa pang filter",
+      "apply": "Ilapat",
+      "clear": "Alisin",
+      "integerRequired": "Buong numero ang kailangan sa column na ito."
+    },
+    "perPage": "{count} bawat pahina",
+    "columnsPicker": "Mga column",
+    "showAllColumns": "Ipakita lahat",
+    "resetColumns": "I-reset",
+    "rowsRange": "{from} hanggang {to} sa {total} row",
+    "loading": "Naglo-load...",
+    "noResults": "Walang row.",
+    "noResultsFor": "Walang row na tumutugma sa \"{q}\".",
+    "noResultsFiltered": "Walang row na tumutugma sa mga filter na ito.",
+    "pagination": "Pagination",
+    "firstPage": "Unang pahina",
+    "previousPage": "Nakaraang pahina",
+    "nextPage": "Susunod na pahina",
+    "lastPage": "Huling pahina",
+    "pageOf": "Pahina {page} ng {total}",
+    "yes": "Oo",
+    "no": "Hindi",
+    "openLink": "Buksan",
+    "status": {
+      "upcoming": "Paparating",
+      "live": "Live",
+      "finished": "Tapos na",
+      "pending": "Naka-iskedyul",
+      "completed": "Tapos na"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Pangalan",
+      "status": "Status",
+      "start_date": "Simula",
+      "end_date": "Wakas",
+      "region": "Rehiyon",
+      "category": "Kategorya",
+      "location": "Lokasyon",
+      "prize_pool": "Prize pool",
+      "teams_count": "Mga team",
+      "organizer_id": "ID ng organizer",
+      "organizer_name": "Organizer",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Socials",
+      "short_name": "Tag",
+      "country_code": "Bansa",
+      "secondary_country_code": "Ikalawang bansa",
+      "is_active": "Aktibo",
+      "players_count": "Mga player",
+      "matches_count": "Mga laban",
+      "bio": "Bio",
+      "vlr_id": "VLR ID",
+      "handle": "Handle",
+      "first_name": "Pangalan",
+      "last_name": "Apelyido",
+      "current_team_id": "ID ng team",
+      "current_team_name": "Kasalukuyang team",
+      "current_role": "Role",
+      "scheduled_at": "Petsa",
+      "tournament_id": "ID ng torneo",
+      "tournament_name": "Torneo",
+      "stage_name": "Stage",
+      "bracket_name": "Bracket",
+      "round": "Round",
+      "best_of": "Best of",
+      "team_a_id": "ID ng Team A",
+      "team_a_name": "Team A",
+      "score_a": "Score A",
+      "score_b": "Score B",
+      "team_b_id": "ID ng Team B",
+      "team_b_name": "Team B",
+      "winner_team_id": "ID ng nanalo",
+      "is_forfeit": "Forfeit",
+      "patch": "Patch"
     }
   }
 }

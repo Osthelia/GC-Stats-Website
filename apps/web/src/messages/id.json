@@ -1134,7 +1134,8 @@
               "Alamat IP",
               "Halaman yang diminta",
               "Peramban",
-              "Tanggal dan waktu"
+              "Tanggal dan waktu",
+              "Penggunaan portal OpenData (akun, alamat IP yang di-hash, dataset), dihapus setelah 30 hari"
             ]
           }
         },
@@ -1656,8 +1657,6 @@
     "product": "Produk",
     "productAllMatches": "Semua pertandingan",
     "productTournaments": "Turnamen",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "Segera hadir",
     "productForum": "Forum",
     "contribute": "Berkontribusi",
     "contributeEditPage": "Sunting halaman",
@@ -1679,7 +1678,8 @@
     "transparency": "Transparansi",
     "finance": "Keuangan",
     "developers": "Pengembang",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1880,7 +1880,8 @@
       "sanctions": "Sanksi",
       "activityLog": "Log aktivitas",
       "analytics": "Analitik",
-      "oauthClients": "Klien OAuth"
+      "oauthClients": "Klien OAuth",
+      "settings": "Konfigurasi"
     },
     "dashboard": {
       "title": "Dasbor",
@@ -3313,7 +3314,8 @@
         "sanctions": "Sanksi",
         "activityLog": "Log aktivitas",
         "analytics": "Analitik",
-        "oauthClients": "Klien OAuth"
+        "oauthClients": "Klien OAuth",
+        "settings": "Konfigurasi"
       },
       "permissionNames": {
         "admin_access": "Mengakses panel admin",
@@ -3362,7 +3364,9 @@
         "activity_log_view": "Melihat log aktivitas",
         "analytics_view": "Melihat analitik",
         "oauth_clients_view": "Melihat klien OAuth",
-        "oauth_clients_manage": "Membuat, menyunting, atau menghapus klien OAuth"
+        "oauth_clients_manage": "Membuat, menyunting, atau menghapus klien OAuth",
+        "settings_view": "Melihat konfigurasi dan pemantauan OpenData",
+        "settings_manage": "Mengubah konfigurasi"
       },
       "create": {
         "button": "Peran baru",
@@ -4996,6 +5000,133 @@
         "stoppedTournament": "Berhenti bermain di sebuah turnamen",
         "insideSource": "Sumber orang dalam",
         "declaredByPlayer": "Dinyatakan oleh pemain"
+      }
+    },
+    "settings": {
+      "title": "Konfigurasi",
+      "subtitle": "Pengaturan global situs.",
+      "save": "Simpan",
+      "saving": "Menyimpan...",
+      "saveSuccess": "Pengaturan disimpan",
+      "saveError": "Beberapa kolom tidak valid",
+      "saveFailed": "Penyimpanan gagal, muat ulang halaman dan coba lagi.",
+      "error": {
+        "required": "Kolom ini wajib diisi.",
+        "invalid": "Nilai tidak valid.",
+        "outOfRange": "Harus bilangan bulat antara {min} dan {max}."
+      },
+      "opendata": {
+        "title": "Portal OpenData",
+        "description": "Dataset publik (turnamen, tim, pemain, pertandingan) yang bisa dijelajahi dan diunduh dalam JSON.",
+        "publicPortal": "Portal publik",
+        "monitoring": "Pemantauan",
+        "enabled": "Portal aktif",
+        "enabledHint": "Jika nonaktif, portal dan API-nya menjawab bahwa layanan tidak tersedia.",
+        "requireAccount": "Wajib akun",
+        "requireAccountHint": "Hanya pengguna yang masuk yang dapat menjelajah dan mengunduh data.",
+        "browsePerMinute": "Halaman tabel per menit",
+        "browsePerMinuteHint": "Per akun, atau per alamat IP untuk pengunjung. Antara {min} dan {max}.",
+        "exportsPerHour": "Ekspor lengkap per jam",
+        "exportsPerHourHint": "Per akun, atau per alamat IP untuk pengunjung. Antara {min} dan {max}.",
+        "propagationHint": "Setiap server menerapkan perubahan dalam 15 detik."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "Pemantauan OpenData",
+      "subtitle": "Penggunaan portal OpenData dan dampaknya pada beban situs.",
+      "backToSettings": "Konfigurasi",
+      "rangeLabel": "Periode",
+      "range": {
+        "1h": "1 jam",
+        "24h": "24 jam",
+        "7d": "7 hari"
+      },
+      "refresh": "Muat ulang",
+      "verdict": {
+        "healthy": "Portal tidak membebani situs",
+        "strained": "Portal mulai menuntut",
+        "overloaded": "Portal harus diperlambat untuk melindungi situs"
+      },
+      "verdictHint": {
+        "healthy": "Tidak ada tekanan beban, tidak ada permintaan yang ditolak.",
+        "strained": "Pantau trennya: turunkan batas atau wajibkan akun jika terus naik.",
+        "overloaded": "Permintaan ditolak saat situs sedang terbebani. Pertimbangkan menurunkan batas atau mewajibkan akun."
+      },
+      "reasons": {
+        "shed": "{shed} permintaan ditolak agar situs tetap responsif",
+        "critical": "Situs mencapai tingkat beban kritis",
+        "elevated": "Situs berada di bawah beban tinggi selama {share} waktu",
+        "rateLimited": "Banyak permintaan mencapai batas",
+        "slow": "Respons lambat (persentil ke-95 pada {p95} ms)"
+      },
+      "configState": "Portal: {enabled} · Wajib akun: {requireAccount} · Batas: {browse} halaman per menit, {exports} ekspor per jam",
+      "on": "aktif",
+      "off": "nonaktif",
+      "stats": {
+        "requests": "Permintaan",
+        "clients": "Klien",
+        "exports": "Ekspor",
+        "cacheHitRate": "Rasio cache",
+        "p95": "Waktu persentil ke-95",
+        "avgQueue": "Rata-rata tunggu",
+        "rateLimited": "Dibatasi",
+        "shed": "Ditolak (beban)",
+        "errors": "Galat",
+        "authRequired": "Ditolak (tanpa akun)",
+        "rowsServed": "Baris disajikan",
+        "elevatedShare": "Waktu di bawah beban"
+      },
+      "requestsChart": "Permintaan",
+      "requestsChartHint": "Disajikan, dibatasi, ditolak karena beban situs, dan galat.",
+      "pressureChart": "Beban situs",
+      "pressureChartHint": "Keterlambatan event loop (peringatan mulai {elevated} ms, kritis mulai {critical} ms), kueri situs yang menunggu koneksi basis data, kueri OpenData yang berjalan.",
+      "instances": "Server",
+      "instancesHint": "Sampel terakhir setiap server. OpenData menjalankan {normal} kueri sekaligus per server, {elevated} saat terbebani, tidak ada saat beban kritis.",
+      "instancesEmpty": "Tidak ada sampel terbaru.",
+      "columns": {
+        "instance": "Server",
+        "level": "Beban",
+        "lag": "Keterlambatan",
+        "poolWaiting": "Kueri menunggu",
+        "inFlight": "OpenData berjalan",
+        "queued": "OpenData antre",
+        "sampledAt": "Waktu sampel",
+        "dataset": "Dataset",
+        "requests": "Disajikan / permintaan",
+        "cacheHit": "Cache",
+        "avg": "Rata-rata",
+        "p95": "Persentil ke-95",
+        "rows": "Baris",
+        "consumer": "Klien",
+        "exports": "Ekspor",
+        "rateLimited": "Dibatasi",
+        "shed": "Ditolak",
+        "lastSeen": "Terakhir terlihat"
+      },
+      "level": {
+        "normal": "Normal",
+        "elevated": "Tinggi",
+        "critical": "Kritis"
+      },
+      "kind": {
+        "browse": "tabel",
+        "export": "ekspor"
+      },
+      "datasets": "Per dataset",
+      "consumers": "Klien teratas",
+      "consumersHint": "Pengunjung tanpa akun dikelompokkan berdasarkan hash alamat IP mereka.",
+      "noRequests": "Tidak ada permintaan pada periode ini.",
+      "anonymous": "Pengunjung {hash}",
+      "charts": {
+        "empty": "Tidak ada permintaan pada periode ini.",
+        "noSamples": "Tidak ada sampel beban pada periode ini.",
+        "served": "Disajikan",
+        "rateLimited": "Dibatasi",
+        "shed": "Ditolak",
+        "errors": "Galat",
+        "lag": "Keterlambatan (ms)",
+        "poolWaiting": "Kueri menunggu",
+        "inFlight": "OpenData berjalan"
       }
     }
   },
@@ -6722,6 +6853,171 @@
       "tooLarge": "File terlalu besar, maksimumnya {max} MB.",
       "tooSmall": "Gambar terlalu kecil, sisi terpendek minimal {min} px.",
       "invalidImage": "File ini bukan gambar yang valid."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "Semua turnamen, tim, pemain, dan pertandingan publik GC Stats, bebas dijelajahi, diurutkan, dan diunduh dalam JSON.",
+    "rowCount": "{count, plural, other {# baris}}",
+    "columnCount": "{count, plural, other {# kolom}}",
+    "explore": "Jelajahi",
+    "allDatasets": "Semua dataset",
+    "datasets": {
+      "tournaments": {
+        "name": "Turnamen",
+        "description": "Semua turnamen yang dipublikasikan: tanggal, status, wilayah, kategori, total hadiah, penyelenggara, dan jumlah tim."
+      },
+      "teams": {
+        "name": "Tim",
+        "description": "Semua tim beserta negara, jumlah pemain saat ini, jumlah pertandingan, bio, dan media sosial."
+      },
+      "players": {
+        "name": "Pemain",
+        "description": "Semua pemain dan staf beserta negara, tim dan peran saat ini, bio, dan media sosial."
+      },
+      "matches": {
+        "name": "Pertandingan",
+        "description": "Semua pertandingan beserta turnamen, fase, tim, skor, status, dan jadwal."
+      }
+    },
+    "usage": {
+      "title": "Menggunakan data",
+      "publicOnly": "Hanya data yang sudah publik di situs yang disediakan: tidak ada akun, kontak, atau kolom pribadi.",
+      "terms": "Data tunduk pada ketentuan yang sama dengan situs: hanya boleh digunakan sebagaimana diizinkan oleh <terms>ketentuan penggunaan</terms> kami.",
+      "freshness": "Tabel diperbarui setiap menit, ekspor lengkap setiap 10 menit.",
+      "limits": "Batas: {browse} halaman tabel per menit dan {exports} ekspor lengkap per jam, per akun atau per alamat IP.",
+      "accountOnly": "Portal saat ini hanya terbuka untuk pengguna yang masuk.",
+      "priority": "Situs selalu diprioritaskan: saat bebannya tinggi, portal melambat dan dapat menjawab sedang sibuk selama beberapa detik."
+    },
+    "api": {
+      "title": "API",
+      "intro": "Tabel dan ekspor menggunakan API JSON publik yang bisa Anda panggil langsung:",
+      "datasets": "Dataset: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: kolom apa pun dari dataset, direction: asc atau desc.",
+      "paramQ": "q: pencarian teks, maksimal 100 karakter.",
+      "paramFilter": "f.kolom: memfilter berdasarkan kolom apa pun (mis. f.region=EMEA). Pencocokan sebagian untuk teks, persis untuk angka, status, dan true/false. Maksimal {max} filter, digabungkan.",
+      "errors": "Galat mengembalikan objek JSON dengan kode galat, status 400, 401, 429, atau 503, dan header Retry-After yang menunjukkan kapan mencoba lagi."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData sementara tidak tersedia",
+        "text": "Portal sedang dinonaktifkan. Silakan kembali nanti."
+      },
+      "accountRequired": {
+        "title": "Masuk untuk mengakses data",
+        "text": "Portal OpenData saat ini hanya terbuka untuk pengguna yang masuk. Membuat akun gratis."
+      },
+      "login": "Masuk",
+      "register": "Buat akun"
+    },
+    "download": {
+      "label": "Unduh JSON",
+      "labelFiltered": "Unduh pilihan",
+      "preparing": "Menyiapkan...",
+      "success": "Unduhan dimulai"
+    },
+    "errors": {
+      "not_found": "Dataset ini tidak ada.",
+      "bad_request": "Parameter permintaan tidak valid.",
+      "disabled": "Portal OpenData sementara tidak tersedia.",
+      "account_required": "Masuk untuk mengakses data.",
+      "rate_limited": "Terlalu banyak permintaan, harap pelan sedikit.",
+      "busy": "Situs sedang sangat sibuk, data akan kembali dalam beberapa detik.",
+      "internal_error": "Terjadi kesalahan, silakan coba lagi.",
+      "network": "Galat jaringan, periksa koneksi Anda."
+    },
+    "retryIn": "(coba lagi dalam {seconds} dtk)",
+    "retry": "Coba lagi",
+    "searchLabel": "Cari",
+    "searchPlaceholder": {
+      "tournaments": "Nama, wilayah, kategori...",
+      "teams": "Nama atau tag...",
+      "players": "Nickname, nama, tim...",
+      "matches": "Turnamen, fase, tim..."
+    },
+    "clearSearch": "Hapus pencarian",
+    "filters": {
+      "button": "Filter",
+      "title": "Filter berdasarkan kolom",
+      "column": "Kolom",
+      "value": "Nilai",
+      "valuePlaceholder": "Nilai yang dicocokkan...",
+      "addAnother": "Tambah filter lain",
+      "apply": "Terapkan",
+      "clear": "Hapus",
+      "integerRequired": "Kolom ini memerlukan bilangan bulat."
+    },
+    "perPage": "{count} per halaman",
+    "columnsPicker": "Kolom",
+    "showAllColumns": "Tampilkan semua",
+    "resetColumns": "Atur ulang",
+    "rowsRange": "{from} sampai {to} dari {total} baris",
+    "loading": "Memuat...",
+    "noResults": "Tidak ada baris.",
+    "noResultsFor": "Tidak ada baris yang cocok dengan \"{q}\".",
+    "noResultsFiltered": "Tidak ada baris yang cocok dengan filter ini.",
+    "pagination": "Navigasi halaman",
+    "firstPage": "Halaman pertama",
+    "previousPage": "Halaman sebelumnya",
+    "nextPage": "Halaman berikutnya",
+    "lastPage": "Halaman terakhir",
+    "pageOf": "Halaman {page} dari {total}",
+    "yes": "Ya",
+    "no": "Tidak",
+    "openLink": "Buka",
+    "status": {
+      "upcoming": "Mendatang",
+      "live": "Langsung",
+      "finished": "Selesai",
+      "pending": "Terjadwal",
+      "completed": "Selesai"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Nama",
+      "status": "Status",
+      "start_date": "Mulai",
+      "end_date": "Selesai",
+      "region": "Wilayah",
+      "category": "Kategori",
+      "location": "Lokasi",
+      "prize_pool": "Total hadiah",
+      "teams_count": "Tim",
+      "organizer_id": "ID penyelenggara",
+      "organizer_name": "Penyelenggara",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Sosial",
+      "short_name": "Tag",
+      "country_code": "Negara",
+      "secondary_country_code": "Negara kedua",
+      "is_active": "Aktif",
+      "players_count": "Pemain",
+      "matches_count": "Pertandingan",
+      "bio": "Bio",
+      "vlr_id": "ID VLR",
+      "handle": "Nickname",
+      "first_name": "Nama depan",
+      "last_name": "Nama belakang",
+      "current_team_id": "ID tim",
+      "current_team_name": "Tim saat ini",
+      "current_role": "Peran",
+      "scheduled_at": "Tanggal",
+      "tournament_id": "ID turnamen",
+      "tournament_name": "Turnamen",
+      "stage_name": "Fase",
+      "bracket_name": "Bagan",
+      "round": "Babak",
+      "best_of": "Best of",
+      "team_a_id": "ID tim A",
+      "team_a_name": "Tim A",
+      "score_a": "Skor A",
+      "score_b": "Skor B",
+      "team_b_id": "ID tim B",
+      "team_b_name": "Tim B",
+      "winner_team_id": "ID pemenang",
+      "is_forfeit": "WO",
+      "patch": "Patch"
     }
   }
 }

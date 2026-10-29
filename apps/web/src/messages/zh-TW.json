@@ -1134,7 +1134,8 @@
               "IP 位址",
               "請求的頁面",
               "瀏覽器",
-              "日期與時間"
+              "日期與時間",
+              "OpenData 入口網站使用紀錄（帳號、雜湊處理的 IP 位址、資料集），30 天後刪除"
             ]
           }
         },
@@ -1656,8 +1657,6 @@
     "product": "產品",
     "productAllMatches": "所有比賽",
     "productTournaments": "賽事",
-    "productDataExplorer": "資料瀏覽器",
-    "productDataExplorerComingSoon": "即將推出",
     "productForum": "論壇",
     "contribute": "參與貢獻",
     "contributeEditPage": "編輯頁面",
@@ -1679,7 +1678,8 @@
     "transparency": "透明度",
     "finance": "財務",
     "developers": "開發者",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1880,7 +1880,8 @@
       "sanctions": "處罰記錄",
       "activityLog": "活動日誌",
       "analytics": "統計分析",
-      "oauthClients": "OAuth 客戶端"
+      "oauthClients": "OAuth 客戶端",
+      "settings": "設定"
     },
     "dashboard": {
       "title": "控制台",
@@ -3313,7 +3314,8 @@
         "sanctions": "處罰記錄",
         "activityLog": "活動日誌",
         "analytics": "統計分析",
-        "oauthClients": "OAuth 客戶端"
+        "oauthClients": "OAuth 客戶端",
+        "settings": "設定"
       },
       "permissionNames": {
         "admin_access": "訪問管理面板",
@@ -3362,7 +3364,9 @@
         "activity_log_view": "檢視活動日誌",
         "analytics_view": "檢視統計分析",
         "oauth_clients_view": "檢視 OAuth 客戶端",
-        "oauth_clients_manage": "建立、編輯或刪除 OAuth 客戶端"
+        "oauth_clients_manage": "建立、編輯或刪除 OAuth 客戶端",
+        "settings_view": "檢視設定與 OpenData 監控",
+        "settings_manage": "編輯設定"
       },
       "create": {
         "button": "新建角色",
@@ -4996,6 +5000,133 @@
         "stoppedTournament": "自某賽事起不再出場",
         "insideSource": "內部訊息",
         "declaredByPlayer": "由選手本人申報"
+      }
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "全站設定。",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "saveSuccess": "設定已儲存",
+      "saveError": "部分欄位無效",
+      "saveFailed": "儲存失敗，請更新頁面後重試。",
+      "error": {
+        "required": "此欄位為必填。",
+        "invalid": "無效的值。",
+        "outOfRange": "必須是 {min} 到 {max} 之間的整數。"
+      },
+      "opendata": {
+        "title": "OpenData 入口網站",
+        "description": "可瀏覽並以 JSON 下載的公開資料集（賽事、隊伍、選手、比賽）。",
+        "publicPortal": "公開入口網站",
+        "monitoring": "監控",
+        "enabled": "啟用入口網站",
+        "enabledHint": "關閉後，入口網站及其 API 會回覆服務無法使用。",
+        "requireAccount": "需要帳號",
+        "requireAccountHint": "只有已登入的使用者可以瀏覽與下載資料。",
+        "browsePerMinute": "每分鐘表格頁數",
+        "browsePerMinuteHint": "以帳號計算，訪客以 IP 位址計算。介於 {min} 與 {max} 之間。",
+        "exportsPerHour": "每小時完整匯出次數",
+        "exportsPerHourHint": "以帳號計算，訪客以 IP 位址計算。介於 {min} 與 {max} 之間。",
+        "propagationHint": "每台伺服器會在 15 秒內套用變更。"
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData 監控",
+      "subtitle": "OpenData 入口網站的使用情況及其對網站負載的影響。",
+      "backToSettings": "設定",
+      "rangeLabel": "期間",
+      "range": {
+        "1h": "1 小時",
+        "24h": "24 小時",
+        "7d": "7 天"
+      },
+      "refresh": "重新整理",
+      "verdict": {
+        "healthy": "入口網站沒有對網站造成壓力",
+        "strained": "入口網站的負載正在升高",
+        "overloaded": "為保護網站，入口網站已被降速"
+      },
+      "verdictHint": {
+        "healthy": "沒有負載壓力，沒有被拒絕的請求。",
+        "strained": "請留意趨勢：若持續上升，請降低限額或要求帳號。",
+        "overloaded": "網站高負載期間有請求被拒絕。請考慮降低限額或要求帳號。"
+      },
+      "reasons": {
+        "shed": "為維持網站流暢，拒絕了 {shed} 個請求",
+        "critical": "網站達到了嚴重負載等級",
+        "elevated": "網站有 {share} 的時間處於高負載",
+        "rateLimited": "大量請求觸及限額",
+        "slow": "回應緩慢（第 95 百分位為 {p95} ms）"
+      },
+      "configState": "入口網站：{enabled} · 需要帳號：{requireAccount} · 限額：每分鐘 {browse} 頁，每小時 {exports} 次匯出",
+      "on": "開啟",
+      "off": "關閉",
+      "stats": {
+        "requests": "請求",
+        "clients": "用戶端",
+        "exports": "匯出",
+        "cacheHitRate": "快取命中率",
+        "p95": "第 95 百分位耗時",
+        "avgQueue": "平均等待",
+        "rateLimited": "已限流",
+        "shed": "已拒絕（負載）",
+        "errors": "錯誤",
+        "authRequired": "已拒絕（無帳號）",
+        "rowsServed": "回傳列數",
+        "elevatedShare": "高負載時間"
+      },
+      "requestsChart": "請求",
+      "requestsChartHint": "已回傳、已限流、因網站負載被拒絕的請求以及錯誤。",
+      "pressureChart": "網站負載",
+      "pressureChartHint": "事件迴圈延遲（{elevated} ms 起警告，{critical} ms 起嚴重），等待資料庫連線的網站查詢，執行中的 OpenData 查詢。",
+      "instances": "伺服器",
+      "instancesHint": "每台伺服器的最新取樣。OpenData 每台伺服器同時執行 {normal} 個查詢，高負載時 {elevated} 個，嚴重負載時不執行。",
+      "instancesEmpty": "沒有最近的取樣。",
+      "columns": {
+        "instance": "伺服器",
+        "level": "負載",
+        "lag": "延遲",
+        "poolWaiting": "等待中的查詢",
+        "inFlight": "執行中的 OpenData",
+        "queued": "排隊中的 OpenData",
+        "sampledAt": "取樣時間",
+        "dataset": "資料集",
+        "requests": "已回傳 / 請求",
+        "cacheHit": "快取",
+        "avg": "平均",
+        "p95": "第 95 百分位",
+        "rows": "列",
+        "consumer": "用戶端",
+        "exports": "匯出",
+        "rateLimited": "已限流",
+        "shed": "已拒絕",
+        "lastSeen": "最後造訪"
+      },
+      "level": {
+        "normal": "正常",
+        "elevated": "偏高",
+        "critical": "嚴重"
+      },
+      "kind": {
+        "browse": "表格",
+        "export": "匯出"
+      },
+      "datasets": "依資料集",
+      "consumers": "主要用戶端",
+      "consumersHint": "沒有帳號的訪客會依其 IP 位址的雜湊分組。",
+      "noRequests": "此期間沒有請求。",
+      "anonymous": "訪客 {hash}",
+      "charts": {
+        "empty": "此期間沒有請求。",
+        "noSamples": "此期間沒有負載取樣。",
+        "served": "已回傳",
+        "rateLimited": "已限流",
+        "shed": "已拒絕",
+        "errors": "錯誤",
+        "lag": "延遲 (ms)",
+        "poolWaiting": "等待中的查詢",
+        "inFlight": "執行中的 OpenData"
       }
     }
   },
@@ -6722,6 +6853,171 @@
       "tooLarge": "檔案太大，最大為 {max} MB。",
       "tooSmall": "圖片太小，短邊至少需要 {min} px。",
       "invalidImage": "此檔案不是有效的圖片。"
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "GC Stats 所有公開的賽事、隊伍、選手與比賽，可自由瀏覽、排序並以 JSON 下載。",
+    "rowCount": "{count, plural, other {# 列}}",
+    "columnCount": "{count, plural, other {# 欄}}",
+    "explore": "瀏覽",
+    "allDatasets": "所有資料集",
+    "datasets": {
+      "tournaments": {
+        "name": "賽事",
+        "description": "所有已發布的賽事：日期、狀態、地區、類別、獎金池、主辦單位與隊伍數量。"
+      },
+      "teams": {
+        "name": "隊伍",
+        "description": "所有隊伍，包含國家、目前選手人數、比賽數、簡介與社群帳號。"
+      },
+      "players": {
+        "name": "選手",
+        "description": "所有選手與工作人員，包含國家、目前隊伍與角色、簡介與社群帳號。"
+      },
+      "matches": {
+        "name": "比賽",
+        "description": "所有比賽，包含賽事、階段、隊伍、比分、狀態與時間。"
+      }
+    },
+    "usage": {
+      "title": "使用資料",
+      "publicOnly": "只提供網站上已公開的資料：不含帳號、聯絡方式或私密欄位。",
+      "terms": "資料與網站適用相同的條款：僅可在我們的<terms>使用條款</terms>允許的範圍內使用。",
+      "freshness": "表格每分鐘更新，完整匯出每 10 分鐘更新。",
+      "limits": "限額：每個帳號或 IP 位址每分鐘 {browse} 頁表格，每小時 {exports} 次完整匯出。",
+      "accountOnly": "入口網站目前僅開放給已登入的使用者。",
+      "priority": "網站永遠優先：負載很高時，入口網站會降速，並可能在幾秒內回覆忙碌中。"
+    },
+    "api": {
+      "title": "API",
+      "intro": "表格與匯出使用可直接呼叫的公開 JSON API：",
+      "datasets": "資料集：{list}。",
+      "paramPerPage": "per_page：{sizes}。",
+      "paramSort": "sort：資料集的任一欄位，direction：asc 或 desc。",
+      "paramQ": "q：文字搜尋，最多 100 個字元。",
+      "paramFilter": "f.欄位：依任意欄位篩選（例如 f.region=EMEA）。文字為部分比對，數字、狀態和 true/false 為完全比對。最多 {max} 個篩選條件，同時生效。",
+      "errors": "錯誤會回傳包含錯誤代碼的 JSON 物件、400、401、429 或 503 狀態，以及提示何時重試的 Retry-After 標頭。"
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData 暫時無法使用",
+        "text": "入口網站目前已關閉，請稍後再來。"
+      },
+      "accountRequired": {
+        "title": "登入後即可存取資料",
+        "text": "OpenData 入口網站目前僅開放給已登入的使用者。註冊帳號完全免費。"
+      },
+      "login": "登入",
+      "register": "註冊帳號"
+    },
+    "download": {
+      "label": "下載 JSON",
+      "labelFiltered": "下載所選資料",
+      "preparing": "準備中...",
+      "success": "已開始下載"
+    },
+    "errors": {
+      "not_found": "此資料集不存在。",
+      "bad_request": "請求參數無效。",
+      "disabled": "OpenData 入口網站暫時無法使用。",
+      "account_required": "登入後即可存取資料。",
+      "rate_limited": "請求過多，請放慢速度。",
+      "busy": "網站負載很高，資料將在幾秒後恢復。",
+      "internal_error": "發生問題，請重試。",
+      "network": "網路錯誤，請檢查連線。"
+    },
+    "retryIn": "（{seconds} 秒後重試）",
+    "retry": "重試",
+    "searchLabel": "搜尋",
+    "searchPlaceholder": {
+      "tournaments": "名稱、地區、類別...",
+      "teams": "名稱或標籤...",
+      "players": "選手 ID、姓名、隊伍...",
+      "matches": "賽事、階段、隊伍..."
+    },
+    "clearSearch": "清除搜尋",
+    "filters": {
+      "button": "篩選",
+      "title": "按列篩選",
+      "column": "列",
+      "value": "值",
+      "valuePlaceholder": "要匹配的值…",
+      "addAnother": "新增另一個篩選條件",
+      "apply": "應用",
+      "clear": "清除",
+      "integerRequired": "此欄位需要輸入整數。"
+    },
+    "perPage": "每頁 {count} 筆",
+    "columnsPicker": "欄位",
+    "showAllColumns": "全部顯示",
+    "resetColumns": "重設",
+    "rowsRange": "共 {total} 列，第 {from} 至 {to} 列",
+    "loading": "載入中...",
+    "noResults": "沒有資料。",
+    "noResultsFor": "沒有符合「{q}」的資料。",
+    "noResultsFiltered": "沒有符合這些篩選條件的資料列。",
+    "pagination": "分頁",
+    "firstPage": "第一頁",
+    "previousPage": "上一頁",
+    "nextPage": "下一頁",
+    "lastPage": "最後一頁",
+    "pageOf": "第 {page} / {total} 頁",
+    "yes": "是",
+    "no": "否",
+    "openLink": "開啟",
+    "status": {
+      "upcoming": "即將開始",
+      "live": "直播中",
+      "finished": "已結束",
+      "pending": "已排定",
+      "completed": "已結束"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "名稱",
+      "status": "狀態",
+      "start_date": "開始",
+      "end_date": "結束",
+      "region": "地區",
+      "category": "類別",
+      "location": "地點",
+      "prize_pool": "獎金池",
+      "teams_count": "隊伍數",
+      "organizer_id": "主辦單位 ID",
+      "organizer_name": "主辦單位",
+      "liquipedia_link": "Liquipedia",
+      "socials": "社群帳號",
+      "short_name": "標籤",
+      "country_code": "國家",
+      "secondary_country_code": "第二國家",
+      "is_active": "活躍",
+      "players_count": "選手數",
+      "matches_count": "比賽數",
+      "bio": "簡介",
+      "vlr_id": "VLR ID",
+      "handle": "選手 ID",
+      "first_name": "名",
+      "last_name": "姓",
+      "current_team_id": "隊伍 ID",
+      "current_team_name": "目前隊伍",
+      "current_role": "角色",
+      "scheduled_at": "時間",
+      "tournament_id": "賽事 ID",
+      "tournament_name": "賽事",
+      "stage_name": "階段",
+      "bracket_name": "對戰表",
+      "round": "輪次",
+      "best_of": "BO",
+      "team_a_id": "A 隊 ID",
+      "team_a_name": "A 隊",
+      "score_a": "A 比分",
+      "score_b": "B 比分",
+      "team_b_id": "B 隊 ID",
+      "team_b_name": "B 隊",
+      "winner_team_id": "勝者 ID",
+      "is_forfeit": "棄權",
+      "patch": "版本"
     }
   }
 }

@@ -2,7 +2,8 @@
  * GC-Stats — client module
  *
  * Provides the drizzle `db` client used across the app: one pg.Pool per Node
- * process (size from DATABASE_POOL_SIZE), pointed at PgBouncer in the cluster.
+ * process (size from DATABASE_POOL_SIZE), pointed at PgBouncer in the cluster,
+ * plus a separate small pool for the OpenData portal (OPENDATA_DATABASE_POOL_SIZE).
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -21,6 +22,8 @@ type Db = NodePgDatabase<typeof schema>;
 declare global {
   // eslint-disable-next-line no-var
   var __gcStatsDbPool: Pool | undefined;
+  // eslint-disable-next-line no-var
+  var __gcStatsOpenDataDbPool: Pool | undefined;
 }
 
 // Without a listener, an idle client's socket error (connection dropped by
@@ -31,21 +34,51 @@ function attachPoolErrorHandler(pool: Pool): Pool {
   return pool;
 }
 
-function createPool(): Pool {
-  const max = Number.parseInt(process.env.DATABASE_POOL_SIZE ?? "", 10);
-  return attachPoolErrorHandler(new Pool({ connectionString: process.env.DATABASE_URL, ...(max > 0 ? { max } : {}) }));
+function createPool(sizeEnv: string | undefined, fallbackMax?: number): Pool {
+  const parsed = Number.parseInt(sizeEnv ?? "", 10);
+  const max = parsed > 0 ? parsed : fallbackMax;
+  return attachPoolErrorHandler(new Pool({ connectionString: process.env.DATABASE_URL, ...(max ? { max } : {}) }));
+}
+
+let mainPool: Pool | undefined;
+function getMainPool(): Pool {
+  if (!mainPool) {
+    mainPool = globalThis.__gcStatsDbPool ?? createPool(process.env.DATABASE_POOL_SIZE);
+    if (process.env.NODE_ENV !== "production") {
+      globalThis.__gcStatsDbPool = mainPool;
+    }
+  }
+  return mainPool;
 }
 
 let instance: Db | undefined;
 function getDb(): Db {
   if (!instance) {
-    const pool = globalThis.__gcStatsDbPool ?? createPool();
-    if (process.env.NODE_ENV !== "production") {
-      globalThis.__gcStatsDbPool = pool;
-    }
-    instance = drizzle(pool, { schema });
+    instance = drizzle(getMainPool(), { schema });
   }
   return instance;
+}
+
+// OpenData gets its own small pool: a burst of exports can only wait on these
+// few connections, never take one the site needs.
+let openDataInstance: Db | undefined;
+function getOpenDataDb(): Db {
+  if (!openDataInstance) {
+    const pool = globalThis.__gcStatsOpenDataDbPool ?? createPool(process.env.OPENDATA_DATABASE_POOL_SIZE, 2);
+    if (process.env.NODE_ENV !== "production") {
+      globalThis.__gcStatsOpenDataDbPool = pool;
+    }
+    openDataInstance = drizzle(pool, { schema });
+  }
+  return openDataInstance;
+}
+
+export type DbPoolStats = { total: number; idle: number; waiting: number; max: number };
+
+/** Main pool usage of this process. `waiting` above 0 means site queries are queuing for a connection. */
+export function getDbPoolStats(): DbPoolStats {
+  const pool = getMainPool();
+  return { total: pool.totalCount, idle: pool.idleCount, waiting: pool.waitingCount, max: pool.options.max ?? 10 };
 }
 
 // Proxy so the pool is only created on first use (not while `next build`
@@ -80,6 +113,9 @@ function makeDbProxy(resolve: () => Db): Db {
 }
 
 export const db: Db = makeDbProxy(getDb);
+
+/** Read only client for the OpenData portal, see getOpenDataDb. */
+export const openDataDb: Db = makeDbProxy(getOpenDataDb);
 
 // Historical name: a second client used to bypass a query cache in front of the
 // database (Hyperdrive). There is none anymore, so it is the same client; the
