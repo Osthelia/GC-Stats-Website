@@ -737,11 +737,11 @@
     "intro": "Kebijakan ini menjelaskan bagaimana kami menangani data di situs ini, dengan fokus pada transparansi dan penghormatan terhadap privasi.",
     "analytics": {
       "title": "Navigasi dan Statistik",
-      "text": "Kami mengukur audiens situs secara anonim sepenuhnya: statistik ini tidak pernah menyimpan alamat IP, hanya negara, halaman, dan waktu kunjungan, tanpa pelacakan individu atau sidik jari digital. Jika Anda membuat akun, sesi login Anda (alamat IP dan user agent) disimpan sementara untuk keperluan keamanan (perlindungan terhadap pengambilalihan akun), seperti yang lazim di hampir semua situs dengan autentikasi."
+      "text": "Kami mengukur pengunjung situs secara sepenuhnya anonim: hanya halaman yang dikunjungi, hari, dan jumlah tayangan yang dihitung, tanpa alamat IP, tanpa pelacakan individu, dan tanpa fingerprinting. Untuk melindungi situs dari bot dan penyalahgunaan, server kami mencatat setiap permintaan (alamat IP, halaman yang diminta, peramban, tanggal) selama 14 hari. Jika Anda memiliki akun, alamat IP setiap login juga disimpan selama 90 hari dalam log keamanan akun Anda."
     },
     "publicData": {
       "title": "Data Publik",
-      "text": "Informasi profil (handle, biografi, tautan media sosial, negara) diberikan secara sukarela oleh pemain dan ditampilkan secara publik di situs. Statistik pertandingan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Semua data ini dapat diakses publik dan dibagikan melalui API kami."
+      "text": "Informasi profil (nama panggilan, bio, media sosial, negara) diberikan oleh pemain atau organisasinya, atau ditambahkan oleh tim kami dari sumber publik, lalu ditampilkan secara publik di situs. Statistik permainan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan turnamen yang diikuti. Semua data ini tersedia untuk publik dan dibagikan melalui API kami."
     },
     "privateData": {
       "title": "Data Pribadi",
@@ -754,22 +754,21 @@
     },
     "socialLogin": {
       "title": "Masuk melalui Discord, Twitter/X, atau Twitch",
-      "text": "Anda dapat menautkan akun Anda ke Discord, Twitter/X, atau Twitch agar masuk lebih cepat. Kami kemudian menyimpan ID Anda di platform tersebut, nama panggilan, avatar, serta token akses/penyegaran yang diperlukan untuk menjaga koneksi tetap aktif (token ini hanya digunakan untuk mengautentikasi akun Anda dan tidak pernah dibagikan). Anda dapat memutuskan tautan akun ini kapan saja dari pengaturan profil Anda.",
-      "gravatar": "Avatar default: Jika Anda tidak memiliki avatar melalui akun tertaut, sebuah gambar dapat diminta dari Gravatar (Automattic) berdasarkan hash email Anda, layanan pihak ketiga standar yang digunakan banyak situs web."
+      "text": "Anda dapat menautkan akun Anda ke Discord, Twitter/X, atau Twitch agar masuk lebih cepat. Kami kemudian menyimpan ID Anda di platform tersebut, nama panggilan, avatar, serta token akses/penyegaran yang diperlukan untuk menjaga koneksi tetap aktif (token ini hanya digunakan untuk mengautentikasi akun Anda dan tidak pernah dibagikan). Anda dapat memutuskan tautan akun ini kapan saja dari pengaturan profil Anda."
     },
     "moderation": {
       "title": "Moderasi dan Keamanan Komunitas",
       "text": "Untuk menjaga keamanan komunitas, kami menyimpan riwayat sanksi (peringatan, blokir) yang diterapkan pada akun atau tim, laporan yang diajukan pengguna (penipuan, penghindaran blokir, pelecehan, akun palsu, dll.), dan log aktivitas tindakan moderasi.",
-      "retentionNote": "Untuk mencegah penghindaran blokir, sidik jari teknis (seperti alamat email) dapat dilekatkan pada sanksi dan disimpan meskipun akun terkait telah dihapus. Hal yang sama berlaku untuk riwayat laporan dan log moderasi, yang membentuk catatan keamanan yang disimpan terpisah dari akun."
+      "retentionNote": "Untuk mencegah penghindaran larangan, riwayat sanksi, laporan, dan log moderasi membentuk catatan keamanan yang tetap disimpan bahkan setelah akun terkait dihapus."
     },
     "dataStructure": {
-      "title": "Struktur Data",
-      "text": "Untuk lebih memahami data yang kami simpan dan bagikan, Anda dapat melihat struktur data kami di bawah. Struktur ini mencantumkan semua data yang disimpan, menjelaskan kegunaannya, apakah wajib, dan apakah dibagikan.",
-      "button": "Lihat data yang disimpan"
+      "title": "Rincian data pribadi",
+      "text": "Untuk setiap data pribadi yang kami simpan, lihat bagaimana kami mendapatkannya, di mana disimpan, dan berapa lama kami menyimpannya.",
+      "button": "Lihat rincian data"
     },
     "retention": {
       "title": "Penyimpanan Data",
-      "text": "Data permainan disimpan selama tim atau pemain aktif dalam ekosistem proyek. Anda dapat meminta penghapusan data Anda kapan saja."
+      "text": "Profil pemain dan data pertandingan disimpan selamanya sebagai arsip skena, bahkan ketika seseorang berhenti bermain. Data akun disimpan selama akun tersebut ada. Log akses dihapus setelah 14 hari, alamat IP login setelah 90 hari. Anda dapat meminta perbaikan atau penghapusan data Anda kapan saja, kecuali data yang benar-benar diperlukan untuk catatan moderasi."
     },
     "rights": {
       "title": "Hak Anda (GDPR)",
@@ -780,7 +779,11 @@
       "title": "Cookie",
       "text": "Situs ini tidak menggunakan cookie iklan atau pembuatan profil. Hanya cookie teknis yang sungguh diperlukan untuk operasi sesi yang dapat digunakan."
     },
-    "takedownLink": "Ajukan penghapusan konten"
+    "takedownLink": "Ajukan penghapusan konten",
+    "hosting": {
+      "title": "Hosting",
+      "text": "Situs, basis data, dan log server di-hosting oleh Infomaniak, di Swiss. Cadangan di luar lokasi dienkripsi dan disimpan di Exoscale, di Zurich dan Jenewa. File publik (gambar, logo) melewati CDN Bunny.net, yang diatur agar tidak mengumpulkan alamat IP apa pun."
+    }
   },
   "legalNotice": {
     "title": "Informasi Hukum",
@@ -870,7 +873,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Menyimpan cache CSS/JS kami, serta gambar pemain, tim, dan turnamen, di server di seluruh dunia untuk meringankan beban server kami sendiri."
+        "body": "Menyimpan cache CSS/JS kami, serta gambar pemain, tim, dan turnamen, di server di seluruh dunia untuk meringankan beban server kami sendiri. CDN diatur agar tidak mengumpulkan alamat IP apa pun."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -903,12 +906,17 @@
           "p4": "Saya merasa penting untuk menjelaskan pilihan ini, dan terutama membicarakan Infomaniak: penyedia yang kurang dikenal, tetapi layak dikenal. Apalagi akun email gratis atau langganan OneDrive bisa dipindahkan ke mereka tanpa sungguh membayar lebih, dengan layanan yang sama baiknya, tetapi dengan penghormatan minimum bagi Anda, privasi Anda, dan planet kita.",
           "cite": "Lacy, pendiri GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Cadangan di luar lokasi",
+        "body": "Cadangan harian terenkripsi dari basis data dan file kami, disimpan di Swiss (Zurich, direplikasi ke Jenewa). Setiap cadangan tidak dapat diubah selama 30 hari, lalu dihapus."
       }
     },
     "data": {
       "title": "Data yang dikumpulkan",
-      "body": "Kami mendokumentasikan secara publik setiap data yang kami simpan: pemain, tim, turnamen, dan pertandingan. Tidak ada data yang dikumpulkan tanpa alasan yang terkait dengan operasional situs.",
-      "link": "Lihat data yang kami simpan"
+      "body": "Kami mendokumentasikan secara publik data pribadi yang kami simpan: bagaimana kami mendapatkannya, di mana disimpan, dan berapa lama kami menyimpannya. Tidak ada data yang dikumpulkan tanpa alasan yang terkait dengan operasional situs.",
+      "link": "Lihat data pribadi"
     },
     "finance": {
       "title": "Keuangan",
@@ -1014,396 +1022,219 @@
     }
   },
   "dataPage": {
-    "title": "Struktur data",
-    "subtitle": "Struktur dan daftar data yang kami kumpulkan",
-    "openData": {
-      "title": "Portal Open Data",
-      "body": "Anda mungkin lebih suka menjelajahi atau mengunduh dataset kami secara langsung daripada memakai API. Portal Open Data akan dipindahkan ke sini bersama API lainnya.",
-      "badge": "Segera hadir"
-    },
-    "groups": {
-      "identity": "Struktur orang, tim, dan organisasi",
-      "account": "Akun pengguna dan moderasi",
-      "tournament": "Struktur turnamen",
-      "matches": "Struktur statistik pertandingan dan game",
-      "news": "Struktur berita dan komunitas",
-      "rawStats": "Data game mentah (ronde demi ronde)",
-      "others": "Struktur data lainnya"
-    },
-    "sections": {
-      "people": "Orang",
-      "teams": "Tim",
-      "organizations": "Organisasi",
-      "tournaments": "Turnamen",
-      "matches": "Pertandingan",
-      "news": "Berita",
-      "users": "Pengguna",
-      "reactionsEmotes": "Reaksi dan Emote"
-    },
-    "descriptions": {
-      "identity": "Seseorang (pemain, pelatih, caster, observer, penyelenggara...) hanya memiliki satu profil, meskipun perannya berubah seiring waktu. Tim dan organisasi berhak menyunting/menghapus \"Informasi tambahan\" mereka.\n\nRiot ID tidak pernah ditampilkan atau dibagikan. ID ini diidentifikasi oleh tim kami dari data pertandingan.",
-      "tournament": "Setiap turnamen memiliki pengenal, nama, tanggal, wilayah, kategori, dan status. Sebuah turnamen dapat dibagi menjadi beberapa tahap (grup, playoff...), yang sendiri terdiri dari satu atau lebih kontainer (bracket atau grup). Tim mendaftar sebagai \"peserta\", dengan roster yang dikunci untuk turnamen tertentu itu, terpisah dari roster permanen tim.",
-      "matches": "Kami mengumpulkan banyak informasi tentang pertandingan untuk menyediakan statistik terperinci. Kami mengumpulkan:\n- Informasi dasar pertandingan (wajib)\n- Veto pertandingan\n- Peta yang dimainkan, dengan hasil dan statistik\n- Statistik agregat per pemain dan per peta, yang sungguh dikueri situs setiap hari\n\nData ini tidak selalu dikumpulkan, tetapi kami berusaha sebaik mungkin memperolehnya agar dapat menampilkan statistik selengkap mungkin.",
-      "rawStats": "Selain statistik agregat di atas, kami menyimpan lapisan mentah ronde demi ronde (kill, damage, ekonomi, status hidup) yang digunakan untuk menghitung ulang statistik tersebut dan menampilkan riwayat ronde.\n\nPosisi setiap pemain saat peristiwa penting (kill, plant, defuse) disimpan secara lengkap tanpa batas waktu: data ini menggerakkan heatmap kami dan tidak dapat direkonstruksi setelah diagregasi.",
-      "news": "Setiap artikel berita memiliki pengenal, judul, konten, dan status (draf, diterbitkan, diarsipkan). Artikel dapat ditautkan ke tim, orang, atau turnamen agar muncul di profilnya.\n\nForum dan emote/reaksi memungkinkan komunitas berinteraksi dengan konten situs; pesan yang disembunyikan atau dihapus oleh moderasi tetap dilacak secara internal.",
-      "account": "Tabel ini hanya ada untuk orang yang membuat akun pengguna (berbeda dari profil orang), yang diperlukan untuk bereaksi pada berita, mengelola profil, atau mengelola situs.\n\nData keamanan (kata sandi, 2FA, passkey) tidak pernah dibagikan. Akun Discord/Twitch yang tertaut menyimpan token akses yang hanya digunakan untuk autentikasi.\n\nData moderasi (sanksi, sidik jari anti penghindaran, laporan, log aktivitas) membentuk catatan keamanan yang disimpan terpisah dari akun, bahkan setelah akun dihapus, untuk mencegah penghindaran blokir.",
-      "others": "Kami menyimpan jumlah kunjungan pada setiap halaman per hari; kami tidak menyimpan siapa yang melihatnya atau waktu persisnya, hanya perkiraan negara/wilayah.\n\nData ini disimpan dan bersifat privat. Data ini tidak pernah dibagikan, kami hanya memakainya untuk memvisualisasikan penggunaan situs dan menyesuaikan infrastruktur bila diperlukan."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Informasi utama",
-          "additional": "Informasi tambahan",
-          "confidential": "Informasi rahasia"
-        },
-        "id": "Pengenal unik yang diberikan kepada orang tersebut (terlihat di URL)",
-        "handle": "Handle",
-        "aliases": "Handle sebelumnya",
-        "firstName": "Nama depan",
-        "lastName": "Nama belakang",
-        "countryCode": "Kode negara (FR = Prancis, US = Amerika Serikat, dll.)",
-        "secondaryCountryCode": "Kode negara kedua, untuk kewarganegaraan ganda",
-        "pronouns": "Kata ganti",
-        "birthDate": "Tanggal lahir",
-        "bio": "Bio",
-        "socials": "Media sosial (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "Pengenal VLR",
-        "liquipediaLink": "Tautan ke halaman Liquipedia orang tersebut",
-        "valId": "Riot ID / PUUID (informasi privat, diidentifikasi dan ditetapkan oleh tim kami dari data pertandingan Riot, digunakan untuk menautkan statistik pertandingan ke seseorang)",
-        "esportsValId": "Pengenal esports Riot yang terkait dengan akun game"
+    "title": "Data pribadi",
+    "subtitle": "Data apa yang kami simpan tentang Anda, dari mana asalnya, siapa yang dapat melihatnya, dan berapa lama kami menyimpannya.",
+    "policy": {
+      "title": "Kebijakan kami",
+      "noSale": {
+        "title": "Tidak dijual, tidak dibagikan",
+        "text": "Kami tidak menjual data apa pun dan tidak pernah membagikan data pribadi Anda, baik kepada pengiklan maupun mitra. Hanya data publik (profil pemain, statistik pertandingan) yang dipublikasikan, di situs dan melalui API kami."
       },
-      "rosterMemberships": {
-        "personId": "Pengenal unik seseorang",
-        "teamId": "Pengenal unik sebuah tim",
-        "role": "Peran di tim (pemain/pelatih/manajer/dll.)",
-        "period": "Periode keanggotaan di tim (bergabung, dan keluar jika ada)",
-        "inactiveSince": "Tanggal sejak orang tersebut, yang masih ada di roster, tidak aktif (cedera, istirahat, dll.)"
+      "minimal": {
+        "title": "Seminimal mungkin",
+        "text": "Kami hanya mengumpulkan apa yang dibutuhkan situs agar berfungsi dan tetap aman. Tanpa iklan, tanpa pelacak, tanpa cookie pelacakan: pengunjung dihitung secara anonim, tanpa alamat IP."
       },
-      "teams": {
-        "titles": {
-          "main": "Informasi utama",
-          "additional": "Informasi tambahan"
-        },
-        "id": "Pengenal unik yang diberikan kepada tim (terlihat di URL)",
-        "name": "Nama tim",
-        "shortName": "Nama singkat (Fnatic = FNC)",
-        "countryCode": "Kode negara (FR = Prancis, US = Amerika Serikat, dll.)",
-        "secondaryCountryCode": "Kode negara kedua, untuk tim yang terkait dengan dua wilayah",
-        "socials": "Media sosial (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Bio",
-        "vlrId": "Pengenal VLR",
-        "liquipediaLink": "Tautan ke halaman Liquipedia tim",
-        "tags": "Tag bebas yang dilekatkan pada tim"
-      },
-      "organizations": {
-        "id": "Pengenal unik organisasi",
-        "name": "Nama organisasi",
-        "slug": "Pengenal teks yang digunakan di URL",
-        "tags": "Peran yang dijalankan organisasi (penyelenggara turnamen, produksi, media, penyiar, agensi, komunitas)",
-        "countryCode": "Kode negara (FR = Prancis, US = Amerika Serikat, dll.)",
-        "socials": "Media sosial (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Pengenal unik seseorang",
-        "organizationId": "Pengenal unik sebuah organisasi",
-        "role": "Peran dalam organisasi (admin/caster/observer/produser/editor/dll.)",
-        "period": "Periode keanggotaan di organisasi"
-      },
-      "productionCredits": {
-        "personId": "Pengenal unik orang yang dikreditkan",
-        "organizationId": "Organisasi tempat orang tersebut bekerja pada kredit ini, jika ada",
-        "role": "Peran yang dijalankan (caster/analis/observer/penyelenggara/produser/editor/fotografer/penerjemah/wasit/dll.)",
-        "titleOverride": "Judul khusus yang ditampilkan menggantikan peran generik",
-        "scope": "Tingkat persis yang bersangkutan: turnamen, tahap, kontainer, pertandingan, atau peta"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Informasi utama",
-          "additional": "Informasi tambahan"
-        },
-        "id": "Pengenal unik turnamen",
-        "name": "Nama kompetisi",
-        "region": "Wilayah dunia (EMEA, NA, dll.)",
-        "category": "Kategori turnamen (mis. Challengers, Cash Cups)",
-        "prizePool": "Total hadiah (cashprize)",
-        "location": "Lokasi fisik",
-        "startDate": "Tanggal mulai",
-        "endDate": "Tanggal selesai",
-        "status": "Status saat ini (mendatang, berlangsung, selesai)",
-        "description": "Gambaran umum acara",
-        "liquipediaLink": "Tautan ke halaman Liquipedia turnamen",
-        "socials": "Tautan media sosial turnamen"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Struktur teknis"
-        },
-        "name": "Nama tahap (mis. Playoffs, Grup A)",
-        "sequenceOrder": "Urutan tampilan tahap",
-        "status": "Status tahap (mendatang, berlangsung, selesai)",
-        "startDate": "Tanggal mulai tahap",
-        "endDate": "Tanggal selesai tahap",
-        "liquipediaLink": "Tautan ke halaman Liquipedia tahap itu sendiri",
-        "containerType": "Format kontainer (bracket eliminasi atau grup)",
-        "config": "Konfigurasi teknis bracket/grup (dihasilkan oleh mesin turnamen)"
-      },
-      "entrants": {
-        "tournamentId": "Referensi ke turnamen",
-        "kind": "Jenis peserta (selalu \"team\" di GC-Stats)",
-        "teamId": "Tim yang terdaftar",
-        "displayName": "Nama yang ditampilkan saat pendaftaran (tidak berubah meskipun tim kemudian diganti namanya)",
-        "seed": "Seed yang diberikan kepada peserta",
-        "qualificationSourceManual": "Apakah sumber kualifikasi ditetapkan manual (jika tidak, diturunkan dari aturan kualifikasi)",
-        "qualificationSourceType": "Sumber kualifikasi manual (turnamen, undangan, atau poin)",
-        "qualificationSourceTournamentId": "Turnamen asal kualifikasi peserta (sumber manual)",
-        "qualificationSourcePointTypeId": "Jenis poin asal kualifikasi (sumber manual)"
-      },
-      "entrantMembers": {
-        "personId": "Orang yang menjadi bagian roster yang dikunci untuk turnamen tertentu ini",
-        "role": "Peran dalam roster ini (pemain/pengganti/pelatih/manajer/analis/dll.)",
-        "isStarter": "Pemain utama atau cadangan untuk turnamen ini"
-      },
-      "qualifications": {
-        "destinationType": "Apa yang diberikan kualifikasi: tempat di kontainer lain, atau peringkat akhir",
-        "placement": "Peringkat yang dicapai (1, 2, dll.)",
-        "placementLabel": "Label peringkat (mis. Juara, Runner up)",
-        "points": "Poin peringkat yang diberikan",
-        "cashPrizeAmount": "Jumlah hadiah uang yang diberikan",
-        "rank": "Peringkat yang dicapai peserta dalam klasemen ini",
-        "amount": "Jumlah poin yang dikreditkan atau didebit (entri buku besar bertanda)",
-        "reason": "Alasan poin diberikan atau dikurangi"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Struktur teknis"
-        },
-        "id": "Pengenal unik pertandingan",
-        "containerId": "Kontainer (bracket/grup) tempat pertandingan berada",
-        "round": "Nomor ronde",
-        "label": "Nama ronde (mis. Grand Final)",
-        "bestOf": "Jumlah peta maksimum (BO1, BO3, BO5)",
-        "status": "Status (mendatang, siap, langsung, selesai)",
-        "entrantAId": "Pengenal unik peserta A",
-        "entrantBId": "Pengenal unik peserta B",
-        "scoreA": "Skor akhir peserta A",
-        "scoreB": "Skor akhir peserta B",
-        "winnerId": "Peserta pemenang",
-        "scheduledAt": "Tanggal dan waktu terjadwal",
-        "patch": "Versi game (mis. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Pertandingan yang bersangkutan",
-        "entrantId": "Peserta yang melakukan aksi",
-        "mapName": "Nama peta (mis. Ascent)",
-        "type": "Aksi (pick, ban, atau decider)",
-        "order": "Urutan dalam rangkaian veto",
-        "side": "Sisi yang dipilih (menyerang/bertahan), untuk pick atau decider",
-        "sidePickedByEntrantId": "Peserta yang memilih sisi ini"
-      },
-      "maps": {
-        "id": "Pengenal unik peta yang dimainkan",
-        "apiMatchId": "Pengenal pertandingan yang diberikan oleh API Riot",
-        "matchId": "Pertandingan yang bersangkutan",
-        "mapName": "Nama peta",
-        "gameMode": "Mode game Riot terkait",
-        "teamAScore": "Skor peserta A di peta ini",
-        "teamBScore": "Skor peserta B di peta ini",
-        "order": "Posisi peta dalam pertandingan",
-        "isCompleted": "Apakah peta sudah selesai?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Agen yang dimainkan (mis. Jett)",
-        "kills": "Total kill",
-        "deaths": "Total death",
-        "assists": "Total assist",
-        "acs": "Average combat score",
-        "adr": "Rerata damage per ronde",
-        "kastPercentage": "% ronde dengan Kill/Assist/Survive/Trade",
-        "firstKills": "First kill (FK)",
-        "firstDeaths": "First death (FD)",
-        "headshotPercentage": "Headshot %",
-        "clutches": "Clutch dimenangkan/dimainkan, per situasi (1v1 sampai 1v5)",
-        "multikills": "Jumlah ronde dengan 2, 3, 4, atau 5 kill",
-        "tradeKills": "Kill yang membalas rekan setim",
-        "tradedDeaths": "Death yang dibalas oleh rekan setim",
-        "roundTypeSplits": "Statistik terperinci per jenis ronde (pistol, menyerang, bertahan, dll.)",
-        "fallDeaths": "Death akibat damage jatuh",
-        "weaponKills": "Jumlah kill per senjata"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Sisi yang dimainkan (menyerang/bertahan)",
-        "roundsPlayed": "Ronde yang dimainkan di sisi ini",
-        "roundsWon": "Ronde yang dimenangkan di sisi ini"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Nomor ronde (1 sampai 24+)",
-        "winningEntrantId": "Peserta yang memenangkan ronde",
-        "winType": "Jenis kemenangan (eliminasi, defuse, detonasi, waktu habis)",
-        "atkEntrantId": "Peserta yang menyerang pada ronde ini",
-        "defEntrantId": "Peserta yang bertahan pada ronde ini",
-        "plantSite": "Site pemasangan spike (A/B/C)",
-        "plantX": "Posisi X pemasangan di minimap",
-        "plantY": "Posisi Y pemasangan di minimap"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Orang yang melakukan kill",
-        "victimPersonId": "Orang yang tereliminasi",
-        "assistantPersonIds": "Orang yang membantu kill",
-        "timeMs": "Waktu kill (ms sejak awal ronde)",
-        "weapon": "Senjata yang digunakan",
-        "damageType": "Jenis damage (senjata, kemampuan, spike, jarak dekat, jatuh)",
-        "isSecondaryFire": "Kill dengan tembakan sekunder (mis. scope senjata)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Orang yang memberikan damage",
-        "receiverPersonId": "Orang yang menerima damage",
-        "damage": "Damage yang diberikan",
-        "headshots": "Jumlah headshot",
-        "bodyshots": "Jumlah bodyshot",
-        "legshots": "Jumlah legshot"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Urutan peristiwa dalam ronde",
-        "timeMs": "Waktu peristiwa (ms sejak awal ronde)",
-        "atkAlive": "Pemain yang masih hidup di sisi penyerang",
-        "defAlive": "Pemain yang masih hidup di sisi bertahan",
-        "winnerSide": "Sisi yang saat ini unggul jumlah"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Orang yang bersangkutan",
-        "kills": "Kill yang dilakukan pada ronde ini",
-        "assists": "Assist yang dilakukan pada ronde ini",
-        "score": "Skor yang diperoleh pada ronde ini",
-        "loadoutValue": "Nilai total loadout",
-        "economySpent": "Kredit yang dihabiskan",
-        "economyRemaining": "Kredit yang tersisa",
-        "weapon": "Senjata utama yang digunakan",
-        "armor": "Jenis armor"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Jenis peristiwa (kill, plant, defuse)",
-        "personId": "Orang yang bersangkutan",
-        "role": "Peran dalam peristiwa (pembunuh, korban, pengamat, pemasang, penjinak)",
-        "x": "Posisi X di minimap",
-        "y": "Posisi Y di minimap",
-        "viewRadians": "Sudut pandang saat peristiwa",
-        "timeMs": "Waktu peristiwa (ms sejak awal ronde)"
-      },
-      "news": {
-        "titles": {
-          "main": "Informasi utama",
-          "additional": "Informasi tambahan"
-        },
-        "id": "Pengenal unik artikel (terlihat di URL)",
-        "authorId": "Penulis artikel",
-        "organizationId": "Organisasi tempat artikel diterbitkan, jika ada",
-        "lang": "Bahasa artikel",
-        "title": "Judul artikel",
-        "slug": "Pengenal teks yang digunakan di URL",
-        "excerpt": "Ringkasan singkat",
-        "content": "Konten artikel",
-        "imageCover": "Gambar sampul",
-        "status": "Status artikel (draf = sedang ditulis, diterbitkan = tayang di situs, diarsipkan = disembunyikan dari situs tetapi dapat dijangkau melalui API)",
-        "isFeatured": "Apakah artikel diunggulkan di beranda?",
-        "showOnHome": "Apakah artikel muncul di beranda?",
-        "publishedAt": "Tanggal publikasi",
-        "createdAt": "Tanggal pembuatan artikel",
-        "updatedAt": "Tanggal modifikasi terakhir"
-      },
-      "newsRelations": {
-        "relatableType": "Jenis entitas yang ditautkan (tim, orang, atau turnamen)",
-        "relatableId": "Pengenal entitas yang ditautkan, digunakan untuk menampilkan artikel di profilnya"
-      },
-      "forumThreads": {
-        "category": "Kategori thread (turnamen, pertandingan, berita, umum)",
-        "subjectType": "Jenis entitas yang terkait dengan thread, jika ada",
-        "title": "Judul thread",
-        "lastMessageAt": "Tanggal pesan terakhir yang diposting"
-      },
-      "forumMessages": {
-        "body": "Isi pesan",
-        "parentId": "Pesan induk, untuk balasan",
-        "hiddenAt": "Tanggal pesan disembunyikan oleh moderasi"
-      },
-      "emotes": {
-        "name": "Nama emote",
-        "imagePath": "Jalur gambar",
-        "source": "Asal emote (mis. impor massal, diturunkan dari logo tim)",
-        "isActive": "Apakah emote tersedia untuk digunakan?"
-      },
-      "reactions": {
-        "emoteId": "Emote yang digunakan",
-        "userId": "Akun yang bereaksi",
-        "reactableType": "Jenis konten tempat reaksi diterapkan (mis. artikel berita)"
-      },
-      "users": {
-        "titles": {
-          "main": "Informasi utama",
-          "security": "Keamanan (privat)"
-        },
-        "id": "Pengenal unik akun",
-        "username": "Handle yang ditampilkan secara publik",
-        "teamTag": "Tim yang ditampilkan sebagai \"didukung\" di profil publik, beserta tag tim tersebut",
-        "preferences": "Preferensi antarmuka (privat)",
-        "pronouns": "Kata ganti",
-        "bio": "Bio publik akun",
-        "socials": "Media sosial yang tertaut ke akun",
-        "email": "Alamat email (privat, tidak pernah ditampilkan)",
-        "passwordHash": "Kata sandi, dihash (tidak pernah disimpan atau ditampilkan dalam teks biasa)",
-        "twoFactorSecret": "Rahasia autentikasi dua faktor (2FA), jika aktif, terenkripsi",
-        "twoFactorRecoveryCodes": "Kode pemulihan 2FA, jika aktif, terenkripsi",
-        "discordSyncedAt": "Tanggal sinkronisasi Discord terakhir"
-      },
-      "accounts": {
-        "provider": "Platform tertaut (Discord atau Twitch)",
-        "providerAccountId": "Pengenal akun di platform tersebut",
-        "accessToken": "Token akses OAuth (privat, tidak pernah dibagikan, hanya digunakan untuk autentikasi)",
-        "refreshToken": "Token penyegaran OAuth (privat)"
-      },
-      "authenticators": {
-        "name": "Nama yang diberikan untuk passkey",
-        "credentialId": "Pengenal teknis kunci (privat)",
-        "lastUsedAt": "Terakhir kali kunci ini digunakan"
-      },
-      "sanctions": {
-        "type": "Jenis sanksi (catatan, peringatan, bisu, skors, blokir)",
-        "reason": "Alasan sanksi",
-        "startsAt": "Tanggal mulai berlaku",
-        "endsAt": "Tanggal berakhir (jika sementara)",
-        "revokedAt": "Tanggal dicabut lebih awal, jika berlaku",
-        "issuedBy": "Moderator yang menjatuhkan sanksi",
-        "revokedBy": "Moderator yang mencabut sanksi, jika berlaku"
-      },
-      "sanctionIdentities": {
-        "type": "Jenis sidik jari teknis yang dilekatkan (mis. email)",
-        "value": "Nilai sidik jari (privat, disimpan meskipun akun dihapus untuk mencegah penghindaran blokir)"
-      },
-      "userReports": {
-        "category": "Kategori laporan",
-        "reason": "Detail yang diberikan pelapor",
-        "status": "Status penanganan (menunggu, diselesaikan, ditolak)",
-        "reviewedBy": "Moderator yang menangani laporan",
-        "resolutionNote": "Catatan penyelesaian dari moderasi"
-      },
-      "activityLog": {
-        "logName": "Kategori tindakan yang dicatat",
-        "description": "Deskripsi tindakan yang dilakukan",
-        "event": "Jenis peristiwa (dibuat, diperbarui, dihapus)",
-        "subjectType": "Jenis entitas yang terkait tindakan (orang, tim, dll.)",
-        "causerId": "Akun yang melakukan tindakan",
-        "attributeChanges": "Detail kolom yang berubah (sebelum/sesudah)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Informasi utama"
-        },
-        "uri": "URL halaman",
-        "viewedAt": "Hari kunjungan",
-        "count": "Jumlah tampilan pada hari itu",
-        "countryCode": "Perkiraan negara pengunjung pada hari itu",
-        "regionCode": "Perkiraan wilayah pengunjung pada hari itu"
+      "switzerland": {
+        "title": "Di-hosting di Swiss",
+        "text": "Semua data kami disimpan di Swiss, oleh penyedia asal Swiss, termasuk cadangannya."
       }
-    }
+    },
+    "storage": {
+      "title": "Mengapa Swiss",
+      "why": "Swiss memiliki salah satu undang-undang privasi paling melindungi di dunia, yaitu Undang-Undang Federal tentang Perlindungan Data. Uni Eropa mengakuinya setara dengan GDPR. Penyedia kami adalah perusahaan Swiss: data Anda tidak tunduk pada hukum asing seperti CLOUD Act Amerika Serikat, yang memungkinkan otoritas AS meminta data dari perusahaan Amerika di mana pun data itu disimpan.",
+      "providers": "Berikut lokasi tepat data disimpan:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Swiss",
+        "body": "Semua server kami: situs, basis data, log server, dan email kami. Salinan berkelanjutan dari basis data disimpan selama 14 hari di pusat data Infomaniak kedua, untuk memulihkannya setelah gangguan."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Swiss (Zurich dan Jenewa)",
+        "body": "Cadangan harian terenkripsi dari basis data dan file kami. Setiap cadangan dihapus setelah 30 hari, dan tidak dapat diubah atau dihapus sebelum itu, bahkan oleh kami."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Server di seluruh dunia",
+        "body": "Hanya menyajikan file publik (gambar, logo, CSS, dan JavaScript). CDN mengganti alamat IP Anda dengan 0.0.0.0: tidak ada alamat IP yang dikumpulkan."
+      }
+    },
+    "private": {
+      "title": "Data privat",
+      "badge": "Tidak pernah publik",
+      "intro": "Data ini tidak pernah ditampilkan secara publik dan tidak dibagikan melalui API kami."
+    },
+    "public": {
+      "title": "Data publik",
+      "badge": "Publik",
+      "intro": "Data ini ditampilkan di situs dan dibagikan melalui API kami, inilah inti dari GC Stats."
+    },
+    "labels": {
+      "source": "Asal data",
+      "visibility": "Siapa yang melihat",
+      "retention": "Berapa lama"
+    },
+    "categories": {
+      "account": {
+        "title": "Akun Anda",
+        "groups": {
+          "profile": {
+            "label": "Akun",
+            "items": [
+              "Alamat email",
+              "Nama pengguna",
+              "Kata sandi, di-hash (tidak pernah disimpan sebagai teks biasa)",
+              "Preferensi tampilan dan tim favorit",
+              "Kata ganti, bio, dan media sosial, jika Anda menambahkannya",
+              "Tanggal login terakhir"
+            ]
+          },
+          "security": {
+            "label": "Keamanan",
+            "items": [
+              "Autentikasi dua faktor (rahasia dan kode pemulihan, terenkripsi)",
+              "Passkey, hanya kunci publik yang disimpan"
+            ]
+          },
+          "linked": {
+            "label": "Akun tertaut",
+            "items": [
+              "ID Discord, Twitch, atau Twitter/X",
+              "Nama dan avatar di platform tersebut",
+              "Token login, hanya digunakan untuk memasukkan Anda"
+            ]
+          },
+          "developers": {
+            "label": "Pengembang",
+            "items": [
+              "Kunci API",
+              "Aplikasi OAuth dan otorisasi yang Anda berikan",
+              "Riwayat panggilan API"
+            ]
+          }
+        },
+        "source": "Anda, saat mendaftar dan di pengaturan. Akun tertaut dikirim oleh platform saat Anda menautkannya.",
+        "visibility": "Anda dan tim kami. Nama pengguna, kata ganti, bio, media sosial, dan tim favorit Anda tampil di halaman profil Anda. Tim kami tidak dapat melihat kata sandi Anda, hanya metode login yang digunakan (kata sandi, Discord, Twitch, Twitter/X, passkey, autentikasi dua faktor). Email dan pengaturan keamanan Anda tidak pernah ditampilkan secara publik.",
+        "retention": "Selama akun Anda ada. Akun tertaut dihapus begitu Anda melepas tautannya. Riwayat panggilan API dihapus setelah 90 hari."
+      },
+      "protection": {
+        "title": "Perlindungan akun Anda dan situs",
+        "groups": {
+          "loginLog": {
+            "label": "Riwayat login",
+            "items": [
+              "Login, login gagal, dan perubahan keamanan",
+              "Tanggal",
+              "Alamat IP"
+            ]
+          },
+          "accessLogs": {
+            "label": "Log akses",
+            "items": [
+              "Alamat IP",
+              "Halaman yang diminta",
+              "Peramban",
+              "Tanggal dan waktu"
+            ]
+          }
+        },
+        "source": "Dicatat otomatis: riwayat login melindungi akun Anda dari pengambilalihan, log akses melindungi situs dari bot dan penyalahgunaan.",
+        "visibility": "Hanya tim teknis kami.",
+        "retention": "Alamat IP login dihapus setelah {days} hari. Log akses dihapus setelah 14 hari."
+      },
+      "moderation": {
+        "title": "Moderasi dan kontribusi",
+        "groups": {
+          "requests": {
+            "label": "Permintaan Anda",
+            "items": [
+              "Usulan perubahan dan diskusinya dengan tim",
+              "Laporan yang Anda kirim"
+            ]
+          },
+          "moderation": {
+            "label": "Moderasi",
+            "items": [
+              "Peringatan dan sanksi, beserta alasannya",
+              "Pesan yang terdeteksi oleh filter otomatis kami",
+              "Riwayat tindakan moderasi"
+            ]
+          }
+        },
+        "source": "Permintaan dan laporan Anda, serta keputusan tim moderasi kami.",
+        "visibility": "Hanya tim kami. Usulan yang diterima memperbarui halaman publik terkait, sedangkan usulannya sendiri tetap privat.",
+        "retention": "Disimpan sebagai riwayat, bahkan setelah akun Anda dihapus, tetapi tanpa tautan ke akun tersebut."
+      },
+      "players": {
+        "title": "Pemain dan staf",
+        "groups": {
+          "identity": {
+            "label": "Identitas",
+            "items": [
+              "Nama panggilan dan nama panggilan sebelumnya",
+              "Nama depan dan belakang",
+              "Negara",
+              "Kata ganti",
+              "Tanggal lahir",
+              "Bio dan media sosial"
+            ]
+          },
+          "career": {
+            "label": "Karier",
+            "items": [
+              "Tim dan peran",
+              "Turnamen dan pertandingan yang dimainkan",
+              "Organisasi dan kredit produksi"
+            ]
+          },
+          "hidden": {
+            "label": "Tidak pernah ditampilkan",
+            "items": [
+              "ID Riot, hanya digunakan untuk menautkan statistik pertandingan ke profil yang benar"
+            ]
+          }
+        },
+        "source": "Orang itu sendiri atau organisasinya, tim kami dari sumber publik (Liquipedia, pengumuman resmi), atau komunitas melalui usulan yang disetujui tim kami. ID Riot berasal dari API resmi Riot Games.",
+        "visibility": "Semua orang, di situs dan melalui API kami, kecuali ID Riot.",
+        "retention": "Disimpan selamanya sebagai arsip skena, bahkan ketika orang tersebut berhenti bermain. Anda dapat meminta perbaikan atau penghapusan."
+      },
+      "matchStats": {
+        "title": "Statistik pertandingan",
+        "groups": {
+          "stats": {
+            "label": "Untuk setiap pertandingan",
+            "items": [
+              "Agen yang dimainkan",
+              "Kill, death, dan assist",
+              "Damage",
+              "Ekonomi dan perlengkapan",
+              "Posisi di peta"
+            ]
+          }
+        },
+        "source": "API resmi Riot Games, untuk pertandingan turnamen yang kami ikuti.",
+        "visibility": "Semua orang, di situs dan melalui API kami.",
+        "retention": "Disimpan sebagai arsip sejarah kompetisi."
+      },
+      "community": {
+        "title": "Postingan Anda",
+        "groups": {
+          "content": {
+            "label": "Yang Anda posting",
+            "items": [
+              "Pesan forum",
+              "Reaksi",
+              "Prediksi dan grup Pick'em"
+            ]
+          }
+        },
+        "source": "Anda.",
+        "visibility": "Semua orang, di situs.",
+        "retention": "Sampai Anda menghapusnya. Jika Anda menghapus akun, reaksi dan prediksi Anda dihapus, sedangkan pesan Anda tetap ada tanpa tautan ke akun Anda."
+      }
+    },
+    "rights": "Anda dapat meminta akses, perbaikan, atau penghapusan data Anda kapan saja.",
+    "privacyLink": "Lihat kebijakan privasi"
   },
   "financePage": {
     "title": "Keuangan",
@@ -1423,6 +1254,10 @@
       "Infrastructure": "Infrastruktur",
       "Software & Licenses": "Perangkat lunak & Lisensi",
       "Other": "Lainnya"
+    },
+    "expensesDoc": {
+      "text": "Agar mudah memahami untuk apa pengeluaran bulanan kami, kami menjelaskannya dalam sebuah dokumen.",
+      "link": "Baca dokumen"
     }
   },
   "teamPage": {
@@ -2036,8 +1871,6 @@
       "finance": "Keuangan",
       "about": "Tentang / Proyek",
       "backToSite": "Kembali ke situs",
-      "pendingChangeRequests": "Permintaan perubahan tertunda",
-      "pendingChangeRequests": "Permintaan perubahan tertunda",
       "pendingChangeRequests": "Permintaan perubahan tertunda",
       "tournaments": "Turnamen",
       "groupModeration": "Moderasi",

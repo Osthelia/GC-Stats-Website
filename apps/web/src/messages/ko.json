@@ -735,11 +735,11 @@
     "intro": "본 방침은 투명성과 개인정보 보호를 중심으로, 저희가 이 사이트에서 데이터를 어떻게 처리하는지 안내해요.",
     "analytics": {
       "title": "방문 및 통계",
-      "text": "저희는 완전히 익명으로 사이트 방문자 수를 측정해요. 이 통계는 IP 주소를 저장하지 않으며, 국가, 페이지, 방문 시각만 기록하고 개별 추적이나 디지털 지문 수집은 하지 않아요. 다만 계정을 생성하면 계정 탈취 방지 등 보안 목적을 위해 로그인 세션 정보(IP 주소, 사용자 에이전트)가 일시적으로 저장돼요. 이는 인증 기능이 있는 거의 모든 사이트에서 적용되는 표준 관행이에요."
+      "text": "사이트 방문자는 완전히 익명으로 측정합니다. 방문한 페이지, 날짜, 조회 수만 집계하며 IP 주소, 개인 추적(트래킹), 핑거프린팅은 사용하지 않습니다. 봇과 악용으로부터 사이트를 보호하기 위해 서버는 모든 요청(IP 주소, 요청한 페이지, 브라우저, 날짜)을 14일간 기록합니다. 계정이 있다면 각 로그인의 IP 주소도 계정 보안 기록에 90일간 보관됩니다."
     },
     "publicData": {
       "title": "공개 데이터",
-      "text": "프로필 정보(닉네임, 자기소개, 소셜 링크, 국가)는 선수가 자발적으로 제공하고 사이트에 공개적으로 표시돼요. 경기 통계는 추적 대상 대회의 일부로 확인된 경기에 대해 Riot Games 공식 API를 통해 직접 수집돼요. 이 모든 데이터는 공개적으로 접근 가능하며 저희 API를 통해 공유돼요."
+      "text": "프로필 정보(닉네임, 소개, SNS, 국가)는 선수 본인이나 소속 조직이 제공하거나, 저희 팀이 공개 자료를 바탕으로 추가하며, 사이트에 공개적으로 표시됩니다. 게임 통계는 다루는 대회의 경기에 대해 Riot Games 공식 API에서 직접 수집됩니다. 이 모든 데이터는 공개되어 있으며 API로 공유됩니다."
     },
     "privateData": {
       "title": "비공개 데이터",
@@ -752,22 +752,21 @@
     },
     "socialLogin": {
       "title": "Discord, Twitter/X, Twitch를 통한 로그인",
-      "text": "회원님은 더 빠른 로그인을 위해 계정을 Discord, Twitter/X, Twitch와 연동할 수 있어요. 이 경우 저희는 해당 플랫폼에서의 ID, 닉네임, 아바타, 그리고 연결 유지를 위한 액세스/리프레시 토큰을 저장해요 (이 토큰은 계정 인증에만 사용되며 공유되지 않아요). 이러한 연동은 프로필 설정에서 언제든지 해제할 수 있어요.",
-      "gravatar": "기본 아바타: 연동된 계정을 통한 아바타가 없는 경우, 이메일의 해시값을 기반으로 Gravatar(Automattic)에서 이미지를 요청할 수 있어요. 이는 많은 웹사이트에서 사용하는 표준적인 서드파티 서비스예요."
+      "text": "회원님은 더 빠른 로그인을 위해 계정을 Discord, Twitter/X, Twitch와 연동할 수 있어요. 이 경우 저희는 해당 플랫폼에서의 ID, 닉네임, 아바타, 그리고 연결 유지를 위한 액세스/리프레시 토큰을 저장해요 (이 토큰은 계정 인증에만 사용되며 공유되지 않아요). 이러한 연동은 프로필 설정에서 언제든지 해제할 수 있어요."
     },
     "moderation": {
       "title": "운영 및 커뮤니티 안전",
       "text": "커뮤니티의 안전을 지키기 위해, 저희는 계정이나 팀에 적용된 제재 이력(경고, 정지), 사용자가 제출한 신고(부정 행위, 제재 회피, 괴롭힘, 가짜 계정 등), 그리고 운영 조치의 활동 기록을 보관해요.",
-      "retentionNote": "제재 회피를 방지하기 위해, 이메일 주소와 같은 기술적 식별 정보가 제재 내역에 첨부되어 관련 계정이 삭제된 이후에도 보관될 수 있어요. 신고 이력과 운영 기록도 마찬가지로, 계정과는 별개로 유지되는 안전 기록이에요."
+      "retentionNote": "제재 회피를 막기 위해 제재 기록, 신고, 운영 로그는 안전 기록으로서 해당 계정이 삭제된 후에도 보관됩니다."
     },
     "dataStructure": {
-      "title": "데이터 구조",
-      "text": "저희가 저장하고 공유하는 데이터를 더 잘 이해할 수 있도록 아래에서 데이터 구조를 확인할 수 있어요. 저장된 모든 데이터와 그 용도, 필수 여부, 공유 여부를 나열하고 있어요.",
-      "button": "저장된 데이터 보기"
+      "title": "개인 데이터 상세",
+      "text": "저희가 보관하는 개인 데이터마다 어떻게 얻는지, 어디에 저장되는지, 얼마나 오래 보관하는지 확인하세요.",
+      "button": "데이터 상세 보기"
     },
     "retention": {
       "title": "데이터 보관",
-      "text": "게임 데이터는 팀이나 선수가 프로젝트 생태계에서 활동하는 동안 보관돼요. 회원님은 언제든지 데이터 삭제를 요청할 수 있어요."
+      "text": "선수 프로필과 경기 데이터는 선수가 은퇴한 후에도 씬의 기록으로 영구 보관됩니다. 계정 데이터는 계정이 존재하는 동안 보관됩니다. 접속 로그는 14일 후, 로그인 IP 주소는 90일 후 삭제됩니다. 운영 기록에 반드시 필요한 데이터를 제외하고 언제든지 데이터의 수정이나 삭제를 요청할 수 있습니다."
     },
     "rights": {
       "title": "회원님의 권리 (GDPR)",
@@ -778,7 +777,11 @@
       "title": "쿠키",
       "text": "본 사이트는 광고나 프로파일링 쿠키를 사용하지 않아요. 세션 작동에 반드시 필요한 기술적 쿠키만 사용될 수 있어요."
     },
-    "takedownLink": "콘텐츠 삭제 요청"
+    "takedownLink": "콘텐츠 삭제 요청",
+    "hosting": {
+      "title": "호스팅",
+      "text": "사이트, 데이터베이스, 서버 로그는 스위스의 Infomaniak에서 호스팅됩니다. 외부 백업은 암호화되어 취리히와 제네바의 Exoscale에 저장됩니다. 공개 파일(이미지, 로고)은 IP 주소를 전혀 수집하지 않도록 설정된 CDN Bunny.net을 거칩니다."
+    }
   },
   "legalNotice": {
     "title": "법적 고지",
@@ -868,7 +871,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "자체 서버의 부하를 줄이기 위해 CSS/JS 파일과 선수, 팀, 대회 이미지를 전 세계 서버에 캐싱해요."
+        "body": "자체 서버의 부하를 줄이기 위해 CSS/JS 파일과 선수, 팀, 대회 이미지를 전 세계 서버에 캐싱해요. CDN은 IP 주소를 전혀 수집하지 않도록 설정되어 있습니다."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -901,12 +904,17 @@
           "p4": "이 선택에 대해, 특히 Infomaniak에 대해 이야기하는 게 중요하다고 생각했어요. 잘 알려지지 않은 제공업체지만, 그럴 자격이 있는 곳이에요. 특히 무료 메일 계정이나 OneDrive 구독을 큰 추가 비용 없이 그쪽으로 옮길 수 있고, 동등하게 좋은 서비스를 받으면서도 회원님과 개인정보, 그리고 우리 지구를 최소한이나마 존중하는 방식으로 이용할 수 있으니까요.",
           "cite": "Lacy, GC Stats 창립자"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "외부 백업",
+        "body": "데이터베이스와 파일의 암호화된 일일 백업으로, 스위스(취리히, 제네바에 복제)에 저장됩니다. 각 백업은 30일 동안 수정할 수 없으며 그 후 삭제됩니다."
       }
     },
     "data": {
       "title": "수집하는 데이터",
-      "body": "저희는 저장하는 모든 데이터(선수, 팀, 대회, 경기)를 공개적으로 문서화해요. 사이트 운영과 관련 없는 이유로 수집되는 데이터는 없어요.",
-      "link": "저장 중인 데이터 확인하기"
+      "body": "저희가 보관하는 개인 데이터를 공개적으로 문서화합니다. 어떻게 얻는지, 어디에 저장되는지, 얼마나 오래 보관하는지. 사이트 운영과 관련 없는 이유로 수집되는 데이터는 없습니다.",
+      "link": "개인 데이터 보기"
     },
     "finance": {
       "title": "재정",
@@ -1012,396 +1020,219 @@
     }
   },
   "dataPage": {
-    "title": "데이터 구조",
-    "subtitle": "저희가 수집하는 데이터의 구조와 목록",
-    "openData": {
-      "title": "오픈 데이터 포털",
-      "body": "API를 사용하는 대신 데이터셋을 직접 탐색하거나 다운로드하는 편이 더 편리할 수 있습니다. 오픈 데이터 포털은 API의 나머지 부분과 함께 이곳으로 이전될 예정입니다.",
-      "badge": "출시 예정"
-    },
-    "groups": {
-      "identity": "인물, 팀 및 조직 구조",
-      "account": "사용자 계정 및 모더레이션",
-      "tournament": "토너먼트 구조",
-      "matches": "매치 및 게임 스탯 구조",
-      "news": "뉴스 및 커뮤니티 구조",
-      "rawStats": "원시 게임 데이터(라운드별)",
-      "others": "기타 데이터 구조"
-    },
-    "sections": {
-      "people": "인물",
-      "teams": "팀",
-      "organizations": "조직",
-      "tournaments": "토너먼트",
-      "matches": "매치",
-      "news": "뉴스",
-      "users": "사용자",
-      "reactionsEmotes": "리액션 및 이모트"
-    },
-    "descriptions": {
-      "identity": "한 인물(선수, 코치, 캐스터, 옵저버, 주최자 등)은 시간이 지나며 역할이 바뀌더라도 프로필이 하나만 존재합니다. 팀과 조직은 자신의 \"추가 정보\"를 수정하거나 삭제할 권한을 가집니다.\n\nRiot ID는 절대 공개되거나 공유되지 않습니다. 저희 팀이 매치 데이터를 통해 확인한 정보입니다.",
-      "tournament": "모든 토너먼트에는 식별자, 이름, 날짜, 지역, 카테고리 및 상태가 있습니다. 하나의 토너먼트는 여러 단계(그룹, 플레이오프 등)로 나뉠 수 있으며, 각 단계는 하나 이상의 컨테이너(브래킷 또는 그룹)로 구성됩니다. 팀은 \"참가자\"로 등록되며, 이때 팀의 상시 로스터와는 별개로 해당 토너먼트 전용 로스터가 고정됩니다.",
-      "matches": "저희는 상세한 스탯을 제공하기 위해 매치에 관한 많은 정보를 수집합니다. 수집하는 항목은 다음과 같습니다.\n• 매치의 기본 정보(필수)\n• 매치의 밴픽(vetoes)\n• 진행된 맵과 그 결과 및 스탯\n• 선수별, 맵별 집계 스탯(사이트가 실제로 일상적으로 조회하는 데이터)\n\n이 데이터가 항상 수집되는 것은 아니지만, 가능한 한 완전한 스탯을 보여드리기 위해 최선을 다해 수집하고 있습니다.",
-      "rawStats": "위의 집계 스탯 외에도, 저희는 이러한 스탯을 재계산하고 라운드 히스토리를 표시하는 데 사용되는 라운드별 원시 데이터(킬, 데미지, 경제, 생존 상태)를 보관합니다.\n\n주요 이벤트(킬, 스파이크 설치, 해제) 당시 모든 선수의 위치는 무기한으로 상세히 보관됩니다. 이 데이터는 히트맵에 사용되며, 한 번 집계되면 다시 복원할 수 없습니다.",
-      "news": "모든 뉴스 기사에는 식별자, 제목, 내용 및 상태(초안, 게시됨, 보관됨)가 있습니다. 기사는 팀, 인물 또는 토너먼트와 연결되어 해당 프로필에 표시될 수 있습니다.\n\n포럼과 이모트/리액션 기능을 통해 커뮤니티는 사이트 콘텐츠와 상호작용할 수 있습니다. 모더레이션에 의해 숨겨지거나 삭제된 메시지는 내부적으로 기록이 유지됩니다.",
-      "account": "이 테이블들은 인물 프로필과는 별개로, 뉴스에 반응하거나 프로필을 관리하거나 사이트를 관리하기 위해 사용자 계정을 생성한 사람에게만 존재합니다.\n\n보안 데이터(비밀번호, 2FA, 패스키)는 절대 공유되지 않습니다. 연동된 Discord/Twitch 계정은 인증에만 사용되는 액세스 토큰을 저장합니다.\n\n모더레이션 데이터(제재, 우회 방지 식별 정보, 신고, 활동 로그)는 계정이 삭제된 이후에도 밴 우회를 방지하기 위해 계정과 독립적으로 유지되는 보안 기록을 구성합니다.",
-      "others": "저희는 각 페이지의 일별 방문 수를 저장합니다. 누가 조회했는지나 정확한 시간은 저장하지 않으며, 대략적인 국가/지역 정보만 저장합니다.\n\n이 데이터는 비공개로 저장됩니다. 절대 공유되지 않으며, 사이트 사용 현황을 시각화하고 필요에 따라 인프라를 조정하는 용도로만 사용됩니다."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "기본 정보",
-          "additional": "추가 정보",
-          "confidential": "기밀 정보"
-        },
-        "id": "인물에게 부여된 고유 식별자(URL에 표시됨)",
-        "handle": "핸들",
-        "aliases": "이전에 사용한 핸들",
-        "firstName": "이름",
-        "lastName": "성",
-        "countryCode": "국가 코드(FR = 프랑스, US = 미국 등)",
-        "secondaryCountryCode": "이중 국적을 위한 두 번째 국가 코드",
-        "pronouns": "대명사",
-        "birthDate": "생년월일",
-        "bio": "소개",
-        "socials": "소셜 미디어(Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "VLR 식별자",
-        "liquipediaLink": "인물의 Liquipedia 페이지 링크",
-        "valId": "Riot ID / PUUID(비공개 정보, 저희 팀이 Riot 매치 데이터를 통해 확인하여 부여하며, 매치 스탯을 해당 인물과 연결하는 데 사용)",
-        "esportsValId": "게임 계정에 연결된 Riot e스포츠 식별자"
+    "title": "개인 데이터",
+    "subtitle": "회원님에 대해 어떤 데이터를 보관하는지, 어디서 얻는지, 누가 볼 수 있는지, 얼마나 오래 보관하는지 알려드립니다.",
+    "policy": {
+      "title": "우리의 원칙",
+      "noSale": {
+        "title": "판매도 공유도 하지 않습니다",
+        "text": "어떤 데이터도 판매하지 않으며, 회원님의 비공개 데이터를 광고주나 파트너와 절대 공유하지 않습니다. 공개 데이터(선수 프로필, 경기 통계)만 사이트와 API를 통해 게시됩니다."
       },
-      "rosterMemberships": {
-        "personId": "인물의 고유 식별자",
-        "teamId": "팀의 고유 식별자",
-        "role": "팀 내 역할(선수/코치/매니저 등)",
-        "period": "팀 소속 기간(합류일, 해당 시 탈퇴일)",
-        "inactiveSince": "로스터에는 남아 있지만 비활성 상태(부상, 휴식 등)가 된 시점"
+      "minimal": {
+        "title": "꼭 필요한 것만",
+        "text": "사이트가 작동하고 안전하게 유지되는 데 필요한 것만 수집합니다. 광고도, 추적기도, 추적 쿠키도 없습니다. 방문자 수는 IP 주소 없이 익명으로 집계됩니다."
       },
-      "teams": {
-        "titles": {
-          "main": "기본 정보",
-          "additional": "추가 정보"
-        },
-        "id": "팀에 부여된 고유 식별자(URL에 표시됨)",
-        "name": "팀 이름",
-        "shortName": "약칭(Fnatic = FNC)",
-        "countryCode": "국가 코드(FR = 프랑스, US = 미국 등)",
-        "secondaryCountryCode": "두 지역에 걸친 팀을 위한 두 번째 국가 코드",
-        "socials": "소셜 미디어(Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "소개",
-        "vlrId": "VLR 식별자",
-        "liquipediaLink": "팀의 Liquipedia 페이지 링크",
-        "tags": "팀에 연결된 자유 형식 태그"
-      },
-      "organizations": {
-        "id": "조직의 고유 식별자",
-        "name": "조직명",
-        "slug": "URL에 사용되는 텍스트 식별자",
-        "tags": "조직이 수행하는 역할(대회 주최, 프로덕션, 미디어, 방송, 에이전시, 커뮤니티)",
-        "countryCode": "국가 코드(FR = 프랑스, US = 미국 등)",
-        "socials": "소셜 미디어(Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "인물의 고유 식별자",
-        "organizationId": "조직의 고유 식별자",
-        "role": "조직 내 역할(관리자/캐스터/옵저버/프로듀서/에디터 등)",
-        "period": "조직 소속 기간"
-      },
-      "productionCredits": {
-        "personId": "크레딧에 등재된 인물의 고유 식별자",
-        "organizationId": "해당 크레딧에서 그 인물이 소속된 조직(있는 경우)",
-        "role": "맡은 역할(캐스터/분석가/옵저버/주최자/프로듀서/에디터/포토그래퍼/번역가/심판 등)",
-        "titleOverride": "일반 역할 대신 표시되는 사용자 지정 직함",
-        "scope": "적용되는 정확한 범위(토너먼트, 단계, 컨테이너, 매치 또는 맵)"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "기본 정보",
-          "additional": "추가 정보"
-        },
-        "id": "토너먼트의 고유 식별자",
-        "name": "대회 이름",
-        "region": "세계 지역(EMEA, NA 등)",
-        "category": "토너먼트 카테고리(예: Challengers, Cash Cups)",
-        "prizePool": "총 상금(cashprize)",
-        "location": "개최 장소",
-        "startDate": "시작일",
-        "endDate": "종료일",
-        "status": "현재 상태(예정, 진행 중, 종료)",
-        "description": "이벤트 개요",
-        "liquipediaLink": "토너먼트의 Liquipedia 페이지 링크",
-        "socials": "토너먼트의 소셜 미디어 링크"
-      },
-      "stages": {
-        "titles": {
-          "structure": "기술적 구조"
-        },
-        "name": "단계 이름(예: 플레이오프, A조)",
-        "sequenceOrder": "단계 표시 순서",
-        "status": "단계 상태(예정, 진행 중, 종료)",
-        "startDate": "단계 시작일",
-        "endDate": "단계 종료일",
-        "liquipediaLink": "단계 자체의 Liquipedia 페이지 링크",
-        "containerType": "컨테이너 형식(토너먼트 브래킷 또는 그룹)",
-        "config": "기술적 브래킷/그룹 설정(토너먼트 엔진에 의해 생성됨)"
-      },
-      "entrants": {
-        "tournamentId": "토너먼트 참조",
-        "kind": "참가자 종류(GC-Stats에서는 항상 \"team\")",
-        "teamId": "등록된 팀",
-        "displayName": "등록 시점에 표시된 이름(이후 팀명이 변경되어도 그대로 유지됨)",
-        "seed": "참가자에게 부여된 시드",
-        "qualificationSourceManual": "진출 경로를 직접 지정했는지 여부 (아니면 진출 규칙에서 결정)",
-        "qualificationSourceType": "수동 진출 경로 (대회, 초청 또는 포인트)",
-        "qualificationSourceTournamentId": "참가자가 진출한 대회 (수동 지정)",
-        "qualificationSourcePointTypeId": "진출의 기준이 된 포인트 유형 (수동 지정)"
-      },
-      "entrantMembers": {
-        "personId": "해당 토너먼트 전용으로 고정된 로스터에 속한 인물",
-        "role": "해당 로스터에서의 역할(선수/스탠드인/코치/매니저/분석가 등)",
-        "isStarter": "해당 토너먼트에서 주전인지 후보인지 여부"
-      },
-      "qualifications": {
-        "destinationType": "진출이 부여하는 것(다른 컨테이너의 자리, 또는 최종 순위)",
-        "placement": "달성한 순위(1위, 2위 등)",
-        "placementLabel": "순위 라벨(예: 우승, 준우승)",
-        "points": "부여된 랭킹 포인트",
-        "cashPrizeAmount": "지급된 상금액",
-        "rank": "해당 순위표에서 참가자가 달성한 등수",
-        "amount": "가산되거나 차감된 포인트 수(부호가 있는 원장 항목)",
-        "reason": "포인트가 부여되거나 차감된 사유"
-      },
-      "matches": {
-        "titles": {
-          "structure": "기술적 구조"
-        },
-        "id": "매치의 고유 식별자",
-        "containerId": "매치가 속한 컨테이너(브래킷/그룹)",
-        "round": "라운드 번호",
-        "label": "라운드 이름(예: 결승전)",
-        "bestOf": "최대 맵 수(BO1, BO3, BO5)",
-        "status": "상태(예정, 준비됨, 진행 중, 종료)",
-        "entrantAId": "참가자 A의 고유 식별자",
-        "entrantBId": "참가자 B의 고유 식별자",
-        "scoreA": "참가자 A의 최종 스코어",
-        "scoreB": "참가자 B의 최종 스코어",
-        "winnerId": "승리한 참가자",
-        "scheduledAt": "예정된 날짜 및 시간",
-        "patch": "게임 버전(예: 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "해당 매치",
-        "entrantId": "해당 액션을 수행한 참가자",
-        "mapName": "맵 이름(예: Ascent)",
-        "type": "액션(Pick, Ban 또는 Decider)",
-        "order": "밴픽 순서 내 위치",
-        "side": "Pick 또는 Decider의 경우 선택된 진영(공격/수비)",
-        "sidePickedByEntrantId": "이 진영을 선택한 참가자"
-      },
-      "maps": {
-        "id": "진행된 맵의 고유 식별자",
-        "apiMatchId": "Riot API가 부여한 매치 식별자",
-        "matchId": "해당 매치",
-        "mapName": "맵 이름",
-        "gameMode": "연결된 Riot 게임 모드",
-        "teamAScore": "해당 맵에서 참가자 A의 스코어",
-        "teamBScore": "해당 맵에서 참가자 B의 스코어",
-        "order": "매치 내 맵의 순서",
-        "isCompleted": "맵이 종료되었는지 여부"
-      },
-      "mapPlayerStats": {
-        "agentName": "사용한 에이전트(예: Jett)",
-        "kills": "총 킬 수",
-        "deaths": "총 데스 수",
-        "assists": "총 어시스트 수",
-        "acs": "평균 전투 점수(ACS)",
-        "adr": "라운드당 평균 데미지(ADR)",
-        "kastPercentage": "Kill/Assist/Survive/Trade 비율(KAST%)",
-        "firstKills": "퍼스트 킬(FK)",
-        "firstDeaths": "퍼스트 데스(FD)",
-        "headshotPercentage": "헤드샷 비율(HS%)",
-        "clutches": "상황별(1v1 ~ 1v5) 클러치 성공/시도 횟수",
-        "multikills": "2, 3, 4, 5킬을 기록한 라운드 수",
-        "tradeKills": "팀원의 죽음을 되갚은 킬(트레이드 킬)",
-        "tradedDeaths": "팀원이 되갚아준 데스",
-        "roundTypeSplits": "라운드 유형별(피스톨, 공격, 수비 등) 상세 스탯",
-        "fallDeaths": "낙사로 인한 데스",
-        "weaponKills": "무기별 킬 수"
-      },
-      "mapTeamRoundSummary": {
-        "side": "플레이한 진영(공격/수비)",
-        "roundsPlayed": "해당 진영에서 플레이한 라운드 수",
-        "roundsWon": "해당 진영에서 승리한 라운드 수"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "라운드 번호(1~24 이상)",
-        "winningEntrantId": "해당 라운드를 승리한 참가자",
-        "winType": "승리 유형(제압, 스파이크 해제, 스파이크 폭발, 시간 종료)",
-        "atkEntrantId": "해당 라운드에서 공격 측 참가자",
-        "defEntrantId": "해당 라운드에서 수비 측 참가자",
-        "plantSite": "스파이크 설치 지점(A/B/C)",
-        "plantX": "미니맵 상 스파이크 설치 X좌표",
-        "plantY": "미니맵 상 스파이크 설치 Y좌표"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "킬을 기록한 인물",
-        "victimPersonId": "사망한 인물",
-        "assistantPersonIds": "해당 킬에 어시스트한 인물들",
-        "timeMs": "킬 발생 시각(라운드 시작 후 경과 밀리초)",
-        "weapon": "사용된 무기",
-        "damageType": "데미지 유형(무기, 어빌리티, 스파이크, 근접 공격, 낙하)",
-        "isSecondaryFire": "보조 공격(예: 무기의 스코프)으로 기록된 킬인지 여부"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "데미지를 가한 인물",
-        "receiverPersonId": "데미지를 받은 인물",
-        "damage": "가한 데미지량",
-        "headshots": "헤드샷 수",
-        "bodyshots": "바디샷 수",
-        "legshots": "레그샷 수"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "라운드 내 이벤트 순서",
-        "timeMs": "이벤트 발생 시각(라운드 시작 후 경과 밀리초)",
-        "atkAlive": "공격 측 생존 인원",
-        "defAlive": "수비 측 생존 인원",
-        "winnerSide": "현재 인원 수에서 앞서는 진영"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "해당 인물",
-        "kills": "해당 라운드에서 기록한 킬 수",
-        "assists": "해당 라운드에서 기록한 어시스트 수",
-        "score": "해당 라운드에서 획득한 점수",
-        "loadoutValue": "로드아웃 총 가치",
-        "economySpent": "사용한 크레딧",
-        "economyRemaining": "남은 크레딧",
-        "weapon": "주로 사용한 무기",
-        "armor": "방어구 종류"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "이벤트 유형(킬, 스파이크 설치, 스파이크 해제)",
-        "personId": "해당 인물",
-        "role": "이벤트에서의 역할(킬러, 피해자, 목격자, 설치자, 해제자)",
-        "x": "미니맵 상 X좌표",
-        "y": "미니맵 상 Y좌표",
-        "viewRadians": "이벤트 발생 당시 시야각",
-        "timeMs": "이벤트 발생 시각(라운드 시작 후 경과 밀리초)"
-      },
-      "news": {
-        "titles": {
-          "main": "기본 정보",
-          "additional": "추가 정보"
-        },
-        "id": "기사의 고유 식별자(URL에 표시됨)",
-        "authorId": "기사 작성자",
-        "organizationId": "기사가 게시된 소속 조직(있는 경우)",
-        "lang": "기사 언어",
-        "title": "기사 제목",
-        "slug": "URL에 사용되는 텍스트 식별자",
-        "excerpt": "짧은 요약",
-        "content": "기사 내용",
-        "imageCover": "커버 이미지",
-        "status": "기사 상태(draft = 작성 중, published = 사이트에 게시됨, archived = 사이트에서는 숨겨졌지만 API로는 조회 가능)",
-        "isFeatured": "홈페이지에 추천 기사로 노출되는지 여부",
-        "showOnHome": "기사가 홈페이지에 노출되는지 여부",
-        "publishedAt": "게시일",
-        "createdAt": "기사 작성일",
-        "updatedAt": "마지막 수정일"
-      },
-      "newsRelations": {
-        "relatableType": "연결된 엔티티 유형(팀, 인물 또는 토너먼트)",
-        "relatableId": "연결된 엔티티의 식별자(해당 프로필에 기사를 표시하는 데 사용)"
-      },
-      "forumThreads": {
-        "category": "게시글 카테고리(토너먼트, 매치, 뉴스, 일반)",
-        "subjectType": "게시글이 관련된 엔티티 유형(있는 경우)",
-        "title": "게시글 제목",
-        "lastMessageAt": "마지막 메시지 작성일"
-      },
-      "forumMessages": {
-        "body": "메시지 내용",
-        "parentId": "답글인 경우 원본 메시지",
-        "hiddenAt": "모더레이션에 의해 메시지가 숨겨진 날짜"
-      },
-      "emotes": {
-        "name": "이모트 이름",
-        "imagePath": "이미지 경로",
-        "source": "이모트 출처(예: 일괄 등록, 팀 로고에서 파생)",
-        "isActive": "이모트 사용 가능 여부"
-      },
-      "reactions": {
-        "emoteId": "사용된 이모트",
-        "userId": "리액션을 남긴 계정",
-        "reactableType": "리액션이 적용된 콘텐츠 유형(예: 뉴스 기사)"
-      },
-      "users": {
-        "titles": {
-          "main": "기본 정보",
-          "security": "보안(비공개)"
-        },
-        "id": "계정의 고유 식별자",
-        "username": "공개적으로 표시되는 핸들",
-        "teamTag": "공개 프로필에 \"응원 팀\"으로 표시되는 팀과 그 팀의 태그",
-        "preferences": "인터페이스 환경설정(비공개)",
-        "pronouns": "대명사",
-        "bio": "계정의 공개 소개",
-        "socials": "계정에 연결된 소셜 미디어",
-        "email": "이메일 주소(비공개, 절대 표시되지 않음)",
-        "passwordHash": "해시 처리된 비밀번호(평문으로 저장되거나 표시되지 않음)",
-        "twoFactorSecret": "2단계 인증(2FA)이 활성화된 경우의 비밀 키(암호화됨)",
-        "twoFactorRecoveryCodes": "2단계 인증(2FA)이 활성화된 경우의 복구 코드(암호화됨)",
-        "discordSyncedAt": "마지막 Discord 동기화 일시"
-      },
-      "accounts": {
-        "provider": "연동된 플랫폼(Discord 또는 Twitch)",
-        "providerAccountId": "해당 플랫폼에서의 계정 식별자",
-        "accessToken": "OAuth 액세스 토큰(비공개, 절대 공유되지 않으며 인증 용도로만 사용)",
-        "refreshToken": "OAuth 리프레시 토큰(비공개)"
-      },
-      "authenticators": {
-        "name": "패스키에 부여된 이름",
-        "credentialId": "해당 키의 기술적 식별자(비공개)",
-        "lastUsedAt": "해당 키를 마지막으로 사용한 시점"
-      },
-      "sanctions": {
-        "type": "제재 유형(주의, 경고, 뮤트, 정지, 밴)",
-        "reason": "제재 사유",
-        "startsAt": "효력 발생 시작일",
-        "endsAt": "종료일(일시적인 경우)",
-        "revokedAt": "조기 해제된 경우 그 날짜",
-        "issuedBy": "제재를 부과한 모더레이터",
-        "revokedBy": "해당되는 경우 제재를 해제한 모더레이터"
-      },
-      "sanctionIdentities": {
-        "type": "연결된 기술적 식별 정보 유형(예: 이메일)",
-        "value": "식별 정보 값(비공개, 밴 우회 방지를 위해 계정 삭제 후에도 보관)"
-      },
-      "userReports": {
-        "category": "신고 카테고리",
-        "reason": "신고자가 제공한 상세 내용",
-        "status": "처리 상태(대기 중, 처리됨, 반려됨)",
-        "reviewedBy": "신고를 처리한 모더레이터",
-        "resolutionNote": "모더레이션이 남긴 처리 결과 메모"
-      },
-      "activityLog": {
-        "logName": "기록된 액션의 카테고리",
-        "description": "수행된 액션에 대한 설명",
-        "event": "이벤트 유형(생성됨, 수정됨, 삭제됨)",
-        "subjectType": "해당 액션과 관련된 엔티티 유형(인물, 팀 등)",
-        "causerId": "해당 액션을 수행한 계정",
-        "attributeChanges": "변경된 필드의 상세 내역(변경 전/후)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "기본 정보"
-        },
-        "uri": "페이지 URL",
-        "viewedAt": "방문한 날짜",
-        "count": "해당 날짜의 조회 수",
-        "countryCode": "해당 날짜 방문자의 대략적인 국가",
-        "regionCode": "해당 날짜 방문자의 대략적인 지역"
+      "switzerland": {
+        "title": "스위스에서 호스팅",
+        "text": "백업을 포함한 모든 데이터는 스위스 업체를 통해 스위스에 저장됩니다."
       }
-    }
+    },
+    "storage": {
+      "title": "왜 스위스인가",
+      "why": "스위스는 세계에서 가장 강력한 개인정보 보호법 중 하나인 연방 데이터 보호법을 갖추고 있습니다. 유럽연합은 이를 GDPR과 동등한 보호 수준으로 인정합니다. 우리 업체들은 스위스 기업이므로, 회원님의 데이터는 저장 위치와 관계없이 미국 당국이 미국 기업에 데이터를 요구할 수 있도록 한 미국 CLOUD Act 같은 외국 법률의 적용을 받지 않습니다.",
+      "providers": "데이터가 정확히 저장되는 곳은 다음과 같습니다.",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "스위스",
+        "body": "모든 서버: 사이트, 데이터베이스, 서버 로그, 이메일. 장애 시 복구할 수 있도록 데이터베이스의 연속 사본을 두 번째 Infomaniak 데이터 센터에 14일간 보관합니다."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "스위스(취리히, 제네바)",
+        "body": "데이터베이스와 파일의 암호화된 일일 백업입니다. 각 백업은 30일 후 삭제되며, 그 전에는 저희조차 수정하거나 삭제할 수 없습니다."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "전 세계 서버",
+        "body": "공개 파일(이미지, 로고, CSS, JavaScript)만 제공합니다. CDN은 회원님의 IP 주소를 0.0.0.0으로 바꾸므로 IP 주소가 전혀 수집되지 않습니다."
+      }
+    },
+    "private": {
+      "title": "비공개 데이터",
+      "badge": "공개되지 않음",
+      "intro": "이 데이터는 공개적으로 표시되거나 API로 공유되지 않습니다."
+    },
+    "public": {
+      "title": "공개 데이터",
+      "badge": "공개",
+      "intro": "이 데이터는 사이트에 표시되고 API로 공유되며, GC Stats의 핵심입니다."
+    },
+    "labels": {
+      "source": "출처",
+      "visibility": "볼 수 있는 사람",
+      "retention": "보관 기간"
+    },
+    "categories": {
+      "account": {
+        "title": "회원님의 계정",
+        "groups": {
+          "profile": {
+            "label": "계정",
+            "items": [
+              "이메일 주소",
+              "사용자 이름",
+              "비밀번호(해시 처리, 평문으로 저장하지 않음)",
+              "표시 설정과 응원하는 팀",
+              "추가한 경우 대명사, 소개, SNS",
+              "마지막 로그인 날짜"
+            ]
+          },
+          "security": {
+            "label": "보안",
+            "items": [
+              "2단계 인증(비밀 키와 복구 코드, 암호화)",
+              "패스키(공개 키만 보관)"
+            ]
+          },
+          "linked": {
+            "label": "연결된 계정",
+            "items": [
+              "Discord, Twitch 또는 Twitter/X ID",
+              "해당 플랫폼의 이름과 아바타",
+              "로그인 토큰(로그인에만 사용)"
+            ]
+          },
+          "developers": {
+            "label": "개발자",
+            "items": [
+              "API 키",
+              "OAuth 애플리케이션과 허용한 권한",
+              "API 호출 기록"
+            ]
+          }
+        },
+        "source": "가입 시와 설정에서 회원님이 입력한 정보. 연결된 계정은 연결할 때 해당 플랫폼이 전달합니다.",
+        "visibility": "회원님과 저희 팀. 사용자 이름, 대명사, 소개, SNS, 응원하는 팀은 프로필 페이지에 표시됩니다. 저희 팀은 회원님의 비밀번호를 볼 수 없으며, 사용한 로그인 방식(비밀번호, Discord, Twitch, Twitter/X, 패스키, 2단계 인증)만 확인할 수 있습니다. 이메일과 보안 설정은 공개되지 않습니다.",
+        "retention": "계정이 존재하는 동안. 연결된 계정은 연결을 해제하는 즉시 삭제됩니다. API 호출 기록은 90일 후 삭제됩니다."
+      },
+      "protection": {
+        "title": "계정과 사이트 보호",
+        "groups": {
+          "loginLog": {
+            "label": "로그인 기록",
+            "items": [
+              "로그인, 로그인 실패, 보안 변경",
+              "날짜",
+              "IP 주소"
+            ]
+          },
+          "accessLogs": {
+            "label": "접속 로그",
+            "items": [
+              "IP 주소",
+              "요청한 페이지",
+              "브라우저",
+              "날짜와 시간"
+            ]
+          }
+        },
+        "source": "자동으로 기록됩니다. 로그인 기록은 계정 도용을 막고, 접속 로그는 봇과 악용으로부터 사이트를 보호합니다.",
+        "visibility": "기술팀만.",
+        "retention": "로그인 IP 주소는 {days}일 후 삭제됩니다. 접속 로그는 14일 후 삭제됩니다."
+      },
+      "moderation": {
+        "title": "운영 관리와 기여",
+        "groups": {
+          "requests": {
+            "label": "회원님의 요청",
+            "items": [
+              "수정 제안과 팀과의 대화",
+              "회원님이 보낸 신고"
+            ]
+          },
+          "moderation": {
+            "label": "운영 관리",
+            "items": [
+              "경고와 제재, 그리고 그 사유",
+              "자동 필터가 감지한 메시지",
+              "운영 조치 기록"
+            ]
+          }
+        },
+        "source": "회원님의 요청과 신고, 그리고 운영팀의 결정.",
+        "visibility": "저희 팀만. 승인된 제안은 해당 공개 페이지에 반영되지만, 제안 자체는 비공개로 유지됩니다.",
+        "retention": "계정을 삭제한 후에도 기록으로 보관되지만, 계정과의 연결은 사라집니다."
+      },
+      "players": {
+        "title": "선수와 스태프",
+        "groups": {
+          "identity": {
+            "label": "신원",
+            "items": [
+              "닉네임과 이전 닉네임",
+              "이름과 성",
+              "국가",
+              "대명사",
+              "생년월일",
+              "소개와 SNS"
+            ]
+          },
+          "career": {
+            "label": "경력",
+            "items": [
+              "팀과 역할",
+              "참가한 대회와 경기",
+              "조직과 제작 크레딧"
+            ]
+          },
+          "hidden": {
+            "label": "표시되지 않음",
+            "items": [
+              "Riot ID(경기 통계를 올바른 프로필에 연결하는 용도로만 사용)"
+            ]
+          }
+        },
+        "source": "본인 또는 소속 조직, 공개 자료(Liquipedia, 공식 발표)를 바탕으로 한 저희 팀, 또는 저희 팀이 승인한 커뮤니티 제안. Riot ID는 Riot Games 공식 API에서 가져옵니다.",
+        "visibility": "Riot ID를 제외하고 누구나(사이트와 API).",
+        "retention": "씬의 기록으로 영구 보관되며, 선수가 은퇴한 후에도 마찬가지입니다. 수정이나 삭제를 요청할 수 있습니다."
+      },
+      "matchStats": {
+        "title": "경기 통계",
+        "groups": {
+          "stats": {
+            "label": "각 경기마다",
+            "items": [
+              "플레이한 요원",
+              "킬, 데스, 어시스트",
+              "피해량",
+              "경제와 장비",
+              "맵 위의 위치"
+            ]
+          }
+        },
+        "source": "저희가 다루는 대회의 경기에 대해 Riot Games 공식 API에서 가져옵니다.",
+        "visibility": "누구나(사이트와 API).",
+        "retention": "대회의 역사 기록으로 보관됩니다."
+      },
+      "community": {
+        "title": "회원님의 게시물",
+        "groups": {
+          "content": {
+            "label": "게시한 내용",
+            "items": [
+              "포럼 메시지",
+              "반응",
+              "Pick'em 예측과 그룹"
+            ]
+          }
+        },
+        "source": "회원님.",
+        "visibility": "누구나(사이트).",
+        "retention": "회원님이 삭제할 때까지. 계정을 삭제하면 반응과 예측은 삭제되고, 메시지는 계정과의 연결 없이 남습니다."
+      }
+    },
+    "rights": "언제든지 데이터의 열람, 수정, 삭제를 요청할 수 있습니다.",
+    "privacyLink": "개인정보 처리방침 보기"
   },
   "financePage": {
     "title": "재정",
@@ -1421,6 +1252,10 @@
       "Infrastructure": "인프라",
       "Software & Licenses": "소프트웨어 및 라이선스",
       "Other": "기타"
+    },
+    "expensesDoc": {
+      "text": "매달 지출이 어디에 쓰이는지 쉽게 이해할 수 있도록 문서로 설명해 두었습니다.",
+      "link": "문서 읽기"
     }
   },
   "teamPage": {
@@ -2034,8 +1869,6 @@
       "finance": "재무",
       "about": "소개 / 프로젝트",
       "backToSite": "사이트로 돌아가기",
-      "pendingChangeRequests": "대기 중인 변경 요청",
-      "pendingChangeRequests": "대기 중인 변경 요청",
       "pendingChangeRequests": "대기 중인 변경 요청",
       "tournaments": "대회",
       "groupModeration": "모더레이션",
@@ -5370,17 +5203,11 @@
         "youtube": "YouTube",
         "tiktok": "TikTok",
         "kick": "Kick",
-
         "sooplive": "SOOP",
-
         "naver": "Naver",
-
         "bilibili": "Bilibili",
-
         "qq": "QQ",
-
         "weibo": "Weibo",
-
         "other": "기타"
       },
       "typeLabel": "유형",

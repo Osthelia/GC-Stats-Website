@@ -737,11 +737,11 @@
     "intro": "Chính sách này cho bạn biết cách chúng tôi xử lý dữ liệu trên trang web này, với trọng tâm là sự minh bạch và tôn trọng quyền riêng tư.",
     "analytics": {
       "title": "Điều hướng & thống kê",
-      "text": "Chúng tôi đo lượng truy cập trang web theo cách hoàn toàn ẩn danh: các thống kê này không bao giờ lưu địa chỉ IP, chỉ lưu quốc gia, trang và thời gian truy cập, không theo dõi cá nhân hay lấy dấu vân tay kỹ thuật số. Tuy nhiên, nếu bạn tạo tài khoản, phiên đăng nhập của bạn (địa chỉ IP và user agent) sẽ được lưu tạm thời vì mục đích bảo mật (chống chiếm đoạt tài khoản), như hầu hết mọi trang web có xác thực."
+      "text": "Chúng tôi đo lượt truy cập hoàn toàn ẩn danh: chỉ đếm trang đã xem, ngày và số lượt xem, không có địa chỉ IP, không theo dõi cá nhân và không lấy dấu vân tay trình duyệt (fingerprinting). Để bảo vệ trang khỏi bot và lạm dụng, máy chủ của chúng tôi ghi lại mọi yêu cầu (địa chỉ IP, trang được yêu cầu, trình duyệt, ngày) trong 14 ngày. Nếu bạn có tài khoản, địa chỉ IP của mỗi lần đăng nhập cũng được giữ 90 ngày trong nhật ký bảo mật của tài khoản."
     },
     "publicData": {
       "title": "Dữ liệu công khai",
-      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, liên kết mạng xã hội, quốc gia) do tuyển thủ tự nguyện cung cấp và được hiển thị công khai trên trang web. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Toàn bộ dữ liệu này được truy cập công khai và chia sẻ qua API của chúng tôi."
+      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, mạng xã hội, quốc gia) do tuyển thủ hoặc tổ chức của họ cung cấp, hoặc do đội ngũ của chúng tôi thêm từ nguồn công khai, rồi được hiển thị công khai trên trang. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận của giải đấu được theo dõi. Toàn bộ dữ liệu này là công khai và được chia sẻ qua API của chúng tôi."
     },
     "privateData": {
       "title": "Dữ liệu riêng tư",
@@ -754,22 +754,21 @@
     },
     "socialLogin": {
       "title": "Đăng nhập qua Discord, Twitter/X hoặc Twitch",
-      "text": "Bạn có thể liên kết tài khoản của mình với Discord, Twitter/X hoặc Twitch để đăng nhập nhanh hơn. Khi đó chúng tôi lưu ID của bạn trên nền tảng đó, biệt danh, ảnh đại diện và các token truy cập/làm mới cần thiết để duy trì kết nối (các token này chỉ dùng để xác thực tài khoản của bạn và không bao giờ được chia sẻ). Bạn có thể hủy liên kết các tài khoản này bất cứ lúc nào từ cài đặt hồ sơ.",
-      "gravatar": "Ảnh đại diện mặc định: Nếu bạn không có ảnh đại diện từ tài khoản liên kết, một hình ảnh có thể được yêu cầu từ Gravatar (Automattic) dựa trên mã băm của email bạn, một dịch vụ bên thứ ba tiêu chuẩn được nhiều trang web sử dụng."
+      "text": "Bạn có thể liên kết tài khoản của mình với Discord, Twitter/X hoặc Twitch để đăng nhập nhanh hơn. Khi đó chúng tôi lưu ID của bạn trên nền tảng đó, biệt danh, ảnh đại diện và các token truy cập/làm mới cần thiết để duy trì kết nối (các token này chỉ dùng để xác thực tài khoản của bạn và không bao giờ được chia sẻ). Bạn có thể hủy liên kết các tài khoản này bất cứ lúc nào từ cài đặt hồ sơ."
     },
     "moderation": {
       "title": "Kiểm duyệt & an toàn cộng đồng",
       "text": "Để giữ an toàn cho cộng đồng, chúng tôi lưu lịch sử các hình phạt (cảnh cáo, cấm) áp dụng cho một tài khoản hoặc đội, các báo cáo do người dùng gửi (gian lận, lách lệnh cấm, quấy rối, tài khoản giả, v.v.) và nhật ký hoạt động của các hành động kiểm duyệt.",
-      "retentionNote": "Để ngăn việc lách lệnh cấm, một dấu vết kỹ thuật (chẳng hạn địa chỉ email) có thể được gắn vào một hình phạt và được giữ lại ngay cả sau khi tài khoản liên quan bị xóa. Điều tương tự áp dụng cho lịch sử báo cáo và nhật ký kiểm duyệt, vốn tạo thành hồ sơ an toàn được lưu giữ độc lập với tài khoản."
+      "retentionNote": "Để ngăn việc lách lệnh cấm, lịch sử hình phạt, báo cáo và nhật ký kiểm duyệt tạo thành hồ sơ an toàn, được giữ lại kể cả sau khi tài khoản liên quan bị xóa."
     },
     "dataStructure": {
-      "title": "Cấu trúc dữ liệu",
-      "text": "Để hiểu rõ hơn về dữ liệu chúng tôi lưu trữ và chia sẻ, bạn có thể xem cấu trúc dữ liệu của chúng tôi bên dưới. Cấu trúc này liệt kê toàn bộ dữ liệu được lưu, giải thích công dụng, dữ liệu nào là bắt buộc và dữ liệu nào được chia sẻ.",
-      "button": "Xem dữ liệu được lưu trữ"
+      "title": "Chi tiết dữ liệu cá nhân",
+      "text": "Với mỗi dữ liệu cá nhân chúng tôi lưu, xem chúng tôi có được nó như thế nào, nó được lưu ở đâu và chúng tôi giữ nó bao lâu.",
+      "button": "Xem chi tiết dữ liệu"
     },
     "retention": {
       "title": "Thời gian lưu giữ dữ liệu",
-      "text": "Dữ liệu trò chơi được giữ miễn là đội hoặc tuyển thủ còn hoạt động trong hệ sinh thái dự án. Bạn có thể yêu cầu xóa dữ liệu của mình bất cứ lúc nào."
+      "text": "Hồ sơ tuyển thủ và dữ liệu trận đấu được lưu vĩnh viễn như kho lưu trữ của cộng đồng, kể cả khi một người ngừng thi đấu. Dữ liệu tài khoản được giữ chừng nào tài khoản còn tồn tại. Nhật ký truy cập bị xóa sau 14 ngày, địa chỉ IP đăng nhập sau 90 ngày. Bạn có thể yêu cầu sửa hoặc xóa dữ liệu bất cứ lúc nào, trừ dữ liệu thật sự cần cho hồ sơ kiểm duyệt."
     },
     "rights": {
       "title": "Quyền của bạn (GDPR)",
@@ -780,7 +779,11 @@
       "title": "Cookie",
       "text": "Trang web này không sử dụng bất kỳ cookie quảng cáo hay lập hồ sơ nào. Chỉ có thể sử dụng các cookie kỹ thuật thật sự cần thiết cho hoạt động của phiên."
     },
-    "takedownLink": "Yêu cầu gỡ nội dung"
+    "takedownLink": "Yêu cầu gỡ nội dung",
+    "hosting": {
+      "title": "Lưu trữ",
+      "text": "Trang web, cơ sở dữ liệu và nhật ký máy chủ được lưu trữ tại Infomaniak, Thụy Sĩ. Bản sao lưu ngoài được mã hóa và lưu tại Exoscale, ở Zurich và Geneva. Tệp công khai (hình ảnh, logo) đi qua CDN Bunny.net, được cấu hình để không thu thập bất kỳ địa chỉ IP nào."
+    }
   },
   "legalNotice": {
     "title": "Thông tin pháp lý",
@@ -870,7 +873,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Lưu đệm CSS/JS của chúng tôi, cũng như hình ảnh tuyển thủ, đội & giải đấu, trên các máy chủ khắp thế giới để giảm tải cho máy chủ của chính chúng tôi."
+        "body": "Lưu đệm CSS/JS của chúng tôi, cũng như hình ảnh tuyển thủ, đội & giải đấu, trên các máy chủ khắp thế giới để giảm tải cho máy chủ của chính chúng tôi. CDN được cấu hình để không thu thập bất kỳ địa chỉ IP nào."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -903,12 +906,17 @@
           "p4": "Tôi nghĩ việc giải thích lựa chọn này là quan trọng, và đặc biệt là nói về Infomaniak: đây là một nhà cung cấp ít được biết đến, nhưng xứng đáng được biết đến. Nhất là khi một tài khoản email miễn phí hay một gói OneDrive có thể được chuyển sang họ mà không phải trả thêm bao nhiêu, cho một dịch vụ tốt không kém, nhưng với mức tôn trọng tối thiểu dành cho bạn, quyền riêng tư của bạn và hành tinh của chúng ta.",
           "cite": "Lacy, người sáng lập GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Sao lưu ngoài",
+        "body": "Bản sao lưu mã hóa hằng ngày của cơ sở dữ liệu và tệp, lưu tại Thụy Sĩ (Zurich, sao chép sang Geneva). Mỗi bản sao lưu không thể sửa trong 30 ngày, sau đó bị xóa."
       }
     },
     "data": {
       "title": "Dữ liệu thu thập",
-      "body": "Chúng tôi ghi chép công khai mọi dữ liệu mà chúng tôi lưu trữ: tuyển thủ, đội, giải đấu và trận đấu. Không có dữ liệu nào được thu thập mà không có lý do gắn với hoạt động của trang web.",
-      "link": "Xem dữ liệu chúng tôi lưu trữ"
+      "body": "Chúng tôi công khai các dữ liệu cá nhân mình lưu trữ: cách chúng tôi có được, nơi lưu và thời gian giữ. Không có dữ liệu nào được thu thập nếu không có lý do liên quan đến hoạt động của trang.",
+      "link": "Xem dữ liệu cá nhân"
     },
     "finance": {
       "title": "Tài chính",
@@ -1014,396 +1022,219 @@
     }
   },
   "dataPage": {
-    "title": "Cấu trúc dữ liệu",
-    "subtitle": "Cấu trúc và danh sách dữ liệu chúng tôi thu thập",
-    "openData": {
-      "title": "Cổng Open Data",
-      "body": "Bạn có thể muốn khám phá hoặc tải xuống trực tiếp các bộ dữ liệu của chúng tôi thay vì dùng API. Cổng Open Data sẽ được chuyển về đây cùng với phần còn lại của API.",
-      "badge": "Sắp ra mắt"
-    },
-    "groups": {
-      "identity": "Cấu trúc về con người, đội & tổ chức",
-      "account": "Tài khoản người dùng & kiểm duyệt",
-      "tournament": "Cấu trúc giải đấu",
-      "matches": "Cấu trúc trận đấu & thống kê ván đấu",
-      "news": "Cấu trúc tin tức & cộng đồng",
-      "rawStats": "Dữ liệu thô của trò chơi (từng round)",
-      "others": "Cấu trúc dữ liệu khác"
-    },
-    "sections": {
-      "people": "Con người",
-      "teams": "Đội",
-      "organizations": "Tổ chức",
-      "tournaments": "Giải đấu",
-      "matches": "Trận đấu",
-      "news": "Tin tức",
-      "users": "Người dùng",
-      "reactionsEmotes": "Biểu cảm & Emote"
-    },
-    "descriptions": {
-      "identity": "Một người (tuyển thủ, huấn luyện viên, caster, observer, đơn vị tổ chức...) chỉ có một hồ sơ, ngay cả khi vai trò của họ thay đổi theo thời gian. Các đội và tổ chức có quyền sửa/xóa \"Thông tin bổ sung\" của mình.\n\nRiot ID không bao giờ được hiển thị hay chia sẻ. Nó được đội ngũ của chúng tôi xác định từ dữ liệu trận đấu.",
-      "tournament": "Mỗi giải đấu có một định danh, một tên, ngày diễn ra, một khu vực, một danh mục và một trạng thái. Một giải đấu có thể được chia thành nhiều giai đoạn (bảng, playoffs...), bản thân chúng gồm một hoặc nhiều vùng chứa (nhánh đấu hoặc bảng). Các đội đăng ký với tư cách \"đội tham gia\", với một đội hình được khóa riêng cho giải đấu cụ thể đó, tách biệt với đội hình thường trực của đội.",
-      "matches": "Chúng tôi thu thập rất nhiều thông tin về trận đấu để cung cấp thống kê chi tiết. Chúng tôi tập hợp:\n- Thông tin cơ bản của trận đấu (bắt buộc)\n- Các lượt veto của trận đấu\n- Các bản đồ đã chơi, kèm kết quả và thống kê\n- Thống kê tổng hợp theo tuyển thủ và theo bản đồ, thứ mà trang web thực sự truy vấn hằng ngày\n\nDữ liệu này không phải lúc nào cũng được thu thập, nhưng chúng tôi cố hết sức để có được nó nhằm hiển thị thống kê đầy đủ nhất có thể.",
-      "rawStats": "Ngoài các thống kê tổng hợp ở trên, chúng tôi giữ một lớp dữ liệu thô theo từng round (kills, sát thương, kinh tế, trạng thái sống sót) dùng để tính lại các thống kê đó và hiển thị lịch sử round.\n\nVị trí của mọi tuyển thủ trong các sự kiện quan trọng (kill, đặt bom, gỡ bom) được giữ đầy đủ chi tiết vô thời hạn: nó cung cấp cho các heatmap của chúng tôi và không thể dựng lại sau khi đã tổng hợp.",
-      "news": "Mỗi bài viết tin tức có một định danh, một tiêu đề, nội dung và một trạng thái (bản nháp, đã xuất bản, đã lưu trữ). Một bài viết có thể được liên kết với một đội, một người hoặc một giải đấu để xuất hiện trên hồ sơ của họ.\n\nDiễn đàn và emote/biểu cảm cho phép cộng đồng tương tác với nội dung của trang web; các tin nhắn bị kiểm duyệt ẩn hoặc gỡ vẫn được theo dõi nội bộ.",
-      "account": "Các bảng này chỉ tồn tại cho những người đã tạo tài khoản người dùng (khác với hồ sơ cá nhân), cần thiết để bày tỏ cảm xúc với tin tức, quản lý hồ sơ hoặc quản trị trang web.\n\nDữ liệu bảo mật (mật khẩu, 2FA, passkey) không bao giờ được chia sẻ. Các tài khoản Discord/Twitch được liên kết lưu một token truy cập chỉ dùng để xác thực.\n\nDữ liệu kiểm duyệt (hình phạt, dấu vết chống lách luật, báo cáo, nhật ký hoạt động) tạo thành một hồ sơ an toàn được giữ độc lập với tài khoản, ngay cả sau khi tài khoản bị xóa, để ngăn việc lách lệnh cấm.",
-      "others": "Chúng tôi lưu số lượt truy cập trên mỗi trang theo từng ngày; chúng tôi không lưu ai đã xem hay thời điểm chính xác, chỉ lưu quốc gia/khu vực gần đúng.\n\nDữ liệu này được lưu trữ và riêng tư. Nó không bao giờ được chia sẻ, chúng tôi chỉ dùng nó để hình dung mức sử dụng trang web và điều chỉnh hạ tầng khi cần."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Thông tin chính",
-          "additional": "Thông tin bổ sung",
-          "confidential": "Thông tin bảo mật"
-        },
-        "id": "Định danh duy nhất được gán cho người này (hiển thị trong URL)",
-        "handle": "Biệt danh",
-        "aliases": "Các biệt danh đã biết trước đây",
-        "firstName": "Tên",
-        "lastName": "Họ",
-        "countryCode": "Mã quốc gia (FR = Pháp, US = Hoa Kỳ, v.v.)",
-        "secondaryCountryCode": "Mã quốc gia thứ hai, cho người có hai quốc tịch",
-        "pronouns": "Đại từ nhân xưng",
-        "birthDate": "Ngày sinh",
-        "bio": "Tiểu sử",
-        "socials": "Mạng xã hội (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "Định danh VLR",
-        "liquipediaLink": "Liên kết đến trang Liquipedia của người này",
-        "valId": "Riot ID / PUUID (thông tin riêng tư, được đội ngũ của chúng tôi xác định và gán từ dữ liệu trận đấu Riot, dùng để gắn thống kê của một trận đấu với một người)",
-        "esportsValId": "Định danh esports của Riot gắn với tài khoản trò chơi"
+    "title": "Dữ liệu cá nhân",
+    "subtitle": "Chúng tôi lưu những dữ liệu nào về bạn, chúng đến từ đâu, ai có thể xem và chúng tôi giữ chúng trong bao lâu.",
+    "policy": {
+      "title": "Chính sách của chúng tôi",
+      "noSale": {
+        "title": "Không bán, không chia sẻ",
+        "text": "Chúng tôi không bán bất kỳ dữ liệu nào và không bao giờ chia sẻ dữ liệu riêng tư của bạn, dù với nhà quảng cáo hay đối tác. Chỉ dữ liệu công khai (hồ sơ tuyển thủ, thống kê trận đấu) được công bố, trên trang và qua API của chúng tôi."
       },
-      "rosterMemberships": {
-        "personId": "Định danh duy nhất của một người",
-        "teamId": "Định danh duy nhất của một đội",
-        "role": "Vai trò trong đội (tuyển thủ/huấn luyện viên/quản lý/v.v.)",
-        "period": "Khoảng thời gian là thành viên của đội (gia nhập, và rời đi nếu có)",
-        "inactiveSince": "Ngày mà người này, vẫn nằm trong đội hình, không hoạt động từ đó (chấn thương, nghỉ ngơi, v.v.)"
+      "minimal": {
+        "title": "Tối thiểu nhất có thể",
+        "text": "Chúng tôi chỉ thu thập những gì trang cần để hoạt động và an toàn. Không quảng cáo, không trình theo dõi, không cookie theo dõi: lượt truy cập được đếm ẩn danh, không có địa chỉ IP."
       },
-      "teams": {
-        "titles": {
-          "main": "Thông tin chính",
-          "additional": "Thông tin bổ sung"
-        },
-        "id": "Định danh duy nhất được gán cho đội (hiển thị trong URL)",
-        "name": "Tên đội",
-        "shortName": "Tên viết tắt (Fnatic = FNC)",
-        "countryCode": "Mã quốc gia (FR = Pháp, US = Hoa Kỳ, v.v.)",
-        "secondaryCountryCode": "Mã quốc gia thứ hai, cho đội gắn với hai khu vực",
-        "socials": "Mạng xã hội (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Tiểu sử",
-        "vlrId": "Định danh VLR",
-        "liquipediaLink": "Liên kết đến trang Liquipedia của đội",
-        "tags": "Các tag tự do gắn với đội"
-      },
-      "organizations": {
-        "id": "Định danh duy nhất của tổ chức",
-        "name": "Tên tổ chức",
-        "slug": "Định danh dạng văn bản dùng trong URL",
-        "tags": "Các vai trò mà tổ chức đảm nhận (đơn vị tổ chức giải đấu, sản xuất, truyền thông, đơn vị phát sóng, công ty đại diện, cộng đồng)",
-        "countryCode": "Mã quốc gia (FR = Pháp, US = Hoa Kỳ, v.v.)",
-        "socials": "Mạng xã hội (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Định danh duy nhất của một người",
-        "organizationId": "Định danh duy nhất của một tổ chức",
-        "role": "Vai trò trong tổ chức (quản trị viên/caster/observer/nhà sản xuất/biên tập viên/v.v.)",
-        "period": "Khoảng thời gian là thành viên của tổ chức"
-      },
-      "productionCredits": {
-        "personId": "Định danh duy nhất của người được ghi công",
-        "organizationId": "Tổ chức mà người này làm việc cho trong ghi công này, nếu có",
-        "role": "Vai trò đảm nhận (caster/nhà phân tích/observer/người tổ chức/nhà sản xuất/biên tập viên/nhiếp ảnh gia/người dịch/trọng tài/v.v.)",
-        "titleOverride": "Chức danh tùy chỉnh được hiển thị thay cho vai trò chung",
-        "scope": "Cấp độ chính xác liên quan: giải đấu, giai đoạn, vùng chứa, trận đấu hoặc bản đồ"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Thông tin chính",
-          "additional": "Thông tin bổ sung"
-        },
-        "id": "Định danh duy nhất của giải đấu",
-        "name": "Tên giải đấu",
-        "region": "Khu vực thế giới (EMEA, NA, v.v.)",
-        "category": "Danh mục giải đấu (ví dụ Challengers, Cash Cups)",
-        "prizePool": "Tổng giải thưởng (tiền thưởng)",
-        "location": "Địa điểm thực tế",
-        "startDate": "Ngày bắt đầu",
-        "endDate": "Ngày kết thúc",
-        "status": "Trạng thái hiện tại (sắp diễn ra, đang diễn ra, đã kết thúc)",
-        "description": "Tổng quan về sự kiện",
-        "liquipediaLink": "Liên kết đến trang Liquipedia của giải đấu",
-        "socials": "Các liên kết mạng xã hội của giải đấu"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Cấu trúc kỹ thuật"
-        },
-        "name": "Tên giai đoạn (ví dụ Playoffs, Bảng A)",
-        "sequenceOrder": "Thứ tự hiển thị của giai đoạn",
-        "status": "Trạng thái giai đoạn (sắp diễn ra, đang diễn ra, đã kết thúc)",
-        "startDate": "Ngày bắt đầu giai đoạn",
-        "endDate": "Ngày kết thúc giai đoạn",
-        "liquipediaLink": "Liên kết đến trang Liquipedia riêng của giai đoạn",
-        "containerType": "Thể thức vùng chứa (nhánh đấu loại trực tiếp hoặc bảng)",
-        "config": "Cấu hình kỹ thuật của nhánh đấu/bảng (do công cụ giải đấu tạo ra)"
-      },
-      "entrants": {
-        "tournamentId": "Tham chiếu đến giải đấu",
-        "kind": "Loại đội tham gia (luôn là \"team\" trên GC-Stats)",
-        "teamId": "Đội đã đăng ký",
-        "displayName": "Tên hiển thị tại thời điểm đăng ký (giữ nguyên ngay cả khi đội sau này được đổi tên)",
-        "seed": "Hạt giống được gán cho đội tham gia",
-        "qualificationSourceManual": "Nguồn giành quyền có được đặt thủ công hay không (nếu không thì được suy ra từ các quy tắc giành quyền)",
-        "qualificationSourceType": "Nguồn giành quyền thủ công (giải đấu, lời mời hoặc điểm)",
-        "qualificationSourceTournamentId": "Giải đấu mà đội tham gia đã giành quyền từ đó (nguồn thủ công)",
-        "qualificationSourcePointTypeId": "Loại điểm mà quyền tham gia đến từ đó (nguồn thủ công)"
-      },
-      "entrantMembers": {
-        "personId": "Người thuộc đội hình bị khóa cho giải đấu cụ thể này",
-        "role": "Vai trò trong đội hình này (tuyển thủ/người thay thế/huấn luyện viên/quản lý/nhà phân tích/v.v.)",
-        "isStarter": "Chính thức hay dự bị trong giải đấu này"
-      },
-      "qualifications": {
-        "destinationType": "Quyền lợi mà việc giành quyền mang lại: một suất vào vùng chứa khác, hoặc một thứ hạng chung cuộc",
-        "placement": "Thứ hạng đạt được (nhất, nhì, v.v.)",
-        "placementLabel": "Nhãn thứ hạng (ví dụ Vô địch, Á quân)",
-        "points": "Điểm xếp hạng được trao",
-        "cashPrizeAmount": "Số tiền thưởng được trao",
-        "rank": "Hạng mà đội tham gia đạt được trong bảng xếp hạng này",
-        "amount": "Số điểm được cộng hoặc trừ (bút toán sổ cái có dấu)",
-        "reason": "Lý do của điểm được trao hoặc bị trừ"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Cấu trúc kỹ thuật"
-        },
-        "id": "Định danh duy nhất của trận đấu",
-        "containerId": "Vùng chứa (nhánh đấu/bảng) mà trận đấu thuộc về",
-        "round": "Số round",
-        "label": "Tên round (ví dụ Chung kết tổng)",
-        "bestOf": "Số bản đồ tối đa (BO1, BO3, BO5)",
-        "status": "Trạng thái (sắp diễn ra, sẵn sàng, trực tiếp, đã hoàn thành)",
-        "entrantAId": "Định danh duy nhất của đội tham gia A",
-        "entrantBId": "Định danh duy nhất của đội tham gia B",
-        "scoreA": "Tỉ số chung cuộc của đội tham gia A",
-        "scoreB": "Tỉ số chung cuộc của đội tham gia B",
-        "winnerId": "Đội tham gia thắng",
-        "scheduledAt": "Ngày và giờ dự kiến",
-        "patch": "Phiên bản trò chơi (ví dụ 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Trận đấu liên quan",
-        "entrantId": "Đội tham gia thực hiện hành động",
-        "mapName": "Tên bản đồ (ví dụ Ascent)",
-        "type": "Hành động (pick, ban hoặc decider)",
-        "order": "Thứ tự trong chuỗi veto",
-        "side": "Phe được chọn (tấn công/phòng thủ), cho một pick hoặc một decider",
-        "sidePickedByEntrantId": "Đội tham gia đã chọn phe này"
-      },
-      "maps": {
-        "id": "Định danh duy nhất của bản đồ đã chơi",
-        "apiMatchId": "Định danh trận đấu do API Riot cung cấp",
-        "matchId": "Trận đấu liên quan",
-        "mapName": "Tên bản đồ",
-        "gameMode": "Chế độ chơi Riot liên kết",
-        "teamAScore": "Tỉ số của đội tham gia A trên bản đồ này",
-        "teamBScore": "Tỉ số của đội tham gia B trên bản đồ này",
-        "order": "Vị trí của bản đồ trong trận đấu",
-        "isCompleted": "Bản đồ đã hoàn thành chưa?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Tướng đã chơi (ví dụ Jett)",
-        "kills": "Tổng số kills",
-        "deaths": "Tổng số deaths",
-        "assists": "Tổng số assists",
-        "acs": "Average combat score",
-        "adr": "Sát thương trung bình mỗi round",
-        "kastPercentage": "% round có Kill/Assist/Survive/Trade",
-        "firstKills": "First kills (FK)",
-        "firstDeaths": "First deaths (FD)",
-        "headshotPercentage": "Tỉ lệ headshot %",
-        "clutches": "Số clutch thắng/đã chơi, theo tình huống (1v1 đến 1v5)",
-        "multikills": "Số round có 2, 3, 4 hoặc 5 kills",
-        "tradeKills": "Các kills trả thù cho đồng đội",
-        "tradedDeaths": "Các lần chết được đồng đội trả thù",
-        "roundTypeSplits": "Thống kê chi tiết theo loại round (pistol, tấn công, phòng thủ, v.v.)",
-        "fallDeaths": "Chết do sát thương rơi",
-        "weaponKills": "Số kills theo từng vũ khí"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Phe đã chơi (tấn công/phòng thủ)",
-        "roundsPlayed": "Số round đã chơi ở phe này",
-        "roundsWon": "Số round thắng ở phe này"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Số round (1 đến 24+)",
-        "winningEntrantId": "Đội tham gia thắng round",
-        "winType": "Kiểu thắng (loại hết, gỡ bom, bom nổ, hết giờ)",
-        "atkEntrantId": "Đội tham gia ở phe tấn công round này",
-        "defEntrantId": "Đội tham gia ở phe phòng thủ round này",
-        "plantSite": "Vị trí đặt Spike (A/B/C)",
-        "plantX": "Vị trí X của điểm đặt bom trên minimap",
-        "plantY": "Vị trí Y của điểm đặt bom trên minimap"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Người thực hiện kill",
-        "victimPersonId": "Người bị hạ",
-        "assistantPersonIds": "Những người hỗ trợ kill",
-        "timeMs": "Thời điểm kill (ms kể từ đầu round)",
-        "weapon": "Vũ khí đã dùng",
-        "damageType": "Loại sát thương (vũ khí, kỹ năng, spike, cận chiến, rơi)",
-        "isSecondaryFire": "Kill thực hiện bằng chế độ bắn phụ (ví dụ ống ngắm của một vũ khí)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Người gây sát thương",
-        "receiverPersonId": "Người nhận sát thương",
-        "damage": "Sát thương gây ra",
-        "headshots": "Số lần bắn trúng đầu",
-        "bodyshots": "Số lần bắn trúng thân",
-        "legshots": "Số lần bắn trúng chân"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Thứ tự của sự kiện trong round",
-        "timeMs": "Thời điểm của sự kiện (ms kể từ đầu round)",
-        "atkAlive": "Số người còn sống ở phe tấn công",
-        "defAlive": "Số người còn sống ở phe phòng thủ",
-        "winnerSide": "Phe đang hơn về quân số"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Người liên quan",
-        "kills": "Số kills trong round này",
-        "assists": "Số assists trong round này",
-        "score": "Điểm đạt được trong round này",
-        "loadoutValue": "Tổng giá trị trang bị",
-        "economySpent": "Credits đã chi",
-        "economyRemaining": "Credits còn lại",
-        "weapon": "Vũ khí chính đã dùng",
-        "armor": "Loại giáp"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Loại sự kiện (kill, đặt bom, gỡ bom)",
-        "personId": "Người liên quan",
-        "role": "Vai trò trong sự kiện (người hạ gục, nạn nhân, người đứng gần, người đặt bom, người gỡ bom)",
-        "x": "Vị trí X trên minimap",
-        "y": "Vị trí Y trên minimap",
-        "viewRadians": "Góc nhìn tại thời điểm xảy ra sự kiện",
-        "timeMs": "Thời điểm của sự kiện (ms kể từ đầu round)"
-      },
-      "news": {
-        "titles": {
-          "main": "Thông tin chính",
-          "additional": "Thông tin bổ sung"
-        },
-        "id": "Định danh duy nhất của bài viết (hiển thị trong URL)",
-        "authorId": "Tác giả bài viết",
-        "organizationId": "Tổ chức mà bài viết được xuất bản dưới tên, nếu có",
-        "lang": "Ngôn ngữ của bài viết",
-        "title": "Tiêu đề bài viết",
-        "slug": "Định danh dạng văn bản dùng trong URL",
-        "excerpt": "Tóm tắt ngắn",
-        "content": "Nội dung bài viết",
-        "imageCover": "Ảnh bìa",
-        "status": "Trạng thái bài viết (bản nháp = đang viết, đã xuất bản = hiển thị trên trang web, đã lưu trữ = ẩn khỏi trang web nhưng vẫn truy cập được qua API)",
-        "isFeatured": "Bài viết có được nổi bật trên trang chủ không?",
-        "showOnHome": "Bài viết có xuất hiện trên trang chủ không?",
-        "publishedAt": "Ngày xuất bản",
-        "createdAt": "Ngày tạo bài viết",
-        "updatedAt": "Ngày chỉnh sửa gần nhất"
-      },
-      "newsRelations": {
-        "relatableType": "Loại thực thể được liên kết (đội, người hoặc giải đấu)",
-        "relatableId": "Định danh của thực thể được liên kết, dùng để hiển thị bài viết trên hồ sơ của nó"
-      },
-      "forumThreads": {
-        "category": "Danh mục chủ đề (giải đấu, trận đấu, tin tức, chung)",
-        "subjectType": "Loại thực thể mà chủ đề liên quan, nếu có",
-        "title": "Tiêu đề chủ đề",
-        "lastMessageAt": "Ngày của tin nhắn được đăng gần nhất"
-      },
-      "forumMessages": {
-        "body": "Nội dung tin nhắn",
-        "parentId": "Tin nhắn gốc, đối với một phản hồi",
-        "hiddenAt": "Ngày tin nhắn bị kiểm duyệt ẩn"
-      },
-      "emotes": {
-        "name": "Tên emote",
-        "imagePath": "Đường dẫn hình ảnh",
-        "source": "Nguồn gốc emote (ví dụ nhập hàng loạt, lấy từ logo đội)",
-        "isActive": "Emote có sẵn để sử dụng không?"
-      },
-      "reactions": {
-        "emoteId": "Emote đã dùng",
-        "userId": "Tài khoản đã bày tỏ cảm xúc",
-        "reactableType": "Loại nội dung mà biểu cảm áp dụng (ví dụ một bài viết tin tức)"
-      },
-      "users": {
-        "titles": {
-          "main": "Thông tin chính",
-          "security": "Bảo mật (riêng tư)"
-        },
-        "id": "Định danh duy nhất của tài khoản",
-        "username": "Biệt danh hiển thị công khai",
-        "teamTag": "Đội được hiển thị là \"yêu thích\" trên hồ sơ công khai, kèm tag của đội đó",
-        "preferences": "Tùy chọn giao diện (riêng tư)",
-        "pronouns": "Đại từ nhân xưng",
-        "bio": "Tiểu sử công khai của tài khoản",
-        "socials": "Mạng xã hội liên kết với tài khoản",
-        "email": "Địa chỉ email (riêng tư, không bao giờ hiển thị)",
-        "passwordHash": "Mật khẩu, đã băm (không bao giờ lưu hay hiển thị dạng văn bản thuần)",
-        "twoFactorSecret": "Khóa bí mật xác thực hai yếu tố (2FA), nếu được bật, đã mã hóa",
-        "twoFactorRecoveryCodes": "Mã khôi phục 2FA, nếu được bật, đã mã hóa",
-        "discordSyncedAt": "Ngày đồng bộ Discord gần nhất"
-      },
-      "accounts": {
-        "provider": "Nền tảng được liên kết (Discord hoặc Twitch)",
-        "providerAccountId": "Định danh tài khoản trên nền tảng đó",
-        "accessToken": "Token truy cập OAuth (riêng tư, không bao giờ chia sẻ, chỉ dùng để xác thực)",
-        "refreshToken": "Token làm mới OAuth (riêng tư)"
-      },
-      "authenticators": {
-        "name": "Tên đặt cho passkey",
-        "credentialId": "Định danh kỹ thuật của khóa (riêng tư)",
-        "lastUsedAt": "Lần cuối khóa này được sử dụng"
-      },
-      "sanctions": {
-        "type": "Loại hình phạt (ghi chú, cảnh cáo, cấm chat, đình chỉ, cấm vĩnh viễn)",
-        "reason": "Lý do của hình phạt",
-        "startsAt": "Ngày bắt đầu có hiệu lực",
-        "endsAt": "Ngày kết thúc (nếu tạm thời)",
-        "revokedAt": "Ngày được gỡ sớm, nếu có",
-        "issuedBy": "Điều hành viên đã áp dụng hình phạt",
-        "revokedBy": "Điều hành viên đã gỡ hình phạt, nếu có"
-      },
-      "sanctionIdentities": {
-        "type": "Loại dấu vết kỹ thuật được gắn (ví dụ email)",
-        "value": "Giá trị dấu vết (riêng tư, được giữ ngay cả sau khi tài khoản bị xóa để ngăn việc lách lệnh cấm)"
-      },
-      "userReports": {
-        "category": "Danh mục báo cáo",
-        "reason": "Chi tiết do người báo cáo cung cấp",
-        "status": "Trạng thái xử lý (đang chờ, đã xử lý, đã bác bỏ)",
-        "reviewedBy": "Điều hành viên đã xử lý báo cáo",
-        "resolutionNote": "Ghi chú xử lý do kiểm duyệt để lại"
-      },
-      "activityLog": {
-        "logName": "Danh mục của hành động được ghi lại",
-        "description": "Mô tả hành động đã thực hiện",
-        "event": "Loại sự kiện (đã tạo, đã cập nhật, đã xóa)",
-        "subjectType": "Loại thực thể liên quan đến hành động (người, đội, v.v.)",
-        "causerId": "Tài khoản đã thực hiện hành động",
-        "attributeChanges": "Chi tiết các trường đã thay đổi (trước/sau)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Thông tin chính"
-        },
-        "uri": "URL trang",
-        "viewedAt": "Ngày truy cập",
-        "count": "Số lượt xem trong ngày đó",
-        "countryCode": "Quốc gia gần đúng của khách truy cập trong ngày đó",
-        "regionCode": "Khu vực gần đúng của khách truy cập trong ngày đó"
+      "switzerland": {
+        "title": "Lưu trữ tại Thụy Sĩ",
+        "text": "Toàn bộ dữ liệu của chúng tôi được lưu tại Thụy Sĩ, bởi các nhà cung cấp Thụy Sĩ, kể cả bản sao lưu."
       }
-    }
+    },
+    "storage": {
+      "title": "Vì sao chọn Thụy Sĩ",
+      "why": "Thụy Sĩ có một trong những luật bảo vệ quyền riêng tư nghiêm ngặt nhất thế giới, Luật Liên bang về Bảo vệ Dữ liệu. Liên minh châu Âu công nhận luật này có mức bảo vệ tương đương GDPR. Các nhà cung cấp của chúng tôi là công ty Thụy Sĩ: dữ liệu của bạn không chịu sự chi phối của luật nước ngoài như CLOUD Act của Mỹ, luật cho phép chính quyền Mỹ yêu cầu dữ liệu từ các công ty Mỹ dù dữ liệu được lưu ở đâu.",
+      "providers": "Đây chính xác là nơi dữ liệu được lưu:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Thụy Sĩ",
+        "body": "Tất cả máy chủ của chúng tôi: trang web, cơ sở dữ liệu, nhật ký máy chủ và email. Một bản sao liên tục của cơ sở dữ liệu được giữ 14 ngày tại trung tâm dữ liệu Infomaniak thứ hai, để khôi phục khi có sự cố."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Thụy Sĩ (Zurich và Geneva)",
+        "body": "Bản sao lưu mã hóa hằng ngày của cơ sở dữ liệu và tệp của chúng tôi. Mỗi bản sao lưu bị xóa sau 30 ngày, và không thể bị sửa hoặc xóa trước đó, kể cả bởi chúng tôi."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Máy chủ trên toàn thế giới",
+        "body": "Chỉ phục vụ các tệp công khai (hình ảnh, logo, CSS và JavaScript). CDN thay địa chỉ IP của bạn bằng 0.0.0.0: không có địa chỉ IP nào được thu thập."
+      }
+    },
+    "private": {
+      "title": "Dữ liệu riêng tư",
+      "badge": "Không bao giờ công khai",
+      "intro": "Những dữ liệu này không bao giờ được hiển thị công khai hay chia sẻ qua API của chúng tôi."
+    },
+    "public": {
+      "title": "Dữ liệu công khai",
+      "badge": "Công khai",
+      "intro": "Những dữ liệu này được hiển thị trên trang và chia sẻ qua API của chúng tôi, đó là cốt lõi của GC Stats."
+    },
+    "labels": {
+      "source": "Nguồn gốc",
+      "visibility": "Ai có thể xem",
+      "retention": "Thời gian lưu"
+    },
+    "categories": {
+      "account": {
+        "title": "Tài khoản của bạn",
+        "groups": {
+          "profile": {
+            "label": "Tài khoản",
+            "items": [
+              "Địa chỉ email",
+              "Tên người dùng",
+              "Mật khẩu, đã băm (không bao giờ lưu dạng văn bản thường)",
+              "Tùy chọn hiển thị và đội yêu thích",
+              "Đại từ, tiểu sử và mạng xã hội, nếu bạn thêm",
+              "Ngày đăng nhập gần nhất"
+            ]
+          },
+          "security": {
+            "label": "Bảo mật",
+            "items": [
+              "Xác thực hai yếu tố (khóa bí mật và mã khôi phục, đã mã hóa)",
+              "Passkey, chỉ lưu khóa công khai"
+            ]
+          },
+          "linked": {
+            "label": "Tài khoản liên kết",
+            "items": [
+              "ID Discord, Twitch hoặc Twitter/X",
+              "Tên và ảnh đại diện trên nền tảng đó",
+              "Mã đăng nhập, chỉ dùng để đăng nhập cho bạn"
+            ]
+          },
+          "developers": {
+            "label": "Nhà phát triển",
+            "items": [
+              "Khóa API",
+              "Ứng dụng OAuth và các quyền bạn đã cấp",
+              "Lịch sử gọi API"
+            ]
+          }
+        },
+        "source": "Bạn, khi đăng ký và trong phần cài đặt. Tài khoản liên kết do nền tảng gửi khi bạn liên kết.",
+        "visibility": "Bạn và đội ngũ của chúng tôi. Tên người dùng, đại từ, tiểu sử, mạng xã hội và đội yêu thích hiển thị trên trang hồ sơ của bạn. Đội ngũ của chúng tôi không thể xem mật khẩu của bạn, chỉ thấy phương thức đăng nhập bạn dùng (mật khẩu, Discord, Twitch, Twitter/X, passkey, xác thực hai yếu tố). Email và cài đặt bảo mật không bao giờ được hiển thị công khai.",
+        "retention": "Chừng nào tài khoản còn tồn tại. Tài khoản liên kết bị xóa ngay khi bạn hủy liên kết. Lịch sử gọi API bị xóa sau 90 ngày."
+      },
+      "protection": {
+        "title": "Bảo vệ tài khoản của bạn và trang web",
+        "groups": {
+          "loginLog": {
+            "label": "Lịch sử đăng nhập",
+            "items": [
+              "Đăng nhập, đăng nhập thất bại và thay đổi bảo mật",
+              "Ngày",
+              "Địa chỉ IP"
+            ]
+          },
+          "accessLogs": {
+            "label": "Nhật ký truy cập",
+            "items": [
+              "Địa chỉ IP",
+              "Trang được yêu cầu",
+              "Trình duyệt",
+              "Ngày và giờ"
+            ]
+          }
+        },
+        "source": "Được ghi tự động: lịch sử đăng nhập bảo vệ tài khoản của bạn khỏi bị chiếm đoạt, nhật ký truy cập bảo vệ trang khỏi bot và lạm dụng.",
+        "visibility": "Chỉ đội kỹ thuật của chúng tôi.",
+        "retention": "Địa chỉ IP đăng nhập bị xóa sau {days} ngày. Nhật ký truy cập bị xóa sau 14 ngày."
+      },
+      "moderation": {
+        "title": "Kiểm duyệt và đóng góp",
+        "groups": {
+          "requests": {
+            "label": "Yêu cầu của bạn",
+            "items": [
+              "Đề xuất chỉnh sửa và trao đổi với đội ngũ",
+              "Báo cáo bạn gửi"
+            ]
+          },
+          "moderation": {
+            "label": "Kiểm duyệt",
+            "items": [
+              "Cảnh cáo và hình phạt, kèm lý do",
+              "Tin nhắn bị bộ lọc tự động phát hiện",
+              "Lịch sử hành động kiểm duyệt"
+            ]
+          }
+        },
+        "source": "Yêu cầu và báo cáo của bạn, cùng quyết định của đội kiểm duyệt.",
+        "visibility": "Chỉ đội ngũ của chúng tôi. Một đề xuất được chấp nhận sẽ cập nhật trang công khai liên quan, còn bản thân đề xuất vẫn riêng tư.",
+        "retention": "Được lưu làm lịch sử, kể cả sau khi tài khoản bị xóa, nhưng không còn liên kết với tài khoản."
+      },
+      "players": {
+        "title": "Tuyển thủ và nhân sự",
+        "groups": {
+          "identity": {
+            "label": "Danh tính",
+            "items": [
+              "Biệt danh và biệt danh cũ",
+              "Họ và tên",
+              "Quốc gia",
+              "Đại từ",
+              "Ngày sinh",
+              "Tiểu sử và mạng xã hội"
+            ]
+          },
+          "career": {
+            "label": "Sự nghiệp",
+            "items": [
+              "Đội và vai trò",
+              "Giải đấu và trận đấu đã chơi",
+              "Tổ chức và ghi công sản xuất"
+            ]
+          },
+          "hidden": {
+            "label": "Không bao giờ hiển thị",
+            "items": [
+              "ID Riot, chỉ dùng để gắn thống kê trận đấu vào đúng hồ sơ"
+            ]
+          }
+        },
+        "source": "Chính người đó hoặc tổ chức của họ, đội ngũ của chúng tôi từ nguồn công khai (Liquipedia, thông báo chính thức), hoặc cộng đồng qua đề xuất được đội ngũ duyệt. ID Riot lấy từ API chính thức của Riot Games.",
+        "visibility": "Mọi người, trên trang và qua API của chúng tôi, trừ ID Riot.",
+        "retention": "Lưu vĩnh viễn như kho lưu trữ của cộng đồng, kể cả khi người đó ngừng thi đấu. Bạn có thể yêu cầu sửa hoặc xóa."
+      },
+      "matchStats": {
+        "title": "Thống kê trận đấu",
+        "groups": {
+          "stats": {
+            "label": "Cho mỗi trận đấu",
+            "items": [
+              "Đặc vụ đã chơi",
+              "Hạ gục, chết và hỗ trợ",
+              "Sát thương",
+              "Kinh tế và trang bị",
+              "Vị trí trên bản đồ"
+            ]
+          }
+        },
+        "source": "API chính thức của Riot Games, cho các trận của giải đấu chúng tôi theo dõi.",
+        "visibility": "Mọi người, trên trang và qua API của chúng tôi.",
+        "retention": "Lưu như kho lưu trữ lịch sử các giải đấu."
+      },
+      "community": {
+        "title": "Bài đăng của bạn",
+        "groups": {
+          "content": {
+            "label": "Những gì bạn đăng",
+            "items": [
+              "Tin nhắn diễn đàn",
+              "Biểu cảm",
+              "Dự đoán và nhóm Pick'em"
+            ]
+          }
+        },
+        "source": "Bạn.",
+        "visibility": "Mọi người, trên trang.",
+        "retention": "Cho đến khi bạn xóa. Nếu bạn xóa tài khoản, biểu cảm và dự đoán bị xóa, tin nhắn vẫn còn nhưng không liên kết với tài khoản của bạn."
+      }
+    },
+    "rights": "Bạn có thể yêu cầu truy cập, sửa hoặc xóa dữ liệu của mình bất cứ lúc nào.",
+    "privacyLink": "Xem chính sách quyền riêng tư"
   },
   "financePage": {
     "title": "Tài chính",
@@ -1423,6 +1254,10 @@
       "Infrastructure": "Hạ tầng",
       "Software & Licenses": "Phần mềm & giấy phép",
       "Other": "Khác"
+    },
+    "expensesDoc": {
+      "text": "Để hiểu đơn giản chi phí hằng tháng của chúng tôi dùng vào việc gì, chúng tôi giải thích trong một tài liệu.",
+      "link": "Đọc tài liệu"
     }
   },
   "teamPage": {
@@ -2036,8 +1871,6 @@
       "finance": "Tài chính",
       "about": "Giới thiệu / Dự án",
       "backToSite": "Quay lại trang web",
-      "pendingChangeRequests": "Yêu cầu thay đổi đang chờ",
-      "pendingChangeRequests": "Yêu cầu thay đổi đang chờ",
       "pendingChangeRequests": "Yêu cầu thay đổi đang chờ",
       "tournaments": "Giải đấu",
       "groupModeration": "Kiểm duyệt",

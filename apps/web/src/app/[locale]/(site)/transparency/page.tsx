@@ -37,17 +37,14 @@ export default function TransparencyPage() {
       <LegalIntro>{t("intro")}</LegalIntro>
 
       <div className="space-y-5 pt-6">
-        <SectionCard icon={icons.code} title={t("dev.title")}>
-          <SectionText>{t("dev.body")}</SectionText>
-          <SectionText>{t("dev.body2")}</SectionText>
-          <a
-            href="https://github.com/GC-Stats/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d]"
+        <SectionCard icon={icons.database} title={t("data.title")}>
+          <SectionText>{t("data.body")}</SectionText>
+          <Link
+            href="/data"
+            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d] active:scale-95"
           >
-            {t("dev.link")}
-          </a>
+            {t("data.link")}
+          </Link>
         </SectionCard>
 
         <SectionCard icon={icons.server} title={t("hosting.title")}>
@@ -55,6 +52,7 @@ export default function TransparencyPage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <ProviderCard icon={icons.globe} name={t("hosting.cdn.name")} role={t("hosting.cdn.role")} body={t("hosting.cdn.body")} />
+            <ProviderCard icon={icons.shield} name={t("hosting.exoscale.name")} role={t("hosting.exoscale.role")} body={t("hosting.exoscale.body")} />
           </div>
 
           <div className="space-y-4 rounded-xl border border-[#e4ae22]/25 bg-black/25 p-5">
@@ -105,21 +103,24 @@ export default function TransparencyPage() {
           </div>
         </SectionCard>
 
-        <SectionCard icon={icons.database} title={t("data.title")}>
-          <SectionText>{t("data.body")}</SectionText>
-          <Link
-            href="/data"
-            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d]"
+        <SectionCard icon={icons.code} title={t("dev.title")}>
+          <SectionText>{t("dev.body")}</SectionText>
+          <SectionText>{t("dev.body2")}</SectionText>
+          <a
+            href="https://github.com/Osthelia/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d] active:scale-95"
           >
-            {t("data.link")}
-          </Link>
+            {t("dev.link")}
+          </a>
         </SectionCard>
 
         <SectionCard icon={icons.chart} title={t("finance.title")}>
           <SectionText>{t("finance.body")}</SectionText>
           <Link
             href="/finance"
-            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d]"
+            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d] active:scale-95"
           >
             {t("finance.link")}
           </Link>
