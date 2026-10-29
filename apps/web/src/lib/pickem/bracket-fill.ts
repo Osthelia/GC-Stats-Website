@@ -189,10 +189,8 @@ export function getReachableEntrants(bracketMatches: EditorMatch[], edges: Edito
   function slotEntrants(match: EditorMatch, slot: "a" | "b", incomingEdge: EditorEdge | undefined): ReadonlySet<number> | null {
     const realId = slot === "a" ? match.entrantAId : match.entrantBId;
     if (realId !== null) return new Set([realId]);
-    if (!incomingEdge) {
-      const seed = match.seeds.find((s) => s.slot === slot);
-      return seed?.sourceType === "group_rank" ? null : new Set();
-    }
+    // A bye stays empty, any other seed not assigned yet can't be narrowed.
+    if (!incomingEdge) return isPermanentByeSlot(match, slot) ? new Set() : null;
     const source = matchById.get(incomingEdge.fromMatchId)!;
     if (source.winnerId !== null) {
       const loserId = source.entrantAId === source.winnerId ? source.entrantBId : source.entrantAId;

@@ -365,6 +365,13 @@
       "when": 1793101638237,
       "tag": "0051_pickem_group_match_picks",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1793277356761,
+      "tag": "0052_pickem_scoring_version",
+      "breakpoints": true
     }
   ]
 }

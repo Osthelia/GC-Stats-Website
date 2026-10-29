@@ -57,10 +57,16 @@ export async function updateStagePickemSettings(stageId: number, input: StagePic
 
   const [current] = await db.select({ groupPickMode: pickemStageSettings.groupPickMode }).from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId)).limit(1);
   const currentMode = current?.groupPickMode ?? "standings";
-  if (input.groupPickMode !== currentMode && (await hasPicksOfMode(stageId, currentMode))) return { ok: false, fieldErrors: { groupPickMode: "hasPicks" } };
+  // The field is only shown for stages with groups, any other stage keeps its mode.
+  const [groupContainer] = await db
+    .select({ id: stageContainers.id })
+    .from(stageContainers)
+    .where(and(eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "group")))
+    .limit(1);
+  const groupPickMode = groupContainer ? input.groupPickMode : currentMode;
+  if (groupPickMode !== currentMode && (await hasPicksOfMode(stageId, currentMode))) return { ok: false, fieldErrors: { groupPickMode: "hasPicks" } };
 
   const opensAt = parsedOpensAt ?? new Date();
-  const groupPickMode = input.groupPickMode;
 
   await db
     .insert(pickemStageSettings)
