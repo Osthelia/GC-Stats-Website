@@ -25,6 +25,8 @@ export type PickemLockedMatch = {
   /** Entrants that can still play this match, null when it can't be narrowed yet. */
   reachable: ReadonlySet<number> | null;
   outcome: PickOutcome;
+  /** No point can be earned on this match anymore. */
+  pointsLost: boolean;
   invalidLabel: string;
   invalidBadge: string;
   unreachableBadge: string;
@@ -191,7 +193,7 @@ function LockedMatchNode({ data, locked }: { data: PickemBracketMatchNodeData; l
         <LockedSideRow entrantId={data.entrantBId} name={data.entrantBName} isPicked={data.entrantBId !== null && data.selectedEntrantId === data.entrantBId} locked={locked} invalid={invalid} tbdLabel={data.tbdLabel} />
       </div>
 
-      <PointsFooter data={data} lost={invalid} />
+      <PointsFooter data={data} lost={invalid || locked.pointsLost} />
 
       <Handle type="source" position={Position.Right} id="winner" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />
       <Handle type="source" position={Position.Right} id="loser" style={{ top: CENTER_Y, background: "transparent", border: "none" }} />

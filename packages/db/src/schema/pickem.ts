@@ -31,6 +31,8 @@ export const pickemStageSettings = pgTable(
     enabled: boolean("enabled").notNull().default(false),
     opensAt: timestamp("opens_at", { withTimezone: true }).notNull(),
     groupPickMode: pickemGroupPickModeEnum("group_pick_mode").notNull().default("standings"),
+    // Scoring rules the stage is scored with, so a rules change never rewrites past leaderboards (1: legacy, 2: current).
+    scoringVersion: integer("scoring_version").notNull().default(2),
   },
   (t) => [unique("pickem_stage_settings_stage_unique").on(t.stageId)]
 );

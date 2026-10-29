@@ -18,6 +18,9 @@ export type PhaseScoringConfig = {
   groupMatchPoints: number;
 };
 
+/** Scoring rules of stages configured from now on (`pickemStageSettings.scoringVersion`). */
+export const PICKEM_SCORING_VERSION = 2;
+
 /** Used by every stage unless a group opts into a custom per-phase override. */
 export const DEFAULT_PICKEM_SCORING: PhaseScoringConfig = {
   teamCorrectPoints: 0,
@@ -26,6 +29,19 @@ export const DEFAULT_PICKEM_SCORING: PhaseScoringConfig = {
   standingRankPoints: 3,
   groupMatchPoints: 3,
 };
+
+// Version 1 defaults, kept so older stages score as they did when they were played.
+const LEGACY_DEFAULT_PICKEM_SCORING: PhaseScoringConfig = {
+  teamCorrectPoints: 1,
+  outcomeCorrectPoints: 3,
+  advancementPerRoundPoints: 2,
+  standingRankPoints: 3,
+  groupMatchPoints: 3,
+};
+
+export function defaultPickemScoring(scoringVersion: number): PhaseScoringConfig {
+  return scoringVersion >= 2 ? DEFAULT_PICKEM_SCORING : LEGACY_DEFAULT_PICKEM_SCORING;
+}
 
 /** Points of a correct winner on a match of this round, before the wrong opponent halving. */
 function winnerPoints(round: number, config: PhaseScoringConfig): number {
@@ -40,7 +56,8 @@ export function bracketMatchMaxPoints(round: number, config: PhaseScoringConfig)
 /**
  * Points for one bracket match pick, two independent parts:
  * - team correct: one of the two predicted teams really plays the match;
- * - winner correct: full points with the right opponent too, half otherwise.
+ * - winner correct: full points with the right opponent too, half otherwise
+ *   (version 2, version 1 always gives full points).
  * Winner points are kept even by validation, rounding up only covers older odd configs.
  */
 export function scoreBracketMatchPick(params: {
@@ -51,8 +68,9 @@ export function scoreBracketMatchPick(params: {
   actualEntrantBId: number | null;
   actualWinnerId: number | null;
   config: PhaseScoringConfig;
+  scoringVersion: number;
 }): number {
-  const { predictedWinnerId, predictedOpponentId, round, actualEntrantAId, actualEntrantBId, actualWinnerId, config } = params;
+  const { predictedWinnerId, predictedOpponentId, round, actualEntrantAId, actualEntrantBId, actualWinnerId, config, scoringVersion } = params;
   if (actualEntrantAId === null || actualEntrantBId === null) return 0;
 
   const isReal = (id: number | null) => id !== null && (id === actualEntrantAId || id === actualEntrantBId);
@@ -60,7 +78,7 @@ export function scoreBracketMatchPick(params: {
   if (isReal(predictedWinnerId) || isReal(predictedOpponentId)) score += config.teamCorrectPoints;
   if (actualWinnerId !== null && actualWinnerId === predictedWinnerId) {
     const full = winnerPoints(round, config);
-    score += isReal(predictedOpponentId) ? full : Math.ceil(full / 2);
+    score += scoringVersion < 2 || isReal(predictedOpponentId) ? full : Math.ceil(full / 2);
   }
   return score;
 }

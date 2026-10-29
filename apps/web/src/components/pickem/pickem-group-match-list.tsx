@@ -28,6 +28,7 @@ export function PickemGroupMatchList({
   picks,
   savingMatchIds,
   pointsPerMatch,
+  readOnly = false,
   onPick,
 }: {
   container: PickFormGroupContainer;
@@ -36,6 +37,8 @@ export function PickemGroupMatchList({
   picks: Record<number, number>;
   savingMatchIds: ReadonlySet<number>;
   pointsPerMatch: number;
+  /** Locked phase: every match shows as locked, whatever its own status. */
+  readOnly?: boolean;
   onPick: (matchId: number, entrantId: number | null) => void;
 }) {
   const t = useTranslations("pickemPage");
@@ -46,18 +49,18 @@ export function PickemGroupMatchList({
     list.push(m);
     rounds.set(m.round, list);
   }
-  const showNextRoundsHint = container.format === "swiss" && container.status !== "completed";
+  const showNextRoundsHint = !readOnly && container.format === "swiss" && container.status !== "completed";
 
   return (
     <div className="flex flex-col gap-5">
-      <p className="text-sm text-muted-foreground">{t("groupMatchHint")}</p>
+      {!readOnly && <p className="text-sm text-muted-foreground">{t("groupMatchHint")}</p>}
 
       {[...rounds.entries()].map(([round, roundMatches]) => (
         <section key={round} className="flex flex-col gap-2">
           <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t("roundLabel", { round })}</h3>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {roundMatches.map((m) => (
-              <GroupMatchCard key={m.id} match={m} entrantNames={entrantNames} pickedId={picks[m.id] ?? null} saving={savingMatchIds.has(m.id)} pointsPerMatch={pointsPerMatch} onPick={onPick} />
+              <GroupMatchCard key={m.id} match={readOnly ? { ...m, locked: true } : m} entrantNames={entrantNames} pickedId={picks[m.id] ?? null} saving={savingMatchIds.has(m.id)} pointsPerMatch={pointsPerMatch} onPick={onPick} />
             ))}
           </div>
         </section>

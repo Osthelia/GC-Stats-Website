@@ -73,7 +73,7 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
           </label>
 
           {enabled && (
-            <FormField label={t("fieldOpensAt")} htmlFor="stg-pickem-opens-at" required error={fieldErrors.opensAt ? t(`error.${fieldErrors.opensAt}`) : undefined} hint={t("fieldOpensAtHint")}>
+            <FormField label={t("fieldOpensAt")} htmlFor="stg-pickem-opens-at" required error={fieldErrors.opensAt ? t(`error.${fieldErrors.opensAt}`) : undefined} hint={t(hasGroups && groupPickMode === "matches" ? "fieldOpensAtHintMatches" : "fieldOpensAtHint")}>
               <DateTimeInput id="stg-pickem-opens-at" value={opensAt} onChange={setOpensAt} aria-invalid={!!fieldErrors.opensAt} />
             </FormField>
           )}

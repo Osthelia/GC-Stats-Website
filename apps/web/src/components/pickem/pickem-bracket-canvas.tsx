@@ -54,6 +54,7 @@ export function PickemBracketCanvas({
   disabled = false,
   readOnly = false,
   reachableEntrants = null,
+  scoringVersion,
   onPick,
 }: {
   containers: { id: number; name: string }[];
@@ -69,6 +70,7 @@ export function PickemBracketCanvas({
   readOnly?: boolean;
   /** Locked phase: entrants that can still play each match (`getReachableEntrants`). */
   reachableEntrants?: Map<number, ReadonlySet<number> | null> | null;
+  scoringVersion: number;
   onPick: (matchId: number, entrantId: number) => void;
 }) {
   const t = useTranslations("pickemPage");
@@ -105,6 +107,7 @@ export function PickemBracketCanvas({
           actualEntrantBId: m.entrantBId,
           actualWinnerId: m.winnerId,
           config: scoringConfig,
+          scoringVersion,
         });
       }
 
@@ -117,6 +120,8 @@ export function PickemBracketCanvas({
           if (m.winnerId !== null) outcome = m.winnerId === selectedEntrantId ? "correct" : "wrong";
           else if (reachable !== null && !reachable.has(selectedEntrantId)) outcome = "wrong";
         }
+        // Wrong winner and no team point left to earn on this match.
+        const pointsLost = outcome === "wrong" && earnedPoints === 0 && (m.winnerId !== null || scoringConfig.teamCorrectPoints === 0);
         locked = {
           realEntrantAId: m.entrantAId,
           realEntrantBId: m.entrantBId,
@@ -126,6 +131,7 @@ export function PickemBracketCanvas({
           live: m.status === "live",
           reachable,
           outcome,
+          pointsLost,
           invalidLabel,
           invalidBadge,
           unreachableBadge,
@@ -191,7 +197,7 @@ export function PickemBracketCanvas({
 
     return { nodes, baseEdges, height: Math.max(360, layout.totalHeight) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containers, matches, edges, virtual, entrantNames, selectedWinners, scoringConfig, disabled, readOnly, reachableEntrants, containerNameById, t]);
+  }, [containers, matches, edges, virtual, entrantNames, selectedWinners, scoringConfig, scoringVersion, disabled, readOnly, reachableEntrants, containerNameById, t]);
 
   const edges_: Edge[] = useMemo(
     () =>

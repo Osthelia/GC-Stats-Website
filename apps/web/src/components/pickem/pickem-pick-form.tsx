@@ -59,9 +59,9 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
   const predictedGroupRank = (containerId: number, rank: number): number | null => standingPicks[containerId]?.[rank] ?? null;
 
   const virtual = useMemo(
-    () => computeVirtualBracket(data.bracketMatches, data.bracketEdges, matchPicksMap, predictedGroupRank, { guessOnly: bracketReadOnly }),
+    () => computeVirtualBracket(data.bracketMatches, data.bracketEdges, matchPicksMap, predictedGroupRank, { guessOnly: bracketReadOnly && data.scoringVersion >= 2 }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data.bracketMatches, data.bracketEdges, matchPicksMap, standingPicks, bracketReadOnly]
+    [data.bracketMatches, data.bracketEdges, matchPicksMap, standingPicks, bracketReadOnly, data.scoringVersion]
   );
   const reachableEntrants = useMemo(() => (bracketReadOnly ? getReachableEntrants(data.bracketMatches, data.bracketEdges) : null), [data.bracketMatches, data.bracketEdges, bracketReadOnly]);
   const pickableMatchIds = useMemo(() => new Set(getPickableMatches(virtual).map((m) => m.matchId)), [virtual]);
@@ -111,13 +111,19 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
 
     setPick(entrantId);
     setSaving(true);
-    const result = await submitGroupMatchPick(stageId, matchId, entrantId);
-    setSaving(false);
-    if (!result.ok) {
+    try {
+      const result = await submitGroupMatchPick(stageId, matchId, entrantId);
+      if (!result.ok) {
+        setPick(previous);
+        toast.error(t(`saveError.${result.error}`));
+        // A match that just locked shows up as such.
+        if (result.error === "matchLocked" || result.error === "locked") router.refresh();
+      }
+    } catch {
       setPick(previous);
-      toast.error(t(`saveError.${result.error}`));
-      // A match that just locked shows up as such.
-      if (result.error === "matchLocked" || result.error === "locked") router.refresh();
+      toast.error(t("saveError.unexpected"));
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -158,6 +164,7 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
             picks={groupMatchPicks}
             savingMatchIds={savingMatchIds}
             pointsPerMatch={scoringConfig.groupMatchPoints}
+            readOnly={readOnly}
             onPick={pickGroupMatch}
           />
         ),
@@ -261,6 +268,7 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
                       disabled={isPending}
                       readOnly={bracketReadOnly}
                       reachableEntrants={reachableEntrants}
+                      scoringVersion={data.scoringVersion}
                       onPick={pickWinner}
                     />
                   ),
@@ -279,6 +287,7 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
               disabled={isPending}
               readOnly={bracketReadOnly}
               reachableEntrants={reachableEntrants}
+              scoringVersion={data.scoringVersion}
               onPick={pickWinner}
             />
           )}

@@ -15,7 +15,6 @@ import { pickemStageSettings, pickemRewards, stages, tournaments, groupEntries, 
 import { slugify } from "@/lib/entity-id";
 import { getStageEditorData } from "@/lib/admin-bracket-editor-data";
 import { computeStageLeaderboard } from "./pickem-data";
-import { DEFAULT_PICKEM_SCORING } from "./scoring";
 
 /**
  * Rewards are a permanent snapshot of a completed phase's PUBLIC (default
@@ -49,7 +48,7 @@ export async function ensureStageRewardsComputed(stageId: number): Promise<void>
     : 0;
   const hasAnyPickable = totalPickableMatches > 0 || totalStandingEntrants > 0;
 
-  const leaderboard = await computeStageLeaderboard(stageId, DEFAULT_PICKEM_SCORING);
+  const leaderboard = await computeStageLeaderboard(stageId, null);
   if (leaderboard.length === 0) return;
 
   const total = leaderboard.length;

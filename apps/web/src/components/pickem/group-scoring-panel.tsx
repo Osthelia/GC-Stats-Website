@@ -124,7 +124,7 @@ export function GroupScoringPanel({
                   <FormField label={t("fieldTeamCorrect")} htmlFor="pickem-scoring-team" required error={fieldErrors.teamCorrectPoints ? t(`error.${fieldErrors.teamCorrectPoints}`) : undefined}>
                     <Input id="pickem-scoring-team" type="number" min={0} value={form.teamCorrectPoints} onChange={(e) => setForm({ ...form, teamCorrectPoints: Number(e.target.value) })} />
                   </FormField>
-                  <FormField label={t("fieldOutcomeCorrect")} htmlFor="pickem-scoring-outcome" required error={fieldErrors.outcomeCorrectPoints ? t(`error.${fieldErrors.outcomeCorrectPoints}`) : undefined}>
+                  <FormField label={t("fieldOutcomeCorrect")} htmlFor="pickem-scoring-outcome" required error={fieldErrors.outcomeCorrectPoints ? t(`error.${fieldErrors.outcomeCorrectPoints}`) : undefined} hint={t("evenPointsHint")}>
                     <Input id="pickem-scoring-outcome" type="number" min={0} value={form.outcomeCorrectPoints} onChange={(e) => setForm({ ...form, outcomeCorrectPoints: Number(e.target.value) })} />
                   </FormField>
                   <FormField
@@ -132,6 +132,7 @@ export function GroupScoringPanel({
                     htmlFor="pickem-scoring-advancement"
                     required
                     error={fieldErrors.advancementPerRoundPoints ? t(`error.${fieldErrors.advancementPerRoundPoints}`) : undefined}
+                    hint={t("evenPointsHint")}
                   >
                     <Input
                       id="pickem-scoring-advancement"

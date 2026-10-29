@@ -45,13 +45,7 @@ export default async function TournamentPickemPage({
 
   const basePath = `${tournament.id}/${slugify(tournament.name)}`;
   const t = await getTranslations("pickemPage");
-
-  const stages = await getPickemEnabledStages(id);
   const requestedStageId = sp.stage ? Number(sp.stage) : null;
-  const activeStage = stages.find((s) => s.id === requestedStageId) ?? pickDefaultStage(stages) ?? null;
-
-  const session = await auth();
-  const userId = session?.user?.id ?? null;
 
   return (
     <div>
@@ -65,35 +59,51 @@ export default async function TournamentPickemPage({
           </Link>
         </div>
 
-        {stages.length === 0 && <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">{t("noPhaseConfigured")}</p>}
-
-        {stages.length > 0 && activeStage && (
-          <>
-            {stages.length > 1 && (
-              <div className="flex flex-wrap gap-1.5">
-                {stages.map((stage) => {
-                  const on = stage.id === activeStage.id;
-                  return (
-                    <Link
-                      key={stage.id}
-                      href={{ pathname: `/tournaments/${basePath}/pickem`, query: { stage: stage.id } }}
-                      className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-[0.96] ${on ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}
-                    >
-                      {stage.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Keyed so the loader shows again on every stage change, the header stays in place. */}
-            <Suspense key={activeStage.id} fallback={<PageLoading />}>
-              <PickemStageSection stageId={activeStage.id} tournamentId={id} userId={userId} />
-            </Suspense>
-          </>
-        )}
+        {/* Only the pick'em zone loads, the tournament header stays in place. */}
+        <Suspense fallback={<PageLoading />}>
+          <PickemContent tournamentId={id} basePath={basePath} requestedStageId={requestedStageId} />
+        </Suspense>
       </div>
     </div>
+  );
+}
+
+async function PickemContent({ tournamentId, basePath, requestedStageId }: { tournamentId: number; basePath: string; requestedStageId: number | null }) {
+  const t = await getTranslations("pickemPage");
+  const [stages, session] = await Promise.all([getPickemEnabledStages(tournamentId), auth()]);
+  const activeStage = stages.find((s) => s.id === requestedStageId) ?? pickDefaultStage(stages) ?? null;
+  const userId = session?.user?.id ?? null;
+
+  return (
+    <>
+      {stages.length === 0 && <p className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">{t("noPhaseConfigured")}</p>}
+
+      {stages.length > 0 && activeStage && (
+        <>
+          {stages.length > 1 && (
+            <div className="flex flex-wrap gap-1.5">
+              {stages.map((stage) => {
+                const on = stage.id === activeStage.id;
+                return (
+                  <Link
+                    key={stage.id}
+                    href={{ pathname: `/tournaments/${basePath}/pickem`, query: { stage: stage.id } }}
+                    className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-all duration-200 active:scale-[0.96] ${on ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"}`}
+                  >
+                    {stage.name}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Keyed so the loader shows again on every stage change, the stage tabs stay in place. */}
+          <Suspense key={activeStage.id} fallback={<PageLoading />}>
+            <PickemStageSection stageId={activeStage.id} tournamentId={tournamentId} userId={userId} />
+          </Suspense>
+        </>
+      )}
+    </>
   );
 }
 
@@ -135,11 +145,14 @@ async function PickemStageSection({ stageId, tournamentId, userId }: { stageId: 
   const isLocked = status.phase === "locked";
   const formData = isLocked && !hasPicks ? null : pickFormData;
 
+  // Logged in users only land here without picks, visitors get why the phase is closed.
+  const lockedMessageKey = userId ? "statusLockedNoPicks" : status.groupPickMode === "matches" ? "statusLockedStageCompleted" : "statusLocked";
+
   const leftFallback =
     status.phase === "notOpenYet" && status.opensAt ? (
       <PickemStatusMessage opensAt={status.opensAt} />
     ) : isLocked ? (
-      <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t(userId ? "statusLockedNoPicks" : status.groupPickMode === "matches" ? "statusLockedStageCompleted" : "statusLocked")}</p>
+      <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t(lockedMessageKey)}</p>
     ) : status.phase === "open" && !userId ? (
       <p className="rounded-lg border px-4 py-3 text-sm text-muted-foreground">{t("statusLoginRequired")}</p>
     ) : null;

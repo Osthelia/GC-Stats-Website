@@ -17,7 +17,7 @@ import { listTournamentStages } from "@/lib/admin-tournament-detail";
 import { computeContainerStandings } from "@/lib/bracket/standings";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { computeVirtualBracket, getPickableMatches } from "./bracket-fill";
-import { scoreBracketMatchPick, scoreStandingPick, scoreGroupMatchPick, DEFAULT_PICKEM_SCORING, type PhaseScoringConfig } from "./scoring";
+import { scoreBracketMatchPick, scoreStandingPick, scoreGroupMatchPick, defaultPickemScoring, PICKEM_SCORING_VERSION, type PhaseScoringConfig } from "./scoring";
 
 export type PickemStagePhase = { id: number; name: string; status: "pending" | "active" | "completed"; startDate: string | null; endDate: string | null };
 
@@ -60,6 +60,7 @@ export type StagePickemStatus = {
   stageId: number;
   enabled: boolean;
   groupPickMode: PickemGroupPickMode;
+  scoringVersion: number;
   opensAt: string | null;
   /** When bracket (and standings) picks close. */
   closesAt: string | null;
@@ -68,8 +69,9 @@ export type StagePickemStatus = {
 
 /**
  * Standings mode closes everything at the stage's earliest match. Matches
- * mode keeps the phase open until the stage completes: group matches lock one
- * by one (`isGroupMatchLocked`) and bracket picks close at the earliest
+ * mode keeps the phase open until nothing is left to predict (stage
+ * completed, or every group done and the bracket closed): group matches lock
+ * one by one (`isGroupMatchLocked`) and bracket picks close at the earliest
  * bracket match. Deadlines are computed here, never stored.
  */
 export async function getStagePickemStatus(stageId: number): Promise<StagePickemStatus> {
@@ -82,6 +84,9 @@ export async function getStagePickemStatus(stageId: number): Promise<StagePickem
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .where(matchesMode ? and(eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "bracket")) : eq(stageContainers.stageId, stageId));
   const [stage] = matchesMode ? await db.select({ status: stages.status }).from(stages).where(eq(stages.id, stageId)) : [];
+  const groupStatuses = matchesMode
+    ? await db.select({ status: stageContainers.status }).from(stageContainers).where(and(eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "group")))
+    : [];
 
   const closesAtRaw = row?.earliest ?? null;
   const closesAt = closesAtRaw
@@ -93,12 +98,32 @@ export async function getStagePickemStatus(stageId: number): Promise<StagePickem
   let phase: PickemPhase = "notConfigured";
   if (enabled && opensAt) {
     const now = new Date();
+    const bracketClosed = closesAt !== null && now >= closesAt;
+    const nothingLeftToPick = async () =>
+      stage?.status === "completed" || (groupStatuses.every((c) => c.status === "completed") && (bracketClosed || !(await stageHasBracket(stageId))));
     if (now < opensAt) phase = "notOpenYet";
-    else if (matchesMode ? stage?.status === "completed" : closesAt !== null && now >= closesAt) phase = "locked";
+    else if (matchesMode ? await nothingLeftToPick() : bracketClosed) phase = "locked";
     else phase = "open";
   }
 
-  return { stageId, enabled, groupPickMode, opensAt: opensAt ? opensAt.toISOString() : null, closesAt: closesAt ? closesAt.toISOString() : null, phase };
+  return {
+    stageId,
+    enabled,
+    groupPickMode,
+    scoringVersion: settings?.scoringVersion ?? PICKEM_SCORING_VERSION,
+    opensAt: opensAt ? opensAt.toISOString() : null,
+    closesAt: closesAt ? closesAt.toISOString() : null,
+    phase,
+  };
+}
+
+async function stageHasBracket(stageId: number): Promise<boolean> {
+  const [row] = await db
+    .select({ id: stageContainers.id })
+    .from(stageContainers)
+    .where(and(eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "bracket")))
+    .limit(1);
+  return !!row;
 }
 
 function isBracketLocked(status: StagePickemStatus, now: Date): boolean {
@@ -148,6 +173,7 @@ export type PickFormData = {
   bracketEdges: EditorEdge[];
   groupContainers: PickFormGroupContainer[];
   groupPickMode: PickemGroupPickMode;
+  scoringVersion: number;
   /** Matches mode only, every match of the stage's group containers. */
   groupMatches: PickFormGroupMatch[];
   bracketLocked: boolean;
@@ -155,7 +181,7 @@ export type PickFormData = {
   initialMatchPicks: Record<number, number>;
   initialGroupMatchPicks: Record<number, number>;
   initialStandingPicks: Record<number, Record<number, number>>;
-  /** containerId -> entrantId -> final rank, completed group containers only. */
+  /** containerId -> entrantId -> final rank, completed group containers of a locked phase only. */
   actualStandingRanks: Record<number, Record<number, number>>;
 };
 
@@ -176,8 +202,7 @@ export async function getPickFormData(userId: string, stageId: number, status: S
   const entrantNames: Record<number, string> = {};
   for (const e of editorData.entrants) entrantNames[e.id] = e.displayName;
 
-  const userMatchPicks = await getUserBracketPicks(userId, stageId);
-  const userStandingPicks = await getUserStandingPicks(userId, stageId);
+  const [userMatchPicks, userStandingPicks] = await Promise.all([getUserBracketPicks(userId, stageId), getUserStandingPicks(userId, stageId)]);
 
   const groupContainerRows = editorData.containers.filter((c) => c.containerType === "group");
   const groupEntryRows = groupContainerRows.length
@@ -221,12 +246,12 @@ export async function getPickFormData(userId: string, stageId: number, status: S
     initialStandingPicks[containerId] = inner;
   }
 
+  // Only the locked read-only view checks standings against the real ranks.
+  const rankedContainers =
+    status.phase === "locked" && status.groupPickMode === "standings" ? groupContainerRows.filter((c) => c.status === "completed") : [];
+  const rankings = await Promise.all(rankedContainers.map(async (c) => [c.id, await computeContainerStandings(db, c.id, c.config)] as const));
   const actualStandingRanks: Record<number, Record<number, number>> = {};
-  for (const c of groupContainerRows) {
-    if (c.status !== "completed" || status.groupPickMode === "matches") continue;
-    const ranked = await computeContainerStandings(db, c.id, c.config);
-    actualStandingRanks[c.id] = Object.fromEntries(ranked.map((r) => [Number(r.id), r.rank]));
-  }
+  for (const [containerId, ranked] of rankings) actualStandingRanks[containerId] = Object.fromEntries(ranked.map((r) => [Number(r.id), r.rank]));
 
   return {
     tournamentId: editorData.tournamentId,
@@ -236,6 +261,7 @@ export async function getPickFormData(userId: string, stageId: number, status: S
     bracketEdges,
     groupContainers,
     groupPickMode: status.groupPickMode,
+    scoringVersion: status.scoringVersion,
     groupMatches,
     bracketLocked: isBracketLocked(status, now),
     initialMatchPicks,
@@ -370,53 +396,84 @@ export type LeaderboardEntry = {
   correctStandingPicks: number;
 };
 
+type StageLeaderboardContext = {
+  scoringVersion: number;
+  matchById: Map<number, EditorMatch>;
+  bracketMatches: EditorMatch[];
+  bracketEdges: EditorEdge[];
+  bracketMatchIds: Set<number>;
+  groupMatchIds: Set<number>;
+  matchPickRows: (typeof pickemMatchPicks.$inferSelect)[];
+  standingPickRows: (typeof pickemStandingPicks.$inferSelect)[];
+  rankByContainerAndEntrant: Map<number, Map<number, number>>;
+  userNameById: Map<string, string | null>;
+};
+
+/** Everything a stage leaderboard needs, loaded once and scored for as many scoring configs as needed. */
+async function loadStageLeaderboardContext(stageId: number): Promise<StageLeaderboardContext | null> {
+  const editorData = await getStageEditorData(stageId);
+  if (!editorData) return null;
+
+  const [settings] = await db
+    .select({ groupPickMode: pickemStageSettings.groupPickMode, scoringVersion: pickemStageSettings.scoringVersion })
+    .from(pickemStageSettings)
+    .where(eq(pickemStageSettings.stageId, stageId));
+  const matchesMode = settings?.groupPickMode === "matches";
+  const groupMatchIds = new Set(matchesMode ? getStageGroupMatches(editorData).map((m) => m.id) : []);
+  const { bracketMatches, bracketEdges } = getStageBracketMatchesAndEdges(editorData);
+  const bracketMatchIds = new Set(bracketMatches.map((m) => m.id));
+
+  // Only picks of the stage's current group mode count.
+  const [allMatchPickRows, standingPickRows] = await Promise.all([
+    db.select().from(pickemMatchPicks).where(eq(pickemMatchPicks.stageId, stageId)),
+    matchesMode ? Promise.resolve([]) : db.select().from(pickemStandingPicks).where(eq(pickemStandingPicks.stageId, stageId)),
+  ]);
+  const matchPickRows = allMatchPickRows.filter((r) => bracketMatchIds.has(r.matchId) || groupMatchIds.has(r.matchId));
+
+  const groupContainers = matchesMode ? [] : editorData.containers.filter((c) => c.containerType === "group" && c.status === "completed");
+  const rankings = await Promise.all(groupContainers.map(async (c) => [c.id, await computeContainerStandings(db, c.id, c.config)] as const));
+  const rankByContainerAndEntrant = new Map(rankings.map(([containerId, ranked]) => [containerId, new Map(ranked.map((r) => [Number(r.id), r.rank]))]));
+
+  const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];
+  const userNameById = new Map<string, string | null>();
+  if (participantIds.length > 0) {
+    const userRows = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, participantIds));
+    for (const u of userRows) userNameById.set(u.id, u.username);
+  }
+
+  return {
+    scoringVersion: settings?.scoringVersion ?? PICKEM_SCORING_VERSION,
+    matchById: new Map(editorData.matches.map((m) => [m.id, m])),
+    bracketMatches,
+    bracketEdges,
+    bracketMatchIds,
+    groupMatchIds,
+    matchPickRows,
+    standingPickRows,
+    rankByContainerAndEntrant,
+    userNameById,
+  };
+}
+
 /**
- * Live score for every user who made at least one pick on this stage —
- * scored on-the-fly from current match/standings state (matches not yet
- * completed simply contribute 0), never cached. Each participant's own
+ * Live score for every user who made at least one counted pick on this
+ * stage, scored on the fly from current match/standings state (matches not
+ * yet completed simply contribute 0), never cached. Each participant's own
  * saved picks re-derive their virtual bracket (needed for the "team
  * correct" signal, which depends on their predicted OPPONENT, never stored
  * directly).
  */
-export async function computeStageLeaderboard(stageId: number, config: PhaseScoringConfig, restrictToUserIds?: string[]): Promise<LeaderboardEntry[]> {
-  const editorData = await getStageEditorData(stageId);
-  if (!editorData) return [];
-
-  const [settings] = await db.select({ groupPickMode: pickemStageSettings.groupPickMode }).from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId));
-  const matchesMode = settings?.groupPickMode === "matches";
-  const groupMatchIds = new Set(matchesMode ? getStageGroupMatches(editorData).map((m) => m.id) : []);
-
-  // Only picks of the stage's current group mode count.
-  const matchPickRows = await db.select().from(pickemMatchPicks).where(eq(pickemMatchPicks.stageId, stageId));
-  const standingPickRows = matchesMode ? [] : await db.select().from(pickemStandingPicks).where(eq(pickemStandingPicks.stageId, stageId));
-
+function scoreStageLeaderboard(ctx: StageLeaderboardContext, config: PhaseScoringConfig, restrictToUserIds?: string[]): LeaderboardEntry[] {
+  const { scoringVersion, matchById, bracketMatches, bracketEdges, bracketMatchIds, groupMatchIds, matchPickRows, standingPickRows, rankByContainerAndEntrant } = ctx;
   let participantIds = new Set<string>([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)]);
   if (restrictToUserIds) {
     const allowed = new Set(restrictToUserIds);
     participantIds = new Set([...participantIds].filter((id) => allowed.has(id)));
   }
-  if (participantIds.size === 0) return [];
-
-  const matchById = new Map(editorData.matches.map((m) => [m.id, m]));
-  const { bracketMatches, bracketEdges } = getStageBracketMatchesAndEdges(editorData);
-  const bracketMatchIds = new Set(bracketMatches.map((m) => m.id));
-
-  const groupContainers = matchesMode ? [] : editorData.containers.filter((c) => c.containerType === "group" && c.status === "completed");
-  const rankByContainerAndEntrant = new Map<number, Map<number, number>>();
-  for (const c of groupContainers) {
-    const ranked = await computeContainerStandings(db, c.id, c.config);
-    rankByContainerAndEntrant.set(c.id, new Map(ranked.map((r) => [Number(r.id), r.rank])));
-  }
-
-  const userNameById = new Map<string, string | null>();
-  if (participantIds.size > 0) {
-    const userRows = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, [...participantIds]));
-    for (const u of userRows) userNameById.set(u.id, u.username);
-  }
 
   const entries: LeaderboardEntry[] = [];
   for (const userId of participantIds) {
-    const userMatchPicks = matchPickRows.filter((r) => r.userId === userId && (bracketMatchIds.has(r.matchId) || groupMatchIds.has(r.matchId)));
+    const userMatchPicks = matchPickRows.filter((r) => r.userId === userId);
     const userStandingPicks = standingPickRows.filter((r) => r.userId === userId);
 
     const predictedWinners = new Map(userMatchPicks.map((r) => [r.matchId, r.predictedWinnerEntrantId]));
@@ -432,14 +489,15 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
     let correctMatchPicks = 0;
 
     {
-      const virtual = computeVirtualBracket(bracketMatches, bracketEdges, predictedWinners, predictedGroupRank, { guessOnly: true });
+      // Version 1 takes the opponent from the real bracket, version 2 from the user's own guess.
+      const virtual = computeVirtualBracket(bracketMatches, bracketEdges, predictedWinners, predictedGroupRank, { guessOnly: scoringVersion >= 2 });
       for (const [matchId, predictedWinnerId] of predictedWinners) {
         if (!bracketMatchIds.has(matchId)) continue;
         const vm = virtual.get(matchId);
         const match = matchById.get(matchId);
         if (!vm || !match) continue;
         const predictedOpponentId = vm.a.entrantId === predictedWinnerId ? vm.b.entrantId : vm.a.entrantId;
-        const matchScore = scoreBracketMatchPick({
+        score += scoreBracketMatchPick({
           predictedWinnerId,
           predictedOpponentId,
           round: match.round,
@@ -447,8 +505,8 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
           actualEntrantBId: match.entrantBId,
           actualWinnerId: match.winnerId,
           config,
+          scoringVersion,
         });
-        score += matchScore;
         if (match.winnerId !== null && match.winnerId === predictedWinnerId) correctMatchPicks++;
       }
     }
@@ -469,7 +527,7 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
 
     entries.push({
       userId,
-      username: userNameById.get(userId) ?? null,
+      username: ctx.userNameById.get(userId) ?? null,
       score,
       totalMatchPicks: userMatchPicks.length,
       correctMatchPicks,
@@ -480,6 +538,13 @@ export async function computeStageLeaderboard(stageId: number, config: PhaseScor
 
   entries.sort((a, b) => b.score - a.score);
   return entries;
+}
+
+/** `config` null scores with the stage's default config (`defaultPickemScoring` of its scoring version). */
+export async function computeStageLeaderboard(stageId: number, config: PhaseScoringConfig | null, restrictToUserIds?: string[]): Promise<LeaderboardEntry[]> {
+  const ctx = await loadStageLeaderboardContext(stageId);
+  if (!ctx) return [];
+  return scoreStageLeaderboard(ctx, config ?? defaultPickemScoring(ctx.scoringVersion), restrictToUserIds);
 }
 
 export type PickemGroupSummary = { id: number; name: string; scoringMode: "default" | "custom"; memberCount: number; isOwner: boolean };
@@ -534,9 +599,15 @@ export async function getGroupDetail(groupId: number): Promise<PickemGroupDetail
   };
 }
 
-export async function getGroupPhaseScoringConfig(groupId: number, stageId: number): Promise<PhaseScoringConfig> {
+async function getStageScoringVersion(stageId: number): Promise<number> {
+  const [row] = await db.select({ scoringVersion: pickemStageSettings.scoringVersion }).from(pickemStageSettings).where(eq(pickemStageSettings.stageId, stageId));
+  return row?.scoringVersion ?? PICKEM_SCORING_VERSION;
+}
+
+/** A group's custom points for a stage, or null when it has none saved yet. */
+async function getGroupPhasePoints(groupId: number, stageId: number): Promise<PhaseScoringConfig | null> {
   const [row] = await db.select().from(pickemGroupPhasePoints).where(and(eq(pickemGroupPhasePoints.groupId, groupId), eq(pickemGroupPhasePoints.stageId, stageId)));
-  if (!row) return DEFAULT_PICKEM_SCORING;
+  if (!row) return null;
   return {
     teamCorrectPoints: row.teamCorrectPoints,
     outcomeCorrectPoints: row.outcomeCorrectPoints,
@@ -544,6 +615,12 @@ export async function getGroupPhaseScoringConfig(groupId: number, stageId: numbe
     standingRankPoints: row.standingRankPoints,
     groupMatchPoints: row.groupMatchPoints,
   };
+}
+
+/** Scoring config of a stage, for a group (its custom points when it uses them) or the global default. */
+export async function getStageScoringConfig(stageId: number, group?: { id: number; scoringMode: "default" | "custom" }): Promise<PhaseScoringConfig> {
+  const custom = group?.scoringMode === "custom" ? await getGroupPhasePoints(group.id, stageId) : null;
+  return custom ?? defaultPickemScoring(await getStageScoringVersion(stageId));
 }
 
 export type PickemScope = { kind: "global" } | { kind: "group"; groupId: number; groupName: string };
@@ -559,20 +636,21 @@ export type PickemScopedLeaderboard = { scope: PickemScope; config: PhaseScoring
  * viewer picked.
  */
 export async function getStageScoringScopes(stageId: number, tournamentId: number, userId: string | null): Promise<PickemScopedLeaderboard[]> {
-  const scopes: PickemScopedLeaderboard[] = [{ scope: { kind: "global" }, config: DEFAULT_PICKEM_SCORING, leaderboard: await computeStageLeaderboard(stageId, DEFAULT_PICKEM_SCORING) }];
+  const ctx = await loadStageLeaderboardContext(stageId);
+  const defaultConfig = defaultPickemScoring(ctx?.scoringVersion ?? PICKEM_SCORING_VERSION);
+  const score = (config: PhaseScoringConfig, restrictToUserIds?: string[]) => (ctx ? scoreStageLeaderboard(ctx, config, restrictToUserIds) : []);
+
+  const scopes: PickemScopedLeaderboard[] = [{ scope: { kind: "global" }, config: defaultConfig, leaderboard: score(defaultConfig) }];
   if (!userId) return scopes;
 
   const groups = await getMyGroupsForTournament(userId, tournamentId);
-  for (const g of groups) {
-    const detail = await getGroupDetail(g.id);
+  const groupScopes = await Promise.all(
+    groups.map(async (g) => ({ g, detail: await getGroupDetail(g.id), custom: g.scoringMode === "custom" ? await getGroupPhasePoints(g.id, stageId) : null }))
+  );
+  for (const { g, detail, custom } of groupScopes) {
     if (!detail) continue;
-    const config = g.scoringMode === "custom" ? await getGroupPhaseScoringConfig(g.id, stageId) : DEFAULT_PICKEM_SCORING;
-    const leaderboard = await computeStageLeaderboard(
-      stageId,
-      config,
-      detail.members.map((m) => m.userId)
-    );
-    scopes.push({ scope: { kind: "group", groupId: g.id, groupName: g.name }, config, leaderboard });
+    const config = custom ?? defaultConfig;
+    scopes.push({ scope: { kind: "group", groupId: g.id, groupName: g.name }, config, leaderboard: score(config, detail.members.map((m) => m.userId)) });
   }
   return scopes;
 }
