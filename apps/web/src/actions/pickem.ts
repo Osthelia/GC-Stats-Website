@@ -17,7 +17,7 @@ import { db } from "@gc-stats/db/client";
 import { pickemGroups, pickemGroupMembers, pickemGroupPhasePoints, tournaments, stages } from "@gc-stats/db";
 import { auth } from "@/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { saveStagePicks, type SavePicksInput } from "@/lib/pickem/pickem-data";
+import { saveStagePicks, saveGroupMatchPick, type SavePicksInput } from "@/lib/pickem/pickem-data";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -43,6 +43,20 @@ function generateJoinCode(): string {
 export async function submitStagePicks(stageId: number, input: SavePicksInput): Promise<ActionResult> {
   const userId = await requireUserId();
   const result = await saveStagePicks(userId, stageId, input);
+  if (!result.ok) return { ok: false, error: result.error };
+  return { ok: true };
+}
+
+// Group match picks save on every click, generous for a user clicking through a round, tight for a script.
+const PICK_WINDOW_MS = 60_000;
+const PICK_MAX_ATTEMPTS = 60;
+
+export async function submitGroupMatchPick(stageId: number, matchId: number, entrantId: number | null): Promise<ActionResult> {
+  const userId = await requireUserId();
+  if (!(await checkRateLimit(`pickem-pick:${userId}`, PICK_WINDOW_MS, PICK_MAX_ATTEMPTS))) return { ok: false, error: "tooManyAttempts" };
+  if (!Number.isInteger(stageId) || !Number.isInteger(matchId)) return { ok: false, error: "matchNotFound" };
+  if (entrantId !== null && !Number.isInteger(entrantId)) return { ok: false, error: "invalidPick" };
+  const result = await saveGroupMatchPick(userId, stageId, matchId, entrantId);
   if (!result.ok) return { ok: false, error: result.error };
   return { ok: true };
 }
@@ -126,15 +140,19 @@ export async function setGroupScoringMode(groupId: number, mode: "default" | "cu
   return { ok: true };
 }
 
-export type GroupPhasePointsInput = { teamCorrectPoints: number; outcomeCorrectPoints: number; advancementPerRoundPoints: number; standingRankPoints: number };
+export type GroupPhasePointsInput = { teamCorrectPoints: number; outcomeCorrectPoints: number; advancementPerRoundPoints: number; standingRankPoints: number; groupMatchPoints: number };
 export type GroupPhasePointsFieldErrors = Partial<Record<keyof GroupPhasePointsInput, string>>;
 export type SetGroupPhasePointsResult = { ok: true } | { ok: false; fieldErrors: GroupPhasePointsFieldErrors } | { ok: false; error: string };
 
-function validatePhasePoints(input: GroupPhasePointsInput): GroupPhasePointsFieldErrors {
+function validatePhasePoints(input: GroupPhasePointsInput, saved: GroupPhasePointsInput | null): GroupPhasePointsFieldErrors {
   const fieldErrors: GroupPhasePointsFieldErrors = {};
   for (const key of Object.keys(input) as (keyof GroupPhasePointsInput)[]) {
     const value = input[key];
     if (!Number.isInteger(value) || value < 0 || value > 1000) fieldErrors[key] = "invalid";
+  }
+  // A correct winner pays half on a wrong opponent, these must stay even. An odd value saved before the rule is kept as is.
+  for (const key of ["outcomeCorrectPoints", "advancementPerRoundPoints"] as const) {
+    if (!fieldErrors[key] && input[key] % 2 !== 0 && input[key] !== saved?.[key]) fieldErrors[key] = "notEven";
   }
   return fieldErrors;
 }
@@ -145,13 +163,31 @@ export async function setGroupPhasePoints(groupId: number, stageId: number, inpu
   if (!check.ok) return { ok: false, error: check.error };
   if (!check.stageIds.includes(stageId)) return { ok: false, error: "stageNotInTournament" };
 
-  const fieldErrors = validatePhasePoints(input);
+  const points: GroupPhasePointsInput = {
+    teamCorrectPoints: input.teamCorrectPoints,
+    outcomeCorrectPoints: input.outcomeCorrectPoints,
+    advancementPerRoundPoints: input.advancementPerRoundPoints,
+    standingRankPoints: input.standingRankPoints,
+    groupMatchPoints: input.groupMatchPoints,
+  };
+  const [saved] = await db
+    .select({
+      teamCorrectPoints: pickemGroupPhasePoints.teamCorrectPoints,
+      outcomeCorrectPoints: pickemGroupPhasePoints.outcomeCorrectPoints,
+      advancementPerRoundPoints: pickemGroupPhasePoints.advancementPerRoundPoints,
+      standingRankPoints: pickemGroupPhasePoints.standingRankPoints,
+      groupMatchPoints: pickemGroupPhasePoints.groupMatchPoints,
+    })
+    .from(pickemGroupPhasePoints)
+    .where(and(eq(pickemGroupPhasePoints.groupId, groupId), eq(pickemGroupPhasePoints.stageId, stageId)))
+    .limit(1);
+  const fieldErrors = validatePhasePoints(points, saved ?? null);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   await db
     .insert(pickemGroupPhasePoints)
-    .values({ groupId, stageId, ...input })
-    .onConflictDoUpdate({ target: [pickemGroupPhasePoints.groupId, pickemGroupPhasePoints.stageId], set: input });
+    .values({ groupId, stageId, ...points })
+    .onConflictDoUpdate({ target: [pickemGroupPhasePoints.groupId, pickemGroupPhasePoints.stageId], set: points });
 
   return { ok: true };
 }

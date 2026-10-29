@@ -37,12 +37,17 @@ export type VirtualMatch = { matchId: number; round: number; a: VirtualSlot; b: 
  *
  * A match with both slots resolved this way is exactly what the pick'em
  * form must ask a winner for — see `getPickableMatches`.
+ *
+ * `guessOnly` rebuilds the bracket as the user predicted it at lock time:
+ * slots fed by an edge or a group rank ignore the real entrants, only
+ * direct seeds stay real. Used for scoring and the locked view.
  */
 export function computeVirtualBracket(
   bracketMatches: EditorMatch[],
   edges: EditorEdge[],
   predictedWinners: ReadonlyMap<number, number>,
-  predictedGroupRank: (containerId: number, rank: number) => number | null
+  predictedGroupRank: (containerId: number, rank: number) => number | null,
+  { guessOnly = false }: { guessOnly?: boolean } = {}
 ): Map<number, VirtualMatch> {
   const winners = new Map(predictedWinners);
   const matchById = new Map(bracketMatches.map((m) => [m.id, m]));
@@ -66,7 +71,9 @@ export function computeVirtualBracket(
 
   function resolveSlot(match: EditorMatch, slot: "a" | "b", incomingEdge: EditorEdge | undefined): VirtualSlot {
     const realId = slot === "a" ? match.entrantAId : match.entrantBId;
-    if (realId !== null) return { entrantId: realId, isReal: true };
+    const seed = match.seeds.find((s) => s.slot === slot);
+    const predictedSlot = !!incomingEdge || seed?.sourceType === "group_rank";
+    if (realId !== null && !(guessOnly && predictedSlot)) return { entrantId: realId, isReal: true };
 
     if (incomingEdge) {
       const sourceWinnerId = winners.get(incomingEdge.fromMatchId) ?? null;
@@ -80,10 +87,11 @@ export function computeVirtualBracket(
       return { entrantId: null, isReal: false };
     }
 
-    const seed = match.seeds.find((s) => s.slot === slot);
     if (seed?.sourceType === "group_rank") {
       const ref = seed.sourceRef as { containerId: number; rank: number };
-      return { entrantId: predictedGroupRank(ref.containerId, ref.rank), isReal: false };
+      const predicted = predictedGroupRank(ref.containerId, ref.rank);
+      if (predicted === null && realId !== null) return { entrantId: realId, isReal: true };
+      return { entrantId: predicted, isReal: false };
     }
     return { entrantId: null, isReal: false };
   }
@@ -155,6 +163,51 @@ function topologicalOrder(
 function isPermanentByeSlot(match: EditorMatch, emptySlot: "a" | "b"): boolean {
   const seed = match.seeds.find((s) => s.slot === emptySlot);
   return !seed || seed.sourceType === "bye";
+}
+
+/**
+ * For every match, the entrants that can still play it given the real
+ * results so far, or null when it can't be narrowed (a slot fed by a group
+ * rank not decided yet).
+ */
+export function getReachableEntrants(bracketMatches: EditorMatch[], edges: EditorEdge[]): Map<number, ReadonlySet<number> | null> {
+  const matchById = new Map(bracketMatches.map((m) => [m.id, m]));
+  const incomingByMatch = new Map<number, Partial<Record<"a" | "b", EditorEdge>>>();
+  const outgoingByFromMatch = new Map<number, EditorEdge[]>();
+  for (const edge of edges) {
+    if (!matchById.has(edge.fromMatchId) || !matchById.has(edge.toMatchId)) continue;
+    const incoming = incomingByMatch.get(edge.toMatchId) ?? {};
+    incoming[edge.toSlot] = edge;
+    incomingByMatch.set(edge.toMatchId, incoming);
+    const outgoing = outgoingByFromMatch.get(edge.fromMatchId) ?? [];
+    outgoing.push(edge);
+    outgoingByFromMatch.set(edge.fromMatchId, outgoing);
+  }
+
+  const result = new Map<number, ReadonlySet<number> | null>();
+
+  function slotEntrants(match: EditorMatch, slot: "a" | "b", incomingEdge: EditorEdge | undefined): ReadonlySet<number> | null {
+    const realId = slot === "a" ? match.entrantAId : match.entrantBId;
+    if (realId !== null) return new Set([realId]);
+    // A bye stays empty, any other seed not assigned yet can't be narrowed.
+    if (!incomingEdge) return isPermanentByeSlot(match, slot) ? new Set() : null;
+    const source = matchById.get(incomingEdge.fromMatchId)!;
+    if (source.winnerId !== null) {
+      const loserId = source.entrantAId === source.winnerId ? source.entrantBId : source.entrantAId;
+      const id = incomingEdge.fromResult === "winner" ? source.winnerId : loserId;
+      return new Set(id !== null ? [id] : []);
+    }
+    // Undecided source: either of its possible entrants can come out of it.
+    return result.get(source.id) ?? null;
+  }
+
+  for (const match of topologicalOrder(bracketMatches, incomingByMatch, outgoingByFromMatch)) {
+    const incoming = incomingByMatch.get(match.id) ?? {};
+    const a = slotEntrants(match, "a", incoming.a);
+    const b = slotEntrants(match, "b", incoming.b);
+    result.set(match.id, a === null || b === null ? null : new Set([...a, ...b]));
+  }
+  return result;
 }
 
 /** Matches where both slots are resolved (real or predicted) — exactly what needs a pick. */

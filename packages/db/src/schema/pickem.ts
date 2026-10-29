@@ -15,11 +15,14 @@ import { stages, stageContainers, matches, entrants, tournaments } from "./brack
 
 export const pickemScoringModeEnum = pgEnum("pickem_scoring_mode", ["default", "custom"]);
 export const pickemRewardKindEnum = pgEnum("pickem_reward_kind", ["top1pct", "top5pct", "perfect"]);
+// How Swiss/round robin containers are predicted: their final standings, or the winner of each match.
+export const pickemGroupPickModeEnum = pgEnum("pickem_group_pick_mode", ["standings", "matches"]);
 
 // Per-stage (phase) pick'em configuration, admin only. Predictions open at
 // `opensAt`; they close at the stage's own earliest match `scheduledAt`
 // (computed at read time from `matches`, never stored — a match can be
-// rescheduled after this row is created).
+// rescheduled after this row is created). In "matches" group mode, each
+// group match locks on its own and only bracket picks keep a stage deadline.
 export const pickemStageSettings = pgTable(
   "pickem_stage_settings",
   {
@@ -27,6 +30,9 @@ export const pickemStageSettings = pgTable(
     stageId: bigint("stage_id", { mode: "number" }).notNull().references(() => stages.id, { onDelete: "cascade" }),
     enabled: boolean("enabled").notNull().default(false),
     opensAt: timestamp("opens_at", { withTimezone: true }).notNull(),
+    groupPickMode: pickemGroupPickModeEnum("group_pick_mode").notNull().default("standings"),
+    // Scoring rules the stage is scored with, so a rules change never rewrites past leaderboards (1: legacy, 2: current).
+    scoringVersion: integer("scoring_version").notNull().default(2),
   },
   (t) => [unique("pickem_stage_settings_stage_unique").on(t.stageId)]
 );
@@ -72,12 +78,14 @@ export const pickemGroupPhasePoints = pgTable(
     outcomeCorrectPoints: integer("outcome_correct_points").notNull(),
     advancementPerRoundPoints: integer("advancement_per_round_points").notNull(),
     standingRankPoints: integer("standing_rank_points").notNull(),
+    groupMatchPoints: integer("group_match_points").notNull().default(3),
   },
   (t) => [unique("pickem_group_phase_points_group_stage_unique").on(t.groupId, t.stageId)]
 );
 
-// One predicted winner per bracket-container match. Locked once the stage's
-// pick'em window closes (first match of the stage) — enforced in
+// One predicted winner per bracket-container match, or per group-container
+// match in "matches" group mode. Locked once the stage's pick'em window
+// closes, or when the group match itself starts — enforced in
 // lib/pickem/pickem-data.ts, not by a DB constraint (the lock deadline
 // moves with matches.scheduledAt).
 export const pickemMatchPicks = pgTable(
