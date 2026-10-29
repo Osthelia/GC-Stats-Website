@@ -737,11 +737,11 @@
     "intro": "Ipinapaliwanag ng patakarang ito kung paano namin hinahawakan ang data sa site na ito, na may pokus sa transparency at paggalang sa privacy.",
     "analytics": {
       "title": "Nabigasyon at Estadistika",
-      "text": "Sinusukat namin ang audience ng site sa ganap na anonymous na paraan: hindi kailanman iniimbak ng mga estadistikang ito ang IP address, tanging ang bansa, ang pahina, at ang oras ng pagbisita lamang, nang walang indibidwal na pagsubaybay o digital fingerprinting. Kung gagawa ka ng account, ang iyong login session (IP address at user agent) ay pansamantalang iniimbak para sa seguridad (proteksyon laban sa account takeover), gaya ng pamantayan sa halos lahat ng site na may authentication."
+      "text": "Sinusukat namin ang mga bisita ng site nang ganap na anonymous: ang binisitang page, ang araw at ang bilang ng views lang ang binibilang, walang IP address, walang indibidwal na tracking at walang fingerprinting. Para protektahan ang site laban sa mga bot at pang-aabuso, nire-record ng aming mga server ang bawat request (IP address, hiniling na page, browser, petsa) nang 14 na araw. Kung may account ka, iniingatan din nang 90 araw ang IP address ng bawat login sa security log ng iyong account."
     },
     "publicData": {
       "title": "Pampublikong Data",
-      "text": "Ang impormasyon sa profile (handle, talambuhay, social link, bansa) ay kusang ibinibigay ng manlalaro at lantad na ipinapakita sa site. Ang mga estadistika ng laban ay direktang kinokolekta sa pamamagitan ng opisyal na Riot Games API para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo. Lahat ng data na ito ay pampublikong naa-access at ibinabahagi sa pamamagitan ng aming API."
+      "text": "Ang impormasyon ng profile (handle, bio, socials, bansa) ay ibinibigay ng player o ng kanyang organisasyon, o idinadagdag ng aming team mula sa mga pampublikong source, at ipinapakita sa publiko sa site. Kinokolekta ang stats ng laro direkta mula sa opisyal na API ng Riot Games para sa mga laban ng mga torneong sinusundan. Pampubliko ang lahat ng data na ito at ibinabahagi sa aming API."
     },
     "privateData": {
       "title": "Pribadong Data",
@@ -754,22 +754,21 @@
     },
     "socialLogin": {
       "title": "Pag-login gamit ang Discord, Twitter/X, o Twitch",
-      "text": "Maaari mong i-link ang iyong account sa Discord, Twitter/X, o Twitch para mas mabilis mag-sign in. Iniimbak namin noon ang iyong ID sa platform na iyon, iyong palayaw, iyong avatar, at ang mga access/refresh token na kailangan para manatiling buhay ang koneksyon (ginagamit lamang ang mga token na ito para i-authenticate ang iyong account at hindi kailanman ibinabahagi). Maaari mong i-unlink ang mga account na ito anumang oras mula sa mga setting ng iyong profile.",
-      "gravatar": "Default na avatar: Kung wala kang avatar mula sa naka-link na account, maaaring humiling ng larawan mula sa Gravatar (Automattic) batay sa hash ng iyong email, isang karaniwang third-party na serbisyo na ginagamit ng maraming website."
+      "text": "Maaari mong i-link ang iyong account sa Discord, Twitter/X, o Twitch para mas mabilis mag-sign in. Iniimbak namin noon ang iyong ID sa platform na iyon, iyong palayaw, iyong avatar, at ang mga access/refresh token na kailangan para manatiling buhay ang koneksyon (ginagamit lamang ang mga token na ito para i-authenticate ang iyong account at hindi kailanman ibinabahagi). Maaari mong i-unlink ang mga account na ito anumang oras mula sa mga setting ng iyong profile."
     },
     "moderation": {
       "title": "Moderasyon at Kaligtasan ng Komunidad",
       "text": "Para mapanatiling ligtas ang komunidad, nag-iingat kami ng kasaysayan ng mga parusa (babala, ban) na ipinataw sa isang account o team, mga ulat na isinumite ng mga user (pandaraya, pag-iwas sa ban, panliligalig, pekeng account, atbp.), at isang activity log ng mga aksyon ng moderasyon.",
-      "retentionNote": "Para maiwasan ang pag-iwas sa ban, maaaring ikabit sa isang parusa ang isang teknikal na fingerprint (tulad ng email address) at itago kahit matapos burahin ang kaugnay na account. Ganoon din ang kasaysayan ng ulat at moderation log, na bumubuo ng talaan ng kaligtasan na iniingatan nang hiwalay sa account."
+      "retentionNote": "Para mapigilan ang pag-iwas sa ban, bumubuo ang kasaysayan ng parusa, mga report at moderation log ng isang security record na iniingatan kahit matapos burahin ang kaugnay na account."
     },
     "dataStructure": {
-      "title": "Istruktura ng Data",
-      "text": "Para mas maunawaan ang data na iniimbak at ibinabahagi namin, makikita sa ibaba ang aming istruktura ng data. Inililista nito ang lahat ng naka-imbak na data, ipinapaliwanag ang gamit ng mga ito, kung sapilitan ba ang mga ito, at kung ibinabahagi ba ang mga ito.",
-      "button": "Tingnan ang naka-imbak na data"
+      "title": "Detalye ng personal na data",
+      "text": "Para sa bawat personal na data na iniimbak namin, tingnan kung paano namin ito nakukuha, saan ito nakaimbak at gaano katagal namin ito iniingatan.",
+      "button": "Tingnan ang detalye ng data"
     },
     "retention": {
       "title": "Pag-iingat ng Data",
-      "text": "Iniingatan ang data ng laro hangga't aktibo ang team o manlalaro sa ecosystem ng proyekto. Maaari kang humiling ng pagbura ng iyong data anumang oras."
+      "text": "Iniingatan habambuhay ang mga profile ng player at data ng laban bilang archive ng eksena, kahit huminto na sa paglalaro ang isang tao. Iniingatan ang data ng account habang umiiral ang account. Binubura ang mga access log pagkalipas ng 14 na araw, at ang mga IP address ng login pagkalipas ng 90 araw. Maaari kang humiling ng pagwawasto o pagbura ng iyong data anumang oras, maliban sa data na talagang kailangan para sa isang moderation record."
     },
     "rights": {
       "title": "Iyong Mga Karapatan (GDPR)",
@@ -780,7 +779,11 @@
       "title": "Mga Cookie",
       "text": "Hindi gumagamit ang site na ito ng anumang advertising o profiling na cookie. Mga teknikal na cookie lamang na mahigpit na kinakailangan para sa takbo ng session ang maaaring gamitin."
     },
-    "takedownLink": "Humiling ng pag-alis ng content"
+    "takedownLink": "Humiling ng pag-alis ng content",
+    "hosting": {
+      "title": "Hosting",
+      "text": "Naka-host ang site, ang database at ang mga log ng server sa Infomaniak, sa Switzerland. Naka-encrypt ang mga offsite backup at nakaimbak sa Exoscale, sa Zurich at Geneva. Dumadaan ang mga pampublikong file (mga larawan, logo) sa CDN na Bunny.net, na naka-set up para hindi mangolekta ng anumang IP address."
+    }
   },
   "legalNotice": {
     "title": "Mga Legal na Banggit",
@@ -870,7 +873,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Nagka-cache ng aming CSS/JS, pati ng mga larawan ng manlalaro, team, at torneo, sa mga server sa buong mundo para gumaan ang karga ng aming sariling mga server."
+        "body": "Nagka-cache ng aming CSS/JS, pati ng mga larawan ng manlalaro, team, at torneo, sa mga server sa buong mundo para gumaan ang karga ng aming sariling mga server. Naka-set up ang CDN para hindi mangolekta ng anumang IP address."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -903,12 +906,17 @@
           "p4": "Naisip kong mahalagang ipaliwanag ang pagpiling ito, at lalo na ang pag-usapan ang Infomaniak: hindi ito gaanong kilalang provider, pero karapat-dapat itong makilala. Lalo na't ang libreng mail account o subscription sa OneDrive ay maaaring ilipat sa kanila nang hindi talaga mas malaki ang babayaran, para sa serbisyong kasing-husay, pero may minimum na paggalang sa iyo, sa iyong privacy, at sa ating planeta.",
           "cite": "Lacy, tagapagtatag ng GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Mga offsite backup",
+        "body": "Araw-araw na naka-encrypt na backup ng aming database at mga file, nakaimbak sa Switzerland (Zurich, kinokopya sa Geneva). Hindi mababago ang bawat backup sa loob ng 30 araw, pagkatapos ay binubura ito."
       }
     },
     "data": {
       "title": "Data na kinokolekta",
-      "body": "Dokumentado namin sa publiko ang bawat data na iniimbak namin: mga manlalaro, team, torneo, at laban. Walang data na kinokolekta nang walang dahilang nakaugnay sa takbo ng site.",
-      "link": "Tingnan ang data na iniimbak namin"
+      "body": "Pampubliko naming idinodokumento ang personal na data na iniimbak namin: kung paano namin ito nakukuha, saan ito nakaimbak at gaano katagal namin ito iniingatan. Walang data na kinokolekta nang walang dahilang kaugnay sa pagpapatakbo ng site.",
+      "link": "Tingnan ang personal na data"
     },
     "finance": {
       "title": "Pananalapi",
@@ -1014,396 +1022,219 @@
     }
   },
   "dataPage": {
-    "title": "Istruktura ng data",
-    "subtitle": "Istruktura at listahan ng data na kinokolekta namin",
-    "openData": {
-      "title": "Open Data portal",
-      "body": "Maaaring mas gusto mong tuklasin o i-download nang direkta ang aming mga dataset sa halip na gamitin ang API. Ililipat dito ang Open Data portal kasabay ng natitirang bahagi ng API.",
-      "badge": "Malapit na"
-    },
-    "groups": {
-      "identity": "Istruktura ng mga tao, team, at organisasyon",
-      "account": "Mga user account at moderasyon",
-      "tournament": "Istruktura ng torneo",
-      "matches": "Istruktura ng laban at estadistika ng laro",
-      "news": "Istruktura ng balita at komunidad",
-      "rawStats": "Raw na data ng laro (round by round)",
-      "others": "Iba pang istruktura ng data"
-    },
-    "sections": {
-      "people": "Mga Tao",
-      "teams": "Mga Team",
-      "organizations": "Mga Organisasyon",
-      "tournaments": "Mga Torneo",
-      "matches": "Mga Laban",
-      "news": "Balita",
-      "users": "Mga User",
-      "reactionsEmotes": "Mga Reaksyon at Emote"
-    },
-    "descriptions": {
-      "identity": "Ang isang tao (manlalaro, coach, caster, observer, organizer...) ay may isang profile lamang, kahit magbago ang kanyang tungkulin sa paglipas ng panahon. May karapatan ang mga team at organisasyon na mag-edit/magbura ng kanilang \"Karagdagang impormasyon\".\n\nHindi kailanman ipinapakita o ibinabahagi ang Riot ID. Tinutukoy ito ng aming team mula sa data ng laban.",
-      "tournament": "May identifier, pangalan, mga petsa, rehiyon, kategorya, at katayuan ang bawat torneo. Maaaring hatiin ang torneo sa ilang stage (groups, playoffs...), na binubuo naman ng isa o higit pang container (bracket o group). Nagpaparehistro ang mga team bilang \"entrants\", na may roster na naka-lock para sa partikular na torneong iyon, hiwalay sa permanenteng roster ng team.",
-      "matches": "Nangongolekta kami ng maraming impormasyon tungkol sa mga laban para magbigay ng detalyadong estadistika. Kinokolekta namin ang:\n- Ang pangunahing impormasyon ng laban (kinakailangan)\n- Ang mga veto ng laban\n- Ang mga nilaro na mapa, kasama ang resulta at estadistika\n- Pinagsama-samang estadistika bawat manlalaro at bawat mapa, ang talagang kinukuha ng site araw-araw\n\nHindi laging nakokolekta ang data na ito, pero sinisikap naming makuha ito para maipakita ang pinakakumpletong estadistika hangga't maaari.",
-      "rawStats": "Bukod sa mga pinagsama-samang estadistika sa itaas, nag-iingat kami ng raw na layer na round by round (kills, damages, economy, alive states) na ginagamit para muling kalkulahin ang mga estadistikang iyon at ipakita ang kasaysayan ng round.\n\nAng posisyon ng bawat manlalaro sa mga mahalagang pangyayari (kill, plant, defuse) ay iniingatan nang buong detalye magpakailanman: pinapakain nito ang aming mga heatmap at hindi na maibabalik kapag napagsama-sama na.",
-      "news": "May identifier, pamagat, content, at katayuan (draft, published, archived) ang bawat artikulo ng balita. Maaaring i-link ang artikulo sa isang team, tao, o torneo para lumabas sa profile nito.\n\nPinapayagan ng forum at mga emote/reaksyon ang komunidad na makipag-ugnayan sa content ng site; ang mga mensaheng itinago o inalis ng moderasyon ay patuloy na sinusubaybayan sa loob.",
-      "account": "Umiiral lamang ang mga table na ito para sa mga taong gumawa ng user account (hiwalay sa profile ng tao), na kailangan para mag-react sa balita, mamahala ng profile, o mangasiwa ng site.\n\nHindi kailanman ibinabahagi ang data ng seguridad (password, 2FA, passkey). Ang mga naka-link na Discord/Twitch account ay nag-iimbak ng access token na ginagamit lamang para sa authentication.\n\nAng data ng moderasyon (mga parusa, anti-evasion fingerprint, ulat, activity log) ay bumubuo ng talaan ng seguridad na iniingatan nang hiwalay sa account, kahit matapos itong burahin, para maiwasan ang pag-iwas sa ban.",
-      "others": "Iniimbak namin ang bilang ng mga pagbisita sa bawat pahina kada araw; hindi namin iniimbak kung sino ang tumingin o ang eksaktong oras, tanging ang tinatayang bansa/rehiyon lamang.\n\nNaka-imbak at pribado ang data na ito. Hindi ito kailanman ibinabahagi, ginagamit lamang namin ito para makita ang paggamit ng site at iangkop ang aming imprastraktura kung kinakailangan."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Pangunahing impormasyon",
-          "additional": "Karagdagang impormasyon",
-          "confidential": "Kumpidensyal na impormasyon"
-        },
-        "id": "Natatanging identifier na itinalaga sa tao (nakikita sa URL)",
-        "handle": "Handle",
-        "aliases": "Mga dating handle",
-        "firstName": "Pangalan",
-        "lastName": "Apelyido",
-        "countryCode": "Country code (FR = France, US = United States, atbp.)",
-        "secondaryCountryCode": "Pangalawang country code, para sa dalawahang nasyonalidad",
-        "pronouns": "Mga panghalip",
-        "birthDate": "Petsa ng kapanganakan",
-        "bio": "Bio",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "VLR identifier",
-        "liquipediaLink": "Link sa pahina ng tao sa Liquipedia",
-        "valId": "Riot ID / PUUID (pribadong impormasyon, tinutukoy at itinatalaga ng aming team mula sa data ng laban ng Riot, ginagamit para iugnay ang estadistika ng laban sa isang tao)",
-        "esportsValId": "Riot esports identifier na kaugnay ng game account"
+    "title": "Personal na data",
+    "subtitle": "Anong data ang iniingatan namin tungkol sa iyo, saan ito galing, sino ang nakakakita nito, at gaano katagal namin ito iniingatan.",
+    "policy": {
+      "title": "Ang aming patakaran",
+      "noSale": {
+        "title": "Walang pagbebenta, walang pagbabahagi",
+        "text": "Hindi kami nagbebenta ng anumang data at hindi namin ibinabahagi ang iyong pribadong data, sa mga advertiser man o sa mga partner. Ang pampublikong data lamang (mga profile ng player, stats ng laban) ang inilalathala, sa site at sa pamamagitan ng aming API."
       },
-      "rosterMemberships": {
-        "personId": "Natatanging identifier ng isang tao",
-        "teamId": "Natatanging identifier ng isang team",
-        "role": "Tungkulin sa team (player/coach/manager/atbp.)",
-        "period": "Panahon ng pagiging miyembro ng team (sumali, at umalis kung naaangkop)",
-        "inactiveSince": "Petsa kung kailan naging hindi aktibo ang tao, na nasa roster pa rin (injury, pahinga, atbp.)"
+      "minimal": {
+        "title": "Ang pinakakailangan lamang",
+        "text": "Kinokolekta lang namin ang kailangan ng site para gumana at manatiling ligtas. Walang ads, walang tracker, walang tracking cookie: binibilang ang mga bisita nang anonymous, walang IP address."
       },
-      "teams": {
-        "titles": {
-          "main": "Pangunahing impormasyon",
-          "additional": "Karagdagang impormasyon"
-        },
-        "id": "Natatanging identifier na itinalaga sa team (nakikita sa URL)",
-        "name": "Pangalan ng team",
-        "shortName": "Maikling pangalan (Fnatic = FNC)",
-        "countryCode": "Country code (FR = France, US = United States, atbp.)",
-        "secondaryCountryCode": "Pangalawang country code, para sa team na nakatali sa dalawang rehiyon",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Bio",
-        "vlrId": "VLR identifier",
-        "liquipediaLink": "Link sa pahina ng team sa Liquipedia",
-        "tags": "Mga malayang tag na nakakabit sa team"
-      },
-      "organizations": {
-        "id": "Natatanging identifier ng organisasyon",
-        "name": "Pangalan ng organisasyon",
-        "slug": "Text identifier na ginagamit sa URL",
-        "tags": "Mga tungkuling ginagampanan ng organisasyon (tournament organizer, production, media, broadcaster, agency, community)",
-        "countryCode": "Country code (FR = France, US = United States, atbp.)",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Natatanging identifier ng isang tao",
-        "organizationId": "Natatanging identifier ng isang organisasyon",
-        "role": "Tungkulin sa loob ng organisasyon (admin/caster/observer/producer/editor/atbp.)",
-        "period": "Panahon ng pagiging miyembro ng organisasyon"
-      },
-      "productionCredits": {
-        "personId": "Natatanging identifier ng taong binibigyan ng kredito",
-        "organizationId": "Organisasyong pinagtatrabahuhan ng tao sa kredito na ito, kung mayroon",
-        "role": "Tungkuling hawak (caster/analyst/observer/organizer/producer/editor/photographer/translator/referee/atbp.)",
-        "titleOverride": "Custom na titulong ipinapakita sa halip na pangkalahatang tungkulin",
-        "scope": "Ang eksaktong antas na sakop: torneo, stage, container, laban, o mapa"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Pangunahing impormasyon",
-          "additional": "Karagdagang impormasyon"
-        },
-        "id": "Natatanging identifier ng torneo",
-        "name": "Pangalan ng kompetisyon",
-        "region": "Rehiyon ng mundo (EMEA, NA, atbp.)",
-        "category": "Kategorya ng torneo (hal. Challengers, Cash Cups)",
-        "prizePool": "Kabuuang prize pool (cashprize)",
-        "location": "Pisikal na lokasyon",
-        "startDate": "Petsa ng simula",
-        "endDate": "Petsa ng pagtatapos",
-        "status": "Kasalukuyang katayuan (paparating, kasalukuyan, tapos na)",
-        "description": "Pangkalahatang-ideya ng event",
-        "liquipediaLink": "Link sa pahina ng torneo sa Liquipedia",
-        "socials": "Mga social media link ng torneo"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Teknikal na istruktura"
-        },
-        "name": "Pangalan ng stage (hal. Playoffs, Group A)",
-        "sequenceOrder": "Pagkakasunod-sunod ng pagpapakita ng stage",
-        "status": "Katayuan ng stage (paparating, kasalukuyan, tapos na)",
-        "startDate": "Petsa ng simula ng stage",
-        "endDate": "Petsa ng pagtatapos ng stage",
-        "liquipediaLink": "Link sa sariling pahina ng stage sa Liquipedia",
-        "containerType": "Format ng container (elimination bracket o group)",
-        "config": "Teknikal na configuration ng bracket/group (nabuo ng tournament engine)"
-      },
-      "entrants": {
-        "tournamentId": "Reperensya sa torneo",
-        "kind": "Uri ng entrant (laging \"team\" sa GC-Stats)",
-        "teamId": "Rehistradong team",
-        "displayName": "Pangalang ipinapakita noong panahon ng pagpaparehistro (nananatiling hindi nagbabago kahit palitan ang pangalan ng team sa huli)",
-        "seed": "Seed na itinalaga sa entrant",
-        "qualificationSourceManual": "Kung ang pinagmulan ng qualification ay itinakda nang mano-mano (kung hindi, hinango sa mga patakaran ng qualification)",
-        "qualificationSourceType": "Manwal na pinagmulan ng qualification (torneo, imbitasyon, o puntos)",
-        "qualificationSourceTournamentId": "Torneong pinagmulan ng qualification ng entrant (manwal na pinagmulan)",
-        "qualificationSourcePointTypeId": "Uri ng puntos na pinagmulan ng qualification (manwal na pinagmulan)"
-      },
-      "entrantMembers": {
-        "personId": "Taong bahagi ng roster na naka-lock para sa partikular na torneong ito",
-        "role": "Tungkulin sa roster na ito (player/stand in/coach/manager/analyst/atbp.)",
-        "isStarter": "Starter o substitute para sa torneong ito"
-      },
-      "qualifications": {
-        "destinationType": "Ano ang ibinibigay ng qualification: puwesto sa ibang container, o pangwakas na placement",
-        "placement": "Nakamit na placement (1st, 2nd, atbp.)",
-        "placementLabel": "Label ng placement (hal. Winner, Runner up)",
-        "points": "Ranking points na iginawad",
-        "cashPrizeAmount": "Halaga ng cash prize na iginawad",
-        "rank": "Ranggong nakamit ng entrant sa standing na ito",
-        "amount": "Bilang ng puntos na idinagdag o binawas (signed ledger entry)",
-        "reason": "Dahilan ng puntos na iginawad o inalis"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Teknikal na istruktura"
-        },
-        "id": "Natatanging identifier ng laban",
-        "containerId": "Container (bracket/group) na kinabibilangan ng laban",
-        "round": "Numero ng round",
-        "label": "Pangalan ng round (hal. Grand Final)",
-        "bestOf": "Pinakamataas na bilang ng mapa (BO1, BO3, BO5)",
-        "status": "Katayuan (paparating, handa, live, tapos na)",
-        "entrantAId": "Natatanging identifier ng entrant A",
-        "entrantBId": "Natatanging identifier ng entrant B",
-        "scoreA": "Pinal na iskor ng entrant A",
-        "scoreB": "Pinal na iskor ng entrant B",
-        "winnerId": "Entrant na nanalo",
-        "scheduledAt": "Nakatakdang petsa at oras",
-        "patch": "Bersyon ng laro (hal. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Kaugnay na laban",
-        "entrantId": "Entrant na gumagawa ng aksyon",
-        "mapName": "Pangalan ng mapa (hal. Ascent)",
-        "type": "Aksyon (pick, ban, o decider)",
-        "order": "Pagkakasunod sa veto sequence",
-        "side": "Napiling panig (atake/depensa), para sa pick o decider",
-        "sidePickedByEntrantId": "Entrant na pumili ng panig na ito"
-      },
-      "maps": {
-        "id": "Natatanging identifier ng nilarong mapa",
-        "apiMatchId": "Match identifier na ibinigay ng Riot API",
-        "matchId": "Kaugnay na laban",
-        "mapName": "Pangalan ng mapa",
-        "gameMode": "Kaugnay na game mode ng Riot",
-        "teamAScore": "Iskor ng entrant A sa mapang ito",
-        "teamBScore": "Iskor ng entrant B sa mapang ito",
-        "order": "Posisyon ng mapa sa loob ng laban",
-        "isCompleted": "Tapos na ba ang mapa?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Nilarong agent (hal. Jett)",
-        "kills": "Kabuuang kills",
-        "deaths": "Kabuuang deaths",
-        "assists": "Kabuuang assists",
-        "acs": "Average combat score",
-        "adr": "Average damage kada round",
-        "kastPercentage": "% ng mga round na may Kill/Assist/Survive/Trade",
-        "firstKills": "First kills (FK)",
-        "firstDeaths": "First deaths (FD)",
-        "headshotPercentage": "Headshot %",
-        "clutches": "Clutches na napanalunan/nalaro, ayon sa sitwasyon (1v1 hanggang 1v5)",
-        "multikills": "Bilang ng mga round na may 2, 3, 4, o 5 kills",
-        "tradeKills": "Mga kill na naghiganti sa kakampi",
-        "tradedDeaths": "Mga death na ipinaghiganti ng kakampi",
-        "roundTypeSplits": "Detalyadong estadistika ayon sa uri ng round (pistol, atake, depensa, atbp.)",
-        "fallDeaths": "Mga death dahil sa fall damage",
-        "weaponKills": "Bilang ng kills bawat armas"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Nilarong panig (atake/depensa)",
-        "roundsPlayed": "Mga round na nilaro sa panig na ito",
-        "roundsWon": "Mga round na napanalunan sa panig na ito"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Numero ng round (1 hanggang 24+)",
-        "winningEntrantId": "Entrant na nanalo sa round",
-        "winType": "Uri ng panalo (elimination, defuse, detonation, time expired)",
-        "atkEntrantId": "Entrant na umaatake sa round na ito",
-        "defEntrantId": "Entrant na nagdedepensa sa round na ito",
-        "plantSite": "Site ng spike plant (A/B/C)",
-        "plantX": "X na posisyon ng plant sa minimap",
-        "plantY": "Y na posisyon ng plant sa minimap"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Taong gumawa ng kill",
-        "victimPersonId": "Taong na-eliminate",
-        "assistantPersonIds": "Mga taong tumulong sa kill",
-        "timeMs": "Oras ng kill (ms mula sa simula ng round)",
-        "weapon": "Armas na ginamit",
-        "damageType": "Uri ng damage (armas, ability, spike, melee, fall)",
-        "isSecondaryFire": "Kill na ginawa gamit ang secondary fire (hal. scope ng armas)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Taong nagbigay ng damage",
-        "receiverPersonId": "Taong tumanggap ng damage",
-        "damage": "Damage na naibigay",
-        "headshots": "Bilang ng headshot",
-        "bodyshots": "Bilang ng bodyshot",
-        "legshots": "Bilang ng legshot"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Pagkakasunod ng pangyayari sa loob ng round",
-        "timeMs": "Oras ng pangyayari (ms mula sa simula ng round)",
-        "atkAlive": "Mga manlalarong buhay sa panig ng atake",
-        "defAlive": "Mga manlalarong buhay sa panig ng depensa",
-        "winnerSide": "Panig na kasalukuyang nangunguna sa bilang"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Kaugnay na tao",
-        "kills": "Mga kill na nagawa sa round na ito",
-        "assists": "Mga assist na nagawa sa round na ito",
-        "score": "Iskor na nakuha sa round na ito",
-        "loadoutValue": "Kabuuang halaga ng loadout",
-        "economySpent": "Credits na ginastos",
-        "economyRemaining": "Credits na natira",
-        "weapon": "Pangunahing armas na ginamit",
-        "armor": "Uri ng armor"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Uri ng pangyayari (kill, plant, defuse)",
-        "personId": "Kaugnay na tao",
-        "role": "Tungkulin sa pangyayari (killer, victim, bystander, planter, defuser)",
-        "x": "X na posisyon sa minimap",
-        "y": "Y na posisyon sa minimap",
-        "viewRadians": "Anggulo ng tingin sa oras ng pangyayari",
-        "timeMs": "Oras ng pangyayari (ms mula sa simula ng round)"
-      },
-      "news": {
-        "titles": {
-          "main": "Pangunahing impormasyon",
-          "additional": "Karagdagang impormasyon"
-        },
-        "id": "Natatanging identifier ng artikulo (nakikita sa URL)",
-        "authorId": "May akda ng artikulo",
-        "organizationId": "Organisasyong pinaglathalaan ng artikulo, kung mayroon",
-        "lang": "Wika ng artikulo",
-        "title": "Pamagat ng artikulo",
-        "slug": "Text identifier na ginagamit sa URL",
-        "excerpt": "Maikling buod",
-        "content": "Content ng artikulo",
-        "imageCover": "Cover na larawan",
-        "status": "Katayuan ng artikulo (draft = isinusulat pa, published = live sa site, archived = nakatago sa site pero maaabot sa pamamagitan ng API)",
-        "isFeatured": "Tampok ba ang artikulo sa homepage?",
-        "showOnHome": "Lumalabas ba ang artikulo sa homepage?",
-        "publishedAt": "Petsa ng paglalathala",
-        "createdAt": "Petsa ng paggawa ng artikulo",
-        "updatedAt": "Petsa ng huling pagbabago"
-      },
-      "newsRelations": {
-        "relatableType": "Uri ng naka-link na entity (team, tao, o torneo)",
-        "relatableId": "Identifier ng naka-link na entity, ginagamit para ipakita ang artikulo sa profile nito"
-      },
-      "forumThreads": {
-        "category": "Kategorya ng thread (torneo, laban, balita, pangkalahatan)",
-        "subjectType": "Uri ng entity na kaugnay ng thread, kung mayroon",
-        "title": "Pamagat ng thread",
-        "lastMessageAt": "Petsa ng huling mensaheng nai-post"
-      },
-      "forumMessages": {
-        "body": "Content ng mensahe",
-        "parentId": "Pangunahing mensahe, para sa sagot",
-        "hiddenAt": "Petsa kung kailan itinago ng moderasyon ang mensahe"
-      },
-      "emotes": {
-        "name": "Pangalan ng emote",
-        "imagePath": "Path ng larawan",
-        "source": "Pinagmulan ng emote (hal. bulk import, hinango mula sa logo ng team)",
-        "isActive": "Magagamit ba ang emote?"
-      },
-      "reactions": {
-        "emoteId": "Emote na ginamit",
-        "userId": "Account na nag-react",
-        "reactableType": "Uri ng content na pinag-react (hal. artikulo ng balita)"
-      },
-      "users": {
-        "titles": {
-          "main": "Pangunahing impormasyon",
-          "security": "Seguridad (pribado)"
-        },
-        "id": "Natatanging identifier ng account",
-        "username": "Hayagang ipinapakitang handle",
-        "teamTag": "Team na ipinapakitang \"sinusuportahan\" sa pampublikong profile, kasama ang tag ng team na iyon",
-        "preferences": "Mga kagustuhan sa interface (pribado)",
-        "pronouns": "Mga panghalip",
-        "bio": "Pampublikong bio ng account",
-        "socials": "Social media na naka-link sa account",
-        "email": "Email address (pribado, hindi kailanman ipinapakita)",
-        "passwordHash": "Password, naka-hash (hindi kailanman iniimbak o ipinapakita sa plain text)",
-        "twoFactorSecret": "Secret ng two-factor authentication (2FA), kung naka-enable, naka-encrypt",
-        "twoFactorRecoveryCodes": "Mga recovery code ng 2FA, kung naka-enable, naka-encrypt",
-        "discordSyncedAt": "Petsa ng huling Discord sync"
-      },
-      "accounts": {
-        "provider": "Naka-link na platform (Discord o Twitch)",
-        "providerAccountId": "Identifier ng account sa platform na iyon",
-        "accessToken": "OAuth access token (pribado, hindi kailanman ibinabahagi, ginagamit lamang para sa authentication)",
-        "refreshToken": "OAuth refresh token (pribado)"
-      },
-      "authenticators": {
-        "name": "Pangalang ibinigay sa passkey",
-        "credentialId": "Teknikal na identifier ng key (pribado)",
-        "lastUsedAt": "Huling beses na ginamit ang key na ito"
-      },
-      "sanctions": {
-        "type": "Uri ng parusa (note, babala, mute, suspensyon, ban)",
-        "reason": "Dahilan ng parusa",
-        "startsAt": "Petsa ng simula ng bisa",
-        "endsAt": "Petsa ng pagtatapos (kung pansamantala)",
-        "revokedAt": "Petsa ng maagang pag-alis, kung naaangkop",
-        "issuedBy": "Moderator na nagbigay ng parusa",
-        "revokedBy": "Moderator na nag-alis ng parusa, kung naaangkop"
-      },
-      "sanctionIdentities": {
-        "type": "Uri ng teknikal na fingerprint na nakakabit (hal. email)",
-        "value": "Value ng fingerprint (pribado, iniingatan kahit matapos burahin ang account para maiwasan ang pag-iwas sa ban)"
-      },
-      "userReports": {
-        "category": "Kategorya ng ulat",
-        "reason": "Detalyeng ibinigay ng nag-ulat",
-        "status": "Katayuan ng pagproseso (nakabinbin, nalutas, ibinasura)",
-        "reviewedBy": "Moderator na humawak ng ulat",
-        "resolutionNote": "Tala ng resolusyon na iniwan ng moderasyon"
-      },
-      "activityLog": {
-        "logName": "Kategorya ng naitalang aksyon",
-        "description": "Paglalarawan ng ginawang aksyon",
-        "event": "Uri ng pangyayari (created, updated, deleted)",
-        "subjectType": "Uri ng entity na sakop ng aksyon (tao, team, atbp.)",
-        "causerId": "Account na gumawa ng aksyon",
-        "attributeChanges": "Detalye ng mga pinalitang field (bago/pagkatapos)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Pangunahing impormasyon"
-        },
-        "uri": "URL ng pahina",
-        "viewedAt": "Araw ng pagbisita",
-        "count": "Bilang ng views sa araw na iyon",
-        "countryCode": "Tinatayang bansa ng mga bisita sa araw na iyon",
-        "regionCode": "Tinatayang rehiyon ng mga bisita sa araw na iyon"
+      "switzerland": {
+        "title": "Naka-host sa Switzerland",
+        "text": "Lahat ng aming data ay nakaimbak sa Switzerland, sa mga Swiss na provider, kasama ang mga backup."
       }
-    }
+    },
+    "storage": {
+      "title": "Bakit Switzerland",
+      "why": "May isa sa pinakamahigpit na batas sa privacy sa mundo ang Switzerland, ang Federal Act on Data Protection. Kinikilala ito ng European Union bilang may antas ng proteksyon na katumbas ng GDPR. Mga Swiss na kumpanya ang aming mga provider: hindi saklaw ang iyong data ng mga dayuhang batas gaya ng CLOUD Act ng Amerika, na nagpapahintulot sa mga awtoridad ng US na humingi ng data mula sa mga Amerikanong kumpanya saan man ito nakaimbak.",
+      "providers": "Narito kung saan eksaktong nakalagay ang data:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Switzerland",
+        "body": "Lahat ng aming server: ang site, ang database, ang mga log ng server at ang aming mga email. May tuloy-tuloy na kopya ng database na iniingatan nang 14 na araw sa ikalawang data center ng Infomaniak, para maibalik ito kapag may aberya."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Switzerland (Zurich at Geneva)",
+        "body": "Araw-araw na naka-encrypt na backup ng database at ng aming mga file. Binubura ang bawat backup pagkalipas ng 30 araw, at hindi ito mababago o mabubura bago noon, kahit namin."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Mga server sa buong mundo",
+        "body": "Mga pampublikong file lamang ang inihahatid (mga larawan, logo, CSS at JavaScript). Pinapalitan ng CDN ang iyong IP address ng 0.0.0.0: walang IP address na kinokolekta."
+      }
+    },
+    "private": {
+      "title": "Pribadong data",
+      "badge": "Hindi kailanman pampubliko",
+      "intro": "Hindi kailanman ipinapakita sa publiko o ibinabahagi sa aming API ang data na ito."
+    },
+    "public": {
+      "title": "Pampublikong data",
+      "badge": "Pampubliko",
+      "intro": "Ipinapakita sa site at ibinabahagi sa aming API ang data na ito, ito ang puso ng GC Stats."
+    },
+    "labels": {
+      "source": "Saan galing",
+      "visibility": "Sino ang nakakakita",
+      "retention": "Gaano katagal"
+    },
+    "categories": {
+      "account": {
+        "title": "Ang iyong account",
+        "groups": {
+          "profile": {
+            "label": "Account",
+            "items": [
+              "Email address",
+              "Username",
+              "Password, naka-hash (hindi kailanman iniimbak bilang plain text)",
+              "Mga kagustuhan sa display at paboritong team",
+              "Pronouns, bio at socials, kung idaragdag mo",
+              "Petsa ng huling pag-login"
+            ]
+          },
+          "security": {
+            "label": "Seguridad",
+            "items": [
+              "Two-factor authentication (secret at recovery codes, naka-encrypt)",
+              "Mga passkey, ang public key lang ang iniingatan"
+            ]
+          },
+          "linked": {
+            "label": "Mga naka-link na account",
+            "items": [
+              "ID sa Discord, Twitch o Twitter/X",
+              "Pangalan at avatar sa platform na iyon",
+              "Mga login token, ginagamit lang para mag-sign in ka"
+            ]
+          },
+          "developers": {
+            "label": "Mga developer",
+            "items": [
+              "Mga API key",
+              "Mga OAuth application at mga pahintulot na ibinigay mo",
+              "Kasaysayan ng mga tawag sa API"
+            ]
+          }
+        },
+        "source": "Ikaw, sa pag-sign up at sa iyong settings. Ang mga naka-link na account ay ipinapadala ng platform kapag ini link mo ang mga ito.",
+        "visibility": "Ikaw at ang aming team. Lumalabas sa iyong profile page ang iyong username, pronouns, bio, socials at paboritong team. Hindi nakikita ng aming team ang iyong password, tanging ang paraan ng pag-login na ginagamit mo (password, Discord, Twitch, Twitter/X, passkey, two-factor authentication). Hindi kailanman ipinapakita sa publiko ang iyong email at mga setting ng seguridad.",
+        "retention": "Habang umiiral ang iyong account. Binubura ang naka-link na account sa sandaling i-unlink mo ito. Binubura ang kasaysayan ng mga tawag sa API pagkalipas ng 90 araw."
+      },
+      "protection": {
+        "title": "Proteksyon ng iyong account at ng site",
+        "groups": {
+          "loginLog": {
+            "label": "Kasaysayan ng login",
+            "items": [
+              "Mga login, bigong login at pagbabago sa seguridad",
+              "Petsa",
+              "IP address"
+            ]
+          },
+          "accessLogs": {
+            "label": "Mga access log",
+            "items": [
+              "IP address",
+              "Hiniling na page",
+              "Browser",
+              "Petsa at oras"
+            ]
+          }
+        },
+        "source": "Awtomatikong nire-record: pinoprotektahan ng kasaysayan ng login ang iyong account laban sa pag-agaw, at pinoprotektahan ng mga access log ang site laban sa mga bot at pang-aabuso.",
+        "visibility": "Ang aming technical team lamang.",
+        "retention": "Binubura ang mga IP address ng login pagkalipas ng {days} araw. Binubura ang mga access log pagkalipas ng 14 na araw."
+      },
+      "moderation": {
+        "title": "Moderation at mga kontribusyon",
+        "groups": {
+          "requests": {
+            "label": "Ang iyong mga request",
+            "items": [
+              "Mga mungkahing pagbabago at ang usapan tungkol dito kasama ang team",
+              "Mga report na ipinapadala mo"
+            ]
+          },
+          "moderation": {
+            "label": "Moderation",
+            "items": [
+              "Mga babala at parusa, kasama ang dahilan",
+              "Mga mensaheng natukoy ng aming awtomatikong filter",
+              "Kasaysayan ng mga aksyon sa moderation"
+            ]
+          }
+        },
+        "source": "Ang iyong mga request at report, at ang mga desisyon ng aming moderation team.",
+        "visibility": "Ang aming team lamang. Ina-update ng tinanggap na mungkahi ang kaugnay na pampublikong page, pero nananatiling pribado ang mungkahi mismo.",
+        "retention": "Iniingatan bilang kasaysayan, kahit matapos burahin ang iyong account, pero wala nang koneksyon dito."
+      },
+      "players": {
+        "title": "Mga player at staff",
+        "groups": {
+          "identity": {
+            "label": "Pagkakakilanlan",
+            "items": [
+              "Handle at mga dating handle",
+              "Pangalan at apelyido",
+              "Bansa",
+              "Pronouns",
+              "Petsa ng kapanganakan",
+              "Bio at socials"
+            ]
+          },
+          "career": {
+            "label": "Karera",
+            "items": [
+              "Mga team at papel",
+              "Mga torneo at laban na nilaro",
+              "Mga organisasyon at production credits"
+            ]
+          },
+          "hidden": {
+            "label": "Hindi kailanman ipinapakita",
+            "items": [
+              "Riot ID, ginagamit lang para ikonekta ang stats ng laban sa tamang profile"
+            ]
+          }
+        },
+        "source": "Ang tao mismo o ang kanyang organisasyon, ang aming team mula sa mga pampublikong source (Liquipedia, opisyal na anunsyo), o ang komunidad sa pamamagitan ng mungkahing inaprubahan ng aming team. Galing ang Riot ID sa opisyal na API ng Riot Games.",
+        "visibility": "Lahat, sa site at sa aming API, maliban sa Riot ID.",
+        "retention": "Iniingatan habambuhay bilang archive ng eksena, kahit huminto na sa paglalaro ang tao. Maaari kang humiling ng pagwawasto o pagbura."
+      },
+      "matchStats": {
+        "title": "Stats ng laban",
+        "groups": {
+          "stats": {
+            "label": "Para sa bawat laban",
+            "items": [
+              "Mga agent na nilaro",
+              "Kills, deaths at assists",
+              "Damage",
+              "Ekonomiya at loadout",
+              "Mga posisyon sa mapa"
+            ]
+          }
+        },
+        "source": "Ang opisyal na API ng Riot Games, para sa mga laban ng mga torneong sinusundan namin.",
+        "visibility": "Lahat, sa site at sa aming API.",
+        "retention": "Iniingatan bilang makasaysayang archive ng mga kompetisyon."
+      },
+      "community": {
+        "title": "Ang iyong mga post",
+        "groups": {
+          "content": {
+            "label": "Ang ipinopost mo",
+            "items": [
+              "Mga mensahe sa forum",
+              "Mga reaksyon",
+              "Mga hula at grupo sa Pick'em"
+            ]
+          }
+        },
+        "source": "Ikaw.",
+        "visibility": "Lahat, sa site.",
+        "retention": "Hanggang burahin mo ang mga ito. Kapag binura mo ang iyong account, mabubura ang iyong mga reaksyon at hula, at mananatili ang iyong mga mensahe nang walang koneksyon sa iyong account."
+      }
+    },
+    "rights": "Maaari kang humiling na ma-access, maitama o mabura ang iyong data anumang oras.",
+    "privacyLink": "Basahin ang privacy policy"
   },
   "financePage": {
     "title": "Pananalapi",
@@ -1423,6 +1254,10 @@
       "Infrastructure": "Imprastraktura",
       "Software & Licenses": "Software at Lisensya",
       "Other": "Iba pa"
+    },
+    "expensesDoc": {
+      "text": "Para madaling maunawaan kung saan napupunta ang aming buwanang gastos, ipinapaliwanag namin ito sa isang dokumento.",
+      "link": "Basahin ang dokumento"
     }
   },
   "teamPage": {
@@ -2036,8 +1871,6 @@
       "finance": "Pananalapi",
       "about": "Tungkol / Mga Proyekto",
       "backToSite": "Bumalik sa site",
-      "pendingChangeRequests": "Mga nakabinbing hiling na pagbabago",
-      "pendingChangeRequests": "Mga nakabinbing hiling na pagbabago",
       "pendingChangeRequests": "Mga nakabinbing hiling na pagbabago",
       "tournaments": "Mga Torneo",
       "groupModeration": "Moderasyon",

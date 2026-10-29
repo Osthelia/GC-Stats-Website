@@ -15,6 +15,8 @@ import { pruneRateLimitCounters } from "./jobs/prune-rate-limit-counters";
 import { resetDataExplorerUsage } from "./jobs/reset-data-explorer-usage";
 import { pruneDataExplorerErrorLogs } from "./jobs/prune-data-explorer-error-logs";
 import { prunePageViews } from "./jobs/prune-page-views";
+import { pruneActivityLogIps } from "./jobs/prune-activity-log-ips";
+import { pruneApiRequestLog } from "./jobs/prune-api-request-log";
 import { activateLiveMatches } from "./jobs/activate-live-matches";
 import { activateLiveTournaments } from "./jobs/activate-live-tournaments";
 import { detectPlayerPovStreams } from "./jobs/detect-player-pov-streams";
@@ -36,6 +38,8 @@ export const jobs: ScheduledJob[] = [
   { name: "reset-data-explorer-usage", cron: "5 0 1 * *", run: resetDataExplorerUsage },
   { name: "prune-data-explorer-error-logs", cron: "0 0 * * *", run: pruneDataExplorerErrorLogs },
   { name: "prune-page-views", cron: "0 0 * * *", run: prunePageViews },
+  { name: "prune-activity-log-ips", cron: "0 0 * * *", run: pruneActivityLogIps },
+  { name: "prune-api-request-log", cron: "0 0 * * *", run: pruneApiRequestLog },
   { name: "activate-live-matches", cron: "* * * * *", run: activateLiveMatches },
   { name: "activate-live-tournaments", cron: "0 0 * * *", run: activateLiveTournaments },
   { name: "detect-player-pov-streams", cron: "* * * * *", run: detectPlayerPovStreams },

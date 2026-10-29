@@ -737,11 +737,11 @@
     "intro": "本政策向您說明我們如何處理本站的資料，重點在於透明度與對隱私的尊重。",
     "analytics": {
       "title": "訪問與統計資料",
-      "text": "我們以完全匿名的方式統計站點訪問量：這些統計資料從不儲存 IP 地址，只記錄國家、頁面及訪問時間，不進行任何個人追蹤或數字指紋識別。如果您建立了帳戶，出於安全目的（防止帳戶被盜用），您的登入會話資訊（IP 地址及使用者代理）會被臨時儲存，這是幾乎所有具備身份驗證功能的站點都會採用的常規做法。"
+      "text": "我們以完全匿名的方式統計網站瀏覽量：只統計瀏覽的頁面、日期與瀏覽次數，不記錄 IP 位址，不進行個人追蹤，也不使用指紋辨識。為了保護網站免受機器人與濫用的侵害，我們的伺服器會記錄每個請求（IP 位址、請求的頁面、瀏覽器、日期），保存 14 天。如果你有帳號，每次登入的 IP 位址也會在帳號的安全日誌中保存 90 天。"
     },
     "publicData": {
       "title": "公開資料",
-      "text": "資料資訊（使用者名稱、簡介、社群連結、國家）由選手自願提供並在站點上公開展示。比賽資料通過 Riot Games 官方 API，針對被識別為受追蹤賽事一部分的比賽直接採集。這些資料全部公開可訪問，並通過我們的 API 分享。"
+      "text": "檔案資訊（遊戲 ID、簡介、社群帳號、國家）由選手本人或其組織提供，或由我們團隊根據公開來源新增，並在網站上公開顯示。遊戲統計透過 Riot Games 官方 API 直接收集，針對我們關注的賽事中的比賽。所有這些資料都是公開的，並透過我們的 API 分享。"
     },
     "privateData": {
       "title": "私密資料",
@@ -754,22 +754,21 @@
     },
     "socialLogin": {
       "title": "通過 Discord、Twitter/X 或 Twitch 登入",
-      "text": "您可以將帳戶與 Discord、Twitter/X 或 Twitch 綁定以便更快登入。此時我們會儲存您在該平臺上的 ID、暱稱、頭像，以及維持連線所需的訪問/更新令牌（這些令牌僅用於驗證您的帳戶，從不對外分享）。您可以隨時在個人資料設定中解除這些綁定。",
-      "gravatar": "預設頭像：如果您沒有通過綁定帳戶獲得頭像，系統可能會根據您電子郵件的雜湊值從 Gravatar（Automattic）請求一張圖片，這是許多網站都在使用的標準第三方服務。"
+      "text": "您可以將帳戶與 Discord、Twitter/X 或 Twitch 綁定以便更快登入。此時我們會儲存您在該平臺上的 ID、暱稱、頭像，以及維持連線所需的訪問/更新令牌（這些令牌僅用於驗證您的帳戶，從不對外分享）。您可以隨時在個人資料設定中解除這些綁定。"
     },
     "moderation": {
       "title": "管理與社群安全",
       "text": "為維護社群安全，我們會保留帳戶或戰隊的處罰歷史（警告、封禁）、使用者提交的舉報記錄（欺詐、規避封禁、騷擾、虛假帳戶等），以及管理操作的活動日誌。",
-      "retentionNote": "為防止規避封禁，某項技術指紋資訊（例如電子電子郵件地址）可能會附加在處罰記錄上，並在關聯帳戶被刪除後依然保留。舉報歷史及管理日誌同樣如此，它們構成獨立於帳戶存在的安全記錄。"
+      "retentionNote": "為防止規避停權，處分紀錄、檢舉與管理日誌構成安全檔案，即使相關帳號被刪除後也會保留。"
     },
     "dataStructure": {
-      "title": "資料結構",
-      "text": "為了讓您更好地瞭解我們儲存和分享的資料，您可以在下方檢視我們的資料結構，其中列出了所有儲存的資料，並說明其用途、是否為必填項以及是否會被分享。",
-      "button": "檢視儲存的資料"
+      "title": "個人資料詳情",
+      "text": "查看我們保存的每一項個人資料：如何取得、存放在哪裡、保存多久。",
+      "button": "查看資料詳情"
     },
     "retention": {
       "title": "資料保留",
-      "text": "只要戰隊或選手仍活躍於本專案生態中，比賽資料就會被保留。您可以隨時申請刪除您的資料。"
+      "text": "選手檔案與比賽資料作為賽事圈的檔案永久保存，即使本人已不再參賽。帳號資料在帳號存在期間保存。存取日誌在 14 天後刪除，登入 IP 位址在 90 天後刪除。除管理檔案必要的資料外，你可以隨時申請更正或刪除你的資料。"
     },
     "rights": {
       "title": "您的權利（GDPR）",
@@ -780,7 +779,11 @@
       "title": "Cookie",
       "text": "本站不使用任何廣告或使用者畫像類 Cookie，僅可能使用維持會話執行所必需的技術性 Cookie。"
     },
-    "takedownLink": "申請內容下架"
+    "takedownLink": "申請內容下架",
+    "hosting": {
+      "title": "託管",
+      "text": "網站、資料庫與伺服器日誌託管於瑞士的 Infomaniak。異地備份經過加密，儲存在位於蘇黎世與日內瓦的 Exoscale。公開檔案（圖片、標誌）透過 CDN Bunny.net 提供，該 CDN 設定為不收集任何 IP 位址。"
+    }
   },
   "legalNotice": {
     "title": "法律宣告",
@@ -870,7 +873,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "在全球各地的伺服器上快取我們的 CSS/JS，以及選手、戰隊和賽事圖片，以減輕我們自身伺服器的負載。"
+        "body": "在全球各地的伺服器上快取我們的 CSS/JS，以及選手、戰隊和賽事圖片，以減輕我們自身伺服器的負載。該 CDN 設定為不收集任何 IP 位址。"
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -903,12 +906,17 @@
           "p4": "我認為有必要解釋這個選擇，尤其是要談談 Infomaniak：這是一家不太為人所知的服務商，但它值得被更多人認識。尤其是免費電子郵件帳戶或 OneDrive 訂閱都可以遷移到他們那裡，而不需要真的多花多少錢，服務品質同樣出色，卻多了一份對你、你的隱私以及我們這個星球的基本尊重。",
           "cite": "Lacy，GC Stats 創始人"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "異地備份",
+        "body": "資料庫與檔案的每日加密備份，儲存在瑞士（蘇黎世，複製到日內瓦）。每份備份在 30 天內無法修改，之後會被刪除。"
       }
     },
     "data": {
       "title": "所收集的資料",
-      "body": "我們公開記錄所儲存的每一項資料：選手、戰隊、賽事及比賽。任何資料的收集都與站點執行有明確關聯。",
-      "link": "檢視我們儲存的資料"
+      "body": "我們公開說明所保存的個人資料：如何取得、存放在哪裡、保存多久。所有資料的收集都與網站運作有關。",
+      "link": "查看個人資料"
     },
     "finance": {
       "title": "財務",
@@ -1014,396 +1022,219 @@
     }
   },
   "dataPage": {
-    "title": "資料結構",
-    "subtitle": "我們收集的資料結構與清單",
-    "openData": {
-      "title": "開放資料門戶",
-      "body": "比起使用 API，您可能更希望直接瀏覽或下載我們的資料集。開放資料門戶將與其餘 API 一同遷移至此。",
-      "badge": "即將推出"
-    },
-    "groups": {
-      "identity": "人員、戰隊與機構結構",
-      "account": "使用者帳戶與管理",
-      "tournament": "賽事結構",
-      "matches": "比賽及遊戲資料結構",
-      "news": "資訊與社群結構",
-      "rawStats": "原始遊戲資料（逐回合）",
-      "others": "其他資料結構"
-    },
-    "sections": {
-      "people": "人員",
-      "teams": "戰隊",
-      "organizations": "機構",
-      "tournaments": "賽事",
-      "matches": "比賽",
-      "news": "資訊",
-      "users": "使用者",
-      "reactionsEmotes": "反應與表情"
-    },
-    "descriptions": {
-      "identity": "一個人（選手、教練、解說、導播、組織者等）只擁有一份資料，即使其角色隨時間改變也不會變化。戰隊和機構有權編輯或刪除其「補充資訊」。\n\nRiot ID 從不展示或分享，它由我們的團隊根據比賽資料識別得出。",
-      "tournament": "每場賽事都有一個識別符號、名稱、日期、地區、類別及狀態。一場賽事可以被拆分為多個階段（小組賽、季後賽等），每個階段又由一個或多個容器（對陣表或小組）組成。戰隊以「參賽方」身份報名，其名單在該賽事期間被鎖定，與戰隊的常規名單相互獨立。",
-      "matches": "我們收集大量比賽相關資訊以提供詳細數據統計，包括：\n- 基本比賽資訊（必需）\n- 比賽的地圖選禁\n- 已進行的地圖，及其結果和資料\n- 按選手及地圖彙總的資料，是網站日常查詢實際使用的資料\n\n這些資料並非總能被收集到，但我們會盡力獲取，以展示儘可能完整的數據統計。",
-      "rawStats": "除上述彙總資料外，我們還保留了逐回合的原始資料層（擊殺、傷害、經濟、存活狀態），用於重新計算這些數據統計及展示回合歷史。\n\n每位選手在關鍵事件（擊殺、裝包、拆包）發生時的位置會被完整地永久保留：它是我們熱力圖的資料來源，且一旦彙總便無法再還原。",
-      "news": "每篇資訊文章都有一個識別符號、標題、正文及狀態（草稿、已發布、已歸檔）。一篇文章可以關聯至某支戰隊、某位人員或某場賽事，從而顯示在其資料頁面上。\n\n論壇及表情/反應功能讓社群能夠與站點內容互動；被管理隱藏或刪除的訊息會在內部繼續保留記錄。",
-      "account": "這些資料表僅適用於建立了使用者帳戶（與人員資料相區分）的使用者，使用者帳戶是對資訊作出反應、管理資料或管理站點所必需的。\n\n安全資料（密碼、雙重驗證、通行金鑰）從不分享。已綁定的 Discord/Twitch 帳戶僅儲存一個僅用於身份驗證的訪問令牌。\n\n管理資料（處罰、防規避指紋、舉報、活動日誌）構成一份獨立於帳戶存在的安全記錄，即使帳戶被刪除後依然保留，以防止規避封禁。",
-      "others": "我們按天儲存每個頁面的訪問次數，不儲存訪問者身份或具體訪問時間，只儲存大致的國家/地區。\n\n這些資料被私密儲存，從不對外分享，我們僅用它來了解站點使用情況並按需調整基礎設施。"
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "基本資訊",
-          "additional": "補充資訊",
-          "confidential": "機密資訊"
-        },
-        "id": "分配給該人員的唯一識別符號（顯示在 URL 中）",
-        "handle": "使用者名稱",
-        "aliases": "曾用使用者名稱",
-        "firstName": "名",
-        "lastName": "姓",
-        "countryCode": "國家程式碼（FR = 法國，US = 美國，等）",
-        "secondaryCountryCode": "第二國家程式碼，用於雙重國籍",
-        "pronouns": "代詞",
-        "birthDate": "出生日期",
-        "bio": "簡介",
-        "socials": "社群媒體（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "vlrId": "VLR 識別符號",
-        "liquipediaLink": "該人員 Liquipedia 頁面連結",
-        "valId": "Riot ID / PUUID（私密資訊，由我們的團隊根據 Riot 比賽資料識別並分配，用於將比賽資料與人員關聯）",
-        "esportsValId": "與遊戲帳戶關聯的 Riot 電競識別符號"
+    "title": "個人資料",
+    "subtitle": "我們保存了你的哪些資料、資料從何而來、誰能看到，以及我們保存多久。",
+    "policy": {
+      "title": "我們的原則",
+      "noSale": {
+        "title": "不出售，不分享",
+        "text": "我們不出售任何資料，也從不與廣告商或合作夥伴分享你的私人資料。只有公開資料（選手檔案、比賽統計）會在網站上和透過我們的 API 發布。"
       },
-      "rosterMemberships": {
-        "personId": "人員的唯一識別符號",
-        "teamId": "戰隊的唯一識別符號",
-        "role": "在戰隊中的角色（選手/教練/經理等）",
-        "period": "在戰隊中的成員週期（加入日期，及退出日期，如適用）",
-        "inactiveSince": "該成員仍在名單中但不再活躍的起始日期（傷病、休整等）"
+      "minimal": {
+        "title": "只收集必要的",
+        "text": "我們只收集網站運作與維持安全所需的內容。沒有廣告、沒有追蹤器、沒有追蹤 Cookie：瀏覽量以匿名方式統計，不記錄 IP 位址。"
       },
-      "teams": {
-        "titles": {
-          "main": "基本資訊",
-          "additional": "補充資訊"
-        },
-        "id": "分配給該戰隊的唯一識別符號（顯示在 URL 中）",
-        "name": "戰隊名稱",
-        "shortName": "簡稱（Fnatic = FNC）",
-        "countryCode": "國家程式碼（FR = 法國，US = 美國，等）",
-        "secondaryCountryCode": "第二國家程式碼，用於與兩個地區相關聯的戰隊",
-        "socials": "社群媒體（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "bio": "簡介",
-        "vlrId": "VLR 識別符號",
-        "liquipediaLink": "該戰隊 Liquipedia 頁面連結",
-        "tags": "附加在戰隊上的自定義標籤"
-      },
-      "organizations": {
-        "id": "機構的唯一識別符號",
-        "name": "機構名稱",
-        "slug": "用於 URL 的文本識別符號",
-        "tags": "機構承擔的角色（賽事組織者、製作團隊、媒體、轉播方、經紀公司、社群）",
-        "countryCode": "國家程式碼（FR = 法國，US = 美國，等）",
-        "socials": "社群媒體（Twitter/Instagram/Twitch/YouTube/TikTok）"
-      },
-      "organizationMemberships": {
-        "personId": "人員的唯一識別符號",
-        "organizationId": "機構的唯一識別符號",
-        "role": "在機構中的角色（管理員/解說/導播/製作人/剪輯等）",
-        "period": "在機構中的成員週期"
-      },
-      "productionCredits": {
-        "personId": "獲得署名的人員唯一識別符號",
-        "organizationId": "該署名對應的所屬機構（如有）",
-        "role": "所擔任的角色（解說/分析師/導播/組織者/製作人/剪輯/攝影師/翻譯/裁判等）",
-        "titleOverride": "替代通用角色顯示的自定義頭銜",
-        "scope": "所涉及的具體層級：賽事、階段、容器、比賽或地圖"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "基本資訊",
-          "additional": "補充資訊"
-        },
-        "id": "賽事的唯一識別符號",
-        "name": "賽事名稱",
-        "region": "所屬地區（EMEA、NA 等）",
-        "category": "賽事類別（例如 Challengers、Cash Cups）",
-        "prizePool": "總獎金池",
-        "location": "舉辦地點",
-        "startDate": "開始日期",
-        "endDate": "結束日期",
-        "status": "當前狀態（即將開始、進行中、已結束）",
-        "description": "賽事概述",
-        "liquipediaLink": "該賽事 Liquipedia 頁面連結",
-        "socials": "賽事的社群媒體連結"
-      },
-      "stages": {
-        "titles": {
-          "structure": "技術結構"
-        },
-        "name": "階段名稱（例如季後賽、A 組）",
-        "sequenceOrder": "階段的顯示順序",
-        "status": "階段狀態（即將開始、進行中、已結束）",
-        "startDate": "階段開始日期",
-        "endDate": "階段結束日期",
-        "liquipediaLink": "該階段自身的 Liquipedia 頁面連結",
-        "containerType": "容器格式（淘汰賽對陣表或小組賽）",
-        "config": "技術性的對陣表/小組配置（由賽事引擎生成）"
-      },
-      "entrants": {
-        "tournamentId": "關聯的賽事",
-        "kind": "參賽方類型（在 GC-Stats 上始終為「戰隊」）",
-        "teamId": "已報名的戰隊",
-        "displayName": "報名時顯示的名稱（即使戰隊此後改名，此名稱也保持不變）",
-        "seed": "分配給該參賽方的種子序號",
-        "qualificationSourceManual": "晉級來源是否為手動設定（否則根據晉級規則推斷）",
-        "qualificationSourceType": "手動晉級來源（賽事、邀請或積分）",
-        "qualificationSourceTournamentId": "參賽者晉級所自的賽事（手動來源）",
-        "qualificationSourcePointTypeId": "晉級所依據的積分類型（手動來源）"
-      },
-      "entrantMembers": {
-        "personId": "屬於該賽事專屬鎖定名單的人員",
-        "role": "該名單中的角色（選手/替補/教練/經理/分析師等）",
-        "isStarter": "在該賽事中為首發還是替補"
-      },
-      "qualifications": {
-        "destinationType": "晉級所獲得的資格：另一個容器的名額，或最終名次",
-        "placement": "所獲得的名次（第一名、第二名等）",
-        "placementLabel": "名次標籤（例如冠軍、亞軍）",
-        "points": "所獲得的積分",
-        "cashPrizeAmount": "所獲得的獎金金額",
-        "rank": "該參賽方在此排名中獲得的名次",
-        "amount": "增減的積分數（有正負號的帳目記錄）",
-        "reason": "積分增減的原因"
-      },
-      "matches": {
-        "titles": {
-          "structure": "技術結構"
-        },
-        "id": "比賽的唯一識別符號",
-        "containerId": "該比賽所屬的容器（對陣表/小組）",
-        "round": "輪次編號",
-        "label": "輪次名稱（例如總決賽）",
-        "bestOf": "最多局數（BO1、BO3、BO5）",
-        "status": "狀態（未開始、準備中、直播中、已結束）",
-        "entrantAId": "參賽方 A 的唯一識別符號",
-        "entrantBId": "參賽方 B 的唯一識別符號",
-        "scoreA": "參賽方 A 的最終比分",
-        "scoreB": "參賽方 B 的最終比分",
-        "winnerId": "獲勝的參賽方",
-        "scheduledAt": "預定日期及時間",
-        "patch": "遊戲版本（例如 8.04）"
-      },
-      "matchVetos": {
-        "matchId": "涉及的比賽",
-        "entrantId": "執行該操作的參賽方",
-        "mapName": "地圖名稱（例如 Ascent）",
-        "type": "操作類型（Pick、Ban 或 Decider）",
-        "order": "在選禁流程中的順序",
-        "side": "所選陣營（進攻/防守），適用於 Pick 或 Decider",
-        "sidePickedByEntrantId": "選擇該陣營的參賽方"
-      },
-      "maps": {
-        "id": "該局地圖的唯一識別符號",
-        "apiMatchId": "由 Riot API 提供的比賽識別符號",
-        "matchId": "涉及的比賽",
-        "mapName": "地圖名稱",
-        "gameMode": "關聯的 Riot 遊戲模式",
-        "teamAScore": "參賽方 A 在該地圖上的比分",
-        "teamBScore": "參賽方 B 在該地圖上的比分",
-        "order": "該地圖在比賽中的順序",
-        "isCompleted": "該地圖是否已結束"
-      },
-      "mapPlayerStats": {
-        "agentName": "所使用的特工（例如 Jett）",
-        "kills": "總擊殺數",
-        "deaths": "總死亡數",
-        "assists": "總助攻數",
-        "acs": "場均戰鬥分數",
-        "adr": "場均單局傷害",
-        "kastPercentage": "擁有擊殺/助攻/存活/換命的回合佔比",
-        "firstKills": "首殺數（FK）",
-        "firstDeaths": "首死數（FD）",
-        "headshotPercentage": "爆頭率",
-        "clutches": "按情況（1v1 至 1v5）統計的殘局取勝/觸發次數",
-        "multikills": "單回合 2、3、4 或 5 殺的次數",
-        "tradeKills": "為隊友報仇的擊殺數",
-        "tradedDeaths": "被隊友報仇的死亡數",
-        "roundTypeSplits": "按回合類型（手槍局、進攻、防守等）細分的資料",
-        "fallDeaths": "因墜落而死亡的次數",
-        "weaponKills": "各武器的擊殺數"
-      },
-      "mapTeamRoundSummary": {
-        "side": "所處陣營（進攻/防守）",
-        "roundsPlayed": "在該陣營下進行的回合數",
-        "roundsWon": "在該陣營下取勝的回合數"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "回合編號（1 至 24 以上）",
-        "winningEntrantId": "贏得該回合的參賽方",
-        "winType": "取勝方式（全殲、拆包、引爆、時間耗盡）",
-        "atkEntrantId": "該回合處於進攻方的參賽方",
-        "defEntrantId": "該回合處於防守方的參賽方",
-        "plantSite": "插旗點位（A/B/C）",
-        "plantX": "插旗點在小地圖上的 X 座標",
-        "plantY": "插旗點在小地圖上的 Y 座標"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "完成擊殺的人員",
-        "victimPersonId": "被淘汰的人員",
-        "assistantPersonIds": "協助該次擊殺的人員",
-        "timeMs": "擊殺發生的時間（自回合開始起的毫秒數）",
-        "weapon": "使用的武器",
-        "damageType": "傷害類型（武器、技能、爆能、近戰、墜落）",
-        "isSecondaryFire": "是否為副射模式擊殺（例如武器的鏡瞄）"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "造成傷害的人員",
-        "receiverPersonId": "受到傷害的人員",
-        "damage": "造成的傷害值",
-        "headshots": "爆頭次數",
-        "bodyshots": "身體部位命中次數",
-        "legshots": "腿部命中次數"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "該事件在回合內的順序",
-        "timeMs": "事件發生的時間（自回合開始起的毫秒數）",
-        "atkAlive": "進攻方存活人數",
-        "defAlive": "防守方存活人數",
-        "winnerSide": "當前人數佔優的一方"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "涉及的人員",
-        "kills": "本回合完成的擊殺數",
-        "assists": "本回合完成的助攻數",
-        "score": "本回合獲得的分數",
-        "loadoutValue": "裝備總價值",
-        "economySpent": "花費的經濟點數",
-        "economyRemaining": "剩餘的經濟點數",
-        "weapon": "主要使用的武器",
-        "armor": "護甲類型"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "事件類型（擊殺、裝包、拆包）",
-        "personId": "涉及的人員",
-        "role": "在該事件中的角色（擊殺者、被殺者、旁觀者、裝包者、拆包者）",
-        "x": "小地圖上的 X 座標",
-        "y": "小地圖上的 Y 座標",
-        "viewRadians": "事件發生時的視角角度",
-        "timeMs": "事件發生的時間（自回合開始起的毫秒數）"
-      },
-      "news": {
-        "titles": {
-          "main": "基本資訊",
-          "additional": "補充資訊"
-        },
-        "id": "文章的唯一識別符號（顯示在 URL 中）",
-        "authorId": "文章作者",
-        "organizationId": "文章發布所屬的機構（如有）",
-        "lang": "文章語言",
-        "title": "文章標題",
-        "slug": "用於 URL 的文本識別符號",
-        "excerpt": "簡短摘要",
-        "content": "文章正文",
-        "imageCover": "封面圖片",
-        "status": "文章狀態（草稿 = 編寫中，已發布 = 站點上線，已歸檔 = 站點隱藏但可通過 API 訪問）",
-        "isFeatured": "是否為首頁精選文章",
-        "showOnHome": "是否顯示在首頁",
-        "publishedAt": "發布日期",
-        "createdAt": "文章建立日期",
-        "updatedAt": "最後修改日期"
-      },
-      "newsRelations": {
-        "relatableType": "關聯實體類型（戰隊、人員或賽事）",
-        "relatableId": "關聯實體的識別符號，用於在其資料頁面展示該文章"
-      },
-      "forumThreads": {
-        "category": "主題類別（賽事、比賽、資訊、綜合）",
-        "subjectType": "該主題所關聯的實體類型（如有）",
-        "title": "主題標題",
-        "lastMessageAt": "最後一條訊息的發布日期"
-      },
-      "forumMessages": {
-        "body": "訊息內容",
-        "parentId": "父訊息（用於回覆）",
-        "hiddenAt": "該訊息被管理隱藏的日期"
-      },
-      "emotes": {
-        "name": "表情名稱",
-        "imagePath": "圖片路徑",
-        "source": "表情來源（例如批次匯入、由戰隊商標生成）",
-        "isActive": "該表情是否可用"
-      },
-      "reactions": {
-        "emoteId": "使用的表情",
-        "userId": "作出反應的帳戶",
-        "reactableType": "該反應所應用的內容類型（例如一篇資訊文章）"
-      },
-      "users": {
-        "titles": {
-          "main": "基本資訊",
-          "security": "安全資訊（私密）"
-        },
-        "id": "帳戶的唯一識別符號",
-        "username": "公開展示的使用者名稱",
-        "teamTag": "在公開資料上顯示為「支援」的戰隊，及該戰隊的標籤",
-        "preferences": "介面偏好設定（私密）",
-        "pronouns": "代詞",
-        "bio": "帳戶的公開簡介",
-        "socials": "與帳戶關聯的社群媒體",
-        "email": "電子郵件地址（私密，從不展示）",
-        "passwordHash": "經過雜湊處理的密碼（從不以明文儲存或展示）",
-        "twoFactorSecret": "雙重身份驗證（2FA）金鑰（如已啟用，經加密儲存）",
-        "twoFactorRecoveryCodes": "2FA 恢復程式碼（如已啟用，經加密儲存）",
-        "discordSyncedAt": "最後一次 Discord 同步日期"
-      },
-      "accounts": {
-        "provider": "已綁定的平臺（Discord 或 Twitch）",
-        "providerAccountId": "該平臺上的帳戶識別符號",
-        "accessToken": "OAuth 訪問令牌（私密，從不分享，僅用於身份驗證）",
-        "refreshToken": "OAuth 更新令牌（私密）"
-      },
-      "authenticators": {
-        "name": "該通行金鑰的自定義名稱",
-        "credentialId": "該金鑰的技術識別符號（私密）",
-        "lastUsedAt": "該金鑰最後一次使用時間"
-      },
-      "sanctions": {
-        "type": "處罰類型（備註、警告、禁言、停權、封禁）",
-        "reason": "處罰原因",
-        "startsAt": "生效起始日期",
-        "endsAt": "結束日期（如為臨時處罰）",
-        "revokedAt": "提前解除的日期（如適用）",
-        "issuedBy": "發起該處罰的管理員",
-        "revokedBy": "解除該處罰的管理員（如適用）"
-      },
-      "sanctionIdentities": {
-        "type": "所附加的技術指紋類型（例如電子郵件）",
-        "value": "指紋值（私密，即使帳戶被刪除後依然保留，以防止規避封禁）"
-      },
-      "userReports": {
-        "category": "舉報類別",
-        "reason": "舉報人提供的詳細說明",
-        "status": "處理狀態（待處理、已處理、已駁回）",
-        "reviewedBy": "處理該舉報的管理員",
-        "resolutionNote": "管理團隊留下的處理備註"
-      },
-      "activityLog": {
-        "logName": "該記錄操作的類別",
-        "description": "所執行操作的描述",
-        "event": "事件類型（建立、更新、刪除）",
-        "subjectType": "該操作涉及的實體類型（人員、戰隊等）",
-        "causerId": "執行該操作的帳戶",
-        "attributeChanges": "已變更欄位的詳情（變更前/變更後）"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "基本資訊"
-        },
-        "uri": "頁面 URL",
-        "viewedAt": "訪問日期",
-        "count": "當日訪問次數",
-        "countryCode": "當日訪問者的大致國家",
-        "regionCode": "當日訪問者的大致地區"
+      "switzerland": {
+        "title": "託管於瑞士",
+        "text": "我們的所有資料，包括備份，都由瑞士業者儲存在瑞士。"
       }
-    }
+    },
+    "storage": {
+      "title": "為什麼選擇瑞士",
+      "why": "瑞士擁有全球保護最嚴格的隱私法律之一，即《聯邦資料保護法》。歐盟認可其保護水準與 GDPR 相當。我們的業者都是瑞士公司：你的資料不受外國法律管轄，例如美國的 CLOUD Act，該法律允許美國當局向美國公司調閱資料，無論資料存放在哪裡。",
+      "providers": "資料的實際存放位置如下：",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "瑞士",
+        "body": "我們的所有伺服器：網站、資料庫、伺服器日誌與電子郵件。資料庫的連續副本會在 Infomaniak 的第二個資料中心保存 14 天，以便故障後還原。"
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "瑞士（蘇黎世與日內瓦）",
+        "body": "資料庫與檔案的每日加密備份。每份備份在 30 天後刪除，在此之前無法被修改或刪除，連我們自己也不行。"
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "遍布全球的伺服器",
+        "body": "只提供公開檔案（圖片、標誌、CSS 與 JavaScript）。CDN 會將你的 IP 位址替換為 0.0.0.0：不會收集任何 IP 位址。"
+      }
+    },
+    "private": {
+      "title": "私人資料",
+      "badge": "從不公開",
+      "intro": "這些資料從不公開顯示，也不會透過我們的 API 分享。"
+    },
+    "public": {
+      "title": "公開資料",
+      "badge": "公開",
+      "intro": "這些資料顯示在網站上並透過我們的 API 分享，是 GC Stats 的核心。"
+    },
+    "labels": {
+      "source": "資料來源",
+      "visibility": "誰能看到",
+      "retention": "保存多久"
+    },
+    "categories": {
+      "account": {
+        "title": "你的帳號",
+        "groups": {
+          "profile": {
+            "label": "帳號",
+            "items": [
+              "電子郵件",
+              "使用者名稱",
+              "密碼（雜湊處理，從不以明文保存）",
+              "顯示偏好與喜愛的隊伍",
+              "代名詞、簡介與社群帳號（如果你填寫）",
+              "最後登入日期"
+            ]
+          },
+          "security": {
+            "label": "安全",
+            "items": [
+              "雙重驗證（金鑰與復原碼，已加密）",
+              "通行金鑰（僅保存公鑰）"
+            ]
+          },
+          "linked": {
+            "label": "已連結帳號",
+            "items": [
+              "Discord、Twitch 或 Twitter/X ID",
+              "該平台上的名稱與頭像",
+              "登入權杖（僅用於讓你登入）"
+            ]
+          },
+          "developers": {
+            "label": "開發者",
+            "items": [
+              "API 金鑰",
+              "OAuth 應用程式與你授予的權限",
+              "API 呼叫紀錄"
+            ]
+          }
+        },
+        "source": "你在註冊與設定中填寫的資訊。已連結帳號的資訊在你連結時由平台傳送。",
+        "visibility": "你與我們的團隊。你的使用者名稱、代名詞、簡介、社群帳號與喜愛的隊伍會顯示在你的個人頁面上。我們的團隊看不到你的密碼，只能看到你使用的登入方式（密碼、Discord、Twitch、Twitter/X、通行金鑰、雙重驗證）。你的電子郵件與安全設定從不公開顯示。",
+        "retention": "只要你的帳號存在。取消連結後，已連結帳號會立即刪除。API 呼叫紀錄在 90 天後刪除。"
+      },
+      "protection": {
+        "title": "保護你的帳號與網站",
+        "groups": {
+          "loginLog": {
+            "label": "登入紀錄",
+            "items": [
+              "登入、登入失敗與安全設定變更",
+              "日期",
+              "IP 位址"
+            ]
+          },
+          "accessLogs": {
+            "label": "存取日誌",
+            "items": [
+              "IP 位址",
+              "請求的頁面",
+              "瀏覽器",
+              "日期與時間"
+            ]
+          }
+        },
+        "source": "自動記錄：登入紀錄保護你的帳號不被盜用，存取日誌保護網站免受機器人與濫用的侵害。",
+        "visibility": "僅限我們的技術團隊。",
+        "retention": "登入 IP 位址在 {days} 天後刪除。存取日誌在 14 天後刪除。"
+      },
+      "moderation": {
+        "title": "管理與貢獻",
+        "groups": {
+          "requests": {
+            "label": "你的請求",
+            "items": [
+              "修改建議以及與團隊的溝通",
+              "你提交的檢舉"
+            ]
+          },
+          "moderation": {
+            "label": "管理",
+            "items": [
+              "警告與處分及其原因",
+              "被自動過濾器偵測到的訊息",
+              "管理操作紀錄"
+            ]
+          }
+        },
+        "source": "你的請求與檢舉，以及我們管理團隊的決定。",
+        "visibility": "僅限我們的團隊。被採納的建議會更新相應的公開頁面，建議本身保持私密。",
+        "retention": "作為紀錄保存，即使在你刪除帳號之後，但不再與你的帳號關聯。"
+      },
+      "players": {
+        "title": "選手與工作人員",
+        "groups": {
+          "identity": {
+            "label": "身分",
+            "items": [
+              "遊戲 ID 與曾用 ID",
+              "姓名",
+              "國家",
+              "代名詞",
+              "出生日期",
+              "簡介與社群帳號"
+            ]
+          },
+          "career": {
+            "label": "生涯",
+            "items": [
+              "隊伍與職位",
+              "參加過的賽事與比賽",
+              "組織與製作名單"
+            ]
+          },
+          "hidden": {
+            "label": "從不顯示",
+            "items": [
+              "Riot ID，僅用於將比賽統計連結到正確的檔案"
+            ]
+          }
+        },
+        "source": "本人或其所屬組織，我們團隊根據公開來源（Liquipedia、官方公告）新增，或社群提交並經我們團隊審核的建議。Riot ID 來自 Riot Games 官方 API。",
+        "visibility": "所有人，在網站上與透過我們的 API，Riot ID 除外。",
+        "retention": "作為賽事圈的檔案永久保存，即使本人已不再參賽。你可以申請更正或刪除。"
+      },
+      "matchStats": {
+        "title": "比賽統計",
+        "groups": {
+          "stats": {
+            "label": "每場比賽",
+            "items": [
+              "使用的特務",
+              "擊殺、死亡與助攻",
+              "傷害",
+              "經濟與裝備",
+              "地圖上的位置"
+            ]
+          }
+        },
+        "source": "Riot Games 官方 API，針對我們關注的賽事中的比賽。",
+        "visibility": "所有人，在網站上與透過我們的 API。",
+        "retention": "作為賽事的歷史檔案保存。"
+      },
+      "community": {
+        "title": "你的發布內容",
+        "groups": {
+          "content": {
+            "label": "你發布的內容",
+            "items": [
+              "論壇訊息",
+              "表情回應",
+              "Pick'em 預測與群組"
+            ]
+          }
+        },
+        "source": "你。",
+        "visibility": "所有人，在網站上。",
+        "retention": "直到你刪除為止。如果你刪除帳號，你的表情回應與預測會被刪除，訊息會保留但不再與你的帳號關聯。"
+      }
+    },
+    "rights": "你可以隨時申請查閱、更正或刪除你的資料。",
+    "privacyLink": "查看隱私權政策"
   },
   "financePage": {
     "title": "財務",
@@ -1423,6 +1254,10 @@
       "Infrastructure": "基礎設施",
       "Software & Licenses": "軟體與授權",
       "Other": "其他"
+    },
+    "expensesDoc": {
+      "text": "為了讓大家簡單了解我們每月的支出用在哪裡，我們寫了一份說明文件。",
+      "link": "閱讀文件"
     }
   },
   "teamPage": {
@@ -2036,8 +1871,6 @@
       "finance": "財務",
       "about": "關於 / 專案",
       "backToSite": "返回站點",
-      "pendingChangeRequests": "待處理的變更請求",
-      "pendingChangeRequests": "待處理的變更請求",
       "pendingChangeRequests": "待處理的變更請求",
       "tournaments": "賽事",
       "groupModeration": "管理",

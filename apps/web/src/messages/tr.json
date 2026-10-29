@@ -735,11 +735,11 @@
     "intro": "Bu politika, şeffaflığa ve gizliliğe saygıya odaklanarak, bu sitede verileri nasıl işlediğimiz hakkında sizi bilgilendirir.",
     "analytics": {
       "title": "Gezinme ve İstatistikler",
-      "text": "Site ziyaretçilerini tamamen anonim bir şekilde ölçüyoruz: bu istatistikler hiçbir zaman bir IP adresi saklamaz, yalnızca ülke, sayfa ve ziyaret zamanı kaydedilir; bireysel takip veya dijital parmak izi kullanılmaz. Bir hesap oluşturursanız, giriş oturumunuz (IP adresi ve tarayıcı bilgisi) güvenlik amacıyla (hesap ele geçirmeye karşı koruma) geçici olarak saklanır, bu da kimlik doğrulaması olan hemen hemen her sitede standart bir uygulamadır."
+      "text": "Sitenin ziyaretçi sayısını tamamen anonim olarak ölçüyoruz: yalnızca ziyaret edilen sayfa, gün ve görüntülenme sayısı sayılır, IP adresi, bireysel takip veya parmak izi (fingerprinting) olmadan. Siteyi botlara ve kötüye kullanıma karşı korumak için sunucularımız her isteği (IP adresi, istenen sayfa, tarayıcı, tarih) 14 gün boyunca kaydeder. Bir hesabınız varsa, her girişin IP adresi de hesabınızın güvenlik kaydında 90 gün saklanır."
     },
     "publicData": {
       "title": "Herkese Açık Veriler",
-      "text": "Profil bilgileri (kullanıcı adı, biyografi, sosyal medya bağlantıları, ülke) oyuncu tarafından gönüllü olarak sağlanır ve sitede herkese açık şekilde gösterilir. Maç istatistikleri, takip edilen turnuvaların parçası olarak belirlenen maçlar için doğrudan resmi Riot Games API'si üzerinden toplanır. Bu verilerin tamamı herkese açıktır ve API'miz aracılığıyla paylaşılır."
+      "text": "Profil bilgileri (takma ad, biyografi, sosyal medya, ülke) oyuncu veya organizasyonu tarafından sağlanır ya da ekibimiz tarafından herkese açık kaynaklardan eklenir ve sitede herkese açık olarak gösterilir. Oyun istatistikleri, takip edilen turnuvaların maçları için doğrudan Riot Games'in resmi API'si üzerinden toplanır. Tüm bu veriler herkese açıktır ve API'miz üzerinden paylaşılır."
     },
     "privateData": {
       "title": "Özel Veriler",
@@ -752,22 +752,21 @@
     },
     "socialLogin": {
       "title": "Discord, Twitter/X veya Twitch ile Giriş",
-      "text": "Daha hızlı giriş yapmak için hesabınızı Discord, Twitter/X veya Twitch ile bağlayabilirsiniz. Bu durumda o platformdaki kimliğinizi, kullanıcı adınızı, avatarınızı ve bağlantıyı sürdürmek için gereken erişim/yenileme jetonlarını saklarız (bu jetonlar yalnızca hesabınızın kimliğini doğrulamak için kullanılır ve hiçbir zaman paylaşılmaz). Bu hesapların bağlantısını profil ayarlarınızdan istediğiniz zaman kaldırabilirsiniz.",
-      "gravatar": "Varsayılan avatar: Bağlı bir hesap üzerinden bir avatarınız yoksa, e postanızın bir özeti (hash) temel alınarak Gravatar'dan (Automattic) bir görsel istenebilir; bu, birçok web sitesi tarafından kullanılan standart bir üçüncü taraf hizmetidir."
+      "text": "Daha hızlı giriş yapmak için hesabınızı Discord, Twitter/X veya Twitch ile bağlayabilirsiniz. Bu durumda o platformdaki kimliğinizi, kullanıcı adınızı, avatarınızı ve bağlantıyı sürdürmek için gereken erişim/yenileme jetonlarını saklarız (bu jetonlar yalnızca hesabınızın kimliğini doğrulamak için kullanılır ve hiçbir zaman paylaşılmaz). Bu hesapların bağlantısını profil ayarlarınızdan istediğiniz zaman kaldırabilirsiniz."
     },
     "moderation": {
       "title": "Moderasyon ve Topluluk Güvenliği",
       "text": "Topluluğu güvende tutmak için bir hesaba veya takıma uygulanan yaptırımların (uyarılar, yasaklar) geçmişini, kullanıcılar tarafından gönderilen raporları (dolandırıcılık, yasak ihlali, taciz, sahte hesaplar vb.) ve moderasyon eylemlerinin bir etkinlik günlüğünü saklarız.",
-      "retentionNote": "Yasak ihlalini önlemek için teknik bir parmak izi (örneğin bir e posta adresi) bir yaptırıma eklenebilir ve ilgili hesap silinse bile saklanabilir. Aynı durum, hesaptan bağımsız olarak tutulan bir güvenlik kaydı oluşturan rapor geçmişi ve moderasyon günlüğü için de geçerlidir."
+      "retentionNote": "Bir yasağın atlatılmasını önlemek için yaptırım geçmişi, şikayetler ve moderasyon kaydı, ilgili hesap silindikten sonra bile saklanan bir güvenlik dosyası oluşturur."
     },
     "dataStructure": {
-      "title": "Veri Yapısı",
-      "text": "Sakladığımız ve paylaştığımız verileri daha iyi anlamanız için veri yapımızı aşağıda bulabilirsiniz. Saklanan tüm verileri listeler, kullanım amaçlarını, zorunlu olup olmadıklarını ve paylaşılıp paylaşılmadıklarını açıklar.",
-      "button": "Saklanan verileri görüntüle"
+      "title": "Ayrıntılı kişisel veriler",
+      "text": "Sakladığımız her kişisel veri için onu nasıl elde ettiğimizi, nerede saklandığını ve ne kadar süre tuttuğumuzu görün.",
+      "button": "Verileri ayrıntılı gör"
     },
     "retention": {
       "title": "Veri Saklama Süresi",
-      "text": "Oyun verileri, takım veya oyuncu proje ekosisteminde aktif olduğu sürece saklanır. Verilerinizin silinmesini istediğiniz zaman talep edebilirsiniz."
+      "text": "Oyuncu profilleri ve maç verileri, kişi oynamayı bıraksa bile sahnenin arşivi olarak ömür boyu saklanır. Hesap verileri hesap var olduğu sürece saklanır. Erişim kayıtları 14 gün, giriş IP adresleri 90 gün sonra silinir. Bir moderasyon dosyası için kesinlikle gerekli olanlar dışında, verilerinizin düzeltilmesini veya silinmesini istediğiniz zaman talep edebilirsiniz."
     },
     "rights": {
       "title": "Haklarınız (GDPR)",
@@ -778,7 +777,11 @@
       "title": "Çerezler",
       "text": "Bu site herhangi bir reklam veya profilleme çerezi kullanmaz. Yalnızca oturum işleyişi için kesinlikle gerekli olan teknik çerezler kullanılabilir."
     },
-    "takedownLink": "İçerik kaldırma talebi gönder"
+    "takedownLink": "İçerik kaldırma talebi gönder",
+    "hosting": {
+      "title": "Barındırma",
+      "text": "Site, veritabanı ve sunucu kayıtları İsviçre'de Infomaniak tarafından barındırılır. Site dışı yedekler şifrelenir ve Exoscale'de, Zürih ve Cenevre'de saklanır. Herkese açık dosyalar (görseller, logolar) hiçbir IP adresi toplamayacak şekilde ayarlanmış Bunny.net CDN üzerinden sunulur."
+    }
   },
   "legalNotice": {
     "title": "Yasal Bilgiler",
@@ -868,7 +871,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Sunucularımızın yükünü hafifletmek için CSS/JS dosyalarımızı ve oyuncu, takım ve turnuva görsellerini dünya genelindeki sunucularda önbelleğe alır."
+        "body": "Sunucularımızın yükünü hafifletmek için CSS/JS dosyalarımızı ve oyuncu, takım ve turnuva görsellerini dünya genelindeki sunucularda önbelleğe alır. CDN hiçbir IP adresi toplamayacak şekilde ayarlanmıştır."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -901,12 +904,17 @@
           "p4": "Bu tercihi açıklamanın, özellikle de Infomaniak'tan bahsetmenin önemli olduğunu düşündüm: çok bilinmeyen ama bilinmeyi hak eden bir sağlayıcı. Özellikle ücretsiz bir e posta hesabı veya bir OneDrive aboneliği, size, gizliliğinize ve gezegenimize asgari düzeyde saygı gösteren, aynı derecede iyi bir hizmet için gerçekten fazla ödeme yapmadan onlara taşınabilir.",
           "cite": "Lacy, GC Stats kurucusu"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Site dışı yedekler",
+        "body": "Veritabanımızın ve dosyalarımızın günlük şifreli yedeği, İsviçre'de saklanır (Zürih, Cenevre'ye kopyalanır). Her yedek 30 gün boyunca değiştirilemez, ardından silinir."
       }
     },
     "data": {
       "title": "Toplanan veriler",
-      "body": "Sakladığımız her veriyi herkese açık olarak belgeliyoruz: oyuncular, takımlar, turnuvalar ve maçlar. Sitenin işleyişiyle bağlantılı bir nedeni olmadan hiçbir veri toplanmaz.",
-      "link": "Sakladığımız verileri gör"
+      "body": "Sakladığımız kişisel verileri herkese açık olarak belgeliyoruz: onları nasıl elde ettiğimizi, nerede saklandığını ve ne kadar süre tuttuğumuzu. Sitenin işleyişiyle ilgili bir neden olmadan hiçbir veri toplanmaz.",
+      "link": "Kişisel verileri gör"
     },
     "finance": {
       "title": "Mali Durum",
@@ -1012,396 +1020,219 @@
     }
   },
   "dataPage": {
-    "title": "Veri yapısı",
-    "subtitle": "Topladığımız verilerin yapısı ve listesi",
-    "openData": {
-      "title": "Açık Veri portalı",
-      "body": "API'yi kullanmak yerine veri setlerimizi doğrudan incelemeyi veya indirmeyi tercih edebilirsiniz. Açık Veri portalı, API'nin geri kalanıyla birlikte buraya taşınacak.",
-      "badge": "Yakında"
-    },
-    "groups": {
-      "identity": "Kişi, takım ve organizasyon yapısı",
-      "account": "Kullanıcı hesapları ve moderasyon",
-      "tournament": "Turnuva yapısı",
-      "matches": "Maç ve oyun istatistikleri yapısı",
-      "news": "Haber ve topluluk yapısı",
-      "rawStats": "Ham oyun verileri (raunt raunt)",
-      "others": "Diğer veri yapısı"
-    },
-    "sections": {
-      "people": "Kişiler",
-      "teams": "Takımlar",
-      "organizations": "Organizasyonlar",
-      "tournaments": "Turnuvalar",
-      "matches": "Maçlar",
-      "news": "Haberler",
-      "users": "Kullanıcılar",
-      "reactionsEmotes": "Tepkiler ve Emojiler"
-    },
-    "descriptions": {
-      "identity": "Bir kişinin (oyuncu, koç, caster, observer, organizatör...) rolü zamanla değişse bile tek bir profili vardır. Takımlar ve organizasyonlar \"Ek bilgiler\"ini düzenleme/silme hakkına sahiptir.\n\nRiot ID hiçbir zaman gösterilmez veya paylaşılmaz. Ekibimiz tarafından maç verilerinden belirlenir.",
-      "tournament": "Her turnuvanın bir kimliği, bir adı, tarihleri, bir bölgesi, bir kategorisi ve bir durumu vardır. Bir turnuva birkaç aşamaya (gruplar, playofflar...) bölünebilir, bunlar da bir veya daha fazla konteynerden (bracket veya grup) oluşur. Takımlar, takımın kalıcı kadrosundan ayrı olarak o turnuvaya özel sabitlenmiş bir kadroyla \"katılımcı\" olarak kayıt olur.",
-      "matches": "Detaylı istatistikler sunabilmek için maçlar hakkında çok fazla bilgi topluyoruz. Şunları topluyoruz:\n- Temel maç bilgileri (zorunlu)\n- Maçın veto işlemleri\n- Oynanan haritalar, sonuç ve istatistikleriyle birlikte\n- Sitenin günlük olarak asıl sorguladığı, oyuncu ve harita başına toplu istatistikler\n\nBu veriler her zaman toplanmaz, ancak mümkün olan en eksiksiz istatistikleri gösterebilmek için elimizden geleni yapıyoruz.",
-      "rawStats": "Yukarıdaki toplu istatistiklere ek olarak, bu istatistikleri yeniden hesaplamak ve raunt geçmişini göstermek için kullanılan raunt raunt bir ham veri katmanı (öldürmeler, hasarlar, ekonomi, hayatta kalma durumları) tutuyoruz.\n\nHer oyuncunun kilit olaylar (öldürme, spike yerleştirme, spike etkisizleştirme) sırasındaki konumu süresiz olarak tüm detaylarıyla saklanır: bu veri, ısı haritalarımızı besler ve toplulaştırıldıktan sonra yeniden oluşturulamaz.",
-      "news": "Her haber makalesinin bir kimliği, bir başlığı, içeriği ve bir durumu (taslak, yayınlandı, arşivlendi) vardır. Bir makale, profilinde görünmesi için bir takıma, bir kişiye veya bir turnuvaya bağlanabilir.\n\nForum ve emoji/tepkiler, topluluğun site içeriğiyle etkileşime girmesini sağlar; moderasyon tarafından gizlenen veya kaldırılan mesajlar dahili olarak takip edilmeye devam eder.",
-      "account": "Bu tablolar yalnızca haberlere tepki vermek, bir profili yönetmek veya siteyi yönetmek için gereken bir kullanıcı hesabı (bir kişi profilinden farklı) oluşturan kişiler için mevcuttur.\n\nGüvenlik verileri (şifre, 2FA, geçiş anahtarları) hiçbir zaman paylaşılmaz. Bağlı Discord/Twitch hesapları yalnızca kimlik doğrulama için kullanılan bir erişim jetonu saklar.\n\nModerasyon verileri (yaptırımlar, ihlal önleme parmak izleri, raporlar, etkinlik günlüğü), yasak ihlalini önlemek amacıyla, silinmesinden sonra bile hesaptan bağımsız olarak tutulan bir güvenlik kaydı oluşturur.",
-      "others": "Her sayfadaki günlük ziyaret sayısını saklıyoruz; kimin görüntülediğini veya tam saatini değil, yalnızca yaklaşık ülke/bölgeyi saklıyoruz.\n\nBu veri saklanır ve özeldir. Hiçbir zaman paylaşılmaz, yalnızca site kullanımını görselleştirmek ve altyapımızı ihtiyaca göre uyarlamak için kullanılır."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Ana bilgiler",
-          "additional": "Ek bilgiler",
-          "confidential": "Gizli bilgiler"
-        },
-        "id": "Kişiye atanan benzersiz tanımlayıcı (URL'de görünür)",
-        "handle": "Kullanıcı adı",
-        "aliases": "Önceden bilinen kullanıcı adları",
-        "firstName": "Ad",
-        "lastName": "Soyad",
-        "countryCode": "Ülke kodu (FR = Fransa, US = Amerika Birleşik Devletleri, vb.)",
-        "secondaryCountryCode": "Çifte vatandaşlık için ikinci ülke kodu",
-        "pronouns": "Zamirler",
-        "birthDate": "Doğum tarihi",
-        "bio": "Biyografi",
-        "socials": "Sosyal medya (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "VLR tanımlayıcısı",
-        "liquipediaLink": "Kişinin Liquipedia sayfasının bağlantısı",
-        "valId": "Riot ID / PUUID (özel bilgi, ekibimiz tarafından Riot maç verilerinden belirlenir ve atanır, bir maçın istatistiklerini bir kişiyle ilişkilendirmek için kullanılır)",
-        "esportsValId": "Oyun hesabıyla ilişkili Riot esporlar tanımlayıcısı"
+    "title": "Kişisel veriler",
+    "subtitle": "Hakkınızda hangi verileri tuttuğumuz, nereden geldikleri, kimlerin görebildiği ve ne kadar süre sakladığımız.",
+    "policy": {
+      "title": "Politikamız",
+      "noSale": {
+        "title": "Satış yok, paylaşım yok",
+        "text": "Hiçbir veriyi satmıyoruz ve özel verilerinizi asla paylaşmıyoruz, ne reklamverenlerle ne de iş ortaklarıyla. Yalnızca herkese açık veriler (oyuncu profilleri, maç istatistikleri) sitede ve API'miz üzerinden yayınlanır."
       },
-      "rosterMemberships": {
-        "personId": "Bir kişinin benzersiz tanımlayıcısı",
-        "teamId": "Bir takımın benzersiz tanımlayıcısı",
-        "role": "Takımdaki rol (oyuncu/koç/menajer/vb.)",
-        "period": "Takımdaki üyelik dönemi (katılma ve varsa ayrılma tarihi)",
-        "inactiveSince": "Kadroda kalan kişinin aktif olmadığı tarihten itibaren (sakatlık, ara, vb.)"
+      "minimal": {
+        "title": "Yalnızca gerekli olan",
+        "text": "Yalnızca sitenin çalışması ve güvende kalması için gerekeni topluyoruz. Reklam yok, izleyici yok, takip çerezi yok: ziyaretçiler IP adresi olmadan anonim olarak sayılır."
       },
-      "teams": {
-        "titles": {
-          "main": "Ana bilgiler",
-          "additional": "Ek bilgiler"
-        },
-        "id": "Takıma atanan benzersiz tanımlayıcı (URL'de görünür)",
-        "name": "Takım adı",
-        "shortName": "Kısa ad (Fnatic = FNC)",
-        "countryCode": "Ülke kodu (FR = Fransa, US = Amerika Birleşik Devletleri, vb.)",
-        "secondaryCountryCode": "İki bölgeye bağlı bir takım için ikinci ülke kodu",
-        "socials": "Sosyal medya (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Biyografi",
-        "vlrId": "VLR tanımlayıcısı",
-        "liquipediaLink": "Takımın Liquipedia sayfasının bağlantısı",
-        "tags": "Takıma eklenen serbest biçimli etiketler"
-      },
-      "organizations": {
-        "id": "Organizasyonun benzersiz tanımlayıcısı",
-        "name": "Organizasyon adı",
-        "slug": "URL'de kullanılan metin tanımlayıcısı",
-        "tags": "Organizasyonun üstlendiği roller (turnuva organizatörü, prodüksiyon, medya, yayıncı, ajans, topluluk)",
-        "countryCode": "Ülke kodu (FR = Fransa, US = Amerika Birleşik Devletleri, vb.)",
-        "socials": "Sosyal medya (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Bir kişinin benzersiz tanımlayıcısı",
-        "organizationId": "Bir organizasyonun benzersiz tanımlayıcısı",
-        "role": "Organizasyon içindeki rol (yönetici/caster/observer/yapımcı/editör/vb.)",
-        "period": "Organizasyondaki üyelik dönemi"
-      },
-      "productionCredits": {
-        "personId": "Katkısı belirtilen kişinin benzersiz tanımlayıcısı",
-        "organizationId": "Varsa, kişinin bu katkı için çalıştığı organizasyon",
-        "role": "Üstlenilen rol (caster/analist/observer/organizatör/yapımcı/editör/fotoğrafçı/çevirmen/hakem/vb.)",
-        "titleOverride": "Genel rol yerine gösterilen özel unvan",
-        "scope": "İlgili tam seviye: turnuva, aşama, konteyner, maç veya harita"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Ana bilgiler",
-          "additional": "Ek bilgiler"
-        },
-        "id": "Turnuvanın benzersiz tanımlayıcısı",
-        "name": "Turnuva adı",
-        "region": "Dünya bölgesi (EMEA, NA, vb.)",
-        "category": "Turnuva kategorisi (örn. Challengers, Cash Cups)",
-        "prizePool": "Toplam ödül havuzu (para ödülü)",
-        "location": "Fiziksel konum",
-        "startDate": "Başlangıç tarihi",
-        "endDate": "Bitiş tarihi",
-        "status": "Mevcut durum (yaklaşan, devam ediyor, tamamlandı)",
-        "description": "Etkinlik genel bakışı",
-        "liquipediaLink": "Turnuvanın Liquipedia sayfasının bağlantısı",
-        "socials": "Turnuvanın sosyal medya bağlantıları"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Teknik yapı"
-        },
-        "name": "Aşama adı (örn. Playofflar, A Grubu)",
-        "sequenceOrder": "Aşamanın görüntülenme sırası",
-        "status": "Aşama durumu (yaklaşan, devam ediyor, tamamlandı)",
-        "startDate": "Aşama başlangıç tarihi",
-        "endDate": "Aşama bitiş tarihi",
-        "liquipediaLink": "Aşamanın kendi Liquipedia sayfasının bağlantısı",
-        "containerType": "Konteyner formatı (eleme bracket'ı veya grup)",
-        "config": "Teknik bracket/grup yapılandırması (turnuva motoru tarafından oluşturulur)"
-      },
-      "entrants": {
-        "tournamentId": "Turnuva referansı",
-        "kind": "Katılımcı türü (GC-Stats'ta her zaman \"takım\")",
-        "teamId": "Kayıtlı takım",
-        "displayName": "Kayıt sırasında gösterilen ad (takım daha sonra yeniden adlandırılsa bile değişmeden kalır)",
-        "seed": "Katılımcıya atanan seed",
-        "qualificationSourceManual": "Katılım kaynağının elle girilip girilmediği (aksi halde katılım kurallarından çıkarılır)",
-        "qualificationSourceType": "Manuel katılım kaynağı (turnuva, davet veya puan)",
-        "qualificationSourceTournamentId": "Katılımcının hak kazandığı turnuva (manuel kaynak)",
-        "qualificationSourcePointTypeId": "Katılım hakkının geldiği puan türü (manuel kaynak)"
-      },
-      "entrantMembers": {
-        "personId": "Bu belirli turnuva için sabitlenmiş kadronun bir parçası olan kişi",
-        "role": "Bu kadrodaki rol (oyuncu/yedek/koç/menajer/analist/vb.)",
-        "isStarter": "Bu turnuva için ilk 5'te mi yoksa yedek mi"
-      },
-      "qualifications": {
-        "destinationType": "Kalifikasyonun sağladığı şey: başka bir konteynerde bir yer veya nihai bir sıralama",
-        "placement": "Elde edilen sıralama (1., 2., vb.)",
-        "placementLabel": "Sıralama etiketi (örn. Şampiyon, Finalist)",
-        "points": "Verilen sıralama puanları",
-        "cashPrizeAmount": "Verilen para ödülü miktarı",
-        "rank": "Katılımcının bu sıralamada ulaştığı derece",
-        "amount": "Kazandırılan veya düşülen puan sayısı (işaretli defter kaydı)",
-        "reason": "Verilen veya kaldırılan puanların nedeni"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Teknik yapı"
-        },
-        "id": "Maçın benzersiz tanımlayıcısı",
-        "containerId": "Maçın ait olduğu konteyner (bracket/grup)",
-        "round": "Raunt numarası",
-        "label": "Raunt adı (örn. Final)",
-        "bestOf": "Maksimum harita sayısı (BO1, BO3, BO5)",
-        "status": "Durum (yaklaşan, hazır, canlı, tamamlandı)",
-        "entrantAId": "A katılımcısının benzersiz tanımlayıcısı",
-        "entrantBId": "B katılımcısının benzersiz tanımlayıcısı",
-        "scoreA": "A katılımcısının final skoru",
-        "scoreB": "B katılımcısının final skoru",
-        "winnerId": "Kazanan katılımcı",
-        "scheduledAt": "Planlanan tarih ve saat",
-        "patch": "Oyun sürümü (örn. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "İlgili maç",
-        "entrantId": "İşlemi gerçekleştiren katılımcı",
-        "mapName": "Harita adı (örn. Ascent)",
-        "type": "İşlem (Pick, Ban veya Decider)",
-        "order": "Veto sırasındaki konum",
-        "side": "Bir Pick veya Decider için seçilen taraf (atak/defans)",
-        "sidePickedByEntrantId": "Bu tarafı seçen katılımcı"
-      },
-      "maps": {
-        "id": "Oynanan haritanın benzersiz tanımlayıcısı",
-        "apiMatchId": "Riot API tarafından verilen maç tanımlayıcısı",
-        "matchId": "İlgili maç",
-        "mapName": "Harita adı",
-        "gameMode": "İlişkili Riot oyun modu",
-        "teamAScore": "A katılımcısının bu haritadaki skoru",
-        "teamBScore": "B katılımcısının bu haritadaki skoru",
-        "order": "Haritanın maç içindeki sırası",
-        "isCompleted": "Harita tamamlandı mı?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Oynanan ajan (örn. Jett)",
-        "kills": "Toplam öldürme",
-        "deaths": "Toplam ölüm",
-        "assists": "Toplam asist",
-        "acs": "Ortalama savaş skoru (ACS)",
-        "adr": "Raunt başına ortalama hasar (ADR)",
-        "kastPercentage": "Kill/Assist/Survive/Trade ile geçirilen raunt yüzdesi (KAST)",
-        "firstKills": "İlk öldürmeler (FK)",
-        "firstDeaths": "İlk ölümler (FD)",
-        "headshotPercentage": "Kafa vuruşu yüzdesi (HS%)",
-        "clutches": "Duruma göre kazanılan/oynanan clutch'lar (1v1'den 1v5'e)",
-        "multikills": "2, 3, 4 veya 5 öldürmeli raunt sayısı",
-        "tradeKills": "Bir takım arkadaşının intikamını alan öldürmeler",
-        "tradedDeaths": "Bir takım arkadaşı tarafından intikamı alınan ölümler",
-        "roundTypeSplits": "Raunt türüne göre detaylı istatistikler (pistol, atak, defans, vb.)",
-        "fallDeaths": "Düşme hasarından kaynaklanan ölümler",
-        "weaponKills": "Silah başına öldürme sayısı"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Oynanan taraf (atak/defans)",
-        "roundsPlayed": "Bu tarafta oynanan raunt sayısı",
-        "roundsWon": "Bu tarafta kazanılan raunt sayısı"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Raunt numarası (1-24+)",
-        "winningEntrantId": "Raunt'u kazanan katılımcı",
-        "winType": "Kazanma türü (eleme, etkisizleştirme, patlatma, süre doldu)",
-        "atkEntrantId": "Bu raunt'ta atakta olan katılımcı",
-        "defEntrantId": "Bu raunt'ta defansta olan katılımcı",
-        "plantSite": "Spike yerleştirme bölgesi (A/B/C)",
-        "plantX": "Spike'ın mini haritadaki X konumu",
-        "plantY": "Spike'ın mini haritadaki Y konumu"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Öldürmeyi yapan kişi",
-        "victimPersonId": "Elenen kişi",
-        "assistantPersonIds": "Öldürmeye asist yapan kişiler",
-        "timeMs": "Öldürme zamanı (raunt başlangıcından itibaren ms)",
-        "weapon": "Kullanılan silah",
-        "damageType": "Hasar türü (silah, yetenek, spike, yakın dövüş, düşme)",
-        "isSecondaryFire": "İkincil ateşleme ile yapılan öldürme (örn. bir silahın dürbünü)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Hasarı veren kişi",
-        "receiverPersonId": "Hasarı alan kişi",
-        "damage": "Verilen hasar",
-        "headshots": "Kafa vuruşu sayısı",
-        "bodyshots": "Gövde vuruşu sayısı",
-        "legshots": "Bacak vuruşu sayısı"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Olayın raunt içindeki sırası",
-        "timeMs": "Olayın zamanı (raunt başlangıcından itibaren ms)",
-        "atkAlive": "Atak tarafında hayatta kalan oyuncular",
-        "defAlive": "Defans tarafında hayatta kalan oyuncular",
-        "winnerSide": "Sayıca o an önde olan taraf"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "İlgili kişi",
-        "kills": "Bu raunt'ta yapılan öldürmeler",
-        "assists": "Bu raunt'ta yapılan asistler",
-        "score": "Bu raunt'ta elde edilen skor",
-        "loadoutValue": "Ekipmanın toplam değeri",
-        "economySpent": "Harcanan kredi",
-        "economyRemaining": "Kalan kredi",
-        "weapon": "Kullanılan ana silah",
-        "armor": "Zırh türü"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Olay türü (öldürme, spike yerleştirme, spike etkisizleştirme)",
-        "personId": "İlgili kişi",
-        "role": "Olaydaki rol (öldüren, kurban, izleyici, yerleştiren, etkisizleştiren)",
-        "x": "Mini haritadaki X konumu",
-        "y": "Mini haritadaki Y konumu",
-        "viewRadians": "Olay anındaki bakış açısı",
-        "timeMs": "Olayın zamanı (raunt başlangıcından itibaren ms)"
-      },
-      "news": {
-        "titles": {
-          "main": "Ana bilgiler",
-          "additional": "Ek bilgiler"
-        },
-        "id": "Makalenin benzersiz tanımlayıcısı (URL'de görünür)",
-        "authorId": "Makale yazarı",
-        "organizationId": "Varsa, makalenin yayınlandığı organizasyon",
-        "lang": "Makalenin dili",
-        "title": "Makale başlığı",
-        "slug": "URL'de kullanılan metin tanımlayıcısı",
-        "excerpt": "Kısa özet",
-        "content": "Makale içeriği",
-        "imageCover": "Kapak görseli",
-        "status": "Makale durumu (taslak = yazılıyor, yayınlandı = sitede canlı, arşivlendi = sitede gizli ancak API üzerinden erişilebilir)",
-        "isFeatured": "Makale ana sayfada öne çıkarılıyor mu?",
-        "showOnHome": "Makale ana sayfada gösteriliyor mu?",
-        "publishedAt": "Yayınlanma tarihi",
-        "createdAt": "Makalenin oluşturulma tarihi",
-        "updatedAt": "Son değişiklik tarihi"
-      },
-      "newsRelations": {
-        "relatableType": "Bağlı varlığın türü (takım, kişi veya turnuva)",
-        "relatableId": "Makaleyi profilinde göstermek için kullanılan bağlı varlığın tanımlayıcısı"
-      },
-      "forumThreads": {
-        "category": "Konu kategorisi (turnuva, maç, haber, genel)",
-        "subjectType": "Varsa, konunun ilişkili olduğu varlık türü",
-        "title": "Konu başlığı",
-        "lastMessageAt": "Son gönderilen mesajın tarihi"
-      },
-      "forumMessages": {
-        "body": "Mesaj içeriği",
-        "parentId": "Bir yanıt için üst mesaj",
-        "hiddenAt": "Mesajın moderasyon tarafından gizlendiği tarih"
-      },
-      "emotes": {
-        "name": "Emoji adı",
-        "imagePath": "Görsel yolu",
-        "source": "Emojinin kökeni (örn. toplu içe aktarma, bir takım logosundan türetilmiş)",
-        "isActive": "Emoji kullanıma açık mı?"
-      },
-      "reactions": {
-        "emoteId": "Kullanılan emoji",
-        "userId": "Tepki veren hesap",
-        "reactableType": "Tepkinin uygulandığı içerik türü (örn. bir haber makalesi)"
-      },
-      "users": {
-        "titles": {
-          "main": "Ana bilgiler",
-          "security": "Güvenlik (özel)"
-        },
-        "id": "Hesabın benzersiz tanımlayıcısı",
-        "username": "Herkese açık olarak gösterilen kullanıcı adı",
-        "teamTag": "Herkese açık profilde \"desteklenen\" olarak gösterilen takım, o takımın etiketiyle birlikte",
-        "preferences": "Arayüz tercihleri (özel)",
-        "pronouns": "Zamirler",
-        "bio": "Hesabın herkese açık biyografisi",
-        "socials": "Hesaba bağlı sosyal medya",
-        "email": "E posta adresi (özel, hiçbir zaman gösterilmez)",
-        "passwordHash": "Şifre, hash'lenmiş (hiçbir zaman düz metin olarak saklanmaz veya gösterilmez)",
-        "twoFactorSecret": "Etkinleştirilmişse, şifrelenmiş iki faktörlü kimlik doğrulama (2FA) gizli anahtarı",
-        "twoFactorRecoveryCodes": "Etkinleştirilmişse, şifrelenmiş 2FA kurtarma kodları",
-        "discordSyncedAt": "Son Discord senkronizasyon tarihi"
-      },
-      "accounts": {
-        "provider": "Bağlı platform (Discord veya Twitch)",
-        "providerAccountId": "O platformdaki hesap tanımlayıcısı",
-        "accessToken": "OAuth erişim jetonu (özel, hiçbir zaman paylaşılmaz, yalnızca kimlik doğrulama için kullanılır)",
-        "refreshToken": "OAuth yenileme jetonu (özel)"
-      },
-      "authenticators": {
-        "name": "Geçiş anahtarına verilen ad",
-        "credentialId": "Anahtarın teknik tanımlayıcısı (özel)",
-        "lastUsedAt": "Bu anahtarın son kullanıldığı zaman"
-      },
-      "sanctions": {
-        "type": "Yaptırım türü (not, uyarı, susturma, askıya alma, yasaklama)",
-        "reason": "Yaptırımın nedeni",
-        "startsAt": "Yürürlüğe girme tarihi",
-        "endsAt": "Bitiş tarihi (geçiciyse)",
-        "revokedAt": "Varsa, erken kaldırılma tarihi",
-        "issuedBy": "Yaptırımı uygulayan moderatör",
-        "revokedBy": "Varsa, yaptırımı kaldıran moderatör"
-      },
-      "sanctionIdentities": {
-        "type": "Eklenen teknik parmak izi türü (örn. e posta)",
-        "value": "Parmak izi değeri (özel, yasak ihlalini önlemek için hesap silindikten sonra da tutulur)"
-      },
-      "userReports": {
-        "category": "Rapor kategorisi",
-        "reason": "Bildiren tarafından sağlanan ayrıntı",
-        "status": "İşleme durumu (beklemede, çözüldü, reddedildi)",
-        "reviewedBy": "Raporu işleyen moderatör",
-        "resolutionNote": "Moderasyon tarafından bırakılan çözüm notu"
-      },
-      "activityLog": {
-        "logName": "Kaydedilen eylemin kategorisi",
-        "description": "Gerçekleştirilen eylemin açıklaması",
-        "event": "Olay türü (oluşturuldu, güncellendi, silindi)",
-        "subjectType": "Eylemin ilgili olduğu varlık türü (kişi, takım, vb.)",
-        "causerId": "Eylemi gerçekleştiren hesap",
-        "attributeChanges": "Değiştirilen alanların ayrıntısı (öncesi/sonrası)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Ana bilgiler"
-        },
-        "uri": "Sayfa URL'si",
-        "viewedAt": "Ziyaret günü",
-        "count": "O gün yapılan görüntüleme sayısı",
-        "countryCode": "O gün ziyaretçilerin yaklaşık ülkesi",
-        "regionCode": "O gün ziyaretçilerin yaklaşık bölgesi"
+      "switzerland": {
+        "title": "İsviçre'de barındırılıyor",
+        "text": "Yedekler dahil tüm verilerimiz İsviçre'de, İsviçreli sağlayıcılarda saklanır."
       }
-    }
+    },
+    "storage": {
+      "title": "Neden İsviçre",
+      "why": "İsviçre, Federal Veri Koruma Kanunu ile dünyanın en koruyucu gizlilik yasalarından birine sahiptir. Avrupa Birliği bu yasayı GDPR ile eşdeğer bir koruma düzeyi olarak tanır. Sağlayıcılarımız İsviçre şirketleridir: verileriniz, ABD makamlarının Amerikan şirketlerinden nerede saklanırsa saklansın veri talep etmesine izin veren ABD CLOUD Act gibi yabancı yasalara tabi değildir.",
+      "providers": "Verilerin tam olarak bulunduğu yerler:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "İsviçre",
+        "body": "Tüm sunucularımız: site, veritabanı, sunucu kayıtları ve e-postalarımız. Veritabanının sürekli bir kopyası, bir arıza sonrasında geri yüklenebilmesi için ikinci bir Infomaniak veri merkezinde 14 gün saklanır."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "İsviçre (Zürih ve Cenevre)",
+        "body": "Veritabanının ve dosyalarımızın günlük şifreli yedeği. Her yedek 30 gün sonra silinir ve bundan önce değiştirilemez veya silinemez, biz bile yapamayız."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Dünya genelinde sunucular",
+        "body": "Yalnızca herkese açık dosyaları sunar (görseller, logolar, CSS ve JavaScript). CDN, IP adresinizi 0.0.0.0 ile değiştirir: hiçbir IP adresi toplanmaz."
+      }
+    },
+    "private": {
+      "title": "Özel veriler",
+      "badge": "Asla herkese açık değil",
+      "intro": "Bu veriler asla herkese açık gösterilmez ve API'miz üzerinden paylaşılmaz."
+    },
+    "public": {
+      "title": "Herkese açık veriler",
+      "badge": "Herkese açık",
+      "intro": "Bu veriler sitede gösterilir ve API'miz üzerinden paylaşılır, GC Stats'in kalbidir."
+    },
+    "labels": {
+      "source": "Nereden geliyor",
+      "visibility": "Kim görüyor",
+      "retention": "Ne kadar süre"
+    },
+    "categories": {
+      "account": {
+        "title": "Hesabınız",
+        "groups": {
+          "profile": {
+            "label": "Hesap",
+            "items": [
+              "E-posta adresi",
+              "Kullanıcı adı",
+              "Şifre, hash'lenmiş (asla düz metin olarak saklanmaz)",
+              "Görüntüleme tercihleri ve favori takım",
+              "Zamirler, biyografi ve sosyal medya, eklerseniz",
+              "Son giriş tarihi"
+            ]
+          },
+          "security": {
+            "label": "Güvenlik",
+            "items": [
+              "İki adımlı doğrulama (gizli anahtar ve kurtarma kodları, şifreli)",
+              "Geçiş anahtarları (passkeys), yalnızca açık anahtar saklanır"
+            ]
+          },
+          "linked": {
+            "label": "Bağlı hesaplar",
+            "items": [
+              "Discord, Twitch veya Twitter/X kimliği",
+              "O platformdaki ad ve avatar",
+              "Giriş jetonları, yalnızca giriş yapmanız için kullanılır"
+            ]
+          },
+          "developers": {
+            "label": "Geliştiriciler",
+            "items": [
+              "API anahtarları",
+              "OAuth uygulamaları ve verdiğiniz yetkiler",
+              "API çağrı geçmişi"
+            ]
+          }
+        },
+        "source": "Siz, kayıt sırasında ve ayarlarınızda. Bağlı hesaplar, bağladığınızda platform tarafından iletilir.",
+        "visibility": "Siz ve ekibimiz. Kullanıcı adınız, zamirleriniz, biyografiniz, sosyal medyanız ve favori takımınız profil sayfanızda görünür. Ekibimiz şifrenizi göremez, yalnızca kullanılan giriş yöntemini görebilir (şifre, Discord, Twitch, Twitter/X, passkey, iki adımlı doğrulama). E-postanız ve güvenlik ayarlarınız asla herkese açık gösterilmez.",
+        "retention": "Hesabınız var olduğu sürece. Bağlı bir hesap, bağlantısını kaldırdığınız anda silinir. API çağrı geçmişi 90 gün sonra silinir."
+      },
+      "protection": {
+        "title": "Hesabınızın ve sitenin korunması",
+        "groups": {
+          "loginLog": {
+            "label": "Giriş geçmişi",
+            "items": [
+              "Girişler, başarısız girişler ve güvenlik değişiklikleri",
+              "Tarih",
+              "IP adresi"
+            ]
+          },
+          "accessLogs": {
+            "label": "Erişim kayıtları",
+            "items": [
+              "IP adresi",
+              "İstenen sayfa",
+              "Tarayıcı",
+              "Tarih ve saat"
+            ]
+          }
+        },
+        "source": "Otomatik olarak kaydedilir: giriş geçmişi hesabınızı ele geçirilmeye karşı, erişim kayıtları siteyi botlara ve kötüye kullanıma karşı korur.",
+        "visibility": "Yalnızca teknik ekibimiz.",
+        "retention": "Giriş IP adresleri {days} gün sonra silinir. Erişim kayıtları 14 gün sonra silinir."
+      },
+      "moderation": {
+        "title": "Moderasyon ve katkılar",
+        "groups": {
+          "requests": {
+            "label": "Talepleriniz",
+            "items": [
+              "Düzenleme önerileri ve ekiple yapılan yazışmalar",
+              "Gönderdiğiniz şikayetler"
+            ]
+          },
+          "moderation": {
+            "label": "Moderasyon",
+            "items": [
+              "Uyarılar ve yaptırımlar, gerekçeleriyle",
+              "Otomatik filtremizin tespit ettiği mesajlar",
+              "Moderasyon işlemleri geçmişi"
+            ]
+          }
+        },
+        "source": "Talepleriniz ve şikayetleriniz ile moderasyon ekibimizin kararları.",
+        "visibility": "Yalnızca ekibimiz. Kabul edilen bir öneri ilgili herkese açık sayfayı günceller, önerinin kendisi özel kalır.",
+        "retention": "Hesabınız silindikten sonra bile geçmiş olarak saklanır, ancak hesabınızla bağlantısı olmadan."
+      },
+      "players": {
+        "title": "Oyuncular ve ekip",
+        "groups": {
+          "identity": {
+            "label": "Kimlik",
+            "items": [
+              "Takma ad ve eski takma adlar",
+              "Ad ve soyad",
+              "Ülke",
+              "Zamirler",
+              "Doğum tarihi",
+              "Biyografi ve sosyal medya"
+            ]
+          },
+          "career": {
+            "label": "Kariyer",
+            "items": [
+              "Takımlar ve roller",
+              "Oynanan turnuvalar ve maçlar",
+              "Organizasyonlar ve yapım katkıları"
+            ]
+          },
+          "hidden": {
+            "label": "Asla gösterilmez",
+            "items": [
+              "Riot kimliği, yalnızca maç istatistiklerini doğru profile bağlamak için kullanılır"
+            ]
+          }
+        },
+        "source": "Kişinin kendisi veya organizasyonu, ekibimiz herkese açık kaynaklardan (Liquipedia, resmi duyurular) ya da topluluk, ekibimizin onayladığı bir öneriyle. Riot kimliği, Riot Games'in resmi API'sinden gelir.",
+        "visibility": "Herkes, sitede ve API'miz üzerinden, Riot kimliği hariç.",
+        "retention": "Kişi oynamayı bıraksa bile sahnenin arşivi olarak ömür boyu saklanır. Düzeltme veya silme talep edebilirsiniz."
+      },
+      "matchStats": {
+        "title": "Maç istatistikleri",
+        "groups": {
+          "stats": {
+            "label": "Oynanan her maç için",
+            "items": [
+              "Oynanan ajanlar",
+              "Öldürmeler, ölümler ve asistler",
+              "Hasar",
+              "Ekonomi ve ekipman",
+              "Haritadaki konumlar"
+            ]
+          }
+        },
+        "source": "Takip ettiğimiz turnuvaların maçları için Riot Games'in resmi API'si.",
+        "visibility": "Herkes, sitede ve API'miz üzerinden.",
+        "retention": "Turnuvaların tarihsel arşivi olarak saklanır."
+      },
+      "community": {
+        "title": "Paylaşımlarınız",
+        "groups": {
+          "content": {
+            "label": "Paylaştıklarınız",
+            "items": [
+              "Forum mesajları",
+              "Tepkiler",
+              "Pick'em tahminleri ve grupları"
+            ]
+          }
+        },
+        "source": "Siz.",
+        "visibility": "Herkes, sitede.",
+        "retention": "Siz silene kadar. Hesabınızı silerseniz tepkileriniz ve tahminleriniz silinir, mesajlarınız ise hesabınızla bağlantısı olmadan kalır."
+      }
+    },
+    "rights": "Verilerinize erişmeyi, onları düzeltmeyi veya silmeyi istediğiniz zaman talep edebilirsiniz.",
+    "privacyLink": "Gizlilik politikasını görüntüle"
   },
   "financePage": {
     "title": "Finans",
@@ -1421,6 +1252,10 @@
       "Infrastructure": "Altyapı",
       "Software & Licenses": "Yazılım ve Lisanslar",
       "Other": "Diğer"
+    },
+    "expensesDoc": {
+      "text": "Aylık harcamalarımızın neye gittiğini basitçe anlamanız için bunları bir belgede açıklıyoruz.",
+      "link": "Belgeyi oku"
     }
   },
   "teamPage": {
@@ -2034,8 +1869,6 @@
       "finance": "Finans",
       "about": "Hakkımızda / Projeler",
       "backToSite": "Siteye dön",
-      "pendingChangeRequests": "Bekleyen değişiklik talepleri",
-      "pendingChangeRequests": "Bekleyen değişiklik talepleri",
       "pendingChangeRequests": "Bekleyen değişiklik talepleri",
       "tournaments": "Turnuvalar",
       "groupModeration": "Moderasyon",
@@ -5370,17 +5203,11 @@
         "youtube": "YouTube",
         "tiktok": "TikTok",
         "kick": "Kick",
-
         "sooplive": "SOOP",
-
         "naver": "Naver",
-
         "bilibili": "Bilibili",
-
         "qq": "QQ",
-
         "weibo": "Weibo",
-
         "other": "Diğer"
       },
       "typeLabel": "Tür",

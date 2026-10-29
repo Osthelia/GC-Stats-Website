@@ -735,11 +735,11 @@
     "intro": "本政策向您说明我们如何处理本站的数据，重点在于透明度与对隐私的尊重。",
     "analytics": {
       "title": "访问与统计数据",
-      "text": "我们以完全匿名的方式统计站点访问量：这些统计数据从不存储 IP 地址，只记录国家、页面及访问时间，不进行任何个人追踪或数字指纹识别。如果您创建了账户，出于安全目的（防止账户被盗用），您的登录会话信息（IP 地址及用户代理）会被临时存储，这是几乎所有具备身份验证功能的站点都会采用的常规做法。"
+      "text": "我们以完全匿名的方式统计网站访问量：只统计访问的页面、日期和浏览次数，不记录 IP 地址，不进行个人追踪，也不使用指纹识别。为了保护网站免受机器人和滥用的侵害，我们的服务器会记录每个请求（IP 地址、请求的页面、浏览器、日期），保存 14 天。如果你有账户，每次登录的 IP 地址也会在账户的安全日志中保存 90 天。"
     },
     "publicData": {
       "title": "公开数据",
-      "text": "资料信息（用户名、简介、社交链接、国家）由选手自愿提供并在站点上公开展示。比赛数据通过 Riot Games 官方 API，针对被识别为受追踪赛事一部分的比赛直接采集。这些数据全部公开可访问，并通过我们的 API 分享。"
+      "text": "资料信息（游戏 ID、简介、社交账号、国家）由选手本人或其组织提供，或由我们团队根据公开来源添加，并在网站上公开显示。游戏统计通过 Riot Games 官方 API 直接收集，针对我们关注的赛事中的比赛。所有这些数据都是公开的，并通过我们的 API 共享。"
     },
     "privateData": {
       "title": "私密数据",
@@ -752,22 +752,21 @@
     },
     "socialLogin": {
       "title": "通过 Discord、Twitter/X 或 Twitch 登录",
-      "text": "您可以将账户与 Discord、Twitter/X 或 Twitch 绑定以便更快登录。此时我们会存储您在该平台上的 ID、昵称、头像，以及维持连接所需的访问/刷新令牌（这些令牌仅用于验证您的账户，从不对外分享）。您可以随时在个人资料设置中解除这些绑定。",
-      "gravatar": "默认头像：如果您没有通过绑定账户获得头像，系统可能会根据您邮箱的哈希值从 Gravatar（Automattic）请求一张图片，这是许多网站都在使用的标准第三方服务。"
+      "text": "您可以将账户与 Discord、Twitter/X 或 Twitch 绑定以便更快登录。此时我们会存储您在该平台上的 ID、昵称、头像，以及维持连接所需的访问/刷新令牌（这些令牌仅用于验证您的账户，从不对外分享）。您可以随时在个人资料设置中解除这些绑定。"
     },
     "moderation": {
       "title": "管理与社区安全",
       "text": "为维护社区安全，我们会保留账户或战队的处罚历史（警告、封禁）、用户提交的举报记录（欺诈、规避封禁、骚扰、虚假账户等），以及管理操作的活动日志。",
-      "retentionNote": "为防止规避封禁，某项技术指纹信息（例如电子邮箱地址）可能会附加在处罚记录上，并在关联账户被删除后依然保留。举报历史及管理日志同样如此，它们构成独立于账户存在的安全记录。"
+      "retentionNote": "为防止规避封禁，处罚记录、举报和管理日志构成安全档案，即使相关账户被删除后也会保留。"
     },
     "dataStructure": {
-      "title": "数据结构",
-      "text": "为了让您更好地了解我们存储和分享的数据，您可以在下方查看我们的数据结构，其中列出了所有存储的数据，并说明其用途、是否为必填项以及是否会被分享。",
-      "button": "查看存储的数据"
+      "title": "个人数据详情",
+      "text": "查看我们保存的每一项个人数据：如何获取、存储在哪里、保存多久。",
+      "button": "查看数据详情"
     },
     "retention": {
       "title": "数据保留",
-      "text": "只要战队或选手仍活跃于本项目生态中，比赛数据就会被保留。您可以随时申请删除您的数据。"
+      "text": "选手资料和比赛数据作为赛事圈的档案永久保存，即使本人已不再参赛。账户数据在账户存在期间保存。访问日志在 14 天后删除，登录 IP 地址在 90 天后删除。除管理档案必需的数据外，你可以随时申请更正或删除你的数据。"
     },
     "rights": {
       "title": "您的权利（GDPR）",
@@ -778,7 +777,11 @@
       "title": "Cookie",
       "text": "本站不使用任何广告或用户画像类 Cookie，仅可能使用维持会话运行所必需的技术性 Cookie。"
     },
-    "takedownLink": "申请内容下架"
+    "takedownLink": "申请内容下架",
+    "hosting": {
+      "title": "托管",
+      "text": "网站、数据库和服务器日志托管在瑞士的 Infomaniak。异地备份经过加密，存储在位于苏黎世和日内瓦的 Exoscale。公开文件（图片、标志）通过 CDN Bunny.net 分发，该 CDN 设置为不收集任何 IP 地址。"
+    }
   },
   "legalNotice": {
     "title": "法律声明",
@@ -868,7 +871,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "在全球各地的服务器上缓存我们的 CSS/JS，以及选手、战队和赛事图片，以减轻我们自身服务器的负载。"
+        "body": "在全球各地的服务器上缓存我们的 CSS/JS，以及选手、战队和赛事图片，以减轻我们自身服务器的负载。该 CDN 设置为不收集任何 IP 地址。"
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -901,12 +904,17 @@
           "p4": "我认为有必要解释这个选择，尤其是要谈谈 Infomaniak：这是一家不太为人所知的服务商，但它值得被更多人认识。尤其是免费邮箱账户或 OneDrive 订阅都可以迁移到他们那里，而不需要真的多花多少钱，服务质量同样出色，却多了一份对你、你的隐私以及我们这个星球的基本尊重。",
           "cite": "Lacy，GC Stats 创始人"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "异地备份",
+        "body": "数据库和文件的每日加密备份，存储在瑞士（苏黎世，复制到日内瓦）。每份备份在 30 天内无法修改，之后会被删除。"
       }
     },
     "data": {
       "title": "所收集的数据",
-      "body": "我们公开记录所存储的每一项数据：选手、战队、赛事及比赛。任何数据的收集都与站点运行有明确关联。",
-      "link": "查看我们存储的数据"
+      "body": "我们公开说明所保存的个人数据：如何获取、存储在哪里、保存多久。所有数据的收集都与网站运营有关。",
+      "link": "查看个人数据"
     },
     "finance": {
       "title": "财务",
@@ -1012,396 +1020,219 @@
     }
   },
   "dataPage": {
-    "title": "数据结构",
-    "subtitle": "我们收集的数据结构与清单",
-    "openData": {
-      "title": "开放数据门户",
-      "body": "比起使用 API，您可能更希望直接浏览或下载我们的数据集。开放数据门户将与其余 API 一同迁移至此。",
-      "badge": "即将推出"
-    },
-    "groups": {
-      "identity": "人员、战队与机构结构",
-      "account": "用户账户与管理",
-      "tournament": "赛事结构",
-      "matches": "比赛及游戏数据结构",
-      "news": "资讯与社区结构",
-      "rawStats": "原始游戏数据（逐回合）",
-      "others": "其他数据结构"
-    },
-    "sections": {
-      "people": "人员",
-      "teams": "战队",
-      "organizations": "机构",
-      "tournaments": "赛事",
-      "matches": "比赛",
-      "news": "资讯",
-      "users": "用户",
-      "reactionsEmotes": "反应与表情"
-    },
-    "descriptions": {
-      "identity": "一个人（选手、教练、解说、导播、组织者等）只拥有一份资料，即使其角色随时间改变也不会变化。战队和机构有权编辑或删除其“补充信息”。\n\nRiot ID 从不展示或分享，它由我们的团队根据比赛数据识别得出。",
-      "tournament": "每场赛事都有一个标识符、名称、日期、地区、类别及状态。一场赛事可以被拆分为多个阶段（小组赛、季后赛等），每个阶段又由一个或多个容器（对阵表或小组）组成。战队以“参赛方”身份报名，其名单在该赛事期间被锁定，与战队的常规名单相互独立。",
-      "matches": "我们收集大量比赛相关信息以提供详细数据统计，包括：\n- 基本比赛信息（必需）\n- 比赛的地图选禁\n- 已进行的地图，及其结果和数据\n- 按选手及地图汇总的数据，是网站日常查询实际使用的数据\n\n这些数据并非总能被收集到，但我们会尽力获取，以展示尽可能完整的数据统计。",
-      "rawStats": "除上述汇总数据外，我们还保留了逐回合的原始数据层（击杀、伤害、经济、存活状态），用于重新计算这些数据统计及展示回合历史。\n\n每位选手在关键事件（击杀、装包、拆包）发生时的位置会被完整地永久保留：它是我们热力图的数据来源，且一旦汇总便无法再还原。",
-      "news": "每篇资讯文章都有一个标识符、标题、正文及状态（草稿、已发布、已归档）。一篇文章可以关联至某支战队、某位人员或某场赛事，从而显示在其资料页面上。\n\n论坛及表情/反应功能让社区能够与站点内容互动；被管理隐藏或删除的消息会在内部继续保留记录。",
-      "account": "这些数据表仅适用于创建了用户账户（与人员资料相区分）的用户，用户账户是对资讯作出反应、管理资料或管理站点所必需的。\n\n安全数据（密码、双重验证、通行密钥）从不分享。已绑定的 Discord/Twitch 账户仅存储一个仅用于身份验证的访问令牌。\n\n管理数据（处罚、防规避指纹、举报、活动日志）构成一份独立于账户存在的安全记录，即使账户被删除后依然保留，以防止规避封禁。",
-      "others": "我们按天存储每个页面的访问次数，不存储访问者身份或具体访问时间，只存储大致的国家/地区。\n\n这些数据被私密存储，从不对外分享，我们仅用它来了解站点使用情况并按需调整基础设施。"
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息",
-          "confidential": "机密信息"
-        },
-        "id": "分配给该人员的唯一标识符（显示在 URL 中）",
-        "handle": "用户名",
-        "aliases": "曾用用户名",
-        "firstName": "名",
-        "lastName": "姓",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "secondaryCountryCode": "第二国家代码，用于双重国籍",
-        "pronouns": "代词",
-        "birthDate": "出生日期",
-        "bio": "简介",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "vlrId": "VLR 标识符",
-        "liquipediaLink": "该人员 Liquipedia 页面链接",
-        "valId": "Riot ID / PUUID（私密信息，由我们的团队根据 Riot 比赛数据识别并分配，用于将比赛数据与人员关联）",
-        "esportsValId": "与游戏账户关联的 Riot 电竞标识符"
+    "title": "个人数据",
+    "subtitle": "我们保存了你的哪些数据、数据从何而来、谁能看到，以及我们保存多久。",
+    "policy": {
+      "title": "我们的原则",
+      "noSale": {
+        "title": "不出售，不共享",
+        "text": "我们不出售任何数据，也从不与广告商或合作伙伴共享你的私人数据。只有公开数据（选手资料、比赛统计）会在网站上和通过我们的 API 发布。"
       },
-      "rosterMemberships": {
-        "personId": "人员的唯一标识符",
-        "teamId": "战队的唯一标识符",
-        "role": "在战队中的角色（选手/教练/经理等）",
-        "period": "在战队中的成员周期（加入日期，及退出日期，如适用）",
-        "inactiveSince": "该成员仍在名单中但不再活跃的起始日期（伤病、休整等）"
+      "minimal": {
+        "title": "只收集必需的",
+        "text": "我们只收集网站运行和保持安全所需的内容。没有广告、没有追踪器、没有追踪 Cookie：访问量以匿名方式统计，不记录 IP 地址。"
       },
-      "teams": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "分配给该战队的唯一标识符（显示在 URL 中）",
-        "name": "战队名称",
-        "shortName": "简称（Fnatic = FNC）",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "secondaryCountryCode": "第二国家代码，用于与两个地区相关联的战队",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "bio": "简介",
-        "vlrId": "VLR 标识符",
-        "liquipediaLink": "该战队 Liquipedia 页面链接",
-        "tags": "附加在战队上的自定义标签"
-      },
-      "organizations": {
-        "id": "机构的唯一标识符",
-        "name": "机构名称",
-        "slug": "用于 URL 的文本标识符",
-        "tags": "机构承担的角色（赛事组织者、制作团队、媒体、转播方、经纪公司、社区）",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）"
-      },
-      "organizationMemberships": {
-        "personId": "人员的唯一标识符",
-        "organizationId": "机构的唯一标识符",
-        "role": "在机构中的角色（管理员/解说/导播/制作人/剪辑等）",
-        "period": "在机构中的成员周期"
-      },
-      "productionCredits": {
-        "personId": "获得署名的人员唯一标识符",
-        "organizationId": "该署名对应的所属机构（如有）",
-        "role": "所担任的角色（解说/分析师/导播/组织者/制作人/剪辑/摄影师/翻译/裁判等）",
-        "titleOverride": "替代通用角色显示的自定义头衔",
-        "scope": "所涉及的具体层级：赛事、阶段、容器、比赛或地图"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "赛事的唯一标识符",
-        "name": "赛事名称",
-        "region": "所属地区（EMEA、NA 等）",
-        "category": "赛事类别（例如 Challengers、Cash Cups）",
-        "prizePool": "总奖金池",
-        "location": "举办地点",
-        "startDate": "开始日期",
-        "endDate": "结束日期",
-        "status": "当前状态（即将开始、进行中、已结束）",
-        "description": "赛事概述",
-        "liquipediaLink": "该赛事 Liquipedia 页面链接",
-        "socials": "赛事的社交媒体链接"
-      },
-      "stages": {
-        "titles": {
-          "structure": "技术结构"
-        },
-        "name": "阶段名称（例如季后赛、A 组）",
-        "sequenceOrder": "阶段的显示顺序",
-        "status": "阶段状态（即将开始、进行中、已结束）",
-        "startDate": "阶段开始日期",
-        "endDate": "阶段结束日期",
-        "liquipediaLink": "该阶段自身的 Liquipedia 页面链接",
-        "containerType": "容器格式（淘汰赛对阵表或小组赛）",
-        "config": "技术性的对阵表/小组配置（由赛事引擎生成）"
-      },
-      "entrants": {
-        "tournamentId": "关联的赛事",
-        "kind": "参赛方类型（在 GC-Stats 上始终为“战队”）",
-        "teamId": "已报名的战队",
-        "displayName": "报名时显示的名称（即使战队此后改名，此名称也保持不变）",
-        "seed": "分配给该参赛方的种子序号",
-        "qualificationSourceManual": "晋级来源是否为手动设置（否则根据晋级规则推断）",
-        "qualificationSourceType": "手动晋级来源（赛事、邀请或积分）",
-        "qualificationSourceTournamentId": "参赛者晋级所自的赛事（手动来源）",
-        "qualificationSourcePointTypeId": "晋级所依据的积分类型（手动来源）"
-      },
-      "entrantMembers": {
-        "personId": "属于该赛事专属锁定名单的人员",
-        "role": "该名单中的角色（选手/替补/教练/经理/分析师等）",
-        "isStarter": "在该赛事中为首发还是替补"
-      },
-      "qualifications": {
-        "destinationType": "晋级所获得的资格：另一个容器的名额，或最终名次",
-        "placement": "所获得的名次（第一名、第二名等）",
-        "placementLabel": "名次标签（例如冠军、亚军）",
-        "points": "所获得的积分",
-        "cashPrizeAmount": "所获得的奖金金额",
-        "rank": "该参赛方在此排名中获得的名次",
-        "amount": "增减的积分数（有正负号的账目记录）",
-        "reason": "积分增减的原因"
-      },
-      "matches": {
-        "titles": {
-          "structure": "技术结构"
-        },
-        "id": "比赛的唯一标识符",
-        "containerId": "该比赛所属的容器（对阵表/小组）",
-        "round": "轮次编号",
-        "label": "轮次名称（例如总决赛）",
-        "bestOf": "最多局数（BO1、BO3、BO5）",
-        "status": "状态（未开始、准备中、直播中、已结束）",
-        "entrantAId": "参赛方 A 的唯一标识符",
-        "entrantBId": "参赛方 B 的唯一标识符",
-        "scoreA": "参赛方 A 的最终比分",
-        "scoreB": "参赛方 B 的最终比分",
-        "winnerId": "获胜的参赛方",
-        "scheduledAt": "预定日期及时间",
-        "patch": "游戏版本（例如 8.04）"
-      },
-      "matchVetos": {
-        "matchId": "涉及的比赛",
-        "entrantId": "执行该操作的参赛方",
-        "mapName": "地图名称（例如 Ascent）",
-        "type": "操作类型（Pick、Ban 或 Decider）",
-        "order": "在选禁流程中的顺序",
-        "side": "所选阵营（进攻/防守），适用于 Pick 或 Decider",
-        "sidePickedByEntrantId": "选择该阵营的参赛方"
-      },
-      "maps": {
-        "id": "该局地图的唯一标识符",
-        "apiMatchId": "由 Riot API 提供的比赛标识符",
-        "matchId": "涉及的比赛",
-        "mapName": "地图名称",
-        "gameMode": "关联的 Riot 游戏模式",
-        "teamAScore": "参赛方 A 在该地图上的比分",
-        "teamBScore": "参赛方 B 在该地图上的比分",
-        "order": "该地图在比赛中的顺序",
-        "isCompleted": "该地图是否已结束"
-      },
-      "mapPlayerStats": {
-        "agentName": "所使用的特工（例如 Jett）",
-        "kills": "总击杀数",
-        "deaths": "总死亡数",
-        "assists": "总助攻数",
-        "acs": "场均战斗分数",
-        "adr": "场均单局伤害",
-        "kastPercentage": "拥有击杀/助攻/存活/换命的回合占比",
-        "firstKills": "首杀数（FK）",
-        "firstDeaths": "首死数（FD）",
-        "headshotPercentage": "爆头率",
-        "clutches": "按情况（1v1 至 1v5）统计的残局取胜/触发次数",
-        "multikills": "单回合 2、3、4 或 5 杀的次数",
-        "tradeKills": "为队友报仇的击杀数",
-        "tradedDeaths": "被队友报仇的死亡数",
-        "roundTypeSplits": "按回合类型（手枪局、进攻、防守等）细分的数据",
-        "fallDeaths": "因坠落而死亡的次数",
-        "weaponKills": "各武器的击杀数"
-      },
-      "mapTeamRoundSummary": {
-        "side": "所处阵营（进攻/防守）",
-        "roundsPlayed": "在该阵营下进行的回合数",
-        "roundsWon": "在该阵营下取胜的回合数"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "回合编号（1 至 24 以上）",
-        "winningEntrantId": "赢得该回合的参赛方",
-        "winType": "取胜方式（全歼、拆包、引爆、时间耗尽）",
-        "atkEntrantId": "该回合处于进攻方的参赛方",
-        "defEntrantId": "该回合处于防守方的参赛方",
-        "plantSite": "插旗点位（A/B/C）",
-        "plantX": "插旗点在小地图上的 X 坐标",
-        "plantY": "插旗点在小地图上的 Y 坐标"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "完成击杀的人员",
-        "victimPersonId": "被淘汰的人员",
-        "assistantPersonIds": "协助该次击杀的人员",
-        "timeMs": "击杀发生的时间（自回合开始起的毫秒数）",
-        "weapon": "使用的武器",
-        "damageType": "伤害类型（武器、技能、爆能、近战、坠落）",
-        "isSecondaryFire": "是否为副射模式击杀（例如武器的镜瞄）"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "造成伤害的人员",
-        "receiverPersonId": "受到伤害的人员",
-        "damage": "造成的伤害值",
-        "headshots": "爆头次数",
-        "bodyshots": "身体部位命中次数",
-        "legshots": "腿部命中次数"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "该事件在回合内的顺序",
-        "timeMs": "事件发生的时间（自回合开始起的毫秒数）",
-        "atkAlive": "进攻方存活人数",
-        "defAlive": "防守方存活人数",
-        "winnerSide": "当前人数占优的一方"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "涉及的人员",
-        "kills": "本回合完成的击杀数",
-        "assists": "本回合完成的助攻数",
-        "score": "本回合获得的分数",
-        "loadoutValue": "装备总价值",
-        "economySpent": "花费的经济点数",
-        "economyRemaining": "剩余的经济点数",
-        "weapon": "主要使用的武器",
-        "armor": "护甲类型"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "事件类型（击杀、装包、拆包）",
-        "personId": "涉及的人员",
-        "role": "在该事件中的角色（击杀者、被杀者、旁观者、装包者、拆包者）",
-        "x": "小地图上的 X 坐标",
-        "y": "小地图上的 Y 坐标",
-        "viewRadians": "事件发生时的视角角度",
-        "timeMs": "事件发生的时间（自回合开始起的毫秒数）"
-      },
-      "news": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "文章的唯一标识符（显示在 URL 中）",
-        "authorId": "文章作者",
-        "organizationId": "文章发布所属的机构（如有）",
-        "lang": "文章语言",
-        "title": "文章标题",
-        "slug": "用于 URL 的文本标识符",
-        "excerpt": "简短摘要",
-        "content": "文章正文",
-        "imageCover": "封面图片",
-        "status": "文章状态（草稿 = 编写中，已发布 = 站点上线，已归档 = 站点隐藏但可通过 API 访问）",
-        "isFeatured": "是否为首页精选文章",
-        "showOnHome": "是否显示在首页",
-        "publishedAt": "发布日期",
-        "createdAt": "文章创建日期",
-        "updatedAt": "最后修改日期"
-      },
-      "newsRelations": {
-        "relatableType": "关联实体类型（战队、人员或赛事）",
-        "relatableId": "关联实体的标识符，用于在其资料页面展示该文章"
-      },
-      "forumThreads": {
-        "category": "主题类别（赛事、比赛、资讯、综合）",
-        "subjectType": "该主题所关联的实体类型（如有）",
-        "title": "主题标题",
-        "lastMessageAt": "最后一条消息的发布日期"
-      },
-      "forumMessages": {
-        "body": "消息内容",
-        "parentId": "父消息（用于回复）",
-        "hiddenAt": "该消息被管理隐藏的日期"
-      },
-      "emotes": {
-        "name": "表情名称",
-        "imagePath": "图片路径",
-        "source": "表情来源（例如批量导入、由战队商标生成）",
-        "isActive": "该表情是否可用"
-      },
-      "reactions": {
-        "emoteId": "使用的表情",
-        "userId": "作出反应的账户",
-        "reactableType": "该反应所应用的内容类型（例如一篇资讯文章）"
-      },
-      "users": {
-        "titles": {
-          "main": "基本信息",
-          "security": "安全信息（私密）"
-        },
-        "id": "账户的唯一标识符",
-        "username": "公开展示的用户名",
-        "teamTag": "在公开资料上显示为“支持”的战队，及该战队的标签",
-        "preferences": "界面偏好设置（私密）",
-        "pronouns": "代词",
-        "bio": "账户的公开简介",
-        "socials": "与账户关联的社交媒体",
-        "email": "邮箱地址（私密，从不展示）",
-        "passwordHash": "经过哈希处理的密码（从不以明文存储或展示）",
-        "twoFactorSecret": "双重身份验证（2FA）密钥（如已启用，经加密存储）",
-        "twoFactorRecoveryCodes": "2FA 恢复代码（如已启用，经加密存储）",
-        "discordSyncedAt": "最后一次 Discord 同步日期"
-      },
-      "accounts": {
-        "provider": "已绑定的平台（Discord 或 Twitch）",
-        "providerAccountId": "该平台上的账户标识符",
-        "accessToken": "OAuth 访问令牌（私密，从不分享，仅用于身份验证）",
-        "refreshToken": "OAuth 刷新令牌（私密）"
-      },
-      "authenticators": {
-        "name": "该通行密钥的自定义名称",
-        "credentialId": "该密钥的技术标识符（私密）",
-        "lastUsedAt": "该密钥最后一次使用时间"
-      },
-      "sanctions": {
-        "type": "处罚类型（备注、警告、禁言、停权、封禁）",
-        "reason": "处罚原因",
-        "startsAt": "生效起始日期",
-        "endsAt": "结束日期（如为临时处罚）",
-        "revokedAt": "提前解除的日期（如适用）",
-        "issuedBy": "发起该处罚的管理员",
-        "revokedBy": "解除该处罚的管理员（如适用）"
-      },
-      "sanctionIdentities": {
-        "type": "所附加的技术指纹类型（例如邮箱）",
-        "value": "指纹值（私密，即使账户被删除后依然保留，以防止规避封禁）"
-      },
-      "userReports": {
-        "category": "举报类别",
-        "reason": "举报人提供的详细说明",
-        "status": "处理状态（待处理、已处理、已驳回）",
-        "reviewedBy": "处理该举报的管理员",
-        "resolutionNote": "管理团队留下的处理备注"
-      },
-      "activityLog": {
-        "logName": "该记录操作的类别",
-        "description": "所执行操作的描述",
-        "event": "事件类型（创建、更新、删除）",
-        "subjectType": "该操作涉及的实体类型（人员、战队等）",
-        "causerId": "执行该操作的账户",
-        "attributeChanges": "已变更字段的详情（变更前/变更后）"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "基本信息"
-        },
-        "uri": "页面 URL",
-        "viewedAt": "访问日期",
-        "count": "当日访问次数",
-        "countryCode": "当日访问者的大致国家",
-        "regionCode": "当日访问者的大致地区"
+      "switzerland": {
+        "title": "托管在瑞士",
+        "text": "我们的所有数据，包括备份，都由瑞士服务商存储在瑞士。"
       }
-    }
+    },
+    "storage": {
+      "title": "为什么选择瑞士",
+      "why": "瑞士拥有世界上保护最严格的隐私法律之一，即《联邦数据保护法》。欧盟认可其保护水平与 GDPR 相当。我们的服务商都是瑞士公司：你的数据不受外国法律管辖，例如美国的 CLOUD Act，该法律允许美国当局向美国公司索取数据，无论数据存储在哪里。",
+      "providers": "数据的具体存放位置如下：",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "瑞士",
+        "body": "我们的所有服务器：网站、数据库、服务器日志和电子邮件。数据库的连续副本会在 Infomaniak 的第二个数据中心保存 14 天，以便故障后恢复。"
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "瑞士（苏黎世和日内瓦）",
+        "body": "数据库和文件的每日加密备份。每份备份在 30 天后删除，在此之前无法被修改或删除，连我们自己也不行。"
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "遍布全球的服务器",
+        "body": "只分发公开文件（图片、标志、CSS 和 JavaScript）。CDN 会把你的 IP 地址替换为 0.0.0.0：不会收集任何 IP 地址。"
+      }
+    },
+    "private": {
+      "title": "私人数据",
+      "badge": "从不公开",
+      "intro": "这些数据从不公开显示，也不会通过我们的 API 共享。"
+    },
+    "public": {
+      "title": "公开数据",
+      "badge": "公开",
+      "intro": "这些数据显示在网站上并通过我们的 API 共享，是 GC Stats 的核心。"
+    },
+    "labels": {
+      "source": "数据来源",
+      "visibility": "谁能看到",
+      "retention": "保存多久"
+    },
+    "categories": {
+      "account": {
+        "title": "你的账户",
+        "groups": {
+          "profile": {
+            "label": "账户",
+            "items": [
+              "电子邮箱",
+              "用户名",
+              "密码（哈希处理，从不以明文保存）",
+              "显示偏好和喜爱的战队",
+              "代词、简介和社交账号（如果你填写）",
+              "最后登录日期"
+            ]
+          },
+          "security": {
+            "label": "安全",
+            "items": [
+              "双重验证（密钥和恢复码，已加密）",
+              "通行密钥（仅保存公钥）"
+            ]
+          },
+          "linked": {
+            "label": "已关联账户",
+            "items": [
+              "Discord、Twitch 或 Twitter/X ID",
+              "该平台上的名称和头像",
+              "登录令牌（仅用于让你登录）"
+            ]
+          },
+          "developers": {
+            "label": "开发者",
+            "items": [
+              "API 密钥",
+              "OAuth 应用和你授予的权限",
+              "API 调用记录"
+            ]
+          }
+        },
+        "source": "你在注册和设置中填写的信息。已关联账户的信息在你关联时由平台发送。",
+        "visibility": "你和我们的团队。你的用户名、代词、简介、社交账号和喜爱的战队会显示在你的个人主页上。我们的团队看不到你的密码，只能看到你使用的登录方式（密码、Discord、Twitch、Twitter/X、通行密钥、双重验证）。你的邮箱和安全设置从不公开显示。",
+        "retention": "只要你的账户存在。取消关联后，已关联账户会立即删除。API 调用记录在 90 天后删除。"
+      },
+      "protection": {
+        "title": "保护你的账户和网站",
+        "groups": {
+          "loginLog": {
+            "label": "登录记录",
+            "items": [
+              "登录、登录失败和安全设置变更",
+              "日期",
+              "IP 地址"
+            ]
+          },
+          "accessLogs": {
+            "label": "访问日志",
+            "items": [
+              "IP 地址",
+              "请求的页面",
+              "浏览器",
+              "日期和时间"
+            ]
+          }
+        },
+        "source": "自动记录：登录记录保护你的账户不被盗用，访问日志保护网站免受机器人和滥用的侵害。",
+        "visibility": "仅限我们的技术团队。",
+        "retention": "登录 IP 地址在 {days} 天后删除。访问日志在 14 天后删除。"
+      },
+      "moderation": {
+        "title": "管理与贡献",
+        "groups": {
+          "requests": {
+            "label": "你的请求",
+            "items": [
+              "修改建议以及与团队的沟通",
+              "你提交的举报"
+            ]
+          },
+          "moderation": {
+            "label": "管理",
+            "items": [
+              "警告和处罚及其原因",
+              "被自动过滤器检测到的消息",
+              "管理操作记录"
+            ]
+          }
+        },
+        "source": "你的请求和举报，以及我们管理团队的决定。",
+        "visibility": "仅限我们的团队。被采纳的建议会更新相应的公开页面，建议本身保持私密。",
+        "retention": "作为记录保存，即使在你删除账户之后，但不再与你的账户关联。"
+      },
+      "players": {
+        "title": "选手和工作人员",
+        "groups": {
+          "identity": {
+            "label": "身份",
+            "items": [
+              "游戏 ID 和曾用 ID",
+              "姓名",
+              "国家",
+              "代词",
+              "出生日期",
+              "简介和社交账号"
+            ]
+          },
+          "career": {
+            "label": "生涯",
+            "items": [
+              "战队和职位",
+              "参加过的赛事和比赛",
+              "组织和制作署名"
+            ]
+          },
+          "hidden": {
+            "label": "从不显示",
+            "items": [
+              "Riot ID，仅用于把比赛统计关联到正确的资料"
+            ]
+          }
+        },
+        "source": "本人或其所属组织，我们团队根据公开来源（Liquipedia、官方公告）添加，或社区提交并经我们团队审核的建议。Riot ID 来自 Riot Games 官方 API。",
+        "visibility": "所有人，在网站上和通过我们的 API，Riot ID 除外。",
+        "retention": "作为赛事圈的档案永久保存，即使本人已不再参赛。你可以申请更正或删除。"
+      },
+      "matchStats": {
+        "title": "比赛统计",
+        "groups": {
+          "stats": {
+            "label": "每场比赛",
+            "items": [
+              "使用的特工",
+              "击杀、死亡和助攻",
+              "伤害",
+              "经济和装备",
+              "地图上的位置"
+            ]
+          }
+        },
+        "source": "Riot Games 官方 API，针对我们关注的赛事中的比赛。",
+        "visibility": "所有人，在网站上和通过我们的 API。",
+        "retention": "作为赛事的历史档案保存。"
+      },
+      "community": {
+        "title": "你的发布内容",
+        "groups": {
+          "content": {
+            "label": "你发布的内容",
+            "items": [
+              "论坛消息",
+              "表情回应",
+              "Pick'em 预测和小组"
+            ]
+          }
+        },
+        "source": "你。",
+        "visibility": "所有人，在网站上。",
+        "retention": "直到你删除为止。如果你删除账户，你的表情回应和预测会被删除，消息会保留但不再与你的账户关联。"
+      }
+    },
+    "rights": "你可以随时申请查阅、更正或删除你的数据。",
+    "privacyLink": "查看隐私政策"
   },
   "financePage": {
     "title": "财务",
@@ -1421,6 +1252,10 @@
       "Infrastructure": "基础设施",
       "Software & Licenses": "软件与授权",
       "Other": "其他"
+    },
+    "expensesDoc": {
+      "text": "为了让大家简单了解我们每月的支出用在哪里，我们写了一份说明文档。",
+      "link": "阅读文档"
     }
   },
   "teamPage": {
@@ -2034,8 +1869,6 @@
       "finance": "财务",
       "about": "关于 / 项目",
       "backToSite": "返回站点",
-      "pendingChangeRequests": "待处理的变更请求",
-      "pendingChangeRequests": "待处理的变更请求",
       "pendingChangeRequests": "待处理的变更请求",
       "tournaments": "赛事",
       "groupModeration": "管理",
@@ -5370,17 +5203,11 @@
         "youtube": "YouTube",
         "tiktok": "TikTok",
         "kick": "Kick",
-
         "sooplive": "SOOP",
-
         "naver": "Naver",
-
         "bilibili": "Bilibili",
-
         "qq": "QQ",
-
         "weibo": "Weibo",
-
         "other": "其他"
       },
       "typeLabel": "类型",

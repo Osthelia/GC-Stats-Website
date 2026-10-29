@@ -24,6 +24,10 @@ export default function PrivacyPage() {
       <LegalIntro>{t("intro")}</LegalIntro>
 
       <div className="space-y-5 pt-6">
+        <SectionCard icon={icons.server} title={t("hosting.title")}>
+          <SectionText>{t("hosting.text")}</SectionText>
+        </SectionCard>
+
         <SectionCard icon={icons.chart} title={t("analytics.title")}>
           <SectionText>{t("analytics.text")}</SectionText>
         </SectionCard>
@@ -43,7 +47,6 @@ export default function PrivacyPage() {
 
         <SectionCard icon={icons.link} title={t("socialLogin.title")}>
           <SectionText>{t("socialLogin.text")}</SectionText>
-          <Callout>{t("socialLogin.gravatar")}</Callout>
         </SectionCard>
 
         <SectionCard icon={icons.gavel} title={t("moderation.title")}>
@@ -55,7 +58,7 @@ export default function PrivacyPage() {
           <SectionText>{t("dataStructure.text")}</SectionText>
           <Link
             href="/data"
-            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d]"
+            className="inline-flex items-center rounded-lg bg-[#e4ae22] px-4 py-2 text-[13px] font-semibold text-[#0e0e0e] transition hover:bg-[#c9981d] active:scale-95"
           >
             {t("dataStructure.button")}
           </Link>

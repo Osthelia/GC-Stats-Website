@@ -737,11 +737,11 @@
     "intro": "This policy informs you about how we handle data on this site, with a focus on transparency and respect for privacy.",
     "analytics": {
       "title": "Navigation & Statistics",
-      "text": "We measure site audience in a completely anonymous way: these statistics never store an IP address, only the country, the page, and the time of visit, with no individual tracking or digital fingerprinting. If you create an account, your login session (IP address and user agent) is however stored temporarily for security purposes (protection against account takeover), as is standard for virtually every site with authentication."
+      "text": "We measure the site's audience in a fully anonymous way: only the visited page, the day and the number of views are counted, with no IP address, no individual tracking and no fingerprinting. To protect the site against bots and abuse, our servers log every request (IP address, requested page, browser, date) for 14 days. If you have an account, the IP address of each login is also kept for 90 days in your account's security log."
     },
     "publicData": {
       "title": "Public Data",
-      "text": "Profile information (handle, biography, social links, country) is voluntarily provided by the player and publicly displayed on the site. Match statistics are collected directly via the official Riot Games API for matches identified as part of tracked tournaments. All of this data is publicly accessible and shared through our API."
+      "text": "Profile information (handle, bio, socials, country) is provided by the player or their organization, or added by our team from public sources, then shown publicly on the site. Game statistics are collected directly through the official Riot Games API for the matches of covered tournaments. All of this data is publicly available and shared through our API."
     },
     "privateData": {
       "title": "Private Data",
@@ -754,22 +754,21 @@
     },
     "socialLogin": {
       "title": "Login via Discord, Twitter/X, or Twitch",
-      "text": "You can link your account to Discord, Twitter/X, or Twitch to sign in faster. We then store your ID on that platform, your nickname, your avatar, and the access/refresh tokens needed to keep the connection alive (these tokens are only used to authenticate your account and are never shared). You can unlink these accounts at any time from your profile settings.",
-      "gravatar": "Default avatar: If you don't have an avatar via a linked account, an image may be requested from Gravatar (Automattic) based on a hash of your email, a standard third-party service used by many websites."
+      "text": "You can link your account to Discord, Twitter/X, or Twitch to sign in faster. We then store your ID on that platform, your nickname, your avatar, and the access/refresh tokens needed to keep the connection alive (these tokens are only used to authenticate your account and are never shared). You can unlink these accounts at any time from your profile settings."
     },
     "moderation": {
       "title": "Moderation & Community Safety",
       "text": "To keep the community safe, we keep a history of sanctions (warnings, bans) applied to an account or team, reports submitted by users (fraud, ban evasion, harassment, fake accounts, etc.), and an activity log of moderation actions.",
-      "retentionNote": "To prevent ban evasion, a technical fingerprint (such as an email address) may be attached to a sanction and kept even after the associated account is deleted. The same applies to the report history and moderation log, which form a safety record kept independently of the account."
+      "retentionNote": "To prevent ban evasion, the sanction history, reports and the moderation log form a safety record, kept even after the account involved is deleted."
     },
     "dataStructure": {
-      "title": "Data Structure",
-      "text": "To better understand the data we store and share, you can find our data structure below. It lists all stored data, explains their utility, if they are mandatory, and if they are shared.",
-      "button": "View stored data"
+      "title": "Personal data in detail",
+      "text": "For each piece of personal data we store, see how we get it, where it is stored and how long we keep it.",
+      "button": "See the data in detail"
     },
     "retention": {
       "title": "Data Retention",
-      "text": "Game data is kept as long as the team or player is active in the project ecosystem. You can request the deletion of your data at any time."
+      "text": "Player profiles and match data are kept for life, as an archive of the scene, even when a person stops playing. Account data is kept as long as the account exists. Access logs are deleted after 14 days, login IP addresses after 90 days. You can ask for your data to be corrected or deleted at any time, except for data strictly needed for a moderation record."
     },
     "rights": {
       "title": "Your Rights (GDPR)",
@@ -780,7 +779,11 @@
       "title": "Cookies",
       "text": "This site does not use any advertising or profiling cookies. Only strictly necessary technical cookies for session operation may be used."
     },
-    "takedownLink": "Request a content removal"
+    "takedownLink": "Request a content removal",
+    "hosting": {
+      "title": "Hosting",
+      "text": "The site, the database and the server logs are hosted by Infomaniak, in Switzerland. Offsite backups are encrypted and stored at Exoscale, in Zurich and Geneva. Public files (images, logos) go through the Bunny.net CDN, set up to collect no IP address."
+    }
   },
   "legalNotice": {
     "title": "Legal Mentions",
@@ -870,7 +873,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Caches our CSS/JS, as well as player, team & tournament images, on servers around the world to lighten the load on our own servers."
+        "body": "Caches our CSS/JS, as well as player, team & tournament images, on servers around the world to lighten the load on our own servers. The CDN is set up to collect no IP address."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -903,12 +906,17 @@
           "p4": "I thought it was important to explain this choice, and especially to talk about Infomaniak: it's a lesser known provider, but one that deserves to be. Especially since a free mail account or a OneDrive subscription can be migrated to them without really paying more, for a service that's just as good, but with a minimum of respect for you, your privacy and our planet.",
           "cite": "Lacy, founder of GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Offsite backups",
+        "body": "Daily encrypted backup of our database and files, stored in Switzerland (Zurich, replicated to Geneva). Each backup cannot be changed for 30 days, then it is deleted."
       }
     },
     "data": {
       "title": "Data collected",
-      "body": "We publicly document every piece of data we store: players, teams, tournaments and matches. No data is collected without a reason tied to the site's operation.",
-      "link": "See the data we store"
+      "body": "We publicly document the personal data we store: how we get it, where it is stored and how long we keep it. No data is collected without a reason tied to running the site.",
+      "link": "See the personal data"
     },
     "finance": {
       "title": "Finance",
@@ -1014,396 +1022,219 @@
     }
   },
   "dataPage": {
-    "title": "Data structure",
-    "subtitle": "Structure and list of the data we collect",
-    "openData": {
-      "title": "Open Data portal",
-      "body": "You might prefer exploring or downloading our datasets directly instead of using the API. The Open Data portal will be migrated here along with the rest of the API.",
-      "badge": "Coming soon"
-    },
-    "groups": {
-      "identity": "People, teams & organizations structure",
-      "account": "User accounts & moderation",
-      "tournament": "Tournament structure",
-      "matches": "Match & game stats structure",
-      "news": "News & community structure",
-      "rawStats": "Raw game data (round by round)",
-      "others": "Other data structure"
-    },
-    "sections": {
-      "people": "People",
-      "teams": "Teams",
-      "organizations": "Organizations",
-      "tournaments": "Tournaments",
-      "matches": "Matches",
-      "news": "News",
-      "users": "Users",
-      "reactionsEmotes": "Reactions & Emotes"
-    },
-    "descriptions": {
-      "identity": "A person (player, coach, caster, observer, organizer...) only has one profile, even if their role changes over time. Teams and organizations have the right to edit/delete their \"Additional information\".\n\nThe Riot ID is never displayed or shared. It is identified by our team from match data.",
-      "tournament": "Every tournament has an identifier, a name, dates, a region, a category and a status. A tournament can be split into several stages (groups, playoffs...), themselves made of one or more containers (bracket or group). Teams register as \"entrants\", with a roster locked in for that specific tournament, separate from the team's permanent roster.",
-      "matches": "We collect a lot of information about matches to provide detailed statistics. We gather:\n- The basic match information (required)\n- The match's vetoes\n- The maps played, with the result and stats\n- Aggregated stats per player and per map, what the site actually queries day to day\n\nThis data isn't always collected, but we try our best to obtain it in order to display the most complete stats possible.",
-      "rawStats": "In addition to the aggregated stats above, we keep a round-by-round raw layer (kills, damages, economy, alive states) used to recompute those stats and to display round history.\n\nEvery player's position during key events (kill, plant, defuse) is kept in full detail indefinitely: it feeds our heatmaps and can't be reconstructed once aggregated.",
-      "news": "Every news article has an identifier, a title, content and a status (draft, published, archived). An article can be linked to a team, a person or a tournament to appear on its profile.\n\nThe forum and emotes/reactions let the community interact with the site's content; messages hidden or removed by moderation stay tracked internally.",
-      "account": "These tables only exist for people who created a user account (distinct from a person profile), required to react to news, manage a profile, or administrate the site.\n\nSecurity data (password, 2FA, passkeys) is never shared. Linked Discord/Twitch accounts store an access token used only for authentication.\n\nModeration data (sanctions, anti-evasion fingerprints, reports, activity log) forms a security record kept independently of the account, even after its deletion, to prevent ban evasion.",
-      "others": "We store the number of visits on each page per day; we don't store who viewed it or the exact time, only the approximate country/region.\n\nThis data is stored and private. It's never shared, we only use it to visualize site usage and adapt our infrastructure as needed."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Main information",
-          "additional": "Additional information",
-          "confidential": "Confidential information"
-        },
-        "id": "Unique identifier assigned to the person (visible in the URL)",
-        "handle": "Handle",
-        "aliases": "Previously known handles",
-        "firstName": "First name",
-        "lastName": "Last name",
-        "countryCode": "Country code (FR = France, US = United States, etc.)",
-        "secondaryCountryCode": "Second country code, for dual nationality",
-        "pronouns": "Pronouns",
-        "birthDate": "Date of birth",
-        "bio": "Bio",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "VLR identifier",
-        "liquipediaLink": "Link to the person's Liquipedia page",
-        "valId": "Riot ID / PUUID (private information, identified and assigned by our team from Riot match data, used to link a match's stats to a person)",
-        "esportsValId": "Riot esports identifier associated with the game account"
+    "title": "Personal data",
+    "subtitle": "What data we keep about you, where it comes from, who can see it and how long we keep it.",
+    "policy": {
+      "title": "Our policy",
+      "noSale": {
+        "title": "No selling, no sharing",
+        "text": "We never sell any data and never share your private data, neither with advertisers nor with partners. Only public data (player profiles, match statistics) is published, on the site and through our API."
       },
-      "rosterMemberships": {
-        "personId": "Unique identifier of a person",
-        "teamId": "Unique identifier of a team",
-        "role": "Role on the team (player/coach/manager/etc.)",
-        "period": "Period of membership on the team (joined, and left if applicable)",
-        "inactiveSince": "Date since which the person, still on the roster, is inactive (injury, break, etc.)"
+      "minimal": {
+        "title": "The bare minimum",
+        "text": "We only collect what the site needs to work and stay safe. No ads, no trackers, no tracking cookies: the audience is counted anonymously, with no IP address."
       },
-      "teams": {
-        "titles": {
-          "main": "Main information",
-          "additional": "Additional information"
-        },
-        "id": "Unique identifier assigned to the team (visible in the URL)",
-        "name": "Team name",
-        "shortName": "Short name (Fnatic = FNC)",
-        "countryCode": "Country code (FR = France, US = United States, etc.)",
-        "secondaryCountryCode": "Second country code, for a team tied to two regions",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Bio",
-        "vlrId": "VLR identifier",
-        "liquipediaLink": "Link to the team's Liquipedia page",
-        "tags": "Free-form tags attached to the team"
-      },
-      "organizations": {
-        "id": "Unique identifier of the organization",
-        "name": "Organization name",
-        "slug": "Text identifier used in the URL",
-        "tags": "Roles the organization plays (tournament organizer, production, media, broadcaster, agency, community)",
-        "countryCode": "Country code (FR = France, US = United States, etc.)",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Unique identifier of a person",
-        "organizationId": "Unique identifier of an organization",
-        "role": "Role within the organization (admin/caster/observer/producer/editor/etc.)",
-        "period": "Period of membership in the organization"
-      },
-      "productionCredits": {
-        "personId": "Unique identifier of the credited person",
-        "organizationId": "Organization the person works for on this credit, if any",
-        "role": "Role held (caster/analyst/observer/organizer/producer/editor/photographer/translator/referee/etc.)",
-        "titleOverride": "Custom title displayed instead of the generic role",
-        "scope": "The exact level concerned: tournament, stage, container, match or map"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Main information",
-          "additional": "Additional information"
-        },
-        "id": "Unique identifier of the tournament",
-        "name": "Competition name",
-        "region": "World region (EMEA, NA, etc.)",
-        "category": "Tournament category (e.g. Challengers, Cash Cups)",
-        "prizePool": "Total prize pool (cashprize)",
-        "location": "Physical location",
-        "startDate": "Start date",
-        "endDate": "End date",
-        "status": "Current status (upcoming, ongoing, finished)",
-        "description": "Event overview",
-        "liquipediaLink": "Link to the tournament's Liquipedia page",
-        "socials": "Tournament's social media links"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Technical structure"
-        },
-        "name": "Stage name (e.g. Playoffs, Group A)",
-        "sequenceOrder": "Display order of the stage",
-        "status": "Stage status (upcoming, ongoing, finished)",
-        "startDate": "Stage start date",
-        "endDate": "Stage end date",
-        "liquipediaLink": "Link to the stage's own Liquipedia page",
-        "containerType": "Container format (elimination bracket or group)",
-        "config": "Technical bracket/group configuration (generated by the tournament engine)"
-      },
-      "entrants": {
-        "tournamentId": "Reference to the tournament",
-        "kind": "Entrant kind (always \"team\" on GC-Stats)",
-        "teamId": "Registered team",
-        "displayName": "Name displayed at registration time (stays unchanged even if the team is later renamed)",
-        "seed": "Seed assigned to the entrant",
-        "qualificationSourceManual": "Whether the qualification source was set by hand (otherwise derived from the qualification rules)",
-        "qualificationSourceType": "Manual qualification source (tournament, invite or points)",
-        "qualificationSourceTournamentId": "Tournament the entrant qualified from (manual source)",
-        "qualificationSourcePointTypeId": "Point type the qualification comes from (manual source)"
-      },
-      "entrantMembers": {
-        "personId": "Person part of the roster locked for this specific tournament",
-        "role": "Role in this roster (player/stand-in/coach/manager/analyst/etc.)",
-        "isStarter": "Starter or substitute for this tournament"
-      },
-      "qualifications": {
-        "destinationType": "What the qualification grants: a spot in another container, or a final placement",
-        "placement": "Placement achieved (1st, 2nd, etc.)",
-        "placementLabel": "Placement label (e.g. Winner, Runner-up)",
-        "points": "Ranking points awarded",
-        "cashPrizeAmount": "Cash prize amount awarded",
-        "rank": "Rank achieved by the entrant in this standing",
-        "amount": "Number of points credited or debited (signed ledger entry)",
-        "reason": "Reason for the points awarded or removed"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Technical structure"
-        },
-        "id": "Unique identifier of the match",
-        "containerId": "Container (bracket/group) the match belongs to",
-        "round": "Round number",
-        "label": "Round name (e.g. Grand Final)",
-        "bestOf": "Maximum number of maps (BO1, BO3, BO5)",
-        "status": "Status (upcoming, ready, live, completed)",
-        "entrantAId": "Unique identifier of entrant A",
-        "entrantBId": "Unique identifier of entrant B",
-        "scoreA": "Final score of entrant A",
-        "scoreB": "Final score of entrant B",
-        "winnerId": "Winning entrant",
-        "scheduledAt": "Scheduled date and time",
-        "patch": "Game version (e.g. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Match concerned",
-        "entrantId": "Entrant performing the action",
-        "mapName": "Map name (e.g. Ascent)",
-        "type": "Action (pick, ban or decider)",
-        "order": "Order in the veto sequence",
-        "side": "Side chosen (attack/defense), for a pick or a decider",
-        "sidePickedByEntrantId": "Entrant who picked this side"
-      },
-      "maps": {
-        "id": "Unique identifier of the map played",
-        "apiMatchId": "Match identifier given by the Riot API",
-        "matchId": "Match concerned",
-        "mapName": "Map name",
-        "gameMode": "Associated Riot game mode",
-        "teamAScore": "Entrant A's score on this map",
-        "teamBScore": "Entrant B's score on this map",
-        "order": "Position of the map within the match",
-        "isCompleted": "Is the map completed?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Agent played (e.g. Jett)",
-        "kills": "Total kills",
-        "deaths": "Total deaths",
-        "assists": "Total assists",
-        "acs": "Average combat score",
-        "adr": "Average damage per round",
-        "kastPercentage": "% of rounds with Kill/Assist/Survive/Trade",
-        "firstKills": "First kills (FK)",
-        "firstDeaths": "First deaths (FD)",
-        "headshotPercentage": "Headshot %",
-        "clutches": "Clutches won/played, by situation (1v1 to 1v5)",
-        "multikills": "Number of rounds with 2, 3, 4 or 5 kills",
-        "tradeKills": "Kills that avenged a teammate",
-        "tradedDeaths": "Deaths avenged by a teammate",
-        "roundTypeSplits": "Detailed stats by round type (pistol, attack, defense, etc.)",
-        "fallDeaths": "Deaths by fall damage",
-        "weaponKills": "Number of kills per weapon"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Side played (attack/defense)",
-        "roundsPlayed": "Rounds played on this side",
-        "roundsWon": "Rounds won on this side"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Round number (1-24+)",
-        "winningEntrantId": "Entrant that won the round",
-        "winType": "Win type (elimination, defuse, detonation, time expired)",
-        "atkEntrantId": "Entrant on attack this round",
-        "defEntrantId": "Entrant on defense this round",
-        "plantSite": "Spike plant site (A/B/C)",
-        "plantX": "X position of the plant on the minimap",
-        "plantY": "Y position of the plant on the minimap"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Person who made the kill",
-        "victimPersonId": "Person eliminated",
-        "assistantPersonIds": "People who assisted the kill",
-        "timeMs": "Time of the kill (ms since round start)",
-        "weapon": "Weapon used",
-        "damageType": "Damage type (weapon, ability, spike, melee, fall)",
-        "isSecondaryFire": "Kill made with secondary fire (e.g. a weapon's scope)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Person who dealt the damage",
-        "receiverPersonId": "Person who received the damage",
-        "damage": "Damage dealt",
-        "headshots": "Number of headshots",
-        "bodyshots": "Number of bodyshots",
-        "legshots": "Number of legshots"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Order of the event within the round",
-        "timeMs": "Time of the event (ms since round start)",
-        "atkAlive": "Players alive on the attack side",
-        "defAlive": "Players alive on the defense side",
-        "winnerSide": "Side currently ahead in numbers"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Person concerned",
-        "kills": "Kills made this round",
-        "assists": "Assists made this round",
-        "score": "Score obtained this round",
-        "loadoutValue": "Total value of the loadout",
-        "economySpent": "Credits spent",
-        "economyRemaining": "Credits remaining",
-        "weapon": "Main weapon used",
-        "armor": "Armor type"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Event type (kill, plant, defuse)",
-        "personId": "Person concerned",
-        "role": "Role in the event (killer, victim, bystander, planter, defuser)",
-        "x": "X position on the minimap",
-        "y": "Y position on the minimap",
-        "viewRadians": "View angle at the time of the event",
-        "timeMs": "Time of the event (ms since round start)"
-      },
-      "news": {
-        "titles": {
-          "main": "Main information",
-          "additional": "Additional information"
-        },
-        "id": "Unique identifier of the article (visible in the URL)",
-        "authorId": "Article author",
-        "organizationId": "Organization the article is published under, if any",
-        "lang": "Article's language",
-        "title": "Article title",
-        "slug": "Text identifier used in the URL",
-        "excerpt": "Short summary",
-        "content": "Article content",
-        "imageCover": "Cover image",
-        "status": "Article status (draft = being written, published = live on the site, archived = hidden from the site but reachable via the API)",
-        "isFeatured": "Is the article featured on the homepage?",
-        "showOnHome": "Does the article show up on the homepage?",
-        "publishedAt": "Publication date",
-        "createdAt": "Creation date of the article",
-        "updatedAt": "Date of the last modification"
-      },
-      "newsRelations": {
-        "relatableType": "Type of linked entity (team, person or tournament)",
-        "relatableId": "Identifier of the linked entity, used to display the article on its profile"
-      },
-      "forumThreads": {
-        "category": "Thread category (tournament, match, news, general)",
-        "subjectType": "Type of entity the thread relates to, if any",
-        "title": "Thread title",
-        "lastMessageAt": "Date of the last message posted"
-      },
-      "forumMessages": {
-        "body": "Message content",
-        "parentId": "Parent message, for a reply",
-        "hiddenAt": "Date the message was hidden by moderation"
-      },
-      "emotes": {
-        "name": "Emote name",
-        "imagePath": "Image path",
-        "source": "Emote origin (e.g. bulk import, derived from a team logo)",
-        "isActive": "Is the emote available for use?"
-      },
-      "reactions": {
-        "emoteId": "Emote used",
-        "userId": "Account that reacted",
-        "reactableType": "Type of content the reaction applies to (e.g. a news article)"
-      },
-      "users": {
-        "titles": {
-          "main": "Main information",
-          "security": "Security (private)"
-        },
-        "id": "Unique identifier of the account",
-        "username": "Publicly displayed handle",
-        "teamTag": "Team shown as \"supported\" on the public profile, with that team's tag",
-        "preferences": "Interface preferences (private)",
-        "pronouns": "Pronouns",
-        "bio": "Account's public bio",
-        "socials": "Social media linked to the account",
-        "email": "Email address (private, never displayed)",
-        "passwordHash": "Password, hashed (never stored or shown in plain text)",
-        "twoFactorSecret": "Two-factor authentication (2FA) secret, if enabled, encrypted",
-        "twoFactorRecoveryCodes": "2FA recovery codes, if enabled, encrypted",
-        "discordSyncedAt": "Date of the last Discord sync"
-      },
-      "accounts": {
-        "provider": "Linked platform (Discord or Twitch)",
-        "providerAccountId": "Account identifier on that platform",
-        "accessToken": "OAuth access token (private, never shared, used only for authentication)",
-        "refreshToken": "OAuth refresh token (private)"
-      },
-      "authenticators": {
-        "name": "Name given to the passkey",
-        "credentialId": "Technical identifier of the key (private)",
-        "lastUsedAt": "Last time this key was used"
-      },
-      "sanctions": {
-        "type": "Sanction type (note, warning, mute, suspension, ban)",
-        "reason": "Reason for the sanction",
-        "startsAt": "Effective start date",
-        "endsAt": "End date (if temporary)",
-        "revokedAt": "Date lifted early, if applicable",
-        "issuedBy": "Moderator who issued the sanction",
-        "revokedBy": "Moderator who lifted the sanction, if applicable"
-      },
-      "sanctionIdentities": {
-        "type": "Type of technical fingerprint attached (e.g. email)",
-        "value": "Fingerprint value (private, kept even after account deletion to prevent ban evasion)"
-      },
-      "userReports": {
-        "category": "Report category",
-        "reason": "Detail provided by the reporter",
-        "status": "Handling status (pending, resolved, dismissed)",
-        "reviewedBy": "Moderator who handled the report",
-        "resolutionNote": "Resolution note left by moderation"
-      },
-      "activityLog": {
-        "logName": "Category of the logged action",
-        "description": "Description of the action performed",
-        "event": "Event type (created, updated, deleted)",
-        "subjectType": "Type of entity concerned by the action (person, team, etc.)",
-        "causerId": "Account that performed the action",
-        "attributeChanges": "Detail of changed fields (before/after)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Main information"
-        },
-        "uri": "Page URL",
-        "viewedAt": "Day of the visit",
-        "count": "Number of views that day",
-        "countryCode": "Approximate country of visitors that day",
-        "regionCode": "Approximate region of visitors that day"
+      "switzerland": {
+        "title": "Hosted in Switzerland",
+        "text": "All of our data is stored in Switzerland, by Swiss hosting providers, backups included."
       }
-    }
+    },
+    "storage": {
+      "title": "Why Switzerland",
+      "why": "Switzerland has one of the most protective privacy laws in the world, the Federal Act on Data Protection. The European Union recognizes it as offering a level of protection equivalent to the GDPR. Our hosting providers are Swiss companies: your data does not fall under foreign laws such as the US CLOUD Act, which lets US authorities demand data from American companies wherever it is stored.",
+      "providers": "Here is exactly where the data lives:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Switzerland",
+        "body": "All of our servers: the site, the database, the server logs and our emails. A continuous copy of the database is kept for 14 days in a second Infomaniak data center, to restore it after an outage."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Switzerland (Zurich and Geneva)",
+        "body": "Daily encrypted backup of the database and our files. Each backup is deleted after 30 days, and cannot be changed or deleted before that, not even by us."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Servers worldwide",
+        "body": "Only serves public files (images, logos, CSS and JavaScript). The CDN replaces your IP address with 0.0.0.0: no IP address is collected."
+      }
+    },
+    "private": {
+      "title": "Private data",
+      "badge": "Never public",
+      "intro": "This data is never shown publicly nor shared through our API."
+    },
+    "public": {
+      "title": "Public data",
+      "badge": "Public",
+      "intro": "This data is shown on the site and shared through our API, it is the heart of GC Stats."
+    },
+    "labels": {
+      "source": "Where it comes from",
+      "visibility": "Who sees it",
+      "retention": "How long"
+    },
+    "categories": {
+      "account": {
+        "title": "Your account",
+        "groups": {
+          "profile": {
+            "label": "Account",
+            "items": [
+              "Email address",
+              "Username",
+              "Password, hashed (never stored in plain text)",
+              "Display preferences and favorite team",
+              "Pronouns, bio and socials, if you add them",
+              "Last login date"
+            ]
+          },
+          "security": {
+            "label": "Security",
+            "items": [
+              "Two-factor authentication (secret and recovery codes, encrypted)",
+              "Passkeys, only the public key is kept"
+            ]
+          },
+          "linked": {
+            "label": "Linked accounts",
+            "items": [
+              "Discord, Twitch or Twitter/X ID",
+              "Username and avatar on that platform",
+              "Sign-in tokens, only used to sign you in"
+            ]
+          },
+          "developers": {
+            "label": "Developers",
+            "items": [
+              "API keys",
+              "OAuth applications and the authorizations you granted",
+              "API call history"
+            ]
+          }
+        },
+        "source": "You, when signing up and in your settings. Linked accounts are sent by the platform when you link them.",
+        "visibility": "You and our team. Your username, pronouns, bio, socials and favorite team appear on your profile page. Our team cannot see your password, only the sign-in method used (password, Discord, Twitch, Twitter/X, passkey, two-factor authentication). Your email and security settings are never shown publicly.",
+        "retention": "As long as your account exists. A linked account is deleted as soon as you unlink it. The API call history is deleted after 90 days."
+      },
+      "protection": {
+        "title": "Protecting your account and the site",
+        "groups": {
+          "loginLog": {
+            "label": "Login history",
+            "items": [
+              "Logins, failed logins and security changes",
+              "Date",
+              "IP address"
+            ]
+          },
+          "accessLogs": {
+            "label": "Access logs",
+            "items": [
+              "IP address",
+              "Requested page",
+              "Browser",
+              "Date and time"
+            ]
+          }
+        },
+        "source": "Recorded automatically: the login history protects your account against takeover, the access logs protect the site against bots and abuse.",
+        "visibility": "Our technical team only.",
+        "retention": "Login IP addresses are deleted after {days} days. Access logs are deleted after 14 days."
+      },
+      "moderation": {
+        "title": "Moderation and contributions",
+        "groups": {
+          "requests": {
+            "label": "Your requests",
+            "items": [
+              "Edit suggestions and their discussion with the team",
+              "Reports you send"
+            ]
+          },
+          "moderation": {
+            "label": "Moderation",
+            "items": [
+              "Warnings and sanctions, with their reason",
+              "Messages flagged by our automatic filter",
+              "History of moderation actions"
+            ]
+          }
+        },
+        "source": "Your requests and reports, and the decisions of our moderation team.",
+        "visibility": "Our team only. An accepted suggestion updates the related public page, the suggestion itself stays private.",
+        "retention": "Kept as history, even after your account is deleted, but with no link to it."
+      },
+      "players": {
+        "title": "Players and staff",
+        "groups": {
+          "identity": {
+            "label": "Identity",
+            "items": [
+              "Handle and former handles",
+              "First and last name",
+              "Country",
+              "Pronouns",
+              "Date of birth",
+              "Bio and socials"
+            ]
+          },
+          "career": {
+            "label": "Career",
+            "items": [
+              "Teams and roles",
+              "Tournaments and matches played",
+              "Organizations and production credits"
+            ]
+          },
+          "hidden": {
+            "label": "Never shown",
+            "items": [
+              "Riot ID, only used to link match statistics to the right profile"
+            ]
+          }
+        },
+        "source": "The person themselves or their organization, our team from public sources (Liquipedia, official announcements), or the community through a suggestion approved by our team. The Riot ID comes from the official Riot Games API.",
+        "visibility": "Everyone, on the site and through our API, except the Riot ID.",
+        "retention": "Kept for life, as an archive of the scene, even when the person stops playing. You can ask for a correction or a deletion."
+      },
+      "matchStats": {
+        "title": "Match statistics",
+        "groups": {
+          "stats": {
+            "label": "For each match played",
+            "items": [
+              "Agents played",
+              "Kills, deaths and assists",
+              "Damage",
+              "Economy and loadout",
+              "Positions on the map"
+            ]
+          }
+        },
+        "source": "The official Riot Games API, for the matches of the tournaments we cover.",
+        "visibility": "Everyone, on the site and through our API.",
+        "retention": "Kept as a historical archive of competitions."
+      },
+      "community": {
+        "title": "Your posts",
+        "groups": {
+          "content": {
+            "label": "What you post",
+            "items": [
+              "Forum messages",
+              "Reactions",
+              "Pick'em predictions and groups"
+            ]
+          }
+        },
+        "source": "You.",
+        "visibility": "Everyone, on the site.",
+        "retention": "Until you delete them. If you delete your account, your reactions and predictions are deleted, and your messages stay with no link to your account."
+      }
+    },
+    "rights": "You can ask to access, correct or delete your data at any time.",
+    "privacyLink": "Read the privacy policy"
   },
   "financePage": {
     "title": "Finance",
@@ -1423,6 +1254,10 @@
       "Infrastructure": "Infrastructure",
       "Software & Licenses": "Software & Licenses",
       "Other": "Other"
+    },
+    "expensesDoc": {
+      "text": "To understand what our monthly expenses are for, we explain them in plain words in a document.",
+      "link": "Read the document"
     }
   },
   "teamPage": {
@@ -2036,8 +1871,6 @@
       "finance": "Finance",
       "about": "About / Projects",
       "backToSite": "Back to site",
-      "pendingChangeRequests": "Pending change requests",
-      "pendingChangeRequests": "Pending change requests",
       "pendingChangeRequests": "Pending change requests",
       "tournaments": "Tournaments",
       "groupModeration": "Moderation",
@@ -5488,17 +5321,11 @@
         "youtube": "YouTube",
         "tiktok": "TikTok",
         "kick": "Kick",
-
         "sooplive": "SOOP",
-
         "naver": "Naver",
-
         "bilibili": "Bilibili",
-
         "qq": "QQ",
-
         "weibo": "Weibo",
-
         "other": "Other"
       },
       "typeLabel": "Type",

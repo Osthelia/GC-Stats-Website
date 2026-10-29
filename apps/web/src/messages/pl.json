@@ -735,11 +735,11 @@
     "intro": "Ta polityka informuje, jak przetwarzamy dane na tej stronie, stawiając na przejrzystość i poszanowanie prywatności.",
     "analytics": {
       "title": "Nawigacja i statystyki",
-      "text": "Mierzymy ruch na stronie w całkowicie anonimowy sposób: te statystyki nigdy nie zapisują adresu IP, a jedynie kraj, stronę i godzinę wizyty, bez indywidualnego śledzenia ani fingerprintingu. Jeśli założysz konto, Twoja sesja logowania (adres IP i user agent) jest jednak tymczasowo przechowywana ze względów bezpieczeństwa (ochrona przed przejęciem konta), jak na praktycznie każdej stronie z uwierzytelnianiem."
+      "text": "Mierzymy oglądalność strony w pełni anonimowo: liczone są tylko odwiedzona strona, dzień i liczba wyświetleń, bez adresu IP, bez indywidualnego śledzenia i bez fingerprintingu. Aby chronić stronę przed botami i nadużyciami, nasze serwery zapisują każde żądanie (adres IP, żądana strona, przeglądarka, data) przez 14 dni. Jeśli masz konto, adres IP każdego logowania jest też przechowywany przez 90 dni w dzienniku bezpieczeństwa Twojego konta."
     },
     "publicData": {
       "title": "Dane publiczne",
-      "text": "Informacje profilowe (nick, biografia, linki do social mediów, kraj) są dobrowolnie podawane przez zawodniczkę i publicznie wyświetlane na stronie. Statystyki meczowe są pobierane bezpośrednio przez oficjalne API Riot Games dla meczów uznanych za część śledzonych turniejów. Wszystkie te dane są publicznie dostępne i udostępniane przez nasze API."
+      "text": "Informacje profilowe (pseudonim, biografia, media społecznościowe, kraj) podaje zawodniczka lub jej organizacja, albo dodaje je nasz zespół na podstawie źródeł publicznych, a następnie są one publicznie wyświetlane na stronie. Statystyki gry są zbierane bezpośrednio przez oficjalne API Riot Games dla meczów obserwowanych turniejów. Wszystkie te dane są publicznie dostępne i udostępniane przez nasze API."
     },
     "privateData": {
       "title": "Dane prywatne",
@@ -752,22 +752,21 @@
     },
     "socialLogin": {
       "title": "Logowanie przez Discord, Twitter/X lub Twitch",
-      "text": "Możesz połączyć konto z Discordem, Twitterem/X lub Twitchem, aby logować się szybciej. Przechowujemy wtedy Twój identyfikator na tej platformie, nick, awatar oraz tokeny dostępu/odświeżania potrzebne do utrzymania połączenia (tokeny służą wyłącznie do uwierzytelniania Twojego konta i nigdy nie są udostępniane). Możesz w każdej chwili odłączyć te konta w ustawieniach profilu.",
-      "gravatar": "Domyślny awatar: jeśli nie masz awatara z połączonego konta, obraz może zostać pobrany z Gravatara (Automattic) na podstawie hasha Twojego e-maila. To standardowa usługa zewnętrzna używana przez wiele stron."
+      "text": "Możesz połączyć konto z Discordem, Twitterem/X lub Twitchem, aby logować się szybciej. Przechowujemy wtedy Twój identyfikator na tej platformie, nick, awatar oraz tokeny dostępu/odświeżania potrzebne do utrzymania połączenia (tokeny służą wyłącznie do uwierzytelniania Twojego konta i nigdy nie są udostępniane). Możesz w każdej chwili odłączyć te konta w ustawieniach profilu."
     },
     "moderation": {
       "title": "Moderacja i bezpieczeństwo społeczności",
       "text": "Aby dbać o bezpieczeństwo społeczności, przechowujemy historię sankcji (ostrzeżenia, bany) nałożonych na konto lub drużynę, zgłoszeń wysyłanych przez użytkowników (oszustwa, obchodzenie banów, nękanie, fałszywe konta itp.) oraz dziennik działań moderacyjnych.",
-      "retentionNote": "Aby zapobiegać obchodzeniu banów, do sankcji może zostać przypisany techniczny odcisk (np. adres e-mail), przechowywany nawet po usunięciu powiązanego konta. To samo dotyczy historii zgłoszeń i dziennika moderacji, które stanowią rejestr bezpieczeństwa przechowywany niezależnie od konta."
+      "retentionNote": "Aby zapobiec obchodzeniu bana, historia sankcji, zgłoszenia i dziennik moderacji tworzą akta bezpieczeństwa, przechowywane także po usunięciu danego konta."
     },
     "dataStructure": {
-      "title": "Struktura danych",
-      "text": "Aby lepiej zrozumieć dane, które przechowujemy i udostępniamy, poniżej znajdziesz naszą strukturę danych. Wymienia wszystkie przechowywane dane, wyjaśnia ich cel oraz to, czy są obowiązkowe i czy są udostępniane.",
-      "button": "Zobacz przechowywane dane"
+      "title": "Dane osobowe w szczegółach",
+      "text": "Dla każdej przechowywanej przez nas danej osobowej sprawdź, skąd ją mamy, gdzie jest przechowywana i jak długo ją trzymamy.",
+      "button": "Zobacz dane w szczegółach"
     },
     "retention": {
       "title": "Przechowywanie danych",
-      "text": "Dane z gier są przechowywane tak długo, jak drużyna lub zawodniczka jest aktywna w ekosystemie projektu. Możesz w każdej chwili poprosić o usunięcie swoich danych."
+      "text": "Profile zawodniczek i dane meczów są przechowywane na zawsze, jako archiwum sceny, nawet gdy osoba przestaje grać. Dane konta są przechowywane, dopóki konto istnieje. Logi dostępu są usuwane po 14 dniach, adresy IP logowania po 90 dniach. W każdej chwili możesz poprosić o poprawienie lub usunięcie swoich danych, z wyjątkiem danych niezbędnych dla akt moderacyjnych."
     },
     "rights": {
       "title": "Twoje prawa (RODO)",
@@ -778,7 +777,11 @@
       "title": "Pliki cookie",
       "text": "Ta strona nie używa reklamowych ani profilujących plików cookie. Mogą być używane wyłącznie techniczne pliki cookie niezbędne do działania sesji."
     },
-    "takedownLink": "Poproś o usunięcie treści"
+    "takedownLink": "Poproś o usunięcie treści",
+    "hosting": {
+      "title": "Hosting",
+      "text": "Strona, baza danych i logi serwera są hostowane przez Infomaniak w Szwajcarii. Zewnętrzne kopie zapasowe są szyfrowane i przechowywane w Exoscale, w Zurychu i Genewie. Pliki publiczne (obrazy, loga) przechodzą przez CDN Bunny.net, skonfigurowany tak, by nie zbierać żadnego adresu IP."
+    }
   },
   "legalNotice": {
     "title": "Nota prawna",
@@ -868,7 +871,7 @@
       "cdn": {
         "name": "Bunny.net",
         "role": "CDN",
-        "body": "Przechowuje w pamięci podręcznej nasze pliki CSS/JS oraz zdjęcia zawodniczek, drużyn i turniejów na serwerach na całym świecie, aby odciążyć nasze własne serwery."
+        "body": "Przechowuje w pamięci podręcznej nasze pliki CSS/JS oraz zdjęcia zawodniczek, drużyn i turniejów na serwerach na całym świecie, aby odciążyć nasze własne serwery. CDN jest skonfigurowany tak, by nie zbierać żadnego adresu IP."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -901,12 +904,17 @@
           "p4": "Uznałam, że warto wyjaśnić ten wybór, a przede wszystkim opowiedzieć o Infomaniak: to mniej znany dostawca, ale zasługuje na rozgłos. Zwłaszcza że darmowe konto pocztowe czy subskrypcję OneDrive można do nich przenieść, nie płacąc realnie więcej, za równie dobrą usługę, ale z minimum szacunku dla Ciebie, Twojej prywatności i naszej planety.",
           "cite": "Lacy, założycielka GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Zewnętrzne kopie zapasowe",
+        "body": "Codzienna szyfrowana kopia zapasowa naszej bazy danych i plików, przechowywana w Szwajcarii (Zurych, z replikacją w Genewie). Każdej kopii nie można zmienić przez 30 dni, potem jest usuwana."
       }
     },
     "data": {
       "title": "Zbierane dane",
-      "body": "Publicznie dokumentujemy każdą przechowywaną informację: zawodniczki, drużyny, turnieje i mecze. Żadne dane nie są zbierane bez powodu związanego z działaniem strony.",
-      "link": "Zobacz przechowywane dane"
+      "body": "Publicznie dokumentujemy przechowywane przez nas dane osobowe: skąd je mamy, gdzie są przechowywane i jak długo je trzymamy. Żadne dane nie są zbierane bez powodu związanego z działaniem strony.",
+      "link": "Zobacz dane osobowe"
     },
     "finance": {
       "title": "Finanse",
@@ -1012,396 +1020,219 @@
     }
   },
   "dataPage": {
-    "title": "Struktura danych",
-    "subtitle": "Struktura i lista zbieranych przez nas danych",
-    "openData": {
-      "title": "Portal Open Data",
-      "body": "Możesz woleć przeglądać lub pobierać nasze zbiory danych bezpośrednio zamiast korzystać z API. Portal Open Data zostanie przeniesiony tutaj razem z resztą API.",
-      "badge": "Wkrótce"
-    },
-    "groups": {
-      "identity": "Struktura osób, drużyn i organizacji",
-      "account": "Konta użytkowników i moderacja",
-      "tournament": "Struktura turniejów",
-      "matches": "Struktura meczów i statystyk gier",
-      "news": "Struktura aktualności i społeczności",
-      "rawStats": "Surowe dane z gier (runda po rundzie)",
-      "others": "Struktura pozostałych danych"
-    },
-    "sections": {
-      "people": "Osoby",
-      "teams": "Drużyny",
-      "organizations": "Organizacje",
-      "tournaments": "Turnieje",
-      "matches": "Mecze",
-      "news": "Aktualności",
-      "users": "Użytkownicy",
-      "reactionsEmotes": "Reakcje i emotki"
-    },
-    "descriptions": {
-      "identity": "Osoba (zawodniczka, trener, caster, observer, organizator...) ma tylko jeden profil, nawet jeśli jej rola zmienia się z czasem. Drużyny i organizacje mają prawo edytować/usuwać swoje \"Informacje dodatkowe\".\n\nRiot ID nigdy nie jest wyświetlane ani udostępniane. Identyfikuje je nasz zespół na podstawie danych meczowych.",
-      "tournament": "Każdy turniej ma identyfikator, nazwę, daty, region, kategorię i status. Turniej może być podzielony na kilka etapów (grupy, playoffy...), które z kolei składają się z jednego lub kilku kontenerów (drabinka lub grupa). Drużyny zapisują się jako \"uczestnicy\", ze składem zablokowanym na dany turniej, niezależnym od stałego składu drużyny.",
-      "matches": "Zbieramy wiele informacji o meczach, aby zapewnić szczegółowe statystyki. Gromadzimy:\n- Podstawowe informacje o meczu (wymagane)\n- Veto meczu\n- Rozegrane mapy z wynikiem i statystykami\n- Zagregowane statystyki na zawodniczkę i na mapę, z których strona korzysta na co dzień\n\nTe dane nie zawsze są zbierane, ale robimy wszystko, aby je pozyskać i wyświetlać jak najpełniejsze statystyki.",
-      "rawStats": "Oprócz powyższych zagregowanych statystyk przechowujemy surową warstwę danych runda po rundzie (zabójstwa, obrażenia, ekonomia, stan żywych graczy), używaną do przeliczania tych statystyk i wyświetlania historii rund.\n\nPozycja każdej zawodniczki podczas kluczowych zdarzeń (kill, plant, defuse) jest przechowywana w pełnej szczegółowości bezterminowo: zasila nasze heatmapy i nie da się jej odtworzyć po agregacji.",
-      "news": "Każdy artykuł ma identyfikator, tytuł, treść i status (szkic, opublikowany, zarchiwizowany). Artykuł może być powiązany z drużyną, osobą lub turniejem, aby pojawić się na jego profilu.\n\nForum oraz emotki/reakcje pozwalają społeczności wchodzić w interakcję z treściami strony; wiadomości ukryte lub usunięte przez moderację pozostają śledzone wewnętrznie.",
-      "account": "Te tabele istnieją tylko dla osób, które założyły konto użytkownika (odrębne od profilu osoby), potrzebne do reagowania na aktualności, zarządzania profilem lub administrowania stroną.\n\nDane bezpieczeństwa (hasło, 2FA, klucze dostępu) nigdy nie są udostępniane. Połączone konta Discord/Twitch przechowują token dostępu używany wyłącznie do uwierzytelniania.\n\nDane moderacyjne (sankcje, odciski zapobiegające obchodzeniu banów, zgłoszenia, dziennik aktywności) stanowią rejestr bezpieczeństwa przechowywany niezależnie od konta, także po jego usunięciu, aby zapobiegać obchodzeniu banów.",
-      "others": "Przechowujemy liczbę wizyt na każdej stronie dziennie; nie zapisujemy, kto ją oglądał ani dokładnej godziny, tylko przybliżony kraj/region.\n\nTe dane są przechowywane i prywatne. Nigdy nie są udostępniane, używamy ich wyłącznie do obserwowania ruchu na stronie i dostosowywania infrastruktury w razie potrzeby."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Informacje główne",
-          "additional": "Informacje dodatkowe",
-          "confidential": "Informacje poufne"
-        },
-        "id": "Unikalny identyfikator przypisany osobie (widoczny w URL)",
-        "handle": "Nick",
-        "aliases": "Wcześniej używane nicki",
-        "firstName": "Imię",
-        "lastName": "Nazwisko",
-        "countryCode": "Kod kraju (PL = Polska, US = Stany Zjednoczone itd.)",
-        "secondaryCountryCode": "Drugi kod kraju, w przypadku podwójnego obywatelstwa",
-        "pronouns": "Zaimki",
-        "birthDate": "Data urodzenia",
-        "bio": "Bio",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "Identyfikator VLR",
-        "liquipediaLink": "Link do strony osoby na Liquipedii",
-        "valId": "Riot ID / PUUID (informacja prywatna, identyfikowana i przypisywana przez nasz zespół na podstawie danych meczowych Riot, służy do powiązania statystyk meczu z osobą)",
-        "esportsValId": "Identyfikator esportowy Riot powiązany z kontem w grze"
+    "title": "Dane osobowe",
+    "subtitle": "Jakie dane o Tobie przechowujemy, skąd pochodzą, kto może je zobaczyć i jak długo je przechowujemy.",
+    "policy": {
+      "title": "Nasza polityka",
+      "noSale": {
+        "title": "Bez sprzedaży, bez udostępniania",
+        "text": "Nie sprzedajemy żadnych danych i nigdy nie udostępniamy Twoich danych prywatnych, ani reklamodawcom, ani partnerom. Publikowane są tylko dane publiczne (profile zawodniczek, statystyki meczów), na stronie i przez nasze API."
       },
-      "rosterMemberships": {
-        "personId": "Unikalny identyfikator osoby",
-        "teamId": "Unikalny identyfikator drużyny",
-        "role": "Rola w drużynie (zawodniczka/trener/manager/itd.)",
-        "period": "Okres przynależności do drużyny (dołączenie i ewentualne odejście)",
-        "inactiveSince": "Data, od której osoba, wciąż w składzie, jest nieaktywna (kontuzja, przerwa itd.)"
+      "minimal": {
+        "title": "Absolutne minimum",
+        "text": "Zbieramy tylko to, czego strona potrzebuje, by działać i być bezpieczna. Bez reklam, bez trackerów, bez śledzących plików cookie: oglądalność liczona jest anonimowo, bez adresu IP."
       },
-      "teams": {
-        "titles": {
-          "main": "Informacje główne",
-          "additional": "Informacje dodatkowe"
-        },
-        "id": "Unikalny identyfikator przypisany drużynie (widoczny w URL)",
-        "name": "Nazwa drużyny",
-        "shortName": "Skrócona nazwa (Fnatic = FNC)",
-        "countryCode": "Kod kraju (PL = Polska, US = Stany Zjednoczone itd.)",
-        "secondaryCountryCode": "Drugi kod kraju, dla drużyny związanej z dwoma regionami",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Bio",
-        "vlrId": "Identyfikator VLR",
-        "liquipediaLink": "Link do strony drużyny na Liquipedii",
-        "tags": "Dowolne tagi przypisane do drużyny"
-      },
-      "organizations": {
-        "id": "Unikalny identyfikator organizacji",
-        "name": "Nazwa organizacji",
-        "slug": "Tekstowy identyfikator używany w URL",
-        "tags": "Role pełnione przez organizację (organizator turniejów, produkcja, media, nadawca, agencja, społeczność)",
-        "countryCode": "Kod kraju (PL = Polska, US = Stany Zjednoczone itd.)",
-        "socials": "Social media (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Unikalny identyfikator osoby",
-        "organizationId": "Unikalny identyfikator organizacji",
-        "role": "Rola w organizacji (admin/caster/observer/producent/redaktor/itd.)",
-        "period": "Okres przynależności do organizacji"
-      },
-      "productionCredits": {
-        "personId": "Unikalny identyfikator osoby w napisach",
-        "organizationId": "Organizacja, dla której osoba pracuje w ramach tego wpisu, jeśli dotyczy",
-        "role": "Pełniona rola (caster/analityk/observer/organizator/producent/redaktor/fotograf/tłumacz/sędzia/itd.)",
-        "titleOverride": "Własny tytuł wyświetlany zamiast ogólnej roli",
-        "scope": "Dokładny poziom, którego dotyczy: turniej, etap, kontener, mecz lub mapa"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Informacje główne",
-          "additional": "Informacje dodatkowe"
-        },
-        "id": "Unikalny identyfikator turnieju",
-        "name": "Nazwa rozgrywek",
-        "region": "Region świata (EMEA, NA itd.)",
-        "category": "Kategoria turnieju (np. Challengers, Cash Cups)",
-        "prizePool": "Łączna pula nagród (cashprize)",
-        "location": "Miejsce wydarzenia",
-        "startDate": "Data rozpoczęcia",
-        "endDate": "Data zakończenia",
-        "status": "Obecny status (nadchodzący, trwający, zakończony)",
-        "description": "Opis wydarzenia",
-        "liquipediaLink": "Link do strony turnieju na Liquipedii",
-        "socials": "Linki do social mediów turnieju"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Struktura techniczna"
-        },
-        "name": "Nazwa etapu (np. Playoffy, Grupa A)",
-        "sequenceOrder": "Kolejność wyświetlania etapu",
-        "status": "Status etapu (nadchodzący, trwający, zakończony)",
-        "startDate": "Data rozpoczęcia etapu",
-        "endDate": "Data zakończenia etapu",
-        "liquipediaLink": "Link do własnej strony etapu na Liquipedii",
-        "containerType": "Format kontenera (drabinka pucharowa lub grupa)",
-        "config": "Konfiguracja techniczna drabinki/grupy (generowana przez silnik turniejowy)"
-      },
-      "entrants": {
-        "tournamentId": "Odwołanie do turnieju",
-        "kind": "Rodzaj uczestnika (na GC-Stats zawsze \"team\")",
-        "teamId": "Zapisana drużyna",
-        "displayName": "Nazwa wyświetlana w chwili zapisu (nie zmienia się, nawet jeśli drużyna później zmieni nazwę)",
-        "seed": "Seed przypisany uczestnikowi",
-        "qualificationSourceManual": "Czy źródło kwalifikacji ustawiono ręcznie (w przeciwnym razie wynika z zasad kwalifikacji)",
-        "qualificationSourceType": "Ręczne źródło kwalifikacji (turniej, zaproszenie lub punkty)",
-        "qualificationSourceTournamentId": "Turniej, z którego uczestnik awansował (źródło ręczne)",
-        "qualificationSourcePointTypeId": "Typ punktów, z którego wynika kwalifikacja (źródło ręczne)"
-      },
-      "entrantMembers": {
-        "personId": "Osoba należąca do składu zablokowanego na ten konkretny turniej",
-        "role": "Rola w tym składzie (zawodniczka/stand in/trener/manager/analityk/itd.)",
-        "isStarter": "Podstawowy skład czy rezerwa w tym turnieju"
-      },
-      "qualifications": {
-        "destinationType": "Co daje kwalifikacja: miejsce w innym kontenerze lub końcowa lokata",
-        "placement": "Zajęte miejsce (1., 2. itd.)",
-        "placementLabel": "Etykieta miejsca (np. Zwycięzca, Drugie miejsce)",
-        "points": "Przyznane punkty rankingowe",
-        "cashPrizeAmount": "Przyznana kwota nagrody pieniężnej",
-        "rank": "Pozycja uczestnika w tej klasyfikacji",
-        "amount": "Liczba przyznanych lub odjętych punktów (wpis w księdze ze znakiem)",
-        "reason": "Powód przyznania lub odebrania punktów"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Struktura techniczna"
-        },
-        "id": "Unikalny identyfikator meczu",
-        "containerId": "Kontener (drabinka/grupa), do którego należy mecz",
-        "round": "Numer rundy",
-        "label": "Nazwa rundy (np. Wielki finał)",
-        "bestOf": "Maksymalna liczba map (BO1, BO3, BO5)",
-        "status": "Status (nadchodzący, gotowy, na żywo, zakończony)",
-        "entrantAId": "Unikalny identyfikator uczestnika A",
-        "entrantBId": "Unikalny identyfikator uczestnika B",
-        "scoreA": "Wynik końcowy uczestnika A",
-        "scoreB": "Wynik końcowy uczestnika B",
-        "winnerId": "Zwycięski uczestnik",
-        "scheduledAt": "Zaplanowana data i godzina",
-        "patch": "Wersja gry (np. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Dany mecz",
-        "entrantId": "Uczestnik wykonujący akcję",
-        "mapName": "Nazwa mapy (np. Ascent)",
-        "type": "Akcja (pick, ban lub decider)",
-        "order": "Kolejność w sekwencji veto",
-        "side": "Wybrana strona (atak/obrona), dla picka lub decidera",
-        "sidePickedByEntrantId": "Uczestnik, który wybrał tę stronę"
-      },
-      "maps": {
-        "id": "Unikalny identyfikator rozegranej mapy",
-        "apiMatchId": "Identyfikator meczu nadany przez API Riot",
-        "matchId": "Dany mecz",
-        "mapName": "Nazwa mapy",
-        "gameMode": "Powiązany tryb gry Riot",
-        "teamAScore": "Wynik uczestnika A na tej mapie",
-        "teamBScore": "Wynik uczestnika B na tej mapie",
-        "order": "Pozycja mapy w meczu",
-        "isCompleted": "Czy mapa została zakończona?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Grany agent (np. Jett)",
-        "kills": "Łączna liczba zabójstw",
-        "deaths": "Łączna liczba śmierci",
-        "assists": "Łączna liczba asyst",
-        "acs": "Średni wynik bojowy",
-        "adr": "Średnie obrażenia na rundę",
-        "kastPercentage": "% rund z Kill/Assist/Survive/Trade",
-        "firstKills": "Pierwsze zabójstwa (FK)",
-        "firstDeaths": "Pierwsze śmierci (FD)",
-        "headshotPercentage": "% headshotów",
-        "clutches": "Clutche wygrane/rozegrane, według sytuacji (od 1v1 do 1v5)",
-        "multikills": "Liczba rund z 2, 3, 4 lub 5 zabójstwami",
-        "tradeKills": "Zabójstwa pomszczające koleżankę z drużyny",
-        "tradedDeaths": "Śmierci pomszczone przez koleżankę z drużyny",
-        "roundTypeSplits": "Szczegółowe statystyki według typu rundy (pistoletowa, atak, obrona itd.)",
-        "fallDeaths": "Śmierci od upadku",
-        "weaponKills": "Liczba zabójstw na broń"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Grana strona (atak/obrona)",
-        "roundsPlayed": "Rundy rozegrane po tej stronie",
-        "roundsWon": "Rundy wygrane po tej stronie"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Numer rundy (1-24+)",
-        "winningEntrantId": "Uczestnik, który wygrał rundę",
-        "winType": "Rodzaj zwycięstwa (eliminacja, rozbrojenie, detonacja, koniec czasu)",
-        "atkEntrantId": "Uczestnik atakujący w tej rundzie",
-        "defEntrantId": "Uczestnik broniący w tej rundzie",
-        "plantSite": "Miejsce podłożenia Spike'a (A/B/C)",
-        "plantX": "Pozycja X podłożenia na minimapie",
-        "plantY": "Pozycja Y podłożenia na minimapie"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Osoba, która zabiła",
-        "victimPersonId": "Wyeliminowana osoba",
-        "assistantPersonIds": "Osoby asystujące przy zabójstwie",
-        "timeMs": "Moment zabójstwa (ms od początku rundy)",
-        "weapon": "Użyta broń",
-        "damageType": "Rodzaj obrażeń (broń, umiejętność, Spike, walka wręcz, upadek)",
-        "isSecondaryFire": "Zabójstwo trybem ognia alternatywnego (np. z celownika broni)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Osoba, która zadała obrażenia",
-        "receiverPersonId": "Osoba, która otrzymała obrażenia",
-        "damage": "Zadane obrażenia",
-        "headshots": "Liczba trafień w głowę",
-        "bodyshots": "Liczba trafień w tułów",
-        "legshots": "Liczba trafień w nogi"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Kolejność zdarzenia w rundzie",
-        "timeMs": "Moment zdarzenia (ms od początku rundy)",
-        "atkAlive": "Żywe zawodniczki po stronie ataku",
-        "defAlive": "Żywe zawodniczki po stronie obrony",
-        "winnerSide": "Strona, która obecnie ma przewagę liczebną"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Dana osoba",
-        "kills": "Zabójstwa w tej rundzie",
-        "assists": "Asysty w tej rundzie",
-        "score": "Wynik uzyskany w tej rundzie",
-        "loadoutValue": "Łączna wartość ekwipunku",
-        "economySpent": "Wydane kredyty",
-        "economyRemaining": "Pozostałe kredyty",
-        "weapon": "Główna używana broń",
-        "armor": "Rodzaj pancerza"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Rodzaj zdarzenia (kill, plant, defuse)",
-        "personId": "Dana osoba",
-        "role": "Rola w zdarzeniu (zabójca, ofiara, obecna, podkładająca, rozbrajająca)",
-        "x": "Pozycja X na minimapie",
-        "y": "Pozycja Y na minimapie",
-        "viewRadians": "Kąt widzenia w chwili zdarzenia",
-        "timeMs": "Moment zdarzenia (ms od początku rundy)"
-      },
-      "news": {
-        "titles": {
-          "main": "Informacje główne",
-          "additional": "Informacje dodatkowe"
-        },
-        "id": "Unikalny identyfikator artykułu (widoczny w URL)",
-        "authorId": "Autor artykułu",
-        "organizationId": "Organizacja, pod szyldem której opublikowano artykuł, jeśli dotyczy",
-        "lang": "Język artykułu",
-        "title": "Tytuł artykułu",
-        "slug": "Tekstowy identyfikator używany w URL",
-        "excerpt": "Krótkie streszczenie",
-        "content": "Treść artykułu",
-        "imageCover": "Obraz okładki",
-        "status": "Status artykułu (szkic = w trakcie pisania, opublikowany = widoczny na stronie, zarchiwizowany = ukryty na stronie, ale dostępny przez API)",
-        "isFeatured": "Czy artykuł jest wyróżniony na stronie głównej?",
-        "showOnHome": "Czy artykuł pojawia się na stronie głównej?",
-        "publishedAt": "Data publikacji",
-        "createdAt": "Data utworzenia artykułu",
-        "updatedAt": "Data ostatniej zmiany"
-      },
-      "newsRelations": {
-        "relatableType": "Rodzaj powiązanego obiektu (drużyna, osoba lub turniej)",
-        "relatableId": "Identyfikator powiązanego obiektu, używany do wyświetlania artykułu na jego profilu"
-      },
-      "forumThreads": {
-        "category": "Kategoria wątku (turniej, mecz, aktualność, ogólne)",
-        "subjectType": "Rodzaj obiektu, którego dotyczy wątek, jeśli dotyczy",
-        "title": "Tytuł wątku",
-        "lastMessageAt": "Data ostatniej wiadomości"
-      },
-      "forumMessages": {
-        "body": "Treść wiadomości",
-        "parentId": "Wiadomość nadrzędna, w przypadku odpowiedzi",
-        "hiddenAt": "Data ukrycia wiadomości przez moderację"
-      },
-      "emotes": {
-        "name": "Nazwa emotki",
-        "imagePath": "Ścieżka obrazu",
-        "source": "Pochodzenie emotki (np. import zbiorczy, utworzona z logo drużyny)",
-        "isActive": "Czy emotka jest dostępna?"
-      },
-      "reactions": {
-        "emoteId": "Użyta emotka",
-        "userId": "Konto, które zareagowało",
-        "reactableType": "Rodzaj treści, której dotyczy reakcja (np. artykuł)"
-      },
-      "users": {
-        "titles": {
-          "main": "Informacje główne",
-          "security": "Bezpieczeństwo (prywatne)"
-        },
-        "id": "Unikalny identyfikator konta",
-        "username": "Publicznie wyświetlany nick",
-        "teamTag": "Drużyna pokazywana jako \"wspierana\" na publicznym profilu, z tagiem tej drużyny",
-        "preferences": "Preferencje interfejsu (prywatne)",
-        "pronouns": "Zaimki",
-        "bio": "Publiczne bio konta",
-        "socials": "Social media powiązane z kontem",
-        "email": "Adres e-mail (prywatny, nigdy niewyświetlany)",
-        "passwordHash": "Hasło, zahaszowane (nigdy nieprzechowywane ani niewyświetlane jawnym tekstem)",
-        "twoFactorSecret": "Sekret uwierzytelniania dwuskładnikowego (2FA), jeśli włączone, zaszyfrowany",
-        "twoFactorRecoveryCodes": "Kody odzyskiwania 2FA, jeśli włączone, zaszyfrowane",
-        "discordSyncedAt": "Data ostatniej synchronizacji z Discordem"
-      },
-      "accounts": {
-        "provider": "Połączona platforma (Discord lub Twitch)",
-        "providerAccountId": "Identyfikator konta na tej platformie",
-        "accessToken": "Token dostępu OAuth (prywatny, nigdy nieudostępniany, używany wyłącznie do uwierzytelniania)",
-        "refreshToken": "Token odświeżania OAuth (prywatny)"
-      },
-      "authenticators": {
-        "name": "Nazwa nadana kluczowi dostępu",
-        "credentialId": "Techniczny identyfikator klucza (prywatny)",
-        "lastUsedAt": "Ostatnie użycie tego klucza"
-      },
-      "sanctions": {
-        "type": "Rodzaj sankcji (notatka, ostrzeżenie, wyciszenie, zawieszenie, ban)",
-        "reason": "Powód sankcji",
-        "startsAt": "Data wejścia w życie",
-        "endsAt": "Data zakończenia (jeśli tymczasowa)",
-        "revokedAt": "Data wcześniejszego zniesienia, jeśli dotyczy",
-        "issuedBy": "Moderator, który nałożył sankcję",
-        "revokedBy": "Moderator, który zniósł sankcję, jeśli dotyczy"
-      },
-      "sanctionIdentities": {
-        "type": "Rodzaj przypisanego odcisku technicznego (np. e-mail)",
-        "value": "Wartość odcisku (prywatna, przechowywana nawet po usunięciu konta, aby zapobiegać obchodzeniu banów)"
-      },
-      "userReports": {
-        "category": "Kategoria zgłoszenia",
-        "reason": "Szczegóły podane przez zgłaszającego",
-        "status": "Status rozpatrzenia (oczekuje, rozpatrzone, odrzucone)",
-        "reviewedBy": "Moderator, który rozpatrzył zgłoszenie",
-        "resolutionNote": "Notatka moderacji dotycząca rozstrzygnięcia"
-      },
-      "activityLog": {
-        "logName": "Kategoria zapisanej akcji",
-        "description": "Opis wykonanej akcji",
-        "event": "Rodzaj zdarzenia (utworzenie, zmiana, usunięcie)",
-        "subjectType": "Rodzaj obiektu, którego dotyczy akcja (osoba, drużyna itd.)",
-        "causerId": "Konto, które wykonało akcję",
-        "attributeChanges": "Szczegóły zmienionych pól (przed/po)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Informacje główne"
-        },
-        "uri": "URL strony",
-        "viewedAt": "Dzień wizyty",
-        "count": "Liczba wyświetleń tego dnia",
-        "countryCode": "Przybliżony kraj odwiedzających tego dnia",
-        "regionCode": "Przybliżony region odwiedzających tego dnia"
+      "switzerland": {
+        "title": "Hosting w Szwajcarii",
+        "text": "Wszystkie nasze dane są przechowywane w Szwajcarii, u szwajcarskich dostawców, łącznie z kopiami zapasowymi."
       }
-    }
+    },
+    "storage": {
+      "title": "Dlaczego Szwajcaria",
+      "why": "Szwajcaria ma jedno z najbardziej ochronnych praw dotyczących prywatności na świecie, federalną ustawę o ochronie danych. Unia Europejska uznaje je za zapewniające poziom ochrony równoważny z RODO. Nasi dostawcy to szwajcarskie firmy: Twoje dane nie podlegają zagranicznym przepisom, takim jak amerykański CLOUD Act, który pozwala władzom USA żądać danych od amerykańskich firm, niezależnie od miejsca ich przechowywania.",
+      "providers": "Oto dokładnie, gdzie znajdują się dane:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Szwajcaria",
+        "body": "Wszystkie nasze serwery: strona, baza danych, logi serwera i nasze emaile. Ciągła kopia bazy danych jest przechowywana przez 14 dni w drugim centrum danych Infomaniak, aby można ją było przywrócić po awarii."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Szwajcaria (Zurych i Genewa)",
+        "body": "Codzienna szyfrowana kopia zapasowa bazy danych i naszych plików. Każda kopia jest usuwana po 30 dniach i wcześniej nie można jej zmienić ani usunąć, nawet my tego nie możemy."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Serwery na całym świecie",
+        "body": "Udostępnia wyłącznie pliki publiczne (obrazy, loga, CSS i JavaScript). CDN zastępuje Twój adres IP adresem 0.0.0.0: żaden adres IP nie jest zbierany."
+      }
+    },
+    "private": {
+      "title": "Dane prywatne",
+      "badge": "Nigdy publiczne",
+      "intro": "Te dane nigdy nie są wyświetlane publicznie ani udostępniane przez nasze API."
+    },
+    "public": {
+      "title": "Dane publiczne",
+      "badge": "Publiczne",
+      "intro": "Te dane są wyświetlane na stronie i udostępniane przez nasze API, to serce GC Stats."
+    },
+    "labels": {
+      "source": "Skąd pochodzą",
+      "visibility": "Kto je widzi",
+      "retention": "Jak długo"
+    },
+    "categories": {
+      "account": {
+        "title": "Twoje konto",
+        "groups": {
+          "profile": {
+            "label": "Konto",
+            "items": [
+              "Adres email",
+              "Nazwa użytkownika",
+              "Hasło, zahaszowane (nigdy nie przechowywane jawnie)",
+              "Preferencje wyświetlania i ulubiona drużyna",
+              "Zaimki, biografia i media społecznościowe, jeśli je dodasz",
+              "Data ostatniego logowania"
+            ]
+          },
+          "security": {
+            "label": "Bezpieczeństwo",
+            "items": [
+              "Uwierzytelnianie dwuskładnikowe (sekret i kody odzyskiwania, zaszyfrowane)",
+              "Klucze dostępu (passkeys), przechowywany jest tylko klucz publiczny"
+            ]
+          },
+          "linked": {
+            "label": "Połączone konta",
+            "items": [
+              "Identyfikator Discord, Twitch lub Twitter/X",
+              "Nazwa i awatar na tej platformie",
+              "Tokeny logowania, używane tylko do logowania"
+            ]
+          },
+          "developers": {
+            "label": "Deweloperzy",
+            "items": [
+              "Klucze API",
+              "Aplikacje OAuth i przyznane przez Ciebie uprawnienia",
+              "Historia wywołań API"
+            ]
+          }
+        },
+        "source": "Ty, przy rejestracji i w ustawieniach. Połączone konta przekazuje platforma, gdy je łączysz.",
+        "visibility": "Ty i nasz zespół. Twoja nazwa użytkownika, zaimki, biografia, media społecznościowe i ulubiona drużyna są widoczne na Twojej stronie profilu. Nasz zespół nie widzi Twojego hasła, tylko użytą metodę logowania (hasło, Discord, Twitch, Twitter/X, passkey, uwierzytelnianie dwuskładnikowe). Email i ustawienia bezpieczeństwa nigdy nie są wyświetlane publicznie.",
+        "retention": "Dopóki Twoje konto istnieje. Połączone konto jest usuwane, gdy tylko je odłączysz. Historia wywołań API jest usuwana po 90 dniach."
+      },
+      "protection": {
+        "title": "Ochrona Twojego konta i strony",
+        "groups": {
+          "loginLog": {
+            "label": "Historia logowania",
+            "items": [
+              "Logowania, nieudane logowania i zmiany bezpieczeństwa",
+              "Data",
+              "Adres IP"
+            ]
+          },
+          "accessLogs": {
+            "label": "Logi dostępu",
+            "items": [
+              "Adres IP",
+              "Żądana strona",
+              "Przeglądarka",
+              "Data i godzina"
+            ]
+          }
+        },
+        "source": "Zapisywane automatycznie: historia logowania chroni Twoje konto przed przejęciem, logi dostępu chronią stronę przed botami i nadużyciami.",
+        "visibility": "Tylko nasz zespół techniczny.",
+        "retention": "Adresy IP logowania są usuwane po {days} dniach. Logi dostępu są usuwane po 14 dniach."
+      },
+      "moderation": {
+        "title": "Moderacja i wkład",
+        "groups": {
+          "requests": {
+            "label": "Twoje zgłoszenia",
+            "items": [
+              "Propozycje zmian i rozmowy o nich z zespołem",
+              "Zgłoszenia, które wysyłasz"
+            ]
+          },
+          "moderation": {
+            "label": "Moderacja",
+            "items": [
+              "Ostrzeżenia i sankcje, wraz z powodem",
+              "Wiadomości wykryte przez nasz automatyczny filtr",
+              "Historia działań moderacyjnych"
+            ]
+          }
+        },
+        "source": "Twoje propozycje i zgłoszenia oraz decyzje naszego zespołu moderacji.",
+        "visibility": "Tylko nasz zespół. Zaakceptowana propozycja aktualizuje odpowiednią stronę publiczną, sama propozycja pozostaje prywatna.",
+        "retention": "Przechowywane jako historia, także po usunięciu Twojego konta, ale bez powiązania z nim."
+      },
+      "players": {
+        "title": "Zawodniczki i staff",
+        "groups": {
+          "identity": {
+            "label": "Tożsamość",
+            "items": [
+              "Pseudonim i dawne pseudonimy",
+              "Imię i nazwisko",
+              "Kraj",
+              "Zaimki",
+              "Data urodzenia",
+              "Biografia i media społecznościowe"
+            ]
+          },
+          "career": {
+            "label": "Kariera",
+            "items": [
+              "Drużyny i role",
+              "Rozegrane turnieje i mecze",
+              "Organizacje i napisy produkcyjne"
+            ]
+          },
+          "hidden": {
+            "label": "Nigdy nie wyświetlane",
+            "items": [
+              "Identyfikator Riot, używany tylko do powiązania statystyk meczów z właściwym profilem"
+            ]
+          }
+        },
+        "source": "Sama osoba lub jej organizacja, nasz zespół na podstawie źródeł publicznych (Liquipedia, oficjalne ogłoszenia) lub społeczność przez propozycję zatwierdzoną przez nasz zespół. Identyfikator Riot pochodzi z oficjalnego API Riot Games.",
+        "visibility": "Wszyscy, na stronie i przez nasze API, z wyjątkiem identyfikatora Riot.",
+        "retention": "Przechowywane na zawsze, jako archiwum sceny, nawet gdy osoba przestaje grać. Możesz poprosić o poprawienie lub usunięcie."
+      },
+      "matchStats": {
+        "title": "Statystyki meczów",
+        "groups": {
+          "stats": {
+            "label": "Dla każdego rozegranego meczu",
+            "items": [
+              "Rozegrani agenci",
+              "Zabójstwa, śmierci i asysty",
+              "Obrażenia",
+              "Ekonomia i wyposażenie",
+              "Pozycje na mapie"
+            ]
+          }
+        },
+        "source": "Oficjalne API Riot Games, dla meczów turniejów, które obserwujemy.",
+        "visibility": "Wszyscy, na stronie i przez nasze API.",
+        "retention": "Przechowywane jako historyczne archiwum rozgrywek."
+      },
+      "community": {
+        "title": "Twoje publikacje",
+        "groups": {
+          "content": {
+            "label": "Co publikujesz",
+            "items": [
+              "Wiadomości na forum",
+              "Reakcje",
+              "Typy i grupy Pick'em"
+            ]
+          }
+        },
+        "source": "Ty.",
+        "visibility": "Wszyscy, na stronie.",
+        "retention": "Dopóki ich nie usuniesz. Jeśli usuniesz konto, Twoje reakcje i typy zostaną usunięte, a wiadomości pozostaną bez powiązania z Twoim kontem."
+      }
+    },
+    "rights": "W każdej chwili możesz poprosić o dostęp do swoich danych, ich poprawienie lub usunięcie.",
+    "privacyLink": "Zobacz politykę prywatności"
   },
   "financePage": {
     "title": "Finanse",
@@ -1421,6 +1252,10 @@
       "Infrastructure": "Infrastruktura",
       "Software & Licenses": "Oprogramowanie i licencje",
       "Other": "Inne"
+    },
+    "expensesDoc": {
+      "text": "Aby w prosty sposób wyjaśnić, na co idą nasze miesięczne wydatki, opisujemy je w dokumencie.",
+      "link": "Przeczytaj dokument"
     }
   },
   "teamPage": {
@@ -2034,8 +1869,6 @@
       "finance": "Finanse",
       "about": "O nas / Projekty",
       "backToSite": "Wróć na stronę",
-      "pendingChangeRequests": "Oczekujące prośby o zmianę",
-      "pendingChangeRequests": "Oczekujące prośby o zmianę",
       "pendingChangeRequests": "Oczekujące prośby o zmianę",
       "tournaments": "Turnieje",
       "groupModeration": "Moderacja",
@@ -5370,17 +5203,11 @@
         "youtube": "YouTube",
         "tiktok": "TikTok",
         "kick": "Kick",
-
         "sooplive": "SOOP",
-
         "naver": "Naver",
-
         "bilibili": "Bilibili",
-
         "qq": "QQ",
-
         "weibo": "Weibo",
-
         "other": "Inne"
       },
       "typeLabel": "Typ",
