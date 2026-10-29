@@ -12,13 +12,14 @@ import "@xyflow/react/dist/style.css";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ReactFlow, ReactFlowProvider, Background, Controls, type Node, type Edge } from "@xyflow/react";
-import { PickemBracketMatchNode, PICKEM_BRACKET_MATCH_NODE_WIDTH, PICKEM_BRACKET_MATCH_NODE_HEIGHT, type PickemBracketMatchNodeData } from "@/components/pickem/pickem-bracket-match-node";
+import { PickemBracketMatchNode, PICKEM_BRACKET_MATCH_NODE_WIDTH, PICKEM_BRACKET_MATCH_NODE_HEIGHT, type PickemBracketMatchNodeData, type PickemLockedMatch } from "@/components/pickem/pickem-bracket-match-node";
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
 import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import { GOLD, RED } from "@/lib/theme-colors";
 import type { VirtualMatch } from "@/lib/pickem/bracket-fill";
-import { scoreBracketMatchPick, type PhaseScoringConfig } from "@/lib/pickem/scoring";
+import { scoreBracketMatchPick, bracketMatchMaxPoints, type PhaseScoringConfig } from "@/lib/pickem/scoring";
+import type { PickOutcome } from "@/components/pickem/pick-outcome-icon";
 import type { EditorMatch, EditorEdge } from "@/lib/admin-bracket-editor-data";
 
 const MIN_ZOOM = 0.1;
@@ -51,6 +52,9 @@ export function PickemBracketCanvas({
   selectedWinners,
   scoringConfig,
   disabled = false,
+  readOnly = false,
+  reachableEntrants = null,
+  scoringVersion,
   onPick,
 }: {
   containers: { id: number; name: string }[];
@@ -62,6 +66,11 @@ export function PickemBracketCanvas({
   /** Scoring config of the currently viewed leaderboard scope — drives the points-at-stake/gain footer, purely a display concern (never affects which picks are valid). */
   scoringConfig: PhaseScoringConfig;
   disabled?: boolean;
+  /** Locked phase: no picking, each pick is marked right/wrong against the real result. */
+  readOnly?: boolean;
+  /** Locked phase: entrants that can still play each match (`getReachableEntrants`). */
+  reachableEntrants?: Map<number, ReadonlySet<number> | null> | null;
+  scoringVersion: number;
   onPick: (matchId: number, entrantId: number) => void;
 }) {
   const t = useTranslations("pickemPage");
@@ -76,8 +85,11 @@ export function PickemBracketCanvas({
     const layout = layoutBracket(layoutMatches, layoutEdges, containerOrder, { columnWidth: COLUMN_WIDTH, rowHeight: ROW_HEIGHT, laneGap: LANE_GAP });
     const matchLane = new Map(layoutMatches.map((m) => [m.id, layout.laneIndexByContainer.get(m.containerId)]));
 
-    const maxPoints = (round: number) => scoringConfig.teamCorrectPoints + scoringConfig.outcomeCorrectPoints + scoringConfig.advancementPerRoundPoints * round;
     const pointsSummaryTooltip = t("pointsSummaryTooltip");
+    const invalidLabel = t("guessInvalid");
+    const invalidBadge = t("guessInvalidBadge");
+    const unreachableBadge = t("pickUnreachableBadge");
+    const unreachableTooltip = t("pickUnreachable");
 
     const nodes: Node<PickemBracketMatchNodeData>[] = matches.map((m) => {
       const vm = virtual.get(m.id);
@@ -95,7 +107,36 @@ export function PickemBracketCanvas({
           actualEntrantBId: m.entrantBId,
           actualWinnerId: m.winnerId,
           config: scoringConfig,
+          scoringVersion,
         });
+      }
+
+      let locked: PickemLockedMatch | null = null;
+      if (readOnly) {
+        const reachable = reachableEntrants?.get(m.id) ?? null;
+        // Busted as soon as the predicted winner can no longer reach this match.
+        let outcome: PickOutcome = "pending";
+        if (selectedEntrantId !== null) {
+          if (m.winnerId !== null) outcome = m.winnerId === selectedEntrantId ? "correct" : "wrong";
+          else if (reachable !== null && !reachable.has(selectedEntrantId)) outcome = "wrong";
+        }
+        // Wrong winner and no team point left to earn on this match.
+        const pointsLost = outcome === "wrong" && earnedPoints === 0 && (m.winnerId !== null || scoringConfig.teamCorrectPoints === 0);
+        locked = {
+          realEntrantAId: m.entrantAId,
+          realEntrantBId: m.entrantBId,
+          realScoreA: m.scoreA,
+          realScoreB: m.scoreB,
+          realWinnerId: m.winnerId,
+          live: m.status === "live",
+          reachable,
+          outcome,
+          pointsLost,
+          invalidLabel,
+          invalidBadge,
+          unreachableBadge,
+          unreachableTooltip,
+        };
       }
 
       return {
@@ -115,9 +156,10 @@ export function PickemBracketCanvas({
           selectedEntrantId,
           tbdLabel: t("tbdLabel"),
           disabled,
+          locked,
           onPick: (entrantId: number) => onPick(m.id, entrantId),
           earnedPoints,
-          maxPoints: maxPoints(m.round),
+          maxPoints: bracketMatchMaxPoints(m.round, scoringConfig),
           pointsSummaryTooltip,
         } satisfies PickemBracketMatchNodeData,
         draggable: false,
@@ -155,7 +197,7 @@ export function PickemBracketCanvas({
 
     return { nodes, baseEdges, height: Math.max(360, layout.totalHeight) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containers, matches, edges, virtual, entrantNames, selectedWinners, scoringConfig, disabled, containerNameById, t]);
+  }, [containers, matches, edges, virtual, entrantNames, selectedWinners, scoringConfig, scoringVersion, disabled, readOnly, reachableEntrants, containerNameById, t]);
 
   const edges_: Edge[] = useMemo(
     () =>

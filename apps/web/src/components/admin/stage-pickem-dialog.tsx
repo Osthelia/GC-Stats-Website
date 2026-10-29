@@ -15,6 +15,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { updateStagePickemSettings, type StagePickemSettingsFieldErrors } from "@/actions/admin-pickem";
@@ -27,11 +28,13 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
   const [fieldErrors, setFieldErrors] = useState<StagePickemSettingsFieldErrors>({});
   const [enabled, setEnabled] = useState(false);
   const [opensAt, setOpensAt] = useState<string | null>(null);
+  const [groupPickMode, setGroupPickMode] = useState<"standings" | "matches">("standings");
 
   useEffect(() => {
     if (open && stage) {
       setEnabled(stage.pickemEnabled);
       setOpensAt(stage.pickemOpensAt);
+      setGroupPickMode(stage.pickemGroupPickMode);
       setFieldErrors({});
     }
   }, [open, stage]);
@@ -40,7 +43,7 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
     if (!stage) return;
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateStagePickemSettings(stage.id, { enabled, opensAt });
+      const result = await updateStagePickemSettings(stage.id, { enabled, opensAt, groupPickMode });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -52,6 +55,8 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
   }
 
   if (!stage) return null;
+  const hasGroups = stage.containers.some((c) => c.containerType === "group");
+  const groupPickModeItems: Record<string, string> = { standings: t("groupPickModeStandings"), matches: t("groupPickModeMatches") };
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
@@ -68,8 +73,31 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
           </label>
 
           {enabled && (
-            <FormField label={t("fieldOpensAt")} htmlFor="stg-pickem-opens-at" required error={fieldErrors.opensAt ? t(`error.${fieldErrors.opensAt}`) : undefined} hint={t("fieldOpensAtHint")}>
+            <FormField label={t("fieldOpensAt")} htmlFor="stg-pickem-opens-at" required error={fieldErrors.opensAt ? t(`error.${fieldErrors.opensAt}`) : undefined} hint={t(hasGroups && groupPickMode === "matches" ? "fieldOpensAtHintMatches" : "fieldOpensAtHint")}>
               <DateTimeInput id="stg-pickem-opens-at" value={opensAt} onChange={setOpensAt} aria-invalid={!!fieldErrors.opensAt} />
+            </FormField>
+          )}
+
+          {enabled && hasGroups && (
+            <FormField
+              label={t("fieldGroupPickMode")}
+              htmlFor="stg-pickem-group-mode"
+              required
+              error={fieldErrors.groupPickMode ? t(`error.${fieldErrors.groupPickMode}`) : undefined}
+              hint={t(groupPickMode === "matches" ? "groupPickModeMatchesHint" : "groupPickModeStandingsHint")}
+            >
+              <Select items={groupPickModeItems} value={groupPickMode} onValueChange={(v) => v && setGroupPickMode(v as "standings" | "matches")}>
+                <SelectTrigger id="stg-pickem-group-mode" aria-invalid={!!fieldErrors.groupPickMode}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(groupPickModeItems).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormField>
           )}
         </div>

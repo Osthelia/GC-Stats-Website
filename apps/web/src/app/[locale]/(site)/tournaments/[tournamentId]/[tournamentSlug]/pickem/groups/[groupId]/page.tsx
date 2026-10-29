@@ -11,7 +11,7 @@ import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
-import { getGroupDetail, getPickemEnabledStages, computeStageLeaderboard, getGroupPhaseScoringConfig } from "@/lib/pickem/pickem-data";
+import { getGroupDetail, getPickemEnabledStages, computeStageLeaderboard, getStageScoringConfig } from "@/lib/pickem/pickem-data";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { PickemLeaderboardTable } from "@/components/pickem/pickem-leaderboard-table";
 import { GroupScoringPanel } from "@/components/pickem/group-scoring-panel";
@@ -19,7 +19,6 @@ import { LeaveGroupButton } from "@/components/pickem/leave-group-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
-import { DEFAULT_PICKEM_SCORING } from "@/lib/pickem/scoring";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 
@@ -52,7 +51,7 @@ export default async function PickemGroupDetailPage({ params }: { params: Promis
   const configByStageId: Record<number, PhaseScoringConfig> = {};
   const leaderboardByStage = new Map<number, Awaited<ReturnType<typeof computeStageLeaderboard>>>();
   for (const stage of stages) {
-    const config = group.scoringMode === "custom" ? await getGroupPhaseScoringConfig(group.id, stage.id) : DEFAULT_PICKEM_SCORING;
+    const config = await getStageScoringConfig(stage.id, group);
     configByStageId[stage.id] = config;
     leaderboardByStage.set(stage.id, await computeStageLeaderboard(stage.id, config, group.members.map((m) => m.userId)));
   }
