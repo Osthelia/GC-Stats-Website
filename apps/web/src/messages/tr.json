@@ -1132,7 +1132,8 @@
               "IP adresi",
               "İstenen sayfa",
               "Tarayıcı",
-              "Tarih ve saat"
+              "Tarih ve saat",
+              "OpenData portalı kullanımı (hesap, hash'lenmiş IP adresi, veri seti), 30 gün sonra silinir"
             ]
           }
         },
@@ -1654,8 +1655,6 @@
     "product": "Ürün",
     "productAllMatches": "Tüm maçlar",
     "productTournaments": "Turnuvalar",
-    "productDataExplorer": "Veri Gezgini",
-    "productDataExplorerComingSoon": "Yakında",
     "productForum": "Forum",
     "contribute": "Katkıda bulun",
     "contributeEditPage": "Bir sayfayı düzenle",
@@ -1677,7 +1676,8 @@
     "transparency": "Şeffaflık",
     "finance": "Finans",
     "developers": "Geliştiriciler",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1878,7 +1878,8 @@
       "sanctions": "Yaptırımlar",
       "activityLog": "Etkinlik günlüğü",
       "analytics": "Analitik",
-      "oauthClients": "OAuth istemcileri"
+      "oauthClients": "OAuth istemcileri",
+      "settings": "Yapılandırma"
     },
     "dashboard": {
       "title": "Panel",
@@ -3309,7 +3310,8 @@
         "sanctions": "Yaptırımlar",
         "activityLog": "Etkinlik günlüğü",
         "analytics": "Analitik",
-        "oauthClients": "OAuth istemcileri"
+        "oauthClients": "OAuth istemcileri",
+        "settings": "Yapılandırma"
       },
       "permissionNames": {
         "admin_access": "Yönetim paneline erişim",
@@ -3358,7 +3360,9 @@
         "activity_log_view": "Etkinlik günlüğünü görüntüle",
         "analytics_view": "Analitiği görüntüle",
         "oauth_clients_view": "OAuth istemcilerini görüntüle",
-        "oauth_clients_manage": "OAuth istemcileri oluştur, düzenle veya sil"
+        "oauth_clients_manage": "OAuth istemcileri oluştur, düzenle veya sil",
+        "settings_view": "Yapılandırmayı ve OpenData izlemesini görüntüleme",
+        "settings_manage": "Yapılandırmayı düzenleme"
       },
       "create": {
         "button": "Yeni rol",
@@ -4886,6 +4890,133 @@
         "stoppedTournament": "Bir turnuvadan itibaren oynamayı bıraktı",
         "insideSource": "Dahili kaynak",
         "declaredByPlayer": "Oyuncu tarafından bildirildi"
+      }
+    },
+    "settings": {
+      "title": "Yapılandırma",
+      "subtitle": "Sitenin genel ayarları.",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "saveSuccess": "Ayarlar kaydedildi",
+      "saveError": "Bazı alanlar geçersiz",
+      "saveFailed": "Kaydetme başarısız oldu, sayfayı yenileyip tekrar deneyin.",
+      "error": {
+        "required": "Bu alan zorunludur.",
+        "invalid": "Geçersiz değer.",
+        "outOfRange": "{min} ile {max} arasında bir tam sayı olmalıdır."
+      },
+      "opendata": {
+        "title": "OpenData portalı",
+        "description": "Göz atılabilen ve JSON olarak indirilebilen herkese açık veri setleri (turnuvalar, takımlar, oyuncular, maçlar).",
+        "publicPortal": "Herkese açık portal",
+        "monitoring": "İzleme",
+        "enabled": "Portal etkin",
+        "enabledHint": "Kapalıyken portal ve API'si hizmetin kullanılamadığını yanıtlar.",
+        "requireAccount": "Hesap zorunlu",
+        "requireAccountHint": "Verilere yalnızca oturum açmış kullanıcılar göz atabilir ve indirebilir.",
+        "browsePerMinute": "Dakika başına tablo sayfası",
+        "browsePerMinuteHint": "Hesap başına veya ziyaretçiler için IP adresi başına. {min} ile {max} arası.",
+        "exportsPerHour": "Saat başına tam dışa aktarım",
+        "exportsPerHourHint": "Hesap başına veya ziyaretçiler için IP adresi başına. {min} ile {max} arası.",
+        "propagationHint": "Her sunucu bir değişikliği 15 saniye içinde uygular."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData izleme",
+      "subtitle": "OpenData portalının kullanımı ve site yüküne etkisi.",
+      "backToSettings": "Yapılandırma",
+      "rangeLabel": "Dönem",
+      "range": {
+        "1h": "1 saat",
+        "24h": "24 saat",
+        "7d": "7 gün"
+      },
+      "refresh": "Yenile",
+      "verdict": {
+        "healthy": "Portal siteye yük bindirmiyor",
+        "strained": "Portal zorlayıcı olmaya başlıyor",
+        "overloaded": "Siteyi korumak için portal yavaşlatıldı"
+      },
+      "verdictHint": {
+        "healthy": "Yük baskısı yok, reddedilen istek yok.",
+        "strained": "Eğilimi izleyin: artmaya devam ederse limitleri düşürün veya hesap zorunlu kılın.",
+        "overloaded": "Site yük altındayken istekler reddedildi. Limitleri düşürmeyi veya hesap zorunlu kılmayı düşünün."
+      },
+      "reasons": {
+        "shed": "Sitenin hızlı kalması için {shed} istek reddedildi",
+        "critical": "Site kritik bir yük seviyesine ulaştı",
+        "elevated": "Site zamanın {share} kadarında yüksek yük altındaydı",
+        "rateLimited": "Birçok istek limite takıldı",
+        "slow": "Yavaş yanıtlar (95. yüzdelik {p95} ms)"
+      },
+      "configState": "Portal: {enabled} · Hesap zorunlu: {requireAccount} · Limitler: dakikada {browse} sayfa, saatte {exports} dışa aktarım",
+      "on": "açık",
+      "off": "kapalı",
+      "stats": {
+        "requests": "İstekler",
+        "clients": "İstemciler",
+        "exports": "Dışa aktarımlar",
+        "cacheHitRate": "Önbellek isabeti",
+        "p95": "95. yüzdelik süre",
+        "avgQueue": "Ortalama bekleme",
+        "rateLimited": "Sınırlanan",
+        "shed": "Reddedilen (yük)",
+        "errors": "Hatalar",
+        "authRequired": "Reddedilen (hesapsız)",
+        "rowsServed": "Sunulan satırlar",
+        "elevatedShare": "Yük altındaki süre"
+      },
+      "requestsChart": "İstekler",
+      "requestsChartHint": "Sunulan, sınırlanan, site yükü nedeniyle reddedilen istekler ve hatalar.",
+      "pressureChart": "Site yükü",
+      "pressureChartHint": "Olay döngüsü gecikmesi ({elevated} ms üzeri uyarı, {critical} ms üzeri kritik), veritabanı bağlantısı bekleyen site sorguları, çalışan OpenData sorguları.",
+      "instances": "Sunucular",
+      "instancesHint": "Her sunucunun son ölçümü. OpenData sunucu başına aynı anda {normal} sorgu çalıştırır, yük altında {elevated}, kritik yükte hiç.",
+      "instancesEmpty": "Yakın tarihli ölçüm yok.",
+      "columns": {
+        "instance": "Sunucu",
+        "level": "Yük",
+        "lag": "Gecikme",
+        "poolWaiting": "Bekleyen sorgular",
+        "inFlight": "Çalışan OpenData",
+        "queued": "Kuyruktaki OpenData",
+        "sampledAt": "Ölçüm zamanı",
+        "dataset": "Veri seti",
+        "requests": "Sunulan / istekler",
+        "cacheHit": "Önbellek",
+        "avg": "Ortalama",
+        "p95": "95. yüzdelik",
+        "rows": "Satırlar",
+        "consumer": "İstemci",
+        "exports": "Dışa aktarımlar",
+        "rateLimited": "Sınırlanan",
+        "shed": "Reddedilen",
+        "lastSeen": "Son görülme"
+      },
+      "level": {
+        "normal": "Normal",
+        "elevated": "Yüksek",
+        "critical": "Kritik"
+      },
+      "kind": {
+        "browse": "tablo",
+        "export": "dışa aktarım"
+      },
+      "datasets": "Veri setine göre",
+      "consumers": "En aktif istemciler",
+      "consumersHint": "Hesabı olmayan ziyaretçiler IP adreslerinin hash'ine göre gruplanır.",
+      "noRequests": "Bu dönemde istek yok.",
+      "anonymous": "Ziyaretçi {hash}",
+      "charts": {
+        "empty": "Bu dönemde istek yok.",
+        "noSamples": "Bu dönemde yük ölçümü yok.",
+        "served": "Sunulan",
+        "rateLimited": "Sınırlanan",
+        "shed": "Reddedilen",
+        "errors": "Hatalar",
+        "lag": "Gecikme (ms)",
+        "poolWaiting": "Bekleyen sorgular",
+        "inFlight": "Çalışan OpenData"
       }
     }
   },
@@ -6564,6 +6695,171 @@
       "tooLarge": "Dosya çok büyük, en fazla {max} MB olabilir.",
       "tooSmall": "Görsel çok küçük, kısa kenar en az {min} px olmalı.",
       "invalidImage": "Bu dosya geçerli bir görsel değil."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "GC Stats'in herkese açık tüm turnuvaları, takımları, oyuncuları ve maçları; serbestçe göz atın, sıralayın ve JSON olarak indirin.",
+    "rowCount": "{count, plural, one {# satır} other {# satır}}",
+    "columnCount": "{count, plural, one {# sütun} other {# sütun}}",
+    "explore": "Keşfet",
+    "allDatasets": "Tüm veri setleri",
+    "datasets": {
+      "tournaments": {
+        "name": "Turnuvalar",
+        "description": "Yayınlanan tüm turnuvalar: tarihler, durum, bölge, kategori, ödül havuzu, organizatör ve takım sayısı."
+      },
+      "teams": {
+        "name": "Takımlar",
+        "description": "Ülkesi, güncel oyuncu sayısı, maç sayısı, biyografisi ve sosyal hesaplarıyla tüm takımlar."
+      },
+      "players": {
+        "name": "Oyuncular",
+        "description": "Ülkesi, güncel takımı ve rolü, biyografisi ve sosyal hesaplarıyla tüm oyuncular ve ekip üyeleri."
+      },
+      "matches": {
+        "name": "Maçlar",
+        "description": "Turnuvası, aşaması, takımları, skoru, durumu ve saatiyle tüm maçlar."
+      }
+    },
+    "usage": {
+      "title": "Verileri kullanma",
+      "publicOnly": "Yalnızca sitede zaten herkese açık olan veriler sunulur: hesap, iletişim veya özel alan yok.",
+      "terms": "Veriler sitenin tabi olduğu koşullara tabidir: yalnızca <terms>kullanım koşullarımızın</terms> izin verdiği şekilde kullanılabilir.",
+      "freshness": "Tablolar her dakika, tam dışa aktarımlar her 10 dakikada bir yenilenir.",
+      "limits": "Limitler: hesap veya IP adresi başına dakikada {browse} tablo sayfası ve saatte {exports} tam dışa aktarım.",
+      "accountOnly": "Portal şu anda yalnızca oturum açmış kullanıcılara açık.",
+      "priority": "Site her zaman önceliklidir: yoğun yük altındayken portal yavaşlar ve birkaç saniye meşgul olduğunu yanıtlayabilir."
+    },
+    "api": {
+      "title": "API",
+      "intro": "Tablolar ve dışa aktarımlar doğrudan çağırabileceğiniz herkese açık bir JSON API kullanır:",
+      "datasets": "Veri setleri: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: veri setinin herhangi bir sütunu, direction: asc veya desc.",
+      "paramQ": "q: metin araması, en fazla 100 karakter.",
+      "paramFilter": "f.sütun: herhangi bir sütuna göre filtreler (ör. f.region=EMEA). Metinde kısmi, sayılarda, durumlarda ve true/false değerlerinde tam eşleşme. En fazla {max} filtre, birlikte uygulanır.",
+      "errors": "Hatalar bir hata kodu içeren bir JSON nesnesi, 400, 401, 429 veya 503 durumu ve ne zaman tekrar deneyeceğinizi belirten bir Retry-After başlığı döndürür."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData geçici olarak kullanılamıyor",
+        "text": "Portal şimdilik kapalı. Lütfen daha sonra tekrar gelin."
+      },
+      "accountRequired": {
+        "title": "Verilere erişmek için oturum açın",
+        "text": "OpenData portalı şu anda yalnızca oturum açmış kullanıcılara açık. Hesap oluşturmak ücretsizdir."
+      },
+      "login": "Oturum aç",
+      "register": "Hesap oluştur"
+    },
+    "download": {
+      "label": "JSON indir",
+      "labelFiltered": "Seçimi indir",
+      "preparing": "Hazırlanıyor...",
+      "success": "İndirme başladı"
+    },
+    "errors": {
+      "not_found": "Bu veri seti mevcut değil.",
+      "bad_request": "Geçersiz istek parametreleri.",
+      "disabled": "OpenData portalı geçici olarak kullanılamıyor.",
+      "account_required": "Verilere erişmek için oturum açın.",
+      "rate_limited": "Çok fazla istek, lütfen yavaşlayın.",
+      "busy": "Site çok yoğun, veriler birkaç saniye içinde geri gelecek.",
+      "internal_error": "Bir sorun oluştu, lütfen tekrar deneyin.",
+      "network": "Ağ hatası, bağlantınızı kontrol edin."
+    },
+    "retryIn": "({seconds} sn sonra tekrar deneyin)",
+    "retry": "Tekrar dene",
+    "searchLabel": "Ara",
+    "searchPlaceholder": {
+      "tournaments": "Ad, bölge, kategori...",
+      "teams": "Ad veya etiket...",
+      "players": "Takma ad, isim, takım...",
+      "matches": "Turnuva, aşama, takım..."
+    },
+    "clearSearch": "Aramayı temizle",
+    "filters": {
+      "button": "Filtre",
+      "title": "Sütuna göre filtrele",
+      "column": "Sütun",
+      "value": "Değer",
+      "valuePlaceholder": "Eşleşecek değer...",
+      "addAnother": "Başka filtre ekle",
+      "apply": "Uygula",
+      "clear": "Temizle",
+      "integerRequired": "Bu sütun için tam sayı girilmelidir."
+    },
+    "perPage": "Sayfa başına {count}",
+    "columnsPicker": "Sütunlar",
+    "showAllColumns": "Tümünü göster",
+    "resetColumns": "Sıfırla",
+    "rowsRange": "{total} satırdan {from} ile {to} arası",
+    "loading": "Yükleniyor...",
+    "noResults": "Satır yok.",
+    "noResultsFor": "\"{q}\" ile eşleşen satır yok.",
+    "noResultsFiltered": "Bu filtrelerle eşleşen satır yok.",
+    "pagination": "Sayfalama",
+    "firstPage": "İlk sayfa",
+    "previousPage": "Önceki sayfa",
+    "nextPage": "Sonraki sayfa",
+    "lastPage": "Son sayfa",
+    "pageOf": "Sayfa {page} / {total}",
+    "yes": "Evet",
+    "no": "Hayır",
+    "openLink": "Aç",
+    "status": {
+      "upcoming": "Yaklaşan",
+      "live": "Canlı",
+      "finished": "Bitti",
+      "pending": "Planlandı",
+      "completed": "Tamamlandı"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Ad",
+      "status": "Durum",
+      "start_date": "Başlangıç",
+      "end_date": "Bitiş",
+      "region": "Bölge",
+      "category": "Kategori",
+      "location": "Konum",
+      "prize_pool": "Ödül havuzu",
+      "teams_count": "Takımlar",
+      "organizer_id": "Organizatör ID",
+      "organizer_name": "Organizatör",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Sosyal",
+      "short_name": "Etiket",
+      "country_code": "Ülke",
+      "secondary_country_code": "İkinci ülke",
+      "is_active": "Aktif",
+      "players_count": "Oyuncular",
+      "matches_count": "Maçlar",
+      "bio": "Biyografi",
+      "vlr_id": "VLR ID",
+      "handle": "Takma ad",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "current_team_id": "Takım ID",
+      "current_team_name": "Güncel takım",
+      "current_role": "Rol",
+      "scheduled_at": "Tarih",
+      "tournament_id": "Turnuva ID",
+      "tournament_name": "Turnuva",
+      "stage_name": "Aşama",
+      "bracket_name": "Fikstür",
+      "round": "Tur",
+      "best_of": "Best of",
+      "team_a_id": "A takımı ID",
+      "team_a_name": "A takımı",
+      "score_a": "Skor A",
+      "score_b": "Skor B",
+      "team_b_id": "B takımı ID",
+      "team_b_name": "B takımı",
+      "winner_team_id": "Kazanan ID",
+      "is_forfeit": "Hükmen",
+      "patch": "Yama"
     }
   }
 }

@@ -3,14 +3,15 @@
  *
  * Stream/VOD tables (stream_channels, match_streams, vods, match player
  * POVs), finance entries, the About page tables (sections, projects, team
- * categories/settings), activity log, and page view tracking.
+ * categories/settings), activity log, page view tracking, site wide
+ * configuration and the OpenData portal monitoring.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, bigserial, bigint, text, char, boolean, integer, numeric, date, timestamp, jsonb, primaryKey, unique, index } from "drizzle-orm/pg-core";
+import { pgTable, bigserial, bigint, text, char, boolean, integer, smallint, numeric, date, timestamp, jsonb, primaryKey, unique, index } from "drizzle-orm/pg-core";
 import { matches } from "./bracket";
 import { maps } from "./stats";
 import { people, organizations } from "./people";
@@ -131,4 +132,47 @@ export const pageViews = pgTable("page_views", {
 }, (t) => [
   primaryKey({ columns: [t.uri, t.viewedAt] }),
   index("page_views_viewed_at_idx").on(t.viewedAt),
+]);
+
+// Site wide settings edited from /admin/settings, one JSON document per key.
+export const siteConfig = pgTable("site_config", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: text("updated_by").references(() => users.id, { onDelete: "set null" }),
+});
+
+// One row per OpenData API call, written in batches (see lib/opendata/metrics.ts).
+export const opendataRequestLog = pgTable("opendata_request_log", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  dataset: text("dataset").notNull(),
+  kind: text("kind").notNull(), // 'browse' | 'export'
+  outcome: text("outcome").notNull(), // 'ok' | 'rate_limited' | 'shed' | 'auth_required' | 'disabled' | 'bad_request' | 'error'
+  statusCode: smallint("status_code").notNull(),
+  durationMs: integer("duration_ms").notNull(),
+  queueMs: integer("queue_ms").notNull().default(0),
+  cacheHit: boolean("cache_hit").notNull().default(false),
+  rowCount: integer("row_count").notNull().default(0),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+  // Keyed hash of the client IP, never the address itself.
+  clientHash: char("client_hash", { length: 16 }).notNull(),
+  pressure: text("pressure").notNull(), // 'normal' | 'elevated' | 'critical'
+}, (t) => [
+  index("opendata_request_log_created_at_idx").on(t.createdAt),
+]);
+
+// Load snapshot taken every minute by each replica: site health next to the OpenData activity.
+export const opendataPressureSamples = pgTable("opendata_pressure_samples", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  sampledAt: timestamp("sampled_at", { withTimezone: true }).notNull().defaultNow(),
+  instance: text("instance").notNull(),
+  pressure: text("pressure").notNull(),
+  eventLoopLagMs: integer("event_loop_lag_ms").notNull(),
+  dbPoolTotal: smallint("db_pool_total").notNull(),
+  dbPoolWaiting: smallint("db_pool_waiting").notNull(),
+  inFlight: smallint("in_flight").notNull(),
+  queued: smallint("queued").notNull(),
+}, (t) => [
+  index("opendata_pressure_samples_sampled_at_idx").on(t.sampledAt),
 ]);

@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql, getTableName } from "drizzle-orm";
+import { sql, getTableName, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import type { PgTable } from "drizzle-orm/pg-core";
 
@@ -30,7 +30,12 @@ function escapeLikePattern(pattern: string): string {
  * lowercased/accent-stripped (see lib/search-typo.ts::typoVariants).
  */
 export function foldedIlike(column: AnyPgColumn, pattern: string) {
-  return sql`translate(lower(${column}), ${ACCENT_SRC}, ${ACCENT_DST}) LIKE ${`%${escapeLikePattern(pattern)}%`}`;
+  return foldedIlikeExpr(sql`${column}`, pattern);
+}
+
+/** `foldedIlike` over any SQL expression (a subquery alias, a computed column). */
+export function foldedIlikeExpr(expr: SQL, pattern: string) {
+  return sql`translate(lower(${expr}), ${ACCENT_SRC}, ${ACCENT_DST}) LIKE ${`%${escapeLikePattern(pattern)}%`}`;
 }
 
 /**

@@ -1132,7 +1132,8 @@
               "IPアドレス",
               "リクエストされたページ",
               "ブラウザ",
-              "日時"
+              "日時",
+              "OpenData ポータルの利用状況（アカウント、ハッシュ化した IP アドレス、データセット）、30 日後に削除"
             ]
           }
         },
@@ -1654,8 +1655,6 @@
     "product": "プロダクト",
     "productAllMatches": "すべての試合",
     "productTournaments": "トーナメント",
-    "productDataExplorer": "データエクスプローラー",
-    "productDataExplorerComingSoon": "近日公開",
     "productForum": "フォーラム",
     "contribute": "貢献する",
     "contributeEditPage": "ページを編集",
@@ -1677,7 +1676,8 @@
     "transparency": "透明性",
     "finance": "財務",
     "developers": "開発者",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1878,7 +1878,8 @@
       "sanctions": "制裁",
       "activityLog": "アクティビティログ",
       "analytics": "アナリティクス",
-      "oauthClients": "OAuthクライアント"
+      "oauthClients": "OAuthクライアント",
+      "settings": "設定"
     },
     "dashboard": {
       "title": "ダッシュボード",
@@ -3309,7 +3310,8 @@
         "sanctions": "制裁",
         "activityLog": "アクティビティログ",
         "analytics": "アナリティクス",
-        "oauthClients": "OAuthクライアント"
+        "oauthClients": "OAuthクライアント",
+        "settings": "設定"
       },
       "permissionNames": {
         "admin_access": "管理パネルへのアクセス",
@@ -3358,7 +3360,9 @@
         "activity_log_view": "アクティビティログの閲覧",
         "analytics_view": "アナリティクスの閲覧",
         "oauth_clients_view": "OAuthクライアントの閲覧",
-        "oauth_clients_manage": "OAuthクライアントの作成、編集、削除"
+        "oauth_clients_manage": "OAuthクライアントの作成、編集、削除",
+        "settings_view": "設定と OpenData のモニタリングを表示",
+        "settings_manage": "設定を編集"
       },
       "create": {
         "button": "新規ロール",
@@ -4886,6 +4890,133 @@
         "stoppedTournament": "大会から出場を停止",
         "insideSource": "内部情報",
         "declaredByPlayer": "選手本人が申告"
+      }
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "サイト全体の設定。",
+      "save": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "設定を保存しました",
+      "saveError": "無効な項目があります",
+      "saveFailed": "保存に失敗しました。ページを再読み込みしてもう一度お試しください。",
+      "error": {
+        "required": "この項目は必須です。",
+        "invalid": "無効な値です。",
+        "outOfRange": "{min} から {max} までの整数を入力してください。"
+      },
+      "opendata": {
+        "title": "OpenData ポータル",
+        "description": "閲覧と JSON ダウンロードができる公開データセット（大会、チーム、選手、試合）。",
+        "publicPortal": "公開ポータル",
+        "monitoring": "モニタリング",
+        "enabled": "ポータルを有効化",
+        "enabledHint": "無効にすると、ポータルと API はサービス停止中と応答します。",
+        "requireAccount": "アカウント必須",
+        "requireAccountHint": "ログインしたユーザーのみがデータを閲覧・ダウンロードできます。",
+        "browsePerMinute": "1 分あたりの表ページ数",
+        "browsePerMinuteHint": "アカウントごと、または訪問者は IP アドレスごと。{min} から {max} まで。",
+        "exportsPerHour": "1 時間あたりの全件エクスポート数",
+        "exportsPerHourHint": "アカウントごと、または訪問者は IP アドレスごと。{min} から {max} まで。",
+        "propagationHint": "変更は 15 秒以内にすべてのサーバーに反映されます。"
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData モニタリング",
+      "subtitle": "OpenData ポータルの利用状況とサイト負荷への影響。",
+      "backToSettings": "設定",
+      "rangeLabel": "期間",
+      "range": {
+        "1h": "1 時間",
+        "24h": "24 時間",
+        "7d": "7 日"
+      },
+      "refresh": "更新",
+      "verdict": {
+        "healthy": "ポータルはサイトに負荷をかけていません",
+        "strained": "ポータルの負荷が高まっています",
+        "overloaded": "サイトを守るためポータルを減速しました"
+      },
+      "verdictHint": {
+        "healthy": "負荷の圧迫なし、拒否されたリクエストなし。",
+        "strained": "推移に注意してください。増え続ける場合は上限を下げるか、アカウント必須にしてください。",
+        "overloaded": "サイトの負荷が高い間、リクエストが拒否されました。上限を下げるか、アカウント必須にすることを検討してください。"
+      },
+      "reasons": {
+        "shed": "サイトの応答性を保つため {shed} 件のリクエストを拒否",
+        "critical": "サイトが危険な負荷レベルに達しました",
+        "elevated": "時間の {share} でサイトが高負荷でした",
+        "rateLimited": "多くのリクエストが上限に達しました",
+        "slow": "応答が遅い（95 パーセンタイル {p95} ms）"
+      },
+      "configState": "ポータル: {enabled} · アカウント必須: {requireAccount} · 上限: 1 分あたり {browse} ページ、1 時間あたり {exports} エクスポート",
+      "on": "オン",
+      "off": "オフ",
+      "stats": {
+        "requests": "リクエスト",
+        "clients": "クライアント",
+        "exports": "エクスポート",
+        "cacheHitRate": "キャッシュヒット率",
+        "p95": "95 パーセンタイル時間",
+        "avgQueue": "平均待ち時間",
+        "rateLimited": "制限",
+        "shed": "拒否（負荷）",
+        "errors": "エラー",
+        "authRequired": "拒否（アカウントなし）",
+        "rowsServed": "提供行数",
+        "elevatedShare": "高負荷の時間"
+      },
+      "requestsChart": "リクエスト",
+      "requestsChartHint": "提供、制限、サイト負荷による拒否、エラー。",
+      "pressureChart": "サイト負荷",
+      "pressureChartHint": "イベントループの遅延（{elevated} ms で警告、{critical} ms で危険）、データベース接続を待つサイトのクエリ、実行中の OpenData クエリ。",
+      "instances": "サーバー",
+      "instancesHint": "各サーバーの最新サンプル。OpenData はサーバーごとに同時 {normal} クエリ、高負荷時は {elevated}、危険な負荷では実行しません。",
+      "instancesEmpty": "最近のサンプルはありません。",
+      "columns": {
+        "instance": "サーバー",
+        "level": "負荷",
+        "lag": "遅延",
+        "poolWaiting": "待機中のクエリ",
+        "inFlight": "実行中の OpenData",
+        "queued": "待機中の OpenData",
+        "sampledAt": "取得時刻",
+        "dataset": "データセット",
+        "requests": "提供 / リクエスト",
+        "cacheHit": "キャッシュ",
+        "avg": "平均",
+        "p95": "95 パーセンタイル",
+        "rows": "行",
+        "consumer": "クライアント",
+        "exports": "エクスポート",
+        "rateLimited": "制限",
+        "shed": "拒否",
+        "lastSeen": "最終アクセス"
+      },
+      "level": {
+        "normal": "通常",
+        "elevated": "高",
+        "critical": "危険"
+      },
+      "kind": {
+        "browse": "表",
+        "export": "エクスポート"
+      },
+      "datasets": "データセット別",
+      "consumers": "上位クライアント",
+      "consumersHint": "アカウントのない訪問者は IP アドレスのハッシュでまとめられます。",
+      "noRequests": "この期間のリクエストはありません。",
+      "anonymous": "訪問者 {hash}",
+      "charts": {
+        "empty": "この期間のリクエストはありません。",
+        "noSamples": "この期間の負荷サンプルはありません。",
+        "served": "提供",
+        "rateLimited": "制限",
+        "shed": "拒否",
+        "errors": "エラー",
+        "lag": "遅延 (ms)",
+        "poolWaiting": "待機中のクエリ",
+        "inFlight": "実行中の OpenData"
       }
     }
   },
@@ -6564,6 +6695,171 @@
       "tooLarge": "ファイルが大きすぎます。上限は {max} MB です。",
       "tooSmall": "画像が小さすぎます。短い辺は {min} px 以上必要です。",
       "invalidImage": "有効な画像ファイルではありません。"
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "GC Stats のすべての公開大会、チーム、選手、試合を自由に閲覧、並べ替え、JSON でダウンロードできます。",
+    "rowCount": "{count, plural, other {# 行}}",
+    "columnCount": "{count, plural, other {# 列}}",
+    "explore": "見る",
+    "allDatasets": "すべてのデータセット",
+    "datasets": {
+      "tournaments": {
+        "name": "大会",
+        "description": "公開済みのすべての大会：日程、ステータス、地域、カテゴリー、賞金、主催者、チーム数。"
+      },
+      "teams": {
+        "name": "チーム",
+        "description": "国、現在の選手数、試合数、紹介文、SNS を含むすべてのチーム。"
+      },
+      "players": {
+        "name": "選手",
+        "description": "国、現在のチームと役割、紹介文、SNS を含むすべての選手とスタッフ。"
+      },
+      "matches": {
+        "name": "試合",
+        "description": "大会、ステージ、チーム、スコア、ステータス、日時を含むすべての試合。"
+      }
+    },
+    "usage": {
+      "title": "データの利用",
+      "publicOnly": "サイトですでに公開されているデータのみを提供します。アカウント、連絡先、非公開項目は含みません。",
+      "terms": "データにはサイトと同じ条件が適用されます。<terms>利用規約</terms>で認められた範囲でのみ利用できます。",
+      "freshness": "表は毎分、全件エクスポートは 10 分ごとに更新されます。",
+      "limits": "上限：アカウントまたは IP アドレスごとに 1 分あたり {browse} 表ページ、1 時間あたり {exports} 全件エクスポート。",
+      "accountOnly": "現在ポータルはログインしたユーザーのみ利用できます。",
+      "priority": "サイトが常に優先されます。高負荷時はポータルが減速し、数秒間ビジーと応答することがあります。"
+    },
+    "api": {
+      "title": "API",
+      "intro": "表とエクスポートは、直接呼び出せる公開 JSON API を使用しています：",
+      "datasets": "データセット：{list}。",
+      "paramPerPage": "per_page：{sizes}。",
+      "paramSort": "sort：データセットの任意の列、direction：asc または desc。",
+      "paramQ": "q：テキスト検索、最大 100 文字。",
+      "paramFilter": "f.列名：任意の列で絞り込みます（例：f.region=EMEA）。テキストは部分一致、数値・ステータス・true/false は完全一致。最大 {max} 件まで組み合わせ可能。",
+      "errors": "エラーはエラーコードを含む JSON オブジェクト、ステータス 400、401、429、503、再試行のタイミングを示す Retry-After ヘッダーを返します。"
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData は一時的に利用できません",
+        "text": "ポータルは現在停止中です。後でもう一度お越しください。"
+      },
+      "accountRequired": {
+        "title": "データにアクセスするにはログインしてください",
+        "text": "OpenData ポータルは現在ログインしたユーザーのみ利用できます。アカウント作成は無料です。"
+      },
+      "login": "ログイン",
+      "register": "アカウント作成"
+    },
+    "download": {
+      "label": "JSON をダウンロード",
+      "labelFiltered": "選択した行をダウンロード",
+      "preparing": "準備中...",
+      "success": "ダウンロードを開始しました"
+    },
+    "errors": {
+      "not_found": "このデータセットは存在しません。",
+      "bad_request": "リクエストのパラメーターが無効です。",
+      "disabled": "OpenData ポータルは一時的に利用できません。",
+      "account_required": "データにアクセスするにはログインしてください。",
+      "rate_limited": "リクエストが多すぎます。少し待ってください。",
+      "busy": "サイトが混雑しています。数秒後にデータが戻ります。",
+      "internal_error": "問題が発生しました。もう一度お試しください。",
+      "network": "ネットワークエラーです。接続を確認してください。"
+    },
+    "retryIn": "（{seconds} 秒後に再試行）",
+    "retry": "再試行",
+    "searchLabel": "検索",
+    "searchPlaceholder": {
+      "tournaments": "名前、地域、カテゴリー...",
+      "teams": "名前またはタグ...",
+      "players": "ハンドル、名前、チーム...",
+      "matches": "大会、ステージ、チーム..."
+    },
+    "clearSearch": "検索をクリア",
+    "filters": {
+      "button": "フィルター",
+      "title": "列で絞り込む",
+      "column": "列",
+      "value": "値",
+      "valuePlaceholder": "一致する値...",
+      "addAnother": "フィルターを追加",
+      "apply": "適用",
+      "clear": "クリア",
+      "integerRequired": "この列には整数を入力してください。"
+    },
+    "perPage": "1 ページ {count} 件",
+    "columnsPicker": "列",
+    "showAllColumns": "すべて表示",
+    "resetColumns": "リセット",
+    "rowsRange": "{total} 行中 {from} から {to}",
+    "loading": "読み込み中...",
+    "noResults": "行がありません。",
+    "noResultsFor": "「{q}」に一致する行はありません。",
+    "noResultsFiltered": "この条件に一致する行はありません。",
+    "pagination": "ページ送り",
+    "firstPage": "最初のページ",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "lastPage": "最後のページ",
+    "pageOf": "{page} / {total} ページ",
+    "yes": "はい",
+    "no": "いいえ",
+    "openLink": "開く",
+    "status": {
+      "upcoming": "開催予定",
+      "live": "ライブ",
+      "finished": "終了",
+      "pending": "予定",
+      "completed": "終了"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "名前",
+      "status": "ステータス",
+      "start_date": "開始",
+      "end_date": "終了",
+      "region": "地域",
+      "category": "カテゴリー",
+      "location": "開催地",
+      "prize_pool": "賞金",
+      "teams_count": "チーム数",
+      "organizer_id": "主催者 ID",
+      "organizer_name": "主催者",
+      "liquipedia_link": "Liquipedia",
+      "socials": "SNS",
+      "short_name": "タグ",
+      "country_code": "国",
+      "secondary_country_code": "第 2 国籍",
+      "is_active": "アクティブ",
+      "players_count": "選手数",
+      "matches_count": "試合数",
+      "bio": "紹介文",
+      "vlr_id": "VLR ID",
+      "handle": "ハンドル",
+      "first_name": "名",
+      "last_name": "姓",
+      "current_team_id": "チーム ID",
+      "current_team_name": "現在のチーム",
+      "current_role": "役割",
+      "scheduled_at": "日時",
+      "tournament_id": "大会 ID",
+      "tournament_name": "大会",
+      "stage_name": "ステージ",
+      "bracket_name": "ブラケット",
+      "round": "ラウンド",
+      "best_of": "Best of",
+      "team_a_id": "チーム A ID",
+      "team_a_name": "チーム A",
+      "score_a": "スコア A",
+      "score_b": "スコア B",
+      "team_b_id": "チーム B ID",
+      "team_b_name": "チーム B",
+      "winner_team_id": "勝者 ID",
+      "is_forfeit": "不戦",
+      "patch": "パッチ"
     }
   }
 }

@@ -23,6 +23,7 @@ import { detectPlayerPovStreams } from "./jobs/detect-player-pov-streams";
 import { pruneExpiredOAuthTokens } from "./jobs/prune-expired-oauth-tokens";
 import { flushChangeRequestDiscordNotices } from "./jobs/flush-change-request-discord-notices";
 import { deactivateInactiveEntities } from "./jobs/deactivate-inactive-entities";
+import { pruneOpenDataLogs } from "./jobs/prune-opendata-logs";
 
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string> };
 
@@ -46,6 +47,7 @@ export const jobs: ScheduledJob[] = [
   { name: "prune-expired-oauth-tokens", cron: "*/15 * * * *", run: pruneExpiredOAuthTokens },
   { name: "flush-change-request-discord-notices", cron: "* * * * *", run: flushChangeRequestDiscordNotices },
   { name: "deactivate-inactive-entities", cron: "10 0 1 * *", run: deactivateInactiveEntities },
+  { name: "prune-opendata-logs", cron: "0 0 * * *", run: pruneOpenDataLogs },
 ];
 
 /** Runs every job matching this cron expression, sequentially, swallowing individual failures. Used by the /api/internal/cron route. */

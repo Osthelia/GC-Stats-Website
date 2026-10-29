@@ -1134,7 +1134,8 @@
               "Địa chỉ IP",
               "Trang được yêu cầu",
               "Trình duyệt",
-              "Ngày và giờ"
+              "Ngày và giờ",
+              "Lượt dùng cổng OpenData (tài khoản, địa chỉ IP đã băm, bộ dữ liệu), xóa sau 30 ngày"
             ]
           }
         },
@@ -1656,8 +1657,6 @@
     "product": "Sản phẩm",
     "productAllMatches": "Tất cả trận đấu",
     "productTournaments": "Giải đấu",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "Sắp ra mắt",
     "productForum": "Diễn đàn",
     "contribute": "Đóng góp",
     "contributeEditPage": "Sửa một trang",
@@ -1679,7 +1678,8 @@
     "transparency": "Minh bạch",
     "finance": "Tài chính",
     "developers": "Nhà phát triển",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1880,7 +1880,8 @@
       "sanctions": "Hình phạt",
       "activityLog": "Nhật ký hoạt động",
       "analytics": "Phân tích",
-      "oauthClients": "Ứng dụng OAuth"
+      "oauthClients": "Ứng dụng OAuth",
+      "settings": "Cấu hình"
     },
     "dashboard": {
       "title": "Bảng điều khiển",
@@ -3313,7 +3314,8 @@
         "sanctions": "Hình phạt",
         "activityLog": "Nhật ký hoạt động",
         "analytics": "Phân tích",
-        "oauthClients": "Ứng dụng OAuth"
+        "oauthClients": "Ứng dụng OAuth",
+        "settings": "Cấu hình"
       },
       "permissionNames": {
         "admin_access": "Truy cập bảng quản trị",
@@ -3362,7 +3364,9 @@
         "activity_log_view": "Xem nhật ký hoạt động",
         "analytics_view": "Xem phân tích",
         "oauth_clients_view": "Xem ứng dụng OAuth",
-        "oauth_clients_manage": "Tạo, sửa hoặc xóa ứng dụng OAuth"
+        "oauth_clients_manage": "Tạo, sửa hoặc xóa ứng dụng OAuth",
+        "settings_view": "Xem cấu hình và giám sát OpenData",
+        "settings_manage": "Chỉnh sửa cấu hình"
       },
       "create": {
         "button": "Vai trò mới",
@@ -5003,6 +5007,133 @@
         "stoppedTournament": "Ngừng thi đấu tại một giải đấu",
         "insideSource": "Nguồn nội bộ",
         "declaredByPlayer": "Do tuyển thủ khai báo"
+      }
+    },
+    "settings": {
+      "title": "Cấu hình",
+      "subtitle": "Cài đặt chung của trang.",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "saveSuccess": "Đã lưu cài đặt",
+      "saveError": "Một số trường không hợp lệ",
+      "saveFailed": "Lưu thất bại, hãy tải lại trang và thử lại.",
+      "error": {
+        "required": "Trường này là bắt buộc.",
+        "invalid": "Giá trị không hợp lệ.",
+        "outOfRange": "Phải là số nguyên từ {min} đến {max}."
+      },
+      "opendata": {
+        "title": "Cổng OpenData",
+        "description": "Bộ dữ liệu công khai (giải đấu, đội, tuyển thủ, trận đấu) để duyệt và tải xuống dạng JSON.",
+        "publicPortal": "Cổng công khai",
+        "monitoring": "Giám sát",
+        "enabled": "Bật cổng",
+        "enabledHint": "Khi tắt, cổng và API của nó trả lời rằng dịch vụ không khả dụng.",
+        "requireAccount": "Bắt buộc tài khoản",
+        "requireAccountHint": "Chỉ người dùng đã đăng nhập mới có thể duyệt và tải dữ liệu.",
+        "browsePerMinute": "Trang bảng mỗi phút",
+        "browsePerMinuteHint": "Theo tài khoản, hoặc theo địa chỉ IP với khách. Từ {min} đến {max}.",
+        "exportsPerHour": "Xuất toàn bộ mỗi giờ",
+        "exportsPerHourHint": "Theo tài khoản, hoặc theo địa chỉ IP với khách. Từ {min} đến {max}.",
+        "propagationHint": "Mỗi máy chủ áp dụng thay đổi trong vòng 15 giây."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "Giám sát OpenData",
+      "subtitle": "Mức sử dụng cổng OpenData và ảnh hưởng đến tải của trang.",
+      "backToSettings": "Cấu hình",
+      "rangeLabel": "Khoảng thời gian",
+      "range": {
+        "1h": "1 giờ",
+        "24h": "24 giờ",
+        "7d": "7 ngày"
+      },
+      "refresh": "Làm mới",
+      "verdict": {
+        "healthy": "Cổng không gây tải cho trang",
+        "strained": "Cổng đang trở nên nặng",
+        "overloaded": "Cổng đã bị làm chậm để bảo vệ trang"
+      },
+      "verdictHint": {
+        "healthy": "Không có áp lực tải, không yêu cầu nào bị từ chối.",
+        "strained": "Theo dõi xu hướng: giảm giới hạn hoặc bắt buộc tài khoản nếu tiếp tục tăng.",
+        "overloaded": "Một số yêu cầu bị từ chối khi trang đang chịu tải. Hãy cân nhắc giảm giới hạn hoặc bắt buộc tài khoản."
+      },
+      "reasons": {
+        "shed": "{shed} yêu cầu bị từ chối để trang luôn phản hồi nhanh",
+        "critical": "Trang đã đạt mức tải nghiêm trọng",
+        "elevated": "Trang chịu tải cao trong {share} thời gian",
+        "rateLimited": "Nhiều yêu cầu chạm giới hạn",
+        "slow": "Phản hồi chậm (phân vị 95 ở {p95} ms)"
+      },
+      "configState": "Cổng: {enabled} · Bắt buộc tài khoản: {requireAccount} · Giới hạn: {browse} trang mỗi phút, {exports} lượt xuất mỗi giờ",
+      "on": "bật",
+      "off": "tắt",
+      "stats": {
+        "requests": "Yêu cầu",
+        "clients": "Máy khách",
+        "exports": "Lượt xuất",
+        "cacheHitRate": "Tỷ lệ cache",
+        "p95": "Thời gian phân vị 95",
+        "avgQueue": "Chờ trung bình",
+        "rateLimited": "Bị giới hạn",
+        "shed": "Bị từ chối (tải)",
+        "errors": "Lỗi",
+        "authRequired": "Bị từ chối (không tài khoản)",
+        "rowsServed": "Số dòng trả về",
+        "elevatedShare": "Thời gian chịu tải"
+      },
+      "requestsChart": "Yêu cầu",
+      "requestsChartHint": "Đã phục vụ, bị giới hạn, bị từ chối do tải của trang, và lỗi.",
+      "pressureChart": "Tải của trang",
+      "pressureChartHint": "Độ trễ vòng lặp sự kiện (cảnh báo từ {elevated} ms, nghiêm trọng từ {critical} ms), truy vấn của trang chờ kết nối cơ sở dữ liệu, truy vấn OpenData đang chạy.",
+      "instances": "Máy chủ",
+      "instancesHint": "Mẫu gần nhất của mỗi máy chủ. OpenData chạy {normal} truy vấn cùng lúc mỗi máy chủ, {elevated} khi chịu tải, không truy vấn nào khi tải nghiêm trọng.",
+      "instancesEmpty": "Không có mẫu gần đây.",
+      "columns": {
+        "instance": "Máy chủ",
+        "level": "Tải",
+        "lag": "Độ trễ",
+        "poolWaiting": "Truy vấn đang chờ",
+        "inFlight": "OpenData đang chạy",
+        "queued": "OpenData trong hàng đợi",
+        "sampledAt": "Thời điểm lấy mẫu",
+        "dataset": "Bộ dữ liệu",
+        "requests": "Đã phục vụ / yêu cầu",
+        "cacheHit": "Cache",
+        "avg": "Trung bình",
+        "p95": "Phân vị 95",
+        "rows": "Dòng",
+        "consumer": "Máy khách",
+        "exports": "Lượt xuất",
+        "rateLimited": "Bị giới hạn",
+        "shed": "Bị từ chối",
+        "lastSeen": "Lần cuối"
+      },
+      "level": {
+        "normal": "Bình thường",
+        "elevated": "Cao",
+        "critical": "Nghiêm trọng"
+      },
+      "kind": {
+        "browse": "bảng",
+        "export": "xuất"
+      },
+      "datasets": "Theo bộ dữ liệu",
+      "consumers": "Máy khách hàng đầu",
+      "consumersHint": "Khách không có tài khoản được nhóm theo mã băm địa chỉ IP.",
+      "noRequests": "Không có yêu cầu trong khoảng thời gian này.",
+      "anonymous": "Khách {hash}",
+      "charts": {
+        "empty": "Không có yêu cầu trong khoảng thời gian này.",
+        "noSamples": "Không có mẫu tải trong khoảng thời gian này.",
+        "served": "Đã phục vụ",
+        "rateLimited": "Bị giới hạn",
+        "shed": "Bị từ chối",
+        "errors": "Lỗi",
+        "lag": "Độ trễ (ms)",
+        "poolWaiting": "Truy vấn đang chờ",
+        "inFlight": "OpenData đang chạy"
       }
     }
   },
@@ -6751,6 +6882,171 @@
       "tooLarge": "Tệp quá nặng, tối đa là {max} MB.",
       "tooSmall": "Ảnh quá nhỏ, cạnh ngắn nhất phải có ít nhất {min} px.",
       "invalidImage": "Tệp này không phải là ảnh hợp lệ."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "Toàn bộ giải đấu, đội, tuyển thủ và trận đấu công khai của GC Stats, tự do duyệt, sắp xếp và tải xuống dạng JSON.",
+    "rowCount": "{count, plural, other {# dòng}}",
+    "columnCount": "{count, plural, other {# cột}}",
+    "explore": "Khám phá",
+    "allDatasets": "Tất cả bộ dữ liệu",
+    "datasets": {
+      "tournaments": {
+        "name": "Giải đấu",
+        "description": "Tất cả giải đấu đã công bố: ngày, trạng thái, khu vực, hạng mục, tổng giải thưởng, ban tổ chức và số đội."
+      },
+      "teams": {
+        "name": "Đội",
+        "description": "Tất cả đội kèm quốc gia, số tuyển thủ hiện tại, số trận, tiểu sử và mạng xã hội."
+      },
+      "players": {
+        "name": "Tuyển thủ",
+        "description": "Tất cả tuyển thủ và thành viên ban huấn luyện kèm quốc gia, đội và vai trò hiện tại, tiểu sử và mạng xã hội."
+      },
+      "matches": {
+        "name": "Trận đấu",
+        "description": "Tất cả trận đấu kèm giải đấu, vòng, đội, tỷ số, trạng thái và lịch."
+      }
+    },
+    "usage": {
+      "title": "Sử dụng dữ liệu",
+      "publicOnly": "Chỉ dữ liệu đã công khai trên trang được cung cấp: không có tài khoản, liên hệ hay trường riêng tư.",
+      "terms": "Dữ liệu tuân theo cùng các điều kiện như trang web: chỉ được sử dụng trong phạm vi <terms>điều khoản sử dụng</terms> của chúng tôi cho phép.",
+      "freshness": "Bảng được làm mới mỗi phút, bản xuất toàn bộ mỗi 10 phút.",
+      "limits": "Giới hạn: {browse} trang bảng mỗi phút và {exports} lượt xuất toàn bộ mỗi giờ, theo tài khoản hoặc địa chỉ IP.",
+      "accountOnly": "Cổng hiện chỉ mở cho người dùng đã đăng nhập.",
+      "priority": "Trang luôn được ưu tiên: khi tải cao, cổng sẽ chậm lại và có thể trả lời đang bận trong vài giây."
+    },
+    "api": {
+      "title": "API",
+      "intro": "Bảng và bản xuất dùng một API JSON công khai mà bạn có thể gọi trực tiếp:",
+      "datasets": "Bộ dữ liệu: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: bất kỳ cột nào của bộ dữ liệu, direction: asc hoặc desc.",
+      "paramQ": "q: tìm kiếm văn bản, tối đa 100 ký tự.",
+      "paramFilter": "f.cột: lọc theo bất kỳ cột nào (vd. f.region=EMEA). Khớp một phần với văn bản, khớp chính xác với số, trạng thái và true/false. Tối đa {max} bộ lọc, kết hợp với nhau.",
+      "errors": "Lỗi trả về một đối tượng JSON có mã lỗi, trạng thái 400, 401, 429 hoặc 503, và tiêu đề Retry-After cho biết khi nào thử lại."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData tạm thời không khả dụng",
+        "text": "Cổng hiện đang tắt. Vui lòng quay lại sau."
+      },
+      "accountRequired": {
+        "title": "Đăng nhập để truy cập dữ liệu",
+        "text": "Cổng OpenData hiện chỉ mở cho người dùng đã đăng nhập. Tạo tài khoản miễn phí."
+      },
+      "login": "Đăng nhập",
+      "register": "Tạo tài khoản"
+    },
+    "download": {
+      "label": "Tải JSON",
+      "labelFiltered": "Tải xuống phần đã lọc",
+      "preparing": "Đang chuẩn bị...",
+      "success": "Đã bắt đầu tải"
+    },
+    "errors": {
+      "not_found": "Bộ dữ liệu này không tồn tại.",
+      "bad_request": "Tham số yêu cầu không hợp lệ.",
+      "disabled": "Cổng OpenData tạm thời không khả dụng.",
+      "account_required": "Đăng nhập để truy cập dữ liệu.",
+      "rate_limited": "Quá nhiều yêu cầu, vui lòng chậm lại.",
+      "busy": "Trang đang rất tải, dữ liệu sẽ trở lại sau vài giây.",
+      "internal_error": "Đã xảy ra lỗi, vui lòng thử lại.",
+      "network": "Lỗi mạng, kiểm tra kết nối của bạn."
+    },
+    "retryIn": "(thử lại sau {seconds} giây)",
+    "retry": "Thử lại",
+    "searchLabel": "Tìm kiếm",
+    "searchPlaceholder": {
+      "tournaments": "Tên, khu vực, hạng mục...",
+      "teams": "Tên hoặc tag...",
+      "players": "Biệt danh, tên, đội...",
+      "matches": "Giải đấu, vòng, đội..."
+    },
+    "clearSearch": "Xóa tìm kiếm",
+    "filters": {
+      "button": "Lọc",
+      "title": "Lọc theo cột",
+      "column": "Cột",
+      "value": "Giá trị",
+      "valuePlaceholder": "Giá trị cần khớp...",
+      "addAnother": "Thêm bộ lọc khác",
+      "apply": "Áp dụng",
+      "clear": "Xóa",
+      "integerRequired": "Cột này yêu cầu một số nguyên."
+    },
+    "perPage": "{count} mỗi trang",
+    "columnsPicker": "Cột",
+    "showAllColumns": "Hiện tất cả",
+    "resetColumns": "Đặt lại",
+    "rowsRange": "{from} đến {to} trên {total} dòng",
+    "loading": "Đang tải...",
+    "noResults": "Không có dòng nào.",
+    "noResultsFor": "Không có dòng nào khớp với \"{q}\".",
+    "noResultsFiltered": "Không có dòng nào khớp với các bộ lọc này.",
+    "pagination": "Phân trang",
+    "firstPage": "Trang đầu",
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "lastPage": "Trang cuối",
+    "pageOf": "Trang {page} / {total}",
+    "yes": "Có",
+    "no": "Không",
+    "openLink": "Mở",
+    "status": {
+      "upcoming": "Sắp diễn ra",
+      "live": "Trực tiếp",
+      "finished": "Đã kết thúc",
+      "pending": "Đã lên lịch",
+      "completed": "Đã kết thúc"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Tên",
+      "status": "Trạng thái",
+      "start_date": "Bắt đầu",
+      "end_date": "Kết thúc",
+      "region": "Khu vực",
+      "category": "Hạng mục",
+      "location": "Địa điểm",
+      "prize_pool": "Tổng giải thưởng",
+      "teams_count": "Đội",
+      "organizer_id": "ID ban tổ chức",
+      "organizer_name": "Ban tổ chức",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Mạng xã hội",
+      "short_name": "Tag",
+      "country_code": "Quốc gia",
+      "secondary_country_code": "Quốc gia thứ hai",
+      "is_active": "Hoạt động",
+      "players_count": "Tuyển thủ",
+      "matches_count": "Trận đấu",
+      "bio": "Tiểu sử",
+      "vlr_id": "ID VLR",
+      "handle": "Biệt danh",
+      "first_name": "Tên",
+      "last_name": "Họ",
+      "current_team_id": "ID đội",
+      "current_team_name": "Đội hiện tại",
+      "current_role": "Vai trò",
+      "scheduled_at": "Ngày",
+      "tournament_id": "ID giải đấu",
+      "tournament_name": "Giải đấu",
+      "stage_name": "Vòng",
+      "bracket_name": "Nhánh đấu",
+      "round": "Lượt",
+      "best_of": "Best of",
+      "team_a_id": "ID đội A",
+      "team_a_name": "Đội A",
+      "score_a": "Tỷ số A",
+      "score_b": "Tỷ số B",
+      "team_b_id": "ID đội B",
+      "team_b_name": "Đội B",
+      "winner_team_id": "ID đội thắng",
+      "is_forfeit": "Xử thua",
+      "patch": "Bản cập nhật"
     }
   }
 }

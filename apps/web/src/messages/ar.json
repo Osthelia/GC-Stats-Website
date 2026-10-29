@@ -1132,7 +1132,8 @@
               "عنوان IP",
               "الصفحة المطلوبة",
               "المتصفح",
-              "التاريخ والوقت"
+              "التاريخ والوقت",
+              "استخدام بوابة OpenData (الحساب، عنوان IP بعد تجزئته، مجموعة البيانات)، يُحذف بعد 30 يومًا"
             ]
           }
         },
@@ -1654,8 +1655,6 @@
     "product": "المنتج",
     "productAllMatches": "كل المباريات",
     "productTournaments": "البطولات",
-    "productDataExplorer": "مستكشف البيانات",
-    "productDataExplorerComingSoon": "قريبًا",
     "productForum": "المنتدى",
     "contribute": "ساهم",
     "contributeEditPage": "تعديل صفحة",
@@ -1677,7 +1676,8 @@
     "transparency": "الشفافية",
     "finance": "الشؤون المالية",
     "developers": "المطورون",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1878,7 +1878,8 @@
       "sanctions": "العقوبات",
       "activityLog": "سجل النشاط",
       "analytics": "الإحصاءات",
-      "oauthClients": "عملاء OAuth"
+      "oauthClients": "عملاء OAuth",
+      "settings": "الإعدادات"
     },
     "dashboard": {
       "title": "لوحة التحكم",
@@ -3309,7 +3310,8 @@
         "sanctions": "العقوبات",
         "activityLog": "سجل النشاط",
         "analytics": "الإحصاءات",
-        "oauthClients": "عملاء OAuth"
+        "oauthClients": "عملاء OAuth",
+        "settings": "الإعدادات"
       },
       "permissionNames": {
         "admin_access": "الوصول إلى لوحة الإدارة",
@@ -3358,7 +3360,9 @@
         "activity_log_view": "عرض سجل النشاط",
         "analytics_view": "عرض الإحصاءات",
         "oauth_clients_view": "عرض عملاء OAuth",
-        "oauth_clients_manage": "إنشاء عملاء OAuth أو تعديلهم أو حذفهم"
+        "oauth_clients_manage": "إنشاء عملاء OAuth أو تعديلهم أو حذفهم",
+        "settings_view": "عرض الإعدادات ومراقبة OpenData",
+        "settings_manage": "تعديل الإعدادات"
       },
       "create": {
         "button": "دور جديد",
@@ -4886,6 +4890,133 @@
         "stoppedTournament": "توقف عن اللعب في بطولة",
         "insideSource": "مصدر داخلي",
         "declaredByPlayer": "أعلنه اللاعب نفسه"
+      }
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "subtitle": "الإعدادات العامة للموقع.",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "saveSuccess": "تم حفظ الإعدادات",
+      "saveError": "بعض الحقول غير صالحة",
+      "saveFailed": "فشل الحفظ، أعد تحميل الصفحة وحاول مرة أخرى.",
+      "error": {
+        "required": "هذا الحقل مطلوب.",
+        "invalid": "قيمة غير صالحة.",
+        "outOfRange": "يجب أن يكون عددًا صحيحًا بين {min} و {max}."
+      },
+      "opendata": {
+        "title": "بوابة OpenData",
+        "description": "مجموعات بيانات عامة (البطولات، الفرق، اللاعبون، المباريات) يمكن تصفحها وتنزيلها بصيغة JSON.",
+        "publicPortal": "البوابة العامة",
+        "monitoring": "المراقبة",
+        "enabled": "تفعيل البوابة",
+        "enabledHint": "عند الإيقاف، تجيب البوابة وواجهتها البرمجية بأن الخدمة غير متاحة.",
+        "requireAccount": "الحساب مطلوب",
+        "requireAccountHint": "يمكن للمستخدمين المسجلين فقط تصفح البيانات وتنزيلها.",
+        "browsePerMinute": "صفحات الجدول في الدقيقة",
+        "browsePerMinuteHint": "لكل حساب، أو لكل عنوان IP للزوار. بين {min} و {max}.",
+        "exportsPerHour": "التصديرات الكاملة في الساعة",
+        "exportsPerHourHint": "لكل حساب، أو لكل عنوان IP للزوار. بين {min} و {max}.",
+        "propagationHint": "يطبّق كل خادم التغيير خلال 15 ثانية."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "مراقبة OpenData",
+      "subtitle": "استخدام بوابة OpenData وتأثيرها على حمل الموقع.",
+      "backToSettings": "الإعدادات",
+      "rangeLabel": "الفترة",
+      "range": {
+        "1h": "ساعة",
+        "24h": "24 ساعة",
+        "7d": "7 أيام"
+      },
+      "refresh": "تحديث",
+      "verdict": {
+        "healthy": "البوابة لا تثقل الموقع",
+        "strained": "البوابة أصبحت مرهقة",
+        "overloaded": "تم إبطاء البوابة لحماية الموقع"
+      },
+      "verdictHint": {
+        "healthy": "لا ضغط على الحمل، ولا طلبات مرفوضة.",
+        "strained": "راقب الاتجاه: خفّض الحدود أو اطلب حسابًا إذا استمر في الارتفاع.",
+        "overloaded": "رُفضت طلبات أثناء ضغط الحمل على الموقع. فكّر في خفض الحدود أو طلب حساب."
+      },
+      "reasons": {
+        "shed": "رُفض {shed} طلبًا للحفاظ على استجابة الموقع",
+        "critical": "بلغ الموقع مستوى حمل حرجًا",
+        "elevated": "كان الموقع تحت حمل مرتفع {share} من الوقت",
+        "rateLimited": "بلغت طلبات كثيرة الحد المسموح",
+        "slow": "استجابات بطيئة (المئين 95 عند {p95} مللي ثانية)"
+      },
+      "configState": "البوابة: {enabled} · الحساب مطلوب: {requireAccount} · الحدود: {browse} صفحة في الدقيقة، {exports} تصدير في الساعة",
+      "on": "مفعّل",
+      "off": "متوقف",
+      "stats": {
+        "requests": "الطلبات",
+        "clients": "العملاء",
+        "exports": "التصديرات",
+        "cacheHitRate": "نسبة إصابة الذاكرة المؤقتة",
+        "p95": "زمن المئين 95",
+        "avgQueue": "متوسط الانتظار",
+        "rateLimited": "محدودة",
+        "shed": "مرفوضة (الحمل)",
+        "errors": "الأخطاء",
+        "authRequired": "مرفوضة (دون حساب)",
+        "rowsServed": "الصفوف المقدمة",
+        "elevatedShare": "الوقت تحت الحمل"
+      },
+      "requestsChart": "الطلبات",
+      "requestsChartHint": "المقدمة، والمحدودة، والمرفوضة بسبب حمل الموقع، والأخطاء.",
+      "pressureChart": "حمل الموقع",
+      "pressureChartHint": "تأخر حلقة الأحداث (تحذير من {elevated} مللي ثانية، حرج من {critical} مللي ثانية)، استعلامات الموقع المنتظرة لاتصال بقاعدة البيانات، استعلامات OpenData الجارية.",
+      "instances": "الخوادم",
+      "instancesHint": "آخر عيّنة لكل خادم. تشغّل OpenData عدد {normal} استعلامات في وقت واحد لكل خادم، و{elevated} تحت الحمل، ولا شيء عند الحمل الحرج.",
+      "instancesEmpty": "لا توجد عيّنة حديثة.",
+      "columns": {
+        "instance": "الخادم",
+        "level": "الحمل",
+        "lag": "التأخر",
+        "poolWaiting": "استعلامات منتظرة",
+        "inFlight": "OpenData جارية",
+        "queued": "OpenData في الانتظار",
+        "sampledAt": "وقت العيّنة",
+        "dataset": "مجموعة البيانات",
+        "requests": "المقدمة / الطلبات",
+        "cacheHit": "الذاكرة المؤقتة",
+        "avg": "المتوسط",
+        "p95": "المئين 95",
+        "rows": "الصفوف",
+        "consumer": "العميل",
+        "exports": "التصديرات",
+        "rateLimited": "محدودة",
+        "shed": "مرفوضة",
+        "lastSeen": "آخر ظهور"
+      },
+      "level": {
+        "normal": "عادي",
+        "elevated": "مرتفع",
+        "critical": "حرج"
+      },
+      "kind": {
+        "browse": "جدول",
+        "export": "تصدير"
+      },
+      "datasets": "حسب مجموعة البيانات",
+      "consumers": "أبرز العملاء",
+      "consumersHint": "يُجمَّع الزوار بلا حساب حسب تجزئة عنوان IP الخاص بهم.",
+      "noRequests": "لا توجد طلبات في هذه الفترة.",
+      "anonymous": "زائر {hash}",
+      "charts": {
+        "empty": "لا توجد طلبات في هذه الفترة.",
+        "noSamples": "لا توجد عيّنات حمل في هذه الفترة.",
+        "served": "مقدمة",
+        "rateLimited": "محدودة",
+        "shed": "مرفوضة",
+        "errors": "أخطاء",
+        "lag": "التأخر (مللي ثانية)",
+        "poolWaiting": "استعلامات منتظرة",
+        "inFlight": "OpenData جارية"
       }
     }
   },
@@ -6564,6 +6695,171 @@
       "tooLarge": "الملف كبير جدًا، الحد الأقصى {max} ميغابايت.",
       "tooSmall": "الصورة صغيرة جدًا، يجب أن يبلغ الضلع الأقصر {min} بكسل على الأقل.",
       "invalidImage": "هذا الملف ليس صورة صالحة."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "كل البطولات والفرق واللاعبين والمباريات العامة في GC Stats، للتصفح والفرز والتنزيل بحرية بصيغة JSON.",
+    "rowCount": "{count, plural, zero {لا صفوف} one {صف واحد} two {صفان} few {# صفوف} many {# صفًا} other {# صف}}",
+    "columnCount": "{count, plural, zero {لا أعمدة} one {عمود واحد} two {عمودان} few {# أعمدة} many {# عمودًا} other {# عمود}}",
+    "explore": "استكشاف",
+    "allDatasets": "كل مجموعات البيانات",
+    "datasets": {
+      "tournaments": {
+        "name": "البطولات",
+        "description": "كل البطولات المنشورة: التواريخ، الحالة، المنطقة، الفئة، الجوائز، المنظِّم وعدد الفرق."
+      },
+      "teams": {
+        "name": "الفرق",
+        "description": "كل الفرق مع البلد، وعدد اللاعبين الحالي، وعدد المباريات، والنبذة، وحسابات التواصل."
+      },
+      "players": {
+        "name": "اللاعبون",
+        "description": "كل اللاعبين وأعضاء الطاقم مع البلد، والفريق والدور الحاليين، والنبذة، وحسابات التواصل."
+      },
+      "matches": {
+        "name": "المباريات",
+        "description": "كل المباريات مع البطولة، والمرحلة، والفرق، والنتيجة، والحالة، والموعد."
+      }
+    },
+    "usage": {
+      "title": "استخدام البيانات",
+      "publicOnly": "تُعرض فقط البيانات المنشورة علنًا على الموقع: لا حسابات ولا جهات اتصال ولا حقول خاصة.",
+      "terms": "تخضع البيانات لنفس شروط الموقع: لا يجوز استخدامها إلا وفق ما تسمح به <terms>شروط الاستخدام</terms> الخاصة بنا.",
+      "freshness": "تُحدَّث الجداول كل دقيقة، والتصديرات الكاملة كل 10 دقائق.",
+      "limits": "الحدود: {browse} صفحة جدول في الدقيقة و{exports} تصدير كامل في الساعة، لكل حساب أو لكل عنوان IP.",
+      "accountOnly": "البوابة متاحة حاليًا للمستخدمين المسجلين فقط.",
+      "priority": "للموقع الأولوية دائمًا: عند ارتفاع الحمل، تتباطأ البوابة وقد تجيب بأنها مشغولة لبضع ثوانٍ."
+    },
+    "api": {
+      "title": "واجهة برمجية API",
+      "intro": "تستخدم الجداول والتصديرات واجهة JSON عامة يمكنك استدعاؤها مباشرة:",
+      "datasets": "مجموعات البيانات: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: أي عمود من مجموعة البيانات، direction: asc أو desc.",
+      "paramQ": "q: بحث نصي، 100 حرف كحد أقصى.",
+      "paramFilter": "f.العمود: يرشّح حسب أي عمود (مثال f.region=EMEA). مطابقة جزئية للنصوص، ومطابقة تامة للأرقام والحالات و true/false. حتى {max} مرشحات مجتمعة.",
+      "errors": "تُرجع الأخطاء كائن JSON يحتوي رمز الخطأ، مع حالة 400 أو 401 أو 429 أو 503، وترويسة Retry-After تحدد متى تعيد المحاولة."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData غير متاحة مؤقتًا",
+        "text": "البوابة متوقفة حاليًا. يرجى العودة لاحقًا."
+      },
+      "accountRequired": {
+        "title": "سجّل الدخول للوصول إلى البيانات",
+        "text": "بوابة OpenData متاحة حاليًا للمستخدمين المسجلين فقط. إنشاء الحساب مجاني."
+      },
+      "login": "تسجيل الدخول",
+      "register": "إنشاء حساب"
+    },
+    "download": {
+      "label": "تنزيل JSON",
+      "labelFiltered": "تنزيل التحديد",
+      "preparing": "جارٍ التحضير...",
+      "success": "بدأ التنزيل"
+    },
+    "errors": {
+      "not_found": "مجموعة البيانات هذه غير موجودة.",
+      "bad_request": "معاملات الطلب غير صالحة.",
+      "disabled": "بوابة OpenData غير متاحة مؤقتًا.",
+      "account_required": "سجّل الدخول للوصول إلى البيانات.",
+      "rate_limited": "طلبات كثيرة جدًا، يرجى التمهل.",
+      "busy": "الموقع تحت ضغط كبير، ستعود البيانات خلال ثوانٍ.",
+      "internal_error": "حدث خطأ ما، يرجى المحاولة مجددًا.",
+      "network": "خطأ في الشبكة، تحقق من اتصالك."
+    },
+    "retryIn": "(أعد المحاولة بعد {seconds} ث)",
+    "retry": "إعادة المحاولة",
+    "searchLabel": "بحث",
+    "searchPlaceholder": {
+      "tournaments": "الاسم، المنطقة، الفئة...",
+      "teams": "الاسم أو الوسم...",
+      "players": "اللقب، الاسم، الفريق...",
+      "matches": "البطولة، المرحلة، الفريق..."
+    },
+    "clearSearch": "مسح البحث",
+    "filters": {
+      "button": "فلترة",
+      "title": "الفلترة حسب العمود",
+      "column": "العمود",
+      "value": "القيمة",
+      "valuePlaceholder": "القيمة المطلوبة...",
+      "addAnother": "إضافة فلتر آخر",
+      "apply": "تطبيق",
+      "clear": "مسح",
+      "integerRequired": "يتطلب هذا العمود عددًا صحيحًا."
+    },
+    "perPage": "{count} لكل صفحة",
+    "columnsPicker": "الأعمدة",
+    "showAllColumns": "إظهار الكل",
+    "resetColumns": "إعادة الضبط",
+    "rowsRange": "{from} إلى {to} من {total} صف",
+    "loading": "جارٍ التحميل...",
+    "noResults": "لا توجد صفوف.",
+    "noResultsFor": "لا توجد صفوف تطابق «{q}».",
+    "noResultsFiltered": "لا توجد صفوف تطابق هذه المرشحات.",
+    "pagination": "ترقيم الصفحات",
+    "firstPage": "الصفحة الأولى",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "lastPage": "الصفحة الأخيرة",
+    "pageOf": "الصفحة {page} من {total}",
+    "yes": "نعم",
+    "no": "لا",
+    "openLink": "فتح",
+    "status": {
+      "upcoming": "قادمة",
+      "live": "مباشر",
+      "finished": "منتهية",
+      "pending": "مجدولة",
+      "completed": "منتهية"
+    },
+    "columns": {
+      "id": "المعرّف",
+      "name": "الاسم",
+      "status": "الحالة",
+      "start_date": "البداية",
+      "end_date": "النهاية",
+      "region": "المنطقة",
+      "category": "الفئة",
+      "location": "المكان",
+      "prize_pool": "الجوائز",
+      "teams_count": "الفرق",
+      "organizer_id": "معرّف المنظِّم",
+      "organizer_name": "المنظِّم",
+      "liquipedia_link": "Liquipedia",
+      "socials": "التواصل",
+      "short_name": "الوسم",
+      "country_code": "البلد",
+      "secondary_country_code": "البلد الثاني",
+      "is_active": "نشط",
+      "players_count": "اللاعبون",
+      "matches_count": "المباريات",
+      "bio": "النبذة",
+      "vlr_id": "معرّف VLR",
+      "handle": "اللقب",
+      "first_name": "الاسم الأول",
+      "last_name": "اسم العائلة",
+      "current_team_id": "معرّف الفريق",
+      "current_team_name": "الفريق الحالي",
+      "current_role": "الدور",
+      "scheduled_at": "التاريخ",
+      "tournament_id": "معرّف البطولة",
+      "tournament_name": "البطولة",
+      "stage_name": "المرحلة",
+      "bracket_name": "جدول الإقصاء",
+      "round": "الجولة",
+      "best_of": "الأفضل من",
+      "team_a_id": "معرّف الفريق A",
+      "team_a_name": "الفريق A",
+      "score_a": "نتيجة A",
+      "score_b": "نتيجة B",
+      "team_b_id": "معرّف الفريق B",
+      "team_b_name": "الفريق B",
+      "winner_team_id": "معرّف الفائز",
+      "is_forfeit": "انسحاب",
+      "patch": "التحديث"
     }
   }
 }

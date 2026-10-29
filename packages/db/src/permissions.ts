@@ -67,6 +67,8 @@ export const PERMISSIONS = {
   analyticsView: "analytics.view",
   oauthClientsView: "oauth-clients.view",
   oauthClientsManage: "oauth-clients.manage",
+  settingsView: "settings.view",
+  settingsManage: "settings.manage",
 } as const;
 
 export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -98,6 +100,7 @@ export const PERMISSION_GROUPS: { key: string; permissions: PermissionName[] }[]
   { key: "activityLog", permissions: [PERMISSIONS.activityLogView] },
   { key: "analytics", permissions: [PERMISSIONS.analyticsView] },
   { key: "oauthClients", permissions: [PERMISSIONS.oauthClientsView, PERMISSIONS.oauthClientsManage] },
+  { key: "settings", permissions: [PERMISSIONS.settingsView, PERMISSIONS.settingsManage] },
 ];
 
 export const ALL_PERMISSIONS: PermissionName[] = PERMISSION_GROUPS.flatMap((g) => g.permissions);

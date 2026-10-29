@@ -48,7 +48,7 @@ export function SectionText({ children }: { children: ReactNode }) {
   return <p className="text-sm leading-relaxed text-neutral-400">{children}</p>;
 }
 
-export function SectionList({ items }: { items: string[] }) {
+export function SectionList({ items }: { items: ReactNode[] }) {
   return (
     <ul className="space-y-2">
       {items.map((item, i) => (

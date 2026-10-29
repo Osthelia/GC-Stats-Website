@@ -10,7 +10,6 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import packageJson from "../../package.json";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DISCORD_INVITE_URL } from "@/lib/discord-invite";
 
 const SOCIALS = [
@@ -49,7 +48,7 @@ export function SiteFooter() {
       links: [
         { label: t("productAllMatches"), href: "/match" },
         { label: t("productTournaments"), href: "/tournaments" },
-        { label: t("productDataExplorer"), href: null },
+        { label: t("productOpenData"), href: "/opendata" },
         { label: t("productForum"), href: "/forum" },
       ],
     },
@@ -114,24 +113,11 @@ export function SiteFooter() {
           <div key={col.title} className="min-w-0">
             <div className="mb-3.5 text-[13.5px] font-semibold text-neutral-50">{col.title}</div>
             <div className="flex flex-col gap-2.5">
-              {col.links.map((l) =>
-                l.href === null ? (
-                  <Tooltip key={l.label}>
-                    <TooltipTrigger
-                      type="button"
-                      aria-disabled="true"
-                      className="w-fit cursor-not-allowed text-left text-[13.5px] text-neutral-700"
-                    >
-                      {l.label}
-                    </TooltipTrigger>
-                    <TooltipContent>{t("productDataExplorerComingSoon")}</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Link key={l.label} href={l.href} className="text-[13.5px] text-neutral-500 hover:text-[#e4ae22]">
-                    {l.label}
-                  </Link>
-                )
-              )}
+              {col.links.map((l) => (
+                <Link key={l.label} href={l.href} className="text-[13.5px] text-neutral-500 hover:text-[#e4ae22]">
+                  {l.label}
+                </Link>
+              ))}
             </div>
           </div>
         ))}

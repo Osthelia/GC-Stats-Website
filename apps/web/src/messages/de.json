@@ -1132,7 +1132,8 @@
               "IP-Adresse",
               "Angeforderte Seite",
               "Browser",
-              "Datum und Uhrzeit"
+              "Datum und Uhrzeit",
+              "Nutzung des OpenData Portals (Konto, gehashte IP Adresse, Datensatz), nach 30 Tagen gelöscht"
             ]
           }
         },
@@ -1654,8 +1655,6 @@
     "product": "Produkt",
     "productAllMatches": "Alle Spiele",
     "productTournaments": "Turniere",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "Demnächst verfügbar",
     "productForum": "Forum",
     "contribute": "Mitwirken",
     "contributeEditPage": "Eine Seite bearbeiten",
@@ -1677,7 +1676,8 @@
     "transparency": "Transparenz",
     "finance": "Finanzen",
     "developers": "Entwickler",
-    "contributeLiquipedia": "Liquipedia"
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -1878,7 +1878,8 @@
       "sanctions": "Sanktionen",
       "activityLog": "Aktivitätsprotokoll",
       "analytics": "Analytics",
-      "oauthClients": "OAuth-Clients"
+      "oauthClients": "OAuth-Clients",
+      "settings": "Konfiguration"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3309,7 +3310,8 @@
         "sanctions": "Sanktionen",
         "activityLog": "Aktivitätsprotokoll",
         "analytics": "Analytics",
-        "oauthClients": "OAuth-Clients"
+        "oauthClients": "OAuth-Clients",
+        "settings": "Konfiguration"
       },
       "permissionNames": {
         "admin_access": "Zugriff auf das Admin Panel",
@@ -3358,7 +3360,9 @@
         "activity_log_view": "Das Aktivitätsprotokoll ansehen",
         "analytics_view": "Analytics ansehen",
         "oauth_clients_view": "OAuth-Clients ansehen",
-        "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen"
+        "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen",
+        "settings_view": "Konfiguration und OpenData Monitoring ansehen",
+        "settings_manage": "Konfiguration bearbeiten"
       },
       "create": {
         "button": "Neue Rolle",
@@ -4886,6 +4890,133 @@
         "stoppedTournament": "Spielt seit einem Turnier nicht mehr",
         "insideSource": "Interne Quelle",
         "declaredByPlayer": "Vom Spieler gemeldet"
+      }
+    },
+    "settings": {
+      "title": "Konfiguration",
+      "subtitle": "Globale Einstellungen der Website.",
+      "save": "Speichern",
+      "saving": "Speichern...",
+      "saveSuccess": "Einstellungen gespeichert",
+      "saveError": "Einige Felder sind ungültig",
+      "saveFailed": "Speichern fehlgeschlagen, lade die Seite neu und versuche es erneut.",
+      "error": {
+        "required": "Dieses Feld ist erforderlich.",
+        "invalid": "Ungültiger Wert.",
+        "outOfRange": "Muss eine ganze Zahl zwischen {min} und {max} sein."
+      },
+      "opendata": {
+        "title": "OpenData Portal",
+        "description": "Öffentliche Datensätze (Turniere, Teams, Spieler, Matches), durchsuchbar und als JSON herunterladbar.",
+        "publicPortal": "Öffentliches Portal",
+        "monitoring": "Monitoring",
+        "enabled": "Portal aktiviert",
+        "enabledHint": "Deaktiviert antworten das Portal und seine API, dass der Dienst nicht verfügbar ist.",
+        "requireAccount": "Konto erforderlich",
+        "requireAccountHint": "Nur angemeldete Nutzer können die Daten ansehen und herunterladen.",
+        "browsePerMinute": "Tabellenseiten pro Minute",
+        "browsePerMinuteHint": "Pro Konto, oder pro IP Adresse für Besucher. Zwischen {min} und {max}.",
+        "exportsPerHour": "Vollständige Exporte pro Stunde",
+        "exportsPerHourHint": "Pro Konto, oder pro IP Adresse für Besucher. Zwischen {min} und {max}.",
+        "propagationHint": "Jeder Server übernimmt eine Änderung innerhalb von 15 Sekunden."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData Monitoring",
+      "subtitle": "Nutzung des OpenData Portals und ihr Einfluss auf die Last der Website.",
+      "backToSettings": "Konfiguration",
+      "rangeLabel": "Zeitraum",
+      "range": {
+        "1h": "1 Stunde",
+        "24h": "24 Stunden",
+        "7d": "7 Tage"
+      },
+      "refresh": "Aktualisieren",
+      "verdict": {
+        "healthy": "Das Portal belastet die Website nicht",
+        "strained": "Das Portal wird anspruchsvoll",
+        "overloaded": "Das Portal musste gebremst werden, um die Website zu schützen"
+      },
+      "verdictHint": {
+        "healthy": "Kein Lastdruck, keine Anfrage abgelehnt.",
+        "strained": "Beobachte den Trend: senke die Limits oder verlange ein Konto, wenn es weiter steigt.",
+        "overloaded": "Anfragen wurden abgelehnt, während die Website ausgelastet war. Senke die Limits oder verlange ein Konto."
+      },
+      "reasons": {
+        "shed": "{shed} Anfragen abgelehnt, damit die Website reaktionsschnell bleibt",
+        "critical": "Die Website hat eine kritische Last erreicht",
+        "elevated": "Die Website war {share} der Zeit unter erhöhter Last",
+        "rateLimited": "Viele Anfragen haben das Limit erreicht",
+        "slow": "Langsame Antworten (95. Perzentil bei {p95} ms)"
+      },
+      "configState": "Portal: {enabled} · Konto erforderlich: {requireAccount} · Limits: {browse} Seiten pro Minute, {exports} Exporte pro Stunde",
+      "on": "an",
+      "off": "aus",
+      "stats": {
+        "requests": "Anfragen",
+        "clients": "Clients",
+        "exports": "Exporte",
+        "cacheHitRate": "Cache Trefferquote",
+        "p95": "Zeit 95. Perzentil",
+        "avgQueue": "Mittlere Wartezeit",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt (Last)",
+        "errors": "Fehler",
+        "authRequired": "Abgelehnt (ohne Konto)",
+        "rowsServed": "Gelieferte Zeilen",
+        "elevatedShare": "Zeit unter Last"
+      },
+      "requestsChart": "Anfragen",
+      "requestsChartHint": "Geliefert, limitiert, wegen Last abgelehnt, und Fehler.",
+      "pressureChart": "Last der Website",
+      "pressureChartHint": "Event Loop Verzögerung (Warnung ab {elevated} ms, kritisch ab {critical} ms), Website Abfragen, die auf eine Datenbankverbindung warten, laufende OpenData Abfragen.",
+      "instances": "Server",
+      "instancesHint": "Letzte Messung jedes Servers. OpenData führt {normal} Abfragen gleichzeitig pro Server aus, {elevated} unter Last, keine bei kritischer Last.",
+      "instancesEmpty": "Keine aktuelle Messung.",
+      "columns": {
+        "instance": "Server",
+        "level": "Last",
+        "lag": "Verzögerung",
+        "poolWaiting": "Wartende Abfragen",
+        "inFlight": "OpenData laufend",
+        "queued": "OpenData wartend",
+        "sampledAt": "Gemessen um",
+        "dataset": "Datensatz",
+        "requests": "Geliefert / Anfragen",
+        "cacheHit": "Cache",
+        "avg": "Mittel",
+        "p95": "95. Perzentil",
+        "rows": "Zeilen",
+        "consumer": "Client",
+        "exports": "Exporte",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt",
+        "lastSeen": "Zuletzt gesehen"
+      },
+      "level": {
+        "normal": "Normal",
+        "elevated": "Erhöht",
+        "critical": "Kritisch"
+      },
+      "kind": {
+        "browse": "Tabelle",
+        "export": "Export"
+      },
+      "datasets": "Nach Datensatz",
+      "consumers": "Top Clients",
+      "consumersHint": "Besucher ohne Konto werden nach einem Hash ihrer IP Adresse gruppiert.",
+      "noRequests": "Keine Anfrage in diesem Zeitraum.",
+      "anonymous": "Besucher {hash}",
+      "charts": {
+        "empty": "Keine Anfrage in diesem Zeitraum.",
+        "noSamples": "Keine Lastmessung in diesem Zeitraum.",
+        "served": "Geliefert",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt",
+        "errors": "Fehler",
+        "lag": "Verzögerung (ms)",
+        "poolWaiting": "Wartende Abfragen",
+        "inFlight": "OpenData laufend"
       }
     }
   },
@@ -6564,6 +6695,171 @@
       "tooLarge": "Die Datei ist zu groß, das Maximum sind {max} MB.",
       "tooSmall": "Das Bild ist zu klein, die kürzere Seite muss mindestens {min} px haben.",
       "invalidImage": "Diese Datei ist kein gültiges Bild."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "Alle öffentlichen Turniere, Teams, Spieler und Matches von GC Stats, frei durchsuchbar, sortierbar und als JSON herunterladbar.",
+    "rowCount": "{count, plural, one {# Zeile} other {# Zeilen}}",
+    "columnCount": "{count, plural, one {# Spalte} other {# Spalten}}",
+    "explore": "Erkunden",
+    "allDatasets": "Alle Datensätze",
+    "datasets": {
+      "tournaments": {
+        "name": "Turniere",
+        "description": "Alle veröffentlichten Turniere: Daten, Status, Region, Kategorie, Preisgeld, Veranstalter und Anzahl der Teams."
+      },
+      "teams": {
+        "name": "Teams",
+        "description": "Alle Teams mit Land, aktueller Spieleranzahl, Anzahl der Matches, Bio und sozialen Netzwerken."
+      },
+      "players": {
+        "name": "Spieler",
+        "description": "Alle Spieler und Staffmitglieder mit Land, aktuellem Team und Rolle, Bio und sozialen Netzwerken."
+      },
+      "matches": {
+        "name": "Matches",
+        "description": "Alle Matches mit Turnier, Phase, Teams, Ergebnis, Status und Termin."
+      }
+    },
+    "usage": {
+      "title": "Die Daten nutzen",
+      "publicOnly": "Es werden nur Daten angeboten, die auf der Website bereits öffentlich sind: kein Konto, kein Kontakt, kein privates Feld.",
+      "terms": "Für die Daten gelten dieselben Bedingungen wie für die Website: Sie dürfen nur so genutzt werden, wie es unsere <terms>Nutzungsbedingungen</terms> erlauben.",
+      "freshness": "Tabellen werden jede Minute aktualisiert, vollständige Exporte alle 10 Minuten.",
+      "limits": "Limits: {browse} Tabellenseiten pro Minute und {exports} vollständige Exporte pro Stunde, pro Konto oder pro IP Adresse.",
+      "accountOnly": "Das Portal ist derzeit nur für angemeldete Nutzer geöffnet.",
+      "priority": "Die Website hat immer Vorrang: bei hoher Last wird das Portal langsamer und kann für einige Sekunden antworten, dass es ausgelastet ist."
+    },
+    "api": {
+      "title": "API",
+      "intro": "Tabellen und Exporte nutzen eine öffentliche JSON API, die du direkt aufrufen kannst:",
+      "datasets": "Datensätze: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: jede Spalte des Datensatzes, direction: asc oder desc.",
+      "paramQ": "q: Textsuche, höchstens 100 Zeichen.",
+      "paramFilter": "f.spalte: filtert nach einer beliebigen Spalte (z. B. f.region=EMEA). Teilübereinstimmung bei Text, exakte Übereinstimmung bei Zahlen, Status und true/false. Bis zu {max} Filter, kombiniert.",
+      "errors": "Fehler liefern ein JSON Objekt mit einem Fehlercode, einen Status 400, 401, 429 oder 503 und einen Retry-After Header, der angibt, wann du es erneut versuchen kannst."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData ist vorübergehend nicht verfügbar",
+        "text": "Das Portal ist im Moment deaktiviert. Schau später wieder vorbei."
+      },
+      "accountRequired": {
+        "title": "Melde dich an, um auf die Daten zuzugreifen",
+        "text": "Das OpenData Portal ist derzeit nur für angemeldete Nutzer geöffnet. Ein Konto ist kostenlos."
+      },
+      "login": "Anmelden",
+      "register": "Konto erstellen"
+    },
+    "download": {
+      "label": "JSON herunterladen",
+      "labelFiltered": "Auswahl herunterladen",
+      "preparing": "Wird vorbereitet...",
+      "success": "Download gestartet"
+    },
+    "errors": {
+      "not_found": "Dieser Datensatz existiert nicht.",
+      "bad_request": "Ungültige Anfrageparameter.",
+      "disabled": "Das OpenData Portal ist vorübergehend nicht verfügbar.",
+      "account_required": "Melde dich an, um auf die Daten zuzugreifen.",
+      "rate_limited": "Zu viele Anfragen, bitte langsamer.",
+      "busy": "Die Website ist stark ausgelastet, die Daten sind in wenigen Sekunden zurück.",
+      "internal_error": "Etwas ist schiefgelaufen, bitte erneut versuchen.",
+      "network": "Netzwerkfehler, prüfe deine Verbindung."
+    },
+    "retryIn": "(erneut in {seconds} s)",
+    "retry": "Erneut versuchen",
+    "searchLabel": "Suchen",
+    "searchPlaceholder": {
+      "tournaments": "Name, Region, Kategorie...",
+      "teams": "Name oder Tag...",
+      "players": "Nickname, Name, Team...",
+      "matches": "Turnier, Phase, Team..."
+    },
+    "clearSearch": "Suche leeren",
+    "filters": {
+      "button": "Filter",
+      "title": "Nach Spalte filtern",
+      "column": "Spalte",
+      "value": "Wert",
+      "valuePlaceholder": "Zu vergleichender Wert...",
+      "addAnother": "Weiteren Filter hinzufügen",
+      "apply": "Anwenden",
+      "clear": "Zurücksetzen",
+      "integerRequired": "Diese Spalte erwartet eine ganze Zahl."
+    },
+    "perPage": "{count} pro Seite",
+    "columnsPicker": "Spalten",
+    "showAllColumns": "Alle anzeigen",
+    "resetColumns": "Zurücksetzen",
+    "rowsRange": "{from} bis {to} von {total} Zeilen",
+    "loading": "Wird geladen...",
+    "noResults": "Keine Zeilen.",
+    "noResultsFor": "Keine Zeile passt zu „{q}“.",
+    "noResultsFiltered": "Keine Zeile entspricht diesen Filtern.",
+    "pagination": "Seitennavigation",
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite",
+    "pageOf": "Seite {page} von {total}",
+    "yes": "Ja",
+    "no": "Nein",
+    "openLink": "Öffnen",
+    "status": {
+      "upcoming": "Bevorstehend",
+      "live": "Live",
+      "finished": "Beendet",
+      "pending": "Geplant",
+      "completed": "Beendet"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "status": "Status",
+      "start_date": "Beginn",
+      "end_date": "Ende",
+      "region": "Region",
+      "category": "Kategorie",
+      "location": "Ort",
+      "prize_pool": "Preisgeld",
+      "teams_count": "Teams",
+      "organizer_id": "Veranstalter ID",
+      "organizer_name": "Veranstalter",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Netzwerke",
+      "short_name": "Tag",
+      "country_code": "Land",
+      "secondary_country_code": "Zweites Land",
+      "is_active": "Aktiv",
+      "players_count": "Spieler",
+      "matches_count": "Matches",
+      "bio": "Bio",
+      "vlr_id": "VLR ID",
+      "handle": "Nickname",
+      "first_name": "Vorname",
+      "last_name": "Nachname",
+      "current_team_id": "Team ID",
+      "current_team_name": "Aktuelles Team",
+      "current_role": "Rolle",
+      "scheduled_at": "Datum",
+      "tournament_id": "Turnier ID",
+      "tournament_name": "Turnier",
+      "stage_name": "Phase",
+      "bracket_name": "Bracket",
+      "round": "Runde",
+      "best_of": "Best of",
+      "team_a_id": "Team A ID",
+      "team_a_name": "Team A",
+      "score_a": "Ergebnis A",
+      "score_b": "Ergebnis B",
+      "team_b_id": "Team B ID",
+      "team_b_name": "Team B",
+      "winner_team_id": "Sieger ID",
+      "is_forfeit": "Forfeit",
+      "patch": "Patch"
     }
   }
 }

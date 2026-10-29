@@ -12,6 +12,11 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 export async function register() {
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    // Per process load sample of the OpenData monitoring, unlike the cron jobs every replica runs it.
+    const { startOpenDataSampler } = await import("@/lib/opendata/metrics");
+    startOpenDataSampler();
+  }
   if (process.env.NEXT_RUNTIME === "nodejs" && process.env.ENABLE_IN_PROCESS_SCHEDULER === "true") {
     const { startScheduledJobs } = await import("@/lib/scheduled-jobs/registry");
     startScheduledJobs();

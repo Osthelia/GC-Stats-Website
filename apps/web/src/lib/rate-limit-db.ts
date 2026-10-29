@@ -23,10 +23,11 @@ import { rateLimitCounters } from "@gc-stats/db";
  * Single atomic UPSERT: resets the counter if the window has expired,
  * otherwise increments it — no separate read-then-write, safe under
  * concurrent requests. Rows are pruned by the
- * prune-rate-limit-counters scheduled job.
+ * prune-rate-limit-counters scheduled job. `client` picks the pool the
+ * counter write runs on.
  */
-export async function checkRateLimitDb(key: string, windowMs: number, max: number, cost = 1): Promise<boolean> {
-  const rows = await db
+export async function checkRateLimitDb(key: string, windowMs: number, max: number, cost = 1, client: typeof db = db): Promise<boolean> {
+  const rows = await client
     .insert(rateLimitCounters)
     .values({ key, count: cost, windowStart: sql`now()` })
     .onConflictDoUpdate({

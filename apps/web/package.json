@@ -22,6 +22,7 @@
     "@osthelia/bracket-engine": "*",
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.2",
+    "@tanstack/react-table": "^8.21.3",
     "@tiptap/extension-color": "^3.31.4",
     "@tiptap/extension-image": "^3.31.4",
     "@tiptap/extension-link": "^3.31.4",

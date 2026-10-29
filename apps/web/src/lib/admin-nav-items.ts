@@ -33,6 +33,7 @@ import {
   History,
   LineChart,
   Plug,
+  Settings,
 } from "lucide-react";
 import { PERMISSIONS } from "@gc-stats/db";
 
@@ -91,6 +92,7 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
       { href: "/admin/about", labelKey: "about", icon: Info, exact: false, permission: PERMISSIONS.aboutView },
       { href: "/admin/analytics", labelKey: "analytics", icon: LineChart, exact: false, permission: PERMISSIONS.analyticsView },
       { href: "/admin/activity-log", labelKey: "activityLog", icon: History, exact: false, permission: PERMISSIONS.activityLogView },
+      { href: "/admin/settings", labelKey: "settings", icon: Settings, exact: false, permission: PERMISSIONS.settingsView },
     ],
   },
 ];
