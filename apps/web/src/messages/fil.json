@@ -479,6 +479,57 @@
         "joinSource": "Pinagmulan ng pagdating",
         "leftSource": "Pinagmulan ng pag-alis"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "Mga API key",
+      "subtitle": "Gumawa ng libreng public API key para magamit ang GC Stats API sa iyong project.",
+      "notice": {
+        "rateLimit": "Limitado ang mga public key sa {rate} request bawat segundo bawat account, hati sa lahat ng iyong key. Maaaring magbago ang limitasyong ito anumang oras, nang walang abiso.",
+        "stable": "Ang tanging paraan para magkaroon ng stable na limit ay humiling ng partner API key sa GC Stats team.",
+        "noWebhooks": "Walang access sa webhooks ang mga public key, nakalaan ang mga ito para sa mga partner key.",
+        "requestPartner": "Humiling ng partner API key"
+      },
+      "create": {
+        "heading": "Gumawa ng public key",
+        "description": "Sabihin sa amin kung saan gagamitin ang data. Puwede kang magkaroon ng hanggang {max} aktibong public key.",
+        "clientName": "Produkto o kumpanya",
+        "clientNamePlaceholder": "Liquipedia, Remake, ang aking Discord bot...",
+        "usageDescription": "Paglalarawan ng paggamit",
+        "usageDescriptionPlaceholder": "Para saan ginagamit ang data, aling mga endpoint, at gaano kadalas humigit kumulang.",
+        "submit": "Gumawa ng key",
+        "termsNote": "Saklaw ang iyong API key ng parehong <terms>mga tuntunin ng paggamit</terms> ng site."
+      },
+      "created": {
+        "title": "Ang iyong bagong API key",
+        "warning": "Kopyahin ito ngayon: hindi na ito ipapakita ulit. Ipadala ito sa x-api-key header ng iyong mga request.",
+        "copy": "Kopyahin ang key",
+        "dismiss": "Nakopya ko na"
+      },
+      "list": {
+        "heading": "Ang iyong mga public key",
+        "empty": "Wala ka pang public API key.",
+        "active": "Aktibo",
+        "revoked": "Binawi",
+        "requests": "{count, plural, one {# request} other {# request}} sa loob ng 30 araw",
+        "revoke": "Bawiin",
+        "suspended": "Suspendido",
+        "suspendedHint": "Sinuspinde ng GC Stats team ang key na ito. Makipag-ugnayan sa amin sa Discord para hilingin na maibalik ito."
+      },
+      "error": {
+        "required": "Kailangan ang field na ito.",
+        "tooShort": "Hindi bababa sa {min} character.",
+        "tooLong": "Hindi hihigit sa {max} character.",
+        "tooManyKeys": "Mayroon ka nang {max} aktibong public key. Bawiin ang isa para makagawa ng bago.",
+        "unauthenticated": "Nag-expire na ang iyong session, mag-sign in ulit.",
+        "disabled": "Naka-disable ang mga public API key sa ngayon.",
+        "invalid": "May mga field na hindi valid.",
+        "notFound": "Wala na ang key na ito.",
+        "network": "Error sa network, subukan ulit.",
+        "blocked": "Na-block ang access mo sa API."
+      },
+      "blocked": "Na-block ang access mo sa API, hindi ka na makakagawa ng mga API key.",
+      "contactDiscord": "Makipag-ugnayan sa amin sa Discord"
     }
   },
   "notifications": {
@@ -928,8 +979,8 @@
     "title": "Developer",
     "intro": "Lahat ng aming data para tulungan kang buuin ang iyong proyekto! At kung nais mong mag-ambag sa GC-Stats, malugod ka rin naming tatanggapin.",
     "apiKey": {
-      "title": "Paghiling ng API key",
-      "body": "Para maiwasan ang pang-aabuso, nangangailangan ng authentication ang aming API. Kung nais mo itong gamitin, makipag-ugnayan sa amin sa Discord o sa email.",
+      "title": "Paghiling ng partner API key",
+      "body": "May stable na rate limit at webhooks ang mga partner key. Para makakuha nito, makipag-ugnayan sa amin sa Discord o sa email.",
       "warning": "Pakisama sa iyong kahilingan ang:",
       "step1": "Pangalan at paglalarawan ng iyong proyekto",
       "step2": "Nilalayong gamit at laki ng paggamit ng API",
@@ -953,6 +1004,23 @@
       "title": "Open source at mga kontribusyon",
       "body": "Nagpasya kaming gawing open source ang karamihan ng proyekto, para matulungan ng komunidad, hindi kami naniniwala sa closed source. Bukas para sa mga kontribusyon ang lahat ng aming repository (maliban sa admin dashboard). Siguraduhing basahin ang aming mga alituntunin bago magsumite ng Pull Request.",
       "badge": "Pampublikong repository"
+    },
+    "publicKey": {
+      "title": "Public API key",
+      "body": "Kahit anong GC Stats account ay puwedeng gumawa ng libreng public key sa loob ng ilang segundo, nang hindi naghihintay sa amin.",
+      "step1": "Gawin ito mula sa settings ng iyong account, at sabihin sa amin ang produkto o kumpanyang gagamit ng data at kung paano.",
+      "step2": "Limitado ang mga public key sa ilang request bawat segundo, at puwedeng magbago ang limit na ito anumang oras.",
+      "step3": "Walang access sa webhooks ang mga public key. Para sa stable na limit at webhooks, humiling ng partner key sa ibaba.",
+      "button": "Gumawa ng public key"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "body": "Puwedeng magrehistro ng mga HTTPS endpoint ang mga partner key mula sa kanilang dashboard: magpapadala ang GC Stats ng POST tuwing nagbabago ang data.",
+      "events": "Mga event: bagong laban, na-update ang laban, bagong torneo, na-update ang torneo, na-update ang team, na-update ang player.",
+      "filters": "Mga filter: rehiyon ng torneo, official man o hindi, mga kalahok na team.",
+      "signature": "May dalang X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp at X-GCS-Signature header ang bawat request. Suriin ang signature gamit ang secret ng iyong endpoint.",
+      "retries": "Sumagot gamit ang 2xx status sa loob ng 10 segundo. Inuulit ang mga nabigong delivery nang humigit kumulang 9 na oras, at ino-off ang endpoint na madalas mabigo.",
+      "setup": "Nasa payload ang event, ang petsa nito at ang entity, na may parehong mga field gaya ng mga OpenData dataset."
     }
   },
   "becomePublisher": {
@@ -2888,6 +2956,7 @@
       "regenerateButton": "Gumawa ng bago",
       "activateButton": "I-activate",
       "deactivateButton": "I-deactivate",
+      "deactivateConfirm": "I-deactivate ang key na \"{name}\"? Permanenteng buburahin ang mga webhook nito.",
       "deleteButton": "Burahin",
       "createTitle": "Gumawa ng API key",
       "createDescription": "Isang beses lamang ipapakita ang buong key, pagkatapos mismo ng paggawa.",
@@ -2928,6 +2997,10 @@
         "userNotFound": "Hindi nahanap ang user.",
         "organizationNotFound": "Hindi nahanap ang organisasyon.",
         "ownerRequired": "Pumili ng user o organisasyon."
+      },
+      "tabs": {
+        "partner": "Mga partner key",
+        "public": "Mga public key"
       }
     },
     "apiKeyStats": {
@@ -3446,6 +3519,8 @@
       "fieldPointType": "Uri ng puntos",
       "fieldPointTypeNone": "Wala",
       "fieldActive": "Aktibong torneo",
+      "fieldOfficial": "Opisyal na torneo",
+      "officialHint": "Event ng opisyal na circuit. Maaaring i-filter ng mga subscriber ng webhook ang mga opisyal at hindi opisyal na torneo.",
       "fieldLocation": "Lokasyon",
       "fieldPrizePool": "Prize pool",
       "fieldDescription": "Paglalarawan",
@@ -5036,6 +5111,18 @@
         "exportsPerHour": "Buong export bawat oras",
         "exportsPerHourHint": "Bawat account, o bawat IP address para sa mga bisita. Mula {min} hanggang {max}.",
         "propagationHint": "Ina-apply ng bawat server ang pagbabago sa loob ng 15 segundo."
+      },
+      "publicApi": {
+        "title": "Public API",
+        "description": "Self service na mga API key na puwedeng gawin ng anumang account mula sa settings nito. May sariling limit pa rin ang mga partner key.",
+        "keys": "Mga public key",
+        "enabled": "Naka-enable ang mga public key",
+        "enabledHint": "Kapag naka-off, walang public key na magagawa at sasagot ng 403 ang mga dati nang key.",
+        "ratePerSecond": "Request bawat segundo",
+        "ratePerSecondHint": "Bawat account, hati sa lahat ng public key nito, mula {min} hanggang {max}. Ang mabibigat na endpoint ay binibilang na maraming request.",
+        "maxKeysPerUser": "Aktibong key kada account",
+        "maxKeysPerUserHint": "Mula {min} hanggang {max}.",
+        "propagationHint": "Aabot ang mga pagbabago sa lahat ng server sa loob ng 15 segundo."
       }
     },
     "opendataMonitoring": {
@@ -5135,6 +5222,70 @@
         "poolWaiting": "Naghihintay na query",
         "inFlight": "Tumatakbong OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "Mga public API key",
+      "subtitle": "Mga key na ginawa ng mga user mula sa kanilang settings. Limitasyon na {rate} request bawat segundo bawat account.",
+      "searchPlaceholder": "Maghanap ayon sa pangalan, paglalarawan, o user",
+      "statusFilter": "Status",
+      "status": {
+        "active": "Aktibo",
+        "suspended": "Suspendido",
+        "revoked": "Binawi",
+        "blocked": "Naka-block ang access sa API"
+      },
+      "empty": "Walang tumutugmang public key.",
+      "requests30d": "{count, plural, one {# request} other {# na request}} sa loob ng 30 araw",
+      "statsAndEdit": "Mga istatistika at pag-edit",
+      "suspend": "Suspindihin",
+      "unsuspend": "Ibalik",
+      "block": "I-block ang access sa API",
+      "unblock": "I-unblock ang access sa API",
+      "delete": "Burahin",
+      "cancel": "Kanselahin",
+      "actionFailed": "Nabigo ang aksyon, pakisubukang muli.",
+      "notFound": "Wala na ang key o user na ito.",
+      "done": {
+        "suspend": "Sinuspinde ang key.",
+        "unsuspend": "Naibalik ang key.",
+        "block": "Na-block ang access sa API, binawi ang lahat ng key ng user.",
+        "unblock": "Na-unblock ang access sa API.",
+        "delete": "Nabura ang key."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Suspindihin ang key na ito?",
+          "description": "Agad na titigil sa paggana ang key na \"{name}\". Kailangang makipag-ugnayan sa amin ni {owner} sa Discord para hilingin na maibalik ito."
+        },
+        "unsuspend": {
+          "title": "Ibalik ang key na ito?",
+          "description": "Gagana muli ang key na \"{name}\" para kay {owner}."
+        },
+        "block": {
+          "title": "I-block ang access sa API?",
+          "description": "Babawiin ang lahat ng public key ni {owner} at hindi na makakagawa ng bago."
+        },
+        "unblock": {
+          "title": "I-unblock ang access sa API?",
+          "description": "Makakagawa muli si {owner} ng mga public key. Mananatiling binawi ang mga binawing key."
+        },
+        "delete": {
+          "title": "Burahin ang key na ito?",
+          "description": "Permanenteng mabubura ang key na \"{name}\" at ang mga istatistika nito."
+        }
+      },
+      "usageHeading": "Paggamit na idineklara ng user",
+      "clientName": "Produkto o kumpanya",
+      "usageDescription": "Paglalarawan ng paggamit",
+      "save": "I-save",
+      "saving": "Sine-save...",
+      "saved": "Na-update ang key.",
+      "saveError": "May mga field na hindi wasto.",
+      "error": {
+        "required": "Kinakailangan ang field na ito.",
+        "tooShort": "Hindi bababa sa {min} na character.",
+        "tooLong": "Hanggang {max} na character lamang."
+      }
     }
   },
   "dashboard": {
@@ -5167,7 +5318,8 @@
       "allAuthors": "Lahat ng may akda",
       "authorAdminSpace": "Mga May Akda",
       "logs": "Mga Log",
-      "veto": "Veto ng mapa"
+      "veto": "Veto ng mapa",
+      "webhooks": "Webhooks"
     },
     "switcher": {
       "selectOrganization": "Pumili ng organisasyon",
@@ -5615,7 +5767,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Hindi nahanap ang key."
-      }
+      },
+      "kindPublic": "Public",
+      "publicRateLimit": "Pinagsasaluhang public na limitasyon"
     },
     "myApiKeys": {
       "title": "Aking mga API key",
@@ -5650,7 +5804,8 @@
       "columnAvgDuration": "Karaniwang tagal",
       "columnErrorRate": "Rate ng error",
       "requests": "{count} request",
-      "errors": "{count} error"
+      "errors": "{count} error",
+      "webhooksButton": "Webhooks"
     },
     "permissions": {
       "title": "Mga tungkulin at pahintulot",
@@ -5944,6 +6099,133 @@
       "subtitle": "I-set up ang live na veto ng mga torneong inoorganisa ng iyong organisasyon.",
       "readOnlyHint": "Wala kang pahintulot na pamahalaan ang veto ng mapa.",
       "noTournaments": "Walang torneo ng iyong organisasyon na may naka-enable na veto ng mapa. Ie-enable ito para sa iyo ng admin ng GC Stats."
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "Nagpapadala ang GC Stats ng HTTPS POST sa iyong mga endpoint kapag may nagbago sa isang laban, torneo, team o player. Sinusuri ang mga delivery humigit kumulang bawat minuto.",
+      "pageTitle": "Webhooks",
+      "pageSubtitle": "Mga endpoint at delivery ng iyong mga partner API key.",
+      "keySwitcher": "Partner API key",
+      "noPartnerKey": "Nakalaan ang mga webhook para sa mga partner API key. Wala ka pang partner key.",
+      "requestPartnerKey": "Humiling ng partner key",
+      "refresh": "I-refresh",
+      "add": "Magdagdag ng endpoint",
+      "keyInactive": "Hindi aktibo ang API key na ito: nabura na ang mga webhook nito at walang maidaragdag hangga't hindi ito muling ina-activate.",
+      "empty": "Wala pang webhook endpoint.",
+      "active": "Aktibo",
+      "inactive": "Hindi aktibo",
+      "toggle": "I-enable o i-disable ang endpoint na ito",
+      "disabledFailing": "Awtomatikong in-off matapos ang sobrang daming sunod sunod na nabigong delivery. Ayusin ang endpoint, saka i-enable ulit.",
+      "any": "Lahat",
+      "test": "Magpadala ng test",
+      "testing": "Ipinapadala...",
+      "testSuccess": "Naihatid (HTTP {status})",
+      "testFailed": "Nabigo ang delivery: {error}",
+      "edit": "I-edit",
+      "showSecret": "Ipakita ang secret",
+      "rotateSecret": "Bagong secret",
+      "delete": "Burahin",
+      "deleted": "Nabura ang endpoint",
+      "created": "Nagawa ang endpoint",
+      "updated": "Na-update ang endpoint",
+      "deliveriesTitle": "Mga kamakailang delivery",
+      "deliveriesEmpty": "Wala pang delivery.",
+      "columnDate": "Petsa",
+      "columnEvent": "Event",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Status",
+      "columnAttempts": "Mga pagsubok",
+      "redeliver": "Ipadala ulit",
+      "status": {
+        "pending": "Nakabinbin",
+        "success": "Naihatid",
+        "failed": "Nabigo"
+      },
+      "secretTitle": "Signing secret",
+      "secretRotatedTitle": "Bagong signing secret",
+      "secretCreatedTitle": "Nagawa ang endpoint, narito ang signing secret nito",
+      "secretDescription": "Gamitin ito para suriin ang X-GCS-Signature header: sha256 HMAC ng X-GCS-Timestamp header, isang tuldok, at pagkatapos ang raw body.",
+      "copySecret": "Kopyahin ang secret",
+      "close": "Isara",
+      "deleteTitle": "Burahin ang endpoint na ito?",
+      "deleteDescription": "Hindi na tatanggap ng webhooks ang {url}. Mabubura rin ang history ng mga delivery nito.",
+      "cancel": "Kanselahin",
+      "save": "I-save",
+      "saving": "Sine-save...",
+      "addTitle": "Bagong webhook endpoint",
+      "editTitle": "I-edit ang endpoint",
+      "dialogDescription": "Piliin ang mga event na matatanggap at paliitin ang mga ito gamit ang mga filter.",
+      "url": "URL ng endpoint",
+      "urlHint": "Public na HTTPS address lang.",
+      "descriptionLabel": "Paglalarawan",
+      "events": "Mga event",
+      "event": {
+        "match": {
+          "created": "Bagong laban",
+          "updated": "Na-update ang laban"
+        },
+        "tournament": {
+          "created": "Bagong torneo",
+          "updated": "Na-update ang torneo"
+        },
+        "team": {
+          "updated": "Na-update ang team"
+        },
+        "player": {
+          "updated": "Na-update ang player"
+        }
+      },
+      "filtersTitle": "Mga filter",
+      "filtersHint": "Pinapadaan ng walang lamang filter ang lahat. Ang mga filter ng rehiyon at official ay para sa mga laban at torneo, ang filter ng team ay para sa lahat ng event.",
+      "official": {
+        "label": "Official",
+        "all": "Official at hindi official",
+        "official": "Official lang",
+        "unofficial": "Hindi official lang"
+      },
+      "regions": "Mga rehiyon",
+      "regionsHint": "Rehiyon ng torneo.",
+      "teams": "Mga team",
+      "teamsHint": "Mga laban at torneo kung saan naglalaro ang isa sa mga team na ito, ang mga team na ito at ang kanilang kasalukuyang mga player.",
+      "teamsPlaceholder": "Magdagdag ng team",
+      "teamsSearch": "Maghanap ng team...",
+      "teamsNoResults": "Walang nahanap na team",
+      "removeTeam": "Alisin si {name}",
+      "error": {
+        "notFound": "Wala na ang endpoint o key na ito.",
+        "tooManyEndpoints": "Hindi hihigit sa {max} endpoint kada API key.",
+        "keyInactive": "Hindi aktibo ang API key na ito, walang webhook na maidaragdag.",
+        "invalid": "May mga field na hindi valid.",
+        "network": "Error sa network, subukan ulit.",
+        "busy": "Kasalukuyan nang ipinapadala ang delivery na ito, subukan muli sa ilang sandali.",
+        "url": {
+          "required": "Kailangan ang URL.",
+          "tooLong": "Hindi hihigit sa {urlMaxLength} character.",
+          "invalid": "Hindi ito valid na URL.",
+          "notHttps": "Dapat magsimula ang URL sa https://.",
+          "credentials": "Hindi puwedeng maglaman ang URL ng username o password.",
+          "privateHost": "Dapat tumuro ang URL sa isang public na address."
+        },
+        "description": {
+          "tooLong": "Hindi hihigit sa {descriptionMaxLength} character."
+        },
+        "events": {
+          "required": "Pumili ng kahit isang event.",
+          "invalid": "Hindi kilalang event."
+        },
+        "filterRegions": {
+          "invalid": "Hindi kilalang rehiyon.",
+          "tooMany": "Hindi hihigit sa {filterRegions} rehiyon."
+        },
+        "filterTeamIds": {
+          "invalid": "Hindi valid na team.",
+          "tooMany": "Hindi hihigit sa {filterTeams} team.",
+          "unknownTeam": "Wala na ang isa sa mga team."
+        },
+        "filterOfficial": {
+          "invalid": "Hindi valid na value."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6886,7 +7168,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "Lahat ng pampublikong torneo, team, player at laban ng GC Stats, malayang i-browse, i-sort at i-download bilang JSON.",
+    "subtitle": "Lahat ng pampublikong tournament, team, player, match, mapa at scoreboard ng GC Stats, malayang i-browse, i-sort at i-download bilang JSON.",
     "rowCount": "{count, plural, one {# row} other {# row}}",
     "columnCount": "{count, plural, one {# column} other {# column}}",
     "explore": "Tuklasin",
@@ -6907,16 +7189,25 @@
       "matches": {
         "name": "Mga laban",
         "description": "Lahat ng laban kasama ang torneo, stage, mga team, score, status at iskedyul."
+      },
+      "maps": {
+        "name": "Mga mapa",
+        "description": "Bawat mapang nalaro: tournament, mga team, score, nanalo at mga round na naipanalo sa bawat side."
+      },
+      "map_players": {
+        "name": "Mga scoreboard",
+        "description": "Bawat linya ng player sa bawat natapos na mapa: agent, kills, deaths, assists, ACS, ADR, KAST, first kills, clutches at multikills."
       }
     },
     "usage": {
       "title": "Paggamit ng data",
       "publicOnly": "Data na pampubliko na sa site lang ang ibinibigay: walang account, contact o pribadong field.",
-      "terms": "Sakop ang data ng parehong mga kondisyon ng site: magagamit lang ito ayon sa pinapayagan ng aming <terms>mga tuntunin ng paggamit</terms>.",
+      "terms": "Ang data ay sakop ng parehong mga tuntunin ng site: magagamit lamang ito ayon sa pinapayagan ng aming mga tuntunin ng paggamit.",
       "freshness": "Nire-refresh ang mga table bawat minuto, ang buong export bawat 10 minuto.",
       "limits": "Mga limit: {browse} pahina ng table bawat minuto at {exports} buong export bawat oras, bawat account o bawat IP address.",
       "accountOnly": "Bukas lang ngayon ang portal sa mga naka-sign in na user.",
-      "priority": "Laging inuuna ang site: kapag mabigat ang load nito, bumabagal ang portal at maaaring sumagot na abala ito nang ilang segundo."
+      "priority": "Laging inuuna ang site: kapag mabigat ang load nito, bumabagal ang portal at maaaring sumagot na abala ito nang ilang segundo.",
+      "termsLink": "Mga tuntunin ng paggamit"
     },
     "api": {
       "title": "API",
@@ -6963,7 +7254,9 @@
       "tournaments": "Pangalan, rehiyon, kategorya...",
       "teams": "Pangalan o tag...",
       "players": "Handle, pangalan, team...",
-      "matches": "Torneo, stage, team..."
+      "matches": "Torneo, stage, team...",
+      "maps": "Tournament, mapa, team...",
+      "map_players": "Player, team, agent, mapa..."
     },
     "clearSearch": "I-clear ang paghahanap",
     "filters": {
@@ -7046,7 +7339,39 @@
       "team_b_name": "Team B",
       "winner_team_id": "ID ng nanalo",
       "is_forfeit": "Forfeit",
-      "patch": "Patch"
+      "patch": "Patch",
+      "match_id": "ID ng match",
+      "started_at": "Petsa",
+      "map_order": "Mapa #",
+      "map_name": "Mapa",
+      "is_completed": "Tapos na",
+      "team_a_atk_rounds_won": "Attack rounds ng Team A",
+      "team_a_def_rounds_won": "Defense rounds ng Team A",
+      "team_b_atk_rounds_won": "Attack rounds ng Team B",
+      "team_b_def_rounds_won": "Defense rounds ng Team B",
+      "map_id": "ID ng mapa",
+      "player_id": "ID ng player",
+      "player_handle": "Player",
+      "team_id": "ID ng team",
+      "team_name": "Team",
+      "agent": "Agent",
+      "kills": "Kills",
+      "deaths": "Deaths",
+      "assists": "Assists",
+      "first_kills": "First kills",
+      "first_deaths": "First deaths",
+      "clutches_won": "Clutches na naipanalo",
+      "clutches_played": "Clutches na nalaro",
+      "trade_kills": "Trade kills",
+      "traded_deaths": "Traded deaths",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

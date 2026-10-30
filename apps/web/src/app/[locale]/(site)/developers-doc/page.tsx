@@ -5,29 +5,35 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 import { useTranslations } from "next-intl";
+import { KeyRound } from "lucide-react";
 import { LegalPageHeader, LegalIntro, SectionCard, SectionText, SectionList, ChannelCard, icons } from "@/components/legal/ui";
 import { Link } from "@/i18n/navigation";
 import { DISCORD_INVITE_URL, DISCORD_INVITE_LABEL } from "@/lib/discord-invite";
 import { staticTitleMetadata } from "@/lib/page-metadata";
-
 export const generateMetadata = staticTitleMetadata("developersDoc.title");
-
 export default function DevelopersDocPage() {
   const t = useTranslations("developersDoc");
-
   const repos = [
     { name: "Osthelia/GC-Stats-Website", url: "https://github.com/Osthelia/GC-Stats-Website" },
     { name: "Osthelia/GC-Stats-Documentation", url: "https://github.com/Osthelia/GC-Stats-Documentation" },
   ];
-
   return (
     <div className="mx-auto max-w-5xl space-y-5 px-6 py-16">
       <LegalPageHeader title={t("title")} />
       <LegalIntro>{t("intro")}</LegalIntro>
-
       <div className="space-y-5 pt-6">
+        <SectionCard icon={icons.code} title={t("publicKey.title")}>
+          <SectionText>{t("publicKey.body")}</SectionText>
+          <SectionList items={[t("publicKey.step1"), t("publicKey.step2"), t("publicKey.step3")]} />
+          <Link
+            href="/settings/api"
+            className="inline-flex w-fit items-center gap-2 rounded-[9px] bg-[#e4ae22] px-3.5 py-2 text-[13px] font-semibold text-[#0e0e0e] transition-all hover:bg-[#f0bc33] active:scale-[0.97]"
+          >
+            <KeyRound className="size-4" />
+            {t("publicKey.button")}
+          </Link>
+        </SectionCard>
         <SectionCard icon={icons.key} title={t("apiKey.title")}>
           <SectionText>{t("apiKey.body")}</SectionText>
           <div>
@@ -48,11 +54,16 @@ export default function DevelopersDocPage() {
             })}
           </p>
         </SectionCard>
-
+        <SectionCard icon={icons.link} title={t("webhooks.title")}>
+          <SectionText>{t("webhooks.body")}</SectionText>
+          <SectionList items={[t("webhooks.events"), t("webhooks.filters"), t("webhooks.signature"), t("webhooks.retries"), t("webhooks.setup")]} />
+          <code className="block overflow-x-auto rounded-lg border border-neutral-800 bg-black/30 px-3 py-2 font-mono text-[12.5px] text-neutral-200">
+            {"X-GCS-Signature: sha256=HMAC_SHA256(secret, X-GCS-Timestamp + \".\" + body)"}
+          </code>
+        </SectionCard>
         <SectionCard icon={icons.ban} title={t("restrictions.title")}>
           <SectionText>{t("restrictions.body")}</SectionText>
         </SectionCard>
-
         <SectionCard icon={icons.code} title={t("apiReference.title")}>
           <div className="flex items-start justify-between gap-4">
             <SectionText>{t("apiReference.body")}</SectionText>
@@ -66,7 +77,6 @@ export default function DevelopersDocPage() {
             </a>
           </div>
         </SectionCard>
-
         <SectionCard icon={icons.github} title={t("openSource.title")}>
           <SectionText>{t("openSource.body")}</SectionText>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

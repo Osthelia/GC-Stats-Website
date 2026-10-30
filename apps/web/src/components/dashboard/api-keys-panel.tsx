@@ -5,13 +5,12 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 "use client";
-
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { BarChart3 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,7 +19,6 @@ import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
 import { RevealApiKeyDialog } from "@/components/dashboard/reveal-api-key-dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { DashboardApiKeyRow, RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
-
 /** Shared table of self-service API keys — used by both the org-scoped space (/dashboard/{id}/api-keys) and the personal one (/dashboard/api-keys). Only `statsBasePath`/`onRegenerate` differ between the two callers. */
 export function ApiKeysPanel({
   keys,
@@ -37,7 +35,6 @@ export function ApiKeysPanel({
   const [revealKey, setRevealKey] = useState<string | null>(null);
   const [regenerating, setRegenerating] = useState<DashboardApiKeyRow | null>(null);
   const [isPending, startTransition] = useTransition();
-
   function confirmRegenerate() {
     if (!regenerating) return;
     const key = regenerating;
@@ -51,7 +48,6 @@ export function ApiKeysPanel({
       setRevealKey(result.plainKey);
     });
   }
-
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -81,9 +77,14 @@ export function ApiKeysPanel({
                 )}
                 {keys.map((key) => (
                   <TableRow key={key.id}>
-                    <TableCell className="font-medium">{key.clientName}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{key.clientName}</span>
+                        {key.kind === "public" && <Badge variant="outline">{t("kindPublic")}</Badge>}
+                      </div>
+                    </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">{key.keyHashPreview}…</TableCell>
-                    <TableCell className="text-muted-foreground">{key.rateLimit ?? t("noRateLimit")}</TableCell>
+                    <TableCell className="text-muted-foreground">{key.kind === "public" ? t("publicRateLimit") : (key.rateLimit ?? t("noRateLimit"))}</TableCell>
                     <TableCell className="text-muted-foreground">{key.requestCount}</TableCell>
                     <TableCell>
                       <ActiveStatusBadge active={key.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
@@ -94,7 +95,7 @@ export function ApiKeysPanel({
                           <BarChart3 className="size-4" />
                           {t("statsButton")}
                         </Button>
-                        {canManage && (
+                        {canManage && key.kind === "partner" && (
                           <Button variant="outline" size="sm" disabled={isPending} onClick={() => setRegenerating(key)}>
                             {t("regenerateButton")}
                           </Button>
@@ -108,9 +109,7 @@ export function ApiKeysPanel({
           </div>
         </CardContent>
       </Card>
-
       <RevealApiKeyDialog plainKey={revealKey} onClose={() => setRevealKey(null)} />
-
       <ConfirmDialog
         open={regenerating !== null}
         onOpenChange={(next) => {

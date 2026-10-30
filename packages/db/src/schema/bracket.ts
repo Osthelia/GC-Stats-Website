@@ -40,6 +40,8 @@ export const tournaments = pgTable("tournaments", {
   // Uncovered tournament (mix) holding a GC team's match: only the match is
   // public, the tournament has no page and stays out of every listing.
   isGhost: boolean("is_ghost").notNull().default(false),
+  // Official circuit or community event, used by the webhook filters.
+  isOfficial: boolean("is_official").notNull().default(true),
   liquipediaLink: text("liquipedia_link"),
   socials: jsonb("socials").notNull().default({}),
   playerPovPhrase: text("player_pov_phrase"),

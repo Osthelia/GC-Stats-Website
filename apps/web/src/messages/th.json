@@ -477,6 +477,57 @@
         "joinSource": "แหล่งที่มาของการเข้าร่วม",
         "leftSource": "แหล่งที่มาของการออก"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API key",
+      "subtitle": "สร้าง API key สาธารณะฟรีเพื่อใช้ GC Stats API ในโปรเจกต์ของคุณ",
+      "notice": {
+        "rateLimit": "คีย์สาธารณะถูกจำกัดไว้ที่ {rate} คำขอต่อวินาทีต่อบัญชี โดยใช้ร่วมกันระหว่างคีย์ทั้งหมดของคุณ ขีดจำกัดนี้อาจเปลี่ยนแปลงได้ตลอดเวลาโดยไม่ต้องแจ้งล่วงหน้า",
+        "stable": "วิธีเดียวที่จะได้ขีดจำกัดที่คงที่คือการขอ API key พาร์ทเนอร์จากทีม GC Stats",
+        "noWebhooks": "key สาธารณะไม่สามารถใช้ webhook ได้ webhook สงวนไว้สำหรับ key พาร์ทเนอร์เท่านั้น",
+        "requestPartner": "ขอ API key พาร์ทเนอร์"
+      },
+      "create": {
+        "heading": "สร้าง key สาธารณะ",
+        "description": "บอกเราว่าข้อมูลจะถูกนำไปใช้ที่ไหน คุณมี key สาธารณะที่ใช้งานอยู่ได้สูงสุด {max} รายการ",
+        "clientName": "ผลิตภัณฑ์หรือบริษัท",
+        "clientNamePlaceholder": "Liquipedia, Remake, บอท Discord ของฉัน...",
+        "usageDescription": "คำอธิบายการใช้งาน",
+        "usageDescriptionPlaceholder": "ใช้ข้อมูลเพื่ออะไร ใช้ endpoint ใดบ้าง และใช้บ่อยแค่ไหนโดยประมาณ",
+        "submit": "สร้าง key",
+        "termsNote": "คีย์ API ของคุณอยู่ภายใต้<terms>ข้อกำหนดการใช้งาน</terms>เดียวกันกับเว็บไซต์"
+      },
+      "created": {
+        "title": "API key ใหม่ของคุณ",
+        "warning": "คัดลอกตอนนี้เลย: key นี้จะไม่แสดงอีก ส่งไปใน header x-api-key ของคำขอของคุณ",
+        "copy": "คัดลอก key",
+        "dismiss": "คัดลอกแล้ว"
+      },
+      "list": {
+        "heading": "key สาธารณะของคุณ",
+        "empty": "คุณยังไม่มี API key สาธารณะ",
+        "active": "เปิดใช้งาน",
+        "revoked": "ถูกเพิกถอน",
+        "requests": "{count, plural, one {# คำขอ} other {# คำขอ}} ใน 30 วัน",
+        "revoke": "เพิกถอน",
+        "suspended": "ถูกระงับ",
+        "suspendedHint": "คีย์นี้ถูกระงับโดยทีม GC Stats ติดต่อเราทาง Discord เพื่อขอให้คืนสถานะ"
+      },
+      "error": {
+        "required": "จำเป็นต้องกรอกช่องนี้",
+        "tooShort": "อย่างน้อย {min} ตัวอักษร",
+        "tooLong": "ไม่เกิน {max} ตัวอักษร",
+        "tooManyKeys": "คุณมี key สาธารณะที่ใช้งานอยู่ {max} รายการแล้ว เพิกถอนหนึ่งรายการเพื่อสร้างใหม่",
+        "unauthenticated": "เซสชันของคุณหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง",
+        "disabled": "API key สาธารณะถูกปิดใช้งานอยู่ในขณะนี้",
+        "invalid": "บางช่องไม่ถูกต้อง",
+        "notFound": "key นี้ไม่มีอยู่แล้ว",
+        "network": "เครือข่ายผิดพลาด กรุณาลองอีกครั้ง",
+        "blocked": "การเข้าถึง API ของคุณถูกบล็อก"
+      },
+      "blocked": "การเข้าถึง API ของคุณถูกบล็อก คุณไม่สามารถสร้างคีย์ API ได้อีกต่อไป",
+      "contactDiscord": "ติดต่อเราทาง Discord"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "นักพัฒนา",
     "intro": "ข้อมูลทั้งหมดของเราเพื่อช่วยคุณสร้างโปรเจกต์! และถ้าคุณอยากร่วมพัฒนา GC-Stats เรายินดีต้อนรับเช่นกัน",
     "apiKey": {
-      "title": "ขอ API key",
-      "body": "เพื่อป้องกันการใช้งานในทางที่ผิด API ของเราต้องมีการยืนยันตัวตน หากต้องการใช้งาน ติดต่อเราทาง Discord หรืออีเมล",
+      "title": "ขอ API key พาร์ทเนอร์",
+      "body": "key พาร์ทเนอร์มาพร้อมขีดจำกัดคำขอที่คงที่และ webhook หากต้องการ ติดต่อเราทาง Discord หรืออีเมล",
       "warning": "กรุณาระบุในคำขอของคุณ:",
       "step1": "ชื่อและคำอธิบายโปรเจกต์ของคุณ",
       "step2": "กรณีการใช้งาน API ที่ตั้งใจไว้และขนาด",
@@ -951,6 +1002,23 @@
       "title": "โอเพนซอร์สและการมีส่วนร่วม",
       "body": "เราตัดสินใจเปิดซอร์สโปรเจกต์ส่วนใหญ่เพื่อให้ชุมชนช่วยได้ เราไม่เชื่อในซอร์สปิด ที่เก็บทั้งหมดของเรา (ยกเว้นแดชบอร์ดผู้ดูแล) เปิดรับการมีส่วนร่วม อย่าลืมอ่านแนวทางของเราก่อนส่ง Pull Request",
       "badge": "ที่เก็บสาธารณะ"
+    },
+    "publicKey": {
+      "title": "API key สาธารณะ",
+      "body": "ทุกบัญชี GC Stats สามารถสร้าง key สาธารณะฟรีได้ในไม่กี่วินาที โดยไม่ต้องรอเรา",
+      "step1": "สร้างได้จากการตั้งค่าบัญชีของคุณ โดยระบุผลิตภัณฑ์หรือบริษัทที่จะใช้ข้อมูลและวิธีการใช้",
+      "step2": "key สาธารณะถูกจำกัดไว้ที่ไม่กี่คำขอต่อวินาที และขีดจำกัดนี้อาจเปลี่ยนแปลงได้ทุกเมื่อ",
+      "step3": "key สาธารณะไม่สามารถใช้ webhook ได้ หากต้องการขีดจำกัดที่คงที่และ webhook ให้ขอ key พาร์ทเนอร์ด้านล่าง",
+      "button": "สร้าง key สาธารณะ"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "key พาร์ทเนอร์สามารถลงทะเบียน endpoint แบบ HTTPS ได้จากแดชบอร์ด: จากนั้น GC Stats จะส่ง POST ทุกครั้งที่ข้อมูลเปลี่ยนแปลง",
+      "events": "อีเวนต์: แมตช์ใหม่ อัปเดตแมตช์ ทัวร์นาเมนต์ใหม่ อัปเดตทัวร์นาเมนต์ อัปเดตทีม อัปเดตผู้เล่น",
+      "filters": "ตัวกรอง: ภูมิภาคของทัวร์นาเมนต์ ทางการหรือไม่ ทีมที่เข้าร่วม",
+      "signature": "ทุกคำขอมี header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp และ X-GCS-Signature ตรวจสอบลายเซ็นด้วย secret ของ endpoint ของคุณ",
+      "retries": "ตอบกลับด้วยสถานะ 2xx ภายใน 10 วินาที การส่งที่ล้มเหลวจะถูกลองใหม่ประมาณ 9 ชั่วโมง และ endpoint ที่ล้มเหลวบ่อยเกินไปจะถูกปิด",
+      "setup": "payload ประกอบด้วยอีเวนต์ วันที่ และเอนทิตี โดยมีฟิลด์เดียวกับชุดข้อมูล OpenData"
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "สร้างใหม่",
       "activateButton": "เปิดใช้งาน",
       "deactivateButton": "ปิดใช้งาน",
+      "deactivateConfirm": "ปิดใช้งานคีย์ \"{name}\" ใช่ไหม? webhook ของคีย์นี้จะถูกลบอย่างถาวร",
       "deleteButton": "ลบ",
       "createTitle": "สร้าง API key",
       "createDescription": "คีย์ฉบับเต็มจะแสดงเพียงครั้งเดียวทันทีหลังสร้าง",
@@ -2924,6 +2993,10 @@
         "userNotFound": "ไม่พบผู้ใช้",
         "organizationNotFound": "ไม่พบองค์กร",
         "ownerRequired": "เลือกผู้ใช้หรือองค์กร"
+      },
+      "tabs": {
+        "partner": "คีย์พาร์ทเนอร์",
+        "public": "คีย์สาธารณะ"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "ประเภทคะแนน",
       "fieldPointTypeNone": "ไม่มี",
       "fieldActive": "ทัวร์นาเมนต์ที่เปิดใช้งาน",
+      "fieldOfficial": "ทัวร์นาเมนต์ทางการ",
+      "officialHint": "อีเวนต์ในวงจรทางการ ผู้ติดตาม webhook สามารถกรองทัวร์นาเมนต์ทางการและไม่เป็นทางการได้",
       "fieldLocation": "สถานที่",
       "fieldPrizePool": "เงินรางวัลรวม",
       "fieldDescription": "คำอธิบาย",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "การส่งออกทั้งหมดต่อชั่วโมง",
         "exportsPerHourHint": "ต่อบัญชี หรือต่อที่อยู่ IP สำหรับผู้เยี่ยมชม ระหว่าง {min} ถึง {max}",
         "propagationHint": "ทุกเซิร์ฟเวอร์จะใช้การเปลี่ยนแปลงภายใน 15 วินาที"
+      },
+      "publicApi": {
+        "title": "API สาธารณะ",
+        "description": "API key แบบบริการตนเองที่ทุกบัญชีสร้างได้จากการตั้งค่า key พาร์ทเนอร์ยังคงใช้ขีดจำกัดของตัวเอง",
+        "keys": "key สาธารณะ",
+        "enabled": "เปิดใช้ key สาธารณะ",
+        "enabledHint": "เมื่อปิด จะไม่สามารถสร้าง key สาธารณะได้ และ key ที่มีอยู่จะตอบกลับ 403",
+        "ratePerSecond": "คำขอต่อวินาที",
+        "ratePerSecondHint": "ต่อบัญชี ใช้ร่วมกันระหว่างคีย์สาธารณะทั้งหมด ระหว่าง {min} ถึง {max} endpoint ที่มีภาระสูงจะนับเป็นหลายคำขอ",
+        "maxKeysPerUser": "key ที่ใช้งานได้ต่อบัญชี",
+        "maxKeysPerUserHint": "ระหว่าง {min} ถึง {max}",
+        "propagationHint": "การเปลี่ยนแปลงจะมีผลกับทุกเซิร์ฟเวอร์ภายใน 15 วินาที"
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "คิวรีที่รอ",
         "inFlight": "OpenData ที่ทำงาน"
       }
+    },
+    "publicApiKeys": {
+      "title": "คีย์ API สาธารณะ",
+      "subtitle": "คีย์ที่ผู้ใช้สร้างจากการตั้งค่าของตน จำกัด {rate} คำขอต่อวินาทีต่อบัญชี",
+      "searchPlaceholder": "ค้นหาตามชื่อ คำอธิบาย หรือผู้ใช้",
+      "statusFilter": "สถานะ",
+      "status": {
+        "active": "ใช้งานอยู่",
+        "suspended": "ถูกระงับ",
+        "revoked": "ถูกเพิกถอน",
+        "blocked": "การเข้าถึง API ถูกบล็อก"
+      },
+      "empty": "ไม่มีคีย์สาธารณะที่ตรงกัน",
+      "requests30d": "{count, plural, other {# คำขอ}} ใน 30 วัน",
+      "statsAndEdit": "สถิติและแก้ไข",
+      "suspend": "ระงับ",
+      "unsuspend": "คืนสถานะ",
+      "block": "บล็อกการเข้าถึง API",
+      "unblock": "เลิกบล็อกการเข้าถึง API",
+      "delete": "ลบ",
+      "cancel": "ยกเลิก",
+      "actionFailed": "การดำเนินการล้มเหลว โปรดลองอีกครั้ง",
+      "notFound": "คีย์หรือผู้ใช้นี้ไม่มีอยู่แล้ว",
+      "done": {
+        "suspend": "ระงับคีย์แล้ว",
+        "unsuspend": "คืนสถานะคีย์แล้ว",
+        "block": "บล็อกการเข้าถึง API แล้ว คีย์ทั้งหมดของผู้ใช้ถูกเพิกถอน",
+        "unblock": "เลิกบล็อกการเข้าถึง API แล้ว",
+        "delete": "ลบคีย์แล้ว"
+      },
+      "confirm": {
+        "suspend": {
+          "title": "ระงับคีย์นี้หรือไม่?",
+          "description": "คีย์ \"{name}\" จะหยุดทำงานทันที {owner} จะต้องติดต่อเราทาง Discord เพื่อขอให้คืนสถานะ"
+        },
+        "unsuspend": {
+          "title": "คืนสถานะคีย์นี้หรือไม่?",
+          "description": "คีย์ \"{name}\" จะกลับมาใช้งานได้สำหรับ {owner}"
+        },
+        "block": {
+          "title": "บล็อกการเข้าถึง API หรือไม่?",
+          "description": "คีย์สาธารณะทั้งหมดของ {owner} จะถูกเพิกถอน และจะไม่สามารถสร้างคีย์ใหม่ได้อีก"
+        },
+        "unblock": {
+          "title": "เลิกบล็อกการเข้าถึง API หรือไม่?",
+          "description": "{owner} สามารถสร้างคีย์สาธารณะได้อีกครั้ง คีย์ที่ถูกเพิกถอนจะยังคงถูกเพิกถอน"
+        },
+        "delete": {
+          "title": "ลบคีย์นี้หรือไม่?",
+          "description": "คีย์ \"{name}\" และสถิติของคีย์จะถูกลบอย่างถาวร"
+        }
+      },
+      "usageHeading": "การใช้งานที่ผู้ใช้แจ้งไว้",
+      "clientName": "ผลิตภัณฑ์หรือบริษัท",
+      "usageDescription": "คำอธิบายการใช้งาน",
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก...",
+      "saved": "อัปเดตคีย์แล้ว",
+      "saveError": "บางช่องไม่ถูกต้อง",
+      "error": {
+        "required": "ช่องนี้จำเป็นต้องกรอก",
+        "tooShort": "อย่างน้อย {min} ตัวอักษร",
+        "tooLong": "ไม่เกิน {max} ตัวอักษร"
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "ผู้ดูแล",
       "allAuthors": "ผู้เขียนทั้งหมด",
       "authorAdminSpace": "ผู้เขียน",
-      "logs": "บันทึก"
+      "logs": "บันทึก",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "เลือกองค์กร",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "ไม่พบคีย์"
-      }
+      },
+      "kindPublic": "สาธารณะ",
+      "publicRateLimit": "ขีดจำกัดสาธารณะที่ใช้ร่วมกัน"
     },
     "myApiKeys": {
       "title": "API key ของฉัน",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "ระยะเวลาเฉลี่ย",
       "columnErrorRate": "อัตราข้อผิดพลาด",
       "requests": "{count} คำขอ",
-      "errors": "{count} ข้อผิดพลาด"
+      "errors": "{count} ข้อผิดพลาด",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "บทบาทและสิทธิ์",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, other {# รายการ}}",
       "previous": "หน้าก่อนหน้า",
       "next": "หน้าถัดไป"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "GC Stats จะส่ง HTTPS POST ไปยัง endpoint ของคุณเมื่อแมตช์ ทัวร์นาเมนต์ ทีม หรือผู้เล่นมีการเปลี่ยนแปลง การส่งจะถูกตรวจสอบประมาณทุกนาที",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "endpoint และการส่งของ partner API key ของคุณ",
+      "keySwitcher": "Partner API key",
+      "noPartnerKey": "webhook สงวนไว้สำหรับ partner API key คุณยังไม่มี partner key",
+      "requestPartnerKey": "ขอ partner key",
+      "refresh": "รีเฟรช",
+      "add": "เพิ่ม endpoint",
+      "keyInactive": "API key นี้ไม่ได้ใช้งาน: webhook ถูกลบแล้ว และจะเพิ่มไม่ได้จนกว่าจะเปิดใช้งานอีกครั้ง",
+      "empty": "ยังไม่มี endpoint ของ webhook",
+      "active": "เปิดใช้งาน",
+      "inactive": "ปิดใช้งาน",
+      "toggle": "เปิดหรือปิด endpoint นี้",
+      "disabledFailing": "ถูกปิดโดยอัตโนมัติหลังจากส่งไม่สำเร็จติดต่อกันหลายครั้งเกินไป แก้ไข endpoint แล้วเปิดใช้งานอีกครั้ง",
+      "any": "ทั้งหมด",
+      "test": "ส่งทดสอบ",
+      "testing": "กำลังส่ง...",
+      "testSuccess": "ส่งสำเร็จ (HTTP {status})",
+      "testFailed": "ส่งไม่สำเร็จ: {error}",
+      "edit": "แก้ไข",
+      "showSecret": "แสดง secret",
+      "rotateSecret": "secret ใหม่",
+      "delete": "ลบ",
+      "deleted": "ลบ endpoint แล้ว",
+      "created": "สร้าง endpoint แล้ว",
+      "updated": "อัปเดต endpoint แล้ว",
+      "deliveriesTitle": "การส่งล่าสุด",
+      "deliveriesEmpty": "ยังไม่มีการส่ง",
+      "columnDate": "วันที่",
+      "columnEvent": "อีเวนต์",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "สถานะ",
+      "columnAttempts": "จำนวนครั้งที่ลอง",
+      "redeliver": "ส่งอีกครั้ง",
+      "status": {
+        "pending": "รอดำเนินการ",
+        "success": "ส่งสำเร็จ",
+        "failed": "ล้มเหลว"
+      },
+      "secretTitle": "Signing secret",
+      "secretRotatedTitle": "Signing secret ใหม่",
+      "secretCreatedTitle": "สร้าง endpoint แล้ว นี่คือ signing secret ของมัน",
+      "secretDescription": "ใช้ตรวจสอบ header X-GCS-Signature: ค่า HMAC sha256 ของ header X-GCS-Timestamp ตามด้วยจุด แล้วตามด้วย body ดิบ",
+      "copySecret": "คัดลอก secret",
+      "close": "ปิด",
+      "deleteTitle": "ลบ endpoint นี้หรือไม่?",
+      "deleteDescription": "{url} จะไม่ได้รับ webhook อีกต่อไป ประวัติการส่งของมันจะถูกลบด้วย",
+      "cancel": "ยกเลิก",
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก...",
+      "addTitle": "endpoint ของ webhook ใหม่",
+      "editTitle": "แก้ไข endpoint",
+      "dialogDescription": "เลือกอีเวนต์ที่ต้องการรับและกรองให้แคบลงด้วยตัวกรอง",
+      "url": "URL ของ endpoint",
+      "urlHint": "ที่อยู่ HTTPS สาธารณะเท่านั้น",
+      "descriptionLabel": "คำอธิบาย",
+      "events": "อีเวนต์",
+      "event": {
+        "match": {
+          "created": "แมตช์ใหม่",
+          "updated": "อัปเดตแมตช์"
+        },
+        "tournament": {
+          "created": "ทัวร์นาเมนต์ใหม่",
+          "updated": "อัปเดตทัวร์นาเมนต์"
+        },
+        "team": {
+          "updated": "อัปเดตทีม"
+        },
+        "player": {
+          "updated": "อัปเดตผู้เล่น"
+        }
+      },
+      "filtersTitle": "ตัวกรอง",
+      "filtersHint": "ตัวกรองที่ว่างจะปล่อยผ่านทั้งหมด ตัวกรองภูมิภาคและทางการใช้กับแมตช์และทัวร์นาเมนต์ ส่วนตัวกรองทีมใช้กับทุกอีเวนต์",
+      "official": {
+        "label": "ทางการ",
+        "all": "ทางการและไม่เป็นทางการ",
+        "official": "ทางการเท่านั้น",
+        "unofficial": "ไม่เป็นทางการเท่านั้น"
+      },
+      "regions": "ภูมิภาค",
+      "regionsHint": "ภูมิภาคของทัวร์นาเมนต์",
+      "teams": "ทีม",
+      "teamsHint": "แมตช์และทัวร์นาเมนต์ที่หนึ่งในทีมเหล่านี้ลงแข่ง ทีมเหล่านี้ และผู้เล่นปัจจุบันของทีม",
+      "teamsPlaceholder": "เพิ่มทีม",
+      "teamsSearch": "ค้นหาทีม...",
+      "teamsNoResults": "ไม่พบทีม",
+      "removeTeam": "นำ {name} ออก",
+      "error": {
+        "notFound": "endpoint หรือ key นี้ไม่มีอยู่แล้ว",
+        "tooManyEndpoints": "สูงสุด {max} endpoint ต่อ API key",
+        "keyInactive": "API key นี้ไม่ได้ใช้งาน จึงเพิ่ม webhook ไม่ได้",
+        "invalid": "บางช่องไม่ถูกต้อง",
+        "network": "เครือข่ายผิดพลาด กรุณาลองอีกครั้ง",
+        "busy": "การส่งนี้กำลังดำเนินการอยู่แล้ว โปรดลองอีกครั้งในอีกสักครู่",
+        "url": {
+          "required": "จำเป็นต้องระบุ URL",
+          "tooLong": "ไม่เกิน {urlMaxLength} ตัวอักษร",
+          "invalid": "URL ไม่ถูกต้อง",
+          "notHttps": "URL ต้องขึ้นต้นด้วย https://",
+          "credentials": "URL ต้องไม่มีชื่อผู้ใช้หรือรหัสผ่าน",
+          "privateHost": "URL ต้องชี้ไปยังที่อยู่สาธารณะ"
+        },
+        "description": {
+          "tooLong": "ไม่เกิน {descriptionMaxLength} ตัวอักษร"
+        },
+        "events": {
+          "required": "เลือกอย่างน้อยหนึ่งอีเวนต์",
+          "invalid": "ไม่รู้จักอีเวนต์นี้"
+        },
+        "filterRegions": {
+          "invalid": "ไม่รู้จักภูมิภาคนี้",
+          "tooMany": "สูงสุด {filterRegions} ภูมิภาค"
+        },
+        "filterTeamIds": {
+          "invalid": "ทีมไม่ถูกต้อง",
+          "tooMany": "สูงสุด {filterTeams} ทีม",
+          "unknownTeam": "หนึ่งในทีมไม่มีอยู่แล้ว"
+        },
+        "filterOfficial": {
+          "invalid": "ค่าไม่ถูกต้อง"
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "ทัวร์นาเมนต์ ทีม ผู้เล่น และแมตช์สาธารณะทั้งหมดของ GC Stats เรียกดู เรียงลำดับ และดาวน์โหลดเป็น JSON ได้อย่างอิสระ",
+    "subtitle": "ทัวร์นาเมนต์ ทีม ผู้เล่น แมตช์ แมป และสกอร์บอร์ดสาธารณะทั้งหมดของ GC Stats เรียกดู จัดเรียง และดาวน์โหลดเป็น JSON ได้ฟรี",
     "rowCount": "{count, plural, other {# แถว}}",
     "columnCount": "{count, plural, other {# คอลัมน์}}",
     "explore": "สำรวจ",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "แมตช์",
         "description": "แมตช์ทั้งหมดพร้อมทัวร์นาเมนต์ รอบ ทีม คะแนน สถานะ และเวลา"
+      },
+      "maps": {
+        "name": "แมป",
+        "description": "ทุกแมปที่เล่น: ทัวร์นาเมนต์ ทีม สกอร์ ผู้ชนะ และรอบที่ชนะในแต่ละฝั่ง"
+      },
+      "map_players": {
+        "name": "สกอร์บอร์ด",
+        "description": "ข้อมูลผู้เล่นทุกคนในทุกแมปที่จบแล้ว: เอเจนต์ คิล เดธ แอสซิสต์ ACS ADR KAST เฟิร์สคิล คลัตช์ และมัลติคิล"
       }
     },
     "usage": {
       "title": "การใช้ข้อมูล",
       "publicOnly": "เปิดเผยเฉพาะข้อมูลที่เป็นสาธารณะบนเว็บไซต์อยู่แล้ว: ไม่มีบัญชี ข้อมูลติดต่อ หรือช่องข้อมูลส่วนตัว",
-      "terms": "ข้อมูลอยู่ภายใต้เงื่อนไขเดียวกับเว็บไซต์ ใช้ได้เฉพาะตามที่<terms>ข้อกำหนดการใช้งาน</terms>ของเราอนุญาตเท่านั้น",
+      "terms": "ข้อมูลอยู่ภายใต้เงื่อนไขเดียวกับเว็บไซต์: ใช้ได้เฉพาะตามที่เงื่อนไขการใช้งานของเราอนุญาตเท่านั้น",
       "freshness": "ตารางรีเฟรชทุกนาที การส่งออกทั้งหมดทุก 10 นาที",
       "limits": "ขีดจำกัด: {browse} หน้าตารางต่อนาที และ {exports} การส่งออกทั้งหมดต่อชั่วโมง ต่อบัญชีหรือต่อที่อยู่ IP",
       "accountOnly": "ขณะนี้พอร์ทัลเปิดให้เฉพาะผู้ใช้ที่เข้าสู่ระบบ",
-      "priority": "เว็บไซต์มีลำดับความสำคัญเสมอ: เมื่อมีภาระสูง พอร์ทัลจะช้าลงและอาจตอบว่าไม่ว่างสักครู่"
+      "priority": "เว็บไซต์มีลำดับความสำคัญเสมอ: เมื่อมีภาระสูง พอร์ทัลจะช้าลงและอาจตอบว่าไม่ว่างสักครู่",
+      "termsLink": "เงื่อนไขการใช้งาน"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "ชื่อ ภูมิภาค หมวดหมู่...",
       "teams": "ชื่อหรือแท็ก...",
       "players": "ชื่อในเกม ชื่อ ทีม...",
-      "matches": "ทัวร์นาเมนต์ รอบ ทีม..."
+      "matches": "ทัวร์นาเมนต์ รอบ ทีม...",
+      "maps": "ทัวร์นาเมนต์ แมป ทีม...",
+      "map_players": "ผู้เล่น ทีม เอเจนต์ แมป..."
     },
     "clearSearch": "ล้างการค้นหา",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "ทีม B",
       "winner_team_id": "ID ผู้ชนะ",
       "is_forfeit": "สละสิทธิ์",
-      "patch": "แพตช์"
+      "patch": "แพตช์",
+      "match_id": "ID แมตช์",
+      "started_at": "วันที่",
+      "map_order": "แมปที่",
+      "map_name": "แมป",
+      "is_completed": "จบแล้ว",
+      "team_a_atk_rounds_won": "รอบบุกทีม A",
+      "team_a_def_rounds_won": "รอบรับทีม A",
+      "team_b_atk_rounds_won": "รอบบุกทีม B",
+      "team_b_def_rounds_won": "รอบรับทีม B",
+      "map_id": "ID แมป",
+      "player_id": "ID ผู้เล่น",
+      "player_handle": "ผู้เล่น",
+      "team_id": "ID ทีม",
+      "team_name": "ทีม",
+      "agent": "เอเจนต์",
+      "kills": "คิล",
+      "deaths": "เดธ",
+      "assists": "แอสซิสต์",
+      "first_kills": "เฟิร์สคิล",
+      "first_deaths": "เฟิร์สเดธ",
+      "clutches_won": "คลัตช์ที่ชนะ",
+      "clutches_played": "คลัตช์ที่เล่น",
+      "trade_kills": "เทรดคิล",
+      "traded_deaths": "เดธที่ถูกเทรด",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

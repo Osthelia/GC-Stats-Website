@@ -5,10 +5,9 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 import type { ComponentType } from "react";
 import { getTranslations } from "next-intl/server";
-import { ArrowRight, Shield, Swords, Trophy, User } from "lucide-react";
+import { ArrowRight, FileText, ListOrdered, Map as MapIcon, Shield, Swords, Trophy, User } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { LegalIntro, LegalPageHeader, SectionCard, SectionList, Callout, icons } from "@/components/legal/ui";
 import { OpenDataAccessNotice } from "@/components/opendata/opendata-access-notice";
@@ -17,34 +16,28 @@ import { staticTitleMetadata } from "@/lib/page-metadata";
 import { getOpenDataAccess } from "@/lib/opendata/access";
 import { getOpenDataCounts } from "@/lib/opendata/handler";
 import { OPENDATA_DATASETS, OPENDATA_DATASET_META, OPENDATA_MAX_FILTERS, OPENDATA_PAGE_SIZES, type OpenDataDataset } from "@/lib/opendata/datasets-meta";
-
 export const dynamic = "force-dynamic";
-
 export const generateMetadata = staticTitleMetadata("openData.title");
-
 const DATASET_ICONS: Record<OpenDataDataset, ComponentType<{ className?: string }>> = {
   tournaments: Trophy,
   teams: Shield,
   players: User,
   matches: Swords,
+  maps: MapIcon,
+  map_players: ListOrdered,
 };
-
 function Code({ children }: { children: string }) {
   return <code className="block overflow-x-auto rounded-lg border border-neutral-800 bg-black/30 px-3 py-2 font-mono text-[12.5px] text-neutral-200">{children}</code>;
 }
-
 export default async function OpenDataPage() {
   const t = await getTranslations("openData");
   const { config, blocked } = await getOpenDataAccess();
   const counts = blocked === "disabled" ? null : await getOpenDataCounts();
-
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-6 py-16">
       <LegalPageHeader title={t("title")} />
       <LegalIntro>{t("subtitle")}</LegalIntro>
-
       {blocked && <OpenDataAccessNotice reason={blocked} callbackPath="/opendata" />}
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {OPENDATA_DATASETS.map((dataset) => {
           const Icon = DATASET_ICONS[dataset];
@@ -80,26 +73,25 @@ export default async function OpenDataPage() {
           );
         })}
       </div>
-
       <SectionCard icon={icons.scale} title={t("usage.title")}>
         <SectionList
           items={[
             t("usage.publicOnly"),
-            t.rich("usage.terms", {
-              terms: (chunks) => (
-                <Link href="/terms" className="text-[#e4ae22] underline-offset-2 transition-colors hover:underline active:opacity-70">
-                  {chunks}
-                </Link>
-              ),
-            }),
+            t("usage.terms"),
             t("usage.freshness"),
             t("usage.limits", { browse: config.browsePerMinute, exports: config.exportsPerHour }),
             ...(config.requireAccount ? [t("usage.accountOnly")] : []),
           ]}
         />
         <Callout>{t("usage.priority")}</Callout>
+        <Link
+          href="/terms"
+          className="inline-flex w-fit items-center gap-2 rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2 text-[13px] font-semibold text-neutral-200 transition-all hover:bg-[var(--gcs-hover)] active:scale-[0.97]"
+        >
+          <FileText className="size-4" />
+          {t("usage.termsLink")}
+        </Link>
       </SectionCard>
-
       <SectionCard icon={icons.code} title={t("api.title")}>
         <p className="text-sm leading-relaxed text-neutral-400">{t("api.intro")}</p>
         <Code>{"GET /api/opendata/{dataset}?page=1&per_page=50&sort=name&direction=asc&q=...&f.{column}=..."}</Code>

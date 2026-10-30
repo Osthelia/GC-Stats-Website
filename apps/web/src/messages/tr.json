@@ -477,6 +477,57 @@
         "joinSource": "Katılım kaynağı",
         "leftSource": "Ayrılık kaynağı"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API anahtarları",
+      "subtitle": "GC Stats API'sini projenizde kullanmak için ücretsiz bir genel API anahtarı oluşturun.",
+      "notice": {
+        "rateLimit": "Genel anahtarlar, hesap başına saniyede {rate} istekle sınırlıdır ve bu sınır tüm anahtarlarınız arasında paylaşılır. Bu sınır herhangi bir zamanda, önceden bildirilmeksizin değişebilir.",
+        "stable": "Sabit bir sınır elde etmenin tek yolu, GC Stats ekibinden bir partner API anahtarı talep etmektir.",
+        "noWebhooks": "Genel anahtarlar webhook'lara erişim sağlamaz, webhook'lar partner anahtarlarına ayrılmıştır.",
+        "requestPartner": "Partner API anahtarı talep et"
+      },
+      "create": {
+        "heading": "Genel anahtar oluştur",
+        "description": "Verilerin nerede kullanılacağını bize bildirin. En fazla {max} aktif genel anahtarınız olabilir.",
+        "clientName": "Ürün veya şirket",
+        "clientNamePlaceholder": "Liquipedia, Remake, Discord botum...",
+        "usageDescription": "Kullanım açıklaması",
+        "usageDescriptionPlaceholder": "Verilerin ne için kullanıldığı, hangi endpoint'ler ve yaklaşık ne sıklıkta.",
+        "submit": "Anahtarı oluştur",
+        "termsNote": "API anahtarınız, sitenin <terms>kullanım koşullarına</terms> tabidir."
+      },
+      "created": {
+        "title": "Yeni API anahtarınız",
+        "warning": "Şimdi kopyalayın: bir daha asla gösterilmeyecek. İsteklerinizin x-api-key başlığında gönderin.",
+        "copy": "Anahtarı kopyala",
+        "dismiss": "Kopyaladım"
+      },
+      "list": {
+        "heading": "Genel anahtarlarınız",
+        "empty": "Henüz genel API anahtarınız yok.",
+        "active": "Aktif",
+        "revoked": "İptal edildi",
+        "requests": "30 günde {count, plural, one {# istek} other {# istek}}",
+        "revoke": "İptal et",
+        "suspended": "Askıya alındı",
+        "suspendedHint": "Bu anahtar GC Stats ekibi tarafından askıya alındı. Yeniden etkinleştirilmesini talep etmek için Discord üzerinden bize ulaşın."
+      },
+      "error": {
+        "required": "Bu alan zorunludur.",
+        "tooShort": "En az {min} karakter.",
+        "tooLong": "En fazla {max} karakter.",
+        "tooManyKeys": "Zaten {max} aktif genel anahtarınız var. Yenisini oluşturmak için birini iptal edin.",
+        "unauthenticated": "Oturumunuzun süresi doldu, lütfen tekrar giriş yapın.",
+        "disabled": "Genel API anahtarları şu anda devre dışı.",
+        "invalid": "Bazı alanlar geçersiz.",
+        "notFound": "Bu anahtar artık mevcut değil.",
+        "network": "Ağ hatası, lütfen tekrar deneyin.",
+        "blocked": "API erişiminiz engellendi."
+      },
+      "blocked": "API erişiminiz engellendi, artık API anahtarı oluşturamazsınız.",
+      "contactDiscord": "Discord üzerinden bize ulaşın"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "Geliştirici",
     "intro": "Projenizi oluşturmanıza yardımcı olacak tüm verilerimiz! Ve GC-Stats'a katkıda bulunmak isterseniz, sizi de aramızda görmekten mutluluk duyarız.",
     "apiKey": {
-      "title": "API anahtarı talep etme",
-      "body": "Kötüye kullanımı önlemek için API'miz kimlik doğrulaması gerektirir. Kullanmak isterseniz, Discord veya e posta üzerinden bizimle iletişime geçin.",
+      "title": "Partner API anahtarı talep etme",
+      "body": "Partner anahtarları sabit bir istek sınırı ve webhook'larla gelir. Bir tane almak için Discord veya e posta üzerinden bizimle iletişime geçin.",
       "warning": "Lütfen talebinize şunları ekleyin:",
       "step1": "Projenizin adı ve açıklaması",
       "step2": "Planlanan API kullanım amacı ve ölçeği",
@@ -951,6 +1002,23 @@
       "title": "Açık kaynak ve katkılar",
       "body": "Topluluğun yardımcı olmasına izin vermek için projenin büyük bölümünü açık kaynak yapmaya karar verdik, kapalı kaynağa inanmıyoruz. Tüm depolarımız (yönetim panosu hariç) katkıya açıktır. Bir Pull Request göndermeden önce yönergelerimizi okuduğunuzdan emin olun.",
       "badge": "Herkese açık depo"
+    },
+    "publicKey": {
+      "title": "Genel API anahtarı",
+      "body": "Her GC Stats hesabı, bizi beklemeden birkaç saniyede ücretsiz bir genel anahtar oluşturabilir.",
+      "step1": "Hesap ayarlarınızdan oluşturun, verileri kullanacak ürünü veya şirketi ve nasıl kullanılacağını belirtin.",
+      "step2": "Genel anahtarlar saniyede birkaç istekle sınırlıdır ve bu sınır herhangi bir zamanda değişebilir.",
+      "step3": "Genel anahtarlar webhook'lara erişim sağlamaz. Sabit bir sınır ve webhook'lar için aşağıdan bir partner anahtarı talep edin.",
+      "button": "Genel anahtar oluştur"
+    },
+    "webhooks": {
+      "title": "Webhook'lar",
+      "body": "Partner anahtarları panellerinden HTTPS endpoint'leri kaydedebilir: GC Stats veriler her değiştiğinde bir POST gönderir.",
+      "events": "Olaylar: yeni maç, maç güncellendi, yeni turnuva, turnuva güncellendi, takım güncellendi, oyuncu güncellendi.",
+      "filters": "Filtreler: turnuva bölgesi, resmi olup olmadığı, katılan takımlar.",
+      "signature": "Her istek X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp ve X-GCS-Signature başlıklarını taşır. İmzayı endpoint'inizin gizli anahtarıyla doğrulayın.",
+      "retries": "10 saniye içinde 2xx durum koduyla yanıt verin. Başarısız gönderimler yaklaşık 9 saat boyunca yeniden denenir, çok sık başarısız olan bir endpoint kapatılır.",
+      "setup": "Payload; olayı, tarihini ve varlığı OpenData veri setleriyle aynı alanlarla içerir."
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "Yeniden oluştur",
       "activateButton": "Etkinleştir",
       "deactivateButton": "Devre dışı bırak",
+      "deactivateConfirm": "\"{name}\" anahtarı devre dışı bırakılsın mı? Webhook'ları kalıcı olarak silinecek.",
       "deleteButton": "Sil",
       "createTitle": "API anahtarı oluştur",
       "createDescription": "Tam anahtar yalnızca oluşturulduktan hemen sonra bir kez gösterilir.",
@@ -2924,6 +2993,10 @@
         "userNotFound": "Kullanıcı bulunamadı.",
         "organizationNotFound": "Organizasyon bulunamadı.",
         "ownerRequired": "Bir kullanıcı veya organizasyon seçin."
+      },
+      "tabs": {
+        "partner": "İş ortağı anahtarları",
+        "public": "Genel anahtarlar"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "Puan türü",
       "fieldPointTypeNone": "Yok",
       "fieldActive": "Aktif turnuva",
+      "fieldOfficial": "Resmi turnuva",
+      "officialHint": "Resmi devre etkinliği. Webhook aboneleri resmi ve gayriresmi turnuvaları filtreleyebilir.",
       "fieldLocation": "Konum",
       "fieldPrizePool": "Ödül havuzu",
       "fieldDescription": "Açıklama",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "Saat başına tam dışa aktarım",
         "exportsPerHourHint": "Hesap başına veya ziyaretçiler için IP adresi başına. {min} ile {max} arası.",
         "propagationHint": "Her sunucu bir değişikliği 15 saniye içinde uygular."
+      },
+      "publicApi": {
+        "title": "Genel API",
+        "description": "Her hesabın kendi ayarlarından oluşturabileceği self servis API anahtarları. Partner anahtarları kendi sınırlarını korur.",
+        "keys": "Genel anahtarlar",
+        "enabled": "Genel anahtarlar etkin",
+        "enabledHint": "Kapalıyken hiçbir genel anahtar oluşturulamaz ve mevcut anahtarlar 403 yanıtı verir.",
+        "ratePerSecond": "Saniye başına istek",
+        "ratePerSecondHint": "Hesap başına, tüm genel anahtarları arasında paylaşılır, {min} ile {max} arasında. Ağır endpoint'ler birden fazla istek sayılır.",
+        "maxKeysPerUser": "Hesap başına aktif anahtar",
+        "maxKeysPerUserHint": "{min} ile {max} arasında.",
+        "propagationHint": "Değişiklikler 15 saniye içinde tüm sunuculara ulaşır."
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "Bekleyen sorgular",
         "inFlight": "Çalışan OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "Genel API anahtarları",
+      "subtitle": "Kullanıcıların ayarlarından oluşturduğu anahtarlar. Hesap başına saniyede {rate} istek sınırı.",
+      "searchPlaceholder": "Ada, açıklamaya veya kullanıcıya göre ara",
+      "statusFilter": "Durum",
+      "status": {
+        "active": "Etkin",
+        "suspended": "Askıya alındı",
+        "revoked": "İptal edildi",
+        "blocked": "API erişimi engellendi"
+      },
+      "empty": "Eşleşen genel anahtar yok.",
+      "requests30d": "30 günde {count, plural, one {# istek} other {# istek}}",
+      "statsAndEdit": "İstatistikler ve düzenleme",
+      "suspend": "Askıya al",
+      "unsuspend": "Yeniden etkinleştir",
+      "block": "API erişimini engelle",
+      "unblock": "API erişiminin engelini kaldır",
+      "delete": "Sil",
+      "cancel": "İptal",
+      "actionFailed": "İşlem başarısız oldu, lütfen tekrar deneyin.",
+      "notFound": "Bu anahtar veya kullanıcı artık mevcut değil.",
+      "done": {
+        "suspend": "Anahtar askıya alındı.",
+        "unsuspend": "Anahtar yeniden etkinleştirildi.",
+        "block": "API erişimi engellendi, kullanıcının tüm anahtarları iptal edildi.",
+        "unblock": "API erişiminin engeli kaldırıldı.",
+        "delete": "Anahtar silindi."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Bu anahtar askıya alınsın mı?",
+          "description": "\"{name}\" anahtarı hemen çalışmayı durdurur. {owner}, yeniden etkinleştirme talep etmek için Discord üzerinden bize ulaşmak zorunda kalacak."
+        },
+        "unsuspend": {
+          "title": "Bu anahtar yeniden etkinleştirilsin mi?",
+          "description": "\"{name}\" anahtarı {owner} için yeniden çalışır."
+        },
+        "block": {
+          "title": "API erişimi engellensin mi?",
+          "description": "{owner} kullanıcısının tüm genel anahtarları iptal edilir ve artık yeni anahtar oluşturamaz."
+        },
+        "unblock": {
+          "title": "API erişiminin engeli kaldırılsın mı?",
+          "description": "{owner} yeniden genel anahtar oluşturabilir. İptal edilen anahtarlar iptal edilmiş olarak kalır."
+        },
+        "delete": {
+          "title": "Bu anahtar silinsin mi?",
+          "description": "\"{name}\" anahtarı ve istatistikleri kalıcı olarak silinir."
+        }
+      },
+      "usageHeading": "Kullanıcının beyan ettiği kullanım",
+      "clientName": "Ürün veya şirket",
+      "usageDescription": "Kullanım açıklaması",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "saved": "Anahtar güncellendi.",
+      "saveError": "Bazı alanlar geçersiz.",
+      "error": {
+        "required": "Bu alan zorunludur.",
+        "tooShort": "En az {min} karakter.",
+        "tooLong": "En fazla {max} karakter."
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "Yönetici",
       "allAuthors": "Tüm yazarlar",
       "authorAdminSpace": "Yazarlar",
-      "logs": "Kayıtlar"
+      "logs": "Kayıtlar",
+      "webhooks": "Webhook'lar"
     },
     "switcher": {
       "selectOrganization": "Bir organizasyon seçin",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Anahtar bulunamadı."
-      }
+      },
+      "kindPublic": "Genel",
+      "publicRateLimit": "Paylaşılan genel sınır"
     },
     "myApiKeys": {
       "title": "API anahtarlarım",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "Ort. süre",
       "columnErrorRate": "Hata oranı",
       "requests": "{count} istek",
-      "errors": "{count} hata"
+      "errors": "{count} hata",
+      "webhooksButton": "Webhook'lar"
     },
     "permissions": {
       "title": "Roller ve izinler",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, one {# kayıt} other {# kayıt}}",
       "previous": "Önceki sayfa",
       "next": "Sonraki sayfa"
+    },
+    "webhooks": {
+      "title": "Webhook'lar",
+      "description": "Bir maç, turnuva, takım veya oyuncu değiştiğinde GC Stats endpoint'lerinize bir HTTPS POST gönderir. Gönderimler yaklaşık her dakika kontrol edilir.",
+      "pageTitle": "Webhook'lar",
+      "pageSubtitle": "Partner API anahtarlarınızın endpoint'leri ve gönderimleri.",
+      "keySwitcher": "Partner API anahtarı",
+      "noPartnerKey": "Webhook'lar partner API anahtarlarına ayrılmıştır. Henüz bir partner anahtarınız yok.",
+      "requestPartnerKey": "Partner anahtarı iste",
+      "refresh": "Yenile",
+      "add": "Endpoint ekle",
+      "keyInactive": "Bu API anahtarı aktif değil: webhook'ları silindi ve yeniden etkinleştirilene kadar yenisi eklenemez.",
+      "empty": "Henüz webhook endpoint'i yok.",
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "toggle": "Bu endpoint'i etkinleştir veya devre dışı bırak",
+      "disabledFailing": "Art arda çok fazla başarısız gönderimden sonra otomatik olarak kapatıldı. Endpoint'i düzeltip yeniden etkinleştirin.",
+      "any": "Tümü",
+      "test": "Test gönder",
+      "testing": "Gönderiliyor...",
+      "testSuccess": "Teslim edildi (HTTP {status})",
+      "testFailed": "Gönderim başarısız: {error}",
+      "edit": "Düzenle",
+      "showSecret": "Gizli anahtarı göster",
+      "rotateSecret": "Yeni gizli anahtar",
+      "delete": "Sil",
+      "deleted": "Endpoint silindi",
+      "created": "Endpoint oluşturuldu",
+      "updated": "Endpoint güncellendi",
+      "deliveriesTitle": "Son gönderimler",
+      "deliveriesEmpty": "Henüz gönderim yok.",
+      "columnDate": "Tarih",
+      "columnEvent": "Olay",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Durum",
+      "columnAttempts": "Deneme",
+      "redeliver": "Yeniden gönder",
+      "status": {
+        "pending": "Bekliyor",
+        "success": "Teslim edildi",
+        "failed": "Başarısız"
+      },
+      "secretTitle": "İmzalama anahtarı",
+      "secretRotatedTitle": "Yeni imzalama anahtarı",
+      "secretCreatedTitle": "Endpoint oluşturuldu, imzalama anahtarı burada",
+      "secretDescription": "X-GCS-Signature başlığını doğrulamak için kullanın: X-GCS-Timestamp başlığı, bir nokta ve ardından ham gövdenin sha256 HMAC değeri.",
+      "copySecret": "Gizli anahtarı kopyala",
+      "close": "Kapat",
+      "deleteTitle": "Bu endpoint silinsin mi?",
+      "deleteDescription": "{url} artık webhook almayacak. Gönderim geçmişi de silinir.",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "addTitle": "Yeni webhook endpoint'i",
+      "editTitle": "Endpoint'i düzenle",
+      "dialogDescription": "Almak istediğiniz olayları seçin ve filtrelerle daraltın.",
+      "url": "Endpoint URL'si",
+      "urlHint": "Yalnızca genel HTTPS adresi.",
+      "descriptionLabel": "Açıklama",
+      "events": "Olaylar",
+      "event": {
+        "match": {
+          "created": "Yeni maç",
+          "updated": "Maç güncellendi"
+        },
+        "tournament": {
+          "created": "Yeni turnuva",
+          "updated": "Turnuva güncellendi"
+        },
+        "team": {
+          "updated": "Takım güncellendi"
+        },
+        "player": {
+          "updated": "Oyuncu güncellendi"
+        }
+      },
+      "filtersTitle": "Filtreler",
+      "filtersHint": "Boş filtreler her şeyi geçirir. Bölge ve resmi filtreleri maçlara ve turnuvalara, takım filtresi tüm olaylara uygulanır.",
+      "official": {
+        "label": "Resmi",
+        "all": "Resmi ve resmi olmayan",
+        "official": "Yalnızca resmi",
+        "unofficial": "Yalnızca resmi olmayan"
+      },
+      "regions": "Bölgeler",
+      "regionsHint": "Turnuva bölgesi.",
+      "teams": "Takımlar",
+      "teamsHint": "Bu takımlardan birinin oynadığı maçlar ve turnuvalar, bu takımlar ve mevcut oyuncuları.",
+      "teamsPlaceholder": "Takım ekle",
+      "teamsSearch": "Takım ara...",
+      "teamsNoResults": "Takım bulunamadı",
+      "removeTeam": "{name} kaldır",
+      "error": {
+        "notFound": "Bu endpoint veya anahtar artık mevcut değil.",
+        "tooManyEndpoints": "API anahtarı başına en fazla {max} endpoint.",
+        "keyInactive": "Bu API anahtarı aktif değil, webhook eklenemez.",
+        "invalid": "Bazı alanlar geçersiz.",
+        "network": "Ağ hatası, lütfen tekrar deneyin.",
+        "busy": "Bu gönderim zaten yapılıyor, birazdan tekrar deneyin.",
+        "url": {
+          "required": "URL zorunludur.",
+          "tooLong": "En fazla {urlMaxLength} karakter.",
+          "invalid": "Bu geçerli bir URL değil.",
+          "notHttps": "URL https:// ile başlamalıdır.",
+          "credentials": "URL kullanıcı adı veya şifre içeremez.",
+          "privateHost": "URL genel bir adrese yönlendirmelidir."
+        },
+        "description": {
+          "tooLong": "En fazla {descriptionMaxLength} karakter."
+        },
+        "events": {
+          "required": "En az bir olay seçin.",
+          "invalid": "Bilinmeyen olay."
+        },
+        "filterRegions": {
+          "invalid": "Bilinmeyen bölge.",
+          "tooMany": "En fazla {filterRegions} bölge."
+        },
+        "filterTeamIds": {
+          "invalid": "Geçersiz takım.",
+          "tooMany": "En fazla {filterTeams} takım.",
+          "unknownTeam": "Takımlardan biri artık mevcut değil."
+        },
+        "filterOfficial": {
+          "invalid": "Geçersiz değer."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "GC Stats'in herkese açık tüm turnuvaları, takımları, oyuncuları ve maçları; serbestçe göz atın, sıralayın ve JSON olarak indirin.",
+    "subtitle": "GC Stats'teki tüm herkese açık turnuvalar, takımlar, oyuncular, maçlar, haritalar ve skor tabloları; özgürce incelenebilir, sıralanabilir ve JSON olarak indirilebilir.",
     "rowCount": "{count, plural, one {# satır} other {# satır}}",
     "columnCount": "{count, plural, one {# sütun} other {# sütun}}",
     "explore": "Keşfet",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "Maçlar",
         "description": "Turnuvası, aşaması, takımları, skoru, durumu ve saatiyle tüm maçlar."
+      },
+      "maps": {
+        "name": "Haritalar",
+        "description": "Oynanan her harita: turnuva, takımlar, skor, kazanan ve her tarafta kazanılan raundlar."
+      },
+      "map_players": {
+        "name": "Skor tabloları",
+        "description": "Tamamlanan her haritanın her oyuncu satırı: ajan, kill, ölüm, asist, ACS, ADR, KAST, ilk kill, clutch ve multikill."
       }
     },
     "usage": {
       "title": "Verileri kullanma",
       "publicOnly": "Yalnızca sitede zaten herkese açık olan veriler sunulur: hesap, iletişim veya özel alan yok.",
-      "terms": "Veriler sitenin tabi olduğu koşullara tabidir: yalnızca <terms>kullanım koşullarımızın</terms> izin verdiği şekilde kullanılabilir.",
+      "terms": "Veriler sitenin koşullarına tabidir: yalnızca kullanım koşullarımızın izin verdiği şekilde kullanılabilir.",
       "freshness": "Tablolar her dakika, tam dışa aktarımlar her 10 dakikada bir yenilenir.",
       "limits": "Limitler: hesap veya IP adresi başına dakikada {browse} tablo sayfası ve saatte {exports} tam dışa aktarım.",
       "accountOnly": "Portal şu anda yalnızca oturum açmış kullanıcılara açık.",
-      "priority": "Site her zaman önceliklidir: yoğun yük altındayken portal yavaşlar ve birkaç saniye meşgul olduğunu yanıtlayabilir."
+      "priority": "Site her zaman önceliklidir: yoğun yük altındayken portal yavaşlar ve birkaç saniye meşgul olduğunu yanıtlayabilir.",
+      "termsLink": "Kullanım koşulları"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "Ad, bölge, kategori...",
       "teams": "Ad veya etiket...",
       "players": "Takma ad, isim, takım...",
-      "matches": "Turnuva, aşama, takım..."
+      "matches": "Turnuva, aşama, takım...",
+      "maps": "Turnuva, harita, takım...",
+      "map_players": "Oyuncu, takım, ajan, harita..."
     },
     "clearSearch": "Aramayı temizle",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "B takımı",
       "winner_team_id": "Kazanan ID",
       "is_forfeit": "Hükmen",
-      "patch": "Yama"
+      "patch": "Yama",
+      "match_id": "Maç ID",
+      "started_at": "Tarih",
+      "map_order": "Harita no",
+      "map_name": "Harita",
+      "is_completed": "Tamamlandı",
+      "team_a_atk_rounds_won": "A takımı saldırı raundları",
+      "team_a_def_rounds_won": "A takımı savunma raundları",
+      "team_b_atk_rounds_won": "B takımı saldırı raundları",
+      "team_b_def_rounds_won": "B takımı savunma raundları",
+      "map_id": "Harita ID",
+      "player_id": "Oyuncu ID",
+      "player_handle": "Oyuncu",
+      "team_id": "Takım ID",
+      "team_name": "Takım",
+      "agent": "Ajan",
+      "kills": "Kill",
+      "deaths": "Ölüm",
+      "assists": "Asist",
+      "first_kills": "İlk kill",
+      "first_deaths": "İlk ölüm",
+      "clutches_won": "Kazanılan clutch",
+      "clutches_played": "Oynanan clutch",
+      "trade_kills": "Trade kill",
+      "traded_deaths": "Trade edilen ölüm",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

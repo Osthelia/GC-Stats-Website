@@ -13,6 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { AdminSearchSortBar } from "@/components/admin/admin-search-sort-bar";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { ApiKeysPanel } from "@/components/admin/api-keys-panel";
+import { ApiKeysTabs } from "@/components/admin/api-keys-tabs";
 import { listAdminApiKeys, getGlobalApiKeysOverview, API_KEYS_PAGE_SIZE, type ApiKeySort, type SortDirection } from "@/lib/admin-api-keys";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
@@ -42,7 +43,7 @@ export default async function AdminApiKeysPage({
   const direction: SortDirection = sp.direction === "desc" ? "desc" : "asc";
   const page = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
-  const [{ rows: keys, total }, overview] = await Promise.all([listAdminApiKeys({ q, sort, direction, page }), getGlobalApiKeysOverview()]);
+  const [{ rows: keys, total }, overview] = await Promise.all([listAdminApiKeys({ q, sort, direction, page }), getGlobalApiKeysOverview("partner")]);
   const totalPages = Math.max(1, Math.ceil(total / API_KEYS_PAGE_SIZE));
   const canManage = hasAccess(access, PERMISSIONS.apiKeysManage);
 
@@ -52,6 +53,8 @@ export default async function AdminApiKeysPage({
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
+
+      <ApiKeysTabs active="partner" />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <AdminStatCard label={t("overviewActiveKeys")} value={overview.activeKeys} icon={KeyRound} color="sky" />

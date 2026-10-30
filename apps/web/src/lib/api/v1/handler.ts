@@ -8,13 +8,12 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 import { NextResponse, after } from "next/server";
 import { db } from "@gc-stats/db/client";
 import { apiRequestLog } from "@gc-stats/db";
 import { resolveApiKey } from "./auth";
 import { checkRateLimit } from "./rate-limit";
-
+import { getPublicApiConfig } from "@/lib/public-api/config";
 /** Thrown by a query/route to short-circuit `withApiV1` with a specific status (400 bad params, ...). */
 export class ApiV1Error extends Error {
   constructor(
@@ -24,7 +23,6 @@ export class ApiV1Error extends Error {
     super(message);
   }
 }
-
 function logRequest(request: Request, endpointTemplate: string, apiKeyId: number | null, startedAt: number, statusCode: number) {
   if (apiKeyId == null) return;
   const durationMs = Date.now() - startedAt;
@@ -39,7 +37,6 @@ function logRequest(request: Request, endpointTemplate: string, apiKeyId: number
       .catch((err) => console.error("Failed to log API v1 request", err)),
   );
 }
-
 /**
  * Auth (`x-api-key`) + rate limit + logging wrapper for every `/api/v1`
  * route. `endpointTemplate` is the route's path *shape* (e.g. "/v1/teams/:id"),
@@ -56,12 +53,18 @@ export async function withApiV1<T>(request: Request, endpointTemplate: string, h
   if (!key) {
     return NextResponse.json({ error: "Missing or invalid x-api-key header" }, { status: 401 });
   }
-
-  if (!(await checkRateLimit(key.id, key.rateLimit, cost))) {
-    logRequest(request, endpointTemplate, key.id, startedAt, 429);
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  if ("suspended" in key) {
+    return NextResponse.json({ error: "This API key is suspended, contact us on Discord to request its reinstatement" }, { status: 403 });
   }
-
+  const publicConfig = key.kind === "public" ? await getPublicApiConfig() : null;
+  if (publicConfig && !publicConfig.enabled) {
+    logRequest(request, endpointTemplate, key.id, startedAt, 403);
+    return NextResponse.json({ error: "Public API keys are currently disabled" }, { status: 403 });
+  }
+  if (!(await checkRateLimit(key, publicConfig?.ratePerSecond ?? 0, cost))) {
+    logRequest(request, endpointTemplate, key.id, startedAt, 429);
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429, headers: { "Retry-After": publicConfig ? "1" : "60" } });
+  }
   try {
     const result = await handler();
     if (result === null) {

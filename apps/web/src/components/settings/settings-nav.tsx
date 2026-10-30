@@ -9,7 +9,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
-const TABS = ["profile", "account", "connections", "notifications", "sanctions", "change-requests"] as const;
+const TABS = ["profile", "account", "connections", "api", "notifications", "sanctions", "change-requests"] as const;
 
 export async function SettingsNav({ active }: { active: (typeof TABS)[number] }) {
   const t = await getTranslations("accountSettings");
@@ -17,6 +17,7 @@ export async function SettingsNav({ active }: { active: (typeof TABS)[number] })
     profile: "/settings/profile",
     account: "/settings/account",
     connections: "/settings/connections",
+    api: "/settings/api",
     notifications: "/settings/notifications",
     sanctions: "/settings/sanctions",
     "change-requests": "/settings/change-requests",
@@ -25,20 +26,21 @@ export async function SettingsNav({ active }: { active: (typeof TABS)[number] })
     profile: t("profile.navLabel"),
     account: t("navLabel"),
     connections: t("connectionsNavLabel"),
+    api: t("publicApi.navLabel"),
     notifications: t("notificationsNavLabel"),
     sanctions: t("sanctions.navLabel"),
     "change-requests": t("changeRequestsNavLabel"),
   };
 
   return (
-    <div className="mb-8 flex gap-1 border-b border-neutral-800">
+    <div className="mb-8 flex gap-1 overflow-x-auto border-b border-neutral-800">
       {TABS.map((tab) => {
         const on = tab === active;
         return (
           <Link
             key={tab}
             href={hrefs[tab]}
-            className="relative px-3.5 pb-3 text-[14px] font-semibold transition-colors"
+            className="relative shrink-0 px-3.5 pb-3 text-[14px] font-semibold whitespace-nowrap transition-colors active:opacity-70"
             style={{ color: on ? "var(--gcs-text)" : "var(--gcs-text-secondary)" }}
           >
             {labels[tab]}

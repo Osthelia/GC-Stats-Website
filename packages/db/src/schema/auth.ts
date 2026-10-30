@@ -10,14 +10,11 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, smallint, integer, timestamp, primaryKey, char, unique } from "drizzle-orm/pg-core";
-
 // Mirrors next-auth's AdapterAccountType — kept as a plain literal union
 // instead of importing next-auth here so this package (consumed outside
 // apps/web too, e.g. scripts/) doesn't need it as a dependency.
 type AdapterAccountType = "oauth" | "oidc" | "email" | "webauthn";
-
 // users.id is `text` (UUID), not bigserial — required by Auth.js's Drizzle
 // adapter (DefaultPostgresUsersTable expects a string PK). Every other
 // table in this schema keeps bigserial/bigint ids; only FKs pointing at
@@ -46,6 +43,8 @@ export const users = pgTable("users", {
   // for the other way to get it (through an organization's own role). Set
   // from /admin/users/[userId] (AuthorAccessPanel).
   isAuthor: boolean("is_author").notNull().default(false),
+  // Set by an admin: every public API key revoked and no new one can be created.
+  apiAccessBlockedAt: timestamp("api_access_blocked_at", { withTimezone: true }),
   discordSyncedAt: timestamp("discord_synced_at", { withTimezone: true }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   // Gates posting on the public forum (actions/forum.ts, lib/forum-guards.ts)
@@ -70,7 +69,6 @@ export const users = pgTable("users", {
   // team_id (fan-of, not roster membership) is added in people.ts once `teams` exists,
   // via a separate ALTER — see drizzle/0000_squashed_baseline.sql.
 });
-
 // Standard Auth.js adapter tables (shape required by @auth/drizzle-adapter's
 // PostgresDrizzleAdapter — see node_modules/@auth/drizzle-adapter/lib/pg.d.ts).
 // Discord/Twitch OAuth link into `accounts`; email+password never creates a
@@ -93,13 +91,11 @@ export const accounts = pgTable(
   },
   (t) => [primaryKey({ columns: [t.provider, t.providerAccountId] })]
 );
-
 export const sessions = pgTable("sessions", {
   sessionToken: text("session_token").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { withTimezone: true }).notNull(),
 });
-
 export const verificationTokens = pgTable(
   "verification_tokens",
   {
@@ -109,7 +105,6 @@ export const verificationTokens = pgTable(
   },
   (t) => [primaryKey({ columns: [t.identifier, t.token] })]
 );
-
 // WebAuthn/passkeys — shape required by Auth.js's `authenticatorsTable`
 // adapter option, used by next-auth/providers/webauthn.
 export const authenticators = pgTable(
@@ -129,7 +124,6 @@ export const authenticators = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.credentialID] })]
 );
-
 // --- RBAC ---------------------------------------------------------------
 // Replaces Spatie Permission's team-scoped model + its `GLOBAL_ID` sentinel
 // with an explicit scope_type/scope_id pair (see DATABASES.MD §5).
@@ -139,18 +133,15 @@ export const roles = pgTable("roles", {
   scopeType: text("scope_type").notNull().default("global"), // 'global' | 'team' | 'publisher'
   isSuperAdmin: boolean("is_super_admin").notNull().default(false),
 });
-
 export const permissions = pgTable("permissions", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   name: text("name").notNull().unique(),
   guard: text("guard").notNull().default("web"),
 });
-
 export const rolePermissions = pgTable("role_permissions", {
   roleId: bigint("role_id", { mode: "number" }).notNull().references(() => roles.id, { onDelete: "cascade" }),
   permissionId: bigint("permission_id", { mode: "number" }).notNull().references(() => permissions.id, { onDelete: "cascade" }),
 }, (t) => [primaryKey({ columns: [t.roleId, t.permissionId] })]);
-
 export const userRoles = pgTable("user_roles", {
   // Plain bigserial PK instead of a (userId, roleId, scopeId) composite:
   // Postgres implicitly forces NOT NULL on every column of a primary key,
@@ -163,7 +154,6 @@ export const userRoles = pgTable("user_roles", {
   roleId: bigint("role_id", { mode: "number" }).notNull().references(() => roles.id, { onDelete: "cascade" }),
   scopeId: bigint("scope_id", { mode: "number" }), // team_id or publisher_id per roles.scopeType; null when scopeType='global'
 }, (t) => [unique("user_roles_user_role_scope_unique").on(t.userId, t.roleId, t.scopeId).nullsNotDistinct()]);
-
 // Owner is exactly one of userId (a personal key, /admin/api-keys) or
 // organizationId (an org-scoped key, /dashboard/{id}/api-keys) — CHECK
 // (num_nonnulls(...) = 1) added in the migration, same pattern as
@@ -180,8 +170,13 @@ export const apiKeys = pgTable("api_key", {
   keyHash: char("key_hash", { length: 64 }).notNull().unique(), // sha256, plaintext never stored
   rateLimit: bigint("rate_limit", { mode: "number" }),
   isActive: boolean("is_active").notNull().default(true),
+  // 'partner': issued by an admin, own rate limit, webhooks. 'public': self service from /settings/api, global rate limit.
+  kind: text("kind").notNull().default("partner"),
+  usageDescription: text("usage_description"),
+  // Suspended by an admin, only an admin can lift it (the owner is told to ask on Discord).
+  suspendedAt: timestamp("suspended_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
-
 export const apiKeyReveals = pgTable("api_key_reveals", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   apiKeyId: bigint("api_key_id", { mode: "number" }).notNull().references(() => apiKeys.id, { onDelete: "cascade" }),
@@ -191,7 +186,6 @@ export const apiKeyReveals = pgTable("api_key_reveals", {
   viewedAt: timestamp("viewed_at", { withTimezone: true }),
   supersededAt: timestamp("superseded_at", { withTimezone: true }),
 });
-
 // Fixed-window counter backing lib/auth-throttle.ts and lib/api/v1/rate-limit.ts,
 // shared by every replica.
 // One row per throttle key (e.g. "login:email:x@y.com"), reset once `windowStart`
@@ -201,7 +195,6 @@ export const rateLimitCounters = pgTable("rate_limit_counters", {
   count: integer("count").notNull().default(0),
   windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
 });
-
 export const apiRequestLog = pgTable("api_request_log", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   apiKeyId: bigint("api_key_id", { mode: "number" }).references(() => apiKeys.id, { onDelete: "set null" }),
