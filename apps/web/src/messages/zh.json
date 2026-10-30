@@ -477,6 +477,57 @@
         "joinSource": "加入来源",
         "leftSource": "离队来源"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API 密钥",
+      "subtitle": "创建一个免费的公开 API 密钥，在您的项目中使用 GC Stats API。",
+      "notice": {
+        "rateLimit": "公开密钥的限额为每个账号每秒 {rate} 次请求，由你的所有密钥共享。此限额可能随时更改，恕不另行通知。",
+        "stable": "获得稳定限制的唯一方式是向 GC Stats 团队申请合作伙伴 API 密钥。",
+        "noWebhooks": "公开密钥无法使用 webhook，webhook 仅供合作伙伴密钥使用。",
+        "requestPartner": "申请合作伙伴 API 密钥"
+      },
+      "create": {
+        "heading": "创建公开密钥",
+        "description": "请告诉我们数据将用于何处。您最多可以拥有 {max} 个有效的公开密钥。",
+        "clientName": "产品或公司",
+        "clientNamePlaceholder": "Liquipedia、Remake、我的 Discord 机器人...",
+        "usageDescription": "用途说明",
+        "usageDescriptionPlaceholder": "数据的用途、使用哪些接口，以及大致的请求频率。",
+        "submit": "创建密钥",
+        "termsNote": "你的 API 密钥受与本站相同的<terms>使用条款</terms>约束。"
+      },
+      "created": {
+        "title": "您的新 API 密钥",
+        "warning": "请立即复制：它将不会再次显示。请在请求的 x-api-key 请求头中发送它。",
+        "copy": "复制密钥",
+        "dismiss": "我已复制"
+      },
+      "list": {
+        "heading": "您的公开密钥",
+        "empty": "您还没有公开 API 密钥。",
+        "active": "启用",
+        "revoked": "已吊销",
+        "requests": "30 天内 {count, plural, one {# 次请求} other {# 次请求}}",
+        "revoke": "吊销",
+        "suspended": "已暂停",
+        "suspendedHint": "此密钥已被 GC Stats 团队暂停。请在 Discord 上联系我们申请恢复。"
+      },
+      "error": {
+        "required": "此字段为必填项。",
+        "tooShort": "至少 {min} 个字符。",
+        "tooLong": "最多 {max} 个字符。",
+        "tooManyKeys": "您已有 {max} 个有效的公开密钥。请吊销一个后再创建新密钥。",
+        "unauthenticated": "您的会话已过期，请重新登录。",
+        "disabled": "公开 API 密钥目前已停用。",
+        "invalid": "部分字段无效。",
+        "notFound": "此密钥已不存在。",
+        "network": "网络错误，请重试。",
+        "blocked": "你的 API 访问权限已被封禁。"
+      },
+      "blocked": "你的 API 访问权限已被封禁，无法再创建 API 密钥。",
+      "contactDiscord": "在 Discord 上联系我们"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "开发者",
     "intro": "我们所有的数据都可以帮助您构建项目！如果您也想为 GC-Stats 做出贡献，我们也非常欢迎。",
     "apiKey": {
-      "title": "申请 API 密钥",
-      "body": "为防止滥用，我们的 API 需要身份验证。如果您想使用它，请通过 Discord 或邮箱联系我们。",
+      "title": "申请合作伙伴 API 密钥",
+      "body": "合作伙伴密钥提供稳定的请求限制和 webhook。如需获取，请通过 Discord 或邮箱联系我们。",
       "warning": "请在申请中说明：",
       "step1": "您的项目名称及描述",
       "step2": "预期的 API 使用场景及规模",
@@ -951,6 +1002,23 @@
       "title": "开源与贡献",
       "body": "我们决定将项目的大部分内容开源，让社区一起参与，我们不相信闭源开发。除管理后台外，我们的所有仓库都欢迎贡献。提交 Pull Request 前，请务必阅读我们的贡献指南。",
       "badge": "公开仓库"
+    },
+    "publicKey": {
+      "title": "公开 API 密钥",
+      "body": "任何 GC Stats 账户都可以在几秒钟内创建免费的公开密钥，无需等待我们。",
+      "step1": "在账户设置中创建，并说明将使用数据的产品或公司及其用途。",
+      "step2": "公开密钥限制为每秒少量请求，且此限制可能随时更改。",
+      "step3": "公开密钥无法使用 webhook。如需稳定的限制和 webhook，请在下方申请合作伙伴密钥。",
+      "button": "创建公开密钥"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "合作伙伴密钥可以在其控制台中注册 HTTPS 接口：每当数据发生变化时，GC Stats 会发送一个 POST 请求。",
+      "events": "事件：新比赛、比赛已更新、新赛事、赛事已更新、战队已更新、选手已更新。",
+      "filters": "筛选：赛事地区、是否官方、参赛战队。",
+      "signature": "每个请求都带有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 和 X-GCS-Signature 请求头。请使用接口密钥校验签名。",
+      "retries": "请在 10 秒内返回 2xx 状态码。失败的推送会在约 9 小时内重试，频繁失败的接口将被关闭。",
+      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。"
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "重新生成",
       "activateButton": "启用",
       "deactivateButton": "停用",
+      "deactivateConfirm": "确定要停用密钥“{name}”吗？它的 webhook 将被永久删除。",
       "deleteButton": "删除",
       "createTitle": "创建 API 密钥",
       "createDescription": "完整密钥仅在创建后展示一次。",
@@ -2924,6 +2993,10 @@
         "userNotFound": "未找到该用户。",
         "organizationNotFound": "未找到该机构。",
         "ownerRequired": "请选择一个用户或机构。"
+      },
+      "tabs": {
+        "partner": "合作伙伴密钥",
+        "public": "公开密钥"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "积分类型",
       "fieldPointTypeNone": "无",
       "fieldActive": "激活赛事",
+      "fieldOfficial": "官方赛事",
+      "officialHint": "官方赛事体系的比赛。Webhook 订阅者可以筛选官方和非官方赛事。",
       "fieldLocation": "地点",
       "fieldPrizePool": "奖金池",
       "fieldDescription": "描述",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "每小时完整导出次数",
         "exportsPerHourHint": "按账号计算，访客按 IP 地址计算。介于 {min} 和 {max} 之间。",
         "propagationHint": "每台服务器会在 15 秒内应用更改。"
+      },
+      "publicApi": {
+        "title": "公开 API",
+        "description": "任何账户都可以在设置中自助创建的 API 密钥。合作伙伴密钥保留各自的限制。",
+        "keys": "公开密钥",
+        "enabled": "启用公开密钥",
+        "enabledHint": "关闭后，无法创建公开密钥，现有密钥将返回 403。",
+        "ratePerSecond": "每秒请求数",
+        "ratePerSecondHint": "按账号计算，由其所有公开密钥共享，介于 {min} 与 {max} 之间。高负载端点按多次请求计算。",
+        "maxKeysPerUser": "每个账户的有效密钥数",
+        "maxKeysPerUserHint": "介于 {min} 和 {max} 之间。",
+        "propagationHint": "更改将在 15 秒内同步到所有服务器。"
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "等待中的查询",
         "inFlight": "运行中的 OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "公开 API 密钥",
+      "subtitle": "用户在设置中创建的密钥。每个账号每秒限 {rate} 次请求。",
+      "searchPlaceholder": "按名称、描述或用户搜索",
+      "statusFilter": "状态",
+      "status": {
+        "active": "有效",
+        "suspended": "已暂停",
+        "revoked": "已撤销",
+        "blocked": "API 访问已封禁"
+      },
+      "empty": "没有匹配的公开密钥。",
+      "requests30d": "30 天内 {count, plural, other {# 次请求}}",
+      "statsAndEdit": "统计与编辑",
+      "suspend": "暂停",
+      "unsuspend": "恢复",
+      "block": "封禁 API 访问",
+      "unblock": "解除 API 访问封禁",
+      "delete": "删除",
+      "cancel": "取消",
+      "actionFailed": "操作失败，请重试。",
+      "notFound": "此密钥或用户已不存在。",
+      "done": {
+        "suspend": "密钥已暂停。",
+        "unsuspend": "密钥已恢复。",
+        "block": "API 访问已封禁，该用户的所有密钥均已撤销。",
+        "unblock": "API 访问封禁已解除。",
+        "delete": "密钥已删除。"
+      },
+      "confirm": {
+        "suspend": {
+          "title": "暂停此密钥？",
+          "description": "密钥“{name}”将立即停止工作。{owner} 需要在 Discord 上联系我们申请恢复。"
+        },
+        "unsuspend": {
+          "title": "恢复此密钥？",
+          "description": "密钥“{name}”将重新对 {owner} 生效。"
+        },
+        "block": {
+          "title": "封禁 API 访问？",
+          "description": "{owner} 的所有公开密钥将被撤销，并且无法再创建新的密钥。"
+        },
+        "unblock": {
+          "title": "解除 API 访问封禁？",
+          "description": "{owner} 可以重新创建公开密钥。已撤销的密钥仍保持撤销状态。"
+        },
+        "delete": {
+          "title": "删除此密钥？",
+          "description": "密钥“{name}”及其统计数据将被永久删除。"
+        }
+      },
+      "usageHeading": "用户申报的用途",
+      "clientName": "产品或公司",
+      "usageDescription": "用途说明",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "密钥已更新。",
+      "saveError": "部分字段无效。",
+      "error": {
+        "required": "此字段为必填项。",
+        "tooShort": "至少 {min} 个字符。",
+        "tooLong": "最多 {max} 个字符。"
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "管理",
       "allAuthors": "所有作者",
       "authorAdminSpace": "作者",
-      "logs": "日志"
+      "logs": "日志",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "选择一个机构",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} 毫秒",
       "error": {
         "notFound": "未找到该密钥。"
-      }
+      },
+      "kindPublic": "公开",
+      "publicRateLimit": "共享公开限额"
     },
     "myApiKeys": {
       "title": "我的 API 密钥",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "平均耗时",
       "columnErrorRate": "错误率",
       "requests": "{count} 次请求",
-      "errors": "{count} 次错误"
+      "errors": "{count} 次错误",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "角色与权限",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, other {#条}}",
       "previous": "上一页",
       "next": "下一页"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "当比赛、赛事、战队或选手发生变化时，GC Stats 会向您的接口发送 HTTPS POST 请求。推送大约每分钟检查一次。",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "您的合作伙伴 API 密钥的接口与推送记录。",
+      "keySwitcher": "合作伙伴 API 密钥",
+      "noPartnerKey": "Webhook 仅限合作伙伴 API 密钥使用。您还没有合作伙伴密钥。",
+      "requestPartnerKey": "申请合作伙伴密钥",
+      "refresh": "刷新",
+      "add": "添加接口",
+      "keyInactive": "此 API 密钥未启用：其 webhook 已被删除，在重新启用之前无法添加。",
+      "empty": "暂无 webhook 接口。",
+      "active": "启用",
+      "inactive": "停用",
+      "toggle": "启用或停用此接口",
+      "disabledFailing": "由于连续推送失败次数过多，已自动关闭。请修复接口后重新启用。",
+      "any": "全部",
+      "test": "发送测试",
+      "testing": "发送中...",
+      "testSuccess": "已送达 (HTTP {status})",
+      "testFailed": "推送失败：{error}",
+      "edit": "编辑",
+      "showSecret": "查看密钥",
+      "rotateSecret": "新密钥",
+      "delete": "删除",
+      "deleted": "接口已删除",
+      "created": "接口已创建",
+      "updated": "接口已更新",
+      "deliveriesTitle": "最近推送",
+      "deliveriesEmpty": "暂无推送记录。",
+      "columnDate": "日期",
+      "columnEvent": "事件",
+      "columnEndpoint": "接口",
+      "columnStatus": "状态",
+      "columnAttempts": "尝试次数",
+      "redeliver": "重新发送",
+      "status": {
+        "pending": "等待中",
+        "success": "已送达",
+        "failed": "失败"
+      },
+      "secretTitle": "签名密钥",
+      "secretRotatedTitle": "新签名密钥",
+      "secretCreatedTitle": "接口已创建，这是它的签名密钥",
+      "secretDescription": "用于校验 X-GCS-Signature 请求头：对 X-GCS-Timestamp 请求头、一个点号和原始请求体进行 sha256 HMAC 计算。",
+      "copySecret": "复制密钥",
+      "close": "关闭",
+      "deleteTitle": "删除此接口？",
+      "deleteDescription": "{url} 将不再接收 webhook。其推送记录也会被删除。",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "保存中...",
+      "addTitle": "新建 webhook 接口",
+      "editTitle": "编辑接口",
+      "dialogDescription": "选择要接收的事件，并用筛选条件缩小范围。",
+      "url": "接口 URL",
+      "urlHint": "仅限公开的 HTTPS 地址。",
+      "descriptionLabel": "描述",
+      "events": "事件",
+      "event": {
+        "match": {
+          "created": "新比赛",
+          "updated": "比赛已更新"
+        },
+        "tournament": {
+          "created": "新赛事",
+          "updated": "赛事已更新"
+        },
+        "team": {
+          "updated": "战队已更新"
+        },
+        "player": {
+          "updated": "选手已更新"
+        }
+      },
+      "filtersTitle": "筛选",
+      "filtersHint": "筛选为空时全部放行。地区和官方筛选适用于比赛和赛事，战队筛选适用于所有事件。",
+      "official": {
+        "label": "官方",
+        "all": "官方和非官方",
+        "official": "仅官方",
+        "unofficial": "仅非官方"
+      },
+      "regions": "地区",
+      "regionsHint": "赛事地区。",
+      "teams": "战队",
+      "teamsHint": "这些战队之一参与的比赛和赛事、这些战队及其当前选手。",
+      "teamsPlaceholder": "添加战队",
+      "teamsSearch": "搜索战队...",
+      "teamsNoResults": "未找到战队",
+      "removeTeam": "移除 {name}",
+      "error": {
+        "notFound": "此接口或密钥已不存在。",
+        "tooManyEndpoints": "每个 API 密钥最多 {max} 个接口。",
+        "keyInactive": "此 API 密钥未启用，无法添加 webhook。",
+        "invalid": "部分字段无效。",
+        "network": "网络错误，请重试。",
+        "busy": "此次投递正在发送中，请稍后再试。",
+        "url": {
+          "required": "URL 为必填项。",
+          "tooLong": "最多 {urlMaxLength} 个字符。",
+          "invalid": "这不是有效的 URL。",
+          "notHttps": "URL 必须以 https:// 开头。",
+          "credentials": "URL 不能包含用户名或密码。",
+          "privateHost": "URL 必须指向公开地址。"
+        },
+        "description": {
+          "tooLong": "最多 {descriptionMaxLength} 个字符。"
+        },
+        "events": {
+          "required": "请至少选择一个事件。",
+          "invalid": "未知事件。"
+        },
+        "filterRegions": {
+          "invalid": "未知地区。",
+          "tooMany": "最多 {filterRegions} 个地区。"
+        },
+        "filterTeamIds": {
+          "invalid": "无效的战队。",
+          "tooMany": "最多 {filterTeams} 支战队。",
+          "unknownTeam": "其中一支战队已不存在。"
+        },
+        "filterOfficial": {
+          "invalid": "无效的值。"
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "GC Stats 所有公开的赛事、战队、选手和比赛，可自由浏览、排序并以 JSON 下载。",
+    "subtitle": "GC Stats 所有公开的赛事、战队、选手、比赛、地图和记分板，可自由浏览、排序并以 JSON 下载。",
     "rowCount": "{count, plural, other {# 行}}",
     "columnCount": "{count, plural, other {# 列}}",
     "explore": "浏览",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "比赛",
         "description": "所有比赛，包括赛事、阶段、战队、比分、状态和时间。"
+      },
+      "maps": {
+        "name": "地图",
+        "description": "每张已进行的地图：赛事、战队、比分、胜者以及双方各阵营赢得的回合。"
+      },
+      "map_players": {
+        "name": "记分板",
+        "description": "每张已结束地图的每位选手数据：特工、击杀、死亡、助攻、ACS、ADR、KAST、首杀、残局和多杀。"
       }
     },
     "usage": {
       "title": "使用数据",
       "publicOnly": "只提供网站上已公开的数据：不含账号、联系方式或私密字段。",
-      "terms": "数据与网站适用相同的条款：仅可在我们的<terms>使用条款</terms>允许的范围内使用。",
+      "terms": "数据适用与本站相同的条款：仅可在我们的使用条款允许的范围内使用。",
       "freshness": "表格每分钟刷新，完整导出每 10 分钟刷新。",
       "limits": "限额：每个账号或 IP 地址每分钟 {browse} 页表格，每小时 {exports} 次完整导出。",
       "accountOnly": "门户目前仅对已登录用户开放。",
-      "priority": "网站始终优先：负载很高时，门户会降速，并可能在几秒内回复繁忙。"
+      "priority": "网站始终优先：负载很高时，门户会降速，并可能在几秒内回复繁忙。",
+      "termsLink": "使用条款"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "名称、地区、类别...",
       "teams": "名称或标签...",
       "players": "ID、姓名、战队...",
-      "matches": "赛事、阶段、战队..."
+      "matches": "赛事、阶段、战队...",
+      "maps": "赛事、地图、战队...",
+      "map_players": "选手、战队、特工、地图..."
     },
     "clearSearch": "清除搜索",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "B 队",
       "winner_team_id": "胜者 ID",
       "is_forfeit": "弃权",
-      "patch": "版本"
+      "patch": "版本",
+      "match_id": "比赛 ID",
+      "started_at": "日期",
+      "map_order": "地图序号",
+      "map_name": "地图",
+      "is_completed": "已结束",
+      "team_a_atk_rounds_won": "A 队进攻回合",
+      "team_a_def_rounds_won": "A 队防守回合",
+      "team_b_atk_rounds_won": "B 队进攻回合",
+      "team_b_def_rounds_won": "B 队防守回合",
+      "map_id": "地图 ID",
+      "player_id": "选手 ID",
+      "player_handle": "选手",
+      "team_id": "战队 ID",
+      "team_name": "战队",
+      "agent": "特工",
+      "kills": "击杀",
+      "deaths": "死亡",
+      "assists": "助攻",
+      "first_kills": "首杀",
+      "first_deaths": "首死",
+      "clutches_won": "残局胜利",
+      "clutches_played": "残局次数",
+      "trade_kills": "补枪击杀",
+      "traded_deaths": "被补枪的死亡",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

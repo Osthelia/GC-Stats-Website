@@ -479,6 +479,57 @@
         "joinSource": "Nguồn gia nhập",
         "leftSource": "Nguồn rời đi"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "Khóa API",
+      "subtitle": "Tạo một khóa API công khai miễn phí để dùng API của GC Stats trong dự án của bạn.",
+      "notice": {
+        "rateLimit": "Khóa công khai bị giới hạn {rate} yêu cầu mỗi giây cho mỗi tài khoản, dùng chung cho tất cả khóa của bạn. Giới hạn này có thể thay đổi bất cứ lúc nào, không cần báo trước.",
+        "stable": "Cách duy nhất để có giới hạn ổn định là yêu cầu khóa API đối tác từ đội ngũ GC Stats.",
+        "noWebhooks": "Khóa công khai không được dùng webhook, webhook chỉ dành cho khóa đối tác.",
+        "requestPartner": "Yêu cầu khóa API đối tác"
+      },
+      "create": {
+        "heading": "Tạo khóa công khai",
+        "description": "Cho chúng tôi biết dữ liệu sẽ được dùng ở đâu. Bạn có thể có tối đa {max} khóa công khai đang hoạt động.",
+        "clientName": "Sản phẩm hoặc công ty",
+        "clientNamePlaceholder": "Liquipedia, Remake, bot Discord của tôi...",
+        "usageDescription": "Mô tả cách sử dụng",
+        "usageDescriptionPlaceholder": "Dữ liệu được dùng để làm gì, những endpoint nào và tần suất khoảng bao nhiêu.",
+        "submit": "Tạo khóa",
+        "termsNote": "Khóa API của bạn tuân theo cùng <terms>điều khoản sử dụng</terms> như trang web."
+      },
+      "created": {
+        "title": "Khóa API mới của bạn",
+        "warning": "Hãy sao chép ngay: khóa sẽ không bao giờ được hiển thị lại. Gửi khóa trong header x-api-key của các yêu cầu.",
+        "copy": "Sao chép khóa",
+        "dismiss": "Tôi đã sao chép"
+      },
+      "list": {
+        "heading": "Khóa công khai của bạn",
+        "empty": "Bạn chưa có khóa API công khai nào.",
+        "active": "Đang hoạt động",
+        "revoked": "Đã thu hồi",
+        "requests": "{count, plural, one {# yêu cầu} other {# yêu cầu}} trong 30 ngày",
+        "revoke": "Thu hồi",
+        "suspended": "Đã tạm ngưng",
+        "suspendedHint": "Khóa này đã bị đội ngũ GC Stats tạm ngưng. Liên hệ với chúng tôi trên Discord để yêu cầu khôi phục."
+      },
+      "error": {
+        "required": "Trường này là bắt buộc.",
+        "tooShort": "Tối thiểu {min} ký tự.",
+        "tooLong": "Tối đa {max} ký tự.",
+        "tooManyKeys": "Bạn đã có {max} khóa công khai đang hoạt động. Hãy thu hồi một khóa để tạo khóa mới.",
+        "unauthenticated": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
+        "disabled": "Khóa API công khai hiện đang bị tắt.",
+        "invalid": "Một số trường không hợp lệ.",
+        "notFound": "Khóa này không còn tồn tại.",
+        "network": "Lỗi mạng, vui lòng thử lại.",
+        "blocked": "Quyền truy cập API của bạn đã bị chặn."
+      },
+      "blocked": "Quyền truy cập API của bạn đã bị chặn, bạn không thể tạo khóa API nữa.",
+      "contactDiscord": "Liên hệ với chúng tôi trên Discord"
     }
   },
   "notifications": {
@@ -928,8 +979,8 @@
     "title": "Nhà phát triển",
     "intro": "Toàn bộ dữ liệu của chúng tôi để giúp bạn xây dựng dự án của mình! Và nếu bạn muốn đóng góp cho GC-Stats, chúng tôi cũng rất mong có bạn.",
     "apiKey": {
-      "title": "Yêu cầu khóa API",
-      "body": "Để ngăn chặn lạm dụng, API của chúng tôi yêu cầu xác thực. Nếu bạn muốn sử dụng, hãy liên hệ với chúng tôi trên Discord hoặc qua email.",
+      "title": "Yêu cầu khóa API đối tác",
+      "body": "Khóa đối tác có giới hạn yêu cầu ổn định và webhook. Để nhận một khóa, hãy liên hệ với chúng tôi trên Discord hoặc qua email.",
       "warning": "Vui lòng nêu trong yêu cầu của bạn:",
       "step1": "Tên và mô tả dự án của bạn",
       "step2": "Trường hợp sử dụng API dự kiến và quy mô",
@@ -953,6 +1004,23 @@
       "title": "Mã nguồn mở & đóng góp",
       "body": "Chúng tôi đã quyết định mở mã nguồn phần lớn dự án để cộng đồng có thể giúp sức, chúng tôi không tin vào mã nguồn đóng. Tất cả kho mã của chúng tôi (trừ bảng quản trị) đều mở cho đóng góp. Hãy đọc kỹ hướng dẫn của chúng tôi trước khi gửi một Pull Request.",
       "badge": "Kho mã công khai"
+    },
+    "publicKey": {
+      "title": "Khóa API công khai",
+      "body": "Mọi tài khoản GC Stats đều có thể tạo khóa công khai miễn phí trong vài giây, không cần chờ chúng tôi.",
+      "step1": "Tạo khóa trong phần cài đặt tài khoản, cho chúng tôi biết sản phẩm hoặc công ty sẽ dùng dữ liệu và cách dùng.",
+      "step2": "Khóa công khai bị giới hạn ở vài yêu cầu mỗi giây, và giới hạn này có thể thay đổi bất cứ lúc nào.",
+      "step3": "Khóa công khai không được dùng webhook. Để có giới hạn ổn định và webhook, hãy yêu cầu khóa đối tác bên dưới.",
+      "button": "Tạo khóa công khai"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "Khóa đối tác có thể đăng ký endpoint HTTPS từ bảng điều khiển: GC Stats sau đó gửi một POST mỗi khi dữ liệu thay đổi.",
+      "events": "Sự kiện: trận đấu mới, trận đấu được cập nhật, giải đấu mới, giải đấu được cập nhật, đội được cập nhật, tuyển thủ được cập nhật.",
+      "filters": "Bộ lọc: khu vực của giải đấu, chính thức hay không, các đội tham gia.",
+      "signature": "Mỗi yêu cầu mang các header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp và X-GCS-Signature. Kiểm tra chữ ký bằng secret của endpoint.",
+      "retries": "Trả lời bằng trạng thái 2xx trong vòng 10 giây. Các lần gửi thất bại được thử lại trong khoảng 9 giờ, endpoint thất bại quá thường xuyên sẽ bị tắt.",
+      "setup": "Payload chứa sự kiện, thời điểm và thực thể, với các trường giống như các bộ dữ liệu OpenData."
     }
   },
   "becomePublisher": {
@@ -2888,6 +2956,7 @@
       "regenerateButton": "Tạo lại",
       "activateButton": "Kích hoạt",
       "deactivateButton": "Vô hiệu hóa",
+      "deactivateConfirm": "Vô hiệu hóa khóa \"{name}\"? Các webhook của khóa sẽ bị xóa vĩnh viễn.",
       "deleteButton": "Xóa",
       "createTitle": "Tạo một khóa API",
       "createDescription": "Khóa đầy đủ chỉ được hiển thị một lần, ngay sau khi tạo.",
@@ -2928,6 +2997,10 @@
         "userNotFound": "Không tìm thấy người dùng.",
         "organizationNotFound": "Không tìm thấy tổ chức.",
         "ownerRequired": "Hãy chọn một người dùng hoặc tổ chức."
+      },
+      "tabs": {
+        "partner": "Khóa đối tác",
+        "public": "Khóa công khai"
       }
     },
     "apiKeyStats": {
@@ -3446,6 +3519,8 @@
       "fieldPointType": "Loại điểm",
       "fieldPointTypeNone": "Không có",
       "fieldActive": "Giải đấu đang hoạt động",
+      "fieldOfficial": "Giải đấu chính thức",
+      "officialHint": "Sự kiện thuộc hệ thống giải chính thức. Người đăng ký webhook có thể lọc giải đấu chính thức và không chính thức.",
       "fieldLocation": "Địa điểm",
       "fieldPrizePool": "Tổng giải thưởng",
       "fieldDescription": "Mô tả",
@@ -5036,6 +5111,18 @@
         "exportsPerHour": "Xuất toàn bộ mỗi giờ",
         "exportsPerHourHint": "Theo tài khoản, hoặc theo địa chỉ IP với khách. Từ {min} đến {max}.",
         "propagationHint": "Mỗi máy chủ áp dụng thay đổi trong vòng 15 giây."
+      },
+      "publicApi": {
+        "title": "API công khai",
+        "description": "Khóa API tự phục vụ mà mọi tài khoản đều có thể tạo trong phần cài đặt. Khóa đối tác giữ giới hạn riêng.",
+        "keys": "Khóa công khai",
+        "enabled": "Bật khóa công khai",
+        "enabledHint": "Khi tắt, không thể tạo khóa công khai nào và các khóa hiện có sẽ trả về 403.",
+        "ratePerSecond": "Yêu cầu mỗi giây",
+        "ratePerSecondHint": "Cho mỗi tài khoản, dùng chung cho tất cả khóa công khai của tài khoản đó, từ {min} đến {max}. Các endpoint nặng được tính là nhiều yêu cầu.",
+        "maxKeysPerUser": "Số khóa hoạt động mỗi tài khoản",
+        "maxKeysPerUserHint": "Từ {min} đến {max}.",
+        "propagationHint": "Thay đổi được áp dụng trên mọi máy chủ trong vòng 15 giây."
       }
     },
     "opendataMonitoring": {
@@ -5135,6 +5222,70 @@
         "poolWaiting": "Truy vấn đang chờ",
         "inFlight": "OpenData đang chạy"
       }
+    },
+    "publicApiKeys": {
+      "title": "Khóa API công khai",
+      "subtitle": "Các khóa do người dùng tạo trong phần cài đặt. Giới hạn {rate} yêu cầu mỗi giây cho mỗi tài khoản.",
+      "searchPlaceholder": "Tìm theo tên, mô tả hoặc người dùng",
+      "statusFilter": "Trạng thái",
+      "status": {
+        "active": "Đang hoạt động",
+        "suspended": "Đã tạm ngưng",
+        "revoked": "Đã thu hồi",
+        "blocked": "Đã chặn truy cập API"
+      },
+      "empty": "Không có khóa công khai nào phù hợp.",
+      "requests30d": "{count, plural, other {# yêu cầu}} trong 30 ngày",
+      "statsAndEdit": "Thống kê & chỉnh sửa",
+      "suspend": "Tạm ngưng",
+      "unsuspend": "Khôi phục",
+      "block": "Chặn truy cập API",
+      "unblock": "Bỏ chặn truy cập API",
+      "delete": "Xóa",
+      "cancel": "Hủy",
+      "actionFailed": "Thao tác thất bại, vui lòng thử lại.",
+      "notFound": "Khóa hoặc người dùng này không còn tồn tại.",
+      "done": {
+        "suspend": "Đã tạm ngưng khóa.",
+        "unsuspend": "Đã khôi phục khóa.",
+        "block": "Đã chặn truy cập API, tất cả khóa của người dùng đã bị thu hồi.",
+        "unblock": "Đã bỏ chặn truy cập API.",
+        "delete": "Đã xóa khóa."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Tạm ngưng khóa này?",
+          "description": "Khóa \"{name}\" ngừng hoạt động ngay lập tức. {owner} sẽ phải liên hệ với chúng tôi trên Discord để yêu cầu khôi phục."
+        },
+        "unsuspend": {
+          "title": "Khôi phục khóa này?",
+          "description": "Khóa \"{name}\" hoạt động trở lại cho {owner}."
+        },
+        "block": {
+          "title": "Chặn truy cập API?",
+          "description": "Tất cả khóa công khai của {owner} bị thu hồi và không thể tạo khóa mới nữa."
+        },
+        "unblock": {
+          "title": "Bỏ chặn truy cập API?",
+          "description": "{owner} có thể tạo khóa công khai trở lại. Các khóa đã thu hồi vẫn bị thu hồi."
+        },
+        "delete": {
+          "title": "Xóa khóa này?",
+          "description": "Khóa \"{name}\" và thống kê của nó sẽ bị xóa vĩnh viễn."
+        }
+      },
+      "usageHeading": "Mục đích sử dụng do người dùng khai báo",
+      "clientName": "Sản phẩm hoặc công ty",
+      "usageDescription": "Mô tả mục đích sử dụng",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "saved": "Đã cập nhật khóa.",
+      "saveError": "Một số trường không hợp lệ.",
+      "error": {
+        "required": "Trường này là bắt buộc.",
+        "tooShort": "Tối thiểu {min} ký tự.",
+        "tooLong": "Tối đa {max} ký tự."
+      }
     }
   },
   "dashboard": {
@@ -5167,7 +5318,8 @@
       "allAuthors": "Tất cả tác giả",
       "authorAdminSpace": "Tác giả",
       "logs": "Nhật ký",
-      "veto": "Veto bản đồ"
+      "veto": "Veto bản đồ",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "Chọn một tổ chức",
@@ -5615,7 +5767,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Không tìm thấy khóa."
-      }
+      },
+      "kindPublic": "Công khai",
+      "publicRateLimit": "Giới hạn công khai dùng chung"
     },
     "myApiKeys": {
       "title": "Khóa API của tôi",
@@ -5650,7 +5804,8 @@
       "columnAvgDuration": "Thời lượng trung bình",
       "columnErrorRate": "Tỉ lệ lỗi",
       "requests": "{count} yêu cầu",
-      "errors": "{count} lỗi"
+      "errors": "{count} lỗi",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "Vai trò & quyền hạn",
@@ -5944,6 +6099,133 @@
       "subtitle": "Thiết lập veto trực tiếp cho các giải đấu mà tổ chức của bạn tổ chức.",
       "readOnlyHint": "Bạn không có quyền quản lý veto bản đồ.",
       "noTournaments": "Không có giải đấu nào của tổ chức bạn được bật veto bản đồ. Quản trị viên GC Stats sẽ bật nó cho bạn."
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "GC Stats gửi một POST HTTPS tới các endpoint của bạn khi một trận đấu, giải đấu, đội hoặc tuyển thủ thay đổi. Việc gửi được kiểm tra khoảng mỗi phút.",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "Endpoint và các lần gửi của khóa API đối tác của bạn.",
+      "keySwitcher": "Khóa API đối tác",
+      "noPartnerKey": "Webhook chỉ dành cho khóa API đối tác. Bạn chưa có khóa đối tác nào.",
+      "requestPartnerKey": "Yêu cầu khóa đối tác",
+      "refresh": "Làm mới",
+      "add": "Thêm endpoint",
+      "keyInactive": "Khóa API này không hoạt động: các webhook của khóa đã bị xóa và không thể thêm webhook nào cho đến khi khóa được kích hoạt lại.",
+      "empty": "Chưa có endpoint webhook nào.",
+      "active": "Đang hoạt động",
+      "inactive": "Không hoạt động",
+      "toggle": "Bật hoặc tắt endpoint này",
+      "disabledFailing": "Đã tự động tắt sau quá nhiều lần gửi thất bại liên tiếp. Hãy sửa endpoint rồi bật lại.",
+      "any": "Tất cả",
+      "test": "Gửi thử",
+      "testing": "Đang gửi...",
+      "testSuccess": "Đã gửi thành công (HTTP {status})",
+      "testFailed": "Gửi thất bại: {error}",
+      "edit": "Sửa",
+      "showSecret": "Hiện secret",
+      "rotateSecret": "Secret mới",
+      "delete": "Xóa",
+      "deleted": "Đã xóa endpoint",
+      "created": "Đã tạo endpoint",
+      "updated": "Đã cập nhật endpoint",
+      "deliveriesTitle": "Lần gửi gần đây",
+      "deliveriesEmpty": "Chưa có lần gửi nào.",
+      "columnDate": "Ngày",
+      "columnEvent": "Sự kiện",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Trạng thái",
+      "columnAttempts": "Số lần thử",
+      "redeliver": "Gửi lại",
+      "status": {
+        "pending": "Đang chờ",
+        "success": "Đã gửi",
+        "failed": "Thất bại"
+      },
+      "secretTitle": "Secret ký",
+      "secretRotatedTitle": "Secret ký mới",
+      "secretCreatedTitle": "Đã tạo endpoint, đây là secret ký của nó",
+      "secretDescription": "Dùng để kiểm tra header X-GCS-Signature: HMAC sha256 của header X-GCS-Timestamp, một dấu chấm, rồi đến body thô.",
+      "copySecret": "Sao chép secret",
+      "close": "Đóng",
+      "deleteTitle": "Xóa endpoint này?",
+      "deleteDescription": "{url} sẽ không nhận webhook nữa. Lịch sử gửi của nó cũng bị xóa.",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "addTitle": "Endpoint webhook mới",
+      "editTitle": "Sửa endpoint",
+      "dialogDescription": "Chọn các sự kiện muốn nhận và thu hẹp bằng bộ lọc.",
+      "url": "URL endpoint",
+      "urlHint": "Chỉ địa chỉ HTTPS công khai.",
+      "descriptionLabel": "Mô tả",
+      "events": "Sự kiện",
+      "event": {
+        "match": {
+          "created": "Trận đấu mới",
+          "updated": "Trận đấu được cập nhật"
+        },
+        "tournament": {
+          "created": "Giải đấu mới",
+          "updated": "Giải đấu được cập nhật"
+        },
+        "team": {
+          "updated": "Đội được cập nhật"
+        },
+        "player": {
+          "updated": "Tuyển thủ được cập nhật"
+        }
+      },
+      "filtersTitle": "Bộ lọc",
+      "filtersHint": "Bộ lọc trống cho phép mọi thứ đi qua. Bộ lọc khu vực và chính thức áp dụng cho trận đấu và giải đấu, bộ lọc đội áp dụng cho mọi sự kiện.",
+      "official": {
+        "label": "Chính thức",
+        "all": "Chính thức và không chính thức",
+        "official": "Chỉ chính thức",
+        "unofficial": "Chỉ không chính thức"
+      },
+      "regions": "Khu vực",
+      "regionsHint": "Khu vực của giải đấu.",
+      "teams": "Đội",
+      "teamsHint": "Các trận đấu và giải đấu có một trong các đội này tham gia, các đội này và tuyển thủ hiện tại của họ.",
+      "teamsPlaceholder": "Thêm đội",
+      "teamsSearch": "Tìm đội...",
+      "teamsNoResults": "Không tìm thấy đội nào",
+      "removeTeam": "Bỏ {name}",
+      "error": {
+        "notFound": "Endpoint hoặc khóa này không còn tồn tại.",
+        "tooManyEndpoints": "Tối đa {max} endpoint cho mỗi khóa API.",
+        "keyInactive": "Khóa API này không hoạt động, không thể thêm webhook.",
+        "invalid": "Một số trường không hợp lệ.",
+        "network": "Lỗi mạng, vui lòng thử lại.",
+        "busy": "Lượt gửi này đang được thực hiện, vui lòng thử lại sau giây lát.",
+        "url": {
+          "required": "URL là bắt buộc.",
+          "tooLong": "Tối đa {urlMaxLength} ký tự.",
+          "invalid": "URL không hợp lệ.",
+          "notHttps": "URL phải bắt đầu bằng https://.",
+          "credentials": "URL không được chứa tên người dùng hoặc mật khẩu.",
+          "privateHost": "URL phải trỏ tới một địa chỉ công khai."
+        },
+        "description": {
+          "tooLong": "Tối đa {descriptionMaxLength} ký tự."
+        },
+        "events": {
+          "required": "Chọn ít nhất một sự kiện.",
+          "invalid": "Sự kiện không xác định."
+        },
+        "filterRegions": {
+          "invalid": "Khu vực không xác định.",
+          "tooMany": "Tối đa {filterRegions} khu vực."
+        },
+        "filterTeamIds": {
+          "invalid": "Đội không hợp lệ.",
+          "tooMany": "Tối đa {filterTeams} đội.",
+          "unknownTeam": "Một trong các đội không còn tồn tại."
+        },
+        "filterOfficial": {
+          "invalid": "Giá trị không hợp lệ."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6886,7 +7168,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "Toàn bộ giải đấu, đội, tuyển thủ và trận đấu công khai của GC Stats, tự do duyệt, sắp xếp và tải xuống dạng JSON.",
+    "subtitle": "Tất cả giải đấu, đội, tuyển thủ, trận đấu, bản đồ và bảng điểm công khai của GC Stats, tự do xem, sắp xếp và tải xuống dạng JSON.",
     "rowCount": "{count, plural, other {# dòng}}",
     "columnCount": "{count, plural, other {# cột}}",
     "explore": "Khám phá",
@@ -6907,16 +7189,25 @@
       "matches": {
         "name": "Trận đấu",
         "description": "Tất cả trận đấu kèm giải đấu, vòng, đội, tỷ số, trạng thái và lịch."
+      },
+      "maps": {
+        "name": "Bản đồ",
+        "description": "Mỗi bản đồ đã thi đấu: giải đấu, đội, tỉ số, đội thắng và số vòng thắng ở mỗi bên."
+      },
+      "map_players": {
+        "name": "Bảng điểm",
+        "description": "Mỗi dòng tuyển thủ của mỗi bản đồ đã kết thúc: đặc vụ, hạ gục, tử vong, hỗ trợ, ACS, ADR, KAST, first kill, clutch và multikill."
       }
     },
     "usage": {
       "title": "Sử dụng dữ liệu",
       "publicOnly": "Chỉ dữ liệu đã công khai trên trang được cung cấp: không có tài khoản, liên hệ hay trường riêng tư.",
-      "terms": "Dữ liệu tuân theo cùng các điều kiện như trang web: chỉ được sử dụng trong phạm vi <terms>điều khoản sử dụng</terms> của chúng tôi cho phép.",
+      "terms": "Dữ liệu tuân theo cùng điều khoản với trang web: chỉ được sử dụng trong phạm vi điều khoản sử dụng của chúng tôi cho phép.",
       "freshness": "Bảng được làm mới mỗi phút, bản xuất toàn bộ mỗi 10 phút.",
       "limits": "Giới hạn: {browse} trang bảng mỗi phút và {exports} lượt xuất toàn bộ mỗi giờ, theo tài khoản hoặc địa chỉ IP.",
       "accountOnly": "Cổng hiện chỉ mở cho người dùng đã đăng nhập.",
-      "priority": "Trang luôn được ưu tiên: khi tải cao, cổng sẽ chậm lại và có thể trả lời đang bận trong vài giây."
+      "priority": "Trang luôn được ưu tiên: khi tải cao, cổng sẽ chậm lại và có thể trả lời đang bận trong vài giây.",
+      "termsLink": "Điều khoản sử dụng"
     },
     "api": {
       "title": "API",
@@ -6963,7 +7254,9 @@
       "tournaments": "Tên, khu vực, hạng mục...",
       "teams": "Tên hoặc tag...",
       "players": "Biệt danh, tên, đội...",
-      "matches": "Giải đấu, vòng, đội..."
+      "matches": "Giải đấu, vòng, đội...",
+      "maps": "Giải đấu, bản đồ, đội...",
+      "map_players": "Tuyển thủ, đội, đặc vụ, bản đồ..."
     },
     "clearSearch": "Xóa tìm kiếm",
     "filters": {
@@ -7046,7 +7339,39 @@
       "team_b_name": "Đội B",
       "winner_team_id": "ID đội thắng",
       "is_forfeit": "Xử thua",
-      "patch": "Bản cập nhật"
+      "patch": "Bản cập nhật",
+      "match_id": "ID trận",
+      "started_at": "Ngày",
+      "map_order": "Bản đồ số",
+      "map_name": "Bản đồ",
+      "is_completed": "Đã kết thúc",
+      "team_a_atk_rounds_won": "Vòng tấn công đội A",
+      "team_a_def_rounds_won": "Vòng phòng thủ đội A",
+      "team_b_atk_rounds_won": "Vòng tấn công đội B",
+      "team_b_def_rounds_won": "Vòng phòng thủ đội B",
+      "map_id": "ID bản đồ",
+      "player_id": "ID tuyển thủ",
+      "player_handle": "Tuyển thủ",
+      "team_id": "ID đội",
+      "team_name": "Đội",
+      "agent": "Đặc vụ",
+      "kills": "Hạ gục",
+      "deaths": "Tử vong",
+      "assists": "Hỗ trợ",
+      "first_kills": "First kill",
+      "first_deaths": "First death",
+      "clutches_won": "Clutch thắng",
+      "clutches_played": "Clutch đã chơi",
+      "trade_kills": "Trade kill",
+      "traded_deaths": "Tử vong được trade",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

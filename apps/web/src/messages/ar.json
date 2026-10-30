@@ -477,6 +477,57 @@
         "joinSource": "مصدر الانضمام",
         "leftSource": "مصدر المغادرة"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "مفاتيح API",
+      "subtitle": "أنشئ مفتاح API عامًا مجانيًا لاستخدام API الخاصة بـ GC Stats في مشروعك.",
+      "notice": {
+        "rateLimit": "المفاتيح العامة محدودة بـ {rate} طلب في الثانية لكل حساب، مشتركة بين جميع مفاتيحك. قد يتغير هذا الحد في أي وقت، دون إشعار مسبق.",
+        "stable": "الطريقة الوحيدة للحصول على حد ثابت هي طلب مفتاح API للشركاء من فريق GC Stats.",
+        "noWebhooks": "المفاتيح العامة لا تتيح الوصول إلى webhooks، فهي مخصصة لمفاتيح الشركاء.",
+        "requestPartner": "طلب مفتاح API للشركاء"
+      },
+      "create": {
+        "heading": "إنشاء مفتاح عام",
+        "description": "أخبرنا أين ستُستخدم البيانات. يمكنك امتلاك ما يصل إلى {max} مفاتيح عامة نشطة.",
+        "clientName": "المنتج أو الشركة",
+        "clientNamePlaceholder": "Liquipedia، Remake، بوت Discord الخاص بي...",
+        "usageDescription": "وصف الاستخدام",
+        "usageDescriptionPlaceholder": "الغرض من استخدام البيانات، والـ endpoints المستخدمة، وعدد المرات تقريبًا.",
+        "submit": "إنشاء المفتاح",
+        "termsNote": "يخضع مفتاح API الخاص بك لنفس <terms>شروط الاستخدام</terms> المطبقة على الموقع."
+      },
+      "created": {
+        "title": "مفتاح API الجديد",
+        "warning": "انسخه الآن: لن يُعرض مرة أخرى أبدًا. أرسله في ترويسة x-api-key في طلباتك.",
+        "copy": "نسخ المفتاح",
+        "dismiss": "لقد نسخته"
+      },
+      "list": {
+        "heading": "مفاتيحك العامة",
+        "empty": "ليس لديك أي مفتاح API عام بعد.",
+        "active": "نشط",
+        "revoked": "ملغى",
+        "requests": "{count, plural, zero {# طلب} one {طلب واحد} two {طلبان} few {# طلبات} many {# طلبًا} other {# طلب}} خلال 30 يومًا",
+        "revoke": "إلغاء",
+        "suspended": "معلّق",
+        "suspendedHint": "تم تعليق هذا المفتاح من قبل فريق GC Stats. تواصل معنا على Discord لطلب إعادة تفعيله."
+      },
+      "error": {
+        "required": "هذا الحقل مطلوب.",
+        "tooShort": "{min} أحرف على الأقل.",
+        "tooLong": "{max} حرفًا كحد أقصى.",
+        "tooManyKeys": "لديك بالفعل {max} مفاتيح عامة نشطة. ألغِ واحدًا لإنشاء مفتاح جديد.",
+        "unauthenticated": "انتهت صلاحية جلستك، يرجى تسجيل الدخول مرة أخرى.",
+        "disabled": "مفاتيح API العامة معطلة حاليًا.",
+        "invalid": "بعض الحقول غير صالحة.",
+        "notFound": "هذا المفتاح لم يعد موجودًا.",
+        "network": "خطأ في الشبكة، يرجى المحاولة مرة أخرى.",
+        "blocked": "تم حظر وصولك إلى واجهة API."
+      },
+      "blocked": "تم حظر وصولك إلى واجهة API، ولم يعد بإمكانك إنشاء مفاتيح API.",
+      "contactDiscord": "تواصل معنا على Discord"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "المطورون",
     "intro": "كل بياناتنا لمساعدتك في بناء مشروعك! وإذا رغبت في المساهمة في GC-Stats، يسعدنا انضمامك أيضًا.",
     "apiKey": {
-      "title": "طلب مفتاح API",
-      "body": "لمنع إساءة الاستخدام، تتطلب واجهتنا البرمجية المصادقة. إذا أردت استخدامها، تواصل معنا على Discord أو عبر البريد الإلكتروني.",
+      "title": "طلب مفتاح API للشركاء",
+      "body": "تأتي مفاتيح الشركاء بحد طلبات ثابت وإمكانية الوصول إلى webhooks. للحصول على واحد، تواصل معنا على Discord أو عبر البريد الإلكتروني.",
       "warning": "يرجى تضمين ما يلي في طلبك:",
       "step1": "اسم مشروعك ووصفه",
       "step2": "الغرض المقصود من استخدام الواجهة البرمجية وحجمه",
@@ -951,6 +1002,23 @@
       "title": "المصدر المفتوح والمساهمات",
       "body": "قررنا فتح مصدر معظم المشروع لتمكين المجتمع من المساعدة، فنحن لا نؤمن بالمصدر المغلق. جميع مستودعاتنا (باستثناء لوحة الإدارة) مفتوحة للمساهمات. احرص على قراءة إرشاداتنا قبل إرسال Pull Request.",
       "badge": "المستودع العام"
+    },
+    "publicKey": {
+      "title": "مفتاح API عام",
+      "body": "يمكن لأي حساب على GC Stats إنشاء مفتاح عام مجاني في ثوانٍ، دون انتظارنا.",
+      "step1": "أنشئه من إعدادات حسابك، مع ذكر المنتج أو الشركة التي ستستخدم البيانات وكيفية استخدامها.",
+      "step2": "المفاتيح العامة محدودة ببضعة طلبات في الثانية، وقد يتغير هذا الحد في أي وقت.",
+      "step3": "المفاتيح العامة لا تتيح الوصول إلى webhooks. للحصول على حد ثابت و webhooks، اطلب مفتاح شريك أدناه.",
+      "button": "إنشاء مفتاح عام"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "body": "يمكن لمفاتيح الشركاء تسجيل endpoints تعمل بـ HTTPS من لوحة التحكم الخاصة بها: يرسل GC Stats عندها طلب POST في كل مرة تتغير فيها البيانات.",
+      "events": "الأحداث: مباراة جديدة، تحديث مباراة، بطولة جديدة، تحديث بطولة، تحديث فريق، تحديث لاعب.",
+      "filters": "الفلاتر: منطقة البطولة، رسمية أم لا، الفرق المشاركة.",
+      "signature": "يحمل كل طلب الترويسات X-GCS-Event و X-GCS-Delivery و X-GCS-Timestamp و X-GCS-Signature. تحقق من التوقيع باستخدام سر الـ endpoint الخاص بك.",
+      "retries": "استجب بحالة 2xx خلال 10 ثوانٍ. تُعاد محاولة الإرسالات الفاشلة لمدة 9 ساعات تقريبًا، ويتم إيقاف الـ endpoint الذي يفشل كثيرًا.",
+      "setup": "يحتوي الـ payload على الحدث وتاريخه والكيان، بنفس حقول مجموعات بيانات OpenData."
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "إعادة الإنشاء",
       "activateButton": "تفعيل",
       "deactivateButton": "تعطيل",
+      "deactivateConfirm": "هل تريد تعطيل المفتاح \"{name}\"؟ سيتم حذف جميع webhooks الخاصة به نهائيًا.",
       "deleteButton": "حذف",
       "createTitle": "إنشاء مفتاح API",
       "createDescription": "يُعرض المفتاح الكامل مرة واحدة فقط، مباشرةً بعد الإنشاء.",
@@ -2924,6 +2993,10 @@
         "userNotFound": "المستخدم غير موجود.",
         "organizationNotFound": "المنظمة غير موجودة.",
         "ownerRequired": "اختر مستخدمًا أو منظمة."
+      },
+      "tabs": {
+        "partner": "مفاتيح الشركاء",
+        "public": "المفاتيح العامة"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "نوع النقاط",
       "fieldPointTypeNone": "لا شيء",
       "fieldActive": "بطولة نشطة",
+      "fieldOfficial": "بطولة رسمية",
+      "officialHint": "حدث ضمن الدائرة الرسمية. يمكن لمشتركي Webhooks تصفية البطولات الرسمية وغير الرسمية.",
       "fieldLocation": "الموقع",
       "fieldPrizePool": "مجموع الجوائز",
       "fieldDescription": "الوصف",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "التصديرات الكاملة في الساعة",
         "exportsPerHourHint": "لكل حساب، أو لكل عنوان IP للزوار. بين {min} و {max}.",
         "propagationHint": "يطبّق كل خادم التغيير خلال 15 ثانية."
+      },
+      "publicApi": {
+        "title": "API العامة",
+        "description": "مفاتيح API ذاتية الخدمة يمكن لأي حساب إنشاؤها من إعداداته. تحتفظ مفاتيح الشركاء بحدودها الخاصة.",
+        "keys": "المفاتيح العامة",
+        "enabled": "تفعيل المفاتيح العامة",
+        "enabledHint": "عند التعطيل، لا يمكن إنشاء أي مفتاح عام وتستجيب المفاتيح الحالية بـ 403.",
+        "ratePerSecond": "الطلبات في الثانية",
+        "ratePerSecondHint": "لكل حساب، مشترك بين جميع مفاتيحه العامة، بين {min} و{max}. نقاط النهاية الثقيلة تُحتسب كعدة طلبات.",
+        "maxKeysPerUser": "المفاتيح النشطة لكل حساب",
+        "maxKeysPerUserHint": "بين {min} و {max}.",
+        "propagationHint": "تصل التغييرات إلى جميع الخوادم خلال 15 ثانية."
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "استعلامات منتظرة",
         "inFlight": "OpenData جارية"
       }
+    },
+    "publicApiKeys": {
+      "title": "مفاتيح API العامة",
+      "subtitle": "مفاتيح أنشأها المستخدمون من إعداداتهم. الحد {rate} طلب في الثانية لكل حساب.",
+      "searchPlaceholder": "البحث بالاسم أو الوصف أو المستخدم",
+      "statusFilter": "الحالة",
+      "status": {
+        "active": "نشط",
+        "suspended": "معلّق",
+        "revoked": "ملغى",
+        "blocked": "وصول API محظور"
+      },
+      "empty": "لا يوجد مفتاح عام مطابق.",
+      "requests30d": "{count, plural, zero {لا طلبات} one {طلب واحد} two {طلبان} few {# طلبات} many {# طلبًا} other {# طلب}} خلال 30 يومًا",
+      "statsAndEdit": "الإحصائيات والتعديل",
+      "suspend": "تعليق",
+      "unsuspend": "إعادة التفعيل",
+      "block": "حظر وصول API",
+      "unblock": "إلغاء حظر وصول API",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "actionFailed": "فشل الإجراء، يرجى المحاولة مرة أخرى.",
+      "notFound": "هذا المفتاح أو المستخدم لم يعد موجودًا.",
+      "done": {
+        "suspend": "تم تعليق المفتاح.",
+        "unsuspend": "تمت إعادة تفعيل المفتاح.",
+        "block": "تم حظر وصول API، وأُلغيت جميع مفاتيح المستخدم.",
+        "unblock": "تم إلغاء حظر وصول API.",
+        "delete": "تم حذف المفتاح."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "تعليق هذا المفتاح؟",
+          "description": "يتوقف المفتاح \"{name}\" عن العمل فورًا. سيتعين على {owner} التواصل معنا على Discord لطلب إعادة تفعيله."
+        },
+        "unsuspend": {
+          "title": "إعادة تفعيل هذا المفتاح؟",
+          "description": "يعود المفتاح \"{name}\" للعمل لدى {owner}."
+        },
+        "block": {
+          "title": "حظر وصول API؟",
+          "description": "تُلغى جميع المفاتيح العامة الخاصة بـ {owner} ولن يكون بالإمكان إنشاء مفاتيح جديدة."
+        },
+        "unblock": {
+          "title": "إلغاء حظر وصول API؟",
+          "description": "يمكن لـ {owner} إنشاء مفاتيح عامة مجددًا. تبقى المفاتيح الملغاة ملغاة."
+        },
+        "delete": {
+          "title": "حذف هذا المفتاح؟",
+          "description": "يُحذف المفتاح \"{name}\" وإحصائياته نهائيًا."
+        }
+      },
+      "usageHeading": "الاستخدام المُصرّح به من المستخدم",
+      "clientName": "المنتج أو الشركة",
+      "usageDescription": "وصف الاستخدام",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "saved": "تم تحديث المفتاح.",
+      "saveError": "بعض الحقول غير صالحة.",
+      "error": {
+        "required": "هذا الحقل مطلوب.",
+        "tooShort": "{min} أحرف على الأقل.",
+        "tooLong": "{max} أحرف كحد أقصى."
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "الإدارة",
       "allAuthors": "كل الكتّاب",
       "authorAdminSpace": "الكتّاب",
-      "logs": "السجلات"
+      "logs": "السجلات",
+      "webhooks": "Webhooks"
     },
     "switcher": {
       "selectOrganization": "اختر منظمة",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "المفتاح غير موجود."
-      }
+      },
+      "kindPublic": "عام",
+      "publicRateLimit": "الحد العام المشترك"
     },
     "myApiKeys": {
       "title": "مفاتيح API الخاصة بي",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "متوسط المدة",
       "columnErrorRate": "نسبة الأخطاء",
       "requests": "الطلبات: {count}",
-      "errors": "الأخطاء: {count}"
+      "errors": "الأخطاء: {count}",
+      "webhooksButton": "Webhooks"
     },
     "permissions": {
       "title": "الأدوار والصلاحيات",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, one {# إدخال} other {# إدخالات}}",
       "previous": "الصفحة السابقة",
       "next": "الصفحة التالية"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "يرسل GC Stats طلب HTTPS POST إلى الـ endpoints الخاصة بك عند تغيّر مباراة أو بطولة أو فريق أو لاعب. يتم فحص الإرسالات كل دقيقة تقريبًا.",
+      "pageTitle": "Webhooks",
+      "pageSubtitle": "نقاط النهاية وعمليات الإرسال لمفاتيح API الشريكة.",
+      "keySwitcher": "مفتاح API الشريك",
+      "noPartnerKey": "Webhooks مخصصة لمفاتيح API الشريكة. ليس لديك مفتاح شريك بعد.",
+      "requestPartnerKey": "طلب مفتاح شريك",
+      "refresh": "تحديث",
+      "add": "إضافة endpoint",
+      "keyInactive": "مفتاح API هذا غير نشط: تم حذف webhooks الخاصة به ولا يمكن إضافة أي webhook حتى تتم إعادة تفعيله.",
+      "empty": "لا يوجد أي endpoint للـ webhook بعد.",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "toggle": "تفعيل أو تعطيل هذا الـ endpoint",
+      "disabledFailing": "تم إيقافه تلقائيًا بعد عدد كبير من الإرسالات الفاشلة المتتالية. أصلح الـ endpoint ثم فعّله مرة أخرى.",
+      "any": "الكل",
+      "test": "إرسال اختبار",
+      "testing": "جارٍ الإرسال...",
+      "testSuccess": "تم التسليم (HTTP {status})",
+      "testFailed": "فشل الإرسال: {error}",
+      "edit": "تعديل",
+      "showSecret": "إظهار السر",
+      "rotateSecret": "سر جديد",
+      "delete": "حذف",
+      "deleted": "تم حذف الـ endpoint",
+      "created": "تم إنشاء الـ endpoint",
+      "updated": "تم تحديث الـ endpoint",
+      "deliveriesTitle": "الإرسالات الأخيرة",
+      "deliveriesEmpty": "لا توجد إرسالات بعد.",
+      "columnDate": "التاريخ",
+      "columnEvent": "الحدث",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "الحالة",
+      "columnAttempts": "المحاولات",
+      "redeliver": "إعادة الإرسال",
+      "status": {
+        "pending": "قيد الانتظار",
+        "success": "تم التسليم",
+        "failed": "فشل"
+      },
+      "secretTitle": "سر التوقيع",
+      "secretRotatedTitle": "سر توقيع جديد",
+      "secretCreatedTitle": "تم إنشاء الـ endpoint، إليك سر التوقيع الخاص به",
+      "secretDescription": "استخدمه للتحقق من ترويسة X-GCS-Signature: قيمة HMAC sha256 لترويسة X-GCS-Timestamp، ثم نقطة، ثم المحتوى الخام.",
+      "copySecret": "نسخ السر",
+      "close": "إغلاق",
+      "deleteTitle": "حذف هذا الـ endpoint؟",
+      "deleteDescription": "لن يستقبل {url} أي webhooks بعد الآن. سيُحذف سجل الإرسالات الخاص به أيضًا.",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "addTitle": "endpoint جديد للـ webhook",
+      "editTitle": "تعديل الـ endpoint",
+      "dialogDescription": "اختر الأحداث التي تريد استقبالها وضيّق نطاقها باستخدام الفلاتر.",
+      "url": "رابط الـ endpoint",
+      "urlHint": "عنوان HTTPS عام فقط.",
+      "descriptionLabel": "الوصف",
+      "events": "الأحداث",
+      "event": {
+        "match": {
+          "created": "مباراة جديدة",
+          "updated": "تحديث مباراة"
+        },
+        "tournament": {
+          "created": "بطولة جديدة",
+          "updated": "تحديث بطولة"
+        },
+        "team": {
+          "updated": "تحديث فريق"
+        },
+        "player": {
+          "updated": "تحديث لاعب"
+        }
+      },
+      "filtersTitle": "الفلاتر",
+      "filtersHint": "الفلاتر الفارغة تسمح بمرور كل شيء. تنطبق فلاتر المنطقة والرسمية على المباريات والبطولات، وفلتر الفريق على جميع الأحداث.",
+      "official": {
+        "label": "رسمي",
+        "all": "الرسمية وغير الرسمية",
+        "official": "الرسمية فقط",
+        "unofficial": "غير الرسمية فقط"
+      },
+      "regions": "المناطق",
+      "regionsHint": "منطقة البطولة.",
+      "teams": "الفرق",
+      "teamsHint": "المباريات والبطولات التي يلعب فيها أحد هذه الفرق، وهذه الفرق ولاعبوها الحاليون.",
+      "teamsPlaceholder": "إضافة فريق",
+      "teamsSearch": "ابحث عن فريق...",
+      "teamsNoResults": "لم يتم العثور على أي فريق",
+      "removeTeam": "إزالة {name}",
+      "error": {
+        "notFound": "هذا الـ endpoint أو المفتاح لم يعد موجودًا.",
+        "tooManyEndpoints": "{max} endpoints كحد أقصى لكل مفتاح API.",
+        "keyInactive": "مفتاح API هذا غير نشط، لا يمكن إضافة أي webhook.",
+        "invalid": "بعض الحقول غير صالحة.",
+        "network": "خطأ في الشبكة، يرجى المحاولة مرة أخرى.",
+        "busy": "هذا الإرسال قيد التنفيذ بالفعل، حاول مرة أخرى بعد قليل.",
+        "url": {
+          "required": "الرابط مطلوب.",
+          "tooLong": "{urlMaxLength} حرفًا كحد أقصى.",
+          "invalid": "هذا ليس رابطًا صالحًا.",
+          "notHttps": "يجب أن يبدأ الرابط بـ https://.",
+          "credentials": "لا يمكن أن يحتوي الرابط على اسم مستخدم أو كلمة مرور.",
+          "privateHost": "يجب أن يشير الرابط إلى عنوان عام."
+        },
+        "description": {
+          "tooLong": "{descriptionMaxLength} حرفًا كحد أقصى."
+        },
+        "events": {
+          "required": "اختر حدثًا واحدًا على الأقل.",
+          "invalid": "حدث غير معروف."
+        },
+        "filterRegions": {
+          "invalid": "منطقة غير معروفة.",
+          "tooMany": "{filterRegions} مناطق كحد أقصى."
+        },
+        "filterTeamIds": {
+          "invalid": "فريق غير صالح.",
+          "tooMany": "{filterTeams} فرق كحد أقصى.",
+          "unknownTeam": "أحد الفرق لم يعد موجودًا."
+        },
+        "filterOfficial": {
+          "invalid": "قيمة غير صالحة."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "كل البطولات والفرق واللاعبين والمباريات العامة في GC Stats، للتصفح والفرز والتنزيل بحرية بصيغة JSON.",
+    "subtitle": "جميع البطولات والفرق واللاعبين والمباريات والخرائط ولوحات النتائج العامة في GC Stats، متاحة للتصفح والفرز والتنزيل بصيغة JSON مجانًا.",
     "rowCount": "{count, plural, zero {لا صفوف} one {صف واحد} two {صفان} few {# صفوف} many {# صفًا} other {# صف}}",
     "columnCount": "{count, plural, zero {لا أعمدة} one {عمود واحد} two {عمودان} few {# أعمدة} many {# عمودًا} other {# عمود}}",
     "explore": "استكشاف",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "المباريات",
         "description": "كل المباريات مع البطولة، والمرحلة، والفرق، والنتيجة، والحالة، والموعد."
+      },
+      "maps": {
+        "name": "الخرائط",
+        "description": "كل خريطة لُعبت: البطولة والفرق والنتيجة والفائز والجولات المكسوبة في كل جانب."
+      },
+      "map_players": {
+        "name": "لوحات النتائج",
+        "description": "كل سطر لاعب في كل خريطة منتهية: العميل والقتلات والوفيات والمساعدات وACS وADR وKAST والقتلات الأولى والكلتش والقتلات المتعددة."
       }
     },
     "usage": {
       "title": "استخدام البيانات",
       "publicOnly": "تُعرض فقط البيانات المنشورة علنًا على الموقع: لا حسابات ولا جهات اتصال ولا حقول خاصة.",
-      "terms": "تخضع البيانات لنفس شروط الموقع: لا يجوز استخدامها إلا وفق ما تسمح به <terms>شروط الاستخدام</terms> الخاصة بنا.",
+      "terms": "تخضع البيانات لنفس شروط الموقع: لا يجوز استخدامها إلا وفق ما تسمح به شروط الاستخدام الخاصة بنا.",
       "freshness": "تُحدَّث الجداول كل دقيقة، والتصديرات الكاملة كل 10 دقائق.",
       "limits": "الحدود: {browse} صفحة جدول في الدقيقة و{exports} تصدير كامل في الساعة، لكل حساب أو لكل عنوان IP.",
       "accountOnly": "البوابة متاحة حاليًا للمستخدمين المسجلين فقط.",
-      "priority": "للموقع الأولوية دائمًا: عند ارتفاع الحمل، تتباطأ البوابة وقد تجيب بأنها مشغولة لبضع ثوانٍ."
+      "priority": "للموقع الأولوية دائمًا: عند ارتفاع الحمل، تتباطأ البوابة وقد تجيب بأنها مشغولة لبضع ثوانٍ.",
+      "termsLink": "شروط الاستخدام"
     },
     "api": {
       "title": "واجهة برمجية API",
@@ -6776,7 +7067,9 @@
       "tournaments": "الاسم، المنطقة، الفئة...",
       "teams": "الاسم أو الوسم...",
       "players": "اللقب، الاسم، الفريق...",
-      "matches": "البطولة، المرحلة، الفريق..."
+      "matches": "البطولة، المرحلة، الفريق...",
+      "maps": "بطولة، خريطة، فريق...",
+      "map_players": "لاعب، فريق، عميل، خريطة..."
     },
     "clearSearch": "مسح البحث",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "الفريق B",
       "winner_team_id": "معرّف الفائز",
       "is_forfeit": "انسحاب",
-      "patch": "التحديث"
+      "patch": "التحديث",
+      "match_id": "معرّف المباراة",
+      "started_at": "التاريخ",
+      "map_order": "رقم الخريطة",
+      "map_name": "الخريطة",
+      "is_completed": "منتهية",
+      "team_a_atk_rounds_won": "جولات هجوم الفريق A",
+      "team_a_def_rounds_won": "جولات دفاع الفريق A",
+      "team_b_atk_rounds_won": "جولات هجوم الفريق B",
+      "team_b_def_rounds_won": "جولات دفاع الفريق B",
+      "map_id": "معرّف الخريطة",
+      "player_id": "معرّف اللاعب",
+      "player_handle": "اللاعب",
+      "team_id": "معرّف الفريق",
+      "team_name": "الفريق",
+      "agent": "العميل",
+      "kills": "القتلات",
+      "deaths": "الوفيات",
+      "assists": "المساعدات",
+      "first_kills": "القتلات الأولى",
+      "first_deaths": "الوفيات الأولى",
+      "clutches_won": "كلتش ناجح",
+      "clutches_played": "كلتش ملعوب",
+      "trade_kills": "قتلات التبادل",
+      "traded_deaths": "وفيات تم تبادلها",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

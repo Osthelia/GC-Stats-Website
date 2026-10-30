@@ -10,7 +10,7 @@
  */
 
 import type { ComponentType } from "react";
-import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText, Swords } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText, Swords, Webhook } from "lucide-react";
 import { ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 
 export type DashboardNavItem = {
@@ -67,7 +67,10 @@ export const DASHBOARD_ORG_NAV_GROUPS: { key: string; labelKey: string; items: D
   {
     key: "developer",
     labelKey: "groupDeveloper",
-    items: [{ href: (id) => `/dashboard/${id}/api-keys`, labelKey: "apiKeys", icon: KeySquare, permission: ORGANIZATION_PERMISSIONS.apiKeysManage }],
+    items: [
+      { href: (id) => `/dashboard/${id}/api-keys`, labelKey: "apiKeys", icon: KeySquare, permission: ORGANIZATION_PERMISSIONS.apiKeysManage },
+      { href: (id) => `/dashboard/${id}/webhooks`, labelKey: "webhooks", icon: Webhook, permission: ORGANIZATION_PERMISSIONS.apiKeysManage },
+    ],
   },
 ];
 
@@ -97,6 +100,7 @@ export function isDashboardPathIn(pathname: string, base: string): boolean {
 /** The individual API key space (/dashboard/api-keys) — not organization-scoped, gated by owning a personal api_key row instead (see dashboard-rbac.ts requireApiKeyAccess). Same idea as DASHBOARD_AUTHOR_NAV_ITEMS. */
 export const DASHBOARD_API_KEY_NAV_ITEMS: { href: string; labelKey: string; icon: ComponentType<{ className?: string }>; exact?: boolean }[] = [
   { href: "/dashboard/api-keys", labelKey: "myApiKeys", icon: KeySquare, exact: true },
+  { href: "/dashboard/api-keys/webhooks", labelKey: "webhooks", icon: Webhook },
 ];
 
 /** Resolves any /dashboard/{id}/*, /dashboard/author/* or /dashboard/api-keys/* pathname to its nav item's labelKey, mirroring matchAdminNavItem — used by dashboard-header.tsx to name the current page. */
@@ -108,6 +112,7 @@ export function matchDashboardNavItemLabel(pathname: string): string {
     const authorItem = DASHBOARD_AUTHOR_NAV_ITEMS.find((i) => pathname === i.href);
     return authorItem?.labelKey ?? "myArticles";
   }
+  if (isDashboardPathIn(pathname, "/dashboard/api-keys/webhooks")) return "webhooks";
   if (isDashboardPathIn(pathname, "/dashboard/api-keys")) return "myApiKeys";
   const suffix = pathname.replace(/^\/dashboard\/\d+/, "");
   const item = DASHBOARD_ORG_NAV_ITEMS.find((i) => suffix === i.href(0).replace(/^\/dashboard\/0/, ""));

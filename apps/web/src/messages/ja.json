@@ -477,6 +477,57 @@
         "joinSource": "加入のソース",
         "leftSource": "退団のソース"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "APIキー",
+      "subtitle": "無料の公開APIキーを作成して、プロジェクトでGC Stats APIを利用できます。",
+      "notice": {
+        "rateLimit": "公開キーは、アカウントごとに毎秒{rate}リクエストに制限され、すべてのキーで共有されます。この制限は予告なくいつでも変更される場合があります。",
+        "stable": "安定した上限を得る唯一の方法は、GC Statsチームにパートナー APIキーをリクエストすることです。",
+        "noWebhooks": "公開キーではwebhookを利用できません。webhookはパートナーキー専用です。",
+        "requestPartner": "パートナーAPIキーをリクエスト"
+      },
+      "create": {
+        "heading": "公開キーを作成",
+        "description": "データの利用先を教えてください。有効な公開キーは最大{max}個まで保持できます。",
+        "clientName": "製品または会社",
+        "clientNamePlaceholder": "Liquipedia、Remake、自作のDiscord bot...",
+        "usageDescription": "用途の説明",
+        "usageDescriptionPlaceholder": "データの用途、使用するエンドポイント、おおよその頻度。",
+        "submit": "キーを作成",
+        "termsNote": "APIキーには、サイトと同じ<terms>利用規約</terms>が適用されます。"
+      },
+      "created": {
+        "title": "新しいAPIキー",
+        "warning": "今すぐコピーしてください。二度と表示されません。リクエストのx-api-keyヘッダーで送信してください。",
+        "copy": "キーをコピー",
+        "dismiss": "コピーしました"
+      },
+      "list": {
+        "heading": "あなたの公開キー",
+        "empty": "公開APIキーはまだありません。",
+        "active": "有効",
+        "revoked": "無効化済み",
+        "requests": "30日間で{count, plural, one {#リクエスト} other {#リクエスト}}",
+        "revoke": "無効化",
+        "suspended": "停止中",
+        "suspendedHint": "このキーはGC Statsチームによって停止されました。再開をご希望の場合は、Discordでお問い合わせください。"
+      },
+      "error": {
+        "required": "この項目は必須です。",
+        "tooShort": "{min}文字以上で入力してください。",
+        "tooLong": "{max}文字以内で入力してください。",
+        "tooManyKeys": "有効な公開キーがすでに{max}個あります。新しく作成するには1つを無効化してください。",
+        "unauthenticated": "セッションの有効期限が切れました。もう一度ログインしてください。",
+        "disabled": "公開APIキーは現在無効になっています。",
+        "invalid": "一部の項目が無効です。",
+        "notFound": "このキーはもう存在しません。",
+        "network": "ネットワークエラーです。もう一度お試しください。",
+        "blocked": "APIへのアクセスがブロックされました。"
+      },
+      "blocked": "APIへのアクセスがブロックされたため、APIキーを作成できなくなりました。",
+      "contactDiscord": "Discordでお問い合わせ"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "開発者向け",
     "intro": "あなたのプロジェクト作りに役立つ、私たちのすべてのデータをご用意しています。そしてGC Statsへの貢献にご興味があれば、ぜひご参加ください。",
     "apiKey": {
-      "title": "APIキーのリクエスト",
-      "body": "不正利用を防ぐため、私たちのAPIには認証が必要です。ご利用になりたい場合は、Discordまたはメールでご連絡ください。",
+      "title": "パートナーAPIキーのリクエスト",
+      "body": "パートナーキーには安定したレート制限とwebhookが付いています。取得するには、Discordまたはメールでご連絡ください。",
       "warning": "リクエストには以下を含めてください。",
       "step1": "プロジェクト名と概要",
       "step2": "想定されるAPIの用途と規模",
@@ -951,6 +1002,23 @@
       "title": "オープンソースと貢献",
       "body": "私たちは、コミュニティの力を借りるため、プロジェクトの大部分をオープンソース化することにしました。クローズドソースは信条に合いません。管理ダッシュボードを除くすべてのリポジトリは、貢献を受け付けています。プルリクエストを送る前に、必ずガイドラインをお読みください。",
       "badge": "公開リポジトリ"
+    },
+    "publicKey": {
+      "title": "公開APIキー",
+      "body": "GC Statsアカウントがあれば誰でも、私たちを待つことなく数秒で無料の公開キーを作成できます。",
+      "step1": "アカウント設定から作成し、データを利用する製品または会社と、その用途をお知らせください。",
+      "step2": "公開キーは毎秒数リクエストに制限されており、この上限はいつでも変更される場合があります。",
+      "step3": "公開キーではwebhookを利用できません。安定した上限とwebhookが必要な場合は、下記からパートナーキーをリクエストしてください。",
+      "button": "公開キーを作成"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "パートナーキーはダッシュボードからHTTPSエンドポイントを登録できます。データが変更されるたびにGC StatsがPOSTを送信します。",
+      "events": "イベント: 新しい試合、試合の更新、新しい大会、大会の更新、チームの更新、選手の更新。",
+      "filters": "フィルター: 大会の地域、公式かどうか、参加チーム。",
+      "signature": "各リクエストにはX-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp、X-GCS-Signatureヘッダーが含まれます。エンドポイントのシークレットで署名を検証してください。",
+      "retries": "10秒以内に2xxステータスで応答してください。失敗した配信は約9時間再試行され、失敗が多すぎるエンドポイントはオフになります。",
+      "setup": "ペイロードにはイベント、その日時、エンティティが、OpenDataのデータセットと同じフィールドで含まれます。"
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "再生成",
       "activateButton": "有効化",
       "deactivateButton": "無効化",
+      "deactivateConfirm": "キー「{name}」を無効化しますか？このキーのwebhookは完全に削除されます。",
       "deleteButton": "削除",
       "createTitle": "APIキーを作成",
       "createDescription": "完全なキーは作成直後の一度だけ表示されます。",
@@ -2924,6 +2993,10 @@
         "userNotFound": "ユーザーが見つかりません。",
         "organizationNotFound": "組織が見つかりません。",
         "ownerRequired": "ユーザーまたは組織を選択してください。"
+      },
+      "tabs": {
+        "partner": "パートナーキー",
+        "public": "公開キー"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "ポイントタイプ",
       "fieldPointTypeNone": "なし",
       "fieldActive": "有効なトーナメント",
+      "fieldOfficial": "公式トーナメント",
+      "officialHint": "公式サーキットのイベントです。webhookの購読者は、公式と非公式のトーナメントを絞り込めます。",
       "fieldLocation": "開催地",
       "fieldPrizePool": "賞金総額",
       "fieldDescription": "説明",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "1 時間あたりの全件エクスポート数",
         "exportsPerHourHint": "アカウントごと、または訪問者は IP アドレスごと。{min} から {max} まで。",
         "propagationHint": "変更は 15 秒以内にすべてのサーバーに反映されます。"
+      },
+      "publicApi": {
+        "title": "公開API",
+        "description": "どのアカウントでも設定から作成できるセルフサービスのAPIキーです。パートナーキーは独自の上限を維持します。",
+        "keys": "公開キー",
+        "enabled": "公開キーを有効化",
+        "enabledHint": "オフの場合、公開キーは作成できず、既存のキーは403を返します。",
+        "ratePerSecond": "毎秒リクエスト数",
+        "ratePerSecondHint": "アカウントごと、すべての公開キーで共有、{min}から{max}の範囲。負荷の高いエンドポイントは複数リクエストとしてカウントされます。",
+        "maxKeysPerUser": "アカウントごとの有効キー数",
+        "maxKeysPerUserHint": "{min}から{max}まで。",
+        "propagationHint": "変更は15秒以内にすべてのサーバーに反映されます。"
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "待機中のクエリ",
         "inFlight": "実行中の OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "公開APIキー",
+      "subtitle": "ユーザーが設定から作成したキーです。アカウントごとに毎秒{rate}リクエストの制限があります。",
+      "searchPlaceholder": "名前、説明、ユーザーで検索",
+      "statusFilter": "ステータス",
+      "status": {
+        "active": "有効",
+        "suspended": "停止中",
+        "revoked": "失効",
+        "blocked": "APIアクセスブロック中"
+      },
+      "empty": "一致する公開キーはありません。",
+      "requests30d": "30日間で{count, plural, other {#件のリクエスト}}",
+      "statsAndEdit": "統計と編集",
+      "suspend": "停止",
+      "unsuspend": "再開",
+      "block": "APIアクセスをブロック",
+      "unblock": "APIアクセスのブロックを解除",
+      "delete": "削除",
+      "cancel": "キャンセル",
+      "actionFailed": "操作に失敗しました。もう一度お試しください。",
+      "notFound": "このキーまたはユーザーは存在しません。",
+      "done": {
+        "suspend": "キーを停止しました。",
+        "unsuspend": "キーを再開しました。",
+        "block": "APIアクセスをブロックし、このユーザーのすべてのキーを失効させました。",
+        "unblock": "APIアクセスのブロックを解除しました。",
+        "delete": "キーを削除しました。"
+      },
+      "confirm": {
+        "suspend": {
+          "title": "このキーを停止しますか？",
+          "description": "キー「{name}」は直ちに使用できなくなります。{owner}が再開を希望する場合は、Discordでお問い合わせいただく必要があります。"
+        },
+        "unsuspend": {
+          "title": "このキーを再開しますか？",
+          "description": "キー「{name}」は{owner}が再び使用できるようになります。"
+        },
+        "block": {
+          "title": "APIアクセスをブロックしますか？",
+          "description": "{owner}のすべての公開キーが失効し、新しいキーも作成できなくなります。"
+        },
+        "unblock": {
+          "title": "APIアクセスのブロックを解除しますか？",
+          "description": "{owner}は再び公開キーを作成できるようになります。失効したキーは失効したままです。"
+        },
+        "delete": {
+          "title": "このキーを削除しますか？",
+          "description": "キー「{name}」とその統計は完全に削除されます。"
+        }
+      },
+      "usageHeading": "ユーザーが申告した用途",
+      "clientName": "製品または企業",
+      "usageDescription": "用途の説明",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "キーを更新しました。",
+      "saveError": "一部の項目が無効です。",
+      "error": {
+        "required": "この項目は必須です。",
+        "tooShort": "{min}文字以上で入力してください。",
+        "tooLong": "{max}文字以内で入力してください。"
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "管理者",
       "allAuthors": "すべての著者",
       "authorAdminSpace": "著者",
-      "logs": "ログ"
+      "logs": "ログ",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "組織を選択",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "キーが見つかりません。"
-      }
+      },
+      "kindPublic": "公開",
+      "publicRateLimit": "共有の公開制限"
     },
     "myApiKeys": {
       "title": "自分のAPIキー",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "平均所要時間",
       "columnErrorRate": "エラー率",
       "requests": "{count}件のリクエスト",
-      "errors": "{count}件のエラー"
+      "errors": "{count}件のエラー",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "ロールと権限",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, other {#件}}",
       "previous": "前のページ",
       "next": "次のページ"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "試合、大会、チーム、選手が変更されると、GC StatsはあなたのエンドポイントにHTTPS POSTを送信します。配信はおよそ1分ごとに確認されます。",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "パートナーAPIキーのエンドポイントと配信。",
+      "keySwitcher": "パートナーAPIキー",
+      "noPartnerKey": "webhookはパートナーAPIキー専用です。まだパートナーキーをお持ちではありません。",
+      "requestPartnerKey": "パートナーキーを申請",
+      "refresh": "更新",
+      "add": "エンドポイントを追加",
+      "keyInactive": "このAPIキーは無効です。webhookは削除済みで、再度有効化されるまで追加できません。",
+      "empty": "webhookエンドポイントはまだありません。",
+      "active": "有効",
+      "inactive": "無効",
+      "toggle": "このエンドポイントを有効化または無効化",
+      "disabledFailing": "配信の失敗が連続したため自動的にオフになりました。エンドポイントを修正してから再度有効化してください。",
+      "any": "すべて",
+      "test": "テストを送信",
+      "testing": "送信中...",
+      "testSuccess": "配信完了 (HTTP {status})",
+      "testFailed": "配信に失敗しました: {error}",
+      "edit": "編集",
+      "showSecret": "シークレットを表示",
+      "rotateSecret": "新しいシークレット",
+      "delete": "削除",
+      "deleted": "エンドポイントを削除しました",
+      "created": "エンドポイントを作成しました",
+      "updated": "エンドポイントを更新しました",
+      "deliveriesTitle": "最近の配信",
+      "deliveriesEmpty": "配信はまだありません。",
+      "columnDate": "日時",
+      "columnEvent": "イベント",
+      "columnEndpoint": "エンドポイント",
+      "columnStatus": "ステータス",
+      "columnAttempts": "試行回数",
+      "redeliver": "再送信",
+      "status": {
+        "pending": "保留中",
+        "success": "配信完了",
+        "failed": "失敗"
+      },
+      "secretTitle": "署名シークレット",
+      "secretRotatedTitle": "新しい署名シークレット",
+      "secretCreatedTitle": "エンドポイントを作成しました。署名シークレットはこちらです",
+      "secretDescription": "X-GCS-Signatureヘッダーの検証に使用します。X-GCS-Timestampヘッダー、ドット、生のボディを連結したもののsha256 HMACです。",
+      "copySecret": "シークレットをコピー",
+      "close": "閉じる",
+      "deleteTitle": "このエンドポイントを削除しますか？",
+      "deleteDescription": "{url}はwebhookを受信しなくなります。配信履歴も削除されます。",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "saving": "保存中...",
+      "addTitle": "新しいwebhookエンドポイント",
+      "editTitle": "エンドポイントを編集",
+      "dialogDescription": "受信するイベントを選び、フィルターで絞り込みます。",
+      "url": "エンドポイントURL",
+      "urlHint": "公開HTTPSアドレスのみ。",
+      "descriptionLabel": "説明",
+      "events": "イベント",
+      "event": {
+        "match": {
+          "created": "新しい試合",
+          "updated": "試合の更新"
+        },
+        "tournament": {
+          "created": "新しい大会",
+          "updated": "大会の更新"
+        },
+        "team": {
+          "updated": "チームの更新"
+        },
+        "player": {
+          "updated": "選手の更新"
+        }
+      },
+      "filtersTitle": "フィルター",
+      "filtersHint": "空のフィルターはすべてを通します。地域と公式のフィルターは試合と大会に、チームのフィルターはすべてのイベントに適用されます。",
+      "official": {
+        "label": "公式",
+        "all": "公式と非公式",
+        "official": "公式のみ",
+        "unofficial": "非公式のみ"
+      },
+      "regions": "地域",
+      "regionsHint": "大会の地域。",
+      "teams": "チーム",
+      "teamsHint": "これらのチームのいずれかが出場する試合と大会、これらのチームと現在の選手。",
+      "teamsPlaceholder": "チームを追加",
+      "teamsSearch": "チームを検索...",
+      "teamsNoResults": "チームが見つかりません",
+      "removeTeam": "{name}を削除",
+      "error": {
+        "notFound": "このエンドポイントまたはキーはもう存在しません。",
+        "tooManyEndpoints": "APIキーごとにエンドポイントは最大{max}個です。",
+        "keyInactive": "このAPIキーは無効なため、webhookを追加できません。",
+        "invalid": "一部の項目が無効です。",
+        "network": "ネットワークエラーです。もう一度お試しください。",
+        "busy": "この配信はすでに送信中です。しばらくしてからもう一度お試しください。",
+        "url": {
+          "required": "URLは必須です。",
+          "tooLong": "{urlMaxLength}文字以内で入力してください。",
+          "invalid": "有効なURLではありません。",
+          "notHttps": "URLはhttps://で始まる必要があります。",
+          "credentials": "URLにユーザー名やパスワードを含めることはできません。",
+          "privateHost": "URLは公開アドレスを指している必要があります。"
+        },
+        "description": {
+          "tooLong": "{descriptionMaxLength}文字以内で入力してください。"
+        },
+        "events": {
+          "required": "イベントを1つ以上選択してください。",
+          "invalid": "不明なイベントです。"
+        },
+        "filterRegions": {
+          "invalid": "不明な地域です。",
+          "tooMany": "地域は最大{filterRegions}個です。"
+        },
+        "filterTeamIds": {
+          "invalid": "無効なチームです。",
+          "tooMany": "チームは最大{filterTeams}個です。",
+          "unknownTeam": "チームの1つがもう存在しません。"
+        },
+        "filterOfficial": {
+          "invalid": "無効な値です。"
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "GC Stats のすべての公開大会、チーム、選手、試合を自由に閲覧、並べ替え、JSON でダウンロードできます。",
+    "subtitle": "GC Statsの公開されているすべての大会、チーム、選手、試合、マップ、スコアボードを自由に閲覧、並べ替え、JSONでダウンロードできます。",
     "rowCount": "{count, plural, other {# 行}}",
     "columnCount": "{count, plural, other {# 列}}",
     "explore": "見る",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "試合",
         "description": "大会、ステージ、チーム、スコア、ステータス、日時を含むすべての試合。"
+      },
+      "maps": {
+        "name": "マップ",
+        "description": "プレイされた全マップ：大会、チーム、スコア、勝者、サイドごとの獲得ラウンド。"
+      },
+      "map_players": {
+        "name": "スコアボード",
+        "description": "終了した全マップの選手ごとの行：エージェント、キル、デス、アシスト、ACS、ADR、KAST、ファーストキル、クラッチ、マルチキル。"
       }
     },
     "usage": {
       "title": "データの利用",
       "publicOnly": "サイトですでに公開されているデータのみを提供します。アカウント、連絡先、非公開項目は含みません。",
-      "terms": "データにはサイトと同じ条件が適用されます。<terms>利用規約</terms>で認められた範囲でのみ利用できます。",
+      "terms": "データにはサイトと同じ条件が適用されます。利用規約で認められた範囲でのみ使用できます。",
       "freshness": "表は毎分、全件エクスポートは 10 分ごとに更新されます。",
       "limits": "上限：アカウントまたは IP アドレスごとに 1 分あたり {browse} 表ページ、1 時間あたり {exports} 全件エクスポート。",
       "accountOnly": "現在ポータルはログインしたユーザーのみ利用できます。",
-      "priority": "サイトが常に優先されます。高負荷時はポータルが減速し、数秒間ビジーと応答することがあります。"
+      "priority": "サイトが常に優先されます。高負荷時はポータルが減速し、数秒間ビジーと応答することがあります。",
+      "termsLink": "利用規約"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "名前、地域、カテゴリー...",
       "teams": "名前またはタグ...",
       "players": "ハンドル、名前、チーム...",
-      "matches": "大会、ステージ、チーム..."
+      "matches": "大会、ステージ、チーム...",
+      "maps": "大会、マップ、チーム...",
+      "map_players": "選手、チーム、エージェント、マップ..."
     },
     "clearSearch": "検索をクリア",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "チーム B",
       "winner_team_id": "勝者 ID",
       "is_forfeit": "不戦",
-      "patch": "パッチ"
+      "patch": "パッチ",
+      "match_id": "試合ID",
+      "started_at": "日付",
+      "map_order": "マップ番号",
+      "map_name": "マップ",
+      "is_completed": "終了",
+      "team_a_atk_rounds_won": "チームA 攻撃ラウンド",
+      "team_a_def_rounds_won": "チームA 防衛ラウンド",
+      "team_b_atk_rounds_won": "チームB 攻撃ラウンド",
+      "team_b_def_rounds_won": "チームB 防衛ラウンド",
+      "map_id": "マップID",
+      "player_id": "選手ID",
+      "player_handle": "選手",
+      "team_id": "チームID",
+      "team_name": "チーム",
+      "agent": "エージェント",
+      "kills": "キル",
+      "deaths": "デス",
+      "assists": "アシスト",
+      "first_kills": "ファーストキル",
+      "first_deaths": "ファーストデス",
+      "clutches_won": "クラッチ勝利",
+      "clutches_played": "クラッチ数",
+      "trade_kills": "トレードキル",
+      "traded_deaths": "トレードされたデス",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

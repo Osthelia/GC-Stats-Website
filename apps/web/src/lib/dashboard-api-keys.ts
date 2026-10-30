@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { apiKeys, apiRequestLog } from "@gc-stats/db";
 import { getApiKeysOverview, type ApiKeysOverview } from "@/lib/api-key-stats";
@@ -25,6 +25,7 @@ export type DashboardApiKeyRow = {
   keyHashPreview: string;
   rateLimit: number | null;
   isActive: boolean;
+  kind: "partner" | "public";
   requestCount: number;
 };
 
@@ -33,7 +34,7 @@ export type RegenerateApiKeyResult = { ok: true; plainKey: string } | { ok: fals
 
 export async function listOrganizationApiKeys(organizationId: number): Promise<DashboardApiKeyRow[]> {
   const rows = await db
-    .select({ id: apiKeys.id, clientName: apiKeys.clientName, keyHash: apiKeys.keyHash, rateLimit: apiKeys.rateLimit, isActive: apiKeys.isActive })
+    .select({ id: apiKeys.id, clientName: apiKeys.clientName, keyHash: apiKeys.keyHash, rateLimit: apiKeys.rateLimit, isActive: apiKeys.isActive, kind: sql<"partner" | "public">`${apiKeys.kind}` })
     .from(apiKeys)
     .where(eq(apiKeys.organizationId, organizationId))
     .orderBy(asc(apiKeys.clientName));
@@ -58,7 +59,7 @@ export async function getOrganizationApiKeysOverview(organizationId: number): Pr
 
 export async function getOrganizationApiKey(organizationId: number, apiKeyId: number): Promise<DashboardApiKeyRow | null> {
   const [row] = await db
-    .select({ id: apiKeys.id, clientName: apiKeys.clientName, keyHash: apiKeys.keyHash, rateLimit: apiKeys.rateLimit, isActive: apiKeys.isActive })
+    .select({ id: apiKeys.id, clientName: apiKeys.clientName, keyHash: apiKeys.keyHash, rateLimit: apiKeys.rateLimit, isActive: apiKeys.isActive, kind: sql<"partner" | "public">`${apiKeys.kind}` })
     .from(apiKeys)
     .where(and(eq(apiKeys.id, apiKeyId), eq(apiKeys.organizationId, organizationId)))
     .limit(1);

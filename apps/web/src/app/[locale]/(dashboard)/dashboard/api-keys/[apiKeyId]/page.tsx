@@ -9,8 +9,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, Activity, Clock, Gauge, TrendingUp } from "lucide-react";
+import { ArrowLeft, Activity, Clock, Gauge, TrendingUp, Webhook } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
@@ -37,6 +38,7 @@ export default async function DashboardPersonalApiKeyStatsPage({ params }: { par
   const key = await getPersonalApiKey(userId, keyId);
   if (!key) notFound();
 
+  const showWebhooks = key.kind === "partner";
   const stats = await getApiKeyStats(keyId);
   const t = await getTranslations({ locale, namespace: "dashboard.apiKeyStats" });
 
@@ -50,6 +52,12 @@ export default async function DashboardPersonalApiKeyStatsPage({ params }: { par
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">{key.clientName}</h1>
           <ActiveStatusBadge active={key.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
+          {showWebhooks && (
+            <Button variant="outline" size="sm" className="ml-auto" render={<Link href={`/dashboard/api-keys/webhooks?key=${keyId}`} />}>
+              <Webhook />
+              {t("webhooksButton")}
+            </Button>
+          )}
         </div>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>

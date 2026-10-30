@@ -9,7 +9,6 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 import { pruneApiKeyReveals } from "./jobs/prune-api-key-reveals";
 import { pruneRateLimitCounters } from "./jobs/prune-rate-limit-counters";
 import { resetDataExplorerUsage } from "./jobs/reset-data-explorer-usage";
@@ -24,14 +23,13 @@ import { pruneExpiredOAuthTokens } from "./jobs/prune-expired-oauth-tokens";
 import { flushChangeRequestDiscordNotices } from "./jobs/flush-change-request-discord-notices";
 import { deactivateInactiveEntities } from "./jobs/deactivate-inactive-entities";
 import { pruneOpenDataLogs } from "./jobs/prune-opendata-logs";
-
+import { dispatchWebhooks } from "./jobs/dispatch-webhooks";
+import { pruneWebhookLogs } from "./jobs/prune-webhook-logs";
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string> };
-
 /** A job summary reporting zero effective work (nothing activated/recorded), so the per-minute jobs don't flood logs with a line every tick. */
 export function isNoopSummary(summary: string): boolean {
   return summary.startsWith("no ") || /^activated 0\//.test(summary) || /recorded\/updated 0 POV stream/.test(summary) || /^sent 0\//.test(summary);
 }
-
 // No node-cron import here on purpose: registry.ts (local dev only) is the only file allowed to import it.
 export const jobs: ScheduledJob[] = [
   { name: "prune-api-key-reveals", cron: "*/15 * * * *", run: pruneApiKeyReveals },
@@ -48,8 +46,9 @@ export const jobs: ScheduledJob[] = [
   { name: "flush-change-request-discord-notices", cron: "* * * * *", run: flushChangeRequestDiscordNotices },
   { name: "deactivate-inactive-entities", cron: "10 0 1 * *", run: deactivateInactiveEntities },
   { name: "prune-opendata-logs", cron: "0 0 * * *", run: pruneOpenDataLogs },
+  { name: "dispatch-webhooks", cron: "* * * * *", run: dispatchWebhooks },
+  { name: "prune-webhook-logs", cron: "0 0 * * *", run: pruneWebhookLogs },
 ];
-
 /** Runs every job matching this cron expression, sequentially, swallowing individual failures. Used by the /api/internal/cron route. */
 export async function runJobsForCron(cronExpr: string): Promise<void> {
   for (const job of jobs.filter((j) => j.cron === cronExpr)) {

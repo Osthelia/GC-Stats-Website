@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GC-Stats - api-keys-panel
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
@@ -61,6 +61,7 @@ export function ApiKeysPanel({
   }
 
   function handleToggle(key: AdminApiKeyRow) {
+    if (key.isActive && !window.confirm(t("deactivateConfirm", { name: key.clientName }))) return;
     startTransition(async () => {
       const result = await toggleApiKeyActive(key.id, !key.isActive);
       if (!result.ok) {

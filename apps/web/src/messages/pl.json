@@ -477,6 +477,57 @@
         "joinSource": "Źródło przybycia",
         "leftSource": "Źródło odejścia"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "Klucze API",
+      "subtitle": "Utwórz darmowy publiczny klucz API, aby korzystać z API GC Stats w swoim projekcie.",
+      "notice": {
+        "rateLimit": "Klucze publiczne są ograniczone do {rate} żądań na sekundę na konto, wspólnie dla wszystkich Twoich kluczy. Ten limit może się zmienić w dowolnym momencie, bez uprzedzenia.",
+        "stable": "Jedynym sposobem na stały limit jest poproszenie zespołu GC Stats o partnerski klucz API.",
+        "noWebhooks": "Klucze publiczne nie dają dostępu do webhooków, są one zarezerwowane dla kluczy partnerskich.",
+        "requestPartner": "Poproś o partnerski klucz API"
+      },
+      "create": {
+        "heading": "Utwórz klucz publiczny",
+        "description": "Powiedz nam, gdzie dane będą używane. Możesz mieć maksymalnie {max} aktywnych kluczy publicznych.",
+        "clientName": "Produkt lub firma",
+        "clientNamePlaceholder": "Liquipedia, Remake, mój bot na Discordzie...",
+        "usageDescription": "Opis zastosowania",
+        "usageDescriptionPlaceholder": "Do czego służą dane, które endpointy i mniej więcej jak często.",
+        "submit": "Utwórz klucz",
+        "termsNote": "Twój klucz API podlega tym samym <terms>warunkom korzystania</terms> co strona."
+      },
+      "created": {
+        "title": "Twój nowy klucz API",
+        "warning": "Skopiuj go teraz: nigdy więcej nie zostanie wyświetlony. Wysyłaj go w nagłówku x-api-key swoich zapytań.",
+        "copy": "Skopiuj klucz",
+        "dismiss": "Skopiowałem"
+      },
+      "list": {
+        "heading": "Twoje klucze publiczne",
+        "empty": "Nie masz jeszcze żadnego publicznego klucza API.",
+        "active": "Aktywny",
+        "revoked": "Unieważniony",
+        "requests": "{count, plural, one {# zapytanie} few {# zapytania} many {# zapytań} other {# zapytania}} w ciągu 30 dni",
+        "revoke": "Unieważnij",
+        "suspended": "Zawieszony",
+        "suspendedHint": "Ten klucz został zawieszony przez zespół GC Stats. Skontaktuj się z nami na Discordzie, aby poprosić o jego przywrócenie."
+      },
+      "error": {
+        "required": "To pole jest wymagane.",
+        "tooShort": "Co najmniej {min} znaków.",
+        "tooLong": "Maksymalnie {max} znaków.",
+        "tooManyKeys": "Masz już {max} aktywnych kluczy publicznych. Unieważnij jeden, aby utworzyć nowy.",
+        "unauthenticated": "Twoja sesja wygasła, zaloguj się ponownie.",
+        "disabled": "Publiczne klucze API są obecnie wyłączone.",
+        "invalid": "Niektóre pola są nieprawidłowe.",
+        "notFound": "Ten klucz już nie istnieje.",
+        "network": "Błąd sieci, spróbuj ponownie.",
+        "blocked": "Twój dostęp do API został zablokowany."
+      },
+      "blocked": "Twój dostęp do API został zablokowany, nie możesz już tworzyć kluczy API.",
+      "contactDiscord": "Skontaktuj się z nami na Discordzie"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "Dla deweloperów",
     "intro": "Wszystkie nasze dane, aby pomóc Ci zbudować Twój projekt! A jeśli masz ochotę współtworzyć GC-Stats, chętnie Cię przyjmiemy.",
     "apiKey": {
-      "title": "Jak uzyskać klucz API",
-      "body": "Aby zapobiegać nadużyciom, nasze API wymaga uwierzytelnienia. Jeśli chcesz z niego korzystać, skontaktuj się z nami na Discordzie lub przez e-mail.",
+      "title": "Jak uzyskać partnerski klucz API",
+      "body": "Klucze partnerskie mają stały limit zapytań i dostęp do webhooków. Aby go otrzymać, skontaktuj się z nami na Discordzie lub mailowo.",
       "warning": "W prośbie podaj:",
       "step1": "Nazwę i opis projektu",
       "step2": "Planowany sposób użycia API i skalę",
@@ -951,6 +1002,23 @@
       "title": "Open source i współtworzenie",
       "body": "Postanowiliśmy udostępnić większość projektu jako open source, aby społeczność mogła pomagać: nie wierzymy w zamknięty kod. Wszystkie nasze repozytoria (poza panelem administracyjnym) są otwarte na wkład. Przed wysłaniem Pull Requesta przeczytaj nasze wytyczne.",
       "badge": "Publiczne repozytorium"
+    },
+    "publicKey": {
+      "title": "Publiczny klucz API",
+      "body": "Każde konto GC Stats może w kilka sekund utworzyć darmowy klucz publiczny, bez czekania na nas.",
+      "step1": "Utwórz go w ustawieniach konta, podając produkt lub firmę, która będzie korzystać z danych, oraz sposób ich użycia.",
+      "step2": "Klucze publiczne są ograniczone do kilku zapytań na sekundę, a ten limit może się zmienić w dowolnym momencie.",
+      "step3": "Klucze publiczne nie dają dostępu do webhooków. Aby uzyskać stały limit i webhooki, poproś o klucz partnerski poniżej.",
+      "button": "Utwórz klucz publiczny"
+    },
+    "webhooks": {
+      "title": "Webhooki",
+      "body": "Klucze partnerskie mogą rejestrować endpointy HTTPS w swoim panelu: GC Stats wysyła wtedy POST przy każdej zmianie danych.",
+      "events": "Zdarzenia: nowy mecz, mecz zaktualizowany, nowy turniej, turniej zaktualizowany, drużyna zaktualizowana, gracz zaktualizowany.",
+      "filters": "Filtry: region turnieju, oficjalny lub nie, uczestniczące drużyny.",
+      "signature": "Każde zapytanie zawiera nagłówki X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp i X-GCS-Signature. Zweryfikuj podpis sekretem swojego endpointu.",
+      "retries": "Odpowiedz statusem 2xx w ciągu 10 sekund. Nieudane wysyłki są ponawiane przez około 9 godzin, a endpoint, który zbyt często zawodzi, zostaje wyłączony.",
+      "setup": "Payload zawiera zdarzenie, jego datę i encję, z tymi samymi polami co zbiory danych OpenData."
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "Wygeneruj ponownie",
       "activateButton": "Aktywuj",
       "deactivateButton": "Dezaktywuj",
+      "deactivateConfirm": "Dezaktywować klucz \"{name}\"? Jego webhooki zostaną trwale usunięte.",
       "deleteButton": "Usuń",
       "createTitle": "Utwórz klucz API",
       "createDescription": "Pełny klucz jest wyświetlany tylko raz, zaraz po utworzeniu.",
@@ -2924,6 +2993,10 @@
         "userNotFound": "Nie znaleziono użytkownika.",
         "organizationNotFound": "Nie znaleziono organizacji.",
         "ownerRequired": "Wybierz użytkownika lub organizację."
+      },
+      "tabs": {
+        "partner": "Klucze partnerów",
+        "public": "Klucze publiczne"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "Rodzaj punktów",
       "fieldPointTypeNone": "Brak",
       "fieldActive": "Aktywny turniej",
+      "fieldOfficial": "Turniej oficjalny",
+      "officialHint": "Wydarzenie oficjalnego cyklu. Subskrybenci webhooków mogą filtrować turnieje oficjalne i nieoficjalne.",
       "fieldLocation": "Miejsce",
       "fieldPrizePool": "Pula nagród",
       "fieldDescription": "Opis",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "Pełne eksporty na godzinę",
         "exportsPerHourHint": "Na konto lub na adres IP dla gości. Od {min} do {max}.",
         "propagationHint": "Każdy serwer stosuje zmianę w ciągu 15 sekund."
+      },
+      "publicApi": {
+        "title": "Publiczne API",
+        "description": "Samoobsługowe klucze API, które każde konto może utworzyć w swoich ustawieniach. Klucze partnerskie zachowują własny limit.",
+        "keys": "Klucze publiczne",
+        "enabled": "Klucze publiczne włączone",
+        "enabledHint": "Gdy wyłączone, nie można utworzyć żadnego klucza publicznego, a istniejące odpowiadają 403.",
+        "ratePerSecond": "Zapytania na sekundę",
+        "ratePerSecondHint": "Na konto, wspólnie dla wszystkich jego kluczy publicznych, od {min} do {max}. Ciężkie endpointy liczą się jako kilka żądań.",
+        "maxKeysPerUser": "Aktywne klucze na konto",
+        "maxKeysPerUserHint": "Od {min} do {max}.",
+        "propagationHint": "Zmiany docierają do wszystkich serwerów w ciągu 15 sekund."
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "Oczekujące zapytania",
         "inFlight": "OpenData w toku"
       }
+    },
+    "publicApiKeys": {
+      "title": "Publiczne klucze API",
+      "subtitle": "Klucze utworzone przez użytkowników w ich ustawieniach. Limit {rate} żądań na sekundę na konto.",
+      "searchPlaceholder": "Szukaj po nazwie, opisie lub użytkowniku",
+      "statusFilter": "Status",
+      "status": {
+        "active": "Aktywny",
+        "suspended": "Zawieszony",
+        "revoked": "Unieważniony",
+        "blocked": "Dostęp do API zablokowany"
+      },
+      "empty": "Brak pasujących kluczy publicznych.",
+      "requests30d": "{count, plural, one {# żądanie} few {# żądania} many {# żądań} other {# żądania}} w ciągu 30 dni",
+      "statsAndEdit": "Statystyki i edycja",
+      "suspend": "Zawieś",
+      "unsuspend": "Przywróć",
+      "block": "Zablokuj dostęp do API",
+      "unblock": "Odblokuj dostęp do API",
+      "delete": "Usuń",
+      "cancel": "Anuluj",
+      "actionFailed": "Akcja nie powiodła się, spróbuj ponownie.",
+      "notFound": "Ten klucz lub użytkownik już nie istnieje.",
+      "done": {
+        "suspend": "Klucz zawieszony.",
+        "unsuspend": "Klucz przywrócony.",
+        "block": "Dostęp do API zablokowany, wszystkie klucze użytkownika zostały unieważnione.",
+        "unblock": "Dostęp do API odblokowany.",
+        "delete": "Klucz usunięty."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Zawiesić ten klucz?",
+          "description": "Klucz „{name}” natychmiast przestaje działać. Aby poprosić o jego przywrócenie, {owner} musi skontaktować się z nami na Discordzie."
+        },
+        "unsuspend": {
+          "title": "Przywrócić ten klucz?",
+          "description": "Klucz „{name}” znów działa dla {owner}."
+        },
+        "block": {
+          "title": "Zablokować dostęp do API?",
+          "description": "Wszystkie klucze publiczne {owner} zostają unieważnione i nie będzie można tworzyć nowych."
+        },
+        "unblock": {
+          "title": "Odblokować dostęp do API?",
+          "description": "{owner} znów może tworzyć klucze publiczne. Unieważnione klucze pozostają unieważnione."
+        },
+        "delete": {
+          "title": "Usunąć ten klucz?",
+          "description": "Klucz „{name}” i jego statystyki zostaną trwale usunięte."
+        }
+      },
+      "usageHeading": "Zastosowanie zadeklarowane przez użytkownika",
+      "clientName": "Produkt lub firma",
+      "usageDescription": "Opis zastosowania",
+      "save": "Zapisz",
+      "saving": "Zapisywanie...",
+      "saved": "Klucz zaktualizowany.",
+      "saveError": "Niektóre pola są nieprawidłowe.",
+      "error": {
+        "required": "To pole jest wymagane.",
+        "tooShort": "Co najmniej {min} znaków.",
+        "tooLong": "Maksymalnie {max} znaków."
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "Admin",
       "allAuthors": "Wszyscy autorzy",
       "authorAdminSpace": "Autorzy",
-      "logs": "Logi"
+      "logs": "Logi",
+      "webhooks": "Webhooki"
     },
     "switcher": {
       "selectOrganization": "Wybierz organizację",
@@ -5497,7 +5649,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Nie znaleziono klucza."
-      }
+      },
+      "kindPublic": "Publiczny",
+      "publicRateLimit": "Wspólny limit publiczny"
     },
     "myApiKeys": {
       "title": "Moje klucze API",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "Średni czas",
       "columnErrorRate": "Odsetek błędów",
       "requests": "Zapytania: {count}",
-      "errors": "Błędy: {count}"
+      "errors": "Błędy: {count}",
+      "webhooksButton": "Webhooki"
     },
     "permissions": {
       "title": "Role i uprawnienia",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, one {# wpis} few {# wpisy} many {# wpisów} other {# wpisu}}",
       "previous": "Poprzednia strona",
       "next": "Następna strona"
+    },
+    "webhooks": {
+      "title": "Webhooki",
+      "description": "GC Stats wysyła POST HTTPS do Twoich endpointów, gdy zmienia się mecz, turniej, drużyna lub gracz. Wysyłki są sprawdzane mniej więcej co minutę.",
+      "pageTitle": "Webhooki",
+      "pageSubtitle": "Endpointy i dostarczenia Twoich kluczy API partnera.",
+      "keySwitcher": "Klucz API partnera",
+      "noPartnerKey": "Webhooki są dostępne tylko dla kluczy API partnera. Nie masz jeszcze klucza partnera.",
+      "requestPartnerKey": "Poproś o klucz partnera",
+      "refresh": "Odśwież",
+      "add": "Dodaj endpoint",
+      "keyInactive": "Ten klucz API jest nieaktywny: jego webhooki zostały usunięte i nie można dodać żadnego, dopóki klucz nie zostanie ponownie aktywowany.",
+      "empty": "Brak endpointów webhooków.",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "toggle": "Włącz lub wyłącz ten endpoint",
+      "disabledFailing": "Wyłączony automatycznie po zbyt wielu nieudanych wysyłkach z rzędu. Napraw endpoint, a następnie włącz go ponownie.",
+      "any": "Wszystkie",
+      "test": "Wyślij test",
+      "testing": "Wysyłanie...",
+      "testSuccess": "Dostarczono (HTTP {status})",
+      "testFailed": "Wysyłka nie powiodła się: {error}",
+      "edit": "Edytuj",
+      "showSecret": "Pokaż sekret",
+      "rotateSecret": "Nowy sekret",
+      "delete": "Usuń",
+      "deleted": "Endpoint usunięty",
+      "created": "Endpoint utworzony",
+      "updated": "Endpoint zaktualizowany",
+      "deliveriesTitle": "Ostatnie wysyłki",
+      "deliveriesEmpty": "Brak wysyłek.",
+      "columnDate": "Data",
+      "columnEvent": "Zdarzenie",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Status",
+      "columnAttempts": "Próby",
+      "redeliver": "Wyślij ponownie",
+      "status": {
+        "pending": "Oczekuje",
+        "success": "Dostarczono",
+        "failed": "Niepowodzenie"
+      },
+      "secretTitle": "Sekret podpisu",
+      "secretRotatedTitle": "Nowy sekret podpisu",
+      "secretCreatedTitle": "Endpoint utworzony, oto jego sekret podpisu",
+      "secretDescription": "Użyj go do weryfikacji nagłówka X-GCS-Signature: HMAC sha256 z nagłówka X-GCS-Timestamp, kropki, a następnie surowej treści.",
+      "copySecret": "Skopiuj sekret",
+      "close": "Zamknij",
+      "deleteTitle": "Usunąć ten endpoint?",
+      "deleteDescription": "{url} przestanie otrzymywać webhooki. Jego historia wysyłek również zostanie usunięta.",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie...",
+      "addTitle": "Nowy endpoint webhooka",
+      "editTitle": "Edytuj endpoint",
+      "dialogDescription": "Wybierz zdarzenia do odbierania i zawęź je filtrami.",
+      "url": "URL endpointu",
+      "urlHint": "Tylko publiczny adres HTTPS.",
+      "descriptionLabel": "Opis",
+      "events": "Zdarzenia",
+      "event": {
+        "match": {
+          "created": "Nowy mecz",
+          "updated": "Mecz zaktualizowany"
+        },
+        "tournament": {
+          "created": "Nowy turniej",
+          "updated": "Turniej zaktualizowany"
+        },
+        "team": {
+          "updated": "Drużyna zaktualizowana"
+        },
+        "player": {
+          "updated": "Gracz zaktualizowany"
+        }
+      },
+      "filtersTitle": "Filtry",
+      "filtersHint": "Puste filtry przepuszczają wszystko. Filtry regionu i oficjalności dotyczą meczów i turniejów, filtr drużyny wszystkich zdarzeń.",
+      "official": {
+        "label": "Oficjalne",
+        "all": "Oficjalne i nieoficjalne",
+        "official": "Tylko oficjalne",
+        "unofficial": "Tylko nieoficjalne"
+      },
+      "regions": "Regiony",
+      "regionsHint": "Region turnieju.",
+      "teams": "Drużyny",
+      "teamsHint": "Mecze i turnieje, w których gra jedna z tych drużyn, te drużyny i ich obecni gracze.",
+      "teamsPlaceholder": "Dodaj drużynę",
+      "teamsSearch": "Szukaj drużyny...",
+      "teamsNoResults": "Nie znaleziono drużyny",
+      "removeTeam": "Usuń {name}",
+      "error": {
+        "notFound": "Ten endpoint lub klucz już nie istnieje.",
+        "tooManyEndpoints": "Maksymalnie {max} endpointów na klucz API.",
+        "keyInactive": "Ten klucz API jest nieaktywny, nie można dodać webhooka.",
+        "invalid": "Niektóre pola są nieprawidłowe.",
+        "network": "Błąd sieci, spróbuj ponownie.",
+        "busy": "Ta dostawa jest już wysyłana, spróbuj ponownie za chwilę.",
+        "url": {
+          "required": "URL jest wymagany.",
+          "tooLong": "Maksymalnie {urlMaxLength} znaków.",
+          "invalid": "To nie jest prawidłowy URL.",
+          "notHttps": "URL musi zaczynać się od https://.",
+          "credentials": "URL nie może zawierać nazwy użytkownika ani hasła.",
+          "privateHost": "URL musi wskazywać na adres publiczny."
+        },
+        "description": {
+          "tooLong": "Maksymalnie {descriptionMaxLength} znaków."
+        },
+        "events": {
+          "required": "Wybierz co najmniej jedno zdarzenie.",
+          "invalid": "Nieznane zdarzenie."
+        },
+        "filterRegions": {
+          "invalid": "Nieznany region.",
+          "tooMany": "Maksymalnie {filterRegions} regionów."
+        },
+        "filterTeamIds": {
+          "invalid": "Nieprawidłowa drużyna.",
+          "tooMany": "Maksymalnie {filterTeams} drużyn.",
+          "unknownTeam": "Jedna z drużyn już nie istnieje."
+        },
+        "filterOfficial": {
+          "invalid": "Nieprawidłowa wartość."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "Wszystkie publiczne turnieje, drużyny, gracze i mecze GC Stats, do swobodnego przeglądania, sortowania i pobrania w JSON.",
+    "subtitle": "Wszystkie publiczne turnieje, drużyny, gracze, mecze, mapy i tablice wyników GC Stats, do swobodnego przeglądania, sortowania i pobierania w JSON.",
     "rowCount": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
     "columnCount": "{count, plural, one {# kolumna} few {# kolumny} many {# kolumn} other {# kolumny}}",
     "explore": "Przeglądaj",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "Mecze",
         "description": "Wszystkie mecze z turniejem, fazą, drużynami, wynikiem, statusem i terminem."
+      },
+      "maps": {
+        "name": "Mapy",
+        "description": "Każda rozegrana mapa: turniej, drużyny, wynik, zwycięzca i rundy wygrane po każdej stronie."
+      },
+      "map_players": {
+        "name": "Tablice wyników",
+        "description": "Każdy wiersz gracza z każdej zakończonej mapy: agent, zabójstwa, śmierci, asysty, ACS, ADR, KAST, first kille, clutche i multikille."
       }
     },
     "usage": {
       "title": "Korzystanie z danych",
       "publicOnly": "Udostępniane są tylko dane już publiczne w serwisie: żadnych kont, kontaktów ani pól prywatnych.",
-      "terms": "Dane podlegają tym samym warunkom co serwis: można z nich korzystać wyłącznie w sposób dozwolony przez nasz <terms>regulamin</terms>.",
+      "terms": "Dane podlegają tym samym warunkom co strona: można z nich korzystać wyłącznie zgodnie z naszymi warunkami korzystania.",
       "freshness": "Tabele odświeżają się co minutę, pełne eksporty co 10 minut.",
       "limits": "Limity: {browse} stron tabeli na minutę i {exports} pełnych eksportów na godzinę, na konto lub na adres IP.",
       "accountOnly": "Portal jest obecnie dostępny tylko dla zalogowanych użytkowników.",
-      "priority": "Serwis ma zawsze pierwszeństwo: przy dużym obciążeniu portal zwalnia i może przez kilka sekund odpowiadać, że jest zajęty."
+      "priority": "Serwis ma zawsze pierwszeństwo: przy dużym obciążeniu portal zwalnia i może przez kilka sekund odpowiadać, że jest zajęty.",
+      "termsLink": "Warunki korzystania"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "Nazwa, region, kategoria...",
       "teams": "Nazwa lub tag...",
       "players": "Nick, imię, drużyna...",
-      "matches": "Turniej, faza, drużyna..."
+      "matches": "Turniej, faza, drużyna...",
+      "maps": "Turniej, mapa, drużyna...",
+      "map_players": "Gracz, drużyna, agent, mapa..."
     },
     "clearSearch": "Wyczyść wyszukiwanie",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "Drużyna B",
       "winner_team_id": "ID zwycięzcy",
       "is_forfeit": "Walkower",
-      "patch": "Patch"
+      "patch": "Patch",
+      "match_id": "ID meczu",
+      "started_at": "Data",
+      "map_order": "Mapa nr",
+      "map_name": "Mapa",
+      "is_completed": "Zakończona",
+      "team_a_atk_rounds_won": "Rundy ataku drużyny A",
+      "team_a_def_rounds_won": "Rundy obrony drużyny A",
+      "team_b_atk_rounds_won": "Rundy ataku drużyny B",
+      "team_b_def_rounds_won": "Rundy obrony drużyny B",
+      "map_id": "ID mapy",
+      "player_id": "ID gracza",
+      "player_handle": "Gracz",
+      "team_id": "ID drużyny",
+      "team_name": "Drużyna",
+      "agent": "Agent",
+      "kills": "Zabójstwa",
+      "deaths": "Śmierci",
+      "assists": "Asysty",
+      "first_kills": "First kille",
+      "first_deaths": "First deathy",
+      "clutches_won": "Wygrane clutche",
+      "clutches_played": "Rozegrane clutche",
+      "trade_kills": "Trade kille",
+      "traded_deaths": "Wymienione śmierci",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

@@ -12,7 +12,7 @@
 
 import { checkRateLimitDb } from "@/lib/rate-limit-db";
 
-/** Returns true when the call is allowed. `cost` lets heavier calls consume more of the window. */
+/** Returns true when the call is allowed. `cost` lets heavier calls consume more of the window, at most all of it. */
 export async function checkRateLimit(key: string, windowMs: number, max: number, cost = 1, client?: Parameters<typeof checkRateLimitDb>[4]): Promise<boolean> {
-  return checkRateLimitDb(key, windowMs, max, cost, client);
+  return checkRateLimitDb(key, windowMs, max, Math.min(cost, Math.max(max, 1)), client);
 }

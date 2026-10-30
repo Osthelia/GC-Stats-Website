@@ -479,6 +479,57 @@
         "joinSource": "Sumber kedatangan",
         "leftSource": "Sumber kepergian"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "Kunci API",
+      "subtitle": "Buat kunci API publik gratis untuk menggunakan API GC Stats di proyek Anda.",
+      "notice": {
+        "rateLimit": "Kunci publik dibatasi {rate} permintaan per detik per akun, dibagi untuk semua kunci kamu. Batas ini dapat berubah sewaktu waktu, tanpa pemberitahuan.",
+        "stable": "Satu satunya cara untuk mendapatkan batas yang stabil adalah meminta kunci API partner dari tim GC Stats.",
+        "noWebhooks": "Kunci publik tidak memberikan akses ke webhook, yang hanya tersedia untuk kunci partner.",
+        "requestPartner": "Minta kunci API partner"
+      },
+      "create": {
+        "heading": "Buat kunci publik",
+        "description": "Beri tahu kami di mana data akan digunakan. Anda dapat memiliki hingga {max} kunci publik aktif.",
+        "clientName": "Produk atau perusahaan",
+        "clientNamePlaceholder": "Liquipedia, Remake, bot Discord saya...",
+        "usageDescription": "Deskripsi penggunaan",
+        "usageDescriptionPlaceholder": "Untuk apa data digunakan, endpoint mana, dan kira kira seberapa sering.",
+        "submit": "Buat kunci",
+        "termsNote": "Kunci API kamu tunduk pada <terms>ketentuan penggunaan</terms> yang sama dengan situs ini."
+      },
+      "created": {
+        "title": "Kunci API baru Anda",
+        "warning": "Salin sekarang: kunci ini tidak akan ditampilkan lagi. Kirimkan di header x-api-key pada permintaan Anda.",
+        "copy": "Salin kunci",
+        "dismiss": "Sudah saya salin"
+      },
+      "list": {
+        "heading": "Kunci publik Anda",
+        "empty": "Anda belum memiliki kunci API publik.",
+        "active": "Aktif",
+        "revoked": "Dicabut",
+        "requests": "{count, plural, one {# permintaan} other {# permintaan}} dalam 30 hari",
+        "revoke": "Cabut",
+        "suspended": "Ditangguhkan",
+        "suspendedHint": "Kunci ini ditangguhkan oleh tim GC Stats. Hubungi kami di Discord untuk meminta pemulihannya."
+      },
+      "error": {
+        "required": "Kolom ini wajib diisi.",
+        "tooShort": "Minimal {min} karakter.",
+        "tooLong": "Maksimal {max} karakter.",
+        "tooManyKeys": "Anda sudah memiliki {max} kunci publik aktif. Cabut salah satunya untuk membuat yang baru.",
+        "unauthenticated": "Sesi Anda telah berakhir, silakan masuk lagi.",
+        "disabled": "Kunci API publik sedang dinonaktifkan.",
+        "invalid": "Beberapa kolom tidak valid.",
+        "notFound": "Kunci ini sudah tidak ada.",
+        "network": "Kesalahan jaringan, silakan coba lagi.",
+        "blocked": "Akses API kamu telah diblokir."
+      },
+      "blocked": "Akses API kamu telah diblokir, kamu tidak dapat lagi membuat kunci API.",
+      "contactDiscord": "Hubungi kami di Discord"
     }
   },
   "notifications": {
@@ -928,8 +979,8 @@
     "title": "Pengembang",
     "intro": "Semua data kami untuk membantu Anda membangun proyek Anda! Dan jika Anda ingin berkontribusi pada GC-Stats, kami juga senang menyambut Anda.",
     "apiKey": {
-      "title": "Meminta kunci API",
-      "body": "Untuk mencegah penyalahgunaan, API kami memerlukan autentikasi. Jika Anda ingin menggunakannya, hubungi kami di Discord atau melalui email.",
+      "title": "Meminta kunci API partner",
+      "body": "Kunci partner memiliki batas permintaan yang stabil dan akses ke webhook. Untuk mendapatkannya, hubungi kami di Discord atau melalui email.",
       "warning": "Mohon sertakan dalam permintaan Anda:",
       "step1": "Nama dan deskripsi proyek Anda",
       "step2": "Kasus penggunaan dan skala API yang dituju",
@@ -953,6 +1004,23 @@
       "title": "Open source dan kontribusi",
       "body": "Kami memutuskan untuk membuat sebagian besar proyek ini open source, agar komunitas dapat membantu, kami tidak percaya pada closed source. Semua repositori kami (kecuali dasbor admin) terbuka untuk kontribusi. Pastikan membaca pedoman kami sebelum mengirim Pull Request.",
       "badge": "Repositori publik"
+    },
+    "publicKey": {
+      "title": "Kunci API publik",
+      "body": "Setiap akun GC Stats dapat membuat kunci publik gratis dalam beberapa detik, tanpa menunggu kami.",
+      "step1": "Buat dari pengaturan akun Anda, dengan menyebutkan produk atau perusahaan yang akan menggunakan data dan caranya.",
+      "step2": "Kunci publik dibatasi beberapa permintaan per detik, dan batas ini dapat berubah kapan saja.",
+      "step3": "Kunci publik tidak memberikan akses ke webhook. Untuk batas yang stabil dan webhook, minta kunci partner di bawah.",
+      "button": "Buat kunci publik"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "Kunci partner dapat mendaftarkan endpoint HTTPS dari dashboard mereka: GC Stats lalu mengirim POST setiap kali data berubah.",
+      "events": "Event: pertandingan baru, pertandingan diperbarui, turnamen baru, turnamen diperbarui, tim diperbarui, pemain diperbarui.",
+      "filters": "Filter: region turnamen, resmi atau tidak, tim peserta.",
+      "signature": "Setiap permintaan membawa header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp, dan X-GCS-Signature. Periksa tanda tangan dengan secret endpoint Anda.",
+      "retries": "Balas dengan status 2xx dalam 10 detik. Pengiriman yang gagal dicoba ulang selama sekitar 9 jam, dan endpoint yang terlalu sering gagal akan dinonaktifkan.",
+      "setup": "Payload berisi event, tanggalnya, dan entitasnya, dengan kolom yang sama seperti dataset OpenData."
     }
   },
   "becomePublisher": {
@@ -2888,6 +2956,7 @@
       "regenerateButton": "Buat ulang",
       "activateButton": "Aktifkan",
       "deactivateButton": "Nonaktifkan",
+      "deactivateConfirm": "Nonaktifkan kunci \"{name}\"? Semua webhook-nya akan dihapus secara permanen.",
       "deleteButton": "Hapus",
       "createTitle": "Buat kunci API",
       "createDescription": "Kunci lengkap hanya ditampilkan sekali, tepat setelah dibuat.",
@@ -2928,6 +2997,10 @@
         "userNotFound": "Pengguna tidak ditemukan.",
         "organizationNotFound": "Organisasi tidak ditemukan.",
         "ownerRequired": "Pilih pengguna atau organisasi."
+      },
+      "tabs": {
+        "partner": "Kunci mitra",
+        "public": "Kunci publik"
       }
     },
     "apiKeyStats": {
@@ -3446,6 +3519,8 @@
       "fieldPointType": "Jenis poin",
       "fieldPointTypeNone": "Tidak ada",
       "fieldActive": "Turnamen aktif",
+      "fieldOfficial": "Turnamen resmi",
+      "officialHint": "Acara sirkuit resmi. Pelanggan webhook dapat memfilter turnamen resmi dan tidak resmi.",
       "fieldLocation": "Lokasi",
       "fieldPrizePool": "Total hadiah",
       "fieldDescription": "Deskripsi",
@@ -5036,6 +5111,18 @@
         "exportsPerHour": "Ekspor lengkap per jam",
         "exportsPerHourHint": "Per akun, atau per alamat IP untuk pengunjung. Antara {min} dan {max}.",
         "propagationHint": "Setiap server menerapkan perubahan dalam 15 detik."
+      },
+      "publicApi": {
+        "title": "API publik",
+        "description": "Kunci API swalayan yang dapat dibuat oleh setiap akun dari pengaturannya. Kunci partner tetap memiliki batasnya sendiri.",
+        "keys": "Kunci publik",
+        "enabled": "Kunci publik diaktifkan",
+        "enabledHint": "Jika nonaktif, tidak ada kunci publik yang dapat dibuat dan kunci yang ada akan merespons 403.",
+        "ratePerSecond": "Permintaan per detik",
+        "ratePerSecondHint": "Per akun, dibagi untuk semua kunci publiknya, antara {min} dan {max}. Endpoint berat dihitung sebagai beberapa permintaan.",
+        "maxKeysPerUser": "Kunci aktif per akun",
+        "maxKeysPerUserHint": "Antara {min} dan {max}.",
+        "propagationHint": "Perubahan diterapkan ke semua server dalam 15 detik."
       }
     },
     "opendataMonitoring": {
@@ -5135,6 +5222,70 @@
         "poolWaiting": "Kueri menunggu",
         "inFlight": "OpenData berjalan"
       }
+    },
+    "publicApiKeys": {
+      "title": "Kunci API publik",
+      "subtitle": "Kunci yang dibuat pengguna dari pengaturan mereka. Batas {rate} permintaan per detik per akun.",
+      "searchPlaceholder": "Cari berdasarkan nama, deskripsi, atau pengguna",
+      "statusFilter": "Status",
+      "status": {
+        "active": "Aktif",
+        "suspended": "Ditangguhkan",
+        "revoked": "Dicabut",
+        "blocked": "Akses API diblokir"
+      },
+      "empty": "Tidak ada kunci publik yang cocok.",
+      "requests30d": "{count, plural, other {# permintaan}} dalam 30 hari",
+      "statsAndEdit": "Statistik & edit",
+      "suspend": "Tangguhkan",
+      "unsuspend": "Pulihkan",
+      "block": "Blokir akses API",
+      "unblock": "Buka blokir akses API",
+      "delete": "Hapus",
+      "cancel": "Batal",
+      "actionFailed": "Tindakan gagal, silakan coba lagi.",
+      "notFound": "Kunci atau pengguna ini sudah tidak ada.",
+      "done": {
+        "suspend": "Kunci ditangguhkan.",
+        "unsuspend": "Kunci dipulihkan.",
+        "block": "Akses API diblokir, semua kunci pengguna telah dicabut.",
+        "unblock": "Blokir akses API dibuka.",
+        "delete": "Kunci dihapus."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Tangguhkan kunci ini?",
+          "description": "Kunci \"{name}\" langsung berhenti berfungsi. {owner} harus menghubungi kami di Discord untuk meminta pemulihannya."
+        },
+        "unsuspend": {
+          "title": "Pulihkan kunci ini?",
+          "description": "Kunci \"{name}\" kembali berfungsi untuk {owner}."
+        },
+        "block": {
+          "title": "Blokir akses API?",
+          "description": "Semua kunci publik milik {owner} dicabut dan tidak dapat lagi membuat kunci baru."
+        },
+        "unblock": {
+          "title": "Buka blokir akses API?",
+          "description": "{owner} dapat membuat kunci publik lagi. Kunci yang dicabut tetap dicabut."
+        },
+        "delete": {
+          "title": "Hapus kunci ini?",
+          "description": "Kunci \"{name}\" beserta statistiknya dihapus secara permanen."
+        }
+      },
+      "usageHeading": "Penggunaan yang dinyatakan pengguna",
+      "clientName": "Produk atau perusahaan",
+      "usageDescription": "Deskripsi penggunaan",
+      "save": "Simpan",
+      "saving": "Menyimpan...",
+      "saved": "Kunci diperbarui.",
+      "saveError": "Beberapa kolom tidak valid.",
+      "error": {
+        "required": "Kolom ini wajib diisi.",
+        "tooShort": "Minimal {min} karakter.",
+        "tooLong": "Maksimal {max} karakter."
+      }
     }
   },
   "dashboard": {
@@ -5167,7 +5318,8 @@
       "allAuthors": "Semua penulis",
       "authorAdminSpace": "Penulis",
       "logs": "Log",
-      "veto": "Veto peta"
+      "veto": "Veto peta",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "Pilih organisasi",
@@ -5615,7 +5767,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Kunci tidak ditemukan."
-      }
+      },
+      "kindPublic": "Publik",
+      "publicRateLimit": "Batas publik bersama"
     },
     "myApiKeys": {
       "title": "Kunci API saya",
@@ -5650,7 +5804,8 @@
       "columnAvgDuration": "Rerata durasi",
       "columnErrorRate": "Tingkat kesalahan",
       "requests": "{count} permintaan",
-      "errors": "{count} kesalahan"
+      "errors": "{count} kesalahan",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "Peran dan izin",
@@ -5944,6 +6099,133 @@
       "subtitle": "Atur veto langsung untuk turnamen yang diselenggarakan organisasi Anda.",
       "readOnlyHint": "Anda tidak memiliki izin untuk mengelola veto peta.",
       "noTournaments": "Tidak ada turnamen organisasi Anda yang mengaktifkan veto peta. Admin GC Stats mengaktifkannya untuk Anda."
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "GC Stats mengirim POST HTTPS ke endpoint Anda ketika pertandingan, turnamen, tim, atau pemain berubah. Pengiriman diperiksa sekitar setiap menit.",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "Endpoint dan pengiriman dari kunci API mitra Anda.",
+      "keySwitcher": "Kunci API mitra",
+      "noPartnerKey": "Webhook hanya tersedia untuk kunci API mitra. Anda belum memiliki kunci mitra.",
+      "requestPartnerKey": "Minta kunci mitra",
+      "refresh": "Muat ulang",
+      "add": "Tambah endpoint",
+      "keyInactive": "Kunci API ini tidak aktif: webhook-nya sudah dihapus dan tidak ada yang bisa ditambahkan sampai diaktifkan kembali.",
+      "empty": "Belum ada endpoint webhook.",
+      "active": "Aktif",
+      "inactive": "Nonaktif",
+      "toggle": "Aktifkan atau nonaktifkan endpoint ini",
+      "disabledFailing": "Dinonaktifkan otomatis setelah terlalu banyak pengiriman gagal berturut turut. Perbaiki endpoint, lalu aktifkan kembali.",
+      "any": "Semua",
+      "test": "Kirim tes",
+      "testing": "Mengirim...",
+      "testSuccess": "Terkirim (HTTP {status})",
+      "testFailed": "Pengiriman gagal: {error}",
+      "edit": "Edit",
+      "showSecret": "Tampilkan secret",
+      "rotateSecret": "Secret baru",
+      "delete": "Hapus",
+      "deleted": "Endpoint dihapus",
+      "created": "Endpoint dibuat",
+      "updated": "Endpoint diperbarui",
+      "deliveriesTitle": "Pengiriman terbaru",
+      "deliveriesEmpty": "Belum ada pengiriman.",
+      "columnDate": "Tanggal",
+      "columnEvent": "Event",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Status",
+      "columnAttempts": "Percobaan",
+      "redeliver": "Kirim ulang",
+      "status": {
+        "pending": "Menunggu",
+        "success": "Terkirim",
+        "failed": "Gagal"
+      },
+      "secretTitle": "Secret penandatanganan",
+      "secretRotatedTitle": "Secret penandatanganan baru",
+      "secretCreatedTitle": "Endpoint dibuat, berikut secret penandatanganannya",
+      "secretDescription": "Gunakan untuk memeriksa header X-GCS-Signature: HMAC sha256 dari header X-GCS-Timestamp, sebuah titik, lalu body mentah.",
+      "copySecret": "Salin secret",
+      "close": "Tutup",
+      "deleteTitle": "Hapus endpoint ini?",
+      "deleteDescription": "{url} tidak akan menerima webhook lagi. Riwayat pengirimannya juga dihapus.",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "saving": "Menyimpan...",
+      "addTitle": "Endpoint webhook baru",
+      "editTitle": "Edit endpoint",
+      "dialogDescription": "Pilih event yang ingin diterima dan persempit dengan filter.",
+      "url": "URL endpoint",
+      "urlHint": "Hanya alamat HTTPS publik.",
+      "descriptionLabel": "Deskripsi",
+      "events": "Event",
+      "event": {
+        "match": {
+          "created": "Pertandingan baru",
+          "updated": "Pertandingan diperbarui"
+        },
+        "tournament": {
+          "created": "Turnamen baru",
+          "updated": "Turnamen diperbarui"
+        },
+        "team": {
+          "updated": "Tim diperbarui"
+        },
+        "player": {
+          "updated": "Pemain diperbarui"
+        }
+      },
+      "filtersTitle": "Filter",
+      "filtersHint": "Filter kosong meloloskan semuanya. Filter region dan resmi berlaku untuk pertandingan dan turnamen, filter tim untuk semua event.",
+      "official": {
+        "label": "Resmi",
+        "all": "Resmi dan tidak resmi",
+        "official": "Hanya resmi",
+        "unofficial": "Hanya tidak resmi"
+      },
+      "regions": "Region",
+      "regionsHint": "Region turnamen.",
+      "teams": "Tim",
+      "teamsHint": "Pertandingan dan turnamen tempat salah satu tim ini bermain, tim tim ini, dan pemain mereka saat ini.",
+      "teamsPlaceholder": "Tambah tim",
+      "teamsSearch": "Cari tim...",
+      "teamsNoResults": "Tim tidak ditemukan",
+      "removeTeam": "Hapus {name}",
+      "error": {
+        "notFound": "Endpoint atau kunci ini sudah tidak ada.",
+        "tooManyEndpoints": "Maksimal {max} endpoint per kunci API.",
+        "keyInactive": "Kunci API ini tidak aktif, webhook tidak bisa ditambahkan.",
+        "invalid": "Beberapa kolom tidak valid.",
+        "network": "Kesalahan jaringan, silakan coba lagi.",
+        "busy": "Pengiriman ini sedang diproses, coba lagi sebentar lagi.",
+        "url": {
+          "required": "URL wajib diisi.",
+          "tooLong": "Maksimal {urlMaxLength} karakter.",
+          "invalid": "URL ini tidak valid.",
+          "notHttps": "URL harus diawali dengan https://.",
+          "credentials": "URL tidak boleh berisi nama pengguna atau kata sandi.",
+          "privateHost": "URL harus mengarah ke alamat publik."
+        },
+        "description": {
+          "tooLong": "Maksimal {descriptionMaxLength} karakter."
+        },
+        "events": {
+          "required": "Pilih minimal satu event.",
+          "invalid": "Event tidak dikenal."
+        },
+        "filterRegions": {
+          "invalid": "Region tidak dikenal.",
+          "tooMany": "Maksimal {filterRegions} region."
+        },
+        "filterTeamIds": {
+          "invalid": "Tim tidak valid.",
+          "tooMany": "Maksimal {filterTeams} tim.",
+          "unknownTeam": "Salah satu tim sudah tidak ada."
+        },
+        "filterOfficial": {
+          "invalid": "Nilai tidak valid."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6886,7 +7168,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "Semua turnamen, tim, pemain, dan pertandingan publik GC Stats, bebas dijelajahi, diurutkan, dan diunduh dalam JSON.",
+    "subtitle": "Semua turnamen, tim, pemain, pertandingan, map, dan scoreboard publik GC Stats, bebas dijelajahi, diurutkan, dan diunduh dalam JSON.",
     "rowCount": "{count, plural, other {# baris}}",
     "columnCount": "{count, plural, other {# kolom}}",
     "explore": "Jelajahi",
@@ -6907,16 +7189,25 @@
       "matches": {
         "name": "Pertandingan",
         "description": "Semua pertandingan beserta turnamen, fase, tim, skor, status, dan jadwal."
+      },
+      "maps": {
+        "name": "Map",
+        "description": "Setiap map yang dimainkan: turnamen, tim, skor, pemenang, dan ronde yang dimenangkan di tiap sisi."
+      },
+      "map_players": {
+        "name": "Scoreboard",
+        "description": "Setiap baris pemain dari setiap map yang selesai: agent, kill, death, assist, ACS, ADR, KAST, first kill, clutch, dan multikill."
       }
     },
     "usage": {
       "title": "Menggunakan data",
       "publicOnly": "Hanya data yang sudah publik di situs yang disediakan: tidak ada akun, kontak, atau kolom pribadi.",
-      "terms": "Data tunduk pada ketentuan yang sama dengan situs: hanya boleh digunakan sebagaimana diizinkan oleh <terms>ketentuan penggunaan</terms> kami.",
+      "terms": "Data tunduk pada ketentuan yang sama dengan situs: hanya boleh digunakan sesuai yang diizinkan oleh ketentuan penggunaan kami.",
       "freshness": "Tabel diperbarui setiap menit, ekspor lengkap setiap 10 menit.",
       "limits": "Batas: {browse} halaman tabel per menit dan {exports} ekspor lengkap per jam, per akun atau per alamat IP.",
       "accountOnly": "Portal saat ini hanya terbuka untuk pengguna yang masuk.",
-      "priority": "Situs selalu diprioritaskan: saat bebannya tinggi, portal melambat dan dapat menjawab sedang sibuk selama beberapa detik."
+      "priority": "Situs selalu diprioritaskan: saat bebannya tinggi, portal melambat dan dapat menjawab sedang sibuk selama beberapa detik.",
+      "termsLink": "Ketentuan penggunaan"
     },
     "api": {
       "title": "API",
@@ -6963,7 +7254,9 @@
       "tournaments": "Nama, wilayah, kategori...",
       "teams": "Nama atau tag...",
       "players": "Nickname, nama, tim...",
-      "matches": "Turnamen, fase, tim..."
+      "matches": "Turnamen, fase, tim...",
+      "maps": "Turnamen, map, tim...",
+      "map_players": "Pemain, tim, agent, map..."
     },
     "clearSearch": "Hapus pencarian",
     "filters": {
@@ -7046,7 +7339,39 @@
       "team_b_name": "Tim B",
       "winner_team_id": "ID pemenang",
       "is_forfeit": "WO",
-      "patch": "Patch"
+      "patch": "Patch",
+      "match_id": "ID pertandingan",
+      "started_at": "Tanggal",
+      "map_order": "Map ke",
+      "map_name": "Map",
+      "is_completed": "Selesai",
+      "team_a_atk_rounds_won": "Ronde serang tim A",
+      "team_a_def_rounds_won": "Ronde bertahan tim A",
+      "team_b_atk_rounds_won": "Ronde serang tim B",
+      "team_b_def_rounds_won": "Ronde bertahan tim B",
+      "map_id": "ID map",
+      "player_id": "ID pemain",
+      "player_handle": "Pemain",
+      "team_id": "ID tim",
+      "team_name": "Tim",
+      "agent": "Agent",
+      "kills": "Kill",
+      "deaths": "Death",
+      "assists": "Assist",
+      "first_kills": "First kill",
+      "first_deaths": "First death",
+      "clutches_won": "Clutch menang",
+      "clutches_played": "Clutch dimainkan",
+      "trade_kills": "Trade kill",
+      "traded_deaths": "Death tertrade",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

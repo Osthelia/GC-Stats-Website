@@ -9,7 +9,6 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 export type RegionKey = "emea" | "na" | "latam" | "brazil" | "pacific" | "oceania" | "china" | "korea" | "international" | "other";
-
 // VCT region branding: the Americas regions share one orange.
 export const REGIONS: Record<RegionKey, { label: string; color: string; short: string }> = {
   emea: { label: "EMEA", color: "#C8E000", short: "EU" },
@@ -24,7 +23,6 @@ export const REGIONS: Record<RegionKey, { label: string; color: string; short: s
   // Neutral fallback for regions without a brand color (Japan, TBD...).
   other: { label: "TBD", color: "#8a8a8a", short: "—" },
 };
-
 // `tournaments.region` stores the display label (e.g. "North America"), not a slug.
 const REGION_LABEL_TO_KEY: Record<string, RegionKey> = {
   EMEA: "emea",
@@ -39,7 +37,6 @@ const REGION_LABEL_TO_KEY: Record<string, RegionKey> = {
   Korea: "korea",
   International: "international",
 };
-
 export function normalizeRegion(raw: string | null | undefined): RegionKey {
   if (!raw) return "other";
   return REGION_LABEL_TO_KEY[raw] ?? "other";

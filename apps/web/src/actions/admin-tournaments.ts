@@ -40,7 +40,8 @@ export type TournamentField =
   | "description"
   | "keywords"
   | "liquipediaLink"
-  | "playerPovPhrase";
+  | "playerPovPhrase"
+  | "isOfficial";
 export type TournamentFieldErrors = Partial<Record<TournamentField, string>> & {
   socials?: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
 };
@@ -54,6 +55,7 @@ export type TournamentInput = {
   endDate: string;
   status: string;
   active: boolean;
+  isOfficial: boolean;
   pointTypeId: number | null;
   organizerOrganizationId: number | null;
   location: string;
@@ -113,6 +115,7 @@ async function validateTournament(input: TournamentInput): Promise<TournamentFie
   }
 
   if (!STATUS_VALUES.includes(input.status)) fieldErrors.status = "invalid";
+  if (typeof input.isOfficial !== "boolean") fieldErrors.isOfficial = "invalid";
 
   if (input.pointTypeId !== null) {
     const [existing] = await db.select({ id: pointTypes.id }).from(pointTypes).where(eq(pointTypes.id, input.pointTypeId)).limit(1);
@@ -168,6 +171,7 @@ function coreColumns(input: TournamentInput) {
     endDate: input.endDate,
     status: input.status,
     active: input.active,
+    isOfficial: input.isOfficial,
     pointTypeId: input.pointTypeId,
     organizerOrganizationId: input.organizerOrganizationId,
     location: input.location.trim() || null,

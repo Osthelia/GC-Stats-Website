@@ -9,14 +9,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { ArrowLeft, Activity, Clock, Gauge, TrendingUp } from "lucide-react";
+import { ArrowLeft, Activity, Clock, Gauge, TrendingUp, Webhook } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
 import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card";
 import { ApiKeyDailyChart } from "@/components/dashboard/api-key-daily-chart";
 import { ApiKeyEndpointsTable } from "@/components/dashboard/api-key-endpoints-table";
-import { requireDashboardOrgAccess } from "@/lib/dashboard-rbac";
+import { ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { hasOrgPermission, requireDashboardOrgAccess } from "@/lib/dashboard-rbac";
 import { getAdminOrganization } from "@/lib/admin-organizations";
 import { getOrganizationApiKey, getApiKeyStats } from "@/lib/dashboard-api-keys";
 import { parseEntityId } from "@/lib/entity-id";
@@ -34,10 +36,11 @@ export default async function DashboardApiKeyStatsPage({ params }: { params: Pro
   const keyId = parseEntityId(apiKeyId);
   if (orgId === null || keyId === null) notFound();
 
-  await requireDashboardOrgAccess(locale as AppLocale, orgId);
+  const { membership } = await requireDashboardOrgAccess(locale as AppLocale, orgId);
   const [organization, key] = await Promise.all([getAdminOrganization(orgId), getOrganizationApiKey(orgId, keyId)]);
   if (!organization || !key) notFound();
 
+  const showWebhooks = key.kind === "partner" && hasOrgPermission(membership, ORGANIZATION_PERMISSIONS.apiKeysManage);
   const stats = await getApiKeyStats(keyId);
   const t = await getTranslations({ locale, namespace: "dashboard.apiKeyStats" });
 
@@ -51,6 +54,12 @@ export default async function DashboardApiKeyStatsPage({ params }: { params: Pro
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">{key.clientName}</h1>
           <ActiveStatusBadge active={key.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
+          {showWebhooks && (
+            <Button variant="outline" size="sm" className="ml-auto" render={<Link href={`/dashboard/${orgId}/webhooks?key=${keyId}`} />}>
+              <Webhook />
+              {t("webhooksButton")}
+            </Button>
+          )}
         </div>
         <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>

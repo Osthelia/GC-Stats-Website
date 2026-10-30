@@ -5,17 +5,13 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
-
 "use client";
-
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CountryBadge } from "@/components/team/country-badge";
 import { FormattedDate } from "@/components/formatted-date";
 import type { OpenDataColumnMeta, OpenDataRow } from "@/lib/opendata/datasets-meta";
-
 const EMPTY = <span className="text-neutral-600">-</span>;
-
 const STATUS_STYLE: Record<string, string> = {
   live: "bg-red-500/15 text-red-400",
   upcoming: "bg-sky-500/15 text-sky-400",
@@ -23,21 +19,17 @@ const STATUS_STYLE: Record<string, string> = {
   finished: "bg-neutral-500/15 text-neutral-400",
   completed: "bg-neutral-500/15 text-neutral-400",
 };
-
 function isHttpUrl(value: string): boolean {
   return /^https?:\/\//i.test(value);
 }
-
 function Pill({ className, children }: { className: string; children: React.ReactNode }) {
   return <span className={`inline-flex rounded-md px-1.5 py-0.5 text-[11.5px] font-semibold ${className}`}>{children}</span>;
 }
-
 /** Renders one value of the explorer according to its column type. */
 export function OpenDataCell({ column, row }: { column: OpenDataColumnMeta; row: OpenDataRow }) {
   const t = useTranslations("openData");
   const value = row[column.key];
   if (value === null || value === undefined || value === "") return EMPTY;
-
   const linkId = column.link ? row[column.link.linkIdKey ?? column.key] : null;
   const wrapLink = (content: React.ReactNode) =>
     column.link && linkId != null ? (
@@ -47,11 +39,11 @@ export function OpenDataCell({ column, row }: { column: OpenDataColumnMeta; row:
     ) : (
       content
     );
-
   switch (column.type) {
     case "id":
       return wrapLink(<span className="font-mono text-[12px] tabular-nums">{String(value)}</span>);
     case "number":
+    case "decimal":
       return <span className="tabular-nums">{Number(value).toLocaleString()}</span>;
     case "date":
       return <FormattedDate date={`${value}T00:00:00Z`} />;

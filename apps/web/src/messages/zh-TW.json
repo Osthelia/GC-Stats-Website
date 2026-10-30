@@ -479,6 +479,57 @@
         "joinSource": "加入來源",
         "leftSource": "離隊來源"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API 金鑰",
+      "subtitle": "建立免費的公開 API 金鑰，在您的專案中使用 GC Stats API。",
+      "notice": {
+        "rateLimit": "公開金鑰的限制為每個帳號每秒 {rate} 次請求，由你的所有金鑰共用。此限制可能隨時變更，恕不另行通知。",
+        "stable": "取得穩定限制的唯一方式，是向 GC Stats 團隊申請合作夥伴 API 金鑰。",
+        "noWebhooks": "公開金鑰無法使用 webhook，webhook 僅供合作夥伴金鑰使用。",
+        "requestPartner": "申請合作夥伴 API 金鑰"
+      },
+      "create": {
+        "heading": "建立公開金鑰",
+        "description": "請告訴我們資料將用於何處。您最多可以擁有 {max} 把有效的公開金鑰。",
+        "clientName": "產品或公司",
+        "clientNamePlaceholder": "Liquipedia、Remake、我的 Discord 機器人...",
+        "usageDescription": "用途說明",
+        "usageDescriptionPlaceholder": "資料的用途、使用哪些端點，以及大約的請求頻率。",
+        "submit": "建立金鑰",
+        "termsNote": "你的 API 金鑰受與本站相同的<terms>使用條款</terms>約束。"
+      },
+      "created": {
+        "title": "您的新 API 金鑰",
+        "warning": "請立即複製：它將不會再次顯示。請在請求的 x-api-key 標頭中傳送它。",
+        "copy": "複製金鑰",
+        "dismiss": "我已複製"
+      },
+      "list": {
+        "heading": "您的公開金鑰",
+        "empty": "您還沒有公開 API 金鑰。",
+        "active": "啟用",
+        "revoked": "已撤銷",
+        "requests": "30 天內 {count, plural, one {# 次請求} other {# 次請求}}",
+        "revoke": "撤銷",
+        "suspended": "已停用",
+        "suspendedHint": "此金鑰已被 GC Stats 團隊停用。請在 Discord 上聯絡我們申請恢復。"
+      },
+      "error": {
+        "required": "此欄位為必填。",
+        "tooShort": "至少 {min} 個字元。",
+        "tooLong": "最多 {max} 個字元。",
+        "tooManyKeys": "您已有 {max} 把有效的公開金鑰。請撤銷一把後再建立新金鑰。",
+        "unauthenticated": "您的工作階段已過期，請重新登入。",
+        "disabled": "公開 API 金鑰目前已停用。",
+        "invalid": "部分欄位無效。",
+        "notFound": "此金鑰已不存在。",
+        "network": "網路錯誤，請重試。",
+        "blocked": "你的 API 存取權限已被封鎖。"
+      },
+      "blocked": "你的 API 存取權限已被封鎖，無法再建立 API 金鑰。",
+      "contactDiscord": "在 Discord 上聯絡我們"
     }
   },
   "notifications": {
@@ -928,8 +979,8 @@
     "title": "開發者",
     "intro": "我們所有的資料都可以幫助您建構專案！如果您也想為 GC-Stats 做出貢獻，我們也非常歡迎。",
     "apiKey": {
-      "title": "申請 API 金鑰",
-      "body": "為防止濫用，我們的 API 需要身份驗證。如果您想使用它，請通過 Discord 或電子郵件聯絡我們。",
+      "title": "申請合作夥伴 API 金鑰",
+      "body": "合作夥伴金鑰提供穩定的請求限制與 webhook。如需取得，請透過 Discord 或電子郵件聯絡我們。",
       "warning": "請在申請中說明：",
       "step1": "您的專案名稱及描述",
       "step2": "預期的 API 使用場景及規模",
@@ -953,6 +1004,23 @@
       "title": "開源與貢獻",
       "body": "我們決定將專案的大部分內容開源，讓社群一起參與，我們不相信閉源開發。除管理後臺外，我們的所有倉庫都歡迎貢獻。提交 Pull Request 前，請務必閱讀我們的貢獻指南。",
       "badge": "公開倉庫"
+    },
+    "publicKey": {
+      "title": "公開 API 金鑰",
+      "body": "任何 GC Stats 帳戶都能在幾秒內建立免費的公開金鑰，無需等待我們。",
+      "step1": "在帳戶設定中建立，並說明將使用資料的產品或公司及其用途。",
+      "step2": "公開金鑰限制為每秒少量請求，且此限制可能隨時變更。",
+      "step3": "公開金鑰無法使用 webhook。如需穩定的限制與 webhook，請在下方申請合作夥伴金鑰。",
+      "button": "建立公開金鑰"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "合作夥伴金鑰可以在其控制台中註冊 HTTPS 端點：每當資料變動時，GC Stats 會傳送一個 POST。",
+      "events": "事件：新比賽、比賽已更新、新賽事、賽事已更新、隊伍已更新、選手已更新。",
+      "filters": "篩選：賽事地區、是否為官方、參賽隊伍。",
+      "signature": "每個請求都帶有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 與 X-GCS-Signature 標頭。請使用端點密鑰驗證簽章。",
+      "retries": "請在 10 秒內回應 2xx 狀態碼。失敗的傳送會在約 9 小時內重試，過於頻繁失敗的端點將被關閉。",
+      "setup": "Payload 包含事件、事件時間與實體，欄位與 OpenData 資料集相同。"
     }
   },
   "becomePublisher": {
@@ -2888,6 +2956,7 @@
       "regenerateButton": "重新生成",
       "activateButton": "啟用",
       "deactivateButton": "停用",
+      "deactivateConfirm": "確定要停用金鑰「{name}」嗎？它的 webhook 將被永久刪除。",
       "deleteButton": "刪除",
       "createTitle": "建立 API 金鑰",
       "createDescription": "完整金鑰僅在建立後展示一次。",
@@ -2928,6 +2997,10 @@
         "userNotFound": "未找到該使用者。",
         "organizationNotFound": "未找到該機構。",
         "ownerRequired": "請選擇一個使用者或機構。"
+      },
+      "tabs": {
+        "partner": "合作夥伴金鑰",
+        "public": "公開金鑰"
       }
     },
     "apiKeyStats": {
@@ -3446,6 +3519,8 @@
       "fieldPointType": "積分類型",
       "fieldPointTypeNone": "無",
       "fieldActive": "啟用賽事",
+      "fieldOfficial": "官方賽事",
+      "officialHint": "官方賽事體系的比賽。Webhook 訂閱者可以篩選官方和非官方賽事。",
       "fieldLocation": "地點",
       "fieldPrizePool": "獎金池",
       "fieldDescription": "描述",
@@ -5036,6 +5111,18 @@
         "exportsPerHour": "每小時完整匯出次數",
         "exportsPerHourHint": "以帳號計算，訪客以 IP 位址計算。介於 {min} 與 {max} 之間。",
         "propagationHint": "每台伺服器會在 15 秒內套用變更。"
+      },
+      "publicApi": {
+        "title": "公開 API",
+        "description": "任何帳戶都能在設定中自助建立的 API 金鑰。合作夥伴金鑰保留各自的限制。",
+        "keys": "公開金鑰",
+        "enabled": "啟用公開金鑰",
+        "enabledHint": "關閉時，無法建立公開金鑰，現有金鑰會回應 403。",
+        "ratePerSecond": "每秒請求數",
+        "ratePerSecondHint": "以帳號計算，由其所有公開金鑰共用，介於 {min} 與 {max} 之間。高負載端點會計為多次請求。",
+        "maxKeysPerUser": "每個帳戶的有效金鑰數",
+        "maxKeysPerUserHint": "介於 {min} 到 {max} 之間。",
+        "propagationHint": "變更會在 15 秒內套用到所有伺服器。"
       }
     },
     "opendataMonitoring": {
@@ -5135,6 +5222,70 @@
         "poolWaiting": "等待中的查詢",
         "inFlight": "執行中的 OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "公開 API 金鑰",
+      "subtitle": "使用者在設定中建立的金鑰。每個帳號每秒限 {rate} 次請求。",
+      "searchPlaceholder": "依名稱、說明或使用者搜尋",
+      "statusFilter": "狀態",
+      "status": {
+        "active": "啟用中",
+        "suspended": "已停用",
+        "revoked": "已撤銷",
+        "blocked": "API 存取已封鎖"
+      },
+      "empty": "沒有符合的公開金鑰。",
+      "requests30d": "30 天內 {count, plural, other {# 次請求}}",
+      "statsAndEdit": "統計與編輯",
+      "suspend": "停用",
+      "unsuspend": "恢復",
+      "block": "封鎖 API 存取",
+      "unblock": "解除 API 存取封鎖",
+      "delete": "刪除",
+      "cancel": "取消",
+      "actionFailed": "操作失敗，請再試一次。",
+      "notFound": "此金鑰或使用者已不存在。",
+      "done": {
+        "suspend": "金鑰已停用。",
+        "unsuspend": "金鑰已恢復。",
+        "block": "API 存取已封鎖，該使用者的所有金鑰均已撤銷。",
+        "unblock": "API 存取封鎖已解除。",
+        "delete": "金鑰已刪除。"
+      },
+      "confirm": {
+        "suspend": {
+          "title": "停用此金鑰？",
+          "description": "金鑰「{name}」將立即停止運作。{owner} 需要在 Discord 上聯絡我們申請恢復。"
+        },
+        "unsuspend": {
+          "title": "恢復此金鑰？",
+          "description": "金鑰「{name}」將重新對 {owner} 生效。"
+        },
+        "block": {
+          "title": "封鎖 API 存取？",
+          "description": "{owner} 的所有公開金鑰將被撤銷，且無法再建立新的金鑰。"
+        },
+        "unblock": {
+          "title": "解除 API 存取封鎖？",
+          "description": "{owner} 可以重新建立公開金鑰。已撤銷的金鑰仍維持撤銷狀態。"
+        },
+        "delete": {
+          "title": "刪除此金鑰？",
+          "description": "金鑰「{name}」及其統計資料將被永久刪除。"
+        }
+      },
+      "usageHeading": "使用者申報的用途",
+      "clientName": "產品或公司",
+      "usageDescription": "用途說明",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "saved": "金鑰已更新。",
+      "saveError": "部分欄位無效。",
+      "error": {
+        "required": "此欄位為必填。",
+        "tooShort": "至少 {min} 個字元。",
+        "tooLong": "最多 {max} 個字元。"
+      }
     }
   },
   "dashboard": {
@@ -5167,7 +5318,8 @@
       "allAuthors": "所有作者",
       "authorAdminSpace": "作者",
       "logs": "日誌",
-      "veto": "地圖禁選"
+      "veto": "地圖禁選",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "選擇一個機構",
@@ -5615,7 +5767,9 @@
       "msValue": "{value} 毫秒",
       "error": {
         "notFound": "未找到該金鑰。"
-      }
+      },
+      "kindPublic": "公開",
+      "publicRateLimit": "共用公開限制"
     },
     "myApiKeys": {
       "title": "我的 API 金鑰",
@@ -5650,7 +5804,8 @@
       "columnAvgDuration": "平均耗時",
       "columnErrorRate": "錯誤率",
       "requests": "{count} 次請求",
-      "errors": "{count} 次錯誤"
+      "errors": "{count} 次錯誤",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "角色與許可權",
@@ -5944,6 +6099,133 @@
       "subtitle": "設定貴組織所主辦賽事的即時禁選。",
       "readOnlyHint": "您沒有管理地圖禁選的權限。",
       "noTournaments": "貴組織沒有任何已啟用地圖禁選的賽事。請由 GC Stats 管理員為您啟用。"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "當比賽、賽事、隊伍或選手有變動時，GC Stats 會向您的端點傳送 HTTPS POST。傳送狀態大約每分鐘檢查一次。",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "您的合作夥伴 API 金鑰的端點與推送記錄。",
+      "keySwitcher": "合作夥伴 API 金鑰",
+      "noPartnerKey": "Webhook 僅限合作夥伴 API 金鑰使用。您還沒有合作夥伴金鑰。",
+      "requestPartnerKey": "申請合作夥伴金鑰",
+      "refresh": "重新整理",
+      "add": "新增端點",
+      "keyInactive": "此 API 金鑰未啟用：其 webhook 已被刪除，在重新啟用之前無法新增。",
+      "empty": "尚無 webhook 端點。",
+      "active": "啟用",
+      "inactive": "停用",
+      "toggle": "啟用或停用此端點",
+      "disabledFailing": "由於連續傳送失敗次數過多，已自動關閉。請修正端點後重新啟用。",
+      "any": "全部",
+      "test": "傳送測試",
+      "testing": "傳送中...",
+      "testSuccess": "已送達 (HTTP {status})",
+      "testFailed": "傳送失敗：{error}",
+      "edit": "編輯",
+      "showSecret": "顯示密鑰",
+      "rotateSecret": "新密鑰",
+      "delete": "刪除",
+      "deleted": "端點已刪除",
+      "created": "端點已建立",
+      "updated": "端點已更新",
+      "deliveriesTitle": "最近傳送",
+      "deliveriesEmpty": "尚無傳送紀錄。",
+      "columnDate": "日期",
+      "columnEvent": "事件",
+      "columnEndpoint": "端點",
+      "columnStatus": "狀態",
+      "columnAttempts": "嘗試次數",
+      "redeliver": "重新傳送",
+      "status": {
+        "pending": "等待中",
+        "success": "已送達",
+        "failed": "失敗"
+      },
+      "secretTitle": "簽章密鑰",
+      "secretRotatedTitle": "新的簽章密鑰",
+      "secretCreatedTitle": "端點已建立，這是它的簽章密鑰",
+      "secretDescription": "用於驗證 X-GCS-Signature 標頭：對 X-GCS-Timestamp 標頭、一個點號與原始內容進行 sha256 HMAC 計算。",
+      "copySecret": "複製密鑰",
+      "close": "關閉",
+      "deleteTitle": "刪除此端點？",
+      "deleteDescription": "{url} 將不再接收 webhook。其傳送紀錄也會一併刪除。",
+      "cancel": "取消",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "addTitle": "新增 webhook 端點",
+      "editTitle": "編輯端點",
+      "dialogDescription": "選擇要接收的事件，並以篩選條件縮小範圍。",
+      "url": "端點 URL",
+      "urlHint": "僅限公開的 HTTPS 位址。",
+      "descriptionLabel": "描述",
+      "events": "事件",
+      "event": {
+        "match": {
+          "created": "新比賽",
+          "updated": "比賽已更新"
+        },
+        "tournament": {
+          "created": "新賽事",
+          "updated": "賽事已更新"
+        },
+        "team": {
+          "updated": "隊伍已更新"
+        },
+        "player": {
+          "updated": "選手已更新"
+        }
+      },
+      "filtersTitle": "篩選",
+      "filtersHint": "篩選為空時全部放行。地區與官方篩選適用於比賽與賽事，隊伍篩選適用於所有事件。",
+      "official": {
+        "label": "官方",
+        "all": "官方與非官方",
+        "official": "僅官方",
+        "unofficial": "僅非官方"
+      },
+      "regions": "地區",
+      "regionsHint": "賽事地區。",
+      "teams": "隊伍",
+      "teamsHint": "這些隊伍之一參與的比賽與賽事、這些隊伍及其目前的選手。",
+      "teamsPlaceholder": "新增隊伍",
+      "teamsSearch": "搜尋隊伍...",
+      "teamsNoResults": "找不到隊伍",
+      "removeTeam": "移除 {name}",
+      "error": {
+        "notFound": "此端點或金鑰已不存在。",
+        "tooManyEndpoints": "每把 API 金鑰最多 {max} 個端點。",
+        "keyInactive": "此 API 金鑰未啟用，無法新增 webhook。",
+        "invalid": "部分欄位無效。",
+        "network": "網路錯誤，請重試。",
+        "busy": "此次遞送正在傳送中，請稍後再試。",
+        "url": {
+          "required": "URL 為必填。",
+          "tooLong": "最多 {urlMaxLength} 個字元。",
+          "invalid": "這不是有效的 URL。",
+          "notHttps": "URL 必須以 https:// 開頭。",
+          "credentials": "URL 不能包含使用者名稱或密碼。",
+          "privateHost": "URL 必須指向公開位址。"
+        },
+        "description": {
+          "tooLong": "最多 {descriptionMaxLength} 個字元。"
+        },
+        "events": {
+          "required": "請至少選擇一個事件。",
+          "invalid": "未知的事件。"
+        },
+        "filterRegions": {
+          "invalid": "未知的地區。",
+          "tooMany": "最多 {filterRegions} 個地區。"
+        },
+        "filterTeamIds": {
+          "invalid": "無效的隊伍。",
+          "tooMany": "最多 {filterTeams} 支隊伍。",
+          "unknownTeam": "其中一支隊伍已不存在。"
+        },
+        "filterOfficial": {
+          "invalid": "無效的值。"
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6886,7 +7168,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "GC Stats 所有公開的賽事、隊伍、選手與比賽，可自由瀏覽、排序並以 JSON 下載。",
+    "subtitle": "GC Stats 所有公開的賽事、戰隊、選手、比賽、地圖與記分板，可自由瀏覽、排序並以 JSON 下載。",
     "rowCount": "{count, plural, other {# 列}}",
     "columnCount": "{count, plural, other {# 欄}}",
     "explore": "瀏覽",
@@ -6907,16 +7189,25 @@
       "matches": {
         "name": "比賽",
         "description": "所有比賽，包含賽事、階段、隊伍、比分、狀態與時間。"
+      },
+      "maps": {
+        "name": "地圖",
+        "description": "每張已進行的地圖：賽事、戰隊、比分、勝方以及雙方各陣營贏得的回合。"
+      },
+      "map_players": {
+        "name": "記分板",
+        "description": "每張已結束地圖的每位選手數據：特務、擊殺、死亡、助攻、ACS、ADR、KAST、首殺、殘局與多殺。"
       }
     },
     "usage": {
       "title": "使用資料",
       "publicOnly": "只提供網站上已公開的資料：不含帳號、聯絡方式或私密欄位。",
-      "terms": "資料與網站適用相同的條款：僅可在我們的<terms>使用條款</terms>允許的範圍內使用。",
+      "terms": "資料適用與本站相同的條款：僅可在我們的使用條款允許的範圍內使用。",
       "freshness": "表格每分鐘更新，完整匯出每 10 分鐘更新。",
       "limits": "限額：每個帳號或 IP 位址每分鐘 {browse} 頁表格，每小時 {exports} 次完整匯出。",
       "accountOnly": "入口網站目前僅開放給已登入的使用者。",
-      "priority": "網站永遠優先：負載很高時，入口網站會降速，並可能在幾秒內回覆忙碌中。"
+      "priority": "網站永遠優先：負載很高時，入口網站會降速，並可能在幾秒內回覆忙碌中。",
+      "termsLink": "使用條款"
     },
     "api": {
       "title": "API",
@@ -6963,7 +7254,9 @@
       "tournaments": "名稱、地區、類別...",
       "teams": "名稱或標籤...",
       "players": "選手 ID、姓名、隊伍...",
-      "matches": "賽事、階段、隊伍..."
+      "matches": "賽事、階段、隊伍...",
+      "maps": "賽事、地圖、戰隊...",
+      "map_players": "選手、戰隊、特務、地圖..."
     },
     "clearSearch": "清除搜尋",
     "filters": {
@@ -7046,7 +7339,39 @@
       "team_b_name": "B 隊",
       "winner_team_id": "勝者 ID",
       "is_forfeit": "棄權",
-      "patch": "版本"
+      "patch": "版本",
+      "match_id": "比賽 ID",
+      "started_at": "日期",
+      "map_order": "地圖序號",
+      "map_name": "地圖",
+      "is_completed": "已結束",
+      "team_a_atk_rounds_won": "A 隊進攻回合",
+      "team_a_def_rounds_won": "A 隊防守回合",
+      "team_b_atk_rounds_won": "B 隊進攻回合",
+      "team_b_def_rounds_won": "B 隊防守回合",
+      "map_id": "地圖 ID",
+      "player_id": "選手 ID",
+      "player_handle": "選手",
+      "team_id": "戰隊 ID",
+      "team_name": "戰隊",
+      "agent": "特務",
+      "kills": "擊殺",
+      "deaths": "死亡",
+      "assists": "助攻",
+      "first_kills": "首殺",
+      "first_deaths": "首死",
+      "clutches_won": "殘局勝利",
+      "clutches_played": "殘局次數",
+      "trade_kills": "補槍擊殺",
+      "traded_deaths": "被補槍的死亡",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }

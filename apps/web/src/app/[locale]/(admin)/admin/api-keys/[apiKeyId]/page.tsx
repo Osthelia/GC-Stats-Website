@@ -17,11 +17,15 @@ import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { ApiKeyDailyChart } from "@/components/admin/api-key-daily-chart";
 import { ApiKeyEndpointsTable } from "@/components/admin/api-key-endpoints-table";
-import { requireAdminPermission } from "@/lib/rbac";
+import { hasAccess, requireAdminPermission } from "@/lib/rbac";
 import { getAdminApiKey } from "@/lib/admin-api-keys";
 import { getApiKeyStats } from "@/lib/api-key-stats";
 import { parseEntityId } from "@/lib/entity-id";
 import type { AppLocale } from "@/i18n/routing";
+import { PublicApiKeyActions } from "@/components/admin/public-api-key-actions";
+import { PublicApiKeyEditForm } from "@/components/admin/public-api-key-edit-form";
+import { PublicApiKeyStatusBadges } from "@/components/admin/public-api-key-status-badges";
+import { getAdminPublicApiKey } from "@/lib/admin-public-api-keys";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -34,11 +38,13 @@ export default async function AdminApiKeyStatsPage({ params }: { params: Promise
   const id = parseEntityId(apiKeyId);
   if (id === null) notFound();
 
-  await requireAdminPermission(locale as AppLocale, PERMISSIONS.apiKeysView);
+  const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.apiKeysView);
   const key = await getAdminApiKey(id);
   if (!key) notFound();
 
-  const stats = await getApiKeyStats(id);
+  const [stats, publicKey] = await Promise.all([getApiKeyStats(id), key.kind === "public" ? getAdminPublicApiKey(id) : null]);
+  const canManage = hasAccess(access, PERMISSIONS.apiKeysManage);
+  const tPublic = await getTranslations({ locale, namespace: "admin.publicApiKeys" });
   const t = await getTranslations({ locale, namespace: "admin.apiKeyStats" });
 
   const ownerLabel = key.userId ? (key.username ?? key.email ?? key.userId) : key.organizationName;
@@ -47,18 +53,30 @@ export default async function AdminApiKeyStatsPage({ params }: { params: Promise
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Link href="/admin/api-keys" className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+        <Link href={publicKey ? "/admin/api-keys/public" : "/admin/api-keys"} className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           {t("backToKeys")}
         </Link>
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">{key.clientName}</h1>
-          <ActiveStatusBadge active={key.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />
+          {publicKey ? <PublicApiKeyStatusBadges apiKey={publicKey} /> : <ActiveStatusBadge active={key.isActive} activeLabel={t("statusActive")} inactiveLabel={t("statusInactive")} />}
         </div>
         <p className="text-sm text-muted-foreground">
           {t("owner")} <Link href={ownerHref} className="text-foreground hover:underline">{ownerLabel}</Link>
         </p>
       </div>
+
+      {publicKey && (
+        <Card>
+          <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+            <CardTitle>{tPublic("usageHeading")}</CardTitle>
+            <PublicApiKeyActions apiKey={publicKey} canManage={canManage} showStats={false} />
+          </CardHeader>
+          <CardContent>
+            <PublicApiKeyEditForm id={publicKey.id} clientName={publicKey.clientName} usageDescription={publicKey.usageDescription ?? ""} canManage={canManage} />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <AdminStatCard label={t("volume24h")} value={stats.volume.day} icon={Activity} color="sky" />

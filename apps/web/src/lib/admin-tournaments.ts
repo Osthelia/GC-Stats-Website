@@ -137,6 +137,7 @@ export type AdminTournamentDetailRow = AdminTournamentRow & {
   liquipediaLink: string | null;
   socials: Record<string, string>;
   playerPovPhrase: string | null;
+  isOfficial: boolean;
   pointTypeId: number | null;
   organizerOrganizationId: number | null;
   organizerOrganizationName: string | null;

@@ -477,6 +477,57 @@
         "joinSource": "영입 출처",
         "leftSource": "방출 출처"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API 키",
+      "subtitle": "무료 공개 API 키를 만들어 프로젝트에서 GC Stats API를 사용해 보세요.",
+      "notice": {
+        "rateLimit": "공개 키는 계정당 초당 {rate}회 요청으로 제한되며, 모든 키가 이 한도를 공유합니다. 이 한도는 사전 통지 없이 언제든지 변경될 수 있습니다.",
+        "stable": "안정적인 제한을 받는 유일한 방법은 GC Stats 팀에 파트너 API 키를 요청하는 것이에요.",
+        "noWebhooks": "공개 키로는 webhook을 사용할 수 없어요. webhook은 파트너 키 전용이에요.",
+        "requestPartner": "파트너 API 키 요청하기"
+      },
+      "create": {
+        "heading": "공개 키 만들기",
+        "description": "데이터를 어디에 사용할지 알려 주세요. 활성 공개 키는 최대 {max}개까지 보유할 수 있어요.",
+        "clientName": "제품 또는 회사",
+        "clientNamePlaceholder": "Liquipedia, Remake, 내 Discord 봇...",
+        "usageDescription": "사용 목적 설명",
+        "usageDescriptionPlaceholder": "데이터 사용 목적, 사용할 엔드포인트, 대략적인 요청 빈도.",
+        "submit": "키 만들기",
+        "termsNote": "API 키에는 사이트와 동일한 <terms>이용 약관</terms>이 적용됩니다."
+      },
+      "created": {
+        "title": "새 API 키",
+        "warning": "지금 복사하세요. 다시는 표시되지 않아요. 요청의 x-api-key 헤더에 담아 보내 주세요.",
+        "copy": "키 복사",
+        "dismiss": "복사했어요"
+      },
+      "list": {
+        "heading": "내 공개 키",
+        "empty": "아직 공개 API 키가 없어요.",
+        "active": "활성",
+        "revoked": "폐기됨",
+        "requests": "30일간 {count, plural, one {#회 요청} other {#회 요청}}",
+        "revoke": "폐기",
+        "suspended": "정지됨",
+        "suspendedHint": "이 키는 GC Stats 팀에 의해 정지되었습니다. 복구를 요청하려면 Discord로 문의해 주세요."
+      },
+      "error": {
+        "required": "필수 항목이에요.",
+        "tooShort": "최소 {min}자 이상 입력하세요.",
+        "tooLong": "최대 {max}자까지 입력할 수 있어요.",
+        "tooManyKeys": "이미 활성 공개 키가 {max}개 있어요. 새 키를 만들려면 하나를 폐기하세요.",
+        "unauthenticated": "세션이 만료됐어요. 다시 로그인해 주세요.",
+        "disabled": "공개 API 키는 현재 비활성화되어 있어요.",
+        "invalid": "일부 항목이 올바르지 않아요.",
+        "notFound": "이 키는 더 이상 존재하지 않아요.",
+        "network": "네트워크 오류가 발생했어요. 다시 시도해 주세요.",
+        "blocked": "API 접근이 차단되었습니다."
+      },
+      "blocked": "API 접근이 차단되어 더 이상 API 키를 생성할 수 없습니다.",
+      "contactDiscord": "Discord로 문의하기"
     }
   },
   "notifications": {
@@ -926,8 +977,8 @@
     "title": "개발자",
     "intro": "여러분의 프로젝트 제작에 도움이 될 모든 데이터가 여기 있어요! GC-Stats에 기여하고 싶으시다면 언제든 환영이에요.",
     "apiKey": {
-      "title": "API 키 요청하기",
-      "body": "남용을 방지하기 위해 저희 API는 인증이 필요해요. 사용을 원하시면 Discord나 이메일로 연락해 주세요.",
+      "title": "파트너 API 키 요청하기",
+      "body": "파트너 키는 안정적인 요청 제한과 webhook을 제공해요. 받으려면 Discord나 이메일로 연락해 주세요.",
       "warning": "요청 시 다음 내용을 함께 알려 주세요.",
       "step1": "프로젝트 이름 및 설명",
       "step2": "API 사용 목적과 규모",
@@ -951,6 +1002,23 @@
       "title": "오픈소스 및 기여",
       "body": "저희는 커뮤니티가 함께 참여할 수 있도록 프로젝트 대부분을 오픈소스로 공개하기로 결정했어요. 클로즈드 소스는 저희 방식이 아니에요. (관리자 대시보드를 제외한) 모든 저장소는 기여에 열려 있어요. Pull Request를 제출하기 전에 저희 가이드라인을 꼭 읽어 주세요.",
       "badge": "공개 저장소"
+    },
+    "publicKey": {
+      "title": "공개 API 키",
+      "body": "GC Stats 계정이 있다면 누구나 저희를 기다릴 필요 없이 몇 초 만에 무료 공개 키를 만들 수 있어요.",
+      "step1": "계정 설정에서 만들고, 데이터를 사용할 제품 또는 회사와 사용 방법을 알려 주세요.",
+      "step2": "공개 키는 초당 몇 회의 요청으로 제한되며, 이 제한은 언제든지 변경될 수 있어요.",
+      "step3": "공개 키로는 webhook을 사용할 수 없어요. 안정적인 제한과 webhook이 필요하다면 아래에서 파트너 키를 요청하세요.",
+      "button": "공개 키 만들기"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "파트너 키는 대시보드에서 HTTPS 엔드포인트를 등록할 수 있어요. 그러면 데이터가 변경될 때마다 GC Stats가 POST를 보내요.",
+      "events": "이벤트: 새 경기, 경기 업데이트, 새 대회, 대회 업데이트, 팀 업데이트, 선수 업데이트.",
+      "filters": "필터: 대회 지역, 공식 여부, 참가 팀.",
+      "signature": "각 요청에는 X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp, X-GCS-Signature 헤더가 포함돼요. 엔드포인트 시크릿으로 서명을 검증하세요.",
+      "retries": "10초 이내에 2xx 상태로 응답하세요. 실패한 전송은 약 9시간 동안 재시도되며, 너무 자주 실패하는 엔드포인트는 꺼져요.",
+      "setup": "페이로드에는 이벤트, 발생 시각, 엔티티가 OpenData 데이터셋과 같은 필드로 담겨 있어요."
     }
   },
   "becomePublisher": {
@@ -2884,6 +2952,7 @@
       "regenerateButton": "재발급",
       "activateButton": "활성화",
       "deactivateButton": "비활성화",
+      "deactivateConfirm": "\"{name}\" 키를 비활성화하시겠습니까? 이 키의 webhook은 영구적으로 삭제됩니다.",
       "deleteButton": "삭제",
       "createTitle": "API 키 생성",
       "createDescription": "전체 키는 생성 직후 한 번만 표시됩니다.",
@@ -2924,6 +2993,10 @@
         "userNotFound": "사용자를 찾을 수 없습니다.",
         "organizationNotFound": "조직을 찾을 수 없습니다.",
         "ownerRequired": "사용자 또는 조직을 선택하세요."
+      },
+      "tabs": {
+        "partner": "파트너 키",
+        "public": "공개 키"
       }
     },
     "apiKeyStats": {
@@ -3438,6 +3511,8 @@
       "fieldPointType": "포인트 유형",
       "fieldPointTypeNone": "없음",
       "fieldActive": "활성 토너먼트",
+      "fieldOfficial": "공식 토너먼트",
+      "officialHint": "공식 서킷 이벤트예요. webhook 구독자는 공식 및 비공식 토너먼트를 필터링할 수 있어요.",
       "fieldLocation": "장소",
       "fieldPrizePool": "상금 규모",
       "fieldDescription": "설명",
@@ -4919,6 +4994,18 @@
         "exportsPerHour": "시간당 전체 내보내기 수",
         "exportsPerHourHint": "계정당, 방문자는 IP 주소당. {min}에서 {max} 사이.",
         "propagationHint": "모든 서버에 15초 이내로 변경 사항이 적용됩니다."
+      },
+      "publicApi": {
+        "title": "공개 API",
+        "description": "모든 계정이 설정에서 직접 만들 수 있는 셀프 서비스 API 키예요. 파트너 키는 자체 제한을 유지해요.",
+        "keys": "공개 키",
+        "enabled": "공개 키 활성화",
+        "enabledHint": "꺼져 있으면 공개 키를 만들 수 없고 기존 키는 403으로 응답해요.",
+        "ratePerSecond": "초당 요청 수",
+        "ratePerSecondHint": "계정당, 모든 공개 키가 공유, {min}에서 {max} 사이. 무거운 엔드포인트는 여러 요청으로 계산됩니다.",
+        "maxKeysPerUser": "계정당 활성 키 수",
+        "maxKeysPerUserHint": "{min}에서 {max} 사이.",
+        "propagationHint": "변경 사항은 15초 이내에 모든 서버에 반영돼요."
       }
     },
     "opendataMonitoring": {
@@ -5018,6 +5105,70 @@
         "poolWaiting": "대기 중인 쿼리",
         "inFlight": "실행 중인 OpenData"
       }
+    },
+    "publicApiKeys": {
+      "title": "공개 API 키",
+      "subtitle": "사용자가 설정에서 생성한 키입니다. 계정당 초당 {rate}회 요청 제한.",
+      "searchPlaceholder": "이름, 설명 또는 사용자로 검색",
+      "statusFilter": "상태",
+      "status": {
+        "active": "활성",
+        "suspended": "정지됨",
+        "revoked": "폐기됨",
+        "blocked": "API 접근 차단됨"
+      },
+      "empty": "일치하는 공개 키가 없습니다.",
+      "requests30d": "30일간 {count, plural, other {요청 #회}}",
+      "statsAndEdit": "통계 및 편집",
+      "suspend": "정지",
+      "unsuspend": "복구",
+      "block": "API 접근 차단",
+      "unblock": "API 접근 차단 해제",
+      "delete": "삭제",
+      "cancel": "취소",
+      "actionFailed": "작업에 실패했습니다. 다시 시도해 주세요.",
+      "notFound": "이 키 또는 사용자가 더 이상 존재하지 않습니다.",
+      "done": {
+        "suspend": "키가 정지되었습니다.",
+        "unsuspend": "키가 복구되었습니다.",
+        "block": "API 접근이 차단되었으며, 사용자의 모든 키가 폐기되었습니다.",
+        "unblock": "API 접근 차단이 해제되었습니다.",
+        "delete": "키가 삭제되었습니다."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "이 키를 정지할까요?",
+          "description": "\"{name}\" 키는 즉시 작동을 멈춥니다. {owner} 님은 복구를 요청하려면 Discord로 문의해야 합니다."
+        },
+        "unsuspend": {
+          "title": "이 키를 복구할까요?",
+          "description": "\"{name}\" 키가 {owner} 님에게 다시 작동합니다."
+        },
+        "block": {
+          "title": "API 접근을 차단할까요?",
+          "description": "{owner} 님의 모든 공개 키가 폐기되며, 더 이상 새 키를 만들 수 없습니다."
+        },
+        "unblock": {
+          "title": "API 접근 차단을 해제할까요?",
+          "description": "{owner} 님이 다시 공개 키를 만들 수 있습니다. 폐기된 키는 폐기된 상태로 유지됩니다."
+        },
+        "delete": {
+          "title": "이 키를 삭제할까요?",
+          "description": "\"{name}\" 키와 해당 통계가 영구적으로 삭제됩니다."
+        }
+      },
+      "usageHeading": "사용자가 신고한 용도",
+      "clientName": "제품 또는 회사",
+      "usageDescription": "용도 설명",
+      "save": "저장",
+      "saving": "저장 중...",
+      "saved": "키가 업데이트되었습니다.",
+      "saveError": "일부 항목이 올바르지 않습니다.",
+      "error": {
+        "required": "필수 항목입니다.",
+        "tooShort": "최소 {min}자 이상이어야 합니다.",
+        "tooLong": "최대 {max}자까지 입력할 수 있습니다."
+      }
     }
   },
   "dashboard": {
@@ -5049,7 +5200,8 @@
       "adminAccess": "관리자",
       "allAuthors": "모든 작성자",
       "authorAdminSpace": "작성자",
-      "logs": "로그"
+      "logs": "로그",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "조직 선택",
@@ -5497,7 +5649,9 @@
       "msValue": "{value}ms",
       "error": {
         "notFound": "키를 찾을 수 없습니다."
-      }
+      },
+      "kindPublic": "공개",
+      "publicRateLimit": "공유 공개 한도"
     },
     "myApiKeys": {
       "title": "내 API 키",
@@ -5532,7 +5686,8 @@
       "columnAvgDuration": "평균 소요 시간",
       "columnErrorRate": "오류율",
       "requests": "요청 {count}건",
-      "errors": "오류 {count}건"
+      "errors": "오류 {count}건",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "역할 및 권한",
@@ -5820,6 +5975,133 @@
       "total": "{count, plural, other {#건}}",
       "previous": "이전 페이지",
       "next": "다음 페이지"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "경기, 대회, 팀 또는 선수가 변경되면 GC Stats가 엔드포인트로 HTTPS POST를 보내요. 전송은 약 1분마다 확인돼요.",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "파트너 API 키의 엔드포인트와 전송 내역.",
+      "keySwitcher": "파트너 API 키",
+      "noPartnerKey": "webhook은 파트너 API 키 전용이에요. 아직 파트너 키가 없어요.",
+      "requestPartnerKey": "파트너 키 요청",
+      "refresh": "새로고침",
+      "add": "엔드포인트 추가",
+      "keyInactive": "이 API 키는 비활성 상태예요. webhook이 삭제되었으며 다시 활성화할 때까지 추가할 수 없어요.",
+      "empty": "아직 webhook 엔드포인트가 없어요.",
+      "active": "활성",
+      "inactive": "비활성",
+      "toggle": "이 엔드포인트 활성화 또는 비활성화",
+      "disabledFailing": "전송 실패가 연속으로 너무 많아 자동으로 꺼졌어요. 엔드포인트를 수정한 뒤 다시 활성화하세요.",
+      "any": "전체",
+      "test": "테스트 보내기",
+      "testing": "보내는 중...",
+      "testSuccess": "전송 완료 (HTTP {status})",
+      "testFailed": "전송 실패: {error}",
+      "edit": "수정",
+      "showSecret": "시크릿 보기",
+      "rotateSecret": "새 시크릿",
+      "delete": "삭제",
+      "deleted": "엔드포인트를 삭제했어요",
+      "created": "엔드포인트를 만들었어요",
+      "updated": "엔드포인트를 업데이트했어요",
+      "deliveriesTitle": "최근 전송",
+      "deliveriesEmpty": "아직 전송 내역이 없어요.",
+      "columnDate": "날짜",
+      "columnEvent": "이벤트",
+      "columnEndpoint": "엔드포인트",
+      "columnStatus": "상태",
+      "columnAttempts": "시도 횟수",
+      "redeliver": "다시 보내기",
+      "status": {
+        "pending": "대기 중",
+        "success": "전송 완료",
+        "failed": "실패"
+      },
+      "secretTitle": "서명 시크릿",
+      "secretRotatedTitle": "새 서명 시크릿",
+      "secretCreatedTitle": "엔드포인트를 만들었어요. 서명 시크릿은 다음과 같아요",
+      "secretDescription": "X-GCS-Signature 헤더를 검증할 때 사용하세요. X-GCS-Timestamp 헤더, 점, 원본 본문을 이어 붙인 값의 sha256 HMAC이에요.",
+      "copySecret": "시크릿 복사",
+      "close": "닫기",
+      "deleteTitle": "이 엔드포인트를 삭제할까요?",
+      "deleteDescription": "{url}은(는) 더 이상 webhook을 받지 않아요. 전송 내역도 함께 삭제돼요.",
+      "cancel": "취소",
+      "save": "저장",
+      "saving": "저장 중...",
+      "addTitle": "새 webhook 엔드포인트",
+      "editTitle": "엔드포인트 수정",
+      "dialogDescription": "받을 이벤트를 선택하고 필터로 범위를 좁히세요.",
+      "url": "엔드포인트 URL",
+      "urlHint": "공개 HTTPS 주소만 가능해요.",
+      "descriptionLabel": "설명",
+      "events": "이벤트",
+      "event": {
+        "match": {
+          "created": "새 경기",
+          "updated": "경기 업데이트"
+        },
+        "tournament": {
+          "created": "새 대회",
+          "updated": "대회 업데이트"
+        },
+        "team": {
+          "updated": "팀 업데이트"
+        },
+        "player": {
+          "updated": "선수 업데이트"
+        }
+      },
+      "filtersTitle": "필터",
+      "filtersHint": "비어 있는 필터는 모두 통과시켜요. 지역 및 공식 필터는 경기와 대회에, 팀 필터는 모든 이벤트에 적용돼요.",
+      "official": {
+        "label": "공식",
+        "all": "공식 및 비공식",
+        "official": "공식만",
+        "unofficial": "비공식만"
+      },
+      "regions": "지역",
+      "regionsHint": "대회 지역.",
+      "teams": "팀",
+      "teamsHint": "이 팀 중 하나가 참가하는 경기와 대회, 이 팀들과 현재 선수들.",
+      "teamsPlaceholder": "팀 추가",
+      "teamsSearch": "팀 검색...",
+      "teamsNoResults": "팀을 찾을 수 없어요",
+      "removeTeam": "{name} 제거",
+      "error": {
+        "notFound": "이 엔드포인트 또는 키는 더 이상 존재하지 않아요.",
+        "tooManyEndpoints": "API 키당 엔드포인트는 최대 {max}개예요.",
+        "keyInactive": "이 API 키는 비활성 상태라서 webhook을 추가할 수 없어요.",
+        "invalid": "일부 항목이 올바르지 않아요.",
+        "network": "네트워크 오류가 발생했어요. 다시 시도해 주세요.",
+        "busy": "이 전송은 이미 진행 중입니다. 잠시 후 다시 시도해 주세요.",
+        "url": {
+          "required": "URL은 필수예요.",
+          "tooLong": "최대 {urlMaxLength}자까지 입력할 수 있어요.",
+          "invalid": "올바른 URL이 아니에요.",
+          "notHttps": "URL은 https://로 시작해야 해요.",
+          "credentials": "URL에 사용자 이름이나 비밀번호를 포함할 수 없어요.",
+          "privateHost": "URL은 공개 주소를 가리켜야 해요."
+        },
+        "description": {
+          "tooLong": "최대 {descriptionMaxLength}자까지 입력할 수 있어요."
+        },
+        "events": {
+          "required": "이벤트를 하나 이상 선택하세요.",
+          "invalid": "알 수 없는 이벤트예요."
+        },
+        "filterRegions": {
+          "invalid": "알 수 없는 지역이에요.",
+          "tooMany": "지역은 최대 {filterRegions}개예요."
+        },
+        "filterTeamIds": {
+          "invalid": "올바르지 않은 팀이에요.",
+          "tooMany": "팀은 최대 {filterTeams}개예요.",
+          "unknownTeam": "팀 중 하나가 더 이상 존재하지 않아요."
+        },
+        "filterOfficial": {
+          "invalid": "올바르지 않은 값이에요."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6699,7 +6981,7 @@
   },
   "openData": {
     "title": "OpenData",
-    "subtitle": "GC Stats의 모든 공개 대회, 팀, 선수, 경기를 자유롭게 열람하고 정렬하고 JSON으로 내려받으세요.",
+    "subtitle": "GC Stats의 모든 공개 대회, 팀, 선수, 경기, 맵, 스코어보드를 자유롭게 탐색하고 정렬하며 JSON으로 다운로드할 수 있습니다.",
     "rowCount": "{count, plural, other {#행}}",
     "columnCount": "{count, plural, other {#열}}",
     "explore": "살펴보기",
@@ -6720,16 +7002,25 @@
       "matches": {
         "name": "경기",
         "description": "대회, 스테이지, 팀, 점수, 상태, 일정이 포함된 모든 경기."
+      },
+      "maps": {
+        "name": "맵",
+        "description": "플레이된 모든 맵: 대회, 팀, 점수, 승자, 진영별 승리 라운드."
+      },
+      "map_players": {
+        "name": "스코어보드",
+        "description": "종료된 모든 맵의 선수별 기록: 요원, 킬, 데스, 어시스트, ACS, ADR, KAST, 퍼스트 킬, 클러치, 멀티킬."
       }
     },
     "usage": {
       "title": "데이터 이용",
       "publicOnly": "사이트에 이미 공개된 데이터만 제공합니다. 계정, 연락처, 비공개 항목은 없습니다.",
-      "terms": "데이터에는 사이트와 동일한 조건이 적용됩니다. <terms>이용약관</terms>에서 허용하는 범위 내에서만 사용할 수 있습니다.",
+      "terms": "데이터에는 사이트와 동일한 약관이 적용됩니다. 이용 약관에서 허용하는 범위 내에서만 사용할 수 있습니다.",
       "freshness": "표는 매분, 전체 내보내기는 10분마다 갱신됩니다.",
       "limits": "한도: 계정 또는 IP 주소당 분당 표 {browse}페이지, 시간당 전체 내보내기 {exports}회.",
       "accountOnly": "현재 포털은 로그인한 사용자만 이용할 수 있습니다.",
-      "priority": "사이트가 항상 우선입니다. 부하가 높으면 포털이 느려지고 몇 초간 바쁘다고 응답할 수 있습니다."
+      "priority": "사이트가 항상 우선입니다. 부하가 높으면 포털이 느려지고 몇 초간 바쁘다고 응답할 수 있습니다.",
+      "termsLink": "이용 약관"
     },
     "api": {
       "title": "API",
@@ -6776,7 +7067,9 @@
       "tournaments": "이름, 지역, 카테고리...",
       "teams": "이름 또는 태그...",
       "players": "닉네임, 이름, 팀...",
-      "matches": "대회, 스테이지, 팀..."
+      "matches": "대회, 스테이지, 팀...",
+      "maps": "대회, 맵, 팀...",
+      "map_players": "선수, 팀, 요원, 맵..."
     },
     "clearSearch": "검색 지우기",
     "filters": {
@@ -6859,7 +7152,39 @@
       "team_b_name": "B팀",
       "winner_team_id": "승자 ID",
       "is_forfeit": "몰수",
-      "patch": "패치"
+      "patch": "패치",
+      "match_id": "경기 ID",
+      "started_at": "날짜",
+      "map_order": "맵 번호",
+      "map_name": "맵",
+      "is_completed": "종료",
+      "team_a_atk_rounds_won": "A팀 공격 라운드",
+      "team_a_def_rounds_won": "A팀 수비 라운드",
+      "team_b_atk_rounds_won": "B팀 공격 라운드",
+      "team_b_def_rounds_won": "B팀 수비 라운드",
+      "map_id": "맵 ID",
+      "player_id": "선수 ID",
+      "player_handle": "선수",
+      "team_id": "팀 ID",
+      "team_name": "팀",
+      "agent": "요원",
+      "kills": "킬",
+      "deaths": "데스",
+      "assists": "어시스트",
+      "first_kills": "퍼스트 킬",
+      "first_deaths": "퍼스트 데스",
+      "clutches_won": "클러치 승리",
+      "clutches_played": "클러치 시도",
+      "trade_kills": "트레이드 킬",
+      "traded_deaths": "트레이드된 데스",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
     }
   }
 }
