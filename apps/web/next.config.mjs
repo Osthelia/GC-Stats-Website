@@ -23,7 +23,8 @@ const nextConfig = {
   // server, not get pulled into a webpack/turbopack bundle.
   serverExternalPackages: ["sharp", "satori"],
   // The alert image renderer reads font files at runtime, which the tracer cannot see.
-  outputFileTracingIncludes: { "/**": ["../../node_modules/@fontsource/*/files/*-latin-{400,700}-normal.woff"] },
+  // The package.json files are needed too, fonts.ts locates each package through them.
+  outputFileTracingIncludes: { "/**": ["../../node_modules/@fontsource/*/package.json", "../../node_modules/@fontsource/*/files/*-latin-{400,700}-normal.woff"] },
   allowedDevOrigins: ["localhost", "127.0.0.1"],
   // Build-time CDN host for /_next/static (a pull zone whose origin is the app). Unset = served by the app.
   assetPrefix: process.env.ASSET_PREFIX || undefined,
