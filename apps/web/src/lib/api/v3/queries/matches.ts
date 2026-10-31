@@ -11,10 +11,11 @@
 
 import { eq, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matches, pickemMatchPicks } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { getMatchStatsResponse, type ApiMatchStatsResponse } from "../../v1/queries/matches";
 import { getMatchEncounters } from "@/lib/match-page-data";
 import { buildHeadToHeadWidgetUrl } from "@/lib/widget-params";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiMatchEncounter = {
   match_id: number;
@@ -49,7 +50,8 @@ function roundPct(n: number, total: number): number {
   return total > 0 ? Math.round((n / total) * 1000) / 10 : 0;
 }
 
-async function getMatchPickemVotes(matchId: number, entrantAId: number | null, entrantBId: number | null): Promise<ApiPickemVotes> {
+async function getMatchPickemVotes(game: GameSlug, matchId: number, entrantAId: number | null, entrantBId: number | null): Promise<ApiPickemVotes> {
+  const { pickemMatchPicks } = gameTables(game);
   if (entrantAId == null && entrantBId == null) return { team_a: 0, team_b: 0, total: 0, team_a_percentage: 0, team_b_percentage: 0 };
 
   const rows = await db
@@ -74,8 +76,9 @@ async function getMatchPickemVotes(matchId: number, entrantAId: number | null, e
  * OBS head to head radar chart widget (the API has no chart rendering of its
  * own), and the pick'em vote split for this match.
  */
-export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Response | null> {
-  const core = await getMatchStatsResponse(matchId);
+export async function getMatchV3Response(game: GameSlug, matchId: number): Promise<ApiMatchV3Response | null> {
+  const { matches } = gameTables(game);
+  const core = await getMatchStatsResponse(game, matchId);
   if (!core) return null;
 
   const [matchRow] = await db.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -84,8 +87,8 @@ export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Res
   const teamBId = core.team_b?.team.id ?? null;
 
   const [encounters, pickem] = await Promise.all([
-    getMatchEncounters(matchId, teamAId, teamBId),
-    getMatchPickemVotes(matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
+    getMatchEncounters(game, matchId, teamAId, teamBId),
+    getMatchPickemVotes(game, matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
   ]);
 
   const radarChartWidgetUrl = teamAId != null && teamBId != null ? buildHeadToHeadWidgetUrl({ teamA: teamAId, teamB: teamBId }) : null;

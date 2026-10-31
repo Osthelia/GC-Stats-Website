@@ -10,8 +10,9 @@
 
 import { and, eq, isNull, isNotNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { news, newsAuthors, users } from "@gc-stats/db";
+import { newsAuthors, users, gameTables } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 export type DashboardAuthorRow = {
   id: number;
@@ -25,24 +26,34 @@ export type DashboardAuthorRow = {
   organizationCount: number;
 };
 
+/** Article counts add up the articles of every game. */
 export async function listDashboardAuthors(): Promise<DashboardAuthorRow[]> {
-  const [rows, counts] = await Promise.all([
+  const [rows, countsPerGame] = await Promise.all([
     db
       .select({ id: newsAuthors.id, name: newsAuthors.name, slug: newsAuthors.slug, username: users.username, isAuthor: users.isAuthor })
       .from(newsAuthors)
       .leftJoin(users, eq(users.id, newsAuthors.userId))
       .orderBy(newsAuthors.name),
-    db
-      .select({
-        authorId: news.authorId,
-        individual: sql<number>`count(*) filter (where ${isNull(news.organizationId)})`.mapWith(Number),
-        organization: sql<number>`count(*) filter (where ${isNotNull(news.organizationId)})`.mapWith(Number),
+    Promise.all(
+      GAMES.map((game) => {
+        const { news } = gameTables(game);
+        return db
+          .select({
+            authorId: news.authorId,
+            individual: sql<number>`count(*) filter (where ${isNull(news.organizationId)})`.mapWith(Number),
+            organization: sql<number>`count(*) filter (where ${isNotNull(news.organizationId)})`.mapWith(Number),
+          })
+          .from(news)
+          .groupBy(news.authorId);
       })
-      .from(news)
-      .groupBy(news.authorId),
+    ),
   ]);
 
-  const countByAuthor = new Map(counts.map((c) => [c.authorId, c]));
+  const countByAuthor = new Map<number | null, { individual: number; organization: number }>();
+  for (const c of countsPerGame.flat()) {
+    const current = countByAuthor.get(c.authorId) ?? { individual: 0, organization: 0 };
+    countByAuthor.set(c.authorId, { individual: current.individual + c.individual, organization: current.organization + c.organization });
+  }
   const logoUrls = await getCurrentLogoUrlsThemed(
     "news-author",
     rows.map((r) => r.id)
@@ -74,7 +85,8 @@ export type DashboardAuthorDetail = {
   organizationCount: number;
 };
 
-export async function getDashboardAuthor(authorId: number): Promise<DashboardAuthorDetail | null> {
+export async function getDashboardAuthor(game: GameSlug, authorId: number): Promise<DashboardAuthorDetail | null> {
+  const { news } = gameTables(game);
   const [row] = await db
     .select({
       id: newsAuthors.id,

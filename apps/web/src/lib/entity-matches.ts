@@ -13,12 +13,13 @@
 import { and, asc, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { entrants, matches, maps, mapPlayerStats, stageContainers, stages, teams, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { abbreviateTournamentName, type HomeMatch } from "@/lib/home-data";
 import { formatSideScore } from "@/lib/match-score-format";
 import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export const ENTITY_MATCHES_PAGE_SIZE = 20;
 
@@ -81,12 +82,34 @@ export function entityMatchesStatusHrefs(basePath: string, filters: EntityMatche
   };
 }
 
-const oppEntrant = alias(entrants, "opp_entrant");
-const selfEntrant = alias(entrants, "self_entrant");
+function oppEntrant(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "opp_entrant");
+}
+function selfEntrant(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "self_entrant");
+}
 
 /** The entity's own entrant for each of its matches. Null when a team has no entrant at all. */
-async function selfMatchesSubquery(entity: MatchEntity) {
+async function selfMatchesSubquery(game: GameSlug, entity: MatchEntity) {
+  const { entrants, matches } = gameTables(game);
+  if (entity.kind === "player" && !gameHasMaps(game)) {
+    // No map stats outside Valorant: a player played the matches of the entrants whose locked roster lists them.
+    const { entrantMembers } = gameTables(game);
+    return db
+      .selectDistinctOn([matches.id], {
+        matchId: sql<number>`${matches.id}`.mapWith(Number).as("self_match_id"),
+        entrantId: sql<number>`${entrantMembers.entrantId}`.mapWith(Number).as("self_entrant_id"),
+      })
+      .from(entrantMembers)
+      .innerJoin(matches, or(eq(matches.entrantAId, entrantMembers.entrantId), eq(matches.entrantBId, entrantMembers.entrantId)))
+      .where(eq(entrantMembers.personId, entity.id))
+      .orderBy(matches.id)
+      .as("self_matches");
+  }
   if (entity.kind === "player") {
+    const { maps, mapPlayerStats } = valorantTablesOf(game);
     return db
       .selectDistinctOn([maps.matchId], {
         matchId: sql<number>`${maps.matchId}`.mapWith(Number).as("self_match_id"),
@@ -113,8 +136,9 @@ async function selfMatchesSubquery(entity: MatchEntity) {
 }
 
 /** One row per match of the entity, both sides resolved. */
-async function entityMatchesSubquery(entity: MatchEntity) {
-  const self = await selfMatchesSubquery(entity);
+async function entityMatchesSubquery(game: GameSlug, entity: MatchEntity) {
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const self = await selfMatchesSubquery(game, entity);
   if (!self) return null;
 
   const selfIsA = sql`${matches.entrantAId} = ${self.entrantId}`;
@@ -132,20 +156,20 @@ async function entityMatchesSubquery(entity: MatchEntity) {
       region: tournaments.region,
       selfEntrantId: self.entrantId,
       selfScore: sql<number | null>`case when ${selfIsA} then ${matches.scoreA} else ${matches.scoreB} end`.as("self_score"),
-      selfTeamId: sql<number | null>`${selfEntrant.teamId}`.mapWith(Number).as("self_team_id"),
-      selfDisplayName: sql<string | null>`${selfEntrant.displayName}`.as("self_display_name"),
+      selfTeamId: sql<number | null>`${selfEntrant(game).teamId}`.mapWith(Number).as("self_team_id"),
+      selfDisplayName: sql<string | null>`${selfEntrant(game).displayName}`.as("self_display_name"),
       opponentEntrantId: opponentEntrantId.mapWith(Number).as("opponent_entrant_id"),
       opponentScore: sql<number | null>`case when ${selfIsA} then ${matches.scoreB} else ${matches.scoreA} end`.as("opponent_score"),
-      opponentTeamId: sql<number | null>`${oppEntrant.teamId}`.mapWith(Number).as("opponent_team_id"),
-      opponentDisplayName: sql<string | null>`${oppEntrant.displayName}`.as("opponent_display_name"),
+      opponentTeamId: sql<number | null>`${oppEntrant(game).teamId}`.mapWith(Number).as("opponent_team_id"),
+      opponentDisplayName: sql<string | null>`${oppEntrant(game).displayName}`.as("opponent_display_name"),
     })
     .from(self)
     .innerJoin(matches, eq(matches.id, self.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-    .leftJoin(selfEntrant, eq(selfEntrant.id, self.entrantId))
-    .leftJoin(oppEntrant, eq(oppEntrant.id, opponentEntrantId))
+    .leftJoin(selfEntrant(game), eq(selfEntrant(game).id, self.entrantId))
+    .leftJoin(oppEntrant(game), eq(oppEntrant(game).id, opponentEntrantId))
     .as("entity_matches");
 }
 
@@ -173,13 +197,13 @@ type EntityMatchesQuery = {
   offset?: number;
 };
 
-export async function getEntityMatches(entity: MatchEntity, opts: EntityMatchesQuery): Promise<HomeMatch[]> {
-  const m = await entityMatchesSubquery(entity);
+export async function getEntityMatches(game: GameSlug, entity: MatchEntity, opts: EntityMatchesQuery): Promise<HomeMatch[]> {
+  const m = await entityMatchesSubquery(game, entity);
   if (!m) return [];
-  return fetchMatches(m, opts);
+  return fetchMatches(game, m, opts);
 }
 
-async function fetchMatches(m: EntityMatchesSq, opts: EntityMatchesQuery): Promise<HomeMatch[]> {
+async function fetchMatches(game: GameSlug, m: EntityMatchesSq, opts: EntityMatchesQuery): Promise<HomeMatch[]> {
   const filters = opts.filters ?? {};
   const conditions = baseConditions(m, filters);
   const statuses = filters.status ? [STATUS_TO_DB[filters.status]] : opts.statuses;
@@ -196,7 +220,7 @@ async function fetchMatches(m: EntityMatchesSq, opts: EntityMatchesQuery): Promi
   if (rows.length === 0) return [];
 
   const teamIds = rows.flatMap((r) => [r.selfTeamId, r.opponentTeamId]).filter((id): id is number => id != null);
-  const resolver = await buildTeamDisplayResolver(teamIds);
+  const resolver = await buildTeamDisplayResolver(game, teamIds);
 
   const side = (teamId: number | null, displayName: string | null, at: Date) => {
     if (displayName == null) return { name: "?", tag: "?", logoUrl: null, logoUrlLight: null };
@@ -239,15 +263,15 @@ async function fetchMatches(m: EntityMatchesSq, opts: EntityMatchesQuery): Promi
 
 /** Matches tab: one page plus the per status counts (counts follow every filter except the status one). */
 export async function getEntityMatchesPage(
-  entity: MatchEntity,
+  game: GameSlug, entity: MatchEntity,
   opts: { filters: EntityMatchesFilters; page: number },
 ): Promise<{ items: HomeMatch[]; counts: EntityMatchStatusCounts; total: number }> {
   const counts: EntityMatchStatusCounts = { all: 0, live: 0, upcoming: 0, finished: 0 };
-  const m = await entityMatchesSubquery(entity);
+  const m = await entityMatchesSubquery(game, entity);
   if (!m) return { items: [], counts, total: 0 };
 
   const [items, countRows] = await Promise.all([
-    fetchMatches(m, { filters: opts.filters, limit: ENTITY_MATCHES_PAGE_SIZE, offset: (opts.page - 1) * ENTITY_MATCHES_PAGE_SIZE }),
+    fetchMatches(game, m, { filters: opts.filters, limit: ENTITY_MATCHES_PAGE_SIZE, offset: (opts.page - 1) * ENTITY_MATCHES_PAGE_SIZE }),
     db
       .select({ status: m.status, count: sql<number>`count(*)::int` })
       .from(m)
@@ -263,17 +287,18 @@ export async function getEntityMatchesPage(
 }
 
 /** Real known values for the Matches tab dropdowns: tournaments played and opposing teams faced. */
-export async function getEntityMatchesFilterOptions(entity: MatchEntity): Promise<EntityMatchesFilterOptions> {
-  const m = await entityMatchesSubquery(entity);
+export async function getEntityMatchesFilterOptions(game: GameSlug, entity: MatchEntity): Promise<EntityMatchesFilterOptions> {
+  const { teams, tournaments } = gameTables(game);
+  const m = await entityMatchesSubquery(game, entity);
   if (!m) return { tournaments: [], opponents: [] };
 
   const [tournamentRows, opponentRows] = await Promise.all([
     db
       .selectDistinct({ id: m.tournamentId, name: m.tournamentName })
       .from(m)
-      .innerJoin(tournaments, and(eq(tournaments.id, m.tournamentId), visibleTournament))
+      .innerJoin(tournaments, and(eq(tournaments.id, m.tournamentId), visibleTournament(game)))
       .orderBy(m.tournamentName),
-    db.selectDistinct({ id: teams.id, name: teams.name }).from(m).innerJoin(teams, and(eq(teams.id, m.opponentTeamId), visibleTeam)).orderBy(teams.name),
+    db.selectDistinct({ id: teams.id, name: teams.name }).from(m).innerJoin(teams, and(eq(teams.id, m.opponentTeamId), visibleTeam(game))).orderBy(teams.name),
   ]);
 
   return { tournaments: tournamentRows, opponents: opponentRows };

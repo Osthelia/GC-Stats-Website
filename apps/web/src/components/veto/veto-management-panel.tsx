@@ -29,6 +29,7 @@ import { VALORANT_MAP_POOL } from "@/lib/valorant-maps";
 import { WIDGETS_URL } from "@/lib/widget-params";
 import { cn } from "@/lib/utils";
 import type { VetoManagementData, VetoManagedEntrant, VetoManagedMatch } from "@/lib/veto/management-data";
+import { useGame } from "@/lib/use-game";
 
 type Scope = { organizationId?: number };
 type Translate = ReturnType<typeof useTranslations>;
@@ -76,6 +77,7 @@ function MapToggleGrid({ value, onChange, disabled }: { value: string[]; onChang
 }
 
 function SettingsCard({ data, scope }: { data: VetoManagementData; scope: Scope }) {
+  const game = useGame();
   const t = useTranslations("admin.vetoManagement");
   const [isPending, startTransition] = useTransition();
   const { settings } = data;
@@ -95,7 +97,7 @@ function SettingsCard({ data, scope }: { data: VetoManagementData; scope: Scope 
     setErrors({});
     startTransition(async () => {
       const result = await saveVetoSettings(
-        data.tournament.id,
+        game, data.tournament.id,
         { firstMoverMode: mode, advantageEntrantId: advantage === NONE ? null : Number(advantage), predefinedSlot: slot, actionTimeoutSeconds: timeout, mapPool: pool, mapPoolPatch: patch },
         scope
       );
@@ -225,6 +227,7 @@ function SettingsCard({ data, scope }: { data: VetoManagementData; scope: Scope 
 }
 
 function TeamLinksCard({ data, scope }: { data: VetoManagementData; scope: Scope }) {
+  const game = useGame();
   const t = useTranslations("admin.vetoManagement");
   const locale = useLocale();
   const [tokens, setTokens] = useState<Record<number, string | null>>(() => Object.fromEntries(data.entrants.map((e) => [e.id, e.vetoToken])));
@@ -248,7 +251,7 @@ function TeamLinksCard({ data, scope }: { data: VetoManagementData; scope: Scope
     const entrant = confirming;
     if (!entrant) return;
     startTransition(async () => {
-      const result = await regenerateTeamVetoLink(data.tournament.id, entrant.id, scope);
+      const result = await regenerateTeamVetoLink(game, data.tournament.id, entrant.id, scope);
       setConfirming(null);
       if (!result.ok) {
         toast.error(t("error.notFound"));
@@ -331,6 +334,7 @@ function MatchesCard({ data, scope }: { data: VetoManagementData; scope: Scope }
 }
 
 function MatchRow({ match, tournamentId, scope }: { match: VetoManagedMatch; tournamentId: number; scope: Scope }) {
+  const game = useGame();
   const t = useTranslations("admin.vetoManagement");
   const [pool, setPool] = useState<string[]>(match.matchPool);
   const [editing, setEditing] = useState(false);
@@ -343,7 +347,7 @@ function MatchRow({ match, tournamentId, scope }: { match: VetoManagedMatch; tou
   function savePool() {
     setError(null);
     startTransition(async () => {
-      const result = await saveMatchVetoPool(tournamentId, match.id, pool, scope);
+      const result = await saveMatchVetoPool(game, tournamentId, match.id, pool, scope);
       if (!result.ok) {
         setError(t(`error.matchPool.${result.error}`));
         return;
@@ -364,7 +368,7 @@ function MatchRow({ match, tournamentId, scope }: { match: VetoManagedMatch; tou
 
   function reset() {
     startTransition(async () => {
-      const result = await resetMatchVeto(tournamentId, match.id, scope);
+      const result = await resetMatchVeto(game, tournamentId, match.id, scope);
       setConfirmingReset(false);
       if (!result.ok) {
         toast.error(t("error.notFound"));

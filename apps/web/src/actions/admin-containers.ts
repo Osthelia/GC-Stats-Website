@@ -14,11 +14,12 @@
 
 import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
+import type { GameSlug } from "@gc-stats/db/game";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
 import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type PointsField } from "@/lib/bracket/config-types";
 
@@ -105,12 +106,13 @@ function buildConfig(input: ContainerInput): Record<string, unknown> {
 }
 
 /** Rows of a stage in the shape the set tree helpers read. */
-async function loadTreeRows(stageId: number): Promise<(TreeRow<number> & { name: string })[]> {
+async function loadTreeRows(game: GameSlug, stageId: number): Promise<(TreeRow<number> & { name: string })[]> {
+  const { stageContainers } = gameTables(game);
   const rows = await db
     .select({ id: stageContainers.id, parentId: stageContainers.parentId, containerType: stageContainers.containerType, status: stageContainers.status, name: stageContainers.name })
     .from(stageContainers)
     .where(eq(stageContainers.stageId, stageId))
-    .orderBy(...containerOrderBy);
+    .orderBy(...containerOrderBy(game));
   return rows.map((r) => ({ id: r.id, parentId: r.parentId, isSet: r.containerType === "set", status: r.status, name: r.name }));
 }
 
@@ -122,29 +124,31 @@ function validateSetName(name: string): ContainerFieldErrors {
 }
 
 /** A set groups containers under one name. `parentId` nests it in another set of the same stage. */
-export async function createContainerSet(stageId: number, input: { name: string; parentId: number | null }): Promise<ContainerResult> {
+export async function createContainerSet(game: GameSlug, stageId: number, input: { name: string; parentId: number | null }): Promise<ContainerResult> {
   await requireTournamentsActor();
+  const { stageContainers, stages } = gameTables(game);
 
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage) return { ok: false, fieldErrors: { name: "stageNotFound" } };
 
   const fieldErrors = validateSetName(input.name);
   if (input.parentId !== null) {
-    const parent = (await loadTreeRows(stageId)).find((r) => r.id === input.parentId);
+    const parent = (await loadTreeRows(game, stageId)).find((r) => r.id === input.parentId);
     if (!parent || !parent.isSet) fieldErrors.parentId = "invalid";
   }
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), status: "pending", containerType: "set", parentId: input.parentId, config: {}, displayOrder: nextContainerDisplayOrder(stageId) })
+    .values({ stageId, name: input.name.trim(), status: "pending", containerType: "set", parentId: input.parentId, config: {}, displayOrder: nextContainerDisplayOrder(game, stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
   return { ok: true, id: created.id };
 }
 
-export async function renameContainerSet(id: number, stageId: number, input: { name: string }): Promise<ContainerResult> {
+export async function renameContainerSet(game: GameSlug, id: number, stageId: number, input: { name: string }): Promise<ContainerResult> {
   await requireTournamentsActor();
+  const { stageContainers } = gameTables(game);
 
   const [existing] = await db
     .select({ id: stageContainers.id })
@@ -163,13 +167,14 @@ export async function renameContainerSet(id: number, stageId: number, input: { n
 export type MoveToSetResult = { ok: true } | { ok: false; error: "notFound" | "invalid" | "parentInvalid" };
 
 /** Moves a container into a set (or back to the root of its stage with a null parent), last among its new siblings unless an index is given. */
-export async function moveContainerToSet(id: number, stageId: number, parentId: number | null, index?: number): Promise<MoveToSetResult> {
+export async function moveContainerToSet(game: GameSlug, id: number, stageId: number, parentId: number | null, index?: number): Promise<MoveToSetResult> {
   await requireTournamentsActor();
+  const { stageContainers } = gameTables(game);
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || (parentId !== null && !Number.isInteger(parentId))) return { ok: false, error: "invalid" };
   if (index !== undefined && (!Number.isInteger(index) || index < 0)) return { ok: false, error: "invalid" };
 
-  const rows = await loadTreeRows(stageId);
+  const rows = await loadTreeRows(game, stageId);
   const check = checkMove(rows, id, parentId);
   if (check !== "ok") return { ok: false, error: check };
 
@@ -182,7 +187,8 @@ export async function moveContainerToSet(id: number, stageId: number, parentId: 
   return { ok: true };
 }
 
-export async function createContainer(stageId: number, input: ContainerInput): Promise<ContainerResult> {
+export async function createContainer(game: GameSlug, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+  const { stageContainers, stages } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select({ id: stages.id, tournamentId: stages.tournamentId }).from(stages).where(eq(stages.id, stageId)).limit(1);
@@ -190,14 +196,14 @@ export async function createContainer(stageId: number, input: ContainerInput): P
 
   const fieldErrors = validateContainer(input);
   if (input.parentId !== null) {
-    const parent = (await loadTreeRows(stageId)).find((r) => r.id === input.parentId);
+    const parent = (await loadTreeRows(game, stageId)).find((r) => r.id === input.parentId);
     if (!parent || !parent.isSet) fieldErrors.parentId = "invalid";
   }
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [created] = await db
     .insert(stageContainers)
-    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, parentId: input.parentId, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(stageId) })
+    .values({ stageId, name: input.name.trim(), status: input.status, containerType: input.containerType, parentId: input.parentId, config: buildConfig(input), displayOrder: nextContainerDisplayOrder(game, stageId) })
     .returning({ id: stageContainers.id });
   if (!created) throw new Error("Insert returned no row");
 
@@ -213,7 +219,8 @@ export async function createContainer(stageId: number, input: ContainerInput): P
  * `group_entries` from those matches; group -> bracket drops the now
  * unused `group_entries`. The `legacyImportTarget` flag is preserved.
  */
-export async function updateContainer(id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+export async function updateContainer(game: GameSlug, id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
+  const { stageContainers, groupEntries, matches, bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
   const [existing] = await db
@@ -236,7 +243,7 @@ export async function updateContainer(id: number, stageId: number, input: Contai
     if (input.containerType === "group") {
       const containerMatchIds = tx.select({ id: matches.id }).from(matches).where(eq(matches.containerId, id));
       await tx.delete(bracketEdges).where(or(inArray(bracketEdges.fromMatchId, containerMatchIds), inArray(bracketEdges.toMatchId, containerMatchIds)));
-      await rebuildGroupEntriesFromMatches(tx, id);
+      await rebuildGroupEntriesFromMatches(game, tx, id);
     } else {
       await tx.delete(groupEntries).where(eq(groupEntries.containerId, id));
     }
@@ -249,13 +256,15 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
 
 /** Without `force`, refuses when a match is live or completed. With it, the
  *  container goes with every match, map and stat row underneath. */
-export async function deleteContainer(id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
+export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
+  const { stageContainers, matches } = gameTables(game);
+  const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
 
   // A set goes with everything nested in it
-  const ids = subtreeOf(await loadTreeRows(stageId), id).map((r) => r.id);
+  const ids = subtreeOf(await loadTreeRows(game, stageId), id).map((r) => r.id);
   if (ids.length === 0) return { ok: false, error: "notFound" };
 
   if (!force) {
@@ -284,7 +293,8 @@ export type AssignEntrantsResult = { ok: true } | { ok: false; error: "notFound"
  *  entrants already present are left untouched (onConflictDoNothing on the
  *  (containerId, entrantId) pair isn't a declared unique constraint, so
  *  duplicates are avoided by checking first instead). */
-export async function assignEntrantsToContainer(containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
+export async function assignEntrantsToContainer(game: GameSlug, containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
+  const { stageContainers, stages, entrants, groupEntries } = gameTables(game);
   await requireTournamentsActor();
 
   const [container] = await db
@@ -313,7 +323,8 @@ export async function assignEntrantsToContainer(containerId: number, entrantIds:
 
 export type RemoveGroupEntryResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function removeEntrantFromContainer(containerId: number, entrantId: number): Promise<RemoveGroupEntryResult> {
+export async function removeEntrantFromContainer(game: GameSlug, containerId: number, entrantId: number): Promise<RemoveGroupEntryResult> {
+  const { groupEntries } = gameTables(game);
   await requireTournamentsActor();
   const [existing] = await db
     .select({ id: groupEntries.id })

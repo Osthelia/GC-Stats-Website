@@ -11,8 +11,9 @@
 import { alias } from "drizzle-orm/pg-core";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, matches, matchVetoSessions, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { ensureVetoTokens, getVetoSettings, type VetoSettings } from "./service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type VetoManagedTournament = { id: number; name: string; vetoEnabled: boolean };
 
@@ -38,11 +39,13 @@ export type VetoManagementData = {
   matches: VetoManagedMatch[];
 };
 
-export async function getVetoManagementData(tournamentId: number): Promise<VetoManagementData | null> {
+export async function getVetoManagementData(game: GameSlug, tournamentId: number): Promise<VetoManagementData | null> {
+  const { entrants, matches, stageContainers, stages, tournaments } = gameTables(game);
+  const { matchVetoSessions } = valorantTablesOf(game);
   const [tournament] = await db.select({ id: tournaments.id, name: tournaments.name, vetoEnabled: tournaments.vetoEnabled }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
   if (!tournament) return null;
   // Teams added after the activation get their link here.
-  if (tournament.vetoEnabled) await ensureVetoTokens(tournamentId);
+  if (tournament.vetoEnabled) await ensureVetoTokens(game, tournamentId);
 
   const entrantA = alias(entrants, "veto_entrant_a");
   const entrantB = alias(entrants, "veto_entrant_b");
@@ -90,7 +93,8 @@ export async function getVetoManagementData(tournamentId: number): Promise<VetoM
 }
 
 /** Tournaments an organization organizes, to pick from in its dashboard. */
-export async function listOrganizerVetoTournaments(organizationId: number): Promise<VetoManagedTournament[]> {
+export async function listOrganizerVetoTournaments(game: GameSlug, organizationId: number): Promise<VetoManagedTournament[]> {
+  const { tournaments } = gameTables(game);
   return db
     .select({ id: tournaments.id, name: tournaments.name, vetoEnabled: tournaments.vetoEnabled })
     .from(tournaments)

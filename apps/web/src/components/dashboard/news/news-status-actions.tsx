@@ -36,6 +36,7 @@ import {
   toggleDashboardNewsShowOnHome,
 } from "@/actions/dashboard-news";
 import type { DashboardNewsArticleDetail } from "@/lib/dashboard-news-data";
+import { useGame } from "@/lib/use-game";
 
 export function NewsStatusActions({
   organizationId,
@@ -54,6 +55,7 @@ export function NewsStatusActions({
   canDelete: boolean;
   listHref: string;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.news");
   const locale = useLocale();
   const timeZone = useDisplayTimezone();
@@ -73,7 +75,7 @@ export function NewsStatusActions({
   function handleSubmitForReview() {
     if (organizationId === null) return;
     startTransition(async () => {
-      const result = await submitDashboardNewsForReview(organizationId, article.id);
+      const result = await submitDashboardNewsForReview(game, organizationId, article.id);
       if (!result.ok) {
         toast.error(t(`review.error.${result.error}`));
         return;
@@ -86,7 +88,7 @@ export function NewsStatusActions({
   function handleApprove() {
     if (organizationId === null) return;
     startTransition(async () => {
-      const result = await approveDashboardNewsArticle(organizationId, article.id);
+      const result = await approveDashboardNewsArticle(game, organizationId, article.id);
       if (!result.ok) {
         toast.error(t(`review.error.${result.error}`));
         return;
@@ -99,7 +101,7 @@ export function NewsStatusActions({
   function handleRequestChanges() {
     if (organizationId === null) return;
     startTransition(async () => {
-      const result = await requestDashboardNewsChanges(organizationId, article.id, changesNote);
+      const result = await requestDashboardNewsChanges(game, organizationId, article.id, changesNote);
       if (!result.ok) {
         toast.error(t(`review.error.${result.error}`));
         return;
@@ -113,7 +115,7 @@ export function NewsStatusActions({
 
   function handlePublish() {
     startTransition(async () => {
-      const result = await publishDashboardNewsArticle(organizationId, article.id, scheduleValue);
+      const result = await publishDashboardNewsArticle(game, organizationId, article.id, scheduleValue);
       if (!result.ok) {
         toast.error(t(`review.error.${result.error}`));
         return;
@@ -126,7 +128,7 @@ export function NewsStatusActions({
 
   function handleArchive() {
     startTransition(async () => {
-      const result = await archiveDashboardNewsArticle(organizationId, article.id);
+      const result = await archiveDashboardNewsArticle(game, organizationId, article.id);
       setConfirmArchive(false);
       if (!result.ok) {
         toast.error(t("archiveError"));
@@ -139,7 +141,7 @@ export function NewsStatusActions({
 
   function handleUnarchive() {
     startTransition(async () => {
-      const result = await unarchiveDashboardNewsArticle(organizationId, article.id);
+      const result = await unarchiveDashboardNewsArticle(game, organizationId, article.id);
       if (!result.ok) {
         toast.error(t("unarchiveError"));
         return;
@@ -151,7 +153,7 @@ export function NewsStatusActions({
 
   function handleUnpublish() {
     startTransition(async () => {
-      const result = await unpublishDashboardNewsArticle(organizationId, article.id);
+      const result = await unpublishDashboardNewsArticle(game, organizationId, article.id);
       setConfirmUnpublish(false);
       if (!result.ok) {
         toast.error(t("unpublishError"));
@@ -164,7 +166,7 @@ export function NewsStatusActions({
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteDashboardNewsArticle(organizationId, article.id);
+      const result = await deleteDashboardNewsArticle(game, organizationId, article.id);
       if (!result.ok) {
         setConfirmDelete(false);
         toast.error(t("deleteError"));
@@ -178,7 +180,7 @@ export function NewsStatusActions({
   function handleToggleFeatured(checked: boolean) {
     setIsFeatured(checked);
     startTransition(async () => {
-      const result = await toggleDashboardNewsFeature(organizationId, article.id, checked);
+      const result = await toggleDashboardNewsFeature(game, organizationId, article.id, checked);
       if (!result.ok) {
         setIsFeatured(!checked);
         toast.error(t("featureError"));
@@ -189,7 +191,7 @@ export function NewsStatusActions({
   function handleToggleShowOnHome(checked: boolean) {
     setShowOnHome(checked);
     startTransition(async () => {
-      const result = await toggleDashboardNewsShowOnHome(organizationId, article.id, checked);
+      const result = await toggleDashboardNewsShowOnHome(game, organizationId, article.id, checked);
       if (!result.ok) {
         setShowOnHome(!checked);
         toast.error(t("showOnHomeError"));

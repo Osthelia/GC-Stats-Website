@@ -12,19 +12,21 @@
 
 "use server";
 
+import { logoGameClause } from "@/lib/admin-logos";
 import { and, eq, inArray, ne, notInArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, rosterMemberships, entrants, newsRelations, logos, activityLog, PERMISSIONS } from "@gc-stats/db";
+import { logos, activityLog, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { rangeLower, closeRange } from "@/lib/daterange";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { TeamPickerResult } from "@/lib/team-search";
 
 /** Typo-tolerant team search backing the team merge target picker — excludes the source team itself from results. */
-export async function searchTeamMergeTargets(sourceTeamId: number, query: string): Promise<TeamPickerResult[]> {
-  await requireActorPermission(PERMISSIONS.teamsMerge);
-  return searchTeamsQuery(query, sourceTeamId, "include");
+export async function searchTeamMergeTargets(game: GameSlug, sourceTeamId: number, query: string): Promise<TeamPickerResult[]> {
+  await requireActorPermission(PERMISSIONS.teamsMerge, game);
+  return searchTeamsQuery(game, query, sourceTeamId, "include");
 }
 
 export type TeamMergeSelection = {
@@ -49,8 +51,9 @@ export type MergeTeamsResult = { ok: true } | { ok: false; error: "sameTeam" | "
  * `team_id` (the "tournaments" category below) carries every match played
  * under it along for free.
  */
-export async function mergeTeams(sourceTeamId: number, targetTeamId: number, selection: TeamMergeSelection): Promise<MergeTeamsResult> {
-  const access = await requireActorPermission(PERMISSIONS.teamsMerge);
+export async function mergeTeams(game: GameSlug, sourceTeamId: number, targetTeamId: number, selection: TeamMergeSelection): Promise<MergeTeamsResult> {
+  const { teams, rosterMemberships, entrants, newsRelations } = gameTables(game);
+  const access = await requireActorPermission(PERMISSIONS.teamsMerge, game);
 
   if (sourceTeamId === targetTeamId) return { ok: false, error: "sameTeam" };
 
@@ -143,7 +146,7 @@ export async function mergeTeams(sourceTeamId: number, targetTeamId: number, sel
       const result = await tx
         .update(logos)
         .set({ entityId: targetTeamId })
-        .where(and(eq(logos.entityType, "team"), eq(logos.entityId, sourceTeamId), inArray(logos.id, selection.logos)))
+        .where(and(eq(logos.entityType, "team"), logoGameClause("team", game), eq(logos.entityId, sourceTeamId), inArray(logos.id, selection.logos)))
         .returning({ id: logos.id });
       counts.logos = result.length;
     }

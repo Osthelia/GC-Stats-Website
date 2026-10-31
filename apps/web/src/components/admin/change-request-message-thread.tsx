@@ -16,9 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { postChangeRequestMessage } from "@/actions/change-requests";
 import type { ChangeRequestMessageRow } from "@/lib/change-request-messages";
+import { useGame } from "@/lib/use-game";
 
 /** Net-new admin-side reader/writer for change_request_messages — see components/settings/change-request-message-thread.tsx for the public counterpart (kept separate per CLAUDE.md, not shared). */
 export function AdminChangeRequestMessageThread({ changeRequestId, messages, canPost }: { changeRequestId: number; messages: ChangeRequestMessageRow[]; canPost: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.changeRequests.detail.thread");
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -27,7 +29,7 @@ export function AdminChangeRequestMessageThread({ changeRequestId, messages, can
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setPending(true);
-    const result = await postChangeRequestMessage(changeRequestId, body);
+    const result = await postChangeRequestMessage(game, changeRequestId, body);
     setPending(false);
     if (!result.ok) {
       toast.error(t("error"));

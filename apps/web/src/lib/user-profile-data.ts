@@ -13,9 +13,11 @@
 import { cache } from "react";
 import { and, count, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { users, teams, forumMessages, newsAuthors, news } from "@gc-stats/db";
+import { users, forumMessages, newsAuthors, gameTables } from "@gc-stats/db";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { getEntityLogos, getCurrentLogoUrlsThemed, themedLogoUrls } from "@/lib/admin-logos";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import { FAN_TEAM_COLUMNS } from "@/lib/fan-team-columns";
 
 export type UserProfileInfo = {
   id: string;
@@ -63,18 +65,21 @@ export type UserFanTeam = {
   logoUrlLight: string | null;
 };
 
-// users.team_id is a real column, deliberately absent from the Drizzle schema
-// (see the comment on `teams` in schema/people.ts and getUserTeamId in
-// actions/user-profile.ts) — read with raw SQL instead of the query builder.
-export async function getUserFanTeam(userId: string): Promise<UserFanTeam | null> {
-  const result = await db.execute<{ team_id: number | null; team_tag: string | null }>(sql`select team_id, team_tag from users where id = ${userId} limit 1`);
+// The fan team columns are real columns, deliberately absent from the Drizzle
+// schema (see FAN_TEAM_COLUMNS) — read with raw SQL instead of the query builder.
+export async function getUserFanTeam(userId: string, game: GameSlug): Promise<UserFanTeam | null> {
+  const { teams } = gameTables(game);
+  const columns = FAN_TEAM_COLUMNS[game];
+  const result = await db.execute<{ team_id: number | null; team_tag: string | null }>(
+    sql`select ${sql.identifier(columns.team)} as team_id, ${sql.identifier(columns.tag)} as team_tag from users where id = ${userId} limit 1`
+  );
   const row = result.rows[0];
   if (!row?.team_id) return null;
 
   const [team] = await db.select({ id: teams.id, name: teams.name, shortName: teams.shortName }).from(teams).where(eq(teams.id, row.team_id)).limit(1);
   if (!team) return null;
 
-  const logos = await getEntityLogos("team", team.id);
+  const logos = await getEntityLogos("team", team.id, game);
   const themed = themedLogoUrls(logos, "team");
 
   return { id: team.id, name: team.name, displayName: team.shortName || team.name, tag: row.team_tag || null, logoUrl: themed.dark, logoUrlLight: themed.light };
@@ -85,7 +90,9 @@ export async function getUserFanTeam(userId: string): Promise<UserFanTeam | null
  * messages) — one raw SQL round trip for team_id/team_tag, one batched team
  * lookup, one batched logo lookup, instead of N of each.
  */
-export async function getUserFanTeamsBatch(userIds: string[]): Promise<Map<string, UserFanTeam>> {
+export async function getUserFanTeamsBatch(userIds: string[], game: GameSlug): Promise<Map<string, UserFanTeam>> {
+  const { teams } = gameTables(game);
+  const columns = FAN_TEAM_COLUMNS[game];
   const map = new Map<string, UserFanTeam>();
   const distinctIds = [...new Set(userIds)];
   if (distinctIds.length === 0) return map;
@@ -93,7 +100,7 @@ export async function getUserFanTeamsBatch(userIds: string[]): Promise<Map<strin
   // team_id is bigint — node-postgres returns it as a string, not a number.
   type UserTeamRow = { id: string; team_id: string | null; team_tag: string | null };
   const result = await db.execute<UserTeamRow>(
-    sql`select id, team_id, team_tag from users where id in (${sql.join(
+    sql`select id, ${sql.identifier(columns.team)} as team_id, ${sql.identifier(columns.tag)} as team_tag from users where id in (${sql.join(
       distinctIds.map((id) => sql`${id}`),
       sql`, `
     )})`
@@ -107,7 +114,7 @@ export async function getUserFanTeamsBatch(userIds: string[]): Promise<Map<strin
   const teamIds: number[] = [...new Set(rowsWithTeam.map((r) => r.team_id))];
   const teamRows = await db.select({ id: teams.id, name: teams.name, shortName: teams.shortName }).from(teams).where(inArray(teams.id, teamIds));
   const teamsById = new Map(teamRows.map((t) => [t.id, t]));
-  const logosByTeam = await getCurrentLogoUrlsThemed("team", teamIds);
+  const logosByTeam = await getCurrentLogoUrlsThemed("team", teamIds, game);
 
   for (const row of rowsWithTeam) {
     const team = teamsById.get(row.team_id);
@@ -140,12 +147,18 @@ export async function getUserProfileStats(userId: string): Promise<UserProfileSt
 
   let hasNewsArticles = false;
   if (authorRow) {
-    const [articleRow] = await db
-      .select({ id: news.id })
-      .from(news)
-      .where(and(eq(news.authorId, authorRow.id), isNewsPublishedCondition()))
-      .limit(1);
-    hasNewsArticles = Boolean(articleRow);
+    const found = await Promise.all(
+      GAMES.map(async (game) => {
+        const { news } = gameTables(game);
+        const [articleRow] = await db
+          .select({ id: news.id })
+          .from(news)
+          .where(and(eq(news.authorId, authorRow.id), isNewsPublishedCondition(game)))
+          .limit(1);
+        return Boolean(articleRow);
+      })
+    );
+    hasNewsArticles = found.some(Boolean);
   }
 
   return { forumMessageCount: Number(messageRow?.c ?? 0), hasNewsArticles };

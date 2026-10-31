@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormField } from "@/components/admin/form-field";
 import { setGroupScoringMode, setGroupPhasePoints, type GroupPhasePointsInput, type GroupPhasePointsFieldErrors } from "@/actions/pickem";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
+import { useGame } from "@/lib/use-game";
 
 type StagePhase = { id: number; name: string };
 
@@ -33,6 +34,7 @@ export function GroupScoringPanel({
   stages: StagePhase[];
   configByStageId: Record<number, PhaseScoringConfig>;
 }) {
+  const game = useGame();
   const t = useTranslations("pickemPage.groups.scoring");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -43,7 +45,7 @@ export function GroupScoringPanel({
 
   function handleModeChange(mode: "default" | "custom") {
     startTransition(async () => {
-      const result = await setGroupScoringMode(groupId, mode);
+      const result = await setGroupScoringMode(game, groupId, mode);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -63,7 +65,7 @@ export function GroupScoringPanel({
     if (selectedStageId === null || !form) return;
     setFieldErrors({});
     startTransition(async () => {
-      const result = await setGroupPhasePoints(groupId, selectedStageId, form);
+      const result = await setGroupPhasePoints(game, groupId, selectedStageId, form);
       if (!result.ok) {
         if ("fieldErrors" in result) setFieldErrors(result.fieldErrors);
         else toast.error(t(`error.${result.error}`));

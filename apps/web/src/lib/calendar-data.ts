@@ -4,7 +4,8 @@ import { unstable_cache } from "next/cache";
 import { and, asc, eq, exists, gte, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { entrants, matches, teams, tournaments, stages, stageContainers } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { slugify } from "@/lib/entity-id";
 import { normalizeRegion, REGIONS } from "./tournament-regions";
@@ -22,7 +23,8 @@ export function parseCalendarTeamId(value: string): number | undefined {
   return Number.isSafeInteger(id) ? id : undefined;
 }
 
-export async function getCalendarTeam(teamId: number) {
+export async function getCalendarTeam(game: GameSlug, teamId: number) {
+  const { teams } = gameTables(game);
   const [team] = await db.select({ id: teams.id, name: teams.name })
     .from(teams)
     .where(and(eq(teams.id, teamId), eq(teams.isGhost, false)))
@@ -30,22 +32,24 @@ export async function getCalendarTeam(teamId: number) {
   return team ?? null;
 }
 
-function getTournamentFilters(filters: CalendarFilters) {
-  const conditions = [eq(tournaments.active, true), visibleTournament];
+function getTournamentFilters(game: GameSlug, filters: CalendarFilters) {
+  const { tournaments } = gameTables(game);
+  const conditions = [eq(tournaments.active, true), visibleTournament(game)];
   if (filters.region) conditions.push(eq(tournaments.region, filters.region));
   if (filters.category) conditions.push(eq(tournaments.category, filters.category));
   return and(...conditions);
 }
 
 export const getCalendarTournamentFacets = unstable_cache(
-  async (): Promise<{ regions: string[]; categories: string[]; years: number[] }> => {
+  async (game: GameSlug): Promise<{ regions: string[]; categories: string[]; years: number[] }> => {
+    const { tournaments } = gameTables(game);
     const [regionRows, categoryRows, yearRows] = await Promise.all([
-      db.selectDistinct({ region: tournaments.region }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament, sql`${tournaments.region} IS NOT NULL`)),
-      db.selectDistinct({ category: tournaments.category }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament, sql`${tournaments.category} IS NOT NULL`)),
+      db.selectDistinct({ region: tournaments.region }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament(game), sql`${tournaments.region} IS NOT NULL`)),
+      db.selectDistinct({ category: tournaments.category }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament(game), sql`${tournaments.category} IS NOT NULL`)),
       db
         .selectDistinct({ year: sql<number>`EXTRACT(YEAR FROM ${tournaments.startDate})::int` })
         .from(tournaments)
-        .where(and(eq(tournaments.active, true), visibleTournament)),
+        .where(and(eq(tournaments.active, true), visibleTournament(game))),
     ]);
     return {
       regions: regionRows.map((r) => r.region!).sort(),
@@ -83,19 +87,19 @@ export function offsetCalendarMonth(month: string, offset: number): string {
   return date.toISOString().slice(0, 7);
 }
 
-const entrantA = alias(entrants, "calendar_entrant_a");
-const entrantB = alias(entrants, "calendar_entrant_b");
-const teamA = alias(teams, "calendar_team_a");
-const teamB = alias(teams, "calendar_team_b");
-
-export const getCalendarMonth = unstable_cache(async (month: string, filters: CalendarFilters): Promise<CalendarEvent[]> => {
+export const getCalendarMonth = unstable_cache(async (game: GameSlug, month: string, filters: CalendarFilters): Promise<CalendarEvent[]> => {
+  const { entrants, matches, teams, tournaments, stages, stageContainers } = gameTables(game);
+  const entrantA = alias(entrants, "calendar_entrant_a");
+  const entrantB = alias(entrants, "calendar_entrant_b");
+  const teamA = alias(teams, "calendar_team_a");
+  const teamB = alias(teams, "calendar_team_b");
   if (!isCalendarMonth(month)) throw new Error("Invalid calendar month");
   const from = `${month}-01`;
   const start = new Date(`${from}T00:00:00Z`);
   const end = new Date(start);
   end.setUTCMonth(end.getUTCMonth() + 1);
   const to = end.toISOString().slice(0, 10);
-  const tournamentFilters = getTournamentFilters(filters);
+  const tournamentFilters = getTournamentFilters(game, filters);
 
   const [matchRows, tournamentRows] = await Promise.all([
     db.select({

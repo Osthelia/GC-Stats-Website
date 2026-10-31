@@ -7,6 +7,7 @@
  */
 
 import { getTranslations } from "next-intl/server";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import type {
@@ -52,11 +53,13 @@ const TABS = ["overview", "matches", "stats", "history", "production"] as const;
 
 /** Rendered once by the tabs layout, the active tab follows the URL. */
 export async function PlayerHeader({
+  game,
   player,
   segment,
   achievements,
   availability,
 }: {
+  game: GameSlug;
   player: PlayerPageInfo;
   segment: string;
   achievements: { items: PlayerAchievement[]; titles: number; podiums: number };
@@ -107,7 +110,7 @@ export async function PlayerHeader({
   const tabAvailable: Record<(typeof TABS)[number], boolean> = {
     overview: true,
     matches: availability.hasMatches,
-    stats: availability.hasMatches,
+    stats: gameHasMaps(game) && availability.hasMatches,
     history: availability.hasTeamHistory,
     production: availability.hasProduction,
   };

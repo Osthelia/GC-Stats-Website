@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { assignEntrantsToContainer } from "@/actions/admin-containers";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 export function AssignEntrantsDialog({
   containerId,
@@ -31,6 +32,7 @@ export function AssignEntrantsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -52,7 +54,7 @@ export function AssignEntrantsDialog({
   function handleSubmit() {
     const newIds = [...selected].filter((id) => !alreadyAssignedIds.includes(id));
     startTransition(async () => {
-      const result = await assignEntrantsToContainer(containerId, newIds);
+      const result = await assignEntrantsToContainer(game, containerId, newIds);
       if (!result.ok) {
         toast.error(t("error.notFound"));
         return;

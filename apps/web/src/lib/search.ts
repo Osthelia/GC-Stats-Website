@@ -14,15 +14,16 @@
  */
 import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { teams, people, tournaments, organizations, pageViews } from "@gc-stats/db";
+import { organizations, pageViews, gameTables } from "@gc-stats/db";
 import { organizationHasNoTeam } from "@/lib/organization-team-link";
 import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo";
 import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, defaultTournamentLogo } from "@/lib/default-logos";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type SearchResultType = "team" | "player" | "tournament" | "organization";
 
@@ -64,7 +65,8 @@ export function scoreMatch(name: string, term: string, termLen: number, views: n
   return (folded.startsWith(term) ? 1000 : 0) + (folded.includes(term) ? 75 : 0) + Math.max(0, 100 - diff * 10) + Math.min(Math.floor(views / 10), POPULARITY_CAP);
 }
 
-export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: number; candidateLimit?: number } = {}): Promise<SearchResults> {
+export async function searchGlobal(game: GameSlug, rawTerm: string, opts: { perTypeLimit?: number; candidateLimit?: number } = {}): Promise<SearchResults> {
+  const { teams, people, tournaments } = gameTables(game);
   // Defaults mirror V1's SearchService::search(perTypeLimit: 5, candidateLimit: 15)
   // — the header dropdown's defaults; the /search page passes SearchController's
   // own (50, 100) explicitly.
@@ -89,20 +91,20 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
     db
       .select({ id: teams.id, name: teams.name, shortName: teams.shortName, countryCode: teams.countryCode, secondaryCountryCode: teams.secondaryCountryCode, isActive: teams.isActive })
       .from(teams)
-      .where(and(visibleTeam, or(...variants.flatMap((v) => [specialCharFoldedIlike(teams.name, v), specialCharFoldedIlike(teams.shortName, v)]))))
+      .where(and(visibleTeam(game), or(...variants.flatMap((v) => [specialCharFoldedIlike(teams.name, v), specialCharFoldedIlike(teams.shortName, v)]))))
       .orderBy(desc(teams.isActive), specialCharPrefixRank(teams.name, base))
       .limit(candidateLimit),
     db
       .select({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode, isActive: people.isActive })
       .from(people)
-      .where(and(visiblePerson, or(...variants.map((v) => specialCharFoldedIlike(people.handle, v)))))
+      .where(and(visiblePerson(game), or(...variants.map((v) => specialCharFoldedIlike(people.handle, v)))))
       .orderBy(desc(people.isActive), specialCharPrefixRank(people.handle, base))
       .limit(candidateLimit),
     db
       .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region })
       .from(tournaments)
       // V1 only ever searches active tournaments (Tournament::where('active', true)).
-      .where(and(eq(tournaments.active, true), visibleTournament, or(...variants.flatMap((v) => [specialCharFoldedIlike(tournaments.name, v), specialCharFoldedArrayIlike(tournaments.keywords, v)]))))
+      .where(and(eq(tournaments.active, true), visibleTournament(game), or(...variants.flatMap((v) => [specialCharFoldedIlike(tournaments.name, v), specialCharFoldedArrayIlike(tournaments.keywords, v)]))))
       .orderBy(specialCharPrefixRank(tournaments.name, base))
       .limit(candidateLimit),
     db
@@ -115,7 +117,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
           // fold of the name, on top of the folded name match.
           or(...variants.flatMap((v) => [specialCharFoldedIlike(organizations.name, v), specialCharFoldedIlike(organizations.slug, v)])),
           // A team-linked organization has no public page.
-          organizationHasNoTeam()
+          organizationHasNoTeam(game)
         )
       )
       .orderBy(specialCharPrefixRank(organizations.name, base))
@@ -123,9 +125,9 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
   ]);
 
   const [teamLogos, personLogos, tournamentLogos, organizationLogos] = await Promise.all([
-    getEntityLogosBatch("team", teamRows.map((t) => t.id)),
+    getEntityLogosBatch("team", teamRows.map((t) => t.id), game),
     getEntityLogosBatch("person", playerRows.map((p) => p.id)),
-    getEntityLogosBatch("tournament", tournamentRows.map((t) => t.id)),
+    getEntityLogosBatch("tournament", tournamentRows.map((t) => t.id), game),
     getEntityLogosBatch("organization", organizationRows.map((o) => o.id)),
   ]);
 
@@ -207,8 +209,8 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       subtitle: t.region,
       countryCode: null,
       secondaryCountryCode: null,
-      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? DEFAULT_TOURNAMENT_LOGO,
-      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? DEFAULT_TOURNAMENT_LOGO,
+      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? defaultTournamentLogo(game),
+      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? defaultTournamentLogo(game),
       path: `tournaments/${t.id}/${slugify(t.name)}`,
       score,
       popularity: views,

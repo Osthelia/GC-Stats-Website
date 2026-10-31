@@ -15,13 +15,14 @@ import { db } from "@gc-stats/db/client";
 import { forumMessages, moderationSuspects } from "@gc-stats/db";
 import { checkTextModeration } from "@/lib/openai-moderation";
 import { issueAutomodMute, AUTOMOD_MUTE_FLAG_INTERVAL } from "@/lib/forum-guards";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Runs after the response is sent (see `after()` calls in actions/forum.ts),
  * so an OpenAI round-trip never delays a post. Mirrors V1's
  * ModerateForumMessage job, dispatched with dispatchAfterResponse().
  */
-export async function moderateForumMessage(messageId: number, checkText: string): Promise<void> {
+export async function moderateForumMessage(game: GameSlug, messageId: number, checkText: string): Promise<void> {
   const result = await checkTextModeration(checkText);
   if (!result.flagged) return;
 
@@ -53,6 +54,6 @@ export async function moderateForumMessage(messageId: number, checkText: string)
   const count = row?.count ?? 0;
 
   if (count > 0 && count % AUTOMOD_MUTE_FLAG_INTERVAL === 0) {
-    await issueAutomodMute(message.userId, `Automod: ${count} flagged forum messages`);
+    await issueAutomodMute(game, message.userId, `Automod: ${count} flagged forum messages`);
   }
 }

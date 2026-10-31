@@ -12,6 +12,7 @@
 
 import { getTeamMapCompMatches, type TeamMapCompMatch } from "@/lib/team-maps-data";
 import { isValidMapsFilters, type MapsFilters } from "@/lib/maps-filters";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LoadTeamCompMatchesResult = { ok: true; matches: TeamMapCompMatch[] } | { ok: false; error: "invalidTeam" | "invalidMap" | "invalidAgents" | "invalidFilters" };
 
@@ -20,12 +21,12 @@ const MAX_AGENTS = 10;
 
 const isShortString = (v: unknown): v is string => typeof v === "string" && v.length > 0 && v.length <= MAX_NAME_LENGTH;
 
-export async function loadTeamCompMatches(teamId: number, mapName: string, agents: string[], filters: MapsFilters): Promise<LoadTeamCompMatchesResult> {
+export async function loadTeamCompMatches(game: GameSlug, teamId: number, mapName: string, agents: string[], filters: MapsFilters): Promise<LoadTeamCompMatchesResult> {
   if (!Number.isInteger(teamId) || teamId <= 0) return { ok: false, error: "invalidTeam" };
   if (!isShortString(mapName)) return { ok: false, error: "invalidMap" };
   if (!Array.isArray(agents) || agents.length < 5 || agents.length > MAX_AGENTS || !agents.every(isShortString)) {
     return { ok: false, error: "invalidAgents" };
   }
   if (!isValidMapsFilters(filters)) return { ok: false, error: "invalidFilters" };
-  return { ok: true, matches: await getTeamMapCompMatches(teamId, mapName, agents, filters) };
+  return { ok: true, matches: await getTeamMapCompMatches(game, teamId, mapName, agents, filters) };
 }

@@ -7,12 +7,13 @@ import { TeamPicker } from "@/components/admin/team-picker";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { searchCalendarTeams } from "@/actions/calendar";
+import type { GameSlug } from "@gc-stats/db/game";
 import type { TeamPickerResult } from "@/lib/team-search";
 
 type TeamSelection = { id: number; name: string };
 type SearchMessage = "searchPage.typeAhead" | "admin.teams.noResults" | "calendar.teamSearchError";
 
-export function CalendarTeamFilter({ selectedTeam }: { selectedTeam: TeamSelection | null }) {
+export function CalendarTeamFilter({ game, selectedTeam }: { game: GameSlug; selectedTeam: TeamSelection | null }) {
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,7 +25,7 @@ export function CalendarTeamFilter({ selectedTeam }: { selectedTeam: TeamSelecti
     let message: SearchMessage = query.trim().length < 2 ? "searchPage.typeAhead" : "admin.teams.noResults";
     let results: TeamPickerResult[] = [];
     try {
-      if (message === "admin.teams.noResults") results = await searchCalendarTeams(query);
+      if (message === "admin.teams.noResults") results = await searchCalendarTeams(game, query);
     } catch {
       message = "calendar.teamSearchError";
     }

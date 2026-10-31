@@ -30,6 +30,7 @@ import {
   type RiotRelayRegion,
 } from "@/actions/admin-map-fetch";
 import { RIOT_RELAY_REGIONS } from "@/lib/riot-relay-client";
+import { useGame } from "@/lib/use-game";
 
 function relayErrorKey(error: RiotRelayError): string {
   switch (error.kind) {
@@ -96,6 +97,7 @@ function MissingPuuidsDialog({
   onCancel: () => void;
   onResolve: (mapping: Record<string, number>) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const [selections, setSelections] = useState<Record<string, { id: number; handle: string } | null>>({});
   const allResolved = players.every((p) => selections[p.puuid]);
@@ -123,7 +125,7 @@ function MissingPuuidsDialog({
                   placeholder={t("personPickerPlaceholder")}
                   searchPlaceholder={t("personPickerSearchPlaceholder")}
                   noResultsLabel={t("personPickerNoResults")}
-                  search={(query) => searchPeopleForMapFetch(mapId, query)}
+                  search={(query) => searchPeopleForMapFetch(game, mapId, query)}
                 />
               </div>
             </div>
@@ -335,6 +337,7 @@ export function MapFetchControls({
   canManage: boolean;
   onMerged: (apiMatchId: string) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [fetchPending, startFetch] = useTransition();
@@ -360,7 +363,7 @@ export function MapFetchControls({
   function runFetch(options?: { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue" }) {
     startFetch(async () => {
       // The match id currently in the field, saved or not, so editing it never fetches the old one.
-      const result = await fetchMapData(mapId, { ...options, apiMatchId: apiMatchId ?? "" });
+      const result = await fetchMapData(game, mapId, { ...options, apiMatchId: apiMatchId ?? "" });
       if (!result.ok) {
         showFetchError(result.error);
         return;
@@ -374,7 +377,7 @@ export function MapFetchControls({
 
   function handleRenew() {
     startRenew(async () => {
-      const result = await renewMapData(mapId, apiMatchId ?? "");
+      const result = await renewMapData(game, mapId, apiMatchId ?? "");
       if (!result.ok) {
         if (result.error.kind === "mapNotFound" || result.error.kind === "noMatchId" || result.error.kind === "regionNotConfigured" || result.error.kind === "duplicateMatchId") {
           toast.error(t(`error.${result.error.kind}`));

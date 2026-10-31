@@ -14,7 +14,8 @@ import { cache } from "react";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, entrants, stageContainers, stages, maps, matchVetos, entrantMembers, people, mapPlayerStats, rosterMemberships, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type AdminMatchListRow = {
   id: number;
@@ -36,7 +37,8 @@ export type AdminMatchListRow = {
 };
 
 /** Flat list of every match in a tournament (across all stages/containers) — replaces V1's separate `/admin/tournaments/{t}/matches` page, folded into the bracket management page instead (2026-09-01). */
-export async function listTournamentMatches(tournamentId: number): Promise<AdminMatchListRow[]> {
+export async function listTournamentMatches(game: GameSlug, tournamentId: number): Promise<AdminMatchListRow[]> {
+  const { matches, entrants, stageContainers, stages } = gameTables(game);
   const entrantA = alias(entrants, "entrant_a");
   const entrantB = alias(entrants, "entrant_b");
   const rows = await db
@@ -91,7 +93,8 @@ export type AdminMatchDetail = {
 };
 
 // Cached per request: generateMetadata and the page both read it.
-export const getAdminMatch = cache(async (matchId: number): Promise<AdminMatchDetail | null> => {
+export const getAdminMatch = cache(async (game: GameSlug, matchId: number): Promise<AdminMatchDetail | null> => {
+  const { matches, stageContainers, stages } = gameTables(game);
   const [row] = await db
     .select({
       id: matches.id,
@@ -135,6 +138,7 @@ export type AdminMapRow = {
 };
 
 export async function listMatchMaps(matchId: number): Promise<AdminMapRow[]> {
+  const { maps } = valorantTables;
   return db
     .select({
       id: maps.id,
@@ -155,6 +159,7 @@ export async function listMatchMaps(matchId: number): Promise<AdminMapRow[]> {
 
 /** Single map lookup for the dedicated admin map page (`.../matches/{matchId}/maps/{mapId}`). */
 export const getAdminMap = cache(async (mapId: number): Promise<AdminMapRow | null> => {
+  const { maps } = valorantTables;
   const [row] = await db
     .select({
       id: maps.id,
@@ -180,7 +185,8 @@ const ROSTER_PLAYER_ROLES = ["player", "player-igl", "sub", "stand_in"];
 const ROSTER_BENCH_ROLES = ["sub", "stand_in"];
 
 /** Players of this tournament entry: the locked `entrant_members`, else the team roster at the match date (tournament dates when unscheduled). Player pool for the manual scoreboard form. */
-export async function getEntrantRoster(entrantId: number, playedAt: string | null): Promise<AdminRosterMember[]> {
+export async function getEntrantRoster(game: GameSlug, entrantId: number, playedAt: string | null): Promise<AdminRosterMember[]> {
+  const { entrantMembers, people, entrants, rosterMemberships, tournaments } = gameTables(game);
   const locked = await db
     .select({ id: people.id, handle: people.handle, role: entrantMembers.role, isStarter: entrantMembers.isStarter })
     .from(entrantMembers)
@@ -238,7 +244,9 @@ export type AdminMapPlayerStatRow = {
 };
 
 /** Existing per-player stats for this map (from a prior Fetch or manual save), used to prefill the manual scoreboard form. */
-export async function getAdminMapPlayerStats(mapId: number): Promise<AdminMapPlayerStatRow[]> {
+export async function getAdminMapPlayerStats(game: GameSlug, mapId: number): Promise<AdminMapPlayerStatRow[]> {
+  const { people } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
   const rows = await db
     .select({
       personId: mapPlayerStats.personId,
@@ -273,6 +281,7 @@ export type AdminVetoRow = {
 };
 
 export async function listMatchVetos(matchId: number): Promise<AdminVetoRow[]> {
+  const { matchVetos } = valorantTables;
   const rows = await db.select().from(matchVetos).where(eq(matchVetos.matchId, matchId)).orderBy(asc(matchVetos.order), asc(matchVetos.id));
   return rows.map((r) => ({
     id: r.id,

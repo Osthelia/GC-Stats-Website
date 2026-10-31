@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LiquipediaWikicodeBlock } from "@/components/match/liquipedia-wikicode-block";
+import { useGame } from "@/lib/use-game";
 import { completeTransfersWikicode, type TransfersFieldErrors, type TransfersResult } from "@/actions/liquipedia-transfers";
 import { TRANSFERS_WIKICODE_MAX_LENGTH } from "@/lib/liquipedia-transfers-wikicode";
 
@@ -32,6 +33,7 @@ function WarningList({ label, names }: { label: string; names: string[] }) {
 
 export function LiquipediaTransfersForm() {
   const t = useTranslations("liquipediaTransfers");
+  const game = useGame();
   const [wikicode, setWikicode] = useState("");
   const [month, setMonth] = useState("");
   const [fieldErrors, setFieldErrors] = useState<TransfersFieldErrors>({});
@@ -43,7 +45,7 @@ export function LiquipediaTransfersForm() {
     setFieldErrors({});
     startTransition(async () => {
       try {
-        const response = await completeTransfersWikicode(wikicode, month);
+        const response = await completeTransfersWikicode(game, wikicode, month);
         if (!response.ok) {
           setResult(null);
           setFieldErrors(response.fieldErrors);

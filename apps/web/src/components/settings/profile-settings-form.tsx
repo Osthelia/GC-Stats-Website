@@ -18,6 +18,7 @@ import { DiscordIcon, TwitchIcon, XIcon, InstagramIcon, YoutubeIcon, TiktokIcon 
 import { PublicSelect } from "@/components/forms/public-select";
 import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
 import { SettingsCard } from "./settings-card";
+import { GAMES, GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60 aria-[invalid=true]:border-[#e08585]";
@@ -31,6 +32,57 @@ const SOCIAL_META: Record<(typeof USER_SOCIAL_KEYS)[number], { label: string; ic
   discord: { label: "Discord", icon: DiscordIcon },
 };
 
+type FanTeamState = { team: { id: number; label: string } | null; tags: string[]; tag: string };
+
+/** Team picker of one game, with the fan tag choices of the picked team. */
+function FanTeamField({ game, state, onChange, error }: { game: GameSlug; state: FanTeamState; onChange: (state: FanTeamState) => void; error?: string }) {
+  const t = useTranslations("accountSettings.profile");
+
+  async function handleTeamChange(entity: { id: number; label: string } | null) {
+    onChange({ team: entity, tags: [], tag: "" });
+    if (entity) onChange({ team: entity, tags: await getTeamFanTags(game, entity.id), tag: "" });
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
+      {t("teamLabel")} ({GAME_INFO[game].name})
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <PublicEntityPicker
+            type="team"
+            game={game}
+            value={state.team}
+            onChange={handleTeamChange}
+            placeholder={t("teamPlaceholder")}
+            searchPlaceholder={t("teamSearchPlaceholder")}
+            noResultsLabel={t("teamSearchEmpty")}
+          />
+        </div>
+        {state.team && (
+          <button
+            type="button"
+            onClick={() => handleTeamChange(null)}
+            className="flex-none cursor-pointer rounded-[9px] px-3 py-2 text-[13px] font-medium text-[#e08585] transition-all hover:bg-[#e08585]/10 active:scale-95"
+          >
+            {t("teamRemove")}
+          </button>
+        )}
+      </div>
+
+      {state.team &&
+        (state.tags.length > 0 ? (
+          <label className="mt-1 flex max-w-[280px] flex-col gap-1.5">
+            <span>{t("teamTagLabel")}</span>
+            <PublicSelect value={state.tag} onChange={(tag) => onChange({ ...state, tag })} options={[{ value: "", label: t("teamTagNone") }, ...state.tags.map((tag) => ({ value: tag, label: tag }))]} />
+          </label>
+        ) : (
+          <p className="mt-1 text-[11.5px] text-neutral-500">{t("teamNoTags")}</p>
+        ))}
+      {error && <span className="text-[12px] text-[#e08585]">{error}</span>}
+    </div>
+  );
+}
+
 export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
   const t = useTranslations("accountSettings.profile");
   const { update } = useSession();
@@ -40,19 +92,19 @@ export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
   const [username, setUsername] = useState(profile.username);
   const [pronouns, setPronouns] = useState(profile.pronouns);
   const [bio, setBio] = useState(profile.bio);
-  const [team, setTeam] = useState<{ id: number; label: string } | null>(profile.team ? { id: profile.team.id, label: profile.team.name } : null);
-  const [teamTags, setTeamTags] = useState<string[]>(profile.team?.tags ?? []);
-  const [teamTag, setTeamTag] = useState(profile.teamTag);
+  const [fanTeams, setFanTeams] = useState<Record<GameSlug, FanTeamState>>(
+    () =>
+      Object.fromEntries(
+        GAMES.map((game) => {
+          const { team, teamTag } = profile.fanTeams[game];
+          return [game, { team: team ? { id: team.id, label: team.name } : null, tags: team?.tags ?? [], tag: teamTag }];
+        })
+      ) as Record<GameSlug, FanTeamState>
+  );
   const [socials, setSocials] = useState<Record<string, string>>(profile.socials);
   const [fieldErrors, setFieldErrors] = useState<UserProfileFieldErrors>({});
   const [status, setStatus] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-
-  async function handleTeamChange(entity: { id: number; label: string } | null) {
-    setTeam(entity);
-    setTeamTag("");
-    setTeamTags(entity ? await getTeamFanTags(entity.id) : []);
-  }
 
   const err = (field: string) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
 
@@ -67,7 +119,14 @@ export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
     setStatus(null);
     setPending(true);
 
-    const result = await updateMyProfile({ name, username, pronouns, bio, teamId: team?.id ?? null, teamTag, socials });
+    const result = await updateMyProfile({
+      name,
+      username,
+      pronouns,
+      bio,
+      fanTeams: Object.fromEntries(GAMES.map((game) => [game, { teamId: fanTeams[game].team?.id ?? null, teamTag: fanTeams[game].tag }])) as Record<GameSlug, { teamId: number | null; teamTag: string }>,
+      socials,
+    });
     setPending(false);
 
     if (!result.ok) {
@@ -118,41 +177,9 @@ export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
             {err("pronouns") && <span className="text-[12px] text-[#e08585]">{err("pronouns")}</span>}
           </label>
 
-          <div className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
-            {t("teamLabel")}
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <PublicEntityPicker
-                  type="team"
-                  value={team}
-                  onChange={handleTeamChange}
-                  placeholder={t("teamPlaceholder")}
-                  searchPlaceholder={t("teamSearchPlaceholder")}
-                  noResultsLabel={t("teamSearchEmpty")}
-                />
-              </div>
-              {team && (
-                <button
-                  type="button"
-                  onClick={() => handleTeamChange(null)}
-                  className="flex-none rounded-[9px] px-3 py-2 text-[13px] font-medium text-[#e08585] transition-colors hover:bg-[#e08585]/10"
-                >
-                  {t("teamRemove")}
-                </button>
-              )}
-            </div>
-
-            {team &&
-              (teamTags.length > 0 ? (
-                <label className="mt-1 flex max-w-[280px] flex-col gap-1.5">
-                  <span>{t("teamTagLabel")}</span>
-                  <PublicSelect value={teamTag} onChange={setTeamTag} options={[{ value: "", label: t("teamTagNone") }, ...teamTags.map((tag) => ({ value: tag, label: tag }))]} />
-                </label>
-              ) : (
-                <p className="mt-1 text-[11.5px] text-neutral-500">{t("teamNoTags")}</p>
-              ))}
-            {err("teamTag") && <span className="text-[12px] text-[#e08585]">{err("teamTag")}</span>}
-          </div>
+          {GAMES.map((game) => (
+            <FanTeamField key={game} game={game} state={fanTeams[game]} onChange={(state) => setFanTeams((prev) => ({ ...prev, [game]: state }))} error={err(`teamTag.${game}`)} />
+          ))}
 
           <label className="flex flex-col gap-1.5 text-[13px] text-neutral-400">
             {t("bioLabel")}

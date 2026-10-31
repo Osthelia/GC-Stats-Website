@@ -6,6 +6,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { gameHasLiquipediaMatches, type GameSlug } from "@gc-stats/db/game";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -65,7 +66,7 @@ function TeamBlock({ side, name, align }: { side: MatchSide; name: string; align
   return <div className={wrapperClass}>{content}</div>;
 }
 
-export async function MatchHeader({ match, children }: { match: MatchHeaderData; children?: ReactNode }) {
+export async function MatchHeader({ game, match, children }: { game: GameSlug; match: MatchHeaderData; children?: ReactNode }) {
   const t = await getTranslations("matchPage");
   const tNav = await getTranslations("nav");
   const tShare = await getTranslations("share");
@@ -86,7 +87,8 @@ export async function MatchHeader({ match, children }: { match: MatchHeaderData;
 
       <HeaderUtilityBar>
         <ShareMenuButton
-          items={[
+          items={
+            !gameHasLiquipediaMatches(game) ? [] : [
             { href: `/match/${match.id}/liquipedia`, label: tShare("liquipediaWikicode"), icon: "match" },
             ...(match.tournamentIsGhost
               ? []

@@ -11,7 +11,7 @@
 
 import { eq, inArray } from "drizzle-orm";
 import type { adminDb } from "@gc-stats/db/client";
-import { maps } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 
 type Tx = Pick<typeof adminDb, "select" | "insert" | "update" | "delete">;
 
@@ -20,6 +20,7 @@ type Tx = Pick<typeof adminDb, "select" | "insert" | "update" | "delete">;
  * same name (keeps its stats and match id), dropping maps no longer in the veto.
  */
 export async function syncPlayedMapsFromVeto(tx: Tx, matchId: number, rows: { mapName: string; type: string }[]): Promise<void> {
+  const { maps } = valorantTables;
   const existingMaps = await tx.select({ id: maps.id, mapName: maps.mapName }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
   const keptIds = new Set<number>();
   const played = rows.filter((row) => row.type === "pick" || row.type === "decider");

@@ -400,6 +400,41 @@
       "when": 1793360264252,
       "tag": "0056_tournament_is_official",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1793446664252,
+      "tag": "0057_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1793533064252,
+      "tag": "0058_user_lol_fan_team",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1793619464252,
+      "tag": "0059_organization_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1793705864252,
+      "tag": "0060_activity_log_game",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1793792264252,
+      "tag": "0061_shared_people",
+      "breakpoints": true
     }
   ]
 }

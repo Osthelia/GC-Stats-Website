@@ -23,6 +23,7 @@ import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import { PersonPhotoDialog } from "@/components/change-request/person-photo-dialog";
 import type { PhotoConsent } from "@/lib/change-request-fields";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
+import { useGame } from "@/lib/use-game";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
@@ -35,6 +36,7 @@ const PRONOUN_VALUES = ["0", "1", "2"] as const;
  * route (no dashboard page lists people outside the org roster).
  */
 export function EditPersonProfileDialog({ organizationId, personId, handle, onSaved }: { organizationId: number; personId: number; handle: string; onSaved: (handle: string) => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.members");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,7 +73,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
     setLoading(true);
     setFieldErrors({});
     setPhotoFile(null);
-    getPersonProfileForOrganization(organizationId, personId).then((profile) => {
+    getPersonProfileForOrganization(game, organizationId, personId).then((profile) => {
       if (!profile) {
         setOpen(false);
         return;
@@ -97,7 +99,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         const formData = new FormData();
         formData.set("file", photoFile);
         if (photoConsent) formData.set("photoConsent", photoConsent);
-        const upload = await uploadPersonPhotoForOrganization(organizationId, personId, formData);
+        const upload = await uploadPersonPhotoForOrganization(game, organizationId, personId, formData);
         if (!upload.ok) {
           setFieldErrors({ photo: upload.error });
           return;
@@ -106,7 +108,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         setPhotoFile(null);
         setPhotoConsent(null);
       }
-      const result = await updatePersonProfileForOrganization(organizationId, personId, {
+      const result = await updatePersonProfileForOrganization(game, organizationId, personId, {
         handle: editHandle,
         firstName,
         lastName,

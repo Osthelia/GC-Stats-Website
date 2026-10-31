@@ -10,12 +10,14 @@
 
 "use server";
 
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { getHomeMatchPage, type HomeMatchChunk, type HomeMatchDirection } from "@/lib/home-data";
 
 const EMPTY_PAGE: HomeMatchChunk = { matches: [], nextOffset: 0, hasMore: false };
 
-export async function loadMoreHomeMatches(direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk> {
+export async function loadMoreHomeMatches(game: GameSlug, direction: HomeMatchDirection, offset: number): Promise<HomeMatchChunk> {
+  if (!isGameSlug(game)) return EMPTY_PAGE;
   if (direction !== "past" && direction !== "future") return EMPTY_PAGE;
   if (!Number.isInteger(offset) || offset < 0) return EMPTY_PAGE;
-  return getHomeMatchPage(direction, offset);
+  return getHomeMatchPage(game, direction, offset);
 }

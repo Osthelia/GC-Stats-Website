@@ -30,6 +30,7 @@ import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, t
 import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
 import { cn } from "@/lib/utils";
 import type { AdminTeamRosterMember } from "@/lib/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -43,6 +44,7 @@ const roleItemsFor = (t: ReturnType<typeof useTranslations>) => Object.fromEntri
  * every card, current or past, not just newly-added ones.
  */
 function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRosterMember; teamId: number; onSaved: (updated: AdminTeamRosterMember) => void; onDeleted: (membershipId: number) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const [isPending, startTransition] = useTransition();
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>(member.role as (typeof ROSTER_ROLES)[number]);
@@ -64,7 +66,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
     const closeIds = hasLeft ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updateRosterMemberEntry(member.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await updateRosterMemberEntry(game, member.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -76,7 +78,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteRosterMembership(member.membershipId);
+      const result = await deleteRosterMembership(game, member.membershipId);
       if (!result.ok) {
         setConfirmOpen(false);
         toast.error(t(`rosterDeleteError.${result.error}` as "rosterDeleteError.notFound"));
@@ -200,6 +202,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
 }
 
 export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; initialMembers: AdminTeamRosterMember[] }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const router = useRouter();
   const [members, setMembers] = useState(initialMembers);
@@ -223,7 +226,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
     const closeIds = person && !hasLeft ? await resolveConflicts(person.id, person.handle, teamId) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addTeamRosterMember(teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await addTeamRosterMember(game, teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

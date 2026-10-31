@@ -27,26 +27,7 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import {
-  matches,
-  entrants,
-  teams,
-  tournaments,
-  stages,
-  stageContainers,
-  matchVetos,
-  maps,
-  mapPlayerStats,
-  mapTeamRoundSummary,
-  mapRoundsRaw,
-  mapRoundPlayerLoadoutsRaw,
-  mapRoundKillsRaw,
-  people,
-  streamChannels,
-  matchStreams,
-  vods,
-  matchPlayerPovs,
-} from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver, type TeamDisplayResolver } from "@/lib/historical-team-display";
 import {
   ECO_TIERS,
@@ -57,6 +38,7 @@ import {
 } from "@/lib/eco-tiers";
 import { knownScheduledAt } from "@/lib/match-schedule";
 import { MATCH_STATS_TAG, matchTag } from "@/lib/cache-tags";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export { ECO_TIERS, emptyEcoTierSummary, type EcoTierKey, type EcoTierSummary };
 
@@ -143,8 +125,9 @@ function resolveSide(
 }
 
 export const getMatchHeader = cache(async (
-  matchId: number,
+  game: GameSlug, matchId: number,
 ): Promise<MatchHeader | null> => {
+  const { matches, entrants, teams, tournaments, stages, stageContainers } = gameTables(game);
   const entrantA = alias(entrants, "header_entrant_a");
   const entrantB = alias(entrants, "header_entrant_b");
   const teamA = alias(teams, "header_team_a");
@@ -199,7 +182,7 @@ export const getMatchHeader = cache(async (
 
   const at = row.scheduledAt ?? new Date();
   const resolver = await buildTeamDisplayResolver(
-    [row.a.teamId, row.b.teamId].filter((id): id is number => id != null),
+    game, [row.a.teamId, row.b.teamId].filter((id): id is number => id != null),
   );
 
   return {
@@ -240,6 +223,7 @@ export async function getMatchVetos(
   matchId: number,
   entrantAId: number | null,
 ): Promise<MatchVetoStep[]> {
+  const { matchVetos } = valorantTables;
   const rows = await db
     .select({
       order: matchVetos.order,
@@ -310,10 +294,12 @@ export type MatchMap = {
 };
 
 export async function getMatchMaps(
-  matchId: number,
+  game: GameSlug, matchId: number,
   entrantAId: number | null,
   entrantBId: number | null,
 ): Promise<MatchMap[]> {
+  const { people } = gameTables(game);
+  const { maps, mapPlayerStats, mapTeamRoundSummary } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: maps.id,
@@ -410,17 +396,17 @@ export async function getMatchMaps(
  * and map fetch actions (`match:{id}`) and by player handle edits (`match-stats`).
  */
 export function getCompletedMatchStats(
-  matchId: number,
+  game: GameSlug, matchId: number,
   entrantAId: number | null,
   entrantBId: number | null,
 ): Promise<[MatchMap[], MatchMapsStats]> {
   return unstable_cache(
     () =>
       Promise.all([
-        getMatchMaps(matchId, entrantAId, entrantBId),
+        getMatchMaps(game, matchId, entrantAId, entrantBId),
         getMatchMapsStatsBatch(matchId, entrantAId, entrantBId),
       ]),
-    ["completed-match-stats-v2", String(matchId), String(entrantAId), String(entrantBId)],
+    ["completed-match-stats-v2", game, String(matchId), String(entrantAId), String(entrantBId)],
     { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }
@@ -535,6 +521,7 @@ export type MatchRound = {
 };
 
 export async function getMatchMapRounds(mapId: number): Promise<MatchRound[]> {
+  const { mapRoundsRaw } = valorantTables;
   const rows = await db
     .select({
       roundNumber: mapRoundsRaw.roundNumber,
@@ -565,6 +552,7 @@ export async function getMatchMapsStatsBatch(
   entrantAId: number | null,
   entrantBId: number | null,
 ): Promise<MatchMapsStats> {
+  const { maps, mapRoundsRaw, mapRoundPlayerLoadoutsRaw, mapRoundKillsRaw } = valorantTables;
   const completedMaps = db
     .select({ id: maps.id })
     .from(maps)
@@ -746,11 +734,12 @@ export type MatchEncounter = {
 };
 
 export async function getMatchEncounters(
-  matchId: number,
+  game: GameSlug, matchId: number,
   teamAId: number | null,
   teamBId: number | null,
   limit = 8,
 ): Promise<{ teamAWins: number; teamBWins: number; items: MatchEncounter[] }> {
+  const { matches, entrants, tournaments, stages, stageContainers } = gameTables(game);
   if (teamAId == null || teamBId == null || teamAId === teamBId)
     return { teamAWins: 0, teamBWins: 0, items: [] };
 
@@ -836,7 +825,9 @@ export type HeadToHeadFilters = {
  * HeadToHeadService::mapPoolForPatch()). Falls back to an empty list (caller
  * then shows every map) if nothing is recorded for that patch yet.
  */
-export async function getMapPoolForPatch(patch: string): Promise<string[]> {
+export async function getMapPoolForPatch(game: GameSlug, patch: string): Promise<string[]> {
+  const { matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const rows = await db
     .selectDistinct({ mapName: maps.mapName })
     .from(maps)
@@ -852,9 +843,11 @@ export async function getMapPoolForPatch(patch: string): Promise<string[]> {
 }
 
 async function teamMapRecords(
-  teamId: number,
+  game: GameSlug, teamId: number,
   filters?: HeadToHeadFilters,
 ): Promise<Map<string, { wins: number; played: number }>> {
+  const { matches, entrants, stages, stageContainers } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const entrantIds = db.select({ id: entrants.id }).from(entrants).where(eq(entrants.teamId, teamId));
   const isSideA = inArray(matches.entrantAId, entrantIds);
   const ownScore = sql`case when ${isSideA} then ${maps.teamAScore} else ${maps.teamBScore} end`;
@@ -902,15 +895,15 @@ async function teamMapRecords(
 
 /** Each team's own win rate per map (radar chart data), independently computed across all of that team's completed maps — not just meetings between the two. */
 export async function getHeadToHeadMapComparison(
-  teamAId: number | null,
+  game: GameSlug, teamAId: number | null,
   teamBId: number | null,
   filters?: HeadToHeadFilters,
 ): Promise<HeadToHeadMapRow[]> {
   if (teamAId == null || teamBId == null || teamAId === teamBId) return [];
 
   const [recA, recB] = await Promise.all([
-    teamMapRecords(teamAId, filters),
-    teamMapRecords(teamBId, filters),
+    teamMapRecords(game, teamAId, filters),
+    teamMapRecords(game, teamBId, filters),
   ]);
   let mapNames = new Set([...recA.keys(), ...recB.keys()]);
   if (filters?.mapPool && filters.mapPool.length > 0) {
@@ -958,7 +951,8 @@ export type MatchVod = {
   publisherName: string | null;
 };
 
-export async function getMatchStreams(matchId: number): Promise<MatchStream[]> {
+export async function getMatchStreams(game: GameSlug, matchId: number): Promise<MatchStream[]> {
+  const { streamChannels, matchStreams } = gameTables(game);
   const rows = await db
     .select({
       id: streamChannels.id,
@@ -980,7 +974,9 @@ export async function getMatchStreams(matchId: number): Promise<MatchStream[]> {
   return rows.sort((a, b) => Number(a.type === "watchparty") - Number(b.type === "watchparty"));
 }
 
-export async function getMatchVods(matchId: number): Promise<MatchVod[]> {
+export async function getMatchVods(game: GameSlug, matchId: number): Promise<MatchVod[]> {
+  const { vods } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -1023,8 +1019,9 @@ export type MatchPlayerPov = {
 };
 
 export async function getMatchPlayerPovs(
-  matchId: number,
+  game: GameSlug, matchId: number,
 ): Promise<MatchPlayerPov[]> {
+  const { people, matchPlayerPovs } = gameTables(game);
   const rows = await db
     .select({
       id: matchPlayerPovs.id,

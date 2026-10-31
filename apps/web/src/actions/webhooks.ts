@@ -15,13 +15,14 @@
 import crypto from "node:crypto";
 import { and, count, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { apiKeys, teams, webhookDeliveries, webhookEndpoints, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { apiKeys, valorantTables, webhookDeliveries, webhookEndpoints, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireApiKeyActor, requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { logActivity } from "@/lib/activity-log";
 import { decrypt, encrypt } from "@/lib/encryption";
 import { sendDeliveryNow, sendTestPing } from "@/lib/webhooks/dispatch";
 import { listWebhookRegions } from "@/lib/webhooks/endpoints";
 import { getCurrentUserId } from "@/lib/session";
+import { DEFAULT_GAME } from "@gc-stats/db/game";
 import { searchTeamsQuery } from "@/lib/team-search";
 import type { TeamPickerResult } from "@/lib/team-search";
 import { validateWebhookUrl, type WebhookUrlError } from "@/lib/webhooks/url-guard";
@@ -103,6 +104,7 @@ async function validateInput(input: WebhookEndpointInput): Promise<{ ok: true; v
   else if (teamIds.length > WEBHOOK_LIMITS.filterTeams) fieldErrors.filterTeamIds = "tooMany";
   else if (teamIds.length > 0) {
     const unique = [...new Set(teamIds as number[])];
+    const { teams } = valorantTables;
     const found = await db.select({ id: teams.id }).from(teams).where(and(inArray(teams.id, unique), eq(teams.isGhost, false)));
     if (found.length !== unique.length) fieldErrors.filterTeamIds = "unknownTeam";
   }
@@ -230,5 +232,5 @@ export async function redeliverWebhook(scope: WebhookKeyScope, deliveryId: unkno
 /** Team filter picker: public teams only, any signed in user. */
 export async function searchWebhookTeams(query: string): Promise<TeamPickerResult[]> {
   if (!(await getCurrentUserId())) return [];
-  return searchTeamsQuery(typeof query === "string" ? query.slice(0, 100) : "");
+  return searchTeamsQuery(DEFAULT_GAME, typeof query === "string" ? query.slice(0, 100) : "");
 }

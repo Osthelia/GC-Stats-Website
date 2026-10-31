@@ -13,7 +13,7 @@
 import { and, asc, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { entrants, entrantMembers, people, teams, matches, maps, stageContainers, stages, tournaments, mapPlayerStats } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { formatSideScore } from "@/lib/match-score-format";
@@ -22,6 +22,7 @@ import type { EntityMatchStatusFilter as MatchStatusFilter } from "@/lib/entity-
 import type { ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
 import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type TournamentRosterPlayer = { personId: number; handle: string };
 
@@ -58,7 +59,9 @@ export type TournamentParticipant = {
  * `entrant_members` (see the migration README: "roster figé par tournoi,
  * pas de reconstruction fiable possible").
  */
-export async function getTournamentParticipants(tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
+export async function getTournamentParticipants(game: GameSlug, tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
+  const { entrants, entrantMembers, people, teams, matches, stageContainers } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
   let stageCondition;
   if (stageId != null) {
     const stageMatchRows = await db
@@ -92,8 +95,8 @@ export async function getTournamentParticipants(tournamentId: number, stageId?: 
   const entrantIds = entrantRows.map((e) => e.id);
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
   const [logosByTeamId, sourceByEntrant, lockedRows] = await Promise.all([
-    getCurrentLogoUrlsThemed("team", teamIds),
-    resolveEntrantQualificationSources(db, tournamentId, entrantRows),
+    getCurrentLogoUrlsThemed("team", teamIds, game),
+    resolveEntrantQualificationSources(game, db, tournamentId, entrantRows),
     db
       .select({ entrantId: entrantMembers.entrantId, personId: people.id, handle: people.handle })
       .from(entrantMembers)
@@ -138,8 +141,8 @@ const TOURNAMENT_MATCH_STATUS: Record<string, HomeMatch["status"]> = { pending: 
 export type TournamentMatchStatus = "pending" | "live" | "completed";
 
 /** Overview tab: only played/in-progress matches, capped short, live first. */
-export async function getTournamentRecentMatches(tournamentId: number, limit = 9): Promise<HomeMatch[]> {
-  return getTournamentMatches(tournamentId, { statuses: ["completed", "live"], limit, liveFirst: true });
+export async function getTournamentRecentMatches(game: GameSlug, tournamentId: number, limit = 9): Promise<HomeMatch[]> {
+  return getTournamentMatches(game, tournamentId, { statuses: ["completed", "live"], limit, liveFirst: true });
 }
 
 export type TournamentMatchesFilters = { stageId?: number; round?: string; teamId?: number; map?: string; status: MatchStatusFilter | "all"; sort?: "oldest" };
@@ -183,7 +186,9 @@ export const TOURNAMENT_MATCHES_PAGE_SIZE = 20;
 const STATUS_TO_DB: Record<MatchStatusFilter, TournamentMatchStatus[]> = { upcoming: ["live", "pending"], live: ["live"], finished: ["completed"] };
 
 /** Every Matches tab filter except `status`, which the status counts ignore. */
-function buildTournamentMatchesConditions(tournamentId: number, filters?: TournamentMatchesFilters) {
+function buildTournamentMatchesConditions(game: GameSlug, tournamentId: number, filters?: TournamentMatchesFilters) {
+  const { entrants, matches, stages } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const conditions = [eq(stages.tournamentId, tournamentId)];
   // Un match sans aucune team assignée n'est pas affiché
   const entrantTeamIds = db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), isNotNull(entrants.teamId)));
@@ -202,13 +207,14 @@ function buildTournamentMatchesConditions(tournamentId: number, filters?: Tourna
 }
 
 /** Matches tab: per status counts for the current filters (the status filter itself aside). */
-export async function getTournamentMatchesStatusCounts(tournamentId: number, filters?: TournamentMatchesFilters): Promise<Record<"all" | MatchStatusFilter, number>> {
+export async function getTournamentMatchesStatusCounts(game: GameSlug, tournamentId: number, filters?: TournamentMatchesFilters): Promise<Record<"all" | MatchStatusFilter, number>> {
+  const { matches, stageContainers, stages } = gameTables(game);
   const rows = await db
     .select({ status: matches.status, count: sql<number>`count(*)::int` })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(...buildTournamentMatchesConditions(tournamentId, filters)))
+    .where(and(...buildTournamentMatchesConditions(game, tournamentId, filters)))
     .groupBy(matches.status);
 
   const counts = { all: 0, live: 0, upcoming: 0, finished: 0 };
@@ -220,16 +226,29 @@ export async function getTournamentMatchesStatusCounts(tournamentId: number, fil
   return counts;
 }
 
-const entrantA = alias(entrants, "entrant_a");
-const entrantB = alias(entrants, "entrant_b");
-const teamA = alias(teams, "team_a");
-const teamB = alias(teams, "team_b");
+function entrantA(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_a");
+}
+function entrantB(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_b");
+}
+function teamA(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "team_a");
+}
+function teamB(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "team_b");
+}
 
 export async function getTournamentMatches(
-  tournamentId: number,
+  game: GameSlug, tournamentId: number,
   opts: { statuses?: TournamentMatchStatus[]; limit?: number; liveFirst?: boolean; filters?: TournamentMatchesFilters; page?: number } = {},
 ): Promise<HomeMatch[]> {
-  const conditions = buildTournamentMatchesConditions(tournamentId, opts.filters);
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const conditions = buildTournamentMatchesConditions(game, tournamentId, opts.filters);
   const statuses = opts.filters && opts.filters.status !== "all" ? STATUS_TO_DB[opts.filters.status] : opts.statuses;
   if (statuses) conditions.push(inArray(matches.status, statuses));
 
@@ -246,21 +265,21 @@ export async function getTournamentMatches(
       entrantBId: matches.entrantBId,
       containerName: stageContainers.name,
       region: tournaments.region,
-      aName: entrantA.displayName,
-      aTeamId: entrantA.teamId,
-      aShortName: teamA.shortName,
-      bName: entrantB.displayName,
-      bTeamId: entrantB.teamId,
-      bShortName: teamB.shortName,
+      aName: entrantA(game).displayName,
+      aTeamId: entrantA(game).teamId,
+      aShortName: teamA(game).shortName,
+      bName: entrantB(game).displayName,
+      bTeamId: entrantB(game).teamId,
+      bShortName: teamB(game).shortName,
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-    .leftJoin(entrantA, eq(entrantA.id, matches.entrantAId))
-    .leftJoin(teamA, eq(teamA.id, entrantA.teamId))
-    .leftJoin(entrantB, eq(entrantB.id, matches.entrantBId))
-    .leftJoin(teamB, eq(teamB.id, entrantB.teamId))
+    .leftJoin(entrantA(game), eq(entrantA(game).id, matches.entrantAId))
+    .leftJoin(teamA(game), eq(teamA(game).id, entrantA(game).teamId))
+    .leftJoin(entrantB(game), eq(entrantB(game).id, matches.entrantBId))
+    .leftJoin(teamB(game), eq(teamB(game).id, entrantB(game).teamId))
     .where(and(...conditions))
     // Overview panel (`liveFirst`): live first, then latest. Matches tab: default is the closest to now (past or future), "oldest" is the farthest.
     .orderBy(
@@ -282,7 +301,7 @@ export async function getTournamentMatches(
   if (rows.length === 0) return [];
 
   const teamIds = [...new Set(rows.flatMap((r) => [r.aTeamId, r.bTeamId]).filter((id): id is number => id != null))];
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds);
+  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds, game);
   const side = (name: string | null, teamId: number | null, shortName: string | null) =>
     name === null
       ? { name: "?", tag: "?", logoUrl: null, logoUrlLight: null }
@@ -336,7 +355,8 @@ export type TournamentMatchesFilterOptions = {
  * own stages ("phase"), every distinct round label actually used, every
  * registered team, and every map actually played (completed maps only).
  */
-export async function getTournamentMatchesFilterOptions(tournamentId: number): Promise<TournamentMatchesFilterOptions> {
+export async function getTournamentMatchesFilterOptions(game: GameSlug, tournamentId: number): Promise<TournamentMatchesFilterOptions> {
+  const { entrants, matches, stageContainers, stages } = gameTables(game);
   const [stageRows, roundRows, teamRows, mapRows] = await Promise.all([
     db.select({ id: stages.id, name: stages.name }).from(stages).where(eq(stages.tournamentId, tournamentId)).orderBy(stages.sequenceOrder),
     db
@@ -350,13 +370,18 @@ export async function getTournamentMatchesFilterOptions(tournamentId: number): P
       .from(entrants)
       .where(and(eq(entrants.tournamentId, tournamentId), isNotNull(entrants.teamId)))
       .orderBy(sql`${entrants.seed} nulls last`, entrants.id),
-    db
-      .selectDistinct({ mapName: maps.mapName })
-      .from(maps)
-      .innerJoin(matches, eq(matches.id, maps.matchId))
-      .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-      .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-      .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName))),
+    gameHasMaps(game)
+      ? (async () => {
+          const { maps } = valorantTablesOf(game);
+          return db
+            .selectDistinct({ mapName: maps.mapName })
+            .from(maps)
+            .innerJoin(matches, eq(matches.id, maps.matchId))
+            .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+            .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+            .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName)));
+        })()
+      : Promise.resolve([] as { mapName: string | null }[]),
   ]);
 
   return {
@@ -368,7 +393,9 @@ export async function getTournamentMatchesFilterOptions(tournamentId: number): P
 }
 
 /** Distinct agents/maps played in this tournament — feeds the stats page filter dropdowns. */
-export async function getTournamentStatsFilterOptions(tournamentId: number): Promise<{ agents: string[]; maps: string[] }> {
+export async function getTournamentStatsFilterOptions(game: GameSlug, tournamentId: number): Promise<{ agents: string[]; maps: string[] }> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const tournamentMaps = (fields: { value: typeof mapPlayerStats.agentName | typeof maps.mapName }) =>
     db
       .selectDistinct(fields)
@@ -388,7 +415,9 @@ export async function getTournamentStatsFilterOptions(tournamentId: number): Pro
 }
 
 /** Rows of the tournament stats page (players only), as a subquery for `aggregateMapPlayerStatsSql`. */
-export function tournamentStatsScope(tournamentId: number, filters: ParsedStatsFilters): SQLWrapper {
+export function tournamentStatsScope(game: GameSlug, tournamentId: number, filters: ParsedStatsFilters): SQLWrapper {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const { from, to } = resolveDateBounds(filters);
 
   const conditions = [eq(stages.tournamentId, tournamentId), isNotNull(mapPlayerStats.personId)];
@@ -418,7 +447,9 @@ export type TournamentStatsPlayerMeta = { agents: string[]; teamId: number | nul
  * swap) is attributed to whichever one they have the most map rows for,
  * per explicit user decision.
  */
-export async function getTournamentStatsPlayerMeta(scope: SQLWrapper): Promise<Map<number, TournamentStatsPlayerMeta>> {
+export async function getTournamentStatsPlayerMeta(game: GameSlug, scope: SQLWrapper): Promise<Map<number, TournamentStatsPlayerMeta>> {
+  const { entrants } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
   const [agentRows, entrantRows] = await Promise.all([
     db
       .selectDistinct({ personId: mapPlayerStats.personId, agentName: mapPlayerStats.agentName })
@@ -442,7 +473,7 @@ export async function getTournamentStatsPlayerMeta(scope: SQLWrapper): Promise<M
     else agentsByPerson.set(r.personId, [r.agentName]);
   }
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds);
+  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds, game);
 
   const result = new Map<number, TournamentStatsPlayerMeta>();
   for (const entrant of entrantRows) {

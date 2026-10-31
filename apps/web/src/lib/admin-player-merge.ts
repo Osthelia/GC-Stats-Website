@@ -11,7 +11,8 @@
 
 import { and, desc, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { mapPlayerStats, maps, matches, stageContainers, stages, tournaments, newsRelations, news } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type MergeMapStatEntry = {
   statId: number;
@@ -29,7 +30,9 @@ export type MergeMapStatEntry = {
 const MAP_STATS_MERGE_LIMIT = 1000;
 
 /** Most recent `map_player_stats` rows this person has recorded, one per map, capped at {@link MAP_STATS_MERGE_LIMIT} — the merge unit for "match participation" (see mergePlayers' mergeStats). */
-export async function getMergeablePlayerMapStats(personId: number): Promise<MergeMapStatEntry[]> {
+export async function getMergeablePlayerMapStats(game: GameSlug, personId: number): Promise<MergeMapStatEntry[]> {
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const { mapPlayerStats, maps } = valorantTablesOf(game);
   const rows = await db
     .select({
       statId: mapPlayerStats.id,
@@ -67,7 +70,8 @@ export async function getMergeablePlayerMapStats(personId: number): Promise<Merg
 export type MergeNewsEntry = { newsId: number; title: string };
 
 /** `news_relations` rows tagging this person — merge unit keyed by `newsId`, mirrors admin-team-merge.ts::getMergeableTeamNews. */
-export async function getMergeablePlayerNews(personId: number): Promise<MergeNewsEntry[]> {
+export async function getMergeablePlayerNews(game: GameSlug, personId: number): Promise<MergeNewsEntry[]> {
+  const { newsRelations, news } = gameTables(game);
   const rows = await db
     .select({ newsId: news.id, title: news.title })
     .from(newsRelations)

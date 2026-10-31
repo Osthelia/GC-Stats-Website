@@ -23,6 +23,7 @@ import { TeamPicker } from "@/components/admin/team-picker";
 import { cn } from "@/lib/utils";
 import { createSanction, type SanctionFieldErrors } from "@/actions/admin-sanctions";
 import { SANCTION_TYPES } from "@/lib/sanction-constants";
+import { useGame } from "@/lib/use-game";
 
 type TargetMode = "user" | "team";
 
@@ -40,6 +41,7 @@ export function SanctionDialog({
   /** Pre-selects the target user (e.g. opened from a report review) instead of starting empty. */
   initialUser?: { id: string; username: string | null } | null;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.sanctions");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -68,7 +70,7 @@ export function SanctionDialog({
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createSanction({
+      const result = await createSanction(game, {
         userId: targetMode === "user" ? (user?.id ?? null) : null,
         teamId: targetMode === "team" ? (team?.id ?? null) : null,
         type,

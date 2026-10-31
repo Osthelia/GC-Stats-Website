@@ -13,13 +13,14 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { vods, maps, newsLanguages, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { newsLanguages, ORGANIZATION_PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { isValidUrl } from "@/lib/admin-validation";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
 import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { CreditMatchOption } from "@/lib/production-credits-data";
 export type { MatchMapOption } from "@/lib/dashboard-vods-data";
@@ -30,14 +31,14 @@ async function isActiveLanguage(code: string): Promise<boolean> {
 }
 
 /** Same search as the production-credits tournament picker, gated by this organization's vodsLink permission instead. */
-export async function searchTournamentsForVod(organizationId: number, query: string): Promise<TournamentPickerResult[]> {
+export async function searchTournamentsForVod(game: GameSlug, organizationId: number, query: string): Promise<TournamentPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
-  return searchTournamentsQuery(query);
+  return searchTournamentsQuery(game, query);
 }
 
-export async function getMatchOptionsForVod(organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
+export async function getMatchOptionsForVod(game: GameSlug, organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
-  return getTournamentMatchOptionsForCredit(tournamentId);
+  return getTournamentMatchOptionsForCredit(game, tournamentId);
 }
 
 export async function getMapOptionsForVod(organizationId: number, matchId: number): Promise<MatchMapOption[]> {
@@ -51,7 +52,9 @@ export type AddVodInput = { tournamentId: number | null; matchId: number | null;
 
 export type AddVodResult = { ok: true; id: number } | { ok: false; fieldErrors: VodFieldErrors };
 
-export async function addVod(organizationId: number, input: AddVodInput): Promise<AddVodResult> {
+export async function addVod(game: GameSlug, organizationId: number, input: AddVodInput): Promise<AddVodResult> {
+  const { vods } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
   const fieldErrors: VodFieldErrors = {};
@@ -63,7 +66,7 @@ export async function addVod(organizationId: number, input: AddVodInput): Promis
   else if (!(await isActiveLanguage(input.languageCode))) fieldErrors.languageCode = "invalidLanguage";
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
-  const matchTournamentId = await getMatchTournamentId(input.matchId as number);
+  const matchTournamentId = await getMatchTournamentId(game, input.matchId as number);
   if (matchTournamentId === null) return { ok: false, fieldErrors: { match: "matchNotFound" } };
   if (matchTournamentId !== input.tournamentId) return { ok: false, fieldErrors: { match: "matchNotInTournament" } };
 
@@ -88,7 +91,8 @@ export async function addVod(organizationId: number, input: AddVodInput): Promis
 export type UpdateVodInput = { url: string; languageCode: string };
 export type UpdateVodResult = { ok: true } | { ok: false; fieldErrors: VodFieldErrors; error?: "notFound" };
 
-export async function updateVod(organizationId: number, vodId: number, input: UpdateVodInput): Promise<UpdateVodResult> {
+export async function updateVod(game: GameSlug, organizationId: number, vodId: number, input: UpdateVodInput): Promise<UpdateVodResult> {
+  const { vods } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
   const [existing] = await db.select().from(vods).where(eq(vods.id, vodId)).limit(1);
@@ -114,7 +118,8 @@ export async function updateVod(organizationId: number, vodId: number, input: Up
 
 export type DeleteVodResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function deleteVod(organizationId: number, vodId: number): Promise<DeleteVodResult> {
+export async function deleteVod(game: GameSlug, organizationId: number, vodId: number): Promise<DeleteVodResult> {
+  const { vods } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.vodsLink);
 
   const [existing] = await db.select({ organizationId: vods.organizationId, matchId: vods.matchId }).from(vods).where(eq(vods.id, vodId)).limit(1);

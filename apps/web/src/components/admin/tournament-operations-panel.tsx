@@ -23,6 +23,7 @@ import { BulkMatchStatusCard } from "@/components/admin/bulk-match-status-card";
 import { MatchScoreBackfillCard } from "@/components/admin/match-score-backfill-card";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 const ALL_CONTAINERS = "all";
 const BEST_OF_VALUES = ["1", "3", "5"] as const;
@@ -42,6 +43,7 @@ export function TournamentOperationsPanel({ tournamentId, containers, matches }:
 }
 
 function PatchCard({ tournamentId, containers }: { tournamentId: number; containers: AdminContainerOption[] }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.operations");
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<BulkPatchFieldErrors>({});
@@ -56,7 +58,7 @@ function PatchCard({ tournamentId, containers }: { tournamentId: number; contain
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await bulkPatchMatches(tournamentId, {
+      const result = await bulkPatchMatches(game, tournamentId, {
         patch,
         containerId: containerId === ALL_CONTAINERS ? null : Number(containerId),
         dateFrom,
@@ -121,6 +123,7 @@ function PatchCard({ tournamentId, containers }: { tournamentId: number; contain
 }
 
 function BulkCreateCard({ tournamentId, containers }: { tournamentId: number; containers: AdminContainerOption[] }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.operations");
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<BulkCreateFieldErrors>({});
@@ -134,7 +137,7 @@ function BulkCreateCard({ tournamentId, containers }: { tournamentId: number; co
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await bulkCreateMatches(tournamentId, {
+      const result = await bulkCreateMatches(game, tournamentId, {
         containerId: containerId ? Number(containerId) : null,
         count,
         scheduledAt: scheduledAt ?? "",

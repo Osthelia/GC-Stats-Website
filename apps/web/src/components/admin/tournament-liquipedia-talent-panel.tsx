@@ -12,6 +12,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useGame } from "@/lib/use-game";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { CheckIcon, Loader2Icon } from "lucide-react";
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 type Row = BroadcastPreviewRow & { checked: boolean; organization: { id: number; name: string } | null };
 
 export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { tournamentId: number; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipedia.talent");
   const router = useRouter();
   const [isAnalyzing, startAnalyze] = useTransition();
@@ -44,7 +46,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
     setFormError(null);
     setRowErrors({});
     startAnalyze(async () => {
-      const result = await previewBroadcastImport(tournamentId, wikicode);
+      const result = await previewBroadcastImport(game, tournamentId, wikicode);
       if (!result.ok) {
         setRows(null);
         setFormError(t(`error.${result.error}`));
@@ -75,6 +77,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
 
     startImport(async () => {
       const result = await importBroadcastCredits(
+        game,
         tournamentId,
         selected.map((r) => ({ name: r.name, personId: r.person?.id ?? null, organizationId: r.organization?.id ?? null, credits: r.credits }))
       );
@@ -160,7 +163,7 @@ export function TournamentLiquipediaTalentPanel({ tournamentId, canManage }: { t
                     placeholder={t("pickPerson")}
                     searchPlaceholder={t("searchPerson")}
                     noResultsLabel={t("noResults")}
-                    search={(query) => searchLiquipediaPeople(query, null)}
+                    search={(query) => searchLiquipediaPeople(game, query, null)}
                   />
                   <OrganizationPicker
                     value={row.organization}

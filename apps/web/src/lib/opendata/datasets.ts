@@ -32,12 +32,12 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       t.category,
       t.location,
       t.prize_pool,
-      (select count(*)::int from entrants e where e.tournament_id = t.id and e.kind = 'team') as teams_count,
+      (select count(*)::int from val_entrants e where e.tournament_id = t.id and e.kind = 'team') as teams_count,
       o.id::int as organizer_id,
       o.name as organizer_name,
       t.liquipedia_link,
       t.socials
-    from tournaments t
+    from val_tournaments t
     left join organizations o on o.id = t.organizer_organization_id
     where t.active and not t.is_ghost`,
   teams: sql`
@@ -48,18 +48,18 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       t.country_code,
       t.secondary_country_code,
       t.is_active,
-      (select count(distinct rm.person_id)::int from roster_memberships rm
+      (select count(distinct rm.person_id)::int from val_roster_memberships rm
         join people rp on rp.id = rm.person_id and not rp.is_ghost
         where rm.team_id = t.id and upper_inf(rm.period) and not rm.has_left and rm.role in ('player', 'player-igl')) as players_count,
-      (select count(*)::int from entrants e
-        join tournaments et on et.id = e.tournament_id and et.active and not et.is_ghost
-        join matches m on m.entrant_a_id = e.id or m.entrant_b_id = e.id
+      (select count(*)::int from val_entrants e
+        join val_tournaments et on et.id = e.tournament_id and et.active and not et.is_ghost
+        join val_matches m on m.entrant_a_id = e.id or m.entrant_b_id = e.id
         where e.team_id = t.id) as matches_count,
       t.bio,
       t.vlr_id,
       t.liquipedia_link,
       t.socials
-    from teams t
+    from val_teams t
     where not t.is_ghost`,
   players: sql`
     select
@@ -80,8 +80,8 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
     from people p
     left join lateral (
       select rm.team_id, tm.name as team_name, rm.role
-      from roster_memberships rm
-      join teams tm on tm.id = rm.team_id and not tm.is_ghost
+      from val_roster_memberships rm
+      join val_teams tm on tm.id = rm.team_id and not tm.is_ghost
       where rm.person_id = p.id and upper_inf(rm.period) and not rm.has_left
       order by lower(rm.period) desc
       limit 1
@@ -107,13 +107,13 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       ew.team_id::int as winner_team_id,
       m.is_forfeit,
       m.patch
-    from matches m
-    join stage_containers c on c.id = m.container_id
-    join stages s on s.id = c.stage_id
-    join tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
-    left join entrants ea on ea.id = m.entrant_a_id
-    left join entrants eb on eb.id = m.entrant_b_id
-    left join entrants ew on ew.id = m.winner_id`,
+    from val_matches m
+    join val_stage_containers c on c.id = m.container_id
+    join val_stages s on s.id = c.stage_id
+    join val_tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
+    left join val_entrants ea on ea.id = m.entrant_a_id
+    left join val_entrants eb on eb.id = m.entrant_b_id
+    left join val_entrants ew on ew.id = m.winner_id`,
   maps: sql`
     select
       mp.id::int as id,
@@ -132,19 +132,19 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       eb.display_name as team_b_name,
       case when not mp.is_completed or mp.team_a_score = mp.team_b_score then null
         when mp.team_a_score > mp.team_b_score then ea.team_id else eb.team_id end::int as winner_team_id,
-      (select rs.rounds_won from map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_a_id and rs.side = 'atk') as team_a_atk_rounds_won,
-      (select rs.rounds_won from map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_a_id and rs.side = 'def') as team_a_def_rounds_won,
-      (select rs.rounds_won from map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_b_id and rs.side = 'atk') as team_b_atk_rounds_won,
-      (select rs.rounds_won from map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_b_id and rs.side = 'def') as team_b_def_rounds_won,
+      (select rs.rounds_won from val_map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_a_id and rs.side = 'atk') as team_a_atk_rounds_won,
+      (select rs.rounds_won from val_map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_a_id and rs.side = 'def') as team_a_def_rounds_won,
+      (select rs.rounds_won from val_map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_b_id and rs.side = 'atk') as team_b_atk_rounds_won,
+      (select rs.rounds_won from val_map_team_round_summary rs where rs.map_id = mp.id and rs.entrant_id = m.entrant_b_id and rs.side = 'def') as team_b_def_rounds_won,
       mp.is_forfeit,
       m.patch
-    from maps mp
-    join matches m on m.id = mp.match_id
-    join stage_containers c on c.id = m.container_id
-    join stages s on s.id = c.stage_id
-    join tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
-    left join entrants ea on ea.id = m.entrant_a_id
-    left join entrants eb on eb.id = m.entrant_b_id`,
+    from val_maps mp
+    join val_matches m on m.id = mp.match_id
+    join val_stage_containers c on c.id = m.container_id
+    join val_stages s on s.id = c.stage_id
+    join val_tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
+    left join val_entrants ea on ea.id = m.entrant_a_id
+    left join val_entrants eb on eb.id = m.entrant_b_id`,
   // Scoreboard of completed maps, a ghost player keeps their handle but gets no id (no public page).
   map_players: sql`
     select
@@ -177,13 +177,13 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       coalesce((ps.multikills ->> '5k')::numeric, 0)::int as multikills_5k,
       ps.trade_kills,
       ps.traded_deaths
-    from map_player_stats ps
-    join maps mp on mp.id = ps.map_id and mp.is_completed
-    join matches m on m.id = mp.match_id
-    join stage_containers c on c.id = m.container_id
-    join stages s on s.id = c.stage_id
-    join tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
-    join entrants e on e.id = ps.entrant_id
+    from val_map_player_stats ps
+    join val_maps mp on mp.id = ps.map_id and mp.is_completed
+    join val_matches m on m.id = mp.match_id
+    join val_stage_containers c on c.id = m.container_id
+    join val_stages s on s.id = c.stage_id
+    join val_tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
+    join val_entrants e on e.id = ps.entrant_id
     left join people p on p.id = ps.person_id`,
 };
 const SEARCH_COLUMNS: Record<OpenDataDataset, string[]> = {

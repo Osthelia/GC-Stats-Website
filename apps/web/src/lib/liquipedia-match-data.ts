@@ -11,9 +11,10 @@
 
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, stages, stageContainers, matches, entrants, matchVetos, maps, mapRoundsRaw, liquipediaTeamNames, matchStreams, streamChannels } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { buildMatchPageWikicode, type WikicodeMap, type WikicodeVetoStep } from "@/lib/liquipedia-match-wikicode";
 import { knownScheduledAt } from "@/lib/match-schedule";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaMatchWikicode = {
   matchId: number;
@@ -41,7 +42,9 @@ function isInternationalLanguage(code: string): boolean {
   return code.trim().toLowerCase().startsWith("en");
 }
 
-async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
+async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
+  const { tournaments, stages, stageContainers, matches, entrants, liquipediaTeamNames, matchStreams, streamChannels } = gameTables(game);
+  const { matchVetos, maps, mapRoundsRaw } = valorantTablesOf(game);
   if (matchIds.length === 0) return [];
 
   const matchRows = await db
@@ -188,7 +191,7 @@ async function buildWikicodes(matchIds: number[]): Promise<LiquipediaMatchWikico
   });
 }
 
-export async function getLiquipediaMatchWikicode(matchId: number): Promise<LiquipediaMatchWikicode | null> {
-  const [result] = await buildWikicodes([matchId]);
+export async function getLiquipediaMatchWikicode(game: GameSlug, matchId: number): Promise<LiquipediaMatchWikicode | null> {
+  const [result] = await buildWikicodes(game, [matchId]);
   return result ?? null;
 }

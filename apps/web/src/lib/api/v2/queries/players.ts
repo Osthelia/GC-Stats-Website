@@ -12,7 +12,7 @@
 import { and, asc, desc, eq, gte, ilike, inArray, isNotNull, lt, lte, notInArray, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { people, teams, entrants, matches, maps, mapPlayerStats, stageContainers, stages, tournaments, qualificationResults, stageQualifications, rosterMemberships, news, organizations, newsRelations } from "@gc-stats/db";
+import { organizations, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { toApiTeamFromJoined, type ApiTeam } from "../../v1/entities";
 import { escapeLike, exclusiveUpperBound } from "../../v1/params";
@@ -31,15 +31,18 @@ import type { PaginationFilter, TeamMatchesFilter } from "../params";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
+import type { GameSlug } from "@gc-stats/db/game";
 
-async function personExists(id: number): Promise<boolean> {
+async function personExists(game: GameSlug, id: number): Promise<boolean> {
+  const { people } = gameTables(game);
   const [row] = await db.select({ id: people.id, isGhost: people.isGhost }).from(people).where(eq(people.id, id)).limit(1);
   rejectGhost(row, "player");
   return !!row;
 }
 
 /** Same "roster membership open on the tournament's end date" rule as the public player page (`getPlayerAchievements`, lib/player-page-data.ts) — no entrant-level attribution available for players. */
-async function getPlayerAchievementsV2(personId: number): Promise<ApiAchievementsResponse> {
+async function getPlayerAchievementsV2(game: GameSlug, personId: number): Promise<ApiAchievementsResponse> {
+  const { entrants, matches, stageContainers, stages, tournaments, qualificationResults, stageQualifications, rosterMemberships } = gameTables(game);
   const rows = await db
     .select({
       qualificationId: stageQualifications.id,
@@ -64,7 +67,7 @@ async function getPlayerAchievementsV2(personId: number): Promise<ApiAchievement
         isNotNull(stageQualifications.placement),
         lte(stageQualifications.placement, 3),
         sql`${rosterMemberships.period} @> ${tournaments.endDate}`,
-        rosterPeriodIsDated,
+        rosterPeriodIsDated(game),
       ),
     )
     .orderBy(desc(tournaments.endDate));
@@ -78,23 +81,36 @@ async function getPlayerAchievementsV2(personId: number): Promise<ApiAchievement
 }
 
 /** No locale filter (unlike the site's `getPlayerPress`) — same reasoning as the team endpoint's press list. */
-async function getPlayerPressV2(personId: number, limit = 10): Promise<ApiPressEntry[]> {
+async function getPlayerPressV2(game: GameSlug, personId: number, limit = 10): Promise<ApiPressEntry[]> {
+  const { news, newsRelations } = gameTables(game);
   const rows = await db
     .select({ title: news.title, slug: news.slug, publisher: organizations.name, publishedAt: news.publishedAt, lang: news.lang })
     .from(newsRelations)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
-    .where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId), isNewsPublishedCondition()))
+    .where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId), isNewsPublishedCondition(game)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
   return rows.map((r) => ({ title: r.title, slug: r.slug, publisher: r.publisher ?? "GC-Stats", published_at: r.publishedAt ? r.publishedAt.toISOString() : null, lang: r.lang }));
 }
 
-const entrantAAlias = alias(entrants, "player_match_entrant_a");
-const entrantBAlias = alias(entrants, "player_match_entrant_b");
-const teamAAlias = alias(teams, "player_match_team_a");
-const teamBAlias = alias(teams, "player_match_team_b");
+function entrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "player_match_entrant_a");
+}
+function entrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "player_match_entrant_b");
+}
+function teamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "player_match_team_a");
+}
+function teamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "player_match_team_b");
+}
 
 const EMPTY_MATCHES: ApiPaginatedTeamMatches = { page: 1, per_page: 20, total: 0, total_pages: 0, data: [] };
 
@@ -103,7 +119,9 @@ const EMPTY_MATCHES: ApiPaginatedTeamMatches = { page: 1, per_page: 20, total: 0
  * (ground truth) rather than roster membership — same limitation as the public
  * player page's `getPlayerMatches` (lib/player-page-data.ts).
  */
-async function getPlayerLastMatchesV2(personId: number, perPage = 20): Promise<ApiPaginatedTeamMatches> {
+async function getPlayerLastMatchesV2(game: GameSlug, personId: number, perPage = 20): Promise<ApiPaginatedTeamMatches> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const playedRows = await db
     .selectDistinct({ id: matches.id, scheduledAt: matches.scheduledAt })
     .from(mapPlayerStats)
@@ -130,20 +148,20 @@ async function getPlayerLastMatchesV2(personId: number, perPage = 20): Promise<A
       scoreB: matches.scoreB,
       stageId: stages.id,
       tournamentId: stages.tournamentId,
-      teamA: teamAAlias,
-      teamB: teamBAlias,
+      teamA: teamAAlias(game),
+      teamB: teamBAlias(game),
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(entrantAAlias, eq(entrantAAlias.id, matches.entrantAId))
-    .leftJoin(teamAAlias, eq(teamAAlias.id, entrantAAlias.teamId))
-    .leftJoin(entrantBAlias, eq(entrantBAlias.id, matches.entrantBId))
-    .leftJoin(teamBAlias, eq(teamBAlias.id, entrantBAlias.teamId))
+    .leftJoin(entrantAAlias(game), eq(entrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(teamAAlias(game), eq(teamAAlias(game).id, entrantAAlias(game).teamId))
+    .leftJoin(entrantBAlias(game), eq(entrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(teamBAlias(game), eq(teamBAlias(game).id, entrantBAlias(game).teamId))
     .where(inArray(matches.id, pageIds))
     .orderBy(desc(matches.scheduledAt), desc(matches.id));
 
-  const vetosByMatch = await buildVetosByMatch(pageIds);
+  const vetosByMatch = await buildVetosByMatch(game, pageIds);
 
   const data: ApiTeamMatchEntry[] = rows.map((row) => {
     const teamA = toApiTeamFromJoined(row.teamA);
@@ -168,7 +186,9 @@ async function getPlayerLastMatchesV2(personId: number, perPage = 20): Promise<A
 }
 
 /** One entry per (tournament, entrant) the player played for, from `map_player_stats`. W/L only counts decided matches the player played in. */
-async function getPlayerLastTournamentsV2(personId: number, limit = 10): Promise<ApiTournamentEntry[]> {
+async function getPlayerLastTournamentsV2(game: GameSlug, personId: number, limit = 10): Promise<ApiTournamentEntry[]> {
+  const { teams, entrants, matches, tournaments } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const entrantRows = await db
     .selectDistinct({ entrantId: entrants.id, entrantName: entrants.displayName, tournament: tournaments, team: teams })
     .from(mapPlayerStats)
@@ -196,7 +216,7 @@ async function getPlayerLastTournamentsV2(personId: number, limit = 10): Promise
     record.set(m.entrantId, r);
   }
 
-  return buildTournamentEntries(entrantRows, record);
+  return buildTournamentEntries(game, entrantRows, record);
 }
 
 export type ApiPlayerTeamHistoryV2 = ApiPlayerTeamHistory & { current_name: string; logos: ApiThemedLogoUrls };
@@ -208,9 +228,9 @@ function dayBefore(date: string): string {
 }
 
 /** Past stints carry the team's name and logo as of their last day, `current_name` is always the live name. */
-async function getPlayerTeamHistoryV2(personId: number): Promise<ApiPlayerTeamHistoryV2[]> {
-  const history = (await getPlayerTeamHistory(personId)) ?? [];
-  const resolver = await buildTeamDisplayResolver(history.map((h) => h.team_id));
+async function getPlayerTeamHistoryV2(game: GameSlug, personId: number): Promise<ApiPlayerTeamHistoryV2[]> {
+  const history = (await getPlayerTeamHistory(game, personId)) ?? [];
+  const resolver = await buildTeamDisplayResolver(game, history.map((h) => h.team_id));
 
   return history.map((h) => {
     const lastDay = h.left_at ? dayBefore(h.left_at) : null;
@@ -227,8 +247,9 @@ export type ApiStaffTournamentEntry = ApiTournamentEntry & { roles: string[] };
 export type ApiPaginatedStaffTournaments = { page: number; per_page: number; total: number; total_pages: number; data: ApiStaffTournamentEntry[] };
 
 /** Tournaments a team played while this person was on its staff (non player roster role overlapping the tournament dates). W/L is the team's. */
-export async function getPlayerStaffTournamentsV2(personId: number, filter: PaginationFilter): Promise<ApiPaginatedStaffTournaments | null> {
-  if (!(await personExists(personId))) return null;
+export async function getPlayerStaffTournamentsV2(game: GameSlug, personId: number, filter: PaginationFilter): Promise<ApiPaginatedStaffTournaments | null> {
+  const { teams, entrants, tournaments, rosterMemberships } = gameTables(game);
+  if (!(await personExists(game, personId))) return null;
 
   const rows = await db
     .select({ entrantId: entrants.id, entrantName: entrants.displayName, role: rosterMemberships.role, tournament: tournaments, team: teams })
@@ -241,7 +262,7 @@ export async function getPlayerStaffTournamentsV2(personId: number, filter: Pagi
         eq(rosterMemberships.personId, personId),
         notInArray(rosterMemberships.role, [...PLAYER_ROSTER_ROLES]),
         sql`${rosterMemberships.period} && daterange(${tournaments.startDate}, ${tournaments.endDate}, '[]')`,
-        rosterPeriodIsDated,
+        rosterPeriodIsDated(game),
       ),
     )
     .orderBy(desc(tournaments.endDate), desc(tournaments.startDate), desc(tournaments.id), desc(entrants.id));
@@ -260,7 +281,7 @@ export async function getPlayerStaffTournamentsV2(personId: number, filter: Pagi
   const all = [...byEntrant.values()];
   const total = all.length;
   const pageItems = all.slice((filter.page - 1) * filter.perPage, filter.page * filter.perPage);
-  const entries = await buildTournamentEntries(pageItems.map((p) => p.row));
+  const entries = await buildTournamentEntries(game, pageItems.map((p) => p.row));
 
   return {
     page: filter.page,
@@ -271,10 +292,10 @@ export async function getPlayerStaffTournamentsV2(personId: number, filter: Pagi
   };
 }
 
-export async function getPlayerStaffTournamentsByNameV2(name: string, filter: PaginationFilter): Promise<ApiPaginatedStaffTournaments | null> {
-  const personId = await resolvePersonIdByName(name);
+export async function getPlayerStaffTournamentsByNameV2(game: GameSlug, name: string, filter: PaginationFilter): Promise<ApiPaginatedStaffTournaments | null> {
+  const personId = await resolvePersonIdByName(game, name);
   if (personId === null) return null;
-  return getPlayerStaffTournamentsV2(personId, filter);
+  return getPlayerStaffTournamentsV2(game, personId, filter);
 }
 
 export type ApiPlayerFullResponseV2 = ApiPlayerV2 & {
@@ -287,14 +308,14 @@ export type ApiPlayerFullResponseV2 = ApiPlayerV2 & {
   press: ApiPressEntry[];
 };
 
-async function buildPlayerFullResponse(row: typeof people.$inferSelect): Promise<ApiPlayerFullResponseV2> {
+async function buildPlayerFullResponse(game: GameSlug, row: typeof valorantTables.people.$inferSelect): Promise<ApiPlayerFullResponseV2> {
   const [logos, achievements, lastMatches, history, lastTournaments, press] = await Promise.all([
     getThemedLogoUrls("person", row.id),
-    getPlayerAchievementsV2(row.id),
-    getPlayerLastMatchesV2(row.id),
-    getPlayerTeamHistoryV2(row.id),
-    getPlayerLastTournamentsV2(row.id),
-    getPlayerPressV2(row.id),
+    getPlayerAchievementsV2(game, row.id),
+    getPlayerLastMatchesV2(game, row.id),
+    getPlayerTeamHistoryV2(game, row.id),
+    getPlayerLastTournamentsV2(game, row.id),
+    getPlayerPressV2(game, row.id),
   ]);
 
   return {
@@ -309,29 +330,33 @@ async function buildPlayerFullResponse(row: typeof people.$inferSelect): Promise
   };
 }
 
-export async function getPlayerByIdV2(id: number): Promise<ApiPlayerFullResponseV2 | null> {
-  if (!(await personExists(id))) return null;
+export async function getPlayerByIdV2(game: GameSlug, id: number): Promise<ApiPlayerFullResponseV2 | null> {
+  const { people } = gameTables(game);
+  if (!(await personExists(game, id))) return null;
   const [row] = await db.select().from(people).where(eq(people.id, id)).limit(1);
   rejectGhost(row, "player");
   if (!row) return null;
-  return buildPlayerFullResponse(row);
+  return buildPlayerFullResponse(game, row);
 }
 
-export async function searchPlayersByNameV2(query: string): Promise<ApiPlayerFullResponseV2[]> {
+export async function searchPlayersByNameV2(game: GameSlug, query: string): Promise<ApiPlayerFullResponseV2[]> {
+  const { people } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
-  const rows = await db.select().from(people).where(and(ilike(people.handle, pattern), visiblePerson)).limit(10);
+  const rows = await db.select().from(people).where(and(ilike(people.handle, pattern), visiblePerson(game))).limit(10);
 
-  return Promise.all(rows.map(buildPlayerFullResponse));
+  return Promise.all(rows.map((r) => buildPlayerFullResponse(game, r)));
 }
 
 /** First player (by handle asc) whose handle starts with the given string — the sub endpoints (matches/stats) resolve a single player, unlike the top level `by-name` which returns every match. */
-async function resolvePersonIdByName(query: string): Promise<number | null> {
+async function resolvePersonIdByName(game: GameSlug, query: string): Promise<number | null> {
+  const { people } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
-  const [row] = await db.select({ id: people.id }).from(people).where(and(ilike(people.handle, pattern), visiblePerson)).orderBy(people.handle).limit(1);
+  const [row] = await db.select({ id: people.id }).from(people).where(and(ilike(people.handle, pattern), visiblePerson(game))).orderBy(people.handle).limit(1);
   return row?.id ?? null;
 }
 
-function matchDateConditions(filter: { from?: string; to?: string }) {
+function matchDateConditions(game: GameSlug, filter: { from?: string; to?: string }) {
+  const { matches } = gameTables(game);
   const conditions = [];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
@@ -339,7 +364,9 @@ function matchDateConditions(filter: { from?: string; to?: string }) {
 }
 
 /** Every match id this person played, resolved from `map_player_stats` (ground truth) — same limitation as `getPlayerLastMatchesV2` above. */
-async function getPlayerPlayedMatchIds(personId: number, tournamentId?: number): Promise<number[]> {
+async function getPlayerPlayedMatchIds(game: GameSlug, personId: number, tournamentId?: number): Promise<number[]> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const conditions = [eq(mapPlayerStats.personId, personId)];
   if (tournamentId) conditions.push(eq(stages.tournamentId, tournamentId));
 
@@ -355,21 +382,34 @@ async function getPlayerPlayedMatchIds(personId: number, tournamentId?: number):
   return rows.map((r) => r.id);
 }
 
-const pagedEntrantAAlias = alias(entrants, "player_paged_entrant_a");
-const pagedEntrantBAlias = alias(entrants, "player_paged_entrant_b");
-const pagedTeamAAlias = alias(teams, "player_paged_team_a");
-const pagedTeamBAlias = alias(teams, "player_paged_team_b");
+function pagedEntrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "player_paged_entrant_a");
+}
+function pagedEntrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "player_paged_entrant_b");
+}
+function pagedTeamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "player_paged_team_a");
+}
+function pagedTeamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "player_paged_team_b");
+}
 
 const EMPTY_PAGED_MATCHES: ApiPaginatedTeamMatches = { page: 1, per_page: 20, total: 0, total_pages: 0, data: [] };
 
 /** Paginated, filterable match history for the player, most recent first — same shape and filters (`opponent_id`/`status`/`phase_id`/`round_name`) as `/v2/teams/{id}/matches`, scoped to matches this person actually played. */
-export async function getPlayerMatchesV2(personId: number, filter: TeamMatchesFilter): Promise<ApiPaginatedTeamMatches | null> {
-  if (!(await personExists(personId))) return null;
+export async function getPlayerMatchesV2(game: GameSlug, personId: number, filter: TeamMatchesFilter): Promise<ApiPaginatedTeamMatches | null> {
+  const { entrants, matches, stageContainers, stages } = gameTables(game);
+  if (!(await personExists(game, personId))) return null;
 
-  const playedMatchIds = await getPlayerPlayedMatchIds(personId, filter.tournamentId);
+  const playedMatchIds = await getPlayerPlayedMatchIds(game, personId, filter.tournamentId);
   if (playedMatchIds.length === 0) return { ...EMPTY_PAGED_MATCHES, page: filter.page, per_page: filter.perPage };
 
-  const conditions = [inArray(matches.id, playedMatchIds), ...matchDateConditions(filter)];
+  const conditions = [inArray(matches.id, playedMatchIds), ...matchDateConditions(game, filter)];
   if (filter.status) conditions.push(eq(matches.status, filter.status as "pending" | "live" | "completed"));
   if (filter.roundName) conditions.push(eq(matches.label, filter.roundName));
   if (filter.stageId) conditions.push(eq(stages.id, filter.stageId));
@@ -403,23 +443,23 @@ export async function getPlayerMatchesV2(personId: number, filter: TeamMatchesFi
       scoreB: matches.scoreB,
       stageId: stages.id,
       tournamentId: stages.tournamentId,
-      teamA: pagedTeamAAlias,
-      teamB: pagedTeamBAlias,
+      teamA: pagedTeamAAlias(game),
+      teamB: pagedTeamBAlias(game),
     })
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(pagedEntrantAAlias, eq(pagedEntrantAAlias.id, matches.entrantAId))
-    .leftJoin(pagedTeamAAlias, eq(pagedTeamAAlias.id, pagedEntrantAAlias.teamId))
-    .leftJoin(pagedEntrantBAlias, eq(pagedEntrantBAlias.id, matches.entrantBId))
-    .leftJoin(pagedTeamBAlias, eq(pagedTeamBAlias.id, pagedEntrantBAlias.teamId))
+    .leftJoin(pagedEntrantAAlias(game), eq(pagedEntrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(pagedTeamAAlias(game), eq(pagedTeamAAlias(game).id, pagedEntrantAAlias(game).teamId))
+    .leftJoin(pagedEntrantBAlias(game), eq(pagedEntrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(pagedTeamBAlias(game), eq(pagedTeamBAlias(game).id, pagedEntrantBAlias(game).teamId))
     .where(and(...conditions))
     .orderBy(desc(matches.scheduledAt), desc(matches.id))
     .limit(filter.perPage)
     .offset((filter.page - 1) * filter.perPage);
 
   const matchIds = rows.map((r) => r.id);
-  const vetosByMatch = await buildVetosByMatch(matchIds);
+  const vetosByMatch = await buildVetosByMatch(game, matchIds);
 
   const data: ApiTeamMatchEntry[] = rows.map((row) => {
     const teamA = toApiTeamFromJoined(row.teamA);
@@ -443,28 +483,29 @@ export async function getPlayerMatchesV2(personId: number, filter: TeamMatchesFi
   return { page: filter.page, per_page: filter.perPage, total, total_pages: totalPages, data };
 }
 
-export async function getPlayerMatchesByNameV2(name: string, filter: TeamMatchesFilter): Promise<ApiPaginatedTeamMatches | null> {
-  const personId = await resolvePersonIdByName(name);
+export async function getPlayerMatchesByNameV2(game: GameSlug, name: string, filter: TeamMatchesFilter): Promise<ApiPaginatedTeamMatches | null> {
+  const personId = await resolvePersonIdByName(game, name);
   if (personId === null) return null;
-  return getPlayerMatchesV2(personId, filter);
+  return getPlayerMatchesV2(game, personId, filter);
 }
 
 /** Direct alias of `/v1/players/{id}/stats` — no `round_name`/`phase_id` narrowing added (unlike the tournament/team endpoints): a single player's per round split isn't a filter anyone asked for, `tournament_id` already covers the useful case. */
-export async function getPlayerStatsV2(personId: number, filter: StatsFilter): Promise<ApiAvgStats | null> {
-  return getPlayerStats(personId, filter);
+export async function getPlayerStatsV2(game: GameSlug, personId: number, filter: StatsFilter): Promise<ApiAvgStats | null> {
+  return getPlayerStats(game, personId, filter);
 }
 
-export async function getPlayerStatsByNameV2(name: string, filter: StatsFilter): Promise<ApiAvgStats | null> {
-  const personId = await resolvePersonIdByName(name);
+export async function getPlayerStatsByNameV2(game: GameSlug, name: string, filter: StatsFilter): Promise<ApiAvgStats | null> {
+  const personId = await resolvePersonIdByName(game, name);
   if (personId === null) return null;
-  return getPlayerStatsV2(personId, filter);
+  return getPlayerStatsV2(game, personId, filter);
 }
 
 export type ApiPlayerListEntry = ApiPlayerV2 & { logos: ApiThemedLogoUrls };
 export type ApiPaginatedPlayers = { page: number; per_page: number; total: number; total_pages: number; data: ApiPlayerListEntry[] };
 
 /** Global player listing (`/v2/players`) — a handle prefix search plus country/active filters, sorted by handle, always paginated. */
-export async function listPlayersV2(filter: PlayersListFilter): Promise<ApiPaginatedPlayers> {
+export async function listPlayersV2(game: GameSlug, filter: PlayersListFilter): Promise<ApiPaginatedPlayers> {
+  const { people } = gameTables(game);
   const conditions = [];
   if (filter.handle) conditions.push(ilike(people.handle, `${escapeLike(filter.handle)}%`));
   if (filter.countryCode) conditions.push(eq(people.countryCode, filter.countryCode));
@@ -474,11 +515,11 @@ export async function listPlayersV2(filter: PlayersListFilter): Promise<ApiPagin
   const orderFn = filter.direction === "desc" ? desc : asc;
 
   const [countRow, rows] = await Promise.all([
-    db.select({ total: sql<number>`count(*)` }).from(people).where(and(where, visiblePerson)),
+    db.select({ total: sql<number>`count(*)` }).from(people).where(and(where, visiblePerson(game))),
     db
       .select()
       .from(people)
-      .where(and(where, visiblePerson))
+      .where(and(where, visiblePerson(game)))
       .orderBy(orderFn(people.handle))
       .limit(filter.perPage)
       .offset((filter.page - 1) * filter.perPage),

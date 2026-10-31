@@ -25,6 +25,7 @@ import { createContainer, updateContainer, moveContainerToSet, type ContainerFie
 import { EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, parseGroupConfig, type PointsField } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
+import { useGame } from "@/lib/use-game";
 
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
@@ -106,6 +107,7 @@ export function ContainerDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -144,13 +146,13 @@ export function ContainerDialog({
             pointsConfig,
           };
     startTransition(async () => {
-      const result = container ? await updateContainer(container.id, stageId, input) : await createContainer(stageId, input);
+      const result = container ? await updateContainer(game, container.id, stageId, input) : await createContainer(game, stageId, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
       if (container && parentId !== container.parentId) {
-        const moved = await moveContainerToSet(container.id, stageId, parentId);
+        const moved = await moveContainerToSet(game, container.id, stageId, parentId);
         if (!moved.ok) {
           setFieldErrors({ parentId: moved.error === "parentInvalid" ? "parentInvalid" : "invalid" });
           return;

@@ -34,6 +34,7 @@ import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
 import { cn } from "@/lib/utils";
 import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
+import { useGame } from "@/lib/use-game";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -62,6 +63,7 @@ function TeamHistoryCard({
   onSaved: (updated: AdminPlayerTeamHistoryEntry) => void;
   onDeleted: (membershipId: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const [isPending, startTransition] = useTransition();
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>(entry.role as (typeof ROSTER_ROLES)[number]);
@@ -83,7 +85,7 @@ function TeamHistoryCard({
     const closeIds = hasLeft ? [] : await resolveConflicts(playerId, playerHandle, entry.teamId, entry.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updatePlayerTeamHistoryEntry(entry.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await updatePlayerTeamHistoryEntry(game, entry.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -96,7 +98,7 @@ function TeamHistoryCard({
   function handleDelete() {
     setConfirmOpen(false);
     startTransition(async () => {
-      const result = await deleteRosterMembership(entry.membershipId);
+      const result = await deleteRosterMembership(game, entry.membershipId);
       if (!result.ok) {
         toast.error(t("historyDeleteError"));
         return;
@@ -228,6 +230,7 @@ export function PlayerTeamHistoryPanel({
   initialEntries: AdminPlayerTeamHistoryEntry[];
   canEdit: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const [entries, setEntries] = useState(initialEntries);
   const [isPending, startTransition] = useTransition();
@@ -249,7 +252,7 @@ export function PlayerTeamHistoryPanel({
     const closeIds = team && !hasLeft ? await resolveConflicts(playerId, playerHandle, team.id) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addPlayerTeamHistoryEntry(playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await addPlayerTeamHistoryEntry(game, playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

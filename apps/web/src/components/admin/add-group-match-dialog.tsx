@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { addGroupMatch, type AddGroupMatchFieldErrors } from "@/actions/admin-bracket-editor";
 import type { AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 const ENTRANT_TBD = "tbd";
 
@@ -35,6 +36,7 @@ export function AddGroupMatchDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -61,7 +63,7 @@ export function AddGroupMatchDialog({
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addGroupMatch({
+      const result = await addGroupMatch(game, {
         stageId,
         containerId: container.id,
         round,

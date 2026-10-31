@@ -15,18 +15,20 @@
 import { and, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
 import { logActivity } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
   return access.userId;
 }
 
-async function tournamentContainerIds(tournamentId: number, containerId: number | null): Promise<number[] | "notFound"> {
+async function tournamentContainerIds(game: GameSlug, tournamentId: number, containerId: number | null): Promise<number[] | "notFound"> {
+  const { stages, stageContainers } = gameTables(game);
   const rows = await db
     .select({ id: stageContainers.id })
     .from(stageContainers)
@@ -47,7 +49,8 @@ function isValidDate(value: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value).getTime());
 }
 
-export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInput): Promise<BulkPatchResult> {
+export async function bulkPatchMatches(game: GameSlug, tournamentId: number, input: BulkPatchInput): Promise<BulkPatchResult> {
+  const { matches } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: BulkPatchFieldErrors = {};
@@ -62,7 +65,7 @@ export async function bulkPatchMatches(tournamentId: number, input: BulkPatchInp
     fieldErrors.dateTo = "dateRange";
   }
 
-  const containerIds = await tournamentContainerIds(tournamentId, input.containerId);
+  const containerIds = await tournamentContainerIds(game, tournamentId, input.containerId);
   if (containerIds === "notFound") fieldErrors.containerId = "containerNotFound";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -100,14 +103,15 @@ export type BulkCreateField = "containerId" | "count" | "scheduledAt" | "bestOf"
 export type BulkCreateFieldErrors = Partial<Record<BulkCreateField, string>>;
 export type BulkCreateResult = { ok: true; count: number } | { ok: false; fieldErrors: BulkCreateFieldErrors };
 
-export async function bulkCreateMatches(tournamentId: number, input: BulkCreateInput): Promise<BulkCreateResult> {
+export async function bulkCreateMatches(game: GameSlug, tournamentId: number, input: BulkCreateInput): Promise<BulkCreateResult> {
+  const { matches } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: BulkCreateFieldErrors = {};
 
   if (input.containerId === null) fieldErrors.containerId = "required";
   else {
-    const containerIds = await tournamentContainerIds(tournamentId, input.containerId);
+    const containerIds = await tournamentContainerIds(game, tournamentId, input.containerId);
     if (containerIds === "notFound") fieldErrors.containerId = "containerNotFound";
   }
 
@@ -161,14 +165,15 @@ export type BulkStatusResult = { ok: true; updated: number; skippedNoResult: num
  * completed match without a result would break standings/stats — the
  * others are skipped and counted.
  */
-export async function bulkSetMatchStatus(tournamentId: number, matchIds: number[], status: MatchStatus): Promise<BulkStatusResult> {
+export async function bulkSetMatchStatus(game: GameSlug, tournamentId: number, matchIds: number[], status: MatchStatus): Promise<BulkStatusResult> {
+  const { matches } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   if (status !== "pending" && status !== "live" && status !== "completed") return { ok: false, error: "invalidStatus" };
   const ids = [...new Set(matchIds)].filter((id) => Number.isInteger(id));
   if (ids.length === 0) return { ok: false, error: "noMatches" };
 
-  const containerIds = await tournamentContainerIds(tournamentId, null);
+  const containerIds = await tournamentContainerIds(game, tournamentId, null);
   if (containerIds === "notFound" || containerIds.length === 0) return { ok: false, error: "matchNotFound" };
 
   const rows = await db

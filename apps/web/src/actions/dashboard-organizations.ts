@@ -15,7 +15,7 @@ import { and, eq, isNull, ne, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
 import { isPersonOrganizationMember } from "@/lib/organization-membership-service";
-import { organizations, organizationAccessRoles, organizationRoles, organizationRolePermissions, organizationMemberships, organizationMemberRoleLinks, users, people, logos, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { organizations, organizationAccessRoles, organizationRoles, organizationRolePermissions, organizationMemberRoleLinks, users, logos, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS, gameTables } from "@gc-stats/db";
 import { tryStoreLogoPair, deleteLogoFiles, validateImageBuffer, MAX_IMAGE_BYTES } from "@gc-stats/storage";
 import { requireDashboardOrgActorPermission, requireDashboardOrgOwnerActor } from "@/lib/dashboard-rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
@@ -26,6 +26,7 @@ import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search"
 import { isValidCountryCode } from "@/lib/countries";
 import { isValidUrl } from "@/lib/admin-validation";
 import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError, type PersonSocialKey } from "@/lib/person-social-keys";
+import { createPerson, updatePersonIdentity, updatePersonProfile } from "@/lib/person-service";
 import { linkUserToPersonEntry, unlinkUserFromPersonEntry, type LinkUserResult } from "@/lib/person-link-service";
 import { listOrganizationRoles } from "@/lib/organization-roles-data";
 import { logActivity, diffChanges } from "@/lib/activity-log";
@@ -51,6 +52,7 @@ import {
   type MemberEntryResult,
   type MembershipActionResult,
 } from "@/lib/organization-membership-service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { OrganizationProfileInput, OrganizationProfileField, OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
 export type OrganizationProfileResult = { ok: true } | { ok: false; fieldErrors: OrganizationProfileFieldErrors };
@@ -115,10 +117,11 @@ export async function searchUsersForOrganization(organizationId: number, query: 
  * rather than every person on the site, since production credits only make
  * sense for someone actually affiliated with this organization.
  */
-export async function searchPeopleForOrganization(organizationId: number, query: string): Promise<PersonPickerResult[]> {
+export async function searchPeopleForOrganization(game: GameSlug, organizationId: number, query: string): Promise<PersonPickerResult[]> {
+  const { organizationMemberships } = gameTables(game);
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
   const memberRows = await db.selectDistinct({ personId: organizationMemberships.personId }).from(organizationMemberships).where(eq(organizationMemberships.organizationId, organizationId));
-  return searchPeopleQuery(query, undefined, memberRows.map((r) => r.personId));
+  return searchPeopleQuery(game, query, undefined, memberRows.map((r) => r.personId));
 }
 
 /**
@@ -128,14 +131,14 @@ export async function searchPeopleForOrganization(organizationId: number, query:
  * aren't affiliated with the organization yet, since that's the whole point
  * of adding a new member. Same membersManage permission gate.
  */
-export async function searchPeopleForNewOrganizationMember(organizationId: number, query: string): Promise<PersonPickerResult[]> {
+export async function searchPeopleForNewOrganizationMember(game: GameSlug, organizationId: number, query: string): Promise<PersonPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return searchPeopleQuery(query);
+  return searchPeopleQuery(game, query, undefined, undefined, "exclude", "all");
 }
 
-export async function addDashboardOrganizationMember(organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
+export async function addDashboardOrganizationMember(game: GameSlug, organizationId: number, personId: number | null, role: string, from: string, until: string): Promise<AddMemberResult> {
   const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return addOrganizationMemberEntry(organizationId, personId, role, from, until, userId);
+  return addOrganizationMemberEntry(game, organizationId, personId, role, from, until, userId);
 }
 
 export type CreatePersonField = "handle" | "countryCode";
@@ -148,7 +151,7 @@ export type CreatePersonResult = { ok: true; id: number; handle: string } | { ok
  * new person to the site — mirrors admin's createPlayer, trimmed to the two
  * fields relevant here (no team assignment, this isn't a roster).
  */
-export async function createPersonForOrganization(organizationId: number, handle: string, countryCode: string): Promise<CreatePersonResult> {
+export async function createPersonForOrganization(game: GameSlug, organizationId: number, handle: string, countryCode: string): Promise<CreatePersonResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleCreate);
 
   const fieldErrors: CreatePersonFieldErrors = {};
@@ -163,12 +166,8 @@ export async function createPersonForOrganization(organizationId: number, handle
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const created = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .insert(people)
-      .values({ handle: trimmedHandle, countryCode: trimmedCountry || null, isActive: true })
-      .returning({ id: people.id, handle: people.handle });
-    if (!row) throw new Error("Insert returned no row");
-    await logActivity({ subject: "player", subjectId: row.id, event: "created", description: `Created player #${row.id} (${row.handle})`, actorUserId, properties: { organizationId } }, tx);
+    const row = { id: await createPerson(tx, game, { handle: trimmedHandle, countryCode: trimmedCountry || null }, { isActive: true }), handle: trimmedHandle };
+    await logActivity({ game, subject: "player", subjectId: row.id, event: "created", description: `Created player #${row.id} (${row.handle})`, actorUserId, properties: { organizationId } }, tx);
     return row;
   });
 
@@ -183,16 +182,16 @@ export async function searchUsersForPersonLink(organizationId: number, query: st
 
 export type { LinkUserResult } from "@/lib/person-link-service";
 
-export async function linkDashboardOrganizationMemberUser(organizationId: number, personId: number, userId: string): Promise<LinkUserResult> {
+export async function linkDashboardOrganizationMemberUser(game: GameSlug, organizationId: number, personId: number, userId: string): Promise<LinkUserResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
-  if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
-  return linkUserToPersonEntry(personId, userId, actorUserId);
+  if (!(await isPersonOrganizationMember(game, organizationId, personId))) return { ok: false, error: "notFound" };
+  return linkUserToPersonEntry(game, personId, userId, actorUserId);
 }
 
-export async function unlinkDashboardOrganizationMemberUser(organizationId: number, personId: number): Promise<LinkUserResult> {
+export async function unlinkDashboardOrganizationMemberUser(game: GameSlug, organizationId: number, personId: number): Promise<LinkUserResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleLinkUser);
-  if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
-  return unlinkUserFromPersonEntry(personId, actorUserId);
+  if (!(await isPersonOrganizationMember(game, organizationId, personId))) return { ok: false, error: "notFound" };
+  return unlinkUserFromPersonEntry(game, personId, actorUserId);
 }
 
 export type OrgPersonProfile = {
@@ -210,7 +209,7 @@ export type OrgPersonProfile = {
 };
 
 /** Neutral (no theme) photo currently in effect for a person, shown by the profile dialog. */
-async function currentPersonPhotoUrl(personId: number): Promise<string | null> {
+async function currentPersonPhotoUrl(game: GameSlug, personId: number): Promise<string | null> {
   const entries = await getEntityLogos("person", personId);
   return displayLogoUrl(currentLogo(entries.filter((e) => !e.theme)), "person");
 }
@@ -222,9 +221,10 @@ async function currentPersonPhotoUrl(personId: number): Promise<string | null> {
  * (handle/name/pronouns/country, VLR id/Liquipedia/socials/aliases), never
  * bio, Riot ids, or the active flag (admin-only, see updatePlayerProfile).
  */
-export async function getPersonProfileForOrganization(organizationId: number, personId: number): Promise<OrgPersonProfile | null> {
+export async function getPersonProfileForOrganization(game: GameSlug, organizationId: number, personId: number): Promise<OrgPersonProfile | null> {
+  const { people } = gameTables(game);
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
-  if (!(await isPersonOrganizationMember(organizationId, personId))) return null;
+  if (!(await isPersonOrganizationMember(game, organizationId, personId))) return null;
 
   const [row] = await db
     .select({
@@ -255,7 +255,7 @@ export async function getPersonProfileForOrganization(organizationId: number, pe
     liquipediaLink: row.liquipediaLink ?? "",
     aliases: Array.isArray(row.aliases) ? (row.aliases as string[]) : [],
     socials: (row.socials as Record<string, string>) ?? {},
-    photoUrl: await currentPersonPhotoUrl(personId),
+    photoUrl: await currentPersonPhotoUrl(game, personId),
   };
 }
 
@@ -278,9 +278,10 @@ export type OrgPersonProfileResult = { ok: true } | { ok: false; fieldErrors: Or
 const ORG_PRONOUN_OPTIONS = [0, 1, 2] as const;
 
 /** Write side — same field scope as getPersonProfileForOrganization above, same validation rules as admin's updatePlayerProfile for the fields they share. */
-export async function updatePersonProfileForOrganization(organizationId: number, personId: number, input: OrgPersonProfileInput): Promise<OrgPersonProfileResult> {
+export async function updatePersonProfileForOrganization(game: GameSlug, organizationId: number, personId: number, input: OrgPersonProfileInput): Promise<OrgPersonProfileResult> {
+  const { people } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
-  if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, fieldErrors: { handle: "notFound" } };
+  if (!(await isPersonOrganizationMember(game, organizationId, personId))) return { ok: false, fieldErrors: { handle: "notFound" } };
 
   const fieldErrors: OrgPersonProfileFieldErrors = {};
   const handle = input.handle.trim();
@@ -310,7 +311,7 @@ export async function updatePersonProfileForOrganization(organizationId: number,
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
-  if (!fieldErrors.vlrId && vlrIdValue !== null) {
+  if (game === "valorant" && !fieldErrors.vlrId && vlrIdValue !== null) {
     const [taken] = await db.select({ id: people.id }).from(people).where(and(eq(people.vlrId, vlrIdValue), ne(people.id, personId))).limit(1);
     if (taken) fieldErrors.vlrId = "taken";
   }
@@ -331,22 +332,22 @@ export async function updatePersonProfileForOrganization(organizationId: number,
   const aliases = [...new Set(input.aliases.map((a) => a.trim()).filter(Boolean))];
 
   const [existing] = await db.select().from(people).where(eq(people.id, personId)).limit(1);
-  const values = {
+  const identityValues = {
     handle,
     firstName: firstName || null,
     lastName: lastName || null,
     countryCode: countryCode || null,
     pronouns: pronounsValue,
-    vlrId: vlrIdValue,
-    liquipediaLink: liquipediaLink || null,
     aliases,
     socials,
   };
+  const profileValues = { liquipediaLink: liquipediaLink || null, ...(game === "valorant" ? { vlrId: vlrIdValue } : {}) };
   await db.transaction(async (tx) => {
-    await tx.update(people).set(values).where(eq(people.id, personId));
-    const changes = existing ? diffChanges(existing, values) : {};
+    await updatePersonIdentity(tx, personId, identityValues);
+    await updatePersonProfile(tx, game, personId, profileValues);
+    const changes = existing ? diffChanges(existing, { ...identityValues, ...profileValues }) : {};
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Updated player #${personId} (${handle})`, actorUserId, changes, properties: { organizationId } }, tx);
+      await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Updated player #${personId} (${handle})`, actorUserId, changes, properties: { organizationId } }, tx);
     }
   });
   // Match scoreboards show the current handle.
@@ -358,9 +359,9 @@ export async function updatePersonProfileForOrganization(organizationId: number,
 export type UploadPersonPhotoResult = { ok: true } | { ok: false; error: string };
 
 /** Replaces the person's neutral photo (their previous one is closed, not deleted, so the logo history stays intact). */
-export async function uploadPersonPhotoForOrganization(organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
+export async function uploadPersonPhotoForOrganization(game: GameSlug, organizationId: number, personId: number, formData: FormData): Promise<UploadPersonPhotoResult> {
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.peopleEditProfile);
-  if (!(await isPersonOrganizationMember(organizationId, personId))) return { ok: false, error: "notFound" };
+  if (!(await isPersonOrganizationMember(game, organizationId, personId))) return { ok: false, error: "notFound" };
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "required" };
@@ -385,12 +386,12 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
       const openNeutral = await tx
         .select({ id: logos.id, period: logos.period })
         .from(logos)
-        .where(and(eq(logos.entityType, "person"), eq(logos.entityId, personId), isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
+        .where(and(eq(logos.entityType, "person"), isNull(logos.game), eq(logos.entityId, personId), isNull(logos.theme), sql`${logos.period} @> CURRENT_TIMESTAMP`));
       for (const row of openNeutral) {
         await tx.update(logos).set({ period: closeRange(row.period, today) }).where(eq(logos.id, row.id));
       }
-      await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, period: openRangeFrom(today), theme: null, isVisible: true });
-      await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId, photoConsent, photoConsentAt: new Date().toISOString() } }, tx);
+      await tx.insert(logos).values({ id: stored.id, entityType: "person", entityId: personId, game: null, period: openRangeFrom(today), theme: null, isVisible: true });
+      await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Added logo of player #${personId}`, actorUserId, properties: { section: "logo", logoId: stored.id, organizationId, photoConsent, photoConsentAt: new Date().toISOString() } }, tx);
     });
   } catch (error) {
     await deleteLogoFiles("person", stored.id).catch(() => {});
@@ -400,14 +401,14 @@ export async function uploadPersonPhotoForOrganization(organizationId: number, p
   return { ok: true };
 }
 
-export async function updateDashboardOrganizationMember(organizationId: number, membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
+export async function updateDashboardOrganizationMember(game: GameSlug, organizationId: number, membershipId: number, role: string, from: string, until: string): Promise<MemberEntryResult> {
   const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return updateOrganizationMemberEntry(membershipId, role, from, until, userId, organizationId);
+  return updateOrganizationMemberEntry(game, membershipId, role, from, until, userId, organizationId);
 }
 
-export async function deleteDashboardOrganizationMembership(organizationId: number, membershipId: number): Promise<MembershipActionResult> {
+export async function deleteDashboardOrganizationMembership(game: GameSlug, organizationId: number, membershipId: number): Promise<MembershipActionResult> {
   const { userId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.membersManage);
-  return deleteOrganizationMembershipEntry(membershipId, userId, organizationId);
+  return deleteOrganizationMembershipEntry(game, membershipId, userId, organizationId);
 }
 
 // --- Dashboard access (organization_access) --------------------------------

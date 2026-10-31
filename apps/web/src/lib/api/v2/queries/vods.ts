@@ -12,16 +12,29 @@
 import { and, desc, eq, gte, inArray, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { vods, matches, stageContainers, stages, entrants, teams, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { exclusiveUpperBound } from "../../v1/params";
 import { toApiTeamFromJoined, type ApiTeam } from "../../v1/entities";
 import { getThemedLogoUrlsBatch, type ApiThemedLogoUrls } from "../../v1/logo-response";
 import type { VodsFilter } from "../params";
+import type { GameSlug } from "@gc-stats/db/game";
 
-const vodEntrantAAlias = alias(entrants, "vod_entrant_a");
-const vodEntrantBAlias = alias(entrants, "vod_entrant_b");
-const vodTeamAAlias = alias(teams, "vod_team_a");
-const vodTeamBAlias = alias(teams, "vod_team_b");
+function vodEntrantAAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "vod_entrant_a");
+}
+function vodEntrantBAlias(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "vod_entrant_b");
+}
+function vodTeamAAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "vod_team_a");
+}
+function vodTeamBAlias(game: GameSlug) {
+  const { teams } = gameTables(game);
+  return alias(teams, "vod_team_b");
+}
 
 export type ApiVodMatchRef = {
   id: number;
@@ -51,7 +64,8 @@ export type ApiPaginatedVods = { page: number; per_page: number; total: number; 
  * listings). `team_id` matches either side of the match, mirroring the
  * tournament matches endpoint's own `team_id` filter.
  */
-export async function getVodsV2(filter: VodsFilter): Promise<ApiPaginatedVods> {
+export async function getVodsV2(game: GameSlug, filter: VodsFilter): Promise<ApiPaginatedVods> {
+  const { vods, matches, stageContainers, stages } = gameTables(game);
   const conditions = [];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
@@ -59,19 +73,20 @@ export async function getVodsV2(filter: VodsFilter): Promise<ApiPaginatedVods> {
   if (filter.organizationId) conditions.push(eq(vods.organizationId, filter.organizationId));
   if (filter.languageCode) conditions.push(eq(vods.languageCode, filter.languageCode));
   if (filter.matchId) conditions.push(eq(vods.matchId, filter.matchId));
-  if (filter.teamId) conditions.push(or(eq(vodTeamAAlias.id, filter.teamId), eq(vodTeamBAlias.id, filter.teamId)) ?? sql`false`);
+  if (filter.teamId) conditions.push(or(eq(vodTeamAAlias(game).id, filter.teamId), eq(vodTeamBAlias(game).id, filter.teamId)) ?? sql`false`);
   const where = conditions.length ? and(...conditions) : undefined;
 
+  // Explicit keys: a bare select() would key the joined rows by the game prefixed table names.
   const baseQuery = db
-    .select()
+    .select({ vods, matches, stages, vod_team_a: vodTeamAAlias(game), vod_team_b: vodTeamBAlias(game) })
     .from(vods)
     .innerJoin(matches, eq(matches.id, vods.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(vodEntrantAAlias, eq(vodEntrantAAlias.id, matches.entrantAId))
-    .leftJoin(vodTeamAAlias, eq(vodTeamAAlias.id, vodEntrantAAlias.teamId))
-    .leftJoin(vodEntrantBAlias, eq(vodEntrantBAlias.id, matches.entrantBId))
-    .leftJoin(vodTeamBAlias, eq(vodTeamBAlias.id, vodEntrantBAlias.teamId));
+    .leftJoin(vodEntrantAAlias(game), eq(vodEntrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(vodTeamAAlias(game), eq(vodTeamAAlias(game).id, vodEntrantAAlias(game).teamId))
+    .leftJoin(vodEntrantBAlias(game), eq(vodEntrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(vodTeamBAlias(game), eq(vodTeamBAlias(game).id, vodEntrantBAlias(game).teamId));
 
   const [countRow] = await db
     .select({ total: sql<number>`count(*)` })
@@ -79,10 +94,10 @@ export async function getVodsV2(filter: VodsFilter): Promise<ApiPaginatedVods> {
     .innerJoin(matches, eq(matches.id, vods.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .leftJoin(vodEntrantAAlias, eq(vodEntrantAAlias.id, matches.entrantAId))
-    .leftJoin(vodTeamAAlias, eq(vodTeamAAlias.id, vodEntrantAAlias.teamId))
-    .leftJoin(vodEntrantBAlias, eq(vodEntrantBAlias.id, matches.entrantBId))
-    .leftJoin(vodTeamBAlias, eq(vodTeamBAlias.id, vodEntrantBAlias.teamId))
+    .leftJoin(vodEntrantAAlias(game), eq(vodEntrantAAlias(game).id, matches.entrantAId))
+    .leftJoin(vodTeamAAlias(game), eq(vodTeamAAlias(game).id, vodEntrantAAlias(game).teamId))
+    .leftJoin(vodEntrantBAlias(game), eq(vodEntrantBAlias(game).id, matches.entrantBId))
+    .leftJoin(vodTeamBAlias(game), eq(vodTeamBAlias(game).id, vodEntrantBAlias(game).teamId))
     .where(where);
 
   const total = Number(countRow?.total ?? 0);

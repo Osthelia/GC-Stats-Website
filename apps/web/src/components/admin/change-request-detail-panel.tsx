@@ -20,6 +20,7 @@ import { AdminChangeRequestMessageThread } from "@/components/admin/change-reque
 import { resolveAllPendingItems } from "@/actions/admin-change-requests";
 import type { AdminChangeRequestDetail, AdminChangeRequestItem, ChangeRequestStatus } from "@/lib/admin-change-requests";
 import type { ChangeRequestMessageRow } from "@/lib/change-request-messages";
+import { useGame } from "@/lib/use-game";
 
 function overallStatus(items: AdminChangeRequestItem[]): ChangeRequestStatus {
   if (items.some((i) => i.status === "pending")) return "pending";
@@ -36,6 +37,7 @@ function overallStatus(items: AdminChangeRequestItem[]): ChangeRequestStatus {
  * bulk-action buttons stay in sync without a router.refresh().
  */
 export function ChangeRequestDetailPanel({ detail, canManage, messages }: { detail: AdminChangeRequestDetail; canManage: boolean; messages: ChangeRequestMessageRow[] }) {
+  const game = useGame();
   const t = useTranslations("admin.changeRequests.detail");
   const [items, setItems] = useState(detail.items);
   const [isPending, startTransition] = useTransition();
@@ -55,7 +57,7 @@ export function ChangeRequestDetailPanel({ detail, canManage, messages }: { deta
   function bulkResolve(action: "approve" | "reject") {
     const note = bulkNote;
     startTransition(async () => {
-      const results = await resolveAllPendingItems(detail.id, action, note);
+      const results = await resolveAllPendingItems(game, detail.id, action, note);
       setItems((prev) =>
         prev.map((it) => {
           const match = results.find((r) => r.itemId === it.id);

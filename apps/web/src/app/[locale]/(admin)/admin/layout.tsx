@@ -8,8 +8,9 @@
 
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { GAMES } from "@gc-stats/db/game";
 import { PERMISSIONS } from "@gc-stats/db";
-import { requireAdminAccess } from "@/lib/rbac";
+import { getGlobalAccess, requireAdminAccess } from "@/lib/rbac";
 import { getAdminChangeRequestCounts } from "@/lib/admin-change-requests";
 import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -32,16 +33,26 @@ export default async function AdminLayout({
 }) {
   const { locale } = await params;
   const access = await requireAdminAccess(locale as AppLocale);
+  // The sidebar shows a section when any game grants it, each page then checks the permission for its own game.
+  const perGame = await Promise.all(GAMES.map((game) => getGlobalAccess(access.userId, game)));
+  const permissions = new Set([...access.permissions, ...perGame.flatMap((a) => [...a.permissions])]);
+  const isSuperAdmin = access.isSuperAdmin || perGame.some((a) => a.isSuperAdmin);
 
-  const canSeeChangeRequests = access.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView);
-  const hasPendingChangeRequests = canSeeChangeRequests && (await getAdminChangeRequestCounts()).pending > 0;
+  const pendingPerGame = await Promise.all(
+    GAMES.map(async (game, i) => {
+      const gameAccess = perGame[i]!;
+      const canSee = access.isSuperAdmin || gameAccess.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView) || gameAccess.permissions.has(PERMISSIONS.changeRequestsView);
+      return canSee && (await getAdminChangeRequestCounts(game)).pending > 0;
+    })
+  );
+  const hasPendingChangeRequests = pendingPerGame.some(Boolean);
 
   return (
     <NextIntlClientProvider>
       <SidebarProvider>
         <AdminSidebar
-          permissions={[...access.permissions]}
-          isSuperAdmin={access.isSuperAdmin}
+          permissions={[...permissions]}
+          isSuperAdmin={isSuperAdmin}
           hasPendingChangeRequests={hasPendingChangeRequests}
         />
         <SidebarInset>

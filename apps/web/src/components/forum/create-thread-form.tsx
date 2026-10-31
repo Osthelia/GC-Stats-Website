@@ -15,11 +15,13 @@ import { createGeneralThread } from "@/actions/forum";
 import { EmoteInsertButton } from "@/components/forum/emote-insert-button";
 import { MentionTextarea, type MentionTextareaHandle } from "@/components/forum/mention-textarea";
 import type { PickerEmote } from "@/lib/reactions";
+import { useGame } from "@/lib/use-game";
 
 const inputClass =
   "w-full rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60 aria-[invalid=true]:border-[#e08585]";
 
 export function CreateThreadForm({ pickerEmotes }: { pickerEmotes: PickerEmote[] }) {
+  const game = useGame();
   const t = useTranslations("forum.create");
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -33,7 +35,7 @@ export function CreateThreadForm({ pickerEmotes }: { pickerEmotes: PickerEmote[]
     setError(null);
     setPending(true);
 
-    const result = await createGeneralThread({ title, body });
+    const result = await createGeneralThread(game, { title, body });
 
     if (!result.ok) {
       setPending(false);

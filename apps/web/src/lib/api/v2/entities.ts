@@ -10,6 +10,7 @@
  */
 import { toApiTeam, toApiPlayer, type ApiTeam, type ApiPlayer } from "../v1/entities";
 import { toApiTournament, type ApiTournament, type ApiTournamentPhase } from "../v1/queries/tournaments";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiTeamV2 = ApiTeam & { liquipedia_link: string | null };
 
@@ -39,10 +40,10 @@ export function toApiPlayerV2(row: PlayerRow): ApiPlayerV2 {
 
 export type ApiTournamentV2 = ApiTournament & { liquipedia_link: string | null };
 
-type TournamentRow = Parameters<typeof toApiTournament>[0] & { liquipediaLink: string | null };
+type TournamentRow = Parameters<typeof toApiTournament>[1] & { liquipediaLink: string | null };
 
-export function toApiTournamentV2(row: TournamentRow): ApiTournamentV2 {
-  return { ...toApiTournament(row), liquipedia_link: row.liquipediaLink };
+export function toApiTournamentV2(game: GameSlug, row: TournamentRow): ApiTournamentV2 {
+  return { ...toApiTournament(game, row), liquipedia_link: row.liquipediaLink };
 }
 
 export type ApiTournamentPhaseV2 = ApiTournamentPhase & { liquipedia_link: string | null };

@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MatchPoster, POSTER_WIDTH, type PosterData } from "@/components/match/match-poster";
 import { slugify } from "@/lib/entity-id";
+import { useGame } from "@/lib/use-game";
 
 const PILL_BASE = "rounded-full px-5 py-2 text-[11px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95";
 const PILL_ACTIVE = "bg-[#e4ae22] text-black shadow-[0_0_18px_rgba(228,174,34,0.35)]";
@@ -26,6 +27,7 @@ const PILL_IDLE = "bg-white/5 text-neutral-400 hover:-translate-y-0.5 hover:bg-w
 type LoadState = { status: "loading" } | { status: "error" } | { status: "ready"; data: PosterData };
 
 export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: number; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("matchPoster");
   const tMatch = useTranslations("matchPage");
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -43,7 +45,7 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
     if (!open) return;
     const controller = new AbortController();
     setState({ status: "loading" });
-    fetch(`/api/match-poster/${matchId}`, { signal: controller.signal })
+    fetch(`/api/${game}/match-poster/${matchId}`, { signal: controller.signal })
       .then((res) => (res.ok ? (res.json() as Promise<PosterData>) : Promise.reject(new Error(String(res.status)))))
       .then((data) => setState({ status: "ready", data }))
       .catch((error) => {
@@ -53,7 +55,7 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
         }
       });
     return () => controller.abort();
-  }, [open, matchId, attempt]);
+  }, [open, matchId, attempt, game]);
 
   // The poster is a fixed width canvas (POSTER_WIDTH), scaled down to fit the dialog for the preview only.
   const frameCallback = useCallback((node: HTMLDivElement | null) => {
@@ -123,7 +125,7 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
   }, [copied]);
 
   const playedMaps = state.status === "ready" ? state.data.maps.filter((m) => m.isCompleted && m.teamAScore != null && m.teamBScore != null && !(m.teamAScore === -1 && m.teamBScore === -1)) : [];
-  const url = typeof window === "undefined" ? "" : `${window.location.host}/match/${matchId}`;
+  const url = typeof window === "undefined" ? "" : `${window.location.host}/${game}/match/${matchId}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

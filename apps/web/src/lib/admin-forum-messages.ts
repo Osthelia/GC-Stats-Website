@@ -15,7 +15,6 @@ import { forumMessages, forumThreads, users } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 import { resolveForumThreadLink } from "@/lib/forum-thread-link";
-
 export const FORUM_MESSAGES_PAGE_SIZE = 30;
 
 export type ForumMessageStatus = "visible" | "hidden" | "deleted";

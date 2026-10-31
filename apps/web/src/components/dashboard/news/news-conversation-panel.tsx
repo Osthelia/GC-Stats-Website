@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { FormattedDate } from "@/components/formatted-date";
 import { postDashboardNewsMessage } from "@/actions/dashboard-news";
 import type { DashboardNewsMessage } from "@/lib/dashboard-news-data";
+import { useGame } from "@/lib/use-game";
 
 const SYSTEM_TYPES = ["submitted", "approved", "changes_requested", "published", "scheduled", "unpublished"] as const;
 
@@ -33,6 +34,7 @@ export function NewsConversationPanel({
   /** Admin browsing someone else's article: shows the timeline without the reply box. */
   readOnly?: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.news.conversation");
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -42,7 +44,7 @@ export function NewsConversationPanel({
     const trimmed = body.trim();
     if (!trimmed) return;
     startTransition(async () => {
-      const result = await postDashboardNewsMessage(organizationId, newsId, trimmed);
+      const result = await postDashboardNewsMessage(game, organizationId, newsId, trimmed);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

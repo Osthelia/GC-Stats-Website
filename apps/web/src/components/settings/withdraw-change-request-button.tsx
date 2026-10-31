@@ -12,8 +12,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { withdrawChangeRequest } from "@/actions/change-requests";
+import { useGame } from "@/lib/use-game";
 
 export function WithdrawChangeRequestButton({ changeRequestId }: { changeRequestId: number }) {
+  const game = useGame();
   const t = useTranslations("accountSettings.changeRequests.detail");
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -22,7 +24,7 @@ export function WithdrawChangeRequestButton({ changeRequestId }: { changeRequest
 
   async function handleConfirm() {
     setPending(true);
-    const result = await withdrawChangeRequest(changeRequestId);
+    const result = await withdrawChangeRequest(game, changeRequestId);
     setPending(false);
     if (!result.ok) {
       setError(result.error);

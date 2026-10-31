@@ -38,79 +38,12 @@ export const newsLanguages = pgTable("news_languages", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
-export const news = pgTable("news", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  authorId: bigint("author_id", { mode: "number" }).references(() => newsAuthors.id),
-  // Organizations replace V1's news_publishers (same real ids already) — an
-  // org with the 'media'/'production' tag doubles as an outlet, no separate
-  // publisher entity needed.
-  organizationId: bigint("organization_id", { mode: "number" }).references(() => organizations.id, { onDelete: "set null" }),
-  lang: varchar("lang", { length: 10 }).notNull().default("en").references(() => newsLanguages.code),
-  title: text("title").notNull(),
-  slug: text("slug").notNull().unique(),
-  excerpt: text("excerpt"),
-  content: text("content").notNull(),
-  imageCover: text("image_cover"),
-  // 'draft' | 'in_review' | 'changes_requested' | 'approved' | 'published' | 'archived'.
-  // The review states only ever apply to an organization-scoped article
-  // (organization.news.edit submits, organization.news.review approves or
-  // requests changes, organization.news.publish puts an approved article
-  // live) — an individual /dashboard/author article has a single trusted
-  // actor and always goes straight draft -> published, see resolveScope in
-  // actions/dashboard-news.ts.
-  status: text("status").notNull().default("draft"),
-  isFeatured: boolean("is_featured").notNull().default(false),
-  showOnHome: boolean("show_on_home").notNull().default(true),
-  // A future publishedAt is how "schedule this for later" is represented —
-  // status flips to 'published' immediately once approved, but every public
-  // read site also requires publishedAt <= now() (see news-page-data.ts and
-  // friends), so a future timestamp keeps it invisible until due without
-  // needing any background job to flip a status flag.
-  publishedAt: timestamp("published_at", { withTimezone: true }),
-  submittedBy: text("submitted_by").references(() => users.id, { onDelete: "set null" }),
-  submittedAt: timestamp("submitted_at", { withTimezone: true }),
-  reviewedBy: text("reviewed_by").references(() => users.id, { onDelete: "set null" }),
-  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [
-  index("news_home_idx").on(t.showOnHome, t.status, t.publishedAt),
-]);
-
-// Private conversation attached to one article — visible only to whoever can
-// reach its /dashboard editor (never public). Doubles as the audit trail for
-// the approval workflow: a status transition (submit/approve/request
-// changes/publish) posts a system row here alongside free-text comments,
-// distinguished by `type`, mirroring change_request_messages' own
-// comment/system split above.
-export const newsMessages = pgTable("news_messages", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  newsId: bigint("news_id", { mode: "number" }).notNull().references(() => news.id, { onDelete: "cascade" }),
-  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
-  type: text("type").notNull().default("comment"), // 'comment' | 'submitted' | 'approved' | 'changes_requested' | 'published' | 'scheduled' | 'unpublished'
-  body: text("body").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const newsRelations = pgTable("news_relations", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  newsId: bigint("news_id", { mode: "number" }).notNull().references(() => news.id, { onDelete: "cascade" }),
-  relatableType: text("relatable_type").notNull(), // 'team' | 'person' | 'tournament'
-  relatableId: bigint("relatable_id", { mode: "number" }).notNull(),
-}, (t) => [
-  index("news_relations_relatable_idx").on(t.relatableType, t.relatableId),
-]);
-
-export const newsImages = pgTable("news_images", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  newsId: bigint("news_id", { mode: "number" }).references(() => news.id, { onDelete: "set null" }),
-  authorId: bigint("author_id", { mode: "number" }).references(() => newsAuthors.id, { onDelete: "set null" }),
-});
-
 // --- Forum -----------------------------------------------------------------
 export const forumThreads = pgTable("forum_threads", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   category: text("category").notNull(), // 'tournament' | 'match' | 'news' | 'general'
+  // Game of the linked tournament, match or news; null for general threads.
+  game: text("game"),
   subjectType: text("subject_type"),
   subjectId: bigint("subject_id", { mode: "number" }),
   title: text("title"),
@@ -120,7 +53,7 @@ export const forumThreads = pgTable("forum_threads", {
   // One thread per subject (mirrors V1 findOrCreateThreadFor's firstOrCreate)
   // — NULLs (general category, no subject) are never considered equal by
   // Postgres, so this never limits how many general threads can exist.
-  unique("forum_threads_subject_unique").on(t.subjectType, t.subjectId),
+  unique("forum_threads_subject_unique").on(t.game, t.subjectType, t.subjectId),
 ]);
 
 export const forumMessages = pgTable("forum_messages", {
@@ -205,56 +138,6 @@ export const sanctionIdentities = pgTable("sanction_identities", {
   sanctionId: bigint("sanction_id", { mode: "number" }).notNull().references(() => sanctions.id, { onDelete: "cascade" }),
   type: text("type").notNull(),
   value: text("value").notNull(),
-});
-
-// --- Change requests (crowdsourced edits) -----------------------------------
-export const changeRequests = pgTable("change_requests", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  subjectType: text("subject_type").notNull(),
-  subjectId: bigint("subject_id", { mode: "number" }).notNull(),
-  requestedBy: text("requested_by").references(() => users.id, { onDelete: "set null" }),
-  reason: text("reason"),
-  status: text("status").notNull().default("pending"),
-  closedBy: text("closed_by").references(() => users.id, { onDelete: "set null" }),
-  closedAt: timestamp("closed_at", { withTimezone: true }),
-  sanctionedAt: timestamp("sanctioned_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const changeRequestItems = pgTable("change_request_items", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  changeRequestId: bigint("change_request_id", { mode: "number" }).notNull().references(() => changeRequests.id, { onDelete: "cascade" }),
-  field: text("field").notNull(),
-  oldValue: jsonb("old_value"),
-  newValue: jsonb("new_value"),
-  status: text("status").notNull().default("pending"),
-  resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
-  resolvedAt: timestamp("resolved_at", { withTimezone: true }),
-  resolutionNote: text("resolution_note"),
-  appliedAt: timestamp("applied_at", { withTimezone: true }),
-  applyError: text("apply_error"),
-});
-
-export const changeRequestMessages = pgTable("change_request_messages", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  changeRequestId: bigint("change_request_id", { mode: "number" }).notNull().references(() => changeRequests.id, { onDelete: "cascade" }),
-  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
-  type: text("type").notNull().default("comment"),
-  body: text("body").notNull(),
-  editedAt: timestamp("edited_at", { withTimezone: true }),
-});
-
-// One row per change request awaiting its Discord decision notice. Every
-// item resolution that closes the request upserts this (pushing scheduledAt
-// forward), so several items resolved close together coalesce into a single
-// Discord message instead of one per item — see lib/notify.ts and
-// scheduled-jobs/jobs/flush-change-request-discord-notices.ts.
-export const changeRequestDiscordNotices = pgTable("change_request_discord_notices", {
-  changeRequestId: bigint("change_request_id", { mode: "number" })
-    .primaryKey()
-    .references(() => changeRequests.id, { onDelete: "cascade" }),
-  scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 // --- Data Explorer (AI/BI feature) ------------------------------------------

@@ -14,12 +14,13 @@ import { randomBytes } from "node:crypto";
 import { and, asc, desc, eq, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, matches, matchVetos, matchVetoSessions, maps, tournamentVetoSettings, tournaments } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { matchTag } from "@/lib/cache-tags";
 import { VALORANT_MAP_POOL } from "@/lib/valorant-maps";
 import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { postDiscordWebhook } from "@/lib/discord-webhook";
 import { VETO_GRACE_SECONDS, buildVetoSteps, computeVetoProgress, requiredPoolSize, stepEntrantId, validateVetoAction, type VetoActionInput, type VetoProgress, type VetoRecord, type VetoSide, type VetoStep } from "./engine";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type VetoStatus = "waiting" | "choosing" | "running" | "done";
 export type FirstMoverMode = "coin_toss" | "coin_toss_winner" | "advantage" | "predefined";
@@ -41,6 +42,7 @@ function newVetoToken(): string {
 }
 
 export async function getVetoSettings(tournamentId: number): Promise<VetoSettings> {
+  const { tournamentVetoSettings } = valorantTables;
   const [row] = await db.select().from(tournamentVetoSettings).where(eq(tournamentVetoSettings.tournamentId, tournamentId)).limit(1);
   if (!row) return DEFAULT_VETO_SETTINGS;
   return {
@@ -54,21 +56,25 @@ export async function getVetoSettings(tournamentId: number): Promise<VetoSetting
 }
 
 /** Gives a token to every team of the tournament that has none yet. */
-export async function ensureVetoTokens(tournamentId: number): Promise<void> {
+export async function ensureVetoTokens(game: GameSlug, tournamentId: number): Promise<void> {
+  const { entrants } = gameTables(game);
   const missing = await db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), eq(entrants.kind, "team"), sql`${entrants.vetoToken} is null`));
   for (const row of missing) {
     await db.update(entrants).set({ vetoToken: newVetoToken() }).where(and(eq(entrants.id, row.id), sql`${entrants.vetoToken} is null`));
   }
 }
 
-export async function regenerateVetoToken(entrantId: number): Promise<string> {
+export async function regenerateVetoToken(game: GameSlug, entrantId: number): Promise<string> {
+  const { entrants } = gameTables(game);
   const token = newVetoToken();
   await db.update(entrants).set({ vetoToken: token }).where(eq(entrants.id, entrantId));
   return token;
 }
 
 /** Maps most played on a patch, to build a pool from the patch alone. */
-export async function mapPoolFromPatch(patch: string): Promise<string[]> {
+export async function mapPoolFromPatch(game: GameSlug, patch: string): Promise<string[]> {
+  const { matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const rows = await db
     .select({ mapName: maps.mapName, played: sql<number>`count(*)::int` })
     .from(maps)
@@ -81,16 +87,17 @@ export async function mapPoolFromPatch(patch: string): Promise<string[]> {
 }
 
 /** Match pool, else tournament pool, else the maps of the tournament patch. */
-export async function resolveMapPool(settings: VetoSettings, matchPool: string[]): Promise<string[]> {
+export async function resolveMapPool(game: GameSlug, settings: VetoSettings, matchPool: string[]): Promise<string[]> {
   if (matchPool.length > 0) return matchPool;
   if (settings.mapPool.length > 0) return settings.mapPool;
-  return settings.mapPoolPatch ? mapPoolFromPatch(settings.mapPoolPatch) : [];
+  return settings.mapPoolPatch ? mapPoolFromPatch(game, settings.mapPoolPatch) : [];
 }
 
 export type TeamContext = { entrantId: number; tournamentId: number; tournamentName: string };
 
 /** The team behind a veto link, only while the tournament has the veto enabled. */
-export async function getTeamContext(token: string): Promise<TeamContext | null> {
+export async function getTeamContext(game: GameSlug, token: string): Promise<TeamContext | null> {
+  const { entrants, tournaments } = gameTables(game);
   if (!token || token.length > 64) return null;
   const [row] = await db
     .select({ entrantId: entrants.id, tournamentId: entrants.tournamentId, tournamentName: tournaments.name })
@@ -104,7 +111,8 @@ export async function getTeamContext(token: string): Promise<TeamContext | null>
 export type TeamMatchRow = { id: number; status: "pending" | "live" | "completed"; scheduledAt: Date | null; entrantAId: number; entrantBId: number; opponentName: string };
 
 /** Matches of the team with both teams known, not finished first (soonest first), then the finished ones. */
-export async function listTeamMatches(entrantId: number): Promise<TeamMatchRow[]> {
+export async function listTeamMatches(game: GameSlug, entrantId: number): Promise<TeamMatchRow[]> {
+  const { entrants, matches } = gameTables(game);
   const rows = await db
     .select({ id: matches.id, status: matches.status, scheduledAt: matches.scheduledAt, entrantAId: matches.entrantAId, entrantBId: matches.entrantBId })
     .from(matches)
@@ -281,7 +289,9 @@ function applyTimeouts(ctx: Ctx, now: Date) {
   }
 }
 
-async function loadCtx(tx: Tx, matchId: number): Promise<Ctx | null> {
+async function loadCtx(game: GameSlug, tx: Tx, matchId: number): Promise<Ctx | null> {
+  const { entrants, matches } = gameTables(game);
+  const { matchVetos, matchVetoSessions, tournamentVetoSettings } = valorantTablesOf(game);
   const [match] = await tx.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
   await tx.insert(matchVetoSessions).values({ matchId }).onConflictDoNothing();
@@ -295,7 +305,7 @@ async function loadCtx(tx: Tx, matchId: number): Promise<Ctx | null> {
   const records = (await tx.select().from(matchVetos).where(eq(matchVetos.matchId, matchId)).orderBy(asc(matchVetos.order))).map(
     (r): VetoRecord => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type as VetoRecord["type"], side: (r.side as VetoSide | null) ?? null, sidePickedByEntrantId: r.sidePickedByEntrantId })
   );
-  const pool = session.mapPool.length > 0 ? session.mapPool : settings.mapPool.length > 0 ? settings.mapPool : settings.mapPoolPatch ? await mapPoolFromPatch(settings.mapPoolPatch) : [];
+  const pool = session.mapPool.length > 0 ? session.mapPool : settings.mapPool.length > 0 ? settings.mapPool : settings.mapPoolPatch ? await mapPoolFromPatch(game, settings.mapPoolPatch) : [];
   return {
     matchId,
     bestOf: match.bestOf,
@@ -319,6 +329,7 @@ async function loadCtx(tx: Tx, matchId: number): Promise<Ctx | null> {
 }
 
 async function persistCtx(tx: Tx, ctx: Ctx) {
+  const { matchVetos, matchVetoSessions } = valorantTables;
   if (!ctx.dirty && !ctx.recordsDirty) return;
   if (ctx.recordsDirty) {
     await tx.delete(matchVetos).where(eq(matchVetos.matchId, ctx.matchId));
@@ -364,15 +375,17 @@ function toPublicState(ctx: Ctx, names: { a: string; b: string }): VetoPublicSta
   };
 }
 
-async function entrantNames(a: number, b: number): Promise<{ a: string; b: string }> {
+async function entrantNames(game: GameSlug, a: number, b: number): Promise<{ a: string; b: string }> {
+  const { entrants } = gameTables(game);
   const rows = await db.select({ id: entrants.id, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, [a, b]));
   return { a: rows.find((r) => r.id === a)?.displayName ?? "TBD", b: rows.find((r) => r.id === b)?.displayName ?? "TBD" };
 }
 
 /** Current state of a match veto, after applying the timeouts that elapsed. */
-export async function getVetoState(matchId: number): Promise<VetoPublicState | null> {
+export async function getVetoState(game: GameSlug, matchId: number): Promise<VetoPublicState | null> {
+  const { matches } = gameTables(game);
   const result = await db.transaction(async (tx) => {
-    const ctx = await loadCtx(tx, matchId);
+    const ctx = await loadCtx(game, tx, matchId);
     if (!ctx) return null;
     // A finished match keeps its maps, no timeout may replay its veto.
     const [match] = await tx.select({ status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -384,16 +397,17 @@ export async function getVetoState(matchId: number): Promise<VetoPublicState | n
   });
   if (!result) return null;
   if (result.recordsDirty) revalidateTag(matchTag(matchId), { expire: 0 });
-  return toPublicState(result, await entrantNames(result.entrantAId, result.entrantBId));
+  return toPublicState(result, await entrantNames(game, result.entrantAId, result.entrantBId));
 }
 
 export type VetoActionResult = { ok: true; state: VetoPublicState } | { ok: false; error: VetoActionError };
 
 /** Runs a team action on a match, checking it belongs to the team and fits the current phase. */
-export async function performVetoAction(viewerEntrantId: number, matchId: number, action: VetoAction): Promise<VetoActionResult> {
+export async function performVetoAction(game: GameSlug, viewerEntrantId: number, matchId: number, action: VetoAction): Promise<VetoActionResult> {
+  const { matches } = gameTables(game);
   let notifyStaff = false;
   const outcome = await db.transaction(async (tx): Promise<{ error: VetoActionError } | { ctx: Ctx }> => {
-    const ctx = await loadCtx(tx, matchId);
+    const ctx = await loadCtx(game, tx, matchId);
     if (!ctx) return { error: "notFound" };
     if (viewerEntrantId !== ctx.entrantAId && viewerEntrantId !== ctx.entrantBId) return { error: "notAllowed" };
     const [match] = await tx.select({ status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -434,7 +448,7 @@ export async function performVetoAction(viewerEntrantId: number, matchId: number
   if ("error" in outcome) return { ok: false, error: outcome.error };
   const { ctx } = outcome;
   if (ctx.recordsDirty) revalidateTag(matchTag(matchId), { expire: 0 });
-  const names = await entrantNames(ctx.entrantAId, ctx.entrantBId);
+  const names = await entrantNames(game, ctx.entrantAId, ctx.entrantBId);
   if (notifyStaff) await notifyGameFinished(matchId, names);
   return { ok: true, state: toPublicState(ctx, names) };
 }
@@ -446,6 +460,7 @@ async function notifyGameFinished(matchId: number, names: { a: string; b: string
 
 /** Resets a match veto (admin or organizer), keeping its pool override. The played maps of the veto are removed too. */
 export async function resetVeto(matchId: number): Promise<void> {
+  const { matchVetos, matchVetoSessions } = valorantTables;
   await db.transaction(async (tx) => {
     // Same lock order as the team actions, so a reset never deadlocks with one.
     await tx.select({ matchId: matchVetoSessions.matchId }).from(matchVetoSessions).where(eq(matchVetoSessions.matchId, matchId)).for("update");

@@ -28,6 +28,7 @@ import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
 import { useDisplayTimezone } from "@/lib/site-settings";
 import { zonedInputToIso } from "@/lib/datetime-local";
+import { useGame } from "@/lib/use-game";
 
 const ALL = "all";
 const STATUSES: MatchStatus[] = ["pending", "live", "completed"];
@@ -36,6 +37,7 @@ type SortCol = "phase" | "round" | "scheduledAt" | "status";
 type Direction = "asc" | "desc";
 
 export function BulkMatchStatusCard({ tournamentId, containers, matches }: { tournamentId: number; containers: AdminContainerOption[]; matches: AdminMatchListRow[] }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.operations");
   const locale = useLocale();
   const router = useRouter();
@@ -136,7 +138,7 @@ export function BulkMatchStatusCard({ tournamentId, containers, matches }: { tou
     setConfirmOpen(false);
     const ids = visibleSelected.map((m) => m.id);
     startTransition(async () => {
-      const result = await bulkSetMatchStatus(tournamentId, ids, targetStatus);
+      const result = await bulkSetMatchStatus(game, tournamentId, ids, targetStatus);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

@@ -13,7 +13,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { productionCredits, people, tournaments, matches, maps, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { ORGANIZATION_PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission as requireOrgActorPermission } from "@/lib/dashboard-rbac";
 
 /** Production credits do not exist for an organization linked to a team. */
@@ -28,19 +28,20 @@ import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tourn
 import { getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
 import { getMatchMapOptions, type MatchMapOption } from "@/lib/dashboard-vods-data";
 import { validateProductionCreditInput, validateRoleAndTitle, type ProductionCreditInput, type ProductionCreditFieldErrors, type ProductionCreditScope } from "@/lib/production-credit-validation";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { ProductionCreditInput, ProductionCreditField, ProductionCreditFieldErrors, ProductionCreditScope, ProductionCreditTarget } from "@/lib/production-credit-validation";
 export type { CreditMatchOption } from "@/lib/production-credits-data";
 
 /** Same search as admin's tournament picker (lib/tournament-search.ts), gated by this organization's staffManage permission instead of admin.access. */
-export async function searchTournamentsForCredit(organizationId: number, query: string): Promise<TournamentPickerResult[]> {
+export async function searchTournamentsForCredit(game: GameSlug, organizationId: number, query: string): Promise<TournamentPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return searchTournamentsQuery(query);
+  return searchTournamentsQuery(game, query);
 }
 
-export async function getMatchOptionsForCredit(organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
+export async function getMatchOptionsForCredit(game: GameSlug, organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
-  return getTournamentMatchOptionsForCredit(tournamentId);
+  return getTournamentMatchOptionsForCredit(game, tournamentId);
 }
 
 export async function getMapOptionsForCredit(organizationId: number, matchId: number): Promise<MatchMapOption[]> {
@@ -59,7 +60,9 @@ export type ProductionCreditResult = { ok: true; created: number; skipped: numbe
  * it's always set here. One row is created per target, targets already
  * credited with the same person and role are skipped.
  */
-export async function addProductionCredits(organizationId: number, input: ProductionCreditInput): Promise<ProductionCreditResult> {
+export async function addProductionCredits(game: GameSlug, organizationId: number, input: ProductionCreditInput): Promise<ProductionCreditResult> {
+  const { productionCredits, people, tournaments, matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const { fieldErrors, role, titleOverride } = validateProductionCreditInput(input);
@@ -68,7 +71,7 @@ export async function addProductionCredits(organizationId: number, input: Produc
   const personId = input.personId as number;
   const [person] = await db.select({ id: people.id }).from(people).where(eq(people.id, personId)).limit(1);
   if (!person) return { ok: false, fieldErrors: { person: "personNotFound" } };
-  if (!(await isPersonOrganizationMember(organizationId, person.id))) return { ok: false, fieldErrors: { person: "personNotFound" } };
+  if (!(await isPersonOrganizationMember(game, organizationId, person.id))) return { ok: false, fieldErrors: { person: "personNotFound" } };
 
   const idsOf = (scope: ProductionCreditScope) => [...new Set(input.targets.filter((t) => t.scope === scope).map((t) => t.id))];
   const tournamentIds = idsOf("tournament");
@@ -110,7 +113,8 @@ export type UpdateCreditInput = { role: string; roleOther: string; titleOverride
 export type UpdateCreditResult = { ok: true } | { ok: false; fieldErrors: ProductionCreditFieldErrors };
 
 /** Only role/titleOverride are editable in place — changing what a credit is attached to (person or target) means deleting it and adding a new one, deliberately simpler than the roster panel's full inline edit. */
-export async function updateProductionCredit(organizationId: number, creditId: number, input: UpdateCreditInput): Promise<UpdateCreditResult> {
+export async function updateProductionCredit(game: GameSlug, organizationId: number, creditId: number, input: UpdateCreditInput): Promise<UpdateCreditResult> {
+  const { productionCredits } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const { fieldErrors, role, titleOverride } = validateRoleAndTitle(input.role, input.roleOther, input.titleOverride);
@@ -132,7 +136,8 @@ export async function updateProductionCredit(organizationId: number, creditId: n
 
 export type DeleteCreditResult = { ok: true } | { ok: false; error: string };
 
-export async function deleteProductionCredit(organizationId: number, creditId: number): Promise<DeleteCreditResult> {
+export async function deleteProductionCredit(game: GameSlug, organizationId: number, creditId: number): Promise<DeleteCreditResult> {
+  const { productionCredits } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.staffManage);
 
   const [existing] = await db.select({ id: productionCredits.id, organizationId: productionCredits.organizationId, personId: productionCredits.personId, role: productionCredits.role }).from(productionCredits).where(eq(productionCredits.id, creditId)).limit(1);

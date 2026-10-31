@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ChevronsUpDown, Newspaper, KeySquare, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { DASHBOARD_AUTHOR_ADMIN_HREF, isDashboardPathIn } from "@/lib/dashboard-nav-items";
+import { DASHBOARD_AUTHOR_ADMIN_HREF, isDashboardPathIn, stripDashboardGame } from "@/lib/dashboard-nav-items";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 
 export type DashboardOrgSwitcherItem = { organizationId: number; organizationName: string; logoUrl: string | null; darkLogoUrl: string | null; isGlobalAdminOverride: boolean };
@@ -30,7 +30,7 @@ export function OrgSwitcher({
   isAuthorAdmin?: boolean;
 }) {
   const t = useTranslations("dashboard.switcher");
-  const pathname = usePathname();
+  const pathname = stripDashboardGame(usePathname());
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 

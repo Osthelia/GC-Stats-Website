@@ -11,9 +11,10 @@
 
 import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { pointTypes } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type PointTypeSort = "name" | "label" | "startDate" | "endDate";
 export type SortDirection = "asc" | "desc";
@@ -28,7 +29,8 @@ export type AdminPointTypeRow = {
 
 export const POINT_TYPES_PAGE_SIZE = 30;
 
-export async function listAdminPointTypes(opts: { q: string; sort: PointTypeSort; direction: SortDirection; page: number }): Promise<{ rows: AdminPointTypeRow[]; total: number }> {
+export async function listAdminPointTypes(game: GameSlug, opts: { q: string; sort: PointTypeSort; direction: SortDirection; page: number }): Promise<{ rows: AdminPointTypeRow[]; total: number }> {
+  const { pointTypes } = gameTables(game);
   const { q, sort, direction, page } = opts;
   const conditions = [];
 

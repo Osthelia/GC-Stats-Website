@@ -11,8 +11,9 @@
 
 import { and, inArray, isNotNull } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { people } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { searchGlobal, type SearchResultItem } from "@/lib/search";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiSearchResultItem = {
   type: string;
@@ -54,8 +55,9 @@ function toApiSearchItem(item: SearchResultItem): ApiSearchResultItem {
 }
 
 /** Thin snake_case wrapper over `searchGlobal` (`lib/search.ts`), the same multi-type fuzzy search behind the site's header dropdown and `/search` page. */
-export async function searchV2(term: string, perTypeLimit: number): Promise<ApiSearchResults> {
-  const results = await searchGlobal(term, { perTypeLimit });
+export async function searchV2(game: GameSlug, term: string, perTypeLimit: number): Promise<ApiSearchResults> {
+  const { people } = gameTables(game);
+  const results = await searchGlobal(game, term, { perTypeLimit });
   const playerIds = results.player.map((p) => p.id);
   const claimed = playerIds.length
     ? new Set((await db.select({ id: people.id }).from(people).where(and(inArray(people.id, playerIds), isNotNull(people.userId)))).map((r) => r.id))
