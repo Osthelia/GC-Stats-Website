@@ -6445,10 +6445,13 @@
       },
       "templates": {
         "title": "Alertes en image",
-        "description": "Remplace le message texte d'un type d'alerte par une image construite depuis votre template. Réservé aux serveurs qui utilisent leur propre bot.",
-        "locked": "Les alertes en image demandent votre propre bot. Connectez-le dans la section ci-dessus pour les débloquer.",
+        "description": "Remplacez le message texte d'une alerte par une image. Choisissez un template, ou personnalisez-le entièrement avec votre propre bot.",
+        "locked": "Choisissez le template utilisé par le bot GC Stats. Le personnaliser demande votre propre bot, connectez-le dans la section au-dessus.",
         "usingImage": "Publié en image",
         "usingText": "Publié en message texte",
+        "presetNone": "Message texte, sans image",
+        "presetChoose": "Template",
+        "presetSaved": "Template enregistré",
         "presetLabel": "Design de départ",
         "presetHint": "Choisissez les informations affichées par l'image. Tout reste modifiable ensuite.",
         "preset": {
@@ -6716,6 +6719,10 @@
           "veto_side": "Side du véto {n} (attaque ou défense)"
         },
         "insertVariableHint": "Clique sur une variable pour l'insérer dans le texte, à l'endroit du curseur.",
+        "templateLabel": "Template",
+        "applyTemplate": "Remplacer le design par ce template",
+        "templateHint": "Remplace tous les calques par le template. Vous pouvez annuler.",
+        "templateApplied": "Template appliqué",
         "layoutLayer": "Layout",
         "pickImage": "Choisir une image",
         "pickImageHint": "Chaque type d'image a sa propre taille, vous pouvez la modifier ensuite.",

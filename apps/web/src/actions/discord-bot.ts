@@ -25,7 +25,7 @@ import { resolveMatchButtonLabel } from "@/lib/discord-bot/render";
 import { resolvePreviewData } from "@/lib/discord-bot/preview";
 import { getGuildSettings, resolveBotToken } from "@/lib/discord-bot/settings";
 import { getGuildTemplates } from "@/lib/discord-bot/templates";
-import { createDefaultTemplate, templateSchema } from "@/lib/discord-bot/template";
+import { createDefaultTemplate, presetsOf, templateSchema, type TemplatePreset } from "@/lib/discord-bot/template";
 import { getCurrentUserId } from "@/lib/session";
 import { routing } from "@/i18n/routing";
 import { listWebhookRegions } from "@/lib/webhooks/endpoints";
@@ -263,14 +263,21 @@ const BACKGROUND_MAX_BYTES = 10 * 1024 * 1024;
 const BACKGROUND_MIN_SIDE = 400;
 const BACKGROUND_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
-/** Authorized server that runs its own bot, the only ones allowed to use image templates. */
-async function authorizeTemplates(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
+/** Authorized server and a valid alert type. */
+async function authorizeEvent(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return auth;
   if (!(DISCORD_BOT_EVENTS as readonly unknown[]).includes(event)) return { ok: false, error: "invalid" };
+  return { ok: true, guildId: auth.guildId, event: event as DiscordBotEvent };
+}
+
+/** Authorized server that runs its own bot, the only ones allowed to customize image templates. */
+async function authorizeTemplates(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
+  const auth = await authorizeEvent(guildId, event);
+  if (!auth.ok) return auth;
   const settings = await getGuildSettings(auth.guildId);
   if (!settings?.botTokenEncrypted) return { ok: false, error: "customBotRequired" };
-  return { ok: true, guildId: auth.guildId, event: event as DiscordBotEvent };
+  return auth;
 }
 
 async function currentBackgroundId(guildId: string, event: DiscordBotEvent): Promise<string | null> {
@@ -338,14 +345,35 @@ export async function removeDiscordBackground(guildId: string, event: DiscordBot
   return { ok: true };
 }
 
+/** Picks the ready-made design of an alert type, open to every server. "none" goes back to the text embed. */
+export async function chooseDiscordTemplatePreset(guildId: string, event: DiscordBotEvent, preset: unknown): Promise<SaveDiscordTemplateResult> {
+  const auth = await authorizeEvent(guildId, event);
+  if (!auth.ok) return auth;
+  if (preset === "none") return deleteTemplateRow(auth.guildId, auth.event);
+  const kind = KIND_BY_EVENT[auth.event];
+  if (typeof preset !== "string" || !(presetsOf(kind) as string[]).includes(preset)) return { ok: false, error: "invalid" };
+
+  const template = { ...createDefaultTemplate(kind, preset as TemplatePreset), backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
+  const values = { template, updatedAt: new Date() };
+  await db
+    .insert(discordBotTemplates)
+    .values({ guildId: auth.guildId, event: auth.event, ...values })
+    .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
+  return { ok: true };
+}
+
+async function deleteTemplateRow(guildId: string, event: DiscordBotEvent): Promise<SaveDiscordTemplateResult> {
+  const existing = (await getGuildTemplates(guildId)).get(event)?.template;
+  await db.delete(discordBotTemplates).where(and(eq(discordBotTemplates.guildId, guildId), eq(discordBotTemplates.event, event)));
+  if (existing?.backgroundImageId) await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
+  return { ok: true };
+}
+
 /** Back to the plain text embed for this alert type. */
 export async function deleteDiscordTemplate(guildId: string, event: DiscordBotEvent): Promise<SaveDiscordTemplateResult> {
   const auth = await authorizeTemplates(guildId, event);
   if (!auth.ok) return auth;
-  const existing = (await getGuildTemplates(auth.guildId)).get(auth.event)?.template;
-  await db.delete(discordBotTemplates).where(and(eq(discordBotTemplates.guildId, auth.guildId), eq(discordBotTemplates.event, auth.event)));
-  if (existing?.backgroundImageId) await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
-  return { ok: true };
+  return deleteTemplateRow(auth.guildId, auth.event);
 }
 
 export type SendTestAlertResult =

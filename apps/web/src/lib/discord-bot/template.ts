@@ -546,7 +546,7 @@ const BLOCK_HEIGHT: Record<TemplateBlock, number> = {
   vetos: 84,
   mvp: 56,
 };
-const BLOCKS_TOP = 296;
+const BLOCKS_TOP = 320;
 const BLOCK_GAP = 12;
 const BOTTOM_PADDING = 24;
 
@@ -818,18 +818,6 @@ export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly T
             ),
           ]
         : []),
-      ...(ordered.length
-        ? [
-            newShapeLayer("divider", {
-              x: 60,
-              y: BLOCKS_TOP - 8,
-              width: 880,
-              height: 1,
-              color: "#ffffff",
-              opacity: 0.15,
-            }),
-          ]
-        : []),
       ...blockLayers,
     ],
   };
@@ -839,4 +827,16 @@ export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly T
 export function createDefaultTemplate(kind: Kind, preset: TemplatePreset = "score"): AlertTemplate {
   const blocks = (TEMPLATE_PRESETS[kind] as Record<string, readonly TemplateBlock[]>)[preset] ?? [];
   return createGcsTemplate(TEMPLATE_ACCENT[kind], kind, blocks);
+}
+
+function sameValue(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (typeof a !== "object" || typeof b !== "object" || a === null || b === null || Array.isArray(a) !== Array.isArray(b)) return false;
+  const keysA = Object.keys(a);
+  return keysA.length === Object.keys(b).length && keysA.every((key) => sameValue((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]));
+}
+
+/** The preset a stored template still matches exactly, null once it was customized. */
+export function presetOfTemplate(template: AlertTemplate, kind: Kind): TemplatePreset | null {
+  return presetsOf(kind).find((preset) => sameValue({ ...createDefaultTemplate(kind, preset), backgroundImageId: null }, { ...template, backgroundImageId: null })) ?? null;
 }

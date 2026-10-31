@@ -19,17 +19,15 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { DiscordTemplateEditor } from "@/components/dashboard/discord-template-editor";
 import {
-  deleteDiscordTemplate,
+  chooseDiscordTemplatePreset,
   removeDiscordBackground,
-  saveDiscordTemplate,
   uploadDiscordBackground,
   type SaveDiscordTemplateResult,
 } from "@/actions/discord-bot";
 import { DISCORD_BOT_EVENTS, type DiscordBotChannel, type DiscordBotEvent, type DiscordBotTemplateView } from "@/lib/discord-bot/shared";
-import { createDefaultTemplate, presetsOf, TEMPLATE_ACCENT, TEMPLATE_FOOTER_HEIGHT, type TemplatePreset } from "@/lib/discord-bot/template";
+import { createDefaultTemplate, presetOfTemplate, presetsOf, TEMPLATE_ACCENT, TEMPLATE_FOOTER_HEIGHT, type TemplatePreset } from "@/lib/discord-bot/template";
 
 const ACCENT_KEY: Record<DiscordBotEvent, keyof typeof TEMPLATE_ACCENT> = { match_live: "live", match_finished: "finished", map_finished: "map" };
 const ACCEPT = "image/png,image/jpeg,image/webp";
@@ -69,8 +67,8 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
   const [isPending, startTransition] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
-  const [preset, setPreset] = useState<TemplatePreset>(defaultPresetOf(event));
-  const presetItems = Object.fromEntries(presetsOf(ACCENT_KEY[event]).map((p) => [p, tt(`preset.${p}`)]));
+  // Without a saved design the editor starts from the default one.
+  const current = template?.template ?? createDefaultTemplate(ACCENT_KEY[event], defaultPresetOf(event));
 
   function run(action: () => Promise<SaveDiscordTemplateResult>, success: string) {
     startTransition(async () => {
@@ -88,11 +86,6 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
     });
   }
 
-  function handleToggle(on: boolean) {
-    if (on) run(() => saveDiscordTemplate(guildId, event, createDefaultTemplate(ACCENT_KEY[event], preset)), tt("enabled"));
-    else run(() => deleteDiscordTemplate(guildId, event), tt("disabled"));
-  }
-
   function handleFile(event_: React.ChangeEvent<HTMLInputElement>) {
     const file = event_.target.files?.[0];
     event_.target.value = "";
@@ -104,78 +97,106 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium">{t(`event.${event}`)}</p>
-          <p className="text-xs text-muted-foreground">{template ? tt("usingImage") : tt("usingText")}</p>
-        </div>
-        <Switch checked={!!template} onCheckedChange={handleToggle} disabled={isPending} aria-label={tt("toggle")} />
+      <div>
+        <p className="text-sm font-medium">{t(`event.${event}`)}</p>
+        <p className="text-xs text-muted-foreground">{template ? tt("usingImage") : tt("usingText")}</p>
       </div>
 
-      {!template && (
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor={`preset-${event}`} className="text-xs font-medium">
-            {tt("presetLabel")}
-          </label>
-          <Select items={presetItems} value={preset} onValueChange={(v) => v && setPreset(v as TemplatePreset)}>
-            <SelectTrigger id={`preset-${event}`} className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(presetItems).map(([id, label]) => (
-                <SelectItem key={id} value={id}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">{tt("presetHint")}</p>
-          <Preview key={preset} guildId={guildId} event={event} version={0} locale={locale} preset={preset} ratio={1000 / createDefaultTemplate(ACCENT_KEY[event], preset).height} />
-        </div>
+      <Preview
+        guildId={guildId}
+        event={event}
+        version={template?.updatedAt ?? 0}
+        locale={locale}
+        preset={template ? undefined : defaultPresetOf(event)}
+        ratio={1000 / (current.height + (current.footer ? TEMPLATE_FOOTER_HEIGHT : 0))}
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" onClick={() => setEditing(true)} disabled={isPending}>
+          <PenLine />
+          {tt("editDesign")}
+        </Button>
+        <input ref={fileRef} type="file" accept={ACCEPT} className="hidden" onChange={handleFile} />
+        <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={isPending}>
+          {isPending ? <Loader2 className="animate-spin" /> : <ImagePlus />}
+          {template?.hasBackground ? tt("changeBackground") : tt("addBackground")}
+        </Button>
+        {template?.hasBackground && (
+          <Button variant="outline" size="sm" onClick={() => run(() => removeDiscordBackground(guildId, event), tt("backgroundRemoved"))} disabled={isPending}>
+            <Trash2 />
+            {tt("removeBackground")}
+          </Button>
+        )}
+      </div>
+      {editing && (
+        // Remounted per save so the editor starts from the stored template.
+        <DiscordTemplateEditor
+          key={template?.updatedAt ?? 0}
+          guildId={guildId}
+          event={event}
+          initial={current}
+          backgroundUrl={template?.backgroundUrl ?? null}
+          channels={channels}
+          locale={locale}
+          open
+          onOpenChange={(open) => !open && setEditing(false)}
+        />
       )}
+    </div>
+  );
+}
 
-      {template && (
-        <>
-          <Preview guildId={guildId} event={event} version={template.updatedAt} locale={locale} ratio={1000 / (template.template.height + (template.template.footer ? TEMPLATE_FOOTER_HEIGHT : 0))} />
-          <label className="flex items-start gap-2 text-sm">
-            <Switch checked={template.template.footer} disabled={isPending} onCheckedChange={(footer) => run(() => saveDiscordTemplate(guildId, event, { ...template.template, footer }), tt("footerSaved"))} />
-            <span className="flex flex-col">
-              {tt("footer")}
-              <span className="text-xs text-muted-foreground">{tt("footerHint")}</span>
-            </span>
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" onClick={() => setEditing(true)} disabled={isPending}>
-              <PenLine />
-              {tt("editDesign")}
-            </Button>
-            <input ref={fileRef} type="file" accept={ACCEPT} className="hidden" onChange={handleFile} />
-            <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={isPending}>
-              {isPending ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-              {template.hasBackground ? tt("changeBackground") : tt("addBackground")}
-            </Button>
-            {template.hasBackground && (
-              <Button variant="outline" size="sm" onClick={() => run(() => removeDiscordBackground(guildId, event), tt("backgroundRemoved"))} disabled={isPending}>
-                <Trash2 />
-                {tt("removeBackground")}
-              </Button>
-            )}
-          </div>
-          {editing && (
-            // Remounted per save so the editor starts from the stored template.
-            <DiscordTemplateEditor
-              key={template.updatedAt}
-              guildId={guildId}
-              event={event}
-              initial={template.template}
-              backgroundUrl={template.backgroundUrl}
-              channels={channels}
-              locale={locale}
-              open
-              onOpenChange={(open) => !open && setEditing(false)}
-            />
-          )}
-        </>
+/** Server on the GC Stats bot: picks a ready-made design per alert type, without customization. */
+function PresetRow({ guildId, event, template, locale }: { guildId: string; event: DiscordBotEvent; template: DiscordBotTemplateView | null; locale: string }) {
+  const t = useTranslations("dashboard.discord");
+  const tt = useTranslations("dashboard.discord.templates");
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const kind = ACCENT_KEY[event];
+  const value = template ? (presetOfTemplate(template.template, kind) ?? "none") : "none";
+  const items = { none: tt("presetNone"), ...Object.fromEntries(presetsOf(kind).map((p) => [p, tt(`preset.${p}`)])) };
+  const shown = value === "none" ? undefined : (value as TemplatePreset);
+
+  function handleChange(next: string) {
+    startTransition(async () => {
+      try {
+        const result = await chooseDiscordTemplatePreset(guildId, event, next);
+        if (!result.ok) {
+          toast.error(tt(`error.${result.error}`));
+          return;
+        }
+        toast.success(tt("presetSaved"));
+        router.refresh();
+      } catch {
+        toast.error(tt("error.network"));
+      }
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-3 rounded-lg border p-4">
+      <p className="text-sm font-medium">{t(`event.${event}`)}</p>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor={`preset-${event}`} className="text-xs font-medium">
+          {tt("presetChoose")}
+        </label>
+        <Select items={items} value={value} onValueChange={(v) => v && v !== value && handleChange(v)} disabled={isPending}>
+          <SelectTrigger id={`preset-${event}`} className="w-full">
+            {isPending ? <Loader2 className="animate-spin" /> : null}
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(items).map(([id, label]) => (
+              <SelectItem key={id} value={id}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      {shown ? (
+        <Preview key={shown} guildId={guildId} event={event} version={template?.updatedAt ?? 0} locale={locale} preset={shown} ratio={1000 / createDefaultTemplate(kind, shown).height} />
+      ) : (
+        <p className="rounded-md border border-dashed px-3 py-6 text-center text-xs text-muted-foreground">{tt("usingText")}</p>
       )}
     </div>
   );
@@ -185,7 +206,6 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
 /** `channels` is null when the bot cannot read the channels of the server. */
 export function DiscordTemplatesPanel({ guildId, templates, locale, locked, channels }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; locked: boolean; channels: DiscordBotChannel[] | null }) {
   const t = useTranslations("dashboard.discord.templates");
-  const td = useTranslations("dashboard.discord");
   return (
     <Card>
       <CardHeader>
@@ -200,10 +220,7 @@ export function DiscordTemplatesPanel({ guildId, templates, locale, locked, chan
           <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-600 dark:text-amber-400">{t("locked")}</p>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {DISCORD_BOT_EVENTS.map((event) => (
-              <div key={event} className="flex flex-col gap-2 rounded-lg border p-4">
-                <p className="text-sm font-medium">{td(`event.${event}`)}</p>
-                <Preview guildId={guildId} event={event} version={0} locale={locale} preset={defaultPresetOf(event)} ratio={1000 / createDefaultTemplate(ACCENT_KEY[event], defaultPresetOf(event)).height} />
-              </div>
+              <PresetRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} />
             ))}
           </div>
         </CardContent>

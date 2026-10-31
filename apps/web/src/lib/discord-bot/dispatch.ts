@@ -48,8 +48,7 @@ function resolveTheme(sub: Subscription, settings: GuildSettings | undefined, te
   return {
     token: resolveBotToken(settings),
     matchButton: settings?.matchButton ?? true,
-    // Image templates are a perk of servers running their own bot.
-    template: settings?.botTokenEncrypted ? (templates?.get(sub.event as DiscordBotEvent) ?? null) : null,
+    template: templates?.get(sub.event as DiscordBotEvent) ?? null,
     colors: {
       live: own ?? settings?.colorLive ?? DISCORD_BOT_DEFAULT_COLORS.live,
       finished: own ?? settings?.colorFinished ?? DISCORD_BOT_DEFAULT_COLORS.finished,

@@ -6445,10 +6445,13 @@
       },
       "templates": {
         "title": "Image alerts",
-        "description": "Replace the text message of an alert type by an image built from your template. Reserved to servers using their own bot.",
-        "locked": "Image alerts need your own bot. Connect it in the section above to unlock them.",
+        "description": "Replace the text message of an alert type by an image. Pick a template, or customize it fully with your own bot.",
+        "locked": "Pick the template used by the GC Stats bot. Customizing it needs your own bot, connect it in the section above.",
         "usingImage": "Posted as an image",
         "usingText": "Posted as a text message",
+        "presetNone": "Text message, no image",
+        "presetChoose": "Template",
+        "presetSaved": "Template saved",
         "presetLabel": "Starting design",
         "presetHint": "Choose the information shown by the image. Everything stays editable afterwards.",
         "preset": {
@@ -6716,6 +6719,10 @@
           "veto_side": "Side of veto {n} (attack or defense)"
         },
         "insertVariableHint": "Click a variable to insert it in the text at the cursor.",
+        "templateLabel": "Template",
+        "applyTemplate": "Replace the design by this template",
+        "templateHint": "Replaces every layer by the template. You can undo it.",
+        "templateApplied": "Template applied",
         "layoutLayer": "Layout",
         "pickImage": "Choose a picture",
         "pickImageHint": "Each type of picture comes with its own size, you can change it afterwards.",

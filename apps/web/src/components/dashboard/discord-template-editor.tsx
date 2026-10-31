@@ -66,7 +66,9 @@ import type { DiscordBotChannel, DiscordBotEvent } from "@/lib/discord-bot/share
 import { buildAlertFields, buildAlertImages, SAMPLE_MAPS, sampleMatch, type AlertKind, type Translate } from "@/lib/discord-bot/variables";
 import {
   conditionValues,
+  createDefaultTemplate,
   fontSupportsWeight,
+  presetsOf,
   MAP_KEYS,
   imageCategoryOf,
   newImageLayer,
@@ -91,6 +93,7 @@ import {
   type AlertTemplate,
   type TemplateCondition,
   type TemplateFontId,
+  type TemplatePreset,
   type TemplateImageSource,
   type TemplateFolder,
   type TemplateLayer,
@@ -347,6 +350,7 @@ export function DiscordTemplateEditor({
 }) {
   const t = useTranslations("dashboard.discord.editor");
   const tEvent = useTranslations("dashboard.discord.event");
+  const tt = useTranslations("dashboard.discord.templates");
   const tm = useTranslations("discordBotMessages");
   const router = useRouter();
   const [isSaving, startSaving] = useTransition();
@@ -373,6 +377,7 @@ export function DiscordTemplateEditor({
     }),
   );
   const [issues, setIssues] = useState<string[]>([]);
+  const [preset, setPreset] = useState<TemplatePreset | null>(null);
   const [variableGroup, setVariableGroup] = useState("match");
   const [variablesOpen, setVariablesOpen] = useState(false);
   const [preview, setPreview] = useState<{
@@ -621,6 +626,19 @@ export function DiscordTemplateEditor({
       align,
       x: textBoxX(layer, align, textAnchorX(layer)),
     });
+  }
+
+  const accentKey = event === "match_live" ? "live" : event === "map_finished" ? "map" : "finished";
+  const presets = presetsOf(accentKey);
+  const presetItems = Object.fromEntries(presets.map((p) => [p, tt(`preset.${p}`)]));
+
+  // Replaces the whole design by a ready-made one, the stored background stays.
+  function applyPreset() {
+    const chosen = preset ?? presets.at(-1);
+    if (!chosen) return;
+    update((prev) => ({ ...createDefaultTemplate(accentKey, chosen), backgroundImageId: prev.backgroundImageId }));
+    setSelectedId(LAYOUT_ID);
+    toast.success(t("templateApplied"));
   }
 
   function undo() {
@@ -1523,6 +1541,14 @@ export function DiscordTemplateEditor({
             ) : (
               <div className="flex flex-col gap-3 rounded-lg border p-3">
                 <p className="text-sm font-medium">{t("layoutLayer")}</p>
+                <div className="flex flex-col gap-2 rounded-md border p-2">
+                  <SimpleSelect id="tpl-preset" label={t("templateLabel")} value={preset ?? presets.at(-1) ?? "score"} items={presetItems} onChange={(value: TemplatePreset) => setPreset(value)} />
+                  <Button type="button" variant="outline" size="sm" onClick={applyPreset}>
+                    <Layers />
+                    {t("applyTemplate")}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">{t("templateHint")}</p>
+                </div>
                 <NumberField
                   id="tpl-canvas-height"
                   label={t("canvasHeight")}

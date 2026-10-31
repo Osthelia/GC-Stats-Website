@@ -11,7 +11,7 @@
  */
 
 import { agentIconUrl } from "@/lib/valorant-agents";
-import { mapSplashUrl } from "@/lib/valorant-maps";
+import { mapSplashHdUrl, mapSplashUrl } from "@/lib/valorant-maps";
 import { MAP_KEYS, VETO_KEYS } from "./template";
 
 /** Best player by ACS: of a map, or of a match (average over its maps). */
@@ -75,8 +75,8 @@ function teamMvpOf(kind: AlertKind, match: AlertMatch, side: "a" | "b", map?: Al
 
 /** Pictures a template can show, by image source. `baseUrl` prefixes the site assets (empty in the browser). */
 export function buildAlertImages(kind: AlertKind, match: AlertMatch, map: AlertMap | undefined, baseUrl: string): Record<string, string | null> {
-  const splash = (mapName: string | null | undefined) => {
-    const path = mapSplashUrl(mapName ?? null);
+  const splash = (mapName: string | null | undefined, hd = false) => {
+    const path = (hd ? mapSplashHdUrl : mapSplashUrl)(mapName ?? null);
     return path ? `${baseUrl}${path}` : null;
   };
   const sortedMaps = [...match.maps].sort((a, b) => a.order - b.order);
@@ -89,7 +89,7 @@ export function buildAlertImages(kind: AlertKind, match: AlertMatch, map: AlertM
     // Player picture, the agent icon when the player has none.
     mvp: mvp?.imageUrl ?? agent,
     mvpAgent: agent,
-    mapCurrent: splash(currentMapOf(kind, match, map)?.mapName),
+    mapCurrent: splash(currentMapOf(kind, match, map)?.mapName, true),
     ...Object.fromEntries(MAP_KEYS.map((key, i) => [key, splash(sortedMaps[i]?.mapName)])),
     ...Object.fromEntries(VETO_KEYS.map((key, i) => [key, splash(sortedVetos[i]?.mapName)])),
   };
