@@ -1115,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "Menyerang",
     "sideDefense": "Bertahan",
-    "openMatch": "Buka pertandingan"
+    "openMatch": "Buka pertandingan",
+    "imageRemoved": "Gambar peringatan ini dihapus oleh moderasi GC Stats."
   },
   "supportUs": {
     "title": "Dukung kami",
@@ -2011,6 +2012,7 @@
       "about": "Tentang / Proyek",
       "backToSite": "Kembali ke situs",
       "pendingChangeRequests": "Permintaan perubahan tertunda",
+      "pendingDiscordImages": "Gambar Discord yang perlu ditinjau",
       "tournaments": "Turnamen",
       "groupModeration": "Moderasi",
       "reports": "Laporan",
@@ -2020,7 +2022,8 @@
       "activityLog": "Log aktivitas",
       "analytics": "Analitik",
       "oauthClients": "Klien OAuth",
-      "settings": "Konfigurasi"
+      "settings": "Konfigurasi",
+      "discordImages": "Gambar bot Discord"
     },
     "dashboard": {
       "title": "Dasbor",
@@ -4838,6 +4841,73 @@
       "statDismissed": "Ditolak",
       "error": {
         "notFound": "Entri ini sudah tidak ada."
+      },
+      "images": {
+        "title": "Gambar bot Discord",
+        "subtitle": "Gambar peringatan yang dikustomisasi oleh server. Gambar yang sudah diverifikasi keluar dari daftar dan hanya kembali jika diedit.",
+        "empty": "Tidak ada gambar yang perlu ditinjau.",
+        "imageAlt": "Gambar peringatan sebuah server",
+        "openImage": "Buka gambar di tab baru",
+        "event": {
+          "match_live": "Pertandingan langsung",
+          "match_finished": "Pertandingan selesai",
+          "map_finished": "Map selesai"
+        },
+        "server": "Server",
+        "unknownUser": "Akun tidak dikenal",
+        "guildBlacklisted": "Server masuk blacklist",
+        "userBlacklisted": "Pengguna masuk blacklist",
+        "verifyButton": "Verifikasi",
+        "sanctionButton": "Beri sanksi",
+        "verifySuccess": "Gambar diverifikasi.",
+        "error": {
+          "notFound": "Gambar ini sudah ditangani atau sudah tidak ada."
+        },
+        "sanction": {
+          "title": "Beri sanksi pada gambar ini",
+          "description": "Pilih apa yang terjadi pada server dan orang yang mengunggah gambar ini.",
+          "sanctionsLabel": "Sanksi",
+          "option": {
+            "blacklistGuild": {
+              "label": "Masukkan server ke blacklist",
+              "hint": "Server tidak bisa lagi memakai dashboard dan tidak menerima peringatan lagi."
+            },
+            "blacklistUser": {
+              "label": "Masukkan akun Discord ke blacklist",
+              "hint": "Akun Discord ini tidak bisa lagi mengelola bot di server mana pun."
+            },
+            "resetImage": {
+              "label": "Reset gambar",
+              "hint": "Gambar kustom dihapus dan server kembali ke peringatan teks biasa."
+            },
+            "editMessages": {
+              "label": "Edit pesan yang sudah dikirim dengan gambar ini",
+              "hint": "Gambar dihapus dari peringatan yang sudah diposting dan diganti dengan pemberitahuan bahwa moderasi GC Stats menghapusnya."
+            }
+          },
+          "alreadyBlacklisted": "Sudah masuk blacklist.",
+          "reasonLabel": "Alasan",
+          "reasonHint": "Disimpan bersama entri blacklist.",
+          "cancel": "Batal",
+          "submit": "Beri sanksi",
+          "submitting": "Memberi sanksi...",
+          "success": "Sanksi diterapkan.",
+          "error": {
+            "notFound": "Gambar ini sudah ditangani atau sudah tidak ada.",
+            "sanctions": {
+              "required": "Pilih setidaknya satu sanksi."
+            },
+            "blacklistUser": {
+              "noEditor": "Akun Discord editor terakhir tidak diketahui."
+            },
+            "reason": {
+              "required": "Masukkan alasan.",
+              "tooLong": "Alasan terlalu panjang (maks. {max} karakter)."
+            }
+          },
+          "successQueued": "Sanksi diterapkan, {count} pesan akan segera diedit."
+        },
+        "editor": "Diedit oleh"
       }
     },
     "forum": {
@@ -6371,6 +6441,7 @@
         "network": "Kesalahan jaringan, coba lagi.",
         "notAuthenticated": "Kamu harus masuk terlebih dahulu.",
         "forbidden": "Kamu tidak dapat mengelola server ini.",
+        "blacklisted": "Server ini atau akun Discord Anda diblokir dari bot.",
         "notFound": "Peringatan ini sudah tidak ada.",
         "invalid": "Beberapa kolom tidak valid.",
         "tooManySubscriptions": "Satu server dapat memiliki maksimal {max} peringatan.",
@@ -6434,6 +6505,7 @@
           "network": "Kesalahan jaringan, coba lagi.",
           "notAuthenticated": "Anda harus masuk terlebih dahulu.",
           "forbidden": "Anda tidak dapat mengelola server ini.",
+          "blacklisted": "Server ini atau akun Discord Anda diblokir dari bot.",
           "invalid": "Beberapa kolom tidak valid.",
           "color": "Warna tidak valid.",
           "token": {
@@ -6449,6 +6521,9 @@
         "description": "Mengganti pesan teks suatu jenis peringatan dengan gambar yang dibuat dari template Anda. Khusus untuk server yang memakai bot sendiri.",
         "usingImage": "Dikirim sebagai gambar",
         "usingText": "Dikirim sebagai pesan teks",
+        "presetNone": "Pesan teks, tanpa gambar",
+        "presetChoose": "Template",
+        "presetSaved": "Template disimpan",
         "presetLabel": "Desain awal",
         "presetHint": "Pilih informasi yang ditampilkan gambar. Semuanya tetap dapat diedit setelahnya.",
         "preset": {
@@ -6475,18 +6550,19 @@
           "network": "Kesalahan jaringan, coba lagi.",
           "notAuthenticated": "Anda harus masuk terlebih dahulu.",
           "forbidden": "Anda tidak dapat mengelola server ini.",
+          "blacklisted": "Server ini atau akun Discord Anda diblokir dari bot.",
           "invalid": "Template tidak valid.",
           "invalidImage": "Gambar ini tidak valid (PNG, JPEG, atau WebP, minimal 400 px pada sisi terpendek).",
           "tooLarge": "Gambar ini lebih besar dari 10 MB.",
           "storageFailed": "Gambar tidak dapat disimpan, coba lagi."
         },
-        "editDesign": "Edit desain"
+        "editDesign": "Edit desain",
+        "presetCustom": "Dikustomisasi"
       },
       "editor": {
         "title": "Desain peringatan: {event}",
         "description": "Seret, ubah ukuran, dan putar elemen di kanvas, atur gayanya di kanan, dan tampilkan hanya pada kondisi tertentu. Pratinjau seperti yang dikirim memakai render persis dari bot.",
         "addText": "Teks",
-        "addLogo": "Logo tim",
         "addShape": "Bentuk",
         "undo": "Urungkan",
         "previewServer": "Pratinjau seperti yang dikirim",
@@ -6497,9 +6573,6 @@
         "backgroundColor": "Warna latar",
         "layers": "Elemen (paling depan dulu)",
         "noLayers": "Belum ada elemen.",
-        "noSelection": "Pilih elemen di kanvas atau di daftar untuk mengeditnya.",
-        "moveBack": "Kirim ke belakang",
-        "moveFront": "Bawa ke depan",
         "duplicate": "Duplikat",
         "delete": "Hapus",
         "width": "Lebar",
@@ -6542,15 +6615,6 @@
         "color": "Warna",
         "bold": "Tebal",
         "uppercase": "Huruf kapital",
-        "sideLabel": "Tim",
-        "side": {
-          "a": "Tim A",
-          "b": "Tim B"
-        },
-        "logoOf": {
-          "a": "Logo tim A",
-          "b": "Logo tim B"
-        },
         "shape": "Bentuk",
         "opacity": "Opasitas",
         "radius": "Radius sudut",
@@ -6564,6 +6628,7 @@
           "network": "Kesalahan jaringan, coba lagi.",
           "notAuthenticated": "Anda harus masuk.",
           "forbidden": "Anda tidak dapat mengelola server ini.",
+          "blacklisted": "Server ini atau akun Discord Anda diblokir dari bot.",
           "invalid": "Templat tidak valid.",
           "invalidImage": "Gambar ini tidak valid.",
           "tooLarge": "Gambar ini terlalu besar.",
@@ -6614,7 +6679,6 @@
         },
         "imageFallbackHint": "Jika tidak ada gambar, kotak dengan inisial akan ditampilkan.",
         "shapeHint": "Bentuk tidak memiliki konten, atur gayanya di tab Gaya.",
-        "logoStyleHint": "Logo tim ditampilkan apa adanya, ubah ukuran dan posisinya di Tata letak.",
         "rotation": "Rotasi (derajat)",
         "alignTitle": "Rata pada gambar",
         "addFolder": "Folder baru",
@@ -6672,7 +6736,6 @@
         },
         "addCondition": "Tambah kondisi",
         "removeCondition": "Hapus kondisi ini",
-        "canvasSettings": "Pengaturan gambar",
         "footer": "Footer GC Stats",
         "artwork": "Artwork map sebagai latar",
         "artworkSource": "Artwork dari",
@@ -6729,6 +6792,10 @@
           "veto_side": "Sisi veto {n} (Menyerang atau Bertahan)"
         },
         "insertVariableHint": "Klik variabel untuk menyisipkannya ke dalam teks, di posisi kursor.",
+        "templateLabel": "Template",
+        "applyTemplate": "Ganti desain dengan template ini",
+        "templateHint": "Mengganti semua layer dengan template. Anda bisa membatalkannya.",
+        "templateApplied": "Template diterapkan",
         "layoutLayer": "Tata letak",
         "pickImage": "Pilih gambar",
         "pickImageHint": "Setiap jenis gambar punya ukuran sendiri, yang bisa kamu ubah setelahnya.",

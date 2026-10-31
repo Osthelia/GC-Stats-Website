@@ -1115,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "Atake",
     "sideDefense": "Depensa",
-    "openMatch": "Buksan ang laban"
+    "openMatch": "Buksan ang laban",
+    "imageRemoved": "Ang larawan ng alert na ito ay inalis ng moderation ng GC Stats."
   },
   "supportUs": {
     "title": "Suportahan kami",
@@ -2011,6 +2012,7 @@
       "about": "Tungkol / Mga Proyekto",
       "backToSite": "Bumalik sa site",
       "pendingChangeRequests": "Mga nakabinbing hiling na pagbabago",
+      "pendingDiscordImages": "Mga larawang Discord na susuriin",
       "tournaments": "Mga Torneo",
       "groupModeration": "Moderasyon",
       "reports": "Mga Ulat",
@@ -2020,7 +2022,8 @@
       "activityLog": "Activity log",
       "analytics": "Analytics",
       "oauthClients": "Mga OAuth client",
-      "settings": "Configuration"
+      "settings": "Configuration",
+      "discordImages": "Mga larawan ng Discord bot"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -4838,6 +4841,73 @@
       "statDismissed": "Ibinasura",
       "error": {
         "notFound": "Wala na ang entry na ito."
+      },
+      "images": {
+        "title": "Mga larawan ng Discord bot",
+        "subtitle": "Mga larawan ng alert na kinustomize ng mga server. Ang na-verify na larawan ay lalabas sa listahan at babalik lang kapag na-edit.",
+        "empty": "Walang larawang susuriin.",
+        "imageAlt": "Larawan ng alert ng isang server",
+        "openImage": "Buksan ang larawan sa bagong tab",
+        "event": {
+          "match_live": "Live na laban",
+          "match_finished": "Tapos na ang laban",
+          "map_finished": "Tapos na ang mapa"
+        },
+        "server": "Server",
+        "unknownUser": "Hindi kilalang account",
+        "guildBlacklisted": "Server na nasa blacklist",
+        "userBlacklisted": "User na nasa blacklist",
+        "verifyButton": "I-verify",
+        "sanctionButton": "Parusahan",
+        "verifySuccess": "Na-verify ang larawan.",
+        "error": {
+          "notFound": "Naasikaso na ang larawang ito o wala na ito."
+        },
+        "sanction": {
+          "title": "Parusahan ang larawang ito",
+          "description": "Piliin kung ano ang mangyayari sa server at sa taong nag-upload ng larawang ito.",
+          "sanctionsLabel": "Mga parusa",
+          "option": {
+            "blacklistGuild": {
+              "label": "I-blacklist ang server",
+              "hint": "Hindi na magagamit ng server ang dashboard at wala nang matatanggap na alert."
+            },
+            "blacklistUser": {
+              "label": "I-blacklist ang Discord account",
+              "hint": "Hindi na mapapamahalaan ng Discord account na ito ang bot sa anumang server."
+            },
+            "resetImage": {
+              "label": "I-reset ang larawan",
+              "hint": "Buburahin ang custom na larawan at babalik ang server sa alert na teksto lang."
+            },
+            "editMessages": {
+              "label": "I-edit ang mga mensaheng naipadala na gamit ang larawang ito",
+              "hint": "Aalisin ang larawan sa mga naipost na alert at papalitan ng paalala na inalis ito ng moderation ng GC Stats."
+            }
+          },
+          "alreadyBlacklisted": "Nasa blacklist na.",
+          "reasonLabel": "Dahilan",
+          "reasonHint": "Itatabi kasama ng entry sa blacklist.",
+          "cancel": "Kanselahin",
+          "submit": "Parusahan",
+          "submitting": "Pinaparusahan...",
+          "success": "Naipatupad ang parusa.",
+          "error": {
+            "notFound": "Naasikaso na ang larawang ito o wala na ito.",
+            "sanctions": {
+              "required": "Pumili ng kahit isang parusa."
+            },
+            "blacklistUser": {
+              "noEditor": "Hindi kilala ang Discord account ng huling nag-edit."
+            },
+            "reason": {
+              "required": "Maglagay ng dahilan.",
+              "tooLong": "Masyadong mahaba ang dahilan (hanggang {max} karakter)."
+            }
+          },
+          "successQueued": "Naipatupad ang parusa, ie-edit na ang {count} mensahe sa lalong madaling panahon."
+        },
+        "editor": "Na-edit ni"
       }
     },
     "forum": {
@@ -6371,6 +6441,7 @@
         "network": "May error sa network, subukan ulit.",
         "notAuthenticated": "Kailangan mong mag log in.",
         "forbidden": "Hindi mo mapamamahalaan ang server na ito.",
+        "blacklisted": "Naka-block sa bot ang server na ito o ang iyong Discord account.",
         "notFound": "Wala na ang alertong ito.",
         "invalid": "May mga di wastong field.",
         "tooManySubscriptions": "Ang isang server ay maaaring magkaroon ng hanggang {max} alerto.",
@@ -6434,6 +6505,7 @@
           "network": "May error sa network, subukan ulit.",
           "notAuthenticated": "Kailangan mong naka sign in.",
           "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "blacklisted": "Naka-block sa bot ang server na ito o ang iyong Discord account.",
           "invalid": "May mga di wastong field.",
           "color": "Hindi wastong kulay.",
           "token": {
@@ -6449,6 +6521,9 @@
         "description": "Pinapalitan ang text message ng isang uri ng alerto ng larawang binuo mula sa iyong template. Para lang sa mga server na may sariling bot.",
         "usingImage": "Ipinost bilang larawan",
         "usingText": "Ipinost bilang text message",
+        "presetNone": "Mensaheng teksto, walang larawan",
+        "presetChoose": "Template",
+        "presetSaved": "Na-save ang template",
         "presetLabel": "Panimulang disenyo",
         "presetHint": "Piliin ang impormasyong ipapakita ng larawan. Mae-edit pa rin ang lahat pagkatapos.",
         "preset": {
@@ -6475,18 +6550,19 @@
           "network": "May error sa network, subukan ulit.",
           "notAuthenticated": "Kailangan mong mag-sign in.",
           "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "blacklisted": "Naka-block sa bot ang server na ito o ang iyong Discord account.",
           "invalid": "Hindi valid ang template.",
           "invalidImage": "Hindi valid ang larawang ito (PNG, JPEG o WebP, hindi bababa sa 400 px sa pinakamaikling gilid).",
           "tooLarge": "Mas malaki sa 10 MB ang larawang ito.",
           "storageFailed": "Hindi ma-store ang larawan, subukan ulit."
         },
-        "editDesign": "I-edit ang disenyo"
+        "editDesign": "I-edit ang disenyo",
+        "presetCustom": "Kinustomize"
       },
       "editor": {
         "title": "Disenyo ng alerto: {event}",
         "description": "I-drag, i-resize at i-rotate ang mga elemento sa canvas, i-style ang mga ito sa kanan at ipakita lamang sa ilalim ng mga kondisyon. Ang preview na ipapadala ay gumagamit ng eksaktong rendering ng bot.",
         "addText": "Teksto",
-        "addLogo": "Logo ng team",
         "addShape": "Hugis",
         "undo": "I-undo",
         "previewServer": "Preview kung paano ipinadala",
@@ -6497,9 +6573,6 @@
         "backgroundColor": "Kulay ng background",
         "layers": "Mga elemento (nasa harap muna)",
         "noLayers": "Wala pang elemento.",
-        "noSelection": "Pumili ng elemento sa canvas o sa listahan para i-edit ito.",
-        "moveBack": "Ipadala sa likod",
-        "moveFront": "Dalhin sa harap",
         "duplicate": "I-duplicate",
         "delete": "Burahin",
         "width": "Lapad",
@@ -6542,15 +6615,6 @@
         "color": "Kulay",
         "bold": "Bold",
         "uppercase": "Malalaking titik",
-        "sideLabel": "Team",
-        "side": {
-          "a": "Team A",
-          "b": "Team B"
-        },
-        "logoOf": {
-          "a": "Logo ng team A",
-          "b": "Logo ng team B"
-        },
         "shape": "Hugis",
         "opacity": "Opacity",
         "radius": "Radius ng sulok",
@@ -6564,6 +6628,7 @@
           "network": "May error sa network, subukan ulit.",
           "notAuthenticated": "Kailangan mong mag-sign in.",
           "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "blacklisted": "Naka-block sa bot ang server na ito o ang iyong Discord account.",
           "invalid": "Hindi wasto ang template.",
           "invalidImage": "Hindi wasto ang larawang ito.",
           "tooLarge": "Masyadong malaki ang larawang ito.",
@@ -6614,7 +6679,6 @@
         },
         "imageFallbackHint": "Kapag walang larawan, may ipapakitang tile na may mga initial.",
         "shapeHint": "Walang nilalaman ang isang hugis, i-style ito sa tab na Estilo.",
-        "logoStyleHint": "Ipinapakita ang logo ng team nang walang pagbabago, baguhin ang laki at posisyon nito sa Layout.",
         "rotation": "Pag-rotate (digri)",
         "alignTitle": "I-align sa larawan",
         "addFolder": "Bagong folder",
@@ -6672,7 +6736,6 @@
         },
         "addCondition": "Magdagdag ng kondisyon",
         "removeCondition": "Alisin ang kondisyong ito",
-        "canvasSettings": "Mga setting ng larawan",
         "footer": "Footer ng GC Stats",
         "artwork": "Artwork ng map bilang background",
         "artworkSource": "Artwork ng",
@@ -6729,6 +6792,10 @@
           "veto_side": "Panig ng veto {n} (Atake o Depensa)"
         },
         "insertVariableHint": "I-click ang isang variable para ipasok ito sa teksto, sa posisyon ng cursor.",
+        "templateLabel": "Template",
+        "applyTemplate": "Palitan ang disenyo ng template na ito",
+        "templateHint": "Papalitan ng template ang lahat ng layer. Maaari mo itong i-undo.",
+        "templateApplied": "Naipatupad ang template",
         "layoutLayer": "Layout",
         "pickImage": "Pumili ng larawan",
         "pickImageHint": "May sariling laki ang bawat uri ng larawan, puwede mo itong baguhin pagkatapos.",

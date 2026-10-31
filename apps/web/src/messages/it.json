@@ -6,8 +6,8 @@
     "home": "Home",
     "matches": "Match",
     "tournaments": "Tornei",
-    "calendar": "Calendario",
     "news": "News",
+    "calendar": "Calendario",
     "forum": "Forum",
     "about": "Chi siamo",
     "search": "Cerca",
@@ -22,6 +22,8 @@
     "menu": "Menu"
   },
   "auth": {
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
     "login": {
       "title": "Accedi",
       "subtitle": "Un solo account GC-Stats, qualunque sia il modo in cui accedi."
@@ -1113,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "Attacco",
     "sideDefense": "Difesa",
-    "openMatch": "Apri la partita"
+    "openMatch": "Apri la partita",
+    "imageRemoved": "L'immagine di questo avviso è stata rimossa dalla moderazione di GC Stats."
   },
   "supportUs": {
     "title": "Sostienici",
@@ -2009,6 +2012,7 @@
       "about": "Chi siamo / Progetti",
       "backToSite": "Torna al sito",
       "pendingChangeRequests": "Richieste di modifica in sospeso",
+      "pendingDiscordImages": "Immagini Discord da verificare",
       "tournaments": "Tornei",
       "groupModeration": "Moderazione",
       "reports": "Segnalazioni",
@@ -2018,7 +2022,8 @@
       "activityLog": "Registro attività",
       "analytics": "Statistiche",
       "oauthClients": "Client OAuth",
-      "settings": "Configurazione"
+      "settings": "Configurazione",
+      "discordImages": "Immagini del bot Discord"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2266,7 +2271,8 @@
           "staff": "Staff",
           "people": "Persone",
           "apiKeys": "Chiavi API",
-          "logs": "Log"
+          "logs": "Log",
+          "veto": "Veto delle mappe"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Modificare il profilo (nome, social, tag)",
@@ -2291,7 +2297,8 @@
           "organization_people_link_user": "Collegare una persona a un account utente",
           "organization_people_edit_profile": "Modificare il profilo di una persona (informazioni di base e avanzate)",
           "organization_api_keys_manage": "Gestire le chiavi API dell'organizzazione",
-          "organization_logs_view": "Vedere i log dell'organizzazione"
+          "organization_logs_view": "Vedere i log dell'organizzazione",
+          "organization_veto_manage": "Gestire il veto delle mappe in diretta dei tornei organizzati"
         },
         "accessError": {
           "notFound": "Organizzazione non trovata."
@@ -4834,6 +4841,73 @@
       "statDismissed": "Archiviati",
       "error": {
         "notFound": "Questa voce non esiste più."
+      },
+      "images": {
+        "title": "Immagini del bot Discord",
+        "subtitle": "Immagini degli avvisi personalizzate dai server. Un'immagine verificata esce dalla lista e torna solo se viene modificata.",
+        "empty": "Nessuna immagine da verificare.",
+        "imageAlt": "Immagine di avviso di un server",
+        "openImage": "Apri l'immagine in una nuova scheda",
+        "event": {
+          "match_live": "Partita in diretta",
+          "match_finished": "Partita terminata",
+          "map_finished": "Mappa terminata"
+        },
+        "server": "Server",
+        "unknownUser": "Account sconosciuto",
+        "guildBlacklisted": "Server in blacklist",
+        "userBlacklisted": "Utente in blacklist",
+        "verifyButton": "Verifica",
+        "sanctionButton": "Sanziona",
+        "verifySuccess": "Immagine verificata.",
+        "error": {
+          "notFound": "Questa immagine è già stata gestita o non esiste più."
+        },
+        "sanction": {
+          "title": "Sanziona questa immagine",
+          "description": "Scegli cosa succede al server e alla persona che ha caricato questa immagine.",
+          "sanctionsLabel": "Sanzioni",
+          "option": {
+            "blacklistGuild": {
+              "label": "Inserire il server in blacklist",
+              "hint": "Il server non può più usare la dashboard e non riceve più avvisi."
+            },
+            "blacklistUser": {
+              "label": "Inserire l'account Discord in blacklist",
+              "hint": "Questo account Discord non può più gestire il bot su nessun server."
+            },
+            "resetImage": {
+              "label": "Reimposta l'immagine",
+              "hint": "L'immagine personalizzata viene eliminata e il server torna all'avviso di solo testo."
+            },
+            "editMessages": {
+              "label": "Modifica i messaggi già inviati con questa immagine",
+              "hint": "L'immagine viene rimossa dagli avvisi pubblicati e sostituita da un avviso che indica che la moderazione di GC Stats l'ha rimossa."
+            }
+          },
+          "alreadyBlacklisted": "Già in blacklist.",
+          "reasonLabel": "Motivo",
+          "reasonHint": "Conservato con la voce della blacklist.",
+          "cancel": "Annulla",
+          "submit": "Sanziona",
+          "submitting": "Sanzione in corso...",
+          "success": "Sanzione applicata.",
+          "error": {
+            "notFound": "Questa immagine è già stata gestita o non esiste più.",
+            "sanctions": {
+              "required": "Seleziona almeno una sanzione."
+            },
+            "blacklistUser": {
+              "noEditor": "L'account Discord dell'ultimo editor è sconosciuto."
+            },
+            "reason": {
+              "required": "Inserisci un motivo.",
+              "tooLong": "Il motivo è troppo lungo (max {max} caratteri)."
+            }
+          },
+          "successQueued": "Sanzione applicata, {count} messaggi verranno modificati a breve."
+        },
+        "editor": "Modificata da"
       }
     },
     "forum": {
@@ -5018,6 +5092,119 @@
       "hasLeft": "Ha lasciato il team",
       "untilLabel": "Uscita il",
       "unknownHint": "Data di fine sconosciuta, lascia vuoto se non la conosci."
+    },
+    "vetoManagement": {
+      "title": "Veto delle mappe in diretta",
+      "subtitle": "I team vetano le mappe da un link privato e il risultato compila il match in tempo reale.",
+      "openPage": "Veto delle mappe in diretta",
+      "backToTournament": "Torna a {name}",
+      "enableTitle": "Attivazione",
+      "enableDescription": "Una volta attivato, ogni team del torneo riceve un link privato per il veto e l'organizzatore può gestire il veto dalla sua dashboard.",
+      "enabled": "Attivato",
+      "disabled": "Disattivato",
+      "enableButton": "Attiva il veto",
+      "disableButton": "Disattiva il veto",
+      "enabledSuccess": "Veto in diretta attivato.",
+      "disabledSuccess": "Veto in diretta disattivato.",
+      "settingsTitle": "Impostazioni",
+      "settingsDescription": "Regole applicate a ogni match del torneo.",
+      "firstMoverLabel": "Chi inizia il veto",
+      "mode": {
+        "coin_toss": "Decide il lancio della moneta",
+        "coin_toss_winner": "Decide il vincitore del lancio della moneta",
+        "advantage": "Decide il team con il vantaggio",
+        "predefined": "Predefinito"
+      },
+      "modeHint": {
+        "coin_toss": "Un lancio della moneta sceglie il team che banna per primo.",
+        "coin_toss_winner": "Un lancio della moneta sceglie un vincitore, che decide quale team banna per primo.",
+        "advantage": "Un team con il vantaggio decide quale team banna per primo.",
+        "predefined": "Il team dello slot scelto (team A o B del match) banna sempre per primo."
+      },
+      "advantageLabel": "Team con il vantaggio",
+      "advantageNone": "Scegli un team",
+      "slotLabel": "Team che inizia",
+      "slotA": "Team A",
+      "slotB": "Team B",
+      "timeoutLabel": "Tempo per azione (secondi)",
+      "timeoutHint": "Un team che esaurisce il tempo riceve una mappa o un lato casuale. Tra 10 e 600.",
+      "poolLabel": "Map pool",
+      "poolCount": "{count} selezionate, ne servono 7.",
+      "patchLabel": "Oppure usa le mappe di una patch",
+      "patchHint": "Usata quando nessuna mappa è selezionata sopra, ad esempio 11.07. Vengono usate le mappe giocate in questa patch.",
+      "saveButton": "Salva",
+      "saving": "Salvataggio...",
+      "saveSuccess": "Impostazioni salvate.",
+      "saveFailed": "Alcuni campi non sono validi.",
+      "linksTitle": "Link dei team",
+      "linksDescription": "Ogni team ha un link privato per tutto il torneo. Chiunque abbia il link può vetare per il team, senza bisogno di un account.",
+      "noEntrants": "Nessun team in questo torneo per ora.",
+      "noLink": "Nessun link per ora",
+      "generate": "Genera",
+      "copyLink": "Copia il link",
+      "copied": "Copiato",
+      "copyFailed": "Impossibile copiare il link.",
+      "regenerate": "Rigenera",
+      "regenerated": "Nuovo link generato, quello vecchio non funziona più.",
+      "regenerateTitle": "Rigenerare questo link?",
+      "regenerateDescription": "Il link attuale di {team} smette di funzionare subito. Invia il nuovo link al team.",
+      "cancel": "Annulla",
+      "matchesTitle": "Match",
+      "matchesDescription": "Modifica la map pool di un match o reimposta un veto già iniziato.",
+      "noMatches": "Nessun match in programma.",
+      "teamsUnknown": "Team non ancora noti",
+      "editPool": "Map pool",
+      "matchPoolHint": "Mappe solo per questo match. Senza selezione, viene usata la pool del torneo.",
+      "useTournamentPool": "Usa la pool del torneo",
+      "poolSaved": "Map pool salvata.",
+      "reset": "Reimposta",
+      "resetTitle": "Reimpostare questo veto?",
+      "resetDescription": "Ogni ban, pick e lato già scelto viene cancellato e i team devono essere di nuovo pronti.",
+      "resetDone": "Veto reimpostato.",
+      "status": {
+        "waiting": "In attesa",
+        "choosing": "Scelta di chi inizia",
+        "running": "In corso",
+        "done": "Terminato"
+      },
+      "error": {
+        "notFound": "Non trovato.",
+        "firstMoverMode": {
+          "invalid": "Scegli un'opzione valida."
+        },
+        "advantageEntrantId": {
+          "required": "Scegli il team con il vantaggio.",
+          "invalid": "Questo team non fa parte del torneo."
+        },
+        "predefinedSlot": {
+          "invalid": "Scegli il team A o B."
+        },
+        "actionTimeoutSeconds": {
+          "required": "Inserisci un tempo.",
+          "notInteger": "Inserisci un numero intero di secondi.",
+          "outOfRange": "Inserisci un valore tra 10 e 600 secondi."
+        },
+        "mapPool": {
+          "required": "Seleziona 7 mappe oppure indica una patch.",
+          "invalidMap": "Una delle mappe non è valida.",
+          "duplicateMap": "Una mappa è selezionata due volte.",
+          "poolSize": "Seleziona esattamente 7 mappe.",
+          "vetoRunning": "Un veto è in corso, attendi che finisca o reimpostalo prima di modificare la pool."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "Inserisci una patch come 11.07.",
+          "patchUnknown": "Questa patch non fornisce una pool di 7 mappe, selezionale a mano."
+        },
+        "matchPool": {
+          "notFound": "Match non trovato.",
+          "invalidMap": "Una delle mappe non è valida.",
+          "duplicateMap": "Una mappa è selezionata due volte.",
+          "poolSize": "Seleziona esattamente 7 mappe, oppure nessuna per usare la pool del torneo.",
+          "vetoStarted": "Il veto è già iniziato, reimpostalo prima."
+        }
+      },
+      "copyOverlay": "Link overlay",
+      "overlayCopied": "Link overlay copiato, aggiungilo come sorgente browser."
     },
     "rosterSource": {
       "placeholder": "Link dell'annuncio",
@@ -5272,6 +5459,7 @@
       "allAuthors": "Tutti gli autori",
       "authorAdminSpace": "Autori",
       "logs": "Log",
+      "veto": "Veto delle mappe",
       "webhooks": "Webhook",
       "discordSpace": "Bot Discord",
       "discordServers": "I miei server"
@@ -6051,6 +6239,12 @@
       "previous": "Pagina precedente",
       "next": "Pagina successiva"
     },
+    "veto": {
+      "title": "Veto delle mappe",
+      "subtitle": "Configura il veto in diretta dei tornei organizzati dalla tua organizzazione.",
+      "readOnlyHint": "Non hai il permesso di gestire il veto delle mappe.",
+      "noTournaments": "Nessun torneo della tua organizzazione ha il veto delle mappe attivato. Un admin di GC Stats lo attiva per te."
+    },
     "webhooks": {
       "title": "Webhook",
       "description": "GC Stats invia un POST HTTPS ai tuoi endpoint quando cambia una partita, un torneo, una squadra o un giocatore. Gli invii vengono controllati circa ogni minuto.",
@@ -6247,6 +6441,7 @@
         "network": "Errore di rete, riprova.",
         "notAuthenticated": "Devi aver effettuato l'accesso.",
         "forbidden": "Non puoi gestire questo server.",
+        "blacklisted": "Questo server o il tuo account Discord è bloccato dal bot.",
         "notFound": "Questo avviso non esiste più.",
         "invalid": "Alcuni campi non sono validi.",
         "tooManySubscriptions": "Un server può avere al massimo {max} avvisi.",
@@ -6310,6 +6505,7 @@
           "network": "Errore di rete, riprova.",
           "notAuthenticated": "Devi aver effettuato l'accesso.",
           "forbidden": "Non puoi gestire questo server.",
+          "blacklisted": "Questo server o il tuo account Discord è bloccato dal bot.",
           "invalid": "Alcuni campi non sono validi.",
           "color": "Colore non valido.",
           "token": {
@@ -6325,6 +6521,9 @@
         "description": "Sostituisce il messaggio di testo di un tipo di avviso con un'immagine creata dal tuo template. Riservato ai server che usano il proprio bot.",
         "usingImage": "Pubblicato come immagine",
         "usingText": "Pubblicato come messaggio di testo",
+        "presetNone": "Messaggio di testo, nessuna immagine",
+        "presetChoose": "Modello",
+        "presetSaved": "Modello salvato",
         "presetLabel": "Design di partenza",
         "presetHint": "Scegli le informazioni mostrate dall'immagine. Tutto resta modificabile in seguito.",
         "preset": {
@@ -6351,18 +6550,19 @@
           "network": "Errore di rete, riprova.",
           "notAuthenticated": "Devi aver effettuato l'accesso.",
           "forbidden": "Non puoi gestire questo server.",
+          "blacklisted": "Questo server o il tuo account Discord è bloccato dal bot.",
           "invalid": "Il template non è valido.",
           "invalidImage": "Questa immagine non è valida (PNG, JPEG o WebP, almeno 400 px sul lato più corto).",
           "tooLarge": "Questa immagine supera i 10 MB.",
           "storageFailed": "Impossibile salvare l'immagine, riprova."
         },
-        "editDesign": "Modifica il design"
+        "editDesign": "Modifica il design",
+        "presetCustom": "Personalizzato"
       },
       "editor": {
         "title": "Design dell'avviso: {event}",
         "description": "Trascina, ridimensiona e ruota gli elementi sul canvas, stilizzali a destra e mostrali solo a determinate condizioni. L'anteprima così come inviata usa il rendering esatto del bot.",
         "addText": "Testo",
-        "addLogo": "Logo del team",
         "addShape": "Forma",
         "undo": "Annulla",
         "previewServer": "Anteprima come inviata",
@@ -6373,9 +6573,6 @@
         "backgroundColor": "Colore di sfondo",
         "layers": "Elementi (primo piano per primo)",
         "noLayers": "Nessun elemento per ora.",
-        "noSelection": "Seleziona un elemento sulla tela o nell'elenco per modificarlo.",
-        "moveBack": "Porta indietro",
-        "moveFront": "Porta avanti",
         "duplicate": "Duplica",
         "delete": "Elimina",
         "width": "Larghezza",
@@ -6418,15 +6615,6 @@
         "color": "Colore",
         "bold": "Grassetto",
         "uppercase": "Maiuscolo",
-        "sideLabel": "Team",
-        "side": {
-          "a": "Team A",
-          "b": "Team B"
-        },
-        "logoOf": {
-          "a": "Logo del team A",
-          "b": "Logo del team B"
-        },
         "shape": "Forma",
         "opacity": "Opacità",
         "radius": "Raggio degli angoli",
@@ -6440,6 +6628,7 @@
           "network": "Errore di rete, riprova.",
           "notAuthenticated": "Devi aver effettuato l'accesso.",
           "forbidden": "Non puoi gestire questo server.",
+          "blacklisted": "Questo server o il tuo account Discord è bloccato dal bot.",
           "invalid": "Il modello non è valido.",
           "invalidImage": "Questa immagine non è valida.",
           "tooLarge": "Questa immagine è troppo grande.",
@@ -6490,7 +6679,6 @@
         },
         "imageFallbackHint": "Senza immagine viene mostrato un riquadro con le iniziali.",
         "shapeHint": "Una forma non ha contenuto, stilizzala nella scheda Stile.",
-        "logoStyleHint": "Il logo del team viene mostrato così com'è, cambia dimensione e posizione in Disposizione.",
         "rotation": "Rotazione (gradi)",
         "alignTitle": "Allinea all'immagine",
         "addFolder": "Nuova cartella",
@@ -6548,7 +6736,6 @@
         },
         "addCondition": "Aggiungi una condizione",
         "removeCondition": "Rimuovi questa condizione",
-        "canvasSettings": "Impostazioni dell'immagine",
         "footer": "Footer GC Stats",
         "artwork": "Artwork della mappa come sfondo",
         "artworkSource": "Artwork di",
@@ -6605,6 +6792,10 @@
           "veto_side": "Lato del veto {n} (Attacco o Difesa)"
         },
         "insertVariableHint": "Clicca su una variabile per inserirla nel testo, nella posizione del cursore.",
+        "templateLabel": "Modello",
+        "applyTemplate": "Sostituisci il design con questo modello",
+        "templateHint": "Sostituisce tutti i livelli con il modello. Puoi annullare.",
+        "templateApplied": "Modello applicato",
         "layoutLayer": "Layout",
         "pickImage": "Scegli un'immagine",
         "pickImageHint": "Ogni tipo di immagine ha una sua dimensione, che puoi modificare dopo.",
@@ -7442,6 +7633,69 @@
     "points": "Qualificato tramite punti {label}",
     "pointsUnknown": "Qualificato tramite punti",
     "iconLabel": "Origine della qualificazione"
+  },
+  "veto": {
+    "title": "Veto delle mappe",
+    "invalidLinkTitle": "Link del veto non valido",
+    "invalidLinkHint": "Questo link non è valido oppure il veto non è attivato per questo torneo. Chiedi un nuovo link agli organizzatori.",
+    "noMatch": "Nessun match da vetare per ora. Questa pagina si aggiorna da sola quando il tuo prossimo match è pronto.",
+    "you": "Voi",
+    "opponent": "Avversario",
+    "ready": "Pronto",
+    "bestOf": "BO{count}",
+    "poolError": "La map pool di questo match non è ancora completa. Chiedi agli organizzatori di impostarla.",
+    "waitingTitle": "Pronti per il veto?",
+    "waitingHint": "Il veto inizia quando entrambi i team sono pronti.",
+    "readyButton": "Siamo pronti",
+    "cancelReady": "Non ancora pronti",
+    "chooseFirstTitle": "Chi inizia il veto?",
+    "chooseFirstHint": "Scegliete quale team banna per primo.",
+    "weStart": "Iniziamo noi",
+    "opponentStarts": "Inizia {team}",
+    "waitingChoice": "{team} sta scegliendo chi inizia il veto.",
+    "yourTurn": {
+      "ban": "Tocca a voi: bannate una mappa",
+      "pick": "Tocca a voi: scegliete una mappa",
+      "side": "Tocca a voi: scegliete il vostro lato"
+    },
+    "stepWaiting": {
+      "ban": "Stanno scegliendo una mappa da bannare.",
+      "pick": "Stanno scegliendo una mappa da giocare.",
+      "side": "Stanno scegliendo un lato."
+    },
+    "theirTurn": "Tocca a {team}",
+    "attack": "Attacco",
+    "defense": "Difesa",
+    "toBeDecided": "Da decidere",
+    "stepLabel": {
+      "ban": "Ban",
+      "pick": "Pick",
+      "side": "Lato",
+      "decider": "Decider"
+    },
+    "vetoDone": "Il veto è finito. Buona partita!",
+    "gameFinishedHint": "Quando la partita è finita, premi questo pulsante per avvisare lo staff di GC Stats. Questo non avvisa l'organizzatore del torneo.",
+    "gameFinishedButton": "La partita è finita",
+    "staffNotified": "Lo staff di GC Stats è stato avvisato (non l'organizzatore del torneo).",
+    "previousMatch": "Match precedente",
+    "nextMatch": "Match successivo",
+    "error": {
+      "unknown": "Qualcosa è andato storto, riprova.",
+      "network": "Problema di connessione, riprova.",
+      "notFound": "Questo match non è disponibile.",
+      "notAllowed": "Non fai parte di questo match.",
+      "wrongPhase": "Questa azione non è disponibile in questo momento.",
+      "notYourTurn": "Non è il tuo turno.",
+      "wrongStep": "Questa non è l'azione prevista.",
+      "mapUnavailable": "Questa mappa non è disponibile.",
+      "invalidSide": "Lato non valido.",
+      "noStep": "Il veto è già finito.",
+      "poolInvalid": "La map pool di questo match non è completa.",
+      "alreadyNotified": "Lo staff è già stato avvisato.",
+      "matchCompleted": "Questo match è già terminato.",
+      "rateLimited": "Troppe richieste, rallenta.",
+      "invalidRequest": "Richiesta non valida."
+    }
   },
   "liquipediaHub": {
     "title": "Liquipedia",

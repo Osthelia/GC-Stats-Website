@@ -6,8 +6,8 @@
     "home": "ホーム",
     "matches": "試合",
     "tournaments": "大会",
-    "calendar": "カレンダー",
     "news": "ニュース",
+    "calendar": "カレンダー",
     "forum": "フォーラム",
     "about": "概要",
     "search": "検索",
@@ -22,6 +22,8 @@
     "menu": "メニュー"
   },
   "auth": {
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを非表示",
     "login": {
       "title": "ログイン",
       "subtitle": "GC-Statsアカウントは一つ、サインイン方法はお好みで選べます。"
@@ -1113,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "アタック",
     "sideDefense": "ディフェンス",
-    "openMatch": "試合を開く"
+    "openMatch": "試合を開く",
+    "imageRemoved": "このアラートの画像は GC Stats のモデレーションによって削除されました。"
   },
   "supportUs": {
     "title": "私たちを支援する",
@@ -2009,6 +2012,7 @@
       "about": "概要 / プロジェクト",
       "backToSite": "サイトに戻る",
       "pendingChangeRequests": "保留中の変更リクエスト",
+      "pendingDiscordImages": "確認待ちの Discord 画像",
       "tournaments": "トーナメント",
       "groupModeration": "モデレーション",
       "reports": "通報",
@@ -2018,7 +2022,8 @@
       "activityLog": "アクティビティログ",
       "analytics": "アナリティクス",
       "oauthClients": "OAuthクライアント",
-      "settings": "設定"
+      "settings": "設定",
+      "discordImages": "Discord ボットの画像"
     },
     "dashboard": {
       "title": "ダッシュボード",
@@ -2266,7 +2271,8 @@
           "staff": "スタッフ",
           "people": "人物",
           "apiKeys": "APIキー",
-          "logs": "ログ"
+          "logs": "ログ",
+          "veto": "マップ拒否"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "プロフィールを編集（名前、ソーシャル、タグ）",
@@ -2291,7 +2297,8 @@
           "organization_people_link_user": "人物をユーザーアカウントにリンク",
           "organization_people_edit_profile": "人物のプロフィールを編集（基本情報と詳細情報）",
           "organization_api_keys_manage": "組織のAPIキーを管理",
-          "organization_logs_view": "組織のログを表示"
+          "organization_logs_view": "組織のログを表示",
+          "organization_veto_manage": "主催大会のライブマップ拒否を管理"
         },
         "accessError": {
           "notFound": "組織が見つかりません。"
@@ -3551,6 +3558,10 @@
       "subtitle": "トーナメントとそのステージ、ブラケット、出場チームを作成、管理します。",
       "searchPlaceholder": "トーナメント名…",
       "searchSubmit": "検索",
+      "activeFilterLabel": "アクティビティ",
+      "activeFilterAny": "すべての大会",
+      "activeFilterActive": "アクティブ",
+      "activeFilterInactive": "非アクティブ",
       "heading": "トーナメント",
       "statTotal": "トーナメント総数",
       "columnName": "名前",
@@ -4744,11 +4755,7 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "インポートとRiotデータの取得中です。しばらくお待ちください。",
         "close": "閉じる"
-      },
-      "activeFilterLabel": "アクティビティ",
-      "activeFilterAny": "すべての大会",
-      "activeFilterActive": "アクティブ",
-      "activeFilterInactive": "非アクティブ"
+      }
     },
     "reports": {
       "title": "通報",
@@ -4834,6 +4841,73 @@
       "statDismissed": "却下済み",
       "error": {
         "notFound": "このエントリーはすでに存在しません。"
+      },
+      "images": {
+        "title": "Discord ボットの画像",
+        "subtitle": "サーバーがカスタマイズしたアラート画像です。確認済みの画像はリストから消え、編集された場合のみ再表示されます。",
+        "empty": "確認する画像はありません。",
+        "imageAlt": "サーバーのアラート画像",
+        "openImage": "画像を新しいタブで開く",
+        "event": {
+          "match_live": "試合中",
+          "match_finished": "試合終了",
+          "map_finished": "マップ終了"
+        },
+        "server": "サーバー",
+        "unknownUser": "不明なアカウント",
+        "guildBlacklisted": "ブラックリスト入りのサーバー",
+        "userBlacklisted": "ブラックリスト入りのユーザー",
+        "verifyButton": "確認済みにする",
+        "sanctionButton": "制裁する",
+        "verifySuccess": "画像を確認しました。",
+        "error": {
+          "notFound": "この画像はすでに処理されたか、存在しません。"
+        },
+        "sanction": {
+          "title": "この画像を制裁する",
+          "description": "サーバーと、この画像をアップロードした人に何が起きるかを選択してください。",
+          "sanctionsLabel": "制裁",
+          "option": {
+            "blacklistGuild": {
+              "label": "サーバーをブラックリストに追加",
+              "hint": "サーバーはダッシュボードを使用できなくなり、アラートも届かなくなります。"
+            },
+            "blacklistUser": {
+              "label": "Discord アカウントをブラックリストに追加",
+              "hint": "この Discord アカウントはどのサーバーでもボットを管理できなくなります。"
+            },
+            "resetImage": {
+              "label": "画像をリセット",
+              "hint": "カスタム画像は削除され、サーバーはテキストのみのアラートに戻ります。"
+            },
+            "editMessages": {
+              "label": "この画像で送信済みのメッセージを編集",
+              "hint": "投稿済みのアラートから画像が削除され、GC Stats のモデレーションが削除したことを示す通知に置き換えられます。"
+            }
+          },
+          "alreadyBlacklisted": "すでにブラックリスト入りです。",
+          "reasonLabel": "理由",
+          "reasonHint": "ブラックリストの項目とともに保存されます。",
+          "cancel": "キャンセル",
+          "submit": "制裁する",
+          "submitting": "制裁中...",
+          "success": "制裁を適用しました。",
+          "error": {
+            "notFound": "この画像はすでに処理されたか、存在しません。",
+            "sanctions": {
+              "required": "制裁を1つ以上選択してください。"
+            },
+            "blacklistUser": {
+              "noEditor": "最後の編集者の Discord アカウントが不明です。"
+            },
+            "reason": {
+              "required": "理由を入力してください。",
+              "tooLong": "理由が長すぎます（最大 {max} 文字）。"
+            }
+          },
+          "successQueued": "制裁を適用しました。{count} 件のメッセージがまもなく編集されます。"
+        },
+        "editor": "編集者"
       }
     },
     "forum": {
@@ -5018,6 +5092,119 @@
       "hasLeft": "チームを離脱済み",
       "untilLabel": "脱退日",
       "unknownHint": "終了日は不明です。わからない場合は空欄のままにしてください。"
+    },
+    "vetoManagement": {
+      "title": "ライブマップ拒否",
+      "subtitle": "チームは専用リンクからマップを拒否し、結果は進行に合わせて試合に反映されます。",
+      "openPage": "ライブマップ拒否",
+      "backToTournament": "{name}に戻る",
+      "enableTitle": "有効化",
+      "enableDescription": "有効にすると、大会の全チームに専用の拒否リンクが発行され、主催者はダッシュボードから拒否を管理できます。",
+      "enabled": "有効",
+      "disabled": "無効",
+      "enableButton": "拒否を有効にする",
+      "disableButton": "拒否を無効にする",
+      "enabledSuccess": "ライブ拒否を有効にしました。",
+      "disabledSuccess": "ライブ拒否を無効にしました。",
+      "settingsTitle": "設定",
+      "settingsDescription": "大会の全試合に適用されるルールです。",
+      "firstMoverLabel": "拒否を開始するチーム",
+      "mode": {
+        "coin_toss": "コイントスで決定",
+        "coin_toss_winner": "コイントスの勝者が決定",
+        "advantage": "アドバンテージチームが決定",
+        "predefined": "事前指定"
+      },
+      "modeHint": {
+        "coin_toss": "コイントスで最初にバンするチームを決めます。",
+        "coin_toss_winner": "コイントスで勝者を決め、勝者が最初にバンするチームを選びます。",
+        "advantage": "アドバンテージを設定したチームが、最初にバンするチームを選びます。",
+        "predefined": "選択した枠(試合のチームAまたはB)のチームが常に最初にバンします。"
+      },
+      "advantageLabel": "アドバンテージのあるチーム",
+      "advantageNone": "チームを選択",
+      "slotLabel": "開始するチーム",
+      "slotA": "チームA",
+      "slotB": "チームB",
+      "timeoutLabel": "1回の操作の制限時間(秒)",
+      "timeoutHint": "時間切れになったチームには、ランダムなマップまたはサイドが割り当てられます。10〜600の間で指定してください。",
+      "poolLabel": "マッププール",
+      "poolCount": "{count}件選択中、7件必要です。",
+      "patchLabel": "またはパッチのマップを使用",
+      "patchHint": "上でマップを選択していない場合に使用されます(例: 11.07)。このパッチでプレイされたマップが使われます。",
+      "saveButton": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "設定を保存しました。",
+      "saveFailed": "無効な項目があります。",
+      "linksTitle": "チームリンク",
+      "linksDescription": "各チームには大会全体で使える専用リンクが1つあります。リンクを知っていれば誰でもアカウントなしでチームの拒否を行えます。",
+      "noEntrants": "この大会にはまだチームがありません。",
+      "noLink": "リンクなし",
+      "generate": "生成",
+      "copyLink": "リンクをコピー",
+      "copied": "コピーしました",
+      "copyFailed": "リンクをコピーできませんでした。",
+      "regenerate": "再生成",
+      "regenerated": "新しいリンクを生成しました。古いリンクは使えなくなります。",
+      "regenerateTitle": "このリンクを再生成しますか?",
+      "regenerateDescription": "{team}の現在のリンクはすぐに使えなくなります。新しいリンクをチームに送ってください。",
+      "cancel": "キャンセル",
+      "matchesTitle": "試合",
+      "matchesDescription": "試合のマッププールを調整したり、開始済みの拒否をリセットしたりできます。",
+      "noMatches": "予定されている試合はありません。",
+      "teamsUnknown": "チームは未確定です",
+      "editPool": "マッププール",
+      "matchPoolHint": "この試合のみのマップです。未選択の場合は大会のプールが使われます。",
+      "useTournamentPool": "大会のプールを使用",
+      "poolSaved": "マッププールを保存しました。",
+      "reset": "リセット",
+      "resetTitle": "この拒否をリセットしますか?",
+      "resetDescription": "選択済みのバン、ピック、サイドはすべて消去され、チームは再度準備完了にする必要があります。",
+      "resetDone": "拒否をリセットしました。",
+      "status": {
+        "waiting": "待機中",
+        "choosing": "開始チームを選択中",
+        "running": "進行中",
+        "done": "完了"
+      },
+      "error": {
+        "notFound": "見つかりません。",
+        "firstMoverMode": {
+          "invalid": "有効な選択肢を選んでください。"
+        },
+        "advantageEntrantId": {
+          "required": "アドバンテージのあるチームを選択してください。",
+          "invalid": "このチームは大会に参加していません。"
+        },
+        "predefinedSlot": {
+          "invalid": "チームAまたはBを選択してください。"
+        },
+        "actionTimeoutSeconds": {
+          "required": "時間を入力してください。",
+          "notInteger": "秒数は整数で入力してください。",
+          "outOfRange": "10〜600秒の間で入力してください。"
+        },
+        "mapPool": {
+          "required": "マップを7つ選択するか、パッチを指定してください。",
+          "invalidMap": "無効なマップが含まれています。",
+          "duplicateMap": "同じマップが2回選択されています。",
+          "poolSize": "ちょうど7つのマップを選択してください。",
+          "vetoRunning": "拒否が進行中です。プールを変更する前に、終了を待つかリセットしてください。"
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "11.07のような形式でパッチを入力してください。",
+          "patchUnknown": "このパッチでは7つのマップのプールを取得できません。手動で選択してください。"
+        },
+        "matchPool": {
+          "notFound": "試合が見つかりません。",
+          "invalidMap": "無効なマップが含まれています。",
+          "duplicateMap": "同じマップが2回選択されています。",
+          "poolSize": "ちょうど7つのマップを選択してください。大会のプールを使う場合は何も選択しないでください。",
+          "vetoStarted": "拒否はすでに開始されています。先にリセットしてください。"
+        }
+      },
+      "copyOverlay": "オーバーレイリンク",
+      "overlayCopied": "オーバーレイリンクをコピーしました。ブラウザソースとして追加してください。"
     },
     "rosterSource": {
       "placeholder": "発表のリンク",
@@ -5272,6 +5459,7 @@
       "allAuthors": "すべての著者",
       "authorAdminSpace": "著者",
       "logs": "ログ",
+      "veto": "マップ拒否",
       "webhooks": "Webhook",
       "discordSpace": "Discord ボット",
       "discordServers": "マイサーバー"
@@ -6051,6 +6239,12 @@
       "previous": "前のページ",
       "next": "次のページ"
     },
+    "veto": {
+      "title": "マップ拒否",
+      "subtitle": "組織が主催する大会のライブ拒否を設定します。",
+      "readOnlyHint": "マップ拒否を管理する権限がありません。",
+      "noTournaments": "マップ拒否が有効な大会が組織にありません。GC Statsの管理者が有効にします。"
+    },
     "webhooks": {
       "title": "Webhook",
       "description": "試合、大会、チーム、選手が変更されると、GC StatsはあなたのエンドポイントにHTTPS POSTを送信します。配信はおよそ1分ごとに確認されます。",
@@ -6247,6 +6441,7 @@
         "network": "ネットワークエラーです。もう一度お試しください。",
         "notAuthenticated": "ログインが必要です。",
         "forbidden": "このサーバーを管理する権限がありません。",
+        "blacklisted": "このサーバーまたはあなたの Discord アカウントはボットからブロックされています。",
         "notFound": "このアラートは存在しません。",
         "invalid": "無効な項目があります。",
         "tooManySubscriptions": "1つのサーバーに設定できるアラートは最大 {max} 件です。",
@@ -6310,6 +6505,7 @@
           "network": "ネットワークエラーです。もう一度お試しください。",
           "notAuthenticated": "サインインが必要です。",
           "forbidden": "このサーバーを管理する権限がありません。",
+          "blacklisted": "このサーバーまたはあなたの Discord アカウントはボットからブロックされています。",
           "invalid": "無効な項目があります。",
           "color": "無効な色です。",
           "token": {
@@ -6325,6 +6521,9 @@
         "description": "アラートの種類ごとのテキストメッセージを、テンプレートから作成した画像に置き換えます。独自のボットを使うサーバー専用です。",
         "usingImage": "画像として投稿",
         "usingText": "テキストメッセージとして投稿",
+        "presetNone": "テキストメッセージ、画像なし",
+        "presetChoose": "テンプレート",
+        "presetSaved": "テンプレートを保存しました",
         "presetLabel": "開始デザイン",
         "presetHint": "画像に表示する情報を選択してください。後からすべて編集できます。",
         "preset": {
@@ -6351,18 +6550,19 @@
           "network": "ネットワークエラーです。もう一度お試しください。",
           "notAuthenticated": "サインインが必要です。",
           "forbidden": "このサーバーを管理する権限がありません。",
+          "blacklisted": "このサーバーまたはあなたの Discord アカウントはボットからブロックされています。",
           "invalid": "テンプレートが無効です。",
           "invalidImage": "この画像は無効です(PNG、JPEG、WebP、短辺が400 px以上)。",
           "tooLarge": "この画像は10 MBを超えています。",
           "storageFailed": "画像を保存できませんでした。もう一度お試しください。"
         },
-        "editDesign": "デザインを編集"
+        "editDesign": "デザインを編集",
+        "presetCustom": "カスタマイズ済み"
       },
       "editor": {
         "title": "アラートのデザイン: {event}",
         "description": "キャンバス上の要素をドラッグ、リサイズ、回転し、右側でスタイルを設定して、条件を満たす場合だけ表示できます。送信されるプレビューはボットと全く同じ描画を使います。",
         "addText": "テキスト",
-        "addLogo": "チームロゴ",
         "addShape": "図形",
         "undo": "元に戻す",
         "previewServer": "送信時のプレビュー",
@@ -6373,9 +6573,6 @@
         "backgroundColor": "背景色",
         "layers": "要素（前面が先）",
         "noLayers": "まだ要素がありません。",
-        "noSelection": "編集するには、キャンバスまたはリストで要素を選択してください。",
-        "moveBack": "背面へ移動",
-        "moveFront": "前面へ移動",
         "duplicate": "複製",
         "delete": "削除",
         "width": "幅",
@@ -6418,15 +6615,6 @@
         "color": "色",
         "bold": "太字",
         "uppercase": "大文字",
-        "sideLabel": "チーム",
-        "side": {
-          "a": "チームA",
-          "b": "チームB"
-        },
-        "logoOf": {
-          "a": "チームAのロゴ",
-          "b": "チームBのロゴ"
-        },
         "shape": "図形",
         "opacity": "不透明度",
         "radius": "角の丸み",
@@ -6440,6 +6628,7 @@
           "network": "ネットワークエラーです。もう一度お試しください。",
           "notAuthenticated": "サインインが必要です。",
           "forbidden": "このサーバーを管理する権限がありません。",
+          "blacklisted": "このサーバーまたはあなたの Discord アカウントはボットからブロックされています。",
           "invalid": "テンプレートが無効です。",
           "invalidImage": "この画像は無効です。",
           "tooLarge": "この画像は大きすぎます。",
@@ -6490,7 +6679,6 @@
         },
         "imageFallbackHint": "画像がない場合は、イニシャルのタイルが表示されます。",
         "shapeHint": "図形にはコンテンツがありません。スタイルタブで設定してください。",
-        "logoStyleHint": "チームのロゴはそのまま表示されます。サイズと位置はレイアウトで変更できます。",
         "rotation": "回転(度)",
         "alignTitle": "画像に揃える",
         "addFolder": "新しいフォルダ",
@@ -6548,7 +6736,6 @@
         },
         "addCondition": "条件を追加",
         "removeCondition": "この条件を削除",
-        "canvasSettings": "画像の設定",
         "footer": "GC Statsのフッター",
         "artwork": "背景としてマップのアートワーク",
         "artworkSource": "アートワークの対象",
@@ -6605,6 +6792,10 @@
           "veto_side": "ベトー{n}のサイド（アタックまたはディフェンス）"
         },
         "insertVariableHint": "変数をクリックすると、カーソル位置のテキストに挿入されます。",
+        "templateLabel": "テンプレート",
+        "applyTemplate": "デザインをこのテンプレートに置き換える",
+        "templateHint": "すべてのレイヤーをテンプレートに置き換えます。元に戻せます。",
+        "templateApplied": "テンプレートを適用しました",
         "layoutLayer": "レイアウト",
         "pickImage": "画像を選ぶ",
         "pickImageHint": "画像の種類ごとに専用のサイズがあり、あとから変更できます。",
@@ -7442,6 +7633,69 @@
     "points": "{label} ポイントで出場",
     "pointsUnknown": "ポイントで出場",
     "iconLabel": "出場経路"
+  },
+  "veto": {
+    "title": "マップ拒否",
+    "invalidLinkTitle": "無効な拒否リンク",
+    "invalidLinkHint": "このリンクは無効か、この大会で拒否が有効になっていません。主催者に新しいリンクを依頼してください。",
+    "noMatch": "現在、拒否を行う試合はありません。次の試合の準備ができると、このページは自動的に更新されます。",
+    "you": "あなた",
+    "opponent": "対戦相手",
+    "ready": "準備完了",
+    "bestOf": "BO{count}",
+    "poolError": "この試合のマッププールはまだ完成していません。主催者に設定を依頼してください。",
+    "waitingTitle": "拒否の準備はできましたか?",
+    "waitingHint": "両チームの準備が整うと拒否が始まります。",
+    "readyButton": "準備完了",
+    "cancelReady": "まだ準備できていない",
+    "chooseFirstTitle": "どちらが拒否を始めますか?",
+    "chooseFirstHint": "最初にバンするチームを選んでください。",
+    "weStart": "自チームが始める",
+    "opponentStarts": "{team}が始める",
+    "waitingChoice": "{team}が開始チームを選んでいます。",
+    "yourTurn": {
+      "ban": "あなたの番です。マップをバンしてください",
+      "pick": "あなたの番です。マップをピックしてください",
+      "side": "あなたの番です。サイドを選んでください"
+    },
+    "stepWaiting": {
+      "ban": "相手がバンするマップを選んでいます。",
+      "pick": "相手がピックするマップを選んでいます。",
+      "side": "相手がサイドを選んでいます。"
+    },
+    "theirTurn": "{team}の番です",
+    "attack": "アタック",
+    "defense": "ディフェンス",
+    "toBeDecided": "未定",
+    "stepLabel": {
+      "ban": "バン",
+      "pick": "ピック",
+      "side": "サイド",
+      "decider": "デシダー"
+    },
+    "vetoDone": "拒否は終了しました。試合頑張ってください!",
+    "gameFinishedHint": "試合が終わったら、このボタンを押してGC Statsスタッフに通知してください。大会主催者には通知されません。",
+    "gameFinishedButton": "試合が終了しました",
+    "staffNotified": "GC Statsスタッフに通知しました(大会主催者には通知されていません)。",
+    "previousMatch": "前の試合",
+    "nextMatch": "次の試合",
+    "error": {
+      "unknown": "問題が発生しました。もう一度お試しください。",
+      "network": "接続に問題があります。もう一度お試しください。",
+      "notFound": "この試合は利用できません。",
+      "notAllowed": "あなたはこの試合の参加者ではありません。",
+      "wrongPhase": "この操作は現在利用できません。",
+      "notYourTurn": "あなたの番ではありません。",
+      "wrongStep": "これは想定された操作ではありません。",
+      "mapUnavailable": "このマップは利用できません。",
+      "invalidSide": "無効なサイドです。",
+      "noStep": "拒否はすでに終了しています。",
+      "poolInvalid": "この試合のマッププールは完成していません。",
+      "alreadyNotified": "スタッフにはすでに通知済みです。",
+      "matchCompleted": "この試合はすでに終了しています。",
+      "rateLimited": "リクエストが多すぎます。少し待ってください。",
+      "invalidRequest": "無効なリクエストです。"
+    }
   },
   "liquipediaHub": {
     "title": "Liquipedia",

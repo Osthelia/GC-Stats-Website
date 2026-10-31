@@ -739,25 +739,25 @@
     "riotData": {
       "title": "Riot 比賽資料",
       "text": "對於被識別為受追蹤賽事一部分的比賽，GC Stats 直接通過 Riot Games 官方 API 獲取比賽資料，包括：",
-      "items": {
-        "0": "參賽選手的 Riot ID（遊戲名及標籤）",
-        "1": "被識別為受追蹤賽事一部分的比賽歷史",
-        "2": "比賽內統計：記分板、表現總結、經濟總結及擊殺記錄"
-      },
+      "items": [
+        "參賽選手的 Riot ID（遊戲名及標籤）",
+        "被識別為受追蹤賽事一部分的比賽歷史",
+        "比賽內統計：記分板、表現總結、經濟總結及擊殺記錄"
+      ],
       "optIn": "對於出現在受追蹤賽事比賽中的任何選手，我們都會記錄基本的參賽資訊（姓名、資料），因為這屬於公開的競技資料。額外的資料資訊（簡介、社群帳號、照片）只有在選手或戰隊同意後才會新增。",
       "correction": "如果您是資料中出現的選手，並希望申請更正或刪除，您可以隨時聯絡我們（詳見我們的隱私政策）。"
     },
     "prohibited": {
       "title": "禁止用途",
       "text": "您同意不將本平臺或其 API 用於以下任何目的：",
-      "items": {
-        "0": "博彩、下注或任何涉及對比賽結果下注的活動",
-        "1": "散佈虛假資訊、偽造資料或篡改資料",
-        "2": "騷擾、針對或人肉搜尋選手或社群成員",
-        "3": "適用法律下的任何非法活動",
-        "4": "超出正常 API 使用範圍的自動化批次抓取",
-        "5": "將原始資料作為獨立產品轉售或再分發"
-      }
+      "items": [
+        "博彩、下注或任何涉及對比賽結果下注的活動",
+        "散佈虛假資訊、偽造資料或篡改資料",
+        "騷擾、針對或人肉搜尋選手或社群成員",
+        "適用法律下的任何非法活動",
+        "超出正常 API 使用範圍的自動化批次抓取",
+        "將原始資料作為獨立產品轉售或再分發"
+      ]
     },
     "api": {
       "title": "API 使用",
@@ -896,11 +896,11 @@
     },
     "infoNeeded": {
       "title": "需提供的資訊",
-      "items": {
-        "0": "該頁面的連結（URL）或內容的精確描述。",
-        "1": "所有權證明或指向您官方資料的連結。",
-        "2": "請求的性質（完全刪除或更新）。"
-      }
+      "items": [
+        "該頁面的連結（URL）或內容的精確描述。",
+        "所有權證明或指向您官方資料的連結。",
+        "請求的性質（完全刪除或更新）。"
+      ]
     },
     "channels": {
       "discord": "通過 Discord 聯絡",
@@ -1032,11 +1032,11 @@
     },
     "freedom": {
       "title": "完全的編輯自由",
-      "items": {
-        "0": "您的文章將保留原始語言，我們從不代您翻譯。",
-        "1": "沒有最低或最高發布量限制，按您自己的節奏發布即可。",
-        "2": "我們從不代寫文章，這個空間完全屬於您，保持您自己的風格。"
-      }
+      "items": [
+        "您的文章將保留原始語言，我們從不代您翻譯。",
+        "沒有最低或最高發布量限制，按您自己的節奏發布即可。",
+        "我們從不代寫文章，這個空間完全屬於您，保持您自己的風格。"
+      ]
     },
     "howTo": {
       "title": "如何加入",
@@ -1115,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "進攻方",
     "sideDefense": "防守方",
-    "openMatch": "開啟比賽"
+    "openMatch": "開啟比賽",
+    "imageRemoved": "此提醒的圖片已被 GC Stats 審核團隊移除。"
   },
   "supportUs": {
     "title": "支援我們",
@@ -2011,6 +2012,7 @@
       "about": "關於 / 專案",
       "backToSite": "返回站點",
       "pendingChangeRequests": "待處理的變更請求",
+      "pendingDiscordImages": "待審核的 Discord 圖片",
       "tournaments": "賽事",
       "groupModeration": "管理",
       "reports": "舉報",
@@ -2020,7 +2022,8 @@
       "activityLog": "活動日誌",
       "analytics": "統計分析",
       "oauthClients": "OAuth 客戶端",
-      "settings": "設定"
+      "settings": "設定",
+      "discordImages": "Discord 機器人圖片"
     },
     "dashboard": {
       "title": "控制台",
@@ -4838,6 +4841,73 @@
       "statDismissed": "已駁回",
       "error": {
         "notFound": "該條目已不存在。"
+      },
+      "images": {
+        "title": "Discord 機器人圖片",
+        "subtitle": "由伺服器自訂的提醒圖片。已驗證的圖片會從清單中消失，只有被編輯後才會再次出現。",
+        "empty": "沒有待審核的圖片。",
+        "imageAlt": "某個伺服器的提醒圖片",
+        "openImage": "在新分頁中開啟圖片",
+        "event": {
+          "match_live": "比賽進行中",
+          "match_finished": "比賽已結束",
+          "map_finished": "地圖已結束"
+        },
+        "server": "伺服器",
+        "unknownUser": "未知帳號",
+        "guildBlacklisted": "已列入黑名單的伺服器",
+        "userBlacklisted": "已列入黑名單的使用者",
+        "verifyButton": "驗證",
+        "sanctionButton": "處罰",
+        "verifySuccess": "圖片已驗證。",
+        "error": {
+          "notFound": "此圖片已被處理或不再存在。"
+        },
+        "sanction": {
+          "title": "處罰此圖片",
+          "description": "選擇對伺服器以及上傳此圖片的人採取的措施。",
+          "sanctionsLabel": "處罰",
+          "option": {
+            "blacklistGuild": {
+              "label": "將伺服器列入黑名單",
+              "hint": "該伺服器將無法再使用控制面板，也不再收到提醒。"
+            },
+            "blacklistUser": {
+              "label": "將 Discord 帳號列入黑名單",
+              "hint": "該 Discord 帳號將無法在任何伺服器上管理機器人。"
+            },
+            "resetImage": {
+              "label": "重設圖片",
+              "hint": "自訂圖片將被刪除，伺服器恢復為純文字提醒。"
+            },
+            "editMessages": {
+              "label": "編輯已發送的帶有此圖片的訊息",
+              "hint": "圖片將從已發布的提醒中移除，並替換為一則說明 GC Stats 審核團隊已將其移除的通知。"
+            }
+          },
+          "alreadyBlacklisted": "已在黑名單中。",
+          "reasonLabel": "原因",
+          "reasonHint": "將與黑名單項目一起保存。",
+          "cancel": "取消",
+          "submit": "處罰",
+          "submitting": "正在處罰...",
+          "success": "已執行處罰。",
+          "error": {
+            "notFound": "此圖片已被處理或不再存在。",
+            "sanctions": {
+              "required": "請至少選擇一項處罰。"
+            },
+            "blacklistUser": {
+              "noEditor": "最後編輯者的 Discord 帳號未知。"
+            },
+            "reason": {
+              "required": "請輸入原因。",
+              "tooLong": "原因太長（最多 {max} 個字元）。"
+            }
+          },
+          "successQueued": "已執行處罰，{count} 則訊息將很快被編輯。"
+        },
+        "editor": "編輯者"
       }
     },
     "forum": {
@@ -6371,6 +6441,7 @@
         "network": "網路錯誤，請重試。",
         "notAuthenticated": "你必須先登入。",
         "forbidden": "你無法管理此伺服器。",
+        "blacklisted": "此伺服器或你的 Discord 帳號已被機器人封鎖。",
         "notFound": "此提醒已不存在。",
         "invalid": "部分欄位無效。",
         "tooManySubscriptions": "每個伺服器最多可有 {max} 個提醒。",
@@ -6434,6 +6505,7 @@
           "network": "網路錯誤，請重試。",
           "notAuthenticated": "你必須先登入。",
           "forbidden": "你無權管理此伺服器。",
+          "blacklisted": "此伺服器或你的 Discord 帳號已被機器人封鎖。",
           "invalid": "部分欄位無效。",
           "color": "顏色無效。",
           "token": {
@@ -6449,6 +6521,9 @@
         "description": "將某類提醒的文字訊息替換為依據你的範本產生的圖片。僅限使用自有機器人的伺服器。",
         "usingImage": "以圖片發布",
         "usingText": "以文字訊息發布",
+        "presetNone": "文字訊息，無圖片",
+        "presetChoose": "範本",
+        "presetSaved": "範本已儲存",
         "presetLabel": "起始設計",
         "presetHint": "選擇圖片顯示的資訊，之後一切仍可編輯。",
         "preset": {
@@ -6475,18 +6550,19 @@
           "network": "網路錯誤，請重試。",
           "notAuthenticated": "你必須先登入。",
           "forbidden": "你無法管理此伺服器。",
+          "blacklisted": "此伺服器或你的 Discord 帳號已被機器人封鎖。",
           "invalid": "範本無效。",
           "invalidImage": "此圖片無效（PNG、JPEG 或 WebP，最短邊至少 400 px）。",
           "tooLarge": "此圖片超過 10 MB。",
           "storageFailed": "無法儲存圖片，請重試。"
         },
-        "editDesign": "編輯設計"
+        "editDesign": "編輯設計",
+        "presetCustom": "已自訂"
       },
       "editor": {
         "title": "提醒設計：{event}",
         "description": "在畫布上拖曳、調整大小並旋轉元素,在右側設定樣式,並僅在符合條件時顯示。實際傳送的預覽使用與機器人完全相同的渲染。",
         "addText": "文字",
-        "addLogo": "戰隊標誌",
         "addShape": "形狀",
         "undo": "復原",
         "previewServer": "依發送效果預覽",
@@ -6497,9 +6573,6 @@
         "backgroundColor": "背景顏色",
         "layers": "元素（最前面的在先）",
         "noLayers": "尚無元素。",
-        "noSelection": "在畫布或清單中選擇一個元素進行編輯。",
-        "moveBack": "下移一層",
-        "moveFront": "上移一層",
         "duplicate": "複製",
         "delete": "刪除",
         "width": "寬度",
@@ -6542,15 +6615,6 @@
         "color": "顏色",
         "bold": "粗體",
         "uppercase": "大寫",
-        "sideLabel": "戰隊",
-        "side": {
-          "a": "A 隊",
-          "b": "B 隊"
-        },
-        "logoOf": {
-          "a": "A 隊標誌",
-          "b": "B 隊標誌"
-        },
         "shape": "形狀",
         "opacity": "不透明度",
         "radius": "圓角半徑",
@@ -6564,6 +6628,7 @@
           "network": "網路錯誤，請重試。",
           "notAuthenticated": "你必須登入。",
           "forbidden": "你無法管理此伺服器。",
+          "blacklisted": "此伺服器或你的 Discord 帳號已被機器人封鎖。",
           "invalid": "範本無效。",
           "invalidImage": "此圖片無效。",
           "tooLarge": "此圖片過大。",
@@ -6614,7 +6679,6 @@
         },
         "imageFallbackHint": "沒有圖片時,會顯示帶有縮寫字母的圖塊。",
         "shapeHint": "形狀沒有內容,請在樣式分頁中設定。",
-        "logoStyleHint": "隊伍標誌會原樣顯示,請在版面中變更其大小與位置。",
         "rotation": "旋轉(度)",
         "alignTitle": "對齊圖片",
         "addFolder": "新增資料夾",
@@ -6672,7 +6736,6 @@
         },
         "addCondition": "新增條件",
         "removeCondition": "移除此條件",
-        "canvasSettings": "圖片設定",
         "footer": "GC Stats 頁尾",
         "artwork": "以地圖美術圖作為背景",
         "artworkSource": "美術圖來源",
@@ -6729,6 +6792,10 @@
           "veto_side": "Veto {n} 的陣營（進攻方或防守方）"
         },
         "insertVariableHint": "點擊變數即可將其插入文字中的游標位置。",
+        "templateLabel": "範本",
+        "applyTemplate": "用此範本取代設計",
+        "templateHint": "用範本取代所有圖層。你可以復原。",
+        "templateApplied": "範本已套用",
         "layoutLayer": "版面",
         "pickImage": "選擇圖片",
         "pickImageHint": "每種圖片類型都有自己的尺寸，之後可以修改。",

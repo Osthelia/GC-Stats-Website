@@ -1115,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "Tấn công",
     "sideDefense": "Phòng thủ",
-    "openMatch": "Mở trận đấu"
+    "openMatch": "Mở trận đấu",
+    "imageRemoved": "Hình ảnh của cảnh báo này đã bị đội kiểm duyệt GC Stats gỡ bỏ."
   },
   "supportUs": {
     "title": "Ủng hộ chúng tôi",
@@ -2011,6 +2012,7 @@
       "about": "Giới thiệu / Dự án",
       "backToSite": "Quay lại trang web",
       "pendingChangeRequests": "Yêu cầu thay đổi đang chờ",
+      "pendingDiscordImages": "Hình ảnh Discord cần duyệt",
       "tournaments": "Giải đấu",
       "groupModeration": "Kiểm duyệt",
       "reports": "Báo cáo",
@@ -2020,7 +2022,8 @@
       "activityLog": "Nhật ký hoạt động",
       "analytics": "Phân tích",
       "oauthClients": "Ứng dụng OAuth",
-      "settings": "Cấu hình"
+      "settings": "Cấu hình",
+      "discordImages": "Hình ảnh của bot Discord"
     },
     "dashboard": {
       "title": "Bảng điều khiển",
@@ -4838,6 +4841,73 @@
       "statDismissed": "Đã bác bỏ",
       "error": {
         "notFound": "Mục này không còn tồn tại."
+      },
+      "images": {
+        "title": "Hình ảnh của bot Discord",
+        "subtitle": "Hình ảnh cảnh báo do các máy chủ tùy chỉnh. Hình ảnh đã xác minh sẽ rời khỏi danh sách và chỉ quay lại nếu được chỉnh sửa.",
+        "empty": "Không có hình ảnh cần duyệt.",
+        "imageAlt": "Hình ảnh cảnh báo của một máy chủ",
+        "openImage": "Mở hình ảnh trong tab mới",
+        "event": {
+          "match_live": "Trận đang diễn ra",
+          "match_finished": "Trận đã kết thúc",
+          "map_finished": "Map đã kết thúc"
+        },
+        "server": "Máy chủ",
+        "unknownUser": "Tài khoản không xác định",
+        "guildBlacklisted": "Máy chủ trong danh sách đen",
+        "userBlacklisted": "Người dùng trong danh sách đen",
+        "verifyButton": "Xác minh",
+        "sanctionButton": "Xử phạt",
+        "verifySuccess": "Đã xác minh hình ảnh.",
+        "error": {
+          "notFound": "Hình ảnh này đã được xử lý hoặc không còn tồn tại."
+        },
+        "sanction": {
+          "title": "Xử phạt hình ảnh này",
+          "description": "Chọn điều sẽ xảy ra với máy chủ và người đã tải hình ảnh này lên.",
+          "sanctionsLabel": "Hình phạt",
+          "option": {
+            "blacklistGuild": {
+              "label": "Đưa máy chủ vào danh sách đen",
+              "hint": "Máy chủ không thể dùng dashboard nữa và không nhận thêm cảnh báo."
+            },
+            "blacklistUser": {
+              "label": "Đưa tài khoản Discord vào danh sách đen",
+              "hint": "Tài khoản Discord này không thể quản lý bot trên bất kỳ máy chủ nào nữa."
+            },
+            "resetImage": {
+              "label": "Đặt lại hình ảnh",
+              "hint": "Hình ảnh tùy chỉnh bị xóa và máy chủ quay lại cảnh báo chỉ có văn bản."
+            },
+            "editMessages": {
+              "label": "Chỉnh sửa các tin nhắn đã gửi kèm hình ảnh này",
+              "hint": "Hình ảnh bị gỡ khỏi các cảnh báo đã đăng và được thay bằng thông báo rằng đội kiểm duyệt GC Stats đã gỡ bỏ."
+            }
+          },
+          "alreadyBlacklisted": "Đã có trong danh sách đen.",
+          "reasonLabel": "Lý do",
+          "reasonHint": "Được lưu cùng mục trong danh sách đen.",
+          "cancel": "Hủy",
+          "submit": "Xử phạt",
+          "submitting": "Đang xử phạt...",
+          "success": "Đã áp dụng hình phạt.",
+          "error": {
+            "notFound": "Hình ảnh này đã được xử lý hoặc không còn tồn tại.",
+            "sanctions": {
+              "required": "Chọn ít nhất một hình phạt."
+            },
+            "blacklistUser": {
+              "noEditor": "Không xác định được tài khoản Discord của người chỉnh sửa gần nhất."
+            },
+            "reason": {
+              "required": "Nhập lý do.",
+              "tooLong": "Lý do quá dài (tối đa {max} ký tự)."
+            }
+          },
+          "successQueued": "Đã áp dụng hình phạt, {count} tin nhắn sẽ sớm được chỉnh sửa."
+        },
+        "editor": "Chỉnh sửa bởi"
       }
     },
     "forum": {
@@ -6371,6 +6441,7 @@
         "network": "Lỗi mạng, hãy thử lại.",
         "notAuthenticated": "Bạn phải đăng nhập.",
         "forbidden": "Bạn không thể quản lý máy chủ này.",
+        "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
         "notFound": "Cảnh báo này không còn tồn tại.",
         "invalid": "Một số trường không hợp lệ.",
         "tooManySubscriptions": "Một máy chủ có tối đa {max} cảnh báo.",
@@ -6434,6 +6505,7 @@
           "network": "Lỗi mạng, vui lòng thử lại.",
           "notAuthenticated": "Bạn phải đăng nhập.",
           "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
           "invalid": "Một số trường không hợp lệ.",
           "color": "Màu không hợp lệ.",
           "token": {
@@ -6449,6 +6521,9 @@
         "description": "Thay tin nhắn văn bản của một loại cảnh báo bằng hình ảnh được tạo từ mẫu của bạn. Chỉ dành cho các máy chủ dùng bot riêng.",
         "usingImage": "Đăng dưới dạng hình ảnh",
         "usingText": "Đăng dưới dạng tin nhắn văn bản",
+        "presetNone": "Tin nhắn văn bản, không có hình ảnh",
+        "presetChoose": "Mẫu",
+        "presetSaved": "Đã lưu mẫu",
         "presetLabel": "Thiết kế ban đầu",
         "presetHint": "Chọn thông tin hiển thị trên ảnh. Sau đó mọi thứ vẫn có thể chỉnh sửa.",
         "preset": {
@@ -6475,18 +6550,19 @@
           "network": "Lỗi mạng, hãy thử lại.",
           "notAuthenticated": "Bạn phải đăng nhập.",
           "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
           "invalid": "Mẫu không hợp lệ.",
           "invalidImage": "Hình ảnh này không hợp lệ (PNG, JPEG hoặc WebP, cạnh ngắn nhất tối thiểu 400 px).",
           "tooLarge": "Hình ảnh này lớn hơn 10 MB.",
           "storageFailed": "Không thể lưu hình ảnh, hãy thử lại."
         },
-        "editDesign": "Chỉnh sửa thiết kế"
+        "editDesign": "Chỉnh sửa thiết kế",
+        "presetCustom": "Đã tùy chỉnh"
       },
       "editor": {
         "title": "Thiết kế cảnh báo: {event}",
         "description": "Kéo, đổi kích thước và xoay các phần tử trên canvas, tạo kiểu ở bên phải và chỉ hiển thị khi thỏa điều kiện. Bản xem trước như khi gửi dùng đúng cách hiển thị của bot.",
         "addText": "Văn bản",
-        "addLogo": "Logo đội",
         "addShape": "Hình dạng",
         "undo": "Hoàn tác",
         "previewServer": "Xem trước như khi gửi",
@@ -6497,9 +6573,6 @@
         "backgroundColor": "Màu nền",
         "layers": "Phần tử (lớp trên cùng trước)",
         "noLayers": "Chưa có phần tử nào.",
-        "noSelection": "Chọn một phần tử trên canvas hoặc trong danh sách để chỉnh sửa.",
-        "moveBack": "Đưa ra sau",
-        "moveFront": "Đưa lên trước",
         "duplicate": "Nhân bản",
         "delete": "Xóa",
         "width": "Chiều rộng",
@@ -6542,15 +6615,6 @@
         "color": "Màu",
         "bold": "In đậm",
         "uppercase": "Chữ hoa",
-        "sideLabel": "Đội",
-        "side": {
-          "a": "Đội A",
-          "b": "Đội B"
-        },
-        "logoOf": {
-          "a": "Logo của đội A",
-          "b": "Logo của đội B"
-        },
         "shape": "Hình dạng",
         "opacity": "Độ mờ đục",
         "radius": "Bán kính bo góc",
@@ -6564,6 +6628,7 @@
           "network": "Lỗi mạng, hãy thử lại.",
           "notAuthenticated": "Bạn cần đăng nhập.",
           "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
           "invalid": "Mẫu không hợp lệ.",
           "invalidImage": "Hình ảnh này không hợp lệ.",
           "tooLarge": "Hình ảnh này quá lớn.",
@@ -6614,7 +6679,6 @@
         },
         "imageFallbackHint": "Khi không có hình ảnh, một ô chứa chữ cái đầu sẽ được hiển thị.",
         "shapeHint": "Hình khối không có nội dung, hãy tạo kiểu trong tab Kiểu dáng.",
-        "logoStyleHint": "Logo đội được hiển thị nguyên bản, hãy đổi kích thước và vị trí trong Bố cục.",
         "rotation": "Góc xoay (độ)",
         "alignTitle": "Căn theo hình ảnh",
         "addFolder": "Thư mục mới",
@@ -6672,7 +6736,6 @@
         },
         "addCondition": "Thêm điều kiện",
         "removeCondition": "Xóa điều kiện này",
-        "canvasSettings": "Cài đặt hình ảnh",
         "footer": "Chân trang GC Stats",
         "artwork": "Ảnh nghệ thuật của map làm nền",
         "artworkSource": "Ảnh nghệ thuật của",
@@ -6729,6 +6792,10 @@
           "veto_side": "Bên của veto {n} (Tấn công hoặc Phòng thủ)"
         },
         "insertVariableHint": "Nhấp vào một biến để chèn nó vào văn bản, tại vị trí con trỏ.",
+        "templateLabel": "Mẫu",
+        "applyTemplate": "Thay thiết kế bằng mẫu này",
+        "templateHint": "Thay mọi lớp bằng mẫu. Bạn có thể hoàn tác.",
+        "templateApplied": "Đã áp dụng mẫu",
         "layoutLayer": "Bố cục",
         "pickImage": "Chọn hình ảnh",
         "pickImageHint": "Mỗi loại hình ảnh có kích thước riêng, bạn có thể đổi sau.",
