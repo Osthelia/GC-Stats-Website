@@ -73,7 +73,7 @@ export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, loca
       // Default bot: GC Stats design with every block that has data.
       const available: Record<TemplateBlock, boolean> = { maps: !!fields.mapsInline, vetos: !!fields.vetos, mvp: !!fields.mvp };
       const blocks = (kind === "map" ? TEMPLATE_PRESETS.map.mvp : TEMPLATE_PRESETS[kind].full).filter((b) => available[b]);
-      image = await renderTemplateImage(createGcsTemplate(accent, kind, blocks), imageData);
+      image = await renderTemplateImage(createGcsTemplate(accent, kind, blocks, colors.background), imageData);
     }
   } catch (error) {
     console.error("[discord-bot] image render failed (%s #%d)", kind, match.id, error);

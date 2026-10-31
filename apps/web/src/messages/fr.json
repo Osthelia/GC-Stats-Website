@@ -6409,11 +6409,12 @@
         "save": "Enregistrer",
         "saving": "Enregistrement...",
         "colorsTitle": "Couleurs",
-        "colorsDescription": "Couleur du message de chaque type d'alerte. Chaque alerte peut la remplacer.",
+        "colorsDescription": "Couleur du message de chaque type d'alerte et fond par défaut des images. Chaque alerte peut remplacer sa couleur.",
         "color": {
           "live": "Match en direct",
           "finished": "Match terminé",
-          "map": "Map terminée"
+          "map": "Map terminée",
+          "background": "Fond de l'image"
         },
         "colorsSaved": "Couleurs enregistrées",
         "botTitle": "Votre propre bot",

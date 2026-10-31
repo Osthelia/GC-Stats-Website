@@ -6285,11 +6285,12 @@
         "save": "Kaydet",
         "saving": "Kaydediliyor...",
         "colorsTitle": "Renkler",
-        "colorsDescription": "Her uyarı türünün mesaj rengi. Her uyarı bunu geçersiz kılabilir.",
+        "colorsDescription": "Her uyarı türünün mesaj rengi ve görsellerin varsayılan arka planı. Her uyarı kendi rengini geçersiz kılabilir.",
         "color": {
           "live": "Canlı maç",
           "finished": "Maç bitti",
-          "map": "Harita bitti"
+          "map": "Harita bitti",
+          "background": "Görsel arka planı"
         },
         "colorsSaved": "Renkler kaydedildi",
         "botTitle": "Kendi botun",

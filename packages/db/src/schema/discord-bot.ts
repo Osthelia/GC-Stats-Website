@@ -46,6 +46,8 @@ export const discordBotGuildSettings = pgTable("discord_bot_guild_settings", {
   colorLive: text("color_live"),
   colorFinished: text("color_finished"),
   colorMap: text("color_map"),
+  // Default background of the image templates (#rrggbb), null = the site's dark background.
+  colorBackground: text("color_background"),
   // Link button to the match under each alert.
   matchButton: boolean("match_button").notNull().default(true),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

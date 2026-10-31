@@ -20,7 +20,7 @@ import type { AlertColors, AlertKind } from "./render";
 import { loadMatchContexts, type MatchContext } from "./match-data";
 import { listTemplates, type StoredTemplate } from "./templates";
 import { listGuildSettings, resolveBotToken, type GuildSettings } from "./settings";
-import { DISCORD_BOT_DEFAULT_COLORS, type DiscordBotEvent } from "./shared";
+import { DISCORD_BOT_DEFAULT_BACKGROUND, DISCORD_BOT_DEFAULT_COLORS, type DiscordBotEvent } from "./shared";
 
 const MAX_SENDS_PER_RUN = 100;
 // A claim without message id older than this belongs to a run that never finished.
@@ -53,6 +53,7 @@ function resolveTheme(sub: Subscription, settings: GuildSettings | undefined, te
       live: own ?? settings?.colorLive ?? DISCORD_BOT_DEFAULT_COLORS.live,
       finished: own ?? settings?.colorFinished ?? DISCORD_BOT_DEFAULT_COLORS.finished,
       map: own ?? settings?.colorMap ?? DISCORD_BOT_DEFAULT_COLORS.map,
+      background: settings?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND,
     },
   };
 }

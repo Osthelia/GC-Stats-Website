@@ -6409,11 +6409,12 @@
         "save": "Guardar",
         "saving": "Guardando...",
         "colorsTitle": "Colores",
-        "colorsDescription": "Color del mensaje de cada tipo de alerta. Cada alerta puede reemplazarlo.",
+        "colorsDescription": "Color del mensaje de cada tipo de alerta y fondo por defecto de las imágenes. Cada alerta puede reemplazar su color.",
         "color": {
           "live": "Partido en directo",
           "finished": "Partido terminado",
-          "map": "Mapa terminado"
+          "map": "Mapa terminado",
+          "background": "Fondo de la imagen"
         },
         "colorsSaved": "Colores guardados",
         "botTitle": "Tu propio bot",

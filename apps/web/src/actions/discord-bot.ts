@@ -32,6 +32,7 @@ import { listWebhookRegions } from "@/lib/webhooks/endpoints";
 import { getManageableGuild, listGuildTextChannels } from "@/lib/discord-bot/guilds";
 import {
   DISCORD_BOT_COLOR_PATTERN,
+  DISCORD_BOT_DEFAULT_BACKGROUND,
   DISCORD_BOT_DEFAULT_COLORS,
   DISCORD_BOT_EVENTS,
   DISCORD_BOT_LIMITS,
@@ -194,18 +195,18 @@ export async function deleteDiscordSubscription(guildId: string, subscriptionId:
   return deleted.length > 0 ? { ok: true } : { ok: false, error: "notFound" };
 }
 
-export type DiscordColorsInput = { live: unknown; finished: unknown; map: unknown; matchButton: unknown };
-export type DiscordColorsFieldErrors = Partial<Record<"live" | "finished" | "map" | "matchButton", "invalid">>;
+export type DiscordColorsInput = { live: unknown; finished: unknown; map: unknown; background: unknown; matchButton: unknown };
+export type DiscordColorsFieldErrors = Partial<Record<"live" | "finished" | "map" | "background" | "matchButton", "invalid">>;
 export type SaveDiscordColorsResult = { ok: true } | { ok: false; error: "notAuthenticated" | "forbidden" | "invalid"; fieldErrors?: DiscordColorsFieldErrors };
 
-/** Accent colors and match button of the server, an empty color restores the default. */
+/** Accent colors, template background and match button of the server, an empty color restores the default. */
 export async function saveDiscordColors(guildId: string, input: DiscordColorsInput): Promise<SaveDiscordColorsResult> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return auth;
 
   const fieldErrors: DiscordColorsFieldErrors = {};
-  const values: Record<"live" | "finished" | "map", string | null> = { live: null, finished: null, map: null };
-  for (const key of ["live", "finished", "map"] as const) {
+  const values: Record<"live" | "finished" | "map" | "background", string | null> = { live: null, finished: null, map: null, background: null };
+  for (const key of ["live", "finished", "map", "background"] as const) {
     const raw = input?.[key];
     if (raw === null || raw === "") continue;
     if (typeof raw !== "string" || !DISCORD_BOT_COLOR_PATTERN.test(raw)) fieldErrors[key] = "invalid";
@@ -214,7 +215,7 @@ export async function saveDiscordColors(guildId: string, input: DiscordColorsInp
   if (typeof input?.matchButton !== "boolean") fieldErrors.matchButton = "invalid";
   if (Object.keys(fieldErrors).length > 0) return { ok: false, error: "invalid", fieldErrors };
 
-  const colors = { colorLive: values.live, colorFinished: values.finished, colorMap: values.map, matchButton: input.matchButton as boolean, updatedAt: new Date() };
+  const colors = { colorLive: values.live, colorFinished: values.finished, colorMap: values.map, colorBackground: values.background, matchButton: input.matchButton as boolean, updatedAt: new Date() };
   await db.insert(discordBotGuildSettings).values({ guildId: auth.guildId, ...colors }).onConflictDoUpdate({ target: discordBotGuildSettings.guildId, set: colors });
   return { ok: true };
 }
@@ -322,7 +323,7 @@ export async function uploadDiscordBackground(guildId: string, event: DiscordBot
   }
 
   const existing = (await getGuildTemplates(auth.guildId)).get(auth.event)?.template;
-  const template = { ...(existing ?? createDefaultTemplate(auth.event === "match_live" ? "live" : auth.event === "map_finished" ? "map" : "finished")), backgroundImageId: stored.id };
+  const template = { ...(existing ?? createDefaultTemplate(auth.event === "match_live" ? "live" : auth.event === "map_finished" ? "map" : "finished", "score", (await getGuildSettings(auth.guildId))?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND)), backgroundImageId: stored.id };
   const values = { template, updatedAt: new Date() };
   await db
     .insert(discordBotTemplates)
@@ -353,7 +354,7 @@ export async function chooseDiscordTemplatePreset(guildId: string, event: Discor
   const kind = KIND_BY_EVENT[auth.event];
   if (typeof preset !== "string" || !(presetsOf(kind) as string[]).includes(preset)) return { ok: false, error: "invalid" };
 
-  const template = { ...createDefaultTemplate(kind, preset as TemplatePreset), backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
+  const template = { ...createDefaultTemplate(kind, preset as TemplatePreset, (await getGuildSettings(auth.guildId))?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND), backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
   const values = { template, updatedAt: new Date() };
   await db
     .insert(discordBotTemplates)

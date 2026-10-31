@@ -46,6 +46,11 @@ export const DISCORD_BOT_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
 export const DISCORD_BOT_DEFAULT_COLORS = { live: "#e74c3c", finished: "#e4ae22", map: "#e4ae22" } as const;
 export type DiscordBotColorKey = keyof typeof DISCORD_BOT_DEFAULT_COLORS;
 
+// Default background of the image templates: the site's dark background.
+export const DISCORD_BOT_DEFAULT_BACKGROUND = "#0e0e0e";
+export const DISCORD_BOT_THEME_DEFAULTS = { ...DISCORD_BOT_DEFAULT_COLORS, background: DISCORD_BOT_DEFAULT_BACKGROUND } as const;
+export type DiscordBotThemeColorKey = keyof typeof DISCORD_BOT_THEME_DEFAULTS;
+
 export function hexToInt(hex: string): number {
   return parseInt(hex.slice(1), 16);
 }
@@ -58,7 +63,7 @@ export type DiscordBotChannel = { id: string; name: string };
 /** Theme of a server, as shown in the dashboard (never carries the bot token). */
 export type DiscordBotSettingsView = {
   bot: { userId: string; name: string; avatarUrl: string | null } | null;
-  colors: Record<DiscordBotColorKey, string | null>;
+  colors: Record<DiscordBotThemeColorKey, string | null>;
   /** Link button to the match under each alert. */
   matchButton: boolean;
 };

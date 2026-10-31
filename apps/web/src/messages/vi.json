@@ -6409,11 +6409,12 @@
         "save": "Lưu",
         "saving": "Đang lưu...",
         "colorsTitle": "Màu sắc",
-        "colorsDescription": "Màu tin nhắn của từng loại cảnh báo. Mỗi cảnh báo có thể ghi đè màu này.",
+        "colorsDescription": "Màu tin nhắn của từng loại cảnh báo và nền mặc định của hình ảnh. Mỗi cảnh báo có thể ghi đè màu của nó.",
         "color": {
           "live": "Trận đang diễn ra",
           "finished": "Trận đã kết thúc",
-          "map": "Map đã kết thúc"
+          "map": "Map đã kết thúc",
+          "background": "Nền hình ảnh"
         },
         "colorsSaved": "Đã lưu màu sắc",
         "botTitle": "Bot của riêng bạn",

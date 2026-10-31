@@ -6409,11 +6409,12 @@
         "save": "Simpan",
         "saving": "Menyimpan...",
         "colorsTitle": "Warna",
-        "colorsDescription": "Warna pesan setiap jenis peringatan. Setiap peringatan dapat menimpanya.",
+        "colorsDescription": "Warna pesan setiap jenis peringatan dan latar belakang default gambar. Setiap peringatan dapat menimpa warnanya.",
         "color": {
           "live": "Pertandingan langsung",
           "finished": "Pertandingan selesai",
-          "map": "Map selesai"
+          "map": "Map selesai",
+          "background": "Latar belakang gambar"
         },
         "colorsSaved": "Warna disimpan",
         "botTitle": "Bot Anda sendiri",

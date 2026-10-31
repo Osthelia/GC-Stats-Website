@@ -16,8 +16,8 @@ import { buildAlertFields, buildAlertImages, type AlertKind, type AlertMap, type
 
 export type { AlertKind, AlertMap, AlertMatch, AlertMvp, AlertVeto } from "./variables";
 
-/** Accent color per alert kind, already resolved from the alert and server overrides. */
-export type AlertColors = Record<AlertKind, string>;
+/** Accent color per alert kind, plus the template background, already resolved from the alert and server overrides. */
+export type AlertColors = Record<AlertKind, string> & { background: string };
 
 function resolveLocale(locale: string): AppLocale {
   return (routing.locales as readonly string[]).includes(locale) ? (locale as AppLocale) : routing.defaultLocale;

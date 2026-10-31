@@ -6285,11 +6285,12 @@
         "save": "Zapisz",
         "saving": "Zapisywanie...",
         "colorsTitle": "Kolory",
-        "colorsDescription": "Kolor wiadomości każdego typu alertu. Każdy alert może go zastąpić.",
+        "colorsDescription": "Kolor wiadomości każdego typu alertu i domyślne tło obrazów. Każdy alert może zastąpić swój kolor.",
         "color": {
           "live": "Mecz na żywo",
           "finished": "Mecz zakończony",
-          "map": "Mapa zakończona"
+          "map": "Mapa zakończona",
+          "background": "Tło obrazu"
         },
         "colorsSaved": "Kolory zapisane",
         "botTitle": "Twój własny bot",

@@ -6409,11 +6409,12 @@
         "save": "儲存",
         "saving": "儲存中...",
         "colorsTitle": "顏色",
-        "colorsDescription": "每種提醒類型的訊息顏色。每則提醒都可以覆蓋該顏色。",
+        "colorsDescription": "每種提醒類型的訊息顏色與圖片的預設背景。每則提醒都可以覆蓋其顏色。",
         "color": {
           "live": "比賽進行中",
           "finished": "比賽已結束",
-          "map": "地圖已結束"
+          "map": "地圖已結束",
+          "background": "圖片背景"
         },
         "colorsSaved": "顏色已儲存",
         "botTitle": "你自己的機器人",

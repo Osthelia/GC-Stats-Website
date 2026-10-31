@@ -6285,11 +6285,12 @@
         "save": "Guardar",
         "saving": "A guardar...",
         "colorsTitle": "Cores",
-        "colorsDescription": "Cor da mensagem de cada tipo de alerta. Cada alerta pode substituí-la.",
+        "colorsDescription": "Cor da mensagem de cada tipo de alerta e fundo predefinido das imagens. Cada alerta pode substituir a sua cor.",
         "color": {
           "live": "Partida ao vivo",
           "finished": "Partida terminada",
-          "map": "Mapa terminado"
+          "map": "Mapa terminado",
+          "background": "Fundo da imagem"
         },
         "colorsSaved": "Cores guardadas",
         "botTitle": "O teu próprio bot",

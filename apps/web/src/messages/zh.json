@@ -6285,11 +6285,12 @@
         "save": "保存",
         "saving": "正在保存...",
         "colorsTitle": "颜色",
-        "colorsDescription": "每种提醒类型的消息颜色。每条提醒都可以覆盖该颜色。",
+        "colorsDescription": "每种提醒类型的消息颜色和图片的默认背景。每条提醒都可以覆盖其颜色。",
         "color": {
           "live": "比赛进行中",
           "finished": "比赛已结束",
-          "map": "地图已结束"
+          "map": "地图已结束",
+          "background": "图片背景"
         },
         "colorsSaved": "颜色已保存",
         "botTitle": "你自己的机器人",

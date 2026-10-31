@@ -6285,11 +6285,12 @@
         "save": "Salva",
         "saving": "Salvataggio...",
         "colorsTitle": "Colori",
-        "colorsDescription": "Colore del messaggio di ogni tipo di avviso. Ogni avviso può sostituirlo.",
+        "colorsDescription": "Colore del messaggio di ogni tipo di avviso e sfondo predefinito delle immagini. Ogni avviso può sostituire il proprio colore.",
         "color": {
           "live": "Partita in diretta",
           "finished": "Partita terminata",
-          "map": "Mappa terminata"
+          "map": "Mappa terminata",
+          "background": "Sfondo dell'immagine"
         },
         "colorsSaved": "Colori salvati",
         "botTitle": "Il tuo bot",

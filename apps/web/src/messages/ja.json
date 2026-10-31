@@ -6285,11 +6285,12 @@
         "save": "保存",
         "saving": "保存中...",
         "colorsTitle": "色",
-        "colorsDescription": "アラートの種類ごとのメッセージの色です。各アラートで上書きできます。",
+        "colorsDescription": "アラートの種類ごとのメッセージの色と、画像のデフォルトの背景です。各アラートで色を上書きできます。",
         "color": {
           "live": "試合ライブ",
           "finished": "試合終了",
-          "map": "マップ終了"
+          "map": "マップ終了",
+          "background": "画像の背景"
         },
         "colorsSaved": "色を保存しました",
         "botTitle": "独自のボット",

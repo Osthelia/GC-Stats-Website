@@ -23,7 +23,7 @@ import { getManageableGuild, listGuildTextChannels } from "@/lib/discord-bot/gui
 import { listGuildSubscriptions } from "@/lib/discord-bot/subscriptions";
 import { getGuildTemplates } from "@/lib/discord-bot/templates";
 import { getGuildSettings, toSettingsView } from "@/lib/discord-bot/settings";
-import { getGcsBotInviteUrl } from "@/lib/discord-bot/shared";
+import { DISCORD_BOT_DEFAULT_BACKGROUND, getGcsBotInviteUrl } from "@/lib/discord-bot/shared";
 import { listWebhookRegions } from "@/lib/webhooks/endpoints";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -69,7 +69,7 @@ export default async function DashboardDiscordServerPage({ params }: { params: P
 
       <DiscordCustomizationPanel guildId={guild.id} settings={settings} inviteUrl={settings.bot ? getGcsBotInviteUrl(guild.id, settings.bot.userId) : null} />
 
-      <DiscordTemplatesPanel guildId={guild.id} templates={templates} locale={locale} locked={!settings.bot} channels={channels} />
+      <DiscordTemplatesPanel guildId={guild.id} templates={templates} locale={locale} locked={!settings.bot} channels={channels} background={settings.colors.background ?? DISCORD_BOT_DEFAULT_BACKGROUND} />
 
       {guild.botJoined ? (
         <DiscordSubscriptionsPanel guildId={guild.id} subscriptions={subscriptions} channels={channels} regions={regions} defaultLocale={locale} />

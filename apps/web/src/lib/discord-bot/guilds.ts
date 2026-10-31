@@ -47,10 +47,21 @@ function remember(key: string, data: unknown): void {
 }
 
 /** GET on the Discord API, cached briefly per caller. A transient failure falls back to a recent answer so rate limits and timeouts do not lock users out. */
-async function discordGet<T>(path: string, authorization: string): Promise<T | null> {
+function discordGet<T>(path: string, authorization: string, ttlMs = CACHE_TTL_MS): Promise<T | null> {
   const key = cacheKey(authorization, path);
+  // Concurrent identical calls share one request.
+  const pending = inFlight.get(key);
+  if (pending) return pending as Promise<T | null>;
+  const request = fetchDiscord<T>(path, authorization, key, ttlMs).finally(() => inFlight.delete(key));
+  inFlight.set(key, request);
+  return request;
+}
+
+const inFlight = new Map<string, Promise<unknown>>();
+
+async function fetchDiscord<T>(path: string, authorization: string, key: string, ttlMs: number): Promise<T | null> {
   const cached = responseCache.get(key);
-  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.data as T;
+  if (cached && Date.now() - cached.at < ttlMs) return cached.data as T;
   const stale = cached && Date.now() - cached.at < STALE_MAX_MS ? (cached.data as T) : null;
   try {
     const response = await fetch(`${DISCORD_API}${path}`, { headers: { Authorization: authorization }, signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS), cache: "no-store" });
@@ -72,6 +83,8 @@ async function discordGet<T>(path: string, authorization: string): Promise<T | n
   }
 }
 
+// Which servers a bot joined changes rarely, so it is cached longer than the rest.
+const BOT_GUILDS_TTL_MS = 5 * 60_000;
 const GUILDS_PAGE_SIZE = 200;
 const GUILDS_MAX_PAGES = 50;
 
@@ -81,7 +94,7 @@ async function listBotGuildIds(token: string | null): Promise<Set<string>> {
   if (!token) return ids;
   let after = "";
   for (let page = 0; page < GUILDS_MAX_PAGES; page++) {
-    const guilds = await discordGet<{ id: string }[]>(`/users/@me/guilds?limit=${GUILDS_PAGE_SIZE}${after}`, `Bot ${token}`);
+    const guilds = await discordGet<{ id: string }[]>(`/users/@me/guilds?limit=${GUILDS_PAGE_SIZE}${after}`, `Bot ${token}`, BOT_GUILDS_TTL_MS);
     if (!guilds || guilds.length === 0) break;
     for (const g of guilds) ids.add(g.id);
     if (guilds.length < GUILDS_PAGE_SIZE) break;
@@ -102,29 +115,29 @@ function canManage(guild: UserGuild): boolean {
 
 /** Servers the user owns or holds Administrator or Manage Server on, read live from their Discord account. */
 export async function listManageableGuilds(userId: string): Promise<GuildsResult> {
+  // The default bot's server list does not depend on the user, so it loads while the token resolves.
+  const defaultBotGuildIdsPromise = listBotGuildIds(process.env.GCS_DISCORD_BOT_TOKEN ?? null);
   const accessToken = await getDiscordAccessToken(userId);
   if (!accessToken) return { ok: false, error: "notLinked" };
 
-  const [userGuilds, defaultBotGuildIds] = await Promise.all([discordGet<UserGuild[]>("/users/@me/guilds", `Bearer ${accessToken}`), listBotGuildIds(process.env.GCS_DISCORD_BOT_TOKEN ?? null)]);
+  const userGuilds = await discordGet<UserGuild[]>("/users/@me/guilds", `Bearer ${accessToken}`);
   if (!userGuilds) return { ok: false, error: "unavailable" };
 
   const manageable = userGuilds.filter(canManage);
   // A server with its own bot is joined when that bot is in it, whatever the GC Stats bot does.
-  const settings = await listGuildSettings(manageable.map((g) => g.id));
-  const customJoined = new Map<string, Set<string>>();
-  const guilds = (
-    await Promise.all(
-      manageable.map(async (g) => {
-        const token = customBotToken(settings.get(g.id));
-        let botJoined = defaultBotGuildIds.has(g.id);
-        if (token) {
-          if (!customJoined.has(token)) customJoined.set(token, await listBotGuildIds(token));
-          botJoined = customJoined.get(token)?.has(g.id) ?? false;
-        }
-        return { id: g.id, name: g.name, iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128` : null, botJoined };
-      }),
-    )
-  )
+  const [settings, defaultBotGuildIds] = await Promise.all([listGuildSettings(manageable.map((g) => g.id)), defaultBotGuildIdsPromise]);
+  const customTokens = new Set<string>();
+  for (const g of manageable) {
+    const token = customBotToken(settings.get(g.id));
+    if (token) customTokens.add(token);
+  }
+  const customJoined = new Map<string, Set<string>>(await Promise.all([...customTokens].map(async (token) => [token, await listBotGuildIds(token)] as const)));
+  const guilds = manageable
+    .map((g) => {
+      const token = customBotToken(settings.get(g.id));
+      const botJoined = token ? (customJoined.get(token)?.has(g.id) ?? false) : defaultBotGuildIds.has(g.id);
+      return { id: g.id, name: g.name, iconUrl: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=128` : null, botJoined };
+    })
     .sort((a, b) => Number(b.botJoined) - Number(a.botJoined) || a.name.localeCompare(b.name));
   return { ok: true, guilds };
 }
@@ -134,6 +147,14 @@ export async function getManageableGuild(userId: string, guildId: string): Promi
   if (!/^\d{15,25}$/.test(guildId)) return null;
   const result = await listManageableGuilds(userId);
   return result.ok ? (result.guilds.find((g) => g.id === guildId) ?? null) : null;
+}
+
+/** Like `getManageableGuild`, but tells a Discord outage apart from a real refusal. */
+export async function checkManageableGuild(userId: string, guildId: string): Promise<"ok" | "forbidden" | "unavailable"> {
+  if (!/^\d{15,25}$/.test(guildId)) return "forbidden";
+  const result = await listManageableGuilds(userId);
+  if (!result.ok) return result.error === "unavailable" ? "unavailable" : "forbidden";
+  return result.guilds.some((g) => g.id === guildId) ? "ok" : "forbidden";
 }
 
 /** Text channels of a guild the bot joined, null when the bot cannot read them. */

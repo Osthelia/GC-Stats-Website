@@ -6285,11 +6285,12 @@
         "save": "Speichern",
         "saving": "Wird gespeichert...",
         "colorsTitle": "Farben",
-        "colorsDescription": "Farbe der Nachricht jedes Benachrichtigungstyps. Jede Benachrichtigung kann sie überschreiben.",
+        "colorsDescription": "Farbe der Nachricht jedes Benachrichtigungstyps und Standardhintergrund der Bilder. Jede Benachrichtigung kann ihre Farbe überschreiben.",
         "color": {
           "live": "Match live",
           "finished": "Match beendet",
-          "map": "Map beendet"
+          "map": "Map beendet",
+          "background": "Bildhintergrund"
         },
         "colorsSaved": "Farben gespeichert",
         "botTitle": "Dein eigener Bot",

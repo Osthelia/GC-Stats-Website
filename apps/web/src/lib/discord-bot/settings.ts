@@ -51,6 +51,6 @@ export function toSettingsView(settings: GuildSettings | undefined): DiscordBotS
   return {
     bot: settings?.botTokenEncrypted && settings.botUserId ? { userId: settings.botUserId, name: settings.botName ?? "", avatarUrl: settings.botAvatarUrl } : null,
     matchButton: settings?.matchButton ?? true,
-    colors: { live: settings?.colorLive ?? null, finished: settings?.colorFinished ?? null, map: settings?.colorMap ?? null },
+    colors: { live: settings?.colorLive ?? null, finished: settings?.colorFinished ?? null, map: settings?.colorMap ?? null, background: settings?.colorBackground ?? null },
   };
 }

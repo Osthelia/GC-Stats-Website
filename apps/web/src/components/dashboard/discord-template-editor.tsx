@@ -333,6 +333,7 @@ export function DiscordTemplateEditor({
   event,
   initial,
   backgroundUrl,
+  defaultBackground,
   channels,
   locale,
   open,
@@ -342,6 +343,8 @@ export function DiscordTemplateEditor({
   event: DiscordBotEvent;
   initial: AlertTemplate;
   backgroundUrl: string | null;
+  /** Template background of the server, used by the ready-made designs. */
+  defaultBackground: string;
   /** Null when the bot cannot read the channels of the server. */
   channels: DiscordBotChannel[] | null;
   locale: string;
@@ -636,7 +639,7 @@ export function DiscordTemplateEditor({
   function applyPreset() {
     const chosen = preset ?? presets.at(-1);
     if (!chosen) return;
-    update((prev) => ({ ...createDefaultTemplate(accentKey, chosen), backgroundImageId: prev.backgroundImageId }));
+    update((prev) => ({ ...createDefaultTemplate(accentKey, chosen, defaultBackground), backgroundImageId: prev.backgroundImageId }));
     setSelectedId(LAYOUT_ID);
     toast.success(t("templateApplied"));
   }

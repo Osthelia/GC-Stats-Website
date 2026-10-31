@@ -6285,11 +6285,12 @@
         "save": "저장",
         "saving": "저장 중...",
         "colorsTitle": "색상",
-        "colorsDescription": "알림 유형별 메시지 색상입니다. 각 알림에서 덮어쓸 수 있습니다.",
+        "colorsDescription": "알림 유형별 메시지 색상과 이미지의 기본 배경입니다. 각 알림에서 색상을 덮어쓸 수 있습니다.",
         "color": {
           "live": "경기 라이브",
           "finished": "경기 종료",
-          "map": "맵 종료"
+          "map": "맵 종료",
+          "background": "이미지 배경"
         },
         "colorsSaved": "색상이 저장되었습니다",
         "botTitle": "나만의 봇",

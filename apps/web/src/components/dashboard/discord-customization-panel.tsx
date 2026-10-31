@@ -24,9 +24,9 @@ import { FormField } from "@/components/admin/form-field";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import { DiscordColorField } from "@/components/dashboard/discord-color-field";
 import { connectCustomDiscordBot, disconnectCustomDiscordBot, saveDiscordColors, type DiscordColorsFieldErrors } from "@/actions/discord-bot";
-import { DISCORD_BOT_DEFAULT_COLORS, type DiscordBotColorKey, type DiscordBotSettingsView } from "@/lib/discord-bot/shared";
+import { DISCORD_BOT_THEME_DEFAULTS, type DiscordBotSettingsView, type DiscordBotThemeColorKey } from "@/lib/discord-bot/shared";
 
-const COLOR_KEYS = Object.keys(DISCORD_BOT_DEFAULT_COLORS) as DiscordBotColorKey[];
+const COLOR_KEYS = Object.keys(DISCORD_BOT_THEME_DEFAULTS) as DiscordBotThemeColorKey[];
 
 function ColorsCard({ guildId, settings }: { guildId: string; settings: DiscordBotSettingsView }) {
   const t = useTranslations("dashboard.discord.theme");
@@ -68,14 +68,14 @@ function ColorsCard({ guildId, settings }: { guildId: string; settings: DiscordB
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {COLOR_KEYS.map((key) => (
               <DiscordColorField
                 key={key}
                 id={`dc-color-${key}`}
                 label={t(`color.${key}`)}
                 value={colors[key]}
-                fallback={DISCORD_BOT_DEFAULT_COLORS[key]}
+                fallback={DISCORD_BOT_THEME_DEFAULTS[key]}
                 resetLabel={t("reset")}
                 error={fieldErrors[key] ? t("error.color") : undefined}
                 onChange={(value) => setColors((prev) => ({ ...prev, [key]: value }))}

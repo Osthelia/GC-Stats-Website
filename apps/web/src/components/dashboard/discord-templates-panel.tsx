@@ -35,10 +35,20 @@ const ACCEPT = "image/png,image/jpeg,image/webp";
 /** Default design of an alert type, as the GC Stats bot posts it. */
 const defaultPresetOf = (event: DiscordBotEvent): TemplatePreset => presetsOf(ACCENT_KEY[event]).at(-1) ?? "score";
 
+const PREVIEW_MAX_RETRIES = 2;
+const PREVIEW_RETRY_DELAY_MS = 1500;
+
 function Preview({ guildId, event, version, locale, ratio, preset }: { guildId: string; event: DiscordBotEvent; version: number; locale: string; ratio: number; preset?: TemplatePreset }) {
   const t = useTranslations("dashboard.discord.templates");
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
-  const src = `/api/discord-bot/preview?${new URLSearchParams({ guildId, event, locale, v: String(version), ...(preset ? { preset } : {}) })}`;
+  const [attempt, setAttempt] = useState(0);
+  const src = `/api/discord-bot/preview?${new URLSearchParams({ guildId, event, locale, v: String(version), ...(preset ? { preset } : {}), ...(attempt ? { retry: String(attempt) } : {}) })}`;
+
+  // A failed image is retried twice after a short pause, a busy server or Discord often recovers.
+  function handleError() {
+    if (attempt >= PREVIEW_MAX_RETRIES) return setState("error");
+    setTimeout(() => setAttempt((n) => n + 1), PREVIEW_RETRY_DELAY_MS * (attempt + 1));
+  }
 
   return (
     <div className="relative w-full overflow-hidden rounded-md border bg-muted" style={{ aspectRatio: ratio }}>
@@ -55,12 +65,12 @@ function Preview({ guildId, event, version, locale, ratio, preset }: { guildId: 
       )}
       {/* The preview is a generated PNG behind auth, next/image would add nothing. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img key={src} src={src} alt={t("previewAlt")} className={state === "ready" ? "size-full object-cover" : "hidden"} onLoad={() => setState("ready")} onError={() => setState("error")} />
+      <img key={src} src={src} alt={t("previewAlt")} className={state === "ready" ? "size-full object-cover" : "hidden"} onLoad={() => setState("ready")} onError={handleError} />
     </div>
   );
 }
 
-function TemplateRow({ guildId, event, template, locale, channels }: { guildId: string; event: DiscordBotEvent; template: DiscordBotTemplateView | null; locale: string; channels: DiscordBotChannel[] | null }) {
+function TemplateRow({ guildId, event, template, locale, channels, background }: { guildId: string; event: DiscordBotEvent; template: DiscordBotTemplateView | null; locale: string; channels: DiscordBotChannel[] | null; background: string }) {
   const t = useTranslations("dashboard.discord");
   const tt = useTranslations("dashboard.discord.templates");
   const router = useRouter();
@@ -68,7 +78,7 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
   const fileRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
   // Without a saved design the editor starts from the default one.
-  const current = template?.template ?? createDefaultTemplate(ACCENT_KEY[event], defaultPresetOf(event));
+  const current = template?.template ?? createDefaultTemplate(ACCENT_KEY[event], defaultPresetOf(event), background);
 
   function run(action: () => Promise<SaveDiscordTemplateResult>, success: string) {
     startTransition(async () => {
@@ -135,6 +145,7 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
           event={event}
           initial={current}
           backgroundUrl={template?.backgroundUrl ?? null}
+          defaultBackground={background}
           channels={channels}
           locale={locale}
           open
@@ -204,7 +215,7 @@ function PresetRow({ guildId, event, template, locale }: { guildId: string; even
 
 /** `locked`: the server uses the GC Stats bot, custom images need its own bot. */
 /** `channels` is null when the bot cannot read the channels of the server. */
-export function DiscordTemplatesPanel({ guildId, templates, locale, locked, channels }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; locked: boolean; channels: DiscordBotChannel[] | null }) {
+export function DiscordTemplatesPanel({ guildId, templates, locale, locked, channels, background }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; locked: boolean; channels: DiscordBotChannel[] | null; background: string }) {
   const t = useTranslations("dashboard.discord.templates");
   return (
     <Card>
@@ -227,7 +238,7 @@ export function DiscordTemplatesPanel({ guildId, templates, locale, locked, chan
       ) : (
         <CardContent className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {DISCORD_BOT_EVENTS.map((event) => (
-            <TemplateRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} channels={channels} />
+            <TemplateRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} channels={channels} background={background} />
           ))}
         </CardContent>
       )}

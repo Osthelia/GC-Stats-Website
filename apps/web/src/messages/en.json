@@ -6409,11 +6409,12 @@
         "save": "Save",
         "saving": "Saving...",
         "colorsTitle": "Colors",
-        "colorsDescription": "Color of the message of each alert type. Each alert can override it.",
+        "colorsDescription": "Color of the message of each alert type and default background of the images. Each alert can override its color.",
         "color": {
           "live": "Match live",
           "finished": "Match finished",
-          "map": "Map finished"
+          "map": "Map finished",
+          "background": "Image background"
         },
         "colorsSaved": "Colors saved",
         "botTitle": "Your own bot",

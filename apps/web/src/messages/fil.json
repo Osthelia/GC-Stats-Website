@@ -6409,11 +6409,12 @@
         "save": "I save",
         "saving": "Sine save...",
         "colorsTitle": "Mga kulay",
-        "colorsDescription": "Kulay ng mensahe ng bawat uri ng alerto. Maaari itong palitan ng bawat alerto.",
+        "colorsDescription": "Kulay ng mensahe ng bawat uri ng alerto at default na background ng mga larawan. Maaaring palitan ng bawat alerto ang kulay nito.",
         "color": {
           "live": "Live na laban",
           "finished": "Tapos na ang laban",
-          "map": "Tapos na ang mapa"
+          "map": "Tapos na ang mapa",
+          "background": "Background ng larawan"
         },
         "colorsSaved": "Nai save ang mga kulay",
         "botTitle": "Sarili mong bot",

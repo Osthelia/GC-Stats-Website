@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { DISCORD_BOT_COLOR_PATTERN, type DiscordBotColorKey } from "./shared";
+import { DISCORD_BOT_COLOR_PATTERN, DISCORD_BOT_DEFAULT_BACKGROUND, type DiscordBotColorKey } from "./shared";
 
 // `height` is the default one, each template stores its own (up to `maxHeight`).
 export const TEMPLATE_CANVAS = { width: 1000, height: 400 } as const;
@@ -681,7 +681,7 @@ function vetosBlock(y: number, accent: string): TemplateLayer[] {
 }
 
 /** Look of the GC Stats alerts: dark, gold, bold condensed names, then the requested information blocks. */
-export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly TemplateBlock[] = []): AlertTemplate {
+export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly TemplateBlock[] = [], background: string = DISCORD_BOT_DEFAULT_BACKGROUND): AlertTemplate {
   // Tall enough for a name on two lines, a single line stays centered in it.
   const name = {
     fontSize: 27,
@@ -707,7 +707,7 @@ export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly T
     height: Math.max(TEMPLATE_LIMITS.minHeight, contentBottom + BOTTOM_PADDING),
     footer: false,
     artwork: { enabled: true, source: "mapCurrent", dim: 0.7 },
-    backgroundColor: "#0e0e0e",
+    backgroundColor: background,
     backgroundImageId: null,
     folders: [],
     layers: [
@@ -824,9 +824,9 @@ export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly T
 }
 
 /** Starting point of a new template, the editor tweaks it from there. */
-export function createDefaultTemplate(kind: Kind, preset: TemplatePreset = "score"): AlertTemplate {
+export function createDefaultTemplate(kind: Kind, preset: TemplatePreset = "score", background: string = DISCORD_BOT_DEFAULT_BACKGROUND): AlertTemplate {
   const blocks = (TEMPLATE_PRESETS[kind] as Record<string, readonly TemplateBlock[]>)[preset] ?? [];
-  return createGcsTemplate(TEMPLATE_ACCENT[kind], kind, blocks);
+  return createGcsTemplate(TEMPLATE_ACCENT[kind], kind, blocks, background);
 }
 
 function sameValue(a: unknown, b: unknown): boolean {
@@ -838,5 +838,5 @@ function sameValue(a: unknown, b: unknown): boolean {
 
 /** The preset a stored template still matches exactly, null once it was customized. */
 export function presetOfTemplate(template: AlertTemplate, kind: Kind): TemplatePreset | null {
-  return presetsOf(kind).find((preset) => sameValue({ ...createDefaultTemplate(kind, preset), backgroundImageId: null }, { ...template, backgroundImageId: null })) ?? null;
+  return presetsOf(kind).find((preset) => sameValue({ ...createDefaultTemplate(kind, preset), backgroundImageId: null, backgroundColor: "" }, { ...template, backgroundImageId: null, backgroundColor: "" })) ?? null;
 }
