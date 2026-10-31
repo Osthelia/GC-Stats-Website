@@ -1047,6 +1047,76 @@
       "email": "Contactar por correo"
     }
   },
+  "discordBot": {
+    "title": "Bot de Discord",
+    "intro": "Sigue cada partida de Game Changers directamente en tu servidor de Discord, con marcadores en vivo y resultados publicados automáticamente.",
+    "addBot": "Añadir a Discord",
+    "comingSoon": "Próximamente",
+    "openDashboard": "Abrir el panel",
+    "features": {
+      "title": "Funcionalidades",
+      "live": {
+        "title": "Partidas en directo",
+        "body": "Se publica un mensaje cuando una partida empieza en directo, y su marcador se actualiza solo hasta el final."
+      },
+      "finished": {
+        "title": "Partidas terminadas",
+        "body": "El resultado final se publica en cuanto termina una partida."
+      },
+      "map": {
+        "title": "Mapas terminados",
+        "body": "Recibe el marcador de cada mapa en cuanto acaba, sin esperar al final de la partida."
+      },
+      "filters": {
+        "title": "Filtros avanzados",
+        "body": "Filtra las alertas por región, por equipo participante y por torneo oficial o no (oficial por defecto)."
+      }
+    },
+    "dashboard": {
+      "title": "Configuración desde el panel",
+      "body": "Cada servidor se configura desde el panel de GC Stats: elige el canal de cada tipo de alerta y ajusta tus filtros.",
+      "why": "Es necesario iniciar sesión con Discord para comprobar qué servidores gestionas. Solo los miembros autorizados a gestionar un servidor pueden cambiar su configuración."
+    },
+    "steps": {
+      "title": "Cómo funciona",
+      "invite": {
+        "title": "Añade el bot",
+        "body": "Invita al bot a tu servidor con el botón de arriba."
+      },
+      "login": {
+        "title": "Inicia sesión con Discord",
+        "body": "Abre el panel e inicia sesión con tu cuenta de Discord."
+      },
+      "configure": {
+        "title": "Configura",
+        "body": "Elige tus canales y filtros, las alertas empiezan de inmediato."
+      }
+    },
+    "help": {
+      "title": "¿Necesitas ayuda?",
+      "body": "¿Preguntas o sugerencias? Únete al <link>Discord de GC Stats</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "EN DIRECTO",
+    "finished": "Partida terminada",
+    "mapFinished": "Mapa {number} terminado",
+    "map": "Mapa {number}",
+    "maps": "Mapas",
+    "bestOf": "Al mejor de {count}",
+    "matchScore": "Marcador de la partida: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team} banea {map}",
+    "vetoPick": "{team} elige {map}",
+    "vetoDecider": "{map} (decisivo)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Ataque",
+    "sideDefense": "Defensa",
+    "openMatch": "Abrir el partido"
+  },
   "supportUs": {
     "title": "Apóyanos",
     "subtitle": "GC-Stats forma parte de Osthelia",
@@ -1747,7 +1817,8 @@
     "finance": "Finanzas",
     "developers": "Desarrolladores",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Bot de Discord"
   },
   "forum": {
     "overview": {
@@ -5319,14 +5390,17 @@
       "authorAdminSpace": "Autores",
       "logs": "Registros",
       "veto": "Veto de mapas",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "discordSpace": "Bot de Discord",
+      "discordServers": "Mis servidores"
     },
     "switcher": {
       "selectOrganization": "Selecciona una organización",
       "authorSpace": "Espacio de autor",
       "apiKeySpace": "Espacio de claves de API",
       "adminAccess": "Admin",
-      "authorAdminSpace": "Autores"
+      "authorAdminSpace": "Autores",
+      "discordSpace": "Bot de Discord"
     },
     "picker": {
       "title": "Tus organizaciones",
@@ -5339,7 +5413,8 @@
       "filterTagAll": "Todos",
       "noResults": "No se encontró ninguna organización.",
       "adminBadge": "Admin",
-      "authorAdminSpace": "Autores"
+      "authorAdminSpace": "Autores",
+      "discordSpace": "Bot de Discord"
     },
     "authors": {
       "title": "Autores",
@@ -6224,6 +6299,451 @@
         },
         "filterOfficial": {
           "invalid": "Valor no válido."
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "Servidores de Discord",
+      "serversSubtitle": "Los servidores donde puedes gestionar el bot de GC Stats.",
+      "serversUnavailable": "No pudimos leer tus servidores de Discord. Reconecta tu cuenta de Discord e inténtalo de nuevo.",
+      "reconnectDiscord": "Reconectar Discord",
+      "serversEmpty": "No gestionas ningún servidor de Discord. Necesitas el permiso Gestionar servidor para configurar el bot.",
+      "subscriptionCount": "{count, plural, =0 {Ninguna alerta} one {# alerta} other {# alertas}}",
+      "botNotJoined": "Bot no añadido",
+      "configure": "Configurar",
+      "addBot": "Añadir el bot",
+      "botUnavailable": "El bot todavía no se puede añadir.",
+      "serverTitle": "Servidor de Discord",
+      "serverSubtitle": "Elige qué alertas se publican en cada canal.",
+      "backToServers": "Volver a los servidores",
+      "botNotJoinedBody": "El bot todavía no está en este servidor. Añádelo para configurar alertas.",
+      "alertsTitle": "Alertas",
+      "alertsDescription": "Cada alerta publica en un canal y se puede filtrar por región, equipo y estado oficial.",
+      "add": "Añadir una alerta",
+      "empty": "Todavía no hay alertas. Añade una para recibir las partidas en tu servidor.",
+      "channelsUnavailable": "El bot no puede leer los canales de este servidor. Comprueba que puede verlos y recarga la página.",
+      "channelMissing": "Canal no encontrado",
+      "disabledLostChannel": "Desactivada, el bot perdió el acceso a este canal. Elige un canal y guarda para reactivarla.",
+      "active": "Activada",
+      "inactive": "Desactivada",
+      "toggle": "Activar o desactivar esta alerta",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "deleteTitle": "¿Eliminar esta alerta?",
+      "deleteDescription": "El bot dejará de publicarla. Los mensajes ya publicados se quedan en tu canal.",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "created": "Alerta añadida",
+      "updated": "Alerta actualizada",
+      "deleted": "Alerta eliminada",
+      "addTitle": "Añadir una alerta",
+      "editTitle": "Editar la alerta",
+      "dialogDescription": "El bot publica en el canal elegido cada partida que pase los filtros.",
+      "eventLabel": "Tipo de alerta",
+      "channelLabel": "Canal",
+      "channelPlaceholder": "Selecciona un canal",
+      "localeLabel": "Idioma de los mensajes",
+      "localeHint": "Idioma de los mensajes que publica el bot.",
+      "filtersTitle": "Filtros",
+      "filtersHint": "Deja un filtro vacío para recibirlo todo.",
+      "regions": "Regiones",
+      "regionsHint": "Solo torneos de las regiones elegidas.",
+      "teams": "Equipos",
+      "teamsHint": "Solo partidas jugadas por uno de estos equipos.",
+      "teamsPlaceholder": "Añadir un equipo",
+      "teamsSearch": "Buscar un equipo",
+      "teamsNoResults": "No se encontró ningún equipo",
+      "removeTeam": "Quitar {name}",
+      "any": "Todo",
+      "event": {
+        "match_live": "Partida en directo",
+        "match_finished": "Partida terminada",
+        "map_finished": "Mapa terminado"
+      },
+      "official": {
+        "label": "Torneos",
+        "all": "Todos los torneos",
+        "official": "Solo oficiales",
+        "unofficial": "Solo no oficiales"
+      },
+      "error": {
+        "network": "Error de red, inténtalo de nuevo.",
+        "notAuthenticated": "Debes iniciar sesión.",
+        "forbidden": "No puedes gestionar este servidor.",
+        "notFound": "Esta alerta ya no existe.",
+        "invalid": "Algunos campos no son válidos.",
+        "tooManySubscriptions": "Un servidor puede tener como máximo {max} alertas.",
+        "channelsUnavailable": "El bot no puede leer los canales de este servidor.",
+        "channelId": {
+          "required": "Selecciona un canal.",
+          "unknownChannel": "Este canal no existe en el servidor."
+        },
+        "event": {
+          "invalid": "Tipo de alerta desconocido."
+        },
+        "locale": {
+          "invalid": "Idioma desconocido."
+        },
+        "filterRegions": {
+          "invalid": "Región desconocida.",
+          "tooMany": "Selecciona como máximo {filterRegions} regiones."
+        },
+        "filterTeamIds": {
+          "invalid": "Equipo no válido.",
+          "tooMany": "Selecciona como máximo {filterTeams} equipos.",
+          "unknownTeam": "Uno de los equipos no existe."
+        },
+        "filterOfficial": {
+          "invalid": "Valor desconocido."
+        },
+        "color": {
+          "invalid": "Color no válido."
+        }
+      },
+      "alertColorLabel": "Color del embed",
+      "alertColorHint": "Reemplaza el color del servidor para esta alerta.",
+      "theme": {
+        "reset": "Restablecer",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "colorsTitle": "Colores",
+        "colorsDescription": "Color del mensaje de cada tipo de alerta. Cada alerta puede reemplazarlo.",
+        "color": {
+          "live": "Partido en directo",
+          "finished": "Partido terminado",
+          "map": "Mapa terminado"
+        },
+        "colorsSaved": "Colores guardados",
+        "botTitle": "Tu propio bot",
+        "botDescription": "Publica las alertas con tu propio bot de Discord (su nombre y su avatar) en lugar del bot de GC Stats.",
+        "tokenLabel": "Token del bot",
+        "tokenHint": "Lo encuentras en el Discord Developer Portal, en la pestaña Bot de tu aplicación. Se almacena cifrado.",
+        "botConnect": "Usar este bot",
+        "botConnecting": "Comprobando...",
+        "botConnected": "Bot conectado, invítalo a tu servidor si hace falta",
+        "botActive": "Las alertas las publica este bot",
+        "botInvite": "Invitar al bot",
+        "botDisconnect": "Usar el bot de GC Stats",
+        "botDisconnectTitle": "¿Volver al bot de GC Stats?",
+        "botDisconnectDescription": "El token de tu bot se elimina y las alertas vuelven a pasar por el bot de GC Stats, si está en tu servidor.",
+        "botDisconnected": "Vuelta al bot de GC Stats",
+        "error": {
+          "network": "Error de red, inténtalo de nuevo.",
+          "notAuthenticated": "Debes iniciar sesión.",
+          "forbidden": "No puedes gestionar este servidor.",
+          "invalid": "Algunos campos no son válidos.",
+          "color": "Color no válido.",
+          "token": {
+            "required": "Introduce el token del bot.",
+            "invalidToken": "Discord ha rechazado este token, comprueba que sea un token de bot."
+          }
+        },
+        "matchButton": "Botón para abrir el partido",
+        "matchButtonHint": "Añade bajo cada alerta un botón que abre la página del partido en GC Stats."
+      },
+      "templates": {
+        "title": "Alertas en imagen",
+        "description": "Sustituye el mensaje de texto de un tipo de alerta por una imagen creada a partir de tu plantilla. Reservado a los servidores que usan su propio bot.",
+        "locked": "Las alertas en imagen requieren tu propio bot. Conéctalo en la sección anterior para desbloquearlas.",
+        "usingImage": "Publicado como imagen",
+        "usingText": "Publicado como mensaje de texto",
+        "presetLabel": "Diseño inicial",
+        "presetHint": "Elige la información que muestra la imagen. Todo sigue siendo editable después.",
+        "preset": {
+          "score": "Solo marcador",
+          "maps": "Marcador y mapas",
+          "vetos": "Marcador y vetos",
+          "mvp": "Marcador y MVP",
+          "full": "Completo"
+        },
+        "footer": "Pie de página",
+        "footerHint": "Añade bajo la imagen la banda de GC Stats con el enlace del partido.",
+        "footerSaved": "Pie de página actualizado",
+        "toggle": "Usar una imagen para este tipo de alerta",
+        "enabled": "Alerta en imagen activada",
+        "disabled": "Vuelta al mensaje de texto",
+        "addBackground": "Añadir un fondo",
+        "changeBackground": "Cambiar el fondo",
+        "removeBackground": "Quitar el fondo",
+        "backgroundSaved": "Fondo guardado",
+        "backgroundRemoved": "Fondo eliminado",
+        "previewAlt": "Vista previa de la imagen de alerta",
+        "previewError": "Vista previa no disponible",
+        "error": {
+          "network": "Error de red, inténtalo de nuevo.",
+          "notAuthenticated": "Debes iniciar sesión.",
+          "forbidden": "No puedes gestionar este servidor.",
+          "invalid": "La plantilla no es válida.",
+          "customBotRequired": "Conecta primero tu propio bot.",
+          "invalidImage": "Esta imagen no es válida (PNG, JPEG o WebP, de al menos 400 px en su lado más corto).",
+          "tooLarge": "Esta imagen supera los 10 MB.",
+          "storageFailed": "No se pudo almacenar la imagen, inténtalo de nuevo."
+        },
+        "editDesign": "Editar el diseño"
+      },
+      "editor": {
+        "title": "Diseño de la alerta: {event}",
+        "description": "Arrastra, redimensiona y gira los elementos del lienzo, dales estilo a la derecha y muéstralos solo bajo ciertas condiciones. La vista previa tal como se envía usa el renderizado exacto del bot.",
+        "addText": "Texto",
+        "addShape": "Forma",
+        "undo": "Deshacer",
+        "previewServer": "Vista previa tal como se envía",
+        "canvasHint": "El lienzo muestra datos de ejemplo. Las flechas mueven el elemento seleccionado (Mayús para 10 píxeles) y Supr lo elimina. Los elementos atenuados están ocultos por sus condiciones.",
+        "previewTitle": "Vista previa tal como se envía",
+        "previewError": "No se pudo generar la vista previa.",
+        "canvasHeight": "Altura de la imagen",
+        "backgroundColor": "Color de fondo",
+        "layers": "Elementos (primer plano primero)",
+        "noLayers": "Aún no hay ningún elemento.",
+        "duplicate": "Duplicar",
+        "delete": "Eliminar",
+        "width": "Ancho",
+        "height": "Alto",
+        "field": {
+          "tournament": "Torneo",
+          "teamA": "Nombre del equipo A",
+          "teamB": "Nombre del equipo B",
+          "scoreA": "Puntuación del equipo A",
+          "scoreB": "Puntuación del equipo B",
+          "score": "Puntuación",
+          "status": "Estado",
+          "bestOf": "Best of",
+          "map": "Nombre del mapa",
+          "maps": "Mapas terminados",
+          "matchScore": "Puntuación del partido",
+          "mapsInline": "Mapas terminados (una línea)",
+          "vetos": "Vetos",
+          "mvp": "MVP",
+          "custom": "Texto libre",
+          "stage": "Fase del torneo",
+          "bestOfShort": "Al mejor de (corto, BO3)",
+          "teamAShort": "Nombre corto del equipo A",
+          "teamBShort": "Nombre corto del equipo B",
+          "mvpA": "MVP del equipo A",
+          "mvpB": "MVP del equipo B",
+          "dateTime": "Fecha y hora",
+          "date": "Fecha",
+          "time": "Hora"
+        },
+        "customText": "Texto",
+        "font": "Fuente",
+        "size": "Tamaño",
+        "align": {
+          "label": "Alineación",
+          "left": "Izquierda",
+          "center": "Centro",
+          "right": "Derecha"
+        },
+        "color": "Color",
+        "bold": "Negrita",
+        "uppercase": "Mayúsculas",
+        "shape": "Forma",
+        "opacity": "Opacidad",
+        "radius": "Radio de las esquinas",
+        "sampleText": "Tu texto",
+        "tooManyLayers": "Una plantilla puede tener como máximo {max} elementos.",
+        "saved": "Diseño guardado",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando...",
+        "error": {
+          "network": "Error de red, inténtalo de nuevo.",
+          "notAuthenticated": "Debes iniciar sesión.",
+          "forbidden": "No puedes gestionar este servidor.",
+          "invalid": "La plantilla no es válida.",
+          "customBotRequired": "Conecta primero tu propio bot.",
+          "invalidImage": "Esta imagen no es válida.",
+          "tooLarge": "Esta imagen es demasiado grande.",
+          "storageFailed": "No se pudo guardar el diseño, inténtalo de nuevo."
+        },
+        "addImage": "Imagen",
+        "tabContent": "Contenido",
+        "tabLayout": "Disposición",
+        "tabStyle": "Estilo",
+        "tabVisibility": "Condiciones",
+        "conditional": "Mostrado bajo condiciones",
+        "sourceMap": "Mapa {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo del equipo A",
+          "teamB": "Logo del equipo B",
+          "mvp": "Imagen del MVP (icono del agente si no hay)",
+          "mapCurrent": "Mapa actual",
+          "mvpAgent": "Icono del agente del MVP",
+          "custom": "Imagen personalizada"
+        },
+        "variableGroup": {
+          "match": "Partida",
+          "alert": "Alerta y MVP",
+          "teams": "Equipos",
+          "schedule": "Fecha y hora",
+          "mvp": "MVP",
+          "maps": "Mapas",
+          "vetos": "Vetos"
+        },
+        "conditionValue": {
+          "live": "En directo",
+          "finished": "Partida terminada",
+          "map": "Mapa terminado",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Equipo A",
+          "b": "Equipo B"
+        },
+        "customTextHint": "Escribe tu propio texto e inserta variables como {tournament} o {veto1.map}.",
+        "insertVariable": "Insertar una variable",
+        "sourceLabel": "Imagen",
+        "fit": {
+          "label": "Ajuste",
+          "cover": "Rellenar (recortar)",
+          "contain": "Contener"
+        },
+        "imageFallbackHint": "Sin imagen, se muestra una ficha con las iniciales.",
+        "shapeHint": "Una forma no tiene contenido, dale estilo en la pestaña Estilo.",
+        "rotation": "Rotación (grados)",
+        "alignTitle": "Alinear con la imagen",
+        "addFolder": "Nueva carpeta",
+        "tooManyFolders": "Una plantilla admite {max} carpetas como máximo.",
+        "folderDefaultName": "Carpeta {n}",
+        "folderExpand": "Expandir la carpeta",
+        "folderCollapse": "Contraer la carpeta",
+        "lockFolder": "Bloquear la carpeta",
+        "unlockFolder": "Desbloquear la carpeta",
+        "lockLayer": "Bloquear la capa",
+        "unlockLayer": "Desbloquear la capa",
+        "folder": "Carpeta",
+        "folderName": "Nombre de la carpeta",
+        "folderNameRequired": "La carpeta necesita un nombre.",
+        "folderHint": "Una carpeta agrupa capas en la lista. Bloquearla bloquea todas las capas que contiene.",
+        "deleteFolder": "Eliminar la carpeta",
+        "layerLockedHint": "Esta capa está bloqueada, desbloquéala para editarla o moverla.",
+        "folderLockedHint": "Esta capa está bloqueada por su carpeta, desbloquea la carpeta para editarla o moverla.",
+        "noFolder": "Sin carpeta",
+        "anchorPoint": "Anclaje del texto",
+        "anchorX": "Posición del anclaje (X)",
+        "anchorHint": "El texto empieza, está centrado o termina en esta posición X, sea cual sea su longitud.",
+        "anchor": {
+          "left": "Inicio del texto",
+          "center": "Centro del texto",
+          "right": "Fin del texto"
+        },
+        "alignLeft": "Alinear a la izquierda",
+        "alignCenterX": "Centrar horizontalmente",
+        "alignRight": "Alinear a la derecha",
+        "alignTop": "Alinear arriba",
+        "alignCenterY": "Centrar verticalmente",
+        "alignBottom": "Alinear abajo",
+        "letterSpacing": "Espaciado de letras",
+        "lineHeight": "Altura de línea",
+        "shadow": "Sombra",
+        "shadowColor": "Color de la sombra",
+        "shadowBlur": "Desenfoque",
+        "shadowX": "Desplazamiento X",
+        "shadowY": "Desplazamiento Y",
+        "borderWidth": "Grosor del borde",
+        "borderColor": "Color del borde",
+        "gradient": "Degradado",
+        "color2": "Segundo color",
+        "angle": "Ángulo (grados)",
+        "conditionsHint": "El elemento se dibuja solo cuando se cumplen todas las condiciones de abajo.",
+        "conditionKey": "Variable",
+        "conditionOp": "Condición",
+        "conditionValueLabel": "Valor",
+        "op": {
+          "is": "es",
+          "isNot": "no es",
+          "exists": "está rellenada",
+          "empty": "está vacía"
+        },
+        "addCondition": "Añadir una condición",
+        "removeCondition": "Quitar esta condición",
+        "footer": "Pie de página GC Stats",
+        "artwork": "Artwork del mapa como fondo",
+        "artworkSource": "Artwork de",
+        "artworkDim": "Oscurecimiento",
+        "artworkHint": "Se ignora cuando se sube una imagen de fondo.",
+        "loadingMatch": "Cargando el partido de vista previa",
+        "timezone": "Zona horaria",
+        "variableName": {
+          "tournament": "Nombre del torneo",
+          "stage": "Fase del torneo",
+          "status": "Estado (en directo o terminado)",
+          "bestOf": "Al mejor de (al mejor de 3)",
+          "bestOfShort": "Al mejor de, corto (BO3)",
+          "score": "Marcador de la partida o del mapa",
+          "scoreA": "Marcador del equipo A",
+          "scoreB": "Marcador del equipo B",
+          "matchScore": "Marcador de la partida",
+          "teamA": "Nombre del equipo A",
+          "teamB": "Nombre del equipo B",
+          "teamAShort": "Nombre corto del equipo A",
+          "teamBShort": "Nombre corto del equipo B",
+          "dateTime": "Fecha y hora de la partida",
+          "date": "Fecha de la partida",
+          "time": "Hora de la partida",
+          "scheduledAt": "Inicio previsto",
+          "alert_kind": "Tipo de alerta",
+          "map": "Nombre del mapa terminado",
+          "currentMap_name": "Nombre del mapa en curso",
+          "currentMap_number": "Número del mapa en curso",
+          "maps": "Mapas terminados (lista)",
+          "mapsInline": "Mapas terminados (en una línea)",
+          "vetos": "Vetos (en una línea)",
+          "mvp": "MVP de la partida o del mapa",
+          "mvpA": "MVP del equipo A",
+          "mvpB": "MVP del equipo B",
+          "mvp_name": "Jugador MVP",
+          "mvp_acs": "ACS del MVP",
+          "mvp_agent": "Agente del MVP",
+          "mvpA_name": "Jugador MVP del equipo A",
+          "mvpA_acs": "ACS del MVP del equipo A",
+          "mvpA_agent": "Agente del MVP del equipo A",
+          "mvpB_name": "Jugador MVP del equipo B",
+          "mvpB_acs": "ACS del MVP del equipo B",
+          "mvpB_agent": "Agente del MVP del equipo B",
+          "map_alias": "Nombre del mapa {n}",
+          "map_name": "Nombre del mapa {n}",
+          "map_score": "Marcador del mapa {n}",
+          "map_scoreA": "Marcador del equipo A en el mapa {n}",
+          "map_scoreB": "Marcador del equipo B en el mapa {n}",
+          "veto_map": "Mapa del veto {n}",
+          "veto_action": "Acción del veto {n} (ban, pick, decider)",
+          "veto_team": "Equipo del veto {n}",
+          "veto_type": "Tipo del veto {n}",
+          "veto_side": "Side del veto {n} (ataque o defensa)"
+        },
+        "insertVariableHint": "Haz clic en una variable para insertarla en el texto, en la posición del cursor.",
+        "layoutLayer": "Layout",
+        "pickImage": "Elegir una imagen",
+        "pickImageHint": "Cada tipo de imagen tiene su propio tamaño, puedes cambiarlo después.",
+        "imageCategory": {
+          "teams": "Equipos",
+          "mvp": "MVP",
+          "maps": "Mapas",
+          "vetos": "Vetos",
+          "custom": "Imagen personalizada"
+        },
+        "customUrl": "Dirección de la imagen",
+        "customUrlHint": "Enlace https público a una imagen. No se sube nada, la imagen se queda en su sitio y se descarga al enviar la alerta.",
+        "customUrlRequired": "La dirección de la imagen es obligatoria.",
+        "customUrlInvalid": "Introduce una dirección https válida.",
+        "useImage": "Usar esta imagen",
+        "sendTest": "Enviar una prueba",
+        "sendTestHint": "Publica este diseño, rellenado con un partido real, en el canal que elijas. Se incluyen los cambios sin guardar.",
+        "testChannel": "Canal",
+        "testChannelPlaceholder": "Elegir un canal",
+        "sendTestAction": "Enviar",
+        "sending": "Enviando",
+        "testSent": "Prueba enviada",
+        "testError": {
+          "required": "Elige un canal.",
+          "unknownChannel": "Este canal no existe en el servidor.",
+          "rateLimited": "Espera unos segundos antes de enviar otra prueba.",
+          "channelsUnavailable": "No se pueden leer los canales del servidor.",
+          "sendFailed": "No se pudo enviar la prueba, comprueba que el bot puede escribir en este canal."
         }
       }
     }

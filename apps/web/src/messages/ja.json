@@ -1045,6 +1045,76 @@
       "email": "メールで問い合わせる"
     }
   },
+  "discordBot": {
+    "title": "Discordボット",
+    "intro": "Game Changersの全試合を、ライブスコアと結果の自動投稿とともに、Discordサーバーで直接チェックできます。",
+    "addBot": "Discordに追加",
+    "comingSoon": "近日公開",
+    "openDashboard": "ダッシュボードを開く",
+    "features": {
+      "title": "機能",
+      "live": {
+        "title": "ライブ試合",
+        "body": "試合が始まるとメッセージが投稿され、終了までスコアが自動で更新されます。"
+      },
+      "finished": {
+        "title": "終了した試合",
+        "body": "試合が終わるとすぐに最終結果が投稿されます。"
+      },
+      "map": {
+        "title": "終了したマップ",
+        "body": "試合の終了を待たずに、各マップのスコアが終わり次第届きます。"
+      },
+      "filters": {
+        "title": "スマートフィルター",
+        "body": "通知を地域、参加チーム、公式または非公式の大会で絞り込めます（デフォルトは公式）。"
+      }
+    },
+    "dashboard": {
+      "title": "ダッシュボードで設定",
+      "body": "各サーバーはGC Statsのダッシュボードで設定します。通知の種類ごとにチャンネルを選び、フィルターを設定してください。",
+      "why": "管理しているサーバーを確認するため、Discordでのログインが必要です。サーバーの管理権限を持つメンバーのみが設定を変更できます。"
+    },
+    "steps": {
+      "title": "使い方",
+      "invite": {
+        "title": "ボットを追加",
+        "body": "上のボタンからボットをサーバーに招待します。"
+      },
+      "login": {
+        "title": "Discordでログイン",
+        "body": "ダッシュボードを開き、Discordアカウントでサインインします。"
+      },
+      "configure": {
+        "title": "設定",
+        "body": "チャンネルとフィルターを選ぶと、すぐに通知が始まります。"
+      }
+    },
+    "help": {
+      "title": "お困りですか？",
+      "body": "ご質問やご提案はありますか？ <link>GC Stats Discord</link>にご参加ください。"
+    }
+  },
+  "discordBotMessages": {
+    "live": "ライブ",
+    "finished": "試合終了",
+    "mapFinished": "マップ{number}終了",
+    "map": "マップ{number}",
+    "maps": "マップ",
+    "bestOf": "Bo{count}",
+    "matchScore": "試合スコア: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team}が{map}をバン",
+    "vetoPick": "{team}が{map}をピック",
+    "vetoDecider": "{map}(デサイダー)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "アタック",
+    "sideDefense": "ディフェンス",
+    "openMatch": "試合を開く"
+  },
   "supportUs": {
     "title": "私たちを支援する",
     "subtitle": "GC StatsはOstheliaの一部です",
@@ -1745,7 +1815,8 @@
     "finance": "財務",
     "developers": "開発者",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discordボット"
   },
   "forum": {
     "overview": {
@@ -5201,14 +5272,17 @@
       "allAuthors": "すべての著者",
       "authorAdminSpace": "著者",
       "logs": "ログ",
-      "webhooks": "Webhook"
+      "webhooks": "Webhook",
+      "discordSpace": "Discord ボット",
+      "discordServers": "マイサーバー"
     },
     "switcher": {
       "selectOrganization": "組織を選択",
       "authorSpace": "執筆者スペース",
       "apiKeySpace": "APIキースペース",
       "adminAccess": "管理者",
-      "authorAdminSpace": "著者"
+      "authorAdminSpace": "著者",
+      "discordSpace": "Discord ボット"
     },
     "picker": {
       "title": "あなたの組織",
@@ -5221,7 +5295,8 @@
       "filterTagAll": "すべて",
       "noResults": "組織が見つかりません。",
       "adminBadge": "管理者",
-      "authorAdminSpace": "著者"
+      "authorAdminSpace": "著者",
+      "discordSpace": "Discord ボット"
     },
     "authors": {
       "title": "著者",
@@ -6100,6 +6175,466 @@
         },
         "filterOfficial": {
           "invalid": "無効な値です。"
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "Discord サーバー",
+      "serversSubtitle": "GC Stats ボットを管理できるサーバーです。",
+      "serversUnavailable": "Discord サーバーを読み込めませんでした。Discord アカウントを再接続してもう一度お試しください。",
+      "reconnectDiscord": "Discord を再接続",
+      "serversEmpty": "管理している Discord サーバーがありません。ボットを設定するには「サーバー管理」権限が必要です。",
+      "subscriptionCount": "{count, plural, =0 {アラートなし} other {アラート # 件}}",
+      "botNotJoined": "ボット未追加",
+      "configure": "設定",
+      "addBot": "ボットを追加",
+      "botUnavailable": "ボットはまだ追加できません。",
+      "serverTitle": "Discord サーバー",
+      "serverSubtitle": "どのアラートをどのチャンネルに投稿するか選択します。",
+      "backToServers": "サーバー一覧に戻る",
+      "botNotJoinedBody": "ボットはまだこのサーバーにいません。アラートを設定するにはボットを追加してください。",
+      "alertsTitle": "アラート",
+      "alertsDescription": "各アラートは1つのチャンネルに投稿され、地域、チーム、公式かどうかで絞り込めます。",
+      "add": "アラートを追加",
+      "empty": "アラートはまだありません。サーバーで試合通知を受け取るには追加してください。",
+      "channelsUnavailable": "ボットがこのサーバーのチャンネルを読み取れません。表示権限があるか確認して、ページを再読み込みしてください。",
+      "channelMissing": "チャンネルが見つかりません",
+      "disabledLostChannel": "オフになりました。ボットがこのチャンネルへのアクセスを失いました。チャンネルを選んで保存すると再びオンになります。",
+      "active": "オン",
+      "inactive": "オフ",
+      "toggle": "このアラートのオンとオフを切り替え",
+      "edit": "編集",
+      "delete": "削除",
+      "deleteTitle": "このアラートを削除しますか？",
+      "deleteDescription": "ボットは投稿を停止します。すでに投稿されたメッセージはチャンネルに残ります。",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "saving": "保存中...",
+      "created": "アラートを追加しました",
+      "updated": "アラートを更新しました",
+      "deleted": "アラートを削除しました",
+      "addTitle": "アラートを追加",
+      "editTitle": "アラートを編集",
+      "dialogDescription": "フィルターを通過したすべての試合について、選択したチャンネルに投稿します。",
+      "eventLabel": "アラートの種類",
+      "channelLabel": "チャンネル",
+      "channelPlaceholder": "チャンネルを選択",
+      "localeLabel": "メッセージの言語",
+      "localeHint": "ボットが投稿するメッセージの言語です。",
+      "filtersTitle": "フィルター",
+      "filtersHint": "すべて受け取るにはフィルターを空にしてください。",
+      "regions": "地域",
+      "regionsHint": "選択した地域のトーナメントのみ。",
+      "teams": "チーム",
+      "teamsHint": "これらのチームのいずれかが出場する試合のみ。",
+      "teamsPlaceholder": "チームを追加",
+      "teamsSearch": "チームを検索",
+      "teamsNoResults": "チームが見つかりません",
+      "removeTeam": "{name} を削除",
+      "any": "すべて",
+      "event": {
+        "match_live": "試合中",
+        "match_finished": "試合終了",
+        "map_finished": "マップ終了"
+      },
+      "official": {
+        "label": "トーナメント",
+        "all": "すべてのトーナメント",
+        "official": "公式のみ",
+        "unofficial": "非公式のみ"
+      },
+      "error": {
+        "network": "ネットワークエラーです。もう一度お試しください。",
+        "notAuthenticated": "ログインが必要です。",
+        "forbidden": "このサーバーを管理する権限がありません。",
+        "notFound": "このアラートは存在しません。",
+        "invalid": "無効な項目があります。",
+        "tooManySubscriptions": "1つのサーバーに設定できるアラートは最大 {max} 件です。",
+        "channelsUnavailable": "ボットがこのサーバーのチャンネルを読み取れません。",
+        "channelId": {
+          "required": "チャンネルを選択してください。",
+          "unknownChannel": "このチャンネルはサーバーに存在しません。"
+        },
+        "event": {
+          "invalid": "不明なアラートの種類です。"
+        },
+        "locale": {
+          "invalid": "不明な言語です。"
+        },
+        "filterRegions": {
+          "invalid": "不明な地域です。",
+          "tooMany": "地域は最大 {filterRegions} 件まで選択できます。"
+        },
+        "filterTeamIds": {
+          "invalid": "無効なチームです。",
+          "tooMany": "チームは最大 {filterTeams} 件まで選択できます。",
+          "unknownTeam": "存在しないチームが含まれています。"
+        },
+        "filterOfficial": {
+          "invalid": "不明な値です。"
+        },
+        "color": {
+          "invalid": "無効な色です。"
+        }
+      },
+      "alertColorLabel": "埋め込みの色",
+      "alertColorHint": "このアラートではサーバーの色を上書きします。",
+      "theme": {
+        "reset": "リセット",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中...",
+        "colorsTitle": "色",
+        "colorsDescription": "アラートの種類ごとのメッセージの色です。各アラートで上書きできます。",
+        "color": {
+          "live": "試合ライブ",
+          "finished": "試合終了",
+          "map": "マップ終了"
+        },
+        "colorsSaved": "色を保存しました",
+        "botTitle": "独自のボット",
+        "botDescription": "GC Statsのボットの代わりに、自分のDiscordボット（名前とアバター）でアラートを投稿します。",
+        "tokenLabel": "ボットtoken",
+        "tokenHint": "アプリケーションのBotタブにあるDiscord Developer Portalで確認できます。暗号化して保存されます。",
+        "botConnect": "このボットを使う",
+        "botConnecting": "確認中...",
+        "botConnected": "ボットを接続しました。必要に応じてサーバーに招待してください",
+        "botActive": "アラートはこのボットが投稿します",
+        "botInvite": "ボットを招待",
+        "botDisconnect": "GC Statsのボットを使う",
+        "botDisconnectTitle": "GC Statsのボットに戻しますか？",
+        "botDisconnectDescription": "ボットのtokenは削除され、GC Statsのボットがサーバーにいる場合はそのボットが再びアラートを投稿します。",
+        "botDisconnected": "GC Statsのボットに戻しました",
+        "error": {
+          "network": "ネットワークエラーです。もう一度お試しください。",
+          "notAuthenticated": "サインインが必要です。",
+          "forbidden": "このサーバーを管理する権限がありません。",
+          "invalid": "無効な項目があります。",
+          "color": "無効な色です。",
+          "token": {
+            "required": "ボットのtokenを入力してください。",
+            "invalidToken": "Discordがこのtokenを拒否しました。ボットのtokenであることを確認してください。"
+          }
+        },
+        "matchButton": "試合を開くボタン",
+        "matchButtonHint": "各通知の下に、GC Statsの試合ページを開くボタンを追加します。"
+      },
+      "templates": {
+        "title": "画像アラート",
+        "description": "アラートの種類ごとのテキストメッセージを、テンプレートから作成した画像に置き換えます。独自のボットを使うサーバー専用です。",
+        "locked": "画像アラートには独自のボットが必要です。上のセクションで接続すると利用できます。",
+        "usingImage": "画像として投稿",
+        "usingText": "テキストメッセージとして投稿",
+        "presetLabel": "開始デザイン",
+        "presetHint": "画像に表示する情報を選択してください。後からすべて編集できます。",
+        "preset": {
+          "score": "スコアのみ",
+          "maps": "スコアとマップ",
+          "vetos": "スコアとベト",
+          "mvp": "スコアとMVP",
+          "full": "すべて"
+        },
+        "footer": "フッター",
+        "footerHint": "画像の下に、試合リンク付きの GC Stats バンドを追加します。",
+        "footerSaved": "フッターを更新しました",
+        "toggle": "このアラートの種類で画像を使用",
+        "enabled": "画像アラートを有効にしました",
+        "disabled": "テキストメッセージに戻しました",
+        "addBackground": "背景を追加",
+        "changeBackground": "背景を変更",
+        "removeBackground": "背景を削除",
+        "backgroundSaved": "背景を保存しました",
+        "backgroundRemoved": "背景を削除しました",
+        "previewAlt": "アラート画像のプレビュー",
+        "previewError": "プレビューを利用できません",
+        "error": {
+          "network": "ネットワークエラーです。もう一度お試しください。",
+          "notAuthenticated": "サインインが必要です。",
+          "forbidden": "このサーバーを管理する権限がありません。",
+          "invalid": "テンプレートが無効です。",
+          "customBotRequired": "先に独自のボットを接続してください。",
+          "invalidImage": "この画像は無効です(PNG、JPEG、WebP、短辺が400 px以上)。",
+          "tooLarge": "この画像は10 MBを超えています。",
+          "storageFailed": "画像を保存できませんでした。もう一度お試しください。"
+        },
+        "editDesign": "デザインを編集"
+      },
+      "editor": {
+        "title": "アラートのデザイン: {event}",
+        "description": "キャンバス上の要素をドラッグ、リサイズ、回転し、右側でスタイルを設定して、条件を満たす場合だけ表示できます。送信されるプレビューはボットと全く同じ描画を使います。",
+        "addText": "テキスト",
+        "addLogo": "チームロゴ",
+        "addShape": "図形",
+        "undo": "元に戻す",
+        "previewServer": "送信時のプレビュー",
+        "canvasHint": "キャンバスにはサンプルデータが表示されます。矢印キーで選択中の要素を移動(Shiftで10ピクセル)、Deleteで削除します。薄く表示された要素は条件により非表示です。",
+        "previewTitle": "送信時のプレビュー",
+        "previewError": "プレビューを生成できませんでした。",
+        "canvasHeight": "画像の高さ",
+        "backgroundColor": "背景色",
+        "layers": "要素（前面が先）",
+        "noLayers": "まだ要素がありません。",
+        "noSelection": "編集するには、キャンバスまたはリストで要素を選択してください。",
+        "moveBack": "背面へ移動",
+        "moveFront": "前面へ移動",
+        "duplicate": "複製",
+        "delete": "削除",
+        "width": "幅",
+        "height": "高さ",
+        "field": {
+          "tournament": "大会",
+          "teamA": "チームAの名前",
+          "teamB": "チームBの名前",
+          "scoreA": "チームAのスコア",
+          "scoreB": "チームBのスコア",
+          "score": "スコア",
+          "status": "ステータス",
+          "bestOf": "Best of",
+          "map": "マップ名",
+          "maps": "終了したマップ",
+          "matchScore": "マッチスコア",
+          "mapsInline": "終了したマップ(1行)",
+          "vetos": "ベト",
+          "mvp": "MVP",
+          "custom": "自由テキスト",
+          "stage": "大会フェーズ",
+          "bestOfShort": "Best of（短縮形、BO3）",
+          "teamAShort": "チームAの略称",
+          "teamBShort": "チームBの略称",
+          "mvpA": "チームAのMVP",
+          "mvpB": "チームBのMVP",
+          "dateTime": "日付と時刻",
+          "date": "日付",
+          "time": "時刻"
+        },
+        "customText": "テキスト",
+        "font": "フォント",
+        "size": "サイズ",
+        "align": {
+          "label": "配置",
+          "left": "左",
+          "center": "中央",
+          "right": "右"
+        },
+        "color": "色",
+        "bold": "太字",
+        "uppercase": "大文字",
+        "sideLabel": "チーム",
+        "side": {
+          "a": "チームA",
+          "b": "チームB"
+        },
+        "logoOf": {
+          "a": "チームAのロゴ",
+          "b": "チームBのロゴ"
+        },
+        "shape": "図形",
+        "opacity": "不透明度",
+        "radius": "角の丸み",
+        "sampleText": "あなたのテキスト",
+        "tooManyLayers": "テンプレートには最大 {max} 個の要素を置けます。",
+        "saved": "デザインを保存しました",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "saving": "保存中...",
+        "error": {
+          "network": "ネットワークエラーです。もう一度お試しください。",
+          "notAuthenticated": "サインインが必要です。",
+          "forbidden": "このサーバーを管理する権限がありません。",
+          "invalid": "テンプレートが無効です。",
+          "customBotRequired": "先に独自のボットを接続してください。",
+          "invalidImage": "この画像は無効です。",
+          "tooLarge": "この画像は大きすぎます。",
+          "storageFailed": "デザインを保存できませんでした。もう一度お試しください。"
+        },
+        "addImage": "画像",
+        "tabContent": "コンテンツ",
+        "tabLayout": "レイアウト",
+        "tabStyle": "スタイル",
+        "tabVisibility": "条件",
+        "conditional": "条件付きで表示",
+        "sourceMap": "マップ {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "チームAのロゴ",
+          "teamB": "チームBのロゴ",
+          "mvp": "MVPの画像(なければエージェントのアイコン)",
+          "mapCurrent": "現在のマップ",
+          "mvpAgent": "MVPのエージェントアイコン",
+          "custom": "カスタム画像"
+        },
+        "variableGroup": {
+          "match": "マッチ",
+          "alert": "アラートとMVP",
+          "teams": "チーム",
+          "schedule": "日付と時刻",
+          "mvp": "MVP",
+          "maps": "マップ",
+          "vetos": "BAN/PICK"
+        },
+        "conditionValue": {
+          "live": "ライブ",
+          "finished": "終了したマッチ",
+          "map": "終了したマップ",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "チームA",
+          "b": "チームB"
+        },
+        "customTextHint": "独自のテキストを書き、{tournament} や {veto1.map} などの変数を挿入できます。",
+        "insertVariable": "変数を挿入",
+        "sourceLabel": "画像",
+        "fit": {
+          "label": "フィット",
+          "cover": "塗りつぶし(トリミング)",
+          "contain": "全体を収める"
+        },
+        "imageFallbackHint": "画像がない場合は、イニシャルのタイルが表示されます。",
+        "shapeHint": "図形にはコンテンツがありません。スタイルタブで設定してください。",
+        "logoStyleHint": "チームのロゴはそのまま表示されます。サイズと位置はレイアウトで変更できます。",
+        "rotation": "回転(度)",
+        "alignTitle": "画像に揃える",
+        "addFolder": "新しいフォルダ",
+        "tooManyFolders": "1つのテンプレートに入れられるフォルダは最大{max}個です。",
+        "folderDefaultName": "フォルダ {n}",
+        "folderExpand": "フォルダを展開",
+        "folderCollapse": "フォルダを折りたたむ",
+        "lockFolder": "フォルダをロック",
+        "unlockFolder": "フォルダのロックを解除",
+        "lockLayer": "要素をロック",
+        "unlockLayer": "要素のロックを解除",
+        "folder": "フォルダ",
+        "folderName": "フォルダ名",
+        "folderNameRequired": "フォルダには名前が必要です。",
+        "folderHint": "フォルダはリスト内の要素をまとめます。ロックすると中のすべての要素がロックされます。",
+        "deleteFolder": "フォルダを削除",
+        "layerLockedHint": "この要素はロックされています。編集や移動をするにはロックを解除してください。",
+        "folderLockedHint": "この要素はフォルダによってロックされています。編集や移動をするにはフォルダのロックを解除してください。",
+        "noFolder": "フォルダなし",
+        "anchorPoint": "テキストの基準点",
+        "anchorX": "基準点の位置 (X)",
+        "anchorHint": "テキストの長さに関係なく、このX位置でテキストが始まる、中央に来る、または終わります。",
+        "anchor": {
+          "left": "テキストの先頭",
+          "center": "テキストの中央",
+          "right": "テキストの末尾"
+        },
+        "alignLeft": "左揃え",
+        "alignCenterX": "水平方向の中央揃え",
+        "alignRight": "右揃え",
+        "alignTop": "上揃え",
+        "alignCenterY": "垂直方向の中央揃え",
+        "alignBottom": "下揃え",
+        "letterSpacing": "文字間隔",
+        "lineHeight": "行の高さ",
+        "shadow": "シャドウ",
+        "shadowColor": "シャドウの色",
+        "shadowBlur": "ぼかし",
+        "shadowX": "オフセットX",
+        "shadowY": "オフセットY",
+        "borderWidth": "枠線の太さ",
+        "borderColor": "枠線の色",
+        "gradient": "グラデーション",
+        "color2": "2番目の色",
+        "angle": "角度(度)",
+        "conditionsHint": "下のすべての条件が満たされた場合のみ、要素が描画されます。",
+        "conditionKey": "変数",
+        "conditionOp": "条件",
+        "conditionValueLabel": "値",
+        "op": {
+          "is": "と等しい",
+          "isNot": "と等しくない",
+          "exists": "が入力されている",
+          "empty": "が空"
+        },
+        "addCondition": "条件を追加",
+        "removeCondition": "この条件を削除",
+        "canvasSettings": "画像の設定",
+        "footer": "GC Statsのフッター",
+        "artwork": "背景としてマップのアートワーク",
+        "artworkSource": "アートワークの対象",
+        "artworkDim": "暗さ",
+        "artworkHint": "背景画像をアップロードした場合は無視されます。",
+        "loadingMatch": "プレビュー用の試合を読み込み中",
+        "timezone": "タイムゾーン",
+        "variableName": {
+          "tournament": "大会名",
+          "stage": "大会のフェーズ",
+          "status": "ステータス（ライブまたは終了）",
+          "bestOf": "Best of（Best of 3）",
+          "bestOfShort": "Best of、短縮形（BO3）",
+          "score": "試合またはマップのスコア",
+          "scoreA": "チームAのスコア",
+          "scoreB": "チームBのスコア",
+          "matchScore": "試合のスコア",
+          "teamA": "チームAの名前",
+          "teamB": "チームBの名前",
+          "teamAShort": "チームAの略称",
+          "teamBShort": "チームBの略称",
+          "dateTime": "試合の日時",
+          "date": "試合の日付",
+          "time": "試合の時刻",
+          "scheduledAt": "開始予定",
+          "alert_kind": "アラートの種類",
+          "map": "終了したマップの名前",
+          "currentMap_name": "進行中のマップの名前",
+          "currentMap_number": "進行中のマップの番号",
+          "maps": "終了したマップ（リスト）",
+          "mapsInline": "終了したマップ（1行）",
+          "vetos": "ベトー（1行）",
+          "mvp": "試合またはマップのMVP",
+          "mvpA": "チームAのMVP",
+          "mvpB": "チームBのMVP",
+          "mvp_name": "MVPプレイヤー",
+          "mvp_acs": "MVPのACS",
+          "mvp_agent": "MVPのエージェント",
+          "mvpA_name": "チームAのMVPプレイヤー",
+          "mvpA_acs": "チームAのMVPのACS",
+          "mvpA_agent": "チームAのMVPのエージェント",
+          "mvpB_name": "チームBのMVPプレイヤー",
+          "mvpB_acs": "チームBのMVPのACS",
+          "mvpB_agent": "チームBのMVPのエージェント",
+          "map_alias": "マップ{n}の名前",
+          "map_name": "マップ{n}の名前",
+          "map_score": "マップ{n}のスコア",
+          "map_scoreA": "マップ{n}でのチームAのスコア",
+          "map_scoreB": "マップ{n}でのチームBのスコア",
+          "veto_map": "ベトー{n}のマップ",
+          "veto_action": "ベトー{n}のアクション（ban, pick, decider）",
+          "veto_team": "ベトー{n}のチーム",
+          "veto_type": "ベトー{n}のタイプ",
+          "veto_side": "ベトー{n}のサイド（アタックまたはディフェンス）"
+        },
+        "insertVariableHint": "変数をクリックすると、カーソル位置のテキストに挿入されます。",
+        "layoutLayer": "レイアウト",
+        "pickImage": "画像を選ぶ",
+        "pickImageHint": "画像の種類ごとに専用のサイズがあり、あとから変更できます。",
+        "imageCategory": {
+          "teams": "チーム",
+          "mvp": "MVP",
+          "maps": "マップ",
+          "vetos": "ベト",
+          "custom": "カスタム画像"
+        },
+        "customUrl": "画像のURL",
+        "customUrlHint": "画像への公開httpsリンクです。アップロードは行われず、画像は元のサイトに残り、通知の送信時にダウンロードされます。",
+        "customUrlRequired": "画像のURLは必須です。",
+        "customUrlInvalid": "有効なhttpsのURLを入力してください。",
+        "useImage": "この画像を使う",
+        "sendTest": "テスト送信",
+        "sendTestHint": "このデザインに実際の試合を反映して、選んだチャンネルに投稿します。未保存の変更も含まれます。",
+        "testChannel": "チャンネル",
+        "testChannelPlaceholder": "チャンネルを選ぶ",
+        "sendTestAction": "送信",
+        "sending": "送信中",
+        "testSent": "テストを送信しました",
+        "testError": {
+          "required": "チャンネルを選んでください。",
+          "unknownChannel": "このチャンネルはサーバーに存在しません。",
+          "rateLimited": "次のテスト送信まで数秒お待ちください。",
+          "channelsUnavailable": "サーバーのチャンネルを読み取れません。",
+          "sendFailed": "テストを送信できませんでした。ボットがこのチャンネルに書き込めるか確認してください。"
         }
       }
     }

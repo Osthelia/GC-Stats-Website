@@ -1047,6 +1047,76 @@
       "email": "Hubungi melalui email"
     }
   },
+  "discordBot": {
+    "title": "Bot Discord",
+    "intro": "Ikuti semua pertandingan Game Changers langsung di server Discord Anda, dengan skor langsung dan hasil yang diposting otomatis.",
+    "addBot": "Tambahkan ke Discord",
+    "comingSoon": "Segera hadir",
+    "openDashboard": "Buka dasbor",
+    "features": {
+      "title": "Fitur",
+      "live": {
+        "title": "Pertandingan langsung",
+        "body": "Sebuah pesan diposting saat pertandingan dimulai, dan skornya diperbarui sendiri hingga selesai."
+      },
+      "finished": {
+        "title": "Pertandingan selesai",
+        "body": "Hasil akhir diposting segera setelah pertandingan berakhir."
+      },
+      "map": {
+        "title": "Map selesai",
+        "body": "Dapatkan skor setiap map begitu selesai, tanpa menunggu pertandingan berakhir."
+      },
+      "filters": {
+        "title": "Filter cerdas",
+        "body": "Saring peringatan berdasarkan wilayah, tim yang berpartisipasi, dan turnamen resmi atau tidak resmi (resmi secara default)."
+      }
+    },
+    "dashboard": {
+      "title": "Atur dari dasbor",
+      "body": "Setiap server diatur dari dasbor GC Stats: pilih kanal untuk tiap jenis peringatan dan tentukan filter Anda.",
+      "why": "Anda perlu masuk dengan Discord agar kami dapat memeriksa server mana yang Anda kelola. Hanya anggota yang berhak mengelola server yang dapat mengubah pengaturannya."
+    },
+    "steps": {
+      "title": "Cara kerja",
+      "invite": {
+        "title": "Tambahkan bot",
+        "body": "Undang bot ke server Anda dengan tombol di atas."
+      },
+      "login": {
+        "title": "Masuk dengan Discord",
+        "body": "Buka dasbor dan masuk dengan akun Discord Anda."
+      },
+      "configure": {
+        "title": "Atur",
+        "body": "Pilih kanal dan filter Anda, peringatan langsung dimulai."
+      }
+    },
+    "help": {
+      "title": "Butuh bantuan?",
+      "body": "Ada pertanyaan atau saran? Bergabunglah dengan <link>Discord GC Stats</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "LANGSUNG",
+    "finished": "Pertandingan selesai",
+    "mapFinished": "Map {number} selesai",
+    "map": "Map {number}",
+    "maps": "Map",
+    "bestOf": "Best of {count}",
+    "matchScore": "Skor pertandingan: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team} mem-ban {map}",
+    "vetoPick": "{team} memilih {map}",
+    "vetoDecider": "{map} (decider)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Menyerang",
+    "sideDefense": "Bertahan",
+    "openMatch": "Buka pertandingan"
+  },
   "supportUs": {
     "title": "Dukung kami",
     "subtitle": "GC-Stats adalah bagian dari Osthelia",
@@ -1747,7 +1817,8 @@
     "finance": "Keuangan",
     "developers": "Pengembang",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Bot Discord"
   },
   "forum": {
     "overview": {
@@ -5319,14 +5390,17 @@
       "authorAdminSpace": "Penulis",
       "logs": "Log",
       "veto": "Veto peta",
-      "webhooks": "Webhook"
+      "webhooks": "Webhook",
+      "discordSpace": "Bot Discord",
+      "discordServers": "Server saya"
     },
     "switcher": {
       "selectOrganization": "Pilih organisasi",
       "authorSpace": "Ruang penulis",
       "apiKeySpace": "Ruang kunci API",
       "adminAccess": "Admin",
-      "authorAdminSpace": "Penulis"
+      "authorAdminSpace": "Penulis",
+      "discordSpace": "Bot Discord"
     },
     "picker": {
       "title": "Organisasi Anda",
@@ -5339,7 +5413,8 @@
       "filterTagAll": "Semua",
       "noResults": "Organisasi tidak ditemukan.",
       "adminBadge": "Admin",
-      "authorAdminSpace": "Penulis"
+      "authorAdminSpace": "Penulis",
+      "discordSpace": "Bot Discord"
     },
     "authors": {
       "title": "Penulis",
@@ -6224,6 +6299,466 @@
         },
         "filterOfficial": {
           "invalid": "Nilai tidak valid."
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "Server Discord",
+      "serversSubtitle": "Server tempat kamu bisa mengelola bot GC Stats.",
+      "serversUnavailable": "Server Discord kamu tidak dapat dibaca. Hubungkan ulang akun Discord lalu coba lagi.",
+      "reconnectDiscord": "Hubungkan ulang Discord",
+      "serversEmpty": "Kamu tidak mengelola server Discord mana pun. Kamu memerlukan izin Kelola Server untuk mengonfigurasi bot.",
+      "subscriptionCount": "{count, plural, =0 {Tidak ada peringatan} other {# peringatan}}",
+      "botNotJoined": "Bot belum ditambahkan",
+      "configure": "Konfigurasi",
+      "addBot": "Tambahkan bot",
+      "botUnavailable": "Bot belum dapat ditambahkan.",
+      "serverTitle": "Server Discord",
+      "serverSubtitle": "Pilih peringatan apa yang diposting di channel mana.",
+      "backToServers": "Kembali ke server",
+      "botNotJoinedBody": "Bot belum ada di server ini. Tambahkan bot untuk mulai mengatur peringatan.",
+      "alertsTitle": "Peringatan",
+      "alertsDescription": "Setiap peringatan diposting di satu channel dan dapat difilter berdasarkan wilayah, tim, dan status resmi.",
+      "add": "Tambah peringatan",
+      "empty": "Belum ada peringatan. Tambahkan satu untuk mulai menerima pertandingan di servermu.",
+      "channelsUnavailable": "Bot tidak dapat membaca channel server ini. Pastikan bot dapat melihatnya, lalu muat ulang halaman.",
+      "channelMissing": "Channel tidak ditemukan",
+      "disabledLostChannel": "Dimatikan, bot kehilangan akses ke channel ini. Pilih channel lalu simpan untuk menyalakannya kembali.",
+      "active": "Aktif",
+      "inactive": "Nonaktif",
+      "toggle": "Nyalakan atau matikan peringatan ini",
+      "edit": "Ubah",
+      "delete": "Hapus",
+      "deleteTitle": "Hapus peringatan ini?",
+      "deleteDescription": "Bot akan berhenti memostingnya. Pesan yang sudah diposting tetap ada di channelmu.",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "saving": "Menyimpan...",
+      "created": "Peringatan ditambahkan",
+      "updated": "Peringatan diperbarui",
+      "deleted": "Peringatan dihapus",
+      "addTitle": "Tambah peringatan",
+      "editTitle": "Ubah peringatan",
+      "dialogDescription": "Bot memposting di channel yang dipilih untuk setiap pertandingan yang lolos filter.",
+      "eventLabel": "Jenis peringatan",
+      "channelLabel": "Channel",
+      "channelPlaceholder": "Pilih channel",
+      "localeLabel": "Bahasa pesan",
+      "localeHint": "Bahasa pesan yang diposting oleh bot.",
+      "filtersTitle": "Filter",
+      "filtersHint": "Kosongkan filter untuk menerima semuanya.",
+      "regions": "Wilayah",
+      "regionsHint": "Hanya turnamen dari wilayah yang dipilih.",
+      "teams": "Tim",
+      "teamsHint": "Hanya pertandingan yang dimainkan oleh salah satu tim ini.",
+      "teamsPlaceholder": "Tambah tim",
+      "teamsSearch": "Cari tim",
+      "teamsNoResults": "Tim tidak ditemukan",
+      "removeTeam": "Hapus {name}",
+      "any": "Semua",
+      "event": {
+        "match_live": "Pertandingan langsung",
+        "match_finished": "Pertandingan selesai",
+        "map_finished": "Map selesai"
+      },
+      "official": {
+        "label": "Turnamen",
+        "all": "Semua turnamen",
+        "official": "Hanya resmi",
+        "unofficial": "Hanya tidak resmi"
+      },
+      "error": {
+        "network": "Kesalahan jaringan, coba lagi.",
+        "notAuthenticated": "Kamu harus masuk terlebih dahulu.",
+        "forbidden": "Kamu tidak dapat mengelola server ini.",
+        "notFound": "Peringatan ini sudah tidak ada.",
+        "invalid": "Beberapa kolom tidak valid.",
+        "tooManySubscriptions": "Satu server dapat memiliki maksimal {max} peringatan.",
+        "channelsUnavailable": "Bot tidak dapat membaca channel server ini.",
+        "channelId": {
+          "required": "Pilih channel.",
+          "unknownChannel": "Channel ini tidak ada di server."
+        },
+        "event": {
+          "invalid": "Jenis peringatan tidak dikenal."
+        },
+        "locale": {
+          "invalid": "Bahasa tidak dikenal."
+        },
+        "filterRegions": {
+          "invalid": "Wilayah tidak dikenal.",
+          "tooMany": "Pilih maksimal {filterRegions} wilayah."
+        },
+        "filterTeamIds": {
+          "invalid": "Tim tidak valid.",
+          "tooMany": "Pilih maksimal {filterTeams} tim.",
+          "unknownTeam": "Salah satu tim tidak ada."
+        },
+        "filterOfficial": {
+          "invalid": "Nilai tidak dikenal."
+        },
+        "color": {
+          "invalid": "Warna tidak valid."
+        }
+      },
+      "alertColorLabel": "Warna embed",
+      "alertColorHint": "Menimpa warna server untuk peringatan ini.",
+      "theme": {
+        "reset": "Atur ulang",
+        "cancel": "Batal",
+        "save": "Simpan",
+        "saving": "Menyimpan...",
+        "colorsTitle": "Warna",
+        "colorsDescription": "Warna pesan setiap jenis peringatan. Setiap peringatan dapat menimpanya.",
+        "color": {
+          "live": "Pertandingan langsung",
+          "finished": "Pertandingan selesai",
+          "map": "Map selesai"
+        },
+        "colorsSaved": "Warna disimpan",
+        "botTitle": "Bot Anda sendiri",
+        "botDescription": "Kirim peringatan dengan bot Discord Anda sendiri (nama dan avatarnya) sebagai pengganti bot GC Stats.",
+        "tokenLabel": "Token bot",
+        "tokenHint": "Ada di Discord Developer Portal, pada tab Bot di aplikasi Anda. Token disimpan dalam bentuk terenkripsi.",
+        "botConnect": "Gunakan bot ini",
+        "botConnecting": "Memeriksa...",
+        "botConnected": "Bot terhubung, undang ke server Anda jika perlu",
+        "botActive": "Peringatan dikirim oleh bot ini",
+        "botInvite": "Undang bot",
+        "botDisconnect": "Gunakan bot GC Stats",
+        "botDisconnectTitle": "Kembali ke bot GC Stats?",
+        "botDisconnectDescription": "Token bot Anda dihapus dan peringatan kembali dikirim oleh bot GC Stats, jika ada di server Anda.",
+        "botDisconnected": "Kembali ke bot GC Stats",
+        "error": {
+          "network": "Kesalahan jaringan, coba lagi.",
+          "notAuthenticated": "Anda harus masuk terlebih dahulu.",
+          "forbidden": "Anda tidak dapat mengelola server ini.",
+          "invalid": "Beberapa kolom tidak valid.",
+          "color": "Warna tidak valid.",
+          "token": {
+            "required": "Masukkan token bot.",
+            "invalidToken": "Discord menolak token ini, pastikan itu adalah token bot."
+          }
+        },
+        "matchButton": "Tombol untuk membuka pertandingan",
+        "matchButtonHint": "Menambahkan tombol di bawah setiap peringatan yang membuka halaman pertandingan di GC Stats."
+      },
+      "templates": {
+        "title": "Peringatan gambar",
+        "description": "Mengganti pesan teks suatu jenis peringatan dengan gambar yang dibuat dari template Anda. Khusus untuk server yang memakai bot sendiri.",
+        "locked": "Peringatan gambar memerlukan bot Anda sendiri. Hubungkan di bagian di atas untuk membukanya.",
+        "usingImage": "Dikirim sebagai gambar",
+        "usingText": "Dikirim sebagai pesan teks",
+        "presetLabel": "Desain awal",
+        "presetHint": "Pilih informasi yang ditampilkan gambar. Semuanya tetap dapat diedit setelahnya.",
+        "preset": {
+          "score": "Skor saja",
+          "maps": "Skor dan map",
+          "vetos": "Skor dan veto",
+          "mvp": "Skor dan MVP",
+          "full": "Lengkap"
+        },
+        "footer": "Footer",
+        "footerHint": "Menambahkan pita GC Stats dengan tautan match di bawah gambar.",
+        "footerSaved": "Footer diperbarui",
+        "toggle": "Gunakan gambar untuk jenis peringatan ini",
+        "enabled": "Peringatan gambar diaktifkan",
+        "disabled": "Kembali ke pesan teks",
+        "addBackground": "Tambah latar belakang",
+        "changeBackground": "Ubah latar belakang",
+        "removeBackground": "Hapus latar belakang",
+        "backgroundSaved": "Latar belakang disimpan",
+        "backgroundRemoved": "Latar belakang dihapus",
+        "previewAlt": "Pratinjau gambar peringatan",
+        "previewError": "Pratinjau tidak tersedia",
+        "error": {
+          "network": "Kesalahan jaringan, coba lagi.",
+          "notAuthenticated": "Anda harus masuk terlebih dahulu.",
+          "forbidden": "Anda tidak dapat mengelola server ini.",
+          "invalid": "Template tidak valid.",
+          "customBotRequired": "Hubungkan bot Anda sendiri terlebih dahulu.",
+          "invalidImage": "Gambar ini tidak valid (PNG, JPEG, atau WebP, minimal 400 px pada sisi terpendek).",
+          "tooLarge": "Gambar ini lebih besar dari 10 MB.",
+          "storageFailed": "Gambar tidak dapat disimpan, coba lagi."
+        },
+        "editDesign": "Edit desain"
+      },
+      "editor": {
+        "title": "Desain peringatan: {event}",
+        "description": "Seret, ubah ukuran, dan putar elemen di kanvas, atur gayanya di kanan, dan tampilkan hanya pada kondisi tertentu. Pratinjau seperti yang dikirim memakai render persis dari bot.",
+        "addText": "Teks",
+        "addLogo": "Logo tim",
+        "addShape": "Bentuk",
+        "undo": "Urungkan",
+        "previewServer": "Pratinjau seperti yang dikirim",
+        "canvasHint": "Kanvas menampilkan data contoh. Tombol panah menggeser elemen yang dipilih (Shift untuk 10 piksel), Delete menghapusnya. Elemen yang pudar disembunyikan oleh kondisinya.",
+        "previewTitle": "Pratinjau seperti yang dikirim",
+        "previewError": "Pratinjau tidak dapat dibuat.",
+        "canvasHeight": "Tinggi gambar",
+        "backgroundColor": "Warna latar",
+        "layers": "Elemen (paling depan dulu)",
+        "noLayers": "Belum ada elemen.",
+        "noSelection": "Pilih elemen di kanvas atau di daftar untuk mengeditnya.",
+        "moveBack": "Kirim ke belakang",
+        "moveFront": "Bawa ke depan",
+        "duplicate": "Duplikat",
+        "delete": "Hapus",
+        "width": "Lebar",
+        "height": "Tinggi",
+        "field": {
+          "tournament": "Turnamen",
+          "teamA": "Nama tim A",
+          "teamB": "Nama tim B",
+          "scoreA": "Skor tim A",
+          "scoreB": "Skor tim B",
+          "score": "Skor",
+          "status": "Status",
+          "bestOf": "Best of",
+          "map": "Nama map",
+          "maps": "Map yang selesai",
+          "matchScore": "Skor pertandingan",
+          "mapsInline": "Map selesai (satu baris)",
+          "vetos": "Veto",
+          "mvp": "MVP",
+          "custom": "Teks bebas",
+          "stage": "Fase turnamen",
+          "bestOfShort": "Best of (singkat, BO3)",
+          "teamAShort": "Nama singkat Tim A",
+          "teamBShort": "Nama singkat Tim B",
+          "mvpA": "MVP Tim A",
+          "mvpB": "MVP Tim B",
+          "dateTime": "Tanggal dan waktu",
+          "date": "Tanggal",
+          "time": "Waktu"
+        },
+        "customText": "Teks",
+        "font": "Font",
+        "size": "Ukuran",
+        "align": {
+          "label": "Perataan",
+          "left": "Kiri",
+          "center": "Tengah",
+          "right": "Kanan"
+        },
+        "color": "Warna",
+        "bold": "Tebal",
+        "uppercase": "Huruf kapital",
+        "sideLabel": "Tim",
+        "side": {
+          "a": "Tim A",
+          "b": "Tim B"
+        },
+        "logoOf": {
+          "a": "Logo tim A",
+          "b": "Logo tim B"
+        },
+        "shape": "Bentuk",
+        "opacity": "Opasitas",
+        "radius": "Radius sudut",
+        "sampleText": "Teks Anda",
+        "tooManyLayers": "Sebuah templat dapat memiliki paling banyak {max} elemen.",
+        "saved": "Desain disimpan",
+        "cancel": "Batal",
+        "save": "Simpan",
+        "saving": "Menyimpan...",
+        "error": {
+          "network": "Kesalahan jaringan, coba lagi.",
+          "notAuthenticated": "Anda harus masuk.",
+          "forbidden": "Anda tidak dapat mengelola server ini.",
+          "invalid": "Templat tidak valid.",
+          "customBotRequired": "Hubungkan bot Anda sendiri terlebih dahulu.",
+          "invalidImage": "Gambar ini tidak valid.",
+          "tooLarge": "Gambar ini terlalu besar.",
+          "storageFailed": "Desain tidak dapat disimpan, coba lagi."
+        },
+        "addImage": "Gambar",
+        "tabContent": "Konten",
+        "tabLayout": "Tata letak",
+        "tabStyle": "Gaya",
+        "tabVisibility": "Kondisi",
+        "conditional": "Ditampilkan pada kondisi tertentu",
+        "sourceMap": "Map {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo tim A",
+          "teamB": "Logo tim B",
+          "mvp": "Gambar MVP (ikon agen jika tidak ada)",
+          "mapCurrent": "Map saat ini",
+          "mvpAgent": "Ikon agen MVP",
+          "custom": "Gambar khusus"
+        },
+        "variableGroup": {
+          "match": "Match",
+          "alert": "Peringatan dan MVP",
+          "teams": "Tim",
+          "schedule": "Tanggal dan waktu",
+          "mvp": "MVP",
+          "maps": "Map",
+          "vetos": "Veto"
+        },
+        "conditionValue": {
+          "live": "Live",
+          "finished": "Match selesai",
+          "map": "Map selesai",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Tim A",
+          "b": "Tim B"
+        },
+        "customTextHint": "Tulis teksmu sendiri dan sisipkan variabel seperti {tournament} atau {veto1.map}.",
+        "insertVariable": "Sisipkan variabel",
+        "sourceLabel": "Gambar",
+        "fit": {
+          "label": "Penyesuaian",
+          "cover": "Isi (potong)",
+          "contain": "Muat"
+        },
+        "imageFallbackHint": "Jika tidak ada gambar, kotak dengan inisial akan ditampilkan.",
+        "shapeHint": "Bentuk tidak memiliki konten, atur gayanya di tab Gaya.",
+        "logoStyleHint": "Logo tim ditampilkan apa adanya, ubah ukuran dan posisinya di Tata letak.",
+        "rotation": "Rotasi (derajat)",
+        "alignTitle": "Rata pada gambar",
+        "addFolder": "Folder baru",
+        "tooManyFolders": "Satu template maksimal berisi {max} folder.",
+        "folderDefaultName": "Folder {n}",
+        "folderExpand": "Buka folder",
+        "folderCollapse": "Tutup folder",
+        "lockFolder": "Kunci folder",
+        "unlockFolder": "Buka kunci folder",
+        "lockLayer": "Kunci elemen",
+        "unlockLayer": "Buka kunci elemen",
+        "folder": "Folder",
+        "folderName": "Nama folder",
+        "folderNameRequired": "Folder harus punya nama.",
+        "folderHint": "Folder mengelompokkan elemen di daftar. Mengunci folder mengunci semua elemen di dalamnya.",
+        "deleteFolder": "Hapus folder",
+        "layerLockedHint": "Elemen ini terkunci. Buka kuncinya untuk mengedit atau memindahkannya.",
+        "folderLockedHint": "Elemen ini terkunci oleh foldernya. Buka kunci folder untuk mengedit atau memindahkannya.",
+        "noFolder": "Tanpa folder",
+        "anchorPoint": "Jangkar teks",
+        "anchorX": "Posisi jangkar (X)",
+        "anchorHint": "Teks dimulai, berada di tengah, atau berakhir di posisi X ini, berapa pun panjangnya.",
+        "anchor": {
+          "left": "Awal teks",
+          "center": "Tengah teks",
+          "right": "Akhir teks"
+        },
+        "alignLeft": "Rata kiri",
+        "alignCenterX": "Tengah secara horizontal",
+        "alignRight": "Rata kanan",
+        "alignTop": "Rata atas",
+        "alignCenterY": "Tengah secara vertikal",
+        "alignBottom": "Rata bawah",
+        "letterSpacing": "Jarak antar huruf",
+        "lineHeight": "Tinggi baris",
+        "shadow": "Bayangan",
+        "shadowColor": "Warna bayangan",
+        "shadowBlur": "Blur",
+        "shadowX": "Offset X",
+        "shadowY": "Offset Y",
+        "borderWidth": "Ketebalan border",
+        "borderColor": "Warna border",
+        "gradient": "Gradien",
+        "color2": "Warna kedua",
+        "angle": "Sudut (derajat)",
+        "conditionsHint": "Elemen hanya digambar jika semua kondisi di bawah terpenuhi.",
+        "conditionKey": "Variabel",
+        "conditionOp": "Kondisi",
+        "conditionValueLabel": "Nilai",
+        "op": {
+          "is": "adalah",
+          "isNot": "bukan",
+          "exists": "terisi",
+          "empty": "kosong"
+        },
+        "addCondition": "Tambah kondisi",
+        "removeCondition": "Hapus kondisi ini",
+        "canvasSettings": "Pengaturan gambar",
+        "footer": "Footer GC Stats",
+        "artwork": "Artwork map sebagai latar",
+        "artworkSource": "Artwork dari",
+        "artworkDim": "Penggelapan",
+        "artworkHint": "Diabaikan jika gambar latar diunggah.",
+        "loadingMatch": "Memuat pertandingan pratinjau",
+        "timezone": "Zona waktu",
+        "variableName": {
+          "tournament": "Nama turnamen",
+          "stage": "Fase turnamen",
+          "status": "Status (langsung atau selesai)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, singkat (BO3)",
+          "score": "Skor pertandingan atau map",
+          "scoreA": "Skor tim A",
+          "scoreB": "Skor tim B",
+          "matchScore": "Skor pertandingan",
+          "teamA": "Nama tim A",
+          "teamB": "Nama tim B",
+          "teamAShort": "Nama singkat tim A",
+          "teamBShort": "Nama singkat tim B",
+          "dateTime": "Tanggal dan jam pertandingan",
+          "date": "Tanggal pertandingan",
+          "time": "Jam pertandingan",
+          "scheduledAt": "Jadwal mulai",
+          "alert_kind": "Jenis peringatan",
+          "map": "Nama map yang selesai",
+          "currentMap_name": "Nama map yang sedang berlangsung",
+          "currentMap_number": "Nomor map yang sedang berlangsung",
+          "maps": "Map yang selesai (daftar)",
+          "mapsInline": "Map yang selesai (dalam satu baris)",
+          "vetos": "Veto (dalam satu baris)",
+          "mvp": "MVP pertandingan atau map",
+          "mvpA": "MVP tim A",
+          "mvpB": "MVP tim B",
+          "mvp_name": "Pemain MVP",
+          "mvp_acs": "ACS MVP",
+          "mvp_agent": "Agent MVP",
+          "mvpA_name": "Pemain MVP tim A",
+          "mvpA_acs": "ACS MVP tim A",
+          "mvpA_agent": "Agent MVP tim A",
+          "mvpB_name": "Pemain MVP tim B",
+          "mvpB_acs": "ACS MVP tim B",
+          "mvpB_agent": "Agent MVP tim B",
+          "map_alias": "Nama map {n}",
+          "map_name": "Nama map {n}",
+          "map_score": "Skor map {n}",
+          "map_scoreA": "Skor tim A di map {n}",
+          "map_scoreB": "Skor tim B di map {n}",
+          "veto_map": "Map veto {n}",
+          "veto_action": "Aksi veto {n} (ban, pick, decider)",
+          "veto_team": "Tim veto {n}",
+          "veto_type": "Jenis veto {n}",
+          "veto_side": "Sisi veto {n} (Menyerang atau Bertahan)"
+        },
+        "insertVariableHint": "Klik variabel untuk menyisipkannya ke dalam teks, di posisi kursor.",
+        "layoutLayer": "Tata letak",
+        "pickImage": "Pilih gambar",
+        "pickImageHint": "Setiap jenis gambar punya ukuran sendiri, yang bisa kamu ubah setelahnya.",
+        "imageCategory": {
+          "teams": "Tim",
+          "mvp": "MVP",
+          "maps": "Map",
+          "vetos": "Veto",
+          "custom": "Gambar khusus"
+        },
+        "customUrl": "Alamat gambar",
+        "customUrlHint": "Tautan https publik ke sebuah gambar. Tidak ada yang diunggah, gambar tetap ada di situsnya dan diunduh saat peringatan dikirim.",
+        "customUrlRequired": "Alamat gambar wajib diisi.",
+        "customUrlInvalid": "Masukkan alamat https yang valid.",
+        "useImage": "Gunakan gambar ini",
+        "sendTest": "Kirim tes",
+        "sendTestHint": "Memposting desain ini, diisi dengan pertandingan nyata, di channel pilihanmu. Perubahan yang belum disimpan ikut disertakan.",
+        "testChannel": "Channel",
+        "testChannelPlaceholder": "Pilih channel",
+        "sendTestAction": "Kirim",
+        "sending": "Mengirim",
+        "testSent": "Tes terkirim",
+        "testError": {
+          "required": "Pilih sebuah channel.",
+          "unknownChannel": "Channel ini tidak ada di server.",
+          "rateLimited": "Tunggu beberapa detik sebelum mengirim tes lagi.",
+          "channelsUnavailable": "Channel server tidak dapat dibaca.",
+          "sendFailed": "Tes tidak dapat dikirim, periksa apakah bot boleh menulis di channel ini."
         }
       }
     }

@@ -1047,6 +1047,76 @@
       "email": "Makipag-ugnayan sa email"
     }
   },
+  "discordBot": {
+    "title": "Discord bot",
+    "intro": "Sundan ang bawat Game Changers match direkta sa iyong Discord server, may live na score at mga resultang awtomatikong ipino-post.",
+    "addBot": "Idagdag sa Discord",
+    "comingSoon": "Malapit na",
+    "openDashboard": "Buksan ang dashboard",
+    "features": {
+      "title": "Mga feature",
+      "live": {
+        "title": "Mga live na match",
+        "body": "May ipino-post na mensahe kapag nag-live ang isang match, at kusang nag-a-update ang score hanggang matapos."
+      },
+      "finished": {
+        "title": "Mga natapos na match",
+        "body": "Ipino-post ang final na resulta pagkatapos na pagkatapos ng match."
+      },
+      "map": {
+        "title": "Mga natapos na map",
+        "body": "Makuha ang score ng bawat map pagkatapos nito, nang hindi naghihintay na matapos ang match."
+      },
+      "filters": {
+        "title": "Mga smart filter",
+        "body": "I-filter ang mga alerto ayon sa rehiyon, sa kalahok na team, at sa opisyal o hindi opisyal na mga torneo (opisyal bilang default)."
+      }
+    },
+    "dashboard": {
+      "title": "I-configure sa dashboard",
+      "body": "Bawat server ay kino-configure sa GC Stats dashboard: piliin ang channel para sa bawat uri ng alerto at itakda ang iyong mga filter.",
+      "why": "Kailangan mong mag-log in gamit ang Discord para ma-verify namin kung aling mga server ang pinamamahalaan mo. Ang mga miyembrong may pahintulot lang na mamahala ng server ang makakapagbago ng mga setting nito."
+    },
+    "steps": {
+      "title": "Paano ito gumagana",
+      "invite": {
+        "title": "Idagdag ang bot",
+        "body": "Imbitahan ang bot sa iyong server gamit ang button sa itaas."
+      },
+      "login": {
+        "title": "Mag-log in gamit ang Discord",
+        "body": "Buksan ang dashboard at mag-sign in gamit ang iyong Discord account."
+      },
+      "configure": {
+        "title": "I-configure",
+        "body": "Piliin ang iyong mga channel at filter, agad na magsisimula ang mga alerto."
+      }
+    },
+    "help": {
+      "title": "Kailangan ng tulong?",
+      "body": "May tanong o suhestiyon? Sumali sa <link>GC Stats Discord</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "LIVE",
+    "finished": "Tapos na ang laban",
+    "mapFinished": "Tapos na ang Mapa {number}",
+    "map": "Mapa {number}",
+    "maps": "Mga Mapa",
+    "bestOf": "Best of {count}",
+    "matchScore": "Score ng laban: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "Bina-ban ng {team} ang {map}",
+    "vetoPick": "Pinili ng {team} ang {map}",
+    "vetoDecider": "{map} (decider)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Atake",
+    "sideDefense": "Depensa",
+    "openMatch": "Buksan ang laban"
+  },
   "supportUs": {
     "title": "Suportahan kami",
     "subtitle": "Bahagi ng Osthelia ang GC-Stats",
@@ -1747,7 +1817,8 @@
     "finance": "Pananalapi",
     "developers": "Mga Developer",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discord bot"
   },
   "forum": {
     "overview": {
@@ -5319,14 +5390,17 @@
       "authorAdminSpace": "Mga May Akda",
       "logs": "Mga Log",
       "veto": "Veto ng mapa",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "discordSpace": "Discord bot",
+      "discordServers": "Aking mga server"
     },
     "switcher": {
       "selectOrganization": "Pumili ng organisasyon",
       "authorSpace": "Espasyo ng may akda",
       "apiKeySpace": "Espasyo ng API key",
       "adminAccess": "Admin",
-      "authorAdminSpace": "Mga May Akda"
+      "authorAdminSpace": "Mga May Akda",
+      "discordSpace": "Discord bot"
     },
     "picker": {
       "title": "Iyong mga organisasyon",
@@ -5339,7 +5413,8 @@
       "filterTagAll": "Lahat",
       "noResults": "Walang nahanap na organisasyon.",
       "adminBadge": "Admin",
-      "authorAdminSpace": "Mga May Akda"
+      "authorAdminSpace": "Mga May Akda",
+      "discordSpace": "Discord bot"
     },
     "authors": {
       "title": "Mga May Akda",
@@ -6224,6 +6299,466 @@
         },
         "filterOfficial": {
           "invalid": "Hindi valid na value."
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "Mga Discord server",
+      "serversSubtitle": "Mga server kung saan mapamamahalaan mo ang GC Stats bot.",
+      "serversUnavailable": "Hindi nabasa ang iyong mga Discord server. Ikonekta muli ang iyong Discord account at subukan ulit.",
+      "reconnectDiscord": "Ikonekta muli ang Discord",
+      "serversEmpty": "Wala kang pinamamahalaang Discord server. Kailangan mo ang permiso na Manage Server para i configure ang bot.",
+      "subscriptionCount": "{count, plural, =0 {Walang alerto} one {# alerto} other {# alerto}}",
+      "botNotJoined": "Hindi pa naidagdag ang bot",
+      "configure": "I configure",
+      "addBot": "Idagdag ang bot",
+      "botUnavailable": "Hindi pa maidaragdag ang bot.",
+      "serverTitle": "Discord server",
+      "serverSubtitle": "Piliin kung aling mga alerto ang ipo post sa aling channel.",
+      "backToServers": "Bumalik sa mga server",
+      "botNotJoinedBody": "Wala pa ang bot sa server na ito. Idagdag ito para simulan ang pag configure ng mga alerto.",
+      "alertsTitle": "Mga alerto",
+      "alertsDescription": "Ang bawat alerto ay ipo post sa isang channel at maaaring i filter ayon sa rehiyon, team, at opisyal na status.",
+      "add": "Magdagdag ng alerto",
+      "empty": "Wala pang alerto. Magdagdag ng isa para makatanggap ng mga laban sa iyong server.",
+      "channelsUnavailable": "Hindi mabasa ng bot ang mga channel ng server na ito. Tiyaking nakikita nito ang mga iyon, saka i reload ang page.",
+      "channelMissing": "Hindi nakita ang channel",
+      "disabledLostChannel": "Nakapatay, nawalan ng access ang bot sa channel na ito. Pumili ng channel at imbakin para buksan itong muli.",
+      "active": "Bukas",
+      "inactive": "Patay",
+      "toggle": "Buksan o patayin ang alertong ito",
+      "edit": "Baguhin",
+      "delete": "Burahin",
+      "deleteTitle": "Burahin ang alertong ito?",
+      "deleteDescription": "Titigil ang bot sa pag post nito. Mananatili sa iyong channel ang mga mensaheng naipost na.",
+      "cancel": "Kanselahin",
+      "save": "Imbakin",
+      "saving": "Iniimbak...",
+      "created": "Naidagdag ang alerto",
+      "updated": "Na update ang alerto",
+      "deleted": "Nabura ang alerto",
+      "addTitle": "Magdagdag ng alerto",
+      "editTitle": "Baguhin ang alerto",
+      "dialogDescription": "Magpo post ang bot sa napiling channel para sa bawat laban na pumasa sa mga filter.",
+      "eventLabel": "Uri ng alerto",
+      "channelLabel": "Channel",
+      "channelPlaceholder": "Pumili ng channel",
+      "localeLabel": "Wika ng mensahe",
+      "localeHint": "Wika ng mga mensaheng ipo post ng bot.",
+      "filtersTitle": "Mga filter",
+      "filtersHint": "Iwanang walang laman ang filter para matanggap ang lahat.",
+      "regions": "Mga rehiyon",
+      "regionsHint": "Mga torneo lamang ng mga napiling rehiyon.",
+      "teams": "Mga team",
+      "teamsHint": "Mga laban lamang na nilalaro ng isa sa mga team na ito.",
+      "teamsPlaceholder": "Magdagdag ng team",
+      "teamsSearch": "Maghanap ng team",
+      "teamsNoResults": "Walang nakitang team",
+      "removeTeam": "Alisin si {name}",
+      "any": "Lahat",
+      "event": {
+        "match_live": "Live na laban",
+        "match_finished": "Tapos na ang laban",
+        "map_finished": "Tapos na ang mapa"
+      },
+      "official": {
+        "label": "Mga torneo",
+        "all": "Lahat ng torneo",
+        "official": "Opisyal lamang",
+        "unofficial": "Hindi opisyal lamang"
+      },
+      "error": {
+        "network": "May error sa network, subukan ulit.",
+        "notAuthenticated": "Kailangan mong mag log in.",
+        "forbidden": "Hindi mo mapamamahalaan ang server na ito.",
+        "notFound": "Wala na ang alertong ito.",
+        "invalid": "May mga di wastong field.",
+        "tooManySubscriptions": "Ang isang server ay maaaring magkaroon ng hanggang {max} alerto.",
+        "channelsUnavailable": "Hindi mabasa ng bot ang mga channel ng server na ito.",
+        "channelId": {
+          "required": "Pumili ng channel.",
+          "unknownChannel": "Wala ang channel na ito sa server."
+        },
+        "event": {
+          "invalid": "Hindi kilalang uri ng alerto."
+        },
+        "locale": {
+          "invalid": "Hindi kilalang wika."
+        },
+        "filterRegions": {
+          "invalid": "Hindi kilalang rehiyon.",
+          "tooMany": "Pumili ng hanggang {filterRegions} rehiyon."
+        },
+        "filterTeamIds": {
+          "invalid": "Di wastong team.",
+          "tooMany": "Pumili ng hanggang {filterTeams} team.",
+          "unknownTeam": "Wala ang isa sa mga team."
+        },
+        "filterOfficial": {
+          "invalid": "Hindi kilalang halaga."
+        },
+        "color": {
+          "invalid": "Hindi wastong kulay."
+        }
+      },
+      "alertColorLabel": "Kulay ng embed",
+      "alertColorHint": "Pinapalitan ang kulay ng server para sa alertong ito.",
+      "theme": {
+        "reset": "I reset",
+        "cancel": "Kanselahin",
+        "save": "I save",
+        "saving": "Sine save...",
+        "colorsTitle": "Mga kulay",
+        "colorsDescription": "Kulay ng mensahe ng bawat uri ng alerto. Maaari itong palitan ng bawat alerto.",
+        "color": {
+          "live": "Live na laban",
+          "finished": "Tapos na ang laban",
+          "map": "Tapos na ang mapa"
+        },
+        "colorsSaved": "Nai save ang mga kulay",
+        "botTitle": "Sarili mong bot",
+        "botDescription": "Ipadala ang mga alerto gamit ang sarili mong Discord bot (ang pangalan at avatar nito) sa halip na ang GC Stats bot.",
+        "tokenLabel": "Token ng bot",
+        "tokenHint": "Makikita sa Discord Developer Portal, sa Bot tab ng iyong application. Naka encrypt itong iniimbak.",
+        "botConnect": "Gamitin ang bot na ito",
+        "botConnecting": "Sinusuri...",
+        "botConnected": "Nakakonekta ang bot, imbitahan ito sa iyong server kung kinakailangan",
+        "botActive": "Ang mga alerto ay ipinapadala ng bot na ito",
+        "botInvite": "Imbitahan ang bot",
+        "botDisconnect": "Gamitin ang GC Stats bot",
+        "botDisconnectTitle": "Bumalik sa GC Stats bot?",
+        "botDisconnectDescription": "Buburahin ang token ng iyong bot at ang GC Stats bot na muli ang magpapadala ng mga alerto, kung nasa server mo ito.",
+        "botDisconnected": "Bumalik sa GC Stats bot",
+        "error": {
+          "network": "May error sa network, subukan ulit.",
+          "notAuthenticated": "Kailangan mong naka sign in.",
+          "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "invalid": "May mga di wastong field.",
+          "color": "Hindi wastong kulay.",
+          "token": {
+            "required": "Ilagay ang token ng bot.",
+            "invalidToken": "Tinanggihan ng Discord ang token na ito, tiyaking token ito ng bot."
+          }
+        },
+        "matchButton": "Button para buksan ang laban",
+        "matchButtonHint": "Nagdaragdag ng button sa ilalim ng bawat alerto na nagbubukas ng pahina ng laban sa GC Stats."
+      },
+      "templates": {
+        "title": "Mga alerto bilang larawan",
+        "description": "Pinapalitan ang text message ng isang uri ng alerto ng larawang binuo mula sa iyong template. Para lang sa mga server na may sariling bot.",
+        "locked": "Kailangan ng sarili mong bot para sa mga alertong larawan. Ikonekta ito sa seksyon sa itaas para ma-unlock.",
+        "usingImage": "Ipinost bilang larawan",
+        "usingText": "Ipinost bilang text message",
+        "presetLabel": "Panimulang disenyo",
+        "presetHint": "Piliin ang impormasyong ipapakita ng larawan. Mae-edit pa rin ang lahat pagkatapos.",
+        "preset": {
+          "score": "Score lang",
+          "maps": "Score at mga mapa",
+          "vetos": "Score at mga veto",
+          "mvp": "Score at MVP",
+          "full": "Kumpleto"
+        },
+        "footer": "Footer",
+        "footerHint": "Nagdaragdag ng GC Stats band na may link ng match sa ilalim ng larawan.",
+        "footerSaved": "Na-update ang footer",
+        "toggle": "Gumamit ng larawan para sa uri ng alertong ito",
+        "enabled": "Naka-enable ang alertong larawan",
+        "disabled": "Balik sa text message",
+        "addBackground": "Magdagdag ng background",
+        "changeBackground": "Palitan ang background",
+        "removeBackground": "Alisin ang background",
+        "backgroundSaved": "Na-save ang background",
+        "backgroundRemoved": "Naalis ang background",
+        "previewAlt": "Preview ng larawan ng alerto",
+        "previewError": "Hindi available ang preview",
+        "error": {
+          "network": "May error sa network, subukan ulit.",
+          "notAuthenticated": "Kailangan mong mag-sign in.",
+          "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "invalid": "Hindi valid ang template.",
+          "customBotRequired": "Ikonekta muna ang sarili mong bot.",
+          "invalidImage": "Hindi valid ang larawang ito (PNG, JPEG o WebP, hindi bababa sa 400 px sa pinakamaikling gilid).",
+          "tooLarge": "Mas malaki sa 10 MB ang larawang ito.",
+          "storageFailed": "Hindi ma-store ang larawan, subukan ulit."
+        },
+        "editDesign": "I-edit ang disenyo"
+      },
+      "editor": {
+        "title": "Disenyo ng alerto: {event}",
+        "description": "I-drag, i-resize at i-rotate ang mga elemento sa canvas, i-style ang mga ito sa kanan at ipakita lamang sa ilalim ng mga kondisyon. Ang preview na ipapadala ay gumagamit ng eksaktong rendering ng bot.",
+        "addText": "Teksto",
+        "addLogo": "Logo ng team",
+        "addShape": "Hugis",
+        "undo": "I-undo",
+        "previewServer": "Preview kung paano ipinadala",
+        "canvasHint": "Nagpapakita ang canvas ng sample na data. Ginagalaw ng mga arrow key ang napiling elemento (Shift para sa 10 pixel), at tinatanggal ito ng Delete. Ang mga malalabong elemento ay nakatago dahil sa kanilang mga kondisyon.",
+        "previewTitle": "Preview kung paano ipinadala",
+        "previewError": "Hindi nagawa ang preview.",
+        "canvasHeight": "Taas ng larawan",
+        "backgroundColor": "Kulay ng background",
+        "layers": "Mga elemento (nasa harap muna)",
+        "noLayers": "Wala pang elemento.",
+        "noSelection": "Pumili ng elemento sa canvas o sa listahan para i-edit ito.",
+        "moveBack": "Ipadala sa likod",
+        "moveFront": "Dalhin sa harap",
+        "duplicate": "I-duplicate",
+        "delete": "Burahin",
+        "width": "Lapad",
+        "height": "Taas",
+        "field": {
+          "tournament": "Torneo",
+          "teamA": "Pangalan ng team A",
+          "teamB": "Pangalan ng team B",
+          "scoreA": "Score ng team A",
+          "scoreB": "Score ng team B",
+          "score": "Score",
+          "status": "Katayuan",
+          "bestOf": "Best of",
+          "map": "Pangalan ng mapa",
+          "maps": "Mga natapos na mapa",
+          "matchScore": "Score ng match",
+          "mapsInline": "Mga natapos na mapa (isang linya)",
+          "vetos": "Mga veto",
+          "mvp": "MVP",
+          "custom": "Malayang teksto",
+          "stage": "Yugto ng torneo",
+          "bestOfShort": "Best of (maikli, BO3)",
+          "teamAShort": "Maikling pangalan ng Koponan A",
+          "teamBShort": "Maikling pangalan ng Koponan B",
+          "mvpA": "MVP ng Koponan A",
+          "mvpB": "MVP ng Koponan B",
+          "dateTime": "Petsa at oras",
+          "date": "Petsa",
+          "time": "Oras"
+        },
+        "customText": "Teksto",
+        "font": "Font",
+        "size": "Laki",
+        "align": {
+          "label": "Pagkakahanay",
+          "left": "Kaliwa",
+          "center": "Gitna",
+          "right": "Kanan"
+        },
+        "color": "Kulay",
+        "bold": "Bold",
+        "uppercase": "Malalaking titik",
+        "sideLabel": "Team",
+        "side": {
+          "a": "Team A",
+          "b": "Team B"
+        },
+        "logoOf": {
+          "a": "Logo ng team A",
+          "b": "Logo ng team B"
+        },
+        "shape": "Hugis",
+        "opacity": "Opacity",
+        "radius": "Radius ng sulok",
+        "sampleText": "Ang iyong teksto",
+        "tooManyLayers": "Ang isang template ay maaaring magkaroon ng hanggang {max} elemento.",
+        "saved": "Nai-save ang disenyo",
+        "cancel": "Kanselahin",
+        "save": "I-save",
+        "saving": "Sine-save...",
+        "error": {
+          "network": "May error sa network, subukan ulit.",
+          "notAuthenticated": "Kailangan mong mag-sign in.",
+          "forbidden": "Hindi mo mapamahalaan ang server na ito.",
+          "invalid": "Hindi wasto ang template.",
+          "customBotRequired": "Ikonekta muna ang sarili mong bot.",
+          "invalidImage": "Hindi wasto ang larawang ito.",
+          "tooLarge": "Masyadong malaki ang larawang ito.",
+          "storageFailed": "Hindi nai-save ang disenyo, subukan ulit."
+        },
+        "addImage": "Larawan",
+        "tabContent": "Nilalaman",
+        "tabLayout": "Layout",
+        "tabStyle": "Estilo",
+        "tabVisibility": "Mga kondisyon",
+        "conditional": "Ipinapakita sa ilalim ng mga kondisyon",
+        "sourceMap": "Map {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo ng team A",
+          "teamB": "Logo ng team B",
+          "mvp": "Larawan ng MVP (icon ng agent kung wala)",
+          "mapCurrent": "Kasalukuyang map",
+          "mvpAgent": "Icon ng agent ng MVP",
+          "custom": "Custom na larawan"
+        },
+        "variableGroup": {
+          "match": "Match",
+          "alert": "Alerto at MVP",
+          "teams": "Mga koponan",
+          "schedule": "Petsa at oras",
+          "mvp": "MVP",
+          "maps": "Maps",
+          "vetos": "Vetos"
+        },
+        "conditionValue": {
+          "live": "Live",
+          "finished": "Tapos na match",
+          "map": "Tapos na map",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Team A",
+          "b": "Team B"
+        },
+        "customTextHint": "Isulat ang sarili mong teksto at maglagay ng mga variable gaya ng {tournament} o {veto1.map}.",
+        "insertVariable": "Maglagay ng variable",
+        "sourceLabel": "Larawan",
+        "fit": {
+          "label": "Pagkasya",
+          "cover": "Punan (i-crop)",
+          "contain": "Isama lahat"
+        },
+        "imageFallbackHint": "Kapag walang larawan, may ipapakitang tile na may mga initial.",
+        "shapeHint": "Walang nilalaman ang isang hugis, i-style ito sa tab na Estilo.",
+        "logoStyleHint": "Ipinapakita ang logo ng team nang walang pagbabago, baguhin ang laki at posisyon nito sa Layout.",
+        "rotation": "Pag-rotate (digri)",
+        "alignTitle": "I-align sa larawan",
+        "addFolder": "Bagong folder",
+        "tooManyFolders": "Hanggang {max} folder lang ang puwede sa isang template.",
+        "folderDefaultName": "Folder {n}",
+        "folderExpand": "Buksan ang folder",
+        "folderCollapse": "Isara ang folder",
+        "lockFolder": "I-lock ang folder",
+        "unlockFolder": "I-unlock ang folder",
+        "lockLayer": "I-lock ang elemento",
+        "unlockLayer": "I-unlock ang elemento",
+        "folder": "Folder",
+        "folderName": "Pangalan ng folder",
+        "folderNameRequired": "Kailangan ng pangalan ng folder.",
+        "folderHint": "Pinagsasama ng folder ang mga elemento sa listahan. Kapag nilock ito, nilolock din ang lahat ng elemento sa loob.",
+        "deleteFolder": "Burahin ang folder",
+        "layerLockedHint": "Naka-lock ang elementong ito. I-unlock ito para i-edit o ilipat.",
+        "folderLockedHint": "Naka-lock ang elementong ito dahil sa folder nito. I-unlock ang folder para i-edit o ilipat.",
+        "noFolder": "Walang folder",
+        "anchorPoint": "Angkla ng teksto",
+        "anchorX": "Posisyon ng angkla (X)",
+        "anchorHint": "Nagsisimula, nasa gitna, o nagtatapos ang teksto sa X na posisyong ito, gaano man ito kahaba.",
+        "anchor": {
+          "left": "Simula ng teksto",
+          "center": "Gitna ng teksto",
+          "right": "Dulo ng teksto"
+        },
+        "alignLeft": "I-align sa kaliwa",
+        "alignCenterX": "I-center nang pahalang",
+        "alignRight": "I-align sa kanan",
+        "alignTop": "I-align sa itaas",
+        "alignCenterY": "I-center nang patayo",
+        "alignBottom": "I-align sa ibaba",
+        "letterSpacing": "Pagitan ng mga letra",
+        "lineHeight": "Taas ng linya",
+        "shadow": "Anino",
+        "shadowColor": "Kulay ng anino",
+        "shadowBlur": "Blur",
+        "shadowX": "Offset X",
+        "shadowY": "Offset Y",
+        "borderWidth": "Kapal ng border",
+        "borderColor": "Kulay ng border",
+        "gradient": "Gradient",
+        "color2": "Pangalawang kulay",
+        "angle": "Anggulo (digri)",
+        "conditionsHint": "Iginuguhit lamang ang elemento kapag totoo ang lahat ng kondisyon sa ibaba.",
+        "conditionKey": "Variable",
+        "conditionOp": "Kondisyon",
+        "conditionValueLabel": "Halaga",
+        "op": {
+          "is": "ay",
+          "isNot": "ay hindi",
+          "exists": "ay may laman",
+          "empty": "ay walang laman"
+        },
+        "addCondition": "Magdagdag ng kondisyon",
+        "removeCondition": "Alisin ang kondisyong ito",
+        "canvasSettings": "Mga setting ng larawan",
+        "footer": "Footer ng GC Stats",
+        "artwork": "Artwork ng map bilang background",
+        "artworkSource": "Artwork ng",
+        "artworkDim": "Pagdidilim",
+        "artworkHint": "Binabalewala kapag may in-upload na background na larawan.",
+        "loadingMatch": "Nilo-load ang preview match",
+        "timezone": "Time zone",
+        "variableName": {
+          "tournament": "Pangalan ng torneo",
+          "stage": "Yugto ng torneo",
+          "status": "Status (live o tapos na)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, maikli (BO3)",
+          "score": "Score ng laban o ng map",
+          "scoreA": "Score ng team A",
+          "scoreB": "Score ng team B",
+          "matchScore": "Score ng laban",
+          "teamA": "Pangalan ng team A",
+          "teamB": "Pangalan ng team B",
+          "teamAShort": "Maikling pangalan ng team A",
+          "teamBShort": "Maikling pangalan ng team B",
+          "dateTime": "Petsa at oras ng laban",
+          "date": "Petsa ng laban",
+          "time": "Oras ng laban",
+          "scheduledAt": "Nakatakdang simula",
+          "alert_kind": "Uri ng alerto",
+          "map": "Pangalan ng natapos na map",
+          "currentMap_name": "Pangalan ng kasalukuyang map",
+          "currentMap_number": "Numero ng kasalukuyang map",
+          "maps": "Mga natapos na map (listahan)",
+          "mapsInline": "Mga natapos na map (sa isang linya)",
+          "vetos": "Mga veto (sa isang linya)",
+          "mvp": "MVP ng laban o ng map",
+          "mvpA": "MVP ng team A",
+          "mvpB": "MVP ng team B",
+          "mvp_name": "MVP na manlalaro",
+          "mvp_acs": "ACS ng MVP",
+          "mvp_agent": "Agent ng MVP",
+          "mvpA_name": "MVP na manlalaro ng team A",
+          "mvpA_acs": "ACS ng MVP ng team A",
+          "mvpA_agent": "Agent ng MVP ng team A",
+          "mvpB_name": "MVP na manlalaro ng team B",
+          "mvpB_acs": "ACS ng MVP ng team B",
+          "mvpB_agent": "Agent ng MVP ng team B",
+          "map_alias": "Pangalan ng map {n}",
+          "map_name": "Pangalan ng map {n}",
+          "map_score": "Score ng map {n}",
+          "map_scoreA": "Score ng team A sa map {n}",
+          "map_scoreB": "Score ng team B sa map {n}",
+          "veto_map": "Map ng veto {n}",
+          "veto_action": "Aksyon ng veto {n} (ban, pick, decider)",
+          "veto_team": "Team ng veto {n}",
+          "veto_type": "Uri ng veto {n}",
+          "veto_side": "Panig ng veto {n} (Atake o Depensa)"
+        },
+        "insertVariableHint": "I-click ang isang variable para ipasok ito sa teksto, sa posisyon ng cursor.",
+        "layoutLayer": "Layout",
+        "pickImage": "Pumili ng larawan",
+        "pickImageHint": "May sariling laki ang bawat uri ng larawan, puwede mo itong baguhin pagkatapos.",
+        "imageCategory": {
+          "teams": "Mga koponan",
+          "mvp": "MVP",
+          "maps": "Mga mapa",
+          "vetos": "Mga veto",
+          "custom": "Custom na larawan"
+        },
+        "customUrl": "Address ng larawan",
+        "customUrlHint": "Pampublikong https link papunta sa isang larawan. Walang ina-upload, nananatili ang larawan sa sarili nitong site at dina-download kapag ipinadala ang alerto.",
+        "customUrlRequired": "Kailangan ang address ng larawan.",
+        "customUrlInvalid": "Maglagay ng wastong https address.",
+        "useImage": "Gamitin ang larawang ito",
+        "sendTest": "Magpadala ng test",
+        "sendTestHint": "Ipo-post ang disenyong ito, puno ng totoong laban, sa channel na pipiliin mo. Kasama ang mga hindi pa nase-save na pagbabago.",
+        "testChannel": "Channel",
+        "testChannelPlaceholder": "Pumili ng channel",
+        "sendTestAction": "Ipadala",
+        "sending": "Ipinapadala",
+        "testSent": "Naipadala ang test",
+        "testError": {
+          "required": "Pumili ng channel.",
+          "unknownChannel": "Walang ganitong channel sa server.",
+          "rateLimited": "Maghintay ng ilang segundo bago magpadala ng isa pang test.",
+          "channelsUnavailable": "Hindi mabasa ang mga channel ng server.",
+          "sendFailed": "Hindi naipadala ang test, tiyaking puwedeng magsulat ang bot sa channel na ito."
         }
       }
     }

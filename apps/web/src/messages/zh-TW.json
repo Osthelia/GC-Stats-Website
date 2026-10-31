@@ -1047,6 +1047,76 @@
       "email": "通過電子郵件聯絡"
     }
   },
+  "discordBot": {
+    "title": "Discord 機器人",
+    "intro": "直接在你的 Discord 伺服器中關注每一場 Game Changers 比賽，即時比分與結果會自動發布。",
+    "addBot": "新增至 Discord",
+    "comingSoon": "即將推出",
+    "openDashboard": "開啟控制台",
+    "features": {
+      "title": "功能",
+      "live": {
+        "title": "進行中的比賽",
+        "body": "比賽開始時會發布一則訊息，比分會自動更新直到比賽結束。"
+      },
+      "finished": {
+        "title": "已結束的比賽",
+        "body": "比賽一結束，最終結果就會發布。"
+      },
+      "map": {
+        "title": "已結束的地圖",
+        "body": "每張地圖一結束就能收到比分，不必等整場比賽結束。"
+      },
+      "filters": {
+        "title": "智慧篩選",
+        "body": "可依地區、參賽隊伍以及官方或非官方賽事篩選通知（預設為官方賽事）。"
+      }
+    },
+    "dashboard": {
+      "title": "在控制台中設定",
+      "body": "每個伺服器都在 GC Stats 控制台中設定：為每種通知類型選擇頻道並設定篩選條件。",
+      "why": "你需要使用 Discord 登入，以便我們確認你管理哪些伺服器。只有具備伺服器管理權限的成員才能變更其設定。"
+    },
+    "steps": {
+      "title": "使用方式",
+      "invite": {
+        "title": "新增機器人",
+        "body": "透過上方按鈕將機器人邀請到你的伺服器。"
+      },
+      "login": {
+        "title": "使用 Discord 登入",
+        "body": "開啟控制台，並以你的 Discord 帳號登入。"
+      },
+      "configure": {
+        "title": "設定",
+        "body": "選擇頻道與篩選條件，通知會立即開始。"
+      }
+    },
+    "help": {
+      "title": "需要協助嗎？",
+      "body": "有問題或建議嗎？歡迎加入 <link>GC Stats Discord</link>。"
+    }
+  },
+  "discordBotMessages": {
+    "live": "直播中",
+    "finished": "比賽結束",
+    "mapFinished": "第 {number} 張地圖結束",
+    "map": "第 {number} 張地圖",
+    "maps": "地圖",
+    "bestOf": "BO{count}",
+    "matchScore": "比賽比分：{score}",
+    "mvp": "MVP:{name}({acs} ACS)",
+    "vetoBan": "{team} 禁用 {map}",
+    "vetoPick": "{team} 選擇 {map}",
+    "vetoDecider": "{map}(決勝地圖)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "進攻方",
+    "sideDefense": "防守方",
+    "openMatch": "開啟比賽"
+  },
   "supportUs": {
     "title": "支援我們",
     "subtitle": "GC-Stats 是 Osthelia 的一部分",
@@ -1747,7 +1817,8 @@
     "finance": "財務",
     "developers": "開發者",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discord 機器人"
   },
   "forum": {
     "overview": {
@@ -5319,14 +5390,17 @@
       "authorAdminSpace": "作者",
       "logs": "日誌",
       "veto": "地圖禁選",
-      "webhooks": "Webhook"
+      "webhooks": "Webhook",
+      "discordSpace": "Discord 機器人",
+      "discordServers": "我的伺服器"
     },
     "switcher": {
       "selectOrganization": "選擇一個機構",
       "authorSpace": "作者空間",
       "apiKeySpace": "API 金鑰空間",
       "adminAccess": "管理",
-      "authorAdminSpace": "作者"
+      "authorAdminSpace": "作者",
+      "discordSpace": "Discord 機器人"
     },
     "picker": {
       "title": "您的機構",
@@ -5339,7 +5413,8 @@
       "filterTagAll": "全部",
       "noResults": "未找到機構。",
       "adminBadge": "管理",
-      "authorAdminSpace": "作者"
+      "authorAdminSpace": "作者",
+      "discordSpace": "Discord 機器人"
     },
     "authors": {
       "title": "作者",
@@ -6224,6 +6299,466 @@
         },
         "filterOfficial": {
           "invalid": "無效的值。"
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "Discord 伺服器",
+      "serversSubtitle": "你可以管理 GC Stats 機器人的伺服器。",
+      "serversUnavailable": "無法讀取你的 Discord 伺服器。請重新連結 Discord 帳號後再試一次。",
+      "reconnectDiscord": "重新連結 Discord",
+      "serversEmpty": "你沒有管理任何 Discord 伺服器。設定機器人需要「管理伺服器」權限。",
+      "subscriptionCount": "{count, plural, =0 {沒有提醒} other {# 個提醒}}",
+      "botNotJoined": "尚未加入機器人",
+      "configure": "設定",
+      "addBot": "加入機器人",
+      "botUnavailable": "目前還無法加入機器人。",
+      "serverTitle": "Discord 伺服器",
+      "serverSubtitle": "選擇要在哪個頻道發布哪些提醒。",
+      "backToServers": "返回伺服器列表",
+      "botNotJoinedBody": "機器人還不在此伺服器中。請先加入機器人再設定提醒。",
+      "alertsTitle": "提醒",
+      "alertsDescription": "每個提醒會發布到一個頻道，可依地區、戰隊與官方狀態篩選。",
+      "add": "新增提醒",
+      "empty": "還沒有提醒。新增一個即可在伺服器中接收比賽資訊。",
+      "channelsUnavailable": "機器人無法讀取此伺服器的頻道。請確認它有檢視權限，然後重新整理頁面。",
+      "channelMissing": "找不到頻道",
+      "disabledLostChannel": "已關閉，機器人失去了此頻道的存取權限。請選擇頻道並儲存以重新開啟。",
+      "active": "開啟",
+      "inactive": "關閉",
+      "toggle": "開啟或關閉此提醒",
+      "edit": "編輯",
+      "delete": "刪除",
+      "deleteTitle": "要刪除此提醒嗎？",
+      "deleteDescription": "機器人將不再發布該提醒。已發布的訊息會保留在你的頻道中。",
+      "cancel": "取消",
+      "save": "儲存",
+      "saving": "儲存中...",
+      "created": "提醒已新增",
+      "updated": "提醒已更新",
+      "deleted": "提醒已刪除",
+      "addTitle": "新增提醒",
+      "editTitle": "編輯提醒",
+      "dialogDescription": "機器人會在所選頻道發布每場符合篩選條件的比賽。",
+      "eventLabel": "提醒類型",
+      "channelLabel": "頻道",
+      "channelPlaceholder": "選擇頻道",
+      "localeLabel": "訊息語言",
+      "localeHint": "機器人發布訊息所使用的語言。",
+      "filtersTitle": "篩選",
+      "filtersHint": "篩選留空即可接收全部。",
+      "regions": "地區",
+      "regionsHint": "僅限所選地區的賽事。",
+      "teams": "戰隊",
+      "teamsHint": "僅限這些戰隊參加的比賽。",
+      "teamsPlaceholder": "新增戰隊",
+      "teamsSearch": "搜尋戰隊",
+      "teamsNoResults": "找不到戰隊",
+      "removeTeam": "移除 {name}",
+      "any": "全部",
+      "event": {
+        "match_live": "比賽進行中",
+        "match_finished": "比賽結束",
+        "map_finished": "地圖結束"
+      },
+      "official": {
+        "label": "賽事",
+        "all": "所有賽事",
+        "official": "僅官方",
+        "unofficial": "僅非官方"
+      },
+      "error": {
+        "network": "網路錯誤，請重試。",
+        "notAuthenticated": "你必須先登入。",
+        "forbidden": "你無法管理此伺服器。",
+        "notFound": "此提醒已不存在。",
+        "invalid": "部分欄位無效。",
+        "tooManySubscriptions": "每個伺服器最多可有 {max} 個提醒。",
+        "channelsUnavailable": "機器人無法讀取此伺服器的頻道。",
+        "channelId": {
+          "required": "請選擇一個頻道。",
+          "unknownChannel": "此頻道在伺服器中不存在。"
+        },
+        "event": {
+          "invalid": "未知的提醒類型。"
+        },
+        "locale": {
+          "invalid": "未知的語言。"
+        },
+        "filterRegions": {
+          "invalid": "未知的地區。",
+          "tooMany": "最多選擇 {filterRegions} 個地區。"
+        },
+        "filterTeamIds": {
+          "invalid": "無效的戰隊。",
+          "tooMany": "最多選擇 {filterTeams} 個戰隊。",
+          "unknownTeam": "其中一個戰隊不存在。"
+        },
+        "filterOfficial": {
+          "invalid": "未知的值。"
+        },
+        "color": {
+          "invalid": "顏色無效。"
+        }
+      },
+      "alertColorLabel": "嵌入訊息顏色",
+      "alertColorHint": "覆蓋此提醒所使用的伺服器顏色。",
+      "theme": {
+        "reset": "重設",
+        "cancel": "取消",
+        "save": "儲存",
+        "saving": "儲存中...",
+        "colorsTitle": "顏色",
+        "colorsDescription": "每種提醒類型的訊息顏色。每則提醒都可以覆蓋該顏色。",
+        "color": {
+          "live": "比賽進行中",
+          "finished": "比賽已結束",
+          "map": "地圖已結束"
+        },
+        "colorsSaved": "顏色已儲存",
+        "botTitle": "你自己的機器人",
+        "botDescription": "使用你自己的 Discord 機器人（名稱和頭像）發布提醒，而不是 GC Stats 機器人。",
+        "tokenLabel": "機器人 token",
+        "tokenHint": "可在應用程式 Bot 分頁中的 Discord Developer Portal 找到。它會以加密方式儲存。",
+        "botConnect": "使用此機器人",
+        "botConnecting": "檢查中...",
+        "botConnected": "機器人已連線，如有需要請邀請它加入你的伺服器",
+        "botActive": "提醒由此機器人發布",
+        "botInvite": "邀請機器人",
+        "botDisconnect": "使用 GC Stats 機器人",
+        "botDisconnectTitle": "切換回 GC Stats 機器人？",
+        "botDisconnectDescription": "你的機器人 token 將被刪除，如果 GC Stats 機器人在你的伺服器中，提醒將重新由它發布。",
+        "botDisconnected": "已切換回 GC Stats 機器人",
+        "error": {
+          "network": "網路錯誤，請重試。",
+          "notAuthenticated": "你必須先登入。",
+          "forbidden": "你無權管理此伺服器。",
+          "invalid": "部分欄位無效。",
+          "color": "顏色無效。",
+          "token": {
+            "required": "請輸入機器人 token。",
+            "invalidToken": "Discord 拒絕了此 token，請確認它是機器人 token。"
+          }
+        },
+        "matchButton": "開啟比賽的按鈕",
+        "matchButtonHint": "在每則提醒下方加入一個按鈕，用於開啟 GC Stats 上的比賽頁面。"
+      },
+      "templates": {
+        "title": "圖片提醒",
+        "description": "將某類提醒的文字訊息替換為依據你的範本產生的圖片。僅限使用自有機器人的伺服器。",
+        "locked": "圖片提醒需要你自己的機器人。請在上方區塊連接機器人以解鎖。",
+        "usingImage": "以圖片發布",
+        "usingText": "以文字訊息發布",
+        "presetLabel": "起始設計",
+        "presetHint": "選擇圖片顯示的資訊，之後一切仍可編輯。",
+        "preset": {
+          "score": "僅比分",
+          "maps": "比分與地圖",
+          "vetos": "比分與禁選",
+          "mvp": "比分與 MVP",
+          "full": "完整"
+        },
+        "footer": "頁尾",
+        "footerHint": "在圖片下方加入附有比賽連結的 GC Stats 橫幅。",
+        "footerSaved": "頁尾已更新",
+        "toggle": "此類提醒使用圖片",
+        "enabled": "已啟用圖片提醒",
+        "disabled": "已恢復為文字訊息",
+        "addBackground": "新增背景",
+        "changeBackground": "更換背景",
+        "removeBackground": "移除背景",
+        "backgroundSaved": "背景已儲存",
+        "backgroundRemoved": "背景已移除",
+        "previewAlt": "提醒圖片預覽",
+        "previewError": "無法預覽",
+        "error": {
+          "network": "網路錯誤，請重試。",
+          "notAuthenticated": "你必須先登入。",
+          "forbidden": "你無法管理此伺服器。",
+          "invalid": "範本無效。",
+          "customBotRequired": "請先連接你自己的機器人。",
+          "invalidImage": "此圖片無效（PNG、JPEG 或 WebP，最短邊至少 400 px）。",
+          "tooLarge": "此圖片超過 10 MB。",
+          "storageFailed": "無法儲存圖片，請重試。"
+        },
+        "editDesign": "編輯設計"
+      },
+      "editor": {
+        "title": "提醒設計：{event}",
+        "description": "在畫布上拖曳、調整大小並旋轉元素,在右側設定樣式,並僅在符合條件時顯示。實際傳送的預覽使用與機器人完全相同的渲染。",
+        "addText": "文字",
+        "addLogo": "戰隊標誌",
+        "addShape": "形狀",
+        "undo": "復原",
+        "previewServer": "依發送效果預覽",
+        "canvasHint": "畫布顯示範例資料。方向鍵可移動選取的元素(按住 Shift 為 10 像素),按 Delete 可移除。變淡的元素是因條件而被隱藏。",
+        "previewTitle": "依發送效果預覽",
+        "previewError": "無法產生預覽。",
+        "canvasHeight": "圖片高度",
+        "backgroundColor": "背景顏色",
+        "layers": "元素（最前面的在先）",
+        "noLayers": "尚無元素。",
+        "noSelection": "在畫布或清單中選擇一個元素進行編輯。",
+        "moveBack": "下移一層",
+        "moveFront": "上移一層",
+        "duplicate": "複製",
+        "delete": "刪除",
+        "width": "寬度",
+        "height": "高度",
+        "field": {
+          "tournament": "賽事",
+          "teamA": "A 隊名稱",
+          "teamB": "B 隊名稱",
+          "scoreA": "A 隊得分",
+          "scoreB": "B 隊得分",
+          "score": "比分",
+          "status": "狀態",
+          "bestOf": "Best of（幾局幾勝）",
+          "map": "地圖名稱",
+          "maps": "已結束的地圖",
+          "matchScore": "比賽比分",
+          "mapsInline": "已結束的地圖（單行）",
+          "vetos": "禁選",
+          "mvp": "MVP",
+          "custom": "自由文字",
+          "stage": "賽事階段",
+          "bestOfShort": "Best of（簡稱，BO3）",
+          "teamAShort": "隊伍 A 簡稱",
+          "teamBShort": "隊伍 B 簡稱",
+          "mvpA": "隊伍 A 的 MVP",
+          "mvpB": "隊伍 B 的 MVP",
+          "dateTime": "日期與時間",
+          "date": "日期",
+          "time": "時間"
+        },
+        "customText": "文字",
+        "font": "字型",
+        "size": "大小",
+        "align": {
+          "label": "對齊",
+          "left": "靠左",
+          "center": "置中",
+          "right": "靠右"
+        },
+        "color": "顏色",
+        "bold": "粗體",
+        "uppercase": "大寫",
+        "sideLabel": "戰隊",
+        "side": {
+          "a": "A 隊",
+          "b": "B 隊"
+        },
+        "logoOf": {
+          "a": "A 隊標誌",
+          "b": "B 隊標誌"
+        },
+        "shape": "形狀",
+        "opacity": "不透明度",
+        "radius": "圓角半徑",
+        "sampleText": "你的文字",
+        "tooManyLayers": "一個範本最多可有 {max} 個元素。",
+        "saved": "設計已儲存",
+        "cancel": "取消",
+        "save": "儲存",
+        "saving": "儲存中...",
+        "error": {
+          "network": "網路錯誤，請重試。",
+          "notAuthenticated": "你必須登入。",
+          "forbidden": "你無法管理此伺服器。",
+          "invalid": "範本無效。",
+          "customBotRequired": "請先連接你自己的機器人。",
+          "invalidImage": "此圖片無效。",
+          "tooLarge": "此圖片過大。",
+          "storageFailed": "無法儲存設計，請重試。"
+        },
+        "addImage": "圖片",
+        "tabContent": "內容",
+        "tabLayout": "版面",
+        "tabStyle": "樣式",
+        "tabVisibility": "條件",
+        "conditional": "符合條件時顯示",
+        "sourceMap": "地圖 {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "A 隊標誌",
+          "teamB": "B 隊標誌",
+          "mvp": "MVP 圖片(若無則使用特工圖示)",
+          "mapCurrent": "目前地圖",
+          "mvpAgent": "MVP 特工圖示",
+          "custom": "自訂圖片"
+        },
+        "variableGroup": {
+          "match": "比賽",
+          "alert": "警報與 MVP",
+          "teams": "隊伍",
+          "schedule": "日期與時間",
+          "mvp": "MVP",
+          "maps": "地圖",
+          "vetos": "禁選"
+        },
+        "conditionValue": {
+          "live": "直播中",
+          "finished": "已結束的比賽",
+          "map": "已結束的地圖",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "A 隊",
+          "b": "B 隊"
+        },
+        "customTextHint": "撰寫你自己的文字,並插入 {tournament} 或 {veto1.map} 等變數。",
+        "insertVariable": "插入變數",
+        "sourceLabel": "圖片",
+        "fit": {
+          "label": "填滿方式",
+          "cover": "填滿(裁切)",
+          "contain": "完整包含"
+        },
+        "imageFallbackHint": "沒有圖片時,會顯示帶有縮寫字母的圖塊。",
+        "shapeHint": "形狀沒有內容,請在樣式分頁中設定。",
+        "logoStyleHint": "隊伍標誌會原樣顯示,請在版面中變更其大小與位置。",
+        "rotation": "旋轉(度)",
+        "alignTitle": "對齊圖片",
+        "addFolder": "新增資料夾",
+        "tooManyFolders": "一個範本最多可以有 {max} 個資料夾。",
+        "folderDefaultName": "資料夾 {n}",
+        "folderExpand": "展開資料夾",
+        "folderCollapse": "收合資料夾",
+        "lockFolder": "鎖定資料夾",
+        "unlockFolder": "解除鎖定資料夾",
+        "lockLayer": "鎖定元素",
+        "unlockLayer": "解除鎖定元素",
+        "folder": "資料夾",
+        "folderName": "資料夾名稱",
+        "folderNameRequired": "資料夾需要名稱。",
+        "folderHint": "資料夾可以在清單中將元素分組。鎖定資料夾會鎖定裡面的所有元素。",
+        "deleteFolder": "刪除資料夾",
+        "layerLockedHint": "此元素已鎖定。請先解除鎖定才能編輯或移動。",
+        "folderLockedHint": "此元素被所屬資料夾鎖定。請先解除資料夾的鎖定才能編輯或移動。",
+        "noFolder": "無資料夾",
+        "anchorPoint": "文字錨點",
+        "anchorX": "錨點位置 (X)",
+        "anchorHint": "無論文字多長，文字都會在此 X 位置開始、置中或結束。",
+        "anchor": {
+          "left": "文字開頭",
+          "center": "文字中央",
+          "right": "文字結尾"
+        },
+        "alignLeft": "靠左對齊",
+        "alignCenterX": "水平置中",
+        "alignRight": "靠右對齊",
+        "alignTop": "靠上對齊",
+        "alignCenterY": "垂直置中",
+        "alignBottom": "靠下對齊",
+        "letterSpacing": "字距",
+        "lineHeight": "行高",
+        "shadow": "陰影",
+        "shadowColor": "陰影顏色",
+        "shadowBlur": "模糊",
+        "shadowX": "X 位移",
+        "shadowY": "Y 位移",
+        "borderWidth": "邊框粗細",
+        "borderColor": "邊框顏色",
+        "gradient": "漸層",
+        "color2": "第二種顏色",
+        "angle": "角度(度)",
+        "conditionsHint": "只有在下方所有條件都成立時,才會繪製此元素。",
+        "conditionKey": "變數",
+        "conditionOp": "條件",
+        "conditionValueLabel": "值",
+        "op": {
+          "is": "等於",
+          "isNot": "不等於",
+          "exists": "已填寫",
+          "empty": "為空"
+        },
+        "addCondition": "新增條件",
+        "removeCondition": "移除此條件",
+        "canvasSettings": "圖片設定",
+        "footer": "GC Stats 頁尾",
+        "artwork": "以地圖美術圖作為背景",
+        "artworkSource": "美術圖來源",
+        "artworkDim": "暗化程度",
+        "artworkHint": "上傳背景圖片時會被忽略。",
+        "loadingMatch": "正在載入預覽比賽",
+        "timezone": "時區",
+        "variableName": {
+          "tournament": "賽事名稱",
+          "stage": "賽事階段",
+          "status": "狀態（直播中或已結束）",
+          "bestOf": "Best of（Best of 3）",
+          "bestOfShort": "Best of，簡寫（BO3）",
+          "score": "比賽或地圖的比分",
+          "scoreA": "A 隊的比分",
+          "scoreB": "B 隊的比分",
+          "matchScore": "比賽的比分",
+          "teamA": "A 隊的名稱",
+          "teamB": "B 隊的名稱",
+          "teamAShort": "A 隊的簡稱",
+          "teamBShort": "B 隊的簡稱",
+          "dateTime": "比賽的日期與時間",
+          "date": "比賽的日期",
+          "time": "比賽的時間",
+          "scheduledAt": "預定開始時間",
+          "alert_kind": "警示類型",
+          "map": "已結束地圖的名稱",
+          "currentMap_name": "進行中地圖的名稱",
+          "currentMap_number": "進行中地圖的編號",
+          "maps": "已結束的地圖（清單）",
+          "mapsInline": "已結束的地圖（單行）",
+          "vetos": "Veto（單行）",
+          "mvp": "比賽或地圖的 MVP",
+          "mvpA": "A 隊的 MVP",
+          "mvpB": "B 隊的 MVP",
+          "mvp_name": "MVP 選手",
+          "mvp_acs": "MVP 的 ACS",
+          "mvp_agent": "MVP 的特務",
+          "mvpA_name": "A 隊的 MVP 選手",
+          "mvpA_acs": "A 隊 MVP 的 ACS",
+          "mvpA_agent": "A 隊 MVP 的特務",
+          "mvpB_name": "B 隊的 MVP 選手",
+          "mvpB_acs": "B 隊 MVP 的 ACS",
+          "mvpB_agent": "B 隊 MVP 的特務",
+          "map_alias": "地圖 {n} 的名稱",
+          "map_name": "地圖 {n} 的名稱",
+          "map_score": "地圖 {n} 的比分",
+          "map_scoreA": "A 隊在地圖 {n} 的比分",
+          "map_scoreB": "B 隊在地圖 {n} 的比分",
+          "veto_map": "Veto {n} 的地圖",
+          "veto_action": "Veto {n} 的動作（ban, pick, decider）",
+          "veto_team": "Veto {n} 的隊伍",
+          "veto_type": "Veto {n} 的類型",
+          "veto_side": "Veto {n} 的陣營（進攻方或防守方）"
+        },
+        "insertVariableHint": "點擊變數即可將其插入文字中的游標位置。",
+        "layoutLayer": "版面",
+        "pickImage": "選擇圖片",
+        "pickImageHint": "每種圖片類型都有自己的尺寸，之後可以修改。",
+        "imageCategory": {
+          "teams": "戰隊",
+          "mvp": "MVP",
+          "maps": "地圖",
+          "vetos": "禁選",
+          "custom": "自訂圖片"
+        },
+        "customUrl": "圖片網址",
+        "customUrlHint": "指向圖片的公開 https 連結。不會上傳任何內容，圖片保留在原網站，並在傳送提醒時下載。",
+        "customUrlRequired": "圖片網址為必填。",
+        "customUrlInvalid": "請輸入有效的 https 網址。",
+        "useImage": "使用此圖片",
+        "sendTest": "傳送測試",
+        "sendTestHint": "將此設計填入一場真實比賽，並發佈到你選擇的頻道。未儲存的修改也會包含在內。",
+        "testChannel": "頻道",
+        "testChannelPlaceholder": "選擇頻道",
+        "sendTestAction": "傳送",
+        "sending": "傳送中",
+        "testSent": "測試已傳送",
+        "testError": {
+          "required": "請選擇一個頻道。",
+          "unknownChannel": "伺服器上不存在此頻道。",
+          "rateLimited": "請等待幾秒後再傳送下一次測試。",
+          "channelsUnavailable": "無法讀取伺服器的頻道。",
+          "sendFailed": "測試傳送失敗，請檢查機器人是否有權限在此頻道發言。"
         }
       }
     }

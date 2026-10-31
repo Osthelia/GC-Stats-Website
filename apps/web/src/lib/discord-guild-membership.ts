@@ -57,39 +57,57 @@ export async function getLinkedDiscordId(userId: string): Promise<string | null>
 }
 
 /**
+ * Access token of the user's linked Discord account, refreshed in place when
+ * expired. Null when no account is linked or Discord refuses the refresh.
+ */
+export function getDiscordAccessToken(userId: string): Promise<string | null> {
+  // Discord refresh tokens are single use: concurrent renders must share one refresh.
+  const pending = inFlightTokens.get(userId);
+  if (pending) return pending;
+  const request = loadDiscordAccessToken(userId).finally(() => inFlightTokens.delete(userId));
+  inFlightTokens.set(userId, request);
+  return request;
+}
+
+const inFlightTokens = new Map<string, Promise<string | null>>();
+
+async function loadDiscordAccessToken(userId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ accessToken: accounts.access_token, refreshToken: accounts.refresh_token, expiresAt: accounts.expires_at })
+    .from(accounts)
+    .where(and(eq(accounts.userId, userId), eq(accounts.provider, "discord")))
+    .limit(1);
+  if (!row?.accessToken) return null;
+
+  const isExpired = row.expiresAt !== null && row.expiresAt * 1000 < Date.now();
+  if (!isExpired) return row.accessToken;
+  if (!row.refreshToken) return null;
+
+  const refreshed = await refreshAccessToken(row.refreshToken);
+  if (!refreshed) return null;
+  await db
+    .update(accounts)
+    .set({
+      access_token: refreshed.access_token,
+      refresh_token: refreshed.refresh_token ?? row.refreshToken,
+      expires_at: Math.floor(Date.now() / 1000) + refreshed.expires_in,
+    })
+    .where(and(eq(accounts.userId, userId), eq(accounts.provider, "discord")));
+  return refreshed.access_token;
+}
+
+/**
  * Checks the user's linked Discord account is a member of DISCORD_GUILD_ID,
- * via the "guilds" OAuth scope on their own access token. Refreshes an
- * expired token in place. Never throws — an API/network failure reads as
- * "not joined" rather than blocking the settings page.
+ * via the "guilds" OAuth scope on their own access token. Never throws, an
+ * API/network failure reads as "not joined" rather than blocking the settings page.
  */
 export async function hasJoinedDiscordGuild(userId: string): Promise<boolean> {
   const guildId = process.env.DISCORD_GUILD_ID;
   if (!guildId) return false;
 
   try {
-    const [row] = await db
-      .select({ accessToken: accounts.access_token, refreshToken: accounts.refresh_token, expiresAt: accounts.expires_at })
-      .from(accounts)
-      .where(and(eq(accounts.userId, userId), eq(accounts.provider, "discord")))
-      .limit(1);
-    if (!row?.accessToken) return false;
-
-    let accessToken = row.accessToken;
-    const isExpired = row.expiresAt !== null && row.expiresAt * 1000 < Date.now();
-    if (isExpired) {
-      if (!row.refreshToken) return false;
-      const refreshed = await refreshAccessToken(row.refreshToken);
-      if (!refreshed) return false;
-      accessToken = refreshed.access_token;
-      await db
-        .update(accounts)
-        .set({
-          access_token: refreshed.access_token,
-          refresh_token: refreshed.refresh_token ?? row.refreshToken,
-          expires_at: Math.floor(Date.now() / 1000) + refreshed.expires_in,
-        })
-        .where(and(eq(accounts.userId, userId), eq(accounts.provider, "discord")));
-    }
+    const accessToken = await getDiscordAccessToken(userId);
+    if (!accessToken) return false;
 
     const response = await fetch("https://discord.com/api/users/@me/guilds", {
       headers: { Authorization: `Bearer ${accessToken}` },

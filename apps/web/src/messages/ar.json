@@ -1045,6 +1045,76 @@
       "email": "التواصل عبر البريد الإلكتروني"
     }
   },
+  "discordBot": {
+    "title": "بوت ديسكورد",
+    "intro": "تابع جميع مباريات Game Changers مباشرة في سيرفر ديسكورد الخاص بك، مع نتائج مباشرة ونتائج نهائية تُنشر تلقائيًا.",
+    "addBot": "أضف إلى ديسكورد",
+    "comingSoon": "قريبًا",
+    "openDashboard": "افتح لوحة التحكم",
+    "features": {
+      "title": "المميزات",
+      "live": {
+        "title": "المباريات المباشرة",
+        "body": "تُنشر رسالة عند بدء المباراة، ويتحدث الإحراز تلقائيًا حتى النهاية."
+      },
+      "finished": {
+        "title": "المباريات المنتهية",
+        "body": "تُنشر النتيجة النهائية فور انتهاء المباراة."
+      },
+      "map": {
+        "title": "الخرائط المنتهية",
+        "body": "احصل على نتيجة كل خريطة فور انتهائها، دون انتظار نهاية المباراة."
+      },
+      "filters": {
+        "title": "فلاتر ذكية",
+        "body": "صفِّ التنبيهات حسب المنطقة، والفريق المشارك، والبطولات الرسمية أو غير الرسمية (الرسمية افتراضيًا)."
+      }
+    },
+    "dashboard": {
+      "title": "الإعداد من لوحة التحكم",
+      "body": "يُعدّ كل سيرفر من لوحة تحكم GC Stats: اختر القناة لكل نوع تنبيه وحدد الفلاتر.",
+      "why": "عليك تسجيل الدخول عبر ديسكورد حتى نتمكن من التحقق من السيرفرات التي تديرها. يمكن فقط للأعضاء الذين لديهم صلاحية إدارة السيرفر تغيير إعداداته."
+    },
+    "steps": {
+      "title": "كيف يعمل",
+      "invite": {
+        "title": "أضف البوت",
+        "body": "ادعُ البوت إلى سيرفرك باستخدام الزر أعلاه."
+      },
+      "login": {
+        "title": "سجّل الدخول عبر ديسكورد",
+        "body": "افتح لوحة التحكم وسجّل الدخول بحساب ديسكورد الخاص بك."
+      },
+      "configure": {
+        "title": "اضبط الإعدادات",
+        "body": "اختر قنواتك والفلاتر، وتبدأ التنبيهات فورًا."
+      }
+    },
+    "help": {
+      "title": "هل تحتاج إلى مساعدة؟",
+      "body": "لديك أسئلة أو اقتراحات؟ انضم إلى <link>ديسكورد GC Stats</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "مباشر",
+    "finished": "انتهت المباراة",
+    "mapFinished": "انتهت الخريطة {number}",
+    "map": "الخريطة {number}",
+    "maps": "الخرائط",
+    "bestOf": "أفضل من {count}",
+    "matchScore": "نتيجة المباراة: {score}",
+    "mvp": "أفضل لاعب: {name} ({acs} ACS)",
+    "vetoBan": "{team} يحظر {map}",
+    "vetoPick": "{team} يختار {map}",
+    "vetoDecider": "{map} (الخريطة الحاسمة)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "هجوم",
+    "sideDefense": "دفاع",
+    "openMatch": "فتح المباراة"
+  },
   "supportUs": {
     "title": "ادعمنا",
     "subtitle": "GC-Stats جزء من Osthelia",
@@ -1745,7 +1815,8 @@
     "finance": "الشؤون المالية",
     "developers": "المطورون",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "بوت ديسكورد"
   },
   "forum": {
     "overview": {
@@ -5201,14 +5272,17 @@
       "allAuthors": "كل الكتّاب",
       "authorAdminSpace": "الكتّاب",
       "logs": "السجلات",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "discordSpace": "بوت Discord",
+      "discordServers": "خوادمي"
     },
     "switcher": {
       "selectOrganization": "اختر منظمة",
       "authorSpace": "مساحة الكاتب",
       "apiKeySpace": "مساحة مفاتيح API",
       "adminAccess": "الإدارة",
-      "authorAdminSpace": "الكتّاب"
+      "authorAdminSpace": "الكتّاب",
+      "discordSpace": "بوت Discord"
     },
     "picker": {
       "title": "منظماتك",
@@ -5221,7 +5295,8 @@
       "filterTagAll": "الكل",
       "noResults": "لم يتم العثور على منظمات.",
       "adminBadge": "مسؤول",
-      "authorAdminSpace": "الكتّاب"
+      "authorAdminSpace": "الكتّاب",
+      "discordSpace": "بوت Discord"
     },
     "authors": {
       "title": "الكتّاب",
@@ -6100,6 +6175,466 @@
         },
         "filterOfficial": {
           "invalid": "قيمة غير صالحة."
+        }
+      }
+    },
+    "discord": {
+      "serversTitle": "خوادم Discord",
+      "serversSubtitle": "الخوادم التي يمكنك فيها إدارة بوت GC Stats.",
+      "serversUnavailable": "تعذرت قراءة خوادم Discord الخاصة بك. أعد ربط حساب Discord وحاول مرة أخرى.",
+      "reconnectDiscord": "إعادة ربط Discord",
+      "serversEmpty": "أنت لا تدير أي خادم Discord. تحتاج إلى صلاحية إدارة الخادم لإعداد البوت.",
+      "subscriptionCount": "{count, plural, =0 {لا توجد تنبيهات} one {تنبيه واحد} two {تنبيهان} few {# تنبيهات} many {# تنبيهًا} other {# تنبيه}}",
+      "botNotJoined": "لم تتم إضافة البوت",
+      "configure": "إعداد",
+      "addBot": "إضافة البوت",
+      "botUnavailable": "لا يمكن إضافة البوت حاليًا.",
+      "serverTitle": "خادم Discord",
+      "serverSubtitle": "اختر التنبيهات التي تُنشر في كل قناة.",
+      "backToServers": "العودة إلى الخوادم",
+      "botNotJoinedBody": "البوت ليس في هذا الخادم بعد. أضفه لبدء إعداد التنبيهات.",
+      "alertsTitle": "التنبيهات",
+      "alertsDescription": "يُنشر كل تنبيه في قناة واحدة ويمكن تصفيته حسب المنطقة والفريق والحالة الرسمية.",
+      "add": "إضافة تنبيه",
+      "empty": "لا توجد تنبيهات بعد. أضف تنبيهًا لبدء استقبال المباريات في خادمك.",
+      "channelsUnavailable": "لا يستطيع البوت قراءة قنوات هذا الخادم. تأكد من أنه يستطيع عرضها ثم أعد تحميل الصفحة.",
+      "channelMissing": "القناة غير موجودة",
+      "disabledLostChannel": "تم الإيقاف، فقد البوت الوصول إلى هذه القناة. اختر قناة واحفظ لإعادة التشغيل.",
+      "active": "مفعّل",
+      "inactive": "متوقف",
+      "toggle": "تشغيل هذا التنبيه أو إيقافه",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "deleteTitle": "حذف هذا التنبيه؟",
+      "deleteDescription": "سيتوقف البوت عن نشره. تبقى الرسائل المنشورة سابقًا في قناتك.",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ...",
+      "created": "تمت إضافة التنبيه",
+      "updated": "تم تحديث التنبيه",
+      "deleted": "تم حذف التنبيه",
+      "addTitle": "إضافة تنبيه",
+      "editTitle": "تعديل التنبيه",
+      "dialogDescription": "ينشر البوت في القناة المختارة كل مباراة تجتاز عوامل التصفية.",
+      "eventLabel": "نوع التنبيه",
+      "channelLabel": "القناة",
+      "channelPlaceholder": "اختر قناة",
+      "localeLabel": "لغة الرسائل",
+      "localeHint": "لغة الرسائل التي ينشرها البوت.",
+      "filtersTitle": "عوامل التصفية",
+      "filtersHint": "اترك عامل التصفية فارغًا لاستقبال كل شيء.",
+      "regions": "المناطق",
+      "regionsHint": "بطولات المناطق المحددة فقط.",
+      "teams": "الفرق",
+      "teamsHint": "المباريات التي يلعبها أحد هذه الفرق فقط.",
+      "teamsPlaceholder": "إضافة فريق",
+      "teamsSearch": "البحث عن فريق",
+      "teamsNoResults": "لم يتم العثور على فريق",
+      "removeTeam": "إزالة {name}",
+      "any": "الكل",
+      "event": {
+        "match_live": "مباراة مباشرة",
+        "match_finished": "انتهت المباراة",
+        "map_finished": "انتهت الخريطة"
+      },
+      "official": {
+        "label": "البطولات",
+        "all": "جميع البطولات",
+        "official": "الرسمية فقط",
+        "unofficial": "غير الرسمية فقط"
+      },
+      "error": {
+        "network": "خطأ في الشبكة، حاول مرة أخرى.",
+        "notAuthenticated": "يجب تسجيل الدخول.",
+        "forbidden": "لا يمكنك إدارة هذا الخادم.",
+        "notFound": "هذا التنبيه لم يعد موجودًا.",
+        "invalid": "بعض الحقول غير صالحة.",
+        "tooManySubscriptions": "يمكن أن يحتوي الخادم على {max} تنبيهات كحد أقصى.",
+        "channelsUnavailable": "لا يستطيع البوت قراءة قنوات هذا الخادم.",
+        "channelId": {
+          "required": "اختر قناة.",
+          "unknownChannel": "هذه القناة غير موجودة في الخادم."
+        },
+        "event": {
+          "invalid": "نوع تنبيه غير معروف."
+        },
+        "locale": {
+          "invalid": "لغة غير معروفة."
+        },
+        "filterRegions": {
+          "invalid": "منطقة غير معروفة.",
+          "tooMany": "اختر {filterRegions} مناطق كحد أقصى."
+        },
+        "filterTeamIds": {
+          "invalid": "فريق غير صالح.",
+          "tooMany": "اختر {filterTeams} فرق كحد أقصى.",
+          "unknownTeam": "أحد الفرق غير موجود."
+        },
+        "filterOfficial": {
+          "invalid": "قيمة غير معروفة."
+        },
+        "color": {
+          "invalid": "لون غير صالح."
+        }
+      },
+      "alertColorLabel": "لون الـ embed",
+      "alertColorHint": "يستبدل لون الخادم لهذا التنبيه.",
+      "theme": {
+        "reset": "إعادة تعيين",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "saving": "جارٍ الحفظ...",
+        "colorsTitle": "الألوان",
+        "colorsDescription": "لون رسالة كل نوع من التنبيهات. يمكن لكل تنبيه استبداله.",
+        "color": {
+          "live": "مباراة مباشرة",
+          "finished": "انتهت المباراة",
+          "map": "انتهت الخريطة"
+        },
+        "colorsSaved": "تم حفظ الألوان",
+        "botTitle": "البوت الخاص بك",
+        "botDescription": "انشر التنبيهات عبر بوت Discord الخاص بك (باسمه وصورته) بدلاً من بوت GC Stats.",
+        "tokenLabel": "token البوت",
+        "tokenHint": "تجده في Discord Developer Portal، في تبويب Bot الخاص بتطبيقك. يتم تخزينه مشفراً.",
+        "botConnect": "استخدام هذا البوت",
+        "botConnecting": "جارٍ التحقق...",
+        "botConnected": "تم ربط البوت، ادعُه إلى خادمك عند الحاجة",
+        "botActive": "يتم نشر التنبيهات بواسطة هذا البوت",
+        "botInvite": "دعوة البوت",
+        "botDisconnect": "استخدام بوت GC Stats",
+        "botDisconnectTitle": "العودة إلى بوت GC Stats؟",
+        "botDisconnectDescription": "سيتم حذف token البوت الخاص بك وستعود التنبيهات لتُنشر عبر بوت GC Stats، إذا كان موجوداً في خادمك.",
+        "botDisconnected": "تمت العودة إلى بوت GC Stats",
+        "error": {
+          "network": "خطأ في الشبكة، حاول مرة أخرى.",
+          "notAuthenticated": "يجب تسجيل الدخول.",
+          "forbidden": "لا يمكنك إدارة هذا الخادم.",
+          "invalid": "بعض الحقول غير صالحة.",
+          "color": "لون غير صالح.",
+          "token": {
+            "required": "أدخل token البوت.",
+            "invalidToken": "رفض Discord هذا الـ token، تأكد من أنه token خاص ببوت."
+          }
+        },
+        "matchButton": "زر لفتح المباراة",
+        "matchButtonHint": "يضيف أسفل كل تنبيه زرًا يفتح صفحة المباراة على GC Stats."
+      },
+      "templates": {
+        "title": "تنبيهات الصور",
+        "description": "تستبدل رسالة النص الخاصة بنوع من التنبيهات بصورة مبنية من قالبك. مخصصة للخوادم التي تستخدم بوتها الخاص.",
+        "locked": "تنبيهات الصور تتطلب بوتك الخاص. اربطه في القسم أعلاه لتفعيلها.",
+        "usingImage": "يُنشر كصورة",
+        "usingText": "يُنشر كرسالة نصية",
+        "presetLabel": "التصميم الأولي",
+        "presetHint": "اختر المعلومات التي تعرضها الصورة. يبقى كل شيء قابلاً للتعديل لاحقاً.",
+        "preset": {
+          "score": "النتيجة فقط",
+          "maps": "النتيجة والخرائط",
+          "vetos": "النتيجة وحظر واختيار الخرائط",
+          "mvp": "النتيجة وأفضل لاعب",
+          "full": "كامل"
+        },
+        "footer": "التذييل",
+        "footerHint": "يضيف شريط GC Stats مع رابط المباراة أسفل الصورة.",
+        "footerSaved": "تم تحديث التذييل",
+        "toggle": "استخدام صورة لهذا النوع من التنبيهات",
+        "enabled": "تم تفعيل تنبيه الصورة",
+        "disabled": "العودة إلى الرسالة النصية",
+        "addBackground": "إضافة خلفية",
+        "changeBackground": "تغيير الخلفية",
+        "removeBackground": "إزالة الخلفية",
+        "backgroundSaved": "تم حفظ الخلفية",
+        "backgroundRemoved": "تمت إزالة الخلفية",
+        "previewAlt": "معاينة صورة التنبيه",
+        "previewError": "المعاينة غير متاحة",
+        "error": {
+          "network": "خطأ في الشبكة، حاول مرة أخرى.",
+          "notAuthenticated": "يجب تسجيل الدخول.",
+          "forbidden": "لا يمكنك إدارة هذا الخادم.",
+          "invalid": "القالب غير صالح.",
+          "customBotRequired": "اربط بوتك الخاص أولاً.",
+          "invalidImage": "هذه الصورة غير صالحة (PNG أو JPEG أو WebP، بعرض 400 px على الأقل في أقصر ضلع).",
+          "tooLarge": "حجم هذه الصورة أكبر من 10 MB.",
+          "storageFailed": "تعذر تخزين الصورة، حاول مرة أخرى."
+        },
+        "editDesign": "تعديل التصميم"
+      },
+      "editor": {
+        "title": "تصميم التنبيه: {event}",
+        "description": "اسحب العناصر على اللوحة وغيّر حجمها وأدرها، ثم نسّقها من اليمين واعرضها فقط عند تحقق شروط معينة. المعاينة كما سترسل تستخدم نفس عرض البوت تمامًا.",
+        "addText": "نص",
+        "addLogo": "شعار الفريق",
+        "addShape": "شكل",
+        "undo": "تراجع",
+        "previewServer": "معاينة كما أُرسلت",
+        "canvasHint": "تعرض اللوحة بيانات تجريبية. مفاتيح الأسهم تحرك العنصر المحدد (Shift لعشرة بكسل) وزر Delete يحذفه. العناصر الباهتة مخفية بسبب شروطها.",
+        "previewTitle": "معاينة كما أُرسلت",
+        "previewError": "تعذر إنشاء المعاينة.",
+        "canvasHeight": "ارتفاع الصورة",
+        "backgroundColor": "لون الخلفية",
+        "layers": "العناصر (الأمامي أولًا)",
+        "noLayers": "لا توجد عناصر بعد.",
+        "noSelection": "اختر عنصرًا على اللوحة أو في القائمة لتعديله.",
+        "moveBack": "إرسال للخلف",
+        "moveFront": "جلب للأمام",
+        "duplicate": "تكرار",
+        "delete": "حذف",
+        "width": "العرض",
+        "height": "الارتفاع",
+        "field": {
+          "tournament": "البطولة",
+          "teamA": "اسم الفريق A",
+          "teamB": "اسم الفريق B",
+          "scoreA": "نتيجة الفريق A",
+          "scoreB": "نتيجة الفريق B",
+          "score": "النتيجة",
+          "status": "الحالة",
+          "bestOf": "Best of",
+          "map": "اسم الخريطة",
+          "maps": "الخرائط المنتهية",
+          "matchScore": "نتيجة المباراة",
+          "mapsInline": "الخرائط المنتهية (سطر واحد)",
+          "vetos": "حظر واختيار الخرائط",
+          "mvp": "أفضل لاعب",
+          "custom": "نص حر",
+          "stage": "مرحلة البطولة",
+          "bestOfShort": "Best of (مختصر، BO3)",
+          "teamAShort": "الاسم المختصر للفريق A",
+          "teamBShort": "الاسم المختصر للفريق B",
+          "mvpA": "MVP الفريق A",
+          "mvpB": "MVP الفريق B",
+          "dateTime": "التاريخ والوقت",
+          "date": "التاريخ",
+          "time": "الوقت"
+        },
+        "customText": "نص",
+        "font": "الخط",
+        "size": "الحجم",
+        "align": {
+          "label": "المحاذاة",
+          "left": "يسار",
+          "center": "وسط",
+          "right": "يمين"
+        },
+        "color": "اللون",
+        "bold": "عريض",
+        "uppercase": "أحرف كبيرة",
+        "sideLabel": "الفريق",
+        "side": {
+          "a": "الفريق A",
+          "b": "الفريق B"
+        },
+        "logoOf": {
+          "a": "شعار الفريق A",
+          "b": "شعار الفريق B"
+        },
+        "shape": "شكل",
+        "opacity": "الشفافية",
+        "radius": "نصف قطر الزوايا",
+        "sampleText": "نصك",
+        "tooManyLayers": "يمكن أن يحتوي القالب على {max} عناصر كحد أقصى.",
+        "saved": "تم حفظ التصميم",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "saving": "جارٍ الحفظ...",
+        "error": {
+          "network": "خطأ في الشبكة، حاول مرة أخرى.",
+          "notAuthenticated": "يجب تسجيل الدخول.",
+          "forbidden": "لا يمكنك إدارة هذا الخادم.",
+          "invalid": "القالب غير صالح.",
+          "customBotRequired": "اربط بوتك الخاص أولًا.",
+          "invalidImage": "هذه الصورة غير صالحة.",
+          "tooLarge": "هذه الصورة كبيرة جدًا.",
+          "storageFailed": "تعذر حفظ التصميم، حاول مرة أخرى."
+        },
+        "addImage": "صورة",
+        "tabContent": "المحتوى",
+        "tabLayout": "التخطيط",
+        "tabStyle": "النمط",
+        "tabVisibility": "الشروط",
+        "conditional": "يظهر عند تحقق شروط",
+        "sourceMap": "الخريطة {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "شعار الفريق A",
+          "teamB": "شعار الفريق B",
+          "mvp": "صورة MVP (أيقونة العميل عند عدم توفرها)",
+          "mapCurrent": "الخريطة الحالية",
+          "mvpAgent": "أيقونة عميل MVP",
+          "custom": "صورة مخصصة"
+        },
+        "variableGroup": {
+          "match": "المباراة",
+          "alert": "التنبيه وMVP",
+          "teams": "الفرق",
+          "schedule": "التاريخ والوقت",
+          "mvp": "MVP",
+          "maps": "الخرائط",
+          "vetos": "الحظر والاختيار"
+        },
+        "conditionValue": {
+          "live": "مباشر",
+          "finished": "مباراة منتهية",
+          "map": "خريطة منتهية",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "الفريق A",
+          "b": "الفريق B"
+        },
+        "customTextHint": "اكتب نصك الخاص وأدرج متغيرات مثل {tournament} أو {veto1.map}.",
+        "insertVariable": "إدراج متغير",
+        "sourceLabel": "الصورة",
+        "fit": {
+          "label": "الملاءمة",
+          "cover": "ملء (اقتصاص)",
+          "contain": "احتواء"
+        },
+        "imageFallbackHint": "عند عدم وجود صورة، تظهر بطاقة بالأحرف الأولى.",
+        "shapeHint": "الشكل لا يحتوي على محتوى، نسّقه من تبويب النمط.",
+        "logoStyleHint": "يظهر شعار الفريق كما هو، غيّر حجمه وموضعه من تبويب التخطيط.",
+        "rotation": "التدوير (بالدرجات)",
+        "alignTitle": "محاذاة على الصورة",
+        "addFolder": "مجلد جديد",
+        "tooManyFolders": "يمكن أن يحتوي القالب على {max} مجلدات كحد أقصى.",
+        "folderDefaultName": "المجلد {n}",
+        "folderExpand": "توسيع المجلد",
+        "folderCollapse": "طي المجلد",
+        "lockFolder": "قفل المجلد",
+        "unlockFolder": "إلغاء قفل المجلد",
+        "lockLayer": "قفل العنصر",
+        "unlockLayer": "إلغاء قفل العنصر",
+        "folder": "المجلد",
+        "folderName": "اسم المجلد",
+        "folderNameRequired": "يحتاج المجلد إلى اسم.",
+        "folderHint": "يجمع المجلد العناصر في القائمة. قفله يقفل كل العناصر بداخله.",
+        "deleteFolder": "حذف المجلد",
+        "layerLockedHint": "هذا العنصر مقفل. ألغِ قفله لتعديله أو نقله.",
+        "folderLockedHint": "هذا العنصر مقفل بسبب مجلده. ألغِ قفل المجلد لتعديله أو نقله.",
+        "noFolder": "بدون مجلد",
+        "anchorPoint": "تثبيت النص",
+        "anchorX": "موضع التثبيت (X)",
+        "anchorHint": "يبدأ النص أو يتوسط أو ينتهي عند هذا الموضع X مهما كان طوله.",
+        "anchor": {
+          "left": "بداية النص",
+          "center": "وسط النص",
+          "right": "نهاية النص"
+        },
+        "alignLeft": "محاذاة لليسار",
+        "alignCenterX": "توسيط أفقي",
+        "alignRight": "محاذاة لليمين",
+        "alignTop": "محاذاة للأعلى",
+        "alignCenterY": "توسيط عمودي",
+        "alignBottom": "محاذاة للأسفل",
+        "letterSpacing": "تباعد الأحرف",
+        "lineHeight": "ارتفاع السطر",
+        "shadow": "ظل",
+        "shadowColor": "لون الظل",
+        "shadowBlur": "التمويه",
+        "shadowX": "الإزاحة X",
+        "shadowY": "الإزاحة Y",
+        "borderWidth": "سمك الحدود",
+        "borderColor": "لون الحدود",
+        "gradient": "تدرج",
+        "color2": "اللون الثاني",
+        "angle": "الزاوية (بالدرجات)",
+        "conditionsHint": "يُرسم العنصر فقط عندما تتحقق جميع الشروط أدناه.",
+        "conditionKey": "المتغير",
+        "conditionOp": "الشرط",
+        "conditionValueLabel": "القيمة",
+        "op": {
+          "is": "يساوي",
+          "isNot": "لا يساوي",
+          "exists": "معبأ",
+          "empty": "فارغ"
+        },
+        "addCondition": "إضافة شرط",
+        "removeCondition": "إزالة هذا الشرط",
+        "canvasSettings": "إعدادات الصورة",
+        "footer": "تذييل GC Stats",
+        "artwork": "صورة الخريطة كخلفية",
+        "artworkSource": "صورة خريطة",
+        "artworkDim": "التعتيم",
+        "artworkHint": "يتم تجاهله عند رفع صورة خلفية.",
+        "loadingMatch": "جارٍ تحميل مباراة المعاينة",
+        "timezone": "المنطقة الزمنية",
+        "variableName": {
+          "tournament": "اسم البطولة",
+          "stage": "مرحلة البطولة",
+          "status": "الحالة (مباشر أو منتهٍ)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of، مختصر (BO3)",
+          "score": "نتيجة المباراة أو الخريطة",
+          "scoreA": "نتيجة الفريق A",
+          "scoreB": "نتيجة الفريق B",
+          "matchScore": "نتيجة المباراة",
+          "teamA": "اسم الفريق A",
+          "teamB": "اسم الفريق B",
+          "teamAShort": "الاسم المختصر للفريق A",
+          "teamBShort": "الاسم المختصر للفريق B",
+          "dateTime": "تاريخ المباراة ووقتها",
+          "date": "تاريخ المباراة",
+          "time": "وقت المباراة",
+          "scheduledAt": "وقت البدء المقرر",
+          "alert_kind": "نوع التنبيه",
+          "map": "اسم الخريطة المنتهية",
+          "currentMap_name": "اسم الخريطة الجارية",
+          "currentMap_number": "رقم الخريطة الجارية",
+          "maps": "الخرائط المنتهية (قائمة)",
+          "mapsInline": "الخرائط المنتهية (في سطر واحد)",
+          "vetos": "الفيتو (في سطر واحد)",
+          "mvp": "MVP المباراة أو الخريطة",
+          "mvpA": "MVP الفريق A",
+          "mvpB": "MVP الفريق B",
+          "mvp_name": "لاعب MVP",
+          "mvp_acs": "ACS الخاص بـ MVP",
+          "mvp_agent": "Agent الخاص بـ MVP",
+          "mvpA_name": "لاعب MVP للفريق A",
+          "mvpA_acs": "ACS الخاص بـ MVP للفريق A",
+          "mvpA_agent": "Agent الخاص بـ MVP للفريق A",
+          "mvpB_name": "لاعب MVP للفريق B",
+          "mvpB_acs": "ACS الخاص بـ MVP للفريق B",
+          "mvpB_agent": "Agent الخاص بـ MVP للفريق B",
+          "map_alias": "اسم الخريطة {n}",
+          "map_name": "اسم الخريطة {n}",
+          "map_score": "نتيجة الخريطة {n}",
+          "map_scoreA": "نتيجة الفريق A في الخريطة {n}",
+          "map_scoreB": "نتيجة الفريق B في الخريطة {n}",
+          "veto_map": "خريطة الفيتو {n}",
+          "veto_action": "إجراء الفيتو {n} (ban, pick, decider)",
+          "veto_team": "فريق الفيتو {n}",
+          "veto_type": "نوع الفيتو {n}",
+          "veto_side": "جانب الفيتو {n} (هجوم أو دفاع)"
+        },
+        "insertVariableHint": "انقر على متغير لإدراجه في النص عند موضع المؤشر.",
+        "layoutLayer": "التخطيط",
+        "pickImage": "اختر صورة",
+        "pickImageHint": "لكل نوع من الصور حجمه الخاص، ويمكنك تغييره لاحقًا.",
+        "imageCategory": {
+          "teams": "الفرق",
+          "mvp": "MVP",
+          "maps": "الخرائط",
+          "vetos": "الفيتو",
+          "custom": "صورة مخصصة"
+        },
+        "customUrl": "عنوان الصورة",
+        "customUrlHint": "رابط https عام يشير إلى صورة. لا يتم رفع أي شيء، تبقى الصورة على موقعها ويتم تنزيلها عند إرسال التنبيه.",
+        "customUrlRequired": "عنوان الصورة مطلوب.",
+        "customUrlInvalid": "أدخل عنوان https صالحًا.",
+        "useImage": "استخدام هذه الصورة",
+        "sendTest": "إرسال اختبار",
+        "sendTestHint": "ينشر هذا التصميم، مملوءًا بمباراة حقيقية، في القناة التي تختارها. التعديلات غير المحفوظة مشمولة.",
+        "testChannel": "القناة",
+        "testChannelPlaceholder": "اختر قناة",
+        "sendTestAction": "إرسال",
+        "sending": "جارٍ الإرسال",
+        "testSent": "تم إرسال الاختبار",
+        "testError": {
+          "required": "اختر قناة.",
+          "unknownChannel": "هذه القناة غير موجودة في الخادم.",
+          "rateLimited": "انتظر بضع ثوانٍ قبل إرسال اختبار آخر.",
+          "channelsUnavailable": "تعذر قراءة قنوات الخادم.",
+          "sendFailed": "تعذر إرسال الاختبار، تحقق من أن البوت يستطيع الكتابة في هذه القناة."
         }
       }
     }

@@ -9,10 +9,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronsUpDown, Newspaper, KeySquare, UsersRound } from "lucide-react";
+import { Bot, Check, ChevronsUpDown, Newspaper, KeySquare, UsersRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { DASHBOARD_AUTHOR_ADMIN_HREF, isDashboardPathIn } from "@/lib/dashboard-nav-items";
+import { DASHBOARD_AUTHOR_ADMIN_HREF, DASHBOARD_DISCORD_HREF, isDashboardPathIn } from "@/lib/dashboard-nav-items";
 import { OrgLogoTile } from "@/components/dashboard/org-logo";
 
 export type DashboardOrgSwitcherItem = { organizationId: number; organizationName: string; logoUrl: string | null; darkLogoUrl: string | null; isGlobalAdminOverride: boolean };
@@ -22,11 +22,13 @@ export function OrgSwitcher({
   organizations,
   isAuthor = false,
   hasApiKey = false,
+  hasDiscord = false,
   isAuthorAdmin = false,
 }: {
   organizations: DashboardOrgSwitcherItem[];
   isAuthor?: boolean;
   hasApiKey?: boolean;
+  hasDiscord?: boolean;
   isAuthorAdmin?: boolean;
 }) {
   const t = useTranslations("dashboard.switcher");
@@ -37,6 +39,7 @@ export function OrgSwitcher({
   const isAuthorAdminSpace = isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF);
   const isAuthorSpace = isDashboardPathIn(pathname, "/dashboard/author");
   const isApiKeySpace = isDashboardPathIn(pathname, "/dashboard/api-keys");
+  const isDiscordSpace = isDashboardPathIn(pathname, DASHBOARD_DISCORD_HREF);
   const orgMatch = /^\/dashboard\/(\d+)/.exec(pathname);
   const activeId = orgMatch ? Number(orgMatch[1]) : null;
   const active = organizations.find((o) => o.organizationId === activeId) ?? null;
@@ -57,7 +60,7 @@ export function OrgSwitcher({
     };
   }, [open]);
 
-  if (organizations.length === 0 && !isAuthor && !hasApiKey && !isAuthorAdmin) return null;
+  if (organizations.length === 0 && !isAuthor && !hasApiKey && !hasDiscord && !isAuthorAdmin) return null;
 
   const label = isAuthorAdminSpace
     ? t("authorAdminSpace")
@@ -65,7 +68,9 @@ export function OrgSwitcher({
       ? t("authorSpace")
       : isApiKeySpace
         ? t("apiKeySpace")
-        : active
+        : isDiscordSpace
+          ? t("discordSpace")
+          : active
           ? active.organizationName
           : t("selectOrganization");
 
@@ -84,6 +89,8 @@ export function OrgSwitcher({
           <Newspaper className="size-5 rounded-md text-muted-foreground" />
         ) : isApiKeySpace ? (
           <KeySquare className="size-5 rounded-md text-muted-foreground" />
+        ) : isDiscordSpace ? (
+          <Bot className="size-5 rounded-md text-muted-foreground" />
         ) : (
           <OrgLogoTile name={active?.organizationName ?? null} logoUrl={active?.logoUrl ?? null} darkLogoUrl={active?.darkLogoUrl ?? null} className="size-5 rounded-md" />
         )}
@@ -133,7 +140,19 @@ export function OrgSwitcher({
               {isApiKeySpace && <Check className="size-3.5 shrink-0 text-primary" />}
             </Link>
           )}
-          {(isAuthorAdmin || isAuthor || hasApiKey) && organizations.length > 0 && <div className="my-1 border-t" />}
+          {hasDiscord && (
+            <Link
+              href={DASHBOARD_DISCORD_HREF}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <Bot className="size-6 rounded-md p-1 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate">{t("discordSpace")}</span>
+              {isDiscordSpace && <Check className="size-3.5 shrink-0 text-primary" />}
+            </Link>
+          )}
+          {(isAuthorAdmin || isAuthor || hasApiKey || hasDiscord) && organizations.length > 0 && <div className="my-1 border-t" />}
           {organizations.map((org) => (
             <Link
               key={org.organizationId}

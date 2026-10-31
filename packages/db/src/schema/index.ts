@@ -20,3 +20,4 @@ export * from "./migration-map";
 export * from "./pickem";
 export * from "./oauth";
 export * from "./webhooks";
+export * from "./discord-bot";
