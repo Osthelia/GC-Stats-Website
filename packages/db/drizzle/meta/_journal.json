@@ -435,6 +435,13 @@
       "when": 1793482087562,
       "tag": "0061_discord_bot_background_color",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1793485873031,
+      "tag": "0062_discord_bot_image_moderation",
+      "breakpoints": true
     }
   ]
 }

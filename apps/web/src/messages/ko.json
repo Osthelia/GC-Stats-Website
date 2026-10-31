@@ -6289,7 +6289,7 @@
         "color": {
           "live": "경기 라이브",
           "finished": "경기 종료",
-          "map": "맵 종료",
+          "map": "맵 종료",
           "background": "이미지 배경"
         },
         "colorsSaved": "색상이 저장되었습니다",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "이미지 알림",
         "description": "알림 유형의 텍스트 메시지를 템플릿으로 만든 이미지로 대체합니다. 자체 봇을 사용하는 서버 전용입니다.",
-        "locked": "이미지 알림에는 자체 봇이 필요합니다. 위 섹션에서 봇을 연결하면 사용할 수 있습니다.",
         "usingImage": "이미지로 게시됨",
         "usingText": "텍스트 메시지로 게시됨",
         "presetLabel": "시작 디자인",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "로그인이 필요합니다.",
           "forbidden": "이 서버를 관리할 수 없습니다.",
           "invalid": "템플릿이 올바르지 않습니다.",
-          "customBotRequired": "먼저 자체 봇을 연결해 주세요.",
           "invalidImage": "올바르지 않은 이미지입니다(PNG, JPEG 또는 WebP, 짧은 변이 최소 400 px).",
           "tooLarge": "이미지가 10 MB보다 큽니다.",
           "storageFailed": "이미지를 저장하지 못했습니다. 다시 시도해 주세요."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "로그인해야 합니다.",
           "forbidden": "이 서버를 관리할 수 없습니다.",
           "invalid": "템플릿이 올바르지 않습니다.",
-          "customBotRequired": "먼저 직접 만든 봇을 연결하세요.",
           "invalidImage": "이 이미지는 올바르지 않습니다.",
           "tooLarge": "이 이미지는 너무 큽니다.",
           "storageFailed": "디자인을 저장하지 못했습니다. 다시 시도하세요."

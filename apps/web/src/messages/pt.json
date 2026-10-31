@@ -6289,7 +6289,7 @@
         "color": {
           "live": "Partida ao vivo",
           "finished": "Partida terminada",
-          "map": "Mapa terminado",
+          "map": "Mapa terminado",
           "background": "Fundo da imagem"
         },
         "colorsSaved": "Cores guardadas",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "Alertas em imagem",
         "description": "Substitui a mensagem de texto de um tipo de alerta por uma imagem criada a partir do seu template. Reservado aos servidores que usam o seu próprio bot.",
-        "locked": "Os alertas em imagem exigem o seu próprio bot. Conecte-o na seção acima para os desbloquear.",
         "usingImage": "Publicado como imagem",
         "usingText": "Publicado como mensagem de texto",
         "presetLabel": "Design inicial",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "Tem de iniciar sessão.",
           "forbidden": "Não pode gerir este servidor.",
           "invalid": "O template é inválido.",
-          "customBotRequired": "Conecte primeiro o seu próprio bot.",
           "invalidImage": "Esta imagem não é válida (PNG, JPEG ou WebP, com pelo menos 400 px no lado mais curto).",
           "tooLarge": "Esta imagem excede 10 MB.",
           "storageFailed": "Não foi possível guardar a imagem, tente novamente."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "Você precisa estar conectado.",
           "forbidden": "Você não pode gerenciar este servidor.",
           "invalid": "O modelo é inválido.",
-          "customBotRequired": "Conecte primeiro seu próprio bot.",
           "invalidImage": "Esta imagem não é válida.",
           "tooLarge": "Esta imagem é grande demais.",
           "storageFailed": "Não foi possível salvar o design, tente novamente."

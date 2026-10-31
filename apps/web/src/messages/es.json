@@ -1115,7 +1115,8 @@
     "actionDecider": "Decider",
     "sideAttack": "Ataque",
     "sideDefense": "Defensa",
-    "openMatch": "Abrir el partido"
+    "openMatch": "Abrir el partido",
+    "imageRemoved": "La moderación de GC Stats ha eliminado la imagen de esta alerta."
   },
   "supportUs": {
     "title": "Apóyanos",
@@ -2011,6 +2012,7 @@
       "about": "Acerca de / Proyectos",
       "backToSite": "Volver al sitio",
       "pendingChangeRequests": "Solicitudes de cambio pendientes",
+      "pendingDiscordImages": "Imágenes de Discord por revisar",
       "tournaments": "Torneos",
       "groupModeration": "Moderación",
       "reports": "Denuncias",
@@ -2020,7 +2022,8 @@
       "activityLog": "Registro de actividad",
       "analytics": "Analíticas",
       "oauthClients": "Clientes OAuth",
-      "settings": "Configuración"
+      "settings": "Configuración",
+      "discordImages": "Imágenes del bot de Discord"
     },
     "dashboard": {
       "title": "Panel de control",
@@ -4838,6 +4841,73 @@
       "statDismissed": "Descartados",
       "error": {
         "notFound": "Esta entrada ya no existe."
+      },
+      "images": {
+        "title": "Imágenes del bot de Discord",
+        "subtitle": "Imágenes de alerta personalizadas por los servidores. Una imagen verificada sale de la lista y solo vuelve si se edita.",
+        "empty": "No hay imágenes que revisar.",
+        "imageAlt": "Imagen de alerta de un servidor",
+        "openImage": "Abrir la imagen en una pestaña nueva",
+        "event": {
+          "match_live": "Partida en directo",
+          "match_finished": "Partida terminada",
+          "map_finished": "Mapa terminado"
+        },
+        "server": "Servidor",
+        "unknownUser": "Cuenta desconocida",
+        "guildBlacklisted": "Servidor en lista negra",
+        "userBlacklisted": "Usuario en lista negra",
+        "verifyButton": "Verificar",
+        "sanctionButton": "Sancionar",
+        "verifySuccess": "Imagen verificada.",
+        "error": {
+          "notFound": "Esta imagen ya se ha tratado o ya no existe."
+        },
+        "sanction": {
+          "title": "Sancionar esta imagen",
+          "description": "Elige qué le ocurre al servidor y a la persona que subió esta imagen.",
+          "sanctionsLabel": "Sanciones",
+          "option": {
+            "blacklistGuild": {
+              "label": "Poner el servidor en la lista negra",
+              "hint": "El servidor ya no puede usar el panel y deja de recibir alertas."
+            },
+            "blacklistUser": {
+              "label": "Poner la cuenta de Discord en la lista negra",
+              "hint": "Esta cuenta de Discord ya no puede gestionar el bot en ningún servidor."
+            },
+            "resetImage": {
+              "label": "Restablecer la imagen",
+              "hint": "La imagen personalizada se elimina y el servidor vuelve a la alerta de texto normal."
+            },
+            "editMessages": {
+              "label": "Editar los mensajes ya enviados con esta imagen",
+              "hint": "La imagen se quita de las alertas ya publicadas y se sustituye por un aviso que indica que la moderación de GC Stats la eliminó."
+            }
+          },
+          "alreadyBlacklisted": "Ya está en la lista negra.",
+          "reasonLabel": "Motivo",
+          "reasonHint": "Se guarda junto a la entrada de la lista negra.",
+          "cancel": "Cancelar",
+          "submit": "Sancionar",
+          "submitting": "Sancionando...",
+          "success": "Sanción aplicada.",
+          "error": {
+            "notFound": "Esta imagen ya se ha tratado o ya no existe.",
+            "sanctions": {
+              "required": "Selecciona al menos una sanción."
+            },
+            "blacklistUser": {
+              "noEditor": "Se desconoce la cuenta de Discord del último editor."
+            },
+            "reason": {
+              "required": "Escribe un motivo.",
+              "tooLong": "El motivo es demasiado largo (máx. {max} caracteres)."
+            }
+          },
+          "successQueued": "Sanción aplicada, {count} mensajes se editarán en breve."
+        },
+        "editor": "Editada por"
       }
     },
     "forum": {
@@ -6371,6 +6441,7 @@
         "network": "Error de red, inténtalo de nuevo.",
         "notAuthenticated": "Debes iniciar sesión.",
         "forbidden": "No puedes gestionar este servidor.",
+        "blacklisted": "Este servidor o tu cuenta de Discord está bloqueado en el bot.",
         "notFound": "Esta alerta ya no existe.",
         "invalid": "Algunos campos no son válidos.",
         "tooManySubscriptions": "Un servidor puede tener como máximo {max} alertas.",
@@ -6434,6 +6505,7 @@
           "network": "Error de red, inténtalo de nuevo.",
           "notAuthenticated": "Debes iniciar sesión.",
           "forbidden": "No puedes gestionar este servidor.",
+          "blacklisted": "Este servidor o tu cuenta de Discord está bloqueado en el bot.",
           "invalid": "Algunos campos no son válidos.",
           "color": "Color no válido.",
           "token": {
@@ -6446,8 +6518,7 @@
       },
       "templates": {
         "title": "Alertas en imagen",
-        "description": "Sustituye el mensaje de texto de una alerta por una imagen. Elige una plantilla, o personalízala por completo con tu propio bot.",
-        "locked": "Elige la plantilla que usa el bot de GC Stats. Personalizarla requiere tu propio bot, conéctalo en la sección de arriba.",
+        "description": "Sustituye el mensaje de texto de un tipo de alerta por una imagen. Elige una plantilla o personalízala por completo.",
         "usingImage": "Publicado como imagen",
         "usingText": "Publicado como mensaje de texto",
         "presetNone": "Mensaje de texto, sin imagen",
@@ -6479,13 +6550,14 @@
           "network": "Error de red, inténtalo de nuevo.",
           "notAuthenticated": "Debes iniciar sesión.",
           "forbidden": "No puedes gestionar este servidor.",
+          "blacklisted": "Este servidor o tu cuenta de Discord está bloqueado en el bot.",
           "invalid": "La plantilla no es válida.",
-          "customBotRequired": "Conecta primero tu propio bot.",
           "invalidImage": "Esta imagen no es válida (PNG, JPEG o WebP, de al menos 400 px en su lado más corto).",
           "tooLarge": "Esta imagen supera los 10 MB.",
           "storageFailed": "No se pudo almacenar la imagen, inténtalo de nuevo."
         },
-        "editDesign": "Editar el diseño"
+        "editDesign": "Editar el diseño",
+        "presetCustom": "Personalizada"
       },
       "editor": {
         "title": "Diseño de la alerta: {event}",
@@ -6556,8 +6628,8 @@
           "network": "Error de red, inténtalo de nuevo.",
           "notAuthenticated": "Debes iniciar sesión.",
           "forbidden": "No puedes gestionar este servidor.",
+          "blacklisted": "Este servidor o tu cuenta de Discord está bloqueado en el bot.",
           "invalid": "La plantilla no es válida.",
-          "customBotRequired": "Conecta primero tu propio bot.",
           "invalidImage": "Esta imagen no es válida.",
           "tooLarge": "Esta imagen es demasiado grande.",
           "storageFailed": "No se pudo guardar el diseño, inténtalo de nuevo."

@@ -15,12 +15,13 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { discordBotMessages, discordBotSubscriptions } from "@gc-stats/db";
 import { editChannelMessage, postChannelMessage } from "./api";
-import { buildAlertMessage } from "./message";
-import type { AlertColors, AlertKind } from "./render";
+import { buildAlertMessage, composeRemovedImageMessage } from "./message";
+import { resolveImageRemovedNotice, resolveMatchButtonLabel, type AlertColors, type AlertKind } from "./render";
 import { loadMatchContexts, type MatchContext } from "./match-data";
+import { listBlacklistedGuildIds } from "./moderation";
 import { listTemplates, type StoredTemplate } from "./templates";
 import { listGuildSettings, resolveBotToken, type GuildSettings } from "./settings";
-import { DISCORD_BOT_DEFAULT_BACKGROUND, DISCORD_BOT_DEFAULT_COLORS, type DiscordBotEvent } from "./shared";
+import { DISCORD_BOT_DEFAULT_BACKGROUND, DISCORD_BOT_DEFAULT_COLORS, GCS_SITE_URL, MESSAGE_IMAGE_REMOVED_HASH, MESSAGE_IMAGE_REMOVAL_QUEUED_HASH, type DiscordBotEvent } from "./shared";
 
 const MAX_SENDS_PER_RUN = 100;
 // A claim without message id older than this belongs to a run that never finished.
@@ -84,7 +85,7 @@ async function deliver(sub: Subscription, theme: Theme, ctx: MatchContext, kind:
 
   if (existing) {
     // Only the live message follows the match, the others are final once posted.
-    if (kind !== "live" || existing.contentHash === contentHash || existing.contentHash === DELETED_HASH || !existing.messageId || budget.left <= 0) return null;
+    if (kind !== "live" || existing.contentHash === contentHash || existing.contentHash === DELETED_HASH || existing.contentHash === MESSAGE_IMAGE_REMOVED_HASH || existing.contentHash === MESSAGE_IMAGE_REMOVAL_QUEUED_HASH || !existing.messageId || budget.left <= 0) return null;
     budget.left--;
     const message = await buildAlertMessage(kind, match, sub.locale, map, theme.colors, theme.template?.template ?? null, theme.matchButton);
     const result = await editChannelMessage(theme.token, sub.channelId, existing.messageId, message.components, message.attachment);
@@ -123,10 +124,50 @@ async function deliver(sub: Subscription, theme: Theme, ctx: MatchContext, kind:
   return "failed";
 }
 
+/** Replaces the alerts moderation removed the image of with a notice, as many as the budget allows per run. */
+async function replaceModeratedImages(budget: { left: number }): Promise<number> {
+  const queued = await db
+    .select({ id: discordBotMessages.id, messageId: discordBotMessages.messageId, matchId: discordBotMessages.matchId, channelId: discordBotSubscriptions.channelId, guildId: discordBotSubscriptions.guildId, locale: discordBotSubscriptions.locale, event: discordBotSubscriptions.event, color: discordBotSubscriptions.color })
+    .from(discordBotMessages)
+    .innerJoin(discordBotSubscriptions, eq(discordBotSubscriptions.id, discordBotMessages.subscriptionId))
+    .where(eq(discordBotMessages.contentHash, MESSAGE_IMAGE_REMOVAL_QUEUED_HASH))
+    .limit(budget.left);
+  if (queued.length === 0) return 0;
+
+  const settings = await listGuildSettings([...new Set(queued.map((m) => m.guildId))]);
+  let replaced = 0;
+  for (const message of queued) {
+    if (!message.messageId) continue;
+    const guildSettings = settings.get(message.guildId);
+    const kind = KIND_BY_EVENT[message.event as DiscordBotEvent];
+    const accent = message.color ?? (kind === "live" ? guildSettings?.colorLive : kind === "map" ? guildSettings?.colorMap : guildSettings?.colorFinished) ?? DISCORD_BOT_DEFAULT_COLORS[kind ?? "finished"];
+    const url = `${GCS_SITE_URL}/${message.locale}/match/${message.matchId}`;
+    const replacement = composeRemovedImageMessage({
+      notice: await resolveImageRemovedNotice(message.locale),
+      accent,
+      url,
+      buttonLabel: guildSettings?.matchButton === false ? null : await resolveMatchButtonLabel(message.locale),
+    });
+    budget.left--;
+    const result = await editChannelMessage(resolveBotToken(guildSettings), message.channelId, message.messageId, replacement.components, undefined, true);
+    // A message that is gone or out of reach will not get better by retrying, only transient failures wait for the next run.
+    if (result.ok || result.permanent) {
+      await db.update(discordBotMessages).set({ contentHash: MESSAGE_IMAGE_REMOVED_HASH, updatedAt: new Date() }).where(eq(discordBotMessages.id, message.id));
+      if (result.ok) replaced++;
+    }
+  }
+  return replaced;
+}
+
 /** Scheduled job entry point. */
 export async function dispatchDiscordBot(): Promise<string> {
-  const allSubs = await db.select().from(discordBotSubscriptions).where(eq(discordBotSubscriptions.isActive, true));
-  if (allSubs.length === 0) return "no discord alert subscription";
+  const budget = { left: MAX_SENDS_PER_RUN };
+  const replaced = await replaceModeratedImages(budget);
+
+  const activeSubs = await db.select().from(discordBotSubscriptions).where(eq(discordBotSubscriptions.isActive, true));
+  const blacklisted = await listBlacklistedGuildIds([...new Set(activeSubs.map((s) => s.guildId))]);
+  const allSubs = activeSubs.filter((s) => !blacklisted.has(s.guildId));
+  if (allSubs.length === 0) return replaced > 0 ? `replaced ${replaced} moderated discord image(s)` : "no discord alert subscription";
   const contexts = await loadMatchContexts();
   if (contexts.length === 0) return "no discord alert to send";
   const settings = await listGuildSettings([...new Set(allSubs.map((s) => s.guildId))]);
@@ -137,7 +178,6 @@ export async function dispatchDiscordBot(): Promise<string> {
   if (subs.length === 0) return "no discord bot token configured";
 
   const counts: Record<Outcome, number> = { posted: 0, edited: 0, failed: 0 };
-  const budget = { left: MAX_SENDS_PER_RUN };
   const disabled = new Set<number>();
 
   for (const ctx of contexts) {
@@ -176,5 +216,5 @@ export async function dispatchDiscordBot(): Promise<string> {
       }
     }
   }
-  return `sent ${counts.posted}/${counts.posted + counts.failed} discord alert(s), edited ${counts.edited}`;
+  return `sent ${counts.posted}/${counts.posted + counts.failed} discord alert(s), edited ${counts.edited}, replaced ${replaced} moderated image(s)`;
 }

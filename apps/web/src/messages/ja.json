@@ -6289,7 +6289,7 @@
         "color": {
           "live": "試合ライブ",
           "finished": "試合終了",
-          "map": "マップ終了",
+          "map": "マップ終了",
           "background": "画像の背景"
         },
         "colorsSaved": "色を保存しました",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "画像アラート",
         "description": "アラートの種類ごとのテキストメッセージを、テンプレートから作成した画像に置き換えます。独自のボットを使うサーバー専用です。",
-        "locked": "画像アラートには独自のボットが必要です。上のセクションで接続すると利用できます。",
         "usingImage": "画像として投稿",
         "usingText": "テキストメッセージとして投稿",
         "presetLabel": "開始デザイン",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "サインインが必要です。",
           "forbidden": "このサーバーを管理する権限がありません。",
           "invalid": "テンプレートが無効です。",
-          "customBotRequired": "先に独自のボットを接続してください。",
           "invalidImage": "この画像は無効です(PNG、JPEG、WebP、短辺が400 px以上)。",
           "tooLarge": "この画像は10 MBを超えています。",
           "storageFailed": "画像を保存できませんでした。もう一度お試しください。"
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "サインインが必要です。",
           "forbidden": "このサーバーを管理する権限がありません。",
           "invalid": "テンプレートが無効です。",
-          "customBotRequired": "先に独自のボットを接続してください。",
           "invalidImage": "この画像は無効です。",
           "tooLarge": "この画像は大きすぎます。",
           "storageFailed": "デザインを保存できませんでした。もう一度お試しください。"

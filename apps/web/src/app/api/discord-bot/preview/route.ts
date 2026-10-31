@@ -27,12 +27,11 @@ const MAX_BODY_BYTES = 256 * 1024;
 const PREVIEW_WINDOW_MS = 60_000;
 const PREVIEW_MAX_PER_WINDOW = 90;
 
-/** The guild when the user may manage it (and runs its own bot when `customBot`, image templates are reserved to those), otherwise the error response. */
-async function authorizeGuild(userId: string, guildId: string, customBot = true): Promise<Response | null> {
+/** Null when the user may manage the guild, otherwise the error response. */
+async function authorizeGuild(userId: string, guildId: string): Promise<Response | null> {
   const access = await checkManageableGuild(userId, guildId);
   if (access === "unavailable") return NextResponse.json({ error: "Discord unavailable" }, { status: 503 });
   if (access === "forbidden") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (customBot && !(await getGuildSettings(guildId))?.botTokenEncrypted) return NextResponse.json({ error: "Custom bot required" }, { status: 403 });
   if (!(await checkRateLimit(`discord-bot-preview:${userId}`, PREVIEW_WINDOW_MS, PREVIEW_MAX_PER_WINDOW))) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   return null;
 }
@@ -67,7 +66,7 @@ export async function GET(request: Request) {
   if (preset) {
     const kind = KIND_BY_EVENT[event];
     if (!kind || !(presetsOf(kind) as string[]).includes(preset)) return NextResponse.json({ error: "Invalid preset" }, { status: 400 });
-    const denied = await authorizeGuild(userId, guildId, false);
+    const denied = await authorizeGuild(userId, guildId);
     if (denied) return denied;
     return renderPreview(event, resolveLocale(params.get("locale")), createDefaultTemplate(kind, preset as TemplatePreset, (await getGuildSettings(guildId))?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND));
   }

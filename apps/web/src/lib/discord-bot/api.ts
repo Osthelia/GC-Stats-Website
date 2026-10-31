@@ -26,11 +26,12 @@ export type DiscordSendResult =
   // `gone`: Discord answered 404 (unknown channel or message), on an edit only the message is lost.
   | { ok: false; permanent: boolean; gone?: boolean; error: string };
 
-async function discordRequest(token: string | null, method: "POST" | "PATCH", path: string, components: DiscordComponent[], attachment?: DiscordAttachment): Promise<DiscordSendResult> {
+async function discordRequest(token: string | null, method: "POST" | "PATCH", path: string, components: DiscordComponent[], attachment?: DiscordAttachment, removeAttachments = false): Promise<DiscordSendResult> {
   if (!token) return { ok: false, permanent: false, error: "bot token not configured" };
   try {
     const headers: Record<string, string> = { Authorization: `Bot ${token}`, "User-Agent": "GCStatsBot (https://gc-stats.app, 1.0)" };
-    const body = { flags: IS_COMPONENTS_V2, components, allowed_mentions: { parse: [] } };
+    // An empty list deletes the files the message already carries, leaving the field out keeps them.
+    const body = { flags: IS_COMPONENTS_V2, components, allowed_mentions: { parse: [] }, ...(removeAttachments ? { attachments: [] } : {}) };
     let payload: string | FormData;
     if (attachment) {
       // On an edit, listing the attachment replaces the previous image.
@@ -63,8 +64,9 @@ export function postChannelMessage(token: string | null, channelId: string, comp
   return discordRequest(token, "POST", `/channels/${encodeURIComponent(channelId)}/messages`, components, attachment);
 }
 
-export function editChannelMessage(token: string | null, channelId: string, messageId: string, components: DiscordComponent[], attachment?: DiscordAttachment): Promise<DiscordSendResult> {
-  return discordRequest(token, "PATCH", `/channels/${encodeURIComponent(channelId)}/messages/${encodeURIComponent(messageId)}`, components, attachment);
+/** `removeAttachments` drops the image of the message when no new `attachment` replaces it. */
+export function editChannelMessage(token: string | null, channelId: string, messageId: string, components: DiscordComponent[], attachment?: DiscordAttachment, removeAttachments = false): Promise<DiscordSendResult> {
+  return discordRequest(token, "PATCH", `/channels/${encodeURIComponent(channelId)}/messages/${encodeURIComponent(messageId)}`, components, attachment, removeAttachments);
 }
 
 export type DiscordBotIdentity = { userId: string; name: string; avatarUrl: string | null };

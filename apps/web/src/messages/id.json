@@ -6413,7 +6413,7 @@
         "color": {
           "live": "Pertandingan langsung",
           "finished": "Pertandingan selesai",
-          "map": "Map selesai",
+          "map": "Map selesai",
           "background": "Latar belakang gambar"
         },
         "colorsSaved": "Warna disimpan",
@@ -6447,7 +6447,6 @@
       "templates": {
         "title": "Peringatan gambar",
         "description": "Mengganti pesan teks suatu jenis peringatan dengan gambar yang dibuat dari template Anda. Khusus untuk server yang memakai bot sendiri.",
-        "locked": "Peringatan gambar memerlukan bot Anda sendiri. Hubungkan di bagian di atas untuk membukanya.",
         "usingImage": "Dikirim sebagai gambar",
         "usingText": "Dikirim sebagai pesan teks",
         "presetLabel": "Desain awal",
@@ -6477,7 +6476,6 @@
           "notAuthenticated": "Anda harus masuk terlebih dahulu.",
           "forbidden": "Anda tidak dapat mengelola server ini.",
           "invalid": "Template tidak valid.",
-          "customBotRequired": "Hubungkan bot Anda sendiri terlebih dahulu.",
           "invalidImage": "Gambar ini tidak valid (PNG, JPEG, atau WebP, minimal 400 px pada sisi terpendek).",
           "tooLarge": "Gambar ini lebih besar dari 10 MB.",
           "storageFailed": "Gambar tidak dapat disimpan, coba lagi."
@@ -6567,7 +6565,6 @@
           "notAuthenticated": "Anda harus masuk.",
           "forbidden": "Anda tidak dapat mengelola server ini.",
           "invalid": "Templat tidak valid.",
-          "customBotRequired": "Hubungkan bot Anda sendiri terlebih dahulu.",
           "invalidImage": "Gambar ini tidak valid.",
           "tooLarge": "Gambar ini terlalu besar.",
           "storageFailed": "Desain tidak dapat disimpan, coba lagi."

@@ -41,6 +41,13 @@ export async function resolveAlertFields(kind: AlertKind, match: AlertMatch, loc
   return buildAlertFields(kind, match, t, map);
 }
 
+/** Notice replacing an alert image removed by moderation, in the subscription's locale (English when the locale has no translation yet). */
+export async function resolveImageRemovedNotice(locale: string): Promise<string> {
+  const resolved = resolveLocale(locale);
+  const read = async (l: AppLocale) => ((await loadMessages(l)).discordBotMessages as Record<string, string> | undefined)?.imageRemoved;
+  return (await read(resolved)) ?? (await read("en")) ?? "";
+}
+
 /** Label of the button opening the match, in the subscription's locale. */
 export async function resolveMatchButtonLabel(locale: string): Promise<string> {
   return (await getTranslator(locale)).t("openMatch");

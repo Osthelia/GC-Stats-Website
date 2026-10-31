@@ -6289,7 +6289,7 @@
         "color": {
           "live": "Match live",
           "finished": "Match beendet",
-          "map": "Map beendet",
+          "map": "Map beendet",
           "background": "Bildhintergrund"
         },
         "colorsSaved": "Farben gespeichert",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "Bild-Alarme",
         "description": "Ersetzt die Textnachricht eines Alarmtyps durch ein Bild, das aus deiner Vorlage erstellt wird. Nur für Server mit eigenem Bot.",
-        "locked": "Bild-Alarme benötigen deinen eigenen Bot. Verbinde ihn im Abschnitt oben, um sie freizuschalten.",
         "usingImage": "Als Bild gepostet",
         "usingText": "Als Textnachricht gepostet",
         "presetLabel": "Ausgangsdesign",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "Du musst angemeldet sein.",
           "forbidden": "Du kannst diesen Server nicht verwalten.",
           "invalid": "Die Vorlage ist ungültig.",
-          "customBotRequired": "Verbinde zuerst deinen eigenen Bot.",
           "invalidImage": "Dieses Bild ist ungültig (PNG, JPEG oder WebP, mindestens 400 px an der kürzesten Seite).",
           "tooLarge": "Dieses Bild ist größer als 10 MB.",
           "storageFailed": "Das Bild konnte nicht gespeichert werden, versuche es erneut."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "Du musst angemeldet sein.",
           "forbidden": "Du kannst diesen Server nicht verwalten.",
           "invalid": "Die Vorlage ist ungültig.",
-          "customBotRequired": "Verbinde zuerst deinen eigenen Bot.",
           "invalidImage": "Dieses Bild ist ungültig.",
           "tooLarge": "Dieses Bild ist zu groß.",
           "storageFailed": "Das Design konnte nicht gespeichert werden, versuche es erneut."

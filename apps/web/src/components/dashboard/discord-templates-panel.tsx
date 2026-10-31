@@ -96,6 +96,15 @@ function TemplateRow({ guildId, event, template, locale, channels, background }:
     });
   }
 
+  const kind = ACCENT_KEY[event];
+  const presetValue = template ? (presetOfTemplate(template.template, kind) ?? "custom") : "none";
+  const presetItems = { none: tt("presetNone"), ...Object.fromEntries(presetsOf(kind).map((p) => [p, tt(`preset.${p}`)])), ...(presetValue === "custom" ? { custom: tt("presetCustom") } : {}) };
+
+  function handlePreset(next: string) {
+    if (next === presetValue || next === "custom") return;
+    run(() => chooseDiscordTemplatePreset(guildId, event, next), tt("presetSaved"));
+  }
+
   function handleFile(event_: React.ChangeEvent<HTMLInputElement>) {
     const file = event_.target.files?.[0];
     event_.target.value = "";
@@ -110,6 +119,24 @@ function TemplateRow({ guildId, event, template, locale, channels, background }:
       <div>
         <p className="text-sm font-medium">{t(`event.${event}`)}</p>
         <p className="text-xs text-muted-foreground">{template ? tt("usingImage") : tt("usingText")}</p>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor={`preset-${event}`} className="text-xs font-medium">
+          {tt("presetChoose")}
+        </label>
+        <Select items={presetItems} value={presetValue} onValueChange={(v) => v && handlePreset(v)} disabled={isPending}>
+          <SelectTrigger id={`preset-${event}`} className="w-full">
+            {isPending ? <Loader2 className="animate-spin" /> : null}
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(presetItems).map(([id, label]) => (
+              <SelectItem key={id} value={id}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <Preview
@@ -156,66 +183,8 @@ function TemplateRow({ guildId, event, template, locale, channels, background }:
   );
 }
 
-/** Server on the GC Stats bot: picks a ready-made design per alert type, without customization. */
-function PresetRow({ guildId, event, template, locale }: { guildId: string; event: DiscordBotEvent; template: DiscordBotTemplateView | null; locale: string }) {
-  const t = useTranslations("dashboard.discord");
-  const tt = useTranslations("dashboard.discord.templates");
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const kind = ACCENT_KEY[event];
-  const value = template ? (presetOfTemplate(template.template, kind) ?? "none") : "none";
-  const items = { none: tt("presetNone"), ...Object.fromEntries(presetsOf(kind).map((p) => [p, tt(`preset.${p}`)])) };
-  const shown = value === "none" ? undefined : (value as TemplatePreset);
-
-  function handleChange(next: string) {
-    startTransition(async () => {
-      try {
-        const result = await chooseDiscordTemplatePreset(guildId, event, next);
-        if (!result.ok) {
-          toast.error(tt(`error.${result.error}`));
-          return;
-        }
-        toast.success(tt("presetSaved"));
-        router.refresh();
-      } catch {
-        toast.error(tt("error.network"));
-      }
-    });
-  }
-
-  return (
-    <div className="flex flex-col gap-3 rounded-lg border p-4">
-      <p className="text-sm font-medium">{t(`event.${event}`)}</p>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`preset-${event}`} className="text-xs font-medium">
-          {tt("presetChoose")}
-        </label>
-        <Select items={items} value={value} onValueChange={(v) => v && v !== value && handleChange(v)} disabled={isPending}>
-          <SelectTrigger id={`preset-${event}`} className="w-full">
-            {isPending ? <Loader2 className="animate-spin" /> : null}
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(items).map(([id, label]) => (
-              <SelectItem key={id} value={id}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {shown ? (
-        <Preview key={shown} guildId={guildId} event={event} version={template?.updatedAt ?? 0} locale={locale} preset={shown} ratio={1000 / createDefaultTemplate(kind, shown).height} />
-      ) : (
-        <p className="rounded-md border border-dashed px-3 py-6 text-center text-xs text-muted-foreground">{tt("usingText")}</p>
-      )}
-    </div>
-  );
-}
-
-/** `locked`: the server uses the GC Stats bot, custom images need its own bot. */
 /** `channels` is null when the bot cannot read the channels of the server. */
-export function DiscordTemplatesPanel({ guildId, templates, locale, locked, channels, background }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; locked: boolean; channels: DiscordBotChannel[] | null; background: string }) {
+export function DiscordTemplatesPanel({ guildId, templates, locale, channels, background }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; channels: DiscordBotChannel[] | null; background: string }) {
   const t = useTranslations("dashboard.discord.templates");
   return (
     <Card>
@@ -226,22 +195,11 @@ export function DiscordTemplatesPanel({ guildId, templates, locale, locked, chan
         </CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
-      {locked ? (
-        <CardContent className="flex flex-col gap-4">
-          <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-600 dark:text-amber-400">{t("locked")}</p>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            {DISCORD_BOT_EVENTS.map((event) => (
-              <PresetRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} />
-            ))}
-          </div>
-        </CardContent>
-      ) : (
-        <CardContent className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {DISCORD_BOT_EVENTS.map((event) => (
-            <TemplateRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} channels={channels} background={background} />
-          ))}
-        </CardContent>
-      )}
+      <CardContent className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {DISCORD_BOT_EVENTS.map((event) => (
+          <TemplateRow key={event} guildId={guildId} event={event} template={templates.find((x) => x.event === event) ?? null} locale={locale} channels={channels} background={background} />
+        ))}
+      </CardContent>
     </Card>
   );
 }

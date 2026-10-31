@@ -56,6 +56,13 @@ export function composeAlertMessage({ kind, fields, accent, image, url, buttonLa
   };
 }
 
+/** What replaces an alert whose image was removed by moderation: the notice and the button to the match. */
+export function composeRemovedImageMessage({ notice, accent, url, buttonLabel }: { notice: string; accent: string; url: string; buttonLabel: string | null }): AlertMessage {
+  const children: DiscordComponent[] = [{ type: TEXT_DISPLAY, content: notice.slice(0, 3900) }];
+  if (buttonLabel) children.push({ type: ACTION_ROW, components: [{ type: BUTTON, style: LINK_BUTTON_STYLE, label: buttonLabel, url }] });
+  return { components: [{ type: CONTAINER, accent_color: hexToInt(accent), components: children }] };
+}
+
 export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, locale: string, map: AlertMap | undefined, colors: AlertColors, template: AlertTemplate | null, matchButton: boolean): Promise<AlertMessage> {
   const live = kind === "live" && match.status === "live";
   const fields = await resolveAlertFields(kind, match, locale, map);

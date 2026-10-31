@@ -12,6 +12,7 @@
 
 import type { ComponentType } from "react";
 import {
+  ImageIcon,
   LayoutDashboard,
   Users,
   Shield,
@@ -74,6 +75,7 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
     items: [
       { href: "/admin/reports", labelKey: "reports", icon: Flag, exact: false, permission: PERMISSIONS.reportsView },
       { href: "/admin/moderation", labelKey: "moderationAuto", icon: ShieldAlert, exact: false, permission: PERMISSIONS.moderationView },
+      { href: "/admin/discord-images", labelKey: "discordImages", icon: ImageIcon, exact: false, permission: PERMISSIONS.moderationView },
       { href: "/admin/forum", labelKey: "forumMessages", icon: MessagesSquare, exact: false, permission: PERMISSIONS.forumView },
       { href: "/admin/sanctions", labelKey: "sanctions", icon: Ban, exact: false, permission: PERMISSIONS.sanctionsView },
     ],

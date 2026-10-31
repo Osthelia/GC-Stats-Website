@@ -6289,7 +6289,7 @@
         "color": {
           "live": "比赛进行中",
           "finished": "比赛已结束",
-          "map": "地图已结束",
+          "map": "地图已结束",
           "background": "图片背景"
         },
         "colorsSaved": "颜色已保存",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "图片提醒",
         "description": "将某类提醒的文本消息替换为根据你的模板生成的图片。仅限使用自有机器人的服务器。",
-        "locked": "图片提醒需要你自己的机器人。请在上方部分连接机器人以解锁。",
         "usingImage": "以图片发布",
         "usingText": "以文本消息发布",
         "presetLabel": "起始设计",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "你必须先登录。",
           "forbidden": "你无法管理此服务器。",
           "invalid": "模板无效。",
-          "customBotRequired": "请先连接你自己的机器人。",
           "invalidImage": "此图片无效（PNG、JPEG 或 WebP，最短边至少 400 px）。",
           "tooLarge": "此图片超过 10 MB。",
           "storageFailed": "无法存储图片，请重试。"
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "你必须登录。",
           "forbidden": "你无法管理此服务器。",
           "invalid": "模板无效。",
-          "customBotRequired": "请先连接你自己的机器人。",
           "invalidImage": "此图片无效。",
           "tooLarge": "此图片过大。",
           "storageFailed": "无法保存设计，请重试。"

@@ -6289,7 +6289,7 @@
         "color": {
           "live": "Partita in diretta",
           "finished": "Partita terminata",
-          "map": "Mappa terminata",
+          "map": "Mappa terminata",
           "background": "Sfondo dell'immagine"
         },
         "colorsSaved": "Colori salvati",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "Avvisi in immagine",
         "description": "Sostituisce il messaggio di testo di un tipo di avviso con un'immagine creata dal tuo template. Riservato ai server che usano il proprio bot.",
-        "locked": "Gli avvisi in immagine richiedono il tuo bot. Collegalo nella sezione qui sopra per sbloccarli.",
         "usingImage": "Pubblicato come immagine",
         "usingText": "Pubblicato come messaggio di testo",
         "presetLabel": "Design di partenza",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "Devi aver effettuato l'accesso.",
           "forbidden": "Non puoi gestire questo server.",
           "invalid": "Il template non è valido.",
-          "customBotRequired": "Collega prima il tuo bot.",
           "invalidImage": "Questa immagine non è valida (PNG, JPEG o WebP, almeno 400 px sul lato più corto).",
           "tooLarge": "Questa immagine supera i 10 MB.",
           "storageFailed": "Impossibile salvare l'immagine, riprova."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "Devi aver effettuato l'accesso.",
           "forbidden": "Non puoi gestire questo server.",
           "invalid": "Il modello non è valido.",
-          "customBotRequired": "Collega prima il tuo bot.",
           "invalidImage": "Questa immagine non è valida.",
           "tooLarge": "Questa immagine è troppo grande.",
           "storageFailed": "Impossibile salvare il design, riprova."

@@ -6289,7 +6289,7 @@
         "color": {
           "live": "Canlı maç",
           "finished": "Maç bitti",
-          "map": "Harita bitti",
+          "map": "Harita bitti",
           "background": "Görsel arka planı"
         },
         "colorsSaved": "Renkler kaydedildi",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "Görsel uyarılar",
         "description": "Bir uyarı türünün metin mesajını, şablonunuzdan oluşturulan bir görselle değiştirir. Yalnızca kendi botunu kullanan sunuculara ayrılmıştır.",
-        "locked": "Görsel uyarılar için kendi botunuz gerekir. Kilidi açmak için yukarıdaki bölümden botunuzu bağlayın.",
         "usingImage": "Görsel olarak gönderildi",
         "usingText": "Metin mesajı olarak gönderildi",
         "presetLabel": "Başlangıç tasarımı",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "Giriş yapmış olmalısınız.",
           "forbidden": "Bu sunucuyu yönetemezsiniz.",
           "invalid": "Şablon geçersiz.",
-          "customBotRequired": "Önce kendi botunuzu bağlayın.",
           "invalidImage": "Bu görsel geçerli değil (PNG, JPEG veya WebP, en kısa kenarı en az 400 px).",
           "tooLarge": "Bu görsel 10 MB'tan büyük.",
           "storageFailed": "Görsel kaydedilemedi, tekrar deneyin."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "Oturum açmanız gerekiyor.",
           "forbidden": "Bu sunucuyu yönetemezsiniz.",
           "invalid": "Şablon geçersiz.",
-          "customBotRequired": "Önce kendi botunuzu bağlayın.",
           "invalidImage": "Bu görsel geçerli değil.",
           "tooLarge": "Bu görsel çok büyük.",
           "storageFailed": "Tasarım kaydedilemedi, tekrar deneyin."

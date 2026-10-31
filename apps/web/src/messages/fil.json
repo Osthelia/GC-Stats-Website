@@ -6413,7 +6413,7 @@
         "color": {
           "live": "Live na laban",
           "finished": "Tapos na ang laban",
-          "map": "Tapos na ang mapa",
+          "map": "Tapos na ang mapa",
           "background": "Background ng larawan"
         },
         "colorsSaved": "Nai save ang mga kulay",
@@ -6447,7 +6447,6 @@
       "templates": {
         "title": "Mga alerto bilang larawan",
         "description": "Pinapalitan ang text message ng isang uri ng alerto ng larawang binuo mula sa iyong template. Para lang sa mga server na may sariling bot.",
-        "locked": "Kailangan ng sarili mong bot para sa mga alertong larawan. Ikonekta ito sa seksyon sa itaas para ma-unlock.",
         "usingImage": "Ipinost bilang larawan",
         "usingText": "Ipinost bilang text message",
         "presetLabel": "Panimulang disenyo",
@@ -6477,7 +6476,6 @@
           "notAuthenticated": "Kailangan mong mag-sign in.",
           "forbidden": "Hindi mo mapamahalaan ang server na ito.",
           "invalid": "Hindi valid ang template.",
-          "customBotRequired": "Ikonekta muna ang sarili mong bot.",
           "invalidImage": "Hindi valid ang larawang ito (PNG, JPEG o WebP, hindi bababa sa 400 px sa pinakamaikling gilid).",
           "tooLarge": "Mas malaki sa 10 MB ang larawang ito.",
           "storageFailed": "Hindi ma-store ang larawan, subukan ulit."
@@ -6567,7 +6565,6 @@
           "notAuthenticated": "Kailangan mong mag-sign in.",
           "forbidden": "Hindi mo mapamahalaan ang server na ito.",
           "invalid": "Hindi wasto ang template.",
-          "customBotRequired": "Ikonekta muna ang sarili mong bot.",
           "invalidImage": "Hindi wasto ang larawang ito.",
           "tooLarge": "Masyadong malaki ang larawang ito.",
           "storageFailed": "Hindi nai-save ang disenyo, subukan ulit."

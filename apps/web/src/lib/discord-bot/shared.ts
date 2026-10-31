@@ -40,6 +40,12 @@ export const DISCORD_BOT_LIMITS = {
   subscriptionsPerGuild: 25,
 } as const;
 
+export const DISCORD_IMAGE_SANCTION_REASON_MAX = 500;
+
+// Content hash of a posted message whose image moderation removed: queued for the bot to edit, then done.
+export const MESSAGE_IMAGE_REMOVAL_QUEUED_HASH = "image-removal-queued";
+export const MESSAGE_IMAGE_REMOVED_HASH = "image-removed";
+
 export const DISCORD_BOT_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
 
 // Default embed colors per alert kind.

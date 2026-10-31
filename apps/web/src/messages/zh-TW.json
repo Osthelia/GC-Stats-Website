@@ -6413,7 +6413,7 @@
         "color": {
           "live": "比賽進行中",
           "finished": "比賽已結束",
-          "map": "地圖已結束",
+          "map": "地圖已結束",
           "background": "圖片背景"
         },
         "colorsSaved": "顏色已儲存",
@@ -6447,7 +6447,6 @@
       "templates": {
         "title": "圖片提醒",
         "description": "將某類提醒的文字訊息替換為依據你的範本產生的圖片。僅限使用自有機器人的伺服器。",
-        "locked": "圖片提醒需要你自己的機器人。請在上方區塊連接機器人以解鎖。",
         "usingImage": "以圖片發布",
         "usingText": "以文字訊息發布",
         "presetLabel": "起始設計",
@@ -6477,7 +6476,6 @@
           "notAuthenticated": "你必須先登入。",
           "forbidden": "你無法管理此伺服器。",
           "invalid": "範本無效。",
-          "customBotRequired": "請先連接你自己的機器人。",
           "invalidImage": "此圖片無效（PNG、JPEG 或 WebP，最短邊至少 400 px）。",
           "tooLarge": "此圖片超過 10 MB。",
           "storageFailed": "無法儲存圖片，請重試。"
@@ -6567,7 +6565,6 @@
           "notAuthenticated": "你必須登入。",
           "forbidden": "你無法管理此伺服器。",
           "invalid": "範本無效。",
-          "customBotRequired": "請先連接你自己的機器人。",
           "invalidImage": "此圖片無效。",
           "tooLarge": "此圖片過大。",
           "storageFailed": "無法儲存設計，請重試。"

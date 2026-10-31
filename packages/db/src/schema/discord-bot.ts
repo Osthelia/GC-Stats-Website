@@ -64,6 +64,36 @@ export const discordBotTemplates = pgTable("discord_bot_templates", {
   uniqueIndex("discord_bot_templates_unique").on(t.guildId, t.event),
 ]);
 
+// Alert image template of a server awaiting the moderators' check. Each edit puts it back to pending.
+export const discordBotImageReviews = pgTable("discord_bot_image_reviews", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  guildId: text("guild_id").notNull(),
+  event: text("event").notNull(), // 'match_live' | 'match_finished' | 'map_finished'
+  // Site account and linked Discord account that made the last edit.
+  editedBy: text("edited_by"),
+  editorDiscordId: text("editor_discord_id"),
+  status: text("status").notNull().default("pending"), // 'pending' | 'verified'
+  reviewedBy: text("reviewed_by"),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("discord_bot_image_reviews_unique").on(t.guildId, t.event),
+  index("discord_bot_image_reviews_status_idx").on(t.status, t.updatedAt),
+]);
+
+// Servers and Discord accounts barred from the bot dashboard and its alerts.
+export const discordBotBlacklist = pgTable("discord_bot_blacklist", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  kind: text("kind").notNull(), // 'guild' | 'user'
+  discordId: text("discord_id").notNull(),
+  reason: text("reason").notNull(),
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("discord_bot_blacklist_unique").on(t.kind, t.discordId),
+]);
+
 // One row per message posted: also the claim that keeps a match from being announced twice.
 export const discordBotMessages = pgTable("discord_bot_messages", {
   id: bigserial("id", { mode: "number" }).primaryKey(),

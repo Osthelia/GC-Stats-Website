@@ -30,6 +30,7 @@ import { getCurrentUserId } from "@/lib/session";
 import { routing } from "@/i18n/routing";
 import { listWebhookRegions } from "@/lib/webhooks/endpoints";
 import { getManageableGuild, listGuildTextChannels } from "@/lib/discord-bot/guilds";
+import { dropTemplateReview, isBlacklisted, isUserBlacklisted, queueTemplateReview } from "@/lib/discord-bot/moderation";
 import {
   DISCORD_BOT_COLOR_PATTERN,
   DISCORD_BOT_DEFAULT_BACKGROUND,
@@ -62,9 +63,9 @@ export type DiscordSubscriptionFieldErrors = Partial<{
   color: "invalid";
 }>;
 
-type ActionError = "notAuthenticated" | "forbidden" | "notFound" | "invalid" | "tooManySubscriptions" | "channelsUnavailable";
+type ActionError = "notAuthenticated" | "forbidden" | "blacklisted" | "notFound" | "invalid" | "tooManySubscriptions" | "channelsUnavailable";
 export type SaveDiscordSubscriptionResult = { ok: true } | { ok: false; error: ActionError; fieldErrors?: DiscordSubscriptionFieldErrors };
-export type DiscordSubscriptionSimpleResult = { ok: true } | { ok: false; error: "notAuthenticated" | "forbidden" | "notFound" };
+export type DiscordSubscriptionSimpleResult = { ok: true } | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" | "notFound" };
 
 type ValidSubscription = {
   channelId: string;
@@ -76,12 +77,14 @@ type ValidSubscription = {
   color: string | null;
 };
 
-/** Signed in user who may manage this server, or the error to return. */
-async function authorizeGuild(guildId: unknown): Promise<{ ok: true; guildId: string } | { ok: false; error: "notAuthenticated" | "forbidden" }> {
+/** Signed in user who may manage this server, or the error to return. Blacklisted servers and Discord accounts are refused. */
+async function authorizeGuild(guildId: unknown): Promise<{ ok: true; guildId: string; userId: string } | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" }> {
   const userId = await getCurrentUserId();
   if (!userId) return { ok: false, error: "notAuthenticated" };
   if (typeof guildId !== "string" || !(await getManageableGuild(userId, guildId))) return { ok: false, error: "forbidden" };
-  return { ok: true, guildId };
+  const [guildBlocked, userBlocked] = await Promise.all([isBlacklisted("guild", guildId), isUserBlacklisted(userId)]);
+  if (guildBlocked || userBlocked) return { ok: false, error: "blacklisted" };
+  return { ok: true, guildId, userId };
 }
 
 async function validateInput(guildId: string, input: DiscordSubscriptionInput): Promise<{ ok: true; value: ValidSubscription } | { ok: false; error: ActionError; fieldErrors?: DiscordSubscriptionFieldErrors }> {
@@ -197,7 +200,7 @@ export async function deleteDiscordSubscription(guildId: string, subscriptionId:
 
 export type DiscordColorsInput = { live: unknown; finished: unknown; map: unknown; background: unknown; matchButton: unknown };
 export type DiscordColorsFieldErrors = Partial<Record<"live" | "finished" | "map" | "background" | "matchButton", "invalid">>;
-export type SaveDiscordColorsResult = { ok: true } | { ok: false; error: "notAuthenticated" | "forbidden" | "invalid"; fieldErrors?: DiscordColorsFieldErrors };
+export type SaveDiscordColorsResult = { ok: true } | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" | "invalid"; fieldErrors?: DiscordColorsFieldErrors };
 
 /** Accent colors, template background and match button of the server, an empty color restores the default. */
 export async function saveDiscordColors(guildId: string, input: DiscordColorsInput): Promise<SaveDiscordColorsResult> {
@@ -222,7 +225,7 @@ export async function saveDiscordColors(guildId: string, input: DiscordColorsInp
 
 export type ConnectDiscordBotResult =
   | { ok: true }
-  | { ok: false; error: "notAuthenticated" | "forbidden" | "invalid"; fieldErrors?: { token: "required" | "invalidToken" } };
+  | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" | "invalid"; fieldErrors?: { token: "required" | "invalidToken" } };
 
 /** Switches the server to its own bot, after checking the token belongs to a bot. */
 export async function connectCustomDiscordBot(guildId: string, token: unknown): Promise<ConnectDiscordBotResult> {
@@ -248,16 +251,10 @@ export async function disconnectCustomDiscordBot(guildId: string): Promise<Disco
     .update(discordBotGuildSettings)
     .set({ botTokenEncrypted: null, botUserId: null, botName: null, botAvatarUrl: null, updatedAt: new Date() })
     .where(eq(discordBotGuildSettings.guildId, auth.guildId));
-  // Image templates need the custom bot, they go away with it.
-  const templates = await db.delete(discordBotTemplates).where(eq(discordBotTemplates.guildId, auth.guildId)).returning({ template: discordBotTemplates.template });
-  for (const { template } of templates) {
-    const backgroundId = (template as { backgroundImageId?: string | null }).backgroundImageId;
-    if (backgroundId) await deleteDiscordBackground(backgroundId).catch(() => undefined);
-  }
   return { ok: true };
 }
 
-type TemplateActionError = "notAuthenticated" | "forbidden" | "invalid" | "customBotRequired" | "invalidImage" | "tooLarge" | "storageFailed";
+type TemplateActionError = "notAuthenticated" | "forbidden" | "blacklisted" | "invalid" | "invalidImage" | "tooLarge" | "storageFailed";
 export type SaveDiscordTemplateResult = { ok: true } | { ok: false; error: TemplateActionError; issues?: string[] };
 
 const BACKGROUND_MAX_BYTES = 10 * 1024 * 1024;
@@ -265,20 +262,11 @@ const BACKGROUND_MIN_SIDE = 400;
 const BACKGROUND_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
 /** Authorized server and a valid alert type. */
-async function authorizeEvent(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
+async function authorizeEvent(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; userId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return auth;
   if (!(DISCORD_BOT_EVENTS as readonly unknown[]).includes(event)) return { ok: false, error: "invalid" };
-  return { ok: true, guildId: auth.guildId, event: event as DiscordBotEvent };
-}
-
-/** Authorized server that runs its own bot, the only ones allowed to customize image templates. */
-async function authorizeTemplates(guildId: unknown, event: unknown): Promise<{ ok: true; guildId: string; event: DiscordBotEvent } | { ok: false; error: TemplateActionError }> {
-  const auth = await authorizeEvent(guildId, event);
-  if (!auth.ok) return auth;
-  const settings = await getGuildSettings(auth.guildId);
-  if (!settings?.botTokenEncrypted) return { ok: false, error: "customBotRequired" };
-  return auth;
+  return { ok: true, guildId: auth.guildId, userId: auth.userId, event: event as DiscordBotEvent };
 }
 
 async function currentBackgroundId(guildId: string, event: DiscordBotEvent): Promise<string | null> {
@@ -287,7 +275,7 @@ async function currentBackgroundId(guildId: string, event: DiscordBotEvent): Pro
 
 /** Saves the layers of a template. The background is only ever changed by its own actions. */
 export async function saveDiscordTemplate(guildId: string, event: DiscordBotEvent, input: unknown): Promise<SaveDiscordTemplateResult> {
-  const auth = await authorizeTemplates(guildId, event);
+  const auth = await authorizeEvent(guildId, event);
   if (!auth.ok) return auth;
 
   const parsed = templateSchema.safeParse(input);
@@ -299,12 +287,13 @@ export async function saveDiscordTemplate(guildId: string, event: DiscordBotEven
     .insert(discordBotTemplates)
     .values({ guildId: auth.guildId, event: auth.event, ...values })
     .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
+  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
   return { ok: true };
 }
 
 /** Replaces the background image of a template, creating the default template when there is none yet. */
 export async function uploadDiscordBackground(guildId: string, event: DiscordBotEvent, formData: FormData): Promise<SaveDiscordTemplateResult> {
-  const auth = await authorizeTemplates(guildId, event);
+  const auth = await authorizeEvent(guildId, event);
   if (!auth.ok) return auth;
 
   const file = formData.get("file");
@@ -329,12 +318,13 @@ export async function uploadDiscordBackground(guildId: string, event: DiscordBot
     .insert(discordBotTemplates)
     .values({ guildId: auth.guildId, event: auth.event, ...values })
     .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
+  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
   if (existing?.backgroundImageId) await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
   return { ok: true };
 }
 
 export async function removeDiscordBackground(guildId: string, event: DiscordBotEvent): Promise<SaveDiscordTemplateResult> {
-  const auth = await authorizeTemplates(guildId, event);
+  const auth = await authorizeEvent(guildId, event);
   if (!auth.ok) return auth;
   const existing = (await getGuildTemplates(auth.guildId)).get(auth.event)?.template;
   if (!existing?.backgroundImageId) return { ok: true };
@@ -343,6 +333,7 @@ export async function removeDiscordBackground(guildId: string, event: DiscordBot
     .set({ template: { ...existing, backgroundImageId: null }, updatedAt: new Date() })
     .where(and(eq(discordBotTemplates.guildId, auth.guildId), eq(discordBotTemplates.event, auth.event)));
   await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
+  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template: { ...existing, backgroundImageId: null } });
   return { ok: true };
 }
 
@@ -360,6 +351,7 @@ export async function chooseDiscordTemplatePreset(guildId: string, event: Discor
     .insert(discordBotTemplates)
     .values({ guildId: auth.guildId, event: auth.event, ...values })
     .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
+  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
   return { ok: true };
 }
 
@@ -367,12 +359,13 @@ async function deleteTemplateRow(guildId: string, event: DiscordBotEvent): Promi
   const existing = (await getGuildTemplates(guildId)).get(event)?.template;
   await db.delete(discordBotTemplates).where(and(eq(discordBotTemplates.guildId, guildId), eq(discordBotTemplates.event, event)));
   if (existing?.backgroundImageId) await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
+  await dropTemplateReview(guildId, event);
   return { ok: true };
 }
 
 /** Back to the plain text embed for this alert type. */
 export async function deleteDiscordTemplate(guildId: string, event: DiscordBotEvent): Promise<SaveDiscordTemplateResult> {
-  const auth = await authorizeTemplates(guildId, event);
+  const auth = await authorizeEvent(guildId, event);
   if (!auth.ok) return auth;
   return deleteTemplateRow(auth.guildId, auth.event);
 }
@@ -387,7 +380,7 @@ const COLOR_FIELD_BY_EVENT = { match_live: "colorLive", match_finished: "colorFi
 
 /** Posts the template being edited, filled with the preview match, in a channel of the server. */
 export async function sendDiscordTestAlert(guildId: string, event: DiscordBotEvent, channelId: unknown, locale: unknown, input: unknown): Promise<SendTestAlertResult> {
-  const auth = await authorizeTemplates(guildId, event);
+  const auth = await authorizeEvent(guildId, event);
   if (!auth.ok) return auth;
 
   if (typeof channelId !== "string" || !channelId) return { ok: false, error: "invalid", fieldErrors: { channelId: "required" } };

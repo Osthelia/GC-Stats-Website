@@ -6413,7 +6413,7 @@
         "color": {
           "live": "Trận đang diễn ra",
           "finished": "Trận đã kết thúc",
-          "map": "Map đã kết thúc",
+          "map": "Map đã kết thúc",
           "background": "Nền hình ảnh"
         },
         "colorsSaved": "Đã lưu màu sắc",
@@ -6447,7 +6447,6 @@
       "templates": {
         "title": "Cảnh báo bằng hình ảnh",
         "description": "Thay tin nhắn văn bản của một loại cảnh báo bằng hình ảnh được tạo từ mẫu của bạn. Chỉ dành cho các máy chủ dùng bot riêng.",
-        "locked": "Cảnh báo bằng hình ảnh cần bot riêng của bạn. Hãy kết nối bot ở phần phía trên để mở khóa.",
         "usingImage": "Đăng dưới dạng hình ảnh",
         "usingText": "Đăng dưới dạng tin nhắn văn bản",
         "presetLabel": "Thiết kế ban đầu",
@@ -6477,7 +6476,6 @@
           "notAuthenticated": "Bạn phải đăng nhập.",
           "forbidden": "Bạn không thể quản lý máy chủ này.",
           "invalid": "Mẫu không hợp lệ.",
-          "customBotRequired": "Hãy kết nối bot riêng của bạn trước.",
           "invalidImage": "Hình ảnh này không hợp lệ (PNG, JPEG hoặc WebP, cạnh ngắn nhất tối thiểu 400 px).",
           "tooLarge": "Hình ảnh này lớn hơn 10 MB.",
           "storageFailed": "Không thể lưu hình ảnh, hãy thử lại."
@@ -6567,7 +6565,6 @@
           "notAuthenticated": "Bạn cần đăng nhập.",
           "forbidden": "Bạn không thể quản lý máy chủ này.",
           "invalid": "Mẫu không hợp lệ.",
-          "customBotRequired": "Hãy kết nối bot của riêng bạn trước.",
           "invalidImage": "Hình ảnh này không hợp lệ.",
           "tooLarge": "Hình ảnh này quá lớn.",
           "storageFailed": "Không thể lưu thiết kế, hãy thử lại."

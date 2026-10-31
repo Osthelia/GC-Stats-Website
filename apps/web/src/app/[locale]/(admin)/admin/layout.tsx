@@ -15,6 +15,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { countPendingDiscordImages } from "@/lib/admin-discord-image-reviews";
 
 // Overrides the root layout's "%s — GC-Stats" template for everything under
 // /admin — every admin page sets its own short `title` (via generateMetadata
@@ -34,7 +35,11 @@ export default async function AdminLayout({
   const access = await requireAdminAccess(locale as AppLocale);
 
   const canSeeChangeRequests = access.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView);
-  const hasPendingChangeRequests = canSeeChangeRequests && (await getAdminChangeRequestCounts()).pending > 0;
+  const canSeeModeration = access.isSuperAdmin || access.permissions.has(PERMISSIONS.moderationView);
+  const [hasPendingChangeRequests, hasPendingDiscordImages] = await Promise.all([
+    canSeeChangeRequests ? getAdminChangeRequestCounts().then((counts) => counts.pending > 0) : false,
+    canSeeModeration ? countPendingDiscordImages().then((count) => count > 0) : false,
+  ]);
 
   return (
     <NextIntlClientProvider>
@@ -43,6 +48,7 @@ export default async function AdminLayout({
           permissions={[...access.permissions]}
           isSuperAdmin={access.isSuperAdmin}
           hasPendingChangeRequests={hasPendingChangeRequests}
+          hasPendingDiscordImages={hasPendingDiscordImages}
         />
         <SidebarInset>
           <AdminHeader />

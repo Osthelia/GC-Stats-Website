@@ -6289,7 +6289,7 @@
         "color": {
           "live": "Mecz na żywo",
           "finished": "Mecz zakończony",
-          "map": "Mapa zakończona",
+          "map": "Mapa zakończona",
           "background": "Tło obrazu"
         },
         "colorsSaved": "Kolory zapisane",
@@ -6323,7 +6323,6 @@
       "templates": {
         "title": "Alerty w obrazie",
         "description": "Zastępuje wiadomość tekstową danego typu alertu obrazem utworzonym na podstawie Twojego szablonu. Dostępne tylko dla serwerów z własnym botem.",
-        "locked": "Alerty w obrazie wymagają własnego bota. Połącz go w sekcji powyżej, aby je odblokować.",
         "usingImage": "Publikowane jako obraz",
         "usingText": "Publikowane jako wiadomość tekstowa",
         "presetLabel": "Projekt startowy",
@@ -6353,7 +6352,6 @@
           "notAuthenticated": "Musisz być zalogowany.",
           "forbidden": "Nie możesz zarządzać tym serwerem.",
           "invalid": "Szablon jest nieprawidłowy.",
-          "customBotRequired": "Najpierw połącz własnego bota.",
           "invalidImage": "Ten obraz jest nieprawidłowy (PNG, JPEG lub WebP, co najmniej 400 px na krótszym boku).",
           "tooLarge": "Ten obraz jest większy niż 10 MB.",
           "storageFailed": "Nie udało się zapisać obrazu, spróbuj ponownie."
@@ -6443,7 +6441,6 @@
           "notAuthenticated": "Musisz być zalogowany.",
           "forbidden": "Nie możesz zarządzać tym serwerem.",
           "invalid": "Szablon jest nieprawidłowy.",
-          "customBotRequired": "Najpierw połącz własnego bota.",
           "invalidImage": "Ten obraz jest nieprawidłowy.",
           "tooLarge": "Ten obraz jest za duży.",
           "storageFailed": "Nie udało się zapisać projektu, spróbuj ponownie."
