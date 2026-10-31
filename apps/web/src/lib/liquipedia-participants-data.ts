@@ -5,7 +5,7 @@
  * its `{{TeamParticipants}}` wikicode.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -100,6 +100,6 @@ export async function getTournamentParticipantsWikicode(game: GameSlug, tourname
     wikicode: buildTeamParticipantsWikicode(teams),
     teamCount: teams.length,
     unlinkedTeams,
-    unlinkedPeopleCount: people.filter((p) => !p.liquipediaName).length,
+    unlinkedPeopleCount: people.filter((p) => p.entrantId !== null && !p.liquipediaName).length,
   };
 }

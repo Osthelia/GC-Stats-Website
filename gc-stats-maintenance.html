@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<title>GC Stats | Maintenance</title>
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface-2: #111111;
+    --hover: #1f1f1f;
+    --hover-2: #2a2a2a;
+    --border: #232323;
+    --text: #f2f2f2;
+    --text-dim: #d4d4d4;
+    --text-secondary: #9a9a9a;
+    --text-tertiary: #7a7a7a;
+    --gold: #e4ae22;
+    --gold-soft: rgba(228, 174, 34, 0.12);
+    --gold-border: rgba(228, 174, 34, 0.35);
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--gold); color: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background:
+      radial-gradient(48rem 24rem at 50% -8%, var(--gold-soft), transparent 70%),
+      var(--bg);
+    color: var(--text);
+    font-family: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px 32px 32px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  /* Text wordmark: no image dependency, so it can never fail to load */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--bg);
+    background: var(--gold);
+    border-radius: 9px;
+  }
+
+  .icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    display: grid;
+    place-items: center;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-border);
+    border-radius: 50%;
+  }
+  .icon svg { width: 30px; height: 30px; animation: swing 2.4s ease-in-out infinite; }
+  @keyframes swing {
+    0%, 100% { transform: rotate(-12deg); }
+    50% { transform: rotate(12deg); }
+  }
+
+  h1 { margin: 0 0 12px; font-size: 1.75rem; line-height: 1.25; }
+  p { margin: 0 0 12px; color: var(--text-secondary); }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 28px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-border);
+    border-radius: 999px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.7); }
+  }
+
+  .discord {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+  .discord p { font-size: 0.9rem; color: var(--text-tertiary); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 11px 22px;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--bg);
+    text-decoration: none;
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.1s;
+  }
+  .btn svg { width: 18px; height: 18px; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(0.96); filter: brightness(0.92); }
+  .btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .icon svg, .dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">GC</span>
+    <span>GC Stats</span>
+  </div>
+  <div class="icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+    </svg>
+  </div>
+  <h1>We'll be right back</h1>
+  <p>GC Stats is under maintenance to improve performance and reliability.</p>
+  <p>Thanks for your patience, the site will be back shortly.</p>
+
+  <div class="discord">
+    <p>Follow updates and ask questions on our Discord server.</p>
+    <a class="btn" href="https://discord.gg/kFHNN8cDXJ" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Join our Discord</span>
+    </a>
+  </div>
+</main>
+
+</body>
+</html>

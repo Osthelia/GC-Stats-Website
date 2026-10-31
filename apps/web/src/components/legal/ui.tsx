@@ -2,7 +2,7 @@
  * GC-Stats - ui
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -48,7 +48,7 @@ export function SectionText({ children }: { children: ReactNode }) {
   return <p className="text-sm leading-relaxed text-neutral-400">{children}</p>;
 }
 
-export function SectionList({ items }: { items: string[] }) {
+export function SectionList({ items }: { items: ReactNode[] }) {
   return (
     <ul className="space-y-2">
       {items.map((item, i) => (

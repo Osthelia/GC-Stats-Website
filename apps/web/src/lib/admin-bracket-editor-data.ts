@@ -5,7 +5,7 @@
  * matches with their seeds, bracket edges, and the stage's entrants.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -88,7 +88,7 @@ export const getStageEditorData = cache(async (game: GameSlug, stageId: number):
     stageName: stage.name,
     stageStatus: stage.status,
     tournamentId: stage.tournamentId,
-    containers: containerRows.map((c) => ({ id: c.id, name: c.name, containerType: c.containerType, config: c.config, status: c.status })),
+    containers: containerRows.flatMap((c) => (c.containerType === "set" ? [] : [{ id: c.id, name: c.name, containerType: c.containerType, config: c.config, status: c.status }])),
     matches: matchRows.map((m) => ({
       id: m.id,
       containerId: m.containerId,

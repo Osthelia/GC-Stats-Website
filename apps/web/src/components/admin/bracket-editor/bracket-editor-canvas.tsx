@@ -2,7 +2,7 @@
  * GC-Stats - bracket-editor-canvas
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import type { BracketGraph, MatchNode as EngineMatchNode } from "@gc-stats/bracket-engine";
+import type { BracketGraph, MatchNode as EngineMatchNode } from "@osthelia/bracket-engine";
 import { MatchNode, type MatchNodeData } from "@/components/admin/bracket-editor/match-node";
 import { RoundHeaderNode, type RoundHeaderNodeData } from "@/components/admin/bracket-editor/round-header-node";
 import { GenerateTemplateForm } from "@/components/admin/bracket-editor/generate-template-form";
@@ -187,10 +187,7 @@ function BracketEditorCanvasInner({
   const game = useGame();
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
-  const [unlocked, setUnlocked] = useState(false);
-  const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
   const locked = stageStatus !== "pending" || initialMatches.some((m) => m.status !== "pending");
-  const readOnly = locked && !unlocked;
   const startedIds = useMemo(() => new Set(initialMatches.filter((m) => m.status !== "pending").map((m) => String(m.id))), [initialMatches]);
 
   const tbdLabel = t("tbdLabel");
@@ -273,19 +270,18 @@ function BracketEditorCanvasInner({
       nodes.map((n) => ({
         ...n,
         draggable: !startedIds.has(n.id),
-        data: { ...n.data, onSetSlot: (slot: "a" | "b", source: EditorSlotSource) => setSlot(n.id, slot, source), onDelete: () => requestDeleteNode(n.id), readOnly: readOnly || startedIds.has(n.id) },
+        data: { ...n.data, onSetSlot: (slot: "a" | "b", source: EditorSlotSource) => setSlot(n.id, slot, source), onDelete: () => requestDeleteNode(n.id), readOnly: startedIds.has(n.id) },
       })),
-    [nodes, setSlot, requestDeleteNode, readOnly, startedIds]
+    [nodes, setSlot, requestDeleteNode, startedIds]
   );
 
   const edgesWithHandlers = useMemo(
-    () => edges.map((e) => ({ ...e, type: "deletable", data: { onDelete: () => deleteEdge(e), readOnly: readOnly || startedIds.has(e.target) } as DeletableEdgeData })),
-    [edges, deleteEdge, readOnly, startedIds]
+    () => edges.map((e) => ({ ...e, type: "deletable", data: { onDelete: () => deleteEdge(e), readOnly: false } as DeletableEdgeData })),
+    [edges, deleteEdge]
   );
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (readOnly || startedIds.has(connection.target)) return;
       const targetSlot = connection.targetHandle as "a" | "b";
       setEdges((prev) =>
         addEdge(
@@ -297,7 +293,7 @@ function BracketEditorCanvasInner({
         prev.map((n) => (n.id === connection.target ? { ...n, data: { ...n.data, slotA: targetSlot === "a" ? { type: "edge" } : n.data.slotA, slotB: targetSlot === "b" ? { type: "edge" } : n.data.slotB } } : n))
       );
     },
-    [readOnly, startedIds, setEdges, setNodes]
+    [setEdges, setNodes]
   );
 
   const resolveContainerId = useCallback(
@@ -315,7 +311,7 @@ function BracketEditorCanvasInner({
   // (round) a match belongs to (2026-09-11 user report).
   const onNodeDragStop: OnNodeDrag<Node<MatchNodeData>> = useCallback(
     (_event, node) => {
-      if (readOnly || node.type !== "matchNode" || startedIds.has(node.id)) return;
+      if (node.type !== "matchNode" || startedIds.has(node.id)) return;
       const containerId = resolveContainerId(node.id);
       if (containerId === null) return;
       const snapped = snapToGrid(node.position.x, node.position.y, String(containerId), initial.layout, LAYOUT_OPTS);
@@ -323,7 +319,7 @@ function BracketEditorCanvasInner({
         prev.map((n) => (n.id === node.id ? { ...n, position: { x: snapped.x, y: snapped.y }, data: { ...n.data, round: snapped.round } } : n))
       );
     },
-    [readOnly, startedIds, resolveContainerId, initial.layout, setNodes]
+    [startedIds, resolveContainerId, initial.layout, setNodes]
   );
 
   const currentGraph: BracketGraph = useMemo(
@@ -448,11 +444,11 @@ function BracketEditorCanvasInner({
       for (const change of changes) {
         if (change.type !== "remove") continue;
         const removedEdge = edges.find((e) => e.id === change.id);
-        if (removedEdge && !startedIds.has(removedEdge.target)) deleteEdge(removedEdge);
+        if (removedEdge) deleteEdge(removedEdge);
       }
       onEdgesChange(changes.filter((c) => c.type !== "remove"));
     },
-    [edges, deleteEdge, onEdgesChange, startedIds]
+    [edges, deleteEdge, onEdgesChange]
   );
 
   function addMatch() {
@@ -533,44 +529,34 @@ function BracketEditorCanvasInner({
 
   return (
     <div className="flex flex-col gap-3">
-      {readOnly && (
-        <div className="flex flex-wrap items-center gap-3 rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
-          <p>{t("readOnlyNotice")}</p>
-          <Button variant="outline" size="sm" className="active:scale-95" onClick={() => setUnlockDialogOpen(true)}>
-            {t("unlockButton")}
-          </Button>
-        </div>
-      )}
-      {locked && unlocked && <p className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">{t("unlockedWarning")}</p>}
+      {locked && <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">{t("startedNotice")}</p>}
 
-      {!readOnly && <GenerateTemplateForm stageId={stageId} seededEntrants={entrants.filter((e): e is { id: number; seed: number; displayName: string } => e.seed !== null)} onGenerated={() => router.refresh()} />}
+      {!locked && <GenerateTemplateForm stageId={stageId} seededEntrants={entrants.filter((e): e is { id: number; seed: number; displayName: string } => e.seed !== null)} onGenerated={() => router.refresh()} />}
 
-      {!readOnly && (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">{t("addMatchLabel")}</span>
-          <Select
-            items={Object.fromEntries(initial.graphContainers.map((c) => [String(c.id), c.name]))}
-            value={addContainerId !== null ? String(addContainerId) : undefined}
-            onValueChange={(v) => v && setAddContainerId(Number(v))}
-          >
-            <SelectTrigger className="h-8 w-48 text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {initial.graphContainers.map((c) => (
-                <SelectItem key={c.id} value={String(c.id)}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Input type="number" min={1} className="h-8 w-20" value={addRound} onChange={(e) => setAddRound(e.target.value)} />
-          <Button variant="outline" size="sm" onClick={addMatch}>
-            {t("addMatchButton")}
-          </Button>
-          <span className="text-xs text-muted-foreground">{t("addMatchTbdHint")}</span>
-        </div>
-      )}
+      <div className="flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">{t("addMatchLabel")}</span>
+        <Select
+          items={Object.fromEntries(initial.graphContainers.map((c) => [String(c.id), c.name]))}
+          value={addContainerId !== null ? String(addContainerId) : undefined}
+          onValueChange={(v) => v && setAddContainerId(Number(v))}
+        >
+          <SelectTrigger className="h-8 w-48 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {initial.graphContainers.map((c) => (
+              <SelectItem key={c.id} value={String(c.id)}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input type="number" min={1} className="h-8 w-20" value={addRound} onChange={(e) => setAddRound(e.target.value)} />
+        <Button variant="outline" size="sm" onClick={addMatch}>
+          {t("addMatchButton")}
+        </Button>
+        <span className="text-xs text-muted-foreground">{t("addMatchTbdHint")}</span>
+      </div>
 
       <div className="gcs-flow-canvas h-[600px] rounded-md border">
         <style>{CONTROLS_DARK_STYLE}</style>
@@ -579,13 +565,10 @@ function BracketEditorCanvasInner({
           edges={edgesWithHandlers}
           nodeTypes={NODE_TYPES}
           edgeTypes={EDGE_TYPES}
-          onNodesChange={readOnly ? undefined : handleNodesChange}
-          onEdgesChange={readOnly ? undefined : handleEdgesChange}
-          onConnect={readOnly ? undefined : onConnect}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
+          onConnect={onConnect}
           onNodeDragStop={handleNodeDragStop}
-          nodesConnectable={!readOnly}
-          nodesDraggable={!readOnly}
-          elementsSelectable={!readOnly}
           panOnScroll
           zoomOnScroll={false}
           zoomActivationKeyCode="Control"
@@ -597,25 +580,13 @@ function BracketEditorCanvasInner({
         </ReactFlow>
       </div>
 
-      {!readOnly && (
-        <div className="flex items-center gap-3">
-          <Button onClick={handleSave} disabled={isSaving || !validation.valid}>
-            {isSaving ? t("saving") : t("saveButton")}
-          </Button>
-          {!validation.valid && <span className="text-sm text-destructive">{t("validationErrors", { count: validation.errors.length })}</span>}
-          {validation.valid && <span className="text-sm text-emerald-600">{t("validationOk")}</span>}
-        </div>
-      )}
-
-      <ConfirmDialog
-        open={unlockDialogOpen}
-        onOpenChange={setUnlockDialogOpen}
-        title={t("unlockTitle")}
-        description={t("unlockConfirm")}
-        confirmLabel={t("unlockConfirmButton")}
-        cancelLabel={t("cancel")}
-        onConfirm={() => setUnlocked(true)}
-      />
+      <div className="flex items-center gap-3">
+        <Button onClick={handleSave} disabled={isSaving || !validation.valid}>
+          {isSaving ? t("saving") : t("saveButton")}
+        </Button>
+        {!validation.valid && <span className="text-sm text-destructive">{t("validationErrors", { count: validation.errors.length })}</span>}
+        {validation.valid && <span className="text-sm text-emerald-600">{t("validationOk")}</span>}
+      </div>
 
       <ConfirmDialog
         open={pendingDeleteNodeId !== null}

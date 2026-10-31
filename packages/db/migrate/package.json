@@ -1,0 +1,11 @@
+{
+  "name": "@gc-stats/db-migrate",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Migration image only: drizzle-orm and pg, nothing else (see Dockerfile, target migrator).",
+  "dependencies": {
+    "drizzle-orm": "0.45.3",
+    "pg": "8.23.1"
+  }
+}

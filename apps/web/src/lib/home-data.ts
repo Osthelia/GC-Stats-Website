@@ -5,7 +5,7 @@
  * future 2d) with pagination, home news feed, and active tournament groups.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -14,7 +14,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
 import { gameTables } from "@gc-stats/db";
-import { organizations } from "@gc-stats/db";
+import { newsAuthors, organizations } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { normalizeRegion, type RegionKey } from "@/lib/tournament-regions";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -30,7 +30,7 @@ export type MatchStatus = "live" | "upcoming" | "finished";
 
 const MATCH_STATUS: Record<string, MatchStatus> = { pending: "upcoming", live: "live", completed: "finished" };
 
-const INTL_LOCALE: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
+const INTL_LOCALE: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH", id: "id-ID", vi: "vi-VN", fil: "fil-PH", "zh-TW": "zh-TW" };
 
 // Display only — shortens "Game Changers <year>" to "GC <year>" (any year,
 // requested explicitly for the home feed, now reused anywhere else a
@@ -238,9 +238,12 @@ export async function getHomeNews(game: GameSlug, locale: AppLocale, languages: 
       publishedAt: news.publishedAt,
       organizationId: news.organizationId,
       publisher: organizations.name,
+      authorId: newsAuthors.id,
+      authorName: newsAuthors.name,
     })
     .from(news)
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
+    .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
     .where(and(isNewsPublishedCondition(game), eq(news.showOnHome, true), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(6);
@@ -249,14 +252,18 @@ export async function getHomeNews(game: GameSlug, locale: AppLocale, languages: 
     "organization",
     rows.map((r) => r.organizationId).filter((id): id is number => id !== null)
   );
+  const logosByAuthorId = await getCurrentLogoUrlsThemed(
+    "news-author",
+    rows.map((r) => (r.organizationId === null ? r.authorId : null)).filter((id): id is number => id !== null)
+  );
 
   const toItem = (r: (typeof rows)[number]): HomeNewsItem => ({
     title: r.title,
     slug: r.slug,
     excerpt: r.excerpt,
-    publisher: r.publisher ?? "GC-Stats",
-    publisherLogoUrl: r.organizationId ? (logosByOrgId.get(r.organizationId)?.dark ?? null) : null,
-    publisherLogoUrlLight: r.organizationId ? (logosByOrgId.get(r.organizationId)?.light ?? null) : null,
+    publisher: r.publisher ?? r.authorName ?? "GCS",
+    publisherLogoUrl: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.dark ?? null,
+    publisherLogoUrlLight: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.light ?? null,
     date: r.publishedAt ? r.publishedAt.toLocaleDateString(INTL_LOCALE[locale], { day: "numeric", month: "short", year: "numeric" }) : "",
   });
 

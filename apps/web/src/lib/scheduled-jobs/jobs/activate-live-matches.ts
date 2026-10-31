@@ -6,7 +6,7 @@
  * match, and notifies Discord. Mirrors V1's matches:activate-live.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -98,7 +98,7 @@ async function activateLiveMatchesForGame(game: GameSlug): Promise<string> {
     const sameTournamentContainerIds = containerIdsByTournament.get(tournament.tournamentId) ?? [];
     if (await isChainedToUnfinishedMatch(game, match.id, sameTournamentContainerIds, match.scheduledAt)) continue;
 
-    // Conditional on status="pending" so a concurrent tick (Cloudflare Cron Triggers can overlap) can't double-activate the same match.
+    // Conditional on status="pending" so a concurrent tick (cron ticks can overlap) can't double-activate the same match.
     // Update + activity log run in the same transaction so a log insert failure never leaves a match "live" without an audit trail.
     const didActivate = await db.transaction(async (tx) => {
       const updated = await tx

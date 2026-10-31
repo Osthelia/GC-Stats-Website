@@ -6,7 +6,7 @@
  * achievements, and related press.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -15,7 +15,7 @@ import { and, desc, eq, inArray, isNotNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import {
-  organizations, gameTables } from "@gc-stats/db";
+  organizations, newsAuthors, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getEntityMatches } from "@/lib/entity-matches";
@@ -111,6 +111,8 @@ export type TeamRosterMember = {
   since: string | null;
   isStaff: boolean;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
@@ -124,6 +126,8 @@ export type TeamFormerMember = {
   since: string | null;
   until: string | null;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
@@ -152,6 +156,8 @@ export async function getTeamRoster(
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
       pronouns: people.pronouns,
     })
     .from(rosterMemberships)
@@ -179,6 +185,8 @@ export async function getTeamRoster(
         since: rangeLower(r.period),
         isStaff: STAFF_ROLES.has(r.role),
         inactiveSince: r.inactiveSince,
+        joinSource: r.joinSource,
+        leftSource: r.leftSource,
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
@@ -192,6 +200,8 @@ export async function getTeamRoster(
         since: rangeLower(r.period),
         until: rangeUpper(r.period),
         inactiveSince: r.inactiveSince,
+        joinSource: r.joinSource,
+        leftSource: r.leftSource,
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
@@ -324,15 +334,17 @@ export async function getTeamPress(game: GameSlug, teamId: number, locale: AppLo
       title: news.title,
       slug: news.slug,
       publisher: organizations.name,
+      authorName: newsAuthors.name,
       publishedAt: news.publishedAt,
       lang: news.lang,
     })
     .from(newsRelations)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
+    .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
     .where(and(eq(newsRelations.relatableType, "team"), eq(newsRelations.relatableId, teamId), isNewsPublishedCondition(game), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
-  return rows.map((r) => ({ ...r, publisher: r.publisher ?? "GC-Stats" }));
+  return rows.map(({ authorName, ...r }) => ({ ...r, publisher: r.publisher ?? authorName ?? "GCS" }));
 }

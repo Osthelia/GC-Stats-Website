@@ -2,7 +2,7 @@
  * GC-Stats - bracket-viewer-canvas
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -13,7 +13,7 @@ import { useMemo, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, type Node, type Edge } from "@xyflow/react";
 import { BracketViewerMatchNode, type BracketViewerMatchNodeData } from "@/components/admin/bracket-viewer/bracket-viewer-match-node";
 import { BracketViewerElbowEdge } from "@/components/admin/bracket-viewer/bracket-viewer-elbow-edge";
-import { layoutBracket } from "@/lib/bracket-layout";
+import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import type { PublicBracketMatch, PublicStageContainer } from "@/lib/tournament-bracket-data";
 

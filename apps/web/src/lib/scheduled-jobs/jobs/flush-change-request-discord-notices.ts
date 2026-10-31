@@ -6,7 +6,7 @@
  * scheduleChangeRequestDiscordNotice.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -21,7 +21,7 @@ import { sendChangeRequestDiscordDecision } from "@/lib/notify";
  * Sends the debounced Discord decision notice for every change request whose
  * wait window has elapsed (see notify.ts's scheduleChangeRequestDiscordNotice).
  * Deletes the row before sending, conditioned on it still existing, so an
- * overlapping tick (Cloudflare Cron Triggers can overlap) can't send twice.
+ * overlapping tick (cron ticks can overlap) can't send twice.
  */
 async function flushChangeRequestDiscordNoticesForGame(game: GameSlug): Promise<string> {
   const { changeRequestDiscordNotices } = gameTables(game);

@@ -6,11 +6,11 @@
  * deliberate TBD slot that the engine's generator output never would.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { validateGraph, type BracketGraph, type ValidationResult } from "@gc-stats/bracket-engine";
+import { validateGraph, type BracketGraph, type ValidationResult } from "@osthelia/bracket-engine";
 
 // The shared engine treats an unfed slot as an "orphan" — correct for a
 // generator's output (which must always be fully resolved), but not for the

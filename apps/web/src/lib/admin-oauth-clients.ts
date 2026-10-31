@@ -5,13 +5,12 @@
  * admin-managed list with no search or pagination.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { asc } from "drizzle-orm";
-// adminDb: the panel must reflect an edit right after router.refresh(), the
-// Hyperdrive-cached `db` would serve the pre-edit row for up to 60s.
+// adminDb: the panel must reflect an edit right after router.refresh().
 import { adminDb as db } from "@gc-stats/db/client";
 import { oauthClients } from "@gc-stats/db";
 import type { OAuthScope } from "@/lib/oauth/scopes";

@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -92,7 +92,7 @@ export default async function PlayerPage({
 
   return (
     <div>
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-start gap-10 px-6 py-7 pb-[70px] lg:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="mx-auto grid max-w-[clamp(1500px,88vw,2400px)] grid-cols-1 items-start gap-10 px-6 py-7 pb-[70px] lg:grid-cols-[minmax(0,1fr)_390px]">
         <div className="flex min-w-0 flex-col gap-7">
           <Suspense fallback={<BlockSkeleton className="h-96" />}>
             <OverviewMatches game={game} id={id} basePath={basePath} />

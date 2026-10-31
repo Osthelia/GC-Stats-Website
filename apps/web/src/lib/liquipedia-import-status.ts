@@ -5,12 +5,12 @@
  * nothing done, Riot match ids present but not fetched, or fetched.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { eq, inArray } from "drizzle-orm";
-// adminDb: the page must show the import that just ran (Hyperdrive caches `db` for 60s).
+// adminDb: the page must show the import that just ran.
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import type { LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";

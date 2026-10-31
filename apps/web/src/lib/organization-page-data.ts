@@ -5,7 +5,7 @@
  * ordered by role, stream channels, VODs, and paginated news.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -280,7 +280,7 @@ export async function getOrganizationNewsPage(
   return { items, total, perPage: ORG_NEWS_PAGE_SIZE };
 }
 
-const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH" };
+const TOURNAMENT_DATE_LOCALES: Record<AppLocale, string> = { fr: "fr-FR", en: "en-US", es: "es-ES", pt: "pt-BR", tr: "tr-TR", ja: "ja-JP", ko: "ko-KR", de: "de-DE", zh: "zh-CN", it: "it-IT", pl: "pl-PL", ar: "ar", th: "th-TH", id: "id-ID", vi: "vi-VN", fil: "fil-PH", "zh-TW": "zh-TW" };
 
 /** Public tournaments organized by the organization: live first, then most recent. */
 export async function getOrganizationTournaments(game: GameSlug, organizationId: number, locale: AppLocale): Promise<TournamentListCardItem[]> {

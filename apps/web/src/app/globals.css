@@ -173,6 +173,10 @@
 .news-content p {
   @apply my-3;
 }
+/* Blank lines are saved as empty <p>; keep them one line tall like in the editor */
+.news-content p:empty::before {
+  content: "\00a0";
+}
 .news-content ul {
   @apply my-3 list-disc pl-5;
 }

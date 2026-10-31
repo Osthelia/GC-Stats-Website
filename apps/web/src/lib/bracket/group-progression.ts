@@ -5,16 +5,17 @@
  * format (swiss, round robin) in the bracket resolution service.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { and, eq, inArray } from "drizzle-orm";
 import { gameTables } from "@gc-stats/db";
-import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@gc-stats/bracket-engine";
+import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
+import { computeMapRecord } from "./standings";
 
 export interface ResolvedGroupMatch {
   containerId: number;
@@ -114,6 +115,7 @@ async function generateAndInsertNextSwissRound(game: GameSlug, tx: Tx, container
   const { groupEntries, matches } = gameTables(game);
   const entries = (await getGroupEntries(game, tx, containerId)).filter((e) => e.status === "active");
   const history = await buildSwissHistory(game, tx, containerId);
+  const mapRecord = config.tiebreakers.includes("map_diff") ? await computeMapRecord(game, tx, containerId) : null;
   const dtos: SwissEntrant[] = entries.map((e) => ({
     id: String(e.entrantId),
     seed: e.seed ?? 0,
@@ -121,6 +123,7 @@ async function generateAndInsertNextSwissRound(game: GameSlug, tx: Tx, container
     losses: e.losses,
     buchholz: e.buchholz,
     roundDiff: e.roundDiff,
+    mapDiff: (mapRecord?.get(e.entrantId)?.mapWins ?? 0) - (mapRecord?.get(e.entrantId)?.mapLosses ?? 0),
     hadBye: e.hadBye,
     status: e.status,
   }));

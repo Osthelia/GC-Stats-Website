@@ -5,7 +5,7 @@
  * roster history, and linking/unlinking a player to a site user account.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -20,6 +20,7 @@ import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { isValidCountryCode } from "@/lib/countries";
 import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
+import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { ROSTER_ROLES } from "@/lib/roster-roles";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
@@ -279,7 +280,7 @@ export async function searchTeams(game: GameSlug, query: string) {
   return searchTeamsQuery(game, query);
 }
 
-export type AddTeamHistoryField = "team" | "role" | "from" | "until" | "inactiveSince";
+export type AddTeamHistoryField = "team" | "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type AddTeamHistoryFieldErrors = Partial<Record<AddTeamHistoryField, string>>;
 export type AddTeamHistoryResult = { ok: true } | { ok: false; fieldErrors: AddTeamHistoryFieldErrors };
 
@@ -292,6 +293,8 @@ export async function addPlayerTeamHistoryEntry(
   until: string,
   hasLeft: boolean,
   inactiveSince: string | null,
+  joinSource: string,
+  leftSource: string,
   closeMembershipIds: number[] = []
 ): Promise<AddTeamHistoryResult> {
   const { people, teams, rosterMemberships } = gameTables(game);
@@ -306,6 +309,11 @@ export async function addPlayerTeamHistoryEntry(
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
+  const joinSourceError = validateRosterSource(joinSource, "join", { allowSelfDeclared: true });
+  if (joinSourceError) fieldErrors.joinSource = joinSourceError;
+  const leftSourceError = validateRosterSource(leftSource, "left", { allowSelfDeclared: true });
+  if (leftSourceError) fieldErrors.leftSource = leftSourceError;
+  else if (leftSource.trim() && !hasLeft) fieldErrors.leftSource = "requiresLeft";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -321,19 +329,19 @@ export async function addPlayerTeamHistoryEntry(
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, personId, teamId as number, from);
 
-    await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null });
+    await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) });
     await logRosterChange(tx, { game, teamId: teamId as number, personId, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
 }
 
-export type TeamHistoryEntryField = "role" | "from" | "until" | "inactiveSince";
+export type TeamHistoryEntryField = "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type TeamHistoryEntryFieldErrors = Partial<Record<TeamHistoryEntryField, string>>;
 export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: TeamHistoryEntryFieldErrors };
 
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
-export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, closeMembershipIds: number[] = []): Promise<TeamHistoryEntryResult> {
+export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = []): Promise<TeamHistoryEntryResult> {
   const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
@@ -345,6 +353,11 @@ export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId:
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
   if (until && !hasLeft) fieldErrors.until = "requiresLeft";
   if (inactiveSince && !DATE_RE.test(inactiveSince)) fieldErrors.inactiveSince = "invalidDate";
+  const joinSourceError = validateRosterSource(joinSource, "join", { allowSelfDeclared: true });
+  if (joinSourceError) fieldErrors.joinSource = joinSourceError;
+  const leftSourceError = validateRosterSource(leftSource, "left", { allowSelfDeclared: true });
+  if (leftSourceError) fieldErrors.leftSource = leftSourceError;
+  else if (leftSource.trim() && !hasLeft) fieldErrors.leftSource = "requiresLeft";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
@@ -357,7 +370,7 @@ export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId:
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, membership.personId, membership.teamId, from);
 
-    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null };
+    const values = { role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
     await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
   });

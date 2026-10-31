@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -60,7 +60,7 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
 
   const bothEntrantsSet = match.entrantAId !== null && match.entrantBId !== null;
   const [rosterA, rosterB, playerStats] = bothEntrantsSet
-    ? await Promise.all([getEntrantRoster(game, match.entrantAId!), getEntrantRoster(game, match.entrantBId!), getAdminMapPlayerStats(game, map.id)])
+    ? await Promise.all([getEntrantRoster(game, match.entrantAId!, match.scheduledAt), getEntrantRoster(game, match.entrantBId!, match.scheduledAt), getAdminMapPlayerStats(game, map.id)])
     : [[], [], []];
 
   return (

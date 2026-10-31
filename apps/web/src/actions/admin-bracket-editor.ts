@@ -6,7 +6,7 @@
  * robin, GSL group) via the bracket-engine package, then persisting it.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -27,7 +27,7 @@ import {
   pairRound,
   type BracketGraph,
   type SwissEntrant,
-} from "@gc-stats/bracket-engine";
+} from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
@@ -77,8 +77,8 @@ export async function generateBracketFromTemplate(game: GameSlug, input: Generat
   // Build the containers this format needs, get their real ids, then hand
   // the id map to the generator/repository — same shared function whether
   // this graph comes from a template or (eventually) the visual editor.
-  async function makeContainer(name: string, containerType: "bracket" | "group" = "bracket", config: Record<string, unknown> = {}) {
-    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, config, displayOrder: nextContainerDisplayOrder(game, input.stageId) }).returning({ id: stageContainers.id });
+  async function makeContainer(name: string, containerType: "bracket" | "group" | "set" = "bracket", config: Record<string, unknown> = {}, parentId: number | null = null) {
+    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, parentId, config, displayOrder: nextContainerDisplayOrder(game, input.stageId) }).returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;
   }
@@ -94,23 +94,25 @@ export async function generateBracketFromTemplate(game: GameSlug, input: Generat
     graph = generateSingleElimination({ containerId: "bracket", entrantCount, bestOf: input.bestOf });
   } else if (input.format === "double_elimination") {
     // Sequential, not Promise.all: the bracket layout algorithm
-    // (lib/bracket-layout.ts) orders lanes by container creation order
+    // (layoutBracket of @osthelia/bracket-engine) orders lanes by container creation order
     // (their auto-incremented id), so issuing these concurrently risked
     // Lower getting a lower id than Upper on some execution interleavings
     // — a real bug hit in this exact form (2026-08-31), not hypothetical.
-    const upperId = await makeContainer("Upper Bracket");
-    const lowerId = await makeContainer("Lower Bracket");
-    const gfId = await makeContainer("Grand Final");
+    const setId = await makeContainer("Double Elimination", "set");
+    const upperId = await makeContainer("Upper Bracket", "bracket", {}, setId);
+    const lowerId = await makeContainer("Lower Bracket", "bracket", {}, setId);
+    const gfId = await makeContainer("Grand Final", "bracket", {}, setId);
     containerIdMap = { upper: upperId, lower: lowerId, gf: gfId };
     tierByContainerId = { upper: "upper", lower: "lower" };
     graph = generateDoubleElimination({ upperContainerId: "upper", lowerContainerId: "lower", grandFinalContainerId: "gf", entrantCount, bestOf: input.bestOf, grandFinalBestOf: input.grandFinalBestOf });
   } else if (input.format === "triple_elimination") {
     // Sequential — same reasoning as double elimination above, this is the
     // format where the bug actually surfaced (Middle/Lower swapped).
-    const upperId = await makeContainer("Upper Bracket");
-    const middleId = await makeContainer("Middle Bracket");
-    const lowerId = await makeContainer("Lower Bracket");
-    const gfId = await makeContainer("Finals");
+    const setId = await makeContainer("Triple Elimination", "set");
+    const upperId = await makeContainer("Upper Bracket", "bracket", {}, setId);
+    const middleId = await makeContainer("Middle Bracket", "bracket", {}, setId);
+    const lowerId = await makeContainer("Lower Bracket", "bracket", {}, setId);
+    const gfId = await makeContainer("Finals", "bracket", {}, setId);
     containerIdMap = { upper: upperId, middle: middleId, lower: lowerId, gf: gfId };
     tierByContainerId = { upper: "upper", middle: "middle", lower: "lower" };
     graph = generateTripleElimination({
@@ -456,9 +458,9 @@ const edgeKey = (from: string | number, result: string, to: string | number, slo
 /**
  * Diff-based save for a bracket that has already started: updates, adds and
  * removes matches and links without ever recreating a match, so results,
- * stats, vetos and schedules survive. Matches that are live or completed are
- * frozen (round, best of, slots and incoming links) and can't be deleted.
- * A new link from a completed match immediately fills its target slot.
+ * stats, vetos and schedules survive. Matches that are live or completed keep
+ * their round, best of and entrants and can't be deleted, but their links can
+ * be changed. A new link from a completed match fills a pending target slot.
  */
 export async function saveBracketInPlace(game: GameSlug, input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   const { stages, stageContainers, matches, matchSeeds, bracketEdges } = gameTables(game);
@@ -507,13 +509,6 @@ export async function saveBracketInPlace(game: GameSlug, input: SaveManualGraphI
 
   const oldEdgeKeys = new Set(edgeRows.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
   const newEdgeKeys = new Set(input.edges.map((e) => edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)));
-  for (const e of input.edges) {
-    if (!oldEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot)) && isStarted(e.toMatchId)) return { ok: false, error: "startedEdgeChanged" };
-  }
-  for (const e of edgeRows) {
-    if (newEdgeKeys.has(edgeKey(e.fromMatchId, e.fromResult, e.toMatchId, e.toSlot))) continue;
-    if (keptIds.has(String(e.toMatchId)) && isStarted(String(e.toMatchId))) return { ok: false, error: "startedEdgeChanged" };
-  }
 
   await db.transaction(async (tx) => {
     const removedIds = existing.filter((m) => !keptIds.has(String(m.id))).map((m) => m.id);
@@ -600,6 +595,8 @@ export async function saveBracketInPlace(game: GameSlug, input: SaveManualGraphI
       await tx.insert(bracketEdges).values({ fromMatchId: fromId, fromResult: e.fromResult, toMatchId: toId, toSlot: e.toSlot });
 
       const source = existingById.get(e.fromMatchId);
+      // A started target keeps the entrants it was played with.
+      if (isStarted(e.toMatchId)) continue;
       if (!source || source.status !== "completed" || source.winnerId === null) continue;
       const loserId = source.winnerId === source.entrantAId ? source.entrantBId : source.entrantAId;
       const entrantId = e.fromResult === "winner" ? source.winnerId : loserId;

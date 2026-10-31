@@ -5,14 +5,14 @@
  * game, see game-tables.ts.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { pgEnum } from "drizzle-orm/pg-core";
 
 // --- Bracket engine enums (shared vocabulary with TournamentPlatform) ----
-export const containerTypeEnum = pgEnum("container_type", ["bracket", "group"]);
+export const containerTypeEnum = pgEnum("container_type", ["bracket", "group", "set"]);
 // No "ready" state (unlike the shared bracket-engine's generic MatchStatus vocabulary):
 // V1's matches.status only ever had upcoming/live/finished, never a distinct
 // pre-live gate once both entrants were known — GC-Stats keeps that same

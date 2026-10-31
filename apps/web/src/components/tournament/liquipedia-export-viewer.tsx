@@ -6,7 +6,7 @@
  * modal, loaded on demand.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -14,15 +14,15 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { InfoIcon, Loader2, UsersIcon } from "lucide-react";
+import { InfoIcon, Loader2, MicIcon, UsersIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { LiquipediaWikicodeBlock } from "@/components/match/liquipedia-wikicode-block";
 import { BracketMatchActionProvider, type BracketMatchTarget } from "@/components/tournament/bracket-match-action";
-import { loadInfoboxWikicode, loadMatchWikicode, loadParticipantsWikicode, type LiquipediaExportResult } from "@/actions/liquipedia-export";
+import { loadInfoboxWikicode, loadMatchWikicode, loadParticipantsWikicode, loadTalentWikicode, type LiquipediaExportResult } from "@/actions/liquipedia-export";
 import { useGame } from "@/lib/use-game";
 import { gameHasLiquipediaMatches } from "@gc-stats/db/game";
 
-type View = { kind: "participants" } | { kind: "infobox" } | { kind: "match"; match: BracketMatchTarget };
+type View = { kind: "participants" } | { kind: "infobox" } | { kind: "talent" } | { kind: "match"; match: BracketMatchTarget };
 type LoadState = { status: "loading" } | { status: "error" } | { status: "ready"; data: Extract<LiquipediaExportResult, { ok: true }> };
 
 function BigButton({ icon, title, hint, onClick }: { icon: ReactNode; title: string; hint: string; onClick: () => void }) {
@@ -58,7 +58,7 @@ export function LiquipediaExportViewer({ tournamentId, children }: { tournamentI
     const id = ++requestId.current;
     setState({ status: "loading" });
     const request =
-      view.kind === "participants" ? loadParticipantsWikicode(game, tournamentId) : view.kind === "infobox" ? loadInfoboxWikicode(game, tournamentId) : loadMatchWikicode(game, tournamentId, view.match.id);
+      view.kind === "participants" ? loadParticipantsWikicode(game, tournamentId) : view.kind === "infobox" ? loadInfoboxWikicode(game, tournamentId) : view.kind === "talent" ? loadTalentWikicode(game, tournamentId) : loadMatchWikicode(game, tournamentId, view.match.id);
     request
       .then((result) => {
         if (id === requestId.current) setState(result.ok ? { status: "ready", data: result } : { status: "error" });
@@ -75,7 +75,9 @@ export function LiquipediaExportViewer({ tournamentId, children }: { tournamentI
       ? t("participantsTab")
       : view?.kind === "infobox"
         ? t("infoboxTab")
-        : view?.kind === "match"
+        : view?.kind === "talent"
+          ? t("talentTab")
+          : view?.kind === "match"
           ? `${view.match.teamA ?? tBracket("tbd")} ${tBracket("vs")} ${view.match.teamB ?? tBracket("tbd")}`
           : "";
 
@@ -84,6 +86,7 @@ export function LiquipediaExportViewer({ tournamentId, children }: { tournamentI
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <BigButton icon={<UsersIcon className="size-6" />} title={t("participantsTab")} hint={t("participantsHint")} onClick={() => setView({ kind: "participants" })} />
         <BigButton icon={<InfoIcon className="size-6" />} title={t("infoboxTab")} hint={t("infoboxHint")} onClick={() => setView({ kind: "infobox" })} />
+        <BigButton icon={<MicIcon className="size-6" />} title={t("talentTab")} hint={t("talentHint")} onClick={() => setView({ kind: "talent" })} />
       </div>
 
       {matchExport && (

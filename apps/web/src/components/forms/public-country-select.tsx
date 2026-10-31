@@ -2,7 +2,7 @@
  * GC-Stats - public-country-select
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -49,7 +49,7 @@ export function PublicCountrySelect({
   }, []);
 
   const filtered = query
-    ? countries.filter((c) => c[locale].toLowerCase().includes(query.toLowerCase()) || c.code.toLowerCase().includes(query.toLowerCase()))
+    ? countries.filter((c) => (countryName(c.code, locale) ?? c.code).toLowerCase().includes(query.toLowerCase()) || c.code.toLowerCase().includes(query.toLowerCase()))
     : countries;
 
   const selectedLabel = countryName(value || null, locale);
@@ -112,7 +112,7 @@ export function PublicCountrySelect({
                   }`}
                 >
                   {flag && <span className={`fi ${flag} shrink-0 rounded-[2px]`} style={{ width: 16, height: 11 }} />}
-                  <span className="truncate">{c[locale]}</span>
+                  <span className="truncate">{(countryName(c.code, locale) ?? c.code)}</span>
                 </button>
               );
             })}

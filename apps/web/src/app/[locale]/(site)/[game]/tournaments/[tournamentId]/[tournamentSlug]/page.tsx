@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -118,7 +118,7 @@ export default async function TournamentPage({
   return (
     <div>
       <TournamentHeader game={game} tournament={tournament} basePath={basePath} activeTab="overview" />
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-6 py-7 pb-[70px]">
+      <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col gap-8 px-6 py-7 pb-[70px]">
         <Suspense fallback={<TournamentBodySkeleton />}>
           <TournamentBody game={game} id={id} basePath={basePath} activeStageId={activeStageId} t={t} />
         </Suspense>

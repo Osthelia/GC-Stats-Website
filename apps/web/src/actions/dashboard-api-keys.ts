@@ -6,7 +6,7 @@
  * else (create, rename, rate limit, activate, delete) is admin-only.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -18,7 +18,6 @@ import { apiKeys, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { logActivity } from "@/lib/activity-log";
 import { generatePlainApiKey, hashApiKey } from "@/lib/api-key-crypto";
-import { invalidateApiKeyCache } from "@/lib/api/v1/auth";
 import type { RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
 
 export type { RegenerateApiKeyResult } from "@/lib/dashboard-api-keys";
@@ -47,6 +46,5 @@ export async function regenerateOrganizationApiKey(organizationId: number, id: n
     await tx.update(apiKeys).set({ keyHash: hashApiKey(plainKey) }).where(eq(apiKeys.id, id));
     await logActivity({ subject: "apiKey", subjectId: id, event: "updated", description: `Regenerated API key #${id}`, actorUserId, properties: { section: "regenerate", organizationId } }, tx);
   });
-  invalidateApiKeyCache(previousHash);
   return { ok: true, plainKey };
 }

@@ -2,7 +2,7 @@
  * GC-Stats - tournament-dialog
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -40,6 +40,7 @@ function emptyState(): FormState {
     endDate: "",
     status: "upcoming",
     active: false,
+    isOfficial: true,
     pointTypeId: null,
     organizerOrganizationId: null,
     location: "",
@@ -61,6 +62,7 @@ function stateFromTournament(tournament: AdminTournamentDetailRow): FormState {
     endDate: tournament.endDate.slice(0, 10),
     status: tournament.status,
     active: tournament.active,
+    isOfficial: tournament.isOfficial,
     pointTypeId: tournament.pointTypeId,
     organizerOrganizationId: tournament.organizerOrganizationId,
     location: tournament.location ?? "",
@@ -264,6 +266,19 @@ export function TournamentDialog({
             <Checkbox checked={form.active} onCheckedChange={(checked) => set("active", checked === true)} />
             {t("fieldActive")}
           </label>
+
+          <div className="flex flex-col gap-1">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox checked={form.isOfficial} onCheckedChange={(checked) => set("isOfficial", checked === true)} aria-invalid={!!fieldErrors.isOfficial} />
+              {t("fieldOfficial")}
+            </label>
+            <p className="text-xs text-muted-foreground">{t("officialHint")}</p>
+            {fieldErrors.isOfficial && (
+              <p role="alert" className="text-xs text-destructive">
+                {err("isOfficial")}
+              </p>
+            )}
+          </div>
 
           <div className="flex flex-col gap-2">
             <span className="text-sm font-medium">{t("sectionSocials")}</span>

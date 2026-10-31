@@ -6,7 +6,7 @@
  * Unpublished drafts are only visible to whoever can review them.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -56,9 +56,12 @@ export async function getPublicNewsIndex(game: GameSlug, opts: { languages: stri
         isFeatured: news.isFeatured,
         organizationId: news.organizationId,
         publisherName: organizations.name,
+        authorId: newsAuthors.id,
+        authorName: newsAuthors.name,
       })
       .from(news)
       .leftJoin(organizations, eq(organizations.id, news.organizationId))
+      .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
       .where(where)
       .orderBy(desc(news.publishedAt))
       .limit(PER_PAGE)
@@ -71,6 +74,10 @@ export async function getPublicNewsIndex(game: GameSlug, opts: { languages: stri
     "organization",
     rows.map((r) => r.organizationId).filter((id): id is number => id !== null)
   );
+  const logosByAuthorId = await getCurrentLogoUrlsThemed(
+    "news-author",
+    rows.map((r) => (r.organizationId === null ? r.authorId : null)).filter((id): id is number => id !== null)
+  );
 
   return {
     items: rows.map((r) => ({
@@ -82,9 +89,9 @@ export async function getPublicNewsIndex(game: GameSlug, opts: { languages: stri
       lang: r.lang,
       publishedAt: r.publishedAt,
       isFeatured: r.isFeatured,
-      publisherName: r.publisherName ?? "GC-Stats",
-      publisherLogoUrl: r.organizationId ? (logosByOrgId.get(r.organizationId)?.dark ?? null) : null,
-      publisherLogoUrlLight: r.organizationId ? (logosByOrgId.get(r.organizationId)?.light ?? null) : null,
+      publisherName: r.publisherName ?? r.authorName ?? "GCS",
+      publisherLogoUrl: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.dark ?? null,
+      publisherLogoUrlLight: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.light ?? null,
     })),
     total,
     perPage: PER_PAGE,
@@ -258,9 +265,12 @@ export async function getUserNewsArticles(
         isFeatured: news.isFeatured,
         organizationId: news.organizationId,
         publisherName: organizations.name,
+        authorId: newsAuthors.id,
+        authorName: newsAuthors.name,
       })
       .from(news)
       .leftJoin(organizations, eq(organizations.id, news.organizationId))
+      .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
       .where(where)
       .orderBy(desc(news.publishedAt))
       .limit(PER_PAGE)
@@ -273,6 +283,10 @@ export async function getUserNewsArticles(
     "organization",
     rows.map((r) => r.organizationId).filter((id): id is number => id !== null)
   );
+  const logosByAuthorId = await getCurrentLogoUrlsThemed(
+    "news-author",
+    rows.map((r) => (r.organizationId === null ? r.authorId : null)).filter((id): id is number => id !== null)
+  );
 
   const items = rows.map((r) => ({
     id: r.id,
@@ -283,9 +297,9 @@ export async function getUserNewsArticles(
     lang: r.lang,
     publishedAt: r.publishedAt,
     isFeatured: r.isFeatured,
-    publisherName: r.publisherName ?? "GC-Stats",
-    publisherLogoUrl: r.organizationId ? (logosByOrgId.get(r.organizationId)?.dark ?? null) : null,
-    publisherLogoUrlLight: r.organizationId ? (logosByOrgId.get(r.organizationId)?.light ?? null) : null,
+    publisherName: r.publisherName ?? r.authorName ?? "GCS",
+    publisherLogoUrl: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.dark ?? null,
+    publisherLogoUrlLight: (r.organizationId ? logosByOrgId.get(r.organizationId) : r.authorId ? logosByAuthorId.get(r.authorId) : undefined)?.light ?? null,
   }));
 
   return { items, total, perPage: PER_PAGE };

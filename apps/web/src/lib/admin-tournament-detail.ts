@@ -6,13 +6,14 @@
  * and group entries.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { asc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables } from "@gc-stats/db";
+import { buildTree, setChain, type TreeNode, type TreeRow } from "@osthelia/bracket-engine";
 import { containerOrderBy } from "@/lib/bracket/container-order";
 import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -28,7 +29,8 @@ export async function listTournamentContainerOptions(game: GameSlug, tournamentI
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .where(eq(stages.tournamentId, tournamentId))
     .orderBy(asc(stages.sequenceOrder), ...containerOrderBy(game));
-  return rows.map(({ id, name, stageName, containerType }) => ({ id, name, stageName, containerType }));
+  // A set holds containers but is not one a match or an entrant can go in
+  return rows.flatMap(({ id, name, stageName, containerType }) => (containerType === "set" ? [] : [{ id, name, stageName, containerType }]));
 }
 
 export type AdminEntrantRow = {
@@ -70,7 +72,11 @@ export async function listTournamentEntrants(game: GameSlug, tournamentId: numbe
 export type AdminContainerRow = {
   id: number;
   name: string;
-  containerType: "bracket" | "group";
+  containerType: "bracket" | "group" | "set";
+  /** Set holding this container, null at the root of the stage (every container of a tournament without sets). */
+  parentId: number | null;
+  /** Names of the sets above this container, outermost first, joined with " - " (null at the root). */
+  setPath: string | null;
   config: unknown;
   status: "pending" | "active" | "completed";
   matchCount: number;
@@ -94,7 +100,15 @@ export type AdminStageRow = {
   containers: AdminContainerRow[];
   pickemEnabled: boolean;
   pickemOpensAt: string | null;
+  pickemGroupPickMode: "standings" | "matches";
 };
+
+/** Display order is kept per parent, so the flat list is walked as a tree (a set is followed by what is inside it). */
+function inTreeOrder<T extends { id: number; parentId: number | null; containerType: string }>(rows: T[]): T[] {
+  const tree = buildTree(rows.map((row) => ({ id: row.id, parentId: row.parentId, isSet: row.containerType === "set", status: "pending", row })));
+  const walk = (nodes: TreeNode<TreeRow<number> & { row: T }>[]): T[] => nodes.flatMap((n) => [n.row.row, ...walk(n.children)]);
+  return walk(tree);
+}
 
 export async function listTournamentStages(game: GameSlug, tournamentId: number): Promise<AdminStageRow[]> {
   const { stages, stageContainers, matches, groupEntries, pickemStageSettings } = gameTables(game);
@@ -115,7 +129,7 @@ export async function listTournamentStages(game: GameSlug, tournamentId: number)
   ]);
   if (stageRows.length === 0) return [];
 
-  // Array order is also the bracket layout's lane tie-break (lib/bracket-layout.ts).
+  // Array order is also the bracket layout's lane tie-break (layoutBracket of @osthelia/bracket-engine).
   const countByContainer = new Map(matchCounts.map((r) => [r.containerId, r.count]));
   const playedByContainer = new Map(matchCounts.map((r) => [r.containerId, r.played]));
 
@@ -128,6 +142,12 @@ export async function listTournamentStages(game: GameSlug, tournamentId: number)
 
   const pickemByStage = new Map(pickemRows.map((r) => [r.stageId, r]));
 
+  const setPathOf = (c: (typeof containerRows)[number], stageRowsOfContainers: typeof containerRows) => {
+    const tree = stageRowsOfContainers.map((r) => ({ id: r.id, parentId: r.parentId, isSet: r.containerType === "set", status: r.status }));
+    const names = setChain(tree, c.parentId).reverse().map((id) => stageRowsOfContainers.find((r) => r.id === id)!.name);
+    return names.length > 0 ? names.join(" - ") : null;
+  };
+
   return stageRows.map((stage) => ({
     id: stage.id,
     name: stage.name,
@@ -139,12 +159,14 @@ export async function listTournamentStages(game: GameSlug, tournamentId: number)
     liquipediaLink: stage.liquipediaLink,
     pickemEnabled: pickemByStage.get(stage.id)?.enabled ?? false,
     pickemOpensAt: pickemByStage.get(stage.id)?.opensAt.toISOString() ?? null,
-    containers: containerRows
-      .filter((c) => c.stageId === stage.id)
+    pickemGroupPickMode: pickemByStage.get(stage.id)?.groupPickMode ?? "standings",
+    containers: inTreeOrder(containerRows.filter((c) => c.stageId === stage.id))
       .map((c) => ({
         id: c.id,
         name: c.name,
         containerType: c.containerType,
+        parentId: c.parentId,
+        setPath: setPathOf(c, containerRows.filter((r) => r.stageId === stage.id)),
         config: c.config,
         status: c.status,
         matchCount: countByContainer.get(c.id) ?? 0,

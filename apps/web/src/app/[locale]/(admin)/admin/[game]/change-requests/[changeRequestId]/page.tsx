@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -57,6 +57,15 @@ export default async function AdminChangeRequestDetailPage({ params }: { params:
           {" · "}
           <FormattedDate date={detail.createdAt} mode="datetime" />
         </p>
+        {detail.requestedByUsername && (
+          <p className={`mt-1 text-sm ${detail.requesterPlayer?.matchesSubject ? "text-emerald-400" : "text-muted-foreground"}`}>
+            {!detail.requesterPlayer
+              ? t("detail.requesterNoPlayer")
+              : t(`detail.${detail.subjectType === "team" ? "requesterTeam" : "requesterPlayer"}${detail.requesterPlayer.matchesSubject ? "Match" : "Other"}` as "detail.requesterPlayerMatch", {
+                  handle: detail.requesterPlayer.handle,
+                })}
+          </p>
+        )}
         <p className="mt-2 text-sm">
           <span className="text-muted-foreground">{t("detail.reason")}: </span>
           {detail.reason || <span className="text-muted-foreground">{t("detail.noReason")}</span>}

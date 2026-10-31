@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -31,7 +31,7 @@ export default async function VerifyEmailPage({
   const t = await getTranslations({ locale: locale as AppLocale, namespace: "auth.verifyEmail" });
 
   return (
-    <div className="mx-auto flex max-w-[1400px] flex-col items-center px-6 pt-20 pb-28">
+    <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col items-center px-6 pt-20 pb-28">
       <div className="mb-8 max-w-[420px] text-center">
         <h1 className="mb-2 text-[30px] font-bold tracking-tight text-neutral-50">{t("title")}</h1>
       </div>

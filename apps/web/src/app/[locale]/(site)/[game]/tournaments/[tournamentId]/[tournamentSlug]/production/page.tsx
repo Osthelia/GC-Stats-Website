@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -65,7 +65,7 @@ export default async function TournamentProductionPage({
         activeTab="production"
       />
 
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-6 py-7 pb-[70px]">
+      <div className="mx-auto flex max-w-[clamp(1500px,88vw,2400px)] flex-col gap-6 px-6 py-7 pb-[70px]">
         <h1 className="text-lg font-black tracking-tight text-neutral-50">
           {t("productionTitle", { tournament: tournament.name })}
         </h1>
@@ -78,6 +78,7 @@ export default async function TournamentProductionPage({
           eventColumnLabel={tProduction("colEvent")}
           showPerson
           showOrganization
+          showTime={false}
           currentTournamentId={id}
         />
       </div>

@@ -5,7 +5,7 @@
  * tournament info for the dashboard listing.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -86,6 +86,9 @@ export type MatchMapOption = { id: number; label: string };
 /** Backs the "specific map" <Select> once a match is picked in the add-VOD form. */
 export async function getMatchMapOptions(matchId: number): Promise<MatchMapOption[]> {
   const { maps } = valorantTables;
-  const rows = await db.select({ id: maps.id, mapName: maps.mapName, order: maps.order }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
-  return rows.map((m) => ({ id: m.id, label: `${m.mapName ?? "?"} (Map ${m.order})` }));
+  const rows = await db.select({ id: maps.id, mapName: maps.mapName, order: maps.order, startedAt: maps.startedAt }).from(maps).where(eq(maps.matchId, matchId)).orderBy(maps.order);
+  return rows.map((m) => {
+    const date = m.startedAt ? ` · ${m.startedAt.toISOString().slice(0, 16).replace("T", " ")} UTC` : "";
+    return { id: m.id, label: `${m.mapName ?? "?"} (Map ${m.order})${date}` };
+  });
 }

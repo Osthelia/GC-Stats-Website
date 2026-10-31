@@ -2,7 +2,7 @@
  * GC-Stats - team-badge
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -15,7 +15,7 @@ export function TeamBadge({ tag, size = 30, logoUrl, logoUrlLight, sizeClassName
   const light = logoUrlLight ?? logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
   return (
     <span
-      className={`relative flex flex-none items-center justify-center overflow-hidden rounded-lg ${sizeClassName ?? ""}`}
+      className={`relative flex flex-none items-center justify-center ${sizeClassName ?? ""}`}
       style={sizeClassName ? undefined : { width: size, height: size }}
     >
       <ThemedLogoImage dark={dark} light={light} alt={tag} width={size} height={size} className="h-full w-full object-contain" />

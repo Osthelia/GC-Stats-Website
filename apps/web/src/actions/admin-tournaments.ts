@@ -5,7 +5,7 @@
  * dates, status, point type, prize pool and socials.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -41,7 +41,8 @@ export type TournamentField =
   | "description"
   | "keywords"
   | "liquipediaLink"
-  | "playerPovPhrase";
+  | "playerPovPhrase"
+  | "isOfficial";
 export type TournamentFieldErrors = Partial<Record<TournamentField, string>> & {
   socials?: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
 };
@@ -55,6 +56,7 @@ export type TournamentInput = {
   endDate: string;
   status: string;
   active: boolean;
+  isOfficial: boolean;
   pointTypeId: number | null;
   organizerOrganizationId: number | null;
   location: string;
@@ -115,6 +117,7 @@ async function validateTournament(game: GameSlug, input: TournamentInput): Promi
   }
 
   if (!STATUS_VALUES.includes(input.status)) fieldErrors.status = "invalid";
+  if (typeof input.isOfficial !== "boolean") fieldErrors.isOfficial = "invalid";
 
   if (input.pointTypeId !== null) {
     const [existing] = await db.select({ id: pointTypes.id }).from(pointTypes).where(eq(pointTypes.id, input.pointTypeId)).limit(1);
@@ -170,6 +173,7 @@ function coreColumns(input: TournamentInput) {
     endDate: input.endDate,
     status: input.status,
     active: input.active,
+    isOfficial: input.isOfficial,
     pointTypeId: input.pointTypeId,
     organizerOrganizationId: input.organizerOrganizationId,
     location: input.location.trim() || null,

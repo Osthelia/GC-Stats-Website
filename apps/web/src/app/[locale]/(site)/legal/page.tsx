@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -79,7 +79,7 @@ export default function LegalNoticePage() {
             <div className="space-y-3 text-[13px] text-neutral-400">
               <p>
                 <span className="block text-xs font-medium text-neutral-500">{t("hosting.name")}</span>
-                Cloudflare, Inc. (Workers), 101 Townsend St, San Francisco, CA 94107, USA
+                Infomaniak Network SA (Public Cloud), Rue Eugène-Marziano 25, 1227 Les Acacias (GE), Switzerland
               </p>
               <p>
                 <span className="block text-xs font-medium text-neutral-500">{t("hosting.nameSecondary")}</span>
