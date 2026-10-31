@@ -18,7 +18,7 @@ import { resolvePreviewData } from "@/lib/discord-bot/preview";
 import type { AlertKind } from "@/lib/discord-bot/render";
 import { DISCORD_BOT_EVENTS, GCS_SITE_URL, type DiscordBotEvent } from "@/lib/discord-bot/shared";
 import { getGuildTemplates } from "@/lib/discord-bot/templates";
-import { templateSchema, type AlertTemplate } from "@/lib/discord-bot/template";
+import { createDefaultTemplate, presetsOf, templateSchema, type AlertTemplate, type TemplatePreset } from "@/lib/discord-bot/template";
 import { routing } from "@/i18n/routing";
 
 const KIND_BY_EVENT: Record<DiscordBotEvent, AlertKind> = { match_live: "live", match_finished: "finished", map_finished: "map" };
@@ -27,10 +27,10 @@ const MAX_BODY_BYTES = 256 * 1024;
 const PREVIEW_WINDOW_MS = 60_000;
 const PREVIEW_MAX_PER_WINDOW = 30;
 
-/** The guild when the user may manage it and runs its own bot (image templates are reserved to those), otherwise the error response. */
-async function authorizeGuild(userId: string, guildId: string): Promise<Response | null> {
+/** The guild when the user may manage it (and runs its own bot when `customBot`, image templates are reserved to those), otherwise the error response. */
+async function authorizeGuild(userId: string, guildId: string, customBot = true): Promise<Response | null> {
   if (!(await getManageableGuild(userId, guildId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (!(await getGuildSettings(guildId))?.botTokenEncrypted) return NextResponse.json({ error: "Custom bot required" }, { status: 403 });
+  if (customBot && !(await getGuildSettings(guildId))?.botTokenEncrypted) return NextResponse.json({ error: "Custom bot required" }, { status: 403 });
   if (!(await checkRateLimit(`discord-bot-preview:${userId}`, PREVIEW_WINDOW_MS, PREVIEW_MAX_PER_WINDOW))) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   return null;
 }
@@ -53,7 +53,7 @@ function resolveLocale(value: unknown): string {
   return typeof value === "string" && (routing.locales as readonly string[]).includes(value) ? value : routing.defaultLocale;
 }
 
-/** Saved template of the server. */
+/** Saved template of the server, or a default design when `preset` is given (open to every server, the GC Stats bot uses them). */
 export async function GET(request: Request) {
   const userId = await getCurrentUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -61,6 +61,14 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const guildId = params.get("guildId") ?? "";
   const event = params.get("event") as DiscordBotEvent;
+  const preset = params.get("preset");
+  if (preset) {
+    const kind = KIND_BY_EVENT[event];
+    if (!kind || !(presetsOf(kind) as string[]).includes(preset)) return NextResponse.json({ error: "Invalid preset" }, { status: 400 });
+    const denied = await authorizeGuild(userId, guildId, false);
+    if (denied) return denied;
+    return renderPreview(event, resolveLocale(params.get("locale")), createDefaultTemplate(kind, preset as TemplatePreset));
+  }
   // Checked before the lookup so a server's templates are not probed by outsiders.
   const denied = await authorizeGuild(userId, guildId);
   if (denied) return denied;

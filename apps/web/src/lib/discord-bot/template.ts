@@ -682,10 +682,12 @@ function vetosBlock(y: number, accent: string): TemplateLayer[] {
 
 /** Look of the GC Stats alerts: dark, gold, bold condensed names, then the requested information blocks. */
 export function createGcsTemplate(accent: string, kind: Kind, blocks: readonly TemplateBlock[] = []): AlertTemplate {
+  // Tall enough for a name on two lines, a single line stays centered in it.
   const name = {
-    fontSize: 30,
-    height: 40,
-    y: 232,
+    fontSize: 27,
+    height: 58,
+    y: 230,
+    lineHeight: 1.05,
     fontWeight: 700,
     align: "center",
   } as const;

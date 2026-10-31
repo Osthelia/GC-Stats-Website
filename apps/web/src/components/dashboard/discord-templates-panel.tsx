@@ -34,10 +34,13 @@ import { createDefaultTemplate, presetsOf, TEMPLATE_ACCENT, TEMPLATE_FOOTER_HEIG
 const ACCENT_KEY: Record<DiscordBotEvent, keyof typeof TEMPLATE_ACCENT> = { match_live: "live", match_finished: "finished", map_finished: "map" };
 const ACCEPT = "image/png,image/jpeg,image/webp";
 
-function Preview({ guildId, event, version, locale, ratio }: { guildId: string; event: DiscordBotEvent; version: number; locale: string; ratio: number }) {
+/** Default design of an alert type, as the GC Stats bot posts it. */
+const defaultPresetOf = (event: DiscordBotEvent): TemplatePreset => presetsOf(ACCENT_KEY[event]).at(-1) ?? "score";
+
+function Preview({ guildId, event, version, locale, ratio, preset }: { guildId: string; event: DiscordBotEvent; version: number; locale: string; ratio: number; preset?: TemplatePreset }) {
   const t = useTranslations("dashboard.discord.templates");
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
-  const src = `/api/discord-bot/preview?${new URLSearchParams({ guildId, event, locale, v: String(version) })}`;
+  const src = `/api/discord-bot/preview?${new URLSearchParams({ guildId, event, locale, v: String(version), ...(preset ? { preset } : {}) })}`;
 
   return (
     <div className="relative w-full overflow-hidden rounded-md border bg-muted" style={{ aspectRatio: ratio }}>
@@ -66,7 +69,7 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
   const [isPending, startTransition] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
-  const [preset, setPreset] = useState<TemplatePreset>(presetsOf(ACCENT_KEY[event]).at(-1) ?? "score");
+  const [preset, setPreset] = useState<TemplatePreset>(defaultPresetOf(event));
   const presetItems = Object.fromEntries(presetsOf(ACCENT_KEY[event]).map((p) => [p, tt(`preset.${p}`)]));
 
   function run(action: () => Promise<SaveDiscordTemplateResult>, success: string) {
@@ -127,6 +130,7 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground">{tt("presetHint")}</p>
+          <Preview key={preset} guildId={guildId} event={event} version={0} locale={locale} preset={preset} ratio={1000 / createDefaultTemplate(ACCENT_KEY[event], preset).height} />
         </div>
       )}
 
@@ -181,6 +185,7 @@ function TemplateRow({ guildId, event, template, locale, channels }: { guildId: 
 /** `channels` is null when the bot cannot read the channels of the server. */
 export function DiscordTemplatesPanel({ guildId, templates, locale, locked, channels }: { guildId: string; templates: DiscordBotTemplateView[]; locale: string; locked: boolean; channels: DiscordBotChannel[] | null }) {
   const t = useTranslations("dashboard.discord.templates");
+  const td = useTranslations("dashboard.discord");
   return (
     <Card>
       <CardHeader>
@@ -191,8 +196,16 @@ export function DiscordTemplatesPanel({ guildId, templates, locale, locked, chan
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       {locked ? (
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-600 dark:text-amber-400">{t("locked")}</p>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {DISCORD_BOT_EVENTS.map((event) => (
+              <div key={event} className="flex flex-col gap-2 rounded-lg border p-4">
+                <p className="text-sm font-medium">{td(`event.${event}`)}</p>
+                <Preview guildId={guildId} event={event} version={0} locale={locale} preset={defaultPresetOf(event)} ratio={1000 / createDefaultTemplate(ACCENT_KEY[event], defaultPresetOf(event)).height} />
+              </div>
+            ))}
+          </div>
         </CardContent>
       ) : (
         <CardContent className="grid grid-cols-1 gap-4 lg:grid-cols-3">

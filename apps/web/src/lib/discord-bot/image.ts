@@ -9,8 +9,10 @@
  */
 
 import { lookup as dnsLookup } from "node:dns";
+import { readFile } from "node:fs/promises";
 import https from "node:https";
 import { isIP } from "node:net";
+import path from "node:path";
 import satori from "satori";
 import sharp from "sharp";
 import { discordBackgroundUrl } from "@gc-stats/storage";
@@ -141,14 +143,28 @@ function fetchExternalImage(url: string): Promise<Buffer | null> {
   });
 }
 
+/** File of a site asset (`/valorant/...`) in the public folder, null for any other address. */
+async function readSiteAsset(url: string): Promise<Buffer | null> {
+  const prefix = `${GCS_SITE_URL}/valorant/`;
+  if (!url.startsWith(prefix)) return null;
+  const root = path.join(process.cwd(), "public", "valorant");
+  const file = path.resolve(root, decodeURIComponent(url.slice(prefix.length)));
+  if (!file.startsWith(root + path.sep)) return null;
+  return readFile(file).catch(() => null);
+}
+
 /** Image as a data URI Satori can embed (it cannot read webp), null when unreachable. */
 async function toDataUri(url: string, resize?: Resize, external = false): Promise<string | null> {
   try {
     let input: Buffer | null;
     if (external) input = await fetchExternalImage(url);
     else {
-      const response = await fetch(url, { signal: AbortSignal.timeout(ASSET_TIMEOUT_MS) });
-      input = response.ok ? await readLimited(response) : null;
+      // Site assets come from disk, the server does not need to reach itself over HTTP.
+      input = await readSiteAsset(url);
+      if (!input) {
+        const response = await fetch(url, { signal: AbortSignal.timeout(ASSET_TIMEOUT_MS) });
+        input = response.ok ? await readLimited(response) : null;
+      }
     }
     if (!input) return null;
     let pipeline = sharp(input);
