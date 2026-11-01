@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "파트너 키는 대시보드에서 HTTPS 엔드포인트를 등록할 수 있어요. 그러면 데이터가 변경될 때마다 GC Stats가 POST를 보내요.",
-      "events": "이벤트: 새 경기, 경기 업데이트, 새 대회, 대회 업데이트, 팀 업데이트, 선수 업데이트.",
+      "events": "이벤트: 새 경기, 경기 업데이트, 새 대회, 대회 업데이트, 팀 업데이트, 선수 업데이트, 운영팀이 확인한 로스터 변경 (roster.updated).",
       "filters": "필터: 대회 지역, 공식 여부, 참가 팀.",
       "signature": "각 요청에는 X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp, X-GCS-Signature 헤더가 포함돼요. 엔드포인트 시크릿으로 서명을 검증하세요.",
       "retries": "10초 이내에 2xx 상태로 응답하세요. 실패한 전송은 약 9시간 동안 재시도되며, 너무 자주 실패하는 엔드포인트는 꺼져요.",
-      "setup": "페이로드에는 이벤트, 발생 시각, 엔티티가 OpenData 데이터셋과 같은 필드로 담겨 있어요."
+      "setup": "페이로드에는 이벤트, 발생 시각, 엔티티가 OpenData 데이터셋과 같은 필드로 담겨 있어요.",
+      "discord": "Discord 유형 엔드포인트는 roster.updated 이벤트만 받으며, 서명 없이 트윗 링크를 채널에 게시합니다."
     }
   },
   "becomePublisher": {
@@ -2023,7 +2024,8 @@
       "analytics": "분석",
       "oauthClients": "OAuth 클라이언트",
       "settings": "설정",
-      "discordImages": "Discord 봇 이미지"
+      "discordImages": "Discord 봇 이미지",
+      "rosterWatch": "로스터 감시"
     },
     "dashboard": {
       "title": "대시보드",
@@ -3462,7 +3464,8 @@
         "activityLog": "활동 로그",
         "analytics": "분석",
         "oauthClients": "OAuth 클라이언트",
-        "settings": "설정"
+        "settings": "설정",
+        "rosterWatch": "로스터 감시"
       },
       "permissionNames": {
         "admin_access": "관리자 패널 접근",
@@ -3513,7 +3516,9 @@
         "oauth_clients_view": "OAuth 클라이언트 조회",
         "oauth_clients_manage": "OAuth 클라이언트 생성, 수정 또는 삭제",
         "settings_view": "설정 및 OpenData 모니터링 보기",
-        "settings_manage": "설정 수정"
+        "settings_manage": "설정 수정",
+        "roster_watch_view": "로스터 감시 보기",
+        "roster_watch_manage": "로스터 감시 트윗을 검토하고 팔로우 중인 계정을 관리"
       },
       "create": {
         "button": "새 역할",
@@ -5442,6 +5447,136 @@
         "tooShort": "최소 {min}자 이상이어야 합니다.",
         "tooLong": "최대 {max}자까지 입력할 수 있습니다."
       }
+    },
+    "rosterWatch": {
+      "title": "로스터 감시",
+      "subtitle": "팀 계정의 트윗을 AI가 분류하여 사람이 로스터 변경을 검토할 수 있습니다.",
+      "empty": "검토할 항목이 없습니다.",
+      "tabs": {
+        "roster": "로스터",
+        "unsure": "확인 필요",
+        "done": "검토 완료"
+      },
+      "filters": {
+        "period": "기간",
+        "periodAny": "모든 기간",
+        "periodDays": "최근 {days}일",
+        "topic": "주제",
+        "topicAny": "모든 주제"
+      },
+      "topic": {
+        "roster_join": "선수 영입",
+        "roster_leave": "선수 이탈",
+        "roster_bench": "선수 벤치행",
+        "staff_change": "스태프 변경",
+        "tryouts": "Tryouts",
+        "match_promo": "경기 홍보",
+        "match_result": "경기 결과",
+        "highlight": "하이라이트",
+        "sponsor": "스폰서",
+        "merch": "굿즈",
+        "giveaway": "Giveaway",
+        "stream": "방송",
+        "content": "콘텐츠",
+        "community": "커뮤니티",
+        "other": "기타"
+      },
+      "verdict": {
+        "roster": "로스터",
+        "not_roster": "로스터 아님",
+        "unsure": "불확실"
+      },
+      "card": {
+        "openTweet": "트윗 열기",
+        "noText": "텍스트 없음",
+        "openPhoto": "사진 열기",
+        "openVideo": "영상 열기",
+        "players": "인물:"
+      },
+      "actions": {
+        "editTeam": "팀 편집",
+        "ignore": "무시",
+        "notRoster": "로스터 아님",
+        "done": "완료"
+      },
+      "form": {
+        "topic": "내용",
+        "topicPlaceholder": "주제를 선택하세요",
+        "noteWhatIsIt": "무엇인가요?",
+        "confirm": "확인",
+        "cancel": "취소"
+      },
+      "reviewed": {
+        "team_edited": "팀 편집됨",
+        "ignored": "무시됨",
+        "marked_not_roster": "로스터 아님으로 표시됨",
+        "reported_missed": "누락으로 신고됨"
+      },
+      "error": {
+        "notFound": "이 트윗은 더 이상 존재하지 않습니다.",
+        "invalidState": "이 트윗에는 이 작업을 할 수 없습니다. 이미 검토되었을 수 있습니다.",
+        "invalidTopic": "올바른 주제를 선택하세요.",
+        "noteRequired": "이 트윗의 내용을 설명해 주세요.",
+        "noteTooLong": "메모가 너무 깁니다 (최대 1000자)."
+      },
+      "accounts": {
+        "title": "팔로우 중인 계정",
+        "subtitle": "하루에 한 번 가져오는 X 계정.",
+        "team": "팀",
+        "teamPlaceholder": "팀을 선택하세요",
+        "teamSearch": "팀 검색",
+        "teamNoResults": "팀을 찾을 수 없습니다",
+        "handle": "X 핸들",
+        "add": "추가",
+        "added": "계정이 추가되었습니다.",
+        "enabled": "활성화",
+        "toastEnabled": "계정이 활성화되었습니다.",
+        "toastDisabled": "계정이 비활성화되었습니다.",
+        "lastPolled": "마지막 가져오기",
+        "lastError": "마지막 오류",
+        "empty": "아직 팔로우 중인 계정이 없습니다.",
+        "noResults": "이 검색과 일치하는 계정이 없습니다.",
+        "searchPlaceholder": "팀 또는 핸들 검색",
+        "count": "{count, plural, other {#개 계정}}",
+        "previous": "이전 페이지",
+        "next": "다음 페이지",
+        "error": {
+          "notFound": "이 계정은 더 이상 존재하지 않습니다.",
+          "teamRequired": "팀을 선택하세요.",
+          "teamNotFound": "이 팀은 더 이상 존재하지 않습니다.",
+          "handleRequired": "X 핸들을 입력하세요.",
+          "handleInvalid": "핸들은 1자에서 15자의 영문, 숫자 또는 밑줄이어야 합니다.",
+          "handleTaken": "이 핸들은 이미 팔로우 중입니다."
+        }
+      },
+      "import": {
+        "button": "자동 가져오기",
+        "title": "X 계정 가져오기",
+        "description": "대회 각 팀의 소셜 링크에서 찾은 X 계정을 팔로우합니다.",
+        "tournament": "대회",
+        "tournamentPlaceholder": "대회 선택",
+        "tournamentSearch": "대회 검색",
+        "tournamentNoResults": "대회를 찾을 수 없습니다",
+        "stage": "스테이지",
+        "allStages": "모든 스테이지",
+        "cancel": "취소",
+        "submit": "가져오기",
+        "importing": "가져오는 중...",
+        "success": "{added, plural, =0 {추가된 계정 없음} other {계정 #개 추가됨}}. 이미 팔로우 중: {alreadyFollowed}, X 계정 없음: {noTwitter}, 유효하지 않음: {invalid}.",
+        "error": {
+          "tournamentRequired": "대회를 선택하세요.",
+          "tournamentNotFound": "이 대회는 더 이상 존재하지 않습니다.",
+          "stageNotFound": "이 스테이지는 대회에 속하지 않습니다."
+        }
+      },
+      "searchPlaceholder": "트윗 또는 팀 검색",
+      "searchSubmit": "검색",
+      "statusLabel": "상태",
+      "columnTeam": "팀",
+      "columnTweet": "트윗",
+      "columnType": "유형",
+      "columnDate": "날짜",
+      "columnActions": "작업"
     }
   },
   "dashboard": {
@@ -6262,7 +6397,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "경기, 대회, 팀 또는 선수가 변경되면 GC Stats가 엔드포인트로 HTTPS POST를 보내요. 전송은 약 1분마다 확인돼요.",
+      "description": "GC Stats는 경기, 대회, 팀, 선수 또는 로스터가 변경되면 엔드포인트로 HTTPS POST를 보냅니다. 전송은 약 1분마다 확인됩니다.",
       "pageTitle": "Webhook",
       "pageSubtitle": "파트너 API 키의 엔드포인트와 전송 내역.",
       "keySwitcher": "파트너 API 키",
@@ -6333,6 +6468,9 @@
         },
         "player": {
           "updated": "선수 업데이트"
+        },
+        "roster": {
+          "updated": "로스터 변경 확인됨"
         }
       },
       "filtersTitle": "필터",
@@ -6364,7 +6502,8 @@
           "invalid": "올바른 URL이 아니에요.",
           "notHttps": "URL은 https://로 시작해야 해요.",
           "credentials": "URL에 사용자 이름이나 비밀번호를 포함할 수 없어요.",
-          "privateHost": "URL은 공개 주소를 가리켜야 해요."
+          "privateHost": "URL은 공개 주소를 가리켜야 해요.",
+          "notDiscord": "Discord Webhook URL이 아닙니다."
         },
         "description": {
           "tooLong": "최대 {descriptionMaxLength}자까지 입력할 수 있어요."
@@ -6384,8 +6523,21 @@
         },
         "filterOfficial": {
           "invalid": "올바르지 않은 값이에요."
+        },
+        "kind": {
+          "invalid": "올바른 유형을 선택하세요."
         }
-      }
+      },
+      "kind": {
+        "label": "유형",
+        "standard": "표준",
+        "discord": "Discord",
+        "hint": {
+          "standard": "서명된 JSON 요청을 서버로 보냅니다.",
+          "discord": "Discord 채널에 트윗 링크만 게시합니다."
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL (서버 설정, 연동, Webhook)."
     },
     "discord": {
       "serversTitle": "Discord 서버",

@@ -21,3 +21,4 @@ export * from "./pickem";
 export * from "./oauth";
 export * from "./webhooks";
 export * from "./discord-bot";
+export * from "./roster-watch";

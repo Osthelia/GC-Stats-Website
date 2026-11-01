@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "合作伙伴密钥可以在其控制台中注册 HTTPS 接口：每当数据发生变化时，GC Stats 会发送一个 POST 请求。",
-      "events": "事件：新比赛、比赛已更新、新赛事、赛事已更新、战队已更新、选手已更新。",
+      "events": "事件：新比赛、比赛更新、新赛事、赛事更新、战队更新、选手更新、经我们团队确认的阵容变更（roster.updated）。",
       "filters": "筛选：赛事地区、是否官方、参赛战队。",
       "signature": "每个请求都带有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 和 X-GCS-Signature 请求头。请使用接口密钥校验签名。",
       "retries": "请在 10 秒内返回 2xx 状态码。失败的推送会在约 9 小时内重试，频繁失败的接口将被关闭。",
-      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。"
+      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。",
+      "discord": "Discord 类型的端点只接收 roster.updated 事件，并在你的频道中发布推文链接，不带签名。"
     }
   },
   "becomePublisher": {
@@ -2023,7 +2024,8 @@
       "analytics": "统计分析",
       "oauthClients": "OAuth 客户端",
       "settings": "配置",
-      "discordImages": "Discord 机器人图片"
+      "discordImages": "Discord 机器人图片",
+      "rosterWatch": "名单监控"
     },
     "dashboard": {
       "title": "控制台",
@@ -3462,7 +3464,8 @@
         "activityLog": "活动日志",
         "analytics": "统计分析",
         "oauthClients": "OAuth 客户端",
-        "settings": "配置"
+        "settings": "配置",
+        "rosterWatch": "名单监控"
       },
       "permissionNames": {
         "admin_access": "访问管理面板",
@@ -3513,7 +3516,9 @@
         "oauth_clients_view": "查看 OAuth 客户端",
         "oauth_clients_manage": "创建、编辑或删除 OAuth 客户端",
         "settings_view": "查看配置和 OpenData 监控",
-        "settings_manage": "编辑配置"
+        "settings_manage": "编辑配置",
+        "roster_watch_view": "查看名单监控",
+        "roster_watch_manage": "审核名单监控推文并管理已关注账号"
       },
       "create": {
         "button": "新建角色",
@@ -5442,6 +5447,136 @@
         "tooShort": "至少 {min} 个字符。",
         "tooLong": "最多 {max} 个字符。"
       }
+    },
+    "rosterWatch": {
+      "title": "名单监控",
+      "subtitle": "战队账号的推文由 AI 分类，以便人工审核名单变动。",
+      "empty": "这里没有需要审核的内容。",
+      "tabs": {
+        "roster": "名单",
+        "unsure": "待确认",
+        "done": "已审核"
+      },
+      "filters": {
+        "period": "时间段",
+        "periodAny": "任意时间段",
+        "periodDays": "最近 {days} 天",
+        "topic": "主题",
+        "topicAny": "任意主题"
+      },
+      "topic": {
+        "roster_join": "选手加入",
+        "roster_leave": "选手离队",
+        "roster_bench": "选手转替补",
+        "staff_change": "教练组变动",
+        "tryouts": "Tryouts",
+        "match_promo": "比赛宣传",
+        "match_result": "比赛结果",
+        "highlight": "精彩集锦",
+        "sponsor": "赞助商",
+        "merch": "周边",
+        "giveaway": "Giveaway",
+        "stream": "直播",
+        "content": "内容",
+        "community": "社区",
+        "other": "其他"
+      },
+      "verdict": {
+        "roster": "名单",
+        "not_roster": "非名单",
+        "unsure": "不确定"
+      },
+      "card": {
+        "openTweet": "打开推文",
+        "noText": "无文字",
+        "openPhoto": "打开照片",
+        "openVideo": "打开视频",
+        "players": "相关人员:"
+      },
+      "actions": {
+        "editTeam": "编辑战队",
+        "ignore": "忽略",
+        "notRoster": "非名单",
+        "done": "完成"
+      },
+      "form": {
+        "topic": "内容是什么",
+        "topicPlaceholder": "选择主题",
+        "noteWhatIsIt": "这是什么？",
+        "confirm": "确认",
+        "cancel": "取消"
+      },
+      "reviewed": {
+        "team_edited": "战队已编辑",
+        "ignored": "已忽略",
+        "marked_not_roster": "已标记为非名单",
+        "reported_missed": "已报告为漏检"
+      },
+      "error": {
+        "notFound": "该推文已不存在。",
+        "invalidState": "该推文无法执行此操作，可能已被审核。",
+        "invalidTopic": "请选择有效的主题。",
+        "noteRequired": "请说明这条推文的内容。",
+        "noteTooLong": "备注太长（最多 1000 个字符）。"
+      },
+      "accounts": {
+        "title": "已关注账号",
+        "subtitle": "每天抓取一次的 X 账号。",
+        "team": "战队",
+        "teamPlaceholder": "选择战队",
+        "teamSearch": "搜索战队",
+        "teamNoResults": "未找到战队",
+        "handle": "X 用户名",
+        "add": "添加",
+        "added": "账号已添加。",
+        "enabled": "已启用",
+        "toastEnabled": "账号已启用。",
+        "toastDisabled": "账号已停用。",
+        "lastPolled": "上次抓取",
+        "lastError": "上次错误",
+        "empty": "尚未关注任何账号。",
+        "noResults": "没有与此搜索匹配的账号。",
+        "searchPlaceholder": "搜索战队或账号名",
+        "count": "{count, plural, other {# 个账号}}",
+        "previous": "上一页",
+        "next": "下一页",
+        "error": {
+          "notFound": "该账号已不存在。",
+          "teamRequired": "请选择战队。",
+          "teamNotFound": "该战队已不存在。",
+          "handleRequired": "请输入 X 用户名。",
+          "handleInvalid": "用户名必须是 1 到 15 个字母、数字或下划线。",
+          "handleTaken": "该用户名已被关注。"
+        }
+      },
+      "import": {
+        "button": "自动导入",
+        "title": "导入 X 账号",
+        "description": "关注赛事中每支战队社交链接里的 X 账号。",
+        "tournament": "赛事",
+        "tournamentPlaceholder": "选择赛事",
+        "tournamentSearch": "搜索赛事",
+        "tournamentNoResults": "未找到赛事",
+        "stage": "阶段",
+        "allStages": "所有阶段",
+        "cancel": "取消",
+        "submit": "导入",
+        "importing": "导入中...",
+        "success": "{added, plural, =0 {未添加任何账号} other {已添加 # 个账号}}。已关注：{alreadyFollowed}，无 X 账号：{noTwitter}，无效：{invalid}。",
+        "error": {
+          "tournamentRequired": "请选择赛事。",
+          "tournamentNotFound": "该赛事已不存在。",
+          "stageNotFound": "该阶段不属于此赛事。"
+        }
+      },
+      "searchPlaceholder": "搜索推文或战队",
+      "searchSubmit": "搜索",
+      "statusLabel": "状态",
+      "columnTeam": "战队",
+      "columnTweet": "推文",
+      "columnType": "类型",
+      "columnDate": "日期",
+      "columnActions": "操作"
     }
   },
   "dashboard": {
@@ -6262,7 +6397,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "当比赛、赛事、战队或选手发生变化时，GC Stats 会向您的接口发送 HTTPS POST 请求。推送大约每分钟检查一次。",
+      "description": "当比赛、赛事、战队、选手或阵容发生变化时，GC Stats 会向你的端点发送 HTTPS POST。投递约每分钟检查一次。",
       "pageTitle": "Webhook",
       "pageSubtitle": "您的合作伙伴 API 密钥的接口与推送记录。",
       "keySwitcher": "合作伙伴 API 密钥",
@@ -6333,6 +6468,9 @@
         },
         "player": {
           "updated": "选手已更新"
+        },
+        "roster": {
+          "updated": "阵容变更已确认"
         }
       },
       "filtersTitle": "筛选",
@@ -6364,7 +6502,8 @@
           "invalid": "这不是有效的 URL。",
           "notHttps": "URL 必须以 https:// 开头。",
           "credentials": "URL 不能包含用户名或密码。",
-          "privateHost": "URL 必须指向公开地址。"
+          "privateHost": "URL 必须指向公开地址。",
+          "notDiscord": "这不是 Discord Webhook URL。"
         },
         "description": {
           "tooLong": "最多 {descriptionMaxLength} 个字符。"
@@ -6384,8 +6523,21 @@
         },
         "filterOfficial": {
           "invalid": "无效的值。"
+        },
+        "kind": {
+          "invalid": "请选择有效的类型。"
         }
-      }
+      },
+      "kind": {
+        "label": "类型",
+        "standard": "标准",
+        "discord": "Discord",
+        "hint": {
+          "standard": "发送到你服务器的带签名 JSON 请求。",
+          "discord": "仅在 Discord 频道中发布推文链接。"
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL（服务器设置、集成、Webhooks）。"
     },
     "discord": {
       "serversTitle": "Discord 服务器",

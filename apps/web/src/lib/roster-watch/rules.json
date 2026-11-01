@@ -1,0 +1,23 @@
+{
+  "neverExclude": {
+    "anyKeywords": [
+      "welcome", "roster", "joins", "joining", "new chapter", "farewell", "parting ways",
+      "thank you for", "thanks for everything", "free agent", "bench", "benched",
+      "signing", "signed", "announce", "new member", "new player", "new coach",
+      "bienvenue", "tryout", "tryouts"
+    ]
+  },
+  "exclude": [
+    {
+      "id": "highlight",
+      "anyKeywords": ["clutch", "clip", "ace", "highlight", "highlights", "insane", "play of the"],
+      "requiresMedia": "video"
+    },
+    {
+      "id": "matchday",
+      "anyKeywords": ["matchday", "match day", "game day", "gameday", "live now", "we're live", "tune in", "map 1", "map 2", "map 3"]
+    },
+    { "id": "result", "regex": "\\b(?:final|won|win|wins|lost|loss|victory|defeat|beat|vs)\\b[^\\n]{0,40}\\b\\d{1,2}\\s*[-–:]\\s*\\d{1,2}\\b|\\b\\d{1,2}\\s*[-–:]\\s*\\d{1,2}\\b[^\\n]{0,40}\\b(?:final|won|win|wins|lost|loss|victory|defeat)\\b" },
+    { "id": "gg", "regex": "^\\s*gg\\b" }
+  ]
+}

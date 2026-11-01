@@ -449,6 +449,20 @@
       "when": 1793490732366,
       "tag": "0063_discord_bot_image_decisions",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1793541295824,
+      "tag": "0064_roster_watch",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1793544018798,
+      "tag": "0065_webhook_endpoint_kind",
+      "breakpoints": true
     }
   ]
 }

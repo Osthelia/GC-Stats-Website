@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "Kunci partner dapat mendaftarkan endpoint HTTPS dari dashboard mereka: GC Stats lalu mengirim POST setiap kali data berubah.",
-      "events": "Event: pertandingan baru, pertandingan diperbarui, turnamen baru, turnamen diperbarui, tim diperbarui, pemain diperbarui.",
+      "events": "Event: pertandingan baru, pertandingan diperbarui, turnamen baru, turnamen diperbarui, tim diperbarui, pemain diperbarui, perubahan roster yang divalidasi oleh tim kami (roster.updated).",
       "filters": "Filter: region turnamen, resmi atau tidak, tim peserta.",
       "signature": "Setiap permintaan membawa header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp, dan X-GCS-Signature. Periksa tanda tangan dengan secret endpoint Anda.",
       "retries": "Balas dengan status 2xx dalam 10 detik. Pengiriman yang gagal dicoba ulang selama sekitar 9 jam, dan endpoint yang terlalu sering gagal akan dinonaktifkan.",
-      "setup": "Payload berisi event, tanggalnya, dan entitasnya, dengan kolom yang sama seperti dataset OpenData."
+      "setup": "Payload berisi event, tanggalnya, dan entitasnya, dengan kolom yang sama seperti dataset OpenData.",
+      "discord": "Endpoint bertipe Discord hanya menerima event roster.updated dan memposting tautan tweet di kanal Anda, tanpa tanda tangan."
     }
   },
   "becomePublisher": {
@@ -2023,7 +2024,8 @@
       "analytics": "Analitik",
       "oauthClients": "Klien OAuth",
       "settings": "Konfigurasi",
-      "discordImages": "Gambar bot Discord"
+      "discordImages": "Gambar bot Discord",
+      "rosterWatch": "Pantauan roster"
     },
     "dashboard": {
       "title": "Dasbor",
@@ -3462,7 +3464,8 @@
         "activityLog": "Log aktivitas",
         "analytics": "Analitik",
         "oauthClients": "Klien OAuth",
-        "settings": "Konfigurasi"
+        "settings": "Konfigurasi",
+        "rosterWatch": "Pantauan roster"
       },
       "permissionNames": {
         "admin_access": "Mengakses panel admin",
@@ -3513,7 +3516,9 @@
         "oauth_clients_view": "Melihat klien OAuth",
         "oauth_clients_manage": "Membuat, menyunting, atau menghapus klien OAuth",
         "settings_view": "Melihat konfigurasi dan pemantauan OpenData",
-        "settings_manage": "Mengubah konfigurasi"
+        "settings_manage": "Mengubah konfigurasi",
+        "roster_watch_view": "Lihat pantauan roster",
+        "roster_watch_manage": "Tinjau tweet pantauan roster dan kelola akun yang diikuti"
       },
       "create": {
         "button": "Peran baru",
@@ -5442,6 +5447,136 @@
         "tooShort": "Minimal {min} karakter.",
         "tooLong": "Maksimal {max} karakter."
       }
+    },
+    "rosterWatch": {
+      "title": "Pantauan roster",
+      "subtitle": "Tweet akun tim, disortir oleh AI agar perubahan roster bisa ditinjau manusia.",
+      "empty": "Tidak ada yang perlu ditinjau di sini.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Perlu dicek",
+        "done": "Sudah ditinjau"
+      },
+      "filters": {
+        "period": "Periode",
+        "periodAny": "Periode apa pun",
+        "periodDays": "{days} hari terakhir",
+        "topic": "Topik",
+        "topicAny": "Topik apa pun"
+      },
+      "topic": {
+        "roster_join": "Pemain bergabung",
+        "roster_leave": "Pemain keluar",
+        "roster_bench": "Pemain dicadangkan",
+        "staff_change": "Perubahan staf",
+        "tryouts": "Tryouts",
+        "match_promo": "Promo pertandingan",
+        "match_result": "Hasil pertandingan",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Konten",
+        "community": "Komunitas",
+        "other": "Lainnya"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Bukan roster",
+        "unsure": "Belum pasti"
+      },
+      "card": {
+        "openTweet": "Buka tweet",
+        "noText": "Tanpa teks",
+        "openPhoto": "Buka foto",
+        "openVideo": "Buka video",
+        "players": "Orang:"
+      },
+      "actions": {
+        "editTeam": "Edit tim",
+        "ignore": "Abaikan",
+        "notRoster": "Bukan roster",
+        "done": "Selesai"
+      },
+      "form": {
+        "topic": "Tentang apa",
+        "topicPlaceholder": "Pilih topik",
+        "noteWhatIsIt": "Apa ini?",
+        "confirm": "Konfirmasi",
+        "cancel": "Batal"
+      },
+      "reviewed": {
+        "team_edited": "Tim diedit",
+        "ignored": "Diabaikan",
+        "marked_not_roster": "Ditandai bukan roster",
+        "reported_missed": "Dilaporkan terlewat"
+      },
+      "error": {
+        "notFound": "Tweet ini sudah tidak ada.",
+        "invalidState": "Tweet ini tidak bisa menerima aksi ini, mungkin sudah ditinjau.",
+        "invalidTopic": "Pilih topik yang valid.",
+        "noteRequired": "Jelaskan tentang apa tweet ini.",
+        "noteTooLong": "Catatan terlalu panjang (maksimal 1000 karakter)."
+      },
+      "accounts": {
+        "title": "Akun yang diikuti",
+        "subtitle": "Akun X yang diambil sekali sehari.",
+        "team": "Tim",
+        "teamPlaceholder": "Pilih tim",
+        "teamSearch": "Cari tim",
+        "teamNoResults": "Tim tidak ditemukan",
+        "handle": "Username X",
+        "add": "Tambah",
+        "added": "Akun ditambahkan.",
+        "enabled": "Aktif",
+        "toastEnabled": "Akun diaktifkan.",
+        "toastDisabled": "Akun dinonaktifkan.",
+        "lastPolled": "Pengambilan terakhir",
+        "lastError": "Error terakhir",
+        "empty": "Belum ada akun yang diikuti.",
+        "noResults": "Tidak ada akun yang cocok dengan pencarian ini.",
+        "searchPlaceholder": "Cari tim atau handle",
+        "count": "{count, plural, other {# akun}}",
+        "previous": "Halaman sebelumnya",
+        "next": "Halaman berikutnya",
+        "error": {
+          "notFound": "Akun ini sudah tidak ada.",
+          "teamRequired": "Pilih tim.",
+          "teamNotFound": "Tim ini sudah tidak ada.",
+          "handleRequired": "Masukkan username X.",
+          "handleInvalid": "Username harus terdiri dari 1 sampai 15 huruf, angka, atau garis bawah.",
+          "handleTaken": "Username ini sudah diikuti."
+        }
+      },
+      "import": {
+        "button": "Impor otomatis",
+        "title": "Impor akun X",
+        "description": "Mengikuti akun X yang ditemukan di sosial media setiap tim turnamen.",
+        "tournament": "Turnamen",
+        "tournamentPlaceholder": "Pilih turnamen",
+        "tournamentSearch": "Cari turnamen",
+        "tournamentNoResults": "Turnamen tidak ditemukan",
+        "stage": "Babak",
+        "allStages": "Semua babak",
+        "cancel": "Batal",
+        "submit": "Impor",
+        "importing": "Mengimpor...",
+        "success": "{added, plural, =0 {Tidak ada akun ditambahkan} other {# akun ditambahkan}}. Sudah diikuti: {alreadyFollowed}, tanpa akun X: {noTwitter}, tidak valid: {invalid}.",
+        "error": {
+          "tournamentRequired": "Pilih turnamen.",
+          "tournamentNotFound": "Turnamen ini sudah tidak ada.",
+          "stageNotFound": "Babak ini bukan bagian dari turnamen."
+        }
+      },
+      "searchPlaceholder": "Cari tweet atau tim",
+      "searchSubmit": "Cari",
+      "statusLabel": "Status",
+      "columnTeam": "Tim",
+      "columnTweet": "Tweet",
+      "columnType": "Tipe",
+      "columnDate": "Tanggal",
+      "columnActions": "Aksi"
     }
   },
   "dashboard": {
@@ -6262,7 +6397,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "GC Stats mengirim POST HTTPS ke endpoint Anda ketika pertandingan, turnamen, tim, atau pemain berubah. Pengiriman diperiksa sekitar setiap menit.",
+      "description": "GC Stats mengirim HTTPS POST ke endpoint Anda saat pertandingan, turnamen, tim, pemain, atau roster berubah. Pengiriman diperiksa sekitar setiap menit.",
       "pageTitle": "Webhook",
       "pageSubtitle": "Endpoint dan pengiriman dari kunci API mitra Anda.",
       "keySwitcher": "Kunci API mitra",
@@ -6333,6 +6468,9 @@
         },
         "player": {
           "updated": "Pemain diperbarui"
+        },
+        "roster": {
+          "updated": "Perubahan roster divalidasi"
         }
       },
       "filtersTitle": "Filter",
@@ -6364,7 +6502,8 @@
           "invalid": "URL ini tidak valid.",
           "notHttps": "URL harus diawali dengan https://.",
           "credentials": "URL tidak boleh berisi nama pengguna atau kata sandi.",
-          "privateHost": "URL harus mengarah ke alamat publik."
+          "privateHost": "URL harus mengarah ke alamat publik.",
+          "notDiscord": "Ini bukan URL Webhook Discord."
         },
         "description": {
           "tooLong": "Maksimal {descriptionMaxLength} karakter."
@@ -6384,8 +6523,21 @@
         },
         "filterOfficial": {
           "invalid": "Nilai tidak valid."
+        },
+        "kind": {
+          "invalid": "Pilih tipe yang valid."
         }
-      }
+      },
+      "kind": {
+        "label": "Tipe",
+        "standard": "Standar",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Permintaan JSON bertanda tangan yang dikirim ke server Anda.",
+          "discord": "Hanya memposting tautan tweet di kanal Discord."
+        }
+      },
+      "urlHintDiscord": "URL Webhook Discord (Pengaturan server, Integrasi, Webhook)."
     },
     "discord": {
       "serversTitle": "Server Discord",
