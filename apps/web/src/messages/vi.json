@@ -6525,7 +6525,8 @@
           "color": "Màu không hợp lệ.",
           "token": {
             "required": "Nhập token của bot.",
-            "invalidToken": "Discord đã từ chối token này, hãy kiểm tra xem đó có phải token bot không."
+            "invalidToken": "Discord đã từ chối token này, hãy kiểm tra xem đó có phải token bot không.",
+            "rateLimited": "Quá nhiều lần thử, hãy đợi một phút."
           }
         },
         "matchButton": "Nút mở trận đấu",

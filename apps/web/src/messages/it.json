@@ -6525,7 +6525,8 @@
           "color": "Colore non valido.",
           "token": {
             "required": "Inserisci il token del bot.",
-            "invalidToken": "Discord ha rifiutato questo token, verifica che sia un token di bot."
+            "invalidToken": "Discord ha rifiutato questo token, verifica che sia un token di bot.",
+            "rateLimited": "Troppi tentativi, attendi un minuto."
           }
         },
         "matchButton": "Pulsante per aprire la partita",

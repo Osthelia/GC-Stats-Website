@@ -6525,7 +6525,8 @@
           "color": "잘못된 색상입니다.",
           "token": {
             "required": "봇 token을 입력하세요.",
-            "invalidToken": "Discord가 이 token을 거부했습니다. 봇 token인지 확인하세요."
+            "invalidToken": "Discord가 이 token을 거부했습니다. 봇 token인지 확인하세요.",
+            "rateLimited": "시도 횟수가 너무 많습니다. 1분 기다려 주세요."
           }
         },
         "matchButton": "경기 열기 버튼",

@@ -6525,7 +6525,8 @@
           "color": "Nieprawidłowy kolor.",
           "token": {
             "required": "Podaj token bota.",
-            "invalidToken": "Discord odrzucił ten token, sprawdź, czy to token bota."
+            "invalidToken": "Discord odrzucił ten token, sprawdź, czy to token bota.",
+            "rateLimited": "Zbyt wiele prób, poczekaj minutę."
           }
         },
         "matchButton": "Przycisk otwierający mecz",

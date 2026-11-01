@@ -87,7 +87,7 @@ async function deliver(sub: Subscription, theme: Theme, ctx: MatchContext, kind:
     // Only the live message follows the match, the others are final once posted.
     if (kind !== "live" || existing.contentHash === contentHash || existing.contentHash === DELETED_HASH || existing.contentHash === MESSAGE_IMAGE_REMOVED_HASH || existing.contentHash === MESSAGE_IMAGE_REMOVAL_QUEUED_HASH || !existing.messageId || budget.left <= 0) return null;
     budget.left--;
-    const message = await buildAlertMessage(kind, match, sub.locale, map, theme.colors, theme.template?.template ?? null, theme.matchButton);
+    const message = await buildAlertMessage(kind, match, sub.locale, map, theme.colors, theme.template?.template ?? null, theme.template?.imagePins ?? {}, theme.matchButton);
     const result = await editChannelMessage(theme.token, sub.channelId, existing.messageId, message.components, message.attachment);
     if (result.ok) {
       await db.update(discordBotMessages).set({ contentHash, updatedAt: new Date() }).where(eq(discordBotMessages.id, existing.id));
@@ -112,7 +112,7 @@ async function deliver(sub: Subscription, theme: Theme, ctx: MatchContext, kind:
     .returning({ id: discordBotMessages.id });
   if (!claim) return null;
 
-  const message = await buildAlertMessage(kind, match, sub.locale, map, theme.colors, theme.template?.template ?? null, theme.matchButton);
+  const message = await buildAlertMessage(kind, match, sub.locale, map, theme.colors, theme.template?.template ?? null, theme.template?.imagePins ?? {}, theme.matchButton);
   const result = await postChannelMessage(theme.token, sub.channelId, message.components, message.attachment);
   if (result.ok) {
     await db.update(discordBotMessages).set({ messageId: result.messageId, updatedAt: new Date() }).where(eq(discordBotMessages.id, claim.id));

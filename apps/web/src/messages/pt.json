@@ -6525,7 +6525,8 @@
           "color": "Cor inválida.",
           "token": {
             "required": "Introduz o token do bot.",
-            "invalidToken": "O Discord recusou este token, verifica se é um token de bot."
+            "invalidToken": "O Discord recusou este token, verifica se é um token de bot.",
+            "rateLimited": "Muitas tentativas, aguarde um minuto."
           }
         },
         "matchButton": "Botão para abrir o jogo",

@@ -6525,7 +6525,8 @@
           "color": "無効な色です。",
           "token": {
             "required": "ボットのtokenを入力してください。",
-            "invalidToken": "Discordがこのtokenを拒否しました。ボットのtokenであることを確認してください。"
+            "invalidToken": "Discordがこのtokenを拒否しました。ボットのtokenであることを確認してください。",
+            "rateLimited": "試行回数が多すぎます。1分ほどお待ちください。"
           }
         },
         "matchButton": "試合を開くボタン",

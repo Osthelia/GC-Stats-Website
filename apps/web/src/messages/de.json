@@ -6525,7 +6525,8 @@
           "color": "Ungültige Farbe.",
           "token": {
             "required": "Gib den Bot Token ein.",
-            "invalidToken": "Discord hat diesen Token abgelehnt, prüfe, ob es ein Bot Token ist."
+            "invalidToken": "Discord hat diesen Token abgelehnt, prüfe, ob es ein Bot Token ist.",
+            "rateLimited": "Zu viele Versuche, warte eine Minute."
           }
         },
         "matchButton": "Button zum Öffnen des Matches",

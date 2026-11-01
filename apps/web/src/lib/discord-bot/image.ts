@@ -8,6 +8,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import crypto from "node:crypto";
 import { lookup as dnsLookup } from "node:dns";
 import { readFile } from "node:fs/promises";
 import https from "node:https";
@@ -34,6 +35,8 @@ export type AlertImageData = {
   locale: string;
   /** Link shown on the right of the footer. */
   footerUrl?: string;
+  /** SHA-256 of each reviewed external image (url -> hex). An external image absent from it or no longer matching is not drawn. Omitted: no check (unsaved editor preview). */
+  imagePins?: Record<string, string>;
 };
 
 type Node = { type: string; props: { style?: Record<string, unknown>; children?: Node | Node[] | string; src?: string } };
@@ -143,6 +146,16 @@ function fetchExternalImage(url: string): Promise<Buffer | null> {
   });
 }
 
+export function sha256Hex(data: Buffer): string {
+  return crypto.createHash("sha256").update(data).digest("hex");
+}
+
+/** SHA-256 of an external image as served right now, null when it cannot be downloaded. */
+export async function hashExternalImage(url: string): Promise<string | null> {
+  const data = await fetchExternalImage(url);
+  return data ? sha256Hex(data) : null;
+}
+
 /** File of a site asset (`/valorant/...`) in the public folder, null for any other address. */
 async function readSiteAsset(url: string): Promise<Buffer | null> {
   const prefix = `${GCS_SITE_URL}/valorant/`;
@@ -154,11 +167,14 @@ async function readSiteAsset(url: string): Promise<Buffer | null> {
 }
 
 /** Image as a data URI Satori can embed (it cannot read webp), null when unreachable. */
-async function toDataUri(url: string, resize?: Resize, external = false): Promise<string | null> {
+async function toDataUri(url: string, resize?: Resize, external = false, pins?: Record<string, string>): Promise<string | null> {
   try {
     let input: Buffer | null;
-    if (external) input = await fetchExternalImage(url);
-    else {
+    if (external) {
+      input = await fetchExternalImage(url);
+      // The picture must be the one the template was saved with.
+      if (input && pins && pins[url] !== sha256Hex(input)) return null;
+    } else {
       // Site assets come from disk, the server does not need to reach itself over HTTP.
       input = await readSiteAsset(url);
       if (!input) {
@@ -305,7 +321,7 @@ export async function renderTemplateImage(template: AlertTemplate, data: AlertIm
     const key = `${url}|${resize.width}x${resize.height}|${resize.fit}`;
     let loaded = assets.get(key);
     if (!loaded) {
-      loaded = toDataUri(url, resize, external);
+      loaded = toDataUri(url, resize, external, data.imagePins);
       assets.set(key, loaded);
     }
     return loaded;

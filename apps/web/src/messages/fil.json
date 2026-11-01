@@ -6525,7 +6525,8 @@
           "color": "Hindi wastong kulay.",
           "token": {
             "required": "Ilagay ang token ng bot.",
-            "invalidToken": "Tinanggihan ng Discord ang token na ito, tiyaking token ito ng bot."
+            "invalidToken": "Tinanggihan ng Discord ang token na ito, tiyaking token ito ng bot.",
+            "rateLimited": "Masyadong maraming pagsubok, maghintay ng isang minuto."
           }
         },
         "matchButton": "Button para buksan ang laban",

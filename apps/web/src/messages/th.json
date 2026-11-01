@@ -6525,7 +6525,8 @@
           "color": "สีไม่ถูกต้อง",
           "token": {
             "required": "กรอก token ของบอท",
-            "invalidToken": "Discord ปฏิเสธ token นี้ ตรวจสอบว่าเป็น token ของบอท"
+            "invalidToken": "Discord ปฏิเสธ token นี้ ตรวจสอบว่าเป็น token ของบอท",
+            "rateLimited": "พยายามมากเกินไป รอสักครู่หนึ่งนาที"
           }
         },
         "matchButton": "ปุ่มเปิดแมตช์",

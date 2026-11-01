@@ -6525,7 +6525,8 @@
           "color": "لون غير صالح.",
           "token": {
             "required": "أدخل token البوت.",
-            "invalidToken": "رفض Discord هذا الـ token، تأكد من أنه token خاص ببوت."
+            "invalidToken": "رفض Discord هذا الـ token، تأكد من أنه token خاص ببوت.",
+            "rateLimited": "محاولات كثيرة جدا، انتظر دقيقة."
           }
         },
         "matchButton": "زر لفتح المباراة",

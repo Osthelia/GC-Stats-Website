@@ -449,6 +449,13 @@
       "when": 1793490732366,
       "tag": "0063_discord_bot_image_decisions",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1793570684819,
+      "tag": "0064_discord_bot_image_pins",
+      "breakpoints": true
     }
   ]
 }

@@ -6525,7 +6525,8 @@
           "color": "顏色無效。",
           "token": {
             "required": "請輸入機器人 token。",
-            "invalidToken": "Discord 拒絕了此 token，請確認它是機器人 token。"
+            "invalidToken": "Discord 拒絕了此 token，請確認它是機器人 token。",
+            "rateLimited": "嘗試次數過多，請等待一分鐘。"
           }
         },
         "matchButton": "開啟比賽的按鈕",

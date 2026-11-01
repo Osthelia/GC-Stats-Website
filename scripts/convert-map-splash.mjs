@@ -9,7 +9,7 @@
 // Converts a map loading screen into the two webp splashes of the site.
 //   splash/{map}.webp     small, for the site and the small map pictures
 //   splash-hd/{map}.webp  high quality, for the Discord alert images and their preview
-// Usage: node convert-map-splash.mjs Loading_Screen_Abyss.png [more files...] [--out dir]
+// Usage: node scripts/convert-map-splash.mjs Loading_Screen_Abyss.png [more files...] [--out dir]
 // The map name is the file name without "Loading_Screen_", lowercased (Loading_Screen_Abyss.png -> abyss).
 
 import { mkdir } from "node:fs/promises";
@@ -25,7 +25,7 @@ const outRoot = resolve(outIndex >= 0 ? (args[outIndex + 1] ?? "") : "apps/web/p
 const files = args.filter((arg, i) => !arg.startsWith("--") && args[i - 1] !== "--out");
 
 if (files.length === 0 || (outIndex >= 0 && !args[outIndex + 1])) {
-  console.error("Usage: node convert-map-splash.mjs <image> [more images...] [--out dir]");
+  console.error("Usage: node scripts/convert-map-splash.mjs <image> [more images...] [--out dir]");
   process.exit(1);
 }
 

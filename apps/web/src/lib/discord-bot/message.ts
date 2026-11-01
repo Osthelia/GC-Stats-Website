@@ -63,7 +63,7 @@ export function composeRemovedImageMessage({ notice, accent, url, buttonLabel }:
   return { components: [{ type: CONTAINER, accent_color: hexToInt(accent), components: children }] };
 }
 
-export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, locale: string, map: AlertMap | undefined, colors: AlertColors, template: AlertTemplate | null, matchButton: boolean): Promise<AlertMessage> {
+export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, locale: string, map: AlertMap | undefined, colors: AlertColors, template: AlertTemplate | null, imagePins: Record<string, string>, matchButton: boolean): Promise<AlertMessage> {
   const live = kind === "live" && match.status === "live";
   const fields = await resolveAlertFields(kind, match, locale, map);
   const images = resolveAlertImages(kind, match, map);
@@ -75,7 +75,7 @@ export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, loca
   let image: Buffer | null = null;
   try {
     if (template) {
-      image = await renderTemplateImage(template, imageData);
+      image = await renderTemplateImage(template, { ...imageData, imagePins });
     } else {
       // Default bot: GC Stats design with every block that has data.
       const available: Record<TemplateBlock, boolean> = { maps: !!fields.mapsInline, vetos: !!fields.vetos, mvp: !!fields.mvp };

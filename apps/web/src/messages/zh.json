@@ -6525,7 +6525,8 @@
           "color": "颜色无效。",
           "token": {
             "required": "请输入机器人 token。",
-            "invalidToken": "Discord 拒绝了此 token，请确认它是机器人 token。"
+            "invalidToken": "Discord 拒绝了此 token，请确认它是机器人 token。",
+            "rateLimited": "尝试次数过多，请等待一分钟。"
           }
         },
         "matchButton": "打开比赛的按钮",

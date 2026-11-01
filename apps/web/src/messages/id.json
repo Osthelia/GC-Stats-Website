@@ -6525,7 +6525,8 @@
           "color": "Warna tidak valid.",
           "token": {
             "required": "Masukkan token bot.",
-            "invalidToken": "Discord menolak token ini, pastikan itu adalah token bot."
+            "invalidToken": "Discord menolak token ini, pastikan itu adalah token bot.",
+            "rateLimited": "Terlalu banyak percobaan, tunggu satu menit."
           }
         },
         "matchButton": "Tombol untuk membuka pertandingan",

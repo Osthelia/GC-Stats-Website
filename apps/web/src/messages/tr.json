@@ -6525,7 +6525,8 @@
           "color": "Geçersiz renk.",
           "token": {
             "required": "Bot token'ını gir.",
-            "invalidToken": "Discord bu token'ı reddetti, bir bot token'ı olduğundan emin ol."
+            "invalidToken": "Discord bu token'ı reddetti, bir bot token'ı olduğundan emin ol.",
+            "rateLimited": "Çok fazla deneme yapıldı, bir dakika bekle."
           }
         },
         "matchButton": "Maçı açan düğme",
