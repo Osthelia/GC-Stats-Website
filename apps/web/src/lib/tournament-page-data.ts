@@ -194,7 +194,6 @@ const STATUS_TO_DB: Record<MatchStatusFilter, TournamentMatchStatus[]> = { upcom
 /** Every Matches tab filter except `status`, which the status counts ignore. */
 function buildTournamentMatchesConditions(game: GameSlug, tournamentId: number, filters?: TournamentMatchesFilters) {
   const { entrants, matches, stages } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
   const conditions = [eq(stages.tournamentId, tournamentId)];
   // Un match sans aucune team assignée n'est pas affiché
   const entrantTeamIds = db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), isNotNull(entrants.teamId)));
@@ -205,7 +204,8 @@ function buildTournamentMatchesConditions(game: GameSlug, tournamentId: number, 
     const teamEntrantIds = db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.tournamentId, tournamentId), eq(entrants.teamId, filters.teamId)));
     conditions.push(or(inArray(matches.entrantAId, teamEntrantIds), inArray(matches.entrantBId, teamEntrantIds))!);
   }
-  if (filters?.map) {
+  if (filters?.map && gameHasMaps(game)) {
+    const { maps } = valorantTablesOf(game);
     // "Played" maps only (isCompleted), not veto picks/bans.
     conditions.push(inArray(matches.id, db.select({ id: maps.matchId }).from(maps).where(and(eq(maps.isCompleted, true), eq(maps.mapName, filters.map)))));
   }
