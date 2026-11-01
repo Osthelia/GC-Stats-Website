@@ -42,6 +42,28 @@ export type TournamentParticipant = {
   roster: TournamentRosterPlayer[];
 };
 
+async function mapFallbackRoster(game: GameSlug, entrantIds: number[]) {
+  const { people } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
+  return db
+    .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: people.id, handle: people.handle })
+    .from(mapPlayerStats)
+    .innerJoin(people, eq(people.id, mapPlayerStats.personId))
+    .where(inArray(mapPlayerStats.entrantId, entrantIds))
+    .orderBy(people.handle);
+}
+
+async function gameFallbackRoster(game: GameSlug, entrantIds: number[]) {
+  const { people } = gameTables(game);
+  const { gamePlayerStats } = leagueTablesOf(game);
+  return db
+    .selectDistinct({ entrantId: gamePlayerStats.entrantId, personId: people.id, handle: people.handle })
+    .from(gamePlayerStats)
+    .innerJoin(people, eq(people.id, gamePlayerStats.personId))
+    .where(inArray(gamePlayerStats.entrantId, entrantIds))
+    .orderBy(people.handle);
+}
+
 /**
  * Participating entrants + their roster for this tournament, scoped to a
  * single stage (`stageId`) when given — entrants only ever belong to a
@@ -57,7 +79,7 @@ export type TournamentParticipant = {
  * Roster source mirrors the priority documented in SUIVI.md ("Décisions
  * prises (entrants...)"): `entrant_members` (the locked-for-this-tournament
  * roster) first, falling back to the players who actually have recorded
- * stats for the entrant (`map_player_stats`) — the same signal V1's
+ * stats for the entrant (`map_player_stats`, or `lol_game_player_stats` for LoL) — the same signal V1's
  * tournament page used (it never had a per-tournament roster table at all)
  * — for tournaments migrated from V1, which never populated
  * `entrant_members` (see the migration README: "roster figé par tournoi,
@@ -65,7 +87,6 @@ export type TournamentParticipant = {
  */
 export async function getTournamentParticipants(game: GameSlug, tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
   const { entrants, entrantMembers, people, teams, matches, stageContainers } = gameTables(game);
-  const { mapPlayerStats } = valorantTablesOf(game);
   let stageCondition;
   if (stageId != null) {
     const stageMatchRows = await db
@@ -112,16 +133,8 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
   const entrantIdsWithLockedRoster = new Set(lockedRows.map((r) => r.entrantId));
   const fallbackEntrantIds = entrantIds.filter((id) => !entrantIdsWithLockedRoster.has(id));
 
-  // Valorant only: the fallback reads the players of the Valorant maps. LoL has no fallback yet.
-  // TODO: once the Riot import fills lol_game_player_stats, fall back to those rows for LoL teams without a locked roster.
-  const fallbackRows = fallbackEntrantIds.length && gameHasMaps(game)
-    ? await db
-        .selectDistinct({ entrantId: mapPlayerStats.entrantId, personId: people.id, handle: people.handle })
-        .from(mapPlayerStats)
-        .innerJoin(people, eq(people.id, mapPlayerStats.personId))
-        .where(inArray(mapPlayerStats.entrantId, fallbackEntrantIds))
-        .orderBy(people.handle)
-    : [];
+  // Without a locked roster, the roster is whoever has played for the entrant: the players of its maps or of its games.
+  const fallbackRows = fallbackEntrantIds.length === 0 ? [] : gameHasMaps(game) ? await mapFallbackRoster(game, fallbackEntrantIds) : await gameFallbackRoster(game, fallbackEntrantIds);
 
   const rosterByEntrant = new Map<number, TournamentRosterPlayer[]>();
   for (const r of [...lockedRows, ...fallbackRows]) {
