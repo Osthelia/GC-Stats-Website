@@ -433,7 +433,7 @@ export function StatsTable<K extends StatColumnSetKey>({
     [fixedColumns, weaponColumns],
   );
 
-  const storageName = `gcs.stats.cols.${storageKey}`;
+  const storageName = columnSet === "valorant" ? `gcs.stats.cols.${storageKey}` : `gcs.stats.cols.${columnSet}.${storageKey}`;
   const [visibleCols, setVisibleCols] = useState<string[]>(
     defaultVisibleColumns,
   );
@@ -461,11 +461,13 @@ export function StatsTable<K extends StatColumnSetKey>({
   useEffect(() => {
     try {
       const stored = localStorage.getItem(storageName);
-      if (stored) setVisibleCols(JSON.parse(stored));
+      // A column the set no longer has is dropped, the weapon columns are per rows and only known by their prefix.
+      const known = (key: string) => key.startsWith("weapon_") || fixedColumns.some((c) => c.key === key);
+      if (stored) setVisibleCols((JSON.parse(stored) as string[]).filter(known));
     } catch {
       // corrupted/blocked storage — keep defaults
     }
-  }, [storageName]);
+  }, [storageName, fixedColumns]);
 
   function toggleCol(key: string) {
     setVisibleCols((prev) => {
