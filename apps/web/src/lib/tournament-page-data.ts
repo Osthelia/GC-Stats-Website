@@ -3,23 +3,27 @@
  *
  * Public tournament page data: participants and rosters (locked roster
  * first, falling back to players with recorded stats), matches with
- * filters, and stats table rows/metadata for the tournament stats tab.
+ * filters, and stats table rows/metadata for the tournament stats tab
+ * (Valorant per map, LoL per game).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
+import { LEAGUE_ROLES } from "@gc-stats/lol-stats-engine";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import { getDisplayCatalog } from "@/lib/data-dragon-client";
+import { lolIconUrl } from "@/lib/lol-icons";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { formatSideScore } from "@/lib/match-score-format";
 import type { HomeMatch } from "@/lib/home-data";
 import type { EntityMatchStatusFilter as MatchStatusFilter } from "@/lib/entity-matches";
-import type { ParsedStatsFilters } from "@/lib/stats-filters";
+import type { LeagueStatsFilters, ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
 import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
 import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
@@ -483,6 +487,107 @@ export async function getTournamentStatsPlayerMeta(game: GameSlug, scope: SQLWra
     const personId = entrant.personId;
     result.set(personId, {
       agents: (agentsByPerson.get(personId) ?? []).sort(),
+      teamId: entrant.teamId,
+      teamName: entrant.displayName,
+      logoUrl: entrant.teamId != null ? (logosByTeamId.get(entrant.teamId)?.dark ?? null) : null,
+      logoUrlLight: entrant.teamId != null ? (logosByTeamId.get(entrant.teamId)?.light ?? null) : null,
+    });
+  }
+  return result;
+}
+
+export type LeagueStatsPlayerMeta = {
+  champions: { name: string; iconUrl: string | null }[];
+  teamId: number | null;
+  teamName: string | null;
+  logoUrl: string | null;
+  logoUrlLight: string | null;
+};
+
+/** Rows of the LoL tournament stats page (players only), as a subquery for `aggregateLeaguePlayerStatsSql`. */
+export function leagueStatsScope(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): SQLWrapper {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games, gamePlayerStats } = leagueTablesOf(game);
+  const { from, to } = resolveDateBounds(filters);
+
+  const conditions = [eq(stages.tournamentId, tournamentId), isNotNull(gamePlayerStats.personId)];
+  if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
+  if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
+  if (from) conditions.push(gte(games.startedAt, from));
+  if (to) conditions.push(lte(games.startedAt, to));
+
+  return db
+    .select({ id: gamePlayerStats.id })
+    .from(gamePlayerStats)
+    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(...conditions));
+}
+
+/** The stats page filter dropdowns: the champions played in this tournament, and the five roles in lane order. */
+export async function getLeagueStatsFilterOptions(game: GameSlug, tournamentId: number): Promise<{ champions: string[]; roles: string[] }> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games, gamePlayerStats } = leagueTablesOf(game);
+  const championRows = await db
+    .selectDistinct({ value: gamePlayerStats.championName })
+    .from(gamePlayerStats)
+    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(eq(stages.tournamentId, tournamentId));
+  return {
+    champions: championRows.map((r) => r.value).sort(),
+    roles: [...LEAGUE_ROLES],
+  };
+}
+
+/**
+ * The "Champions" and "Team" columns of the tournament stats table, over the same rows as the stats aggregation
+ * (`scope`). A player who appeared under two entrants is attributed to the one they have the most game rows for.
+ */
+export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper): Promise<Map<number, LeagueStatsPlayerMeta>> {
+  const { entrants } = gameTables(game);
+  const { gamePlayerStats } = leagueTablesOf(game);
+  const played = count();
+  const [championRows, entrantRows, catalog] = await Promise.all([
+    db
+      .select({ personId: gamePlayerStats.personId, championName: gamePlayerStats.championName, played })
+      .from(gamePlayerStats)
+      .where(inArray(gamePlayerStats.id, scope))
+      .groupBy(gamePlayerStats.personId, gamePlayerStats.championName)
+      .orderBy(desc(played), gamePlayerStats.championName),
+    // Entrant with the most game rows per player, lowest id on a tie.
+    db
+      .selectDistinctOn([gamePlayerStats.personId], { personId: gamePlayerStats.personId, id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName })
+      .from(gamePlayerStats)
+      .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
+      .where(inArray(gamePlayerStats.id, scope))
+      .groupBy(gamePlayerStats.personId, entrants.id)
+      .orderBy(gamePlayerStats.personId, desc(count()), entrants.id),
+    // The newest catalog: the icon key of a champion doesn't change with the patch.
+    getDisplayCatalog(null),
+  ]);
+
+  const championsByPerson = new Map<number, { name: string; iconUrl: string | null }[]>();
+  for (const r of championRows) {
+    if (r.personId == null) continue;
+    const key = catalog.championIconKeys[r.championName];
+    const champion = { name: r.championName, iconUrl: key === undefined ? null : lolIconUrl("champions", key) };
+    const champions = championsByPerson.get(r.personId);
+    if (champions) champions.push(champion);
+    else championsByPerson.set(r.personId, [champion]);
+  }
+  const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
+  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds, game);
+
+  const result = new Map<number, LeagueStatsPlayerMeta>();
+  for (const entrant of entrantRows) {
+    if (entrant.personId == null) continue;
+    result.set(entrant.personId, {
+      champions: championsByPerson.get(entrant.personId) ?? [],
       teamId: entrant.teamId,
       teamName: entrant.displayName,
       logoUrl: entrant.teamId != null ? (logosByTeamId.get(entrant.teamId)?.dark ?? null) : null,

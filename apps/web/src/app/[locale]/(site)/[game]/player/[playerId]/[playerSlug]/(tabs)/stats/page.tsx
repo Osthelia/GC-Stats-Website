@@ -87,6 +87,7 @@ export default async function PlayerStatsPage({
 
         <StatsTable
           rows={rows}
+          columnSet="valorant"
           storageKey="player"
           columnLabels={columnLabels}
           weaponsGroupLabel={t("statsWeaponsGroup")}

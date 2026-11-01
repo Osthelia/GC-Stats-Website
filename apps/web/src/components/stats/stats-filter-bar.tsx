@@ -8,6 +8,7 @@
 
 import { ListFilterDropdown } from "@/components/filters/list-filter-dropdown";
 import { SegmentedTrack, SegmentedLink } from "@/components/stats/segmented";
+import { VALORANT_STATS_FILTER_PARAMS, type StatsFilterParams } from "@/lib/stats-filters";
 
 export type StatsFilterState = {
   agent: string;
@@ -29,9 +30,12 @@ export function StatsFilterBar({
   agentOptions,
   mapOptions,
   labels,
+  params = VALORANT_STATS_FILTER_PARAMS,
 }: {
   basePath: string;
   filters: StatsFilterState;
+  /** The query names of the agent and map filters; LoL uses `champion` and `role` (see StatsFilterParams). */
+  params?: StatsFilterParams;
   agentOptions?: { value: string; label: string }[];
   mapOptions: { value: string; label: string }[];
   labels: {
@@ -51,8 +55,8 @@ export function StatsFilterBar({
   const buildHref = (overrides: Partial<StatsFilterState>) => {
     const next = { ...filters, ...overrides };
     const qs = new URLSearchParams();
-    if (next.agent) qs.set("agent", next.agent);
-    if (next.map) qs.set("map", next.map);
+    if (next.agent) qs.set(params.agent, next.agent);
+    if (next.map) qs.set(params.map, next.map);
     if (next.days && next.days !== "0") qs.set("days", next.days);
     if (next.startDate) qs.set("startDate", next.startDate);
     if (next.endDate) qs.set("endDate", next.endDate);
@@ -107,9 +111,9 @@ export function StatsFilterBar({
         className="flex flex-wrap items-end gap-3"
       >
         {filters.agent && (
-          <input type="hidden" name="agent" value={filters.agent} />
+          <input type="hidden" name={params.agent} value={filters.agent} />
         )}
-        {filters.map && <input type="hidden" name="map" value={filters.map} />}
+        {filters.map && <input type="hidden" name={params.map} value={filters.map} />}
         {filters.days && filters.days !== "0" && (
           <input type="hidden" name="days" value={filters.days} />
         )}

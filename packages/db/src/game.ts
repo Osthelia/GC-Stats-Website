@@ -47,6 +47,10 @@ export function gameHasVeto(game: GameSlug): boolean {
   return game === "valorant";
 }
 
+export function gameHasStats(game: GameSlug): boolean {
+  return gameHasMaps(game) || gameHasSeriesGames(game);
+}
+
 // A series is made of games stored in their own table (`lol_games`), not of maps.
 export function gameHasSeriesGames(game: GameSlug): boolean {
   return game === "lol";

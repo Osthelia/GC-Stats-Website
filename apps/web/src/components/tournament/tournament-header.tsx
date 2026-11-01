@@ -33,7 +33,7 @@ import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { ShareMenuButton } from "@/components/site/share-menu-button";
 import { isViewerAdmin } from "@/lib/rbac";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, gameHasStats, type GameSlug } from "@gc-stats/db/game";
 
 const SOCIAL_ICONS: Record<
   string,
@@ -391,7 +391,7 @@ export async function TournamentHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.filter((tab) => (tab !== "maps" && tab !== "stats") || gameHasMaps(game)).map((tab) => ({
+          tabs={TABS.filter((tab) => (tab !== "maps" || gameHasMaps(game)) && (tab !== "stats" || gameHasStats(game))).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

@@ -8,10 +8,12 @@
 
 "use client";
 
-import { useMemo, type ComponentProps } from "react";
+import { useMemo } from "react";
 import { Link } from "@/i18n/navigation";
-import { StatsTable, type StatsExtraColumn } from "@/components/stats/stats-table";
+import { StatsTable, type StatsExtraColumn, type StatsTableProps } from "@/components/stats/stats-table";
+import type { StatColumnSetKey } from "@/lib/stats-columns";
 import { AgentIcon } from "@/components/match/agent-icon";
+import { LolIcon } from "@/components/match/lol-icon";
 import { TeamBadge } from "@/components/home/team-badge";
 import { CountryBadge, hasCountryFlag } from "@/components/team/country-badge";
 import { slugify } from "@/lib/entity-id";
@@ -22,27 +24,33 @@ export type TournamentStatsPlayer = {
   countryCode: string | null;
   secondaryCountryCode: string | null;
   agents: string[];
+  /** LoL: the champions played, the most played first. */
+  champions: { name: string; iconUrl: string | null }[];
   teamId: number | null;
   teamName: string | null;
   logoUrl: string | null;
   logoUrlLight: string | null;
 };
 
+/** Max Champions show */
+const SHOWN_CHAMPIONS = 5;
+
 /** Cells are built here from plain data, so the RSC payload carries one small object per player instead of prerendered nodes. */
-export function TournamentStatsTable({
+export function TournamentStatsTable<K extends StatColumnSetKey>({
   players,
   agentLabel,
   nationalityLabel,
   teamLabel,
   ...tableProps
-}: Omit<ComponentProps<typeof StatsTable>, "identities" | "extraColumns"> & {
+}: Omit<StatsTableProps<K>, "identities" | "extraColumns"> & {
   players: Record<string, TournamentStatsPlayer>;
   agentLabel: string;
   nationalityLabel: string;
   teamLabel: string;
 }) {
+  const { columnSet } = tableProps;
   const { identities, extraColumns } = useMemo(() => {
-    const identities: ComponentProps<typeof StatsTable>["identities"] = {};
+    const identities: StatsTableProps<K>["identities"] = {};
     const agent: StatsExtraColumn = { key: "agent", label: agentLabel, cells: {}, searchValues: {} };
     const nationality: StatsExtraColumn = { key: "nationality", label: nationalityLabel, cells: {}, searchValues: {} };
     const team: StatsExtraColumn = { key: "team", label: teamLabel, cells: {}, searchValues: {} };
@@ -61,17 +69,34 @@ export function TournamentStatsTable({
         searchValue: p.handle ?? "",
       };
 
-      agent.cells[key] =
-        p.agents.length > 0 ? (
-          <div className="flex -space-x-2">
-            {p.agents.map((a) => (
-              <AgentIcon key={a} agent={a} size="h-6 w-6" rounded />
-            ))}
-          </div>
-        ) : (
-          "–"
-        );
-      agent.searchValues![key] = p.agents.join(", ");
+       if (columnSet === "valorant") {
+        agent.cells[key] =
+          p.agents.length > 0 ? (
+            <div className="flex -space-x-2">
+              {p.agents.map((a) => (
+                <AgentIcon key={a} agent={a} size="h-6 w-6" rounded />
+              ))}
+            </div>
+          ) : (
+            "–"
+          );
+        agent.searchValues![key] = p.agents.join(", ");
+      } else if (columnSet === "lol") {
+        agent.cells[key] =
+          p.champions.length > 0 ? (
+            <div className="flex items-center justify-center gap-1">
+              <div className="flex -space-x-1.5">
+                {p.champions.slice(0, SHOWN_CHAMPIONS).map((c) => (
+                  <LolIcon key={c.name} kind="champion" url={c.iconUrl} name={c.name} size={24} />
+                ))}
+              </div>
+              {p.champions.length > SHOWN_CHAMPIONS && <span className="text-[10px] text-neutral-500">+{p.champions.length - SHOWN_CHAMPIONS}</span>}
+            </div>
+          ) : (
+            "–"
+          );
+        agent.searchValues![key] = p.champions.map((c) => c.name).join(", ");
+      }
 
       nationality.cells[key] = hasCountryFlag(p.countryCode) ? (
         <span className="inline-flex justify-center">
@@ -98,7 +123,7 @@ export function TournamentStatsTable({
     }
 
     return { identities, extraColumns: [agent, nationality, team] };
-  }, [players, agentLabel, nationalityLabel, teamLabel]);
+  }, [players, columnSet, agentLabel, nationalityLabel, teamLabel]);
 
   return <StatsTable {...tableProps} identities={identities} extraColumns={extraColumns} />;
 }
