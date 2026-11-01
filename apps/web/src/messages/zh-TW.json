@@ -4907,7 +4907,22 @@
           },
           "successQueued": "已執行處罰，{count} 則訊息將很快被編輯。"
         },
-        "editor": "編輯者"
+        "editor": "編輯者",
+        "history": {
+          "title": "歷史記錄",
+          "subtitle": "對警報圖片做出的所有決定，即使圖片被重置也會保留。",
+          "empty": "尚無決定。",
+          "verified": "已驗證",
+          "sanctioned": "已處罰",
+          "moderator": "決定者",
+          "reason": "原因",
+          "sanction": {
+            "blacklist_guild": "伺服器已加入黑名單",
+            "blacklist_user": "帳號已加入黑名單",
+            "reset_image": "圖片已重置",
+            "edit_messages": "訊息已編輯"
+          }
+        }
       }
     },
     "forum": {

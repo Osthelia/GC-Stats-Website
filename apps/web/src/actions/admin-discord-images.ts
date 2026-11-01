@@ -14,7 +14,7 @@
 
 import { and, eq, inArray, isNotNull, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { discordBotBlacklist, discordBotImageReviews, discordBotMessages, discordBotSubscriptions, discordBotTemplates, PERMISSIONS } from "@gc-stats/db";
+import { discordBotBlacklist, discordBotImageDecisions, discordBotImageReviews, discordBotMessages, discordBotSubscriptions, discordBotTemplates, PERMISSIONS } from "@gc-stats/db";
 import { deleteDiscordBackground } from "@gc-stats/storage";
 import { requireActorPermission } from "@/lib/rbac";
 import { DISCORD_IMAGE_SANCTION_REASON_MAX, MESSAGE_IMAGE_REMOVED_HASH, MESSAGE_IMAGE_REMOVAL_QUEUED_HASH } from "@/lib/discord-bot/shared";
@@ -34,12 +34,22 @@ export async function verifyDiscordImage(id: number): Promise<DiscordImageVerify
   const access = await requireActorPermission(PERMISSIONS.moderationManage);
   if (!Number.isInteger(id) || id <= 0) return { ok: false, error: "notFound" };
 
-  const updated = await db
+  const [updated] = await db
     .update(discordBotImageReviews)
     .set({ status: "verified", reviewedBy: access.userId, reviewedAt: new Date() })
     .where(and(eq(discordBotImageReviews.id, id), eq(discordBotImageReviews.status, "pending")))
-    .returning({ id: discordBotImageReviews.id });
-  return updated.length > 0 ? { ok: true } : { ok: false, error: "notFound" };
+    .returning();
+  if (!updated) return { ok: false, error: "notFound" };
+
+  await db.insert(discordBotImageDecisions).values({
+    guildId: updated.guildId,
+    event: updated.event,
+    decision: "verified",
+    editedBy: updated.editedBy,
+    editorDiscordId: updated.editorDiscordId,
+    decidedBy: access.userId,
+  });
+  return { ok: true };
 }
 
 export async function sanctionDiscordImage(id: number, input: DiscordImageSanctionInput): Promise<DiscordImageSanctionResult> {
@@ -67,6 +77,17 @@ export async function sanctionDiscordImage(id: number, input: DiscordImageSancti
   };
   if (blacklistGuild) await blacklist("guild", review.guildId);
   if (blacklistUser && review.editorDiscordId) await blacklist("user", review.editorDiscordId);
+
+  await db.insert(discordBotImageDecisions).values({
+    guildId: review.guildId,
+    event: review.event,
+    decision: "sanctioned",
+    sanctions: [blacklistGuild && "blacklist_guild", blacklistUser && "blacklist_user", resetImage && "reset_image", editMessages && "edit_messages"].filter((v): v is string => !!v),
+    reason,
+    editedBy: review.editedBy,
+    editorDiscordId: review.editorDiscordId,
+    decidedBy: access.userId,
+  });
 
   const queued = editMessages ? await queueMessageEdits(review.guildId, review.event) : 0;
 

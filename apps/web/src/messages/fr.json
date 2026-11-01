@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Sanction appliquée, {count} messages seront édités sous peu."
         },
-        "editor": "Modifiée par"
+        "editor": "Modifiée par",
+        "history": {
+          "title": "Historique",
+          "subtitle": "Toutes les décisions prises sur les images d'alerte, conservées même après la réinitialisation de l'image.",
+          "empty": "Aucune décision pour le moment.",
+          "verified": "Vérifiée",
+          "sanctioned": "Sanctionnée",
+          "moderator": "Décidé par",
+          "reason": "Raison",
+          "sanction": {
+            "blacklist_guild": "Serveur blacklisté",
+            "blacklist_user": "Compte blacklisté",
+            "reset_image": "Image réinitialisée",
+            "edit_messages": "Messages modifiés"
+          }
+        }
       }
     },
     "forum": {

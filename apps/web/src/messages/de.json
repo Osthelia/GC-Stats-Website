@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Sanktion angewendet, {count} Nachrichten werden in Kürze bearbeitet."
         },
-        "editor": "Bearbeitet von"
+        "editor": "Bearbeitet von",
+        "history": {
+          "title": "Verlauf",
+          "subtitle": "Alle Entscheidungen zu Alarmbildern, auch nach dem Zurücksetzen des Bildes gespeichert.",
+          "empty": "Noch keine Entscheidung.",
+          "verified": "Geprüft",
+          "sanctioned": "Sanktioniert",
+          "moderator": "Entschieden von",
+          "reason": "Grund",
+          "sanction": {
+            "blacklist_guild": "Server auf die Blacklist gesetzt",
+            "blacklist_user": "Konto auf die Blacklist gesetzt",
+            "reset_image": "Bild zurückgesetzt",
+            "edit_messages": "Nachrichten bearbeitet"
+          }
+        }
       }
     },
     "forum": {

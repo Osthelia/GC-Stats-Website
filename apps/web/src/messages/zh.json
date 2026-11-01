@@ -4907,7 +4907,22 @@
           },
           "successQueued": "已执行处罚，{count} 条消息将很快被编辑。"
         },
-        "editor": "编辑者"
+        "editor": "编辑者",
+        "history": {
+          "title": "历史记录",
+          "subtitle": "对警报图片做出的所有决定，即使图片被重置也会保留。",
+          "empty": "暂无决定。",
+          "verified": "已验证",
+          "sanctioned": "已处罚",
+          "moderator": "决定者",
+          "reason": "原因",
+          "sanction": {
+            "blacklist_guild": "服务器已加入黑名单",
+            "blacklist_user": "账号已加入黑名单",
+            "reset_image": "图片已重置",
+            "edit_messages": "消息已编辑"
+          }
+        }
       }
     },
     "forum": {

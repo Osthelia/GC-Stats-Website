@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Sanction applied, {count} messages will be edited shortly."
         },
-        "editor": "Edited by"
+        "editor": "Edited by",
+        "history": {
+          "title": "History",
+          "subtitle": "Every decision taken on alert images, kept even after the image is reset.",
+          "empty": "No decision yet.",
+          "verified": "Verified",
+          "sanctioned": "Sanctioned",
+          "moderator": "Decided by",
+          "reason": "Reason",
+          "sanction": {
+            "blacklist_guild": "Server blacklisted",
+            "blacklist_user": "Account blacklisted",
+            "reset_image": "Image reset",
+            "edit_messages": "Messages edited"
+          }
+        }
       }
     },
     "forum": {

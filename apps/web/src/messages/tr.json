@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Yaptırım uygulandı, {count} mesaj kısa süre içinde düzenlenecek."
         },
-        "editor": "Düzenleyen"
+        "editor": "Düzenleyen",
+        "history": {
+          "title": "Geçmiş",
+          "subtitle": "Uyarı görselleri hakkında alınan tüm kararlar, görsel sıfırlandıktan sonra bile saklanır.",
+          "empty": "Henüz karar yok.",
+          "verified": "Doğrulandı",
+          "sanctioned": "Yaptırım uygulandı",
+          "moderator": "Karar veren",
+          "reason": "Gerekçe",
+          "sanction": {
+            "blacklist_guild": "Sunucu kara listeye alındı",
+            "blacklist_user": "Hesap kara listeye alındı",
+            "reset_image": "Görsel sıfırlandı",
+            "edit_messages": "Mesajlar düzenlendi"
+          }
+        }
       }
     },
     "forum": {

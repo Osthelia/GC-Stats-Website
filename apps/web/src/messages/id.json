@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Sanksi diterapkan, {count} pesan akan segera diedit."
         },
-        "editor": "Diedit oleh"
+        "editor": "Diedit oleh",
+        "history": {
+          "title": "Riwayat",
+          "subtitle": "Semua keputusan yang diambil untuk gambar peringatan, tetap disimpan meski gambar sudah direset.",
+          "empty": "Belum ada keputusan.",
+          "verified": "Terverifikasi",
+          "sanctioned": "Disanksi",
+          "moderator": "Diputuskan oleh",
+          "reason": "Alasan",
+          "sanction": {
+            "blacklist_guild": "Server masuk daftar hitam",
+            "blacklist_user": "Akun masuk daftar hitam",
+            "reset_image": "Gambar direset",
+            "edit_messages": "Pesan diedit"
+          }
+        }
       }
     },
     "forum": {

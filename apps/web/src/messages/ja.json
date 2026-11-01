@@ -4907,7 +4907,22 @@
           },
           "successQueued": "制裁を適用しました。{count} 件のメッセージがまもなく編集されます。"
         },
-        "editor": "編集者"
+        "editor": "編集者",
+        "history": {
+          "title": "履歴",
+          "subtitle": "アラート画像に対して下されたすべての判断です。画像がリセットされても保持されます。",
+          "empty": "まだ判断はありません。",
+          "verified": "確認済み",
+          "sanctioned": "制裁済み",
+          "moderator": "判断した人",
+          "reason": "理由",
+          "sanction": {
+            "blacklist_guild": "サーバーをブラックリストに登録しました",
+            "blacklist_user": "アカウントをブラックリストに登録しました",
+            "reset_image": "画像をリセットしました",
+            "edit_messages": "メッセージを編集しました"
+          }
+        }
       }
     },
     "forum": {

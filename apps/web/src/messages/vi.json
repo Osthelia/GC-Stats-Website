@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Đã áp dụng hình phạt, {count} tin nhắn sẽ sớm được chỉnh sửa."
         },
-        "editor": "Chỉnh sửa bởi"
+        "editor": "Chỉnh sửa bởi",
+        "history": {
+          "title": "Lịch sử",
+          "subtitle": "Mọi quyết định đã đưa ra về hình ảnh cảnh báo, được giữ lại ngay cả sau khi hình ảnh được đặt lại.",
+          "empty": "Chưa có quyết định nào.",
+          "verified": "Đã xác minh",
+          "sanctioned": "Đã xử phạt",
+          "moderator": "Quyết định bởi",
+          "reason": "Lý do",
+          "sanction": {
+            "blacklist_guild": "Máy chủ đã bị đưa vào danh sách đen",
+            "blacklist_user": "Tài khoản đã bị đưa vào danh sách đen",
+            "reset_image": "Đã đặt lại hình ảnh",
+            "edit_messages": "Đã chỉnh sửa tin nhắn"
+          }
+        }
       }
     },
     "forum": {

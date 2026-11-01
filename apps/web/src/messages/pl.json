@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Kara nałożona, {count} wiadomości zostanie wkrótce edytowanych."
         },
-        "editor": "Edytowane przez"
+        "editor": "Edytowane przez",
+        "history": {
+          "title": "Historia",
+          "subtitle": "Wszystkie decyzje podjęte w sprawie obrazów alertów, zachowane nawet po zresetowaniu obrazu.",
+          "empty": "Brak decyzji.",
+          "verified": "Zweryfikowano",
+          "sanctioned": "Ukarano",
+          "moderator": "Decyzja podjęta przez",
+          "reason": "Powód",
+          "sanction": {
+            "blacklist_guild": "Serwer dodany do czarnej listy",
+            "blacklist_user": "Konto dodane do czarnej listy",
+            "reset_image": "Obraz zresetowany",
+            "edit_messages": "Wiadomości edytowane"
+          }
+        }
       }
     },
     "forum": {

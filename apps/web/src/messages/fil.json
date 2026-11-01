@@ -4907,7 +4907,22 @@
           },
           "successQueued": "Naipatupad ang parusa, ie-edit na ang {count} mensahe sa lalong madaling panahon."
         },
-        "editor": "Na-edit ni"
+        "editor": "Na-edit ni",
+        "history": {
+          "title": "Kasaysayan",
+          "subtitle": "Lahat ng desisyong ginawa sa mga larawan ng alerto, nananatili kahit na na-reset na ang larawan.",
+          "empty": "Wala pang desisyon.",
+          "verified": "Na-verify",
+          "sanctioned": "Pinarusahan",
+          "moderator": "Nagpasya",
+          "reason": "Dahilan",
+          "sanction": {
+            "blacklist_guild": "Na-blacklist ang server",
+            "blacklist_user": "Na-blacklist ang account",
+            "reset_image": "Na-reset ang larawan",
+            "edit_messages": "Na-edit ang mga mensahe"
+          }
+        }
       }
     },
     "forum": {

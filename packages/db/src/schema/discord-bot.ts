@@ -82,6 +82,26 @@ export const discordBotImageReviews = pgTable("discord_bot_image_reviews", {
   index("discord_bot_image_reviews_status_idx").on(t.status, t.updatedAt),
 ]);
 
+// Append-only history of the moderators' decisions on alert images. Survives resets and review deletions.
+export const discordBotImageDecisions = pgTable("discord_bot_image_decisions", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  guildId: text("guild_id").notNull(),
+  event: text("event").notNull(), // 'match_live' | 'match_finished' | 'map_finished'
+  decision: text("decision").notNull(), // 'verified' | 'sanctioned'
+  // Sanctions applied: 'blacklist_guild' | 'blacklist_user' | 'reset_image' | 'edit_messages'. Empty when verified.
+  sanctions: text("sanctions").array().notNull().default(sql`'{}'::text[]`),
+  reason: text("reason"),
+  // Site account and Discord account that made the reviewed edit.
+  editedBy: text("edited_by"),
+  editorDiscordId: text("editor_discord_id"),
+  decidedBy: text("decided_by"),
+  decidedAt: timestamp("decided_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index("discord_bot_image_decisions_decided_at_idx").on(t.decidedAt),
+  index("discord_bot_image_decisions_guild_id_idx").on(t.guildId),
+  index("discord_bot_image_decisions_editor_discord_id_idx").on(t.editorDiscordId),
+]);
+
 // Servers and Discord accounts barred from the bot dashboard and its alerts.
 export const discordBotBlacklist = pgTable("discord_bot_blacklist", {
   id: bigserial("id", { mode: "number" }).primaryKey(),

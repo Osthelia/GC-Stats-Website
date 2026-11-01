@@ -4907,7 +4907,22 @@
           },
           "successQueued": "제재가 적용되었습니다. 메시지 {count}개가 곧 수정됩니다."
         },
-        "editor": "편집자"
+        "editor": "편집자",
+        "history": {
+          "title": "기록",
+          "subtitle": "알림 이미지에 내려진 모든 결정이며, 이미지가 초기화된 후에도 보관됩니다.",
+          "empty": "아직 결정이 없습니다.",
+          "verified": "확인됨",
+          "sanctioned": "제재됨",
+          "moderator": "결정한 사람",
+          "reason": "사유",
+          "sanction": {
+            "blacklist_guild": "서버 블랙리스트 등록됨",
+            "blacklist_user": "계정 블랙리스트 등록됨",
+            "reset_image": "이미지 초기화됨",
+            "edit_messages": "메시지 수정됨"
+          }
+        }
       }
     },
     "forum": {
