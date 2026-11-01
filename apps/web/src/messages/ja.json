@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "パートナーキーはダッシュボードからHTTPSエンドポイントを登録できます。データが変更されるたびにGC StatsがPOSTを送信します。",
-      "events": "イベント: 新しい試合、試合の更新、新しい大会、大会の更新、チームの更新、選手の更新。",
+      "events": "イベント：新しい試合、試合の更新、新しい大会、大会の更新、チームの更新、選手の更新、運営チームが確認したロスター変更（roster.updated）。",
       "filters": "フィルター: 大会の地域、公式かどうか、参加チーム。",
       "signature": "各リクエストにはX-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp、X-GCS-Signatureヘッダーが含まれます。エンドポイントのシークレットで署名を検証してください。",
       "retries": "10秒以内に2xxステータスで応答してください。失敗した配信は約9時間再試行され、失敗が多すぎるエンドポイントはオフになります。",
-      "setup": "ペイロードにはイベント、その日時、エンティティが、OpenDataのデータセットと同じフィールドで含まれます。"
+      "setup": "ペイロードにはイベント、その日時、エンティティが、OpenDataのデータセットと同じフィールドで含まれます。",
+      "discord": "Discordタイプのエンドポイントはroster.updatedイベントのみを受信し、署名なしでツイートのリンクをチャンネルに投稿します。"
     }
   },
   "becomePublisher": {
@@ -2023,7 +2024,8 @@
       "analytics": "アナリティクス",
       "oauthClients": "OAuthクライアント",
       "settings": "設定",
-      "discordImages": "Discord ボットの画像"
+      "discordImages": "Discord ボットの画像",
+      "rosterWatch": "ロスター監視"
     },
     "dashboard": {
       "title": "ダッシュボード",
@@ -3462,7 +3464,8 @@
         "activityLog": "アクティビティログ",
         "analytics": "アナリティクス",
         "oauthClients": "OAuthクライアント",
-        "settings": "設定"
+        "settings": "設定",
+        "rosterWatch": "ロスター監視"
       },
       "permissionNames": {
         "admin_access": "管理パネルへのアクセス",
@@ -3513,7 +3516,9 @@
         "oauth_clients_view": "OAuthクライアントの閲覧",
         "oauth_clients_manage": "OAuthクライアントの作成、編集、削除",
         "settings_view": "設定と OpenData のモニタリングを表示",
-        "settings_manage": "設定を編集"
+        "settings_manage": "設定を編集",
+        "roster_watch_view": "ロスター監視を表示",
+        "roster_watch_manage": "ロスター監視のツイートを確認し、フォロー中のアカウントを管理"
       },
       "create": {
         "button": "新規ロール",
@@ -5442,6 +5447,136 @@
         "tooShort": "{min}文字以上で入力してください。",
         "tooLong": "{max}文字以内で入力してください。"
       }
+    },
+    "rosterWatch": {
+      "title": "ロスター監視",
+      "subtitle": "チームアカウントのツイートをAIが分類し、ロスター変更を人が確認できるようにします。",
+      "empty": "確認するものはありません。",
+      "tabs": {
+        "roster": "ロスター",
+        "unsure": "要確認",
+        "done": "確認済み"
+      },
+      "filters": {
+        "period": "期間",
+        "periodAny": "すべての期間",
+        "periodDays": "過去{days}日間",
+        "topic": "トピック",
+        "topicAny": "すべてのトピック"
+      },
+      "topic": {
+        "roster_join": "選手加入",
+        "roster_leave": "選手離脱",
+        "roster_bench": "選手がベンチ入り",
+        "staff_change": "スタッフ変更",
+        "tryouts": "Tryouts",
+        "match_promo": "試合告知",
+        "match_result": "試合結果",
+        "highlight": "ハイライト",
+        "sponsor": "スポンサー",
+        "merch": "グッズ",
+        "giveaway": "Giveaway",
+        "stream": "配信",
+        "content": "コンテンツ",
+        "community": "コミュニティ",
+        "other": "その他"
+      },
+      "verdict": {
+        "roster": "ロスター",
+        "not_roster": "ロスター外",
+        "unsure": "不明"
+      },
+      "card": {
+        "openTweet": "ツイートを開く",
+        "noText": "テキストなし",
+        "openPhoto": "写真を開く",
+        "openVideo": "動画を開く",
+        "players": "関係者:"
+      },
+      "actions": {
+        "editTeam": "チームを編集",
+        "ignore": "無視",
+        "notRoster": "ロスター外",
+        "done": "完了"
+      },
+      "form": {
+        "topic": "内容",
+        "topicPlaceholder": "トピックを選択",
+        "noteWhatIsIt": "これは何ですか？",
+        "confirm": "確認",
+        "cancel": "キャンセル"
+      },
+      "reviewed": {
+        "team_edited": "チームを編集済み",
+        "ignored": "無視済み",
+        "marked_not_roster": "ロスター外としてマーク済み",
+        "reported_missed": "見逃しとして報告済み"
+      },
+      "error": {
+        "notFound": "このツイートはもう存在しません。",
+        "invalidState": "このツイートにはこの操作を実行できません。すでに確認済みの可能性があります。",
+        "invalidTopic": "有効なトピックを選択してください。",
+        "noteRequired": "このツイートの内容を説明してください。",
+        "noteTooLong": "メモが長すぎます（最大1000文字）。"
+      },
+      "accounts": {
+        "title": "フォロー中のアカウント",
+        "subtitle": "1日1回取得するXアカウント。",
+        "team": "チーム",
+        "teamPlaceholder": "チームを選択",
+        "teamSearch": "チームを検索",
+        "teamNoResults": "チームが見つかりません",
+        "handle": "Xのユーザー名",
+        "add": "追加",
+        "added": "アカウントを追加しました。",
+        "enabled": "有効",
+        "toastEnabled": "アカウントを有効にしました。",
+        "toastDisabled": "アカウントを無効にしました。",
+        "lastPolled": "最終取得",
+        "lastError": "最後のエラー",
+        "empty": "フォロー中のアカウントはまだありません。",
+        "noResults": "この検索に一致するアカウントはありません。",
+        "searchPlaceholder": "チームまたはハンドルを検索",
+        "count": "{count, plural, other {#件のアカウント}}",
+        "previous": "前のページ",
+        "next": "次のページ",
+        "error": {
+          "notFound": "このアカウントはもう存在しません。",
+          "teamRequired": "チームを選択してください。",
+          "teamNotFound": "このチームはもう存在しません。",
+          "handleRequired": "Xのユーザー名を入力してください。",
+          "handleInvalid": "ユーザー名は1から15文字の英数字またはアンダースコアにしてください。",
+          "handleTaken": "このユーザー名はすでにフォロー中です。"
+        }
+      },
+      "import": {
+        "button": "自動インポート",
+        "title": "Xアカウントをインポート",
+        "description": "大会の各チームのSNSに登録されているXアカウントをフォローします。",
+        "tournament": "大会",
+        "tournamentPlaceholder": "大会を選択",
+        "tournamentSearch": "大会を検索",
+        "tournamentNoResults": "大会が見つかりません",
+        "stage": "ステージ",
+        "allStages": "すべてのステージ",
+        "cancel": "キャンセル",
+        "submit": "インポート",
+        "importing": "インポート中...",
+        "success": "{added, plural, =0 {追加されたアカウントはありません} other {#件のアカウントを追加しました}}。フォロー済み: {alreadyFollowed}、Xアカウントなし: {noTwitter}、無効: {invalid}。",
+        "error": {
+          "tournamentRequired": "大会を選択してください。",
+          "tournamentNotFound": "この大会は存在しません。",
+          "stageNotFound": "このステージは大会に属していません。"
+        }
+      },
+      "searchPlaceholder": "ツイートまたはチームを検索",
+      "searchSubmit": "検索",
+      "statusLabel": "ステータス",
+      "columnTeam": "チーム",
+      "columnTweet": "ツイート",
+      "columnType": "種類",
+      "columnDate": "日付",
+      "columnActions": "操作"
     }
   },
   "dashboard": {
@@ -6262,7 +6397,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "試合、大会、チーム、選手が変更されると、GC StatsはあなたのエンドポイントにHTTPS POSTを送信します。配信はおよそ1分ごとに確認されます。",
+      "description": "GC Statsは、試合、大会、チーム、選手、またはロスターが変更されると、エンドポイントにHTTPS POSTを送信します。配信は約1分ごとに確認されます。",
       "pageTitle": "Webhook",
       "pageSubtitle": "パートナーAPIキーのエンドポイントと配信。",
       "keySwitcher": "パートナーAPIキー",
@@ -6333,6 +6468,9 @@
         },
         "player": {
           "updated": "選手の更新"
+        },
+        "roster": {
+          "updated": "ロスター変更を確認済み"
         }
       },
       "filtersTitle": "フィルター",
@@ -6364,7 +6502,8 @@
           "invalid": "有効なURLではありません。",
           "notHttps": "URLはhttps://で始まる必要があります。",
           "credentials": "URLにユーザー名やパスワードを含めることはできません。",
-          "privateHost": "URLは公開アドレスを指している必要があります。"
+          "privateHost": "URLは公開アドレスを指している必要があります。",
+          "notDiscord": "これはDiscord Webhook URLではありません。"
         },
         "description": {
           "tooLong": "{descriptionMaxLength}文字以内で入力してください。"
@@ -6384,8 +6523,21 @@
         },
         "filterOfficial": {
           "invalid": "無効な値です。"
+        },
+        "kind": {
+          "invalid": "有効なタイプを選択してください。"
         }
-      }
+      },
+      "kind": {
+        "label": "タイプ",
+        "standard": "標準",
+        "discord": "Discord",
+        "hint": {
+          "standard": "署名付きJSONリクエストをあなたのサーバーに送信します。",
+          "discord": "Discordチャンネルにツイートのリンクだけを投稿します。"
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL（サーバー設定、連携サービス、ウェブフック）。"
     },
     "discord": {
       "serversTitle": "Discord サーバー",

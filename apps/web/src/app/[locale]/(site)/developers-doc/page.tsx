@@ -56,7 +56,7 @@ export default function DevelopersDocPage() {
         </SectionCard>
         <SectionCard icon={icons.link} title={t("webhooks.title")}>
           <SectionText>{t("webhooks.body")}</SectionText>
-          <SectionList items={[t("webhooks.events"), t("webhooks.filters"), t("webhooks.signature"), t("webhooks.retries"), t("webhooks.setup")]} />
+          <SectionList items={[t("webhooks.events"), t("webhooks.discord"), t("webhooks.filters"), t("webhooks.signature"), t("webhooks.retries"), t("webhooks.setup")]} />
           <code className="block overflow-x-auto rounded-lg border border-neutral-800 bg-black/30 px-3 py-2 font-mono text-[12.5px] text-neutral-200">
             {"X-GCS-Signature: sha256=HMAC_SHA256(secret, X-GCS-Timestamp + \".\" + body)"}
           </code>

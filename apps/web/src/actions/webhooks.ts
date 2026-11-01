@@ -24,10 +24,11 @@ import { listWebhookRegions } from "@/lib/webhooks/endpoints";
 import { getCurrentUserId } from "@/lib/session";
 import { searchTeamsQuery } from "@/lib/team-search";
 import type { TeamPickerResult } from "@/lib/team-search";
-import { validateWebhookUrl, type WebhookUrlError } from "@/lib/webhooks/url-guard";
-import { WEBHOOK_LIMITS, WEBHOOK_OFFICIAL_FILTERS, isWebhookEvent, type WebhookEvent, type WebhookKeyScope, type WebhookOfficialFilter } from "@/lib/webhooks/shared";
+import { isDiscordWebhookUrl, validateWebhookUrl, type WebhookUrlError } from "@/lib/webhooks/url-guard";
+import { ROSTER_WEBHOOK_EVENT, WEBHOOK_KINDS, WEBHOOK_LIMITS, WEBHOOK_OFFICIAL_FILTERS, isWebhookEvent, type WebhookEvent, type WebhookKeyScope, type WebhookKind, type WebhookOfficialFilter } from "@/lib/webhooks/shared";
 
 export type WebhookEndpointInput = {
+  kind: unknown;
   url: unknown;
   description: unknown;
   events: unknown;
@@ -37,7 +38,8 @@ export type WebhookEndpointInput = {
 };
 
 export type WebhookFieldErrors = Partial<{
-  url: WebhookUrlError;
+  kind: "invalid";
+  url: WebhookUrlError | "notDiscord";
   description: "tooLong";
   events: "required" | "invalid";
   filterRegions: "invalid" | "tooMany";
@@ -68,29 +70,35 @@ async function authorizeKey(scope: WebhookKeyScope): Promise<{ userId: string; k
 async function findEndpoint(apiKeyId: number, endpointId: unknown) {
   if (typeof endpointId !== "number" || !Number.isInteger(endpointId) || endpointId <= 0) return null;
   const [row] = await db
-    .select({ id: webhookEndpoints.id, url: webhookEndpoints.url, secretEncrypted: webhookEndpoints.secretEncrypted })
+    .select({ id: webhookEndpoints.id, kind: webhookEndpoints.kind, url: webhookEndpoints.url, secretEncrypted: webhookEndpoints.secretEncrypted })
     .from(webhookEndpoints)
     .where(and(eq(webhookEndpoints.id, endpointId), eq(webhookEndpoints.apiKeyId, apiKeyId)))
     .limit(1);
   return row ?? null;
 }
 
-type ValidEndpoint = { url: string; description: string | null; events: WebhookEvent[]; filterRegions: string[]; filterTeamIds: number[]; filterOfficial: WebhookOfficialFilter };
+type ValidEndpoint = { kind: WebhookKind; url: string; description: string | null; events: WebhookEvent[]; filterRegions: string[]; filterTeamIds: number[]; filterOfficial: WebhookOfficialFilter };
 
 async function validateInput(input: WebhookEndpointInput): Promise<{ ok: true; value: ValidEndpoint } | { ok: false; fieldErrors: WebhookFieldErrors }> {
   const fieldErrors: WebhookFieldErrors = {};
 
+  const kind = (WEBHOOK_KINDS as readonly unknown[]).includes(input.kind) ? (input.kind as WebhookKind) : null;
+  if (!kind) fieldErrors.kind = "invalid";
+
   const url = validateWebhookUrl(input.url);
   if (!url.ok) fieldErrors.url = url.error;
+  else if (kind === "discord" && !isDiscordWebhookUrl(url.url)) fieldErrors.url = "notDiscord";
 
   const description = typeof input.description === "string" ? input.description.trim() : "";
   if (description.length > WEBHOOK_LIMITS.descriptionMaxLength) fieldErrors.description = "tooLong";
 
-  const events = Array.isArray(input.events) ? input.events : null;
+  // A Discord endpoint only posts the tweet link of a validated roster change.
+  const discord = kind === "discord";
+  const events = discord ? [ROSTER_WEBHOOK_EVENT] : Array.isArray(input.events) ? input.events : null;
   if (!events || events.length === 0) fieldErrors.events = "required";
   else if (!events.every(isWebhookEvent)) fieldErrors.events = "invalid";
 
-  const regions = Array.isArray(input.filterRegions) ? input.filterRegions : null;
+  const regions = discord ? [] : Array.isArray(input.filterRegions) ? input.filterRegions : null;
   if (!regions || !regions.every((r) => typeof r === "string")) fieldErrors.filterRegions = "invalid";
   else if (regions.length > WEBHOOK_LIMITS.filterRegions) fieldErrors.filterRegions = "tooMany";
   else if (regions.length > 0) {
@@ -107,18 +115,20 @@ async function validateInput(input: WebhookEndpointInput): Promise<{ ok: true; v
     if (found.length !== unique.length) fieldErrors.filterTeamIds = "unknownTeam";
   }
 
-  if (!(WEBHOOK_OFFICIAL_FILTERS as readonly unknown[]).includes(input.filterOfficial)) fieldErrors.filterOfficial = "invalid";
+  const official = discord ? "all" : input.filterOfficial;
+  if (!(WEBHOOK_OFFICIAL_FILTERS as readonly unknown[]).includes(official)) fieldErrors.filterOfficial = "invalid";
 
-  if (Object.keys(fieldErrors).length > 0 || !url.ok) return { ok: false, fieldErrors };
+  if (Object.keys(fieldErrors).length > 0 || !url.ok || !kind) return { ok: false, fieldErrors };
   return {
     ok: true,
     value: {
+      kind,
       url: url.url,
       description: description || null,
       events: [...new Set(events as WebhookEvent[])],
       filterRegions: [...new Set(regions as string[])],
       filterTeamIds: [...new Set(teamIds as number[])],
-      filterOfficial: input.filterOfficial as WebhookOfficialFilter,
+      filterOfficial: official as WebhookOfficialFilter,
     },
   };
 }
@@ -142,7 +152,8 @@ export async function createWebhookEndpoint(scope: WebhookKeyScope, input: Webho
     .returning({ id: webhookEndpoints.id });
   if (!row) throw new Error("webhook endpoint insert returned no row");
   await logActivity({ subject: "apiKey", subjectId: scope.apiKeyId, event: "updated", description: `Created webhook #${row.id} on API key #${scope.apiKeyId}`, actorUserId: actor.userId, properties: { section: "webhook", webhookId: row.id } });
-  return { ok: true, secret };
+  // A Discord endpoint is not signed, its secret is never used.
+  return { ok: true, secret: validated.value.kind === "standard" ? secret : undefined };
 }
 
 export async function updateWebhookEndpoint(scope: WebhookKeyScope, endpointId: unknown, input: WebhookEndpointInput): Promise<SaveWebhookResult> {
@@ -153,9 +164,21 @@ export async function updateWebhookEndpoint(scope: WebhookKeyScope, endpointId: 
   const validated = await validateInput(input);
   if (!validated.ok) return { ok: false, error: "invalid", fieldErrors: validated.fieldErrors };
 
-  await db.update(webhookEndpoints).set({ ...validated.value, updatedAt: new Date() }).where(eq(webhookEndpoints.id, endpoint.id));
+  // A kind change starts clean: failures counted for the old kind no longer apply, and a Discord endpoint
+  // turned standard gets a fresh secret since the old one was never shown.
+  const kindChanged = endpoint.kind !== validated.value.kind;
+  const secret = kindChanged && validated.value.kind === "standard" ? generateSecret() : null;
+  await db
+    .update(webhookEndpoints)
+    .set({
+      ...validated.value,
+      ...(kindChanged ? { consecutiveFailures: 0, disabledReason: null } : {}),
+      ...(secret ? { secretEncrypted: encrypt(secret) } : {}),
+      updatedAt: new Date(),
+    })
+    .where(eq(webhookEndpoints.id, endpoint.id));
   await logActivity({ subject: "apiKey", subjectId: scope.apiKeyId, event: "updated", description: `Updated webhook #${endpoint.id} on API key #${scope.apiKeyId}`, actorUserId: actor.userId, properties: { section: "webhook", webhookId: endpoint.id } });
-  return { ok: true };
+  return { ok: true, secret: secret ?? undefined };
 }
 
 export async function setWebhookEndpointActive(scope: WebhookKeyScope, endpointId: unknown, active: unknown): Promise<WebhookSimpleResult> {

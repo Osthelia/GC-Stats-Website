@@ -29,6 +29,7 @@ import {
   Languages,
   Flag,
   ShieldAlert,
+  Radar,
   MessagesSquare,
   Ban,
   History,
@@ -67,6 +68,7 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
       { href: "/admin/players", labelKey: "players", icon: User, exact: false, permission: PERMISSIONS.playersView },
       { href: "/admin/point-types", labelKey: "pointTypes", icon: Trophy, exact: false, permission: PERMISSIONS.pointTypesView },
       { href: "/admin/change-requests", labelKey: "changeRequests", icon: FileEdit, exact: false, permission: PERMISSIONS.changeRequestsView },
+      { href: "/admin/roster-watch", labelKey: "rosterWatch", icon: Radar, exact: false, permission: PERMISSIONS.rosterWatchView },
     ],
   },
   {
