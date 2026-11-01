@@ -56,9 +56,22 @@ function ObjectiveIcon({ src, size, alt, title }: { src: string; size: number; a
 
 /**
  * `mirrored` is the right team's strip: its items run in reverse, so the dragons sit next to the centre line, as the
- * stats do in the rows below.
+ * stats do in the rows below. The strip wraps where it is narrow.
+ * `split` is the strip of a stacked layout: the dragons are a line of their own, everything else is the line below.
  */
-export function LolObjectiveStrip({ objectives, tone, size, mirrored = false }: { objectives: LeagueGameObjectives | undefined; tone: string; size: number; mirrored?: boolean }) {
+export function LolObjectiveStrip({
+  objectives,
+  tone,
+  size,
+  mirrored = false,
+  split = false,
+}: {
+  objectives: LeagueGameObjectives | undefined;
+  tone: string;
+  size: number;
+  mirrored?: boolean;
+  split?: boolean;
+}) {
   const t = useTranslations("matchPage");
   const dragons = objectives?.dragonTypes ?? [];
   const dragonsItem = (
@@ -66,7 +79,7 @@ export function LolObjectiveStrip({ objectives, tone, size, mirrored = false }: 
       key="dragons"
       role="group"
       aria-label={t("dragons")}
-      className={`flex items-center gap-1 ${mirrored ? "justify-end" : "justify-start"}`}
+      className={`flex flex-wrap items-center gap-1 ${split ? "w-full" : ""} ${mirrored ? "justify-end" : "justify-start"}`}
       style={{ minWidth: DRAGON_SLOTS * size + (DRAGON_SLOTS - 1) * DRAGON_GAP }}
     >
       {dragons.length === 0 && <span className="font-mono font-bold">0</span>}
@@ -84,5 +97,5 @@ export function LolObjectiveStrip({ objectives, tone, size, mirrored = false }: 
     </div>
   ));
   const items = [dragonsItem, ...countedItems];
-  return <div className={`flex items-center justify-around gap-2 ${tone}`}>{mirrored ? items.reverse() : items}</div>;
+  return <div className={`flex flex-wrap items-center gap-2 ${split ? "justify-start gap-x-6" : "justify-around"} ${tone}`}>{mirrored ? items.reverse() : items}</div>;
 }

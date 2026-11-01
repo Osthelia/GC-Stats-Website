@@ -377,7 +377,7 @@ function PosterLeagueBody({ data, selectedId, a, b, nameA, nameB }: { data: Post
       {game.draft && (
         <div className="flex flex-col gap-3">
           <span className="px-2 font-mono text-[17px] font-black tracking-widest uppercase" style={{ color: MUTED }}>{t("draft")}</span>
-          <LeagueDraft draft={posterDraft(game.draft)} blueName={nameOf(game.draft.blueEntrantId)} redName={nameOf(otherEntrantOf(game.draft.blueEntrantId, a.entrantId, b.entrantId))} size={72} />
+          <LeagueDraft draft={posterDraft(game.draft)} blueName={nameOf(game.draft.blueEntrantId)} redName={nameOf(otherEntrantOf(game.draft.blueEntrantId, a.entrantId, b.entrantId))} look="poster" />
         </div>
       )}
       <LeagueScoreboard
