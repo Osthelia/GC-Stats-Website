@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "地图数",
       "roundsPlayed": "回合",
+      "rating": "评分",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",
@@ -1754,10 +1755,12 @@
     "colKills": "击杀",
     "colDeaths": "死亡",
     "colAssists": "助攻",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "选手",
+    "ratingFull": "GCS Rating：1.00 代表同定位选手的平均水平",
     "acsFull": "场均战斗分数",
     "adrFull": "场均单局伤害",
     "kastFull": "击杀、助攻、拆包/装包、存活占比",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "地图数",
       "roundsPlayed": "回合",
+      "rating": "评分",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",

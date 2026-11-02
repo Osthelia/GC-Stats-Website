@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "Maps",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Morts",
@@ -1754,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Joueur",
+    "ratingFull": "Rating GCS : 1.00 correspond au joueur moyen du même rôle",
     "acsFull": "Score de combat moyen",
     "adrFull": "Dégâts moyens par round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "Maps",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Morts",

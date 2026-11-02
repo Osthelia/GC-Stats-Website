@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "Bản đồ",
       "roundsPlayed": "Round",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",
@@ -1754,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Tuyển thủ",
+    "ratingFull": "Rating GCS: 1.00 là người chơi trung bình cùng vai trò",
     "acsFull": "Average Combat Score",
     "adrFull": "Average Damage per Round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "Bản đồ",
       "roundsPlayed": "Round",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",

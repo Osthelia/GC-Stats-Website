@@ -12,7 +12,8 @@
     "generate:openapi": "tsx scripts/generate-openapi.ts",
     "test:roster-watch": "tsx --env-file=.env.local scripts/roster-watch-test.ts",
     "seed:roster-watch": "tsx --env-file=.env.local scripts/seed-roster-watch-accounts.ts",
-    "backfill:patch": "tsx --env-file=.env.local scripts/backfill-match-patch.ts"
+    "backfill:patch": "tsx --env-file=.env.local scripts/backfill-match-patch.ts",
+    "ratings:recompute": "tsx --env-file=.env.local scripts/recompute-ratings.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",

@@ -15,9 +15,29 @@ import { eq, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
 import { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
-import { computeAliveTimeline, computeMapAggregates, computeRoundSides, type RiotMatchDto } from "@gc-stats/map-stats-engine";
+import { computeAliveTimeline, computeMapAggregates, computeRoundSides, rateMap, ratingInputFromRiot, type RiotMatchDto } from "@gc-stats/map-stats-engine";
 import { resolveAgentName, resolveEquipName, resolveMapName } from "@/lib/riot-content-client";
+import { getActiveRatingModel, RATING_LOCK_KEY } from "@/lib/rating/active-model";
+import { storedRatingDetails } from "@/lib/rating/stored-details";
 import { buildAliveStateRows, buildDamageRows, buildKillRows, buildLoadoutRows, buildPlantDefusePositionRows, buildRoundRows, entrantIdForColor, type RawMapperContext } from "./raw-mapper";
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Rating is derived data: any failure here leaves the map unrated instead of failing the whole fetch. */
+async function rateIncomingMap(tx: Tx, match: RiotMatchDto, ctx: RawMapperContext) {
+  const none = { ratingModel: null, ratingByPuuid: new Map<string, ReturnType<typeof rateMap>[number]>() };
+  // Unlinked players cannot be rebuilt from the RAW layer, so such maps stay unrated (same rule as the recompute).
+  if (match.players.some((p) => !p.isObserver && !ctx.personIdByPuuid.has(p.puuid))) return none;
+  try {
+    const ratingModel = await getActiveRatingModel(tx);
+    if (!ratingModel) return none;
+    const results = rateMap(ratingInputFromRiot(match, (id) => resolveAgentName(ctx.content, id)), ratingModel.model);
+    return { ratingModel, ratingByPuuid: new Map(results.map((r) => [r.id, r])) };
+  } catch (error) {
+    console.error("[rating] map %d left unrated", ctx.mapId, error);
+    return none;
+  }
+}
 
 /**
  * Writes everything a successful fetch produces for one map: replaces the
@@ -31,6 +51,9 @@ import { buildAliveStateRows, buildDamageRows, buildKillRows, buildLoadoutRows, 
 export async function storeMapData(match: RiotMatchDto, ctx: RawMapperContext): Promise<void> {
   await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(${ctx.mapId})`);
+    // Shared with other ingestions, exclusive for a rating recompute: the model read below is never replaced mid-write.
+    await tx.execute(sql`select pg_advisory_xact_lock_shared(${RATING_LOCK_KEY[0]}, ${RATING_LOCK_KEY[1]})`);
+    const { ratingModel, ratingByPuuid } = await rateIncomingMap(tx, match, ctx);
 
     // Idempotent re-fetch: clear this map's previous RAW + aggregated rows first.
     await tx.delete(mapRoundsRaw).where(eq(mapRoundsRaw.mapId, ctx.mapId)); // cascades kills/damages/alive-states/loadouts and (via mapRoundId) positions
@@ -68,30 +91,37 @@ export async function storeMapData(match: RiotMatchDto, ctx: RawMapperContext): 
     if (loadoutRows.length) await tx.insert(mapRoundPlayerLoadoutsRaw).values(loadoutRows);
 
     const aggregates = computeMapAggregates(match, (uuid) => resolveEquipName(ctx.content, uuid));
-    const playerStatRows = aggregates.playerStats.map((row) => ({
-      mapId: ctx.mapId,
-      personId: ctx.personIdByPuuid.get(row.puuid) ?? null,
-      entrantId: entrantIdForColor(ctx, row.teamId),
-      agentName: resolveAgentName(ctx.content, row.agentCharacterId),
-      valName: row.valName,
-      kills: row.kills,
-      deaths: row.deaths,
-      assists: row.assists,
-      acs: row.acs,
-      adr: row.adr,
-      kastPercentage: String(row.kastPercentage),
-      firstKills: row.firstKills,
-      firstDeaths: row.firstDeaths,
-      headshotPercentage: String(row.headshotPercentage),
-      clutches: row.clutches,
-      multikills: row.multikills,
-      tradeKills: row.tradeKills,
-      tradedDeaths: row.tradedDeaths,
-      roundTypeSplits: row.roundTypeSplits,
-      abilityKills: row.abilityKills,
-      fallDeaths: row.fallDeaths,
-      weaponKills: row.weaponKills,
-    }));
+    const playerStatRows = aggregates.playerStats.map((row) => {
+      const rating = ratingByPuuid.get(row.puuid);
+      return {
+        mapId: ctx.mapId,
+        personId: ctx.personIdByPuuid.get(row.puuid) ?? null,
+        entrantId: entrantIdForColor(ctx, row.teamId),
+        agentName: resolveAgentName(ctx.content, row.agentCharacterId),
+        valName: row.valName,
+        kills: row.kills,
+        deaths: row.deaths,
+        assists: row.assists,
+        acs: row.acs,
+        adr: row.adr,
+        kastPercentage: String(row.kastPercentage),
+        firstKills: row.firstKills,
+        firstDeaths: row.firstDeaths,
+        headshotPercentage: String(row.headshotPercentage),
+        clutches: row.clutches,
+        multikills: row.multikills,
+        tradeKills: row.tradeKills,
+        tradedDeaths: row.tradedDeaths,
+        roundTypeSplits: row.roundTypeSplits,
+        abilityKills: row.abilityKills,
+        fallDeaths: row.fallDeaths,
+        weaponKills: row.weaponKills,
+        rating: rating?.rating ?? null,
+        ratingRounds: rating?.rounds ?? null,
+        ratingComponents: rating ? storedRatingDetails(rating) : null,
+        ratingModelId: rating ? ratingModel!.id : null,
+      };
+    });
     if (playerStatRows.length) await tx.insert(mapPlayerStats).values(playerStatRows);
 
     const teamRoundRows = aggregates.teamRoundSummary.map((row) => ({

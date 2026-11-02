@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "Harita",
       "roundsPlayed": "Raunt",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",
@@ -1754,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Oyuncu",
+    "ratingFull": "GCS Rating: 1.00, aynı roldeki ortalama oyuncudur",
     "acsFull": "Ortalama Combat Score",
     "adrFull": "Round Başına Ortalama Hasar",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "Haritalar",
       "roundsPlayed": "Raunt",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",

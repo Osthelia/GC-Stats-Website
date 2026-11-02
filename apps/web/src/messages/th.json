@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "แมพ",
       "roundsPlayed": "รอบ",
+      "rating": "เรตติ้ง",
       "acs": "ACS",
       "kills": "คิล",
       "deaths": "ตาย",
@@ -1754,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "ผู้เล่น",
+    "ratingFull": "GCS Rating: 1.00 คือผู้เล่นระดับเฉลี่ยในบทบาทเดียวกัน",
     "acsFull": "คะแนนการต่อสู้เฉลี่ย",
     "adrFull": "ความเสียหายเฉลี่ยต่อรอบ",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "แมพ",
       "roundsPlayed": "รอบ",
+      "rating": "เรตติ้ง",
       "acs": "ACS",
       "kills": "คิล",
       "deaths": "ตาย",

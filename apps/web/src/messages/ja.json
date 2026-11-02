@@ -1597,6 +1597,7 @@
     "statsColumns": {
       "played": "マップ数",
       "roundsPlayed": "ラウンド",
+      "rating": "レーティング",
       "acs": "ACS",
       "kills": "キル",
       "deaths": "デス",
@@ -1754,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "選手",
+    "ratingFull": "GCS Rating：1.00 は同じロールの平均的なプレイヤーです",
     "acsFull": "Average Combat Score",
     "adrFull": "Average Damage per Round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7442,6 +7445,7 @@
     "statsColumns": {
       "played": "マップ数",
       "roundsPlayed": "ラウンド",
+      "rating": "レーティング",
       "acs": "ACS",
       "kills": "キル",
       "deaths": "デス",
