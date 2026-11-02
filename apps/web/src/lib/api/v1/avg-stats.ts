@@ -129,7 +129,7 @@ const ZERO_AVG_STATS: ApiAvgStats = {
 };
 
 function roundScopeSql(scope: EntityScope): SQL {
-  return scope.kind === "team" ? sql`ps.entrant_id = ANY(${scope.entrantIds}::bigint[])` : sql`ps.person_id = ${scope.personId}`;
+  return scope.kind === "team" ? sql`ps.entrant_id = ANY(${sql.param(scope.entrantIds)}::bigint[])` : sql`ps.person_id = ${scope.personId}`;
 }
 
 function rawFilterSql(filter: StatsFilter): SQL {

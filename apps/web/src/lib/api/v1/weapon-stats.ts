@@ -22,7 +22,7 @@ function scopeCondition(scope: EntityScope) {
 }
 
 function roundScopeSql(scope: EntityScope) {
-  return scope.kind === "team" ? sql`ps.entrant_id = ANY(${scope.entrantIds}::bigint[])` : sql`ps.person_id = ${scope.personId}`;
+  return scope.kind === "team" ? sql`ps.entrant_id = ANY(${sql.param(scope.entrantIds)}::bigint[])` : sql`ps.person_id = ${scope.personId}`;
 }
 
 function isEmptyTeamScope(scope: EntityScope): boolean {

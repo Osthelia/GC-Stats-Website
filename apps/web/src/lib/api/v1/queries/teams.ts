@@ -394,7 +394,7 @@ async function fetchSituationsForSide(entrantIds: number[], filter: StatsFilter,
     JOIN maps gm ON gm.id = r.map_id
     JOIN matches m ON m.id = gm.match_id
     LEFT JOIN map_round_alive_states_raw a ON a.map_round_id = r.id
-    WHERE ${sideCol} = ANY(${entrantIds}::bigint[])
+    WHERE ${sideCol} = ANY(${sql.param(entrantIds)}::bigint[])
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
     ORDER BY r.id, a.sequence ASC
@@ -445,11 +445,11 @@ async function fetchPostPlantForSide(entrantIds: number[], filter: StatsFilter, 
 
   const result = await db.execute<{ played: number; won: number }>(sql`
     SELECT COUNT(*)::int AS played,
-      COALESCE(SUM(CASE WHEN r.winning_entrant_id = ANY(${entrantIds}::bigint[]) THEN 1 ELSE 0 END), 0)::int AS won
+      COALESCE(SUM(CASE WHEN r.winning_entrant_id = ANY(${sql.param(entrantIds)}::bigint[]) THEN 1 ELSE 0 END), 0)::int AS won
     FROM map_rounds_raw r
     JOIN maps gm ON gm.id = r.map_id
     JOIN matches m ON m.id = gm.match_id
-    WHERE r.plant_site IS NOT NULL AND ${sideCol} = ANY(${entrantIds}::bigint[])
+    WHERE r.plant_site IS NOT NULL AND ${sideCol} = ANY(${sql.param(entrantIds)}::bigint[])
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
   `);
