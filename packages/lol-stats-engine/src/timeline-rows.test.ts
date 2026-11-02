@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type { LeagueSide } from "./game-summary";
 import { buildTimelineRows, type LeagueTimelineContext } from "./timeline-rows";
+import { computeDragonTypes, computeObjectiveTimings } from "./timeline-stats";
 import type { RiotMatchDto, RiotTimelineDto } from "./types";
 
 const fixturePath = fileURLToPath(new URL("./__fixtures__/lol-game-example.json", import.meta.url));
@@ -82,6 +83,20 @@ describe("buildTimelineRows (hand-written cases)", () => {
     const sides = new Map<number, LeagueSide>([[8, "red"]]);
     const [kill] = buildTimelineRows(withActor, { gameId: 1, personIdByParticipantId: map(participants), sideByParticipantId: sides }).events;
     expect(kill?.side).toBe("red");
+  });
+
+  it("gives no side to a team id that is not one (300: a monster nobody took, 0: a dragon soul notice)", () => {
+    const timeline = minimalTimeline([
+      { type: "ELITE_MONSTER_KILL", timestamp: 900000, killerId: 0, killerTeamId: 300, monsterType: "RIFTHERALD" },
+      { type: "ELITE_MONSTER_KILL", timestamp: 950000, killerId: 0, killerTeamId: 300, monsterType: "DRAGON", monsterSubType: "WATER_DRAGON" },
+      { type: "DRAGON_SOUL_GIVEN", timestamp: 960000, teamId: 0, name: "Ocean" },
+      { type: "ELITE_MONSTER_KILL", timestamp: 1000000, killerId: 2, killerTeamId: 100, monsterType: "RIFTHERALD" },
+    ]);
+    const rows = buildTimelineRows(timeline, { gameId: 1, personIdByParticipantId: map(participants), sideByParticipantId: new Map() });
+    expect(rows.events.map((e) => e.side)).toEqual([null, null, null, "blue"]);
+    // The stats over the events skip them instead of failing on a side that doesn't exist.
+    expect(computeObjectiveTimings(rows)).toEqual({ blue: { RIFTHERALD: 1000000 }, red: {} });
+    expect(computeDragonTypes(rows)).toEqual({ blue: [], red: [] });
   });
 
   it("throws when a participant has no person, so a partial import never gets written", () => {

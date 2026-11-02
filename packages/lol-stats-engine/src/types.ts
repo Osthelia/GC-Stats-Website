@@ -143,8 +143,10 @@ export interface RiotTimelineEventDto {
   victimId?: number;
   creatorId?: number;
   assistingParticipantIds?: number[];
-  teamId?: RiotTeamId;
-  killerTeamId?: RiotTeamId;
+  // 100 or 200 for a side; also 300 for a monster that died to neutral damage (no side took it) and 0 on a dragon
+  // soul notice (DRAGON_SOUL_GIVEN). Not RiotTeamId, so no code maps those to a side by accident.
+  teamId?: number;
+  killerTeamId?: number;
   position?: { x: number; y: number };
   monsterType?: string;
   monsterSubType?: string;
