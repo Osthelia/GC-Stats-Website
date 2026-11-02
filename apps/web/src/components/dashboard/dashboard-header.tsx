@@ -19,11 +19,13 @@ export function DashboardHeader({
   organizations,
   isAuthor = false,
   hasApiKey = false,
+  hasDiscord = false,
   isAuthorAdmin = false,
 }: {
   organizations: DashboardOrgSwitcherItem[];
   isAuthor?: boolean;
   hasApiKey?: boolean;
+  hasDiscord?: boolean;
   isAuthorAdmin?: boolean;
 }) {
   const t = useTranslations("dashboard.nav");
@@ -36,7 +38,7 @@ export function DashboardHeader({
         <span className="text-sm font-medium">{t(matchDashboardNavItemLabel(pathname))}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
-        <OrgSwitcher organizations={organizations} isAuthor={isAuthor} hasApiKey={hasApiKey} isAuthorAdmin={isAuthorAdmin} />
+        <OrgSwitcher organizations={organizations} isAuthor={isAuthor} hasApiKey={hasApiKey} hasDiscord={hasDiscord} isAuthorAdmin={isAuthorAdmin} />
         <HeaderAuthStatus isDashboard />
       </div>
     </header>

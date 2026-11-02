@@ -400,6 +400,62 @@
       "when": 1793360264252,
       "tag": "0056_tournament_is_official",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1793379251323,
+      "tag": "0057_discord_bot",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1793385085333,
+      "tag": "0058_discord_bot_customization",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1793385465337,
+      "tag": "0059_discord_bot_templates",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1793403023389,
+      "tag": "0060_discord_bot_match_button",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1793482087562,
+      "tag": "0061_discord_bot_background_color",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1793485873031,
+      "tag": "0062_discord_bot_image_moderation",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1793490732366,
+      "tag": "0063_discord_bot_image_decisions",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1793570684819,
+      "tag": "0064_discord_bot_image_pins",
+      "breakpoints": true
     }
   ]
 }

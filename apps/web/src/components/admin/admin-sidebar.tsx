@@ -107,10 +107,12 @@ export function AdminSidebar({
   permissions,
   isSuperAdmin,
   hasPendingChangeRequests,
+  hasPendingDiscordImages,
 }: {
   permissions: string[];
   isSuperAdmin: boolean;
   hasPendingChangeRequests: boolean;
+  hasPendingDiscordImages: boolean;
 }) {
   const t = useTranslations("admin.nav");
   const pathname = usePathname();
@@ -169,8 +171,8 @@ export function AdminSidebar({
                     <NavItemLabel
                       item={item}
                       label={t(item.labelKey)}
-                      hasAlert={item.href === "/admin/change-requests" && hasPendingChangeRequests}
-                      alertLabel={t("pendingChangeRequests")}
+                      hasAlert={item.href === "/admin/change-requests" ? hasPendingChangeRequests : item.href === "/admin/discord-images" && hasPendingDiscordImages}
+                      alertLabel={t(item.href === "/admin/discord-images" ? "pendingDiscordImages" : "pendingChangeRequests")}
                     />
                   </SidebarMenuButton>
                 </SidebarMenuItem>

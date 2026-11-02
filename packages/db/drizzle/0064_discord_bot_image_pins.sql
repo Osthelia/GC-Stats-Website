@@ -1,0 +1,1 @@
+ALTER TABLE "discord_bot_templates" ADD COLUMN "image_pins" jsonb DEFAULT '{}'::jsonb NOT NULL;
