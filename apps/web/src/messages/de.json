@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooks",
       "body": "Partnerschlüssel können in ihrem Dashboard HTTPS Endpoints registrieren: GC Stats sendet dann bei jeder Datenänderung einen POST.",
-      "events": "Ereignisse: neues Match, Match aktualisiert, neues Turnier, Turnier aktualisiert, Team aktualisiert, Spieler aktualisiert.",
+      "events": "Ereignisse: neues Match, Match aktualisiert, neues Turnier, Turnier aktualisiert, Team aktualisiert, Spieler aktualisiert, von unserem Team bestätigte Roster-Änderung (roster.updated).",
       "filters": "Filter: Region des Turniers, offiziell oder nicht, teilnehmende Teams.",
       "signature": "Jede Anfrage enthält die Header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp und X-GCS-Signature. Prüfen Sie die Signatur mit dem Secret Ihres Endpoints.",
       "retries": "Antworten Sie innerhalb von 10 Sekunden mit einem 2xx Status. Fehlgeschlagene Zustellungen werden etwa 9 Stunden lang wiederholt, ein Endpoint, der zu oft fehlschlägt, wird deaktiviert.",
-      "setup": "Der Payload enthält das Ereignis, sein Datum und die Entität, mit denselben Feldern wie die OpenData Datensätze."
+      "setup": "Der Payload enthält das Ereignis, sein Datum und die Entität, mit denselben Feldern wie die OpenData Datensätze.",
+      "discord": "Ein Endpunkt vom Typ Discord erhält nur das Ereignis roster.updated und veröffentlicht den Tweet-Link in deinem Kanal, ohne Signatur."
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "Analytics",
       "oauthClients": "OAuth-Clients",
       "settings": "Konfiguration",
-      "discordImages": "Discord Bot Bilder"
+      "discordImages": "Discord Bot Bilder",
+      "rosterWatch": "Roster Watch"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3465,7 +3467,8 @@
         "activityLog": "Aktivitätsprotokoll",
         "analytics": "Analytics",
         "oauthClients": "OAuth-Clients",
-        "settings": "Konfiguration"
+        "settings": "Konfiguration",
+        "rosterWatch": "Roster Watch"
       },
       "permissionNames": {
         "admin_access": "Zugriff auf das Admin Panel",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "OAuth-Clients ansehen",
         "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen",
         "settings_view": "Konfiguration und OpenData Monitoring ansehen",
-        "settings_manage": "Konfiguration bearbeiten"
+        "settings_manage": "Konfiguration bearbeiten",
+        "roster_watch_view": "Roster Watch ansehen",
+        "roster_watch_manage": "Roster Watch Tweets prüfen und gefolgte Accounts verwalten"
       },
       "create": {
         "button": "Neue Rolle",
@@ -5445,6 +5450,136 @@
         "tooShort": "Mindestens {min} Zeichen.",
         "tooLong": "Höchstens {max} Zeichen."
       }
+    },
+    "rosterWatch": {
+      "title": "Roster Watch",
+      "subtitle": "Tweets der Team Accounts, von einer KI sortiert, damit Roster Änderungen von einem Menschen geprüft werden können.",
+      "empty": "Hier gibt es nichts zu prüfen.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Zu prüfen",
+        "done": "Geprüft"
+      },
+      "filters": {
+        "period": "Zeitraum",
+        "periodAny": "Beliebiger Zeitraum",
+        "periodDays": "Letzte {days} Tage",
+        "topic": "Thema",
+        "topicAny": "Beliebiges Thema"
+      },
+      "topic": {
+        "roster_join": "Spieler kommt",
+        "roster_leave": "Spieler geht",
+        "roster_bench": "Spieler auf der Bank",
+        "staff_change": "Staff Änderung",
+        "tryouts": "Tryouts",
+        "match_promo": "Match Promo",
+        "match_result": "Matchergebnis",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Content",
+        "community": "Community",
+        "other": "Sonstiges"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Kein Roster",
+        "unsure": "Unsicher"
+      },
+      "card": {
+        "openTweet": "Tweet öffnen",
+        "noText": "Kein Text",
+        "openPhoto": "Foto öffnen",
+        "openVideo": "Video öffnen",
+        "players": "Personen:"
+      },
+      "actions": {
+        "editTeam": "Team bearbeiten",
+        "ignore": "Ignorieren",
+        "notRoster": "Kein Roster",
+        "done": "Erledigt"
+      },
+      "form": {
+        "topic": "Worum geht es",
+        "topicPlaceholder": "Thema wählen",
+        "noteWhatIsIt": "Was ist es?",
+        "confirm": "Bestätigen",
+        "cancel": "Abbrechen"
+      },
+      "reviewed": {
+        "team_edited": "Team bearbeitet",
+        "ignored": "Ignoriert",
+        "marked_not_roster": "Als kein Roster markiert",
+        "reported_missed": "Als verpasst gemeldet"
+      },
+      "error": {
+        "notFound": "Dieser Tweet existiert nicht mehr.",
+        "invalidState": "Dieser Tweet kann diese Aktion nicht ausführen, er wurde eventuell schon geprüft.",
+        "invalidTopic": "Wähle ein gültiges Thema.",
+        "noteRequired": "Erkläre, worum es in diesem Tweet geht.",
+        "noteTooLong": "Die Notiz ist zu lang (maximal 1000 Zeichen)."
+      },
+      "accounts": {
+        "title": "Gefolgte Accounts",
+        "subtitle": "X Accounts, die einmal täglich abgerufen werden.",
+        "team": "Team",
+        "teamPlaceholder": "Team wählen",
+        "teamSearch": "Team suchen",
+        "teamNoResults": "Kein Team gefunden",
+        "handle": "X Handle",
+        "add": "Hinzufügen",
+        "added": "Account hinzugefügt.",
+        "enabled": "Aktiv",
+        "toastEnabled": "Account aktiviert.",
+        "toastDisabled": "Account deaktiviert.",
+        "lastPolled": "Letzter Abruf",
+        "lastError": "Letzter Fehler",
+        "empty": "Noch kein Account gefolgt.",
+        "noResults": "Kein Konto entspricht dieser Suche.",
+        "searchPlaceholder": "Team oder Handle suchen",
+        "count": "{count, plural, one {# Konto} other {# Konten}}",
+        "previous": "Vorherige Seite",
+        "next": "Nächste Seite",
+        "error": {
+          "notFound": "Dieser Account existiert nicht mehr.",
+          "teamRequired": "Wähle ein Team.",
+          "teamNotFound": "Dieses Team existiert nicht mehr.",
+          "handleRequired": "Gib ein X Handle ein.",
+          "handleInvalid": "Das Handle muss aus 1 bis 15 Buchstaben, Ziffern oder Unterstrichen bestehen.",
+          "handleTaken": "Diesem Handle wird bereits gefolgt."
+        }
+      },
+      "import": {
+        "button": "Automatischer Import",
+        "title": "X-Konten importieren",
+        "description": "Folgt dem X-Konto aus den Social-Media-Links jedes Teams des Turniers.",
+        "tournament": "Turnier",
+        "tournamentPlaceholder": "Turnier auswählen",
+        "tournamentSearch": "Turnier suchen",
+        "tournamentNoResults": "Kein Turnier gefunden",
+        "stage": "Phase",
+        "allStages": "Alle Phasen",
+        "cancel": "Abbrechen",
+        "submit": "Importieren",
+        "importing": "Import läuft...",
+        "success": "{added, plural, =0 {Kein Konto hinzugefügt} one {# Konto hinzugefügt} other {# Konten hinzugefügt}}. Bereits gefolgt: {alreadyFollowed}, ohne X-Konto: {noTwitter}, ungültig: {invalid}.",
+        "error": {
+          "tournamentRequired": "Wähle ein Turnier aus.",
+          "tournamentNotFound": "Dieses Turnier existiert nicht mehr.",
+          "stageNotFound": "Diese Phase gehört nicht zum Turnier."
+        }
+      },
+      "searchPlaceholder": "Tweet oder Team suchen",
+      "searchSubmit": "Suchen",
+      "statusLabel": "Status",
+      "columnTeam": "Team",
+      "columnTweet": "Tweet",
+      "columnType": "Typ",
+      "columnDate": "Datum",
+      "columnActions": "Aktionen"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhooks",
-      "description": "GC Stats sendet einen HTTPS POST an Ihre Endpoints, wenn sich ein Match, ein Turnier, ein Team oder ein Spieler ändert. Zustellungen werden etwa jede Minute geprüft.",
+      "description": "GC Stats sendet einen HTTPS POST an deine Endpunkte, wenn sich ein Match, ein Turnier, ein Team, ein Spieler oder ein Roster ändert. Die Zustellungen werden etwa jede Minute geprüft.",
       "pageTitle": "Webhooks",
       "pageSubtitle": "Endpoints und Zustellungen Ihrer Partner API Schlüssel.",
       "keySwitcher": "Partner API Schlüssel",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "Spieler aktualisiert"
+        },
+        "roster": {
+          "updated": "Roster-Änderung bestätigt"
         }
       },
       "filtersTitle": "Filter",
@@ -6367,7 +6505,8 @@
           "invalid": "Dies ist keine gültige URL.",
           "notHttps": "Die URL muss mit https:// beginnen.",
           "credentials": "Die URL darf keinen Benutzernamen und kein Passwort enthalten.",
-          "privateHost": "Die URL muss auf eine öffentliche Adresse verweisen."
+          "privateHost": "Die URL muss auf eine öffentliche Adresse verweisen.",
+          "notDiscord": "Das ist keine Discord Webhook URL."
         },
         "description": {
           "tooLong": "Höchstens {descriptionMaxLength} Zeichen."
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "Ungültiger Wert."
+        },
+        "kind": {
+          "invalid": "Wähle einen gültigen Typ."
         }
-      }
+      },
+      "kind": {
+        "label": "Typ",
+        "standard": "Standard",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Signierte JSON-Anfrage, die an deinen Server gesendet wird.",
+          "discord": "Veröffentlicht nur den Tweet-Link in einem Discord-Kanal."
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL (Servereinstellungen, Integrationen, Webhooks)."
     },
     "discord": {
       "serversTitle": "Discord Server",

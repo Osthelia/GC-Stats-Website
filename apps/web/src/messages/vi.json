@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "Khóa đối tác có thể đăng ký endpoint HTTPS từ bảng điều khiển: GC Stats sau đó gửi một POST mỗi khi dữ liệu thay đổi.",
-      "events": "Sự kiện: trận đấu mới, trận đấu được cập nhật, giải đấu mới, giải đấu được cập nhật, đội được cập nhật, tuyển thủ được cập nhật.",
+      "events": "Sự kiện: trận đấu mới, trận đấu cập nhật, giải đấu mới, giải đấu cập nhật, đội cập nhật, tuyển thủ cập nhật, thay đổi roster được đội ngũ của chúng tôi xác nhận (roster.updated).",
       "filters": "Bộ lọc: khu vực của giải đấu, chính thức hay không, các đội tham gia.",
       "signature": "Mỗi yêu cầu mang các header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp và X-GCS-Signature. Kiểm tra chữ ký bằng secret của endpoint.",
       "retries": "Trả lời bằng trạng thái 2xx trong vòng 10 giây. Các lần gửi thất bại được thử lại trong khoảng 9 giờ, endpoint thất bại quá thường xuyên sẽ bị tắt.",
-      "setup": "Payload chứa sự kiện, thời điểm và thực thể, với các trường giống như các bộ dữ liệu OpenData."
+      "setup": "Payload chứa sự kiện, thời điểm và thực thể, với các trường giống như các bộ dữ liệu OpenData.",
+      "discord": "Endpoint loại Discord chỉ nhận sự kiện roster.updated và đăng liên kết tweet trong kênh của bạn, không có chữ ký."
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "Phân tích",
       "oauthClients": "Ứng dụng OAuth",
       "settings": "Cấu hình",
-      "discordImages": "Hình ảnh của bot Discord"
+      "discordImages": "Hình ảnh của bot Discord",
+      "rosterWatch": "Theo dõi roster"
     },
     "dashboard": {
       "title": "Bảng điều khiển",
@@ -3465,7 +3467,8 @@
         "activityLog": "Nhật ký hoạt động",
         "analytics": "Phân tích",
         "oauthClients": "Ứng dụng OAuth",
-        "settings": "Cấu hình"
+        "settings": "Cấu hình",
+        "rosterWatch": "Theo dõi roster"
       },
       "permissionNames": {
         "admin_access": "Truy cập bảng quản trị",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "Xem ứng dụng OAuth",
         "oauth_clients_manage": "Tạo, sửa hoặc xóa ứng dụng OAuth",
         "settings_view": "Xem cấu hình và giám sát OpenData",
-        "settings_manage": "Chỉnh sửa cấu hình"
+        "settings_manage": "Chỉnh sửa cấu hình",
+        "roster_watch_view": "Xem theo dõi roster",
+        "roster_watch_manage": "Xem xét tweet theo dõi roster và quản lý các tài khoản đang theo dõi"
       },
       "create": {
         "button": "Vai trò mới",
@@ -5445,6 +5450,136 @@
         "tooShort": "Tối thiểu {min} ký tự.",
         "tooLong": "Tối đa {max} ký tự."
       }
+    },
+    "rosterWatch": {
+      "title": "Theo dõi roster",
+      "subtitle": "Tweet của các tài khoản đội, được AI phân loại để con người xem xét các thay đổi roster.",
+      "empty": "Không có gì cần xem xét ở đây.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Cần kiểm tra",
+        "done": "Đã xem xét"
+      },
+      "filters": {
+        "period": "Khoảng thời gian",
+        "periodAny": "Mọi khoảng thời gian",
+        "periodDays": "{days} ngày qua",
+        "topic": "Chủ đề",
+        "topicAny": "Mọi chủ đề"
+      },
+      "topic": {
+        "roster_join": "Tuyển thủ gia nhập",
+        "roster_leave": "Tuyển thủ rời đi",
+        "roster_bench": "Tuyển thủ xuống dự bị",
+        "staff_change": "Thay đổi staff",
+        "tryouts": "Tryouts",
+        "match_promo": "Quảng bá trận đấu",
+        "match_result": "Kết quả trận đấu",
+        "highlight": "Highlight",
+        "sponsor": "Nhà tài trợ",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Nội dung",
+        "community": "Cộng đồng",
+        "other": "Khác"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Không phải roster",
+        "unsure": "Chưa chắc"
+      },
+      "card": {
+        "openTweet": "Mở tweet",
+        "noText": "Không có văn bản",
+        "openPhoto": "Mở ảnh",
+        "openVideo": "Mở video",
+        "players": "Nhân vật:"
+      },
+      "actions": {
+        "editTeam": "Sửa đội",
+        "ignore": "Bỏ qua",
+        "notRoster": "Không phải roster",
+        "done": "Xong"
+      },
+      "form": {
+        "topic": "Nội dung về gì",
+        "topicPlaceholder": "Chọn một chủ đề",
+        "noteWhatIsIt": "Đây là gì?",
+        "confirm": "Xác nhận",
+        "cancel": "Hủy"
+      },
+      "reviewed": {
+        "team_edited": "Đã sửa đội",
+        "ignored": "Đã bỏ qua",
+        "marked_not_roster": "Đã đánh dấu không phải roster",
+        "reported_missed": "Đã báo cáo là bị sót"
+      },
+      "error": {
+        "notFound": "Tweet này không còn tồn tại.",
+        "invalidState": "Tweet này không thể thực hiện thao tác này, có thể đã được xem xét.",
+        "invalidTopic": "Chọn một chủ đề hợp lệ.",
+        "noteRequired": "Hãy giải thích tweet này nói về điều gì.",
+        "noteTooLong": "Ghi chú quá dài (tối đa 1000 ký tự)."
+      },
+      "accounts": {
+        "title": "Tài khoản đang theo dõi",
+        "subtitle": "Tài khoản X được lấy dữ liệu mỗi ngày một lần.",
+        "team": "Đội",
+        "teamPlaceholder": "Chọn một đội",
+        "teamSearch": "Tìm một đội",
+        "teamNoResults": "Không tìm thấy đội",
+        "handle": "Tên người dùng X",
+        "add": "Thêm",
+        "added": "Đã thêm tài khoản.",
+        "enabled": "Bật",
+        "toastEnabled": "Đã bật tài khoản.",
+        "toastDisabled": "Đã tắt tài khoản.",
+        "lastPolled": "Lần lấy cuối",
+        "lastError": "Lỗi gần nhất",
+        "empty": "Chưa theo dõi tài khoản nào.",
+        "noResults": "Không có tài khoản nào khớp với tìm kiếm này.",
+        "searchPlaceholder": "Tìm một đội hoặc một handle",
+        "count": "{count, plural, other {# tài khoản}}",
+        "previous": "Trang trước",
+        "next": "Trang sau",
+        "error": {
+          "notFound": "Tài khoản này không còn tồn tại.",
+          "teamRequired": "Chọn một đội.",
+          "teamNotFound": "Đội này không còn tồn tại.",
+          "handleRequired": "Nhập tên người dùng X.",
+          "handleInvalid": "Tên người dùng phải gồm 1 đến 15 chữ cái, chữ số hoặc dấu gạch dưới.",
+          "handleTaken": "Tên người dùng này đã được theo dõi."
+        }
+      },
+      "import": {
+        "button": "Nhập tự động",
+        "title": "Nhập tài khoản X",
+        "description": "Theo dõi tài khoản X có trong mạng xã hội của từng đội thuộc giải đấu.",
+        "tournament": "Giải đấu",
+        "tournamentPlaceholder": "Chọn một giải đấu",
+        "tournamentSearch": "Tìm giải đấu",
+        "tournamentNoResults": "Không tìm thấy giải đấu",
+        "stage": "Giai đoạn",
+        "allStages": "Tất cả giai đoạn",
+        "cancel": "Hủy",
+        "submit": "Nhập",
+        "importing": "Đang nhập...",
+        "success": "{added, plural, =0 {Không có tài khoản nào được thêm} other {Đã thêm # tài khoản}}. Đã theo dõi: {alreadyFollowed}, không có tài khoản X: {noTwitter}, không hợp lệ: {invalid}.",
+        "error": {
+          "tournamentRequired": "Hãy chọn một giải đấu.",
+          "tournamentNotFound": "Giải đấu này không còn tồn tại.",
+          "stageNotFound": "Giai đoạn này không thuộc giải đấu."
+        }
+      },
+      "searchPlaceholder": "Tìm tweet hoặc đội",
+      "searchSubmit": "Tìm kiếm",
+      "statusLabel": "Trạng thái",
+      "columnTeam": "Đội",
+      "columnTweet": "Tweet",
+      "columnType": "Loại",
+      "columnDate": "Ngày",
+      "columnActions": "Hành động"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "GC Stats gửi một POST HTTPS tới các endpoint của bạn khi một trận đấu, giải đấu, đội hoặc tuyển thủ thay đổi. Việc gửi được kiểm tra khoảng mỗi phút.",
+      "description": "GC Stats gửi một HTTPS POST đến các endpoint của bạn khi một trận đấu, giải đấu, đội, tuyển thủ hoặc roster thay đổi. Việc gửi được kiểm tra khoảng mỗi phút.",
       "pageTitle": "Webhook",
       "pageSubtitle": "Endpoint và các lần gửi của khóa API đối tác của bạn.",
       "keySwitcher": "Khóa API đối tác",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "Tuyển thủ được cập nhật"
+        },
+        "roster": {
+          "updated": "Thay đổi roster đã được xác nhận"
         }
       },
       "filtersTitle": "Bộ lọc",
@@ -6367,7 +6505,8 @@
           "invalid": "URL không hợp lệ.",
           "notHttps": "URL phải bắt đầu bằng https://.",
           "credentials": "URL không được chứa tên người dùng hoặc mật khẩu.",
-          "privateHost": "URL phải trỏ tới một địa chỉ công khai."
+          "privateHost": "URL phải trỏ tới một địa chỉ công khai.",
+          "notDiscord": "Đây không phải là URL Webhook Discord."
         },
         "description": {
           "tooLong": "Tối đa {descriptionMaxLength} ký tự."
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "Giá trị không hợp lệ."
+        },
+        "kind": {
+          "invalid": "Hãy chọn một loại hợp lệ."
         }
-      }
+      },
+      "kind": {
+        "label": "Loại",
+        "standard": "Tiêu chuẩn",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Yêu cầu JSON có chữ ký được gửi đến máy chủ của bạn.",
+          "discord": "Chỉ đăng liên kết tweet trong kênh Discord."
+        }
+      },
+      "urlHintDiscord": "URL Webhook Discord (Cài đặt máy chủ, Tích hợp, Webhook)."
     },
     "discord": {
       "serversTitle": "Máy chủ Discord",

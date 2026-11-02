@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooks",
       "body": "يمكن لمفاتيح الشركاء تسجيل endpoints تعمل بـ HTTPS من لوحة التحكم الخاصة بها: يرسل GC Stats عندها طلب POST في كل مرة تتغير فيها البيانات.",
-      "events": "الأحداث: مباراة جديدة، تحديث مباراة، بطولة جديدة، تحديث بطولة، تحديث فريق، تحديث لاعب.",
+      "events": "الأحداث: مباراة جديدة، تحديث مباراة، بطولة جديدة، تحديث بطولة، تحديث فريق، تحديث لاعب، تغيير تشكيلة تم التحقق منه من فريقنا (roster.updated).",
       "filters": "الفلاتر: منطقة البطولة، رسمية أم لا، الفرق المشاركة.",
       "signature": "يحمل كل طلب الترويسات X-GCS-Event و X-GCS-Delivery و X-GCS-Timestamp و X-GCS-Signature. تحقق من التوقيع باستخدام سر الـ endpoint الخاص بك.",
       "retries": "استجب بحالة 2xx خلال 10 ثوانٍ. تُعاد محاولة الإرسالات الفاشلة لمدة 9 ساعات تقريبًا، ويتم إيقاف الـ endpoint الذي يفشل كثيرًا.",
-      "setup": "يحتوي الـ payload على الحدث وتاريخه والكيان، بنفس حقول مجموعات بيانات OpenData."
+      "setup": "يحتوي الـ payload على الحدث وتاريخه والكيان، بنفس حقول مجموعات بيانات OpenData.",
+      "discord": "نقطة نهاية من نوع Discord تتلقى حدث roster.updated فقط وتنشر رابط التغريدة في قناتك، بدون توقيع."
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "الإحصاءات",
       "oauthClients": "عملاء OAuth",
       "settings": "الإعدادات",
-      "discordImages": "صور بوت Discord"
+      "discordImages": "صور بوت Discord",
+      "rosterWatch": "مراقبة التشكيلات"
     },
     "dashboard": {
       "title": "لوحة التحكم",
@@ -3465,7 +3467,8 @@
         "activityLog": "سجل النشاط",
         "analytics": "الإحصاءات",
         "oauthClients": "عملاء OAuth",
-        "settings": "الإعدادات"
+        "settings": "الإعدادات",
+        "rosterWatch": "مراقبة التشكيلات"
       },
       "permissionNames": {
         "admin_access": "الوصول إلى لوحة الإدارة",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "عرض عملاء OAuth",
         "oauth_clients_manage": "إنشاء عملاء OAuth أو تعديلهم أو حذفهم",
         "settings_view": "عرض الإعدادات ومراقبة OpenData",
-        "settings_manage": "تعديل الإعدادات"
+        "settings_manage": "تعديل الإعدادات",
+        "roster_watch_view": "عرض مراقبة التشكيلات",
+        "roster_watch_manage": "مراجعة تغريدات مراقبة التشكيلات وإدارة الحسابات المتابَعة"
       },
       "create": {
         "button": "دور جديد",
@@ -5445,6 +5450,136 @@
         "tooShort": "{min} أحرف على الأقل.",
         "tooLong": "{max} أحرف كحد أقصى."
       }
+    },
+    "rosterWatch": {
+      "title": "مراقبة التشكيلات",
+      "subtitle": "تغريدات حسابات الفرق، مصنفة بواسطة الذكاء الاصطناعي ليراجع شخص تغييرات التشكيلة.",
+      "empty": "لا شيء للمراجعة هنا.",
+      "tabs": {
+        "roster": "التشكيلة",
+        "unsure": "للتحقق",
+        "done": "تمت مراجعتها"
+      },
+      "filters": {
+        "period": "الفترة",
+        "periodAny": "أي فترة",
+        "periodDays": "آخر {days} أيام",
+        "topic": "الموضوع",
+        "topicAny": "أي موضوع"
+      },
+      "topic": {
+        "roster_join": "انضمام لاعب",
+        "roster_leave": "مغادرة لاعب",
+        "roster_bench": "لاعب على الدكة",
+        "staff_change": "تغيير في الطاقم",
+        "tryouts": "Tryouts",
+        "match_promo": "ترويج مباراة",
+        "match_result": "نتيجة مباراة",
+        "highlight": "Highlight",
+        "sponsor": "راعي",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "بث مباشر",
+        "content": "محتوى",
+        "community": "المجتمع",
+        "other": "أخرى"
+      },
+      "verdict": {
+        "roster": "التشكيلة",
+        "not_roster": "ليست تشكيلة",
+        "unsure": "غير متأكد"
+      },
+      "card": {
+        "openTweet": "فتح التغريدة",
+        "noText": "بدون نص",
+        "openPhoto": "فتح الصورة",
+        "openVideo": "فتح الفيديو",
+        "players": "الأشخاص:"
+      },
+      "actions": {
+        "editTeam": "تعديل الفريق",
+        "ignore": "تجاهل",
+        "notRoster": "ليست تشكيلة",
+        "done": "تم"
+      },
+      "form": {
+        "topic": "عن ماذا تتحدث",
+        "topicPlaceholder": "اختر موضوعاً",
+        "noteWhatIsIt": "ما هذا؟",
+        "confirm": "تأكيد",
+        "cancel": "إلغاء"
+      },
+      "reviewed": {
+        "team_edited": "تم تعديل الفريق",
+        "ignored": "تم التجاهل",
+        "marked_not_roster": "تم تحديدها كغير تشكيلة",
+        "reported_missed": "تم الإبلاغ عنها كفائتة"
+      },
+      "error": {
+        "notFound": "هذه التغريدة لم تعد موجودة.",
+        "invalidState": "لا يمكن تنفيذ هذا الإجراء على هذه التغريدة، ربما تمت مراجعتها بالفعل.",
+        "invalidTopic": "اختر موضوعاً صالحاً.",
+        "noteRequired": "اشرح موضوع هذه التغريدة.",
+        "noteTooLong": "الملاحظة طويلة جداً (1000 حرف كحد أقصى)."
+      },
+      "accounts": {
+        "title": "الحسابات المتابَعة",
+        "subtitle": "حسابات X يتم جلبها مرة واحدة يومياً.",
+        "team": "الفريق",
+        "teamPlaceholder": "اختر فريقاً",
+        "teamSearch": "ابحث عن فريق",
+        "teamNoResults": "لم يتم العثور على فريق",
+        "handle": "معرّف X",
+        "add": "إضافة",
+        "added": "تمت إضافة الحساب.",
+        "enabled": "مفعّل",
+        "toastEnabled": "تم تفعيل الحساب.",
+        "toastDisabled": "تم تعطيل الحساب.",
+        "lastPolled": "آخر جلب",
+        "lastError": "آخر خطأ",
+        "empty": "لا يوجد حساب متابَع بعد.",
+        "noResults": "لا يوجد حساب يطابق هذا البحث.",
+        "searchPlaceholder": "ابحث عن فريق أو معرّف",
+        "count": "{count, plural, zero {# حساب} one {حساب واحد} two {حسابان} few {# حسابات} many {# حسابًا} other {# حساب}}",
+        "previous": "الصفحة السابقة",
+        "next": "الصفحة التالية",
+        "error": {
+          "notFound": "هذا الحساب لم يعد موجوداً.",
+          "teamRequired": "اختر فريقاً.",
+          "teamNotFound": "هذا الفريق لم يعد موجوداً.",
+          "handleRequired": "أدخل معرّف X.",
+          "handleInvalid": "يجب أن يتكون المعرّف من 1 إلى 15 حرفاً أو رقماً أو شرطة سفلية.",
+          "handleTaken": "هذا المعرّف متابَع بالفعل."
+        }
+      },
+      "import": {
+        "button": "استيراد تلقائي",
+        "title": "استيراد حسابات X",
+        "description": "يتابع حساب X الموجود في الروابط الاجتماعية لكل فريق في البطولة.",
+        "tournament": "البطولة",
+        "tournamentPlaceholder": "اختر بطولة",
+        "tournamentSearch": "ابحث عن بطولة",
+        "tournamentNoResults": "لم يتم العثور على بطولة",
+        "stage": "المرحلة",
+        "allStages": "كل المراحل",
+        "cancel": "إلغاء",
+        "submit": "استيراد",
+        "importing": "جارٍ الاستيراد...",
+        "success": "{added, plural, =0 {لم تتم إضافة أي حساب} one {تمت إضافة حساب واحد} two {تمت إضافة حسابين} few {تمت إضافة # حسابات} many {تمت إضافة # حسابًا} other {تمت إضافة # حساب}}. متابَعة مسبقًا: {alreadyFollowed}، بدون حساب X: {noTwitter}، غير صالحة: {invalid}.",
+        "error": {
+          "tournamentRequired": "اختر بطولة.",
+          "tournamentNotFound": "هذه البطولة لم تعد موجودة.",
+          "stageNotFound": "هذه المرحلة لا تنتمي إلى البطولة."
+        }
+      },
+      "searchPlaceholder": "ابحث عن تغريدة أو فريق",
+      "searchSubmit": "بحث",
+      "statusLabel": "الحالة",
+      "columnTeam": "الفريق",
+      "columnTweet": "التغريدة",
+      "columnType": "النوع",
+      "columnDate": "التاريخ",
+      "columnActions": "الإجراءات"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhooks",
-      "description": "يرسل GC Stats طلب HTTPS POST إلى الـ endpoints الخاصة بك عند تغيّر مباراة أو بطولة أو فريق أو لاعب. يتم فحص الإرسالات كل دقيقة تقريبًا.",
+      "description": "يرسل GC Stats طلب HTTPS POST إلى نقاط النهاية الخاصة بك عندما تتغير مباراة أو بطولة أو فريق أو لاعب أو تشكيلة. يتم فحص عمليات التسليم تقريبًا كل دقيقة.",
       "pageTitle": "Webhooks",
       "pageSubtitle": "نقاط النهاية وعمليات الإرسال لمفاتيح API الشريكة.",
       "keySwitcher": "مفتاح API الشريك",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "تحديث لاعب"
+        },
+        "roster": {
+          "updated": "تم التحقق من تغيير التشكيلة"
         }
       },
       "filtersTitle": "الفلاتر",
@@ -6367,7 +6505,8 @@
           "invalid": "هذا ليس رابطًا صالحًا.",
           "notHttps": "يجب أن يبدأ الرابط بـ https://.",
           "credentials": "لا يمكن أن يحتوي الرابط على اسم مستخدم أو كلمة مرور.",
-          "privateHost": "يجب أن يشير الرابط إلى عنوان عام."
+          "privateHost": "يجب أن يشير الرابط إلى عنوان عام.",
+          "notDiscord": "هذا ليس عنوان URL لـ Webhook في Discord."
         },
         "description": {
           "tooLong": "{descriptionMaxLength} حرفًا كحد أقصى."
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "قيمة غير صالحة."
+        },
+        "kind": {
+          "invalid": "اختر نوعًا صالحًا."
         }
-      }
+      },
+      "kind": {
+        "label": "النوع",
+        "standard": "قياسي",
+        "discord": "Discord",
+        "hint": {
+          "standard": "طلب JSON موقّع يُرسل إلى خادمك.",
+          "discord": "ينشر رابط التغريدة فقط في قناة Discord."
+        }
+      },
+      "urlHintDiscord": "عنوان URL لـ Webhook في Discord (إعدادات الخادم، التكاملات، Webhooks)."
     },
     "discord": {
       "serversTitle": "خوادم Discord",

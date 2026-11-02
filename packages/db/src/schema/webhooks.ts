@@ -18,6 +18,7 @@ import { apiKeys } from "./auth";
 export const webhookEndpoints = pgTable("webhook_endpoints", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   apiKeyId: bigint("api_key_id", { mode: "number" }).notNull().references(() => apiKeys.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull().default("standard"), // 'standard' | 'discord'
   url: text("url").notNull(),
   description: text("description"),
   secretEncrypted: text("secret_encrypted").notNull(),

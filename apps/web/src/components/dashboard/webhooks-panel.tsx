@@ -42,17 +42,21 @@ import {
   type WebhookSendResult,
 } from "@/actions/webhooks";
 import {
+  ROSTER_WEBHOOK_EVENT,
   WEBHOOK_EVENTS,
+  WEBHOOK_KINDS,
   WEBHOOK_LIMITS,
   WEBHOOK_OFFICIAL_FILTERS,
   type WebhookDeliveryView,
   type WebhookEndpointView,
   type WebhookEvent,
   type WebhookKeyScope,
+  type WebhookKind,
   type WebhookOfficialFilter,
 } from "@/lib/webhooks/shared";
 
 type FormState = {
+  kind: WebhookKind;
   url: string;
   description: string;
   events: WebhookEvent[];
@@ -61,7 +65,7 @@ type FormState = {
   filterOfficial: WebhookOfficialFilter;
 };
 
-const EMPTY_FORM: FormState = { url: "", description: "", events: [...WEBHOOK_EVENTS], filterRegions: [], filterTeams: [], filterOfficial: "all" };
+const EMPTY_FORM: FormState = { kind: "standard", url: "", description: "", events: [...WEBHOOK_EVENTS], filterRegions: [], filterTeams: [], filterOfficial: "all" };
 
 const DELIVERY_STATUS_CLASS: Record<string, string> = {
   success: "bg-emerald-500/15 text-emerald-500",
@@ -107,7 +111,7 @@ function EndpointDialog({
   const [isPending, startTransition] = useTransition();
   const [form, setForm] = useState<FormState>(
     editing
-      ? { url: editing.url, description: editing.description ?? "", events: editing.events, filterRegions: editing.filterRegions, filterTeams: editing.filterTeams, filterOfficial: editing.filterOfficial }
+      ? { kind: editing.kind, url: editing.url, description: editing.description ?? "", events: editing.events, filterRegions: editing.filterRegions, filterTeams: editing.filterTeams, filterOfficial: editing.filterOfficial }
       : EMPTY_FORM,
   );
   const [fieldErrors, setFieldErrors] = useState<WebhookFieldErrors>({});
@@ -117,6 +121,8 @@ function EndpointDialog({
   const toggle = <T,>(list: T[], value: T) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
   const err = (field: keyof WebhookFieldErrors) => (fieldErrors[field] ? t(`error.${field}.${fieldErrors[field]}`, { ...WEBHOOK_LIMITS }) : undefined);
 
+  const discord = form.kind === "discord";
+  const kindItems = Object.fromEntries(WEBHOOK_KINDS.map((v) => [v, t(`kind.${v}`)]));
   const officialItems = Object.fromEntries(WEBHOOK_OFFICIAL_FILTERS.map((v) => [v, t(`official.${v}`)]));
 
   function handleSubmit(event: React.FormEvent) {
@@ -125,9 +131,10 @@ function EndpointDialog({
     setFormError(null);
     startTransition(async () => {
       const input = {
+        kind: form.kind,
         url: form.url,
         description: form.description,
-        events: form.events,
+        events: discord ? [ROSTER_WEBHOOK_EVENT] : form.events,
         filterRegions: form.filterRegions,
         filterTeamIds: form.filterTeams.map((team) => team.id),
         filterOfficial: form.filterOfficial,
@@ -158,14 +165,30 @@ function EndpointDialog({
             <DialogDescription>{t("dialogDescription")}</DialogDescription>
           </DialogHeader>
 
-          <FormField label={t("url")} htmlFor="wh-url" required error={err("url")} hint={t("urlHint")}>
-            <Input id="wh-url" value={form.url} onChange={(e) => set("url", e.target.value)} placeholder="https://example.com/webhooks/gcs" maxLength={WEBHOOK_LIMITS.urlMaxLength} aria-invalid={!!fieldErrors.url} />
+          <FormField label={t("kind.label")} htmlFor="wh-kind" required error={err("kind")} hint={t(`kind.hint.${form.kind}`)}>
+            <Select items={kindItems} value={form.kind} disabled={!!editing} onValueChange={(v) => v && set("kind", v as WebhookKind)}>
+              <SelectTrigger id="wh-kind" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {WEBHOOK_KINDS.map((v) => (
+                  <SelectItem key={v} value={v}>
+                    {kindItems[v]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+
+          <FormField label={t("url")} htmlFor="wh-url" required error={err("url")} hint={discord ? t("urlHintDiscord") : t("urlHint")}>
+            <Input id="wh-url" value={form.url} onChange={(e) => set("url", e.target.value)} placeholder={discord ? "https://discord.com/api/webhooks/..." : "https://example.com/webhooks/gcs"} maxLength={WEBHOOK_LIMITS.urlMaxLength} aria-invalid={!!fieldErrors.url} />
           </FormField>
 
           <FormField label={t("descriptionLabel")} htmlFor="wh-description" error={err("description")}>
             <Input id="wh-description" value={form.description} onChange={(e) => set("description", e.target.value)} maxLength={WEBHOOK_LIMITS.descriptionMaxLength} aria-invalid={!!fieldErrors.description} />
           </FormField>
 
+          {!discord && (
           <FormField label={t("events")} htmlFor="wh-events" required error={err("events")}>
             <div id="wh-events" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {WEBHOOK_EVENTS.map((event) => (
@@ -179,6 +202,7 @@ function EndpointDialog({
               ))}
             </div>
           </FormField>
+          )}
 
           <div className="flex flex-col gap-3 rounded-lg border p-3">
             <div>
@@ -186,6 +210,7 @@ function EndpointDialog({
               <p className="text-xs text-muted-foreground">{t("filtersHint")}</p>
             </div>
 
+            {!discord && (<>
             <FormField label={t("official.label")} htmlFor="wh-official" error={err("filterOfficial")}>
               <Select items={officialItems} value={form.filterOfficial} onValueChange={(v) => v && set("filterOfficial", v as WebhookOfficialFilter)}>
                 <SelectTrigger id="wh-official" className="w-full">
@@ -219,6 +244,7 @@ function EndpointDialog({
                 })}
               </div>
             </FormField>
+            </>)}
 
             <FormField label={t("teams")} htmlFor="wh-teams" error={err("filterTeamIds")} hint={t("teamsHint")}>
               <div className="flex flex-col gap-2">
@@ -294,7 +320,9 @@ export function WebhooksPanel({
   const [deleting, setDeleting] = useState<WebhookEndpointView | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const endpointUrl = new Map(endpoints.map((e) => [e.id, e.url]));
+  // The path of a Discord webhook URL is its secret token.
+  const displayUrl = (e: WebhookEndpointView) => (e.kind === "discord" ? new URL(e.url).hostname : e.url);
+  const endpointUrl = new Map(endpoints.map((e) => [e.id, displayUrl(e)]));
 
   async function run<T>(key: string, action: () => Promise<T>): Promise<T | null> {
     setBusy(key);
@@ -374,7 +402,10 @@ export function WebhooksPanel({
               <div key={endpoint.id} className="flex flex-col gap-3 rounded-lg border p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-mono text-sm">{endpoint.url}</p>
+                    <p className="flex items-center gap-2">
+                      <Badge variant="secondary">{t(`kind.${endpoint.kind}`)}</Badge>
+                      <span className="truncate font-mono text-sm">{displayUrl(endpoint)}</span>
+                    </p>
                     {endpoint.description && <p className="text-xs text-muted-foreground">{endpoint.description}</p>}
                     {endpoint.disabledReason === "failing" && !endpoint.isActive && <p className="mt-1 text-xs text-destructive">{t("disabledFailing")}</p>}
                   </div>
@@ -393,14 +424,18 @@ export function WebhooksPanel({
                 </div>
 
                 <dl className="grid grid-cols-1 gap-1 text-xs text-muted-foreground sm:grid-cols-3">
-                  <div>
-                    <dt className="inline font-medium text-foreground">{t("official.label")}: </dt>
-                    <dd className="inline">{t(`official.${endpoint.filterOfficial}`)}</dd>
-                  </div>
-                  <div>
-                    <dt className="inline font-medium text-foreground">{t("regions")}: </dt>
-                    <dd className="inline">{endpoint.filterRegions.length ? endpoint.filterRegions.join(", ") : t("any")}</dd>
-                  </div>
+                  {endpoint.kind !== "discord" && (
+                    <>
+                      <div>
+                        <dt className="inline font-medium text-foreground">{t("official.label")}: </dt>
+                        <dd className="inline">{t(`official.${endpoint.filterOfficial}`)}</dd>
+                      </div>
+                      <div>
+                        <dt className="inline font-medium text-foreground">{t("regions")}: </dt>
+                        <dd className="inline">{endpoint.filterRegions.length ? endpoint.filterRegions.join(", ") : t("any")}</dd>
+                      </div>
+                    </>
+                  )}
                   <div>
                     <dt className="inline font-medium text-foreground">{t("teams")}: </dt>
                     <dd className="inline">{endpoint.filterTeams.length ? endpoint.filterTeams.map((team) => team.name).join(", ") : t("any")}</dd>
@@ -416,14 +451,18 @@ export function WebhooksPanel({
                     <Pencil />
                     {t("edit")}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleReveal(endpoint)} disabled={busy === `reveal-${endpoint.id}`}>
-                    <Eye />
-                    {t("showSecret")}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleRotate(endpoint)} disabled={busy === `rotate-${endpoint.id}`}>
-                    <RotateCw />
-                    {t("rotateSecret")}
-                  </Button>
+                  {endpoint.kind !== "discord" && (
+                    <>
+                      <Button variant="outline" size="sm" onClick={() => handleReveal(endpoint)} disabled={busy === `reveal-${endpoint.id}`}>
+                        <Eye />
+                        {t("showSecret")}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleRotate(endpoint)} disabled={busy === `rotate-${endpoint.id}`}>
+                        <RotateCw />
+                        {t("rotateSecret")}
+                      </Button>
+                    </>
+                  )}
                   <Button variant="destructive" size="sm" onClick={() => setDeleting(endpoint)}>
                     <Trash2 />
                     {t("delete")}
@@ -513,7 +552,7 @@ export function WebhooksPanel({
         open={!!deleting}
         onOpenChange={(open) => !open && setDeleting(null)}
         title={t("deleteTitle")}
-        description={t("deleteDescription", { url: deleting?.url ?? "" })}
+        description={t("deleteDescription", { url: deleting ? displayUrl(deleting) : "" })}
         confirmLabel={t("delete")}
         cancelLabel={t("cancel")}
         onConfirm={handleDelete}

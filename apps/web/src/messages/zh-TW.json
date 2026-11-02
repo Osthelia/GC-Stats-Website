@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "合作夥伴金鑰可以在其控制台中註冊 HTTPS 端點：每當資料變動時，GC Stats 會傳送一個 POST。",
-      "events": "事件：新比賽、比賽已更新、新賽事、賽事已更新、隊伍已更新、選手已更新。",
+      "events": "事件：新比賽、比賽更新、新賽事、賽事更新、戰隊更新、選手更新、經我們團隊確認的陣容變更（roster.updated）。",
       "filters": "篩選：賽事地區、是否為官方、參賽隊伍。",
       "signature": "每個請求都帶有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 與 X-GCS-Signature 標頭。請使用端點密鑰驗證簽章。",
       "retries": "請在 10 秒內回應 2xx 狀態碼。失敗的傳送會在約 9 小時內重試，過於頻繁失敗的端點將被關閉。",
-      "setup": "Payload 包含事件、事件時間與實體，欄位與 OpenData 資料集相同。"
+      "setup": "Payload 包含事件、事件時間與實體，欄位與 OpenData 資料集相同。",
+      "discord": "Discord 類型的端點只接收 roster.updated 事件，並在你的頻道中發佈推文連結，不帶簽名。"
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "統計分析",
       "oauthClients": "OAuth 客戶端",
       "settings": "設定",
-      "discordImages": "Discord 機器人圖片"
+      "discordImages": "Discord 機器人圖片",
+      "rosterWatch": "名單監控"
     },
     "dashboard": {
       "title": "控制台",
@@ -3465,7 +3467,8 @@
         "activityLog": "活動日誌",
         "analytics": "統計分析",
         "oauthClients": "OAuth 客戶端",
-        "settings": "設定"
+        "settings": "設定",
+        "rosterWatch": "名單監控"
       },
       "permissionNames": {
         "admin_access": "訪問管理面板",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "檢視 OAuth 客戶端",
         "oauth_clients_manage": "建立、編輯或刪除 OAuth 客戶端",
         "settings_view": "檢視設定與 OpenData 監控",
-        "settings_manage": "編輯設定"
+        "settings_manage": "編輯設定",
+        "roster_watch_view": "查看名單監控",
+        "roster_watch_manage": "審核名單監控推文並管理已追蹤帳號"
       },
       "create": {
         "button": "新建角色",
@@ -5445,6 +5450,136 @@
         "tooShort": "至少 {min} 個字元。",
         "tooLong": "最多 {max} 個字元。"
       }
+    },
+    "rosterWatch": {
+      "title": "名單監控",
+      "subtitle": "戰隊帳號的推文由 AI 分類，以便人工審核名單異動。",
+      "empty": "這裡沒有需要審核的內容。",
+      "tabs": {
+        "roster": "名單",
+        "unsure": "待確認",
+        "done": "已審核"
+      },
+      "filters": {
+        "period": "時間範圍",
+        "periodAny": "任意時間範圍",
+        "periodDays": "最近 {days} 天",
+        "topic": "主題",
+        "topicAny": "任意主題"
+      },
+      "topic": {
+        "roster_join": "選手加入",
+        "roster_leave": "選手離隊",
+        "roster_bench": "選手轉替補",
+        "staff_change": "教練組異動",
+        "tryouts": "Tryouts",
+        "match_promo": "比賽宣傳",
+        "match_result": "比賽結果",
+        "highlight": "精彩片段",
+        "sponsor": "贊助商",
+        "merch": "周邊",
+        "giveaway": "Giveaway",
+        "stream": "直播",
+        "content": "內容",
+        "community": "社群",
+        "other": "其他"
+      },
+      "verdict": {
+        "roster": "名單",
+        "not_roster": "非名單",
+        "unsure": "不確定"
+      },
+      "card": {
+        "openTweet": "開啟推文",
+        "noText": "無文字",
+        "openPhoto": "開啟照片",
+        "openVideo": "開啟影片",
+        "players": "相關人員:"
+      },
+      "actions": {
+        "editTeam": "編輯戰隊",
+        "ignore": "忽略",
+        "notRoster": "非名單",
+        "done": "完成"
+      },
+      "form": {
+        "topic": "內容是什麼",
+        "topicPlaceholder": "選擇主題",
+        "noteWhatIsIt": "這是什麼？",
+        "confirm": "確認",
+        "cancel": "取消"
+      },
+      "reviewed": {
+        "team_edited": "戰隊已編輯",
+        "ignored": "已忽略",
+        "marked_not_roster": "已標記為非名單",
+        "reported_missed": "已回報為漏檢"
+      },
+      "error": {
+        "notFound": "這則推文已不存在。",
+        "invalidState": "這則推文無法執行此操作，可能已被審核。",
+        "invalidTopic": "請選擇有效的主題。",
+        "noteRequired": "請說明這則推文的內容。",
+        "noteTooLong": "備註太長（最多 1000 個字元）。"
+      },
+      "accounts": {
+        "title": "已追蹤帳號",
+        "subtitle": "每天擷取一次的 X 帳號。",
+        "team": "戰隊",
+        "teamPlaceholder": "選擇戰隊",
+        "teamSearch": "搜尋戰隊",
+        "teamNoResults": "找不到戰隊",
+        "handle": "X 使用者名稱",
+        "add": "新增",
+        "added": "帳號已新增。",
+        "enabled": "已啟用",
+        "toastEnabled": "帳號已啟用。",
+        "toastDisabled": "帳號已停用。",
+        "lastPolled": "上次擷取",
+        "lastError": "上次錯誤",
+        "empty": "尚未追蹤任何帳號。",
+        "noResults": "沒有符合此搜尋的帳號。",
+        "searchPlaceholder": "搜尋戰隊或帳號名稱",
+        "count": "{count, plural, other {# 個帳號}}",
+        "previous": "上一頁",
+        "next": "下一頁",
+        "error": {
+          "notFound": "這個帳號已不存在。",
+          "teamRequired": "請選擇戰隊。",
+          "teamNotFound": "這個戰隊已不存在。",
+          "handleRequired": "請輸入 X 使用者名稱。",
+          "handleInvalid": "使用者名稱必須是 1 到 15 個字母、數字或底線。",
+          "handleTaken": "這個使用者名稱已被追蹤。"
+        }
+      },
+      "import": {
+        "button": "自動匯入",
+        "title": "匯入 X 帳號",
+        "description": "追蹤賽事中每支隊伍社群連結裡的 X 帳號。",
+        "tournament": "賽事",
+        "tournamentPlaceholder": "選擇賽事",
+        "tournamentSearch": "搜尋賽事",
+        "tournamentNoResults": "找不到賽事",
+        "stage": "階段",
+        "allStages": "所有階段",
+        "cancel": "取消",
+        "submit": "匯入",
+        "importing": "匯入中...",
+        "success": "{added, plural, =0 {未新增任何帳號} other {已新增 # 個帳號}}。已追蹤：{alreadyFollowed}，無 X 帳號：{noTwitter}，無效：{invalid}。",
+        "error": {
+          "tournamentRequired": "請選擇賽事。",
+          "tournamentNotFound": "該賽事已不存在。",
+          "stageNotFound": "該階段不屬於此賽事。"
+        }
+      },
+      "searchPlaceholder": "搜尋推文或戰隊",
+      "searchSubmit": "搜尋",
+      "statusLabel": "狀態",
+      "columnTeam": "戰隊",
+      "columnTweet": "推文",
+      "columnType": "類型",
+      "columnDate": "日期",
+      "columnActions": "操作"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "當比賽、賽事、隊伍或選手有變動時，GC Stats 會向您的端點傳送 HTTPS POST。傳送狀態大約每分鐘檢查一次。",
+      "description": "當比賽、賽事、戰隊、選手或陣容發生變化時，GC Stats 會向你的端點發送 HTTPS POST。投遞約每分鐘檢查一次。",
       "pageTitle": "Webhook",
       "pageSubtitle": "您的合作夥伴 API 金鑰的端點與推送記錄。",
       "keySwitcher": "合作夥伴 API 金鑰",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "選手已更新"
+        },
+        "roster": {
+          "updated": "陣容變更已確認"
         }
       },
       "filtersTitle": "篩選",
@@ -6367,7 +6505,8 @@
           "invalid": "這不是有效的 URL。",
           "notHttps": "URL 必須以 https:// 開頭。",
           "credentials": "URL 不能包含使用者名稱或密碼。",
-          "privateHost": "URL 必須指向公開位址。"
+          "privateHost": "URL 必須指向公開位址。",
+          "notDiscord": "這不是 Discord Webhook URL。"
         },
         "description": {
           "tooLong": "最多 {descriptionMaxLength} 個字元。"
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "無效的值。"
+        },
+        "kind": {
+          "invalid": "請選擇有效的類型。"
         }
-      }
+      },
+      "kind": {
+        "label": "類型",
+        "standard": "標準",
+        "discord": "Discord",
+        "hint": {
+          "standard": "發送到你伺服器的帶簽名 JSON 請求。",
+          "discord": "僅在 Discord 頻道中發佈推文連結。"
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL（伺服器設定、整合、Webhooks）。"
     },
     "discord": {
       "serversTitle": "Discord 伺服器",

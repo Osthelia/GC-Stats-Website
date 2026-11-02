@@ -17,6 +17,15 @@ import { WEBHOOK_LIMITS } from "./shared";
 
 export type WebhookUrlError = "required" | "tooLong" | "invalid" | "notHttps" | "credentials" | "privateHost";
 
+const DISCORD_HOSTS = ["discord.com", "discordapp.com", "ptb.discord.com", "canary.discord.com"];
+const DISCORD_PATH_RE = /^\/api(?:\/v\d+)?\/webhooks\/\d+\/[\w-]+\/?$/;
+
+/** True for a Discord webhook URL (already validated as a public https URL). */
+export function isDiscordWebhookUrl(url: string): boolean {
+  const parsed = new URL(url);
+  return DISCORD_HOSTS.includes(parsed.hostname.toLowerCase()) && DISCORD_PATH_RE.test(parsed.pathname);
+}
+
 const BLOCKED_HOST_SUFFIXES = [".localhost", ".local", ".internal", ".lan", ".home.arpa"];
 
 const BLOCKED_RANGES = new net.BlockList();

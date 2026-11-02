@@ -1,0 +1,1 @@
+ALTER TABLE "webhook_endpoints" ADD COLUMN "kind" text DEFAULT 'standard' NOT NULL;

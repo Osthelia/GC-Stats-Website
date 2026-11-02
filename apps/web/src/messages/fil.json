@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooks",
       "body": "Puwedeng magrehistro ng mga HTTPS endpoint ang mga partner key mula sa kanilang dashboard: magpapadala ang GC Stats ng POST tuwing nagbabago ang data.",
-      "events": "Mga event: bagong laban, na-update ang laban, bagong torneo, na-update ang torneo, na-update ang team, na-update ang player.",
+      "events": "Mga event: bagong match, na-update na match, bagong torneo, na-update na torneo, na-update na team, na-update na manlalaro, pagbabago sa roster na na-validate ng aming team (roster.updated).",
       "filters": "Mga filter: rehiyon ng torneo, official man o hindi, mga kalahok na team.",
       "signature": "May dalang X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp at X-GCS-Signature header ang bawat request. Suriin ang signature gamit ang secret ng iyong endpoint.",
       "retries": "Sumagot gamit ang 2xx status sa loob ng 10 segundo. Inuulit ang mga nabigong delivery nang humigit kumulang 9 na oras, at ino-off ang endpoint na madalas mabigo.",
-      "setup": "Nasa payload ang event, ang petsa nito at ang entity, na may parehong mga field gaya ng mga OpenData dataset."
+      "setup": "Nasa payload ang event, ang petsa nito at ang entity, na may parehong mga field gaya ng mga OpenData dataset.",
+      "discord": "Ang endpoint na uri ng Discord ay tumatanggap lang ng event na roster.updated at ipino-post ang link ng tweet sa iyong channel, walang signature."
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "Analytics",
       "oauthClients": "Mga OAuth client",
       "settings": "Configuration",
-      "discordImages": "Mga larawan ng Discord bot"
+      "discordImages": "Mga larawan ng Discord bot",
+      "rosterWatch": "Roster watch"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3465,7 +3467,8 @@
         "activityLog": "Activity log",
         "analytics": "Analytics",
         "oauthClients": "Mga OAuth client",
-        "settings": "Configuration"
+        "settings": "Configuration",
+        "rosterWatch": "Roster watch"
       },
       "permissionNames": {
         "admin_access": "I-access ang admin panel",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "Tingnan ang mga OAuth client",
         "oauth_clients_manage": "Gumawa, mag-edit, o magbura ng mga OAuth client",
         "settings_view": "Tingnan ang configuration at ang monitoring ng OpenData",
-        "settings_manage": "Baguhin ang configuration"
+        "settings_manage": "Baguhin ang configuration",
+        "roster_watch_view": "Tingnan ang roster watch",
+        "roster_watch_manage": "Suriin ang mga tweet ng roster watch at pamahalaan ang mga sinusundan na account"
       },
       "create": {
         "button": "Bagong tungkulin",
@@ -5445,6 +5450,136 @@
         "tooShort": "Hindi bababa sa {min} na character.",
         "tooLong": "Hanggang {max} na character lamang."
       }
+    },
+    "rosterWatch": {
+      "title": "Roster watch",
+      "subtitle": "Mga tweet ng mga account ng team, inayos ng AI para masuri ng tao ang mga pagbabago sa roster.",
+      "empty": "Walang susuriin dito.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Titingnan",
+        "done": "Nasuri na"
+      },
+      "filters": {
+        "period": "Panahon",
+        "periodAny": "Anumang panahon",
+        "periodDays": "Huling {days} araw",
+        "topic": "Paksa",
+        "topicAny": "Anumang paksa"
+      },
+      "topic": {
+        "roster_join": "Sumali ang player",
+        "roster_leave": "Umalis ang player",
+        "roster_bench": "Inilagay sa bench ang player",
+        "staff_change": "Pagbabago sa staff",
+        "tryouts": "Tryouts",
+        "match_promo": "Promo ng match",
+        "match_result": "Resulta ng match",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Content",
+        "community": "Community",
+        "other": "Iba pa"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Hindi roster",
+        "unsure": "Hindi sigurado"
+      },
+      "card": {
+        "openTweet": "Buksan ang tweet",
+        "noText": "Walang teksto",
+        "openPhoto": "Buksan ang larawan",
+        "openVideo": "Buksan ang video",
+        "players": "Mga tao:"
+      },
+      "actions": {
+        "editTeam": "Baguhin ang team",
+        "ignore": "Huwag pansinin",
+        "notRoster": "Hindi roster",
+        "done": "Tapos na"
+      },
+      "form": {
+        "topic": "Tungkol saan ito",
+        "topicPlaceholder": "Pumili ng paksa",
+        "noteWhatIsIt": "Ano ito?",
+        "confirm": "Kumpirmahin",
+        "cancel": "Kanselahin"
+      },
+      "reviewed": {
+        "team_edited": "Nabago ang team",
+        "ignored": "Hindi pinansin",
+        "marked_not_roster": "Minarkahang hindi roster",
+        "reported_missed": "Iniulat bilang nakaligtaan"
+      },
+      "error": {
+        "notFound": "Wala na ang tweet na ito.",
+        "invalidState": "Hindi magagawa ang aksyong ito sa tweet na ito, maaaring nasuri na ito.",
+        "invalidTopic": "Pumili ng wastong paksa.",
+        "noteRequired": "Ipaliwanag kung tungkol saan ang tweet na ito.",
+        "noteTooLong": "Masyadong mahaba ang tala (hanggang 1000 character)."
+      },
+      "accounts": {
+        "title": "Mga sinusundan na account",
+        "subtitle": "Mga X account na kinukuha isang beses kada araw.",
+        "team": "Team",
+        "teamPlaceholder": "Pumili ng team",
+        "teamSearch": "Maghanap ng team",
+        "teamNoResults": "Walang nahanap na team",
+        "handle": "X handle",
+        "add": "Idagdag",
+        "added": "Naidagdag ang account.",
+        "enabled": "Nakabukas",
+        "toastEnabled": "Binuksan ang account.",
+        "toastDisabled": "Pinatay ang account.",
+        "lastPolled": "Huling kuha",
+        "lastError": "Huling error",
+        "empty": "Wala pang sinusundang account.",
+        "noResults": "Walang account na tumutugma sa paghahanap na ito.",
+        "searchPlaceholder": "Maghanap ng team o handle",
+        "count": "{count, plural, one {# account} other {# na account}}",
+        "previous": "Nakaraang pahina",
+        "next": "Susunod na pahina",
+        "error": {
+          "notFound": "Wala na ang account na ito.",
+          "teamRequired": "Pumili ng team.",
+          "teamNotFound": "Wala na ang team na ito.",
+          "handleRequired": "Maglagay ng X handle.",
+          "handleInvalid": "Ang handle ay dapat 1 hanggang 15 letra, numero o underscore.",
+          "handleTaken": "Sinusundan na ang handle na ito."
+        }
+      },
+      "import": {
+        "button": "Awtomatikong import",
+        "title": "Mag-import ng mga X account",
+        "description": "Sinusundan ang X account na makikita sa socials ng bawat team ng torneo.",
+        "tournament": "Torneo",
+        "tournamentPlaceholder": "Pumili ng torneo",
+        "tournamentSearch": "Maghanap ng torneo",
+        "tournamentNoResults": "Walang nahanap na torneo",
+        "stage": "Yugto",
+        "allStages": "Lahat ng yugto",
+        "cancel": "Kanselahin",
+        "submit": "I-import",
+        "importing": "Nag-i-import...",
+        "success": "{added, plural, =0 {Walang account na naidagdag} one {# account ang naidagdag} other {# account ang naidagdag}}. Sinusundan na: {alreadyFollowed}, walang X account: {noTwitter}, di-wasto: {invalid}.",
+        "error": {
+          "tournamentRequired": "Pumili ng torneo.",
+          "tournamentNotFound": "Wala na ang torneong ito.",
+          "stageNotFound": "Ang yugtong ito ay hindi bahagi ng torneo."
+        }
+      },
+      "searchPlaceholder": "Maghanap ng tweet o team",
+      "searchSubmit": "Hanapin",
+      "statusLabel": "Katayuan",
+      "columnTeam": "Team",
+      "columnTweet": "Tweet",
+      "columnType": "Uri",
+      "columnDate": "Petsa",
+      "columnActions": "Mga aksyon"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhooks",
-      "description": "Nagpapadala ang GC Stats ng HTTPS POST sa iyong mga endpoint kapag may nagbago sa isang laban, torneo, team o player. Sinusuri ang mga delivery humigit kumulang bawat minuto.",
+      "description": "Nagpapadala ang GC Stats ng HTTPS POST sa iyong mga endpoint kapag nagbago ang isang match, torneo, team, manlalaro o roster. Sinusuri ang mga delivery humigit-kumulang bawat minuto.",
       "pageTitle": "Webhooks",
       "pageSubtitle": "Mga endpoint at delivery ng iyong mga partner API key.",
       "keySwitcher": "Partner API key",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "Na-update ang player"
+        },
+        "roster": {
+          "updated": "Na-validate ang pagbabago sa roster"
         }
       },
       "filtersTitle": "Mga filter",
@@ -6367,7 +6505,8 @@
           "invalid": "Hindi ito valid na URL.",
           "notHttps": "Dapat magsimula ang URL sa https://.",
           "credentials": "Hindi puwedeng maglaman ang URL ng username o password.",
-          "privateHost": "Dapat tumuro ang URL sa isang public na address."
+          "privateHost": "Dapat tumuro ang URL sa isang public na address.",
+          "notDiscord": "Hindi ito URL ng Discord Webhook."
         },
         "description": {
           "tooLong": "Hindi hihigit sa {descriptionMaxLength} character."
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "Hindi valid na value."
+        },
+        "kind": {
+          "invalid": "Pumili ng wastong uri."
         }
-      }
+      },
+      "kind": {
+        "label": "Uri",
+        "standard": "Standard",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Naka-sign na JSON request na ipinapadala sa iyong server.",
+          "discord": "Ang link lang ng tweet ang ipo-post sa isang Discord channel."
+        }
+      },
+      "urlHintDiscord": "URL ng Discord Webhook (Server settings, Integrations, Webhooks)."
     },
     "discord": {
       "serversTitle": "Mga Discord server",

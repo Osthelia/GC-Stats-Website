@@ -26,6 +26,7 @@ import { pruneOpenDataLogs } from "./jobs/prune-opendata-logs";
 import { dispatchWebhooks } from "./jobs/dispatch-webhooks";
 import { pruneWebhookLogs } from "./jobs/prune-webhook-logs";
 import { dispatchDiscordBot } from "./jobs/dispatch-discord-bot";
+import { rosterWatch } from "./jobs/roster-watch";
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string> };
 /** A job summary reporting zero effective work (nothing activated/recorded), so the per-minute jobs don't flood logs with a line every tick. */
 export function isNoopSummary(summary: string): boolean {
@@ -50,6 +51,7 @@ export const jobs: ScheduledJob[] = [
   { name: "dispatch-webhooks", cron: "* * * * *", run: dispatchWebhooks },
   { name: "prune-webhook-logs", cron: "0 0 * * *", run: pruneWebhookLogs },
   { name: "dispatch-discord-bot", cron: "* * * * *", run: dispatchDiscordBot },
+  { name: "roster-watch", cron: "0 6 * * *", run: rosterWatch },
 ];
 /** Runs every job matching this cron expression, sequentially, swallowing individual failures. Used by the /api/internal/cron route. */
 export async function runJobsForCron(cronExpr: string): Promise<void> {

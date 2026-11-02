@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooks",
       "body": "Las claves de partner pueden registrar endpoints HTTPS desde su panel: GC Stats envía entonces un POST cada vez que cambian los datos.",
-      "events": "Eventos: nuevo partido, partido actualizado, nuevo torneo, torneo actualizado, equipo actualizado, jugador actualizado.",
+      "events": "Eventos: nuevo partido, partido actualizado, nuevo torneo, torneo actualizado, equipo actualizado, jugador actualizado, cambio de roster validado por nuestro equipo (roster.updated).",
       "filters": "Filtros: región del torneo, oficial o no, equipos participantes.",
       "signature": "Cada petición lleva las cabeceras X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp y X-GCS-Signature. Comprueba la firma con el secreto de tu endpoint.",
       "retries": "Responde con un estado 2xx en menos de 10 segundos. Los envíos fallidos se reintentan durante unas 9 horas, y un endpoint que falla demasiado a menudo se desactiva.",
-      "setup": "El payload contiene el evento, su fecha y la entidad, con los mismos campos que los conjuntos de datos de OpenData."
+      "setup": "El payload contiene el evento, su fecha y la entidad, con los mismos campos que los conjuntos de datos de OpenData.",
+      "discord": "Un endpoint de tipo Discord solo recibe el evento roster.updated y publica el enlace del tweet en tu canal, sin firma."
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "Analíticas",
       "oauthClients": "Clientes OAuth",
       "settings": "Configuración",
-      "discordImages": "Imágenes del bot de Discord"
+      "discordImages": "Imágenes del bot de Discord",
+      "rosterWatch": "Vigilancia de rosters"
     },
     "dashboard": {
       "title": "Panel de control",
@@ -3465,7 +3467,8 @@
         "activityLog": "Registro de actividad",
         "analytics": "Analíticas",
         "oauthClients": "Clientes OAuth",
-        "settings": "Configuración"
+        "settings": "Configuración",
+        "rosterWatch": "Vigilancia de rosters"
       },
       "permissionNames": {
         "admin_access": "Acceder al panel de administración",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "Ver los clientes OAuth",
         "oauth_clients_manage": "Crear, editar o eliminar clientes OAuth",
         "settings_view": "Ver la configuración y la monitorización de OpenData",
-        "settings_manage": "Editar la configuración"
+        "settings_manage": "Editar la configuración",
+        "roster_watch_view": "Ver la vigilancia de rosters",
+        "roster_watch_manage": "Revisar los tweets de la vigilancia de rosters y gestionar las cuentas seguidas"
       },
       "create": {
         "button": "Nuevo rol",
@@ -5445,6 +5450,136 @@
         "tooShort": "Al menos {min} caracteres.",
         "tooLong": "Como máximo {max} caracteres."
       }
+    },
+    "rosterWatch": {
+      "title": "Vigilancia de rosters",
+      "subtitle": "Tweets de las cuentas de los equipos, clasificados por una IA para que una persona revise los cambios de roster.",
+      "empty": "Nada que revisar aquí.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Por comprobar",
+        "done": "Revisados"
+      },
+      "filters": {
+        "period": "Período",
+        "periodAny": "Cualquier período",
+        "periodDays": "Últimos {days} días",
+        "topic": "Tema",
+        "topicAny": "Cualquier tema"
+      },
+      "topic": {
+        "roster_join": "Un jugador se une",
+        "roster_leave": "Un jugador se va",
+        "roster_bench": "Un jugador al banquillo",
+        "staff_change": "Cambio de staff",
+        "tryouts": "Tryouts",
+        "match_promo": "Promo de partida",
+        "match_result": "Resultado de partida",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Contenido",
+        "community": "Comunidad",
+        "other": "Otro"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "No es roster",
+        "unsure": "Dudoso"
+      },
+      "card": {
+        "openTweet": "Abrir el tweet",
+        "noText": "Sin texto",
+        "openPhoto": "Abrir la foto",
+        "openVideo": "Abrir el vídeo",
+        "players": "Personas:"
+      },
+      "actions": {
+        "editTeam": "Editar el equipo",
+        "ignore": "Ignorar",
+        "notRoster": "No es roster",
+        "done": "Hecho"
+      },
+      "form": {
+        "topic": "De qué trata",
+        "topicPlaceholder": "Elige un tema",
+        "noteWhatIsIt": "¿Qué es?",
+        "confirm": "Confirmar",
+        "cancel": "Cancelar"
+      },
+      "reviewed": {
+        "team_edited": "Equipo editado",
+        "ignored": "Ignorado",
+        "marked_not_roster": "Marcado como no roster",
+        "reported_missed": "Marcado como no detectado"
+      },
+      "error": {
+        "notFound": "Este tweet ya no existe.",
+        "invalidState": "Este tweet no admite esta acción, puede que ya esté revisado.",
+        "invalidTopic": "Elige un tema válido.",
+        "noteRequired": "Explica de qué trata este tweet.",
+        "noteTooLong": "La nota es demasiado larga (1000 caracteres máx.)."
+      },
+      "accounts": {
+        "title": "Cuentas seguidas",
+        "subtitle": "Cuentas de X consultadas una vez al día.",
+        "team": "Equipo",
+        "teamPlaceholder": "Elige un equipo",
+        "teamSearch": "Buscar un equipo",
+        "teamNoResults": "No se encontró ningún equipo",
+        "handle": "Usuario de X",
+        "add": "Añadir",
+        "added": "Cuenta añadida.",
+        "enabled": "Activada",
+        "toastEnabled": "Cuenta activada.",
+        "toastDisabled": "Cuenta desactivada.",
+        "lastPolled": "Última consulta",
+        "lastError": "Último error",
+        "empty": "Aún no se sigue ninguna cuenta.",
+        "noResults": "Ninguna cuenta coincide con esta búsqueda.",
+        "searchPlaceholder": "Busca un equipo o un usuario",
+        "count": "{count, plural, one {# cuenta} other {# cuentas}}",
+        "previous": "Página anterior",
+        "next": "Página siguiente",
+        "error": {
+          "notFound": "Esta cuenta ya no existe.",
+          "teamRequired": "Elige un equipo.",
+          "teamNotFound": "Este equipo ya no existe.",
+          "handleRequired": "Introduce un usuario de X.",
+          "handleInvalid": "El usuario debe tener de 1 a 15 letras, dígitos o guiones bajos.",
+          "handleTaken": "Este usuario ya está seguido."
+        }
+      },
+      "import": {
+        "button": "Importación automática",
+        "title": "Importar cuentas de X",
+        "description": "Sigue la cuenta de X encontrada en las redes sociales de cada equipo del torneo.",
+        "tournament": "Torneo",
+        "tournamentPlaceholder": "Elige un torneo",
+        "tournamentSearch": "Buscar un torneo",
+        "tournamentNoResults": "Ningún torneo encontrado",
+        "stage": "Fase",
+        "allStages": "Todas las fases",
+        "cancel": "Cancelar",
+        "submit": "Importar",
+        "importing": "Importando...",
+        "success": "{added, plural, =0 {Ninguna cuenta añadida} one {# cuenta añadida} other {# cuentas añadidas}}. Ya seguidas: {alreadyFollowed}, sin cuenta de X: {noTwitter}, no válidas: {invalid}.",
+        "error": {
+          "tournamentRequired": "Elige un torneo.",
+          "tournamentNotFound": "Este torneo ya no existe.",
+          "stageNotFound": "Esta fase no pertenece al torneo."
+        }
+      },
+      "searchPlaceholder": "Buscar un tweet o un equipo",
+      "searchSubmit": "Buscar",
+      "statusLabel": "Estado",
+      "columnTeam": "Equipo",
+      "columnTweet": "Tweet",
+      "columnType": "Tipo",
+      "columnDate": "Fecha",
+      "columnActions": "Acciones"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhooks",
-      "description": "GC Stats envía un POST HTTPS a tus endpoints cuando cambia un partido, un torneo, un equipo o un jugador. Los envíos se comprueban aproximadamente cada minuto.",
+      "description": "GC Stats envía un POST HTTPS a tus endpoints cuando cambia un partido, un torneo, un equipo, un jugador o un roster. Las entregas se comprueban aproximadamente cada minuto.",
       "pageTitle": "Webhooks",
       "pageSubtitle": "Endpoints y envíos de tus claves de API de socio.",
       "keySwitcher": "Clave de API de socio",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "Jugador actualizado"
+        },
+        "roster": {
+          "updated": "Cambio de roster validado"
         }
       },
       "filtersTitle": "Filtros",
@@ -6367,7 +6505,8 @@
           "invalid": "Esta URL no es válida.",
           "notHttps": "La URL debe empezar por https://.",
           "credentials": "La URL no puede contener un usuario ni una contraseña.",
-          "privateHost": "La URL debe apuntar a una dirección pública."
+          "privateHost": "La URL debe apuntar a una dirección pública.",
+          "notDiscord": "Esta no es una URL de Webhook de Discord."
         },
         "description": {
           "tooLong": "Como máximo {descriptionMaxLength} caracteres."
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "Valor no válido."
+        },
+        "kind": {
+          "invalid": "Elige un tipo válido."
         }
-      }
+      },
+      "kind": {
+        "label": "Tipo",
+        "standard": "Estándar",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Solicitud JSON firmada enviada a tu servidor.",
+          "discord": "Publica solo el enlace del tweet en un canal de Discord."
+        }
+      },
+      "urlHintDiscord": "URL del Webhook de Discord (Ajustes del servidor, Integraciones, Webhooks)."
     },
     "discord": {
       "serversTitle": "Servidores de Discord",

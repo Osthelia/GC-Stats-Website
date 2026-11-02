@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "key พาร์ทเนอร์สามารถลงทะเบียน endpoint แบบ HTTPS ได้จากแดชบอร์ด: จากนั้น GC Stats จะส่ง POST ทุกครั้งที่ข้อมูลเปลี่ยนแปลง",
-      "events": "อีเวนต์: แมตช์ใหม่ อัปเดตแมตช์ ทัวร์นาเมนต์ใหม่ อัปเดตทัวร์นาเมนต์ อัปเดตทีม อัปเดตผู้เล่น",
+      "events": "เหตุการณ์: แมตช์ใหม่, แมตช์อัปเดต, ทัวร์นาเมนต์ใหม่, ทัวร์นาเมนต์อัปเดต, ทีมอัปเดต, ผู้เล่นอัปเดต, การเปลี่ยนแปลงรายชื่อผู้เล่นที่ทีมของเรายืนยันแล้ว (roster.updated)",
       "filters": "ตัวกรอง: ภูมิภาคของทัวร์นาเมนต์ ทางการหรือไม่ ทีมที่เข้าร่วม",
       "signature": "ทุกคำขอมี header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp และ X-GCS-Signature ตรวจสอบลายเซ็นด้วย secret ของ endpoint ของคุณ",
       "retries": "ตอบกลับด้วยสถานะ 2xx ภายใน 10 วินาที การส่งที่ล้มเหลวจะถูกลองใหม่ประมาณ 9 ชั่วโมง และ endpoint ที่ล้มเหลวบ่อยเกินไปจะถูกปิด",
-      "setup": "payload ประกอบด้วยอีเวนต์ วันที่ และเอนทิตี โดยมีฟิลด์เดียวกับชุดข้อมูล OpenData"
+      "setup": "payload ประกอบด้วยอีเวนต์ วันที่ และเอนทิตี โดยมีฟิลด์เดียวกับชุดข้อมูล OpenData",
+      "discord": "เอนด์พอยต์ประเภท Discord จะรับเฉพาะเหตุการณ์ roster.updated และโพสต์ลิงก์ทวีตในช่องของคุณ โดยไม่มีลายเซ็น"
     }
   },
   "becomePublisher": {
@@ -2026,7 +2027,8 @@
       "analytics": "สถิติการใช้งาน",
       "oauthClients": "ไคลเอนต์ OAuth",
       "settings": "การตั้งค่า",
-      "discordImages": "รูปภาพของบอท Discord"
+      "discordImages": "รูปภาพของบอท Discord",
+      "rosterWatch": "ติดตามรายชื่อผู้เล่น"
     },
     "dashboard": {
       "title": "แดชบอร์ด",
@@ -3465,7 +3467,8 @@
         "activityLog": "บันทึกกิจกรรม",
         "analytics": "สถิติการใช้งาน",
         "oauthClients": "ไคลเอนต์ OAuth",
-        "settings": "การตั้งค่า"
+        "settings": "การตั้งค่า",
+        "rosterWatch": "ติดตามรายชื่อผู้เล่น"
       },
       "permissionNames": {
         "admin_access": "เข้าถึงแผงผู้ดูแล",
@@ -3516,7 +3519,9 @@
         "oauth_clients_view": "ดูไคลเอนต์ OAuth",
         "oauth_clients_manage": "สร้าง แก้ไข หรือลบไคลเอนต์ OAuth",
         "settings_view": "ดูการตั้งค่าและการติดตาม OpenData",
-        "settings_manage": "แก้ไขการตั้งค่า"
+        "settings_manage": "แก้ไขการตั้งค่า",
+        "roster_watch_view": "ดูการติดตามรายชื่อผู้เล่น",
+        "roster_watch_manage": "ตรวจสอบทวีตของการติดตามรายชื่อผู้เล่นและจัดการบัญชีที่ติดตาม"
       },
       "create": {
         "button": "บทบาทใหม่",
@@ -5445,6 +5450,136 @@
         "tooShort": "อย่างน้อย {min} ตัวอักษร",
         "tooLong": "ไม่เกิน {max} ตัวอักษร"
       }
+    },
+    "rosterWatch": {
+      "title": "ติดตามรายชื่อผู้เล่น",
+      "subtitle": "ทวีตของบัญชีทีม จัดเรียงโดย AI เพื่อให้คนตรวจสอบการเปลี่ยนแปลงรายชื่อได้",
+      "empty": "ไม่มีรายการให้ตรวจสอบ",
+      "tabs": {
+        "roster": "รายชื่อผู้เล่น",
+        "unsure": "ต้องตรวจสอบ",
+        "done": "ตรวจสอบแล้ว"
+      },
+      "filters": {
+        "period": "ช่วงเวลา",
+        "periodAny": "ทุกช่วงเวลา",
+        "periodDays": "{days} วันล่าสุด",
+        "topic": "หัวข้อ",
+        "topicAny": "ทุกหัวข้อ"
+      },
+      "topic": {
+        "roster_join": "ผู้เล่นเข้าทีม",
+        "roster_leave": "ผู้เล่นออกจากทีม",
+        "roster_bench": "ผู้เล่นนั่งสำรอง",
+        "staff_change": "เปลี่ยนแปลงสตาฟ",
+        "tryouts": "Tryouts",
+        "match_promo": "โปรโมตแมตช์",
+        "match_result": "ผลแมตช์",
+        "highlight": "Highlight",
+        "sponsor": "สปอนเซอร์",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "สตรีม",
+        "content": "คอนเทนต์",
+        "community": "คอมมูนิตี้",
+        "other": "อื่นๆ"
+      },
+      "verdict": {
+        "roster": "รายชื่อผู้เล่น",
+        "not_roster": "ไม่ใช่รายชื่อผู้เล่น",
+        "unsure": "ไม่แน่ใจ"
+      },
+      "card": {
+        "openTweet": "เปิดทวีต",
+        "noText": "ไม่มีข้อความ",
+        "openPhoto": "เปิดรูปภาพ",
+        "openVideo": "เปิดวิดีโอ",
+        "players": "บุคคล:"
+      },
+      "actions": {
+        "editTeam": "แก้ไขทีม",
+        "ignore": "ละเว้น",
+        "notRoster": "ไม่ใช่รายชื่อผู้เล่น",
+        "done": "เสร็จแล้ว"
+      },
+      "form": {
+        "topic": "เกี่ยวกับอะไร",
+        "topicPlaceholder": "เลือกหัวข้อ",
+        "noteWhatIsIt": "นี่คืออะไร",
+        "confirm": "ยืนยัน",
+        "cancel": "ยกเลิก"
+      },
+      "reviewed": {
+        "team_edited": "แก้ไขทีมแล้ว",
+        "ignored": "ละเว้นแล้ว",
+        "marked_not_roster": "ทำเครื่องหมายว่าไม่ใช่รายชื่อผู้เล่นแล้ว",
+        "reported_missed": "รายงานว่าตกหล่นแล้ว"
+      },
+      "error": {
+        "notFound": "ทวีตนี้ไม่มีอยู่แล้ว",
+        "invalidState": "ทวีตนี้ไม่สามารถทำรายการนี้ได้ อาจถูกตรวจสอบไปแล้ว",
+        "invalidTopic": "เลือกหัวข้อที่ถูกต้อง",
+        "noteRequired": "อธิบายว่าทวีตนี้เกี่ยวกับอะไร",
+        "noteTooLong": "หมายเหตุยาวเกินไป (สูงสุด 1000 ตัวอักษร)"
+      },
+      "accounts": {
+        "title": "บัญชีที่ติดตาม",
+        "subtitle": "บัญชี X ที่ดึงข้อมูลวันละครั้ง",
+        "team": "ทีม",
+        "teamPlaceholder": "เลือกทีม",
+        "teamSearch": "ค้นหาทีม",
+        "teamNoResults": "ไม่พบทีม",
+        "handle": "แฮนเดิล X",
+        "add": "เพิ่ม",
+        "added": "เพิ่มบัญชีแล้ว",
+        "enabled": "เปิดใช้งาน",
+        "toastEnabled": "เปิดใช้งานบัญชีแล้ว",
+        "toastDisabled": "ปิดใช้งานบัญชีแล้ว",
+        "lastPolled": "ดึงข้อมูลล่าสุด",
+        "lastError": "ข้อผิดพลาดล่าสุด",
+        "empty": "ยังไม่มีบัญชีที่ติดตาม",
+        "noResults": "ไม่พบบัญชีที่ตรงกับการค้นหานี้",
+        "searchPlaceholder": "ค้นหาทีมหรือแฮนเดิล",
+        "count": "{count, plural, other {# บัญชี}}",
+        "previous": "หน้าก่อนหน้า",
+        "next": "หน้าถัดไป",
+        "error": {
+          "notFound": "บัญชีนี้ไม่มีอยู่แล้ว",
+          "teamRequired": "เลือกทีม",
+          "teamNotFound": "ทีมนี้ไม่มีอยู่แล้ว",
+          "handleRequired": "ใส่แฮนเดิล X",
+          "handleInvalid": "แฮนเดิลต้องมี 1 ถึง 15 ตัวอักษร ตัวเลข หรือขีดล่าง",
+          "handleTaken": "แฮนเดิลนี้ถูกติดตามอยู่แล้ว"
+        }
+      },
+      "import": {
+        "button": "นำเข้าอัตโนมัติ",
+        "title": "นำเข้าบัญชี X",
+        "description": "ติดตามบัญชี X ที่พบในโซเชียลของแต่ละทีมในทัวร์นาเมนต์",
+        "tournament": "ทัวร์นาเมนต์",
+        "tournamentPlaceholder": "เลือกทัวร์นาเมนต์",
+        "tournamentSearch": "ค้นหาทัวร์นาเมนต์",
+        "tournamentNoResults": "ไม่พบทัวร์นาเมนต์",
+        "stage": "สเตจ",
+        "allStages": "ทุกสเตจ",
+        "cancel": "ยกเลิก",
+        "submit": "นำเข้า",
+        "importing": "กำลังนำเข้า...",
+        "success": "{added, plural, =0 {ไม่มีบัญชีที่เพิ่ม} other {เพิ่ม # บัญชีแล้ว}} ติดตามอยู่แล้ว: {alreadyFollowed}, ไม่มีบัญชี X: {noTwitter}, ไม่ถูกต้อง: {invalid}",
+        "error": {
+          "tournamentRequired": "เลือกทัวร์นาเมนต์",
+          "tournamentNotFound": "ทัวร์นาเมนต์นี้ไม่มีอยู่แล้ว",
+          "stageNotFound": "สเตจนี้ไม่ได้อยู่ในทัวร์นาเมนต์"
+        }
+      },
+      "searchPlaceholder": "ค้นหาทวีตหรือทีม",
+      "searchSubmit": "ค้นหา",
+      "statusLabel": "สถานะ",
+      "columnTeam": "ทีม",
+      "columnTweet": "ทวีต",
+      "columnType": "ประเภท",
+      "columnDate": "วันที่",
+      "columnActions": "การดำเนินการ"
     }
   },
   "dashboard": {
@@ -6265,7 +6400,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "GC Stats จะส่ง HTTPS POST ไปยัง endpoint ของคุณเมื่อแมตช์ ทัวร์นาเมนต์ ทีม หรือผู้เล่นมีการเปลี่ยนแปลง การส่งจะถูกตรวจสอบประมาณทุกนาที",
+      "description": "GC Stats จะส่ง HTTPS POST ไปยังเอนด์พอยต์ของคุณเมื่อแมตช์ ทัวร์นาเมนต์ ทีม ผู้เล่น หรือรายชื่อผู้เล่นมีการเปลี่ยนแปลง การส่งจะถูกตรวจสอบทุกประมาณหนึ่งนาที",
       "pageTitle": "Webhook",
       "pageSubtitle": "endpoint และการส่งของ partner API key ของคุณ",
       "keySwitcher": "Partner API key",
@@ -6336,6 +6471,9 @@
         },
         "player": {
           "updated": "อัปเดตผู้เล่น"
+        },
+        "roster": {
+          "updated": "ยืนยันการเปลี่ยนแปลงรายชื่อผู้เล่นแล้ว"
         }
       },
       "filtersTitle": "ตัวกรอง",
@@ -6367,7 +6505,8 @@
           "invalid": "URL ไม่ถูกต้อง",
           "notHttps": "URL ต้องขึ้นต้นด้วย https://",
           "credentials": "URL ต้องไม่มีชื่อผู้ใช้หรือรหัสผ่าน",
-          "privateHost": "URL ต้องชี้ไปยังที่อยู่สาธารณะ"
+          "privateHost": "URL ต้องชี้ไปยังที่อยู่สาธารณะ",
+          "notDiscord": "นี่ไม่ใช่ URL ของ Webhook Discord"
         },
         "description": {
           "tooLong": "ไม่เกิน {descriptionMaxLength} ตัวอักษร"
@@ -6387,8 +6526,21 @@
         },
         "filterOfficial": {
           "invalid": "ค่าไม่ถูกต้อง"
+        },
+        "kind": {
+          "invalid": "เลือกประเภทที่ถูกต้อง"
         }
-      }
+      },
+      "kind": {
+        "label": "ประเภท",
+        "standard": "มาตรฐาน",
+        "discord": "Discord",
+        "hint": {
+          "standard": "คำขอ JSON ที่ลงนามซึ่งส่งไปยังเซิร์ฟเวอร์ของคุณ",
+          "discord": "โพสต์เฉพาะลิงก์ทวีตในช่อง Discord"
+        }
+      },
+      "urlHintDiscord": "URL ของ Webhook Discord (การตั้งค่าเซิร์ฟเวอร์, การเชื่อมต่อ, Webhooks)"
     },
     "discord": {
       "serversTitle": "เซิร์ฟเวอร์ Discord",
