@@ -20,3 +20,4 @@ export * from "./basic-stats";
 export * from "./advanced-stats";
 export * from "./kill-breakdown";
 export * from "./aggregate-map";
+export * from "./rating";

@@ -1596,6 +1596,7 @@
     "statsColumns": {
       "played": "Peta",
       "roundsPlayed": "Ronde",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kill",
       "deaths": "Death",
@@ -1753,10 +1754,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Pemain",
+    "ratingFull": "Rating GCS: 1.00 adalah pemain rata-rata dengan role yang sama",
     "acsFull": "Average Combat Score",
     "adrFull": "Rerata Damage per Ronde",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7290,6 +7293,7 @@
     "statsColumns": {
       "played": "Peta",
       "roundsPlayed": "Ronde",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kill",
       "deaths": "Death",

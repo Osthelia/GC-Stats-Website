@@ -26,6 +26,8 @@ import {
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
+import { compareMatchPlayers } from "@/lib/match-player-order";
+import { getActiveRatingModelId } from "@/lib/rating/active-model";
 import { db } from "@gc-stats/db/client";
 import {
   matches,
@@ -280,6 +282,10 @@ export type MatchMapPlayerRow = {
   headshotPercentage: number;
   clutchesWon: number;
   clutchesPlayed: number;
+  /** GCS rating, null when the map could not be rated. */
+  rating: number | null;
+  /** Rounds behind the rating, used to weight it across maps. */
+  ratingRounds: number | null;
 };
 
 type ClutchesJson = Record<string, { won?: number; total?: number }>;
@@ -358,6 +364,8 @@ export async function getMatchMaps(
         firstDeaths: mapPlayerStats.firstDeaths,
         headshotPercentage: mapPlayerStats.headshotPercentage,
         clutches: mapPlayerStats.clutches,
+        rating: mapPlayerStats.rating,
+        ratingRounds: mapPlayerStats.ratingRounds,
       })
       .from(mapPlayerStats)
       .leftJoin(people, eq(people.id, mapPlayerStats.personId))
@@ -381,7 +389,7 @@ export async function getMatchMaps(
         kastPercentage: Number(s.kastPercentage),
         headshotPercentage: Number(s.headshotPercentage),
       }))
-      .sort((a, b) => b.acs - a.acs);
+      .sort(compareMatchPlayers);
 
     return {
       id: r.id,
@@ -409,18 +417,20 @@ export async function getMatchMaps(
  * Maps and per map stats of a completed match, cached a day. Invalidated by the admin match
  * and map fetch actions (`match:{id}`) and by player handle edits (`match-stats`).
  */
-export function getCompletedMatchStats(
+export async function getCompletedMatchStats(
   matchId: number,
   entrantAId: number | null,
   entrantBId: number | null,
 ): Promise<[MatchMap[], MatchMapsStats]> {
+  // Keyed by the active rating model: a rating recompute (run outside Next) cannot revalidate tags.
+  const ratingModelId = await getActiveRatingModelId();
   return unstable_cache(
     () =>
       Promise.all([
         getMatchMaps(matchId, entrantAId, entrantBId),
         getMatchMapsStatsBatch(matchId, entrantAId, entrantBId),
       ]),
-    ["completed-match-stats-v2", String(matchId), String(entrantAId), String(entrantBId)],
+    ["completed-match-stats-v3", String(matchId), String(entrantAId), String(entrantBId), String(ratingModelId)],
     { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }
@@ -452,6 +462,8 @@ export function aggregateMatchStats(
       firstDeaths: number;
       clutchesWon: number;
       clutchesPlayed: number;
+      ratingSum: number;
+      ratingRounds: number;
       n: number;
     }
   >();
@@ -478,6 +490,8 @@ export function aggregateMatchStats(
       firstDeaths: 0,
       clutchesWon: 0,
       clutchesPlayed: 0,
+      ratingSum: 0,
+      ratingRounds: 0,
       n: 0,
     };
     if (s.agentName) agg.agents.add(s.agentName);
@@ -492,6 +506,10 @@ export function aggregateMatchStats(
     agg.firstDeaths += s.firstDeaths;
     agg.clutchesWon += s.clutchesWon;
     agg.clutchesPlayed += s.clutchesPlayed;
+    if (s.rating != null && s.ratingRounds) {
+      agg.ratingSum += s.rating * s.ratingRounds;
+      agg.ratingRounds += s.ratingRounds;
+    }
     agg.n += 1;
     byPerson.set(key, agg);
   }
@@ -515,16 +533,18 @@ export function aggregateMatchStats(
       headshotPercentage: a.hsSum / a.n,
       clutchesWon: a.clutchesWon,
       clutchesPlayed: a.clutchesPlayed,
+      rating: a.ratingRounds > 0 ? a.ratingSum / a.ratingRounds : null,
+      ratingRounds: a.ratingRounds > 0 ? a.ratingRounds : null,
     }),
   );
 
   return {
     playersA: players
       .filter((p) => p.entrantId === entrantAId)
-      .sort((a, b) => b.acs - a.acs),
+      .sort(compareMatchPlayers),
     playersB: players
       .filter((p) => p.entrantId === entrantBId)
-      .sort((a, b) => b.acs - a.acs),
+      .sort(compareMatchPlayers),
   };
 }
 

@@ -1596,6 +1596,7 @@
     "statsColumns": {
       "played": "الخرائط",
       "roundsPlayed": "الجولات",
+      "rating": "التقييم",
       "acs": "ACS",
       "kills": "القتل",
       "deaths": "الوفيات",
@@ -1753,10 +1754,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "اللاعبة",
+    "ratingFull": "تقييم GCS: القيمة 1.00 تمثل اللاعب المتوسط في الدور نفسه",
     "acsFull": "متوسط نقاط القتال",
     "adrFull": "متوسط الضرر لكل جولة",
     "kastFull": "قتل، مساعدة، مقايضة، نجاة",
@@ -7290,6 +7293,7 @@
     "statsColumns": {
       "played": "الخرائط",
       "roundsPlayed": "الجولات",
+      "rating": "التقييم",
       "acs": "ACS",
       "kills": "القتل",
       "deaths": "الوفيات",

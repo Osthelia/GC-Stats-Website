@@ -72,6 +72,8 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
         multi5k: sumFloat(jsonKey(mapPlayerStats.multikills, "5k")),
         clutchesWon: sumFloat(clutchSum("won")),
         clutchesPlayed: sumFloat(clutchSum("total")),
+        ratingWeighted: sumFloat(sql`${mapPlayerStats.rating} * ${mapPlayerStats.ratingRounds}`),
+        ratingRounds: sumFloat(sql`case when ${mapPlayerStats.rating} is not null then ${mapPlayerStats.ratingRounds} end`),
       })
       .from(mapPlayerStats)
       .where(inScope)

@@ -13,6 +13,8 @@ import type { StatRow } from "@/lib/stats-aggregate";
 import {
   STAT_COLUMNS,
   DEFAULT_VISIBLE_COLUMNS,
+  restoreVisibleColumns,
+  storedVisibleColumns,
   buildWeaponColumns,
   formatStatValue,
   clutchFraction,
@@ -21,6 +23,7 @@ import {
 } from "@/lib/stats-columns";
 import { SegmentedTrack, SegmentedButton } from "@/components/stats/segmented";
 import { AgentIcon } from "@/components/match/agent-icon";
+import { RatingValue } from "@/components/stats/rating-value";
 import { ColumnFilterButton, ColumnFilterModal, type ColumnFilter, type ColumnFilterLabels } from "@/components/filters/column-filter-modal";
 
 /**
@@ -100,7 +103,7 @@ export function StatsTable({
   );
   const [colPickerOpen, setColPickerOpen] = useState(false);
   const [mode, setMode] = useState<StatsMode>("avg");
-  const [sortCol, setSortCol] = useState("acs");
+  const [sortCol, setSortCol] = useState("rating");
   const [sortAsc, setSortAsc] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<ColumnFilter[]>([]);
@@ -122,7 +125,7 @@ export function StatsTable({
   useEffect(() => {
     try {
       const stored = localStorage.getItem(storageName);
-      if (stored) setVisibleCols(JSON.parse(stored));
+      if (stored) setVisibleCols(restoreVisibleColumns(JSON.parse(stored)));
     } catch {
       // corrupted/blocked storage — keep defaults
     }
@@ -134,7 +137,7 @@ export function StatsTable({
         ? prev.filter((k) => k !== key)
         : [...prev, key];
       try {
-        localStorage.setItem(storageName, JSON.stringify(next));
+        localStorage.setItem(storageName, JSON.stringify(storedVisibleColumns(next)));
       } catch {
         // ignore
       }
@@ -155,7 +158,13 @@ export function StatsTable({
     const col = allColumns.find((c) => c.key === sortCol);
     if (!col) return rows;
     const withValue = rows.map((r) => ({ row: r, value: col.value(r, mode) }));
-    withValue.sort((a, b) => (sortAsc ? a.value - b.value : b.value - a.value));
+    // Rows without a value (NaN) always go last, whatever the direction.
+    withValue.sort((a, b) => {
+      const aMissing = Number.isNaN(a.value);
+      const bMissing = Number.isNaN(b.value);
+      if (aMissing || bMissing) return Number(aMissing) - Number(bMissing);
+      return sortAsc ? a.value - b.value : b.value - a.value;
+    });
     return withValue.map((w) => w.row);
   }, [rows, allColumns, sortCol, sortAsc, mode]);
 
@@ -505,9 +514,13 @@ function StatsBodyRow({
           key={c.key}
           className="border-b border-neutral-800/40 p-2.5 text-center text-neutral-300"
         >
-          {c.key === "clutches"
-            ? `${clutchFraction(row).won}/${clutchFraction(row).played}`
-            : formatStatValue(c.value(row, mode), c.format)}
+          {c.key === "clutches" ? (
+            `${clutchFraction(row).won}/${clutchFraction(row).played}`
+          ) : c.format === "rating" ? (
+            <RatingValue rating={c.value(row, mode)} />
+          ) : (
+            formatStatValue(c.value(row, mode), c.format)
+          )}
         </td>
       ))}
     </tr>

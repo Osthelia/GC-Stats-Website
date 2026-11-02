@@ -1596,6 +1596,7 @@
     "statsColumns": {
       "played": "맵 수",
       "roundsPlayed": "라운드",
+      "rating": "레이팅",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",
@@ -1753,10 +1754,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "선수",
+    "ratingFull": "GCS 레이팅: 1.00은 같은 역할의 평균 선수입니다",
     "acsFull": "평균 컴뱃 스코어",
     "adrFull": "라운드당 평균 데미지",
     "kastFull": "킬, 어시스트, 트레이드, 생존",
@@ -7290,6 +7293,7 @@
     "statsColumns": {
       "played": "맵 수",
       "roundsPlayed": "라운드",
+      "rating": "레이팅",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",
