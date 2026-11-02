@@ -1596,6 +1596,7 @@
     "statsColumns": {
       "played": "Mapas",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Mortes",
@@ -1753,10 +1754,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Jogadora",
+    "ratingFull": "Rating GCS: 1.00 é o jogador médio da mesma função",
     "acsFull": "Average Combat Score",
     "adrFull": "Average Damage per Round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -7290,6 +7293,7 @@
     "statsColumns": {
       "played": "Mapas",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Mortes",

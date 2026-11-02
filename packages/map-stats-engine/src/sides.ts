@@ -37,7 +37,7 @@ export function firstHalfAttackerFallback(rounds: RiotRoundResultDto[], players:
 }
 
 /** First half / swap at halftime / alternate every round in OT — same shape as V1. */
-function heuristicAttackerForRound(roundNum: number, firstHalfAttacker: RiotTeamId): RiotTeamId {
+export function heuristicAttackerForRound(roundNum: number, firstHalfAttacker: RiotTeamId): RiotTeamId {
   if (roundNum < FIRST_HALF_ROUNDS) return firstHalfAttacker;
   if (roundNum < FIRST_HALF_ROUNDS * 2) return otherTeam(firstHalfAttacker);
   const otIndex = roundNum - FIRST_HALF_ROUNDS * 2;

@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, bigserial, bigint, integer, smallint, text, boolean, real, numeric, jsonb, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, bigserial, bigint, integer, smallint, text, boolean, real, numeric, jsonb, timestamp, index } from "drizzle-orm/pg-core";
 import { matches, entrants } from "./bracket";
 import { people } from "./people";
 
@@ -138,6 +138,21 @@ export const mapRoundPlayerLoadoutsRaw = pgTable("map_round_player_loadouts_raw"
   index("map_round_player_loadouts_raw_map_round_id_idx").on(t.mapRoundId),
 ]);
 
+// --- GCS rating model ----------------------------------------------------
+// One row per recompute; the active one rates newly ingested maps.
+
+export const ratingModels = pgTable("rating_models", {
+  id: serial("id").primaryKey(),
+  formulaVersion: integer("formula_version").notNull(),
+  model: jsonb("model").notNull(), // win probability counts, baselines, calibration
+  report: jsonb("report").notNull().default({}), // validation figures of the recompute
+  sampleMaps: integer("sample_maps").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index("rating_models_is_active_idx").on(t.isActive),
+]);
+
 // --- Aggregated layer — what the app/API actually queries -----------------
 // Upserted by the ingestion pipeline's aggregation job after each completed
 // map; can be safely recomputed from the RAW layer at any time (successor
@@ -167,6 +182,11 @@ export const mapPlayerStats = pgTable("map_player_stats", {
   abilityKills: jsonb("ability_kills").notNull().default({}), // {"ability1": n, "ability2": n, "grenade": n, "ultimate": n}
   fallDeaths: integer("fall_deaths").notNull().default(0),
   weaponKills: jsonb("weapon_kills").notNull().default({}), // {"<weapon name>": n, ...}
+  // GCS rating, null when the map has no RAW data or no model exists yet.
+  rating: real("rating"),
+  ratingRounds: integer("rating_rounds"),
+  ratingComponents: jsonb("rating_components"), // {"imp": {value, z}, ..., "clutch": {won, bonus}}
+  ratingModelId: integer("rating_model_id").references(() => ratingModels.id, { onDelete: "set null" }),
 }, (t) => [
   index("map_player_stats_map_id_idx").on(t.mapId),
 ]);

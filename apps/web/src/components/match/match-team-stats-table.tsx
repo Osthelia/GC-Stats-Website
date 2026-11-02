@@ -15,10 +15,12 @@ import { slugify } from "@/lib/entity-id";
 import { formatSideScore } from "@/lib/match-score-format";
 import { AgentIcon } from "@/components/match/agent-icon";
 import type { MatchMapPlayerRow, MatchSide } from "@/lib/match-page-data";
+import { compareMatchPlayers } from "@/lib/match-player-order";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import { RatingValue } from "@/components/stats/rating-value";
 
-const GRID_COLS = "100px 160px minmax(16px,1fr) 44px 82px 42px 42px 54px 38px 16px 38px 54px 42px 42px 82px 44px minmax(16px,1fr) 160px 100px";
-const GRID_COLS_MOBILE = "32px minmax(90px,140px) 36px 66px 34px 34px 46px 32px";
+const GRID_COLS = "100px 160px minmax(16px,1fr) 44px 44px 82px 42px 42px 54px 38px 16px 38px 54px 42px 42px 82px 44px 44px minmax(16px,1fr) 160px 100px";
+const GRID_COLS_MOBILE = "32px minmax(90px,140px) 38px 36px 66px 34px 34px 46px 32px";
 
 function fkColor(fk: number, fd: number): string {
   return fk > fd ? "text-green-400" : "text-neutral-400";
@@ -56,7 +58,9 @@ export function MatchTeamStatsTable({
   const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
   const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
   const rowCount = Math.max(statsA.length, statsB.length);
-  const maxAcs = statsA.concat(statsB).reduce<number | null>((max, s) => (max == null || s.acs > max ? s.acs : max), null);
+  // MVP: best rating, then ACS, then K/D.
+  const mvp = statsA.concat(statsB).reduce<MatchMapPlayerRow | null>((best, s) => (best == null || compareMatchPlayers(s, best) < 0 ? s : best), null);
+  const isMvp = (s: MatchMapPlayerRow) => s === mvp;
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
@@ -81,11 +85,14 @@ export function MatchTeamStatsTable({
       </div>
 
       <div className="no-scrollbar hidden w-full overflow-x-auto md:block">
-        <div className="w-full min-w-[1180px]">
-          <div className="grid gap-5 border-b border-neutral-800 px-3 py-2 text-[10px] font-black tracking-wide text-neutral-500 uppercase" style={{ gridTemplateColumns: GRID_COLS }}>
+        <div className="w-full min-w-[1270px]">
+          <div className="grid gap-3 border-b border-neutral-800 px-3 py-2 text-[10px] font-black tracking-wide text-neutral-500 uppercase" style={{ gridTemplateColumns: GRID_COLS }}>
             <div>{t("colAgent")}</div>
             <div>{t("colPlayer")}</div>
             <div aria-hidden />
+            <div className="text-center text-neutral-300" title={t("ratingFull")}>
+              {t("colRating")}
+            </div>
             <div className="text-center" title={t("acsFull")}>
               {t("colAcs")}
             </div>
@@ -110,6 +117,9 @@ export function MatchTeamStatsTable({
             <div className="text-center text-neutral-300">K/D/A</div>
             <div className="text-center" title={t("acsFull")}>
               {t("colAcs")}
+            </div>
+            <div className="text-center text-neutral-300" title={t("ratingFull")}>
+              {t("colRating")}
             </div>
             <div aria-hidden />
             <div className="text-right">{t("colPlayer")}</div>
@@ -124,7 +134,7 @@ export function MatchTeamStatsTable({
               const rightAgents = right ? (right.agents.length ? right.agents : right.agentName ? [right.agentName] : []) : [];
 
               return (
-                <div key={i} className={`grid items-center gap-5 px-3 py-2.5 transition-colors hover:bg-white/[0.025] ${i % 2 === 1 ? "bg-white/[0.02]" : ""}`} style={{ gridTemplateColumns: GRID_COLS }}>
+                <div key={i} className={`grid items-center gap-3 px-3 py-2.5 transition-colors hover:bg-white/[0.025] ${i % 2 === 1 ? "bg-white/[0.02]" : ""}`} style={{ gridTemplateColumns: GRID_COLS }}>
                   <div className="flex flex-wrap gap-1.5">
                     {leftAgents.map((agent, ai) => (
                       <AgentIcon key={ai} agent={agent} size="h-7 w-7" />
@@ -137,12 +147,13 @@ export function MatchTeamStatsTable({
                         <PlayerLink p={left} className="min-w-0 truncate px-1 transition-colors hover:text-[#e4ae22]">
                           {left.handle}
                         </PlayerLink>
-                        {maxAcs != null && left.acs === maxAcs && <span className="shrink-0 rounded bg-[#e4ae22] px-1.5 py-0.5 text-[9px] font-black text-black uppercase">{t("mvp")}</span>}
+                        {isMvp(left) && <span className="shrink-0 rounded bg-[#e4ae22] px-1.5 py-0.5 text-[9px] font-black text-black uppercase">{t("mvp")}</span>}
                       </div>
                     )}
                   </div>
 
                   <div aria-hidden />
+                  <div className="text-center text-[13px]">{left && <RatingValue rating={left.rating} />}</div>
                   <div className="text-center font-mono text-[13px] font-bold text-neutral-300">{left?.acs ?? ""}</div>
                   <div className="text-center text-[12.5px] whitespace-nowrap tabular-nums">
                     {left && (
@@ -178,12 +189,13 @@ export function MatchTeamStatsTable({
                     )}
                   </div>
                   <div className="text-center font-mono text-[13px] font-bold text-neutral-300">{right?.acs ?? ""}</div>
+                  <div className="text-center text-[13px]">{right && <RatingValue rating={right.rating} />}</div>
                   <div aria-hidden />
 
                   <div className="min-w-0 text-right text-[13px] font-black text-[var(--gcs-text)] uppercase italic">
                     {right && (
                       <div className="flex min-w-0 items-center justify-end gap-2">
-                        {maxAcs != null && right.acs === maxAcs && <span className="shrink-0 rounded bg-[#e4ae22] px-1.5 py-0.5 text-[9px] font-black text-black uppercase">{t("mvp")}</span>}
+                        {isMvp(right) && <span className="shrink-0 rounded bg-[#e4ae22] px-1.5 py-0.5 text-[9px] font-black text-black uppercase">{t("mvp")}</span>}
                         <PlayerLink p={right} className="min-w-0 truncate px-1 transition-colors hover:text-[#e4ae22]">
                           {right.handle}
                         </PlayerLink>
@@ -211,10 +223,13 @@ export function MatchTeamStatsTable({
           <div key={team.name} className="py-3">
             <div className="mb-2 px-3 text-center text-[13px] font-black tracking-wide text-[var(--gcs-text)] uppercase italic">{team.name}</div>
             <div className="no-scrollbar overflow-x-auto">
-              <div className="min-w-[420px] px-3">
+              <div className="min-w-[460px] px-3">
                 <div className="grid items-center gap-2 pb-1.5 text-[9px] font-black tracking-wide text-neutral-500 uppercase" style={{ gridTemplateColumns: GRID_COLS_MOBILE }}>
                   <div />
                   <div>{t("colPlayer")}</div>
+                  <div className="text-center text-neutral-300" title={t("ratingFull")}>
+                    {t("colRating")}
+                  </div>
                   <div className="text-center">{t("colAcs")}</div>
                   <div className="text-center text-neutral-300">K/D/A</div>
                   <div className="text-center">{t("colAdr")}</div>
@@ -225,11 +240,11 @@ export function MatchTeamStatsTable({
                 <div>
                   {team.stats.map((s, i) => {
                     const agents = s.agents.length ? s.agents : s.agentName ? [s.agentName] : [];
-                    const isMvp = maxAcs != null && s.acs === maxAcs;
+                    const mvpRow = isMvp(s);
                     return (
                       <div
                         key={i}
-                        className={`-ml-2 grid items-center gap-2 py-2 pl-2 ${isMvp ? "border-l-2 border-[#e4ae22]" : ""}`}
+                        className={`-ml-2 grid items-center gap-2 py-2 pl-2 ${mvpRow ? "border-l-2 border-[#e4ae22]" : ""}`}
                         style={{ gridTemplateColumns: GRID_COLS_MOBILE }}
                       >
                         <div className="flex flex-wrap gap-1">
@@ -241,6 +256,9 @@ export function MatchTeamStatsTable({
                           <PlayerLink p={s} className="block min-w-0 truncate px-1 transition-colors hover:text-[#e4ae22]">
                             {s.handle}
                           </PlayerLink>
+                        </div>
+                        <div className="text-center text-[12px]">
+                          <RatingValue rating={s.rating} />
                         </div>
                         <div className="text-center font-mono text-[12px] font-bold text-neutral-300">{s.acs}</div>
                         <div className="text-center text-[11px] whitespace-nowrap">

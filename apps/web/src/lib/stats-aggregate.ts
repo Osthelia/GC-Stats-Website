@@ -39,6 +39,9 @@ export type StatRow = {
     multi5k: number;
     clutchesWon: number;
     clutchesPlayed: number;
+    /** Sum of rating x rounds over rated maps, and the rounds behind it. */
+    ratingWeighted: number;
+    ratingRounds: number;
   };
   weaponKills: Record<string, number>;
 };

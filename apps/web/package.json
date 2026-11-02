@@ -9,7 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "generate:openapi": "tsx scripts/generate-openapi.ts",
-    "backfill:patch": "tsx --env-file=.env.local scripts/backfill-match-patch.ts"
+    "backfill:patch": "tsx --env-file=.env.local scripts/backfill-match-patch.ts",
+    "ratings:recompute": "tsx --env-file=.env.local scripts/recompute-ratings.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
