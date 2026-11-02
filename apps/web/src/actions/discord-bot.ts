@@ -25,7 +25,8 @@ import { resolveMatchButtonLabel } from "@/lib/discord-bot/render";
 import { resolvePreviewData } from "@/lib/discord-bot/preview";
 import { getGuildSettings, resolveBotToken } from "@/lib/discord-bot/settings";
 import { getGuildTemplates } from "@/lib/discord-bot/templates";
-import { createDefaultTemplate, presetsOf, templateSchema, type TemplatePreset } from "@/lib/discord-bot/template";
+import { pinExternalImages } from "@/lib/discord-bot/pins";
+import { createDefaultTemplate, presetsOf, templateSchema, type AlertTemplate, type TemplatePreset } from "@/lib/discord-bot/template";
 import { getCurrentUserId } from "@/lib/session";
 import { routing } from "@/i18n/routing";
 import { listWebhookRegions } from "@/lib/webhooks/endpoints";
@@ -225,12 +226,17 @@ export async function saveDiscordColors(guildId: string, input: DiscordColorsInp
 
 export type ConnectDiscordBotResult =
   | { ok: true }
-  | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" | "invalid"; fieldErrors?: { token: "required" | "invalidToken" } };
+  | { ok: false; error: "notAuthenticated" | "forbidden" | "blacklisted" | "invalid"; fieldErrors?: { token: "required" | "invalidToken" | "rateLimited" } };
+
+const CONNECT_WINDOW_MS = 60_000;
+const CONNECT_MAX_PER_WINDOW = 5;
 
 /** Switches the server to its own bot, after checking the token belongs to a bot. */
 export async function connectCustomDiscordBot(guildId: string, token: unknown): Promise<ConnectDiscordBotResult> {
   const auth = await authorizeGuild(guildId);
   if (!auth.ok) return auth;
+
+  if (!(await checkRateLimit(`discord-bot-connect:${auth.userId}`, CONNECT_WINDOW_MS, CONNECT_MAX_PER_WINDOW))) return { ok: false, error: "invalid", fieldErrors: { token: "rateLimited" } };
 
   const trimmed = typeof token === "string" ? token.trim() : "";
   if (!trimmed) return { ok: false, error: "invalid", fieldErrors: { token: "required" } };
@@ -269,6 +275,16 @@ async function authorizeEvent(guildId: unknown, event: unknown): Promise<{ ok: t
   return { ok: true, guildId: auth.guildId, userId: auth.userId, event: event as DiscordBotEvent };
 }
 
+/** Writes the template of an alert type and puts it back in the review queue. */
+async function writeTemplate(auth: { guildId: string; userId: string; event: DiscordBotEvent }, template: AlertTemplate, imagePins: Record<string, string>): Promise<void> {
+  const values = { template, imagePins, updatedAt: new Date() };
+  await db
+    .insert(discordBotTemplates)
+    .values({ guildId: auth.guildId, event: auth.event, ...values })
+    .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
+  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
+}
+
 async function currentBackgroundId(guildId: string, event: DiscordBotEvent): Promise<string | null> {
   return (await getGuildTemplates(guildId)).get(event)?.template.backgroundImageId ?? null;
 }
@@ -282,12 +298,9 @@ export async function saveDiscordTemplate(guildId: string, event: DiscordBotEven
   if (!parsed.success) return { ok: false, error: "invalid", issues: parsed.error.issues.slice(0, 5).map((i) => `${i.path.join(".")}: ${i.message}`) };
 
   const template = { ...parsed.data, backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
-  const values = { template, updatedAt: new Date() };
-  await db
-    .insert(discordBotTemplates)
-    .values({ guildId: auth.guildId, event: auth.event, ...values })
-    .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
-  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
+  const { pins, unreachable } = await pinExternalImages(template);
+  if (unreachable.length > 0) return { ok: false, error: "invalid", issues: unreachable.map((url) => `url: image not reachable (${url.slice(0, 80)})`) };
+  await writeTemplate(auth, template, pins);
   return { ok: true };
 }
 
@@ -311,14 +324,16 @@ export async function uploadDiscordBackground(guildId: string, event: DiscordBot
     return { ok: false, error: "storageFailed" };
   }
 
-  const existing = (await getGuildTemplates(auth.guildId)).get(auth.event)?.template;
+  const stored_ = (await getGuildTemplates(auth.guildId)).get(auth.event);
+  const existing = stored_?.template;
   const template = { ...(existing ?? createDefaultTemplate(auth.event === "match_live" ? "live" : auth.event === "map_finished" ? "map" : "finished", "score", (await getGuildSettings(auth.guildId))?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND)), backgroundImageId: stored.id };
-  const values = { template, updatedAt: new Date() };
-  await db
-    .insert(discordBotTemplates)
-    .values({ guildId: auth.guildId, event: auth.event, ...values })
-    .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
-  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
+  try {
+    await writeTemplate(auth, template, stored_?.imagePins ?? {});
+  } catch (error) {
+    // The new file is not referenced by anything, do not leave it behind.
+    await deleteDiscordBackground(stored.id).catch(() => undefined);
+    throw error;
+  }
   if (existing?.backgroundImageId) await deleteDiscordBackground(existing.backgroundImageId).catch(() => undefined);
   return { ok: true };
 }
@@ -346,12 +361,7 @@ export async function chooseDiscordTemplatePreset(guildId: string, event: Discor
   if (typeof preset !== "string" || !(presetsOf(kind) as string[]).includes(preset)) return { ok: false, error: "invalid" };
 
   const template = { ...createDefaultTemplate(kind, preset as TemplatePreset, (await getGuildSettings(auth.guildId))?.colorBackground ?? DISCORD_BOT_DEFAULT_BACKGROUND), backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
-  const values = { template, updatedAt: new Date() };
-  await db
-    .insert(discordBotTemplates)
-    .values({ guildId: auth.guildId, event: auth.event, ...values })
-    .onConflictDoUpdate({ target: [discordBotTemplates.guildId, discordBotTemplates.event], set: values });
-  await queueTemplateReview({ guildId: auth.guildId, event: auth.event, userId: auth.userId, template });
+  await writeTemplate(auth, template, {});
   return { ok: true };
 }
 

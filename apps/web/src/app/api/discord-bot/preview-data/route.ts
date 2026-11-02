@@ -10,6 +10,7 @@
 
 import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/session";
+import { isBlacklisted, isUserBlacklisted } from "@/lib/discord-bot/moderation";
 import { getManageableGuild } from "@/lib/discord-bot/guilds";
 import { resolvePreviewData } from "@/lib/discord-bot/preview";
 import { DISCORD_BOT_EVENTS, type DiscordBotEvent } from "@/lib/discord-bot/shared";
@@ -25,7 +26,10 @@ export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const event = params.get("event") as DiscordBotEvent;
   if (!(DISCORD_BOT_EVENTS as readonly string[]).includes(event)) return NextResponse.json({ error: "Invalid event" }, { status: 400 });
-  if (!(await getManageableGuild(userId, params.get("guildId") ?? ""))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const guildId = params.get("guildId") ?? "";
+  if (!(await getManageableGuild(userId, guildId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const [guildBlocked, userBlocked] = await Promise.all([isBlacklisted("guild", guildId), isUserBlacklisted(userId)]);
+  if (guildBlocked || userBlocked) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const locale = params.get("locale") ?? "";
   const resolved = (routing.locales as readonly string[]).includes(locale) ? locale : routing.defaultLocale;

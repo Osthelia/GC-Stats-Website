@@ -39,7 +39,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   try {
     const locale = routing.defaultLocale;
     const { matchId, fields, images } = await resolvePreviewData(KIND_BY_EVENT[event], locale);
-    const png = await renderTemplateImage(stored.template, { fields, images, locale, footerUrl: `${GCS_SITE_URL.replace(/^https?:\/\//, "")}/${locale}/match/${matchId}` });
+    const png = await renderTemplateImage(stored.template, { fields, images, locale, footerUrl: `${GCS_SITE_URL.replace(/^https?:\/\//, "")}/${locale}/match/${matchId}`, imagePins: stored.imagePins });
     return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("[discord-bot] review render failed (review #%d)", id, error);

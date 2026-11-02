@@ -14,7 +14,7 @@ import { discordBotTemplates } from "@gc-stats/db";
 import { templateSchema, type AlertTemplate } from "./template";
 import type { DiscordBotEvent } from "./shared";
 
-export type StoredTemplate = { template: AlertTemplate; updatedAt: Date };
+export type StoredTemplate = { template: AlertTemplate; imagePins: Record<string, string>; updatedAt: Date };
 
 /** Templates per server then alert type, rows that no longer validate are ignored. */
 export async function listTemplates(guildIds: string[]): Promise<Map<string, Map<DiscordBotEvent, StoredTemplate>>> {
@@ -25,7 +25,7 @@ export async function listTemplates(guildIds: string[]): Promise<Map<string, Map
     const parsed = templateSchema.safeParse(row.template);
     if (!parsed.success) continue;
     if (!result.has(row.guildId)) result.set(row.guildId, new Map());
-    result.get(row.guildId)?.set(row.event as DiscordBotEvent, { template: parsed.data, updatedAt: row.updatedAt });
+    result.get(row.guildId)?.set(row.event as DiscordBotEvent, { template: parsed.data, imagePins: row.imagePins, updatedAt: row.updatedAt });
   }
   return result;
 }

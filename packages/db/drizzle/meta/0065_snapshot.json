@@ -1,6 +1,6 @@
 {
-  "id": "6bb4dbf5-d0cf-4464-a1a5-c0036ba4028c",
-  "prevId": "6c602603-4df9-41c3-aa72-05d1726c6e29",
+  "id": "6c602603-4df9-41c3-aa72-05d1726c6e29",
+  "prevId": "992cf269-2fb0-4dc2-a7a4-0adb45f94c07",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -5574,6 +5574,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "image_pins": {
+          "name": "image_pins",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp with time zone",
@@ -10670,13 +10677,6 @@
           "type": "bigint",
           "primaryKey": false,
           "notNull": true
-        },
-        "kind": {
-          "name": "kind",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'standard'"
         },
         "url": {
           "name": "url",

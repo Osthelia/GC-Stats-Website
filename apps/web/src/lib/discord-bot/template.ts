@@ -24,6 +24,7 @@ export const TEMPLATE_LIMITS = {
   minHeight: 300,
   maxHeight: 900,
   conditions: 5,
+  externalImages: 4,
 } as const;
 // Extra band under the canvas when the footer is on.
 export const TEMPLATE_FOOTER_HEIGHT = 48;
@@ -362,7 +363,18 @@ export const templateSchema = z
           message: "Unknown folder",
         });
     });
+    if (externalImageUrls(template).length > TEMPLATE_LIMITS.externalImages)
+      ctx.addIssue({
+        code: "custom",
+        path: ["layers"],
+        message: `At most ${TEMPLATE_LIMITS.externalImages} different external images`,
+      });
   });
+
+/** Distinct external image addresses a template draws. */
+export function externalImageUrls(template: { layers: readonly { type: string; source?: string; url?: string }[] }): string[] {
+  return [...new Set(template.layers.flatMap((l) => (l.type === "image" && l.source === "custom" && l.url ? [l.url] : [])))];
+}
 
 export type AlertTemplate = z.infer<typeof templateSchema>;
 export type TemplateLayer = AlertTemplate["layers"][number];

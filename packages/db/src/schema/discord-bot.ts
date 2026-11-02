@@ -59,6 +59,8 @@ export const discordBotTemplates = pgTable("discord_bot_templates", {
   guildId: text("guild_id").notNull(),
   event: text("event").notNull(), // 'match_live' | 'match_finished' | 'map_finished'
   template: jsonb("template").notNull(),
+  // SHA-256 of each external image (url -> hex) as it was when the template was saved, an image that no longer matches is not drawn.
+  imagePins: jsonb("image_pins").$type<Record<string, string>>().notNull().default({}),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   uniqueIndex("discord_bot_templates_unique").on(t.guildId, t.event),
