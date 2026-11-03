@@ -25,12 +25,12 @@ type Props = {
 };
 
 export function LolIcon({ kind, url, name, size }: Props) {
-  const [failed, setFailed] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const style = { width: size, height: size };
   const px = typeof size === "number" ? size : undefined;
   const shape = kind === "rune" || kind === "tree" ? "rounded-full" : "rounded-sm";
 
-  if (url === null || failed) {
+  if (url === null || url === failedUrl) {
     return (
       <span
         role="img"
@@ -58,7 +58,7 @@ export function LolIcon({ kind, url, name, size }: Props) {
       height={px}
       style={{...style, clipPath: champion ? "inset(6% round 4px)" : ""}}
       className={champion ? "flex-none object-cover" : tree ? "flex-none object-contain" : `flex-none border border-neutral-800 bg-(--gcs-surface-2) object-cover ${shape}`}
-      onError={() => setFailed(true)}
+      onError={() => setFailedUrl(url)}
     />
   );
 }
