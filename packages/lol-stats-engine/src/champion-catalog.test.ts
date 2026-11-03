@@ -12,7 +12,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { championNameOf, compareVersions, internalPatch, missingChampionIds, patchOf, publicPatch, pickDataDragonVersion, pickStoredVersion } from "./champion-catalog";
+import { championNameOf, compareVersions, internalPatch, missingChampionIds, patchOf, publicPatch, sortPatchesNewestFirst, pickDataDragonVersion, pickStoredVersion } from "./champion-catalog";
 import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto } from "./types";
 
@@ -69,6 +69,16 @@ describe("internalPatch", () => {
 
   it("is the inverse of publicPatch", () => {
     for (const patch of ["14.24", "15.1", "15.3", "15.4", "15.18", "16.1", "16.13"]) expect(internalPatch(publicPatch(patch))).toBe(patch);
+  });
+});
+
+describe("sortPatchesNewestFirst", () => {
+  it("puts the newest patch first, by number and not by text", () => {
+    expect(sortPatchesNewestFirst(["25.9", "26.13", "25.18", "26.2"])).toEqual(["26.13", "26.2", "25.18", "25.9"]);
+  });
+
+  it("puts the season names of early 2025 after the numbered patches of 2025", () => {
+    expect(sortPatchesNewestFirst(["25.S1.2", "25.4", "25.S1.3", "14.24"])).toEqual(["25.4", "25.S1.3", "25.S1.2", "14.24"]);
   });
 });
 

@@ -16,6 +16,7 @@
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs } from "@gc-stats/db";
+import { lolIconUrl } from "@/lib/lol-icons";
 import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
 import { convertToWebp, objectExists, putObject } from "@gc-stats/storage";
 import { lolIconKey, type LolIconKind } from "./lol-icons";
@@ -173,6 +174,12 @@ export interface DisplayCatalog {
   championIconKeys: Record<string, string>;
   itemNames: Record<string, string>;
   runeNames: Record<string, string>;
+}
+
+/** The icon url of a champion by name, null for one without an icon. The newest catalog: the icon key of a champion doesn't change with the patch. */
+export async function getChampionIconLookup(): Promise<(championName: string) => string | null> {
+  const { championIconKeys } = await getDisplayCatalog(null);
+  return (championName) => (championIconKeys[championName] === undefined ? null : lolIconUrl("champions", championIconKeys[championName]));
 }
 
 export async function getDisplayCatalog(patch: string | null): Promise<DisplayCatalog> {

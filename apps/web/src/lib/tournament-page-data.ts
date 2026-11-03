@@ -15,10 +15,9 @@ import { and, asc, count, desc, eq, exists, gte, inArray, isNotNull, lte, or, sq
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
-import { LEAGUE_ROLES, buildChampionStatRows, compareVersions, internalPatch, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
+import { LEAGUE_ROLES, buildChampionStatRows, sortPatchesNewestFirst, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
-import { getDisplayCatalog } from "@/lib/data-dragon-client";
-import { lolIconUrl } from "@/lib/lol-icons";
+import { getChampionIconLookup } from "@/lib/data-dragon-client";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { formatSideScore } from "@/lib/match-score-format";
 import type { HomeMatch } from "@/lib/home-data";
@@ -565,7 +564,7 @@ export async function getTournamentPatches(game: GameSlug, tournamentId: number)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .where(and(eq(stages.tournamentId, tournamentId), isNotNull(matches.patch)));
-  return rows.map((r) => r.patch!).sort((a, b) => compareVersions(internalPatch(b), internalPatch(a)));
+  return sortPatchesNewestFirst(rows.map((r) => r.patch!));
 }
 
 /**
@@ -576,7 +575,7 @@ export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper
   const { entrants } = gameTables(game);
   const { gamePlayerStats } = leagueTablesOf(game);
   const played = count();
-  const [championRows, entrantRows, catalog] = await Promise.all([
+  const [championRows, entrantRows, iconUrlOf] = await Promise.all([
     db
       .select({ personId: gamePlayerStats.personId, championName: gamePlayerStats.championName, played })
       .from(gamePlayerStats)
@@ -591,15 +590,13 @@ export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper
       .where(inArray(gamePlayerStats.id, scope))
       .groupBy(gamePlayerStats.personId, entrants.id)
       .orderBy(gamePlayerStats.personId, desc(count()), entrants.id),
-    // The newest catalog: the icon key of a champion doesn't change with the patch.
-    getDisplayCatalog(null),
+    getChampionIconLookup(),
   ]);
 
   const championsByPerson = new Map<number, { name: string; iconUrl: string | null }[]>();
   for (const r of championRows) {
     if (r.personId == null) continue;
-    const key = catalog.championIconKeys[r.championName];
-    const champion = { name: r.championName, iconUrl: key === undefined ? null : lolIconUrl("champions", key) };
+    const champion = { name: r.championName, iconUrl: iconUrlOf(r.championName) };
     const champions = championsByPerson.get(r.personId);
     if (champions) champions.push(champion);
     else championsByPerson.set(r.personId, [champion]);
@@ -647,7 +644,7 @@ export async function getTournamentChampionStats(game: GameSlug, tournamentId: n
   if (filters.role) pickConditions.push(eq(gamePlayerStats.role, filters.role));
   const sum = (expr: SQLWrapper) => sql<number>`coalesce(sum(${expr}), 0)::int`;
 
-  const [gameCount, pickRows, banRows, catalog] = await Promise.all([
+  const [gameCount, pickRows, banRows, iconUrlOf] = await Promise.all([
     db.select({ games: count() }).from(games).where(inArray(games.id, gameIds)),
     db
       .select({
@@ -668,16 +665,13 @@ export async function getTournamentChampionStats(game: GameSlug, tournamentId: n
       .from(gameDraft)
       .where(and(inArray(gameDraft.gameId, gameIds), eq(gameDraft.type, "ban")))
       .groupBy(gameDraft.championName),
-    getDisplayCatalog(null),
+    getChampionIconLookup(),
   ]);
 
   // With a role, only the champions picked in it: a ban has no role, so a champion only banned doesn't belong to one.
   // Their bans and presence still count every role.
   const rows = buildChampionStatRows(pickRows, banRows, gameCount[0]?.games ?? 0).filter((row) => !filters.role || row.totals.picks > 0);
   const iconUrls: Record<string, string | null> = {};
-  for (const row of rows) {
-    const key = catalog.championIconKeys[row.groupKey];
-    iconUrls[row.groupKey] = key === undefined ? null : lolIconUrl("champions", key);
-  }
+  for (const row of rows) iconUrls[row.groupKey] = iconUrlOf(row.groupKey);
   return { rows, iconUrls };
 }

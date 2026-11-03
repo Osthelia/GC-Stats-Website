@@ -7,7 +7,7 @@
  */
 
 import { getTranslations } from "next-intl/server";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasStats, type GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import type {
@@ -110,7 +110,7 @@ export async function PlayerHeader({
   const tabAvailable: Record<(typeof TABS)[number], boolean> = {
     overview: true,
     matches: availability.hasMatches,
-    stats: gameHasMaps(game) && availability.hasMatches,
+    stats: gameHasStats(game) && availability.hasMatches,
     history: availability.hasTeamHistory,
     production: availability.hasProduction,
   };

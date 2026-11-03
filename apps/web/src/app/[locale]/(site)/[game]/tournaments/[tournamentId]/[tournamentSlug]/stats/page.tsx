@@ -213,7 +213,7 @@ async function loadValorantStats(game: GameSlug, tournamentId: number, filters: 
 async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
   const scope = leagueStatsScope(game, tournamentId, filters);
   const [rows, playerMeta, filterOptions, patches] = await Promise.all([
-    aggregateLeaguePlayerStatsSql(game, scope),
+    aggregateLeaguePlayerStatsSql(game, scope, "personId"),
     getLeagueStatsPlayerMeta(game, scope),
     getLeagueStatsFilterOptions(game, tournamentId),
     getTournamentPatches(game, tournamentId),

@@ -41,6 +41,10 @@ export function internalPatch(publicName: string): string {
   return `${Number(match[1]) - 10}.${match[2]}`;
 }
 
+export function sortPatchesNewestFirst(patches: string[]): string[] {
+  return [...patches].sort((a, b) => compareVersions(internalPatch(b), internalPatch(a)));
+}
+
 /** Compares dotted versions number by number, so "15.18.10" is newer than "15.18.9". */
 export function compareVersions(a: string, b: string): number {
   const left = a.split(".").map(Number);

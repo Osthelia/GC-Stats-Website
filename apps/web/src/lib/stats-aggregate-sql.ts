@@ -108,13 +108,13 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
 /** The average over the rows that have a value: a lane diff is null in a game without a lane opponent. */
 const avgFloat = (column: PgColumn) => sql<number>`coalesce(avg(${column}), 0)::float8`;
 
-/** The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person. */
-export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWrapper): Promise<LeagueStatRow[]> {
+/** The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person or per champion. */
+export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWrapper, groupBy: "championName" | "personId"): Promise<LeagueStatRow[]> {
   const { games, gamePlayerStats, gameTeamStats } = leagueTablesOf(game);
 
   const rows = await db
     .select({
-      groupKey: sql<string>`coalesce(${gamePlayerStats.personId}::text, '?')`,
+      groupKey: groupBy === "personId" ? sql<string>`coalesce(${gamePlayerStats.personId}::text, '?')` : sql<string>`${gamePlayerStats.championName}`,
       mapsPlayed: sql<number>`count(*)::int`,
       wins: sumFloat(sql`case when ${games.winnerEntrantId} = ${gamePlayerStats.entrantId} then 1 else 0 end`),
       kills: sumFloat(gamePlayerStats.kills),
@@ -137,7 +137,7 @@ export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWr
     .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
     .leftJoin(gameTeamStats, and(eq(gameTeamStats.gameId, gamePlayerStats.gameId), eq(gameTeamStats.entrantId, gamePlayerStats.entrantId)))
     .where(inArray(gamePlayerStats.id, scope))
-    .groupBy(gamePlayerStats.personId);
+    .groupBy(groupBy === "personId" ? gamePlayerStats.personId : gamePlayerStats.championName);
 
   return rows.map(({ groupKey, mapsPlayed, goldDiff10, goldDiff15, xpDiff10, xpDiff15, csDiff10, csDiff15, ...totals }) => ({
     groupKey,
