@@ -466,8 +466,9 @@ async function linkedPeopleByPuuid(puuids: string[]) {
 
 /**
  * Which entrant is blue. First the linked players: each one known to play for an entrant (its roster, or its earlier
- * games) is a vote, a blue player of A or a red player of B for "A is blue", and the other way round. Falls back to
- * the team names of the list when the players do not decide it (a Riot game has no names).
+ * games) is a vote, a blue player of A or a red player of B for "A is blue", and the other way round. A player known
+ * to both entrants does not vote. Falls back to the team names of the list when the players do not decide it (a Riot
+ * game has no names).
  */
 export function suggestSides(
   names: { blue: string | null; red: string | null },
@@ -484,14 +485,11 @@ export function suggestSides(
     const person = linked.get(p.puuid);
     if (!person) continue;
     const blue = sideForTeamId(p.teamId) === "blue";
-    if (peopleA.has(person.id)) {
-      if (blue) aIsBlue++;
-      else bIsBlue++;
-    }
-    else if (peopleB.has(person.id)) {
-      if (blue) bIsBlue++;
-      else aIsBlue++;
-    }
+    const knownToA = peopleA.has(person.id);
+    // Known to neither or to both (a substitute, a transfer): says nothing about the sides.
+    if (knownToA === peopleB.has(person.id)) continue;
+    if (knownToA === blue) aIsBlue++;
+    else bIsBlue++;
   }
   if (aIsBlue > bIsBlue) return { sides: { blue: ids.a, red: ids.b }, from: "players" };
   if (bIsBlue > aIsBlue) return { sides: { blue: ids.b, red: ids.a }, from: "players" };
