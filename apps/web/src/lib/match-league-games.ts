@@ -10,7 +10,7 @@
  */
 
 import { unstable_cache } from "next/cache";
-import { asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf } from "@gc-stats/db";
 import { averageSeriesLines, blueEntrantOf, draftStep, killParticipation, LEAGUE_DRAFT_STEPS, perMinute, seriesScoreThrough, stepSide, type LeagueSide, type SeriesAverage } from "@gc-stats/lol-stats-engine";
@@ -37,7 +37,6 @@ export type LeagueGameDraftStep = { step: number; type: "ban" | "pick"; side: Le
 export type LeagueGameDraft = {
   blueEntrantId: number | null;
   steps: LeagueGameDraftStep[];
-  unplacedPicks: { side: LeagueSide; championName: string; iconUrl: string | null }[];
 };
 
 export type PlayerRunes = { keystoneName: string | null; keystoneIconUrl: string | null; secondaryName: string | null; secondaryIconUrl: string | null };
@@ -137,7 +136,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
     db
       .select({ gameId: gameDraft.gameId, entrantId: gameDraft.entrantId, championName: gameDraft.championName, type: gameDraft.type, order: gameDraft.order })
       .from(gameDraft)
-      .where(inArray(gameDraft.gameId, gameIds)),
+      .where(and(inArray(gameDraft.gameId, gameIds), isNotNull(gameDraft.order))),
     db
       .select({
         gameId: gamePlayerStats.gameId,
@@ -174,15 +173,11 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
     const knownBlueEntrantId = game.source !== null ? (teams.find((team) => team.side === "blue")?.entrantId ?? null) : game.draftBlueEntrantId;
     const firstPlaced = draft.find((row): row is typeof row & { order: number } => row.order !== null) ?? null;
     const blueEntrantId = blueEntrantOf({ knownBlueEntrantId, firstPick, entrantAId: entrants.entrantAId, entrantBId: entrants.entrantBId, firstPlaced });
-    const sideOf = (entrantId: number): LeagueSide => (entrantId === blueEntrantId ? "blue" : "red");
 
     const steps = draft.flatMap((row): LeagueGameDraftStep[] => {
       const step = row.order === null ? null : draftStep(row.order);
       return step ? [{ step: step.step, type: step.type, side: stepSide(step, firstPick), championName: row.championName, iconUrl: championIconUrl(row.championName) }] : [];
     });
-    const unplacedPicks = draft
-      .filter((row) => row.order === null && row.type === "pick")
-      .map((row) => ({ side: sideOf(row.entrantId), championName: row.championName, iconUrl: championIconUrl(row.championName) }));
 
     return {
       id: game.id,
@@ -206,7 +201,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
         gold: team.gold,
       })),
       // A draft still being filled in is not shown: only a draft with every step is.
-      draft: steps.length === LEAGUE_DRAFT_STEPS.length ? { blueEntrantId, steps, unplacedPicks } : null,
+      draft: steps.length === LEAGUE_DRAFT_STEPS.length ? { blueEntrantId, steps } : null,
       players: playerRows
         .filter((row) => row.gameId === game.id)
         .map((row): LeagueGamePlayer => ({

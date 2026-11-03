@@ -339,7 +339,6 @@ function posterDraft(draft: LeagueGameDraft): LeagueGameDraft {
   return {
     ...draft,
     steps: draft.steps.map((step) => ({ ...step, iconUrl: posterIcon(step.iconUrl) })),
-    unplacedPicks: draft.unplacedPicks.map((pick) => ({ ...pick, iconUrl: posterIcon(pick.iconUrl) })),
   };
 }
 
