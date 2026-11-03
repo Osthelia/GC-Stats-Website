@@ -11,12 +11,8 @@
 import { useState } from "react";
 import { LiquipediaIcon } from "@/components/icons/brand-icons";
 
-// Liquipedia's own favicon, same URL V1 hardcoded in its tournament/team/
-// player headers — real brand mark instead of our generic outline glyph
-// (explicit user direction: "on met le logo Liquipedia, voir V1"). Falls
-// back to that outline glyph on load failure (CLAUDE.md: every logo needs a
-// fallback), same pattern as AgentIcon.
-const LIQUIPEDIA_LOGO_URL = "https://liquipedia.net/commons/extensions/TeamLiquidIntegration/resources/pagelogo/liquipedia_icon_menu.png";
+// Self-hosted copy of Liquipedia's favicon; falls back to the outline glyph if it fails to load.
+const LIQUIPEDIA_LOGO_URL = "/logos/liquipedia.png";
 
 export function LiquipediaLinkPill({ href, label }: { href: string; label: string }) {
   const [failed, setFailed] = useState(false);
