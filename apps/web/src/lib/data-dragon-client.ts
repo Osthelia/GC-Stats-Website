@@ -129,7 +129,7 @@ async function fallbackFromDatabase(patch: string): Promise<DataDragonCatalog | 
 }
 
 /** `patch` is the public name a match stores ("26.13"); the catalogs are found by the internal one ("16.13"). */
-async function storedCatalogForPatch(publicName: string | null, reader: Reader = db): Promise<DataDragonCatalog | null> {
+async function storedCatalogForPatch(publicName: string | null, reader: Reader): Promise<DataDragonCatalog | null> {
   const patch = publicName === null ? null : internalPatch(publicName);
   const inMemory = patch === null ? null : fromMemory(patch);
   if (inMemory) return inMemory;
@@ -139,9 +139,9 @@ async function storedCatalogForPatch(publicName: string | null, reader: Reader =
   return loaded.get(version) ?? loadStored(version, reader);
 }
 
-/** Picks Champion names from given patch. if none is given from the newest Patch */
+/** Picks Champion names from given patch. if none is given from the newest Patch. Admin only: it must see a version an import just stored. */
 export async function getChampionNamesForPatch(patch: string | null): Promise<string[]> {
-  const catalog = await storedCatalogForPatch(patch);
+  const catalog = await storedCatalogForPatch(patch, db);
   return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
 }
 
@@ -190,7 +190,7 @@ export async function getChampionIconLookup(): Promise<(championName: string) =>
 }
 
 export async function getDisplayCatalog(patch: string | null): Promise<DisplayCatalog> {
-  const catalog = await storedCatalogForPatch(patch);
+  const catalog = await storedCatalogForPatch(patch, cachedDb);
   if (!catalog) return { championIconKeys: {}, itemNames: {}, runeNames: {} };
   return {
     championIconKeys: championIconKeysOf(catalog),
