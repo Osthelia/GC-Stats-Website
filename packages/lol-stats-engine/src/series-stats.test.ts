@@ -12,7 +12,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { averageSeriesLines, killParticipation, otherEntrantOf, perMinute, seriesScoreThrough, type PlayerGameLine, type SeriesGameResult } from "./series-stats";
+import { averageSeriesLines, kdaRatio, killParticipation, otherEntrantOf, perMinute, seriesScoreThrough, type PlayerGameLine, type SeriesGameResult } from "./series-stats";
 
 function line(overrides: Partial<PlayerGameLine>): PlayerGameLine {
   return {
@@ -38,6 +38,15 @@ describe("killParticipation", () => {
 
   it("is zero when the team got no kills", () => {
     expect(killParticipation(0, 0, 0)).toBe(0);
+  });
+});
+
+describe("kdaRatio", () => {
+  it("is kills plus assists over deaths", () => {
+    expect(kdaRatio(4, 2, 6)).toBe(5);
+  });
+  it("is kills plus assists without deaths", () => {
+    expect(kdaRatio(4, 0, 6)).toBe(10);
   });
 });
 

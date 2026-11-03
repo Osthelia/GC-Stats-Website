@@ -21,21 +21,15 @@ export type ParsedStatsFilters = {
   endDate: string;
 };
 
-/**
- * The query names of the two pick filters. The parsed filters and the filter bar keep the Valorant names for them
- * (`agent`, `map`); the URL uses the game's own names, so a shared LoL link reads `?champion=Ahri&role=MIDDLE`.
- */
-export type StatsFilterParams = { agent: string; map: string };
-export const VALORANT_STATS_FILTER_PARAMS: StatsFilterParams = { agent: "agent", map: "map" };
-export const LEAGUE_STATS_FILTER_PARAMS: StatsFilterParams = { agent: "champion", map: "role" };
-
 /** The roles by the names the game uses for them. */
 export const LEAGUE_ROLE_LABELS: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "Bot", UTILITY: "Support" };
 
-export type LeagueStatsFilters = Omit<ParsedStatsFilters, "agent" | "map"> & { champion: string; role: string };
+/** The filters of the LoL tournament pages. */
+export type LeagueStatsFilters = { champion: string; role: string; patch: string };
 
-export function leagueStatsFilters({ agent, map, ...dates }: ParsedStatsFilters): LeagueStatsFilters {
-  return { ...dates, champion: agent, role: map };
+/** A shared LoL link reads `?champion=Ahri&role=MIDDLE&patch=15.18`. */
+export function parseLeagueStatsFilters(searchParams: StatsSearchParams): LeagueStatsFilters {
+  return { champion: raw(searchParams.champion), role: raw(searchParams.role), patch: raw(searchParams.patch) };
 }
 
 const DAYS_VALUES = new Set(["0", "30", "60"]);
@@ -45,14 +39,14 @@ function raw(v: string | string[] | undefined): string {
   return (Array.isArray(v) ? v[0] : v) ?? "";
 }
 
-export function parseStatsFilters(searchParams: StatsSearchParams, params: StatsFilterParams = VALORANT_STATS_FILTER_PARAMS): ParsedStatsFilters {
+export function parseStatsFilters(searchParams: StatsSearchParams): ParsedStatsFilters {
   const days = raw(searchParams.days);
   const startDate = raw(searchParams.startDate);
   const endDate = raw(searchParams.endDate);
 
   return {
-    agent: raw(searchParams[params.agent]),
-    map: raw(searchParams[params.map]),
+    agent: raw(searchParams.agent),
+    map: raw(searchParams.map),
     days: DAYS_VALUES.has(days) ? (days as "0" | "30" | "60") : "0",
     startDate: DATE_RE.test(startDate) ? startDate : "",
     endDate: DATE_RE.test(endDate) ? endDate : "",

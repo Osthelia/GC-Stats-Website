@@ -17,19 +17,19 @@ import {
   getTournamentStatsPlayerMeta,
   leagueStatsScope,
   getLeagueStatsFilterOptions,
+  getTournamentPatches,
   getLeagueStatsPlayerMeta,
 } from "@/lib/tournament-page-data";
 import { getPeopleHandles } from "@/lib/team-page-data";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { TournamentStatsTable, type TournamentStatsPlayer } from "@/components/tournament/tournament-stats-table";
 import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
+import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
 import {
   LEAGUE_ROLE_LABELS,
-  LEAGUE_STATS_FILTER_PARAMS,
-  VALORANT_STATS_FILTER_PARAMS,
-  leagueStatsFilters,
+    parseLeagueStatsFilters,
   parseStatsFilters,
   type LeagueStatsFilters,
   type ParsedStatsFilters,
@@ -67,11 +67,11 @@ export default async function TournamentStatsPage({
 
   const sp = await searchParams;
   const league = gameHasSeriesGames(game);
-  // LoL links read `?champion=…&role=…`; the parsed filters keep the Valorant slot names for the filter bar.
-  const filterParams = league ? LEAGUE_STATS_FILTER_PARAMS : VALORANT_STATS_FILTER_PARAMS;
-  const filters = parseStatsFilters(sp, filterParams);
+  // The two games filter by different things, so each is parsed its own way.
+  const filters = parseStatsFilters(sp);
+  const leagueFilters = parseLeagueStatsFilters(sp);
 
-  const [stats, t] = await Promise.all([league ? loadLeagueStats(game, id, leagueStatsFilters(filters)) : loadValorantStats(game, id, filters), getTranslations("tournamentPage")]);
+  const [stats, t] = await Promise.all([league ? loadLeagueStats(game, id, leagueFilters) : loadValorantStats(game, id, filters), getTranslations("tournamentPage")]);
   const { players, agentOptions, mapOptions, weaponColumns } = stats;
   const set = STAT_COLUMN_SETS[stats.columnSet];
 
@@ -111,26 +111,35 @@ export default async function TournamentStatsPage({
       <TournamentHeader game={game} tournament={tournament} basePath={basePath} activeTab="stats" />
 
       <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
-        <StatsFilterBar
-          basePath={`/tournaments/${basePath}/stats`}
-          filters={filters}
-          params={filterParams}
-          agentOptions={agentOptions}
-          mapOptions={mapOptions}
-          labels={{
-            periodLabel: t("statsFilterPeriod"),
-            allTime: t("statsFilterAllTime"),
-            last30: t("statsFilterLast30"),
-            last60: t("statsFilterLast60"),
-            agentLabel: t(set.labels.agentFilter),
-            agentDefault: t(set.labels.agentFilterAll),
-            mapLabel: t(set.labels.mapFilter),
-            mapDefault: t(set.labels.mapFilterAll),
-            startDate: t("statsFilterStartDate"),
-            endDate: t("statsFilterEndDate"),
-            submit: t("statsFilterSubmit"),
-          }}
-        />
+        {stats.columnSet === "lol" ? (
+          <LeagueStatsFilterBar
+            basePath={`/tournaments/${basePath}/stats`}
+            filters={leagueFilters}
+            patch={{ label: t("statsFilterPatch"), defaultLabel: t("statsFilterPatchAll"), options: stats.patches.map((p) => ({ value: p, label: p })) }}
+            role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: mapOptions }}
+            champion={{ label: t(set.labels.agentFilter), defaultLabel: t(set.labels.agentFilterAll), options: agentOptions, search: { placeholder: t("statsFilterChampionSearch"), noResult: t("statsFilterChampionNoResult") } }}
+          />
+        ) : (
+          <StatsFilterBar
+            basePath={`/tournaments/${basePath}/stats`}
+            filters={filters}
+            agentOptions={agentOptions}
+            mapOptions={mapOptions}
+            labels={{
+              periodLabel: t("statsFilterPeriod"),
+              allTime: t("statsFilterAllTime"),
+              last30: t("statsFilterLast30"),
+              last60: t("statsFilterLast60"),
+              agentLabel: t(set.labels.agentFilter),
+              agentDefault: t(set.labels.agentFilterAll),
+              mapLabel: t(set.labels.mapFilter),
+              mapDefault: t(set.labels.mapFilterAll),
+              startDate: t("statsFilterStartDate"),
+              endDate: t("statsFilterEndDate"),
+              submit: t("statsFilterSubmit"),
+            }}
+          />
+        )}
 
         {stats.columnSet === "lol" ? (
           <TournamentStatsTable {...tableProps} columnSet="lol" rows={stats.rows} />
@@ -149,7 +158,7 @@ type TournamentStats = {
   mapOptions: { value: string; label: string }[];
   /** The per weapon columns, which exist for Valorant only. */
   weaponColumns: StatColumn[];
-} & ({ columnSet: "valorant"; rows: StatRow[] } | { columnSet: "lol"; rows: LeagueStatRow[] });
+} & ({ columnSet: "valorant"; rows: StatRow[] } | { columnSet: "lol"; rows: LeagueStatRow[]; patches: string[] });
 
 /** The player cells' data of either game: the picks (agents or champions) and the team come from that game's meta. */
 type StatsPlayerMeta = {
@@ -203,14 +212,16 @@ async function loadValorantStats(game: GameSlug, tournamentId: number, filters: 
 
 async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
   const scope = leagueStatsScope(game, tournamentId, filters);
-  const [rows, playerMeta, filterOptions] = await Promise.all([
+  const [rows, playerMeta, filterOptions, patches] = await Promise.all([
     aggregateLeaguePlayerStatsSql(game, scope),
     getLeagueStatsPlayerMeta(game, scope),
     getLeagueStatsFilterOptions(game, tournamentId),
+    getTournamentPatches(game, tournamentId),
   ]);
   return {
     columnSet: "lol",
     rows,
+    patches,
     players: await statsPlayers(game, rows, playerMeta),
     agentOptions: filterOptions.champions.map((c) => ({ value: c, label: c })),
     mapOptions: filterOptions.roles.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role })),

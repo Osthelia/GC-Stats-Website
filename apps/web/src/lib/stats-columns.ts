@@ -10,7 +10,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
+import { championPresence, championWinRate, kdaRatio } from "@gc-stats/lol-stats-engine";
+import type { ChampionStatRow, LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
 
 export type StatsMode = "total" | "avg";
 
@@ -89,14 +90,7 @@ export const LEAGUE_STAT_COLUMNS: StatColumn<LeagueStatRow>[] = [
   { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.kills, r.mapsPlayed, m) },
   { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.deaths, r.mapsPlayed, m) },
   { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.assists, r.mapsPlayed, m) },
-  {
-    key: "kda",
-    i18nKey: "kda",
-    format: "decimal2",
-    defaultVisible: true,
-    modeInvariant: true,
-    value: (r) => (r.totals.deaths > 0 ? (r.totals.kills + r.totals.assists) / r.totals.deaths : r.totals.kills + r.totals.assists),
-  },
+  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists) },
   { key: "kp", i18nKey: "kp", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => ratio(r.totals.kills + r.totals.assists, r.totals.teamKills) * 100 },
   { key: "csPerMinute", i18nKey: "csPerMinute", format: "decimal1", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.cs, r.totals.minutes) },
   { key: "goldPerMinute", i18nKey: "goldPerMinute", format: "int", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.gold, r.totals.minutes) },
@@ -108,6 +102,22 @@ export const LEAGUE_STAT_COLUMNS: StatColumn<LeagueStatRow>[] = [
   { key: "xpDiff15", i18nKey: "xpDiff15", format: "int", defaultVisible: false, avgOnly: true, value: (r) => r.averages.xpDiff15 },
   { key: "csDiff10", i18nKey: "csDiff10", format: "decimal1", defaultVisible: false, avgOnly: true, value: (r) => r.averages.csDiff10 },
   { key: "csDiff15", i18nKey: "csDiff15", format: "decimal1", defaultVisible: false, avgOnly: true, value: (r) => r.averages.csDiff15 },
+];
+
+/** A value only a picked champion has: NaN (shown as "–", sorted last) for a champion that was only banned. */
+function whenPicked(row: ChampionStatRow, value: () => number): number {
+  return row.totals.picks > 0 ? value() : NaN;
+}
+
+export const CHAMPION_STAT_COLUMNS: StatColumn<ChampionStatRow>[] = [
+  { key: "picks", i18nKey: "picks", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.totals.picks },
+  { key: "bans", i18nKey: "bans", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.totals.bans },
+  { key: "presence", i18nKey: "presence", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => championPresence(r.totals.picks, r.totals.bans, r.totals.games) },
+  { key: "winRate", i18nKey: "winRate", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => whenPicked(r, () => championWinRate(r.totals.wins, r.totals.picks)) },
+  { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.kills, r.mapsPlayed, m)) },
+  { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.deaths, r.mapsPlayed, m)) },
+  { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.assists, r.mapsPlayed, m)) },
+  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => whenPicked(r, () => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists)) },
 ];
 
 /** Clutch column needs both won and played to render "won/played" — not expressible through the generic numeric `value()`. */
@@ -158,7 +168,7 @@ export type StatColumnSet<Row> = {
   labels: { agentColumn: string; agentFilter: string; agentFilterAll: string; mapFilter: string; mapFilterAll: string };
 };
 
-export type StatRowByGame = { valorant: StatRow; lol: LeagueStatRow };
+export type StatRowByGame = { valorant: StatRow; lol: LeagueStatRow; lolChampions: ChampionStatRow };
 
 export const STAT_COLUMN_SETS = {
   valorant: {
@@ -172,11 +182,18 @@ export const STAT_COLUMN_SETS = {
     defaultSort: "kda",
     labels: { agentColumn: "statsChampionColumn", agentFilter: "statsFilterChampion", agentFilterAll: "statsFilterChampionAll", mapFilter: "statsFilterRole", mapFilterAll: "statsFilterRoleAll" },
   } satisfies StatColumnSet<LeagueStatRow>,
+  lolChampions: {
+    columns: CHAMPION_STAT_COLUMNS,
+    defaultSort: "presence",
+    labels: { agentColumn: "statsChampionColumn", agentFilter: "statsFilterChampion", agentFilterAll: "statsFilterChampionAll", mapFilter: "statsFilterRole", mapFilterAll: "statsFilterRoleAll" },
+  } satisfies StatColumnSet<ChampionStatRow>,
 };
 
 export type StatColumnSetKey = keyof StatRowByGame & keyof typeof STAT_COLUMN_SETS;
 
 export function formatStatValue(value: number, format: StatColumnFormat): string {
+  // No value (a LoL champion that was only banned has no K/D/A): Valorant columns never produce NaN.
+  if (Number.isNaN(value)) return "–";
   switch (format) {
     case "int":
       return String(Math.round(value));

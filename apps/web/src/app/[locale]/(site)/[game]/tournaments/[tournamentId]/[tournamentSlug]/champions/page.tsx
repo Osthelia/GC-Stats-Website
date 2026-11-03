@@ -12,13 +12,13 @@ import { buildChampionInsights } from "@gc-stats/lol-stats-engine";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
-import { getTournamentChampionStats } from "@/lib/tournament-page-data";
+import { getTournamentChampionStats, getTournamentPatches } from "@/lib/tournament-page-data";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { TournamentChampionInsights } from "@/components/tournament/tournament-champion-insights";
 import { TournamentChampionsTable } from "@/components/tournament/tournament-champions-table";
-import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
+import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { STAT_COLUMN_SETS } from "@/lib/stats-columns";
-import { LEAGUE_ROLE_LABELS, LEAGUE_STATS_FILTER_PARAMS, leagueStatsFilters, parseStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { LEAGUE_ROLE_LABELS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
 import { LEAGUE_ROLES } from "@gc-stats/lol-stats-engine";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
@@ -47,11 +47,10 @@ export default async function TournamentChampionsPage({
   if (!tournament) notFound();
 
   const basePath = `${tournament.id}/${slugify(tournament.name)}`;
-  // The filter bar keeps the Valorant slot names: its `map` slot is the role. There is no champion filter here, so a
-  // `?champion=` left from the stats page is dropped instead of being carried along by every filter link.
-  const filters = { ...parseStatsFilters(await searchParams, LEAGUE_STATS_FILTER_PARAMS), agent: "" };
+  // There is no champion filter here, so a `?champion=` left from the stats page is dropped.
+  const filters = { ...parseLeagueStatsFilters(await searchParams), champion: "" };
 
-  const [{ rows, iconUrls }, t] = await Promise.all([getTournamentChampionStats(game, id, leagueStatsFilters(filters)), getTranslations("tournamentPage")]);
+  const [{ rows, iconUrls }, patches, t] = await Promise.all([getTournamentChampionStats(game, id, filters), getTournamentPatches(game, id), getTranslations("tournamentPage")]);
   const set = STAT_COLUMN_SETS.lolChampions;
 
   const columnLabels: Record<string, string> = {};
@@ -62,27 +61,14 @@ export default async function TournamentChampionsPage({
       <TournamentHeader game={game} tournament={tournament} basePath={basePath} activeTab="champions" />
 
       <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
-        <StatsFilterBar
+        <LeagueStatsFilterBar
           basePath={`/tournaments/${basePath}/champions`}
           filters={filters}
-          params={LEAGUE_STATS_FILTER_PARAMS}
-          mapOptions={LEAGUE_ROLES.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role }))}
-          labels={{
-            periodLabel: t("statsFilterPeriod"),
-            allTime: t("statsFilterAllTime"),
-            last30: t("statsFilterLast30"),
-            last60: t("statsFilterLast60"),
-            agentLabel: t(set.labels.agentFilter),
-            agentDefault: t(set.labels.agentFilterAll),
-            mapLabel: t(set.labels.mapFilter),
-            mapDefault: t(set.labels.mapFilterAll),
-            startDate: t("statsFilterStartDate"),
-            endDate: t("statsFilterEndDate"),
-            submit: t("statsFilterSubmit"),
-          }}
+          patch={{ label: t("statsFilterPatch"), defaultLabel: t("statsFilterPatchAll"), options: patches.map((p) => ({ value: p, label: p })) }}
+          role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: LEAGUE_ROLES.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role })) }}
         />
 
-        {filters.map && <p className="-mt-3 mb-6 text-xs text-neutral-500">{t("championsRoleBansNote")}</p>}
+        {filters.role && <p className="-mt-3 mb-6 text-xs text-neutral-500">{t("championsRoleBansNote")}</p>}
 
         <div className="flex flex-col gap-6">
           <TournamentChampionInsights insights={buildChampionInsights(rows)} iconUrls={iconUrls} />
@@ -91,6 +77,7 @@ export default async function TournamentChampionsPage({
             rows={rows}
             iconUrls={iconUrls}
             rolesLabel={t("championsRolesColumn")}
+            showRoles={!filters.role}
             columnLabels={columnLabels}
             weaponsGroupLabel={t("statsWeaponsGroup")}
             columnsButtonLabel={t("statsColumnsButton")}

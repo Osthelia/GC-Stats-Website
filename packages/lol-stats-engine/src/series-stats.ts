@@ -41,6 +41,11 @@ export function killParticipation(kills: number, assists: number, teamKills: num
   return teamKills === 0 ? 0 : ((kills + assists) / teamKills) * 100;
 }
 
+/** (Kills + assists) / deaths; without deaths, kills + assists. */
+export function kdaRatio(kills: number, deaths: number, assists: number): number {
+  return deaths > 0 ? (kills + assists) / deaths : kills + assists;
+}
+
 /** A total per minute, or null when the game's length is not known (games entered by hand). */
 export function perMinute(total: number, durationSeconds: number | null): number | null {
   return durationSeconds ? total / (durationSeconds / 60) : null;

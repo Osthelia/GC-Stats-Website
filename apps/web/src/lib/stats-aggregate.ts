@@ -77,3 +77,6 @@ export type StatRow = StatRowOf<ValorantTotals> & {
 };
 
 export type LeagueStatRow = StatRowOf<LeagueTotals> & { averages: LeagueAverages };
+
+/** The champions table of the LoL tournament page */
+export type { ChampionStatRow } from "@gc-stats/lol-stats-engine";

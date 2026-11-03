@@ -11,11 +11,11 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, count, desc, eq, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, gte, inArray, isNotNull, lte, or, sql, type SQLWrapper } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
-import { LEAGUE_ROLES } from "@gc-stats/lol-stats-engine";
+import { LEAGUE_ROLES, buildChampionStatRows, compareVersions, internalPatch, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getDisplayCatalog } from "@/lib/data-dragon-client";
 import { lolIconUrl } from "@/lib/lol-icons";
@@ -521,13 +521,11 @@ export type LeagueStatsPlayerMeta = {
 export function leagueStatsScope(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): SQLWrapper {
   const { matches, stageContainers, stages } = gameTables(game);
   const { games, gamePlayerStats } = leagueTablesOf(game);
-  const { from, to } = resolveDateBounds(filters);
 
   const conditions = [eq(stages.tournamentId, tournamentId), isNotNull(gamePlayerStats.personId)];
   if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
   if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
-  if (from) conditions.push(gte(games.startedAt, from));
-  if (to) conditions.push(lte(games.startedAt, to));
+  if (filters.patch) conditions.push(eq(matches.patch, filters.patch));
 
   return db
     .select({ id: gamePlayerStats.id })
@@ -555,6 +553,19 @@ export async function getLeagueStatsFilterOptions(game: GameSlug, tournamentId: 
     champions: championRows.map((r) => r.value).sort(),
     roles: [...LEAGUE_ROLES],
   };
+}
+
+export async function getTournamentPatches(game: GameSlug, tournamentId: number): Promise<string[]> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games } = leagueTablesOf(game);
+  const rows = await db
+    .selectDistinct({ patch: matches.patch })
+    .from(games)
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(eq(stages.tournamentId, tournamentId), isNotNull(matches.patch)));
+  return rows.map((r) => r.patch!).sort((a, b) => compareVersions(internalPatch(b), internalPatch(a)));
 }
 
 /**
@@ -608,4 +619,65 @@ export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper
     });
   }
   return result;
+}
+
+export type TournamentChampionStats = { rows: ChampionStatRow[]; iconUrls: Record<string, string | null> };
+
+export async function getTournamentChampionStats(game: GameSlug, tournamentId: number, filters: Pick<LeagueStatsFilters, "role" | "patch">): Promise<TournamentChampionStats> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
+
+  // Only games with player stats: picks come from them, so a game entered by hand or a forfeit (completed, but no
+  // player rows) would raise the game count without a pick and lower every presence.
+  const gameConditions = [
+    eq(stages.tournamentId, tournamentId),
+    eq(games.isCompleted, true),
+    exists(db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(eq(gamePlayerStats.gameId, games.id))),
+  ];
+  if (filters.patch) gameConditions.push(eq(matches.patch, filters.patch));
+  const gameIds = db
+    .select({ id: games.id })
+    .from(games)
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(...gameConditions));
+
+  const pickConditions = [inArray(gamePlayerStats.gameId, gameIds)];
+  if (filters.role) pickConditions.push(eq(gamePlayerStats.role, filters.role));
+  const sum = (expr: SQLWrapper) => sql<number>`coalesce(sum(${expr}), 0)::int`;
+
+  const [gameCount, pickRows, banRows, catalog] = await Promise.all([
+    db.select({ games: count() }).from(games).where(inArray(games.id, gameIds)),
+    db
+      .select({
+        championName: gamePlayerStats.championName,
+        picks: sql<number>`count(*)::int`,
+        wins: sum(sql`case when ${games.winnerEntrantId} = ${gamePlayerStats.entrantId} then 1 else 0 end`),
+        kills: sum(gamePlayerStats.kills),
+        deaths: sum(gamePlayerStats.deaths),
+        assists: sum(gamePlayerStats.assists),
+        roles: sql<string[]>`coalesce(array_agg(distinct ${gamePlayerStats.role}) filter (where ${gamePlayerStats.role} is not null), '{}')`,
+      })
+      .from(gamePlayerStats)
+      .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+      .where(and(...pickConditions))
+      .groupBy(gamePlayerStats.championName),
+    db
+      .select({ championName: gameDraft.championName, bans: sql<number>`count(*)::int` })
+      .from(gameDraft)
+      .where(and(inArray(gameDraft.gameId, gameIds), eq(gameDraft.type, "ban")))
+      .groupBy(gameDraft.championName),
+    getDisplayCatalog(null),
+  ]);
+
+  // With a role, only the champions picked in it: a ban has no role, so a champion only banned doesn't belong to one.
+  // Their bans and presence still count every role.
+  const rows = buildChampionStatRows(pickRows, banRows, gameCount[0]?.games ?? 0).filter((row) => !filters.role || row.totals.picks > 0);
+  const iconUrls: Record<string, string | null> = {};
+  for (const row of rows) {
+    const key = catalog.championIconKeys[row.groupKey];
+    iconUrls[row.groupKey] = key === undefined ? null : lolIconUrl("champions", key);
+  }
+  return { rows, iconUrls };
 }
