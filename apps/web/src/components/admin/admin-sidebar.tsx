@@ -29,6 +29,14 @@ import {
 
 const STORAGE_PREFIX = "gcs_admin_nav_";
 
+const ALERT_LABEL_KEYS: Record<string, string> = {
+  "/admin/change-requests": "pendingChangeRequests",
+  "/admin/discord-images": "pendingDiscordImages",
+  "/admin/reports": "pendingReports",
+  "/admin/roster-watch": "pendingRosterWatch",
+  "/admin/moderation": "pendingModeration",
+};
+
 function NavGroup({
   groupKey,
   label,
@@ -106,13 +114,11 @@ function NavItemLabel({ item, label, hasAlert, alertLabel }: { item: NavItem; la
 export function AdminSidebar({
   permissions,
   isSuperAdmin,
-  hasPendingChangeRequests,
-  hasPendingDiscordImages,
+  alerts,
 }: {
   permissions: string[];
   isSuperAdmin: boolean;
-  hasPendingChangeRequests: boolean;
-  hasPendingDiscordImages: boolean;
+  alerts: Record<string, boolean>;
 }) {
   const t = useTranslations("admin.nav");
   const pathname = usePathname();
@@ -171,8 +177,8 @@ export function AdminSidebar({
                     <NavItemLabel
                       item={item}
                       label={t(item.labelKey)}
-                      hasAlert={item.href === "/admin/change-requests" ? hasPendingChangeRequests : item.href === "/admin/discord-images" && hasPendingDiscordImages}
-                      alertLabel={t(item.href === "/admin/discord-images" ? "pendingDiscordImages" : "pendingChangeRequests")}
+                      hasAlert={alerts[item.href] === true}
+                      alertLabel={ALERT_LABEL_KEYS[item.href] ? t(ALERT_LABEL_KEYS[item.href]) : ""}
                     />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
