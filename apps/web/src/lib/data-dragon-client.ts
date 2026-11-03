@@ -14,7 +14,7 @@
  */
 
 import { eq } from "drizzle-orm";
-import { adminDb as db } from "@gc-stats/db/client";
+import { adminDb as db, db as cachedDb } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs } from "@gc-stats/db";
 import { lolIconUrl } from "@/lib/lol-icons";
 import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
@@ -130,14 +130,14 @@ async function fallbackFromDatabase(patch: string): Promise<DataDragonCatalog | 
 }
 
 /** `patch` is the public name a match stores ("26.13"); the catalogs are found by the internal one ("16.13"). */
-async function storedCatalogForPatch(publicName: string | null): Promise<DataDragonCatalog | null> {
+async function storedCatalogForPatch(publicName: string | null, reader: Reader = db): Promise<DataDragonCatalog | null> {
   const patch = publicName === null ? null : internalPatch(publicName);
   const inMemory = patch === null ? null : fromMemory(patch);
   if (inMemory) return inMemory;
-  const stored = await storedVersions();
+  const stored = await storedVersions(reader);
   const version = patch === null ? newestVersion(stored) : pickStoredVersion(stored, patch);
   if (version === null) return null;
-  return loaded.get(version) ?? loadStored(version);
+  return loaded.get(version) ?? loadStored(version, reader);
 }
 
 /** Picks Champion names from given patch. if none is given from the newest Patch */
@@ -176,29 +176,38 @@ export interface DisplayCatalog {
   runeNames: Record<string, string>;
 }
 
-/** The icon url of a champion by name, null for one without an icon. The newest catalog: the icon key of a champion doesn't change with the patch. */
+/** The client a read goes through: `db` bypasses the Hyperdrive query cache (an import must see a version it just stored), the public one doesn't. */
+type Reader = typeof db;
+
+/** Champion name to Data Dragon's key for its image ("Wukong" → "MonkeyKing"). */
+function championIconKeysOf(catalog: DataDragonCatalog): Record<string, string> {
+  return Object.fromEntries([...catalog.championNameById].map(([id, name]) => [name, catalog.championKeyById.get(id) ?? name]));
+}
+
+/** The icon url of a champion by name, null for one without an icon. Reads only the champions of the newest catalog, through the cached client. */
 export async function getChampionIconLookup(): Promise<(championName: string) => string | null> {
-  const { championIconKeys } = await getDisplayCatalog(null);
-  return (championName) => (championIconKeys[championName] === undefined ? null : lolIconUrl("champions", championIconKeys[championName]));
+  const catalog = await storedCatalogForPatch(null, cachedDb);
+  const keys = catalog ? championIconKeysOf(catalog) : {};
+  return (championName) => (keys[championName] === undefined ? null : lolIconUrl("champions", keys[championName]));
 }
 
 export async function getDisplayCatalog(patch: string | null): Promise<DisplayCatalog> {
   const catalog = await storedCatalogForPatch(patch);
   if (!catalog) return { championIconKeys: {}, itemNames: {}, runeNames: {} };
   return {
-    championIconKeys: Object.fromEntries([...catalog.championNameById].map(([id, name]) => [name, catalog.championKeyById.get(id) ?? name])),
+    championIconKeys: championIconKeysOf(catalog),
     itemNames: Object.fromEntries([...catalog.itemNameById].map(([id, name]) => [String(id), name])),
     runeNames: await runeNamesOf(catalog.version),
   };
 }
 
-async function storedVersions(): Promise<string[]> {
-  const rows = await db.select({ version: lolDataDragonCatalogs.version }).from(lolDataDragonCatalogs);
+async function storedVersions(reader: Reader = db): Promise<string[]> {
+  const rows = await reader.select({ version: lolDataDragonCatalogs.version }).from(lolDataDragonCatalogs);
   return rows.map((row) => row.version);
 }
 
-async function loadStored(version: string): Promise<DataDragonCatalog | null> {
-  const [row] = await db
+async function loadStored(version: string, reader: Reader = db): Promise<DataDragonCatalog | null> {
+  const [row] = await reader
     .select({ champions: lolDataDragonCatalogs.champions, items: lolDataDragonCatalogs.items })
     .from(lolDataDragonCatalogs)
     .where(eq(lolDataDragonCatalogs.version, version));
