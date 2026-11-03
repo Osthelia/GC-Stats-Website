@@ -20,7 +20,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { defaultRoundRobinTiebreakers, type GroupContainerConfig, type StandingsPointsConfig } from "@/lib/bracket/config-types";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -177,7 +177,6 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
  *  container goes with every match, map and stat row underneath. */
 export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
   const { stageContainers, matches } = gameTables(game);
-  const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
@@ -195,9 +194,12 @@ export async function deleteContainer(game: GameSlug, id: number, stageId: numbe
   }
 
   await db.transaction(async (tx) => {
-    // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
-    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(eq(matches.containerId, id));
-    await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    if (gameHasMaps(game)) {
+      // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
+      const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
+      const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(eq(matches.containerId, id));
+      await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    }
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
   });
   return { ok: true };
