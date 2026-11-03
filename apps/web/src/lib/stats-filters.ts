@@ -21,8 +21,11 @@ export type ParsedStatsFilters = {
   endDate: string;
 };
 
-/** The roles by the names the game uses for them. */
+/** The roles by the names the game uses for them, in lane order. */
 export const LEAGUE_ROLE_LABELS: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "Bot", UTILITY: "Support" };
+
+/** The role filter's options, in lane order. */
+export const LEAGUE_ROLE_OPTIONS = Object.entries(LEAGUE_ROLE_LABELS).map(([value, label]) => ({ value, label }));
 
 /** The filters of the LoL tournament pages. */
 export type LeagueStatsFilters = { champion: string; role: string; patch: string };

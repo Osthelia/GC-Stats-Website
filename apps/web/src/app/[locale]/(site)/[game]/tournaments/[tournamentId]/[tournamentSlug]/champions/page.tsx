@@ -18,8 +18,7 @@ import { TournamentChampionInsights } from "@/components/tournament/tournament-c
 import { TournamentChampionsTable } from "@/components/tournament/tournament-champions-table";
 import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { STAT_COLUMN_SETS } from "@/lib/stats-columns";
-import { LEAGUE_ROLE_LABELS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
-import { LEAGUE_ROLES } from "@gc-stats/lol-stats-engine";
+import { LEAGUE_ROLE_OPTIONS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 import { gameFromParams } from "@/lib/game";
@@ -65,7 +64,7 @@ export default async function TournamentChampionsPage({
           basePath={`/tournaments/${basePath}/champions`}
           filters={filters}
           patch={{ label: t("statsFilterPatch"), defaultLabel: t("statsFilterPatchAll"), options: patches.map((p) => ({ value: p, label: p })) }}
-          role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: LEAGUE_ROLES.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role })) }}
+          role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: LEAGUE_ROLE_OPTIONS }}
         />
 
         {filters.role && <p className="-mt-3 mb-6 text-xs text-neutral-500">{t("championsRoleBansNote")}</p>}

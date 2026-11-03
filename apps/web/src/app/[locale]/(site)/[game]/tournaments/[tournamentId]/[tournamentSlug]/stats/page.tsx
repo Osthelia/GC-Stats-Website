@@ -16,7 +16,7 @@ import {
   getTournamentStatsFilterOptions,
   getTournamentStatsPlayerMeta,
   leagueStatsScope,
-  getLeagueStatsFilterOptions,
+  getTournamentChampionNames,
   getTournamentPatches,
   getLeagueStatsPlayerMeta,
 } from "@/lib/tournament-page-data";
@@ -28,7 +28,7 @@ import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar
 import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
 import {
-  LEAGUE_ROLE_LABELS,
+  LEAGUE_ROLE_OPTIONS,
     parseLeagueStatsFilters,
   parseStatsFilters,
   type LeagueStatsFilters,
@@ -212,10 +212,10 @@ async function loadValorantStats(game: GameSlug, tournamentId: number, filters: 
 
 async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
   const scope = leagueStatsScope(game, tournamentId, filters);
-  const [rows, playerMeta, filterOptions, patches] = await Promise.all([
+  const [rows, playerMeta, champions, patches] = await Promise.all([
     aggregateLeaguePlayerStatsSql(game, scope, "personId"),
     getLeagueStatsPlayerMeta(game, scope),
-    getLeagueStatsFilterOptions(game, tournamentId),
+    getTournamentChampionNames(game, tournamentId),
     getTournamentPatches(game, tournamentId),
   ]);
   return {
@@ -223,8 +223,8 @@ async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: Le
     rows,
     patches,
     players: await statsPlayers(game, rows, playerMeta),
-    agentOptions: filterOptions.champions.map((c) => ({ value: c, label: c })),
-    mapOptions: filterOptions.roles.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role })),
+    agentOptions: champions.map((c) => ({ value: c, label: c })),
+    mapOptions: LEAGUE_ROLE_OPTIONS,
     weaponColumns: [],
   };
 }

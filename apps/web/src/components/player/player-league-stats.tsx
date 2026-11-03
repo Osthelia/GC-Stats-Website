@@ -9,14 +9,13 @@
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import type { GameSlug } from "@gc-stats/db/game";
-import { LEAGUE_ROLES } from "@gc-stats/lol-stats-engine";
 import { playerNotInGame } from "@/lib/person-games-data";
 import { slugify } from "@/lib/entity-id";
 import { getLeaguePlayerStatsFilterOptions, getPlayerPageInfo, leaguePlayerStatsScope } from "@/lib/player-page-data";
 import { aggregateLeaguePlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { getChampionIconLookup } from "@/lib/data-dragon-client";
 import { STAT_COLUMN_SETS } from "@/lib/stats-columns";
-import { LEAGUE_ROLE_LABELS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { LEAGUE_ROLE_OPTIONS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
 import { StatsTable } from "@/components/stats/stats-table";
 import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { LolIcon } from "@/components/match/lol-icon";
@@ -52,7 +51,7 @@ export async function PlayerLeagueStats({ game, personId, searchParams }: { game
           basePath={`/player/${player.id}/${slugify(player.handle)}/stats`}
           filters={filters}
           patch={{ label: tLeague("statsFilterPatch"), defaultLabel: tLeague("statsFilterPatchAll"), options: options.patches.map((p) => ({ value: p, label: p })) }}
-          role={{ label: tLeague(set.labels.mapFilter), defaultLabel: tLeague(set.labels.mapFilterAll), options: LEAGUE_ROLES.map((role) => ({ value: role, label: LEAGUE_ROLE_LABELS[role] ?? role })) }}
+          role={{ label: tLeague(set.labels.mapFilter), defaultLabel: tLeague(set.labels.mapFilterAll), options: LEAGUE_ROLE_OPTIONS }}
           champion={{
             label: tLeague(set.labels.agentFilter),
             defaultLabel: tLeague(set.labels.agentFilterAll),

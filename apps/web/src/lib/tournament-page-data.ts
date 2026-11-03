@@ -15,7 +15,7 @@ import { and, asc, count, desc, eq, exists, gte, inArray, isNotNull, lte, or, sq
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
-import { LEAGUE_ROLES, buildChampionStatRows, sortPatchesNewestFirst, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
+import { buildChampionStatRows, sortPatchesNewestFirst, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getChampionIconLookup } from "@/lib/data-dragon-client";
 import { normalizeRegion } from "@/lib/tournament-regions";
@@ -516,54 +516,55 @@ export type LeagueStatsPlayerMeta = {
   logoUrlLight: string | null;
 };
 
-/** Rows of the LoL tournament stats page (players only), as a subquery for `aggregateLeaguePlayerStatsSql`. */
-export function leagueStatsScope(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): SQLWrapper {
+function tournamentGameIds(game: GameSlug, tournamentId: number, options: { patch?: string; onlyPlayed?: boolean } = {}) {
   const { matches, stageContainers, stages } = gameTables(game);
   const { games, gamePlayerStats } = leagueTablesOf(game);
 
-  const conditions = [eq(stages.tournamentId, tournamentId), isNotNull(gamePlayerStats.personId)];
-  if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
-  if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
-  if (filters.patch) conditions.push(eq(matches.patch, filters.patch));
+  const conditions = [eq(stages.tournamentId, tournamentId)];
+  if (options.patch) conditions.push(eq(matches.patch, options.patch));
+  if (options.onlyPlayed) {
+    conditions.push(eq(games.isCompleted, true));
+    conditions.push(exists(db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(eq(gamePlayerStats.gameId, games.id))));
+  }
 
   return db
-    .select({ id: gamePlayerStats.id })
-    .from(gamePlayerStats)
-    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+    .select({ id: games.id })
+    .from(games)
     .innerJoin(matches, eq(matches.id, games.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .where(and(...conditions));
 }
 
-/** The stats page filter dropdowns: the champions played in this tournament, and the five roles in lane order. */
-export async function getLeagueStatsFilterOptions(game: GameSlug, tournamentId: number): Promise<{ champions: string[]; roles: string[] }> {
-  const { matches, stageContainers, stages } = gameTables(game);
-  const { games, gamePlayerStats } = leagueTablesOf(game);
-  const championRows = await db
+/** Rows of the LoL tournament stats page (players only), as a subquery for `aggregateLeaguePlayerStatsSql`. */
+export function leagueStatsScope(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): SQLWrapper {
+  const { gamePlayerStats } = leagueTablesOf(game);
+
+  const conditions = [inArray(gamePlayerStats.gameId, tournamentGameIds(game, tournamentId, { patch: filters.patch })), isNotNull(gamePlayerStats.personId)];
+  if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
+  if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
+
+  return db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(and(...conditions));
+}
+
+/** The champions played in the tournament, for the stats page dropdown. */
+export async function getTournamentChampionNames(game: GameSlug, tournamentId: number): Promise<string[]> {
+  const { gamePlayerStats } = leagueTablesOf(game);
+  const rows = await db
     .selectDistinct({ value: gamePlayerStats.championName })
     .from(gamePlayerStats)
-    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
-    .innerJoin(matches, eq(matches.id, games.matchId))
-    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(eq(stages.tournamentId, tournamentId));
-  return {
-    champions: championRows.map((r) => r.value).sort(),
-    roles: [...LEAGUE_ROLES],
-  };
+    .where(inArray(gamePlayerStats.gameId, tournamentGameIds(game, tournamentId)));
+  return rows.map((r) => r.value).sort();
 }
 
 export async function getTournamentPatches(game: GameSlug, tournamentId: number): Promise<string[]> {
-  const { matches, stageContainers, stages } = gameTables(game);
+  const { matches } = gameTables(game);
   const { games } = leagueTablesOf(game);
   const rows = await db
     .selectDistinct({ patch: matches.patch })
     .from(games)
     .innerJoin(matches, eq(matches.id, games.matchId))
-    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(eq(stages.tournamentId, tournamentId), isNotNull(matches.patch)));
+    .where(and(inArray(games.id, tournamentGameIds(game, tournamentId)), isNotNull(matches.patch)));
   return sortPatchesNewestFirst(rows.map((r) => r.patch!));
 }
 
@@ -621,24 +622,8 @@ export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper
 export type TournamentChampionStats = { rows: ChampionStatRow[]; iconUrls: Record<string, string | null> };
 
 export async function getTournamentChampionStats(game: GameSlug, tournamentId: number, filters: Pick<LeagueStatsFilters, "role" | "patch">): Promise<TournamentChampionStats> {
-  const { matches, stageContainers, stages } = gameTables(game);
   const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
-
-  // Only games with player stats: picks come from them, so a game entered by hand or a forfeit (completed, but no
-  // player rows) would raise the game count without a pick and lower every presence.
-  const gameConditions = [
-    eq(stages.tournamentId, tournamentId),
-    eq(games.isCompleted, true),
-    exists(db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(eq(gamePlayerStats.gameId, games.id))),
-  ];
-  if (filters.patch) gameConditions.push(eq(matches.patch, filters.patch));
-  const gameIds = db
-    .select({ id: games.id })
-    .from(games)
-    .innerJoin(matches, eq(matches.id, games.matchId))
-    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(...gameConditions));
+  const gameIds = tournamentGameIds(game, tournamentId, { patch: filters.patch, onlyPlayed: true });
 
   const pickConditions = [inArray(gamePlayerStats.gameId, gameIds)];
   if (filters.role) pickConditions.push(eq(gamePlayerStats.role, filters.role));
