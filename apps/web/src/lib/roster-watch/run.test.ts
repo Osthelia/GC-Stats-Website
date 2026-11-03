@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { collectAccountTweets } from "./collect";
 import { runRosterWatch, type NewSignal, type RosterWatchStore, type WatchedAccount } from "./run";
-import type { ProviderTweet, TweetPage, XTweetProvider } from "./providers/types";
+import type { ProviderTweet, TweetPage, TweetQuery, XTweetProvider } from "./providers/types";
 import type { ClassifierResult } from "./classifier";
 
 const NOW = new Date("2026-06-10T12:00:00Z");
@@ -12,13 +12,15 @@ function tweet(id: number | string, overrides: Partial<ProviderTweet> = {}): Pro
 }
 
 /** Serves tweets newest first in pages of `size`, counting the calls. */
-function fakeProvider(tweets: ProviderTweet[], size: number): XTweetProvider & { calls: number } {
+function fakeProvider(tweets: ProviderTweet[], size: number): XTweetProvider & { calls: number; queries: TweetQuery[] } {
   const sorted = [...tweets].sort((a, b) => (BigInt(b.id) > BigInt(a.id) ? 1 : -1));
   const provider = {
     calls: 0,
+    queries: [] as TweetQuery[],
     resolveUserId: async () => "u1",
-    fetchPage: async (_userId: string, cursor: string | null): Promise<TweetPage> => {
+    fetchPage: async (query: TweetQuery, cursor: string | null): Promise<TweetPage> => {
       provider.calls++;
+      provider.queries.push(query);
       const start = cursor ? Number(cursor) : 0;
       const end = start + size;
       return { tweets: sorted.slice(start, end), nextCursor: end < sorted.length ? String(end) : null };
@@ -55,6 +57,17 @@ describe("collectAccountTweets", () => {
     const result = await collectAccountTweets(provider, { xHandle: "t", xUserId: "u1", lastSeenTweetId: "3" }, NOW);
     expect(result.tweets.map((t) => t.id)).toEqual(["4", "5", "6"]);
     expect(provider.calls).toBe(2);
+  });
+
+  it("asks only for the tweets since the last seen one, or the 7 day window on a first run", async () => {
+    const known = (BigInt(Date.UTC(2026, 5, 10)) - 1_288_834_974_657n) << 22n;
+    const seen = fakeProvider([], 20);
+    await collectAccountTweets(seen, { xHandle: "t", xUserId: "u1", lastSeenTweetId: String(known) }, NOW);
+    expect(seen.queries[0]).toEqual({ handle: "t", since: new Date(Date.UTC(2026, 5, 10)) });
+
+    const first = fakeProvider([], 20);
+    await collectAccountTweets(first, { xHandle: "t", xUserId: "u1", lastSeenTweetId: null }, NOW);
+    expect(first.queries[0]?.since).toEqual(new Date(NOW.getTime() - 7 * 86_400_000));
   });
 
   it("limits the first run to the last 7 days", async () => {

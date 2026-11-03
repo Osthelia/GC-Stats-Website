@@ -167,22 +167,25 @@ export function AdminSidebar({
         {visibleGroups.map((group) => (
           <NavGroup key={group.key} groupKey={group.key} label={t(group.labelKey)}>
             <SidebarMenu className="gap-1.5">
-              {group.items.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    isActive={isActive(item)}
-                    tooltip={t(item.labelKey)}
-                    render={<Link href={item.href} />}
-                  >
-                    <NavItemLabel
-                      item={item}
-                      label={t(item.labelKey)}
-                      hasAlert={alerts[item.href] === true}
-                      alertLabel={ALERT_LABEL_KEYS[item.href] ? t(ALERT_LABEL_KEYS[item.href]) : ""}
-                    />
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {group.items.map((item) => {
+                const alertKey = ALERT_LABEL_KEYS[item.href];
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      isActive={isActive(item)}
+                      tooltip={t(item.labelKey)}
+                      render={<Link href={item.href} />}
+                    >
+                      <NavItemLabel
+                        item={item}
+                        label={t(item.labelKey)}
+                        hasAlert={alerts[item.href] === true}
+                        alertLabel={alertKey ? t(alertKey) : ""}
+                      />
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </NavGroup>
         ))}

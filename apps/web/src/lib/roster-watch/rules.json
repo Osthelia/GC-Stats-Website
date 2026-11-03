@@ -1,10 +1,14 @@
 {
   "neverExclude": {
     "anyKeywords": [
-      "welcome", "roster", "joins", "joining", "new chapter", "farewell", "parting ways",
+      "welcome", "roster", "joins", "joining", "rejoin", "rejoins", "new chapter", "farewell", "parting ways",
       "thank you for", "thanks for everything", "free agent", "bench", "benched",
-      "signing", "signed", "announce", "new member", "new player", "new coach",
-      "bienvenue", "tryout", "tryouts"
+      "signing", "signed", "announce", "announcing", "new member", "new player", "new coach",
+      "leaves", "leaving", "departure", "departs", "goodbye", "step down", "stepping down", "released",
+      "transfer", "substitute", "sub", "coach", "analyst", "manager", "lineup", "line-up", "introducing", "meet",
+      "picked up", "locked in", "returns",
+      "bienvenue", "bienvenido", "bienvenida", "quitte", "départ", "recrue", "nouveau joueur", "se une", "fichaje", "anuncia", "adiós",
+      "tryout", "tryouts"
     ]
   },
   "exclude": [
@@ -15,7 +19,19 @@
     },
     {
       "id": "matchday",
-      "anyKeywords": ["matchday", "match day", "game day", "gameday", "live now", "we're live", "tune in", "map 1", "map 2", "map 3"]
+      "anyKeywords": ["matchday", "match day", "game day", "gameday", "live now", "we're live", "tune in", "map 1", "map 2", "map 3", "game 1", "game 2", "game 3", "starts in", "up next"]
+    },
+    {
+      "id": "stream",
+      "anyKeywords": ["twitch.tv", "going live", "now live", "live on twitch", "watch live", "starting soon"]
+    },
+    {
+      "id": "giveaway",
+      "anyKeywords": ["giveaway", "enter to win", "rt to win", "retweet to win", "chance to win", "concours", "sorteo"]
+    },
+    {
+      "id": "sponsor",
+      "anyKeywords": ["use code", "promo code", "discount"]
     },
     { "id": "result", "regex": "\\b(?:final|won|win|wins|lost|loss|victory|defeat|beat|vs)\\b[^\\n]{0,40}\\b\\d{1,2}\\s*[-–:]\\s*\\d{1,2}\\b|\\b\\d{1,2}\\s*[-–:]\\s*\\d{1,2}\\b[^\\n]{0,40}\\b(?:final|won|win|wins|lost|loss|victory|defeat)\\b" },
     { "id": "gg", "regex": "^\\s*gg\\b" }

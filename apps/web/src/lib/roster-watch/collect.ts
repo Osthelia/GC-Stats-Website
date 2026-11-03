@@ -25,6 +25,13 @@ export type CollectResult = {
   newestSeenId: string | null;
 };
 
+const SNOWFLAKE_EPOCH_MS = 1_288_834_974_657n;
+
+/** Tweet ids are snowflakes, the post time is in the bits above the 22 low ones. */
+export function tweetIdDate(id: string): Date {
+  return new Date(Number((BigInt(id) >> 22n) + SNOWFLAKE_EPOCH_MS));
+}
+
 /** Numeric string comparison, tweet ids exceed Number.MAX_SAFE_INTEGER. */
 export function isNewerTweetId(id: string, sinceId: string): boolean {
   return BigInt(id) > BigInt(sinceId);
@@ -47,6 +54,8 @@ export async function collectAccountTweets(
   }
 
   const windowStart = new Date(now.getTime() - FIRST_RUN_WINDOW_DAYS * 86_400_000);
+  // Asking only for tweets since the last seen one keeps the billed tweets to the new ones (the last seen tweet itself may come back, it stops the walk).
+  const since = account.lastSeenTweetId ? tweetIdDate(account.lastSeenTweetId) : windowStart;
   const collected: ProviderTweet[] = [];
   const skipped: SkippedTweet[] = [];
   let stopInfo: CollectStop | null = null;
@@ -54,7 +63,7 @@ export async function collectAccountTweets(
   let newestSeenId: string | null = null;
 
   for (let page = 0; page < MAX_PAGES_PER_ACCOUNT; page++) {
-    const result = await provider.fetchPage(userId, cursor);
+    const result = await provider.fetchPage({ handle: account.xHandle, since }, cursor);
     apiCalls++;
 
     let reachedKnown = false;

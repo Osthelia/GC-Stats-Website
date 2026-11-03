@@ -9,7 +9,8 @@
  */
 
 import type { XSignalMedia } from "@gc-stats/db";
-import type { ProviderTweet, TweetPage, XTweetProvider } from "./types";
+import { X_HANDLE_RE } from "../constants";
+import type { ProviderTweet, TweetPage, TweetQuery, XTweetProvider } from "./types";
 
 const BASE_URL = "https://api.twitterapi.io";
 const REQUEST_TIMEOUT_MS = 20_000;
@@ -87,15 +88,22 @@ export class TwitterApiIoProvider implements XTweetProvider {
     return id;
   }
 
-  async fetchPage(userId: string, cursor: string | null): Promise<TweetPage> {
-    const params: Record<string, string> = { userId, includeReplies: "false" };
+  /**
+   * Uses the search endpoint instead of the user timeline: it is billed per returned tweet and the date filter
+   * keeps the response to the new tweets, where the timeline always returns (and bills) a full page of 20.
+   */
+  async fetchPage({ handle, since }: TweetQuery, cursor: string | null): Promise<TweetPage> {
+    // The handle goes straight into the search query, so anything but a plain handle could inject operators.
+    if (!X_HANDLE_RE.test(handle)) throw new Error(`Invalid X handle "${handle}"`);
+    const query = `from:${handle} since_time:${Math.floor(since.getTime() / 1000)} -filter:retweets -filter:replies`;
+    const params: Record<string, string> = { query, queryType: "Latest" };
     if (cursor) params.cursor = cursor;
-    const body = (await this.get("/twitter/user/last_tweets", params)) as {
-      data?: { tweets?: RawTweet[] };
+    const body = (await this.get("/twitter/tweet/advanced_search", params)) as {
+      tweets?: RawTweet[];
       has_next_page?: boolean;
       next_cursor?: string;
     };
-    const tweets = (body.data?.tweets ?? []).map(mapTweet).filter((tweet): tweet is ProviderTweet => tweet !== null);
+    const tweets = (body.tweets ?? []).map(mapTweet).filter((tweet): tweet is ProviderTweet => tweet !== null);
     return { tweets, nextCursor: body.has_next_page && body.next_cursor ? body.next_cursor : null };
   }
 }

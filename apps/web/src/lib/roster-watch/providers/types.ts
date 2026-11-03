@@ -22,9 +22,12 @@ export type ProviderTweet = {
 
 export type TweetPage = { tweets: ProviderTweet[]; nextCursor: string | null };
 
+/** Which tweets to read: original tweets of one account posted since a date. */
+export type TweetQuery = { handle: string; since: Date };
+
 export interface XTweetProvider {
   /** Resolves a handle to the provider's stable user id. */
   resolveUserId(handle: string): Promise<string>;
-  /** One page of tweets, newest first. A null cursor starts from the latest tweet. */
-  fetchPage(userId: string, cursor: string | null): Promise<TweetPage>;
+  /** One page of tweets posted since `query.since` (retweets and replies excluded), newest first. A null cursor starts from the latest tweet. */
+  fetchPage(query: TweetQuery, cursor: string | null): Promise<TweetPage>;
 }

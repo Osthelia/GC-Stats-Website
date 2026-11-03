@@ -52,6 +52,24 @@ describe("applyRules", () => {
     expect(text("insane clutch", ["video"])).toEqual({ excluded: true, ruleId: "highlight" });
   });
 
+  it("excludes stream, giveaway and promo code tweets", () => {
+    expect(text("Watch live on twitch.tv/team")).toEqual({ excluded: true, ruleId: "stream" });
+    expect(text("Giveaway time! Enter to win a keyboard")).toEqual({ excluded: true, ruleId: "giveaway" });
+    expect(text("Use code TEAM for 10% off")).toEqual({ excluded: true, ruleId: "sponsor" });
+    expect(text("Game 2 starts in 10 minutes")).toEqual({ excluded: true, ruleId: "matchday" });
+  });
+
+  it("keeps partnership announcements for the LLM", () => {
+    expect(text("Proud to announce a new partnership #ad")).toEqual({ excluded: false });
+    expect(text("Sponsored by Brand, our new partner")).toEqual({ excluded: false });
+  });
+
+  it("protects departures and staff changes from the new exclusions", () => {
+    expect(text("Game 1 starts in 5 min. Introducing our new sub")).toEqual({ excluded: false });
+    expect(text("Giveaway: our analyst is leaving, goodbye")).toEqual({ excluded: false });
+    expect(text("Up next: meet our new coach")).toEqual({ excluded: false });
+  });
+
   it("sends unknown tweets to the LLM", () => {
     expect(text("Something is coming")).toEqual({ excluded: false });
   });
