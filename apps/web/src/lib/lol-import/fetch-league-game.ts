@@ -15,7 +15,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, or, sql } from "drizzle-orm";
+import { and, eq, inArray, ne, or, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonProfiles, lolTeams } from "@gc-stats/db";
@@ -107,6 +107,8 @@ export interface PrepareInput {
   matchId: number;
   game: GameRef;
   mode: LeaguepediaGameMode;
+  /** The stored game being replaced, null when a new game is created. Its stored players say nothing about the sides. */
+  gameId: number | null;
 }
 
 /** One unknown Riot account: link it to an existing person, or create a person for it. */
@@ -170,7 +172,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   const puuids = riotMatch.info.participants.map((p) => p.puuid);
   const linked = await linkedPeopleByPuuid(puuids);
 
-  const [peopleA, peopleB] = await Promise.all([knownPeopleOf(match.entrantAId), knownPeopleOf(match.entrantBId)]);
+  const [peopleA, peopleB] = await Promise.all([knownPeopleOf(match.entrantAId, input.gameId), knownPeopleOf(match.entrantBId, input.gameId)]);
   const entrantNames = new Map(match.entrants.map((e) => [e.id, e.name]));
   const suggestion = suggestSides({ blue: resolved.blue, red: resolved.red }, riotMatch, linked, peopleA, peopleB, match.entrants, {
     a: match.entrantAId,
@@ -416,11 +418,15 @@ async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number;
 /**
  * The people known to play for an entrant: its roster, and the players already stored for it in any game. An entrant
  * belongs to one tournament, so this covers the earlier games of the series and of the tournament, without a roster.
+ * The game being replaced is left out: it may have been saved with the sides swapped, which a re-import is there to fix.
  */
-async function knownPeopleOf(entrantId: number): Promise<Set<number>> {
+async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
   const [roster, played] = await Promise.all([
     getEntrantPersonIds("lol", entrantId),
-    db.selectDistinct({ personId: lolGamePlayerStats.personId }).from(lolGamePlayerStats).where(eq(lolGamePlayerStats.entrantId, entrantId)),
+    db
+      .selectDistinct({ personId: lolGamePlayerStats.personId })
+      .from(lolGamePlayerStats)
+      .where(and(eq(lolGamePlayerStats.entrantId, entrantId), replacedGameId === null ? undefined : ne(lolGamePlayerStats.gameId, replacedGameId))),
   ]);
   for (const row of played) if (row.personId !== null) roster.add(row.personId);
   return roster;
