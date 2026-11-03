@@ -20,7 +20,7 @@ import type { StatRow } from "@/lib/stats-aggregate";
 export type MapPlayerStatsScope = SQLWrapper;
 
 /** Treats a non object JSONB value as empty, jsonb_each would throw on it. */
-function jsonObject(column: PgColumn) {
+export function jsonObject(column: PgColumn) {
   return sql`case when jsonb_typeof(${column}) = 'object' then ${column} else '{}'::jsonb end`;
 }
 
@@ -37,7 +37,7 @@ export const playerRoundsPlayedSql = sql<number>`(
 
 type TotalsRow = StatRow["totals"] & { groupKey: string; mapsPlayed: number; roundsPlayed: number };
 
-const sumFloat = (expr: SQL | PgColumn) => sql<number>`coalesce(sum(${expr}), 0)::float8`;
+export const sumFloat = (expr: SQL | PgColumn) => sql<number>`coalesce(sum(${expr}), 0)::float8`;
 
 export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, groupBy: "agentName" | "personId"): Promise<StatRow[]> {
   const groupKey = groupBy === "agentName" ? sql<string>`coalesce(${mapPlayerStats.agentName}, '?')` : sql<string>`coalesce(${mapPlayerStats.personId}::text, '?')`;

@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { maps, matches, entrants, teams, mapPlayerStats, mapRoundsRaw, mapRoundPlayerLoadoutsRaw } from "@gc-stats/db";
@@ -121,30 +121,28 @@ export type ApiRoundFullResponse = { round_number: number; winning_team: number 
 export async function getMapRoundsResponse(mapId: number): Promise<ApiRoundFullResponse[] | null> {
   if (!(await mapExists(mapId))) return null;
 
-  const roundRows = await db
-    .select({ id: mapRoundsRaw.id, roundNumber: mapRoundsRaw.roundNumber, winningEntrantId: mapRoundsRaw.winningEntrantId, winType: mapRoundsRaw.winType })
-    .from(mapRoundsRaw)
-    .where(eq(mapRoundsRaw.mapId, mapId))
-    .orderBy(asc(mapRoundsRaw.roundNumber));
-
-  const roundIds = roundRows.map((r) => r.id);
-  const loadoutRows =
-    roundIds.length > 0
-      ? await db
-          .select({
-            mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
-            personId: mapRoundPlayerLoadoutsRaw.personId,
-            kills: mapRoundPlayerLoadoutsRaw.kills,
-            assists: mapRoundPlayerLoadoutsRaw.assists,
-            score: mapRoundPlayerLoadoutsRaw.score,
-            economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
-            economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
-            weapon: mapRoundPlayerLoadoutsRaw.weapon,
-            armor: mapRoundPlayerLoadoutsRaw.armor,
-          })
-          .from(mapRoundPlayerLoadoutsRaw)
-          .where(inArray(mapRoundPlayerLoadoutsRaw.mapRoundId, roundIds))
-      : [];
+  const [roundRows, loadoutRows] = await Promise.all([
+    db
+      .select({ id: mapRoundsRaw.id, roundNumber: mapRoundsRaw.roundNumber, winningEntrantId: mapRoundsRaw.winningEntrantId, winType: mapRoundsRaw.winType })
+      .from(mapRoundsRaw)
+      .where(eq(mapRoundsRaw.mapId, mapId))
+      .orderBy(asc(mapRoundsRaw.roundNumber)),
+    db
+      .select({
+        mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
+        personId: mapRoundPlayerLoadoutsRaw.personId,
+        kills: mapRoundPlayerLoadoutsRaw.kills,
+        assists: mapRoundPlayerLoadoutsRaw.assists,
+        score: mapRoundPlayerLoadoutsRaw.score,
+        economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
+        economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
+        weapon: mapRoundPlayerLoadoutsRaw.weapon,
+        armor: mapRoundPlayerLoadoutsRaw.armor,
+      })
+      .from(mapRoundPlayerLoadoutsRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundPlayerLoadoutsRaw.mapRoundId))
+      .where(eq(mapRoundsRaw.mapId, mapId)),
+  ]);
 
   const entrantIds = [...new Set(roundRows.map((r) => r.winningEntrantId).filter((id): id is number => id != null))];
   const teamByEntrant = await resolveEntrantTeamIds(entrantIds);

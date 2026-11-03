@@ -23,6 +23,32 @@ export class ApiV1Error extends Error {
     super(message);
   }
 }
+const RESPONSE_CACHE_TTL_MS = 60_000;
+const RESPONSE_CACHE_MAX_ENTRIES = 500;
+const responseCache = new Map<string, { expiresAt: number; value: Promise<unknown> }>();
+
+/** Per instance GET cache, applied after auth and rate limit. Concurrent identical requests share one run; 404s and errors are never kept. */
+function cachedResult<T>(request: Request, run: () => Promise<T | null>): Promise<T | null> {
+  if (request.method !== "GET") return run();
+  const key = request.url;
+  const hit = responseCache.get(key);
+  if (hit && hit.expiresAt > Date.now()) return hit.value as Promise<T | null>;
+
+  const value = run();
+  responseCache.set(key, { expiresAt: Date.now() + RESPONSE_CACHE_TTL_MS, value });
+  value.then(
+    (result) => {
+      if (result === null) responseCache.delete(key);
+    },
+    () => responseCache.delete(key),
+  );
+  if (responseCache.size > RESPONSE_CACHE_MAX_ENTRIES) {
+    const oldest = responseCache.keys().next().value;
+    if (oldest !== undefined) responseCache.delete(oldest);
+  }
+  return value;
+}
+
 function logRequest(request: Request, endpointTemplate: string, apiKeyId: number | null, startedAt: number, statusCode: number) {
   if (apiKeyId == null) return;
   const durationMs = Date.now() - startedAt;
@@ -66,7 +92,7 @@ export async function withApiV1<T>(request: Request, endpointTemplate: string, h
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429, headers: { "Retry-After": publicConfig ? "1" : "60" } });
   }
   try {
-    const result = await handler();
+    const result = await cachedResult(request, handler);
     if (result === null) {
       logRequest(request, endpointTemplate, key.id, startedAt, 404);
       return NextResponse.json({ error: "Not found" }, { status: 404 });

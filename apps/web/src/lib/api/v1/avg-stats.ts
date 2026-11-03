@@ -13,7 +13,7 @@
 import { and, eq, gte, inArray, lt, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
-import { playerRoundsPlayedSql } from "@/lib/stats-aggregate-sql";
+import { playerRoundsPlayedSql, sumFloat } from "@/lib/stats-aggregate-sql";
 import { exclusiveUpperBound, type StatsFilter } from "./params";
 
 /** Who an aggregate stats query is scoped to — a team (any of its entrants across tournaments) or a single player. */
@@ -184,12 +184,11 @@ async function fetchSideStats(scope: EntityScope, filter: StatsFilter, side: "at
     JOIN stage_containers sc ON sc.id = m.container_id
     JOIN stages st ON st.id = sc.stage_id
     JOIN map_player_stats mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
-    LEFT JOIN (
-      SELECT map_round_id, attacker_person_id,
-        SUM(damage) AS damage, SUM(headshots) AS headshots, SUM(bodyshots) AS bodyshots, SUM(legshots) AS legshots
-      FROM map_round_damages_raw
-      GROUP BY map_round_id, attacker_person_id
-    ) d ON d.map_round_id = ps.map_round_id AND d.attacker_person_id = ps.person_id
+    LEFT JOIN LATERAL (
+      SELECT SUM(dm.damage) AS damage, SUM(dm.headshots) AS headshots, SUM(dm.bodyshots) AS bodyshots, SUM(dm.legshots) AS legshots
+      FROM map_round_damages_raw dm
+      WHERE dm.map_round_id = ps.map_round_id AND dm.attacker_person_id = ps.person_id
+    ) d ON true
     WHERE ${sideEntrantCol} = ps.entrant_id AND ${roundScopeSql(scope)} ${rawFilterSql(filter)}
   `);
 
@@ -203,8 +202,7 @@ async function fetchSideStats(scope: EntityScope, filter: StatsFilter, side: "at
   const totalLegshots = Number(row.total_legshots);
   const totalShots = totalHeadshots + totalBodyshots + totalLegshots;
 
-  const firstKills = await fetchFirstBloodCount(scope, filter, side, "killer_person_id");
-  const firstDeaths = await fetchFirstBloodCount(scope, filter, side, "victim_person_id");
+  const { firstKills, firstDeaths } = await fetchFirstBloodCounts(scope, filter, side);
 
   return {
     side,
@@ -228,50 +226,35 @@ async function fetchSideStats(scope: EntityScope, filter: StatsFilter, side: "at
   };
 }
 
-/** Counts rounds where the round's earliest kill (`time_ms` ascending) was landed by / suffered by this scope, restricted to `side`. */
-async function fetchFirstBloodCount(
-  scope: EntityScope,
-  filter: StatsFilter,
-  side: "atk" | "def",
-  anchorColumn: "killer_person_id" | "victim_person_id",
-): Promise<number> {
+/** Counts rounds where the round's earliest kill (`time_ms` ascending) was landed / suffered by this scope, restricted to `side`. */
+async function fetchFirstBloodCounts(scope: EntityScope, filter: StatsFilter, side: "atk" | "def"): Promise<{ firstKills: number; firstDeaths: number }> {
   const sideEntrantCol = side === "atk" ? sql`r.atk_entrant_id` : sql`r.def_entrant_id`;
-  const anchor = anchorColumn === "killer_person_id" ? sql`fk.killer_person_id` : sql`fk.victim_person_id`;
 
-  const result = await db.execute<{ first_count: number }>(sql`
-    SELECT COUNT(*)::int AS first_count
-    FROM (
-      SELECT k.map_round_id, k.killer_person_id, k.victim_person_id,
-        ROW_NUMBER() OVER (PARTITION BY k.map_round_id ORDER BY k.time_ms ASC) AS rn
-      FROM map_round_kills_raw k
-    ) fk
-    JOIN map_rounds_raw r ON r.id = fk.map_round_id
-    JOIN map_round_player_loadouts_raw ps ON ps.map_round_id = fk.map_round_id AND ps.person_id = ${anchor}
+  // The first kill is looked up per in-scope round only, instead of ranking every kill in the table.
+  const result = await db.execute<{ first_kills: number; first_deaths: number }>(sql`
+    SELECT
+      COUNT(*) FILTER (WHERE fk.killer_person_id = ps.person_id)::int AS first_kills,
+      COUNT(*) FILTER (WHERE fk.victim_person_id = ps.person_id)::int AS first_deaths
+    FROM map_round_player_loadouts_raw ps
+    JOIN map_rounds_raw r ON r.id = ps.map_round_id
     JOIN maps gm ON gm.id = r.map_id
     JOIN matches m ON m.id = gm.match_id
     JOIN stage_containers sc ON sc.id = m.container_id
     JOIN stages st ON st.id = sc.stage_id
     JOIN map_player_stats mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
-    WHERE fk.rn = 1 AND ${sideEntrantCol} = ps.entrant_id AND ${roundScopeSql(scope)} ${rawFilterSql(filter)}
+    JOIN LATERAL (
+      SELECT k.killer_person_id, k.victim_person_id
+      FROM map_round_kills_raw k
+      WHERE k.map_round_id = r.id
+      ORDER BY k.time_ms ASC
+      LIMIT 1
+    ) fk ON (fk.killer_person_id = ps.person_id OR fk.victim_person_id = ps.person_id)
+    WHERE ${sideEntrantCol} = ps.entrant_id AND ${roundScopeSql(scope)} ${rawFilterSql(filter)}
   `);
 
-  return Number(result.rows[0]?.first_count ?? 0);
+  const row = result.rows[0];
+  return { firstKills: Number(row?.first_kills ?? 0), firstDeaths: Number(row?.first_deaths ?? 0) };
 }
-
-type BaseStatsRow = {
-  mapId: number;
-  entrantId: number;
-  roundsPlayed: number;
-  kills: number;
-  deaths: number;
-  assists: number;
-  acs: number;
-  adr: number;
-  kastPercentage: string;
-  headshotPercentage: string;
-  firstKills: number;
-  firstDeaths: number;
-};
 
 /**
  * Average stats always split by side (atk/def) — shared by `/teams/{id}/stats`
@@ -283,67 +266,74 @@ type BaseStatsRow = {
 export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Promise<ApiAvgStats> {
   if (isEmptyTeamScope(scope)) return ZERO_AVG_STATS;
 
-  const rows: BaseStatsRow[] = await db
+  const sidesPromise = Promise.all([fetchSideStats(scope, filter, "atk"), fetchSideStats(scope, filter, "def")]);
+
+  const where = and(mapPlayerStatsScopeCondition(scope), ...baseFilterConditions(filter));
+
+  const totalsQuery = db
     .select({
-      mapId: mapPlayerStats.mapId,
-      entrantId: mapPlayerStats.entrantId,
-      roundsPlayed: playerRoundsPlayedSql,
-      kills: mapPlayerStats.kills,
-      deaths: mapPlayerStats.deaths,
-      assists: mapPlayerStats.assists,
-      acs: mapPlayerStats.acs,
-      adr: mapPlayerStats.adr,
-      kastPercentage: mapPlayerStats.kastPercentage,
-      headshotPercentage: mapPlayerStats.headshotPercentage,
-      firstKills: mapPlayerStats.firstKills,
-      firstDeaths: mapPlayerStats.firstDeaths,
+      mapsPlayed: sql<number>`count(distinct ${mapPlayerStats.mapId})::int`,
+      kills: sumFloat(mapPlayerStats.kills),
+      deaths: sumFloat(mapPlayerStats.deaths),
+      assists: sumFloat(mapPlayerStats.assists),
+      acs: sumFloat(mapPlayerStats.acs),
+      adr: sumFloat(mapPlayerStats.adr),
+      kast: sumFloat(mapPlayerStats.kastPercentage),
+      hs: sumFloat(mapPlayerStats.headshotPercentage),
+      firstKills: sumFloat(mapPlayerStats.firstKills),
+      firstDeaths: sumFloat(mapPlayerStats.firstDeaths),
     })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
     .innerJoin(matches, eq(matches.id, maps.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(mapPlayerStatsScopeCondition(scope), ...baseFilterConditions(filter)));
+    .where(where);
 
-  const [atk, def] = await Promise.all([fetchSideStats(scope, filter, "atk"), fetchSideStats(scope, filter, "def")]);
+  // A team scope has one row per player per map, so each (map, entrant) is counted once.
+  const perMapEntrant = db
+    .selectDistinctOn([mapPlayerStats.mapId, mapPlayerStats.entrantId], { rounds: sql<number>`${playerRoundsPlayedSql}`.as("rounds") })
+    .from(mapPlayerStats)
+    .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
+    .innerJoin(matches, eq(matches.id, maps.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(where)
+    .as("per_map_entrant");
+  const roundsQuery = db.select({ total: sql<number>`coalesce(sum(${perMapEntrant.rounds}), 0)::int` }).from(perMapEntrant);
 
-  if (rows.length === 0) return { ...ZERO_AVG_STATS, by_side: { atk, def } };
+  const [[totals], [roundsRow], [atk, def]] = await Promise.all([totalsQuery, roundsQuery, sidesPromise]);
 
-  const mapsPlayed = new Set(rows.map((r) => r.mapId)).size;
-  // Team scope has one row per player per map, so count each (map, entrant) once.
-  const roundsByMapEntrant = new Map(rows.map((r) => [`${r.mapId}:${r.entrantId}`, Number(r.roundsPlayed)]));
-  const roundsPlayed = [...roundsByMapEntrant.values()].reduce((acc, n) => acc + n, 0);
-  const sum = (f: (r: BaseStatsRow) => number) => rows.reduce((acc, r) => acc + f(r), 0);
-  const avg = (total: number) => (mapsPlayed > 0 ? total / mapsPlayed : 0);
+  const mapsPlayed = Number(totals?.mapsPlayed ?? 0);
+  if (!totals || mapsPlayed === 0) return { ...ZERO_AVG_STATS, by_side: { atk, def } };
 
-  const totalKills = sum((r) => r.kills);
-  const totalDeaths = sum((r) => r.deaths);
-  const avgKills = avg(totalKills);
-  const avgDeaths = avg(totalDeaths);
-  const totalKast = sum((r) => Number(r.kastPercentage));
-  const totalHs = sum((r) => Number(r.headshotPercentage));
+  const roundsPlayed = Number(roundsRow?.total ?? 0);
+  const avg = (total: number) => total / mapsPlayed;
+
+  const avgKills = avg(totals.kills);
+  const avgDeaths = avg(totals.deaths);
 
   return {
     maps_played: mapsPlayed,
     rounds_played: roundsPlayed,
-    total_kills: totalKills,
+    total_kills: totals.kills,
     avg_kills: avgKills,
-    total_deaths: totalDeaths,
+    total_deaths: totals.deaths,
     avg_deaths: avgDeaths,
-    total_assists: sum((r) => r.assists),
-    avg_assists: avg(sum((r) => r.assists)),
-    total_acs: sum((r) => r.acs),
-    avg_acs: avg(sum((r) => r.acs)),
-    total_adr: sum((r) => r.adr),
-    avg_adr: avg(sum((r) => r.adr)),
-    total_kast_percentage: totalKast,
-    avg_kast_percentage: avg(totalKast),
-    total_headshot_percentage: totalHs,
-    avg_headshot_percentage: avg(totalHs),
-    total_first_kills: sum((r) => r.firstKills),
-    avg_first_kills: avg(sum((r) => r.firstKills)),
-    total_first_deaths: sum((r) => r.firstDeaths),
-    avg_first_deaths: avg(sum((r) => r.firstDeaths)),
+    total_assists: totals.assists,
+    avg_assists: avg(totals.assists),
+    total_acs: totals.acs,
+    avg_acs: avg(totals.acs),
+    total_adr: totals.adr,
+    avg_adr: avg(totals.adr),
+    total_kast_percentage: totals.kast,
+    avg_kast_percentage: avg(totals.kast),
+    total_headshot_percentage: totals.hs,
+    avg_headshot_percentage: avg(totals.hs),
+    total_first_kills: totals.firstKills,
+    avg_first_kills: avg(totals.firstKills),
+    total_first_deaths: totals.firstDeaths,
+    avg_first_deaths: avg(totals.firstDeaths),
     kd_ratio: avgDeaths > 0 ? avgKills / avgDeaths : avgKills,
     by_side: { atk, def },
   };

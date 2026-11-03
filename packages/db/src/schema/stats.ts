@@ -59,6 +59,8 @@ export const mapRoundsRaw = pgTable("map_rounds_raw", {
   plantTimeMs: integer("plant_time_ms"),
 }, (t) => [
   index("map_rounds_raw_map_id_idx").on(t.mapId),
+  index("map_rounds_raw_atk_entrant_id_idx").on(t.atkEntrantId),
+  index("map_rounds_raw_def_entrant_id_idx").on(t.defEntrantId),
 ]);
 
 export const mapRoundKillsRaw = pgTable("map_round_kills_raw", {
@@ -72,7 +74,7 @@ export const mapRoundKillsRaw = pgTable("map_round_kills_raw", {
   isSecondaryFire: boolean("is_secondary_fire"),
   assistantPersonIds: bigint("assistant_person_ids", { mode: "number" }).array(),
 }, (t) => [
-  index("map_round_kills_raw_map_round_id_idx").on(t.mapRoundId),
+  index("map_round_kills_raw_map_round_id_time_ms_idx").on(t.mapRoundId, t.timeMs),
 ]);
 
 export const mapRoundDamagesRaw = pgTable("map_round_damages_raw", {
@@ -85,7 +87,7 @@ export const mapRoundDamagesRaw = pgTable("map_round_damages_raw", {
   bodyshots: integer("bodyshots").notNull().default(0),
   legshots: integer("legshots").notNull().default(0),
 }, (t) => [
-  index("map_round_damages_raw_map_round_id_idx").on(t.mapRoundId),
+  index("map_round_damages_raw_map_round_id_attacker_idx").on(t.mapRoundId, t.attackerPersonId),
 ]);
 
 export const mapRoundAliveStatesRaw = pgTable("map_round_alive_states_raw", {
@@ -136,6 +138,8 @@ export const mapRoundPlayerLoadoutsRaw = pgTable("map_round_player_loadouts_raw"
   armor: text("armor"),
 }, (t) => [
   index("map_round_player_loadouts_raw_map_round_id_idx").on(t.mapRoundId),
+  index("map_round_player_loadouts_raw_person_id_idx").on(t.personId),
+  index("map_round_player_loadouts_raw_entrant_id_idx").on(t.entrantId),
 ]);
 
 // --- GCS rating model ----------------------------------------------------
@@ -189,6 +193,8 @@ export const mapPlayerStats = pgTable("map_player_stats", {
   ratingModelId: integer("rating_model_id").references(() => ratingModels.id, { onDelete: "set null" }),
 }, (t) => [
   index("map_player_stats_map_id_idx").on(t.mapId),
+  index("map_player_stats_entrant_id_idx").on(t.entrantId),
+  index("map_player_stats_person_id_idx").on(t.personId),
 ]);
 
 export const mapTeamRoundSummary = pgTable("map_team_round_summary", {

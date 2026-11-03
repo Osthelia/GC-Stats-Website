@@ -238,7 +238,8 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
   const mapIds = mapRows.map((m) => m.id);
   if (mapIds.length === 0) return { ...core, vetos, maps: [] };
 
-  const [playerStatRows, roundRows] = await Promise.all([
+  // Round level tables are joined to their rounds by map, so every query runs in parallel instead of waiting for the round ids.
+  const [playerStatRows, roundRows, loadoutRows, damageRows, killRows] = await Promise.all([
     db
       .select({
         id: mapPlayerStats.id,
@@ -272,9 +273,41 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
       .from(mapRoundsRaw)
       .where(inArray(mapRoundsRaw.mapId, mapIds))
       .orderBy(asc(mapRoundsRaw.roundNumber)),
+    db
+      .select({
+        mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
+        personId: mapRoundPlayerLoadoutsRaw.personId,
+        kills: mapRoundPlayerLoadoutsRaw.kills,
+        assists: mapRoundPlayerLoadoutsRaw.assists,
+        score: mapRoundPlayerLoadoutsRaw.score,
+        economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
+        economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
+        weapon: mapRoundPlayerLoadoutsRaw.weapon,
+        armor: mapRoundPlayerLoadoutsRaw.armor,
+      })
+      .from(mapRoundPlayerLoadoutsRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundPlayerLoadoutsRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds)),
+    db
+      .select({
+        mapRoundId: mapRoundDamagesRaw.mapRoundId,
+        attackerPersonId: mapRoundDamagesRaw.attackerPersonId,
+        damage: sql<number>`sum(${mapRoundDamagesRaw.damage})`,
+        headshots: sql<number>`sum(${mapRoundDamagesRaw.headshots})`,
+        bodyshots: sql<number>`sum(${mapRoundDamagesRaw.bodyshots})`,
+        legshots: sql<number>`sum(${mapRoundDamagesRaw.legshots})`,
+      })
+      .from(mapRoundDamagesRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundDamagesRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds))
+      .groupBy(mapRoundDamagesRaw.mapRoundId, mapRoundDamagesRaw.attackerPersonId),
+    db
+      .select({ mapRoundId: mapRoundKillsRaw.mapRoundId, killerPersonId: mapRoundKillsRaw.killerPersonId, victimPersonId: mapRoundKillsRaw.victimPersonId, timeMs: mapRoundKillsRaw.timeMs })
+      .from(mapRoundKillsRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundKillsRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds))
+      .orderBy(asc(mapRoundKillsRaw.timeMs)),
   ]);
-
-  const roundIds = roundRows.map((r) => r.id);
 
   const entrantIds = [
     ...new Set(
@@ -282,43 +315,6 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
     ),
   ];
   const teamByEntrant = await resolveEntrantTeamIds(entrantIds);
-
-  const [loadoutRows, damageRows, killRows] =
-    roundIds.length > 0
-      ? await Promise.all([
-          db
-            .select({
-              mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
-              personId: mapRoundPlayerLoadoutsRaw.personId,
-              kills: mapRoundPlayerLoadoutsRaw.kills,
-              assists: mapRoundPlayerLoadoutsRaw.assists,
-              score: mapRoundPlayerLoadoutsRaw.score,
-              economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
-              economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
-              weapon: mapRoundPlayerLoadoutsRaw.weapon,
-              armor: mapRoundPlayerLoadoutsRaw.armor,
-            })
-            .from(mapRoundPlayerLoadoutsRaw)
-            .where(inArray(mapRoundPlayerLoadoutsRaw.mapRoundId, roundIds)),
-          db
-            .select({
-              mapRoundId: mapRoundDamagesRaw.mapRoundId,
-              attackerPersonId: mapRoundDamagesRaw.attackerPersonId,
-              damage: sql<number>`sum(${mapRoundDamagesRaw.damage})`,
-              headshots: sql<number>`sum(${mapRoundDamagesRaw.headshots})`,
-              bodyshots: sql<number>`sum(${mapRoundDamagesRaw.bodyshots})`,
-              legshots: sql<number>`sum(${mapRoundDamagesRaw.legshots})`,
-            })
-            .from(mapRoundDamagesRaw)
-            .where(inArray(mapRoundDamagesRaw.mapRoundId, roundIds))
-            .groupBy(mapRoundDamagesRaw.mapRoundId, mapRoundDamagesRaw.attackerPersonId),
-          db
-            .select({ mapRoundId: mapRoundKillsRaw.mapRoundId, killerPersonId: mapRoundKillsRaw.killerPersonId, victimPersonId: mapRoundKillsRaw.victimPersonId, timeMs: mapRoundKillsRaw.timeMs })
-            .from(mapRoundKillsRaw)
-            .where(inArray(mapRoundKillsRaw.mapRoundId, roundIds))
-            .orderBy(asc(mapRoundKillsRaw.timeMs)),
-        ])
-      : [[], [], []];
 
   const damageByRoundPlayer = new Map<string, { damage: number; headshots: number; bodyshots: number; legshots: number }>();
   for (const row of damageRows) {
