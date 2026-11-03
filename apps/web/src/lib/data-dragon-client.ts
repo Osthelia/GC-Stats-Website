@@ -16,10 +16,9 @@
 import { eq } from "drizzle-orm";
 import { adminDb as db, db as cachedDb } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs } from "@gc-stats/db";
-import { lolIconUrl } from "@/lib/lol-icons";
 import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
 import { convertToWebp, objectExists, putObject } from "@gc-stats/storage";
-import { lolIconKey, type LolIconKind } from "./lol-icons";
+import { lolIconKey, lolIconUrl, type LolIconKind } from "./lol-icons";
 
 const DATA_DRAGON_BASE = "https://ddragon.leagueoflegends.com";
 const CDN = `${DATA_DRAGON_BASE}/cdn`;
@@ -145,7 +144,6 @@ export async function getChampionNamesForPatch(patch: string | null): Promise<st
   const catalog = await storedCatalogForPatch(patch);
   return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
 }
-
 
 interface RuneNameFile {
   id: number;
