@@ -29,6 +29,9 @@ export type StatsFilterParams = { agent: string; map: string };
 export const VALORANT_STATS_FILTER_PARAMS: StatsFilterParams = { agent: "agent", map: "map" };
 export const LEAGUE_STATS_FILTER_PARAMS: StatsFilterParams = { agent: "champion", map: "role" };
 
+/** The roles by the names the game uses for them. */
+export const LEAGUE_ROLE_LABELS: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "Bot", UTILITY: "Support" };
+
 export type LeagueStatsFilters = Omit<ParsedStatsFilters, "agent" | "map"> & { champion: string; role: string };
 
 export function leagueStatsFilters({ agent, map, ...dates }: ParsedStatsFilters): LeagueStatsFilters {

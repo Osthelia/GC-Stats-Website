@@ -26,6 +26,7 @@ import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
 import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
 import {
+  LEAGUE_ROLE_LABELS,
   LEAGUE_STATS_FILTER_PARAMS,
   VALORANT_STATS_FILTER_PARAMS,
   leagueStatsFilters,
@@ -199,9 +200,6 @@ async function loadValorantStats(game: GameSlug, tournamentId: number, filters: 
     weaponColumns: buildWeaponColumns(rows),
   };
 }
-
-/** The roles by the names the game uses for them. */
-const LEAGUE_ROLE_LABELS: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "Bot", UTILITY: "Support" };
 
 async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
   const scope = leagueStatsScope(game, tournamentId, filters);
