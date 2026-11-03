@@ -50,8 +50,9 @@ function dragonOf(dragon: string | null): { name: string | null; image: string }
   return { name: known?.name ?? null, image: known?.image ?? GENERIC_DRAGON };
 }
 
-function ObjectiveIcon({ src, size, alt, title }: { src: string; size: number; alt: string; title?: string }) {
-  return <img src={src} alt={alt} title={title} width={size} height={size} className="flex-none" />;
+/** The name is the alt text and the hover tooltip, as on every LoL icon. */
+function ObjectiveIcon({ src, size, name }: { src: string; size: number; name: string }) {
+  return <img src={src} alt={name} title={name} width={size} height={size} className="flex-none" />;
 }
 
 /**
@@ -77,25 +78,26 @@ export function LolObjectiveStrip({
   const dragonsItem = (
     <div
       key="dragons"
-      role="group"
-      aria-label={t("dragons")}
+      role={dragons.length > 0 ? "group" : undefined}
+      aria-label={dragons.length > 0 ? t("dragons") : undefined}
       className={`flex flex-wrap items-center gap-1 ${split ? "w-full" : ""} ${mirrored ? "justify-end" : "justify-start"}`}
       style={{ minWidth: DRAGON_SLOTS * size + (DRAGON_SLOTS - 1) * DRAGON_GAP }}
     >
-      {dragons.length === 0 && <span className="font-mono font-bold">0</span>}
       {(mirrored ? [...dragons].reverse() : dragons).map((dragon, i) => {
         const { name, image } = dragonOf(dragon);
         const label = name ?? t("dragons");
-        return <ObjectiveIcon key={i} src={image} size={size} alt={label} title={label} />;
+        return <ObjectiveIcon key={i} src={image} size={size} name={label} />;
       })}
     </div>
   );
   const countedItems = COUNTED.map((kind) => (
     <div key={kind} className="flex items-center gap-2 font-mono font-bold" title={t(kind)}>
-      <ObjectiveIcon src={IMAGES[kind]} size={size} alt={t(kind)} />
+      <ObjectiveIcon src={IMAGES[kind]} size={size} name={t(kind)} />
       <span className="tabular-nums">{objectives?.[kind] ?? 0}</span>
     </div>
   ));
-  const items = [dragonsItem, ...countedItems];
+  // No dragons: nothing is shown. Side by side the empty slot keeps its width, so the counts stay in line with the
+  // other team's; stacked it would be an empty line, so it is left out.
+  const items = dragons.length === 0 && split ? countedItems : [dragonsItem, ...countedItems];
   return <div className={`flex flex-wrap items-center gap-2 ${split ? "justify-start gap-x-6" : "justify-around"} ${tone}`}>{mirrored ? items.reverse() : items}</div>;
 }
