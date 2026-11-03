@@ -326,13 +326,17 @@ export async function getLeaguePlayerStatsFilterOptions(game: GameSlug, personId
   const { matches } = gameTables(game);
   const { games, gamePlayerStats } = leagueTablesOf(game);
   const [championRows, patchRows] = await Promise.all([
-    db.selectDistinct({ value: gamePlayerStats.championName }).from(gamePlayerStats).where(eq(gamePlayerStats.personId, personId)),
+    db
+      .selectDistinct({ value: gamePlayerStats.championName })
+      .from(gamePlayerStats)
+      .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+      .where(and(eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true))),
     db
       .selectDistinct({ value: matches.patch })
       .from(gamePlayerStats)
       .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
       .innerJoin(matches, eq(matches.id, games.matchId))
-      .where(and(eq(gamePlayerStats.personId, personId), isNotNull(matches.patch))),
+      .where(and(eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true), isNotNull(matches.patch))),
   ]);
 
   return {
@@ -346,7 +350,7 @@ export function leaguePlayerStatsScope(game: GameSlug, personId: number, filters
   const { matches } = gameTables(game);
   const { games, gamePlayerStats } = leagueTablesOf(game);
 
-  const conditions = [eq(gamePlayerStats.personId, personId)];
+  const conditions = [eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true)];
   if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
   if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
   if (filters.patch) conditions.push(eq(matches.patch, filters.patch));

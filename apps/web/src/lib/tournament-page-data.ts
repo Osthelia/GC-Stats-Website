@@ -516,16 +516,16 @@ export type LeagueStatsPlayerMeta = {
   logoUrlLight: string | null;
 };
 
-function tournamentGameIds(game: GameSlug, tournamentId: number, options: { patch?: string; onlyPlayed?: boolean } = {}) {
+function tournamentGameIds(game: GameSlug, tournamentId: number, options: { patch?: string } = {}) {
   const { matches, stageContainers, stages } = gameTables(game);
   const { games, gamePlayerStats } = leagueTablesOf(game);
 
-  const conditions = [eq(stages.tournamentId, tournamentId)];
+  const conditions = [
+    eq(stages.tournamentId, tournamentId),
+    eq(games.isCompleted, true),
+    exists(db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(eq(gamePlayerStats.gameId, games.id))),
+  ];
   if (options.patch) conditions.push(eq(matches.patch, options.patch));
-  if (options.onlyPlayed) {
-    conditions.push(eq(games.isCompleted, true));
-    conditions.push(exists(db.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(eq(gamePlayerStats.gameId, games.id))));
-  }
 
   return db
     .select({ id: games.id })
@@ -623,7 +623,7 @@ export type TournamentChampionStats = { rows: ChampionStatRow[]; iconUrls: Recor
 
 export async function getTournamentChampionStats(game: GameSlug, tournamentId: number, filters: Pick<LeagueStatsFilters, "role" | "patch">): Promise<TournamentChampionStats> {
   const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
-  const gameIds = tournamentGameIds(game, tournamentId, { patch: filters.patch, onlyPlayed: true });
+  const gameIds = tournamentGameIds(game, tournamentId, { patch: filters.patch });
 
   const pickConditions = [inArray(gamePlayerStats.gameId, gameIds)];
   if (filters.role) pickConditions.push(eq(gamePlayerStats.role, filters.role));
