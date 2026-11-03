@@ -87,7 +87,7 @@ export function MatchLeagueGames({ series, a, b, teamAName, teamBName }: Props) 
 
           {active.draft ? (
             <div>
-              <p className="pb-2 pl-3 md:pl-6 text-base font-semibold">{t("draft")}</p>
+              <p className="mb-4 text-base font-semibold">{t("draft")}</p>
               <LeagueDraft draft={active.draft} blueName={teamName(active.draft.blueEntrantId) ?? "–"} redName={teamName(otherEntrantOf(active.draft.blueEntrantId, a.entrantId, b.entrantId)) ?? "–"} />
             </div>
           ) : (
