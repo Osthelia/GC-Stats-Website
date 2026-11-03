@@ -496,7 +496,11 @@ export function StatsTable<K extends StatColumnSetKey>({
     const col = allColumns.find((c) => c.key === sortCol);
     if (!col) return rows;
     const withValue = rows.map((r) => ({ row: r, value: col.value(r, mode) }));
-    withValue.sort((a, b) => (sortAsc ? a.value - b.value : b.value - a.value));
+    // A missing value (NaN, e.g. the K/D/A of a LoL champion that was only banned) sorts last either way.
+    withValue.sort((a, b) => {
+      if (Number.isNaN(a.value) || Number.isNaN(b.value)) return Number(Number.isNaN(a.value)) - Number(Number.isNaN(b.value));
+      return sortAsc ? a.value - b.value : b.value - a.value;
+    });
     return withValue.map((w) => w.row);
   }, [rows, allColumns, sortCol, sortAsc, mode]);
 
