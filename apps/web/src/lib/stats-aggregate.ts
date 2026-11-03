@@ -53,7 +53,6 @@ export type LeagueTotals = {
   minutes: number;
 };
 
-/** The lane diffs against the lane opponent at 10 and 15 minutes: averages over the games that have one (a game without a lane opponent has none). */
 export type LeagueAverages = {
   goldDiff10: number;
   goldDiff15: number;

@@ -105,8 +105,11 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
   });
 }
 
-/** The average over the rows that have a value: a lane diff is null in a game without a lane opponent. */
-const avgFloat = (column: PgColumn) => sql<number>`coalesce(avg(${column}), 0)::float8`;
+/** The average over the rows that have a value: a lane diff is null in a game without a lane opponent, and so is the average of none. */
+const avgFloat = (column: PgColumn) => sql<number | null>`avg(${column})::float8`;
+
+/** No lane opponent in any game: NaN, which the stats table shows as "–" and sorts last. */
+const orNaN = (average: number | null) => average ?? NaN;
 
 /** The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person or per champion. */
 export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWrapper, groupBy: "championName" | "personId"): Promise<LeagueStatRow[]> {
@@ -143,6 +146,13 @@ export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWr
     groupKey,
     mapsPlayed,
     totals,
-    averages: { goldDiff10, goldDiff15, xpDiff10, xpDiff15, csDiff10, csDiff15 },
+    averages: {
+      goldDiff10: orNaN(goldDiff10),
+      goldDiff15: orNaN(goldDiff15),
+      xpDiff10: orNaN(xpDiff10),
+      xpDiff15: orNaN(xpDiff15),
+      csDiff10: orNaN(csDiff10),
+      csDiff15: orNaN(csDiff15),
+    },
   }));
 }

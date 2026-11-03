@@ -192,7 +192,7 @@ export const STAT_COLUMN_SETS = {
 export type StatColumnSetKey = keyof StatRowByGame & keyof typeof STAT_COLUMN_SETS;
 
 export function formatStatValue(value: number, format: StatColumnFormat): string {
-  // No value (a LoL champion that was only banned has no K/D/A): Valorant columns never produce NaN.
+  // No value (a LoL champion that was only banned has no K/D/A, a player without a lane opponent has no lane diff): Valorant columns never produce NaN.
   if (Number.isNaN(value)) return "–";
   switch (format) {
     case "int":
