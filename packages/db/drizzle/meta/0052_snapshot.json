@@ -3091,6 +3091,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{}'::jsonb"
+        },
+        "dragon_types": {
+          "name": "dragon_types",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -3615,6 +3621,82 @@
           "value": "\"lol_leaguepedia_games\".\"winner\" IN (1, 2)"
         }
       },
+      "isRLSEnabled": false
+    },
+    "public.lol_leaguepedia_team_names": {
+      "name": "lol_leaguepedia_team_names",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "lol_leaguepedia_team_names_name_lower_unique": {
+          "name": "lol_leaguepedia_team_names_name_lower_unique",
+          "columns": [
+            {
+              "expression": "lower(\"name\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "lol_leaguepedia_team_names_team_id_lol_teams_id_fk": {
+          "name": "lol_leaguepedia_team_names_team_id_lol_teams_id_fk",
+          "tableFrom": "lol_leaguepedia_team_names",
+          "tableTo": "lol_teams",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "lol_leaguepedia_team_names_team_id_unique": {
+          "name": "lol_leaguepedia_team_names_team_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "team_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
       "isRLSEnabled": false
     },
     "public.lol_leaguepedia_tournaments": {

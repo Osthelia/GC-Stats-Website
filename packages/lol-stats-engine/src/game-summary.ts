@@ -93,21 +93,39 @@ export interface LeagueSummaryContext {
   personIdByPuuid: Map<string, number>;
   /** Champion display name for a championId, e.g. 103 → "Ahri". Must name every champion of the game (see missingChampionIds). */
   championNameById: Map<number, string>;
-  /** The role of each participant, from resolvePlayerRoles. Without it the role is Riot's teamPosition. */
+  /** The role of each participant, from resolvePlayerRoles. Without it the role is the lobby role (assignedRoles). */
   roleByParticipantId?: Map<number, string | null>;
 }
 
 const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
-const LANE_ROLES = new Set(["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]);
+export const LEAGUE_ROLES = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"] as const;
+export type LeagueRole = (typeof LEAGUE_ROLES)[number];
+const LANE_ROLES = new Set<string>(LEAGUE_ROLES);
 
 /** A lane role from Riot's teamPosition. Anything else (empty, "AFK", "Invalid") is null, so it never pairs with a lane opponent. */
 export function roleOf(teamPosition: string): string | null {
   return LANE_ROLES.has(teamPosition) ? teamPosition : null;
 }
 
-/** The role the stats use: the resolved one when the caller gave it (inference, admin override), else Riot's teamPosition. */
-function playerRole(p: RiotParticipantDto, ctx: LeagueSummaryContext): string | null {
-  return ctx.roleByParticipantId?.has(p.participantId) ? ctx.roleByParticipantId.get(p.participantId)! : roleOf(p.teamPosition);
+/**
+ * The role each player was given in the lobby, by participant id. Riot's positionAssignedByMatchmaking when it names
+ * all five roles of a team. Games from before Riot added the field (before season 26) use the lobby
+ * order instead: slots 1–5 of each team are top, jungle, mid, bottom, support.
+ */
+export function assignedRoles(match: RiotMatchDto): Map<number, LeagueRole | null> {
+  const roles = new Map<number, LeagueRole | null>();
+  for (const teamId of [100, 200] as RiotTeamId[]) {
+    const players = match.info.participants.filter((p) => p.teamId === teamId).sort((a, b) => a.participantId - b.participantId);
+    const fromRiot = players.map((p) => p.positionAssignedByMatchmaking ?? "");
+    const riotIsComplete = players.length === 5 && LEAGUE_ROLES.every((role) => fromRiot.includes(role));
+    players.forEach((p, i) => roles.set(p.participantId, riotIsComplete ? (fromRiot[i] as LeagueRole) : players.length === 5 ? LEAGUE_ROLES[i]! : null));
+  }
+  return roles;
+}
+
+/** The role the stats use: the resolved one when the caller gave it (lobby role or admin override), else the lobby role. */
+function playerRole(p: RiotParticipantDto, ctx: LeagueSummaryContext, assigned: Map<number, LeagueRole | null>): string | null {
+  return ctx.roleByParticipantId?.has(p.participantId) ? ctx.roleByParticipantId.get(p.participantId)! : (assigned.get(p.participantId) ?? null);
 }
 
 /** Riot's `teamId`: 100 is blue, 200 is red. Games entered by hand have no side. */
@@ -140,7 +158,8 @@ export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext)
     isForfeit: false,
   };
 
-  const players = info.participants.map((p) => buildPlayerRow(p, ctx));
+  const assigned = assignedRoles(match);
+  const players = info.participants.map((p) => buildPlayerRow(p, ctx, assigned));
   const teams = info.teams.map((team) => buildTeamRow(team, info.participants, ctx));
   const draft = info.teams.flatMap((team) => buildBanRows(team, ctx));
   // Picks come from the participants: Match-V5 gives no pick order.
@@ -149,7 +168,7 @@ export function buildGameSummary(match: RiotMatchDto, ctx: LeagueSummaryContext)
   return { game, players, teams, draft };
 }
 
-function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): LeaguePlayerStatsRow {
+function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext, assigned: Map<number, LeagueRole | null>): LeaguePlayerStatsRow {
   const side = sideForTeamId(p.teamId);
   const primary = p.perks.styles[0];
   const secondary = p.perks.styles[1];
@@ -158,7 +177,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext): Leagu
     entrantId: ctx.entrantIdBySide[side],
     personId: ctx.personIdByPuuid.get(p.puuid) ?? null,
     championName: championNameOf(ctx.championNameById, p.championId),
-    role: playerRole(p, ctx),
+    role: playerRole(p, ctx, assigned),
     kills: p.kills,
     deaths: p.deaths,
     assists: p.assists,

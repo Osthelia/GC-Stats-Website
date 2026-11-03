@@ -11,7 +11,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { LeagueSide } from "./game-summary";
-import { LEAGUE_DRAFT_STEPS, banStepForPickTurn, draftDiffers, draftProblem, draftStep, stepSide, type DraftPick } from "./league-draft";
+import { LEAGUE_DRAFT_STEPS, banStepForPickTurn, blueEntrantOf, draftDiffers, draftProblem, draftStep, stepSide, type DraftPick } from "./league-draft";
 
 const KNOWN = new Set(["Ahri", "Jinx", "Leona", "Ambessa", "Sivir"]);
 
@@ -146,5 +146,29 @@ describe("draftDiffers", () => {
     expect(draftDiffers(imported, [{ side: "red", type: "ban", championName: "Ahri" }, imported[1]!])).toBe(true);
     expect(draftDiffers(imported, [{ side: "blue", type: "pick", championName: "Ahri" }, imported[1]!])).toBe(true);
     expect(draftDiffers(imported, [imported[0]!])).toBe(true);
+  });
+});
+
+describe("blueEntrantOf", () => {
+  const base = { entrantAId: 1, entrantBId: 2, firstPick: "blue" as LeagueSide };
+
+  it("prefers the known blue entrant", () => {
+    expect(blueEntrantOf({ ...base, knownBlueEntrantId: 2, firstPlaced: { entrantId: 1, order: 1 } })).toBe(2);
+  });
+
+  it("reads the blue side from the first placed step when nothing is known", () => {
+    // Step 1 is the first ban, which is the first pick's side: blue with a blue first pick.
+    expect(blueEntrantOf({ ...base, knownBlueEntrantId: null, firstPlaced: { entrantId: 2, order: 1 } })).toBe(2);
+    // Step 2 is the second side's ban, so entrant 1 made it and is red.
+    expect(blueEntrantOf({ ...base, knownBlueEntrantId: null, firstPlaced: { entrantId: 1, order: 2 } })).toBe(2);
+  });
+
+  it("follows a red first pick when reading the placed step", () => {
+    // With a red first pick, step 1 belongs to red, so entrant 1 making it means entrant 2 is blue.
+    expect(blueEntrantOf({ ...base, firstPick: "red", knownBlueEntrantId: null, firstPlaced: { entrantId: 1, order: 1 } })).toBe(2);
+  });
+
+  it("falls back to entrant A without anything to read", () => {
+    expect(blueEntrantOf({ ...base, knownBlueEntrantId: null, firstPlaced: null })).toBe(1);
   });
 });

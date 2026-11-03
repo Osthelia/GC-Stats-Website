@@ -22,6 +22,7 @@ import { leagueTablesOf } from "@gc-stats/db";
 import {
   buildGameSummary,
   buildTimelineRows,
+  computeDragonTypes,
   computeFirstBlood,
   computeFirstTower,
   computeLaneDiffs,
@@ -29,6 +30,7 @@ import {
   draftDiffers,
   firstPickSideOf,
   patchOf,
+  publicPatch,
   sideForTeamId,
   type LanePlayer,
   type LeagueSide,
@@ -55,7 +57,7 @@ export interface StoreGameInput {
   /** The game being edited: its row is replaced in place, so a manual game becomes the Riot game without a second row. */
   replaceGameId?: number | null;
   championNameById: Map<number, string>;
-  /** The role of each participant: inferred from the positions, or the admin's override (resolvePlayerRoles). */
+  /** The role of each participant: the lobby role, or the admin's override (resolvePlayerRoles). */
   roleByParticipantId: Map<number, string | null>;
   /** The admin's role overrides by puuid, kept on the game so a re-import keeps them. */
   roleOverrides: Record<string, string | null>;
@@ -145,6 +147,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     const firstBlood = computeFirstBlood(rows);
     const firstTower = computeFirstTower(rows);
     const objectiveTimings = computeObjectiveTimings(rows);
+    const dragonTypes = computeDragonTypes(rows);
 
     const players = summary.players.map((p) => ({ ...p, ...(p.personId === null ? undefined : laneDiffs.get(p.personId)) }));
     const teams = summary.teams.map((t) => ({
@@ -152,6 +155,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       firstBlood: firstBlood?.side === t.side,
       firstTower: firstTower?.side === t.side,
       objectiveTimings: objectiveTimings[t.side],
+      dragonTypes: dragonTypes[t.side],
     }));
 
     if (players.length) await tx.insert(gamePlayerStats).values(players);
@@ -171,9 +175,9 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       await tx.update(games).set({ draftImportDiffers: differs }).where(eq(games.id, id));
     }
 
-    // set patch if the match has no patch set
+    // set patch if the match has no patch set, by the name fans use (the game version is Riot's internal number)
     const gamePatch = patchOf(match.info.gameVersion);
-    if (gamePatch) await tx.update(matches).set({ patch: gamePatch }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
+    if (gamePatch) await tx.update(matches).set({ patch: publicPatch(gamePatch) }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 

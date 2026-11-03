@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { roleOf, type LeagueSide } from "./game-summary";
 import { buildTimelineRows, type LeagueTimelineContext } from "./timeline-rows";
-import { computeFirstBlood, computeFirstTower, computeLaneDiffs, computeObjectiveTimings, type LanePlayer } from "./timeline-stats";
+import { computeDragonTypes, computeFirstBlood, computeFirstTower, computeLaneDiffs, computeObjectiveTimings, type LanePlayer } from "./timeline-stats";
 import type { RiotMatchDto, RiotTimelineDto } from "./types";
 
 const fixturePath = fileURLToPath(new URL("./__fixtures__/lol-game-example.json", import.meta.url));
@@ -62,5 +62,14 @@ describe("computeObjectiveTimings (real LoL game)", () => {
     const timings = computeObjectiveTimings(rows);
     expect(timings.blue).toMatchObject({ DRAGON: 432505, HORDE: 516484 });
     expect(timings.red).toMatchObject({ HORDE: 557580, DRAGON: 846251, RIFTHERALD: 940884 });
+  });
+});
+
+describe("computeDragonTypes (real LoL game)", () => {
+  it("lists the dragon types each side took, in the order they were taken", () => {
+    expect(computeDragonTypes(rows)).toEqual({
+      blue: ["WATER_DRAGON", "FIRE_DRAGON", "FIRE_DRAGON"],
+      red: ["EARTH_DRAGON", "FIRE_DRAGON", "FIRE_DRAGON", "FIRE_DRAGON"],
+    });
   });
 });

@@ -4,21 +4,23 @@
  * One game in two steps, from a Leaguepedia list entry or a Riot match id. `prepare` loads the game (bucket or
  * its source), checks it, keeps
  * the raw pair in the bucket and returns a preview: teams, winner, players, champions, and the entrant
- * sides suggested from the mapped players or the team names. Nothing else is written. `commit` takes the
+ * sides suggested from the linked players or the team names. Nothing else is written. `commit` takes the
  * admin's choices (which person each unknown Riot account is, and which entrant is blue and red), writes
- * the lol_id links with conflict handling, and stores the game through importGame. No auth here: the
- * actions check the permission and call these.
+ * the lol_id links with conflict handling, stores the game through importGame, and remembers which team each
+ * Leaguepedia team name stands for, for the side suggestions of later imports. No auth here: the actions
+ * check the permission and call these.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne, or, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { lolEntrants, lolGames, lolLeaguepediaGames, lolMatches, lolPeople, lolPersonProfiles } from "@gc-stats/db";
+import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonProfiles, lolTeams } from "@gc-stats/db";
 import {
+  assignedRoles,
   championNameOf,
   inferRoles,
   isTournamentRealmMatchId,
@@ -26,7 +28,6 @@ import {
   missingChampionIds,
   resolvePlayerRoles,
   riotCluster,
-  roleOf,
   sideForTeamId,
   validateImport,
   type LeagueSide,
@@ -38,6 +39,7 @@ import { getLolMatch, getLolTimeline, renewLolMatch, renewLolTimeline } from "@/
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
+import { compareTeamNames } from "@/lib/liquipedia-team-match";
 import { importGame } from "./import-game";
 import { loadLeaguepediaGame, type LeaguepediaGameMode } from "./leaguepedia-game";
 
@@ -74,19 +76,16 @@ export interface PreviewPlayer {
   kills: number;
   deaths: number;
   assists: number;
-  /** The person this account is linked to, null when it is not linked yet. */
   person: { id: number; handle: string } | null;
-  /** The role the stats use: the admin's override, else the inferred one. */
   role: string | null;
-  /** The role inferred from the positions, before any override. */
-  inferredRole: string | null;
-  /** Riot's own teamPosition, shown for reference only (unreliable for esports games). */
-  riotRole: string | null;
+  /** The lobby role (positionAssignedByMatchmaking, or the lobby order for older games), before any override. */
+  assignedRole: string | null;
+  /** The role the map positions of the first minutes suggest, null when they cannot tell. Only a check: the preview shows it when it differs. */
+  positionRole: string | null;
 }
 
 export interface LeaguepediaPreview {
   game: GameRef;
-  /** How the game was loaded: fetch, renew or reprocess. Carried to the save for the activity log. */
   mode: LeaguepediaGameMode;
   riotMatchId: string;
   teams: { blue: string | null; red: string | null };
@@ -108,6 +107,8 @@ export interface PrepareInput {
   matchId: number;
   game: GameRef;
   mode: LeaguepediaGameMode;
+  /** The stored game being replaced, null when a new game is created. Its stored players say nothing about the sides. */
+  gameId: number | null;
 }
 
 /** One unknown Riot account: link it to an existing person, or create a person for it. */
@@ -165,15 +166,15 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   if (missing.length > 0) return { ok: false, error: { kind: "unknownChampions", ids: missing } };
   const riotMatch = validation.match;
   const roleOverrides = await savedRoleOverrides(resolved.riotMatchId);
+  const assigned = assignedRoles(riotMatch);
   const inferred = inferRoles(riotMatch, validation.timeline);
-  const effective = resolvePlayerRoles(riotMatch, validation.timeline, roleOverrides);
+  const effective = resolvePlayerRoles(riotMatch, roleOverrides);
   const puuids = riotMatch.info.participants.map((p) => p.puuid);
   const linked = await linkedPeopleByPuuid(puuids);
 
-  const rosterA = await getEntrantPersonIds("lol", match.entrantAId);
-  const rosterB = await getEntrantPersonIds("lol", match.entrantBId);
+  const [peopleA, peopleB] = await Promise.all([knownPeopleOf(match.entrantAId, input.gameId), knownPeopleOf(match.entrantBId, input.gameId)]);
   const entrantNames = new Map(match.entrants.map((e) => [e.id, e.name]));
-  const suggestion = suggestSides({ blue: resolved.blue, red: resolved.red }, riotMatch, linked, rosterA, rosterB, match.entrants, {
+  const suggestion = suggestSides({ blue: resolved.blue, red: resolved.red }, riotMatch, linked, peopleA, peopleB, match.entrants, {
     a: match.entrantAId,
     b: match.entrantBId,
   });
@@ -198,8 +199,8 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
           riotId: p.riotIdGameName ? `${p.riotIdGameName}${p.riotIdTagline ? `#${p.riotIdTagline}` : ""}` : p.puuid.slice(0, 8),
           side: sideForTeamId(p.teamId),
           role: effective.get(p.participantId) ?? null,
-          inferredRole: inferred?.get(p.participantId) ?? roleOf(p.teamPosition),
-          riotRole: p.teamPosition || null,
+          assignedRole: assigned.get(p.participantId) ?? null,
+          positionRole: inferred?.get(p.participantId) ?? null,
           championName: championNameOf(catalog.championNameById, p.championId),
           kills: p.kills,
           deaths: p.deaths,
@@ -275,6 +276,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
       rawStored: true,
     });
     if (!stored.ok) return { ok: false, error: stored.error };
+    await rememberLeaguepediaTeamNames({ blue: resolved.blue, red: resolved.red }, match.entrants, input.entrantIdBySide);
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
     console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);
@@ -375,14 +377,86 @@ function riotLoadError(error: RiotGameError): LeaguepediaGameError {
   }
 }
 
-async function findMatchEntrants(matchId: number) {
+/** An entrant of the series, with every name a Leaguepedia team name can be matched against. */
+export interface SeriesEntrant {
+  id: number;
+  /** The entrant's display name. */
+  name: string;
+  teamId: number | null;
+  /** The display name, the team's name and its short name. */
+  names: string[];
+  /** The Leaguepedia name an earlier import linked to the entrant's team (lol_leaguepedia_team_names). */
+  leaguepediaName: string | null;
+}
+
+async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
   const [match] = await db.select({ entrantAId: lolMatches.entrantAId, entrantBId: lolMatches.entrantBId }).from(lolMatches).where(eq(lolMatches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
-  const entrants = await db
-    .select({ id: lolEntrants.id, name: lolEntrants.displayName })
+  const rows = await db
+    .select({
+      id: lolEntrants.id,
+      name: lolEntrants.displayName,
+      teamId: lolEntrants.teamId,
+      teamName: lolTeams.name,
+      teamShortName: lolTeams.shortName,
+      leaguepediaName: lolLeaguepediaTeamNames.name,
+    })
     .from(lolEntrants)
+    .leftJoin(lolTeams, eq(lolTeams.id, lolEntrants.teamId))
+    .leftJoin(lolLeaguepediaTeamNames, eq(lolLeaguepediaTeamNames.teamId, lolEntrants.teamId))
     .where(inArray(lolEntrants.id, [match.entrantAId, match.entrantBId]));
+  const entrants = rows.map((row): SeriesEntrant => ({
+    id: row.id,
+    name: row.name,
+    teamId: row.teamId,
+    names: [row.name, row.teamName, row.teamShortName].filter((name): name is string => Boolean(name)),
+    leaguepediaName: row.leaguepediaName,
+  }));
   return { entrantAId: match.entrantAId, entrantBId: match.entrantBId, entrants };
+}
+
+/**
+ * The people known to play for an entrant: its roster, and the players already stored for it in any game. An entrant
+ * belongs to one tournament, so this covers the earlier games of the series and of the tournament, without a roster.
+ * The game being replaced is left out: it may have been saved with the sides swapped, which a re-import is there to fix.
+ */
+async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
+  const [roster, played] = await Promise.all([
+    getEntrantPersonIds("lol", entrantId),
+    db
+      .selectDistinct({ personId: lolGamePlayerStats.personId })
+      .from(lolGamePlayerStats)
+      .where(and(eq(lolGamePlayerStats.entrantId, entrantId), replacedGameId === null ? undefined : ne(lolGamePlayerStats.gameId, replacedGameId))),
+  ]);
+  for (const row of played) if (row.personId !== null) roster.add(row.personId);
+  return roster;
+}
+
+/** Links each side's Leaguepedia team name to the team of the entrant . */
+async function rememberLeaguepediaTeamNames(names: { blue: string | null; red: string | null }, entrants: SeriesEntrant[], sides: Record<LeagueSide, number>): Promise<void> {
+  const links = (["blue", "red"] as const).flatMap((side) => {
+    const name = names[side]?.trim();
+    const entrant = entrants.find((e) => e.id === sides[side]);
+    return name && entrant?.teamId != null ? [{ teamId: entrant.teamId, name, known: entrant.leaguepediaName === name }] : [];
+  });
+  if (links.length === 0 || links.every((link) => link.known)) return;
+  // Both sides on one team, or one name for both teams: nothing can be told apart, so nothing is learned.
+  if (new Set(links.map((l) => l.teamId)).size !== links.length || new Set(links.map((l) => l.name.toLowerCase())).size !== links.length) return;
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(lolLeaguepediaTeamNames)
+        .where(
+          or(
+            inArray(lolLeaguepediaTeamNames.teamId, links.map((l) => l.teamId)),
+            inArray(sql`lower(${lolLeaguepediaTeamNames.name})`, links.map((l) => l.name.toLowerCase()))
+          )
+        );
+      await tx.insert(lolLeaguepediaTeamNames).values(links.map(({ teamId, name }) => ({ teamId, name })));
+    });
+  } catch (err) {
+    console.error("[leaguepedia] could not remember the team names of the sides", err);
+  }
 }
 
 async function linkedPeopleByPuuid(puuids: string[]) {
@@ -391,49 +465,75 @@ async function linkedPeopleByPuuid(puuids: string[]) {
 }
 
 /**
- * Which entrant is blue: the one whose roster holds more of the blue players. Falls back to the team names
- * of the list when the players do not decide it.
+ * Which entrant is blue. First the linked players: each one known to play for an entrant (its roster, or its earlier
+ * games) is a vote, a blue player of A or a red player of B for "A is blue", and the other way round. A player known
+ * to both entrants does not vote. Falls back to the team names of the list when the players do not decide it (a Riot
+ * game has no names).
  */
 export function suggestSides(
   names: { blue: string | null; red: string | null },
   match: RiotMatchDto,
   linked: Map<string, { id: number; handle: string }>,
-  rosterA: Set<number>,
-  rosterB: Set<number>,
-  entrants: { id: number; name: string }[],
+  peopleA: Set<number>,
+  peopleB: Set<number>,
+  entrants: SeriesEntrant[],
   ids: { a: number; b: number }
 ): { sides: Record<LeagueSide, number>; from: "players" | "names" } | null {
-  let blueA = 0;
-  let blueB = 0;
+  let aIsBlue = 0;
+  let bIsBlue = 0;
   for (const p of match.info.participants) {
     const person = linked.get(p.puuid);
-    if (!person || sideForTeamId(p.teamId) !== "blue") continue;
-    if (rosterA.has(person.id)) blueA++;
-    if (rosterB.has(person.id)) blueB++;
+    if (!person) continue;
+    const blue = sideForTeamId(p.teamId) === "blue";
+    const knownToA = peopleA.has(person.id);
+    // Known to neither or to both (a substitute, a transfer): says nothing about the sides.
+    if (knownToA === peopleB.has(person.id)) continue;
+    if (knownToA === blue) aIsBlue++;
+    else bIsBlue++;
   }
-  if (blueA > blueB) return { sides: { blue: ids.a, red: ids.b }, from: "players" };
-  if (blueB > blueA) return { sides: { blue: ids.b, red: ids.a }, from: "players" };
+  if (aIsBlue > bIsBlue) return { sides: { blue: ids.a, red: ids.b }, from: "players" };
+  if (bIsBlue > aIsBlue) return { sides: { blue: ids.b, red: ids.a }, from: "players" };
 
   const byNames = sidesFromNames(names, entrants, ids);
   return byNames ? { sides: byNames, from: "names" } : null;
 }
 
-/** Blue and red by team name, case and surrounding spaces ignored. Null unless both names match one entrant each. */
-export function sidesFromNames(
-  names: { blue: string | null; red: string | null },
-  entrants: { id: number; name: string }[],
-  ids: { a: number; b: number }
-): Record<LeagueSide, number> | null {
-  const idOf = (name: string | null): number | null => {
-    if (!name) return null;
-    const key = name.trim().toLowerCase();
-    const hit = entrants.find((e) => e.name.trim().toLowerCase() === key);
-    return hit && (hit.id === ids.a || hit.id === ids.b) ? hit.id : null;
-  };
-  const blue = idOf(names.blue);
-  const red = idOf(names.red);
-  if (blue === null || red === null || blue === red) return null;
-  return { blue, red };
+/** The sides from the list's blue and red team names. One recognised name is enough: the other side is the other entrant. */
+export function sidesFromNames(names: { blue: string | null; red: string | null }, entrants: SeriesEntrant[], ids: { a: number; b: number }): Record<LeagueSide, number> | null {
+  const candidates = entrants.filter((e) => e.id === ids.a || e.id === ids.b);
+  const blue = entrantForName(names.blue, candidates);
+  const red = entrantForName(names.red, candidates);
+  const other = (id: number) => (id === ids.a ? ids.b : ids.a);
+  if (blue !== null && red !== null) return blue === red ? null : { blue, red };
+  if (blue !== null) return { blue, red: other(blue) };
+  if (red !== null) return { blue: other(red), red };
+  return null;
+}
+
+/**
+ * The entrant a Leaguepedia team name stands for: the one whose team an earlier import linked to that name, else the
+ * one with the closest own name (compareTeamNames from the Liquipedia matching, exact or confident only). Null when
+ * nothing matches, or both entrants match equally well.
+ */
+export function entrantForName(name: string | null, entrants: SeriesEntrant[]): number | null {
+  if (!name?.trim()) return null;
+  const key = name.trim().toLowerCase();
+  const linked = entrants.find((e) => e.leaguepediaName?.trim().toLowerCase() === key);
+  if (linked) return linked.id;
+
+  const scored = entrants.map((e) => ({
+    id: e.id,
+    score: Math.max(
+      0,
+      ...e.names.map((own) => {
+        const result = compareTeamNames(own, name);
+        return result && result.confidence !== "possible" ? result.score : 0;
+      })
+    ),
+  }));
+  const best = Math.max(0, ...scored.map((s) => s.score));
+  const top = scored.filter((s) => s.score === best);
+  return best > 0 && top.length === 1 ? top[0]!.id : null;
 }
 
 type RiotGameError = { kind: "tournamentRealm" } | { kind: "notInBucket" } | { kind: "storageUnavailable" } | { kind: "riotUnavailable"; error: RiotRelayError };

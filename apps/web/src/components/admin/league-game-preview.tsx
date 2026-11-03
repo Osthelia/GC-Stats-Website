@@ -84,8 +84,8 @@ export function LeaguepediaGamePreview({
         const m = mappings[p.puuid]!;
         return m.mode === "existing" ? { puuid: p.puuid, personId: m.person!.id, createHandle: null } : { puuid: p.puuid, personId: null, createHandle: m.handle.trim() };
       });
-      // Only the roles the admin changed from the inferred ones are kept; the others keep following the inference.
-      const roleOverrides = Object.fromEntries(preview.players.filter((p) => (roles[p.puuid] ?? null) !== p.inferredRole).map((p) => [p.puuid, roles[p.puuid] ?? null]));
+      // Only the roles the admin changed from the lobby roles are kept; the others keep following the lobby.
+      const roleOverrides = Object.fromEntries(preview.players.filter((p) => (roles[p.puuid] ?? null) !== p.assignedRole).map((p) => [p.puuid, roles[p.puuid] ?? null]));
       const result = await commitLeaguepediaGameForMatch(tournamentId, matchId, {
         mode: preview.mode,
         gameId,
@@ -210,7 +210,9 @@ function PlayerRow({
               ))}
             </SelectContent>
           </Select>
-          <span className="text-xs text-muted-foreground">{t("leaguepedia.riotRole", { role: player.riotRole ?? "—" })}</span>
+          {player.positionRole !== null && player.positionRole !== player.assignedRole && (
+            <span className="text-xs text-amber-500">{t("leaguepedia.positionRole", { role: player.positionRole })}</span>
+          )}
         </div>
       </div>
 

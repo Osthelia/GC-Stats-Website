@@ -16,7 +16,7 @@ import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
-import { draftStep, stepSide, type LeagueSide } from "@gc-stats/lol-stats-engine";
+import { blueEntrantOf, type LeagueSide } from "@gc-stats/lol-stats-engine";
 
 export type AdminMatchListRow = {
   id: number;
@@ -340,24 +340,17 @@ export async function getLeagueGameDraft(matchId: number, gameId: number, entran
   // An import's blue side is Riot's blue team. A game by hand stores its blue entrant with the draft. A draft saved before
   // that was stored has none: then a filled step tells it, since the first pick gives every step its side.
   const firstPick: LeagueSide = game.draftFirstPick === "red" ? "red" : "blue";
-  let blueEntrantId: number | null = game.draftBlueEntrantId;
+  let knownBlueEntrantId: number | null = game.draftBlueEntrantId;
   if (game.source !== null) {
     const [blueTeam] = await db
       .select({ entrantId: gameTeamStats.entrantId })
       .from(gameTeamStats)
       .where(and(eq(gameTeamStats.gameId, gameId), eq(gameTeamStats.side, "blue")))
       .limit(1);
-    blueEntrantId = blueTeam?.entrantId ?? null;
+    knownBlueEntrantId = blueTeam?.entrantId ?? null;
   }
-  if (blueEntrantId === null) {
-    const placed = rows.find((row) => row.order !== null);
-    const placedStep = placed?.order != null ? draftStep(placed.order) : null;
-    if (placed && placedStep) {
-      const otherEntrantId = placed.entrantId === entrants.entrantAId ? entrants.entrantBId : entrants.entrantAId;
-      blueEntrantId = stepSide(placedStep, firstPick) === "blue" ? placed.entrantId : otherEntrantId;
-    }
-  }
-  blueEntrantId ??= entrants.entrantAId;
+  const firstPlaced = rows.find((row): row is typeof row & { order: number } => row.order !== null) ?? null;
+  const blueEntrantId = blueEntrantOf({ knownBlueEntrantId, firstPick, entrantAId: entrants.entrantAId, entrantBId: entrants.entrantBId, firstPlaced });
   const sideOf = (entrantId: number): LeagueSide => (entrantId === blueEntrantId ? "blue" : "red");
 
   return {

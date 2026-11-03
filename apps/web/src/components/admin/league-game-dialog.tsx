@@ -169,7 +169,7 @@ export function LeagueGameDialog({
   // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
   function handlePrepare(mode: "fetch" | "renew" | "reprocess") {
     startTransition(async () => {
-      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { game: gameRef, mode });
+      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { game: gameRef, mode, gameId: editing?.id ?? null });
       if (!result.ok) {
         toast.error(
           t(`leaguepedia.error.${result.error.kind}`, {

@@ -8,10 +8,11 @@
 
 import { notFound } from "next/navigation";
 import { playerNotInGame } from "@/lib/person-games-data";
-import { gameHasMaps } from "@gc-stats/db/game";
+import { gameHasSeriesGames, gameHasStats } from "@gc-stats/db/game";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPlayerPageInfo, playerStatsScope, getPlayerStatsFilterOptions } from "@/lib/player-page-data";
+import { PlayerLeagueStats } from "@/components/player/player-league-stats";
 import { StatsTable } from "@/components/stats/stats-table";
 import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
 import { aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
@@ -35,12 +36,13 @@ export default async function PlayerStatsPage({
   searchParams: Promise<StatsSearchParams>;
 }) {
   const game = await gameFromParams(params);
-  if (!gameHasMaps(game)) notFound();
+  if (!gameHasStats(game)) notFound();
   const { playerId } = await params;
   const id = parseEntityId(playerId);
   if (id === null) notFound();
 
   const sp = await searchParams;
+  if (gameHasSeriesGames(game)) return <PlayerLeagueStats game={game} personId={id} searchParams={sp} />;
   const filters = parseStatsFilters(sp);
 
   const [player, rows, filterOptions, t] = await Promise.all([
@@ -87,6 +89,7 @@ export default async function PlayerStatsPage({
 
         <StatsTable
           rows={rows}
+          columnSet="valorant"
           storageKey="player"
           columnLabels={columnLabels}
           weaponsGroupLabel={t("statsWeaponsGroup")}

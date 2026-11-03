@@ -68,7 +68,7 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
     entrantIdBySide: input.entrantIdBySide,
     personIdByPuuid: input.personIdByPuuid,
     championNameById: names.catalog.championNameById,
-    roleByParticipantId: resolvePlayerRoles(validation.match, validation.timeline, input.roleOverrides ?? {}),
+    roleByParticipantId: resolvePlayerRoles(validation.match, input.roleOverrides ?? {}),
     roleOverrides: input.roleOverrides ?? {},
     replaceGameId: input.replaceGameId ?? null,
   });

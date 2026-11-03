@@ -83,7 +83,7 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
 
 export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
 
-export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode };
+export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode; gameId: number | null };
 export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
 
 /** The match, when it exists and belongs to the tournament in the URL. */

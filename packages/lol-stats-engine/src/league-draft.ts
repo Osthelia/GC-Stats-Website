@@ -10,6 +10,7 @@
  */
 
 import { otherSide, type LeagueSide } from "./game-summary";
+import { otherEntrantOf } from "./series-stats";
 
 export type DraftType = "ban" | "pick";
 export type DraftPhase = "ban1" | "pick1" | "ban2" | "pick2";
@@ -53,6 +54,27 @@ export function banStepForPickTurn(pickTurn: number): number {
 /** Gives back the side of the current step */
 export function stepSide(step: DraftStep, firstPick: LeagueSide): LeagueSide {
   return step.turn === "first" ? firstPick : otherSide(firstPick);
+}
+
+/**
+ * Returns the blue side teamId of a match. first checks the known, side then firstpick and as a finally resort 
+ * returns entranceA
+ */
+export function blueEntrantOf(input: {
+  knownBlueEntrantId: number | null;
+  firstPick: LeagueSide;
+  entrantAId: number | null;
+  entrantBId: number | null;
+  firstPlaced: { entrantId: number; order: number } | null;
+}): number | null {
+  const { knownBlueEntrantId, firstPick, entrantAId, entrantBId, firstPlaced } = input;
+  if (knownBlueEntrantId !== null) return knownBlueEntrantId;
+  const step = firstPlaced ? draftStep(firstPlaced.order) : null;
+  if (firstPlaced && step) {
+    const otherEntrantId = otherEntrantOf(firstPlaced.entrantId, entrantAId, entrantBId);
+    return stepSide(step, firstPick) === "blue" ? firstPlaced.entrantId : otherEntrantId;
+  }
+  return entrantAId;
 }
 
 export interface DraftEntry {

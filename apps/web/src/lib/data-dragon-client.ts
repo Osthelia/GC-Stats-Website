@@ -14,11 +14,11 @@
  */
 
 import { eq } from "drizzle-orm";
-import { adminDb as db } from "@gc-stats/db/client";
+import { adminDb as db, db as cachedDb } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs } from "@gc-stats/db";
-import { compareVersions, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
+import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
 import { convertToWebp, objectExists, putObject } from "@gc-stats/storage";
-import { lolIconKey, type LolIconKind } from "./lol-icons";
+import { lolIconKey, lolIconUrl, type LolIconKind } from "./lol-icons";
 
 const DATA_DRAGON_BASE = "https://ddragon.leagueoflegends.com";
 const CDN = `${DATA_DRAGON_BASE}/cdn`;
@@ -128,21 +128,84 @@ async function fallbackFromDatabase(patch: string): Promise<DataDragonCatalog | 
   return version === null ? null : loadStored(version);
 }
 
-/** Picks Champion names from given patch. if none is given from the newest Patch */
-export async function getChampionNamesForPatch(patch: string | null): Promise<string[]> {
-  const stored = await storedVersions();
+/** `patch` is the public name a match stores ("26.13"); the catalogs are found by the internal one ("16.13"). */
+async function storedCatalogForPatch(publicName: string | null, reader: Reader): Promise<DataDragonCatalog | null> {
+  const patch = publicName === null ? null : internalPatch(publicName);
+  const inMemory = patch === null ? null : fromMemory(patch);
+  if (inMemory) return inMemory;
+  const stored = await storedVersions(reader);
   const version = patch === null ? newestVersion(stored) : pickStoredVersion(stored, patch);
-  const catalog = version === null ? null : await loadStored(version);
+  if (version === null) return null;
+  return loaded.get(version) ?? loadStored(version, reader);
+}
+
+/** Picks Champion names from given patch. if none is given from the newest Patch. Admin only: it must see a version an import just stored. */
+export async function getChampionNamesForPatch(patch: string | null): Promise<string[]> {
+  const catalog = await storedCatalogForPatch(patch, db);
   return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
 }
 
-async function storedVersions(): Promise<string[]> {
-  const rows = await db.select({ version: lolDataDragonCatalogs.version }).from(lolDataDragonCatalogs);
+interface RuneNameFile {
+  id: number;
+  name: string;
+  slots: { runes: { id: number; name: string }[] }[];
+}
+
+/** Rune ids (trees and perks) to their names. A Data Dragon version never changes, so each one is read once. */
+const runeNamesByVersion = new Map<string, Record<string, string>>();
+
+async function runeNamesOf(version: string): Promise<Record<string, string>> {
+  const known = runeNamesByVersion.get(version);
+  if (known) return known;
+  const styles = await getJson<RuneNameFile[]>(`${CDN}/${version}/data/${LOCALE}/runesReforged.json`).catch(iconSourceFailure);
+  if (!styles) return {};
+  const names: Record<string, string> = {};
+  for (const style of styles) {
+    names[String(style.id)] = style.name;
+    for (const slot of style.slots) for (const rune of slot.runes) names[String(rune.id)] = rune.name;
+  }
+  runeNamesByVersion.set(version, names);
+  return names;
+}
+
+export interface DisplayCatalog {
+  championIconKeys: Record<string, string>;
+  itemNames: Record<string, string>;
+  runeNames: Record<string, string>;
+}
+
+/** The client a read goes through: `db` bypasses the Hyperdrive query cache (an import must see a version it just stored), the public one doesn't. */
+type Reader = typeof db;
+
+/** Champion name to Data Dragon's key for its image ("Wukong" → "MonkeyKing"). */
+function championIconKeysOf(catalog: DataDragonCatalog): Record<string, string> {
+  return Object.fromEntries([...catalog.championNameById].map(([id, name]) => [name, catalog.championKeyById.get(id) ?? name]));
+}
+
+/** The icon url of a champion by name, null for one without an icon. Reads only the champions of the newest catalog, through the cached client. */
+export async function getChampionIconLookup(): Promise<(championName: string) => string | null> {
+  const catalog = await storedCatalogForPatch(null, cachedDb);
+  const keys = catalog ? championIconKeysOf(catalog) : {};
+  return (championName) => (keys[championName] === undefined ? null : lolIconUrl("champions", keys[championName]));
+}
+
+export async function getDisplayCatalog(patch: string | null): Promise<DisplayCatalog> {
+  const catalog = await storedCatalogForPatch(patch, cachedDb);
+  if (!catalog) return { championIconKeys: {}, itemNames: {}, runeNames: {} };
+  return {
+    championIconKeys: championIconKeysOf(catalog),
+    itemNames: Object.fromEntries([...catalog.itemNameById].map(([id, name]) => [String(id), name])),
+    runeNames: await runeNamesOf(catalog.version),
+  };
+}
+
+async function storedVersions(reader: Reader = db): Promise<string[]> {
+  const rows = await reader.select({ version: lolDataDragonCatalogs.version }).from(lolDataDragonCatalogs);
   return rows.map((row) => row.version);
 }
 
-async function loadStored(version: string): Promise<DataDragonCatalog | null> {
-  const [row] = await db
+async function loadStored(version: string, reader: Reader = db): Promise<DataDragonCatalog | null> {
+  const [row] = await reader
     .select({ champions: lolDataDragonCatalogs.champions, items: lolDataDragonCatalogs.items })
     .from(lolDataDragonCatalogs)
     .where(eq(lolDataDragonCatalogs.version, version));
@@ -220,7 +283,8 @@ interface RuneStyleFile {
 function iconsOf(match: RiotMatchDto, catalog: DataDragonCatalog): Icon[] {
   const participants = match.info.participants;
   const version = catalog.version;
-  const champions = uniqueValues(participants.map((p) => catalog.championKeyById.get(p.championId)).filter((key): key is string => key !== undefined));
+  const championIds = [...participants.map((p) => p.championId), ...match.info.teams.flatMap((team) => team.bans.map((ban) => ban.championId).filter((id) => id > 0))];
+  const champions = uniqueValues(championIds.map((id) => catalog.championKeyById.get(id)).filter((key): key is string => key !== undefined));
   const items = uniqueValues(participants.flatMap((p) => [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6]).filter((id) => id > 0));
   const spells = uniqueValues(participants.flatMap((p) => [p.spell1Id, p.spell2Id]).filter((id) => id > 0));
   const runes = uniqueValues(participants.flatMap((p) => p.perks.styles.flatMap((style) => [style.style, ...style.selections.map((s) => s.perk)])));

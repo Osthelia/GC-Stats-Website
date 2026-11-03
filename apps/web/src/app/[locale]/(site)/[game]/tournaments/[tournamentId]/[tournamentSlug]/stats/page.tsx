@@ -7,21 +7,39 @@
  */
 
 import { notFound } from "next/navigation";
-import { gameHasMaps } from "@gc-stats/db/game";
+import { gameHasSeriesGames, gameHasStats } from "@gc-stats/db/game";
 import { getTranslations } from "next-intl/server";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
-import { tournamentStatsScope, getTournamentStatsFilterOptions, getTournamentStatsPlayerMeta } from "@/lib/tournament-page-data";
+import {
+  tournamentStatsScope,
+  getTournamentStatsFilterOptions,
+  getTournamentStatsPlayerMeta,
+  leagueStatsScope,
+  getTournamentChampionNames,
+  getTournamentPatches,
+  getLeagueStatsPlayerMeta,
+} from "@/lib/tournament-page-data";
 import { getPeopleHandles } from "@/lib/team-page-data";
 import { TournamentHeader } from "@/components/tournament/tournament-header";
 import { TournamentStatsTable, type TournamentStatsPlayer } from "@/components/tournament/tournament-stats-table";
 import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
-import { aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
-import { STAT_COLUMNS, buildWeaponColumns, weaponNameFromColumnKey } from "@/lib/stats-columns";
-import { parseStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
+import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
+import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
+import {
+  LEAGUE_ROLE_OPTIONS,
+    parseLeagueStatsFilters,
+  parseStatsFilters,
+  type LeagueStatsFilters,
+  type ParsedStatsFilters,
+  type StatsSearchParams,
+} from "@/lib/stats-filters";
+import type { LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 import { gameFromParams } from "@/lib/game";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; tournamentId: string; game: string }> }): Promise<Metadata> {
   const game = await gameFromParams(params);
@@ -37,7 +55,7 @@ export default async function TournamentStatsPage({
   searchParams: Promise<StatsSearchParams>;
 }) {
   const game = await gameFromParams(params);
-  if (!gameHasMaps(game)) notFound();
+  if (!gameHasStats(game)) notFound();
   const { tournamentId } = await params;
   const id = parseEntityId(tournamentId);
   if (id === null) notFound();
@@ -48,22 +66,112 @@ export default async function TournamentStatsPage({
   const basePath = `${tournament.id}/${slugify(tournament.name)}`;
 
   const sp = await searchParams;
+  const league = gameHasSeriesGames(game);
+  // The two games filter by different things, so each is parsed its own way.
   const filters = parseStatsFilters(sp);
+  const leagueFilters = parseLeagueStatsFilters(sp);
 
-  const scope = tournamentStatsScope(game, id, filters);
-  const [rows, playerMeta, filterOptions, t] = await Promise.all([
-    aggregateMapPlayerStatsSql(scope, "personId"),
-    getTournamentStatsPlayerMeta(game, scope),
-    getTournamentStatsFilterOptions(game, id),
-    getTranslations("tournamentPage"),
-  ]);
-  const people = await getPeopleHandles(game, rows.map((r) => Number(r.groupKey)));
+  const [stats, t] = await Promise.all([league ? loadLeagueStats(game, id, leagueFilters) : loadValorantStats(game, id, filters), getTranslations("tournamentPage")]);
+  const { players, agentOptions, mapOptions, weaponColumns } = stats;
+  const set = STAT_COLUMN_SETS[stats.columnSet];
 
-  const weaponColumns = buildWeaponColumns(rows);
   const columnLabels: Record<string, string> = {};
-  for (const c of STAT_COLUMNS) columnLabels[c.key] = t(`statsColumns.${c.i18nKey}`);
+  for (const c of set.columns) columnLabels[c.key] = t(`statsColumns.${c.i18nKey}`);
   for (const c of weaponColumns) columnLabels[c.key] = weaponNameFromColumnKey(c.key);
 
+  // Everything but the rows and their column set, which go in together below so their types stay linked.
+  const tableProps = {
+    storageKey: "tournament",
+    columnLabels,
+    weaponsGroupLabel: t("statsWeaponsGroup"),
+    columnsButtonLabel: t("statsColumnsButton"),
+    modeAvgLabel: t("statsModeAvg"),
+    modeTotalLabel: t("statsModeTotal"),
+    noDataLabel: t("statsNoData"),
+    identityColumnLabel: t("statsIdentityColumn"),
+    players,
+    agentLabel: t(set.labels.agentColumn),
+    nationalityLabel: t("statsNationalityColumn"),
+    teamLabel: t("statsTeamColumn"),
+    filterLabels: {
+      button: t("statsColumnFilterButton"),
+      title: t("statsColumnFilterTitle"),
+      columnLabel: t("statsColumnFilterColumnLabel"),
+      valueLabel: t("statsColumnFilterValueLabel"),
+      valuePlaceholder: t("statsColumnFilterValuePlaceholder"),
+      addAnother: t("statsColumnFilterAddAnother"),
+      apply: t("statsColumnFilterApply"),
+      clear: t("statsColumnFilterClear"),
+    },
+    paginationLabels: { previous: t("previous"), next: t("next"), pageOf: t.raw("pageOf") },
+  };
+
+  return (
+    <div>
+      <TournamentHeader game={game} tournament={tournament} basePath={basePath} activeTab="stats" />
+
+      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
+        {stats.columnSet === "lol" ? (
+          <LeagueStatsFilterBar
+            basePath={`/tournaments/${basePath}/stats`}
+            filters={leagueFilters}
+            patch={{ label: t("statsFilterPatch"), defaultLabel: t("statsFilterPatchAll"), options: stats.patches.map((p) => ({ value: p, label: p })) }}
+            role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: mapOptions }}
+            champion={{ label: t(set.labels.agentFilter), defaultLabel: t(set.labels.agentFilterAll), options: agentOptions, search: { placeholder: t("statsFilterChampionSearch"), noResult: t("statsFilterChampionNoResult") } }}
+          />
+        ) : (
+          <StatsFilterBar
+            basePath={`/tournaments/${basePath}/stats`}
+            filters={filters}
+            agentOptions={agentOptions}
+            mapOptions={mapOptions}
+            labels={{
+              periodLabel: t("statsFilterPeriod"),
+              allTime: t("statsFilterAllTime"),
+              last30: t("statsFilterLast30"),
+              last60: t("statsFilterLast60"),
+              agentLabel: t(set.labels.agentFilter),
+              agentDefault: t(set.labels.agentFilterAll),
+              mapLabel: t(set.labels.mapFilter),
+              mapDefault: t(set.labels.mapFilterAll),
+              startDate: t("statsFilterStartDate"),
+              endDate: t("statsFilterEndDate"),
+              submit: t("statsFilterSubmit"),
+            }}
+          />
+        )}
+
+        {stats.columnSet === "lol" ? (
+          <TournamentStatsTable {...tableProps} columnSet="lol" rows={stats.rows} />
+        ) : (
+          <TournamentStatsTable {...tableProps} columnSet="valorant" rows={stats.rows} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** What both games share; the rows come with the key of their column set, so the two can't be mixed up. */
+type TournamentStats = {
+  players: Record<string, TournamentStatsPlayer>;
+  agentOptions: { value: string; label: string }[];
+  mapOptions: { value: string; label: string }[];
+  /** The per weapon columns, which exist for Valorant only. */
+  weaponColumns: StatColumn[];
+} & ({ columnSet: "valorant"; rows: StatRow[] } | { columnSet: "lol"; rows: LeagueStatRow[]; patches: string[] });
+
+/** The player cells' data of either game: the picks (agents or champions) and the team come from that game's meta. */
+type StatsPlayerMeta = {
+  agents?: string[];
+  champions?: TournamentStatsPlayer["champions"];
+  teamId: number | null;
+  teamName: string | null;
+  logoUrl: string | null;
+  logoUrlLight: string | null;
+};
+
+async function statsPlayers(game: GameSlug, rows: { groupKey: string }[], playerMeta: Map<number, StatsPlayerMeta>): Promise<Record<string, TournamentStatsPlayer>> {
+  const people = await getPeopleHandles(game, rows.map((r) => Number(r.groupKey)));
   const players: Record<string, TournamentStatsPlayer> = {};
   for (const row of rows) {
     const personId = Number(row.groupKey);
@@ -75,65 +183,48 @@ export default async function TournamentStatsPage({
       countryCode: person?.countryCode ?? null,
       secondaryCountryCode: person?.secondaryCountryCode ?? null,
       agents: meta?.agents ?? [],
+      champions: meta?.champions ?? [],
       teamId: meta?.teamId ?? null,
       teamName: meta?.teamName ?? null,
       logoUrl: meta?.logoUrl ?? null,
       logoUrlLight: meta?.logoUrlLight ?? null,
     };
   }
+  return players;
+}
 
-  return (
-    <div>
-      <TournamentHeader game={game} tournament={tournament} basePath={basePath} activeTab="stats" />
+async function loadValorantStats(game: GameSlug, tournamentId: number, filters: ParsedStatsFilters): Promise<TournamentStats> {
+  const scope = tournamentStatsScope(game, tournamentId, filters);
+  const [rows, playerMeta, filterOptions] = await Promise.all([
+    aggregateMapPlayerStatsSql(scope, "personId"),
+    getTournamentStatsPlayerMeta(game, scope),
+    getTournamentStatsFilterOptions(game, tournamentId),
+  ]);
+  return {
+    columnSet: "valorant",
+    rows,
+    players: await statsPlayers(game, rows, playerMeta),
+    agentOptions: filterOptions.agents.map((a) => ({ value: a, label: a })),
+    mapOptions: filterOptions.maps.map((m) => ({ value: m, label: m })),
+    weaponColumns: buildWeaponColumns(rows),
+  };
+}
 
-      <div className="mx-auto max-w-[1400px] px-6 py-7 pb-[70px]">
-        <StatsFilterBar
-          basePath={`/tournaments/${basePath}/stats`}
-          filters={filters}
-          agentOptions={filterOptions.agents.map((a) => ({ value: a, label: a }))}
-          mapOptions={filterOptions.maps.map((m) => ({ value: m, label: m }))}
-          labels={{
-            periodLabel: t("statsFilterPeriod"),
-            allTime: t("statsFilterAllTime"),
-            last30: t("statsFilterLast30"),
-            last60: t("statsFilterLast60"),
-            agentLabel: t("statsFilterAgent"),
-            agentDefault: t("statsFilterAgentAll"),
-            mapLabel: t("statsFilterMap"),
-            mapDefault: t("statsFilterMapAll"),
-            startDate: t("statsFilterStartDate"),
-            endDate: t("statsFilterEndDate"),
-            submit: t("statsFilterSubmit"),
-          }}
-        />
-
-        <TournamentStatsTable
-          rows={rows}
-          storageKey="tournament"
-          columnLabels={columnLabels}
-          weaponsGroupLabel={t("statsWeaponsGroup")}
-          columnsButtonLabel={t("statsColumnsButton")}
-          modeAvgLabel={t("statsModeAvg")}
-          modeTotalLabel={t("statsModeTotal")}
-          noDataLabel={t("statsNoData")}
-          identityColumnLabel={t("statsIdentityColumn")}
-          players={players}
-          agentLabel={t("statsAgentColumn")}
-          nationalityLabel={t("statsNationalityColumn")}
-          teamLabel={t("statsTeamColumn")}
-          filterLabels={{
-            button: t("statsColumnFilterButton"),
-            title: t("statsColumnFilterTitle"),
-            columnLabel: t("statsColumnFilterColumnLabel"),
-            valueLabel: t("statsColumnFilterValueLabel"),
-            valuePlaceholder: t("statsColumnFilterValuePlaceholder"),
-            addAnother: t("statsColumnFilterAddAnother"),
-            apply: t("statsColumnFilterApply"),
-            clear: t("statsColumnFilterClear"),
-          }}
-          paginationLabels={{ previous: t("previous"), next: t("next"), pageOf: t.raw("pageOf") }}
-        />
-      </div>
-    </div>
-  );
+async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
+  const scope = leagueStatsScope(game, tournamentId, filters);
+  const [rows, playerMeta, champions, patches] = await Promise.all([
+    aggregateLeaguePlayerStatsSql(game, scope, "personId"),
+    getLeagueStatsPlayerMeta(game, scope),
+    getTournamentChampionNames(game, tournamentId),
+    getTournamentPatches(game, tournamentId),
+  ]);
+  return {
+    columnSet: "lol",
+    rows,
+    patches,
+    players: await statsPlayers(game, rows, playerMeta),
+    agentOptions: champions.map((c) => ({ value: c, label: c })),
+    mapOptions: LEAGUE_ROLE_OPTIONS,
+    weaponColumns: [],
+  };
 }

@@ -33,6 +33,8 @@ import { withSection } from "@/lib/page-metadata";
 import { MatchHeader } from "@/components/match/match-header";
 import { MatchVetos } from "@/components/match/match-vetos";
 import { MatchMaps } from "@/components/match/match-maps";
+import { MatchLeagueGames } from "@/components/match/match-league-games";
+import { getMatchLeagueGames } from "@/lib/match-league-games";
 import { MatchEncounters } from "@/components/match/match-encounters";
 import { MatchH2hGraph } from "@/components/match/match-h2h-graph";
 import { MatchMedia } from "@/components/match/match-media";
@@ -120,6 +122,11 @@ async function MatchStatsSection({ matchId, match, teamAName, teamBName, game }:
   );
 }
 
+async function MatchLeagueGamesSection({ matchId, match, teamAName, teamBName }: { matchId: number; match: MatchHeaderData; teamAName: string; teamBName: string }) {
+  const series = await getMatchLeagueGames(matchId, match.patch, { entrantAId: match.a.entrantId, entrantBId: match.b.entrantId });
+  return <MatchLeagueGames series={series} a={match.a} b={match.b} teamAName={teamAName} teamBName={teamBName} />;
+}
+
 async function MatchLeaguepediaSource({ matchId }: { matchId: number }) {
   return <LeaguepediaSourceFooter games={await getLeaguepediaSourceGames(matchId)} />;
 }
@@ -190,6 +197,14 @@ export default async function Page({ params, searchParams }: { params: Promise<{
         <div className="mt-12">
           <Suspense fallback={<MapsSectionSkeleton />}>
             <MatchStatsSection game={game} matchId={matchId} match={match} teamAName={teamAName} teamBName={teamBName} />
+          </Suspense>
+        </div>
+      )}
+
+      {gameHasSeriesGames(game) && (
+        <div className="mt-12">
+          <Suspense fallback={<MapsSectionSkeleton />}>
+            <MatchLeagueGamesSection matchId={matchId} match={match} teamAName={teamAName} teamBName={teamBName} />
           </Suspense>
         </div>
       )}

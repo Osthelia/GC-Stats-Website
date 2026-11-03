@@ -1,9 +1,11 @@
 /**
  * GC-Stats — infer-roles module
  *
- * Works out each player's role from where they stand in the first minutes of the timeline. Riot's own
- * teamPosition is unreliable for esports games (it is AFK for one player per team, and often on the wrong
- * player), so the stats use this instead, and the admin can override it per player.
+ * Each player's role: the lobby role (assignedRoles in game-summary), unless the admin overrides it. The role
+ * worked out here from where the players stand in the first minutes of the timeline is only a check, shown in the
+ * import preview when it differs. It is not used as the role, because in tournament games it is often wrong: junglers
+ * pass through mid early and get swapped with the mid laner, and early lane swaps (top and bottom trading lanes) are
+ * read as the role.
  *
  * Each team gets one player per role. Every player is compared with a point on the map for each role, and
  * the cheapest assignment of the five roles wins (120 permutations). The two bottom-lane players share a
@@ -15,10 +17,7 @@
  */
 
 import type { RiotMatchDto, RiotParticipantFrameDto, RiotTimelineDto, RiotTeamId } from "./types";
-import { roleOf, sideForTeamId, type LeagueSide } from "./game-summary";
-
-export const LEAGUE_ROLES = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"] as const;
-export type LeagueRole = (typeof LEAGUE_ROLES)[number];
+import { assignedRoles, LEAGUE_ROLES, sideForTeamId, type LeagueRole, type LeagueSide } from "./game-summary";
 
 type Point = { x: number; y: number };
 
@@ -42,8 +41,8 @@ const BLUE_BASE: Point = { x: 0, y: 0 };
 const RED_BASE: Point = { x: 15000, y: 15000 };
 
 /**
- * Role per participant id, or null when the timeline is missing or a player has no usable position in
- * the first five minutes (the caller then keeps Riot's teamPosition).
+ * Role per participant id from the positions in the first five minutes, or null when the timeline is missing or a
+ * player has no usable position. A check on the lobby roles, not the role itself (see the top of this file).
  */
 export function inferRoles(match: RiotMatchDto, timeline: RiotTimelineDto | null): Map<number, LeagueRole> | null {
   if (!timeline) return null;
@@ -74,14 +73,14 @@ export function inferRoles(match: RiotMatchDto, timeline: RiotTimelineDto | null
 
 /**
  * The role of every participant, by participant id. An override (keyed by puuid) wins, null included, so the
- * admin can clear a role. Otherwise the inferred role, or Riot's teamPosition when inference is not possible.
+ * admin can clear a role. Otherwise the lobby role (assignedRoles).
  */
-export function resolvePlayerRoles(match: RiotMatchDto, timeline: RiotTimelineDto | null, overrides: Record<string, string | null> = {}): Map<number, string | null> {
-  const inferred = inferRoles(match, timeline);
+export function resolvePlayerRoles(match: RiotMatchDto, overrides: Record<string, string | null> = {}): Map<number, string | null> {
+  const assigned = assignedRoles(match);
   const roles = new Map<number, string | null>();
   for (const p of match.info.participants) {
     const override = overrides[p.puuid];
-    roles.set(p.participantId, override !== undefined ? override : (inferred?.get(p.participantId) ?? roleOf(p.teamPosition)));
+    roles.set(p.participantId, override !== undefined ? override : (assigned.get(p.participantId) ?? null));
   }
   return roles;
 }

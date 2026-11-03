@@ -17,7 +17,7 @@ import type { LeagueFrameRow, LeagueTimelineRows } from "./timeline-rows";
 export interface LanePlayer {
   personId: number;
   side: LeagueSide;
-  role: string | null; // Riot teamPosition, null when unknown
+  role: string | null; // the player's role (resolvePlayerRoles), null when unknown
 }
 
 export interface LaneDiffs {
@@ -101,5 +101,15 @@ export function computeObjectiveTimings(rows: LeagueTimelineRows): ObjectiveTimi
     timings[e.side][kind] ??= e.timeMs;
   }
   return timings;
+}
+
+/** For each side, the dragon types it took in the order it took them, e.g. ["WATER_DRAGON", "FIRE_DRAGON"]. */
+export function computeDragonTypes(rows: LeagueTimelineRows): Record<LeagueSide, string[]> {
+  const types: Record<LeagueSide, string[]> = { blue: [], red: [] };
+  for (const e of rows.events) {
+    if (e.type !== "ELITE_MONSTER_KILL" || e.side === null || e.subtype === null || !e.subtype.startsWith("DRAGON:")) continue;
+    types[e.side].push(e.subtype.slice("DRAGON:".length));
+  }
+  return types;
 }
 

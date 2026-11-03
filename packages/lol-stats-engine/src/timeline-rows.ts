@@ -171,10 +171,14 @@ function buildEventRow(event: RiotTimelineEventDto, seq: number, ctx: LeagueTime
   };
 }
 
-/** The team named by the event, or else the actor's team. */
+/**
+ * The team named by the event, or else the actor's team. A team id that is not a side (300: a monster that died to
+ * neutral damage, such as a Rift Herald or Void Grubs nobody took; 0: a dragon soul notice) gives no side.
+ */
 function eventSide(event: RiotTimelineEventDto, actorId: number | null, ctx: LeagueTimelineContext): LeagueSide | null {
   const teamId = event.teamId ?? event.killerTeamId;
-  if (teamId !== undefined) return sideForTeamId(teamId);
+  if (teamId === 100 || teamId === 200) return sideForTeamId(teamId);
+  if (teamId !== undefined) return null;
   return actorId === null ? null : (ctx.sideByParticipantId.get(actorId) ?? null);
 }
 
