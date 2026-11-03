@@ -18,13 +18,13 @@ import { useState } from "react";
 type Props = {
   kind: "champion" | "item" | "rune" | "tree";
   url: string | null;
-  /** The champion, item or rune name: the alt text and the tooltip. Decorative icons pass none. */
-  name?: string;
+  /** The champion, item or rune name: for alt text and the hover tooltip */
+  name: string;
   /** Pixels, or a CSS length such as a variable when the size changes with the breakpoint. */
   size: number | string;
 };
 
-export function LolIcon({ kind, url, name = "", size }: Props) {
+export function LolIcon({ kind, url, name, size }: Props) {
   const [failed, setFailed] = useState(false);
   const style = { width: size, height: size };
   const px = typeof size === "number" ? size : undefined;
@@ -51,7 +51,7 @@ export function LolIcon({ kind, url, name = "", size }: Props) {
   return (
     <img
       src={url}
-      alt={name}
+      alt={`${name} ${kind} image`}
       title={name}
       loading="lazy"
       width={px}
