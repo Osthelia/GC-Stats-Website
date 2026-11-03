@@ -17,6 +17,30 @@ export function patchOf(gameVersion: string): string | null {
   return /^(\d+\.\d+)(?:\.|$)/.exec(gameVersion)?.[1] ?? null;
 }
 
+/**
+ * Riot's internal patch numbers run ten behind the names fans use: internal 16.13 is patch 26.13. From 2025 on
+ * the public major is the internal one plus 10; the first three patches of 2025 were named "25.S1.1" to "25.S1.3"
+ * (internal 15.1 to 15.3). Patches before 2025 are named the same in both. The page and the stored match patch use
+ * the public name, Data Dragon and the game versions the internal one.
+ */
+export function publicPatch(internalPatch: string): string {
+  const match = /^(\d+)\.(\d+)$/.exec(internalPatch);
+  if (!match) return internalPatch;
+  const major = Number(match[1]);
+  if (major < 15) return internalPatch;
+  if (major === 15 && Number(match[2]) <= 3) return `25.S1.${match[2]}`;
+  return `${major + 10}.${match[2]}`;
+}
+
+/** The internal patch of a public one, for the Data Dragon lookups: "26.13" → "16.13", "25.S1.2" → "15.2". A patch that isn't recognised is returned as it is. */
+export function internalPatch(publicName: string): string {
+  const season = /^25\.S1\.(\d+)$/.exec(publicName);
+  if (season) return `15.${season[1]}`;
+  const match = /^(\d+)\.(\d+)$/.exec(publicName);
+  if (!match || Number(match[1]) < 25) return publicName;
+  return `${Number(match[1]) - 10}.${match[2]}`;
+}
+
 /** Compares dotted versions number by number, so "15.18.10" is newer than "15.18.9". */
 export function compareVersions(a: string, b: string): number {
   const left = a.split(".").map(Number);

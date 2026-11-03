@@ -30,6 +30,7 @@ import {
   draftDiffers,
   firstPickSideOf,
   patchOf,
+  publicPatch,
   sideForTeamId,
   type LanePlayer,
   type LeagueSide,
@@ -174,9 +175,9 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
       await tx.update(games).set({ draftImportDiffers: differs }).where(eq(games.id, id));
     }
 
-    // set patch if the match has no patch set
+    // set patch if the match has no patch set, by the name fans use (the game version is Riot's internal number)
     const gamePatch = patchOf(match.info.gameVersion);
-    if (gamePatch) await tx.update(matches).set({ patch: gamePatch }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
+    if (gamePatch) await tx.update(matches).set({ patch: publicPatch(gamePatch) }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 

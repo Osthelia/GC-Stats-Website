@@ -10,7 +10,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
+import type { ChampionStatRow, LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
 import {
   STAT_COLUMN_SETS,
   formatStatValue,
@@ -360,7 +360,7 @@ function StatsFilterModal({
 }
 
 /** The rows of either game, inside the table: the columns of `columnSet` are the ones that fit them. */
-type AnyStatRow = StatRow | LeagueStatRow;
+type AnyStatRow = StatRow | LeagueStatRow | ChampionStatRow;
 
 export type StatsTableProps<K extends StatColumnSetKey> = {
   rows: StatRowByGame[K][];

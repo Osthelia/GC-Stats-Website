@@ -16,7 +16,7 @@
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs } from "@gc-stats/db";
-import { compareVersions, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
+import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
 import { convertToWebp, objectExists, putObject } from "@gc-stats/storage";
 import { lolIconKey, type LolIconKind } from "./lol-icons";
 
@@ -128,7 +128,9 @@ async function fallbackFromDatabase(patch: string): Promise<DataDragonCatalog | 
   return version === null ? null : loadStored(version);
 }
 
-async function storedCatalogForPatch(patch: string | null): Promise<DataDragonCatalog | null> {
+/** `patch` is the public name a match stores ("26.13"); the catalogs are found by the internal one ("16.13"). */
+async function storedCatalogForPatch(publicName: string | null): Promise<DataDragonCatalog | null> {
+  const patch = publicName === null ? null : internalPatch(publicName);
   const inMemory = patch === null ? null : fromMemory(patch);
   if (inMemory) return inMemory;
   const stored = await storedVersions();

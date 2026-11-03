@@ -12,7 +12,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { championNameOf, compareVersions, missingChampionIds, patchOf, pickDataDragonVersion, pickStoredVersion } from "./champion-catalog";
+import { championNameOf, compareVersions, internalPatch, missingChampionIds, patchOf, publicPatch, pickDataDragonVersion, pickStoredVersion } from "./champion-catalog";
 import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto } from "./types";
 
@@ -29,6 +29,46 @@ describe("patchOf", () => {
     expect(patchOf("15")).toBeNull();
     expect(patchOf("")).toBeNull();
     expect(patchOf("latest")).toBeNull();
+  });
+});
+
+describe("publicPatch", () => {
+  it("adds 10 to the major from 2025 on", () => {
+    expect(publicPatch("16.13")).toBe("26.13");
+    expect(publicPatch("15.18")).toBe("25.18");
+    expect(publicPatch("15.4")).toBe("25.4");
+  });
+
+  it("names the first three patches of 2025 by their season", () => {
+    expect(publicPatch("15.1")).toBe("25.S1.1");
+    expect(publicPatch("15.3")).toBe("25.S1.3");
+  });
+
+  it("keeps the patches before 2025 and anything it doesn't read", () => {
+    expect(publicPatch("14.24")).toBe("14.24");
+    expect(publicPatch("latest")).toBe("latest");
+  });
+});
+
+describe("internalPatch", () => {
+  it("takes the 10 off a public patch", () => {
+    expect(internalPatch("26.13")).toBe("16.13");
+    expect(internalPatch("25.4")).toBe("15.4");
+  });
+
+  it("reads the season names of early 2025", () => {
+    expect(internalPatch("25.S1.1")).toBe("15.1");
+    expect(internalPatch("25.S1.3")).toBe("15.3");
+  });
+
+  it("keeps the patches before 2025 and anything it doesn't read", () => {
+    expect(internalPatch("14.24")).toBe("14.24");
+    expect(internalPatch("9.03")).toBe("9.03");
+    expect(internalPatch("")).toBe("");
+  });
+
+  it("is the inverse of publicPatch", () => {
+    for (const patch of ["14.24", "15.1", "15.3", "15.4", "15.18", "16.1", "16.13"]) expect(internalPatch(publicPatch(patch))).toBe(patch);
   });
 });
 
