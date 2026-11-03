@@ -372,6 +372,13 @@
       "when": 1792668725157,
       "tag": "0052_powerful_wolfpack",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1793726061848,
+      "tag": "0053_data_dragon_icon_sync",
+      "breakpoints": true
     }
   ]
 }
