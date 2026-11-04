@@ -31,7 +31,8 @@ export function discordUserUrl(discordUserId: string): string {
 
 /** Normalizes a Discord value (user ID or invite) to what gets stored, null when it is neither. */
 export function normalizeDiscordValue(value: string): string | null {
-  const trimmed = value.trim();
+  // Socials come from JSON, so a numeric Discord ID can be stored as a number.
+  const trimmed = String(value).trim();
   if (isDiscordUserId(trimmed)) return trimmed;
   const invite = DISCORD_INVITE_RE.exec(trimmed);
   return invite ? `https://discord.gg/${invite[1]}` : null;

@@ -14,6 +14,7 @@
 import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, integer, timestamp, uuid, unique, type AnyPgColumn, index } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 import { organizations } from "./people";
+import { jsonbValue } from "./custom-types";
 
 // Portage direct de la V1 (pas de rework de domaine) - voir DATABASES.MD Â§6.
 // Les relations polymorphes Laravel restent en discriminant type+id sans FK
@@ -225,8 +226,8 @@ export const changeRequestItems = pgTable("change_request_items", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   changeRequestId: bigint("change_request_id", { mode: "number" }).notNull().references(() => changeRequests.id, { onDelete: "cascade" }),
   field: text("field").notNull(),
-  oldValue: jsonb("old_value"),
-  newValue: jsonb("new_value"),
+  oldValue: jsonbValue("old_value"),
+  newValue: jsonbValue("new_value"),
   status: text("status").notNull().default("pending"),
   resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
   resolvedAt: timestamp("resolved_at", { withTimezone: true }),

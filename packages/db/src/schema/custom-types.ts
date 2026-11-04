@@ -25,3 +25,17 @@ export const tstzrange = customType<{ data: string }>({
     return "tstzrange";
   },
 });
+
+// The pg driver already parses jsonb. Drizzle's built-in jsonb parses string
+// values a second time, turning "580863516555083787" into a rounded number.
+export const jsonbValue = customType<{ data: unknown; driverData: unknown }>({
+  dataType() {
+    return "jsonb";
+  },
+  toDriver(value) {
+    return JSON.stringify(value);
+  },
+  fromDriver(value) {
+    return value;
+  },
+});
