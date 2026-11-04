@@ -29,6 +29,7 @@ import {
 } from "@gc-stats/db";
 import { toApiTeamFromJoined, type ApiTeam } from "../entities";
 import { resolveEntrantTeamIds } from "../entrant-teams";
+import { roundRating } from "../rating";
 
 const entrantAAlias = alias(entrants, "match_full_entrant_a");
 const entrantBAlias = alias(entrants, "match_full_entrant_b");
@@ -185,6 +186,8 @@ export type ApiMapPlayerStat = {
   first_deaths: number;
   kast_percentage: number;
   headshot_percentage: number;
+  rating: number | null;
+  rating_rounds: number | null;
 };
 
 export type ApiRoundKillEvent = { kill_player_id: number | null; victim_player_id: number; time_ms: number };
@@ -256,6 +259,8 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
         firstDeaths: mapPlayerStats.firstDeaths,
         kastPercentage: mapPlayerStats.kastPercentage,
         headshotPercentage: mapPlayerStats.headshotPercentage,
+        rating: mapPlayerStats.rating,
+        ratingRounds: mapPlayerStats.ratingRounds,
       })
       .from(mapPlayerStats)
       .where(inArray(mapPlayerStats.mapId, mapIds)),
@@ -388,6 +393,8 @@ export async function getMatchStatsResponse(matchId: number): Promise<ApiMatchSt
       first_deaths: row.firstDeaths,
       kast_percentage: Number(row.kastPercentage),
       headshot_percentage: Number(row.headshotPercentage),
+      rating: roundRating(row.rating),
+      rating_rounds: row.rating != null ? row.ratingRounds : null,
     });
     playerStatsByMap.set(row.mapId, list);
   }

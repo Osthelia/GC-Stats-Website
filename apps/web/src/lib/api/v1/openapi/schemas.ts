@@ -122,6 +122,8 @@ export const ApiAgentStatsEntrySchema = z
     total_first_deaths: z.number(),
     avg_first_deaths: z.number(),
     kd_ratio: z.number(),
+    avg_rating: z.number().nullable().openapi({ description: "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating." }),
+    rating_rounds: z.number().int().nullable().openapi({ description: "Rounds the rating is computed over, null when no rating is available." }),
   })
   .openapi("AgentStatsEntry");
 
@@ -233,6 +235,8 @@ export const ApiAvgStatsSchema = z
     total_first_deaths: z.number(),
     avg_first_deaths: z.number(),
     kd_ratio: z.number(),
+    avg_rating: z.number().nullable().openapi({ description: "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating." }),
+    rating_rounds: z.number().int().nullable().openapi({ description: "Rounds the rating is computed over, null when no rating is available." }),
     by_side: z.object({ atk: ApiSideStatsSchema, def: ApiSideStatsSchema }),
   })
   .openapi("AvgStats");
@@ -439,6 +443,8 @@ export const ApiMapPlayerStatSchema = z
     first_deaths: z.number().int(),
     kast_percentage: z.number(),
     headshot_percentage: z.number(),
+    rating: z.number().nullable().openapi({ description: "GCS rating for this map. Null when it could not be computed." }),
+    rating_rounds: z.number().int().nullable().openapi({ description: "Rounds the rating is computed over, null when no rating is available." }),
   })
   .openapi("MapPlayerStat");
 
@@ -481,8 +487,8 @@ export const ApiRoundStatsFullSchema = z
   .openapi("RoundStatsFull");
 
 export const ApiMapStatsFullSchema = ApiGameMapSchema.extend({
-  player_stats: z.array(ApiMapPlayerStatSchema),
-  rounds: z.array(ApiRoundStatsFullSchema),
+  player_stats: z.array(ApiMapPlayerStatSchema).openapi({ description: "Every player's stats on this map, with rating." }),
+  rounds: z.array(ApiRoundStatsFullSchema).openapi({ description: "Round by round detail: outcome, plant, per player stats and kill events." }),
 }).openapi("MapStatsFull");
 
 export const ApiMatchStatsResponseSchema = z
@@ -499,7 +505,7 @@ export const ApiMatchStatsResponseSchema = z
     team_a: ApiTeamWithScoreSchema.nullable(),
     team_b: ApiTeamWithScoreSchema.nullable(),
     vetos: z.array(ApiMatchVetoSchema),
-    maps: z.array(ApiMapStatsFullSchema),
+    maps: z.array(ApiMapStatsFullSchema).openapi({ description: "Played maps, each with its own player_stats and rounds." }),
   })
   .openapi("MatchStatsResponse");
 
@@ -532,7 +538,112 @@ export const ApiPickemVotesSchema = z
   })
   .openapi("PickemVotes");
 
-export const ApiMatchV3ResponseSchema = ApiMatchStatsResponseSchema.extend({
+export const ApiPhaseSchema = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    type: z
+      .enum(["bracket", "swiss", "round_robin", "group", "set", "mixed"])
+      .nullable()
+      .openapi({ description: "Format of the phase's containers, \"mixed\" when it holds several different ones, null when it has none yet." }),
+    status: z.enum(["pending", "active", "completed"]),
+    order: z.number().int().openapi({ description: "Position of the phase in its tournament, starting at the first one played." }),
+    start_date: z.string().nullable(),
+    end_date: z.string().nullable(),
+    liquipedia_link: z.string().nullable(),
+  })
+  .openapi("Phase");
+
+export const ApiContainerPathItemSchema = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    type: z.enum(["bracket", "swiss", "round_robin", "group", "set"]),
+  })
+  .openapi("ContainerPathItem");
+
+export const ApiMatchContainerSchema = ApiContainerPathItemSchema.extend({
+  path: z.array(ApiContainerPathItemSchema).openapi({ description: "Sets above the container, outermost first, ending with the container itself (e.g. Group Stage, Group A, Lower Bracket)." }),
+}).openapi("MatchContainer");
+
+export const ApiTeamMatchEntryV3Schema = ApiTeamMatchEntrySchema.omit({ phase_id: true })
+  .extend({ phase: ApiPhaseSchema.nullable(), container: ApiMatchContainerSchema.nullable() })
+  .openapi("TeamMatchEntryV3");
+
+export const ApiPaginatedMatchesV3Schema = z
+  .object({
+    page: z.number().int(),
+    per_page: z.number().int(),
+    total: z.number().int(),
+    total_pages: z.number().int(),
+    data: z.array(ApiTeamMatchEntryV3Schema),
+  })
+  .openapi("PaginatedMatchesV3");
+
+export const ApiMatchStreamSchema = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    platform: z.string().openapi({ description: "youtube, twitch, tiktok or kick." }),
+    type: z.string().openapi({ description: "official or watchparty, official streams come first." }),
+    url: z.string(),
+    language_code: z.string(),
+    organization_id: z.number().int().nullable(),
+  })
+  .openapi("MatchStream");
+
+export const ApiMatchPlayerPovSchema = z
+  .object({
+    id: z.number().int(),
+    team_id: z.number().int().nullable(),
+    player_id: z.number().int().nullable().openapi({ description: "Null when the channel is the team's own." }),
+    player_handle: z.string().nullable(),
+    twitch_login: z.string(),
+    title: z.string().nullable(),
+    url: z.string(),
+    last_seen_live_at: z.string().nullable(),
+  })
+  .openapi("MatchPlayerPov");
+
+export const ApiMatchVodSchema = z
+  .object({
+    id: z.number().int(),
+    url: z.string(),
+    language_code: z.string(),
+    map_id: z.number().int().nullable().openapi({ description: "Null for a VOD of the whole match." }),
+    map_order: z.number().int().nullable(),
+    organization: z.object({ id: z.number().int(), name: z.string() }).nullable(),
+  })
+  .openapi("MatchVod");
+
+export const ApiMatchPlayerTotalsSchema = z
+  .object({
+    person_id: z.number().int(),
+    team_id: z.number().int(),
+    agents: z.array(z.string()).openapi({ description: "Agents played across the completed maps." }),
+    maps_played: z.number().int(),
+    kills: z.number().int(),
+    deaths: z.number().int(),
+    assists: z.number().int(),
+    kd_ratio: z.number().nullable(),
+    acs: z.number().openapi({ description: "Average ACS per map." }),
+    adr: z.number().openapi({ description: "Average ADR per map." }),
+    first_kills: z.number().int(),
+    first_deaths: z.number().int(),
+    kast_percentage: z.number().openapi({ description: "Average KAST per map." }),
+    headshot_percentage: z.number().openapi({ description: "Average headshot percentage per map." }),
+    rating: z.number().nullable().openapi({ description: "GCS rating over all completed maps, weighted by rated rounds." }),
+    rating_rounds: z.number().int().nullable().openapi({ description: "Rounds the rating is computed over, null when no rating is available." }),
+  })
+  .openapi("MatchPlayerTotals");
+
+export const ApiMatchV3ResponseSchema = ApiMatchStatsResponseSchema.omit({ phase_id: true }).extend({
+  phase: ApiPhaseSchema.nullable(),
+  container: ApiMatchContainerSchema.nullable(),
+  player_stats: z.array(ApiMatchPlayerTotalsSchema).openapi({ description: "Per player stats combined over every completed map of the match. Per map stats are in maps[].player_stats." }),
+  streams: z.array(ApiMatchStreamSchema),
+  player_povs: z.array(ApiMatchPlayerPovSchema),
+  vods: z.array(ApiMatchVodSchema),
   encounters: ApiMatchEncountersSchema,
   radar_chart_widget_url: z.string().nullable().openapi({ description: "Absolute URL to the OBS head to head radar chart widget for these two teams, null if either side is a bye/TBD." }),
   pickem: ApiPickemVotesSchema,
@@ -847,6 +958,8 @@ export const ApiTournamentStatsEntrySchema = z
     total_first_deaths: z.number(),
     avg_first_deaths: z.number(),
     kd_ratio: z.number(),
+    avg_rating: z.number().nullable().openapi({ description: "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating." }),
+    rating_rounds: z.number().int().nullable().openapi({ description: "Rounds the rating is computed over, null when no rating is available." }),
   })
   .openapi("TournamentStatsEntry");
 
@@ -1060,4 +1173,75 @@ export const ApiSearchResultsSchema = z
 export const searchFilterQuerySchema = z.object({
   q: z.string().min(2).openapi({ param: { name: "q", in: "query" }, example: "liquid", description: "Search term, at least 2 characters." }),
   limit: z.string().regex(/^\d+$/).optional().openapi({ param: { name: "limit", in: "query" }, example: "5", description: "Max results per entity type, defaults to 5, capped at 20." }),
+});
+
+const ApiGroupParticipantShape = {
+  entrant_id: z.number().int(),
+  name: z.string(),
+  team: z.object({ id: z.number().int(), name: z.string(), short_name: z.string().nullable(), country_code: z.string().nullable() }).nullable(),
+};
+
+export const ApiGroupStandingSchema = z
+  .object({
+    ...ApiGroupParticipantShape,
+    rank: z.number().int(),
+    seed: z.number().int().nullable(),
+    status: z.string().nullable().openapi({ description: "active, qualified or eliminated." }),
+    matches_won: z.number().int(),
+    matches_lost: z.number().int(),
+    map_wins: z.number().int(),
+    map_losses: z.number().int(),
+    map_diff: z.number().int(),
+    round_wins: z.number().int(),
+    round_losses: z.number().int(),
+    round_diff: z.number().int(),
+    buchholz: z.number(),
+    points: z.number().int().nullable().openapi({ description: "Null when the group has no points scoring." }),
+  })
+  .openapi("GroupStanding");
+
+export const ApiGroupMatchSchema = z
+  .object({
+    id: z.number().int(),
+    round_name: z.string().nullable(),
+    status: z.string(),
+    best_of: z.number().int(),
+    scheduled_at: z.string().nullable(),
+    team_a: z.object(ApiGroupParticipantShape).nullable(),
+    team_b: z.object(ApiGroupParticipantShape).nullable(),
+    score_a: z.number().int().nullable(),
+    score_b: z.number().int().nullable(),
+    winner_entrant_id: z.number().int().nullable(),
+    is_forfeit: z.boolean(),
+  })
+  .openapi("GroupMatch");
+
+export const ApiGroupSchema = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    format: z.enum(["swiss", "round_robin"]),
+    phase: ApiPhaseSchema.nullable(),
+    path: z.array(ApiContainerPathItemSchema).openapi({ description: "Sets above the group, outermost first, ending with the group itself." }),
+    config: z.object({
+      qualify_at_wins: z.number().int().nullable(),
+      eliminate_at_losses: z.number().int().nullable(),
+      max_rounds: z.number().int().nullable(),
+      tiebreakers: z.array(z.string()).openapi({ description: "Tiebreakers applied in order after the number of wins." }),
+      uses_points: z.boolean(),
+    }),
+    standings: z.array(ApiGroupStandingSchema),
+    rounds: z.array(z.object({ round: z.number().int(), matches: z.array(ApiGroupMatchSchema) })).openapi({ description: "Matches grouped by round, in play order." }),
+  })
+  .openapi("Group");
+
+export const ApiTournamentGroupsSchema = z
+  .object({
+    tournament_id: z.number().int(),
+    groups: z.array(ApiGroupSchema),
+  })
+  .openapi("TournamentGroups");
+
+export const tournamentGroupsFilterQuerySchema = z.object({
+  phase_id: z.string().regex(/^\d+$/).optional().openapi({ param: { name: "phase_id", in: "query" }, description: "Restricts to the groups of a single tournament phase." }),
 });

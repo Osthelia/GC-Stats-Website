@@ -21,6 +21,7 @@ import { fetchWeaponStats, type ApiWeaponStatsEntry } from "../weapon-stats";
 import { sumFloat } from "@/lib/stats-aggregate-sql";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
+import { ratedRoundsSql, roundRating, weightedRatingSql } from "../rating";
 
 async function personExists(id: number): Promise<boolean> {
   const [row] = await db.select({ id: people.id, isGhost: people.isGhost }).from(people).where(eq(people.id, id)).limit(1);
@@ -164,6 +165,8 @@ export type ApiAgentStatsEntry = {
   total_first_deaths: number;
   avg_first_deaths: number;
   kd_ratio: number;
+  avg_rating: number | null;
+  rating_rounds: number | null;
 };
 
 /** Per-agent stats and pickrate for the player across all recorded maps. */
@@ -189,6 +192,8 @@ export async function getPlayerAgentStats(personId: number, filter: MapsFilter):
       headshotPercentage: sumFloat(mapPlayerStats.headshotPercentage),
       firstKills: sumFloat(mapPlayerStats.firstKills),
       firstDeaths: sumFloat(mapPlayerStats.firstDeaths),
+      rating: weightedRatingSql,
+      ratedRounds: ratedRoundsSql,
     })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
@@ -229,6 +234,8 @@ export async function getPlayerAgentStats(personId: number, filter: MapsFilter):
       total_first_deaths: row.firstDeaths,
       avg_first_deaths: avg(row.firstDeaths),
       kd_ratio: avgDeaths > 0 ? avgKills / avgDeaths : avgKills,
+      avg_rating: roundRating(row.rating),
+      rating_rounds: Number(row.ratedRounds) > 0 ? Number(row.ratedRounds) : null,
     };
   });
 

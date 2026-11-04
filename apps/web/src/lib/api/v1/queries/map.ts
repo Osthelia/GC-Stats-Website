@@ -15,6 +15,7 @@ import { db } from "@gc-stats/db/client";
 import { maps, matches, entrants, teams, mapPlayerStats, mapRoundsRaw, mapRoundPlayerLoadoutsRaw } from "@gc-stats/db";
 import { toApiTeamFromJoined } from "../entities";
 import { resolveEntrantTeamIds } from "../entrant-teams";
+import { roundRating } from "../rating";
 import { toApiGameMap, type ApiGameMap, type ApiTeamWithScore, type ApiMapPlayerStat } from "./matches";
 
 const entrantAAlias = alias(entrants, "map_full_entrant_a");
@@ -43,6 +44,8 @@ async function getMapPlayerStats(mapId: number): Promise<ApiMapPlayerStat[]> {
       firstDeaths: mapPlayerStats.firstDeaths,
       kastPercentage: mapPlayerStats.kastPercentage,
       headshotPercentage: mapPlayerStats.headshotPercentage,
+      rating: mapPlayerStats.rating,
+      ratingRounds: mapPlayerStats.ratingRounds,
     })
     .from(mapPlayerStats)
     .where(eq(mapPlayerStats.mapId, mapId));
@@ -63,6 +66,8 @@ async function getMapPlayerStats(mapId: number): Promise<ApiMapPlayerStat[]> {
     first_deaths: row.firstDeaths,
     kast_percentage: Number(row.kastPercentage),
     headshot_percentage: Number(row.headshotPercentage),
+    rating: roundRating(row.rating),
+    rating_rounds: row.rating != null ? row.ratingRounds : null,
   }));
 }
 

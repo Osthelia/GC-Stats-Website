@@ -79,7 +79,7 @@ export async function TeamFormerMembers({
                     alt={m.handle}
                     width={30}
                     height={30}
-                    className="h-full w-full object-contain"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
                   m.handle.charAt(0).toUpperCase()

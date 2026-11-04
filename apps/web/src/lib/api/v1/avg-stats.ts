@@ -15,6 +15,7 @@ import { db } from "@gc-stats/db/client";
 import { mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
 import { playerRoundsPlayedSql, sumFloat } from "@/lib/stats-aggregate-sql";
 import { exclusiveUpperBound, type StatsFilter } from "./params";
+import { ratedRoundsSql, roundRating, weightedRatingSql } from "./rating";
 
 /** Who an aggregate stats query is scoped to — a team (any of its entrants across tournaments) or a single player. */
 export type EntityScope = { kind: "team"; entrantIds: number[] } | { kind: "player"; personId: number };
@@ -62,6 +63,8 @@ export type ApiAvgStats = {
   total_first_deaths: number;
   avg_first_deaths: number;
   kd_ratio: number;
+  avg_rating: number | null;
+  rating_rounds: number | null;
   by_side: { atk: ApiSideStats; def: ApiSideStats };
 };
 
@@ -125,6 +128,8 @@ const ZERO_AVG_STATS: ApiAvgStats = {
   total_first_deaths: 0,
   avg_first_deaths: 0,
   kd_ratio: 0,
+  avg_rating: null,
+  rating_rounds: null,
   by_side: { atk: ZERO_SIDE("atk"), def: ZERO_SIDE("def") },
 };
 
@@ -282,6 +287,8 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
       hs: sumFloat(mapPlayerStats.headshotPercentage),
       firstKills: sumFloat(mapPlayerStats.firstKills),
       firstDeaths: sumFloat(mapPlayerStats.firstDeaths),
+      rating: weightedRatingSql,
+      ratedRounds: ratedRoundsSql,
     })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
@@ -335,6 +342,8 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
     total_first_deaths: totals.firstDeaths,
     avg_first_deaths: avg(totals.firstDeaths),
     kd_ratio: avgDeaths > 0 ? avgKills / avgDeaths : avgKills,
+    avg_rating: roundRating(totals.rating),
+    rating_rounds: Number(totals.ratedRounds) > 0 ? Number(totals.ratedRounds) : null,
     by_side: { atk, def },
   };
 }
