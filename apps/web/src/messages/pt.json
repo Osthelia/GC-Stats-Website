@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Para jogos sem ID de partida Riot para fazer o Fetch (LAN, muito antigos etc.).",
           "columnPlayer": "Jogadora",
           "columnIgn": "IGN",
+          "previousLineupNote": "Lineup anterior (último mapa jogado), substituída quando o mapa for obtido.",
           "noPlayerData": "Sem dados de jogadores.",
           "columnAgent": "Agente",
           "columnKills": "Kills",

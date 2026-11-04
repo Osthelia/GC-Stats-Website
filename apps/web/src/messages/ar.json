@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "للمباريات التي لا تملك معرّف مباراة Riot للجلب (LAN، قديمة جدًا، إلخ).",
           "columnPlayer": "اللاعبة",
           "columnIgn": "IGN",
+          "previousLineupNote": "التشكيلة السابقة (آخر خريطة تم لعبها)، يتم استبدالها بعد جلب الخريطة.",
           "noPlayerData": "لا توجد بيانات للاعبين.",
           "columnAgent": "العميل",
           "columnKills": "القتل",

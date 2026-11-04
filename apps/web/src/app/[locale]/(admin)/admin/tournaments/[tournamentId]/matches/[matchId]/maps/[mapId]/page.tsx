@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
-import { getAdminMatch, getAdminMap, getEntrantRoster, getAdminMapPlayerStats } from "@/lib/admin-matches";
+import { getAdminMatch, getAdminMap, getEntrantRoster, getAdminMapPlayerStats, getTeamPreviousLineup } from "@/lib/admin-matches";
 import { listTournamentEntrants } from "@/lib/admin-tournament-detail";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
@@ -58,6 +58,13 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
     ? await Promise.all([getEntrantRoster(match.entrantAId!, match.scheduledAt), getEntrantRoster(match.entrantBId!, match.scheduledAt), getAdminMapPlayerStats(map.id)])
     : [[], [], []];
 
+  // A map with no stats yet starts from the lineup each team last played
+  const previousLineupFor = (entrantId: number | null) => {
+    const teamId = entrants.find((e) => e.id === entrantId)?.teamId;
+    return teamId == null || playerStats.length > 0 ? [] : getTeamPreviousLineup(teamId, id, map.order, match.scheduledAt ? new Date(match.scheduledAt) : new Date());
+  };
+  const [previousLineupA, previousLineupB] = await Promise.all([previousLineupFor(match.entrantAId), previousLineupFor(match.entrantBId)]);
+
   return (
     <div className="flex flex-col gap-6">
       <Link href={`/admin/tournaments/${tournId}/matches/${id}`} className="text-sm text-muted-foreground hover:text-foreground">
@@ -76,7 +83,7 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
         canManage={canManage}
         riotPlayers={
           bothEntrantsSet && (
-            <MapPlayersPanel entrantAId={match.entrantAId!} entrantBId={match.entrantBId!} entrantAName={entrantAName} entrantBName={entrantBName} stats={playerStats} />
+            <MapPlayersPanel entrantAId={match.entrantAId!} entrantBId={match.entrantBId!} entrantAName={entrantAName} entrantBName={entrantBName} stats={playerStats} previousLineupA={previousLineupA} previousLineupB={previousLineupB} />
           )
         }
       />
@@ -91,6 +98,8 @@ export default async function AdminMapDetailPage({ params }: { params: Promise<{
           rosterA={rosterA}
           rosterB={rosterB}
           initialStats={playerStats}
+          previousLineupA={previousLineupA}
+          previousLineupB={previousLineupB}
           canManage={canManage}
         />
       )}

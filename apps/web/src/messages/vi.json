@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Dành cho các ván không có ID trận Riot để Fetch (LAN, quá cũ, v.v.).",
           "columnPlayer": "Tuyển thủ",
           "columnIgn": "IGN",
+          "previousLineupNote": "Lineup trước đó (map đã chơi gần nhất), sẽ được thay thế khi lấy xong map.",
           "noPlayerData": "Không có dữ liệu tuyển thủ.",
           "columnAgent": "Tướng",
           "columnKills": "Kills",

@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Untuk game tanpa ID pertandingan Riot untuk diambil (LAN, terlalu lama, dll).",
           "columnPlayer": "Pemain",
           "columnIgn": "IGN",
+          "previousLineupNote": "Lineup sebelumnya (map terakhir yang dimainkan), diganti setelah map diambil.",
           "noPlayerData": "Tidak ada data pemain.",
           "columnAgent": "Agen",
           "columnKills": "Kill",

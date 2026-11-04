@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Für Spiele ohne abrufbare Riot Match ID (LAN, zu alt usw.).",
           "columnPlayer": "Spielerin",
           "columnIgn": "IGN",
+          "previousLineupNote": "Vorherige Lineup (zuletzt gespielte Map), wird ersetzt, sobald die Map abgerufen wurde.",
           "noPlayerData": "Keine Spielerdaten.",
           "columnAgent": "Agent",
           "columnKills": "Kills",

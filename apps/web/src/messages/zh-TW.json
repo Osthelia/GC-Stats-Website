@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "適用於沒有 Riot 比賽 ID 可抓取的比賽（線下賽、過於久遠等）。",
           "columnPlayer": "選手",
           "columnIgn": "IGN",
+          "previousLineupNote": "上一次陣容（最後打的地圖），取得地圖後將被取代。",
           "noPlayerData": "暫無選手資料。",
           "columnAgent": "特工",
           "columnKills": "擊殺",

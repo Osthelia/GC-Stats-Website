@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Getirilecek bir Riot maç kimliği olmayan oyunlar için (LAN, çok eski, vb).",
           "columnPlayer": "Oyuncu",
           "columnIgn": "IGN",
+          "previousLineupNote": "Önceki lineup (oynanan son harita), harita alındığında değiştirilir.",
           "noPlayerData": "Oyuncu verisi yok.",
           "columnAgent": "Ajan",
           "columnKills": "Öldürme",

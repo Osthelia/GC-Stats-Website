@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Dla gier bez identyfikatora meczu Riot do pobrania (LAN, zbyt stare itd.).",
           "columnPlayer": "Zawodniczka",
           "columnIgn": "IGN",
+          "previousLineupNote": "Poprzedni skład (ostatnia rozegrana mapa), zastąpiony po pobraniu mapy.",
           "noPlayerData": "Brak danych graczy.",
           "columnAgent": "Agent",
           "columnKills": "Zabójstwa",

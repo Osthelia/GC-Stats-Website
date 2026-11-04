@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Fetchできるリオット試合IDがない試合用（LAN、古すぎる試合など）。",
           "columnPlayer": "選手",
           "columnIgn": "IGN",
+          "previousLineupNote": "前回のラインナップ（最後にプレイしたマップ）、マップ取得後に置き換えられます。",
           "noPlayerData": "プレイヤーデータがありません。",
           "columnAgent": "エージェント",
           "columnKills": "キル",

@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "For games without a Riot match ID to Fetch (LAN, too old, etc).",
           "columnPlayer": "Player",
           "columnIgn": "IGN",
+          "previousLineupNote": "Previous lineup (last map played), replaced once the map is fetched.",
           "noPlayerData": "No player data.",
           "columnAgent": "Agent",
           "columnKills": "Kills",

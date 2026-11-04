@@ -8,12 +8,28 @@
 
 import { getTranslations } from "next-intl/server";
 import { AgentIcon } from "@/components/match/agent-icon";
-import type { AdminMapPlayerStatRow } from "@/lib/admin-matches";
+import type { AdminMapPlayerStatRow, AdminPreviousLineupPlayer } from "@/lib/admin-matches";
 
-function TeamPlayers({ teamName, rows, labels }: { teamName: string; rows: AdminMapPlayerStatRow[]; labels: { player: string; ign: string; agent: string; empty: string } }) {
+type PlayerRow = Pick<AdminMapPlayerStatRow, "personId" | "handle" | "valName"> & { agentName?: string | null };
+
+function TeamPlayers({
+  teamName,
+  rows,
+  previousLineup,
+  labels,
+}: {
+  teamName: string;
+  rows: PlayerRow[];
+  previousLineup: AdminPreviousLineupPlayer[];
+  labels: { player: string; ign: string; agent: string; empty: string; previousLineup: string };
+}) {
+  const isPrevious = rows.length === 0 && previousLineup.length > 0;
+  if (isPrevious) rows = previousLineup;
+
   return (
     <div className="flex min-w-0 flex-col gap-1.5">
       <h4 className="truncate text-center text-[11px] font-bold tracking-widest text-muted-foreground uppercase">{teamName}</h4>
+      {isPrevious && <p className="text-center text-[10px] text-muted-foreground italic">{labels.previousLineup}</p>}
       {rows.length === 0 ? (
         <p className="py-1 text-center text-[11px] text-muted-foreground">{labels.empty}</p>
       ) : (
@@ -45,20 +61,24 @@ export async function MapPlayersPanel({
   entrantAName,
   entrantBName,
   stats,
+  previousLineupA,
+  previousLineupB,
 }: {
   entrantAId: number;
   entrantBId: number;
   entrantAName: string;
   entrantBName: string;
   stats: AdminMapPlayerStatRow[];
+  previousLineupA: AdminPreviousLineupPlayer[];
+  previousLineupB: AdminPreviousLineupPlayer[];
 }) {
   const t = await getTranslations("admin.tournaments.matches.maps");
-  const labels = { player: t("columnPlayer"), ign: t("columnIgn"), agent: t("columnAgent"), empty: t("noPlayerData") };
+  const labels = { player: t("columnPlayer"), ign: t("columnIgn"), agent: t("columnAgent"), empty: t("noPlayerData"), previousLineup: t("previousLineupNote") };
 
   return (
     <div className="flex flex-col gap-3 border-t pt-3">
-      <TeamPlayers teamName={entrantAName} rows={stats.filter((s) => s.entrantId === entrantAId)} labels={labels} />
-      <TeamPlayers teamName={entrantBName} rows={stats.filter((s) => s.entrantId === entrantBId)} labels={labels} />
+      <TeamPlayers teamName={entrantAName} rows={stats.filter((s) => s.entrantId === entrantAId)} previousLineup={previousLineupA} labels={labels} />
+      <TeamPlayers teamName={entrantBName} rows={stats.filter((s) => s.entrantId === entrantBId)} previousLineup={previousLineupB} labels={labels} />
     </div>
   );
 }

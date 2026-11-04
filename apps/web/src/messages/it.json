@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Per le partite senza un ID match Riot da recuperare (LAN, troppo vecchie, ecc.).",
           "columnPlayer": "Giocatrice",
           "columnIgn": "IGN",
+          "previousLineupNote": "Lineup precedente (ultima mappa giocata), sostituita una volta recuperata la mappa.",
           "noPlayerData": "Nessun dato dei giocatori.",
           "columnAgent": "Agente",
           "columnKills": "Kill",

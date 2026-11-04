@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Para sa mga larong walang Riot match ID na makukuha (LAN, masyadong luma, atbp.).",
           "columnPlayer": "Manlalaro",
           "columnIgn": "IGN",
+          "previousLineupNote": "Nakaraang lineup (huling map na nilaro), papalitan kapag nakuha na ang map.",
           "noPlayerData": "Walang data ng manlalaro.",
           "columnAgent": "Agent",
           "columnKills": "Kills",

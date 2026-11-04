@@ -4381,6 +4381,7 @@
           "manualScoreboardDescription": "Para las partidas sin ID de partido de Riot que recuperar (LAN, demasiado antiguas, etc.).",
           "columnPlayer": "Jugador",
           "columnIgn": "IGN",
+          "previousLineupNote": "Alineación anterior (último mapa jugado), reemplazada cuando se obtenga el mapa.",
           "noPlayerData": "Sin datos de jugadores.",
           "columnAgent": "Agente",
           "columnKills": "Bajas",
