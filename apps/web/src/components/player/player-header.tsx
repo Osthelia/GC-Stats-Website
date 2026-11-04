@@ -157,7 +157,7 @@ export async function PlayerHeader({
             tabs, otherwise the tab bar rides up flush against the avatar. */}
         <div className="flex flex-wrap items-start gap-6 pb-7">
           <div
-            className="flex h-[118px] w-[118px] flex-none items-center justify-center rounded-2xl border border-neutral-800"
+            className="flex h-[118px] w-[118px] flex-none items-center justify-center overflow-hidden rounded-2xl border border-neutral-800"
             style={{
               background: "var(--gcs-surface-2)",
               boxShadow: "0 16px 36px rgba(0,0,0,0.5)",
@@ -168,9 +168,9 @@ export async function PlayerHeader({
                 dark={player.logoUrl ?? player.logoUrlLight!}
                 light={player.logoUrlLight ?? player.logoUrl!}
                 alt={player.handle}
-                width={84}
-                height={84}
-                className="h-[84px] w-[84px] rounded-xl object-contain"
+                width={118}
+                height={118}
+                className="h-full w-full object-cover"
               />
             ) : (
               <span className="text-[40px] font-black text-neutral-600">
