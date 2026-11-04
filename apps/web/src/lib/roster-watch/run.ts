@@ -12,6 +12,7 @@
 import type { XSignalMedia } from "@gc-stats/db";
 import { collectAccountTweets } from "./collect";
 import { applyRules, DEFAULT_RULES, type RulesConfig } from "./rules";
+import { translateToEnglish, type TranslateFn } from "./translate";
 import type { ClassifierResult } from "./classifier";
 import type { XTweetProvider } from "./providers/types";
 
@@ -28,6 +29,7 @@ export type NewSignal = {
   stage: "excluded" | "classified" | "error";
   exclusionRuleId: string | null;
   classification: ClassifierResult | null;
+  textEn?: string | null;
 };
 
 export type RetrySignal = { id: number; tweetId: string; text: string; media: XSignalMedia[]; teamName: string };
@@ -41,7 +43,7 @@ export interface RosterWatchStore {
   updateAccount(id: number, patch: { xUserId?: string; lastSeenTweetId?: string | null; lastPolledAt: Date; lastError: string | null }): Promise<void>;
   /** Recent errored signals of enabled accounts, capped. */
   listErroredSignals(): Promise<RetrySignal[]>;
-  saveClassification(id: number, classification: ClassifierResult): Promise<void>;
+  saveClassification(id: number, classification: ClassifierResult, textEn: string | null): Promise<void>;
 }
 
 export type ClassifyFn = (input: { text: string; media: XSignalMedia[]; teamName: string }) => Promise<ClassifierResult>;
@@ -57,6 +59,11 @@ function preview(text: string): string {
 /** Consecutive classification failures after which the run gives up (bad key, model or outage). */
 const MAX_CONSECUTIVE_FAILURES = 3;
 
+/** Only the tweets an admin will read are translated, which keeps the DeepL quota small. */
+function translateIfReviewable(translate: TranslateFn, classification: ClassifierResult, text: string): Promise<string | null> {
+  return classification.verdict === "not_roster" ? Promise.resolve(null) : translate(text);
+}
+
 function errorMessage(error: unknown): string {
   return (error instanceof Error ? error.message : String(error)).slice(0, 500);
 }
@@ -65,10 +72,11 @@ export async function runRosterWatch(deps: {
   store: RosterWatchStore;
   provider: XTweetProvider;
   classify: ClassifyFn;
+  translate?: TranslateFn;
   rules?: RulesConfig;
   now?: Date;
 }): Promise<RunStats> {
-  const { store, provider, classify, rules = DEFAULT_RULES, now = new Date() } = deps;
+  const { store, provider, classify, translate = translateToEnglish, rules = DEFAULT_RULES, now = new Date() } = deps;
   const stats: RunStats = { accounts: 0, failedAccounts: 0, apiCalls: 0, tweets: 0, excluded: 0, classified: 0, errors: 0, retried: 0 };
 
   let consecutiveFailures = 0;
@@ -103,7 +111,8 @@ export async function runRosterWatch(deps: {
 
         try {
           const classification = await classify({ text: tweet.text, media: tweet.media, teamName: account.teamName });
-          await store.insertSignal({ ...base, stage: "classified", exclusionRuleId: null, classification });
+          const textEn = await translateIfReviewable(translate, classification, tweet.text);
+          await store.insertSignal({ ...base, stage: "classified", exclusionRuleId: null, classification, textEn });
           stats.classified++;
           consecutiveFailures = 0;
           console.log(
@@ -147,7 +156,8 @@ export async function runRosterWatch(deps: {
   const retryable = consecutiveFailures >= MAX_CONSECUTIVE_FAILURES ? [] : (await store.listErroredSignals()).filter((signal) => !failedThisRun.has(signal.tweetId));
   for (const signal of retryable) {
     try {
-      await store.saveClassification(signal.id, await classify({ text: signal.text, media: signal.media, teamName: signal.teamName }));
+      const classification = await classify({ text: signal.text, media: signal.media, teamName: signal.teamName });
+      await store.saveClassification(signal.id, classification, await translateIfReviewable(translate, classification, signal.text));
       stats.retried++;
       consecutiveFailures = 0;
     } catch (error) {

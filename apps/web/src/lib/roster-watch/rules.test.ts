@@ -70,6 +70,22 @@ describe("applyRules", () => {
     expect(text("Up next: meet our new coach")).toEqual({ excluded: false });
   });
 
+  it("excludes any other game, even when a never_exclude keyword is present", () => {
+    expect(text("Welcome Faker to our League of Legends roster")).toEqual({ excluded: true, ruleId: "other_game" });
+    expect(text("New player joins our CS2 team")).toEqual({ excluded: true, ruleId: "other_game" });
+    expect(text("Our Rocket League roster is leaving")).toEqual({ excluded: true, ruleId: "other_game" });
+  });
+
+  it("matches game abbreviations on exact case only", () => {
+    expect(text("Welcome to our LoL roster")).toEqual({ excluded: true, ruleId: "other_game" });
+    expect(text("Welcome aboard, lol so happy")).toEqual({ excluded: false });
+  });
+
+  it("keeps Valorant tweets, including its agent names", () => {
+    expect(text("Welcome to our VALORANT roster")).toEqual({ excluded: false });
+    expect(text("Deadlock main joins the team")).toEqual({ excluded: false });
+  });
+
   it("sends unknown tweets to the LLM", () => {
     expect(text("Something is coming")).toEqual({ excluded: false });
   });

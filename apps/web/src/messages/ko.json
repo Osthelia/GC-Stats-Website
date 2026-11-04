@@ -5477,6 +5477,9 @@
         "roster_bench": "선수 벤치행",
         "staff_change": "스태프 변경",
         "tryouts": "Tryouts",
+        "not_enough_info": "정보 부족",
+
+        "wrong_game": "다른 게임",
         "match_promo": "경기 홍보",
         "match_result": "경기 결과",
         "highlight": "하이라이트",
@@ -5506,12 +5509,19 @@
         "notRoster": "로스터 아님",
         "done": "완료"
       },
-      "form": {
-        "topic": "내용",
-        "topicPlaceholder": "주제를 선택하세요",
-        "noteWhatIsIt": "무엇인가요?",
+      "deck": {
+        "next": "다음",
+        "back": "뒤로",
+        "remaining": "이 페이지에 {count}개 남음",
+        "allSeen": "이 페이지의 모든 트윗을 확인했습니다.",
+        "restart": "처음부터 다시",
+        "showOriginal": "원문 보기",
+        "showTranslation": "영어 번역 보기",
+        "explanation": "설명",
+        "explanationPlaceholder": "로스터와 관련이 없는 이유는?",
         "confirm": "확인",
-        "cancel": "취소"
+
+        "pickTopic": "무엇에 관한 내용인가요?"
       },
       "reviewed": {
         "team_edited": "팀 편집됨",
@@ -5523,7 +5533,6 @@
         "notFound": "이 트윗은 더 이상 존재하지 않습니다.",
         "invalidState": "이 트윗에는 이 작업을 할 수 없습니다. 이미 검토되었을 수 있습니다.",
         "invalidTopic": "올바른 주제를 선택하세요.",
-        "noteRequired": "이 트윗의 내용을 설명해 주세요.",
         "noteTooLong": "메모가 너무 깁니다 (최대 1000자)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "트윗",
       "columnType": "유형",
       "columnDate": "날짜",
-      "columnActions": "작업"
+      "columnReview": "검토"
     }
   },
   "dashboard": {

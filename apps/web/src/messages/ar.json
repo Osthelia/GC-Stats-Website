@@ -5477,6 +5477,9 @@
         "roster_bench": "لاعب على الدكة",
         "staff_change": "تغيير في الطاقم",
         "tryouts": "Tryouts",
+        "not_enough_info": "معلومات غير كافية",
+
+        "wrong_game": "لعبة خاطئة",
         "match_promo": "ترويج مباراة",
         "match_result": "نتيجة مباراة",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "ليست تشكيلة",
         "done": "تم"
       },
-      "form": {
-        "topic": "عن ماذا تتحدث",
-        "topicPlaceholder": "اختر موضوعاً",
-        "noteWhatIsIt": "ما هذا؟",
+      "deck": {
+        "next": "التالي",
+        "back": "رجوع",
+        "remaining": "متبقي {count} في هذه الصفحة",
+        "allSeen": "لقد راجعت كل التغريدات في هذه الصفحة.",
+        "restart": "ابدأ من جديد",
+        "showOriginal": "عرض النص الأصلي",
+        "showTranslation": "عرض الترجمة الإنجليزية",
+        "explanation": "الشرح",
+        "explanationPlaceholder": "لماذا لا يتعلق بالتشكيلة؟",
         "confirm": "تأكيد",
-        "cancel": "إلغاء"
+
+        "pickTopic": "عن ماذا يتحدث؟"
       },
       "reviewed": {
         "team_edited": "تم تعديل الفريق",
@@ -5523,7 +5533,6 @@
         "notFound": "هذه التغريدة لم تعد موجودة.",
         "invalidState": "لا يمكن تنفيذ هذا الإجراء على هذه التغريدة، ربما تمت مراجعتها بالفعل.",
         "invalidTopic": "اختر موضوعاً صالحاً.",
-        "noteRequired": "اشرح موضوع هذه التغريدة.",
         "noteTooLong": "الملاحظة طويلة جداً (1000 حرف كحد أقصى)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "التغريدة",
       "columnType": "النوع",
       "columnDate": "التاريخ",
-      "columnActions": "الإجراءات"
+      "columnReview": "مراجعة"
     }
   },
   "dashboard": {

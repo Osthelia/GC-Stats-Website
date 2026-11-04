@@ -5477,6 +5477,9 @@
         "roster_bench": "Spieler auf der Bank",
         "staff_change": "Staff Änderung",
         "tryouts": "Tryouts",
+        "not_enough_info": "Nicht genug Infos",
+
+        "wrong_game": "Falsches Spiel",
         "match_promo": "Match Promo",
         "match_result": "Matchergebnis",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "Kein Roster",
         "done": "Erledigt"
       },
-      "form": {
-        "topic": "Worum geht es",
-        "topicPlaceholder": "Thema wählen",
-        "noteWhatIsIt": "Was ist es?",
+      "deck": {
+        "next": "Weiter",
+        "back": "Zurück",
+        "remaining": "Noch {count} auf dieser Seite",
+        "allSeen": "Du hast alle Tweets dieser Seite durchgesehen.",
+        "restart": "Von vorn beginnen",
+        "showOriginal": "Original anzeigen",
+        "showTranslation": "Englische Übersetzung anzeigen",
+        "explanation": "Erklärung",
+        "explanationPlaceholder": "Warum geht es nicht um den Roster?",
         "confirm": "Bestätigen",
-        "cancel": "Abbrechen"
+
+        "pickTopic": "Worum geht es?"
       },
       "reviewed": {
         "team_edited": "Team bearbeitet",
@@ -5523,7 +5533,6 @@
         "notFound": "Dieser Tweet existiert nicht mehr.",
         "invalidState": "Dieser Tweet kann diese Aktion nicht ausführen, er wurde eventuell schon geprüft.",
         "invalidTopic": "Wähle ein gültiges Thema.",
-        "noteRequired": "Erkläre, worum es in diesem Tweet geht.",
         "noteTooLong": "Die Notiz ist zu lang (maximal 1000 Zeichen)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Typ",
       "columnDate": "Datum",
-      "columnActions": "Aktionen"
+      "columnReview": "Prüfen"
     }
   },
   "dashboard": {

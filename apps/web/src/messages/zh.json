@@ -5477,6 +5477,9 @@
         "roster_bench": "选手转替补",
         "staff_change": "教练组变动",
         "tryouts": "Tryouts",
+        "not_enough_info": "信息不足",
+
+        "wrong_game": "非本游戏",
         "match_promo": "比赛宣传",
         "match_result": "比赛结果",
         "highlight": "精彩集锦",
@@ -5506,12 +5509,19 @@
         "notRoster": "非名单",
         "done": "完成"
       },
-      "form": {
-        "topic": "内容是什么",
-        "topicPlaceholder": "选择主题",
-        "noteWhatIsIt": "这是什么？",
+      "deck": {
+        "next": "下一个",
+        "back": "返回",
+        "remaining": "本页还剩 {count} 条",
+        "allSeen": "你已看完本页所有推文。",
+        "restart": "重新开始",
+        "showOriginal": "显示原文",
+        "showTranslation": "显示英文翻译",
+        "explanation": "说明",
+        "explanationPlaceholder": "为什么与阵容无关？",
         "confirm": "确认",
-        "cancel": "取消"
+
+        "pickTopic": "内容是关于什么的？"
       },
       "reviewed": {
         "team_edited": "战队已编辑",
@@ -5523,7 +5533,6 @@
         "notFound": "该推文已不存在。",
         "invalidState": "该推文无法执行此操作，可能已被审核。",
         "invalidTopic": "请选择有效的主题。",
-        "noteRequired": "请说明这条推文的内容。",
         "noteTooLong": "备注太长（最多 1000 个字符）。"
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "推文",
       "columnType": "类型",
       "columnDate": "日期",
-      "columnActions": "操作"
+      "columnReview": "审核"
     }
   },
   "dashboard": {

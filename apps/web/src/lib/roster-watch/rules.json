@@ -1,4 +1,15 @@
 {
+  "otherGames": {
+    "anyKeywords": [
+      "league of legends", "teamfight tactics", "wild rift", "legends of runeterra", "dota", "counter-strike", "counter strike", "cs:go", "csgo", "cs2",
+      "rainbow six", "call of duty", "warzone", "black ops", "modern warfare", "apex legends", "overwatch", "marvel rivals", "fortnite",
+      "rocket league", "halo", "pubg", "smite", "paladins", "mobile legends", "honor of kings", "brawl stars", "clash royale", "clash of clans",
+      "street fighter", "tekken", "super smash", "smash bros", "mortal kombat", "pokemon", "pokémon", "hearthstone", "starcraft", "age of empires", "minecraft",
+      "roblox", "genshin", "fifa", "ea fc", "ea sports fc", "madden", "nba 2k", "gran turismo", "forza", "splitgate", "rust",
+      "fall guys", "world of warcraft", "diablo", "path of exile", "destiny 2", "battlefield", "escape from tarkov", "dead by daylight"
+    ],
+    "caseSensitiveKeywords": ["LoL", "TFT", "CoD", "R6", "R6S", "OW2", "BO6", "BO7", "SF6", "SSBU", "MLBB", "HoK"]
+  },
   "neverExclude": {
     "anyKeywords": [
       "welcome", "roster", "joins", "joining", "rejoin", "rejoins", "new chapter", "farewell", "parting ways",

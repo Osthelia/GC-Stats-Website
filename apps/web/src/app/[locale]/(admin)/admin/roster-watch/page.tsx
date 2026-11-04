@@ -14,6 +14,7 @@ import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSearchSortBar } from "@/components/admin/admin-search-sort-bar";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { RosterWatchAccountsPanel } from "@/components/admin/roster-watch-accounts-panel";
+import { RosterWatchDeck } from "@/components/admin/roster-watch-deck";
 import { RosterWatchPanel } from "@/components/admin/roster-watch-panel";
 import {
   ROSTER_WATCH_PAGE_SIZE,
@@ -109,7 +110,11 @@ export default async function AdminRosterWatchPage({
         ]}
       />
 
-      <RosterWatchPanel rows={rows} tab={tab} canManage={canManage} sortable={{ pathname: "/admin/roster-watch", sort, direction, query }} />
+      {tab === "done" ? (
+        <RosterWatchPanel rows={rows} sortable={{ pathname: "/admin/roster-watch", sort, direction, query }} />
+      ) : (
+        <RosterWatchDeck rows={rows} canManage={canManage} />
+      )}
 
       <AdminPagination pathname="/admin/roster-watch" page={page} totalPages={totalPages} total={total} query={query} label={`${total}`} />
 

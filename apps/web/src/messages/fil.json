@@ -5477,6 +5477,9 @@
         "roster_bench": "Inilagay sa bench ang player",
         "staff_change": "Pagbabago sa staff",
         "tryouts": "Tryouts",
+        "not_enough_info": "Kulang ang impormasyon",
+
+        "wrong_game": "Maling laro",
         "match_promo": "Promo ng match",
         "match_result": "Resulta ng match",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "Hindi roster",
         "done": "Tapos na"
       },
-      "form": {
-        "topic": "Tungkol saan ito",
-        "topicPlaceholder": "Pumili ng paksa",
-        "noteWhatIsIt": "Ano ito?",
+      "deck": {
+        "next": "Susunod",
+        "back": "Bumalik",
+        "remaining": "{count} na lang ang natitira sa page na ito",
+        "allSeen": "Nakita mo na ang lahat ng tweet sa page na ito.",
+        "restart": "Magsimulang muli",
+        "showOriginal": "Ipakita ang orihinal",
+        "showTranslation": "Ipakita ang English na salin",
+        "explanation": "Paliwanag",
+        "explanationPlaceholder": "Bakit hindi ito tungkol sa roster?",
         "confirm": "Kumpirmahin",
-        "cancel": "Kanselahin"
+
+        "pickTopic": "Tungkol saan ito?"
       },
       "reviewed": {
         "team_edited": "Nabago ang team",
@@ -5523,7 +5533,6 @@
         "notFound": "Wala na ang tweet na ito.",
         "invalidState": "Hindi magagawa ang aksyong ito sa tweet na ito, maaaring nasuri na ito.",
         "invalidTopic": "Pumili ng wastong paksa.",
-        "noteRequired": "Ipaliwanag kung tungkol saan ang tweet na ito.",
         "noteTooLong": "Masyadong mahaba ang tala (hanggang 1000 character)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Uri",
       "columnDate": "Petsa",
-      "columnActions": "Mga aksyon"
+      "columnReview": "Suriin"
     }
   },
   "dashboard": {

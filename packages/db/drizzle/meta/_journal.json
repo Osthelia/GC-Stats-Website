@@ -484,6 +484,13 @@
       "when": 1793651704194,
       "tag": "0068_stats_query_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1793820007667,
+      "tag": "0069_roster_signal_translation",
+      "breakpoints": true
     }
   ]
 }

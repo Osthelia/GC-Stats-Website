@@ -64,6 +64,7 @@ export const dbRosterWatchStore: RosterWatchStore = {
         tweetedAt: signal.tweetedAt,
         stage: signal.stage,
         exclusionRuleId: signal.exclusionRuleId,
+        textEn: signal.textEn ?? null,
         ...(signal.classification ? classificationColumns(signal.classification) : {}),
       })
       .onConflictDoNothing({ target: xRosterSignals.tweetId });
@@ -90,10 +91,10 @@ export const dbRosterWatchStore: RosterWatchStore = {
       .limit(RETRY_LIMIT);
   },
 
-  async saveClassification(id, classification) {
+  async saveClassification(id, classification, textEn) {
     await db
       .update(xRosterSignals)
-      .set({ stage: "classified", ...classificationColumns(classification), updatedAt: new Date() })
+      .set({ stage: "classified", ...classificationColumns(classification), textEn, updatedAt: new Date() })
       .where(eq(xRosterSignals.id, id));
   },
 };

@@ -39,6 +39,8 @@ export const xRosterSignals = pgTable("x_roster_signals", {
   teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
   tweetUrl: text("tweet_url").notNull(),
   text: text("text").notNull(),
+  // English translation (DeepL), null when not translated or already in English.
+  textEn: text("text_en"),
   media: jsonb("media").$type<XSignalMedia[]>().notNull().default([]),
   tweetedAt: timestamp("tweeted_at", { withTimezone: true }).notNull(),
   stage: text("stage").notNull(), // 'excluded' | 'classified' | 'error'

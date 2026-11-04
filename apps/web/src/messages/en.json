@@ -5477,6 +5477,8 @@
         "roster_bench": "Player benched",
         "staff_change": "Staff change",
         "tryouts": "Tryouts",
+        "not_enough_info": "Not enough info",
+        "wrong_game": "Wrong game",
         "match_promo": "Match promo",
         "match_result": "Match result",
         "highlight": "Highlight",
@@ -5506,12 +5508,18 @@
         "notRoster": "Not roster",
         "done": "Done"
       },
-      "form": {
-        "topic": "What is it about",
-        "topicPlaceholder": "Pick a topic",
-        "noteWhatIsIt": "What is it?",
+      "deck": {
+        "next": "Next",
+        "back": "Back",
+        "remaining": "{count} left on this page",
+        "allSeen": "You went through every tweet of this page.",
+        "restart": "Start over",
+        "showOriginal": "Show the original",
+        "showTranslation": "Show the English translation",
+        "explanation": "Explanation",
+        "explanationPlaceholder": "Why is it not about the roster?",
         "confirm": "Confirm",
-        "cancel": "Cancel"
+        "pickTopic": "What is it about?"
       },
       "reviewed": {
         "team_edited": "Team edited",
@@ -5523,7 +5531,6 @@
         "notFound": "This tweet no longer exists.",
         "invalidState": "This tweet cannot take this action, it may already be reviewed.",
         "invalidTopic": "Pick a valid topic.",
-        "noteRequired": "Explain what this tweet is about.",
         "noteTooLong": "The note is too long (1000 characters max)."
       },
       "accounts": {
@@ -5583,7 +5590,7 @@
       "columnTweet": "Tweet",
       "columnType": "Type",
       "columnDate": "Date",
-      "columnActions": "Actions"
+      "columnReview": "Review"
     }
   },
   "dashboard": {

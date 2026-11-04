@@ -16,8 +16,8 @@ export const NON_ROSTER_TOPICS = ["match_promo", "match_result", "highlight", "s
 export const TOPICS = [...ROSTER_TOPICS, "tryouts", ...NON_ROSTER_TOPICS, "other"] as const;
 export type Topic = (typeof TOPICS)[number];
 
-/** Topics an admin can pick when a tweet is not about the roster. */
-export const REVIEW_TOPICS = [...NON_ROSTER_TOPICS, "other"] as const;
+/** Topics an admin can pick when a tweet is not about the roster, "not_enough_info" is for tweets too vague to be sorted. */
+export const REVIEW_TOPICS = ["not_enough_info", "wrong_game", "match_promo", "match_result", "highlight", "sponsor", "merch", "giveaway", "content", "other"] as const;
 export type ReviewTopic = (typeof REVIEW_TOPICS)[number];
 
 export const STAGES = ["excluded", "classified", "error"] as const;

@@ -5477,6 +5477,9 @@
         "roster_bench": "Oyuncu yedeğe alındı",
         "staff_change": "Staff değişikliği",
         "tryouts": "Tryouts",
+        "not_enough_info": "Yeterli bilgi yok",
+
+        "wrong_game": "Yanlış oyun",
         "match_promo": "Maç tanıtımı",
         "match_result": "Maç sonucu",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "Roster değil",
         "done": "Tamam"
       },
-      "form": {
-        "topic": "Ne hakkında",
-        "topicPlaceholder": "Bir konu seç",
-        "noteWhatIsIt": "Bu nedir?",
+      "deck": {
+        "next": "Sonraki",
+        "back": "Geri",
+        "remaining": "Bu sayfada {count} kaldı",
+        "allSeen": "Bu sayfadaki tüm tweetleri inceledin.",
+        "restart": "Baştan başla",
+        "showOriginal": "Orijinali göster",
+        "showTranslation": "İngilizce çeviriyi göster",
+        "explanation": "Açıklama",
+        "explanationPlaceholder": "Neden roster ile ilgili değil?",
         "confirm": "Onayla",
-        "cancel": "İptal"
+
+        "pickTopic": "Ne hakkında?"
       },
       "reviewed": {
         "team_edited": "Takım düzenlendi",
@@ -5523,7 +5533,6 @@
         "notFound": "Bu tweet artık mevcut değil.",
         "invalidState": "Bu tweet bu işlemi kabul etmiyor, zaten incelenmiş olabilir.",
         "invalidTopic": "Geçerli bir konu seç.",
-        "noteRequired": "Bu tweetin ne hakkında olduğunu açıkla.",
         "noteTooLong": "Not çok uzun (en fazla 1000 karakter)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Tür",
       "columnDate": "Tarih",
-      "columnActions": "İşlemler"
+      "columnReview": "İncele"
     }
   },
   "dashboard": {

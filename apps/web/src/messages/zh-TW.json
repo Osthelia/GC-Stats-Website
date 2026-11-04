@@ -5477,6 +5477,9 @@
         "roster_bench": "選手轉替補",
         "staff_change": "教練組異動",
         "tryouts": "Tryouts",
+        "not_enough_info": "資訊不足",
+
+        "wrong_game": "非本遊戲",
         "match_promo": "比賽宣傳",
         "match_result": "比賽結果",
         "highlight": "精彩片段",
@@ -5506,12 +5509,19 @@
         "notRoster": "非名單",
         "done": "完成"
       },
-      "form": {
-        "topic": "內容是什麼",
-        "topicPlaceholder": "選擇主題",
-        "noteWhatIsIt": "這是什麼？",
+      "deck": {
+        "next": "下一個",
+        "back": "返回",
+        "remaining": "本頁還剩 {count} 則",
+        "allSeen": "你已看完本頁所有推文。",
+        "restart": "重新開始",
+        "showOriginal": "顯示原文",
+        "showTranslation": "顯示英文翻譯",
+        "explanation": "說明",
+        "explanationPlaceholder": "為什麼與陣容無關？",
         "confirm": "確認",
-        "cancel": "取消"
+
+        "pickTopic": "內容是關於什麼？"
       },
       "reviewed": {
         "team_edited": "戰隊已編輯",
@@ -5523,7 +5533,6 @@
         "notFound": "這則推文已不存在。",
         "invalidState": "這則推文無法執行此操作，可能已被審核。",
         "invalidTopic": "請選擇有效的主題。",
-        "noteRequired": "請說明這則推文的內容。",
         "noteTooLong": "備註太長（最多 1000 個字元）。"
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "推文",
       "columnType": "類型",
       "columnDate": "日期",
-      "columnActions": "操作"
+      "columnReview": "審核"
     }
   },
   "dashboard": {

@@ -13,9 +13,10 @@ describe("planReview", () => {
     expect(planReview(signal({ status: "ignored" }), { action: "ignored" })).toEqual({ ok: false, error: "invalidState" });
   });
 
-  it("requires a note and a valid topic for not roster", () => {
+  it("requires a valid topic for not roster, the note is optional", () => {
     const unsure = signal({ verdict: "unsure" });
-    expect(planReview(unsure, { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: "   " })).toEqual({ ok: false, error: "noteRequired", field: "reviewNote" });
+    expect(planReview(unsure, { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: "   " })).toMatchObject({ ok: true, patch: { reviewNote: null } });
+    expect(planReview(unsure, { action: "marked_not_roster", reviewTopic: "not_enough_info" })).toMatchObject({ ok: true, patch: { reviewTopic: "not_enough_info", reviewNote: null } });
     expect(planReview(unsure, { action: "marked_not_roster", reviewTopic: "roster_join", reviewNote: "x" })).toEqual({ ok: false, error: "invalidTopic", field: "reviewTopic" });
     expect(planReview(unsure, { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: " promo code " })).toMatchObject({
       ok: true,
@@ -23,8 +24,9 @@ describe("planReview", () => {
     });
   });
 
-  it("only allows not roster on unsure tweets", () => {
-    expect(planReview(signal({ verdict: "roster" }), { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: "x" })).toEqual({ ok: false, error: "invalidState" });
+  it("allows not roster on roster and unsure tweets only", () => {
+    expect(planReview(signal({ verdict: "roster" }), { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: "x" })).toMatchObject({ ok: true, patch: { status: "marked_not_roster" } });
+    expect(planReview(signal({ verdict: "not_roster" }), { action: "marked_not_roster", reviewTopic: "sponsor", reviewNote: "x" })).toEqual({ ok: false, error: "invalidState" });
   });
 
   it("reports a missed roster from the audit, note optional", () => {

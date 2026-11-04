@@ -5477,6 +5477,9 @@
         "roster_bench": "選手がベンチ入り",
         "staff_change": "スタッフ変更",
         "tryouts": "Tryouts",
+        "not_enough_info": "情報不足",
+
+        "wrong_game": "別のゲーム",
         "match_promo": "試合告知",
         "match_result": "試合結果",
         "highlight": "ハイライト",
@@ -5506,12 +5509,19 @@
         "notRoster": "ロスター外",
         "done": "完了"
       },
-      "form": {
-        "topic": "内容",
-        "topicPlaceholder": "トピックを選択",
-        "noteWhatIsIt": "これは何ですか？",
-        "confirm": "確認",
-        "cancel": "キャンセル"
+      "deck": {
+        "next": "次へ",
+        "back": "戻る",
+        "remaining": "このページの残り {count} 件",
+        "allSeen": "このページのツイートをすべて確認しました。",
+        "restart": "最初からやり直す",
+        "showOriginal": "原文を表示",
+        "showTranslation": "英語訳を表示",
+        "explanation": "説明",
+        "explanationPlaceholder": "なぜロスターに関係ないのですか？",
+        "confirm": "確定",
+
+        "pickTopic": "何についてですか？"
       },
       "reviewed": {
         "team_edited": "チームを編集済み",
@@ -5523,7 +5533,6 @@
         "notFound": "このツイートはもう存在しません。",
         "invalidState": "このツイートにはこの操作を実行できません。すでに確認済みの可能性があります。",
         "invalidTopic": "有効なトピックを選択してください。",
-        "noteRequired": "このツイートの内容を説明してください。",
         "noteTooLong": "メモが長すぎます（最大1000文字）。"
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "ツイート",
       "columnType": "種類",
       "columnDate": "日付",
-      "columnActions": "操作"
+      "columnReview": "レビュー"
     }
   },
   "dashboard": {

@@ -5477,6 +5477,9 @@
         "roster_bench": "ผู้เล่นนั่งสำรอง",
         "staff_change": "เปลี่ยนแปลงสตาฟ",
         "tryouts": "Tryouts",
+        "not_enough_info": "ข้อมูลไม่เพียงพอ",
+
+        "wrong_game": "ผิดเกม",
         "match_promo": "โปรโมตแมตช์",
         "match_result": "ผลแมตช์",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "ไม่ใช่รายชื่อผู้เล่น",
         "done": "เสร็จแล้ว"
       },
-      "form": {
-        "topic": "เกี่ยวกับอะไร",
-        "topicPlaceholder": "เลือกหัวข้อ",
-        "noteWhatIsIt": "นี่คืออะไร",
+      "deck": {
+        "next": "ถัดไป",
+        "back": "ย้อนกลับ",
+        "remaining": "เหลืออีก {count} รายการในหน้านี้",
+        "allSeen": "คุณดูทวีตทั้งหมดในหน้านี้แล้ว",
+        "restart": "เริ่มใหม่",
+        "showOriginal": "แสดงต้นฉบับ",
+        "showTranslation": "แสดงคำแปลภาษาอังกฤษ",
+        "explanation": "คำอธิบาย",
+        "explanationPlaceholder": "ทำไมจึงไม่เกี่ยวกับรอสเตอร์?",
         "confirm": "ยืนยัน",
-        "cancel": "ยกเลิก"
+
+        "pickTopic": "เกี่ยวกับเรื่องอะไร?"
       },
       "reviewed": {
         "team_edited": "แก้ไขทีมแล้ว",
@@ -5523,7 +5533,6 @@
         "notFound": "ทวีตนี้ไม่มีอยู่แล้ว",
         "invalidState": "ทวีตนี้ไม่สามารถทำรายการนี้ได้ อาจถูกตรวจสอบไปแล้ว",
         "invalidTopic": "เลือกหัวข้อที่ถูกต้อง",
-        "noteRequired": "อธิบายว่าทวีตนี้เกี่ยวกับอะไร",
         "noteTooLong": "หมายเหตุยาวเกินไป (สูงสุด 1000 ตัวอักษร)"
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "ทวีต",
       "columnType": "ประเภท",
       "columnDate": "วันที่",
-      "columnActions": "การดำเนินการ"
+      "columnReview": "ตรวจสอบ"
     }
   },
   "dashboard": {

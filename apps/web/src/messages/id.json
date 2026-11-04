@@ -5477,6 +5477,9 @@
         "roster_bench": "Pemain dicadangkan",
         "staff_change": "Perubahan staf",
         "tryouts": "Tryouts",
+        "not_enough_info": "Info belum cukup",
+
+        "wrong_game": "Game salah",
         "match_promo": "Promo pertandingan",
         "match_result": "Hasil pertandingan",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "Bukan roster",
         "done": "Selesai"
       },
-      "form": {
-        "topic": "Tentang apa",
-        "topicPlaceholder": "Pilih topik",
-        "noteWhatIsIt": "Apa ini?",
+      "deck": {
+        "next": "Berikutnya",
+        "back": "Kembali",
+        "remaining": "Sisa {count} di halaman ini",
+        "allSeen": "Kamu sudah melihat semua tweet di halaman ini.",
+        "restart": "Mulai ulang",
+        "showOriginal": "Tampilkan aslinya",
+        "showTranslation": "Tampilkan terjemahan bahasa Inggris",
+        "explanation": "Penjelasan",
+        "explanationPlaceholder": "Kenapa ini tidak soal roster?",
         "confirm": "Konfirmasi",
-        "cancel": "Batal"
+
+        "pickTopic": "Ini tentang apa?"
       },
       "reviewed": {
         "team_edited": "Tim diedit",
@@ -5523,7 +5533,6 @@
         "notFound": "Tweet ini sudah tidak ada.",
         "invalidState": "Tweet ini tidak bisa menerima aksi ini, mungkin sudah ditinjau.",
         "invalidTopic": "Pilih topik yang valid.",
-        "noteRequired": "Jelaskan tentang apa tweet ini.",
         "noteTooLong": "Catatan terlalu panjang (maksimal 1000 karakter)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Tipe",
       "columnDate": "Tanggal",
-      "columnActions": "Aksi"
+      "columnReview": "Tinjau"
     }
   },
   "dashboard": {

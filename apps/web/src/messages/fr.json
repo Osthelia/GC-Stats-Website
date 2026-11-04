@@ -5477,6 +5477,8 @@
         "roster_bench": "Passage sur le banc",
         "staff_change": "Changement de staff",
         "tryouts": "Tryouts",
+        "not_enough_info": "Peu d'info",
+        "wrong_game": "Pas le bon jeu",
         "match_promo": "Promo de match",
         "match_result": "Résultat de match",
         "highlight": "Highlight",
@@ -5506,12 +5508,18 @@
         "notRoster": "Pas du roster",
         "done": "Fait"
       },
-      "form": {
-        "topic": "De quoi s'agit-il",
-        "topicPlaceholder": "Choisir un sujet",
-        "noteWhatIsIt": "C'est quoi ?",
+      "deck": {
+        "next": "Suivant",
+        "back": "Retour",
+        "remaining": "{count} restants sur cette page",
+        "allSeen": "Tu as parcouru tous les tweets de cette page.",
+        "restart": "Recommencer",
+        "showOriginal": "Voir l'original",
+        "showTranslation": "Voir la traduction anglaise",
+        "explanation": "Explication",
+        "explanationPlaceholder": "Pourquoi ce n'est pas du roster ?",
         "confirm": "Confirmer",
-        "cancel": "Annuler"
+        "pickTopic": "De quoi s'agit-il ?"
       },
       "reviewed": {
         "team_edited": "Équipe éditée",
@@ -5523,7 +5531,6 @@
         "notFound": "Ce tweet n'existe plus.",
         "invalidState": "Ce tweet ne peut pas recevoir cette action, il a peut-être déjà été traité.",
         "invalidTopic": "Choisis un sujet valide.",
-        "noteRequired": "Explique de quoi parle ce tweet.",
         "noteTooLong": "La note est trop longue (1000 caractères max)."
       },
       "accounts": {
@@ -5583,7 +5590,7 @@
       "columnTweet": "Tweet",
       "columnType": "Type",
       "columnDate": "Date",
-      "columnActions": "Actions"
+      "columnReview": "Traitement"
     }
   },
   "dashboard": {

@@ -14,17 +14,17 @@ import { REVIEW_NOTE_MAX_LENGTH, REVIEW_TOPICS, X_HANDLE_RE, type ReviewTopic, t
 export type ReviewInput =
   | { action: "team_edited" }
   | { action: "ignored" }
-  | { action: "marked_not_roster"; reviewTopic: string; reviewNote: string }
+  | { action: "marked_not_roster"; reviewTopic: string; reviewNote?: string }
   | { action: "reported_missed"; reviewNote: string };
 
 export type ReviewableSignal = { stage: Stage; verdict: Verdict | null; status: SignalStatus };
 
 export type ReviewPatch = { status: SignalStatus; reviewTopic: ReviewTopic | null; reviewNote: string | null };
 
-export type ReviewError = "invalidState" | "invalidTopic" | "noteRequired" | "noteTooLong";
+export type ReviewError = "invalidState" | "invalidTopic" | "noteTooLong";
 export type ReviewPlan = { ok: true; patch: ReviewPatch } | { ok: false; error: ReviewError; field?: "reviewTopic" | "reviewNote" };
 
-/** Roster and unsure tweets can be edited or ignored, only unsure ones can be declared not roster, only audit tweets can be reported missed. */
+/** Roster and unsure tweets can be edited, ignored or declared not roster, only audit tweets can be reported missed. */
 export function planReview(signal: ReviewableSignal, input: ReviewInput): ReviewPlan {
   if (signal.status !== "pending") return { ok: false, error: "invalidState" };
 
@@ -40,11 +40,10 @@ export function planReview(signal: ReviewableSignal, input: ReviewInput): Review
       return { ok: true, patch: { status: input.action, reviewTopic: null, reviewNote: null } };
     }
     case "marked_not_roster": {
-      if (signal.verdict !== "unsure") return { ok: false, error: "invalidState" };
+      if (signal.verdict !== "roster" && signal.verdict !== "unsure") return { ok: false, error: "invalidState" };
       if (!(REVIEW_TOPICS as readonly unknown[]).includes(rawTopic)) return { ok: false, error: "invalidTopic", field: "reviewTopic" };
-      if (!note) return { ok: false, error: "noteRequired", field: "reviewNote" };
       if (note.length > REVIEW_NOTE_MAX_LENGTH) return { ok: false, error: "noteTooLong", field: "reviewNote" };
-      return { ok: true, patch: { status: "marked_not_roster", reviewTopic: rawTopic as ReviewTopic, reviewNote: note } };
+      return { ok: true, patch: { status: "marked_not_roster", reviewTopic: rawTopic as ReviewTopic, reviewNote: note || null } };
     }
     case "reported_missed": {
       if (!inAudit) return { ok: false, error: "invalidState" };

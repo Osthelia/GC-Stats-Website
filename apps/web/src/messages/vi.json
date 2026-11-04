@@ -5477,6 +5477,9 @@
         "roster_bench": "Tuyển thủ xuống dự bị",
         "staff_change": "Thay đổi staff",
         "tryouts": "Tryouts",
+        "not_enough_info": "Chưa đủ thông tin",
+
+        "wrong_game": "Sai game",
         "match_promo": "Quảng bá trận đấu",
         "match_result": "Kết quả trận đấu",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "Không phải roster",
         "done": "Xong"
       },
-      "form": {
-        "topic": "Nội dung về gì",
-        "topicPlaceholder": "Chọn một chủ đề",
-        "noteWhatIsIt": "Đây là gì?",
+      "deck": {
+        "next": "Tiếp",
+        "back": "Quay lại",
+        "remaining": "Còn {count} ở trang này",
+        "allSeen": "Bạn đã xem hết các tweet của trang này.",
+        "restart": "Bắt đầu lại",
+        "showOriginal": "Hiện bản gốc",
+        "showTranslation": "Hiện bản dịch tiếng Anh",
+        "explanation": "Giải thích",
+        "explanationPlaceholder": "Vì sao không liên quan đến đội hình?",
         "confirm": "Xác nhận",
-        "cancel": "Hủy"
+
+        "pickTopic": "Nội dung nói về gì?"
       },
       "reviewed": {
         "team_edited": "Đã sửa đội",
@@ -5523,7 +5533,6 @@
         "notFound": "Tweet này không còn tồn tại.",
         "invalidState": "Tweet này không thể thực hiện thao tác này, có thể đã được xem xét.",
         "invalidTopic": "Chọn một chủ đề hợp lệ.",
-        "noteRequired": "Hãy giải thích tweet này nói về điều gì.",
         "noteTooLong": "Ghi chú quá dài (tối đa 1000 ký tự)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Loại",
       "columnDate": "Ngày",
-      "columnActions": "Hành động"
+      "columnReview": "Xem xét"
     }
   },
   "dashboard": {

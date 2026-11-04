@@ -5477,6 +5477,9 @@
         "roster_bench": "Un jugador al banquillo",
         "staff_change": "Cambio de staff",
         "tryouts": "Tryouts",
+        "not_enough_info": "Información insuficiente",
+
+        "wrong_game": "Juego equivocado",
         "match_promo": "Promo de partida",
         "match_result": "Resultado de partida",
         "highlight": "Highlight",
@@ -5506,12 +5509,19 @@
         "notRoster": "No es roster",
         "done": "Hecho"
       },
-      "form": {
-        "topic": "De qué trata",
-        "topicPlaceholder": "Elige un tema",
-        "noteWhatIsIt": "¿Qué es?",
+      "deck": {
+        "next": "Siguiente",
+        "back": "Atrás",
+        "remaining": "Quedan {count} en esta página",
+        "allSeen": "Has revisado todos los tweets de esta página.",
+        "restart": "Empezar de nuevo",
+        "showOriginal": "Mostrar el original",
+        "showTranslation": "Mostrar la traducción al inglés",
+        "explanation": "Explicación",
+        "explanationPlaceholder": "¿Por qué no trata del roster?",
         "confirm": "Confirmar",
-        "cancel": "Cancelar"
+
+        "pickTopic": "¿De qué trata?"
       },
       "reviewed": {
         "team_edited": "Equipo editado",
@@ -5523,7 +5533,6 @@
         "notFound": "Este tweet ya no existe.",
         "invalidState": "Este tweet no admite esta acción, puede que ya esté revisado.",
         "invalidTopic": "Elige un tema válido.",
-        "noteRequired": "Explica de qué trata este tweet.",
         "noteTooLong": "La nota es demasiado larga (1000 caracteres máx.)."
       },
       "accounts": {
@@ -5583,7 +5592,7 @@
       "columnTweet": "Tweet",
       "columnType": "Tipo",
       "columnDate": "Fecha",
-      "columnActions": "Acciones"
+      "columnReview": "Revisar"
     }
   },
   "dashboard": {

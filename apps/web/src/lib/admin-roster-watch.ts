@@ -41,6 +41,8 @@ export type RosterWatchRow = {
   teamLogoUrl: string | null;
   tweetUrl: string;
   text: string;
+  /** English translation, null for tweets classified before translations existed. */
+  textEn: string | null;
   media: XSignalMedia[];
   tweetedAt: string;
   stage: Stage;
@@ -91,6 +93,7 @@ export async function listRosterWatchSignals(filters: RosterWatchFilters): Promi
         teamName: teams.name,
         tweetUrl: xRosterSignals.tweetUrl,
         text: xRosterSignals.text,
+        textEn: xRosterSignals.textEn,
         media: xRosterSignals.media,
         tweetedAt: xRosterSignals.tweetedAt,
         stage: xRosterSignals.stage,
