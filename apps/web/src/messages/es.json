@@ -3922,6 +3922,7 @@
         "fieldMatchScope": "Los equipos también juegan contra equipos de otros grupos (contar los partidos de toda la fase)",
         "fieldMatchScopeHint": "Solo se listan los equipos asignados a este grupo y cuentan sus partidos terminados en cualquier grupo de esta fase. Asigna los equipos tras guardar. Solo round robin.",
         "matchScopeNoTeams": "Aún no hay equipos asignados a este grupo, así que su tabla está vacía. Asígnale equipos primero.",
+        "matchScopeSwitchWarning": "Al cambiar al ámbito de fase solo se listan los equipos asignados. Los equipos que jugaron en este grupo pero no están asignados desaparecerán de su tabla hasta que los asignes.",
         "fieldMatchWinPoints": "Puntos por partido ganado",
         "fieldMatchWinPointsHint": "Déjalo vacío para no contar los partidos ganados en la clasificación.",
         "fieldMapWinPoints": "Puntos por mapa ganado",

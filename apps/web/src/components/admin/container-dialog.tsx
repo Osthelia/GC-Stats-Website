@@ -123,6 +123,9 @@ export function ContainerDialog({
     }
   }, [open, container]);
 
+  // An existing group that has matches and isn't stage-scoped yet: its table would shrink to the pinned teams.
+  const switchesToStageScope = form.stageScope && !!container && container.containerType === "group" && container.matchCount > 0 && parseGroupConfig(container.config).matchScope === "container";
+
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
   function handleSubmit() {
@@ -227,6 +230,7 @@ export function ContainerDialog({
                   </label>
                   <p className="text-xs text-muted-foreground">{t("fieldMatchScopeHint")}</p>
                   {form.stageScope && container && container.groupEntryEntrantIds.length === 0 && <p className="text-xs text-destructive">{t("matchScopeNoTeams")}</p>}
+                  {switchesToStageScope && <p className="text-xs text-destructive">{t("matchScopeSwitchWarning")}</p>}
                 </div>
               )}
 

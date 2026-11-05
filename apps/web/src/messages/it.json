@@ -3918,6 +3918,7 @@
         "fieldMatchScope": "Le squadre giocano anche contro squadre di altri gruppi (conta le partite dell'intera fase)",
         "fieldMatchScopeHint": "Sono elencate solo le squadre assegnate a questo gruppo e contano le loro partite concluse in qualsiasi gruppo di questa fase. Assegna le squadre dopo il salvataggio. Solo round robin.",
         "matchScopeNoTeams": "Nessuna squadra è ancora assegnata a questo gruppo, quindi la tabella è vuota. Assegna prima delle squadre.",
+        "matchScopeSwitchWarning": "Passando all'ambito della fase vengono elencate solo le squadre assegnate. Le squadre che hanno giocato in questo gruppo ma non sono assegnate spariranno dalla tabella finché non le assegni.",
         "fieldMatchWinPoints": "Punti per match vinto",
         "fieldMatchWinPointsHint": "Lascia vuoto per non contare i match vinti in classifica.",
         "fieldMapWinPoints": "Punti per mappa vinta",

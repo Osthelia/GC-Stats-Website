@@ -3914,6 +3914,7 @@
         "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (tüm aşamadaki maçlar sayılır)",
         "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve bu aşamadaki herhangi bir gruptaki tamamlanmış maçları sayılır. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
         "matchScopeNoTeams": "Bu gruba henüz takım atanmadı, bu yüzden tablosu boş. Önce takım atayın.",
+        "matchScopeSwitchWarning": "Aşama kapsamına geçmek yalnızca atanan takımları listeler. Bu grupta oynayıp atanmamış takımlar, siz atayana kadar tablodan kaybolur.",
         "fieldMatchWinPoints": "Maç galibiyeti başına puan",
         "fieldMatchWinPointsHint": "Maç galibiyetlerini sıralamada saymamak için boş bırakın.",
         "fieldMapWinPoints": "Harita galibiyeti başına puan",

@@ -3914,6 +3914,7 @@
         "fieldMatchScope": "As equipas também jogam contra equipas de outros grupos (contar os jogos de toda a fase)",
         "fieldMatchScopeHint": "Só as equipas atribuídas a este grupo são listadas e os seus jogos concluídos em qualquer grupo desta fase contam. Atribui as equipas depois de guardar. Apenas round robin.",
         "matchScopeNoTeams": "Ainda não há equipas atribuídas a este grupo, por isso a tabela está vazia. Atribui-lhe equipas primeiro.",
+        "matchScopeSwitchWarning": "Ao mudar para o âmbito da fase só são listadas as equipas atribuídas. As equipas que jogaram neste grupo mas não estão atribuídas desaparecem da tabela até as atribuíres.",
         "fieldMatchWinPoints": "Pontos por vitória em partida",
         "fieldMatchWinPointsHint": "Deixe em branco para não contar vitórias em partidas na classificação.",
         "fieldMapWinPoints": "Pontos por vitória em mapa",

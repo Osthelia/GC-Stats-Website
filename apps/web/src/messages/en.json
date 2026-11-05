@@ -3922,6 +3922,7 @@
         "fieldMatchScope": "Teams also play teams from other groups (count matches from the whole stage)",
         "fieldMatchScopeHint": "Only the teams pinned to this group are listed, and their completed matches in any group of this stage count. Pin the teams after saving. Round robin only.",
         "matchScopeNoTeams": "No teams are pinned to this group yet, so its table is empty. Assign teams to it first.",
+        "matchScopeSwitchWarning": "Switching to stage scope lists only the pinned teams. Teams that played in this group but aren't pinned will disappear from its table until you pin them.",
         "fieldMatchWinPoints": "Points per match win",
         "fieldMatchWinPointsHint": "Leave blank to not count match wins in the standings.",
         "fieldMapWinPoints": "Points per map win",

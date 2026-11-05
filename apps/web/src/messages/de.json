@@ -3914,6 +3914,7 @@
         "fieldMatchScope": "Teams spielen auch gegen Teams anderer Gruppen (Spiele der ganzen Phase zählen)",
         "fieldMatchScopeHint": "Es werden nur die dieser Gruppe zugewiesenen Teams gelistet; ihre abgeschlossenen Spiele in jeder Gruppe dieser Phase zählen. Teams nach dem Speichern zuweisen. Nur Round Robin.",
         "matchScopeNoTeams": "Dieser Gruppe sind noch keine Teams zugewiesen, daher ist die Tabelle leer. Weise ihr zuerst Teams zu.",
+        "matchScopeSwitchWarning": "Beim Wechsel auf Phasen-Umfang werden nur die zugewiesenen Teams gelistet. Teams, die in dieser Gruppe gespielt haben, aber nicht zugewiesen sind, verschwinden aus der Tabelle, bis du sie zuweist.",
         "fieldMatchWinPoints": "Punkte pro Match Sieg",
         "fieldMatchWinPointsHint": "Leer lassen, um Match Siege nicht in der Tabelle zu zählen.",
         "fieldMapWinPoints": "Punkte pro Map Sieg",

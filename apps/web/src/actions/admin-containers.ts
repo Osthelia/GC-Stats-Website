@@ -55,7 +55,7 @@ export type PointsInput = {
 
 export type ContainerInput =
   | { name: string; status: StageStatus; containerType: "bracket" }
-  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; matchScope: GroupMatchScope; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
+  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; matchScope?: GroupMatchScope; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
 
 const POINTS_FIELDS: (keyof PointsInput)[] = ["matchWinPoints", "mapWinPoints", "roundWinPoints", "matchForfeitWinPoints", "mapForfeitWinPoints"];
 
@@ -74,7 +74,7 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
     }
     // Swiss pairs inside one container and keeps per-container counters, so only round robin can count the whole stage.
     if (input.matchScope === "stage" && input.groupFormat !== "round_robin") fieldErrors.matchScope = "roundRobinOnly";
-    else if (input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
+    else if (input.matchScope !== undefined && input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
     for (const field of POINTS_FIELDS) {
       const value = input[field];
       if (value !== null && !Number.isFinite(value)) fieldErrors[field] = "invalid";
@@ -100,7 +100,7 @@ function buildConfig(game: GameSlug, input: ContainerInput): GroupContainerConfi
   if (input.containerType === "bracket") return {};
   const pointsConfig = buildPointsConfig(input);
   if (input.groupFormat === "round_robin") {
-    return { type: "round_robin", matchScope: input.matchScope, tiebreakers: defaultRoundRobinTiebreakers(game, pointsConfig !== null), pointsConfig };
+    return { type: "round_robin", matchScope: input.matchScope ?? "container", tiebreakers: defaultRoundRobinTiebreakers(game, pointsConfig !== null), pointsConfig };
   }
   return {
     type: "swiss",

@@ -3922,6 +3922,7 @@
         "fieldMatchScope": "Les équipes jouent aussi contre celles d'autres groupes (compter les matchs de toute la phase)",
         "fieldMatchScopeHint": "Seules les équipes assignées à ce groupe sont listées, et leurs matchs terminés dans n'importe quel groupe de cette phase comptent. Assignez les équipes après l'enregistrement. Round robin uniquement.",
         "matchScopeNoTeams": "Aucune équipe n'est encore assignée à ce groupe, son classement est donc vide. Assignez-lui d'abord des équipes.",
+        "matchScopeSwitchWarning": "Passer à la portée de la phase ne liste que les équipes assignées. Les équipes qui ont joué dans ce groupe sans être assignées disparaîtront de son classement tant que vous ne les assignez pas.",
         "fieldMatchWinPoints": "Points par victoire de match",
         "fieldMatchWinPointsHint": "Laissez vide pour ne pas compter les victoires de match dans le classement.",
         "fieldMapWinPoints": "Points par victoire de map",
