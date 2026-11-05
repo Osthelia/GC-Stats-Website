@@ -1119,10 +1119,25 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     // By numeric champion id. `key` is Data Dragon's internal id ("MonkeyKing"), the one its image URLs use.
     champions: jsonb("champions").$type<Record<string, { name: string; key: string }>>().notNull(),
     items: jsonb("items").$type<Record<string, string>>().notNull(), // by numeric item id
+    // Rune and rune tree names by id, so pages never ask Data Dragon. Null for versions stored before the column;
+    // the icon sync fills it in.
+    runes: jsonb("runes").$type<Record<string, string>>(),
+    // Set only once every icon of the version is in the bucket. While null, the next request for the patch tries again.
+    iconsSyncedAt: timestamp("icons_synced_at", { withTimezone: true }),
+    // The lock of the icon sync: one sync per version at a time. A crashed sync frees it after ten minutes.
+    iconsSyncStartedAt: timestamp("icons_sync_started_at", { withTimezone: true }),
     fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
   });
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs };
+  // One row per icon that is in the bucket, inserted after its upload succeeded. Icon files carry no patch, so
+  // this is the record of what the bucket holds and the bucket itself is never asked.
+  const dataDragonIcons = pgTable("lol_data_dragon_icons", {
+    kind: text("kind").$type<"champions" | "items" | "spells" | "runes">().notNull(),
+    iconId: text("icon_id").notNull(), // champions by Data Dragon key ("MonkeyKing"), the rest by numeric id
+    storedAt: timestamp("stored_at", { withTimezone: true }).notNull().defaultNow(),
+  }, (t) => [primaryKey({ columns: [t.kind, t.iconId] })]);
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1241,6 +1256,7 @@ export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
 export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
 export const lolLeaguepediaTeamNames = leagueOnly.leaguepediaTeamNames;
 export const lolDataDragonCatalogs = leagueOnly.dataDragonCatalogs;
+export const lolDataDragonIcons = leagueOnly.dataDragonIcons;
 
 export const valorantTables: GameTables & ValorantOnlyTables = { ...val, ...valorantOnly };
 export const leagueTables: GameTables<"lol"> & LeagueOnlyTables = { ...lol, ...leagueOnly };

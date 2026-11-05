@@ -11,6 +11,7 @@
 
 export * from "./types";
 export * from "./champion-catalog";
+export * from "./data-dragon-icons";
 export * from "./match-id";
 export * from "./league-draft";
 export * from "./game-summary";

@@ -3,21 +3,22 @@
  *
  * Champion and item names of a patch, from Riot's Data Dragon CDN (public, no key). Match-V5 gives numeric
  * champion and item ids, so the names come from here. Each Data Dragon version is stored once in
- * lol_data_dragon_catalogs and never fetched again, because a published version does not change. An import
- * reads the stored names, so it needs Data Dragon only the first time a version is used. Never throws: a
- * failure comes back as a typed error, and the caller stores nothing. The game's icons (champions, items, summoner
- * spells, runes) are copied to the public bucket the same way: once per icon, never failing the import.
+ * lol_data_dragon_catalogs (champion, item and rune names) and never fetched again, because a published version
+ * does not change. An import reads the stored names, so it needs Data Dragon only the first time a version is
+ * used, and pages never ask it. Never throws: a failure comes back as a typed error, and the caller stores
+ * nothing. The icons (champions, items, summoner spells, runes) are copied to the public bucket per patch, after
+ * the response (syncPatchIcons): every icon of a version once, never failing the import.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { adminDb as db, db as cachedDb } from "@gc-stats/db/client";
-import { lolDataDragonCatalogs } from "@gc-stats/db";
-import { compareVersions, internalPatch, patchOf, pickDataDragonVersion, pickStoredVersion, type RiotMatchDto } from "@gc-stats/lol-stats-engine";
-import { convertToWebp, objectExists, putObject } from "@gc-stats/storage";
+import { lolDataDragonCatalogs, lolDataDragonIcons } from "@gc-stats/db";
+import { compareVersions, internalPatch, missingIcons, patchOf, pickDataDragonVersion, pickStoredVersion, summonersRiftItemIds, type DataDragonIconRef } from "@gc-stats/lol-stats-engine";
+import { convertToWebp, putObject } from "@gc-stats/storage";
 import { lolIconKey, lolIconUrl, type LolIconKind } from "./lol-icons";
 
 const DATA_DRAGON_BASE = "https://ddragon.leagueoflegends.com";
@@ -25,6 +26,8 @@ const CDN = `${DATA_DRAGON_BASE}/cdn`;
 const LOCALE = "en_US";
 const ICON_BATCH_SIZE = 8;
 const ICON_WEBP_QUALITY = 80;
+/** A sync that crashed leaves its lock behind; after this long another import may take it over. */
+const ICON_SYNC_LOCK_MINUTES = 10;
 
 export interface DataDragonCatalog {
   /** The Data Dragon version the names come from, e.g. "15.18.1". */
@@ -33,6 +36,8 @@ export interface DataDragonCatalog {
   /** Data Dragon's internal champion key ("MonkeyKing"), the name its image URLs use. */
   championKeyById: Map<number, string>;
   itemNameById: Map<number, string>;
+  /** Rune and rune tree names by id. Empty for a version stored before the column, until its first icon sync. */
+  runeNames: Record<string, string>;
 }
 
 export type ChampionCatalogResult = { ok: true; catalog: DataDragonCatalog } | { ok: false; error: { kind: "dataDragonUnavailable" } };
@@ -40,13 +45,26 @@ export type ChampionCatalogResult = { ok: true; catalog: DataDragonCatalog } | {
 /** The stored shape: keyed by the numeric id as a string. */
 export type ChampionRecords = Record<string, { name: string; key: string }>;
 export type ItemRecords = Record<string, string>;
+export type RuneRecords = Record<string, string>;
 
 interface ChampionFile {
   data: Record<string, { id: string; key: string; name: string }>;
 }
 
 interface ItemFile {
-  data: Record<string, { name: string }>;
+  data: Record<string, { name: string; maps?: Record<string, boolean> }>;
+}
+
+interface SummonerFile {
+  data: Record<string, { key: string; image: { full: string } }>;
+}
+
+/** runesReforged.json: the rune trees, each with its keystone and perk slots. Icon paths are relative to the CDN's img folder. */
+interface RuneStyleFile {
+  id: number;
+  name: string;
+  icon: string;
+  slots: { runes: { id: number; name: string; icon: string }[] }[];
 }
 
 /** Catalogs already read in this process, by Data Dragon version. A version never changes, so they are kept. */
@@ -91,6 +109,16 @@ export function parseItemNames(file: ItemFile): ItemRecords {
   return records;
 }
 
+/** Rune ids (trees and perks) to their names. */
+export function parseRuneNames(styles: RuneStyleFile[]): RuneRecords {
+  const records: RuneRecords = {};
+  for (const style of styles) {
+    records[String(style.id)] = style.name;
+    for (const slot of style.slots) for (const rune of slot.runes) records[String(rune.id)] = rune.name;
+  }
+  return records;
+}
+
 function fromMemory(patch: string): DataDragonCatalog | null {
   const version = newestVersion([...loaded.keys()].filter((v) => patchOf(v) === patch));
   return version === null ? null : (loaded.get(version) ?? null);
@@ -108,14 +136,17 @@ async function fetchFromDataDragon(patch: string): Promise<DataDragonCatalog | n
     const versions = await getJson<string[]>(`${DATA_DRAGON_BASE}/api/versions.json`);
     const version = pickDataDragonVersion(versions, patch);
     if (version === null) return null;
-    const [champions, items] = await Promise.all([
-      getJson<ChampionFile>(`${DATA_DRAGON_BASE}/cdn/${version}/data/${LOCALE}/champion.json`),
-      getJson<ItemFile>(`${DATA_DRAGON_BASE}/cdn/${version}/data/${LOCALE}/item.json`),
+    const [champions, items, runeStyles] = await Promise.all([
+      getJson<ChampionFile>(`${CDN}/${version}/data/${LOCALE}/champion.json`),
+      getJson<ItemFile>(`${CDN}/${version}/data/${LOCALE}/item.json`),
+      // Rune names are not needed to import a game, so a failed read keeps the catalog; the icon sync fills them in.
+      getJson<RuneStyleFile[]>(`${CDN}/${version}/data/${LOCALE}/runesReforged.json`).catch(sourceFailure),
     ]);
     const championRecords = parseChampionNames(champions);
     const itemRecords = parseItemNames(items);
-    await storeCatalog(version, championRecords, itemRecords);
-    return remember(version, championRecords, itemRecords);
+    const runeRecords = runeStyles ? parseRuneNames(runeStyles) : null;
+    await storeCatalog(version, championRecords, itemRecords, runeRecords);
+    return remember(version, championRecords, itemRecords, runeRecords);
   } catch (err) {
     console.warn(`[data-dragon] catalog request error: ${err instanceof Error ? err.message : String(err)}`);
     return null;
@@ -145,29 +176,6 @@ export async function getChampionNamesForPatch(patch: string | null): Promise<st
   return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
 }
 
-interface RuneNameFile {
-  id: number;
-  name: string;
-  slots: { runes: { id: number; name: string }[] }[];
-}
-
-/** Rune ids (trees and perks) to their names. A Data Dragon version never changes, so each one is read once. */
-const runeNamesByVersion = new Map<string, Record<string, string>>();
-
-async function runeNamesOf(version: string): Promise<Record<string, string>> {
-  const known = runeNamesByVersion.get(version);
-  if (known) return known;
-  const styles = await getJson<RuneNameFile[]>(`${CDN}/${version}/data/${LOCALE}/runesReforged.json`).catch(iconSourceFailure);
-  if (!styles) return {};
-  const names: Record<string, string> = {};
-  for (const style of styles) {
-    names[String(style.id)] = style.name;
-    for (const slot of style.slots) for (const rune of slot.runes) names[String(rune.id)] = rune.name;
-  }
-  runeNamesByVersion.set(version, names);
-  return names;
-}
-
 export interface DisplayCatalog {
   championIconKeys: Record<string, string>;
   itemNames: Record<string, string>;
@@ -195,7 +203,7 @@ export async function getDisplayCatalog(patch: string | null): Promise<DisplayCa
   return {
     championIconKeys: championIconKeysOf(catalog),
     itemNames: Object.fromEntries([...catalog.itemNameById].map(([id, name]) => [String(id), name])),
-    runeNames: await runeNamesOf(catalog.version),
+    runeNames: catalog.runeNames,
   };
 }
 
@@ -206,30 +214,31 @@ async function storedVersions(reader: Reader = db): Promise<string[]> {
 
 async function loadStored(version: string, reader: Reader = db): Promise<DataDragonCatalog | null> {
   const [row] = await reader
-    .select({ champions: lolDataDragonCatalogs.champions, items: lolDataDragonCatalogs.items })
+    .select({ champions: lolDataDragonCatalogs.champions, items: lolDataDragonCatalogs.items, runes: lolDataDragonCatalogs.runes })
     .from(lolDataDragonCatalogs)
     .where(eq(lolDataDragonCatalogs.version, version));
-  return row ? remember(version, row.champions, row.items) : null;
+  return row ? remember(version, row.champions, row.items, row.runes) : null;
 }
 
 /**
  * Two imports can race on the same new version, so the second insert does nothing. A failed write only means
  * the next import fetches the version again, so it is logged and not thrown.
  */
-async function storeCatalog(version: string, champions: ChampionRecords, items: ItemRecords): Promise<void> {
+async function storeCatalog(version: string, champions: ChampionRecords, items: ItemRecords, runes: RuneRecords | null): Promise<void> {
   try {
-    await db.insert(lolDataDragonCatalogs).values({ version, champions, items }).onConflictDoNothing();
+    await db.insert(lolDataDragonCatalogs).values({ version, champions, items, runes }).onConflictDoNothing();
   } catch (err) {
     console.warn(`[data-dragon] could not store ${version}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 
-function remember(version: string, champions: ChampionRecords, items: ItemRecords): DataDragonCatalog {
+function remember(version: string, champions: ChampionRecords, items: ItemRecords, runes: RuneRecords | null): DataDragonCatalog {
   const catalog: DataDragonCatalog = {
     version,
     championNameById: new Map(Object.entries(champions).map(([id, c]) => [Number(id), c.name])),
     championKeyById: new Map(Object.entries(champions).map(([id, c]) => [Number(id), c.key])),
     itemNameById: new Map(Object.entries(items).map(([id, name]) => [Number(id), name])),
+    runeNames: runes ?? {},
   };
   loaded.set(version, catalog);
   return catalog;
@@ -240,115 +249,135 @@ function newestVersion(versions: string[]): string | null {
   return [...versions].sort((a, b) => compareVersions(b, a))[0] ?? null;
 }
 
-/**
- * Copies the missing icons of the game to the public bucket. Failures are logged and skipped, so a bad icon never
- * fails the import. Each icon is checked first, so one that is already stored is never fetched again.
- */
-export async function storeMissingIcons(match: RiotMatchDto, catalog: DataDragonCatalog): Promise<void> {
-  try {
-    const candidates = iconsOf(match, catalog);
-    const present = await inIconBatches(candidates, (icon) => objectExists(lolIconKey(icon.kind, icon.id)));
-    const missing = candidates.filter((_, i) => !present[i]);
-    if (missing.length === 0) return;
+/** Versions whose icons are all stored, as far as this process knows. A synced version never changes back. */
+const syncedVersions = new Set<string>();
 
-    if (missing.some((icon) => icon.kind === "spells")) await assignSpellUrls(missing, catalog.version);
-    if (missing.some((icon) => icon.kind === "runes")) await assignRuneUrls(missing, catalog.version);
-
-    await inIconBatches(missing, storeIcon);
-  } catch (err) {
-    console.warn(`[data-dragon] could not check the game's icons: ${err instanceof Error ? err.message : String(err)}`);
-  }
-}
-
-interface Icon {
+interface Icon extends DataDragonIconRef {
   kind: LolIconKind;
-  id: string;
   /** Edge length in pixels. Champions are larger than everything else. */
   size: number;
-  /** null until the source is known: spells and runes are looked up in Data Dragon's own files. */
-  url: string | null;
+  url: string;
 }
 
-interface SummonerFile {
-  data: Record<string, { key: string; image: { full: string } }>;
+/** The catalog of the patch (public name, or the newest when null) as stored, then its icons. For pages that show a patch's champions without an import. */
+export async function syncIconsOfPatch(patch: string | null): Promise<void> {
+  const catalog = await storedCatalogForPatch(patch, db).catch(() => null);
+  if (catalog) await syncPatchIcons(catalog.version);
 }
 
-interface RuneStyleFile {
-  id: number;
-  icon: string;
-  slots: { runes: { id: number; icon: string }[] }[];
-}
+/**
+ * Stores every icon of a Data Dragon version in the public bucket, once. The version is marked done only when all of
+ * its icons are stored, so a patch with a failed icon is tried again by the next request for it. Only one sync runs per
+ * version (a lock on the catalog row). Never throws: it runs after the response, and a missing icon only shows a
+ * placeholder. Also stores the version's rune names, which the catalog lacked before this sync existed.
+ */
+export async function syncPatchIcons(version: string): Promise<void> {
+  if (syncedVersions.has(version)) return;
+  try {
+    const [row] = await db.select({ syncedAt: lolDataDragonCatalogs.iconsSyncedAt }).from(lolDataDragonCatalogs).where(eq(lolDataDragonCatalogs.version, version));
+    if (!row) return;
+    if (row.syncedAt !== null) {
+      syncedVersions.add(version);
+      return;
+    }
+    if (!(await takeSyncLock(version))) return;
 
-/** Every icon the game shows: the champions, the items, the summoner spells and the rune styles and perks. */
-function iconsOf(match: RiotMatchDto, catalog: DataDragonCatalog): Icon[] {
-  const participants = match.info.participants;
-  const version = catalog.version;
-  const championIds = [...participants.map((p) => p.championId), ...match.info.teams.flatMap((team) => team.bans.map((ban) => ban.championId).filter((id) => id > 0))];
-  const champions = uniqueValues(championIds.map((id) => catalog.championKeyById.get(id)).filter((key): key is string => key !== undefined));
-  const items = uniqueValues(participants.flatMap((p) => [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6]).filter((id) => id > 0));
-  const spells = uniqueValues(participants.flatMap((p) => [p.spell1Id, p.spell2Id]).filter((id) => id > 0));
-  const runes = uniqueValues(participants.flatMap((p) => p.perks.styles.flatMap((style) => [style.style, ...style.selections.map((s) => s.perk)])));
-
-  return [
-    ...champions.map((key): Icon => ({ kind: "champions", id: key, size: 128, url: `${CDN}/${version}/img/champion/${key}.png` })),
-    ...items.map((id): Icon => ({ kind: "items", id: String(id), size: 64, url: `${CDN}/${version}/img/item/${id}.png` })),
-    ...spells.map((id): Icon => ({ kind: "spells", id: String(id), size: 64, url: null })),
-    ...runes.map((id): Icon => ({ kind: "runes", id: String(id), size: 64, url: null })),
-  ];
-}
-
-/** Data Dragon names each spell's image by its own name, so the numeric id is looked up in summoner.json. */
-async function assignSpellUrls(missing: Icon[], version: string): Promise<void> {
-  const file = await getJson<SummonerFile>(`${CDN}/${version}/data/${LOCALE}/summoner.json`).catch(iconSourceFailure);
-  if (!file) return;
-  const urlById = new Map(Object.values(file.data).map((spell) => [spell.key, `${CDN}/${version}/img/spell/${spell.image.full}`]));
-  for (const icon of missing) if (icon.kind === "spells") icon.url = urlById.get(icon.id) ?? null;
-}
-
-/** Runes and rune styles, from runesReforged.json. Their icon paths are relative to the CDN's img folder. */
-async function assignRuneUrls(missing: Icon[], version: string): Promise<void> {
-  const styles = await getJson<RuneStyleFile[]>(`${CDN}/${version}/data/${LOCALE}/runesReforged.json`).catch(iconSourceFailure);
-  if (!styles) return;
-  const urlById = new Map<string, string>();
-  for (const style of styles) {
-    urlById.set(String(style.id), `${CDN}/img/${style.icon}`);
-    for (const slot of style.slots) for (const rune of slot.runes) urlById.set(String(rune.id), `${CDN}/img/${rune.icon}`);
+    let synced = false;
+    try {
+      synced = await syncIcons(version);
+    } finally {
+      // A finished sync is marked done; a failed one frees the lock so the next request retries at once.
+      await db
+        .update(lolDataDragonCatalogs)
+        .set({ iconsSyncStartedAt: null, ...(synced ? { iconsSyncedAt: sql`now()` } : {}) })
+        .where(eq(lolDataDragonCatalogs.version, version));
+    }
+    if (synced) syncedVersions.add(version);
+  } catch (err) {
+    console.warn(`[data-dragon] icon sync of ${version} failed: ${err instanceof Error ? err.message : String(err)}`);
   }
-  for (const icon of missing) if (icon.kind === "runes") icon.url = urlById.get(icon.id) ?? null;
 }
 
-async function storeIcon(icon: Icon): Promise<void> {
-  if (icon.url === null) {
-    console.warn(`[data-dragon] no source for ${icon.kind}/${icon.id}`);
-    return;
+/** One UPDATE decides which import syncs: only a version that is not done and whose lock is free or expired. */
+async function takeSyncLock(version: string): Promise<boolean> {
+  const taken = await db
+    .update(lolDataDragonCatalogs)
+    .set({ iconsSyncStartedAt: sql`now()` })
+    .where(
+      and(
+        eq(lolDataDragonCatalogs.version, version),
+        isNull(lolDataDragonCatalogs.iconsSyncedAt),
+        or(isNull(lolDataDragonCatalogs.iconsSyncStartedAt), lt(lolDataDragonCatalogs.iconsSyncStartedAt, sql`now() - ${`${ICON_SYNC_LOCK_MINUTES} minutes`}::interval`)),
+      ),
+    )
+    .returning({ version: lolDataDragonCatalogs.version });
+  return taken.length > 0;
+}
+
+/** Reads the version's files, stores the rune names and uploads the icons not stored yet. True when nothing is missing afterwards. */
+async function syncIcons(version: string): Promise<boolean> {
+  const base = `${CDN}/${version}/data/${LOCALE}`;
+  const [champions, items, spells, runeStyles] = await Promise.all([
+    getJson<ChampionFile>(`${base}/champion.json`),
+    getJson<ItemFile>(`${base}/item.json`),
+    getJson<SummonerFile>(`${base}/summoner.json`),
+    getJson<RuneStyleFile[]>(`${base}/runesReforged.json`),
+  ]);
+  await db.update(lolDataDragonCatalogs).set({ runes: parseRuneNames(runeStyles) }).where(eq(lolDataDragonCatalogs.version, version));
+
+  const wanted = iconsOfVersion(version, champions, items, spells, runeStyles);
+  const stored = await db.select({ kind: lolDataDragonIcons.kind, id: lolDataDragonIcons.iconId }).from(lolDataDragonIcons);
+  const missing = new Set(missingIcons(wanted, stored).map((icon) => `${icon.kind}/${icon.id}`));
+  const toUpload = wanted.filter((icon) => missing.has(`${icon.kind}/${icon.id}`));
+
+  const results = await inIconBatches(toUpload, storeIcon);
+  return results.every(Boolean);
+}
+
+/** Every icon of the version: all champions, the Summoner's Rift items, all summoner spells and the rune trees and perks. */
+function iconsOfVersion(version: string, champions: ChampionFile, items: ItemFile, spells: SummonerFile, runeStyles: RuneStyleFile[]): Icon[] {
+  const icons: Icon[] = [];
+  for (const champion of Object.values(champions.data)) {
+    icons.push({ kind: "champions", id: champion.id, size: 128, url: `${CDN}/${version}/img/champion/${champion.id}.png` });
   }
+  for (const id of summonersRiftItemIds(items.data)) icons.push({ kind: "items", id, size: 64, url: `${CDN}/${version}/img/item/${id}.png` });
+  // Data Dragon names each spell's image by its own name, so the numeric id comes from the file.
+  for (const spell of Object.values(spells.data)) icons.push({ kind: "spells", id: spell.key, size: 64, url: `${CDN}/${version}/img/spell/${spell.image.full}` });
+  for (const style of runeStyles) {
+    icons.push({ kind: "runes", id: String(style.id), size: 64, url: `${CDN}/img/${style.icon}` });
+    for (const slot of style.slots) for (const rune of slot.runes) icons.push({ kind: "runes", id: String(rune.id), size: 64, url: `${CDN}/img/${rune.icon}` });
+  }
+  return icons;
+}
+
+/** Uploads one icon and records it. False when it could not be stored, so the version stays open. */
+async function storeIcon(icon: Icon): Promise<boolean> {
   try {
     const response = await fetch(icon.url);
     if (!response.ok) throw new Error(`${icon.url} returned status ${response.status}`);
     const source = Buffer.from(await response.arrayBuffer());
     const webp = await convertToWebp(source, { width: icon.size, height: icon.size, quality: ICON_WEBP_QUALITY, fit: "inside" });
     await putObject(lolIconKey(icon.kind, icon.id), webp, "image/webp");
+    await db.insert(lolDataDragonIcons).values({ kind: icon.kind, iconId: icon.id }).onConflictDoNothing();
+    return true;
   } catch (err) {
     console.warn(`[data-dragon] could not store ${icon.kind}/${icon.id}: ${err instanceof Error ? err.message : String(err)}`);
+    return false;
   }
 }
 
-function iconSourceFailure(err: unknown): null {
-  console.warn(`[data-dragon] could not read an icon source: ${err instanceof Error ? err.message : String(err)}`);
+function sourceFailure(err: unknown): null {
+  console.warn(`[data-dragon] could not read a Data Dragon file: ${err instanceof Error ? err.message : String(err)}`);
   return null;
 }
 
-/** Runs the task for each icon, a batch at a time, so one import does not open dozens of requests at once. */
+/** Runs the task for each icon, a batch at a time, so a sync does not open hundreds of requests at once. */
 async function inIconBatches<T, R>(items: T[], task: (item: T) => Promise<R>): Promise<R[]> {
   const results: R[] = [];
   for (let i = 0; i < items.length; i += ICON_BATCH_SIZE) {
     results.push(...(await Promise.all(items.slice(i, i + ICON_BATCH_SIZE).map(task))));
   }
   return results;
-}
-
-function uniqueValues<T>(values: T[]): T[] {
-  return [...new Set(values)];
 }
 
 async function getJson<T>(url: string): Promise<T> {

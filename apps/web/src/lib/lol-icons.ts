@@ -2,9 +2,9 @@
  * GC-Stats - lol-icons
  *
  * Where the League icons live in the public bucket: champions, items, summoner spells and runes, one WebP
- * file each. The keys carry no patch version, so a new patch only adds the icons it brings. The import copies
- * the missing ones (storeMissingIcons in data-dragon-client), and pages build their URLs from these helpers with no request to
- * Riot or Data Dragon.
+ * file each. The keys carry no patch version, so a new patch only adds the icons it brings. The first request
+ * for a patch copies all of its icons (syncPatchIcons in data-dragon-client), and pages build their URLs from these
+ * helpers with no request to Riot or Data Dragon.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
