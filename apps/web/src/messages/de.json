@@ -7,6 +7,7 @@
     "matches": "Spiele",
     "tournaments": "Turniere",
     "news": "News",
+    "calendar": "Kalender",
     "forum": "Forum",
     "about": "Über uns",
     "search": "Suche",
@@ -472,8 +473,61 @@
             "notAuthorized": "Das dürfen Sie nicht tun.",
             "resolved": "Dieser Änderungsantrag ist abgeschlossen, die Diskussion ist geschlossen."
           }
-        }
+        },
+        "joinSource": "Quelle des Zugangs",
+        "leftSource": "Quelle des Abgangs"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API Schlüssel",
+      "subtitle": "Erstellen Sie einen kostenlosen öffentlichen API Schlüssel, um die GC Stats API in Ihrem Projekt zu nutzen.",
+      "notice": {
+        "rateLimit": "Öffentliche Schlüssel sind auf {rate} Anfragen pro Sekunde und Konto begrenzt, geteilt zwischen all deinen Schlüsseln. Dieses Limit kann sich jederzeit ohne Vorankündigung ändern.",
+        "stable": "Ein stabiles Limit erhalten Sie nur, indem Sie beim GC Stats Team einen Partner API Schlüssel beantragen.",
+        "noWebhooks": "Öffentliche Schlüssel geben keinen Zugriff auf Webhooks, diese sind Partnerschlüsseln vorbehalten.",
+        "requestPartner": "Partner API Schlüssel beantragen"
+      },
+      "create": {
+        "heading": "Öffentlichen Schlüssel erstellen",
+        "description": "Sagen Sie uns, wo die Daten verwendet werden. Sie können bis zu {max} aktive öffentliche Schlüssel haben.",
+        "clientName": "Produkt oder Unternehmen",
+        "clientNamePlaceholder": "Liquipedia, Remake, mein Discord Bot...",
+        "usageDescription": "Beschreibung der Nutzung",
+        "usageDescriptionPlaceholder": "Wofür die Daten verwendet werden, welche Endpoints und ungefähr wie oft.",
+        "submit": "Schlüssel erstellen",
+        "termsNote": "Für deinen API Schlüssel gelten dieselben <terms>Nutzungsbedingungen</terms> wie für die Website."
+      },
+      "created": {
+        "title": "Ihr neuer API Schlüssel",
+        "warning": "Kopieren Sie ihn jetzt: Er wird nie wieder angezeigt. Senden Sie ihn im Header x-api-key Ihrer Anfragen.",
+        "copy": "Schlüssel kopieren",
+        "dismiss": "Ich habe ihn kopiert"
+      },
+      "list": {
+        "heading": "Ihre öffentlichen Schlüssel",
+        "empty": "Sie haben noch keinen öffentlichen API Schlüssel.",
+        "active": "Aktiv",
+        "revoked": "Widerrufen",
+        "requests": "{count, plural, one {# Anfrage} other {# Anfragen}} in 30 Tagen",
+        "revoke": "Widerrufen",
+        "suspended": "Gesperrt",
+        "suspendedHint": "Dieser Schlüssel wurde vom GC Stats Team gesperrt. Kontaktiere uns auf Discord, um die Reaktivierung zu beantragen."
+      },
+      "error": {
+        "required": "Dieses Feld ist erforderlich.",
+        "tooShort": "Mindestens {min} Zeichen.",
+        "tooLong": "Höchstens {max} Zeichen.",
+        "tooManyKeys": "Sie haben bereits {max} aktive öffentliche Schlüssel. Widerrufen Sie einen, um einen neuen zu erstellen.",
+        "unauthenticated": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
+        "disabled": "Öffentliche API Schlüssel sind derzeit deaktiviert.",
+        "invalid": "Einige Felder sind ungültig.",
+        "notFound": "Dieser Schlüssel existiert nicht mehr.",
+        "network": "Netzwerkfehler, bitte versuchen Sie es erneut.",
+        "blocked": "Dein Zugriff auf die API wurde gesperrt."
+      },
+      "blocked": "Dein Zugriff auf die API wurde gesperrt, du kannst keine API Schlüssel mehr erstellen.",
+      "contactDiscord": "Kontaktiere uns auf Discord"
     }
   },
   "notifications": {
@@ -732,11 +786,11 @@
     "intro": "Diese Richtlinie informiert Sie darüber, wie wir Daten auf dieser Website verarbeiten, mit besonderem Augenmerk auf Transparenz und den Schutz der Privatsphäre.",
     "analytics": {
       "title": "Navigation und Statistiken",
-      "text": "Wir messen die Besucherzahlen der Website vollständig anonym: Diese Statistiken speichern niemals eine IP Adresse, sondern nur das Land, die Seite und den Zeitpunkt des Besuchs, ohne individuelle Verfolgung oder digitalen Fingerabdruck. Wenn Sie ein Konto erstellen, wird Ihre Anmeldesitzung (IP Adresse und Nutzer Agent) jedoch vorübergehend aus Sicherheitsgründen gespeichert (Schutz vor Kontoübernahme), wie es bei praktisch jeder Website mit Authentifizierung üblich ist."
+      "text": "Wir messen die Besucherzahlen der Website völlig anonym: Gezählt werden nur die besuchte Seite, der Tag und die Anzahl der Aufrufe, ohne IP-Adresse, ohne individuelles Tracking und ohne Fingerprinting. Zum Schutz der Website vor Bots und Missbrauch protokollieren unsere Server jede Anfrage (IP-Adresse, angeforderte Seite, Browser, Datum) 14 Tage lang. Wenn du ein Konto hast, wird die IP-Adresse jeder Anmeldung außerdem 90 Tage lang im Sicherheitsprotokoll deines Kontos gespeichert."
     },
     "publicData": {
       "title": "Öffentliche Daten",
-      "text": "Profilinformationen (Handle, Biografie, Social Media Links, Land) werden vom Spieler freiwillig angegeben und öffentlich auf der Website angezeigt. Spielstatistiken werden direkt über die offizielle Riot Games API für Spiele erhoben, die als Teil verfolgter Turniere identifiziert wurden. Alle diese Daten sind öffentlich zugänglich und werden über unsere API geteilt."
+      "text": "Profilinformationen (Spielername, Biografie, soziale Netzwerke, Land) werden von der Spielerin oder ihrer Organisation angegeben oder von unserem Team aus öffentlichen Quellen hinzugefügt und öffentlich auf der Website angezeigt. Spielstatistiken werden direkt über die offizielle Riot-Games-API für die Matches der abgedeckten Turniere erhoben. Alle diese Daten sind öffentlich zugänglich und werden über unsere API geteilt."
     },
     "privateData": {
       "title": "Private Daten",
@@ -749,22 +803,21 @@
     },
     "socialLogin": {
       "title": "Anmeldung über Discord, Twitter/X oder Twitch",
-      "text": "Sie können Ihr Konto mit Discord, Twitter/X oder Twitch verknüpfen, um sich schneller anzumelden. Wir speichern dann Ihre ID auf dieser Plattform, Ihren Nickname, Ihren Avatar sowie die Zugriffs und Aktualisierungstoken, die zur Aufrechterhaltung der Verbindung erforderlich sind (diese Token werden nur zur Authentifizierung Ihres Kontos verwendet und niemals geteilt). Sie können diese Konten jederzeit in Ihren Profileinstellungen trennen.",
-      "gravatar": "Standard Avatar: Wenn Sie über kein verknüpftes Konto einen Avatar haben, kann ein Bild von Gravatar (Automattic) anhand eines Hashwerts Ihrer E Mail Adresse angefordert werden, ein von vielen Websites genutzter Standarddienst eines Drittanbieters."
+      "text": "Sie können Ihr Konto mit Discord, Twitter/X oder Twitch verknüpfen, um sich schneller anzumelden. Wir speichern dann Ihre ID auf dieser Plattform, Ihren Nickname, Ihren Avatar sowie die Zugriffs und Aktualisierungstoken, die zur Aufrechterhaltung der Verbindung erforderlich sind (diese Token werden nur zur Authentifizierung Ihres Kontos verwendet und niemals geteilt). Sie können diese Konten jederzeit in Ihren Profileinstellungen trennen."
     },
     "moderation": {
       "title": "Moderation und Sicherheit der Community",
       "text": "Um die Community sicher zu halten, führen wir einen Verlauf der Sanktionen (Verwarnungen, Banns), die auf ein Konto oder Team angewendet wurden, der von Nutzern eingereichten Meldungen (Betrug, Umgehung von Sperren, Belästigung, Fake Konten usw.) sowie ein Aktivitätsprotokoll der Moderationsmaßnahmen.",
-      "retentionNote": "Um die Umgehung von Sperren zu verhindern, kann ein technischer Fingerabdruck (z. B. eine E Mail Adresse) einer Sanktion zugeordnet und auch nach Löschung des zugehörigen Kontos aufbewahrt werden. Gleiches gilt für den Verlauf der Meldungen und das Moderationsprotokoll, die einen unabhängig vom Konto geführten Sicherheitsnachweis bilden."
+      "retentionNote": "Um die Umgehung einer Sperre zu verhindern, bilden der Sanktionsverlauf, die Meldungen und das Moderationsprotokoll eine Sicherheitsakte, die auch nach Löschung des betroffenen Kontos aufbewahrt wird."
     },
     "dataStructure": {
-      "title": "Datenstruktur",
-      "text": "Um die von uns gespeicherten und geteilten Daten besser zu verstehen, finden Sie unten unsere Datenstruktur. Sie listet alle gespeicherten Daten auf und erläutert ihren Nutzen, ob sie verpflichtend sind und ob sie geteilt werden.",
-      "button": "Gespeicherte Daten ansehen"
+      "title": "Personenbezogene Daten im Detail",
+      "text": "Für alle personenbezogenen Daten, die wir speichern: wie wir sie erhalten, wo sie gespeichert werden und wie lange wir sie aufbewahren.",
+      "button": "Daten im Detail ansehen"
     },
     "retention": {
       "title": "Aufbewahrungsdauer",
-      "text": "Spieldaten werden so lange aufbewahrt, wie das Team oder der Spieler im Projekt Ökosystem aktiv ist. Sie können jederzeit die Löschung Ihrer Daten beantragen."
+      "text": "Spielerinnenprofile und Matchdaten werden dauerhaft als Archiv der Szene aufbewahrt, auch wenn eine Person aufhört zu spielen. Kontodaten werden aufbewahrt, solange das Konto existiert. Zugriffsprotokolle werden nach 14 Tagen gelöscht, Anmelde-IP-Adressen nach 90 Tagen. Du kannst jederzeit die Berichtigung oder Löschung deiner Daten verlangen, außer der Daten, die für eine Moderationsakte unbedingt nötig sind."
     },
     "rights": {
       "title": "Ihre Rechte (DSGVO)",
@@ -775,7 +828,11 @@
       "title": "Cookies",
       "text": "Diese Website verwendet keine Werbe oder Profiling Cookies. Es werden nur unbedingt notwendige technische Cookies für den Sitzungsbetrieb verwendet."
     },
-    "takedownLink": "Eine Entfernung von Inhalten beantragen"
+    "takedownLink": "Eine Entfernung von Inhalten beantragen",
+    "hosting": {
+      "title": "Hosting",
+      "text": "Die Website, die Datenbank und die Serverprotokolle werden bei Infomaniak in der Schweiz gehostet. Externe Sicherungen sind verschlüsselt und bei Exoscale in Zürich und Genf gespeichert. Öffentliche Dateien (Bilder, Logos) laufen über das CDN Bunny.net, das so eingerichtet ist, dass es keine IP-Adresse erhebt."
+    }
   },
   "legalNotice": {
     "title": "Impressum",
@@ -810,7 +867,7 @@
       "name": "Hosting der Website",
       "nameSecondary": "Datenbank",
       "cdnTitle": "Bildspeicherung und Auslieferung",
-      "cdnValue": "Cloudflare (CDN), genutzt für das Caching und die Auslieferung von Logos, Avataren und News Bildern.",
+      "cdnValue": "Bunny.net (CDN), genutzt für das Caching und die Auslieferung von Logos, Avataren und News Bildern.",
       "mailTitle": "E Mail Zustellung",
       "mailValue": "Für den Versand transaktionaler E-Mails (Authentifizierung und Kontobenachrichtigungen) wird Infomaniak genutzt."
     },
@@ -862,15 +919,10 @@
     "hosting": {
       "title": "Hosting und Infrastruktur",
       "body": "Wir verlassen uns auf eine kleine Anzahl von Anbietern, um GC Stats schnell, zuverlässig und transparent zu halten. Hier sehen Sie genau, wer was hostet, ohne die von uns erhobenen Daten jemals weiterzuverkaufen.",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "Hosting (Workers)",
-        "body": "Hostet und veröffentlicht die GC Stats Website über sein Workers Netzwerk: Edge Ausführung weltweit sowie eine Vorschau Bereitstellung für jede Änderung, bevor sie live geht."
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
-        "body": "Speichert unser CSS/JS sowie Spieler, Team und Turnierbilder zwischen, auf Servern weltweit, um die Last unserer eigenen Server zu verringern."
+        "body": "Speichert unser CSS/JS sowie Spieler, Team und Turnierbilder zwischen, auf Servern weltweit, um die Last unserer eigenen Server zu verringern. Das CDN ist so eingerichtet, dass es keine IP-Adresse erhebt."
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -882,7 +934,7 @@
         },
         "publicCloud": {
           "title": "Public Cloud",
-          "body": "Infomaniak Server, auf denen unsere internen Dienste und unsere Datenbank laufen, privat verbunden mit unserer Cloudflare Infrastruktur (Workers VPC)."
+          "body": "Infomaniak-Server (ein Kubernetes-Cluster), auf denen die GC-Stats-Website, unsere internen Dienste und unsere Datenbank laufen."
         },
         "database": {
           "title": "Datenbank",
@@ -894,7 +946,7 @@
         },
         "domain": {
           "title": "Domain Registrar",
-          "body": "Registriert und verwaltet unseren Domainnamen (die Nameserver selbst werden separat von Cloudflare verwaltet)."
+          "body": "Registriert und verwaltet unseren Domainnamen und seine DNS-Zone."
         },
         "quote": {
           "p1": "Infomaniak ist ein Schweizer Anbieter, der einige meiner Werte teilt: Privatsphäre, Umwelt und Respekt gegenüber seinen Kunden.",
@@ -903,12 +955,17 @@
           "p4": "Ich hielt es für wichtig, diese Entscheidung zu erklären, und vor allem über Infomaniak zu sprechen: Es ist ein weniger bekannter Anbieter, der es aber verdient hätte, bekannter zu sein. Zumal ein kostenloses E Mail Konto oder ein OneDrive Abo ohne wirklichen Mehrpreis zu ihnen migriert werden kann, für einen ebenso guten Dienst, aber mit einem Mindestmaß an Respekt für Sie, Ihre Privatsphäre und unseren Planeten.",
           "cite": "Lacy, Gründer/in von GC Stats"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "Externe Sicherungen",
+        "body": "Tägliche verschlüsselte Sicherung unserer Datenbank und Dateien, gespeichert in der Schweiz (Zürich, nach Genf repliziert). Jede Sicherung ist 30 Tage lang unveränderbar und wird danach gelöscht."
       }
     },
     "data": {
       "title": "Erhobene Daten",
-      "body": "Wir dokumentieren öffentlich jede von uns gespeicherte Dateneinheit: Spieler, Teams, Turniere und Spiele. Keine Daten werden ohne einen mit dem Betrieb der Website verbundenen Grund erhoben.",
-      "link": "Unsere gespeicherten Daten ansehen"
+      "body": "Wir dokumentieren öffentlich die personenbezogenen Daten, die wir speichern: wie wir sie erhalten, wo sie gespeichert werden und wie lange wir sie aufbewahren. Es werden keine Daten ohne Grund erhoben, der mit dem Betrieb der Website zusammenhängt.",
+      "link": "Personenbezogene Daten ansehen"
     },
     "finance": {
       "title": "Finanzen",
@@ -920,8 +977,8 @@
     "title": "Entwickler",
     "intro": "All unsere Daten, um Ihnen beim Aufbau Ihres Projekts zu helfen! Und wenn Sie Lust haben, zu GC Stats beizutragen, freuen wir uns auch über Sie.",
     "apiKey": {
-      "title": "Einen API Schlüssel beantragen",
-      "body": "Um Missbrauch zu verhindern, erfordert unsere API eine Authentifizierung. Wenn Sie sie nutzen möchten, kontaktieren Sie uns auf Discord oder per E Mail.",
+      "title": "Einen Partner API Schlüssel beantragen",
+      "body": "Partnerschlüssel haben ein stabiles Anfragelimit und Zugriff auf Webhooks. Um einen zu erhalten, kontaktieren Sie uns auf Discord oder per E Mail.",
       "warning": "Bitte geben Sie in Ihrer Anfrage an:",
       "step1": "Name und Beschreibung Ihres Projekts",
       "step2": "Vorgesehener API Anwendungsfall und Umfang",
@@ -945,6 +1002,23 @@
       "title": "Open Source und Beiträge",
       "body": "Wir haben uns entschieden, den Großteil des Projekts als Open Source zu veröffentlichen, um der Community zu ermöglichen, mitzuhelfen, wir glauben nicht an geschlossenen Code. Alle unsere Repositories (außer dem Admin Dashboard) stehen für Beiträge offen. Lesen Sie unbedingt unsere Richtlinien, bevor Sie einen Pull Request einreichen.",
       "badge": "Öffentliches Repository"
+    },
+    "publicKey": {
+      "title": "Öffentlicher API Schlüssel",
+      "body": "Jedes GC Stats Konto kann in wenigen Sekunden einen kostenlosen öffentlichen Schlüssel erstellen, ohne auf uns zu warten.",
+      "step1": "Erstellen Sie ihn in Ihren Kontoeinstellungen und geben Sie an, welches Produkt oder Unternehmen die Daten nutzt und wie.",
+      "step2": "Öffentliche Schlüssel sind auf wenige Anfragen pro Sekunde begrenzt, und dieses Limit kann sich jederzeit ändern.",
+      "step3": "Öffentliche Schlüssel geben keinen Zugriff auf Webhooks. Für ein stabiles Limit und Webhooks beantragen Sie unten einen Partnerschlüssel.",
+      "button": "Öffentlichen Schlüssel erstellen"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "body": "Partnerschlüssel können in ihrem Dashboard HTTPS Endpoints registrieren: GC Stats sendet dann bei jeder Datenänderung einen POST.",
+      "events": "Ereignisse: neues Match, Match aktualisiert, neues Turnier, Turnier aktualisiert, Team aktualisiert, Spieler aktualisiert.",
+      "filters": "Filter: Region des Turniers, offiziell oder nicht, teilnehmende Teams.",
+      "signature": "Jede Anfrage enthält die Header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp und X-GCS-Signature. Prüfen Sie die Signatur mit dem Secret Ihres Endpoints.",
+      "retries": "Antworten Sie innerhalb von 10 Sekunden mit einem 2xx Status. Fehlgeschlagene Zustellungen werden etwa 9 Stunden lang wiederholt, ein Endpoint, der zu oft fehlschlägt, wird deaktiviert.",
+      "setup": "Der Payload enthält das Ereignis, sein Datum und die Entität, mit denselben Feldern wie die OpenData Datensätze."
     }
   },
   "becomePublisher": {
@@ -1014,396 +1088,220 @@
     }
   },
   "dataPage": {
-    "title": "Datenstruktur",
-    "subtitle": "Struktur und Liste der von uns erhobenen Daten",
-    "openData": {
-      "title": "Open Data Portal",
-      "body": "Vielleicht möchten Sie lieber unsere Datensätze direkt durchsuchen oder herunterladen, statt die API zu nutzen. Das Open Data Portal wird zusammen mit dem Rest der API hierher migriert.",
-      "badge": "Demnächst verfügbar"
-    },
-    "groups": {
-      "identity": "Struktur von Personen, Teams und Organisationen",
-      "account": "Benutzerkonten und Moderation",
-      "tournament": "Turnierstruktur",
-      "matches": "Struktur von Spiel- und Match-Statistiken",
-      "news": "Struktur von News und Community",
-      "rawStats": "Rohe Spieldaten (Runde für Runde)",
-      "others": "Sonstige Datenstruktur"
-    },
-    "sections": {
-      "people": "Personen",
-      "teams": "Teams",
-      "organizations": "Organisationen",
-      "tournaments": "Turniere",
-      "matches": "Spiele",
-      "news": "News",
-      "users": "Benutzer",
-      "reactionsEmotes": "Reaktionen und Emotes"
-    },
-    "descriptions": {
-      "identity": "Eine Person (Spieler/in, Coach, Caster, Observer, Organisator/in...) hat nur ein Profil, auch wenn sich ihre Rolle im Laufe der Zeit ändert. Teams und Organisationen haben das Recht, ihre „Zusätzlichen Informationen“ zu bearbeiten oder zu löschen.\n\nDie Riot ID wird niemals angezeigt oder geteilt. Sie wird von unserem Team anhand von Spieldaten identifiziert.",
-      "tournament": "Jedes Turnier hat eine Kennung, einen Namen, Termine, eine Region, eine Kategorie und einen Status. Ein Turnier kann in mehrere Phasen (Gruppen, Playoffs...) unterteilt sein, die wiederum aus einem oder mehreren Containern (Bracket oder Gruppe) bestehen. Teams melden sich als „Entrants“ mit einem für dieses spezifische Turnier festgelegten Roster an, getrennt vom festen Roster des Teams.",
-      "matches": "Wir sammeln viele Informationen zu Spielen, um detaillierte Statistiken bereitzustellen. Wir erfassen:\n- Die grundlegenden Spielinformationen (erforderlich)\n- Die Vetos des Spiels\n- Die gespielten Karten, mit Ergebnis und Statistiken\n- Aggregierte Statistiken pro Spieler und pro Karte, das, was die Website tagtäglich tatsächlich abfragt\n\nDiese Daten werden nicht immer erhoben, aber wir bemühen uns, sie zu erhalten, um möglichst vollständige Statistiken anzuzeigen.",
-      "rawStats": "Zusätzlich zu den oben genannten aggregierten Statistiken führen wir eine rohe Ebene Runde für Runde (Kills, Schaden, Wirtschaft, Lebendstatus), die zur Neuberechnung dieser Statistiken und zur Anzeige des Rundenverlaufs verwendet wird.\n\nDie Position jedes Spielers bei wichtigen Ereignissen (Kill, Plant, Defuse) wird unbegrenzt in voller Detailtiefe gespeichert: Sie speist unsere Heatmaps und kann nach der Aggregation nicht mehr rekonstruiert werden.",
-      "news": "Jeder News Artikel hat eine Kennung, einen Titel, Inhalt und einen Status (Entwurf, veröffentlicht, archiviert). Ein Artikel kann mit einem Team, einer Person oder einem Turnier verknüpft werden, um auf dessen Profil zu erscheinen.\n\nDas Forum und die Emotes/Reaktionen ermöglichen es der Community, mit den Inhalten der Website zu interagieren; von der Moderation ausgeblendete oder entfernte Nachrichten bleiben intern nachverfolgt.",
-      "account": "Diese Tabellen existieren nur für Personen, die ein Benutzerkonto erstellt haben (getrennt von einem Personenprofil), erforderlich, um auf News zu reagieren, ein Profil zu verwalten oder die Website zu administrieren.\n\nSicherheitsdaten (Passwort, 2FA, Passkeys) werden niemals geteilt. Verknüpfte Discord/Twitch Konten speichern ein Zugriffstoken, das nur zur Authentifizierung verwendet wird.\n\nModerationsdaten (Sanktionen, Fingerabdrücke gegen Umgehung, Meldungen, Aktivitätsprotokoll) bilden einen Sicherheitsnachweis, der unabhängig vom Konto geführt wird, selbst nach dessen Löschung, um die Umgehung von Sperren zu verhindern.",
-      "others": "Wir speichern die Anzahl der Besuche auf jeder Seite pro Tag; wir speichern nicht, wer sie angesehen hat oder den genauen Zeitpunkt, nur das ungefähre Land/die Region.\n\nDiese Daten werden gespeichert und privat gehalten. Sie werden niemals geteilt, wir verwenden sie nur, um die Nutzung der Website zu visualisieren und unsere Infrastruktur bei Bedarf anzupassen."
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "Hauptinformationen",
-          "additional": "Zusätzliche Informationen",
-          "confidential": "Vertrauliche Informationen"
-        },
-        "id": "Eindeutige Kennung der Person (in der URL sichtbar)",
-        "handle": "Handle",
-        "aliases": "Zuvor verwendete Handles",
-        "firstName": "Vorname",
-        "lastName": "Nachname",
-        "countryCode": "Ländercode (FR = Frankreich, US = Vereinigte Staaten usw.)",
-        "secondaryCountryCode": "Zweiter Ländercode, bei doppelter Staatsangehörigkeit",
-        "pronouns": "Pronomen",
-        "birthDate": "Geburtsdatum",
-        "bio": "Bio",
-        "socials": "Soziale Netzwerke (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "vlrId": "VLR Kennung",
-        "liquipediaLink": "Link zur Liquipedia Seite der Person",
-        "valId": "Riot ID / PUUID (vertrauliche Information, von unserem Team anhand von Riot Spieldaten identifiziert und zugewiesen, verwendet zur Verknüpfung der Statistiken eines Spiels mit einer Person)",
-        "esportsValId": "Riot Esports Kennung des zugehörigen Spielkontos"
+    "title": "Personenbezogene Daten",
+    "subtitle": "Welche Daten wir über dich speichern, woher sie kommen, wer sie sehen kann und wie lange wir sie aufbewahren.",
+    "policy": {
+      "title": "Unsere Grundsätze",
+      "noSale": {
+        "title": "Kein Verkauf, keine Weitergabe",
+        "text": "Wir verkaufen keine Daten und geben deine privaten Daten nie weiter, weder an Werbetreibende noch an Partner. Nur öffentliche Daten (Spielerinnenprofile, Matchstatistiken) werden veröffentlicht, auf der Website und über unsere API."
       },
-      "rosterMemberships": {
-        "personId": "Eindeutige Kennung einer Person",
-        "teamId": "Eindeutige Kennung eines Teams",
-        "role": "Rolle im Team (Spieler/in, Coach, Manager/in usw.)",
-        "period": "Mitgliedschaftszeitraum im Team (Beitritt, und Austritt, falls zutreffend)",
-        "inactiveSince": "Datum, seit dem die noch im Roster geführte Person inaktiv ist (Verletzung, Pause usw.)"
+      "minimal": {
+        "title": "Nur das Nötigste",
+        "text": "Wir erheben nur, was die Website zum Funktionieren und für ihre Sicherheit braucht. Keine Werbung, keine Tracker, keine Tracking-Cookies: Besucher werden anonym gezählt, ohne IP-Adresse."
       },
-      "teams": {
-        "titles": {
-          "main": "Hauptinformationen",
-          "additional": "Zusätzliche Informationen"
-        },
-        "id": "Eindeutige Kennung des Teams (in der URL sichtbar)",
-        "name": "Teamname",
-        "shortName": "Kurzname (Fnatic = FNC)",
-        "countryCode": "Ländercode (FR = Frankreich, US = Vereinigte Staaten usw.)",
-        "secondaryCountryCode": "Zweiter Ländercode, für ein Team mit Bezug zu zwei Regionen",
-        "socials": "Soziale Netzwerke (Twitter/Instagram/Twitch/YouTube/TikTok)",
-        "bio": "Bio",
-        "vlrId": "VLR Kennung",
-        "liquipediaLink": "Link zur Liquipedia Seite des Teams",
-        "tags": "Frei definierte Tags des Teams"
-      },
-      "organizations": {
-        "id": "Eindeutige Kennung der Organisation",
-        "name": "Name der Organisation",
-        "slug": "In der URL verwendete Textkennung",
-        "tags": "Rollen der Organisation (Turnierveranstalter, Produktion, Medien, Sender, Agentur, Community)",
-        "countryCode": "Ländercode (FR = Frankreich, US = Vereinigte Staaten usw.)",
-        "socials": "Soziale Netzwerke (Twitter/Instagram/Twitch/YouTube/TikTok)"
-      },
-      "organizationMemberships": {
-        "personId": "Eindeutige Kennung einer Person",
-        "organizationId": "Eindeutige Kennung einer Organisation",
-        "role": "Rolle innerhalb der Organisation (Admin/Caster/Observer/Producer/Editor usw.)",
-        "period": "Mitgliedschaftszeitraum in der Organisation"
-      },
-      "productionCredits": {
-        "personId": "Eindeutige Kennung der genannten Person",
-        "organizationId": "Organisation, für die die Person bei diesem Credit tätig ist, falls vorhanden",
-        "role": "Ausgeübte Rolle (Caster/Analyst/Observer/Organisator/Producer/Editor/Fotograf/Übersetzer/Schiedsrichter usw.)",
-        "titleOverride": "Benutzerdefinierter Titel, der anstelle der allgemeinen Rolle angezeigt wird",
-        "scope": "Die genaue betroffene Ebene: Turnier, Phase, Container, Spiel oder Karte"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "Hauptinformationen",
-          "additional": "Zusätzliche Informationen"
-        },
-        "id": "Eindeutige Kennung des Turniers",
-        "name": "Name des Wettbewerbs",
-        "region": "Weltregion (EMEA, NA usw.)",
-        "category": "Turnierkategorie (z. B. Challengers, Cash Cups)",
-        "prizePool": "Gesamtpreisgeld (Cashprize)",
-        "location": "Physischer Austragungsort",
-        "startDate": "Startdatum",
-        "endDate": "Enddatum",
-        "status": "Aktueller Status (anstehend, laufend, beendet)",
-        "description": "Übersicht der Veranstaltung",
-        "liquipediaLink": "Link zur Liquipedia Seite des Turniers",
-        "socials": "Soziale Netzwerke Links des Turniers"
-      },
-      "stages": {
-        "titles": {
-          "structure": "Technische Struktur"
-        },
-        "name": "Phasenname (z. B. Playoffs, Gruppe A)",
-        "sequenceOrder": "Anzeigereihenfolge der Phase",
-        "status": "Status der Phase (anstehend, laufend, beendet)",
-        "startDate": "Startdatum der Phase",
-        "endDate": "Enddatum der Phase",
-        "liquipediaLink": "Link zur eigenen Liquipedia Seite der Phase",
-        "containerType": "Container Format (K.o.-Bracket oder Gruppe)",
-        "config": "Technische Bracket/Gruppen Konfiguration (von der Turnier Engine erzeugt)"
-      },
-      "entrants": {
-        "tournamentId": "Verweis auf das Turnier",
-        "kind": "Art des Entrants (bei GC Stats immer „team“)",
-        "teamId": "Registriertes Team",
-        "displayName": "Zum Zeitpunkt der Anmeldung angezeigter Name (bleibt unverändert, auch wenn das Team später umbenannt wird)",
-        "seed": "Dem Entrant zugewiesener Seed",
-        "qualificationSourceManual": "Ob die Qualifikationsquelle von Hand gesetzt wurde (sonst aus den Qualifikationsregeln abgeleitet)",
-        "qualificationSourceType": "Manuelle Qualifikationsquelle (Turnier, Einladung oder Punkte)",
-        "qualificationSourceTournamentId": "Turnier, über das sich der Teilnehmer qualifiziert hat (manuelle Quelle)",
-        "qualificationSourcePointTypeId": "Punkteart, aus der die Qualifikation stammt (manuelle Quelle)"
-      },
-      "entrantMembers": {
-        "personId": "Person, die Teil des für dieses spezifische Turnier festgelegten Rosters ist",
-        "role": "Rolle in diesem Roster (Spieler/in, Stand-in, Coach, Manager/in, Analyst/in usw.)",
-        "isStarter": "Starter/in oder Ersatz für dieses Turnier"
-      },
-      "qualifications": {
-        "destinationType": "Was die Qualifikation gewährt: einen Platz in einem anderen Container oder eine Endplatzierung",
-        "placement": "Erreichte Platzierung (1., 2. usw.)",
-        "placementLabel": "Platzierungsbezeichnung (z. B. Sieger, Zweitplatzierter)",
-        "points": "Vergebene Rangpunkte",
-        "cashPrizeAmount": "Vergebener Geldpreis",
-        "rank": "Vom Entrant in diesem Standing erreichter Rang",
-        "amount": "Anzahl der gutgeschriebenen oder abgezogenen Punkte (vorzeichenbehafteter Eintrag)",
-        "reason": "Grund für die vergebenen oder entzogenen Punkte"
-      },
-      "matches": {
-        "titles": {
-          "structure": "Technische Struktur"
-        },
-        "id": "Eindeutige Kennung des Spiels",
-        "containerId": "Container (Bracket/Gruppe), zu dem das Spiel gehört",
-        "round": "Rundennummer",
-        "label": "Rundenname (z. B. Grand Final)",
-        "bestOf": "Maximale Anzahl an Karten (BO1, BO3, BO5)",
-        "status": "Status (anstehend, bereit, live, abgeschlossen)",
-        "entrantAId": "Eindeutige Kennung von Entrant A",
-        "entrantBId": "Eindeutige Kennung von Entrant B",
-        "scoreA": "Endergebnis von Entrant A",
-        "scoreB": "Endergebnis von Entrant B",
-        "winnerId": "Siegender Entrant",
-        "scheduledAt": "Geplantes Datum und Uhrzeit",
-        "patch": "Spielversion (z. B. 8.04)"
-      },
-      "matchVetos": {
-        "matchId": "Betroffenes Spiel",
-        "entrantId": "Entrant, der die Aktion durchführt",
-        "mapName": "Kartenname (z. B. Ascent)",
-        "type": "Aktion (Pick, Ban oder Decider)",
-        "order": "Reihenfolge in der Veto Sequenz",
-        "side": "Gewählte Seite (Angriff/Verteidigung), bei einem Pick oder Decider",
-        "sidePickedByEntrantId": "Entrant, der diese Seite gewählt hat"
-      },
-      "maps": {
-        "id": "Eindeutige Kennung der gespielten Karte",
-        "apiMatchId": "Von der Riot API vergebene Spielkennung",
-        "matchId": "Betroffenes Spiel",
-        "mapName": "Kartenname",
-        "gameMode": "Zugehöriger Riot Spielmodus",
-        "teamAScore": "Ergebnis von Entrant A auf dieser Karte",
-        "teamBScore": "Ergebnis von Entrant B auf dieser Karte",
-        "order": "Position der Karte innerhalb des Spiels",
-        "isCompleted": "Ist die Karte abgeschlossen?"
-      },
-      "mapPlayerStats": {
-        "agentName": "Gespielter Agent (z. B. Jett)",
-        "kills": "Kills insgesamt",
-        "deaths": "Tode insgesamt",
-        "assists": "Assists insgesamt",
-        "acs": "Durchschnittlicher Combat Score",
-        "adr": "Durchschnittlicher Schaden pro Runde",
-        "kastPercentage": "% der Runden mit Kill/Assist/Survive/Trade",
-        "firstKills": "Erste Kills (FK)",
-        "firstDeaths": "Erste Tode (FD)",
-        "headshotPercentage": "Kopfschuss %",
-        "clutches": "Gewonnene/gespielte Clutches, nach Situation (1v1 bis 1v5)",
-        "multikills": "Anzahl der Runden mit 2, 3, 4 oder 5 Kills",
-        "tradeKills": "Kills, die einen Teamkameraden gerächt haben",
-        "tradedDeaths": "Von einem Teamkameraden gerächte Tode",
-        "roundTypeSplits": "Detaillierte Statistiken nach Rundentyp (Pistolenrunde, Angriff, Verteidigung usw.)",
-        "fallDeaths": "Tode durch Fallschaden",
-        "weaponKills": "Anzahl der Kills pro Waffe"
-      },
-      "mapTeamRoundSummary": {
-        "side": "Gespielte Seite (Angriff/Verteidigung)",
-        "roundsPlayed": "Auf dieser Seite gespielte Runden",
-        "roundsWon": "Auf dieser Seite gewonnene Runden"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "Rundennummer (1-24+)",
-        "winningEntrantId": "Entrant, der die Runde gewonnen hat",
-        "winType": "Gewinnart (Elimination, Defuse, Detonation, Zeit abgelaufen)",
-        "atkEntrantId": "Entrant im Angriff in dieser Runde",
-        "defEntrantId": "Entrant in der Verteidigung in dieser Runde",
-        "plantSite": "Ort der Spike Platzierung (A/B/C)",
-        "plantX": "X Position des Plants auf der Minikarte",
-        "plantY": "Y Position des Plants auf der Minikarte"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "Person, die den Kill ausgeführt hat",
-        "victimPersonId": "Eliminierte Person",
-        "assistantPersonIds": "Personen, die beim Kill assistiert haben",
-        "timeMs": "Zeitpunkt des Kills (ms seit Rundenbeginn)",
-        "weapon": "Verwendete Waffe",
-        "damageType": "Schadensart (Waffe, Fähigkeit, Spike, Nahkampf, Sturz)",
-        "isSecondaryFire": "Kill mit sekundärem Feuermodus ausgeführt (z. B. Zielfernrohr einer Waffe)"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "Person, die den Schaden verursacht hat",
-        "receiverPersonId": "Person, die den Schaden erlitten hat",
-        "damage": "Verursachter Schaden",
-        "headshots": "Anzahl der Kopfschüsse",
-        "bodyshots": "Anzahl der Körpertreffer",
-        "legshots": "Anzahl der Beintreffer"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "Reihenfolge des Ereignisses innerhalb der Runde",
-        "timeMs": "Zeitpunkt des Ereignisses (ms seit Rundenbeginn)",
-        "atkAlive": "Lebende Spieler auf der Angriffsseite",
-        "defAlive": "Lebende Spieler auf der Verteidigungsseite",
-        "winnerSide": "Seite, die derzeit zahlenmäßig führt"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "Betroffene Person",
-        "kills": "In dieser Runde erzielte Kills",
-        "assists": "In dieser Runde erzielte Assists",
-        "score": "In dieser Runde erzielter Score",
-        "loadoutValue": "Gesamtwert der Ausrüstung",
-        "economySpent": "Ausgegebene Credits",
-        "economyRemaining": "Verbleibende Credits",
-        "weapon": "Verwendete Hauptwaffe",
-        "armor": "Rüstungstyp"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "Ereignistyp (Kill, Plant, Defuse)",
-        "personId": "Betroffene Person",
-        "role": "Rolle beim Ereignis (Killer, Opfer, Umstehende/r, Planter/in, Defuser/in)",
-        "x": "X Position auf der Minikarte",
-        "y": "Y Position auf der Minikarte",
-        "viewRadians": "Blickwinkel zum Zeitpunkt des Ereignisses",
-        "timeMs": "Zeitpunkt des Ereignisses (ms seit Rundenbeginn)"
-      },
-      "news": {
-        "titles": {
-          "main": "Hauptinformationen",
-          "additional": "Zusätzliche Informationen"
-        },
-        "id": "Eindeutige Kennung des Artikels (in der URL sichtbar)",
-        "authorId": "Autor/in des Artikels",
-        "organizationId": "Organisation, unter der der Artikel veröffentlicht wird, falls vorhanden",
-        "lang": "Sprache des Artikels",
-        "title": "Titel des Artikels",
-        "slug": "In der URL verwendete Textkennung",
-        "excerpt": "Kurze Zusammenfassung",
-        "content": "Inhalt des Artikels",
-        "imageCover": "Titelbild",
-        "status": "Artikelstatus (Entwurf = in Bearbeitung, veröffentlicht = live auf der Website, archiviert = auf der Website ausgeblendet, aber über die API erreichbar)",
-        "isFeatured": "Wird der Artikel auf der Startseite hervorgehoben?",
-        "showOnHome": "Erscheint der Artikel auf der Startseite?",
-        "publishedAt": "Veröffentlichungsdatum",
-        "createdAt": "Erstellungsdatum des Artikels",
-        "updatedAt": "Datum der letzten Änderung"
-      },
-      "newsRelations": {
-        "relatableType": "Typ der verknüpften Entität (Team, Person oder Turnier)",
-        "relatableId": "Kennung der verknüpften Entität, verwendet, um den Artikel auf deren Profil anzuzeigen"
-      },
-      "forumThreads": {
-        "category": "Thread Kategorie (Turnier, Spiel, News, Allgemein)",
-        "subjectType": "Typ der Entität, auf die sich der Thread bezieht, falls vorhanden",
-        "title": "Thread Titel",
-        "lastMessageAt": "Datum der letzten veröffentlichten Nachricht"
-      },
-      "forumMessages": {
-        "body": "Nachrichteninhalt",
-        "parentId": "Übergeordnete Nachricht, bei einer Antwort",
-        "hiddenAt": "Datum, an dem die Nachricht von der Moderation ausgeblendet wurde"
-      },
-      "emotes": {
-        "name": "Name des Emotes",
-        "imagePath": "Bildpfad",
-        "source": "Herkunft des Emotes (z. B. Massenimport, aus einem Teamlogo abgeleitet)",
-        "isActive": "Ist das Emote verfügbar?"
-      },
-      "reactions": {
-        "emoteId": "Verwendetes Emote",
-        "userId": "Konto, das reagiert hat",
-        "reactableType": "Art des Inhalts, auf den sich die Reaktion bezieht (z. B. ein News Artikel)"
-      },
-      "users": {
-        "titles": {
-          "main": "Hauptinformationen",
-          "security": "Sicherheit (privat)"
-        },
-        "id": "Eindeutige Kennung des Kontos",
-        "username": "Öffentlich angezeigter Handle",
-        "teamTag": "Auf dem öffentlichen Profil als „unterstützt“ angezeigtes Team, mit dem Tag dieses Teams",
-        "preferences": "Oberflächeneinstellungen (privat)",
-        "pronouns": "Pronomen",
-        "bio": "Öffentliche Bio des Kontos",
-        "socials": "Mit dem Konto verknüpfte soziale Netzwerke",
-        "email": "E Mail Adresse (privat, niemals angezeigt)",
-        "passwordHash": "Passwort, gehasht (niemals im Klartext gespeichert oder angezeigt)",
-        "twoFactorSecret": "Zwei Faktor Authentifizierung (2FA) Geheimnis, falls aktiviert, verschlüsselt",
-        "twoFactorRecoveryCodes": "2FA Wiederherstellungscodes, falls aktiviert, verschlüsselt",
-        "discordSyncedAt": "Datum der letzten Discord Synchronisierung"
-      },
-      "accounts": {
-        "provider": "Verknüpfte Plattform (Discord oder Twitch)",
-        "providerAccountId": "Kontokennung auf dieser Plattform",
-        "accessToken": "OAuth Zugriffstoken (privat, niemals geteilt, nur zur Authentifizierung verwendet)",
-        "refreshToken": "OAuth Aktualisierungstoken (privat)"
-      },
-      "authenticators": {
-        "name": "Dem Passkey gegebener Name",
-        "credentialId": "Technische Kennung des Schlüssels (privat)",
-        "lastUsedAt": "Letzte Verwendung dieses Schlüssels"
-      },
-      "sanctions": {
-        "type": "Sanktionstyp (Notiz, Verwarnung, Stummschaltung, Sperre, Bann)",
-        "reason": "Grund der Sanktion",
-        "startsAt": "Wirksames Startdatum",
-        "endsAt": "Enddatum (falls befristet)",
-        "revokedAt": "Datum der vorzeitigen Aufhebung, falls zutreffend",
-        "issuedBy": "Moderator/in, der/die die Sanktion ausgesprochen hat",
-        "revokedBy": "Moderator/in, der/die die Sanktion aufgehoben hat, falls zutreffend"
-      },
-      "sanctionIdentities": {
-        "type": "Art des angehängten technischen Fingerabdrucks (z. B. E Mail)",
-        "value": "Wert des Fingerabdrucks (privat, auch nach Löschung des Kontos aufbewahrt, um die Umgehung von Sperren zu verhindern)"
-      },
-      "userReports": {
-        "category": "Meldungskategorie",
-        "reason": "Von der meldenden Person angegebenes Detail",
-        "status": "Bearbeitungsstatus (ausstehend, gelöst, abgewiesen)",
-        "reviewedBy": "Moderator/in, der/die die Meldung bearbeitet hat",
-        "resolutionNote": "Von der Moderation hinterlassene Lösungsnotiz"
-      },
-      "activityLog": {
-        "logName": "Kategorie der protokollierten Aktion",
-        "description": "Beschreibung der durchgeführten Aktion",
-        "event": "Ereignistyp (erstellt, aktualisiert, gelöscht)",
-        "subjectType": "Von der Aktion betroffener Entitätstyp (Person, Team usw.)",
-        "causerId": "Konto, das die Aktion durchgeführt hat",
-        "attributeChanges": "Detail der geänderten Felder (vorher/nachher)"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "Hauptinformationen"
-        },
-        "uri": "Seiten URL",
-        "viewedAt": "Tag des Besuchs",
-        "count": "Anzahl der Aufrufe an diesem Tag",
-        "countryCode": "Ungefähres Land der Besucher an diesem Tag",
-        "regionCode": "Ungefähre Region der Besucher an diesem Tag"
+      "switzerland": {
+        "title": "In der Schweiz gehostet",
+        "text": "Alle unsere Daten werden in der Schweiz bei Schweizer Anbietern gespeichert, auch die Sicherungen."
       }
-    }
+    },
+    "storage": {
+      "title": "Warum die Schweiz",
+      "why": "Die Schweiz hat mit dem Bundesgesetz über den Datenschutz eines der strengsten Datenschutzgesetze der Welt. Die Europäische Union erkennt es als gleichwertig mit der DSGVO an. Unsere Anbieter sind Schweizer Unternehmen: Deine Daten fallen nicht unter ausländische Gesetze wie den US-amerikanischen CLOUD Act, der US-Behörden erlaubt, Daten amerikanischer Unternehmen anzufordern, egal wo sie gespeichert sind.",
+      "providers": "Hier liegen die Daten genau:",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "Schweiz",
+        "body": "Alle unsere Server: die Website, die Datenbank, die Serverprotokolle und unsere E-Mails. Eine laufende Kopie der Datenbank wird 14 Tage lang in einem zweiten Rechenzentrum von Infomaniak aufbewahrt, um sie nach einem Ausfall wiederherzustellen."
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "Schweiz (Zürich und Genf)",
+        "body": "Tägliche verschlüsselte Sicherung der Datenbank und unserer Dateien. Jede Sicherung wird nach 30 Tagen gelöscht und kann vorher weder geändert noch gelöscht werden, auch nicht von uns."
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "Server weltweit",
+        "body": "Liefert nur öffentliche Dateien aus (Bilder, Logos, CSS und JavaScript). Das CDN ersetzt deine IP-Adresse durch 0.0.0.0: Es wird keine IP-Adresse erhoben."
+      }
+    },
+    "private": {
+      "title": "Private Daten",
+      "badge": "Nie öffentlich",
+      "intro": "Diese Daten werden nie öffentlich angezeigt und nie über unsere API geteilt."
+    },
+    "public": {
+      "title": "Öffentliche Daten",
+      "badge": "Öffentlich",
+      "intro": "Diese Daten werden auf der Website angezeigt und über unsere API geteilt, sie sind das Herz von GC Stats."
+    },
+    "labels": {
+      "source": "Woher sie kommen",
+      "visibility": "Wer sie sieht",
+      "retention": "Wie lange"
+    },
+    "categories": {
+      "account": {
+        "title": "Dein Konto",
+        "groups": {
+          "profile": {
+            "label": "Konto",
+            "items": [
+              "E-Mail-Adresse",
+              "Benutzername",
+              "Passwort, gehasht (nie im Klartext gespeichert)",
+              "Anzeigeeinstellungen und Lieblingsteam",
+              "Pronomen, Biografie und soziale Netzwerke, wenn du sie angibst",
+              "Datum der letzten Anmeldung"
+            ]
+          },
+          "security": {
+            "label": "Sicherheit",
+            "items": [
+              "Zwei-Faktor-Authentifizierung (Geheimnis und Wiederherstellungscodes, verschlüsselt)",
+              "Passkeys, nur der öffentliche Schlüssel wird gespeichert"
+            ]
+          },
+          "linked": {
+            "label": "Verknüpfte Konten",
+            "items": [
+              "Discord, Twitch oder Twitter/X-ID",
+              "Name und Avatar auf dieser Plattform",
+              "Anmeldetoken, nur für deine Anmeldung verwendet"
+            ]
+          },
+          "developers": {
+            "label": "Entwickler",
+            "items": [
+              "API-Schlüssel",
+              "OAuth-Anwendungen und von dir erteilte Berechtigungen",
+              "Verlauf der API-Aufrufe"
+            ]
+          }
+        },
+        "source": "Du, bei der Registrierung und in deinen Einstellungen. Verknüpfte Konten werden von der Plattform übermittelt, wenn du sie verknüpfst.",
+        "visibility": "Du und unser Team. Dein Benutzername, deine Pronomen, deine Biografie, deine Netzwerke und dein Lieblingsteam erscheinen auf deiner Profilseite. Unser Team kann dein Passwort nicht sehen, nur die verwendete Anmeldemethode (Passwort, Discord, Twitch, Twitter/X, Passkey, Zwei-Faktor-Authentifizierung). E-Mail und Sicherheitseinstellungen werden nie öffentlich angezeigt.",
+        "retention": "Solange dein Konto existiert. Ein verknüpftes Konto wird gelöscht, sobald du die Verknüpfung aufhebst. Der Verlauf der API-Aufrufe wird nach 90 Tagen gelöscht."
+      },
+      "protection": {
+        "title": "Schutz deines Kontos und der Website",
+        "groups": {
+          "loginLog": {
+            "label": "Anmeldeverlauf",
+            "items": [
+              "Anmeldungen, fehlgeschlagene Anmeldungen und Sicherheitsänderungen",
+              "Datum",
+              "IP-Adresse"
+            ]
+          },
+          "accessLogs": {
+            "label": "Zugriffsprotokolle",
+            "items": [
+              "IP-Adresse",
+              "Angeforderte Seite",
+              "Browser",
+              "Datum und Uhrzeit",
+              "Nutzung des OpenData Portals (Konto, gehashte IP Adresse, Datensatz), nach 30 Tagen gelöscht"
+            ]
+          }
+        },
+        "source": "Automatisch erfasst: Der Anmeldeverlauf schützt dein Konto vor Übernahme, die Zugriffsprotokolle schützen die Website vor Bots und Missbrauch.",
+        "visibility": "Nur unser technisches Team.",
+        "retention": "Anmelde-IP-Adressen werden nach {days} Tagen gelöscht. Zugriffsprotokolle werden nach 14 Tagen gelöscht."
+      },
+      "moderation": {
+        "title": "Moderation und Beiträge",
+        "groups": {
+          "requests": {
+            "label": "Deine Anfragen",
+            "items": [
+              "Änderungsvorschläge und der Austausch mit dem Team dazu",
+              "Meldungen, die du sendest"
+            ]
+          },
+          "moderation": {
+            "label": "Moderation",
+            "items": [
+              "Verwarnungen und Sanktionen, mit ihrem Grund",
+              "Vom automatischen Filter erkannte Nachrichten",
+              "Verlauf der Moderationsaktionen"
+            ]
+          }
+        },
+        "source": "Deine Anfragen und Meldungen sowie die Entscheidungen unseres Moderationsteams.",
+        "visibility": "Nur unser Team. Ein angenommener Vorschlag aktualisiert die betreffende öffentliche Seite, der Vorschlag selbst bleibt privat.",
+        "retention": "Als Verlauf aufbewahrt, auch nach Löschung deines Kontos, aber ohne Verbindung zu ihm."
+      },
+      "players": {
+        "title": "Spielerinnen und Staff",
+        "groups": {
+          "identity": {
+            "label": "Identität",
+            "items": [
+              "Spielername und frühere Namen",
+              "Vor- und Nachname",
+              "Land",
+              "Pronomen",
+              "Geburtsdatum",
+              "Biografie und soziale Netzwerke"
+            ]
+          },
+          "career": {
+            "label": "Karriere",
+            "items": [
+              "Teams und Rollen",
+              "Gespielte Turniere und Matches",
+              "Organisationen und Produktionscredits"
+            ]
+          },
+          "hidden": {
+            "label": "Nie angezeigt",
+            "items": [
+              "Riot-ID, nur verwendet, um Matchstatistiken dem richtigen Profil zuzuordnen"
+            ]
+          }
+        },
+        "source": "Die Person selbst oder ihre Organisation, unser Team aus öffentlichen Quellen (Liquipedia, offizielle Ankündigungen) oder die Community über einen von unserem Team geprüften Vorschlag. Die Riot-ID stammt aus der offiziellen Riot-Games-API.",
+        "visibility": "Alle, auf der Website und über unsere API, außer der Riot-ID.",
+        "retention": "Dauerhaft aufbewahrt, als Archiv der Szene, auch wenn die Person aufhört zu spielen. Du kannst eine Berichtigung oder Löschung verlangen."
+      },
+      "matchStats": {
+        "title": "Matchstatistiken",
+        "groups": {
+          "stats": {
+            "label": "Für jedes gespielte Match",
+            "items": [
+              "Gespielte Agenten",
+              "Kills, Tode und Assists",
+              "Schaden",
+              "Wirtschaft und Ausrüstung",
+              "Positionen auf der Karte"
+            ]
+          }
+        },
+        "source": "Die offizielle Riot-Games-API, für die Matches der Turniere, die wir abdecken.",
+        "visibility": "Alle, auf der Website und über unsere API.",
+        "retention": "Als historisches Archiv der Wettbewerbe aufbewahrt."
+      },
+      "community": {
+        "title": "Deine Beiträge",
+        "groups": {
+          "content": {
+            "label": "Was du veröffentlichst",
+            "items": [
+              "Forennachrichten",
+              "Reaktionen",
+              "Pick'em-Tipps und Gruppen"
+            ]
+          }
+        },
+        "source": "Du.",
+        "visibility": "Alle, auf der Website.",
+        "retention": "Bis du sie löschst. Wenn du dein Konto löschst, werden deine Reaktionen und Tipps gelöscht, deine Nachrichten bleiben ohne Verbindung zu deinem Konto bestehen."
+      }
+    },
+    "rights": "Du kannst jederzeit Auskunft, Berichtigung oder Löschung deiner Daten verlangen.",
+    "privacyLink": "Datenschutzerklärung ansehen"
   },
   "financePage": {
     "title": "Finanzen",
@@ -1423,6 +1321,10 @@
       "Infrastructure": "Infrastruktur",
       "Software & Licenses": "Software und Lizenzen",
       "Other": "Sonstiges"
+    },
+    "expensesDoc": {
+      "text": "Wofür unsere monatlichen Ausgaben verwendet werden, erklären wir einfach in einem Dokument.",
+      "link": "Dokument lesen"
     }
   },
   "teamPage": {
@@ -1855,8 +1757,6 @@
     "product": "Produkt",
     "productAllMatches": "Alle Spiele",
     "productTournaments": "Turniere",
-    "productDataExplorer": "Data Explorer",
-    "productDataExplorerComingSoon": "Demnächst verfügbar",
     "productForum": "Forum",
     "contribute": "Mitwirken",
     "contributeEditPage": "Eine Seite bearbeiten",
@@ -1877,7 +1777,9 @@
     "data": "Daten",
     "transparency": "Transparenz",
     "finance": "Finanzen",
-    "developers": "Entwickler"
+    "developers": "Entwickler",
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -2069,6 +1971,7 @@
       "finance": "Finanzen",
       "about": "Über uns / Projekte",
       "backToSite": "Zurück zur Website",
+      "pendingChangeRequests": "Offene Änderungsanfragen",
       "tournaments": "Turniere",
       "groupModeration": "Moderation",
       "reports": "Meldungen",
@@ -2077,7 +1980,8 @@
       "sanctions": "Sanktionen",
       "activityLog": "Aktivitätsprotokoll",
       "analytics": "Analytics",
-      "oauthClients": "OAuth-Clients"
+      "oauthClients": "OAuth-Clients",
+      "settings": "Konfiguration"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -3112,6 +3016,7 @@
       "regenerateButton": "Neu generieren",
       "activateButton": "Aktivieren",
       "deactivateButton": "Deaktivieren",
+      "deactivateConfirm": "Den Schlüssel \"{name}\" deaktivieren? Seine Webhooks werden endgültig gelöscht.",
       "deleteButton": "Löschen",
       "createTitle": "API-Schlüssel erstellen",
       "createDescription": "Der vollständige Schlüssel wird nur einmal angezeigt, direkt nach der Erstellung.",
@@ -3152,6 +3057,10 @@
         "userNotFound": "Benutzer:in nicht gefunden.",
         "organizationNotFound": "Organisation nicht gefunden.",
         "ownerRequired": "Wählen Sie eine:n Benutzer:in oder eine Organisation."
+      },
+      "tabs": {
+        "partner": "Partnerschlüssel",
+        "public": "Öffentliche Schlüssel"
       }
     },
     "apiKeyStats": {
@@ -3453,7 +3362,8 @@
           "logoNotFound": "Der Logo Eintrag existiert nicht mehr.",
           "alreadyLinked": "Diese:r Spieler:in ist bereits mit einem anderen Konto verknüpft.",
           "unknownField": "Nicht unterstütztes Feld.",
-          "unknown": "Unbekannter Fehler."
+          "unknown": "Unbekannter Fehler.",
+          "invalidSource": "Der Quellenlink ist nicht mehr gültig."
         },
         "oldValue": "Aktuell",
         "newValue": "Vorgeschlagen",
@@ -3482,7 +3392,14 @@
           "replyPlaceholder": "Der antragstellenden Person antworten…",
           "send": "Senden",
           "error": "Etwas ist schiefgelaufen."
-        }
+        },
+        "requesterNoPlayer": "Kein Spielerkonto mit dem Antragsteller verknüpft.",
+        "requesterPlayerMatch": "Verknüpftes Spielerkonto: {handle}, das bearbeitete Profil.",
+        "requesterPlayerOther": "Verknüpftes Spielerkonto: {handle}, ein anderes Profil als das bearbeitete.",
+        "requesterTeamMatch": "Verknüpftes Spielerkonto: {handle}, im Roster des bearbeiteten Teams.",
+        "requesterTeamOther": "Verknüpftes Spielerkonto: {handle}, nicht im Roster des bearbeiteten Teams.",
+        "joinSource": "Quelle des Zugangs",
+        "leftSource": "Quelle des Abgangs"
       }
     },
     "roles": {
@@ -3530,7 +3447,8 @@
         "sanctions": "Sanktionen",
         "activityLog": "Aktivitätsprotokoll",
         "analytics": "Analytics",
-        "oauthClients": "OAuth-Clients"
+        "oauthClients": "OAuth-Clients",
+        "settings": "Konfiguration"
       },
       "permissionNames": {
         "admin_access": "Zugriff auf das Admin Panel",
@@ -3563,6 +3481,7 @@
         "organizations_edit": "Organisationen bearbeiten (Profil, Logo, Tags)",
         "organizations_manage_access": "Organisationszugriff verwalten (maximale Berechtigungen, Mitglieder, Inhaber:in)",
         "organizations_delete": "Organisationen löschen",
+        "organizations_access_dashboard": "Auf das Dashboard jeder Organisation mit denselben Zugriffen wie deren Inhaber:in zugreifen",
         "change_requests_view": "Änderungsanträge ansehen",
         "change_requests_manage": "Änderungsanträge genehmigen/ablehnen",
         "tournaments_view": "Turniere ansehen",
@@ -3578,7 +3497,9 @@
         "activity_log_view": "Das Aktivitätsprotokoll ansehen",
         "analytics_view": "Analytics ansehen",
         "oauth_clients_view": "OAuth-Clients ansehen",
-        "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen"
+        "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen",
+        "settings_view": "Konfiguration und OpenData Monitoring ansehen",
+        "settings_manage": "Konfiguration bearbeiten"
       },
       "create": {
         "button": "Neue Rolle",
@@ -3654,6 +3575,8 @@
       "fieldPointType": "Punkteart",
       "fieldPointTypeNone": "Keine",
       "fieldActive": "Aktives Turnier",
+      "fieldOfficial": "Offizielles Turnier",
+      "officialHint": "Ereignis der offiziellen Turnierserie. Webhook Abonnenten können offizielle und inoffizielle Turniere filtern.",
       "fieldLocation": "Ort",
       "fieldPrizePool": "Preisgeld",
       "fieldDescription": "Beschreibung",
@@ -3826,11 +3749,32 @@
         "containerEditDescription": "Typ und Format können geändert werden: Eine Umwandlung in eine Gruppe baut die Tabelle aus den vorhandenen Matches neu auf.",
         "containerUpdateSuccess": "Container aktualisiert.",
         "editContainerButton": "Bearbeiten",
-        "moveContainerUp": "Nach oben",
-        "moveContainerDown": "Nach unten",
+        "dndInstructions": "Drücke die Leertaste, um die Zeile aufzunehmen, bewege sie mit den Pfeiltasten und lege sie mit der Leertaste ab.",
+        "dndPicked": "{name} aufgenommen",
+        "dndDropped": "{name} abgelegt",
+        "dndCancelled": "Verschieben von {name} abgebrochen",
+        "dndHandle": "{name} verschieben",
+        "dndDropHere": "Hier ablegen",
+        "dndHint": "Ziehe eine Zeile am Griff, um sie neu zu ordnen oder in einem Set abzulegen.",
         "fieldContainerTypeChangeHint": "Eine Typänderung baut die Tabelle aus den vorhandenen Matches neu auf und entfernt Bracket-Verknüpfungen.",
         "deleteContainerButton": "Löschen",
         "deleteContainerConfirm": "Den Container „{name}” und alle seine Matches endgültig löschen?",
+        "containerTypeSet": "Set",
+        "addSetButton": "Set hinzufügen",
+        "setAddTitle": "Set hinzufügen",
+        "setAddDescription": "Ein Set fasst Container unter einem Namen zusammen, zum Beispiel eine Gruppenphase mit Gruppe A und Gruppe B.",
+        "setEditTitle": "Set umbenennen",
+        "setEditDescription": "Nur der Name ändert sich, die Container im Set bleiben unverändert.",
+        "setAddSuccess": "Set hinzugefügt.",
+        "setUpdateSuccess": "Set umbenannt.",
+        "fieldParentSet": "Set",
+        "parentSetNone": "Keins (Stage-Ebene)",
+        "fieldParentSetHint": "Container eines Sets werden gemeinsam unter seinem Namen angezeigt.",
+        "deleteSetTitle": "Set löschen",
+        "deleteSetConfirm": "Das Set „{name}“ mit allem Inhalt (Container und Matches) endgültig löschen?",
+        "deleteSetSuccess": "Set gelöscht.",
+        "setEmpty": "Dieses Set ist leer.",
+        "setContents": "{count, plural, =0 {Keine Container} one {# Container} other {# Container}}",
         "deleteContainerSuccess": "Container gelöscht.",
         "deleteContainerTitle": "Container löschen",
         "deleteContainerPlayedWarning": "{count, plural, one {# Match wurde} other {# Matches wurden}} bereits gespielt (live oder abgeschlossen). Ihre Ergebnisse und Statistiken gehen verloren.",
@@ -3877,11 +3821,18 @@
           "fieldEnabled": "Pick'em für diese Phase aktivieren",
           "fieldOpensAt": "Öffnet am",
           "fieldOpensAtHint": "Schließt automatisch beim frühesten geplanten Match der Phase.",
+          "fieldOpensAtHintMatches": "Vorhersagen für das Bracket schließen mit seinem ersten Match, Vorhersagen für Gruppenmatches werden einzeln gesperrt, sobald das jeweilige Match beginnt.",
+          "fieldGroupPickMode": "Vorhersagen der Gruppenphase",
+          "groupPickModeStandings": "Endplatzierung",
+          "groupPickModeMatches": "Sieger jedes Matches",
+          "groupPickModeStandingsHint": "Nutzer ordnen jedes Team der Gruppe. Schließt beim ersten Match der Phase.",
+          "groupPickModeMatchesHint": "Nutzer wählen den Sieger jedes Matches. Jede Vorhersage wird beim Start ihres Matches gesperrt, Swiss Runden öffnen, sobald ihre Paarungen ausgelost sind.",
           "cancel": "Abbrechen",
           "save": "Speichern",
           "saving": "Speichern…",
           "saveSuccess": "Pick'em Einstellungen aktualisiert.",
           "error": {
+            "hasPicks": "Nutzer haben bereits mit dem aktuellen Modus vorhergesagt, er kann nicht mehr geändert werden.",
             "required": "Dieses Feld ist erforderlich.",
             "invalid": "Ungültiger Wert.",
             "stageNotFound": "Phase nicht gefunden."
@@ -3907,28 +3858,45 @@
           "entrantNotFound": "Dieses Team ist nicht im Turnier registriert.",
           "entrantNotInGroup": "Dieses Team ist dieser Gruppe nicht zugewiesen.",
           "roundRobinOnly": "Nur Round-Robin-Gruppen können Spiele der ganzen Phase zählen.",
-          "cannotMove": "Dieser Container kann nicht weiter verschoben werden."
+          "cannotMove": "Dieser Container kann nicht weiter verschoben werden.",
+          "parentInvalid": "Dieses Set kann hier nicht verwendet werden.",
+          "tiebreakersInvalid": "Verwende jeden Tiebreaker nur einmal, aus der angebotenen Liste.",
+          "pointsValue": "Gib eine ganze Zahl zwischen -1000 und 1000 ein."
         },
-        "pointsSectionTitle": "Punkte Tiebreaker (optional)",
-        "pointsSectionHint": "Jede Punkteart ist unabhängig. Leer lassen, um sie nicht zu verwenden. Angesammelte Punkte entscheiden bei Gleichstand vor Buchholz/Rundendifferenz.",
+        "tiebreakerOrder": {
+          "title": "Tiebreaker",
+          "hint": "Siege zählen immer zuerst. Gleichstände werden dann in dieser Reihenfolge aufgelöst, der letzte Eintrag ist der finale Ausweg.",
+          "wins": "Siege",
+          "moveUp": "Nach oben",
+          "moveDown": "Nach unten",
+          "remove": "Entfernen",
+          "options": {
+            "points": "Punkte",
+            "buchholz": "Buchholz",
+            "map_diff": "Mapdifferenz",
+            "round_diff": "Rundendifferenz",
+            "head_to_head": "Direkter Vergleich",
+            "seed": "Seed"
+          }
+        },
+        "pointsConfig": {
+          "title": "Punkte",
+          "hint": "Jedes gewonnene oder verlorene Match, jede Map und jede Runde bringt dem Team Punkte. Runden zählen nur auf Maps mit erfasstem Ergebnis.",
+          "enable": "Punkte verwenden",
+          "scopes": {
+            "match": "Match",
+            "map": "Jede Map",
+            "round": "Jede Runde",
+            "forfeit": "Forfeit (ersetzt die anderen)"
+          },
+          "win": "Gewonnen",
+          "loss": "Verloren",
+          "notUsed": "Punkte ordnen die Gruppe nur, wenn Punkte in den Tiebreakern steht."
+        },
         "fieldMatchScope": "Teams spielen auch gegen Teams anderer Gruppen (Spiele der ganzen Phase zählen)",
         "fieldMatchScopeHint": "Es werden nur die dieser Gruppe zugewiesenen Teams gelistet; ihre abgeschlossenen Spiele in jeder Gruppe dieser Phase zählen. Teams nach dem Speichern zuweisen. Nur Round Robin.",
         "matchScopeNoTeams": "Dieser Gruppe sind noch keine Teams zugewiesen, daher ist die Tabelle leer. Weise ihr zuerst Teams zu.",
-        "matchScopeSwitchWarning": "Beim Wechsel auf Phasen-Umfang werden nur die zugewiesenen Teams gelistet. Teams, die in dieser Gruppe gespielt haben, aber nicht zugewiesen sind, verschwinden aus der Tabelle, bis du sie zuweist.",
-        "fieldMatchWinPoints": "Punkte pro Match Sieg",
-        "fieldMatchWinPointsHint": "Leer lassen, um Match Siege nicht in der Tabelle zu zählen.",
-        "fieldMapWinPoints": "Punkte pro Map Sieg",
-        "fieldMapWinPointsHint": "Leer lassen, um Map Siege nicht zu zählen.",
-        "fieldGameWinPoints": "Punkte pro Spielsieg",
-        "fieldGameWinPointsHint": "Leer lassen, um Spielsiege nicht zu zählen.",
-        "fieldGameForfeitWinPoints": "Punkte pro Spielsieg durch Forfait",
-        "fieldGameForfeitWinPointsHint": "Ein anderer Wert für einen Spielsieg durch Forfait statt durch gespielte Partie.",
-        "fieldRoundWinPoints": "Punkte pro Runden Sieg",
-        "fieldRoundWinPointsHint": "Leer lassen, um Runden Siege nicht zu zählen.",
-        "fieldMatchForfeitWinPoints": "Punkte pro Match Sieg durch Forfeit",
-        "fieldMatchForfeitWinPointsHint": "Ein abweichender Wert für einen Sieg durch Forfeit statt tatsächlich gespielt.",
-        "fieldMapForfeitWinPoints": "Punkte pro Map Sieg durch Forfeit",
-        "fieldMapForfeitWinPointsHint": "Ein abweichender Wert für einen Map Sieg durch Forfeit statt tatsächlich gespielt."
+        "matchScopeSwitchWarning": "Beim Wechsel auf Phasen-Umfang werden nur die zugewiesenen Teams gelistet. Teams, die in dieser Gruppe gespielt haben, aber nicht zugewiesen sind, verschwinden aus der Tabelle, bis du sie zuweist."
       },
       "bracketPage": {
         "title": "Bracket Verwaltung",
@@ -4013,7 +3981,8 @@
         "columnTeam": "Team",
         "columnPoints": "Punkte",
         "columnCashPrize": "Preisgeld",
-        "noValue": "Keiner"
+        "noValue": "Keiner",
+        "tbd": "TBD"
       },
       "bracketViewerPage": {
         "title": "Bracket",
@@ -4091,12 +4060,7 @@
         "subtitle": "Generieren Sie ein Bracket aus einer Vorlage und passen Sie es dann frei an. Verbinden Sie Sieger/Verlierer per Drag & Drop mit den nächsten Matches.",
         "backToTournament": "← Zurück zum Turnier",
         "legacyImportLink": "Alte Matches importieren →",
-        "readOnlyNotice": "Diese Phase hat bereits begonnen: Das Bracket kann hier nicht mehr bearbeitet werden. Sie können es weiterhin ansehen.",
-        "unlockButton": "Bearbeitung entsperren",
-        "unlockTitle": "Dieses gestartete Bracket bearbeiten?",
-        "unlockConfirm": "Bereits gespielte oder laufende Matches bleiben eingefroren und behalten Ergebnisse und Statistiken. Andere Matches und Verbindungen können weiter geändert, neue Matches hinzugefügt und ungespielte gelöscht werden.",
-        "unlockConfirmButton": "Entsperren",
-        "unlockedWarning": "Bearbeitung entsperrt: Gespielte und laufende Matches sind eingefroren, alles andere lässt sich ohne Ergebnisverlust ändern.",
+        "startedNotice": "Bearbeitung entsperrt: Gespielte und laufende Matches sind eingefroren, alles andere lässt sich ohne Ergebnisverlust ändern.",
         "swissContainersNotice": "Die Swiss Gruppen dieser Phase ({names}) werden von der Turnierseite aus verwaltet, nicht in diesem Editor: Eine Swiss Runde wird nach jedem Ergebnis dynamisch generiert, es gibt keinen festen Graphen zu zeichnen.",
         "templateFormat": "Format",
         "format": {
@@ -4159,7 +4123,6 @@
           "matchMismatch": "Ein Match passt nicht mehr zum gespeicherten Bracket, lade die Seite neu und versuche es erneut.",
           "startedMatchChanged": "Ein gespieltes oder laufendes Match kann nicht verschoben und sein Best of nicht geändert werden.",
           "startedMatchDeleted": "Ein gespieltes oder laufendes Match kann nicht gelöscht werden.",
-          "startedEdgeChanged": "Die Verbindungen zu einem gespielten oder laufenden Match können nicht geändert werden.",
           "entrantMismatch": "Einer der zugewiesenen Teilnehmer gehört nicht zu diesem Turnier. Laden Sie die Seite neu und versuchen Sie es erneut.",
           "bracketStarted": "In diesem Bracket wurden bereits Matches gespielt, es kann nicht mehr bearbeitet werden.",
           "saveFailed": "Speichern fehlgeschlagen, lade die Seite neu und versuche es erneut."
@@ -4772,6 +4735,47 @@
           "errorUnreachable": "Liquipedia ist nicht erreichbar, versuche es später erneut.",
           "errorInvalid": "Ungültiges Turnier.",
           "errorBusy": "Für dieses Turnier läuft bereits ein Import."
+        },
+        "talent": {
+          "tab": "Übertragungstalente",
+          "wikicodeTitle": "Wikicode der Talente",
+          "wikicodeDescription": "Füge den Talent-Abschnitt (BroadcasterCard-Vorlagen) der Liquipedia-Seite des Turniers ein.",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "Analysieren",
+          "analyzing": "Analyse läuft...",
+          "parsedCount": "{count, plural, one {# Talent gefunden} other {# Talente gefunden}}",
+          "tableTitle": "Zu nennende Talente",
+          "tableDescription": "Jedes markierte Talent wird im Turnier mit den Rollen seiner Karte genannt. Seine Liquipedia-Seite liest danach der Liquipedia-Import.",
+          "empty": "Analysiere einen Wikicode, um die Talente aufzulisten.",
+          "alreadyCredited": "{count, plural, one {# Credit bereits im Turnier} other {# Credits bereits im Turnier}}",
+          "pickPerson": "Person auswählen",
+          "searchPerson": "Person suchen",
+          "noResults": "Keine Person gefunden",
+          "checkedCount": "{count, plural, one {# Talent ausgewählt} other {# Talente ausgewählt}}",
+          "importButton": "Credits importieren",
+          "importing": "Import läuft...",
+          "success": "{created, plural, one {# Credit erstellt} other {# Credits erstellt}}, {skipped} bereits vorhanden.",
+          "error": {
+            "invalid": "Ungültiger Wikicode.",
+            "tooLong": "Dieser Wikicode ist zu lang.",
+            "noCards": "Keine BroadcasterCard mit bekannter Position gefunden.",
+            "empty": "Nichts zu importieren.",
+            "tooMany": "Zu viele Talente auf einmal.",
+            "tournamentNotFound": "Dieses Turnier existiert nicht.",
+            "rows": "Einige Zeilen sind ungültig."
+          },
+          "rowError": {
+            "personRequired": "Wähle die Person für dieses Talent.",
+            "personNotFound": "Diese Person existiert nicht.",
+            "invalidName": "Ungültiger Liquipedia-Name.",
+            "invalidCredits": "Ungültige Credits.",
+            "organizationRequired": "Wähle die Organisation für dieses Talent.",
+            "organizationNotFound": "Diese Organisation existiert nicht."
+          },
+          "pickOrganization": "Organisation auswählen",
+          "searchOrganization": "Organisation suchen",
+          "noOrganizationResults": "Keine Organisation gefunden",
+          "organizationRequiredHint": "Jedes ausgewählte Talent braucht eine Organisation."
         }
       },
       "scoreBackfill": {
@@ -5196,6 +5200,228 @@
     },
     "personPicker": {
       "notInGame": "Noch nicht in {game}"
+    },
+    "rosterSource": {
+      "placeholder": "Link zur Ankündigung",
+      "error": {
+        "invalidUrl": "Gib einen gültigen Link ein, der mit http:// oder https:// beginnt.",
+        "sourceTooLong": "Dieser Link ist zu lang (maximal 500 Zeichen).",
+        "invalidSource": "Diese Option ist hier nicht verfügbar.",
+        "requiresLeft": "Markiere das Mitglied als ausgetreten, um eine Quelle des Abgangs festzulegen."
+      },
+      "joinLabel": "Quelle des Zugangs",
+      "leftLabel": "Quelle des Abgangs",
+      "option": {
+        "none": "Keine Quelle",
+        "link": "Link zur Ankündigung",
+        "startedTournament": "Hat bei einem Turnier angefangen zu spielen",
+        "stoppedTournament": "Spielt seit einem Turnier nicht mehr",
+        "insideSource": "Interne Quelle",
+        "declaredByPlayer": "Vom Spieler gemeldet"
+      }
+    },
+    "settings": {
+      "title": "Konfiguration",
+      "subtitle": "Globale Einstellungen der Website.",
+      "save": "Speichern",
+      "saving": "Speichern...",
+      "saveSuccess": "Einstellungen gespeichert",
+      "saveError": "Einige Felder sind ungültig",
+      "saveFailed": "Speichern fehlgeschlagen, lade die Seite neu und versuche es erneut.",
+      "error": {
+        "required": "Dieses Feld ist erforderlich.",
+        "invalid": "Ungültiger Wert.",
+        "outOfRange": "Muss eine ganze Zahl zwischen {min} und {max} sein."
+      },
+      "opendata": {
+        "title": "OpenData Portal",
+        "description": "Öffentliche Datensätze (Turniere, Teams, Spieler, Matches), durchsuchbar und als JSON herunterladbar.",
+        "publicPortal": "Öffentliches Portal",
+        "monitoring": "Monitoring",
+        "enabled": "Portal aktiviert",
+        "enabledHint": "Deaktiviert antworten das Portal und seine API, dass der Dienst nicht verfügbar ist.",
+        "requireAccount": "Konto erforderlich",
+        "requireAccountHint": "Nur angemeldete Nutzer können die Daten ansehen und herunterladen.",
+        "browsePerMinute": "Tabellenseiten pro Minute",
+        "browsePerMinuteHint": "Pro Konto, oder pro IP Adresse für Besucher. Zwischen {min} und {max}.",
+        "exportsPerHour": "Vollständige Exporte pro Stunde",
+        "exportsPerHourHint": "Pro Konto, oder pro IP Adresse für Besucher. Zwischen {min} und {max}.",
+        "propagationHint": "Jeder Server übernimmt eine Änderung innerhalb von 15 Sekunden."
+      },
+      "publicApi": {
+        "title": "Öffentliche API",
+        "description": "Self Service API Schlüssel, die jedes Konto in seinen Einstellungen erstellen kann. Partnerschlüssel behalten ihr eigenes Limit.",
+        "keys": "Öffentliche Schlüssel",
+        "enabled": "Öffentliche Schlüssel aktiviert",
+        "enabledHint": "Wenn deaktiviert, kann kein öffentlicher Schlüssel erstellt werden und bestehende antworten mit 403.",
+        "ratePerSecond": "Anfragen pro Sekunde",
+        "ratePerSecondHint": "Pro Konto, geteilt zwischen allen öffentlichen Schlüsseln, zwischen {min} und {max}. Aufwendige Endpoints zählen als mehrere Anfragen.",
+        "maxKeysPerUser": "Aktive Schlüssel pro Konto",
+        "maxKeysPerUserHint": "Zwischen {min} und {max}.",
+        "propagationHint": "Änderungen erreichen alle Server innerhalb von 15 Sekunden."
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData Monitoring",
+      "subtitle": "Nutzung des OpenData Portals und ihr Einfluss auf die Last der Website.",
+      "backToSettings": "Konfiguration",
+      "rangeLabel": "Zeitraum",
+      "range": {
+        "1h": "1 Stunde",
+        "24h": "24 Stunden",
+        "7d": "7 Tage"
+      },
+      "refresh": "Aktualisieren",
+      "verdict": {
+        "healthy": "Das Portal belastet die Website nicht",
+        "strained": "Das Portal wird anspruchsvoll",
+        "overloaded": "Das Portal musste gebremst werden, um die Website zu schützen"
+      },
+      "verdictHint": {
+        "healthy": "Kein Lastdruck, keine Anfrage abgelehnt.",
+        "strained": "Beobachte den Trend: senke die Limits oder verlange ein Konto, wenn es weiter steigt.",
+        "overloaded": "Anfragen wurden abgelehnt, während die Website ausgelastet war. Senke die Limits oder verlange ein Konto."
+      },
+      "reasons": {
+        "shed": "{shed} Anfragen abgelehnt, damit die Website reaktionsschnell bleibt",
+        "critical": "Die Website hat eine kritische Last erreicht",
+        "elevated": "Die Website war {share} der Zeit unter erhöhter Last",
+        "rateLimited": "Viele Anfragen haben das Limit erreicht",
+        "slow": "Langsame Antworten (95. Perzentil bei {p95} ms)"
+      },
+      "configState": "Portal: {enabled} · Konto erforderlich: {requireAccount} · Limits: {browse} Seiten pro Minute, {exports} Exporte pro Stunde",
+      "on": "an",
+      "off": "aus",
+      "stats": {
+        "requests": "Anfragen",
+        "clients": "Clients",
+        "exports": "Exporte",
+        "cacheHitRate": "Cache Trefferquote",
+        "p95": "Zeit 95. Perzentil",
+        "avgQueue": "Mittlere Wartezeit",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt (Last)",
+        "errors": "Fehler",
+        "authRequired": "Abgelehnt (ohne Konto)",
+        "rowsServed": "Gelieferte Zeilen",
+        "elevatedShare": "Zeit unter Last"
+      },
+      "requestsChart": "Anfragen",
+      "requestsChartHint": "Geliefert, limitiert, wegen Last abgelehnt, und Fehler.",
+      "pressureChart": "Last der Website",
+      "pressureChartHint": "Event Loop Verzögerung (Warnung ab {elevated} ms, kritisch ab {critical} ms), Website Abfragen, die auf eine Datenbankverbindung warten, laufende OpenData Abfragen.",
+      "instances": "Server",
+      "instancesHint": "Letzte Messung jedes Servers. OpenData führt {normal} Abfragen gleichzeitig pro Server aus, {elevated} unter Last, keine bei kritischer Last.",
+      "instancesEmpty": "Keine aktuelle Messung.",
+      "columns": {
+        "instance": "Server",
+        "level": "Last",
+        "lag": "Verzögerung",
+        "poolWaiting": "Wartende Abfragen",
+        "inFlight": "OpenData laufend",
+        "queued": "OpenData wartend",
+        "sampledAt": "Gemessen um",
+        "dataset": "Datensatz",
+        "requests": "Geliefert / Anfragen",
+        "cacheHit": "Cache",
+        "avg": "Mittel",
+        "p95": "95. Perzentil",
+        "rows": "Zeilen",
+        "consumer": "Client",
+        "exports": "Exporte",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt",
+        "lastSeen": "Zuletzt gesehen"
+      },
+      "level": {
+        "normal": "Normal",
+        "elevated": "Erhöht",
+        "critical": "Kritisch"
+      },
+      "kind": {
+        "browse": "Tabelle",
+        "export": "Export"
+      },
+      "datasets": "Nach Datensatz",
+      "consumers": "Top Clients",
+      "consumersHint": "Besucher ohne Konto werden nach einem Hash ihrer IP Adresse gruppiert.",
+      "noRequests": "Keine Anfrage in diesem Zeitraum.",
+      "anonymous": "Besucher {hash}",
+      "charts": {
+        "empty": "Keine Anfrage in diesem Zeitraum.",
+        "noSamples": "Keine Lastmessung in diesem Zeitraum.",
+        "served": "Geliefert",
+        "rateLimited": "Limitiert",
+        "shed": "Abgelehnt",
+        "errors": "Fehler",
+        "lag": "Verzögerung (ms)",
+        "poolWaiting": "Wartende Abfragen",
+        "inFlight": "OpenData laufend"
+      }
+    },
+    "publicApiKeys": {
+      "title": "Öffentliche API Schlüssel",
+      "subtitle": "Von Nutzenden in ihren Einstellungen erstellte Schlüssel. Limit von {rate} Anfragen pro Sekunde und Konto.",
+      "searchPlaceholder": "Nach Name, Beschreibung oder Nutzer suchen",
+      "statusFilter": "Status",
+      "status": {
+        "active": "Aktiv",
+        "suspended": "Gesperrt",
+        "revoked": "Widerrufen",
+        "blocked": "API Zugriff gesperrt"
+      },
+      "empty": "Kein öffentlicher Schlüssel gefunden.",
+      "requests30d": "{count, plural, one {# Anfrage} other {# Anfragen}} in 30 Tagen",
+      "statsAndEdit": "Statistiken & bearbeiten",
+      "suspend": "Sperren",
+      "unsuspend": "Reaktivieren",
+      "block": "API Zugriff sperren",
+      "unblock": "API Zugriff entsperren",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "actionFailed": "Die Aktion ist fehlgeschlagen, bitte versuche es erneut.",
+      "notFound": "Dieser Schlüssel oder Nutzer existiert nicht mehr.",
+      "done": {
+        "suspend": "Schlüssel gesperrt.",
+        "unsuspend": "Schlüssel reaktiviert.",
+        "block": "API Zugriff gesperrt, alle Schlüssel des Kontos wurden widerrufen.",
+        "unblock": "API Zugriff entsperrt.",
+        "delete": "Schlüssel gelöscht."
+      },
+      "confirm": {
+        "suspend": {
+          "title": "Diesen Schlüssel sperren?",
+          "description": "Der Schlüssel „{name}“ funktioniert ab sofort nicht mehr. {owner} muss uns auf Discord kontaktieren, um die Reaktivierung zu beantragen."
+        },
+        "unsuspend": {
+          "title": "Diesen Schlüssel reaktivieren?",
+          "description": "Der Schlüssel „{name}“ funktioniert wieder für {owner}."
+        },
+        "block": {
+          "title": "API Zugriff sperren?",
+          "description": "Alle öffentlichen Schlüssel von {owner} werden widerrufen, und es können keine neuen mehr erstellt werden."
+        },
+        "unblock": {
+          "title": "API Zugriff entsperren?",
+          "description": "{owner} kann wieder öffentliche Schlüssel erstellen. Widerrufene Schlüssel bleiben widerrufen."
+        },
+        "delete": {
+          "title": "Diesen Schlüssel löschen?",
+          "description": "Der Schlüssel „{name}“ und seine Statistiken werden endgültig gelöscht."
+        }
+      },
+      "usageHeading": "Vom Nutzer angegebene Verwendung",
+      "clientName": "Produkt oder Unternehmen",
+      "usageDescription": "Beschreibung der Verwendung",
+      "save": "Speichern",
+      "saving": "Wird gespeichert...",
+      "saved": "Schlüssel aktualisiert.",
+      "saveError": "Einige Felder sind ungültig.",
+      "error": {
+        "required": "Dieses Feld ist erforderlich.",
+        "tooShort": "Mindestens {min} Zeichen.",
+        "tooLong": "Höchstens {max} Zeichen."
+      }
     }
   },
   "dashboard": {
@@ -5227,7 +5453,8 @@
       "adminAccess": "Admin",
       "allAuthors": "Alle Autoren",
       "authorAdminSpace": "Autoren",
-      "logs": "Protokolle"
+      "logs": "Protokolle",
+      "webhooks": "Webhooks"
     },
     "switcher": {
       "selectOrganization": "Organisation auswählen",
@@ -5522,7 +5749,13 @@
         "twitch": "Twitch",
         "youtube": "YouTube",
         "tiktok": "TikTok",
-        "kick": "Kick"
+        "kick": "Kick",
+        "sooplive": "SOOP",
+        "naver": "Naver",
+        "bilibili": "Bilibili",
+        "qq": "QQ",
+        "weibo": "Weibo",
+        "other": "Andere"
       },
       "typeLabel": "Typ",
       "type": {
@@ -5679,7 +5912,9 @@
       "msValue": "{value} ms",
       "error": {
         "notFound": "Schlüssel nicht gefunden."
-      }
+      },
+      "kindPublic": "Öffentlich",
+      "publicRateLimit": "Geteiltes öffentliches Limit"
     },
     "myApiKeys": {
       "title": "Meine API Schlüssel",
@@ -5714,7 +5949,8 @@
       "columnAvgDuration": "Durchschn. Dauer",
       "columnErrorRate": "Fehlerquote",
       "requests": "{count} Anfragen",
-      "errors": "{count} Fehler"
+      "errors": "{count} Fehler",
+      "webhooksButton": "Webhooks"
     },
     "permissions": {
       "title": "Rollen & Berechtigungen",
@@ -6002,6 +6238,133 @@
       "total": "{count, plural, one {# Eintrag} other {# Einträge}}",
       "previous": "Vorherige Seite",
       "next": "Nächste Seite"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "GC Stats sendet einen HTTPS POST an Ihre Endpoints, wenn sich ein Match, ein Turnier, ein Team oder ein Spieler ändert. Zustellungen werden etwa jede Minute geprüft.",
+      "pageTitle": "Webhooks",
+      "pageSubtitle": "Endpoints und Zustellungen Ihrer Partner API Schlüssel.",
+      "keySwitcher": "Partner API Schlüssel",
+      "noPartnerKey": "Webhooks sind Partner API Schlüsseln vorbehalten. Sie haben noch keinen Partnerschlüssel.",
+      "requestPartnerKey": "Partnerschlüssel anfragen",
+      "refresh": "Aktualisieren",
+      "add": "Endpoint hinzufügen",
+      "keyInactive": "Dieser API Schlüssel ist inaktiv: Seine Webhooks wurden gelöscht, und es können keine hinzugefügt werden, bis er wieder aktiviert wird.",
+      "empty": "Noch kein Webhook Endpoint.",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "toggle": "Diesen Endpoint aktivieren oder deaktivieren",
+      "disabledFailing": "Nach zu vielen fehlgeschlagenen Zustellungen in Folge automatisch deaktiviert. Beheben Sie das Problem am Endpoint und aktivieren Sie ihn dann wieder.",
+      "any": "Alle",
+      "test": "Test senden",
+      "testing": "Wird gesendet...",
+      "testSuccess": "Zugestellt (HTTP {status})",
+      "testFailed": "Zustellung fehlgeschlagen: {error}",
+      "edit": "Bearbeiten",
+      "showSecret": "Secret anzeigen",
+      "rotateSecret": "Neues Secret",
+      "delete": "Löschen",
+      "deleted": "Endpoint gelöscht",
+      "created": "Endpoint erstellt",
+      "updated": "Endpoint aktualisiert",
+      "deliveriesTitle": "Letzte Zustellungen",
+      "deliveriesEmpty": "Noch keine Zustellung.",
+      "columnDate": "Datum",
+      "columnEvent": "Ereignis",
+      "columnEndpoint": "Endpoint",
+      "columnStatus": "Status",
+      "columnAttempts": "Versuche",
+      "redeliver": "Erneut senden",
+      "status": {
+        "pending": "Ausstehend",
+        "success": "Zugestellt",
+        "failed": "Fehlgeschlagen"
+      },
+      "secretTitle": "Signatur Secret",
+      "secretRotatedTitle": "Neues Signatur Secret",
+      "secretCreatedTitle": "Endpoint erstellt, hier ist sein Signatur Secret",
+      "secretDescription": "Damit prüfen Sie den Header X-GCS-Signature: sha256 HMAC aus dem Header X-GCS-Timestamp, einem Punkt und dann dem unveränderten Body.",
+      "copySecret": "Secret kopieren",
+      "close": "Schließen",
+      "deleteTitle": "Diesen Endpoint löschen?",
+      "deleteDescription": "{url} erhält keine Webhooks mehr. Der Zustellverlauf wird ebenfalls gelöscht.",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Wird gespeichert...",
+      "addTitle": "Neuer Webhook Endpoint",
+      "editTitle": "Endpoint bearbeiten",
+      "dialogDescription": "Wählen Sie die zu empfangenden Ereignisse und grenzen Sie sie mit Filtern ein.",
+      "url": "Endpoint URL",
+      "urlHint": "Nur öffentliche HTTPS Adressen.",
+      "descriptionLabel": "Beschreibung",
+      "events": "Ereignisse",
+      "event": {
+        "match": {
+          "created": "Neues Match",
+          "updated": "Match aktualisiert"
+        },
+        "tournament": {
+          "created": "Neues Turnier",
+          "updated": "Turnier aktualisiert"
+        },
+        "team": {
+          "updated": "Team aktualisiert"
+        },
+        "player": {
+          "updated": "Spieler aktualisiert"
+        }
+      },
+      "filtersTitle": "Filter",
+      "filtersHint": "Leere Filter lassen alles durch. Region und Offiziell Filter gelten für Matches und Turniere, der Teamfilter für alle Ereignisse.",
+      "official": {
+        "label": "Offiziell",
+        "all": "Offiziell und inoffiziell",
+        "official": "Nur offiziell",
+        "unofficial": "Nur inoffiziell"
+      },
+      "regions": "Regionen",
+      "regionsHint": "Region des Turniers.",
+      "teams": "Teams",
+      "teamsHint": "Matches und Turniere, in denen eines dieser Teams spielt, diese Teams und ihre aktuellen Spieler.",
+      "teamsPlaceholder": "Team hinzufügen",
+      "teamsSearch": "Team suchen...",
+      "teamsNoResults": "Kein Team gefunden",
+      "removeTeam": "{name} entfernen",
+      "error": {
+        "notFound": "Dieser Endpoint oder Schlüssel existiert nicht mehr.",
+        "tooManyEndpoints": "Höchstens {max} Endpoints pro API Schlüssel.",
+        "keyInactive": "Dieser API Schlüssel ist inaktiv, es kann kein Webhook hinzugefügt werden.",
+        "invalid": "Einige Felder sind ungültig.",
+        "network": "Netzwerkfehler, bitte versuchen Sie es erneut.",
+        "busy": "Diese Zustellung wird bereits gesendet, versuche es gleich noch einmal.",
+        "url": {
+          "required": "Die URL ist erforderlich.",
+          "tooLong": "Höchstens {urlMaxLength} Zeichen.",
+          "invalid": "Dies ist keine gültige URL.",
+          "notHttps": "Die URL muss mit https:// beginnen.",
+          "credentials": "Die URL darf keinen Benutzernamen und kein Passwort enthalten.",
+          "privateHost": "Die URL muss auf eine öffentliche Adresse verweisen."
+        },
+        "description": {
+          "tooLong": "Höchstens {descriptionMaxLength} Zeichen."
+        },
+        "events": {
+          "required": "Wählen Sie mindestens ein Ereignis.",
+          "invalid": "Unbekanntes Ereignis."
+        },
+        "filterRegions": {
+          "invalid": "Unbekannte Region.",
+          "tooMany": "Höchstens {filterRegions} Regionen."
+        },
+        "filterTeamIds": {
+          "invalid": "Ungültiges Team.",
+          "tooMany": "Höchstens {filterTeams} Teams.",
+          "unknownTeam": "Eines der Teams existiert nicht mehr."
+        },
+        "filterOfficial": {
+          "invalid": "Ungültiger Wert."
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6273,7 +6636,18 @@
       "addRow": "Zeile hinzufügen",
       "hint": "Sie können das Bearbeiten oder Entfernen eines bestehenden Eintrags vorschlagen sowie bis zu 6 neue hinzufügen. Alles hier wird vom Team geprüft, bevor es das Roster verändert.",
       "hasLeft": "Hat das Team verlassen",
-      "untilLabel": "Verlassen am"
+      "untilLabel": "Verlassen am",
+      "sourcePlaceholder": "Link zur Ankündigung",
+      "joinSourceLabel": "Quelle des Zugangs",
+      "leftSourceLabel": "Quelle des Abgangs",
+      "sourceOption": {
+        "none": "Keine Quelle",
+        "link": "Link zur Ankündigung",
+        "startedTournament": "Hat bei einem Turnier angefangen zu spielen",
+        "stoppedTournament": "Spielt seit einem Turnier nicht mehr",
+        "insideSource": "Interne Quelle",
+        "declaredByPlayer": "Vom Spieler gemeldet"
+      }
     },
     "nameHistory": {
       "title": "Namensverlauf",
@@ -6328,7 +6702,10 @@
       "invalidType": "Es werden nur Fotos im Format JPG, PNG oder WebP akzeptiert.",
       "tooSmall": "Dieses Foto ist zu klein (mindestens 400 px an der kürzesten Seite).",
       "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein.",
-      "userLinkOtherPerson": "Dein Konto ist bereits mit einem anderen Spieler verknüpft. Falls beide Profile dieselbe Person sind, bitte das Team, sie zusammenzuführen."
+      "userLinkOtherPerson": "Dein Konto ist bereits mit einem anderen Spieler verknüpft. Falls beide Profile dieselbe Person sind, bitte das Team, sie zusammenzuführen.",
+      "sourceTooLong": "Dieser Link ist zu lang (maximal 500 Zeichen).",
+      "invalidSource": "Diese Option ist hier nicht verfügbar.",
+      "leftSourceRequiresLeft": "Eine Quelle des Abgangs setzt voraus, dass das Mitglied als ausgetreten markiert ist."
     },
     "discordIdHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink.",
     "useLinkedDiscord": "Mein verknüpftes Discord Konto verwenden"
@@ -6521,6 +6898,21 @@
     "noPhaseConfigured": "Pick'em ist für keine Phase dieses Turniers geöffnet.",
     "statusNotOpenYet": "Vorhersagen öffnen am <date></date>.",
     "statusLocked": "Vorhersagen sind gesperrt, das erste Match dieser Phase hat begonnen.",
+    "statusLockedNoPicks": "Die Tipps sind gesperrt, du hast für diese Phase keine abgegeben.",
+    "statusLockedStageCompleted": "Vorhersagen sind geschlossen, in dieser Phase gibt es nichts mehr vorherzusagen.",
+    "lockedPicksHint": "Die Tipps sind gesperrt. Hier sind deine, abgeglichen mit den Ergebnissen, sobald die Spiele enden.",
+    "lockedBracketHint": "Bracket Vorhersagen sind gesperrt, das erste Match hat begonnen. Vorhersagen für Gruppenmatches bleiben bis zum Start des jeweiligen Matches offen.",
+    "groupMatchHint": "Wähle den Sieger jedes Matches. Deine Vorhersage wird sofort gespeichert und beim Start des Matches gesperrt. Klicke erneut auf deine Wahl, um sie zu entfernen.",
+    "groupMatchNone": "Noch keine Paarungen ausgelost.",
+    "groupMatchNextRounds": "Die nächsten Runden erscheinen hier, sobald ihre Paarungen ausgelost sind.",
+    "groupMatchLocked": "Die Vorhersagen für dieses Match sind geschlossen.",
+    "pickCorrect": "Richtiger Tipp",
+    "pickWrong": "Falscher Tipp",
+    "standingActualRank": "Tatsächlicher Platz #{rank}",
+    "guessInvalid": "Unmöglicher Tipp, keines der getippten Teams kann dieses Spiel erreichen.",
+    "guessInvalidBadge": "Unmöglich",
+    "pickUnreachableBadge": "Raus",
+    "pickUnreachable": "Dieses Team kann dieses Spiel nicht mehr erreichen.",
     "statusLoginRequired": "Melden Sie sich an, um Ihre Vorhersagen abzugeben.",
     "leaderboardTitle": "Bestenliste",
     "overallLeaderboardTitle": "Gesamte Bestenliste",
@@ -6557,6 +6949,10 @@
       "invalidPick": "Eine der Vorhersagen ist ungültig.",
       "duplicateRank": "Derselbe Rang wurde zweimal vorhergesagt.",
       "incompleteStandingPicks": "Jedes Team der Gruppe muss eingeordnet werden.",
+      "tooManyAttempts": "Zu viele Vorhersagen in kurzer Zeit. Bitte warte eine Minute und versuche es erneut.",
+      "unexpected": "Deine Vorhersage konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      "matchLocked": "Dieses Match hat bereits begonnen, die Vorhersage ist gesperrt.",
+      "matchNotFound": "Match nicht gefunden.",
       "duplicateEntrant": "Dasselbe Team wurde zweimal eingeordnet.",
       "invalidRank": "Die Rangfolge ist nicht vollständig."
     },
@@ -6611,6 +7007,8 @@
         "fieldOutcomeCorrect": "Punkte, Ergebnis korrekt",
         "fieldAdvancement": "Punkte pro Runde, Weiterkommen",
         "fieldStanding": "Punkte, Platzierung korrekt",
+        "fieldGroupMatch": "Punkte, Sieger eines Gruppenmatches korrekt",
+        "evenPointsHint": "Gerade Zahl, ein richtiger Sieger mit dem falschen Gegner bringt die Hälfte.",
         "save": "Speichern",
         "saving": "Speichern…",
         "pointsSaveSuccess": "Punkte aktualisiert.",
@@ -6618,7 +7016,8 @@
           "notFound": "Gruppe nicht gefunden.",
           "forbidden": "Nur der Besitzer der Gruppe kann dies tun.",
           "stageNotInTournament": "Diese Phase gehört nicht zu diesem Turnier.",
-          "invalid": "Ungültiger Wert."
+          "invalid": "Ungültiger Wert.",
+          "notEven": "Muss eine gerade Zahl sein."
         }
       }
     }
@@ -6737,7 +7136,9 @@
     "stageSelector": "Phase",
     "bracketTemplate": "Liquipedia-Vorlage",
     "bracketHint": "Öffne den Generator, gib diese Vorlage ein und füge das Ergebnis in die Seite ein.",
-    "bracketGenerator": "Generator öffnen"
+    "bracketGenerator": "Generator öffnen",
+    "talentTab": "Talente",
+    "talentHint": "Hosts, Caster, Observer und Produktions-Credits"
   },
   "matchPoster": {
     "title": "Matchbild",
@@ -6766,6 +7167,19 @@
     "calendarCopied": "Link kopiert"
   },
   "calendar": {
+    "monthView": "Monat",
+    "weekView": "Woche",
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "showEvents": "Tuniere",
+    "both": "Beides",
+    "filterTeamLabel": "Team",
+    "allTeams": "Alle Teams",
+    "searchTeams": "Teams suchen…",
+    "teamSearchError": "Teams konnten nicht gesucht werden. Bitte erneut versuchen.",
+    "teamUnavailable": "Team nicht verfügbar",
     "allName": "GC Stats, alle Matches",
     "teamName": "Matches von {team} (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",
@@ -6804,5 +7218,282 @@
     "switcherLabel": "Spiel",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "Werkzeuge, die GC Stats Daten in Liquipedia Wikicode umwandeln.",
+    "transfersTitle": "Transfers",
+    "transfersHint": "Vervollständige eine monatliche Transferseite mit den Roster Änderungen.",
+    "tournamentsTitle": "Turnier und Match",
+    "tournamentsHint": "Suche ein Turnier, um den Wikicode zu exportieren, und wähle dann auf seiner Seite ein Match.",
+    "tournamentPlaceholder": "Turnier auswählen",
+    "tournamentSearchPlaceholder": "Turnier suchen",
+    "tournamentNoResults": "Kein Turnier gefunden."
+  },
+  "liquipediaTransfers": {
+    "title": "Liquipedia Transfers",
+    "back": "Zurück zu Liquipedia",
+    "subtitle": "Füge den Wikicode einer monatlichen Transferseite ein. GC Stats ergänzt die Roster Änderungen dieses Monats, neueste zuerst, und lässt die vorhandenen Zeilen unverändert.",
+    "wikicodeLabel": "Wikicode der Transferseite",
+    "wikicodePlaceholder": "Wikicode hier einfügen",
+    "monthLabel": "Monat",
+    "monthHint": "Leer lassen, um den Monat aus dem Seitentitel oder den Daten zu lesen.",
+    "submit": "Seite vervollständigen",
+    "submitting": "Seite wird vervollständigt",
+    "summary": "Hinzugefügte Zeilen für {month}: {count}",
+    "nothingToAdd": "Nichts hinzuzufügen, alle Roster Änderungen von {month} stehen bereits auf der Seite.",
+    "alreadyListed": "Bereits auf der Seite ({count}), unverändert:",
+    "unlinkedTeams": "Teams ohne Liquipedia Namen, mit ihrem GC Stats Namen geschrieben ({count}):",
+    "unlinkedPeople": "Personen ohne Liquipedia Namen, mit ihrem Handle geschrieben ({count}):",
+    "missingSources": "Änderungen ohne verwendbare Quelle, ohne Referenz belassen ({count}):",
+    "error": {
+      "required": "Füge den Wikicode der Transferseite ein.",
+      "tooLong": "Dieser Wikicode ist zu lang (maximal 300.000 Zeichen).",
+      "missingStart": "Der Wikicode muss die Vorlage Transfer Start enthalten.",
+      "missingEnd": "Der Wikicode muss nach der Vorlage Transfer Start die Vorlage Transfer End enthalten.",
+      "invalid": "Gib einen gültigen Monat ein.",
+      "undetected": "Der Monat konnte nicht aus der Seite gelesen werden, wähle ihn im Monatsfeld aus.",
+      "generic": "Etwas ist schiefgelaufen, bitte versuche es erneut."
+    }
+  },
+  "imageUpload": {
+    "dropzone": "Hier klicken oder ein Bild ablegen",
+    "dropzoneHint": "Wähle eine Datei, beschneide und zoome sie vor dem Senden",
+    "checking": "Bild wird geprüft",
+    "constraintsTitle": "Anforderungen an das Bild",
+    "constraintFormats": "Formate: {formats}",
+    "constraintWeight": "Maximale Größe: {max} MB",
+    "constraintMinSide": "Mindestgröße: {min} px an der kürzeren Seite",
+    "constraintRatio": "Seitenverhältnis: {ratio} (nach der Auswahl kannst du beschneiden und zoomen)",
+    "constraintOutput": "Auf {max} px an der längeren Seite verkleinert, falls größer",
+    "editCrop": "Zuschnitt bearbeiten",
+    "replace": "Ersetzen",
+    "remove": "Entfernen",
+    "cropTitle": "Bild zuschneiden",
+    "cropDescription": "Verschiebe das Bild und zoome, um den sichtbaren Bereich zu wählen.",
+    "cropDescriptionPadding": "Verschiebe das Bild und zoome, um den sichtbaren Bereich zu wählen. Verkleinere, um einen transparenten Rand hinzuzufügen.",
+    "zoom": "Zoom",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "fit": "Ganzes Bild einpassen",
+    "reset": "Zurücksetzen",
+    "cancel": "Abbrechen",
+    "apply": "Anwenden",
+    "applying": "Wird angewendet",
+    "exportFailed": "Das Bild konnte nicht verarbeitet werden, versuche eine andere Datei.",
+    "error": {
+      "invalidType": "Nicht unterstütztes Format, nutze {formats}.",
+      "tooLarge": "Die Datei ist zu groß, das Maximum sind {max} MB.",
+      "tooSmall": "Das Bild ist zu klein, die kürzere Seite muss mindestens {min} px haben.",
+      "invalidImage": "Diese Datei ist kein gültiges Bild."
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "Alle öffentlichen Turniere, Teams, Spieler, Matches, Maps und Scoreboards von GC Stats, frei durchsuchbar, sortierbar und als JSON herunterladbar.",
+    "rowCount": "{count, plural, one {# Zeile} other {# Zeilen}}",
+    "columnCount": "{count, plural, one {# Spalte} other {# Spalten}}",
+    "explore": "Erkunden",
+    "allDatasets": "Alle Datensätze",
+    "datasets": {
+      "tournaments": {
+        "name": "Turniere",
+        "description": "Alle veröffentlichten Turniere: Daten, Status, Region, Kategorie, Preisgeld, Veranstalter und Anzahl der Teams."
+      },
+      "teams": {
+        "name": "Teams",
+        "description": "Alle Teams mit Land, aktueller Spieleranzahl, Anzahl der Matches, Bio und sozialen Netzwerken."
+      },
+      "players": {
+        "name": "Spieler",
+        "description": "Alle Spieler und Staffmitglieder mit Land, aktuellem Team und Rolle, Bio und sozialen Netzwerken."
+      },
+      "matches": {
+        "name": "Matches",
+        "description": "Alle Matches mit Turnier, Phase, Teams, Ergebnis, Status und Termin."
+      },
+      "maps": {
+        "name": "Maps",
+        "description": "Jede gespielte Map: Turnier, Teams, Ergebnis, Sieger und gewonnene Runden pro Seite."
+      },
+      "map_players": {
+        "name": "Scoreboards",
+        "description": "Jede Spielerzeile jeder abgeschlossenen Map: Agent, Kills, Tode, Assists, ACS, ADR, KAST, First Kills, Clutches und Multikills."
+      }
+    },
+    "usage": {
+      "title": "Die Daten nutzen",
+      "publicOnly": "Es werden nur Daten angeboten, die auf der Website bereits öffentlich sind: kein Konto, kein Kontakt, kein privates Feld.",
+      "terms": "Für die Daten gelten dieselben Bedingungen wie für die Website: Sie dürfen nur im Rahmen unserer Nutzungsbedingungen verwendet werden.",
+      "freshness": "Tabellen werden jede Minute aktualisiert, vollständige Exporte alle 10 Minuten.",
+      "limits": "Limits: {browse} Tabellenseiten pro Minute und {exports} vollständige Exporte pro Stunde, pro Konto oder pro IP Adresse.",
+      "accountOnly": "Das Portal ist derzeit nur für angemeldete Nutzer geöffnet.",
+      "priority": "Die Website hat immer Vorrang: bei hoher Last wird das Portal langsamer und kann für einige Sekunden antworten, dass es ausgelastet ist.",
+      "termsLink": "Nutzungsbedingungen"
+    },
+    "api": {
+      "title": "API",
+      "intro": "Tabellen und Exporte nutzen eine öffentliche JSON API, die du direkt aufrufen kannst:",
+      "datasets": "Datensätze: {list}.",
+      "paramPerPage": "per_page: {sizes}.",
+      "paramSort": "sort: jede Spalte des Datensatzes, direction: asc oder desc.",
+      "paramQ": "q: Textsuche, höchstens 100 Zeichen.",
+      "paramFilter": "f.spalte: filtert nach einer beliebigen Spalte (z. B. f.region=EMEA). Teilübereinstimmung bei Text, exakte Übereinstimmung bei Zahlen, Status und true/false. Bis zu {max} Filter, kombiniert.",
+      "errors": "Fehler liefern ein JSON Objekt mit einem Fehlercode, einen Status 400, 401, 429 oder 503 und einen Retry-After Header, der angibt, wann du es erneut versuchen kannst."
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData ist vorübergehend nicht verfügbar",
+        "text": "Das Portal ist im Moment deaktiviert. Schau später wieder vorbei."
+      },
+      "accountRequired": {
+        "title": "Melde dich an, um auf die Daten zuzugreifen",
+        "text": "Das OpenData Portal ist derzeit nur für angemeldete Nutzer geöffnet. Ein Konto ist kostenlos."
+      },
+      "login": "Anmelden",
+      "register": "Konto erstellen"
+    },
+    "download": {
+      "label": "JSON herunterladen",
+      "labelFiltered": "Auswahl herunterladen",
+      "preparing": "Wird vorbereitet...",
+      "success": "Download gestartet"
+    },
+    "errors": {
+      "not_found": "Dieser Datensatz existiert nicht.",
+      "bad_request": "Ungültige Anfrageparameter.",
+      "disabled": "Das OpenData Portal ist vorübergehend nicht verfügbar.",
+      "account_required": "Melde dich an, um auf die Daten zuzugreifen.",
+      "rate_limited": "Zu viele Anfragen, bitte langsamer.",
+      "busy": "Die Website ist stark ausgelastet, die Daten sind in wenigen Sekunden zurück.",
+      "internal_error": "Etwas ist schiefgelaufen, bitte erneut versuchen.",
+      "network": "Netzwerkfehler, prüfe deine Verbindung."
+    },
+    "retryIn": "(erneut in {seconds} s)",
+    "retry": "Erneut versuchen",
+    "searchLabel": "Suchen",
+    "searchPlaceholder": {
+      "tournaments": "Name, Region, Kategorie...",
+      "teams": "Name oder Tag...",
+      "players": "Nickname, Name, Team...",
+      "matches": "Turnier, Phase, Team...",
+      "maps": "Turnier, Map, Team...",
+      "map_players": "Spieler, Team, Agent, Map..."
+    },
+    "clearSearch": "Suche leeren",
+    "filters": {
+      "button": "Filter",
+      "title": "Nach Spalte filtern",
+      "column": "Spalte",
+      "value": "Wert",
+      "valuePlaceholder": "Zu vergleichender Wert...",
+      "addAnother": "Weiteren Filter hinzufügen",
+      "apply": "Anwenden",
+      "clear": "Zurücksetzen",
+      "integerRequired": "Diese Spalte erwartet eine ganze Zahl."
+    },
+    "perPage": "{count} pro Seite",
+    "columnsPicker": "Spalten",
+    "showAllColumns": "Alle anzeigen",
+    "resetColumns": "Zurücksetzen",
+    "rowsRange": "{from} bis {to} von {total} Zeilen",
+    "loading": "Wird geladen...",
+    "noResults": "Keine Zeilen.",
+    "noResultsFor": "Keine Zeile passt zu „{q}“.",
+    "noResultsFiltered": "Keine Zeile entspricht diesen Filtern.",
+    "pagination": "Seitennavigation",
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite",
+    "pageOf": "Seite {page} von {total}",
+    "yes": "Ja",
+    "no": "Nein",
+    "openLink": "Öffnen",
+    "status": {
+      "upcoming": "Bevorstehend",
+      "live": "Live",
+      "finished": "Beendet",
+      "pending": "Geplant",
+      "completed": "Beendet"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "status": "Status",
+      "start_date": "Beginn",
+      "end_date": "Ende",
+      "region": "Region",
+      "category": "Kategorie",
+      "location": "Ort",
+      "prize_pool": "Preisgeld",
+      "teams_count": "Teams",
+      "organizer_id": "Veranstalter ID",
+      "organizer_name": "Veranstalter",
+      "liquipedia_link": "Liquipedia",
+      "socials": "Netzwerke",
+      "short_name": "Tag",
+      "country_code": "Land",
+      "secondary_country_code": "Zweites Land",
+      "is_active": "Aktiv",
+      "players_count": "Spieler",
+      "matches_count": "Matches",
+      "bio": "Bio",
+      "vlr_id": "VLR ID",
+      "handle": "Nickname",
+      "first_name": "Vorname",
+      "last_name": "Nachname",
+      "current_team_id": "Team ID",
+      "current_team_name": "Aktuelles Team",
+      "current_role": "Rolle",
+      "scheduled_at": "Datum",
+      "tournament_id": "Turnier ID",
+      "tournament_name": "Turnier",
+      "stage_name": "Phase",
+      "bracket_name": "Bracket",
+      "round": "Runde",
+      "best_of": "Best of",
+      "team_a_id": "Team A ID",
+      "team_a_name": "Team A",
+      "score_a": "Ergebnis A",
+      "score_b": "Ergebnis B",
+      "team_b_id": "Team B ID",
+      "team_b_name": "Team B",
+      "winner_team_id": "Sieger ID",
+      "is_forfeit": "Forfeit",
+      "patch": "Patch",
+      "match_id": "Match ID",
+      "started_at": "Datum",
+      "map_order": "Map Nr.",
+      "map_name": "Map",
+      "is_completed": "Abgeschlossen",
+      "team_a_atk_rounds_won": "Angriffsrunden Team A",
+      "team_a_def_rounds_won": "Verteidigungsrunden Team A",
+      "team_b_atk_rounds_won": "Angriffsrunden Team B",
+      "team_b_def_rounds_won": "Verteidigungsrunden Team B",
+      "map_id": "Map ID",
+      "player_id": "Spieler ID",
+      "player_handle": "Spieler",
+      "team_id": "Team ID",
+      "team_name": "Team",
+      "agent": "Agent",
+      "kills": "Kills",
+      "deaths": "Tode",
+      "assists": "Assists",
+      "first_kills": "First Kills",
+      "first_deaths": "First Deaths",
+      "clutches_won": "Gewonnene Clutches",
+      "clutches_played": "Gespielte Clutches",
+      "trade_kills": "Trade Kills",
+      "traded_deaths": "Getradete Tode",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
+    }
   }
 }

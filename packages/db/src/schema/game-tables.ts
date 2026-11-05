@@ -7,7 +7,7 @@
  * played in them (`lol_games`, players, teams, draft).
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -18,7 +18,7 @@ import { users } from "./auth";
 import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
 import { containerTypeEnum, matchStatusEnum, slotEnum, matchResultEnum, seedSourceEnum, entryStatusEnum, stageStatusEnum } from "./bracket";
-import { pickemScoringModeEnum, pickemRewardKindEnum } from "./pickem";
+import { pickemScoringModeEnum, pickemRewardKindEnum, pickemGroupPickModeEnum } from "./pickem";
 import { gameHasMaps, type GameSlug } from "../game";
 
 type GamePrefix = "val" | "lol";
@@ -168,6 +168,9 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     // logic to display it) with a plain column — same information, no
     // parallel role vocabulary to keep in sync.
     inactiveSince: date("inactive_since"),
+    // Where the arrival / departure was announced: a link, or a plain text option (see lib/roster-source.ts). Converted to a Liquipedia reference in transfers.
+    joinSource: text("join_source"),
+    leftSource: text("left_source"),
     // EXCLUDE USING gist (person_id, team_id, role, period) added in drizzle/0000_squashed_baseline.sql
     // - same person can hold two DIFFERENT roles concurrently, not the same role twice overlapping.
     // Entries left with an unknown end date (open period + has_left) are excluded from it, see 0042.
@@ -234,6 +237,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     // Uncovered tournament (mix) holding a GC team's match: only the match is
     // public, the tournament has no page and stays out of every listing.
     isGhost: boolean("is_ghost").notNull().default(false),
+    // Official circuit or community event, used by the webhook filters.
+    isOfficial: boolean("is_official").notNull().default(true),
     liquipediaLink: text("liquipedia_link"),
     socials: jsonb("socials").notNull().default({}),
     playerPovPhrase: text("player_pov_phrase"),
@@ -283,6 +288,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     stageId: bigint("stage_id", { mode: "number" }).notNull().references(() => stages.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     containerType: containerTypeEnum("container_type").notNull(),
+    // Set (container_type 'set') holding this container, null for a container at the root of its stage.
+    parentId: bigint("parent_id", { mode: "number" }).references((): AnyPgColumn => stageContainers.id, { onDelete: "cascade" }),
     config: jsonb("config").notNull().default({}),
     status: stageStatusEnum("status").notNull().default("pending"),
     // Position within its stage, set by the admin (ties broken by id).
@@ -291,6 +298,7 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     liquipediaBracketTemplate: text("liquipedia_bracket_template"),
   }, (t) => [
     index(`${p}_stage_containers_stage_id_idx`).on(t.stageId),
+    index(`${p}_stage_containers_parent_id_idx`).on(t.parentId),
   ]);
 
   // --- Entrants -------------------------------------------------------------
@@ -611,7 +619,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
   // Per-stage (phase) pick'em configuration, admin only. Predictions open at
   // `opensAt`; they close at the stage's own earliest match `scheduledAt`
   // (computed at read time from `matches`, never stored — a match can be
-  // rescheduled after this row is created).
+  // rescheduled after this row is created). In "matches" group mode, each
+  // group match locks on its own and only bracket picks keep a stage deadline.
   const pickemStageSettings = pgTable(
     `${p}_pickem_stage_settings` as `${P}_pickem_stage_settings`,
     {
@@ -619,6 +628,9 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
       stageId: bigint("stage_id", { mode: "number" }).notNull().references(() => stages.id, { onDelete: "cascade" }),
       enabled: boolean("enabled").notNull().default(false),
       opensAt: timestamp("opens_at", { withTimezone: true }).notNull(),
+      groupPickMode: pickemGroupPickModeEnum("group_pick_mode").notNull().default("standings"),
+      // Scoring rules the stage is scored with, so a rules change never rewrites past leaderboards (1: legacy, 2: current).
+      scoringVersion: integer("scoring_version").notNull().default(2),
     },
     (t) => [unique(`${p}_pickem_stage_settings_stage_unique`).on(t.stageId)]
   );
@@ -664,12 +676,14 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
       outcomeCorrectPoints: integer("outcome_correct_points").notNull(),
       advancementPerRoundPoints: integer("advancement_per_round_points").notNull(),
       standingRankPoints: integer("standing_rank_points").notNull(),
+      groupMatchPoints: integer("group_match_points").notNull().default(3),
     },
     (t) => [unique(`${p}_pickem_group_phase_points_group_stage_unique`).on(t.groupId, t.stageId)]
   );
 
-  // One predicted winner per bracket-container match. Locked once the stage's
-  // pick'em window closes (first match of the stage) — enforced in
+  // One predicted winner per bracket-container match, or per group-container
+  // match in "matches" group mode. Locked once the stage's pick'em window
+  // closes, or when the group match itself starts — enforced in
   // lib/pickem/pickem-data.ts, not by a DB constraint (the lock deadline
   // moves with matches.scheduledAt).
   const pickemMatchPicks = pgTable(
@@ -742,9 +756,7 @@ export function defineValorantTables(g: GameTables) {
     isCompleted: boolean("is_completed").notNull().default(false),
     startedAt: timestamp("started_at", { withTimezone: true }),
     note: text("note"),
-    // Same purpose as matches.isForfeit, one level down — a map-win point
-    // value can differ from a map-forfeit-win value in a group container's
-    // points tiebreaker (apps/web/src/lib/bracket/points.ts).
+    // A forfeited map has no real rounds, the group standings and points skip its score.
     isForfeit: boolean("is_forfeit").notNull().default(false),
   }, (t) => [
     index("val_maps_match_id_idx").on(t.matchId),

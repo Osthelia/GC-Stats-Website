@@ -2,7 +2,7 @@
  * GC-Stats - team-roster-panel
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -23,6 +23,7 @@ import { PersonPicker } from "@/components/admin/person-picker";
 import { CountryFlag } from "@/components/admin/country-flag";
 import { RequiredMark } from "@/components/admin/required-mark";
 import { RosterLeftFields } from "@/components/admin/roster-left-fields";
+import { RosterSourceField } from "@/components/admin/roster-source-field";
 import { MemberSortSelect, sortMembers, type MemberSortKey } from "@/components/admin/member-sort-select";
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, type AddRosterMemberFieldErrors, type RosterEntryFieldErrors } from "@/actions/admin-teams";
@@ -51,6 +52,8 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
   const [until, setUntil] = useState(member.until ?? "");
   const [hasLeft, setHasLeft] = useState(member.hasLeft);
   const [inactiveSince, setInactiveSince] = useState(member.inactiveSince ?? "");
+  const [joinSource, setJoinSource] = useState(member.joinSource ?? "");
+  const [leftSource, setLeftSource] = useState(member.leftSource ?? "");
   const [fieldErrors, setFieldErrors] = useState<RosterEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -63,12 +66,12 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
     const closeIds = hasLeft ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updateRosterMemberEntry(game, member.membershipId, role, from, until, hasLeft, inactiveSince, closeIds);
+      const result = await updateRosterMemberEntry(game, member.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...member, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null });
+      onSaved({ ...member, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null });
       toast.success(t("rosterAddSubmit"));
     });
   }
@@ -168,6 +171,8 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
               </p>
             )}
           </div>
+          <RosterSourceField id={`roster-row-${member.membershipId}-join-source`} kind="join" value={joinSource} onChange={setJoinSource} error={fieldErrors.joinSource} />
+          {hasLeft && <RosterSourceField id={`roster-row-${member.membershipId}-left-source`} kind="left" value={leftSource} onChange={setLeftSource} error={fieldErrors.leftSource} />}
         </div>
 
         <div className="flex gap-2">
@@ -208,6 +213,8 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
   const [until, setUntil] = useState("");
   const [hasLeft, setHasLeft] = useState(false);
   const [inactiveSince, setInactiveSince] = useState("");
+  const [joinSource, setJoinSource] = useState("");
+  const [leftSource, setLeftSource] = useState("");
   const [fieldErrors, setFieldErrors] = useState<AddRosterMemberFieldErrors>({});
   const [sortKey, setSortKey] = useState<MemberSortKey>("joined");
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -219,7 +226,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
     const closeIds = person && !hasLeft ? await resolveConflicts(person.id, person.handle, teamId) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addTeamRosterMember(game, teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, closeIds);
+      const result = await addTeamRosterMember(game, teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -229,6 +236,8 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
       setUntil("");
       setHasLeft(false);
       setInactiveSince("");
+      setJoinSource("");
+      setLeftSource("");
       toast.success(t("rosterAddSubmit"));
       // Refresh from the server instead of patching local state by hand.
       router.refresh();
@@ -325,6 +334,8 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
               }}
               error={err("until")}
             />
+            <RosterSourceField id="roster-source-join" kind="join" value={joinSource} onChange={setJoinSource} error={fieldErrors.joinSource} />
+            {hasLeft && <RosterSourceField id="roster-source-left" kind="left" value={leftSource} onChange={setLeftSource} error={fieldErrors.leftSource} />}
             <div className="flex items-end">
               <Button variant="outline" disabled={isPending} onClick={handleAdd} className="w-full">
                 {t("rosterAddSubmit")}

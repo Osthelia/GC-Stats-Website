@@ -5,7 +5,7 @@
  * modals. The data is already public on the site, so no permission is needed.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -13,6 +13,7 @@
 
 import { getLiquipediaMatchWikicode } from "@/lib/liquipedia-match-data";
 import { getTournamentParticipantsWikicode } from "@/lib/liquipedia-participants-data";
+import { getTournamentTalentWikicode } from "@/lib/liquipedia-talent-data";
 import { getTournamentInfoboxWikicode } from "@/lib/liquipedia-infobox-data";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
 import { gameHasLiquipediaMatches, type GameSlug } from "@gc-stats/db/game";
@@ -44,4 +45,10 @@ export async function loadInfoboxWikicode(game: GameSlug, tournamentId: number):
   if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
   const wikicode = await getTournamentInfoboxWikicode(game, tournamentId);
   return wikicode ? { ok: true, wikicode, unlinkedTeams: [], unlinkedPeopleCount: 0 } : { ok: false, error: "notFound" };
+}
+
+export async function loadTalentWikicode(game: GameSlug, tournamentId: number): Promise<LiquipediaExportResult> {
+  if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
+  const data = await getTournamentTalentWikicode(game, tournamentId);
+  return data.creditCount > 0 ? { ok: true, wikicode: data.wikicode, unlinkedTeams: [], unlinkedPeopleCount: data.unlinkedPeopleCount } : { ok: false, error: "notFound" };
 }

@@ -7,8 +7,11 @@
  * Mirrors twitch-client.ts conventions: env read at the point of use, never throws, `console.warn` on
  * unexpected failures.
  *
+ * RiotRelay stays private: it is reached through RIOT_RELAY_URL, the
+ * in-cluster Service URL, and has no public ingress.
+ *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 

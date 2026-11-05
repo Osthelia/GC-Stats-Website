@@ -7,12 +7,12 @@
  * run after the map data transaction commits.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { eq, inArray } from "drizzle-orm";
-// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+// adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { resolveMatch } from "./match-resolution-service";

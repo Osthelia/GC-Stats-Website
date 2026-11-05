@@ -11,3 +11,6 @@ build/
 .claude
 
 logo/
+# Stray tsc output next to the TypeScript sources
+packages/db/src/**/*.js
+packages/db/scripts/**/*.js

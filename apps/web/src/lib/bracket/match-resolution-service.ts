@@ -6,18 +6,18 @@
  * the outcome through the bracket graph, group standings and qualifications.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { eq, inArray } from "drizzle-orm";
-// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+// adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, valorantTables } from "@gc-stats/db";
-import { resolveMatchInGraph } from "@gc-stats/bracket-engine";
+import { resolveMatchInGraph } from "@osthelia/bracket-engine";
 import { applyDownstreamPatches, hydrateOutgoingSubgraph, getMatch, type Tx } from "./repository";
 import { advanceSwissGroup, advanceRoundRobinGroup } from "./group-progression";
-import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "./qualification-resolution";
+import { resolveContainerRankQualifications, resolveContainerMatchQualifications, resolveMatchQualifications } from "./qualification-resolution";
 import { countsForStageScope, parseGroupConfig, usesStageScope } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -50,10 +50,10 @@ export interface ResolveMatchInput {
  *   3. if the match belongs to a group container, updates that group's
  *      record-keeping (wins/losses, standings) and, for Swiss, either
  *      generates the next round or reports the group as decided
- *   4. once a container is fully decided, resolves whatever
- *      `stage_qualifications` rules feed off it (rank-based from a group,
- *      or match-outcome-based from a bracket) — the cross-container/
- *      cross-stage half of auto progression
+ *   4. resolves the `stage_qualifications` rules anchored on this match's
+ *      outcome right away, and once a container is fully decided, the
+ *      rank-based ones of a group (the cross-container/cross-stage half
+ *      of auto progression)
  */
 export async function resolveMatch(game: GameSlug, input: ResolveMatchInput): Promise<void> {
   const { matches, stageContainers } = gameTables(game);
@@ -98,6 +98,7 @@ export async function resolveMatch(game: GameSlug, input: ResolveMatchInput): Pr
       .where(eq(matches.id, input.matchId));
 
     await applyDownstreamPatches(game, tx, patches);
+    await resolveMatchQualifications(game, tx, input.matchId);
 
     const [container] = await tx.select().from(stageContainers).where(eq(stageContainers.id, match.containerId));
     if (!container) throw new Error(`resolveMatch: container ${match.containerId} not found`);

@@ -1,69 +1,85 @@
 ﻿/**
  * GC-Stats - points
  *
- * Tallies the configurable points tiebreaker (match/map/round wins, with
- * separate forfeit values) used by the group standings calculation.
+ * Tallies the points tiebreaker of a group: match, map and round won or
+ * lost, a forfeited match being worth the forfeit values alone.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
-import { listMatchMapResults, type Tx } from "./repository";
+import type { Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
-/**
- * Tallies the configurable points tiebreaker (2026-08-31 spec) for every
- * entrant with at least one completed match in `containerIds`: match wins,
- * map wins, and round wins, each with a separate (optional) value for a
- * forfeited win. `maps.teamAScore`/`teamBScore` map to
- * `matches.entrantAId`/`entrantBId` — the same convention used throughout
- * the match-detail data layer (`match-page-data.ts`), not invented here.
- */
+// What the points need of a completed match
+export interface PointsMatch {
+  entrantAId: number | null;
+  entrantBId: number | null;
+  winnerId: number | null;
+  // Maps won by each side
+  scoreA: number | null;
+  scoreB: number | null;
+  // Rounds won by each side over the played maps, null when no map was recorded
+  roundsA: number | null;
+  roundsB: number | null;
+  forfeit: boolean;
+}
+
+/** Points of one entrant over its completed matches, a bye counting as a match won. */
+export function entrantPoints(config: StandingsPointsConfig, entrantId: number, played: readonly PointsMatch[], hadBye: boolean): number {
+  let total = hadBye ? config.matchWin : 0;
+  for (const m of played) {
+    const isA = m.entrantAId === entrantId;
+    if (!isA && m.entrantBId !== entrantId) continue;
+    const won = m.winnerId === entrantId;
+    if (m.forfeit) {
+      total += won ? config.forfeitWin : config.forfeitLoss;
+      continue;
+    }
+    total += won ? config.matchWin : config.matchLoss;
+    const mapsWon = isA ? [m.scoreA, m.scoreB] : [m.scoreB, m.scoreA];
+    if (mapsWon[0] !== null && mapsWon[1] !== null) total += mapsWon[0]! * config.mapWin + mapsWon[1]! * config.mapLoss;
+    const rounds = isA ? [m.roundsA, m.roundsB] : [m.roundsB, m.roundsA];
+    if (rounds[0] !== null && rounds[1] !== null) total += rounds[0]! * config.roundWin + rounds[1]! * config.roundLoss;
+  }
+  return total;
+}
+
+/** Points of every entrant of a group, over the matches of `containerIds` (several when the group counts its whole stage). Rounds come from the map scores, forfeited maps excluded. */
 export async function computeContainerPoints(game: GameSlug, tx: Tx, containerIds: number[], config: StandingsPointsConfig): Promise<Map<number, number>> {
-  const { matches } = gameTables(game);
-  const points = new Map<number, number>();
-  const add = (entrantId: number | null, amount: number | null) => {
-    if (entrantId === null || amount === null) return;
-    points.set(entrantId, (points.get(entrantId) ?? 0) + amount);
-  };
+  const { matches, groupEntries } = gameTables(game);
+  const [completed, entries] = await Promise.all([
+    tx.select().from(matches).where(and(inArray(matches.containerId, containerIds), eq(matches.status, "completed"))),
+    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)),
+  ]);
 
-  const completedMatches = await tx.select().from(matches).where(inArray(matches.containerId, containerIds));
-  const finished = completedMatches.filter((m) => m.status === "completed" && m.winnerId !== null);
-
-  if (config.matchWin !== null || config.matchForfeitWin !== null) {
-    for (const m of finished) {
-      add(m.winnerId, m.isForfeit ? config.matchForfeitWin : config.matchWin);
+  const rounds = new Map<number, { a: number; b: number }>();
+  // Only Valorant matches have maps, other games score on the match itself.
+  if (completed.length > 0 && gameHasMaps(game)) {
+    const { maps } = valorantTablesOf(game);
+    const mapRows = await tx.select().from(maps).where(inArray(maps.matchId, completed.map((m) => m.id)));
+    for (const mp of mapRows) {
+      if (!mp.isCompleted || mp.isForfeit || mp.teamAScore === null || mp.teamBScore === null) continue;
+      const cur = rounds.get(mp.matchId) ?? { a: 0, b: 0 };
+      rounds.set(mp.matchId, { a: cur.a + mp.teamAScore, b: cur.b + mp.teamBScore });
     }
   }
 
-  const needsMapData = config.mapWin !== null || config.mapForfeitWin !== null || config.roundWin !== null;
-  if (!needsMapData || finished.length === 0) return points;
-
-  const matchById = new Map(finished.map((m) => [m.id, m]));
-  const mapResults = await listMatchMapResults(game, tx, finished.map((m) => m.id));
-
-  if (config.mapWin !== null || config.mapForfeitWin !== null) {
-    for (const map of mapResults) {
-      const match = matchById.get(map.matchId);
-      if (!match || map.winner === null) continue;
-      const winnerId = map.winner === "a" ? match.entrantAId : match.entrantBId;
-      add(winnerId, map.isForfeit ? config.mapForfeitWin : config.mapWin);
-    }
-  }
-
-  // Round wins only exist for Valorant maps: a LoL game has no round scores, so it is filtered out here.
-  const scoredMapIds = mapResults.filter((map) => map.isCompleted && map.roundsA !== null && map.roundsB !== null).map((map) => map.id);
-  if (config.roundWin !== null && scoredMapIds.length > 0) {
-    const { mapRoundsRaw } = valorantTablesOf(game);
-    const roundRows = await tx.select({ winningEntrantId: mapRoundsRaw.winningEntrantId }).from(mapRoundsRaw).where(inArray(mapRoundsRaw.mapId, scoredMapIds));
-    for (const r of roundRows) {
-      add(r.winningEntrantId, config.roundWin);
-    }
-  }
-
-  return points;
+  const played: PointsMatch[] = completed.map((m) => ({
+    entrantAId: m.entrantAId,
+    entrantBId: m.entrantBId,
+    winnerId: m.winnerId,
+    scoreA: m.scoreA,
+    scoreB: m.scoreB,
+    roundsA: rounds.get(m.id)?.a ?? null,
+    roundsB: rounds.get(m.id)?.b ?? null,
+    forfeit: m.isForfeit,
+  }));
+  const hadBye = new Map(entries.map((e) => [e.entrantId, e.hadBye]));
+  const ids = new Set([...hadBye.keys(), ...played.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null)]);
+  return new Map([...ids].map((id) => [id, entrantPoints(config, id, played, hadBye.get(id) ?? false)]));
 }

@@ -6,6 +6,7 @@
     "home": "首页",
     "matches": "比赛",
     "tournaments": "赛事",
+    "calendar": "赛程",
     "news": "新闻",
     "forum": "论坛",
     "about": "关于",
@@ -472,8 +473,61 @@
             "notAuthorized": "您无权执行此操作。",
             "resolved": "此修改请求已处理完毕，讨论已关闭。"
           }
-        }
+        },
+        "joinSource": "加入来源",
+        "leftSource": "离队来源"
       }
+    },
+    "publicApi": {
+      "navLabel": "API",
+      "title": "API 密钥",
+      "subtitle": "创建一个免费的公开 API 密钥，在您的项目中使用 GC Stats API。",
+      "notice": {
+        "rateLimit": "公开密钥的限额为每个账号每秒 {rate} 次请求，由你的所有密钥共享。此限额可能随时更改，恕不另行通知。",
+        "stable": "获得稳定限制的唯一方式是向 GC Stats 团队申请合作伙伴 API 密钥。",
+        "noWebhooks": "公开密钥无法使用 webhook，webhook 仅供合作伙伴密钥使用。",
+        "requestPartner": "申请合作伙伴 API 密钥"
+      },
+      "create": {
+        "heading": "创建公开密钥",
+        "description": "请告诉我们数据将用于何处。您最多可以拥有 {max} 个有效的公开密钥。",
+        "clientName": "产品或公司",
+        "clientNamePlaceholder": "Liquipedia、Remake、我的 Discord 机器人...",
+        "usageDescription": "用途说明",
+        "usageDescriptionPlaceholder": "数据的用途、使用哪些接口，以及大致的请求频率。",
+        "submit": "创建密钥",
+        "termsNote": "你的 API 密钥受与本站相同的<terms>使用条款</terms>约束。"
+      },
+      "created": {
+        "title": "您的新 API 密钥",
+        "warning": "请立即复制：它将不会再次显示。请在请求的 x-api-key 请求头中发送它。",
+        "copy": "复制密钥",
+        "dismiss": "我已复制"
+      },
+      "list": {
+        "heading": "您的公开密钥",
+        "empty": "您还没有公开 API 密钥。",
+        "active": "启用",
+        "revoked": "已吊销",
+        "requests": "30 天内 {count, plural, one {# 次请求} other {# 次请求}}",
+        "revoke": "吊销",
+        "suspended": "已暂停",
+        "suspendedHint": "此密钥已被 GC Stats 团队暂停。请在 Discord 上联系我们申请恢复。"
+      },
+      "error": {
+        "required": "此字段为必填项。",
+        "tooShort": "至少 {min} 个字符。",
+        "tooLong": "最多 {max} 个字符。",
+        "tooManyKeys": "您已有 {max} 个有效的公开密钥。请吊销一个后再创建新密钥。",
+        "unauthenticated": "您的会话已过期，请重新登录。",
+        "disabled": "公开 API 密钥目前已停用。",
+        "invalid": "部分字段无效。",
+        "notFound": "此密钥已不存在。",
+        "network": "网络错误，请重试。",
+        "blocked": "你的 API 访问权限已被封禁。"
+      },
+      "blocked": "你的 API 访问权限已被封禁，无法再创建 API 密钥。",
+      "contactDiscord": "在 Discord 上联系我们"
     }
   },
   "notifications": {
@@ -732,11 +786,11 @@
     "intro": "本政策向您说明我们如何处理本站的数据，重点在于透明度与对隐私的尊重。",
     "analytics": {
       "title": "访问与统计数据",
-      "text": "我们以完全匿名的方式统计站点访问量：这些统计数据从不存储 IP 地址，只记录国家、页面及访问时间，不进行任何个人追踪或数字指纹识别。如果您创建了账户，出于安全目的（防止账户被盗用），您的登录会话信息（IP 地址及用户代理）会被临时存储，这是几乎所有具备身份验证功能的站点都会采用的常规做法。"
+      "text": "我们以完全匿名的方式统计网站访问量：只统计访问的页面、日期和浏览次数，不记录 IP 地址，不进行个人追踪，也不使用指纹识别。为了保护网站免受机器人和滥用的侵害，我们的服务器会记录每个请求（IP 地址、请求的页面、浏览器、日期），保存 14 天。如果你有账户，每次登录的 IP 地址也会在账户的安全日志中保存 90 天。"
     },
     "publicData": {
       "title": "公开数据",
-      "text": "资料信息（用户名、简介、社交链接、国家）由选手自愿提供并在站点上公开展示。比赛数据通过 Riot Games 官方 API，针对被识别为受追踪赛事一部分的比赛直接采集。这些数据全部公开可访问，并通过我们的 API 分享。"
+      "text": "资料信息（游戏 ID、简介、社交账号、国家）由选手本人或其组织提供，或由我们团队根据公开来源添加，并在网站上公开显示。游戏统计通过 Riot Games 官方 API 直接收集，针对我们关注的赛事中的比赛。所有这些数据都是公开的，并通过我们的 API 共享。"
     },
     "privateData": {
       "title": "私密数据",
@@ -749,22 +803,21 @@
     },
     "socialLogin": {
       "title": "通过 Discord、Twitter/X 或 Twitch 登录",
-      "text": "您可以将账户与 Discord、Twitter/X 或 Twitch 绑定以便更快登录。此时我们会存储您在该平台上的 ID、昵称、头像，以及维持连接所需的访问/刷新令牌（这些令牌仅用于验证您的账户，从不对外分享）。您可以随时在个人资料设置中解除这些绑定。",
-      "gravatar": "默认头像：如果您没有通过绑定账户获得头像，系统可能会根据您邮箱的哈希值从 Gravatar（Automattic）请求一张图片，这是许多网站都在使用的标准第三方服务。"
+      "text": "您可以将账户与 Discord、Twitter/X 或 Twitch 绑定以便更快登录。此时我们会存储您在该平台上的 ID、昵称、头像，以及维持连接所需的访问/刷新令牌（这些令牌仅用于验证您的账户，从不对外分享）。您可以随时在个人资料设置中解除这些绑定。"
     },
     "moderation": {
       "title": "管理与社区安全",
       "text": "为维护社区安全，我们会保留账户或战队的处罚历史（警告、封禁）、用户提交的举报记录（欺诈、规避封禁、骚扰、虚假账户等），以及管理操作的活动日志。",
-      "retentionNote": "为防止规避封禁，某项技术指纹信息（例如电子邮箱地址）可能会附加在处罚记录上，并在关联账户被删除后依然保留。举报历史及管理日志同样如此，它们构成独立于账户存在的安全记录。"
+      "retentionNote": "为防止规避封禁，处罚记录、举报和管理日志构成安全档案，即使相关账户被删除后也会保留。"
     },
     "dataStructure": {
-      "title": "数据结构",
-      "text": "为了让您更好地了解我们存储和分享的数据，您可以在下方查看我们的数据结构，其中列出了所有存储的数据，并说明其用途、是否为必填项以及是否会被分享。",
-      "button": "查看存储的数据"
+      "title": "个人数据详情",
+      "text": "查看我们保存的每一项个人数据：如何获取、存储在哪里、保存多久。",
+      "button": "查看数据详情"
     },
     "retention": {
       "title": "数据保留",
-      "text": "只要战队或选手仍活跃于本项目生态中，比赛数据就会被保留。您可以随时申请删除您的数据。"
+      "text": "选手资料和比赛数据作为赛事圈的档案永久保存，即使本人已不再参赛。账户数据在账户存在期间保存。访问日志在 14 天后删除，登录 IP 地址在 90 天后删除。除管理档案必需的数据外，你可以随时申请更正或删除你的数据。"
     },
     "rights": {
       "title": "您的权利（GDPR）",
@@ -775,7 +828,11 @@
       "title": "Cookie",
       "text": "本站不使用任何广告或用户画像类 Cookie，仅可能使用维持会话运行所必需的技术性 Cookie。"
     },
-    "takedownLink": "申请内容下架"
+    "takedownLink": "申请内容下架",
+    "hosting": {
+      "title": "托管",
+      "text": "网站、数据库和服务器日志托管在瑞士的 Infomaniak。异地备份经过加密，存储在位于苏黎世和日内瓦的 Exoscale。公开文件（图片、标志）通过 CDN Bunny.net 分发，该 CDN 设置为不收集任何 IP 地址。"
+    }
   },
   "legalNotice": {
     "title": "法律声明",
@@ -810,7 +867,7 @@
       "name": "网站托管",
       "nameSecondary": "数据库",
       "cdnTitle": "图片存储与分发",
-      "cdnValue": "Cloudflare（CDN），用于缓存和分发标志、头像及新闻图片。",
+      "cdnValue": "Bunny.net（CDN），用于缓存和分发标志、头像及新闻图片。",
       "mailTitle": "邮件发送",
       "mailValue": "我们使用 Infomaniak 发送事务性邮件（身份验证和账户通知）。"
     },
@@ -862,15 +919,10 @@
     "hosting": {
       "title": "托管与基础设施",
       "body": "我们依靠少数几家服务商，来保证 GC Stats 的速度、稳定性与透明度。以下明确列出了各项服务的托管方，我们绝不会转售所收集的数据。",
-      "cloudflareHosting": {
-        "name": "Cloudflare",
-        "role": "托管（Workers）",
-        "body": "在其 Workers 网络上托管并部署 GC Stats 网站：全球边缘节点执行，且每次改动上线前都有预览部署。"
-      },
       "cdn": {
-        "name": "Cloudflare",
+        "name": "Bunny.net",
         "role": "CDN",
-        "body": "在全球各地的服务器上缓存我们的 CSS/JS，以及选手、战队和赛事图片，以减轻我们自身服务器的负载。"
+        "body": "在全球各地的服务器上缓存我们的 CSS/JS，以及选手、战队和赛事图片，以减轻我们自身服务器的负载。该 CDN 设置为不收集任何 IP 地址。"
       },
       "infomaniak": {
         "name": "Infomaniak",
@@ -882,7 +934,7 @@
         },
         "publicCloud": {
           "title": "公有云",
-          "body": "Infomaniak 的服务器运行着我们的内部服务及数据库，并通过 Workers VPC 与我们的 Cloudflare 基础设施进行私密连接。"
+          "body": "运行 GC Stats 网站、内部服务和数据库的 Infomaniak 服务器(Kubernetes 集群)。"
         },
         "database": {
           "title": "数据库",
@@ -894,7 +946,7 @@
         },
         "domain": {
           "title": "域名注册商",
-          "body": "注册并管理我们的域名（名称服务器本身由 Cloudflare 单独管理）。"
+          "body": "注册并管理我们的域名及其 DNS 区域。"
         },
         "quote": {
           "p1": "Infomaniak 是一家瑞士服务商，与我的一些价值观不谋而合：隐私、环保，以及对客户的尊重。",
@@ -903,12 +955,17 @@
           "p4": "我认为有必要解释这个选择，尤其是要谈谈 Infomaniak：这是一家不太为人所知的服务商，但它值得被更多人认识。尤其是免费邮箱账户或 OneDrive 订阅都可以迁移到他们那里，而不需要真的多花多少钱，服务质量同样出色，却多了一份对你、你的隐私以及我们这个星球的基本尊重。",
           "cite": "Lacy，GC Stats 创始人"
         }
+      },
+      "exoscale": {
+        "name": "Exoscale",
+        "role": "异地备份",
+        "body": "数据库和文件的每日加密备份，存储在瑞士（苏黎世，复制到日内瓦）。每份备份在 30 天内无法修改，之后会被删除。"
       }
     },
     "data": {
       "title": "所收集的数据",
-      "body": "我们公开记录所存储的每一项数据：选手、战队、赛事及比赛。任何数据的收集都与站点运行有明确关联。",
-      "link": "查看我们存储的数据"
+      "body": "我们公开说明所保存的个人数据：如何获取、存储在哪里、保存多久。所有数据的收集都与网站运营有关。",
+      "link": "查看个人数据"
     },
     "finance": {
       "title": "财务",
@@ -920,8 +977,8 @@
     "title": "开发者",
     "intro": "我们所有的数据都可以帮助您构建项目！如果您也想为 GC-Stats 做出贡献，我们也非常欢迎。",
     "apiKey": {
-      "title": "申请 API 密钥",
-      "body": "为防止滥用，我们的 API 需要身份验证。如果您想使用它，请通过 Discord 或邮箱联系我们。",
+      "title": "申请合作伙伴 API 密钥",
+      "body": "合作伙伴密钥提供稳定的请求限制和 webhook。如需获取，请通过 Discord 或邮箱联系我们。",
       "warning": "请在申请中说明：",
       "step1": "您的项目名称及描述",
       "step2": "预期的 API 使用场景及规模",
@@ -945,6 +1002,23 @@
       "title": "开源与贡献",
       "body": "我们决定将项目的大部分内容开源，让社区一起参与，我们不相信闭源开发。除管理后台外，我们的所有仓库都欢迎贡献。提交 Pull Request 前，请务必阅读我们的贡献指南。",
       "badge": "公开仓库"
+    },
+    "publicKey": {
+      "title": "公开 API 密钥",
+      "body": "任何 GC Stats 账户都可以在几秒钟内创建免费的公开密钥，无需等待我们。",
+      "step1": "在账户设置中创建，并说明将使用数据的产品或公司及其用途。",
+      "step2": "公开密钥限制为每秒少量请求，且此限制可能随时更改。",
+      "step3": "公开密钥无法使用 webhook。如需稳定的限制和 webhook，请在下方申请合作伙伴密钥。",
+      "button": "创建公开密钥"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "body": "合作伙伴密钥可以在其控制台中注册 HTTPS 接口：每当数据发生变化时，GC Stats 会发送一个 POST 请求。",
+      "events": "事件：新比赛、比赛已更新、新赛事、赛事已更新、战队已更新、选手已更新。",
+      "filters": "筛选：赛事地区、是否官方、参赛战队。",
+      "signature": "每个请求都带有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 和 X-GCS-Signature 请求头。请使用接口密钥校验签名。",
+      "retries": "请在 10 秒内返回 2xx 状态码。失败的推送会在约 9 小时内重试，频繁失败的接口将被关闭。",
+      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。"
     }
   },
   "becomePublisher": {
@@ -1014,396 +1088,220 @@
     }
   },
   "dataPage": {
-    "title": "数据结构",
-    "subtitle": "我们收集的数据结构与清单",
-    "openData": {
-      "title": "开放数据门户",
-      "body": "比起使用 API，您可能更希望直接浏览或下载我们的数据集。开放数据门户将与其余 API 一同迁移至此。",
-      "badge": "即将推出"
-    },
-    "groups": {
-      "identity": "人员、战队与机构结构",
-      "account": "用户账户与管理",
-      "tournament": "赛事结构",
-      "matches": "比赛及游戏数据结构",
-      "news": "资讯与社区结构",
-      "rawStats": "原始游戏数据（逐回合）",
-      "others": "其他数据结构"
-    },
-    "sections": {
-      "people": "人员",
-      "teams": "战队",
-      "organizations": "机构",
-      "tournaments": "赛事",
-      "matches": "比赛",
-      "news": "资讯",
-      "users": "用户",
-      "reactionsEmotes": "反应与表情"
-    },
-    "descriptions": {
-      "identity": "一个人（选手、教练、解说、导播、组织者等）只拥有一份资料，即使其角色随时间改变也不会变化。战队和机构有权编辑或删除其“补充信息”。\n\nRiot ID 从不展示或分享，它由我们的团队根据比赛数据识别得出。",
-      "tournament": "每场赛事都有一个标识符、名称、日期、地区、类别及状态。一场赛事可以被拆分为多个阶段（小组赛、季后赛等），每个阶段又由一个或多个容器（对阵表或小组）组成。战队以“参赛方”身份报名，其名单在该赛事期间被锁定，与战队的常规名单相互独立。",
-      "matches": "我们收集大量比赛相关信息以提供详细数据统计，包括：\n- 基本比赛信息（必需）\n- 比赛的地图选禁\n- 已进行的地图，及其结果和数据\n- 按选手及地图汇总的数据，是网站日常查询实际使用的数据\n\n这些数据并非总能被收集到，但我们会尽力获取，以展示尽可能完整的数据统计。",
-      "rawStats": "除上述汇总数据外，我们还保留了逐回合的原始数据层（击杀、伤害、经济、存活状态），用于重新计算这些数据统计及展示回合历史。\n\n每位选手在关键事件（击杀、装包、拆包）发生时的位置会被完整地永久保留：它是我们热力图的数据来源，且一旦汇总便无法再还原。",
-      "news": "每篇资讯文章都有一个标识符、标题、正文及状态（草稿、已发布、已归档）。一篇文章可以关联至某支战队、某位人员或某场赛事，从而显示在其资料页面上。\n\n论坛及表情/反应功能让社区能够与站点内容互动；被管理隐藏或删除的消息会在内部继续保留记录。",
-      "account": "这些数据表仅适用于创建了用户账户（与人员资料相区分）的用户，用户账户是对资讯作出反应、管理资料或管理站点所必需的。\n\n安全数据（密码、双重验证、通行密钥）从不分享。已绑定的 Discord/Twitch 账户仅存储一个仅用于身份验证的访问令牌。\n\n管理数据（处罚、防规避指纹、举报、活动日志）构成一份独立于账户存在的安全记录，即使账户被删除后依然保留，以防止规避封禁。",
-      "others": "我们按天存储每个页面的访问次数，不存储访问者身份或具体访问时间，只存储大致的国家/地区。\n\n这些数据被私密存储，从不对外分享，我们仅用它来了解站点使用情况并按需调整基础设施。"
-    },
-    "fields": {
-      "people": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息",
-          "confidential": "机密信息"
-        },
-        "id": "分配给该人员的唯一标识符（显示在 URL 中）",
-        "handle": "用户名",
-        "aliases": "曾用用户名",
-        "firstName": "名",
-        "lastName": "姓",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "secondaryCountryCode": "第二国家代码，用于双重国籍",
-        "pronouns": "代词",
-        "birthDate": "出生日期",
-        "bio": "简介",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "vlrId": "VLR 标识符",
-        "liquipediaLink": "该人员 Liquipedia 页面链接",
-        "valId": "Riot ID / PUUID（私密信息，由我们的团队根据 Riot 比赛数据识别并分配，用于将比赛数据与人员关联）",
-        "esportsValId": "与游戏账户关联的 Riot 电竞标识符"
+    "title": "个人数据",
+    "subtitle": "我们保存了你的哪些数据、数据从何而来、谁能看到，以及我们保存多久。",
+    "policy": {
+      "title": "我们的原则",
+      "noSale": {
+        "title": "不出售，不共享",
+        "text": "我们不出售任何数据，也从不与广告商或合作伙伴共享你的私人数据。只有公开数据（选手资料、比赛统计）会在网站上和通过我们的 API 发布。"
       },
-      "rosterMemberships": {
-        "personId": "人员的唯一标识符",
-        "teamId": "战队的唯一标识符",
-        "role": "在战队中的角色（选手/教练/经理等）",
-        "period": "在战队中的成员周期（加入日期，及退出日期，如适用）",
-        "inactiveSince": "该成员仍在名单中但不再活跃的起始日期（伤病、休整等）"
+      "minimal": {
+        "title": "只收集必需的",
+        "text": "我们只收集网站运行和保持安全所需的内容。没有广告、没有追踪器、没有追踪 Cookie：访问量以匿名方式统计，不记录 IP 地址。"
       },
-      "teams": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "分配给该战队的唯一标识符（显示在 URL 中）",
-        "name": "战队名称",
-        "shortName": "简称（Fnatic = FNC）",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "secondaryCountryCode": "第二国家代码，用于与两个地区相关联的战队",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）",
-        "bio": "简介",
-        "vlrId": "VLR 标识符",
-        "liquipediaLink": "该战队 Liquipedia 页面链接",
-        "tags": "附加在战队上的自定义标签"
-      },
-      "organizations": {
-        "id": "机构的唯一标识符",
-        "name": "机构名称",
-        "slug": "用于 URL 的文本标识符",
-        "tags": "机构承担的角色（赛事组织者、制作团队、媒体、转播方、经纪公司、社区）",
-        "countryCode": "国家代码（FR = 法国，US = 美国，等）",
-        "socials": "社交媒体（Twitter/Instagram/Twitch/YouTube/TikTok）"
-      },
-      "organizationMemberships": {
-        "personId": "人员的唯一标识符",
-        "organizationId": "机构的唯一标识符",
-        "role": "在机构中的角色（管理员/解说/导播/制作人/剪辑等）",
-        "period": "在机构中的成员周期"
-      },
-      "productionCredits": {
-        "personId": "获得署名的人员唯一标识符",
-        "organizationId": "该署名对应的所属机构（如有）",
-        "role": "所担任的角色（解说/分析师/导播/组织者/制作人/剪辑/摄影师/翻译/裁判等）",
-        "titleOverride": "替代通用角色显示的自定义头衔",
-        "scope": "所涉及的具体层级：赛事、阶段、容器、比赛或地图"
-      },
-      "tournaments": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "赛事的唯一标识符",
-        "name": "赛事名称",
-        "region": "所属地区（EMEA、NA 等）",
-        "category": "赛事类别（例如 Challengers、Cash Cups）",
-        "prizePool": "总奖金池",
-        "location": "举办地点",
-        "startDate": "开始日期",
-        "endDate": "结束日期",
-        "status": "当前状态（即将开始、进行中、已结束）",
-        "description": "赛事概述",
-        "liquipediaLink": "该赛事 Liquipedia 页面链接",
-        "socials": "赛事的社交媒体链接"
-      },
-      "stages": {
-        "titles": {
-          "structure": "技术结构"
-        },
-        "name": "阶段名称（例如季后赛、A 组）",
-        "sequenceOrder": "阶段的显示顺序",
-        "status": "阶段状态（即将开始、进行中、已结束）",
-        "startDate": "阶段开始日期",
-        "endDate": "阶段结束日期",
-        "liquipediaLink": "该阶段自身的 Liquipedia 页面链接",
-        "containerType": "容器格式（淘汰赛对阵表或小组赛）",
-        "config": "技术性的对阵表/小组配置（由赛事引擎生成）"
-      },
-      "entrants": {
-        "tournamentId": "关联的赛事",
-        "kind": "参赛方类型（在 GC-Stats 上始终为“战队”）",
-        "teamId": "已报名的战队",
-        "displayName": "报名时显示的名称（即使战队此后改名，此名称也保持不变）",
-        "seed": "分配给该参赛方的种子序号",
-        "qualificationSourceManual": "晋级来源是否为手动设置（否则根据晋级规则推断）",
-        "qualificationSourceType": "手动晋级来源（赛事、邀请或积分）",
-        "qualificationSourceTournamentId": "参赛者晋级所自的赛事（手动来源）",
-        "qualificationSourcePointTypeId": "晋级所依据的积分类型（手动来源）"
-      },
-      "entrantMembers": {
-        "personId": "属于该赛事专属锁定名单的人员",
-        "role": "该名单中的角色（选手/替补/教练/经理/分析师等）",
-        "isStarter": "在该赛事中为首发还是替补"
-      },
-      "qualifications": {
-        "destinationType": "晋级所获得的资格：另一个容器的名额，或最终名次",
-        "placement": "所获得的名次（第一名、第二名等）",
-        "placementLabel": "名次标签（例如冠军、亚军）",
-        "points": "所获得的积分",
-        "cashPrizeAmount": "所获得的奖金金额",
-        "rank": "该参赛方在此排名中获得的名次",
-        "amount": "增减的积分数（有正负号的账目记录）",
-        "reason": "积分增减的原因"
-      },
-      "matches": {
-        "titles": {
-          "structure": "技术结构"
-        },
-        "id": "比赛的唯一标识符",
-        "containerId": "该比赛所属的容器（对阵表/小组）",
-        "round": "轮次编号",
-        "label": "轮次名称（例如总决赛）",
-        "bestOf": "最多局数（BO1、BO3、BO5）",
-        "status": "状态（未开始、准备中、直播中、已结束）",
-        "entrantAId": "参赛方 A 的唯一标识符",
-        "entrantBId": "参赛方 B 的唯一标识符",
-        "scoreA": "参赛方 A 的最终比分",
-        "scoreB": "参赛方 B 的最终比分",
-        "winnerId": "获胜的参赛方",
-        "scheduledAt": "预定日期及时间",
-        "patch": "游戏版本（例如 8.04）"
-      },
-      "matchVetos": {
-        "matchId": "涉及的比赛",
-        "entrantId": "执行该操作的参赛方",
-        "mapName": "地图名称（例如 Ascent）",
-        "type": "操作类型（Pick、Ban 或 Decider）",
-        "order": "在选禁流程中的顺序",
-        "side": "所选阵营（进攻/防守），适用于 Pick 或 Decider",
-        "sidePickedByEntrantId": "选择该阵营的参赛方"
-      },
-      "maps": {
-        "id": "该局地图的唯一标识符",
-        "apiMatchId": "由 Riot API 提供的比赛标识符",
-        "matchId": "涉及的比赛",
-        "mapName": "地图名称",
-        "gameMode": "关联的 Riot 游戏模式",
-        "teamAScore": "参赛方 A 在该地图上的比分",
-        "teamBScore": "参赛方 B 在该地图上的比分",
-        "order": "该地图在比赛中的顺序",
-        "isCompleted": "该地图是否已结束"
-      },
-      "mapPlayerStats": {
-        "agentName": "所使用的特工（例如 Jett）",
-        "kills": "总击杀数",
-        "deaths": "总死亡数",
-        "assists": "总助攻数",
-        "acs": "场均战斗分数",
-        "adr": "场均单局伤害",
-        "kastPercentage": "拥有击杀/助攻/存活/换命的回合占比",
-        "firstKills": "首杀数（FK）",
-        "firstDeaths": "首死数（FD）",
-        "headshotPercentage": "爆头率",
-        "clutches": "按情况（1v1 至 1v5）统计的残局取胜/触发次数",
-        "multikills": "单回合 2、3、4 或 5 杀的次数",
-        "tradeKills": "为队友报仇的击杀数",
-        "tradedDeaths": "被队友报仇的死亡数",
-        "roundTypeSplits": "按回合类型（手枪局、进攻、防守等）细分的数据",
-        "fallDeaths": "因坠落而死亡的次数",
-        "weaponKills": "各武器的击杀数"
-      },
-      "mapTeamRoundSummary": {
-        "side": "所处阵营（进攻/防守）",
-        "roundsPlayed": "在该阵营下进行的回合数",
-        "roundsWon": "在该阵营下取胜的回合数"
-      },
-      "mapRoundsRaw": {
-        "roundNumber": "回合编号（1 至 24 以上）",
-        "winningEntrantId": "赢得该回合的参赛方",
-        "winType": "取胜方式（全歼、拆包、引爆、时间耗尽）",
-        "atkEntrantId": "该回合处于进攻方的参赛方",
-        "defEntrantId": "该回合处于防守方的参赛方",
-        "plantSite": "插旗点位（A/B/C）",
-        "plantX": "插旗点在小地图上的 X 坐标",
-        "plantY": "插旗点在小地图上的 Y 坐标"
-      },
-      "mapRoundKillsRaw": {
-        "killerPersonId": "完成击杀的人员",
-        "victimPersonId": "被淘汰的人员",
-        "assistantPersonIds": "协助该次击杀的人员",
-        "timeMs": "击杀发生的时间（自回合开始起的毫秒数）",
-        "weapon": "使用的武器",
-        "damageType": "伤害类型（武器、技能、爆能、近战、坠落）",
-        "isSecondaryFire": "是否为副射模式击杀（例如武器的镜瞄）"
-      },
-      "mapRoundDamagesRaw": {
-        "attackerPersonId": "造成伤害的人员",
-        "receiverPersonId": "受到伤害的人员",
-        "damage": "造成的伤害值",
-        "headshots": "爆头次数",
-        "bodyshots": "身体部位命中次数",
-        "legshots": "腿部命中次数"
-      },
-      "mapRoundAliveStatesRaw": {
-        "sequence": "该事件在回合内的顺序",
-        "timeMs": "事件发生的时间（自回合开始起的毫秒数）",
-        "atkAlive": "进攻方存活人数",
-        "defAlive": "防守方存活人数",
-        "winnerSide": "当前人数占优的一方"
-      },
-      "mapRoundPlayerLoadoutsRaw": {
-        "personId": "涉及的人员",
-        "kills": "本回合完成的击杀数",
-        "assists": "本回合完成的助攻数",
-        "score": "本回合获得的分数",
-        "loadoutValue": "装备总价值",
-        "economySpent": "花费的经济点数",
-        "economyRemaining": "剩余的经济点数",
-        "weapon": "主要使用的武器",
-        "armor": "护甲类型"
-      },
-      "mapRoundPlayerPositionsRaw": {
-        "eventType": "事件类型（击杀、装包、拆包）",
-        "personId": "涉及的人员",
-        "role": "在该事件中的角色（击杀者、被杀者、旁观者、装包者、拆包者）",
-        "x": "小地图上的 X 坐标",
-        "y": "小地图上的 Y 坐标",
-        "viewRadians": "事件发生时的视角角度",
-        "timeMs": "事件发生的时间（自回合开始起的毫秒数）"
-      },
-      "news": {
-        "titles": {
-          "main": "基本信息",
-          "additional": "补充信息"
-        },
-        "id": "文章的唯一标识符（显示在 URL 中）",
-        "authorId": "文章作者",
-        "organizationId": "文章发布所属的机构（如有）",
-        "lang": "文章语言",
-        "title": "文章标题",
-        "slug": "用于 URL 的文本标识符",
-        "excerpt": "简短摘要",
-        "content": "文章正文",
-        "imageCover": "封面图片",
-        "status": "文章状态（草稿 = 编写中，已发布 = 站点上线，已归档 = 站点隐藏但可通过 API 访问）",
-        "isFeatured": "是否为首页精选文章",
-        "showOnHome": "是否显示在首页",
-        "publishedAt": "发布日期",
-        "createdAt": "文章创建日期",
-        "updatedAt": "最后修改日期"
-      },
-      "newsRelations": {
-        "relatableType": "关联实体类型（战队、人员或赛事）",
-        "relatableId": "关联实体的标识符，用于在其资料页面展示该文章"
-      },
-      "forumThreads": {
-        "category": "主题类别（赛事、比赛、资讯、综合）",
-        "subjectType": "该主题所关联的实体类型（如有）",
-        "title": "主题标题",
-        "lastMessageAt": "最后一条消息的发布日期"
-      },
-      "forumMessages": {
-        "body": "消息内容",
-        "parentId": "父消息（用于回复）",
-        "hiddenAt": "该消息被管理隐藏的日期"
-      },
-      "emotes": {
-        "name": "表情名称",
-        "imagePath": "图片路径",
-        "source": "表情来源（例如批量导入、由战队商标生成）",
-        "isActive": "该表情是否可用"
-      },
-      "reactions": {
-        "emoteId": "使用的表情",
-        "userId": "作出反应的账户",
-        "reactableType": "该反应所应用的内容类型（例如一篇资讯文章）"
-      },
-      "users": {
-        "titles": {
-          "main": "基本信息",
-          "security": "安全信息（私密）"
-        },
-        "id": "账户的唯一标识符",
-        "username": "公开展示的用户名",
-        "teamTag": "在公开资料上显示为“支持”的战队，及该战队的标签",
-        "preferences": "界面偏好设置（私密）",
-        "pronouns": "代词",
-        "bio": "账户的公开简介",
-        "socials": "与账户关联的社交媒体",
-        "email": "邮箱地址（私密，从不展示）",
-        "passwordHash": "经过哈希处理的密码（从不以明文存储或展示）",
-        "twoFactorSecret": "双重身份验证（2FA）密钥（如已启用，经加密存储）",
-        "twoFactorRecoveryCodes": "2FA 恢复代码（如已启用，经加密存储）",
-        "discordSyncedAt": "最后一次 Discord 同步日期"
-      },
-      "accounts": {
-        "provider": "已绑定的平台（Discord 或 Twitch）",
-        "providerAccountId": "该平台上的账户标识符",
-        "accessToken": "OAuth 访问令牌（私密，从不分享，仅用于身份验证）",
-        "refreshToken": "OAuth 刷新令牌（私密）"
-      },
-      "authenticators": {
-        "name": "该通行密钥的自定义名称",
-        "credentialId": "该密钥的技术标识符（私密）",
-        "lastUsedAt": "该密钥最后一次使用时间"
-      },
-      "sanctions": {
-        "type": "处罚类型（备注、警告、禁言、停权、封禁）",
-        "reason": "处罚原因",
-        "startsAt": "生效起始日期",
-        "endsAt": "结束日期（如为临时处罚）",
-        "revokedAt": "提前解除的日期（如适用）",
-        "issuedBy": "发起该处罚的管理员",
-        "revokedBy": "解除该处罚的管理员（如适用）"
-      },
-      "sanctionIdentities": {
-        "type": "所附加的技术指纹类型（例如邮箱）",
-        "value": "指纹值（私密，即使账户被删除后依然保留，以防止规避封禁）"
-      },
-      "userReports": {
-        "category": "举报类别",
-        "reason": "举报人提供的详细说明",
-        "status": "处理状态（待处理、已处理、已驳回）",
-        "reviewedBy": "处理该举报的管理员",
-        "resolutionNote": "管理团队留下的处理备注"
-      },
-      "activityLog": {
-        "logName": "该记录操作的类别",
-        "description": "所执行操作的描述",
-        "event": "事件类型（创建、更新、删除）",
-        "subjectType": "该操作涉及的实体类型（人员、战队等）",
-        "causerId": "执行该操作的账户",
-        "attributeChanges": "已变更字段的详情（变更前/变更后）"
-      },
-      "pageViews": {
-        "titles": {
-          "main": "基本信息"
-        },
-        "uri": "页面 URL",
-        "viewedAt": "访问日期",
-        "count": "当日访问次数",
-        "countryCode": "当日访问者的大致国家",
-        "regionCode": "当日访问者的大致地区"
+      "switzerland": {
+        "title": "托管在瑞士",
+        "text": "我们的所有数据，包括备份，都由瑞士服务商存储在瑞士。"
       }
-    }
+    },
+    "storage": {
+      "title": "为什么选择瑞士",
+      "why": "瑞士拥有世界上保护最严格的隐私法律之一，即《联邦数据保护法》。欧盟认可其保护水平与 GDPR 相当。我们的服务商都是瑞士公司：你的数据不受外国法律管辖，例如美国的 CLOUD Act，该法律允许美国当局向美国公司索取数据，无论数据存储在哪里。",
+      "providers": "数据的具体存放位置如下：",
+      "infomaniak": {
+        "name": "Infomaniak",
+        "location": "瑞士",
+        "body": "我们的所有服务器：网站、数据库、服务器日志和电子邮件。数据库的连续副本会在 Infomaniak 的第二个数据中心保存 14 天，以便故障后恢复。"
+      },
+      "backups": {
+        "name": "Exoscale",
+        "location": "瑞士（苏黎世和日内瓦）",
+        "body": "数据库和文件的每日加密备份。每份备份在 30 天后删除，在此之前无法被修改或删除，连我们自己也不行。"
+      },
+      "cdn": {
+        "name": "Bunny.net",
+        "location": "遍布全球的服务器",
+        "body": "只分发公开文件（图片、标志、CSS 和 JavaScript）。CDN 会把你的 IP 地址替换为 0.0.0.0：不会收集任何 IP 地址。"
+      }
+    },
+    "private": {
+      "title": "私人数据",
+      "badge": "从不公开",
+      "intro": "这些数据从不公开显示，也不会通过我们的 API 共享。"
+    },
+    "public": {
+      "title": "公开数据",
+      "badge": "公开",
+      "intro": "这些数据显示在网站上并通过我们的 API 共享，是 GC Stats 的核心。"
+    },
+    "labels": {
+      "source": "数据来源",
+      "visibility": "谁能看到",
+      "retention": "保存多久"
+    },
+    "categories": {
+      "account": {
+        "title": "你的账户",
+        "groups": {
+          "profile": {
+            "label": "账户",
+            "items": [
+              "电子邮箱",
+              "用户名",
+              "密码（哈希处理，从不以明文保存）",
+              "显示偏好和喜爱的战队",
+              "代词、简介和社交账号（如果你填写）",
+              "最后登录日期"
+            ]
+          },
+          "security": {
+            "label": "安全",
+            "items": [
+              "双重验证（密钥和恢复码，已加密）",
+              "通行密钥（仅保存公钥）"
+            ]
+          },
+          "linked": {
+            "label": "已关联账户",
+            "items": [
+              "Discord、Twitch 或 Twitter/X ID",
+              "该平台上的名称和头像",
+              "登录令牌（仅用于让你登录）"
+            ]
+          },
+          "developers": {
+            "label": "开发者",
+            "items": [
+              "API 密钥",
+              "OAuth 应用和你授予的权限",
+              "API 调用记录"
+            ]
+          }
+        },
+        "source": "你在注册和设置中填写的信息。已关联账户的信息在你关联时由平台发送。",
+        "visibility": "你和我们的团队。你的用户名、代词、简介、社交账号和喜爱的战队会显示在你的个人主页上。我们的团队看不到你的密码，只能看到你使用的登录方式（密码、Discord、Twitch、Twitter/X、通行密钥、双重验证）。你的邮箱和安全设置从不公开显示。",
+        "retention": "只要你的账户存在。取消关联后，已关联账户会立即删除。API 调用记录在 90 天后删除。"
+      },
+      "protection": {
+        "title": "保护你的账户和网站",
+        "groups": {
+          "loginLog": {
+            "label": "登录记录",
+            "items": [
+              "登录、登录失败和安全设置变更",
+              "日期",
+              "IP 地址"
+            ]
+          },
+          "accessLogs": {
+            "label": "访问日志",
+            "items": [
+              "IP 地址",
+              "请求的页面",
+              "浏览器",
+              "日期和时间",
+              "OpenData 门户使用记录（账号、哈希处理的 IP 地址、数据集），30 天后删除"
+            ]
+          }
+        },
+        "source": "自动记录：登录记录保护你的账户不被盗用，访问日志保护网站免受机器人和滥用的侵害。",
+        "visibility": "仅限我们的技术团队。",
+        "retention": "登录 IP 地址在 {days} 天后删除。访问日志在 14 天后删除。"
+      },
+      "moderation": {
+        "title": "管理与贡献",
+        "groups": {
+          "requests": {
+            "label": "你的请求",
+            "items": [
+              "修改建议以及与团队的沟通",
+              "你提交的举报"
+            ]
+          },
+          "moderation": {
+            "label": "管理",
+            "items": [
+              "警告和处罚及其原因",
+              "被自动过滤器检测到的消息",
+              "管理操作记录"
+            ]
+          }
+        },
+        "source": "你的请求和举报，以及我们管理团队的决定。",
+        "visibility": "仅限我们的团队。被采纳的建议会更新相应的公开页面，建议本身保持私密。",
+        "retention": "作为记录保存，即使在你删除账户之后，但不再与你的账户关联。"
+      },
+      "players": {
+        "title": "选手和工作人员",
+        "groups": {
+          "identity": {
+            "label": "身份",
+            "items": [
+              "游戏 ID 和曾用 ID",
+              "姓名",
+              "国家",
+              "代词",
+              "出生日期",
+              "简介和社交账号"
+            ]
+          },
+          "career": {
+            "label": "生涯",
+            "items": [
+              "战队和职位",
+              "参加过的赛事和比赛",
+              "组织和制作署名"
+            ]
+          },
+          "hidden": {
+            "label": "从不显示",
+            "items": [
+              "Riot ID，仅用于把比赛统计关联到正确的资料"
+            ]
+          }
+        },
+        "source": "本人或其所属组织，我们团队根据公开来源（Liquipedia、官方公告）添加，或社区提交并经我们团队审核的建议。Riot ID 来自 Riot Games 官方 API。",
+        "visibility": "所有人，在网站上和通过我们的 API，Riot ID 除外。",
+        "retention": "作为赛事圈的档案永久保存，即使本人已不再参赛。你可以申请更正或删除。"
+      },
+      "matchStats": {
+        "title": "比赛统计",
+        "groups": {
+          "stats": {
+            "label": "每场比赛",
+            "items": [
+              "使用的特工",
+              "击杀、死亡和助攻",
+              "伤害",
+              "经济和装备",
+              "地图上的位置"
+            ]
+          }
+        },
+        "source": "Riot Games 官方 API，针对我们关注的赛事中的比赛。",
+        "visibility": "所有人，在网站上和通过我们的 API。",
+        "retention": "作为赛事的历史档案保存。"
+      },
+      "community": {
+        "title": "你的发布内容",
+        "groups": {
+          "content": {
+            "label": "你发布的内容",
+            "items": [
+              "论坛消息",
+              "表情回应",
+              "Pick'em 预测和小组"
+            ]
+          }
+        },
+        "source": "你。",
+        "visibility": "所有人，在网站上。",
+        "retention": "直到你删除为止。如果你删除账户，你的表情回应和预测会被删除，消息会保留但不再与你的账户关联。"
+      }
+    },
+    "rights": "你可以随时申请查阅、更正或删除你的数据。",
+    "privacyLink": "查看隐私政策"
   },
   "financePage": {
     "title": "财务",
@@ -1423,6 +1321,10 @@
       "Infrastructure": "基础设施",
       "Software & Licenses": "软件与授权",
       "Other": "其他"
+    },
+    "expensesDoc": {
+      "text": "为了让大家简单了解我们每月的支出用在哪里，我们写了一份说明文档。",
+      "link": "阅读文档"
     }
   },
   "teamPage": {
@@ -1855,8 +1757,6 @@
     "product": "产品",
     "productAllMatches": "所有比赛",
     "productTournaments": "赛事",
-    "productDataExplorer": "数据浏览器",
-    "productDataExplorerComingSoon": "即将推出",
     "productForum": "论坛",
     "contribute": "参与贡献",
     "contributeEditPage": "编辑页面",
@@ -1877,7 +1777,9 @@
     "data": "数据",
     "transparency": "透明度",
     "finance": "财务",
-    "developers": "开发者"
+    "developers": "开发者",
+    "contributeLiquipedia": "Liquipedia",
+    "productOpenData": "OpenData"
   },
   "forum": {
     "overview": {
@@ -2069,6 +1971,7 @@
       "finance": "财务",
       "about": "关于 / 项目",
       "backToSite": "返回站点",
+      "pendingChangeRequests": "待处理的变更请求",
       "tournaments": "赛事",
       "groupModeration": "管理",
       "reports": "举报",
@@ -2077,7 +1980,8 @@
       "sanctions": "处罚记录",
       "activityLog": "活动日志",
       "analytics": "统计分析",
-      "oauthClients": "OAuth 客户端"
+      "oauthClients": "OAuth 客户端",
+      "settings": "配置"
     },
     "dashboard": {
       "title": "控制台",
@@ -3112,6 +3016,7 @@
       "regenerateButton": "重新生成",
       "activateButton": "启用",
       "deactivateButton": "停用",
+      "deactivateConfirm": "确定要停用密钥“{name}”吗？它的 webhook 将被永久删除。",
       "deleteButton": "删除",
       "createTitle": "创建 API 密钥",
       "createDescription": "完整密钥仅在创建后展示一次。",
@@ -3152,6 +3057,10 @@
         "userNotFound": "未找到该用户。",
         "organizationNotFound": "未找到该机构。",
         "ownerRequired": "请选择一个用户或机构。"
+      },
+      "tabs": {
+        "partner": "合作伙伴密钥",
+        "public": "公开密钥"
       }
     },
     "apiKeyStats": {
@@ -3453,7 +3362,8 @@
           "logoNotFound": "该商标记录已不存在。",
           "alreadyLinked": "该选手已绑定至另一个账户。",
           "unknownField": "不受支持的字段。",
-          "unknown": "未知错误。"
+          "unknown": "未知错误。",
+          "invalidSource": "来源链接已失效。"
         },
         "oldValue": "当前",
         "newValue": "建议修改为",
@@ -3482,7 +3392,14 @@
           "replyPlaceholder": "回复申请人…",
           "send": "发送",
           "error": "出现了错误。"
-        }
+        },
+        "requesterNoPlayer": "申请者未关联选手账号。",
+        "requesterPlayerMatch": "已关联选手账号：{handle}，即被编辑的资料。",
+        "requesterPlayerOther": "已关联选手账号：{handle}，与被编辑的资料不同。",
+        "requesterTeamMatch": "已关联选手账号：{handle}，在被编辑队伍的阵容中。",
+        "requesterTeamOther": "已关联选手账号：{handle}，不在被编辑队伍的阵容中。",
+        "joinSource": "加入来源",
+        "leftSource": "离队来源"
       }
     },
     "roles": {
@@ -3530,7 +3447,8 @@
         "sanctions": "处罚记录",
         "activityLog": "活动日志",
         "analytics": "统计分析",
-        "oauthClients": "OAuth 客户端"
+        "oauthClients": "OAuth 客户端",
+        "settings": "配置"
       },
       "permissionNames": {
         "admin_access": "访问管理面板",
@@ -3563,6 +3481,7 @@
         "organizations_edit": "编辑机构（资料、商标、标签）",
         "organizations_manage_access": "管理机构访问权限（权限上限、成员、所有者）",
         "organizations_delete": "删除机构",
+        "organizations_access_dashboard": "以与所有者相同的权限访问任意组织的仪表板",
         "change_requests_view": "查看修改请求",
         "change_requests_manage": "通过/拒绝修改请求",
         "tournaments_view": "查看赛事",
@@ -3578,7 +3497,9 @@
         "activity_log_view": "查看活动日志",
         "analytics_view": "查看统计分析",
         "oauth_clients_view": "查看 OAuth 客户端",
-        "oauth_clients_manage": "创建、编辑或删除 OAuth 客户端"
+        "oauth_clients_manage": "创建、编辑或删除 OAuth 客户端",
+        "settings_view": "查看配置和 OpenData 监控",
+        "settings_manage": "编辑配置"
       },
       "create": {
         "button": "新建角色",
@@ -3654,6 +3575,8 @@
       "fieldPointType": "积分类型",
       "fieldPointTypeNone": "无",
       "fieldActive": "激活赛事",
+      "fieldOfficial": "官方赛事",
+      "officialHint": "官方赛事体系的比赛。Webhook 订阅者可以筛选官方和非官方赛事。",
       "fieldLocation": "地点",
       "fieldPrizePool": "奖金池",
       "fieldDescription": "描述",
@@ -3826,11 +3749,32 @@
         "containerEditDescription": "类型和赛制均可更改：转换为小组会根据现有比赛重建积分榜。",
         "containerUpdateSuccess": "容器已更新。",
         "editContainerButton": "编辑",
-        "moveContainerUp": "上移",
-        "moveContainerDown": "下移",
+        "dndInstructions": "按空格键拾取这一行，用方向键移动，再按空格键放下。",
+        "dndPicked": "已拾取 {name}",
+        "dndDropped": "已放下 {name}",
+        "dndCancelled": "已取消移动 {name}",
+        "dndHandle": "移动 {name}",
+        "dndDropHere": "放在这里",
+        "dndHint": "拖动手柄可重新排序，或放入集合中。",
         "fieldContainerTypeChangeHint": "更改类型会根据现有比赛重建积分榜，并移除对阵图连线。",
         "deleteContainerButton": "删除",
         "deleteContainerConfirm": "确定要永久删除容器“{name}”及其所有比赛吗？",
+        "containerTypeSet": "集合",
+        "addSetButton": "添加集合",
+        "setAddTitle": "添加集合",
+        "setAddDescription": "集合将多个容器归在同一个名称下,例如包含 A 组和 B 组的小组赛阶段。",
+        "setEditTitle": "重命名集合",
+        "setEditDescription": "只会更改名称,集合内的容器保持不变。",
+        "setAddSuccess": "已添加集合。",
+        "setUpdateSuccess": "已重命名集合。",
+        "fieldParentSet": "集合",
+        "parentSetNone": "无(阶段根级)",
+        "fieldParentSetHint": "集合中的容器会在其名称下一起显示。",
+        "deleteSetTitle": "删除集合",
+        "deleteSetConfirm": "确定永久删除集合“{name}”及其全部内容(容器和比赛)吗?",
+        "deleteSetSuccess": "已删除集合。",
+        "setEmpty": "此集合为空。",
+        "setContents": "{count, plural, =0 {没有容器} other {# 个容器}}",
         "deleteContainerSuccess": "容器已删除。",
         "deleteContainerTitle": "删除容器",
         "deleteContainerPlayedWarning": "已有{count, plural, other {#场比赛}}进行过（进行中或已结束）。其结果和统计数据将会丢失。",
@@ -3877,11 +3821,18 @@
           "fieldEnabled": "为此阶段启用 Pick'em",
           "fieldOpensAt": "开放时间",
           "fieldOpensAtHint": "将在该阶段最早的预定比赛开始时自动关闭。",
+          "fieldOpensAtHintMatches": "淘汰赛预测在淘汰赛首场比赛开始时截止，小组赛预测在每场比赛开始时逐场锁定。",
+          "fieldGroupPickMode": "小组赛预测",
+          "groupPickModeStandings": "最终排名",
+          "groupPickModeMatches": "每场比赛的胜者",
+          "groupPickModeStandingsHint": "用户为小组内所有队伍排名。在本阶段首场比赛开始时关闭。",
+          "groupPickModeMatchesHint": "用户选择每场比赛的胜者。每个预测在其比赛开始时锁定，瑞士轮在对阵确定后开放。",
           "cancel": "取消",
           "save": "保存",
           "saving": "保存中…",
           "saveSuccess": "Pick'em 设置已更新。",
           "error": {
+            "hasPicks": "已有用户使用当前模式进行预测，无法再更改。",
             "required": "此字段为必填项。",
             "invalid": "值无效。",
             "stageNotFound": "未找到该阶段。"
@@ -3907,28 +3858,45 @@
           "entrantNotFound": "该队伍未报名此赛事。",
           "entrantNotInGroup": "该队伍未分配到此小组。",
           "roundRobinOnly": "只有循环赛小组可以统计整个阶段的比赛。",
-          "cannotMove": "此容器无法再移动。"
+          "cannotMove": "此容器无法再移动。",
+          "parentInvalid": "此集合无法在此处使用。",
+          "tiebreakersInvalid": "每个决胜规则只能从所列选项中使用一次。",
+          "pointsValue": "请输入 -1000 到 1000 之间的整数。"
         },
-        "pointsSectionTitle": "积分同分判定（可选）",
-        "pointsSectionHint": "每种积分类型相互独立，留空表示不使用。累计积分会在 Buchholz/轮次差之前用于判定同分名次。",
+        "tiebreakerOrder": {
+          "title": "决胜规则",
+          "hint": "胜场始终优先计算。平局随后按此顺序判定，最后一项为最终依据。",
+          "wins": "胜场",
+          "moveUp": "上移",
+          "moveDown": "下移",
+          "remove": "移除",
+          "options": {
+            "points": "积分",
+            "buchholz": "Buchholz",
+            "map_diff": "地图差",
+            "round_diff": "回合差",
+            "head_to_head": "相互战绩",
+            "seed": "种子"
+          }
+        },
+        "pointsConfig": {
+          "title": "积分",
+          "hint": "每场胜负的比赛、地图和回合都会为队伍带来积分。回合仅在已记录比分的地图上计算。",
+          "enable": "使用积分",
+          "scopes": {
+            "match": "比赛",
+            "map": "每张地图",
+            "round": "每个回合",
+            "forfeit": "弃权（取代其他项）"
+          },
+          "win": "胜",
+          "loss": "负",
+          "notUsed": "仅当积分位于决胜规则中时，积分才会影响小组排名。"
+        },
         "fieldMatchScope": "队伍也会与其他小组的队伍比赛(统计整个阶段的比赛)",
         "fieldMatchScopeHint": "仅列出分配到本组的队伍,并统计其在本阶段任意小组中已完成的比赛。保存后再分配队伍。仅限循环赛。",
         "matchScopeNoTeams": "本组尚未分配任何队伍,因此积分表为空。请先为其分配队伍。",
-        "matchScopeSwitchWarning": "切换为整个阶段范围后,只会列出已分配的队伍。在本组比赛过但未分配的队伍,在分配之前会从积分表中消失。",
-        "fieldMatchWinPoints": "每场比赛胜利积分",
-        "fieldMatchWinPointsHint": "留空表示排名不计入比赛胜场积分。",
-        "fieldMapWinPoints": "每张地图胜利积分",
-        "fieldMapWinPointsHint": "留空表示不计入地图胜场积分。",
-        "fieldGameWinPoints": "每场比赛胜利积分",
-        "fieldGameWinPointsHint": "留空则不计算比赛胜利。",
-        "fieldGameForfeitWinPoints": "每场比赛弃权胜利积分",
-        "fieldGameForfeitWinPointsHint": "对弃权获得的比赛胜利使用不同的值（而非实际比赛）。",
-        "fieldRoundWinPoints": "每回合胜利积分",
-        "fieldRoundWinPointsHint": "留空表示不计入回合胜利积分。",
-        "fieldMatchForfeitWinPoints": "因弃权获胜的比赛积分",
-        "fieldMatchForfeitWinPointsHint": "相较于实际进行的胜利，弃权获胜可设置不同的分值。",
-        "fieldMapForfeitWinPoints": "因弃权获胜的地图积分",
-        "fieldMapForfeitWinPointsHint": "相较于实际进行的胜利，弃权获胜可设置不同的分值。"
+        "matchScopeSwitchWarning": "切换为整个阶段范围后,只会列出已分配的队伍。在本组比赛过但未分配的队伍,在分配之前会从积分表中消失。"
       },
       "bracketPage": {
         "title": "对阵表管理",
@@ -4013,7 +3981,8 @@
         "columnTeam": "战队",
         "columnPoints": "积分",
         "columnCashPrize": "奖金",
-        "noValue": "无"
+        "noValue": "无",
+        "tbd": "待定"
       },
       "bracketViewerPage": {
         "title": "对阵表",
@@ -4091,12 +4060,7 @@
         "subtitle": "从模板生成对阵表，然后自由调整：拖拽连接获胜方/失败方到下一场比赛。",
         "backToTournament": "← 返回赛事",
         "legacyImportLink": "导入历史比赛 →",
-        "readOnlyNotice": "该阶段已经开始，无法在此编辑对阵表，但仍可查看。",
-        "unlockButton": "解锁编辑",
-        "unlockTitle": "编辑这个已开始的对阵表？",
-        "unlockConfirm": "已结束或进行中的比赛会被冻结，并保留其结果和统计数据。你仍可修改其他比赛和连线、添加比赛，以及删除尚未进行的比赛。",
-        "unlockConfirmButton": "解锁",
-        "unlockedWarning": "编辑已解锁：已结束和进行中的比赛被冻结，其余内容可在不丢失结果的情况下修改。",
+        "startedNotice": "编辑已解锁：已结束和进行中的比赛被冻结，其余内容可在不丢失结果的情况下修改。",
         "swissContainersNotice": "该阶段的瑞士轮小组（{names}）在赛事页面管理，而非在此编辑器中：瑞士轮的每一轮都在结果出来后动态生成，没有固定的图结构可供绘制。",
         "templateFormat": "格式",
         "format": {
@@ -4159,7 +4123,6 @@
           "matchMismatch": "有比赛与已保存的对阵表不一致，请刷新页面后重试。",
           "startedMatchChanged": "已结束或进行中的比赛无法移动，也无法修改其赛制。",
           "startedMatchDeleted": "已结束或进行中的比赛无法删除。",
-          "startedEdgeChanged": "通向已结束或进行中比赛的连线无法修改。",
           "entrantMismatch": "其中一个已分配的参赛方不属于该赛事，请刷新页面后重试。",
           "bracketStarted": "此对阵图中已有比赛进行，无法再编辑。",
           "saveFailed": "保存失败，请刷新页面后重试。"
@@ -4772,6 +4735,47 @@
           "errorUnreachable": "无法连接 Liquipedia，请稍后再试。",
           "errorInvalid": "无效的赛事。",
           "errorBusy": "此赛事的导入已在进行中。"
+        },
+        "talent": {
+          "tab": "转播人员",
+          "wikicodeTitle": "人员维基代码",
+          "wikicodeDescription": "粘贴赛事 Liquipedia 页面的 Talent 部分（BroadcasterCard 模板）。",
+          "wikicodePlaceholder": "'{{BroadcasterCard|position=Host|b1=Name}}'",
+          "analyzeButton": "分析",
+          "analyzing": "分析中...",
+          "parsedCount": "{count, plural, other {# 位人员已找到}}",
+          "tableTitle": "待署名的人员",
+          "tableDescription": "每位勾选的人员将按其卡片上的职位在赛事中署名。之后 Liquipedia 导入会读取其页面。",
+          "empty": "分析维基代码以列出人员。",
+          "alreadyCredited": "{count, plural, other {# 条署名已在赛事中}}",
+          "pickPerson": "选择一个人",
+          "searchPerson": "搜索人员",
+          "noResults": "未找到人员",
+          "checkedCount": "{count, plural, other {# 位人员已选择}}",
+          "importButton": "导入署名",
+          "importing": "导入中...",
+          "success": "{created, plural, other {已创建#条署名}}，{skipped} 条已存在。",
+          "error": {
+            "invalid": "维基代码无效。",
+            "tooLong": "此维基代码过长。",
+            "noCards": "未找到职位已知的 BroadcasterCard。",
+            "empty": "没有可导入的内容。",
+            "tooMany": "一次人员过多。",
+            "tournamentNotFound": "此赛事不存在。",
+            "rows": "部分行无效。"
+          },
+          "rowError": {
+            "personRequired": "请选择此人员对应的人。",
+            "personNotFound": "此人不存在。",
+            "invalidName": "Liquipedia 名称无效。",
+            "invalidCredits": "署名无效。",
+            "organizationRequired": "请选择此人员所属的组织。",
+            "organizationNotFound": "此组织不存在。"
+          },
+          "pickOrganization": "选择组织",
+          "searchOrganization": "搜索组织",
+          "noOrganizationResults": "未找到组织",
+          "organizationRequiredHint": "每位选中的人员都需要一个组织。"
         }
       },
       "scoreBackfill": {
@@ -5196,6 +5200,228 @@
     },
     "personPicker": {
       "notInGame": "尚未加入 {game}"
+    },
+    "rosterSource": {
+      "placeholder": "公告链接",
+      "error": {
+        "invalidUrl": "请输入以 http:// 或 https:// 开头的有效链接。",
+        "sourceTooLong": "此链接过长（最多 500 个字符）。",
+        "invalidSource": "此选项在此处不可用。",
+        "requiresLeft": "要设置离队来源，请先将成员标记为已离队。"
+      },
+      "joinLabel": "加入来源",
+      "leftLabel": "离队来源",
+      "option": {
+        "none": "无来源",
+        "link": "公告链接",
+        "startedTournament": "自某赛事起开始出场",
+        "stoppedTournament": "自某赛事起不再出场",
+        "insideSource": "内部消息",
+        "declaredByPlayer": "由选手本人申报"
+      }
+    },
+    "settings": {
+      "title": "配置",
+      "subtitle": "全站设置。",
+      "save": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "设置已保存",
+      "saveError": "部分字段无效",
+      "saveFailed": "保存失败，请刷新页面后重试。",
+      "error": {
+        "required": "此字段为必填项。",
+        "invalid": "无效的值。",
+        "outOfRange": "必须是 {min} 到 {max} 之间的整数。"
+      },
+      "opendata": {
+        "title": "OpenData 门户",
+        "description": "可浏览并以 JSON 下载的公开数据集（赛事、战队、选手、比赛）。",
+        "publicPortal": "公开门户",
+        "monitoring": "监控",
+        "enabled": "启用门户",
+        "enabledHint": "关闭后，门户及其 API 会回复服务不可用。",
+        "requireAccount": "需要账号",
+        "requireAccountHint": "只有已登录用户可以浏览和下载数据。",
+        "browsePerMinute": "每分钟表格页数",
+        "browsePerMinuteHint": "按账号计算，访客按 IP 地址计算。介于 {min} 和 {max} 之间。",
+        "exportsPerHour": "每小时完整导出次数",
+        "exportsPerHourHint": "按账号计算，访客按 IP 地址计算。介于 {min} 和 {max} 之间。",
+        "propagationHint": "每台服务器会在 15 秒内应用更改。"
+      },
+      "publicApi": {
+        "title": "公开 API",
+        "description": "任何账户都可以在设置中自助创建的 API 密钥。合作伙伴密钥保留各自的限制。",
+        "keys": "公开密钥",
+        "enabled": "启用公开密钥",
+        "enabledHint": "关闭后，无法创建公开密钥，现有密钥将返回 403。",
+        "ratePerSecond": "每秒请求数",
+        "ratePerSecondHint": "按账号计算，由其所有公开密钥共享，介于 {min} 与 {max} 之间。高负载端点按多次请求计算。",
+        "maxKeysPerUser": "每个账户的有效密钥数",
+        "maxKeysPerUserHint": "介于 {min} 和 {max} 之间。",
+        "propagationHint": "更改将在 15 秒内同步到所有服务器。"
+      }
+    },
+    "opendataMonitoring": {
+      "title": "OpenData 监控",
+      "subtitle": "OpenData 门户的使用情况及其对网站负载的影响。",
+      "backToSettings": "配置",
+      "rangeLabel": "时间段",
+      "range": {
+        "1h": "1 小时",
+        "24h": "24 小时",
+        "7d": "7 天"
+      },
+      "refresh": "刷新",
+      "verdict": {
+        "healthy": "门户没有给网站带来压力",
+        "strained": "门户的负载正在变高",
+        "overloaded": "为保护网站，门户已被降速"
+      },
+      "verdictHint": {
+        "healthy": "没有负载压力，没有被拒绝的请求。",
+        "strained": "请关注趋势：如果持续上升，请降低限额或要求账号。",
+        "overloaded": "网站高负载期间有请求被拒绝。请考虑降低限额或要求账号。"
+      },
+      "reasons": {
+        "shed": "为保持网站流畅，拒绝了 {shed} 个请求",
+        "critical": "网站达到了严重负载水平",
+        "elevated": "网站有 {share} 的时间处于高负载",
+        "rateLimited": "大量请求触及限额",
+        "slow": "响应缓慢（第 95 百分位为 {p95} ms）"
+      },
+      "configState": "门户：{enabled} · 需要账号：{requireAccount} · 限额：每分钟 {browse} 页，每小时 {exports} 次导出",
+      "on": "开启",
+      "off": "关闭",
+      "stats": {
+        "requests": "请求",
+        "clients": "客户端",
+        "exports": "导出",
+        "cacheHitRate": "缓存命中率",
+        "p95": "第 95 百分位耗时",
+        "avgQueue": "平均等待",
+        "rateLimited": "已限流",
+        "shed": "已拒绝（负载）",
+        "errors": "错误",
+        "authRequired": "已拒绝（无账号）",
+        "rowsServed": "返回行数",
+        "elevatedShare": "高负载时间"
+      },
+      "requestsChart": "请求",
+      "requestsChartHint": "已返回、已限流、因网站负载被拒绝的请求以及错误。",
+      "pressureChart": "网站负载",
+      "pressureChartHint": "事件循环延迟（{elevated} ms 起警告，{critical} ms 起严重），等待数据库连接的网站查询，正在运行的 OpenData 查询。",
+      "instances": "服务器",
+      "instancesHint": "每台服务器的最新采样。OpenData 每台服务器同时运行 {normal} 个查询，高负载时 {elevated} 个，严重负载时不运行。",
+      "instancesEmpty": "没有最近的采样。",
+      "columns": {
+        "instance": "服务器",
+        "level": "负载",
+        "lag": "延迟",
+        "poolWaiting": "等待中的查询",
+        "inFlight": "运行中的 OpenData",
+        "queued": "排队中的 OpenData",
+        "sampledAt": "采样时间",
+        "dataset": "数据集",
+        "requests": "已返回 / 请求",
+        "cacheHit": "缓存",
+        "avg": "平均",
+        "p95": "第 95 百分位",
+        "rows": "行",
+        "consumer": "客户端",
+        "exports": "导出",
+        "rateLimited": "已限流",
+        "shed": "已拒绝",
+        "lastSeen": "最后访问"
+      },
+      "level": {
+        "normal": "正常",
+        "elevated": "偏高",
+        "critical": "严重"
+      },
+      "kind": {
+        "browse": "表格",
+        "export": "导出"
+      },
+      "datasets": "按数据集",
+      "consumers": "主要客户端",
+      "consumersHint": "没有账号的访客按其 IP 地址的哈希分组。",
+      "noRequests": "此时间段内没有请求。",
+      "anonymous": "访客 {hash}",
+      "charts": {
+        "empty": "此时间段内没有请求。",
+        "noSamples": "此时间段内没有负载采样。",
+        "served": "已返回",
+        "rateLimited": "已限流",
+        "shed": "已拒绝",
+        "errors": "错误",
+        "lag": "延迟 (ms)",
+        "poolWaiting": "等待中的查询",
+        "inFlight": "运行中的 OpenData"
+      }
+    },
+    "publicApiKeys": {
+      "title": "公开 API 密钥",
+      "subtitle": "用户在设置中创建的密钥。每个账号每秒限 {rate} 次请求。",
+      "searchPlaceholder": "按名称、描述或用户搜索",
+      "statusFilter": "状态",
+      "status": {
+        "active": "有效",
+        "suspended": "已暂停",
+        "revoked": "已撤销",
+        "blocked": "API 访问已封禁"
+      },
+      "empty": "没有匹配的公开密钥。",
+      "requests30d": "30 天内 {count, plural, other {# 次请求}}",
+      "statsAndEdit": "统计与编辑",
+      "suspend": "暂停",
+      "unsuspend": "恢复",
+      "block": "封禁 API 访问",
+      "unblock": "解除 API 访问封禁",
+      "delete": "删除",
+      "cancel": "取消",
+      "actionFailed": "操作失败，请重试。",
+      "notFound": "此密钥或用户已不存在。",
+      "done": {
+        "suspend": "密钥已暂停。",
+        "unsuspend": "密钥已恢复。",
+        "block": "API 访问已封禁，该用户的所有密钥均已撤销。",
+        "unblock": "API 访问封禁已解除。",
+        "delete": "密钥已删除。"
+      },
+      "confirm": {
+        "suspend": {
+          "title": "暂停此密钥？",
+          "description": "密钥“{name}”将立即停止工作。{owner} 需要在 Discord 上联系我们申请恢复。"
+        },
+        "unsuspend": {
+          "title": "恢复此密钥？",
+          "description": "密钥“{name}”将重新对 {owner} 生效。"
+        },
+        "block": {
+          "title": "封禁 API 访问？",
+          "description": "{owner} 的所有公开密钥将被撤销，并且无法再创建新的密钥。"
+        },
+        "unblock": {
+          "title": "解除 API 访问封禁？",
+          "description": "{owner} 可以重新创建公开密钥。已撤销的密钥仍保持撤销状态。"
+        },
+        "delete": {
+          "title": "删除此密钥？",
+          "description": "密钥“{name}”及其统计数据将被永久删除。"
+        }
+      },
+      "usageHeading": "用户申报的用途",
+      "clientName": "产品或公司",
+      "usageDescription": "用途说明",
+      "save": "保存",
+      "saving": "保存中...",
+      "saved": "密钥已更新。",
+      "saveError": "部分字段无效。",
+      "error": {
+        "required": "此字段为必填项。",
+        "tooShort": "至少 {min} 个字符。",
+        "tooLong": "最多 {max} 个字符。"
+      }
     }
   },
   "dashboard": {
@@ -5227,7 +5453,8 @@
       "adminAccess": "管理",
       "allAuthors": "所有作者",
       "authorAdminSpace": "作者",
-      "logs": "日志"
+      "logs": "日志",
+      "webhooks": "Webhook"
     },
     "switcher": {
       "selectOrganization": "选择一个机构",
@@ -5522,7 +5749,13 @@
         "twitch": "Twitch",
         "youtube": "YouTube",
         "tiktok": "TikTok",
-        "kick": "Kick"
+        "kick": "Kick",
+        "sooplive": "SOOP",
+        "naver": "Naver",
+        "bilibili": "Bilibili",
+        "qq": "QQ",
+        "weibo": "Weibo",
+        "other": "其他"
       },
       "typeLabel": "类型",
       "type": {
@@ -5679,7 +5912,9 @@
       "msValue": "{value} 毫秒",
       "error": {
         "notFound": "未找到该密钥。"
-      }
+      },
+      "kindPublic": "公开",
+      "publicRateLimit": "共享公开限额"
     },
     "myApiKeys": {
       "title": "我的 API 密钥",
@@ -5714,7 +5949,8 @@
       "columnAvgDuration": "平均耗时",
       "columnErrorRate": "错误率",
       "requests": "{count} 次请求",
-      "errors": "{count} 次错误"
+      "errors": "{count} 次错误",
+      "webhooksButton": "Webhook"
     },
     "permissions": {
       "title": "角色与权限",
@@ -6002,6 +6238,133 @@
       "total": "{count, plural, other {#条}}",
       "previous": "上一页",
       "next": "下一页"
+    },
+    "webhooks": {
+      "title": "Webhook",
+      "description": "当比赛、赛事、战队或选手发生变化时，GC Stats 会向您的接口发送 HTTPS POST 请求。推送大约每分钟检查一次。",
+      "pageTitle": "Webhook",
+      "pageSubtitle": "您的合作伙伴 API 密钥的接口与推送记录。",
+      "keySwitcher": "合作伙伴 API 密钥",
+      "noPartnerKey": "Webhook 仅限合作伙伴 API 密钥使用。您还没有合作伙伴密钥。",
+      "requestPartnerKey": "申请合作伙伴密钥",
+      "refresh": "刷新",
+      "add": "添加接口",
+      "keyInactive": "此 API 密钥未启用：其 webhook 已被删除，在重新启用之前无法添加。",
+      "empty": "暂无 webhook 接口。",
+      "active": "启用",
+      "inactive": "停用",
+      "toggle": "启用或停用此接口",
+      "disabledFailing": "由于连续推送失败次数过多，已自动关闭。请修复接口后重新启用。",
+      "any": "全部",
+      "test": "发送测试",
+      "testing": "发送中...",
+      "testSuccess": "已送达 (HTTP {status})",
+      "testFailed": "推送失败：{error}",
+      "edit": "编辑",
+      "showSecret": "查看密钥",
+      "rotateSecret": "新密钥",
+      "delete": "删除",
+      "deleted": "接口已删除",
+      "created": "接口已创建",
+      "updated": "接口已更新",
+      "deliveriesTitle": "最近推送",
+      "deliveriesEmpty": "暂无推送记录。",
+      "columnDate": "日期",
+      "columnEvent": "事件",
+      "columnEndpoint": "接口",
+      "columnStatus": "状态",
+      "columnAttempts": "尝试次数",
+      "redeliver": "重新发送",
+      "status": {
+        "pending": "等待中",
+        "success": "已送达",
+        "failed": "失败"
+      },
+      "secretTitle": "签名密钥",
+      "secretRotatedTitle": "新签名密钥",
+      "secretCreatedTitle": "接口已创建，这是它的签名密钥",
+      "secretDescription": "用于校验 X-GCS-Signature 请求头：对 X-GCS-Timestamp 请求头、一个点号和原始请求体进行 sha256 HMAC 计算。",
+      "copySecret": "复制密钥",
+      "close": "关闭",
+      "deleteTitle": "删除此接口？",
+      "deleteDescription": "{url} 将不再接收 webhook。其推送记录也会被删除。",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "保存中...",
+      "addTitle": "新建 webhook 接口",
+      "editTitle": "编辑接口",
+      "dialogDescription": "选择要接收的事件，并用筛选条件缩小范围。",
+      "url": "接口 URL",
+      "urlHint": "仅限公开的 HTTPS 地址。",
+      "descriptionLabel": "描述",
+      "events": "事件",
+      "event": {
+        "match": {
+          "created": "新比赛",
+          "updated": "比赛已更新"
+        },
+        "tournament": {
+          "created": "新赛事",
+          "updated": "赛事已更新"
+        },
+        "team": {
+          "updated": "战队已更新"
+        },
+        "player": {
+          "updated": "选手已更新"
+        }
+      },
+      "filtersTitle": "筛选",
+      "filtersHint": "筛选为空时全部放行。地区和官方筛选适用于比赛和赛事，战队筛选适用于所有事件。",
+      "official": {
+        "label": "官方",
+        "all": "官方和非官方",
+        "official": "仅官方",
+        "unofficial": "仅非官方"
+      },
+      "regions": "地区",
+      "regionsHint": "赛事地区。",
+      "teams": "战队",
+      "teamsHint": "这些战队之一参与的比赛和赛事、这些战队及其当前选手。",
+      "teamsPlaceholder": "添加战队",
+      "teamsSearch": "搜索战队...",
+      "teamsNoResults": "未找到战队",
+      "removeTeam": "移除 {name}",
+      "error": {
+        "notFound": "此接口或密钥已不存在。",
+        "tooManyEndpoints": "每个 API 密钥最多 {max} 个接口。",
+        "keyInactive": "此 API 密钥未启用，无法添加 webhook。",
+        "invalid": "部分字段无效。",
+        "network": "网络错误，请重试。",
+        "busy": "此次投递正在发送中，请稍后再试。",
+        "url": {
+          "required": "URL 为必填项。",
+          "tooLong": "最多 {urlMaxLength} 个字符。",
+          "invalid": "这不是有效的 URL。",
+          "notHttps": "URL 必须以 https:// 开头。",
+          "credentials": "URL 不能包含用户名或密码。",
+          "privateHost": "URL 必须指向公开地址。"
+        },
+        "description": {
+          "tooLong": "最多 {descriptionMaxLength} 个字符。"
+        },
+        "events": {
+          "required": "请至少选择一个事件。",
+          "invalid": "未知事件。"
+        },
+        "filterRegions": {
+          "invalid": "未知地区。",
+          "tooMany": "最多 {filterRegions} 个地区。"
+        },
+        "filterTeamIds": {
+          "invalid": "无效的战队。",
+          "tooMany": "最多 {filterTeams} 支战队。",
+          "unknownTeam": "其中一支战队已不存在。"
+        },
+        "filterOfficial": {
+          "invalid": "无效的值。"
+        }
+      }
     }
   },
   "globalSearch": {
@@ -6273,7 +6636,18 @@
       "addRow": "添加一行",
       "hint": "您可以提议编辑或移除现有记录，并最多新增 6 条记录，这里的所有内容都会经团队审核后才会改动名单。",
       "hasLeft": "已离开战队",
-      "untilLabel": "离开于"
+      "untilLabel": "离开于",
+      "sourcePlaceholder": "公告链接",
+      "joinSourceLabel": "加入来源",
+      "leftSourceLabel": "离队来源",
+      "sourceOption": {
+        "none": "无来源",
+        "link": "公告链接",
+        "startedTournament": "自某赛事起开始出场",
+        "stoppedTournament": "自某赛事起不再出场",
+        "insideSource": "内部消息",
+        "declaredByPlayer": "由选手本人申报"
+      }
     },
     "nameHistory": {
       "title": "曾用名历史",
@@ -6328,7 +6702,10 @@
       "invalidType": "仅接受 JPG、PNG 或 WebP 格式的照片。",
       "tooSmall": "这张照片太小（最短边至少 400 像素）。",
       "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。",
-      "userLinkOtherPerson": "你的账户已绑定到另一位选手。如果两份资料是同一个人，请联系工作人员合并。"
+      "userLinkOtherPerson": "你的账户已绑定到另一位选手。如果两份资料是同一个人，请联系工作人员合并。",
+      "sourceTooLong": "此链接过长（最多 500 个字符）。",
+      "invalidSource": "此选项在此处不可用。",
+      "leftSourceRequiresLeft": "离队来源要求成员已标记为离队。"
     },
     "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。",
     "useLinkedDiscord": "使用我已关联的 Discord 账号"
@@ -6521,6 +6898,21 @@
     "noPhaseConfigured": "该赛事尚未开放任何阶段的 Pick'em。",
     "statusNotOpenYet": "预测将于 <date></date> 开放。",
     "statusLocked": "预测已锁定，本阶段首场比赛已经开始。",
+    "statusLockedNoPicks": "预测已锁定，你没有为此阶段做出任何预测。",
+    "statusLockedStageCompleted": "预测已关闭，本阶段已没有可预测的比赛。",
+    "lockedPicksHint": "预测已锁定。以下是你的预测，随比赛结束与结果对比。",
+    "lockedBracketHint": "淘汰赛首场比赛已开始，淘汰赛预测已锁定。小组赛预测在每场比赛开始前仍可进行。",
+    "groupMatchHint": "选择每场比赛的胜者。你的预测会立即保存，并在比赛开始时锁定。再次点击你的选择可将其取消。",
+    "groupMatchNone": "尚未确定对阵。",
+    "groupMatchNextRounds": "后续轮次的对阵确定后将显示在这里。",
+    "groupMatchLocked": "本场比赛的预测已关闭。",
+    "pickCorrect": "预测正确",
+    "pickWrong": "预测错误",
+    "standingActualRank": "实际排名 #{rank}",
+    "guessInvalid": "不可能的预测，预测的两支队伍都无法进入这场比赛。",
+    "guessInvalidBadge": "不可能",
+    "pickUnreachableBadge": "无法晋级",
+    "pickUnreachable": "这支队伍已无法进入这场比赛。",
     "statusLoginRequired": "登录后即可进行预测。",
     "leaderboardTitle": "排行榜",
     "overallLeaderboardTitle": "总排行榜",
@@ -6557,6 +6949,10 @@
       "invalidPick": "其中一项预测无效。",
       "duplicateRank": "同一名次被预测了两次。",
       "incompleteStandingPicks": "小组内的每支战队都必须排定名次。",
+      "tooManyAttempts": "短时间内预测次数过多，请等待一分钟后重试。",
+      "unexpected": "无法保存你的预测，请重试。",
+      "matchLocked": "本场比赛已经开始，预测已锁定。",
+      "matchNotFound": "未找到比赛。",
       "duplicateEntrant": "同一战队被排定了两次名次。",
       "invalidRank": "排名尚未填写完整。"
     },
@@ -6611,6 +7007,8 @@
         "fieldOutcomeCorrect": "结果预测正确得分",
         "fieldAdvancement": "每轮晋级得分",
         "fieldStanding": "名次预测正确得分",
+        "fieldGroupMatch": "小组赛胜者预测正确得分",
+        "evenPointsHint": "需为偶数，猜对胜者但对手猜错只得一半分数。",
         "save": "保存",
         "saving": "保存中…",
         "pointsSaveSuccess": "分值已更新。",
@@ -6618,7 +7016,8 @@
           "notFound": "未找到该小组。",
           "forbidden": "只有小组创建者可以执行此操作。",
           "stageNotInTournament": "该阶段不属于此赛事。",
-          "invalid": "值无效。"
+          "invalid": "值无效。",
+          "notEven": "必须是偶数。"
         }
       }
     }
@@ -6737,7 +7136,9 @@
     "stageSelector": "阶段",
     "bracketTemplate": "Liquipedia 模板",
     "bracketHint": "打开生成器，输入此模板，并将结果粘贴到页面中。",
-    "bracketGenerator": "打开生成器"
+    "bracketGenerator": "打开生成器",
+    "talentTab": "转播人员",
+    "talentHint": "主持、解说、观察员和制作署名"
   },
   "matchPoster": {
     "title": "比赛图片",
@@ -6766,6 +7167,19 @@
     "calendarCopied": "链接已复制"
   },
   "calendar": {
+    "monthView": "月",
+    "weekView": "周",
+    "previousMonth": "上个月",
+    "nextMonth": "下个月",
+    "previousWeek": "上一周",
+    "nextWeek": "下一周",
+    "showEvents": "事件",
+    "both": "两者",
+    "filterTeamLabel": "队伍",
+    "allTeams": "所有队伍",
+    "searchTeams": "搜索队伍…",
+    "teamSearchError": "无法搜索队伍，请重试。",
+    "teamUnavailable": "队伍不可用",
     "allName": "GC Stats，全部比赛",
     "teamName": "{team} 的比赛 (GC Stats)",
     "tournamentName": "{tournament} (GC Stats)",
@@ -6804,5 +7218,282 @@
     "switcherLabel": "游戏",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "liquipediaHub": {
+    "title": "Liquipedia",
+    "subtitle": "将 GC Stats 数据转换为 Liquipedia 维基代码的工具。",
+    "transfersTitle": "转会",
+    "transfersHint": "用阵容变动补全每月转会页面。",
+    "tournamentsTitle": "赛事与比赛",
+    "tournamentsHint": "搜索赛事以导出维基代码，然后在其页面中选择比赛。",
+    "tournamentPlaceholder": "选择赛事",
+    "tournamentSearchPlaceholder": "搜索赛事",
+    "tournamentNoResults": "未找到赛事。"
+  },
+  "liquipediaTransfers": {
+    "title": "Liquipedia 转会",
+    "back": "返回 Liquipedia",
+    "subtitle": "粘贴每月转会页面的维基代码。GC Stats 会按从新到旧的顺序添加该月的阵容变动，并保持现有行不变。",
+    "wikicodeLabel": "转会页面的维基代码",
+    "wikicodePlaceholder": "在此粘贴维基代码",
+    "monthLabel": "月份",
+    "monthHint": "留空则从页面标题或日期中读取月份。",
+    "submit": "补全页面",
+    "submitting": "正在补全页面",
+    "summary": "{month} 新增的行数：{count}",
+    "nothingToAdd": "没有需要添加的内容，{month} 的所有阵容变动都已在页面上。",
+    "alreadyListed": "页面上已有 ({count})，保持不变：",
+    "unlinkedTeams": "没有 Liquipedia 名称的队伍，已使用 GC Stats 名称 ({count})：",
+    "unlinkedPeople": "没有 Liquipedia 名称的人员，已使用其昵称 ({count})：",
+    "missingSources": "没有可用来源的变动，未添加引用 ({count})：",
+    "error": {
+      "required": "请粘贴转会页面的维基代码。",
+      "tooLong": "此维基代码过长（最多 300,000 个字符）。",
+      "missingStart": "维基代码必须包含 Transfer Start 模板。",
+      "missingEnd": "维基代码必须在 Transfer Start 模板之后包含 Transfer End 模板。",
+      "invalid": "请输入有效的月份。",
+      "undetected": "无法从页面中读取月份，请在月份栏中选择。",
+      "generic": "出了点问题，请重试。"
+    }
+  },
+  "imageUpload": {
+    "dropzone": "点击此处或拖入图片",
+    "dropzoneHint": "选择文件，发送前可以裁剪和缩放",
+    "checking": "正在检查图片",
+    "constraintsTitle": "图片要求",
+    "constraintFormats": "格式：{formats}",
+    "constraintWeight": "最大大小：{max} MB",
+    "constraintMinSide": "最小尺寸：短边至少 {min} px",
+    "constraintRatio": "比例：{ratio}（选择后可以裁剪和缩放）",
+    "constraintOutput": "如果更大，长边会缩小到 {max} px",
+    "editCrop": "编辑裁剪",
+    "replace": "替换",
+    "remove": "移除",
+    "cropTitle": "裁剪图片",
+    "cropDescription": "移动图片并缩放，选择可见区域。",
+    "cropDescriptionPadding": "移动图片并缩放，选择可见区域。缩小可在四周添加透明边距。",
+    "zoom": "缩放",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "fit": "适应整张图片",
+    "reset": "重置",
+    "cancel": "取消",
+    "apply": "应用",
+    "applying": "应用中",
+    "exportFailed": "无法处理该图片，请换一个文件。",
+    "error": {
+      "invalidType": "不支持的格式，请使用 {formats}。",
+      "tooLarge": "文件太大，最大为 {max} MB。",
+      "tooSmall": "图片太小，短边至少需要 {min} px。",
+      "invalidImage": "该文件不是有效的图片。"
+    }
+  },
+  "openData": {
+    "title": "OpenData",
+    "subtitle": "GC Stats 所有公开的赛事、战队、选手、比赛、地图和记分板，可自由浏览、排序并以 JSON 下载。",
+    "rowCount": "{count, plural, other {# 行}}",
+    "columnCount": "{count, plural, other {# 列}}",
+    "explore": "浏览",
+    "allDatasets": "所有数据集",
+    "datasets": {
+      "tournaments": {
+        "name": "赛事",
+        "description": "所有已发布的赛事：日期、状态、地区、类别、奖金池、主办方和战队数量。"
+      },
+      "teams": {
+        "name": "战队",
+        "description": "所有战队，包括国家、当前选手人数、比赛数、简介和社交账号。"
+      },
+      "players": {
+        "name": "选手",
+        "description": "所有选手和工作人员，包括国家、当前战队和角色、简介和社交账号。"
+      },
+      "matches": {
+        "name": "比赛",
+        "description": "所有比赛，包括赛事、阶段、战队、比分、状态和时间。"
+      },
+      "maps": {
+        "name": "地图",
+        "description": "每张已进行的地图：赛事、战队、比分、胜者以及双方各阵营赢得的回合。"
+      },
+      "map_players": {
+        "name": "记分板",
+        "description": "每张已结束地图的每位选手数据：特工、击杀、死亡、助攻、ACS、ADR、KAST、首杀、残局和多杀。"
+      }
+    },
+    "usage": {
+      "title": "使用数据",
+      "publicOnly": "只提供网站上已公开的数据：不含账号、联系方式或私密字段。",
+      "terms": "数据适用与本站相同的条款：仅可在我们的使用条款允许的范围内使用。",
+      "freshness": "表格每分钟刷新，完整导出每 10 分钟刷新。",
+      "limits": "限额：每个账号或 IP 地址每分钟 {browse} 页表格，每小时 {exports} 次完整导出。",
+      "accountOnly": "门户目前仅对已登录用户开放。",
+      "priority": "网站始终优先：负载很高时，门户会降速，并可能在几秒内回复繁忙。",
+      "termsLink": "使用条款"
+    },
+    "api": {
+      "title": "API",
+      "intro": "表格和导出使用一个可直接调用的公开 JSON API：",
+      "datasets": "数据集：{list}。",
+      "paramPerPage": "per_page：{sizes}。",
+      "paramSort": "sort：数据集的任意列，direction：asc 或 desc。",
+      "paramQ": "q：文本搜索，最多 100 个字符。",
+      "paramFilter": "f.列名：按任意列筛选（例如 f.region=EMEA）。文本为部分匹配，数字、状态和 true/false 为精确匹配。最多 {max} 个筛选条件，同时生效。",
+      "errors": "错误会返回包含错误代码的 JSON 对象、400、401、429 或 503 状态，以及提示何时重试的 Retry-After 头。"
+    },
+    "access": {
+      "disabled": {
+        "title": "OpenData 暂时不可用",
+        "text": "门户目前已关闭，请稍后再来。"
+      },
+      "accountRequired": {
+        "title": "登录后即可访问数据",
+        "text": "OpenData 门户目前仅对已登录用户开放。注册账号是免费的。"
+      },
+      "login": "登录",
+      "register": "注册账号"
+    },
+    "download": {
+      "label": "下载 JSON",
+      "labelFiltered": "下载所选数据",
+      "preparing": "准备中...",
+      "success": "下载已开始"
+    },
+    "errors": {
+      "not_found": "该数据集不存在。",
+      "bad_request": "请求参数无效。",
+      "disabled": "OpenData 门户暂时不可用。",
+      "account_required": "登录后即可访问数据。",
+      "rate_limited": "请求过多，请放慢速度。",
+      "busy": "网站负载很高，数据将在几秒后恢复。",
+      "internal_error": "出了点问题，请重试。",
+      "network": "网络错误，请检查连接。"
+    },
+    "retryIn": "（{seconds} 秒后重试）",
+    "retry": "重试",
+    "searchLabel": "搜索",
+    "searchPlaceholder": {
+      "tournaments": "名称、地区、类别...",
+      "teams": "名称或标签...",
+      "players": "ID、姓名、战队...",
+      "matches": "赛事、阶段、战队...",
+      "maps": "赛事、地图、战队...",
+      "map_players": "选手、战队、特工、地图..."
+    },
+    "clearSearch": "清除搜索",
+    "filters": {
+      "button": "筛选",
+      "title": "按列筛选",
+      "column": "列",
+      "value": "值",
+      "valuePlaceholder": "要匹配的值…",
+      "addAnother": "添加另一个筛选条件",
+      "apply": "应用",
+      "clear": "清除",
+      "integerRequired": "此列需要输入整数。"
+    },
+    "perPage": "每页 {count} 条",
+    "columnsPicker": "列",
+    "showAllColumns": "全部显示",
+    "resetColumns": "重置",
+    "rowsRange": "共 {total} 行，第 {from} 至 {to} 行",
+    "loading": "加载中...",
+    "noResults": "没有数据。",
+    "noResultsFor": "没有与“{q}”匹配的行。",
+    "noResultsFiltered": "没有符合这些筛选条件的行。",
+    "pagination": "分页",
+    "firstPage": "第一页",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "lastPage": "最后一页",
+    "pageOf": "第 {page} / {total} 页",
+    "yes": "是",
+    "no": "否",
+    "openLink": "打开",
+    "status": {
+      "upcoming": "即将开始",
+      "live": "直播中",
+      "finished": "已结束",
+      "pending": "已排期",
+      "completed": "已结束"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "名称",
+      "status": "状态",
+      "start_date": "开始",
+      "end_date": "结束",
+      "region": "地区",
+      "category": "类别",
+      "location": "地点",
+      "prize_pool": "奖金池",
+      "teams_count": "战队数",
+      "organizer_id": "主办方 ID",
+      "organizer_name": "主办方",
+      "liquipedia_link": "Liquipedia",
+      "socials": "社交账号",
+      "short_name": "标签",
+      "country_code": "国家",
+      "secondary_country_code": "第二国家",
+      "is_active": "活跃",
+      "players_count": "选手数",
+      "matches_count": "比赛数",
+      "bio": "简介",
+      "vlr_id": "VLR ID",
+      "handle": "选手 ID",
+      "first_name": "名",
+      "last_name": "姓",
+      "current_team_id": "战队 ID",
+      "current_team_name": "当前战队",
+      "current_role": "角色",
+      "scheduled_at": "时间",
+      "tournament_id": "赛事 ID",
+      "tournament_name": "赛事",
+      "stage_name": "阶段",
+      "bracket_name": "对阵表",
+      "round": "轮次",
+      "best_of": "BO",
+      "team_a_id": "A 队 ID",
+      "team_a_name": "A 队",
+      "score_a": "A 比分",
+      "score_b": "B 比分",
+      "team_b_id": "B 队 ID",
+      "team_b_name": "B 队",
+      "winner_team_id": "胜者 ID",
+      "is_forfeit": "弃权",
+      "patch": "版本",
+      "match_id": "比赛 ID",
+      "started_at": "日期",
+      "map_order": "地图序号",
+      "map_name": "地图",
+      "is_completed": "已结束",
+      "team_a_atk_rounds_won": "A 队进攻回合",
+      "team_a_def_rounds_won": "A 队防守回合",
+      "team_b_atk_rounds_won": "B 队进攻回合",
+      "team_b_def_rounds_won": "B 队防守回合",
+      "map_id": "地图 ID",
+      "player_id": "选手 ID",
+      "player_handle": "选手",
+      "team_id": "战队 ID",
+      "team_name": "战队",
+      "agent": "特工",
+      "kills": "击杀",
+      "deaths": "死亡",
+      "assists": "助攻",
+      "first_kills": "首杀",
+      "first_deaths": "首死",
+      "clutches_won": "残局胜利",
+      "clutches_played": "残局次数",
+      "trade_kills": "补枪击杀",
+      "traded_deaths": "被补枪的死亡",
+      "acs": "ACS",
+      "adr": "ADR",
+      "kast_percentage": "KAST %",
+      "headshot_percentage": "HS %",
+      "multikills_2k": "2K",
+      "multikills_3k": "3K",
+      "multikills_4k": "4K",
+      "multikills_5k": "5K"
+    }
   }
 }

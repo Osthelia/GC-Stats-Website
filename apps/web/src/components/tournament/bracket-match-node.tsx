@@ -2,7 +2,7 @@
  * GC-Stats - bracket-match-node
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -11,7 +11,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
-import { GOLD, RED, tint } from "@/lib/theme-colors";
+import { GOLD, RED } from "@/lib/theme-colors";
 import { formatSideScore } from "@/lib/match-score-format";
 import { useBracketMatchAction } from "@/components/tournament/bracket-match-action";
 
@@ -111,8 +111,10 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
   const live = data.status === "live";
 
   const action = useBracketMatchAction();
-  const className = "nodrag nopan block w-56 overflow-hidden rounded-lg border border-neutral-800 transition-colors duration-150 hover:border-[#e4ae22]/50 hover:shadow-lg";
-  const style = { background: "var(--gcs-surface-3)" };
+  const className = `nodrag nopan block w-56 overflow-hidden rounded-lg border transition-colors duration-150 hover:shadow-lg ${live ? "" : "border-neutral-800 hover:border-[#e4ae22]/50"}`;
+  const style = live
+    ? { background: "var(--gcs-surface-3)", borderColor: RED }
+    : { background: "var(--gcs-surface-3)" };
 
   const content = (
     <>
@@ -122,11 +124,9 @@ export function BracketMatchNode({ data }: NodeProps & { data: BracketMatchNodeD
       <div className="flex items-center justify-between gap-2 border-b border-neutral-800 bg-black/20 px-2.5" style={{ height: HEADER_HEIGHT }}>
         <span className="truncate text-[10px] font-semibold tracking-wide text-neutral-500 uppercase">{data.label ?? `${data.containerName} · R${data.round}`}</span>
         {live && (
-          <span className="flex items-center gap-1 rounded px-1.5 py-0.5" style={{ background: tint(RED, 0.18) }}>
-            <span className="relative flex h-1 w-1">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: RED }} />
-              <span className="relative inline-flex h-1 w-1 rounded-full" style={{ background: RED }} />
-            </span>
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: RED }} />
+            <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: RED }} />
           </span>
         )}
       </div>

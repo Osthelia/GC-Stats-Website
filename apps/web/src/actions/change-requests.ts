@@ -6,7 +6,7 @@
  * diff stored as change_requests/change_request_items for staff to review.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -19,6 +19,7 @@ import { tryStoreLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles
 import { auth } from "@/auth";
 import { INTERNATIONAL_CODE } from "@/lib/countries";
 import { rangeIsOpen, rangeLower, rangeUpper } from "@/lib/daterange";
+import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { getEntityLogos, currentLogo } from "@/lib/admin-logos";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
 import { notify } from "@/lib/notify";
@@ -194,6 +195,9 @@ export async function submitChangeRequest(
         if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
         if (typeof op.hasLeft !== "boolean" || (op.until && !op.hasLeft)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+        const addSourceError = validateRosterSource(op.joinSource, "join") ?? validateRosterSource(op.leftSource, "left");
+        if (addSourceError) return { ok: false, fieldErrors: {}, formError: addSourceError };
+        if (op.leftSource?.trim() && !op.hasLeft) return { ok: false, fieldErrors: {}, formError: "leftSourceRequiresLeft" };
         // The fixed side (subject) must match this suggest-edit page — the picked side is trusted to exist (picker only offers real rows) but re-checked anyway.
         const fixedOk = subjectType === "team" ? op.teamId === subjectId : op.personId === subjectId;
         if (!fixedOk) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
@@ -205,11 +209,11 @@ export async function submitChangeRequest(
         membershipItems.push({
           field: "membership_add",
           oldValue: null,
-          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince },
+          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
         });
       } else if (op.type === "edit" || op.type === "delete") {
         const [membership] = await db
-          .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft, inactiveSince: rosterMemberships.inactiveSince })
+          .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft, inactiveSince: rosterMemberships.inactiveSince, joinSource: rosterMemberships.joinSource, leftSource: rosterMemberships.leftSource })
           .from(rosterMemberships)
           .where(eq(rosterMemberships.id, op.membershipId))
           .limit(1);
@@ -225,6 +229,11 @@ export async function submitChangeRequest(
           if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
           if (typeof op.hasLeft !== "boolean" || (op.until && !op.hasLeft)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.inactiveSince && !DATE_RE.test(op.inactiveSince)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+          const editSourceError =
+            validateRosterSource(op.joinSource, "join", { allowSelfDeclared: op.joinSource === membership.joinSource }) ??
+            validateRosterSource(op.leftSource, "left", { allowSelfDeclared: op.leftSource === membership.leftSource });
+          if (editSourceError) return { ok: false, fieldErrors: {}, formError: editSourceError };
+          if (op.leftSource?.trim() && !op.hasLeft) return { ok: false, fieldErrors: {}, formError: "leftSourceRequiresLeft" };
           membershipItems.push({
             field: "membership_edit",
             oldValue: {
@@ -234,8 +243,10 @@ export async function submitChangeRequest(
               until: rangeIsOpen(membership.period) ? null : rangeUpper(membership.period),
               hasLeft: membership.hasLeft,
               inactiveSince: membership.inactiveSince,
+              joinSource: membership.joinSource,
+              leftSource: membership.leftSource,
             },
-            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince },
+            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
           });
         }
       }

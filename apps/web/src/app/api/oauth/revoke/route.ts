@@ -6,7 +6,7 @@
  * existed or belonged to that client, per spec (never an oracle).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -16,7 +16,6 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { oauthAccessTokens, oauthRefreshTokens } from "@gc-stats/db";
 import { resolveOAuthClient, verifyClientSecret } from "@/lib/oauth/client-auth";
 import { hashOpaqueToken } from "@/lib/oauth/token-crypto";
-import { invalidateAccessTokenCache } from "@/lib/oauth/token-resolve";
 import { revokeOAuthTokens } from "@/lib/oauth/revoke-tokens";
 import { checkOAuthRateLimit } from "@/lib/oauth/rate-limit";
 import { getClientIp } from "@/lib/client-ip";
@@ -48,7 +47,6 @@ export async function POST(request: Request) {
     .update(oauthAccessTokens)
     .set({ revokedAt: now })
     .where(and(eq(oauthAccessTokens.tokenHash, tokenHash), eq(oauthAccessTokens.clientId, client.id)));
-  invalidateAccessTokenCache(tokenHash);
 
   // A revoked refresh token takes its access tokens down with it.
   const [refresh] = await db

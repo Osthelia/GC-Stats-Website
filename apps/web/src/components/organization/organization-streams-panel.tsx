@@ -2,20 +2,13 @@
  * GC-Stats - organization-streams-panel
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { getTranslations } from "next-intl/server";
 import type { OrganizationStreamChannel } from "@/lib/organization-page-data";
-import { TwitchIcon, YoutubeIcon, TiktokIcon, KickIcon, WebsiteIcon } from "@/components/icons/brand-icons";
-
-const PLATFORM_ICONS: Record<string, (props: { className?: string }) => React.ReactNode> = {
-  twitch: TwitchIcon,
-  youtube: YoutubeIcon,
-  tiktok: TiktokIcon,
-  kick: KickIcon,
-};
+import { STREAM_PLATFORM_ICONS, WebsiteIcon } from "@/components/icons/brand-icons";
 
 export async function OrganizationStreamsPanel({ channels }: { channels: OrganizationStreamChannel[] }) {
   const t = await getTranslations("organizationPage");
@@ -29,7 +22,7 @@ export async function OrganizationStreamsPanel({ channels }: { channels: Organiz
       ) : (
         <div className="flex flex-col gap-2">
           {channels.map((c) => {
-            const Icon = PLATFORM_ICONS[c.platform] ?? WebsiteIcon;
+            const Icon = STREAM_PLATFORM_ICONS[c.platform] ?? WebsiteIcon;
             return (
               <a
                 key={c.id}

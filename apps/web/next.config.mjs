@@ -6,21 +6,6 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Cloudflare Workers can't run sharp at all (native .node bindings, no
-// workerd equivalent) — Next's own image optimizer must be fully disabled
-// there (unoptimized: true) so no code path ever requires it, otherwise
-// Next's output tracing still copies it in and wrangler's bundler fails to
-// resolve it. Docker keeps real server side optimization via sharp.
-//
-// Deliberately a separate flag from `DEPLOY_TARGET` (only set by
-// `cf-build`/`cross-env`, never at runtime): `DEPLOY_TARGET` is read by
-// packages/db/src/client.ts and instrumentation.ts to pick Hyperdrive/Cron
-// Triggers at REQUEST time — if it were also true during `next build`'s
-// page-data collection (which executes route modules, e.g. `auth.ts`'s
-// top level `DrizzleAdapter(db, ...)`), that code would try to reach
-// `getCloudflareContext()` outside of any real request and crash the build.
-const isCloudflareBuild = process.env.OPENNEXT_BUILD_TARGET === "cloudflare";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Standalone server bundle for Docker: copies only the traced
@@ -34,42 +19,22 @@ const nextConfig = {
   // Next.js otherwise skips transpiling anything resolved from
   // node_modules/workspace symlinks.
   transpilePackages: ["@gc-stats/db", "@gc-stats/storage"],
-  images: isCloudflareBuild ? { unoptimized: true } : undefined,
   // sharp ships native (.node) bindings — must stay a real require() on the
   // server, not get pulled into a webpack/turbopack bundle.
-  // pg-cloudflare has a "workerd" conditional export (real implementation vs.
-  // a Node/default no-op) that Next's own file tracing/bundling can't see —
-  // bundling it ourselves resolves to the wrong condition. Externalizing
-  // makes Next copy the whole package instead and defers actual resolution to
-  // wrangler's own bundling pass, which does understand the workerd condition.
-  serverExternalPackages: isCloudflareBuild ? ["pg", "pg-cloudflare"] : ["sharp"],
-  turbopack: {
-    resolveAlias: isCloudflareBuild
-      ? {
-          // `next/image`'s shared server chunk requires sharp regardless of
-          // `images.unoptimized` (it's bundled into a chunk shared by every
-          // page using next/image, not eliminated at build time) — Turbopack
-          // has no way to tree-shake a `require()` away, so alias it to a
-          // stub instead. Real native sharp can't be bundled for workerd.
-          sharp: "./stubs/sharp-stub.js",
-          // instrumentation.ts dynamically imports registry.ts (node-cron)
-          // behind a `DEPLOY_TARGET !== "cloudflare"` runtime guard, but
-          // Cloudflare validates the whole bundle's module-scope code on
-          // deploy — merely being reachable in the bundle is enough for
-          // node-cron's background-scheduled-task.ts to crash at startup.
-          "node-cron": "./stubs/node-cron-stub.js",
-          // Messages are fetched from static assets instead of bundled, see load-messages.cloudflare.ts.
-          "@/i18n/load-messages": "./src/i18n/load-messages.cloudflare.ts",
-        }
-      : {},
-  },
+  serverExternalPackages: ["sharp"],
   allowedDevOrigins: ["localhost", "127.0.0.1"],
+  // Build-time CDN host for /_next/static (a pull zone whose origin is the app). Unset = served by the app.
+  assetPrefix: process.env.ASSET_PREFIX || undefined,
   // Old endpoint kept temporarly
   async rewrites() {
     return [{ source: "/api/:version(v\\d+)/:path*", destination: "/api/valorant/:version/:path*" }];
   },
   async headers() {
     return [
+      // Fonts and chunks fetched cross-origin from the CDN host need CORS.
+      ...(process.env.ASSET_PREFIX
+        ? [{ source: "/_next/static/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }]
+        : []),
       {
         source: "/:path*",
         headers: [

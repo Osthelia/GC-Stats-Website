@@ -5,14 +5,14 @@
  * records read at request time from the series maps, not trusted from `group_entries`.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { and, eq, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { gameTables } from "@gc-stats/db";
-import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
+import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@osthelia/bracket-engine";
 import { listMatchMapResults, type Tx } from "./repository";
 import { countsForStageScope, parseGroupConfig, type GroupContainerConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
@@ -35,7 +35,7 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
  * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
  * round count and would otherwise skew the differential.
  */
-async function computeMapRecord(game: GameSlug, tx: Tx, containerIds: number[]): Promise<Map<number, MapRecord>> {
+export async function computeMapRecord(game: GameSlug, tx: Tx, containerIds: number[]): Promise<Map<number, MapRecord>> {
   const { matches } = gameTables(game);
   const stats = new Map<number, MapRecord>();
   const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
@@ -131,13 +131,13 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
   });
 
   const emptyRecord: MapRecord = { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
-  const gameDiffOf = (entrantId: number) => {
-    const rec = mapRecord.get(entrantId) ?? emptyRecord;
-    return rec.mapWins - rec.mapLosses;
-  };
   const roundDiffOf = (entrantId: number) => {
     const rec = mapRecord.get(entrantId) ?? emptyRecord;
     return rec.roundWins - rec.roundLosses;
+  };
+  const mapDiffOf = (entrantId: number) => {
+    const rec = mapRecord.get(entrantId) ?? emptyRecord;
+    return rec.mapWins - rec.mapLosses;
   };
   const withMapRecord = (ranked: RankedStandingsEntry[]): GroupStandingsEntry[] =>
     ranked.map((r) => {
@@ -153,6 +153,7 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
+      mapDiff: mapDiffOf(e.entrantId),
       points: points?.get(e.entrantId) ?? 0,
     }));
     return withMapRecord(createSwissStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
@@ -179,10 +180,14 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
       losses: e.losses,
       buchholz: e.buchholz,
       roundDiff: roundDiffOf(e.entrantId),
-      gameDiff: gameDiffOf(e.entrantId),
+      mapDiff: mapDiffOf(e.entrantId),
       headToHead,
       points: points?.get(e.entrantId) ?? 0,
     };
   });
-  return withMapRecord(createRoundRobinStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
+  const ranked = createRoundRobinStandings({ tiebreakers: config.tiebreakers }).recompute(dtos);
+  if (!points) return withMapRecord(ranked);
+
+  const byPoints = [...ranked].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+  return withMapRecord(byPoints.map((r, i) => ({ ...r, rank: i + 1 })));
 }

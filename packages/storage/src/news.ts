@@ -7,7 +7,7 @@
  * and the object key stay tied together like NewsImage did in V1.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -26,7 +26,7 @@ export type StoredNewsImage = { id: string; url: string };
 
 export async function storeNewsImage(buffer: Buffer): Promise<StoredNewsImage> {
   const id = randomUUID();
-  const webp = await convertToWebp(buffer, { width: MAX_WIDTH, quality: QUALITY, fit: "inside" });
+  const webp = await convertToWebp(buffer, { width: MAX_WIDTH, quality: QUALITY, fit: "inside", animated: true });
   const key = newsImageKey(id);
   await putObject(key, webp, "image/webp");
   return { id, url: publicUrl(key) };

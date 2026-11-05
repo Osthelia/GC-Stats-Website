@@ -5,7 +5,7 @@
  * tournament info for the dashboard listing.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -81,8 +81,11 @@ export async function listOrganizationVodRows(game: GameSlug, organizationId: nu
 
 export type MatchMapOption = { id: number; label: string };
 
-/** Backs the "specific map" <Select> once a match is picked: its maps (Valorant) or games (LoL). */
+/** Backs the "specific map" <Select> once a match is picked: its maps (Valorant) or games (LoL), with the start time when known. */
 export async function getMatchMapOptions(game: GameSlug, matchId: number): Promise<MatchMapOption[]> {
   const rows = await selectSeriesMaps(db, game, (t) => eq(t.matchId, matchId));
-  return rows.map((m) => ({ id: m.id, label: mapLabel(game, m.mapName, m.order) }));
+  return rows.map((m) => {
+    const date = m.startedAt ? ` · ${m.startedAt.toISOString().slice(0, 16).replace("T", " ")} UTC` : "";
+    return { id: m.id, label: `${mapLabel(game, m.mapName, m.order)}${date}` };
+  });
 }

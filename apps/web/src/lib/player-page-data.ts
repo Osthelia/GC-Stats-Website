@@ -6,7 +6,7 @@
  * achievements, stats filter options, and related press.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -15,7 +15,7 @@ import { and, desc, eq, gte, inArray, isNotNull, lte, sql, type SQLWrapper } fro
 import { db } from "@gc-stats/db/client";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import {
-  organizations, gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
+  organizations, newsAuthors, gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { sortPatchesNewestFirst } from "@gc-stats/lol-stats-engine";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
@@ -146,6 +146,8 @@ export type PlayerTeamHistoryEntry = {
   since: string | null;
   until: string | null;
   inactiveSince: string | null;
+  joinSource: string | null;
+  leftSource: string | null;
   teamLogoUrl: string | null;
   teamLogoUrlLight: string | null;
 };
@@ -165,6 +167,8 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       period: rosterMemberships.period,
       hasLeft: rosterMemberships.hasLeft,
       inactiveSince: rosterMemberships.inactiveSince,
+      joinSource: rosterMemberships.joinSource,
+      leftSource: rosterMemberships.leftSource,
     })
     .from(rosterMemberships)
     .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))
@@ -188,6 +192,8 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       since: rangeLower(r.period),
       until: rangeUpper(r.period),
       inactiveSince: r.inactiveSince,
+      joinSource: r.joinSource,
+      leftSource: r.leftSource,
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
     };
@@ -380,15 +386,17 @@ export async function getPlayerPress(game: GameSlug, personId: number, locale: A
       title: news.title,
       slug: news.slug,
       publisher: organizations.name,
+      authorName: newsAuthors.name,
       publishedAt: news.publishedAt,
       lang: news.lang,
     })
     .from(newsRelations)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
+    .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
     .where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId), isNewsPublishedCondition(game), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 
-  return rows.map((r) => ({ ...r, publisher: r.publisher ?? "GC-Stats" }));
+  return rows.map(({ authorName, ...r }) => ({ ...r, publisher: r.publisher ?? authorName ?? "GCS" }));
 }

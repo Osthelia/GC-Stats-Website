@@ -2,7 +2,7 @@
  * GC-Stats - site-footer
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -10,7 +10,6 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import packageJson from "../../package.json";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DISCORD_INVITE_URL } from "@/lib/discord-invite";
 
 const SOCIALS = [
@@ -49,7 +48,7 @@ export function SiteFooter() {
       links: [
         { label: t("productAllMatches"), href: "/match" },
         { label: t("productTournaments"), href: "/tournaments" },
-        { label: t("productDataExplorer"), href: null },
+        { label: t("productOpenData"), href: "/opendata" },
         { label: t("productForum"), href: "/forum" },
       ],
     },
@@ -60,6 +59,7 @@ export function SiteFooter() {
         { label: t("contributeAddTournament"), href: "/help/add_tournament" },
         { label: t("contributeBecomePublisher"), href: "/become-publisher" },
         { label: t("contributeWidgets"), href: "/widget" },
+        { label: t("contributeLiquipedia"), href: "/liquipedia" },
       ],
     },
     {
@@ -76,7 +76,7 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-neutral-800">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 px-6 pt-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
+      <div className="mx-auto grid max-w-[clamp(1500px,88vw,2400px)] grid-cols-1 gap-10 px-6 pt-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
         <div className="min-w-0">
           <div className="mb-3 flex items-center gap-2.5">
             <div className="flex h-[26px] w-[26px] items-center justify-center rounded-lg bg-[#e4ae22] text-[11px] font-bold text-[#0e0e0e]">GC</div>
@@ -113,30 +113,17 @@ export function SiteFooter() {
           <div key={col.title} className="min-w-0">
             <div className="mb-3.5 text-[13.5px] font-semibold text-neutral-50">{col.title}</div>
             <div className="flex flex-col gap-2.5">
-              {col.links.map((l) =>
-                l.href === null ? (
-                  <Tooltip key={l.label}>
-                    <TooltipTrigger
-                      type="button"
-                      aria-disabled="true"
-                      className="w-fit cursor-not-allowed text-left text-[13.5px] text-neutral-700"
-                    >
-                      {l.label}
-                    </TooltipTrigger>
-                    <TooltipContent>{t("productDataExplorerComingSoon")}</TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <Link key={l.label} href={l.href} className="text-[13.5px] text-neutral-500 hover:text-[#e4ae22]">
-                    {l.label}
-                  </Link>
-                )
-              )}
+              {col.links.map((l) => (
+                <Link key={l.label} href={l.href} className="text-[13.5px] text-neutral-500 hover:text-[#e4ae22]">
+                  {l.label}
+                </Link>
+              ))}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-6 pb-10 pt-8">
+      <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pb-10 pt-8">
         <div className="flex flex-wrap items-center justify-between gap-5 border-t border-neutral-900 pt-5">
           <span className="flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
             <span>{t("copyright", { year: new Date().getFullYear(), version: packageJson.version })}</span>

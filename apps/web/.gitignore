@@ -1,6 +1,2 @@
 next-env.d.ts
-cloudflare-env.d.ts
-.open-next
-.wrangler
-wrangler.preview.jsonc
 .preview-secrets.json

@@ -2,7 +2,7 @@
  * GC-Stats - org-streams-panel
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -322,7 +322,7 @@ function AddChannelForm({ organizationId, languages, onAdded }: { organizationId
   );
 }
 
-function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: number; channels: OrganizationStreamChannelRow[]; onAdded: () => void }) {
+function AddLinkForm({ organizationId, channels, languages, onAdded }: { organizationId: number; channels: OrganizationStreamChannelRow[]; languages: NewsLanguageOption[]; onAdded: () => void }) {
   const game = useGame();
   const t = useTranslations("dashboard.streams");
   const [isPending, startTransition] = useTransition();
@@ -334,7 +334,9 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const channelItems = Object.fromEntries(channels.map((c) => [String(c.id), c.name]));
+  const platItems = platformItems(t);
+  const channelLabel = (c: OrganizationStreamChannelRow) => `${c.name} (${platItems[c.platform] ?? c.platform} - ${languages.find((l) => l.code === c.languageCode)?.name ?? c.languageCode})`;
+  const channelItems = Object.fromEntries(channels.map((c) => [String(c.id), channelLabel(c)]));
 
   useEffect(() => {
     setSelectedMatchIds(new Set());
@@ -398,7 +400,7 @@ function AddLinkForm({ organizationId, channels, onAdded }: { organizationId: nu
             <SelectContent>
               {channels.map((c) => (
                 <SelectItem key={c.id} value={String(c.id)}>
-                  {c.name}
+                  {channelLabel(c)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -542,7 +544,7 @@ export function OrgStreamsPanel({
             <CardTitle>{t("linksTitle")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <AddLinkForm organizationId={organizationId} channels={channels} onAdded={() => window.location.reload()} />
+            <AddLinkForm organizationId={organizationId} channels={channels} languages={languages} onAdded={() => window.location.reload()} />
             <div className="flex flex-col gap-4 border-t pt-4">
               {links.length === 0 && <p className="text-sm text-muted-foreground">{t("linkEmpty")}</p>}
               {links.length > 0 && (

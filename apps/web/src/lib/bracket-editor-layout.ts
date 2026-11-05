@@ -2,7 +2,7 @@
  * GC-Stats - bracket-editor-layout
  *
  * Grid layout for the admin bracket editor canvas only, distinct from
- * lib/bracket-layout.ts (public read-only display + initial editor load),
+ * layoutBracket of @osthelia/bracket-engine (public read-only display + initial editor load),
  * which merges a grand-final container's lane into its upper bracket's lane
  * using global topological depth as the column. That trick made the editor
  * ambiguous to drag in: a node's x position didn't correspond 1:1 to its own
@@ -17,7 +17,7 @@
  * placed there, matches with no explicit order auto-fill the next free row.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 

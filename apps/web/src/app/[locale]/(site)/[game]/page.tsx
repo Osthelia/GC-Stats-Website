@@ -2,7 +2,7 @@
  * GC-Stats — page
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const game = await gameFromParams(params);
 
   return (
-    <div className="mx-auto max-w-[1550px] px-6 py-9 pb-[72px]">
+    <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-9 pb-[72px]">
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_420px]">
         <Suspense fallback={<MatchesSkeleton />}>
           <HomeMatches game={game} />

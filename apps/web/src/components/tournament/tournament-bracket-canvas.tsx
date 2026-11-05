@@ -2,7 +2,7 @@
  * GC-Stats - tournament-bracket-canvas
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -32,7 +32,7 @@ import {
   type BracketQualifierNodeData,
 } from "@/components/tournament/bracket-qualifier-node";
 import { BracketElbowEdge } from "@/components/tournament/bracket-elbow-edge";
-import { layoutBracket } from "@/lib/bracket-layout";
+import { layoutBracket } from "@osthelia/bracket-engine";
 import { CONTROLS_DARK_STYLE } from "@/lib/bracket-controls-style";
 import { GOLD, RED } from "@/lib/theme-colors";
 import type {

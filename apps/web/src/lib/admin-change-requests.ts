@@ -6,13 +6,13 @@
  * previews) for each item.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { and, asc, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, gameTables } from "@gc-stats/db";
+import { users, sharedPeople as people, gameTables } from "@gc-stats/db";
 import { logoUrl } from "@gc-stats/storage";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
@@ -227,11 +227,29 @@ export type AdminChangeRequestDetail = {
   subjectId: number;
   subjectLabel: string | null;
   requestedByUsername: string | null;
+  /** Player profile linked to the requester's account, null when there is none (or no requester). */
+  requesterPlayer: { personId: number; handle: string; matchesSubject: boolean } | null;
   reason: string | null;
   status: ChangeRequestStatus;
   createdAt: string;
   items: AdminChangeRequestItem[];
 };
+
+/** Player linked to the requester's account, and whether it is the edited person (or, for a team, a member of it). */
+async function getRequesterPlayer(game: GameSlug, requestedBy: string | null, subjectType: "team" | "person", subjectId: number): Promise<AdminChangeRequestDetail["requesterPlayer"]> {
+  if (!requestedBy) return null;
+  const { rosterMemberships } = gameTables(game);
+  const [player] = await db.select({ personId: people.id, handle: people.handle }).from(people).where(eq(people.userId, requestedBy)).limit(1);
+  if (!player) return null;
+  if (subjectType === "person") return { ...player, matchesSubject: player.personId === subjectId };
+
+  const [membership] = await db
+    .select({ id: rosterMemberships.id })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.personId, player.personId), eq(rosterMemberships.teamId, subjectId)))
+    .limit(1);
+  return { ...player, matchesSubject: Boolean(membership) };
+}
 
 export async function getAdminChangeRequestDetail(game: GameSlug, id: number): Promise<AdminChangeRequestDetail | null> {
   const { changeRequests, changeRequestItems, rosterMemberships } = gameTables(game);
@@ -240,6 +258,7 @@ export async function getAdminChangeRequestDetail(game: GameSlug, id: number): P
       id: changeRequests.id,
       subjectType: changeRequests.subjectType,
       subjectId: changeRequests.subjectId,
+      requestedBy: changeRequests.requestedBy,
       requestedByUsername: users.username,
       reason: changeRequests.reason,
       status: changeRequests.status,
@@ -250,6 +269,8 @@ export async function getAdminChangeRequestDetail(game: GameSlug, id: number): P
     .where(eq(changeRequests.id, id))
     .limit(1);
   if (!row) return null;
+
+  const requesterPlayer = await getRequesterPlayer(game, row.requestedBy, row.subjectType === "team" ? "team" : "person", row.subjectId);
 
   const resolvedByAlias = users;
   const items = await db
@@ -316,6 +337,7 @@ export async function getAdminChangeRequestDetail(game: GameSlug, id: number): P
     subjectId: row.subjectId,
     subjectLabel: label,
     requestedByUsername: row.requestedByUsername,
+    requesterPlayer,
     reason: row.reason,
     status: row.status as ChangeRequestStatus,
     createdAt: row.createdAt.toISOString(),

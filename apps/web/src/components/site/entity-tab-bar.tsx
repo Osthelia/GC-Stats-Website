@@ -2,7 +2,7 @@
  * GC-Stats - entity-tab-bar
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -72,7 +72,7 @@ export function EntityTabBar({
             ref={on ? activeRef : undefined}
             href={tab.href}
             aria-current={on ? "page" : undefined}
-            className={`flex-none whitespace-nowrap rounded-t-lg px-4 py-2.5 text-[13.5px] transition-all duration-200 active:opacity-70 ${on ? "" : "hover:-translate-y-0.5 hover:bg-white/5"}`}
+            className={`flex-none whitespace-nowrap rounded-t-lg px-4 py-2.5 text-[13.5px] transition-all duration-200 active:opacity-70 ${on ? "" : "hover:bg-white/5"}`}
             style={
               on
                 ? { background: GOLD, color: "#0b0b0c", fontWeight: 700 }

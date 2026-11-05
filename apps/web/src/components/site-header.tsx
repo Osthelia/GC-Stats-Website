@@ -2,7 +2,7 @@
  * GC-Stats - site-header
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -13,7 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing, localeDisplay, type AppLocale } from "@/i18n/routing";
-import { TIMEZONES } from "@/lib/timezones";
+import { getTimezones, timezoneOffset } from "@/lib/timezones";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { GlobalSearch } from "@/components/search/global-search";
@@ -29,12 +29,13 @@ import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
 import { GameSwitcher } from "@/components/site/game-switcher";
 import { useGame } from "@/lib/use-game";
 
-const NAV_ITEMS = ["matches", "tournaments"] as const;
+const NAV_ITEMS = ["matches", "tournaments", "calendar"] as const;
 
 // Paths inside a game, completed with the game of the current page by the Link.
 const NAV_HREFS: Record<(typeof NAV_ITEMS)[number], string> = {
   matches: "/match",
   tournaments: "/tournaments",
+  calendar: "/calendar",
 };
 
 export function SiteHeader({
@@ -118,8 +119,7 @@ export function SiteHeader({
       </div>
 
       {/* Left padding keeps the content clear of the switcher on narrow desktops */}
-      <div className="mx-auto flex h-[62px] max-w-[1400px] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9 md:pl-[max(1.5rem,calc(11rem_-_(100vw_-_1400px)/2))]">
-
+      <div className="mx-auto flex h-[62px] max-w-[clamp(1500px,88vw,2400px)] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9 md:pl-[max(1.5rem,calc(11rem_-_(100vw_-_clamp(1500px,88vw,2400px))/2))]">
         <Link href={homeHref} className="flex flex-none items-center gap-2.5">
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[#e4ae22] text-[13px] font-bold tracking-tight text-[#0e0e0e]">
             GC
@@ -477,7 +477,7 @@ function MobileSettingsPanel({
       "linear-gradient(90deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787)",
   };
   const currentOffset =
-    TIMEZONES.find((z) => z.id === timezone)?.offset ?? TIMEZONES[0]!.offset;
+    timezoneOffset(timezone);
 
   return (
     <div>
@@ -590,14 +590,15 @@ function MobileTimezonePanel({ onBack }: { onBack: () => void }) {
   const { timezone, setTimezone } = useSiteSettings();
   const [tzQuery, setTzQuery] = useState("");
 
+  const allZones = getTimezones();
   const query = stripAccents(tzQuery.trim().toLowerCase());
   const zones = query
-    ? TIMEZONES.filter(
+    ? allZones.filter(
         (z) =>
           stripAccents(z.id.replace(/_/g, " ").toLowerCase()).includes(query) ||
           z.offset.includes(query),
       )
-    : TIMEZONES;
+    : allZones;
 
   return (
     <div>
@@ -921,16 +922,17 @@ function SettingsPanelContent({
       "linear-gradient(90deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787)",
   };
 
+  const allZones = getTimezones();
   const query = stripAccents(tzQuery.trim().toLowerCase());
   const zones = query
-    ? TIMEZONES.filter(
+    ? allZones.filter(
         (z) =>
           stripAccents(z.id.replace(/_/g, " ").toLowerCase()).includes(query) ||
           z.offset.includes(query),
       )
-    : TIMEZONES;
+    : allZones;
   const currentOffset =
-    TIMEZONES.find((z) => z.id === timezone)?.offset ?? TIMEZONES[0]!.offset;
+    timezoneOffset(timezone);
 
   return (
     <>

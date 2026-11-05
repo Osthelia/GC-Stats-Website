@@ -31,13 +31,13 @@ export async function selectSeriesMaps(
   client: MapRefsClient,
   game: GameSlug,
   where: (columns: { id: AnyPgColumn; matchId: AnyPgColumn }) => SQL,
-): Promise<{ id: number; matchId: number; mapName: string | null; order: number }[]> {
+): Promise<{ id: number; matchId: number; mapName: string | null; order: number; startedAt: Date | null }[]> {
   if (gameHasMaps(game)) {
     const { maps } = valorantTables;
-    return client.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName, order: maps.order }).from(maps).where(where(maps)).orderBy(maps.order, maps.id);
+    return client.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName, order: maps.order, startedAt: maps.startedAt }).from(maps).where(where(maps)).orderBy(maps.order, maps.id);
   }
   const { games } = leagueTables;
-  const rows = await client.select({ id: games.id, matchId: games.matchId, order: games.order }).from(games).where(where(games)).orderBy(games.order, games.id);
+  const rows = await client.select({ id: games.id, matchId: games.matchId, order: games.order, startedAt: games.startedAt }).from(games).where(where(games)).orderBy(games.order, games.id);
   return rows.map((g) => ({ ...g, mapName: null }));
 }
 

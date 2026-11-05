@@ -7,12 +7,12 @@
  * map id so concurrent fetches of the same map never interleave.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
 import { eq, sql } from "drizzle-orm";
-// adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
+// adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
 import { valorantTables } from "@gc-stats/db";
 import { computeAliveTimeline, computeMapAggregates, computeRoundSides, type RiotMatchDto } from "@gc-stats/map-stats-engine";

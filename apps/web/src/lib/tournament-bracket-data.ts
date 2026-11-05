@@ -6,7 +6,7 @@
  * bracket editor's own data hydration rather than duplicating the query.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -20,7 +20,7 @@ import { getStageEditorData, type EditorMatch, type EditorEdge } from "@/lib/adm
 import { computeContainerStandings, type GroupStandingsEntry } from "@/lib/bracket/standings";
 import { getContainerAdvancementRules, getMatchAdvancementRules } from "@/lib/bracket/container-qualifications";
 import { getStageFinalStandings } from "@/lib/bracket/final-standings";
-import { parseGroupConfig, isPointsConfigActive } from "@/lib/bracket/config-types";
+import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -135,8 +135,9 @@ export type PublicFinalStandingRow = {
   points: number | null;
   cashPrizeAmount: string | null;
   cashPrizeCurrency: string | null;
-  entrantId: number;
-  displayName: string;
+  /** Null while the placement has no resolved team (displayName is then null too). */
+  entrantId: number | null;
+  displayName: string | null;
   shortName: string | null;
   teamHref: string | null;
   logoUrl: string | null;
@@ -238,7 +239,8 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
     return teamId !== null ? teamLogos.get(teamId) : undefined;
   };
   const containers: PublicStageContainer[] = await Promise.all(
-    stage.containers.map(async (container) => {
+    // A set only groups containers, it has nothing to show by itself
+    stage.containers.filter((c) => c.containerType !== "set").map(async (container) => {
       const isGroup = container.containerType === "group";
 
       const containerMatches = (editorData?.matches ?? []).filter((m) => m.containerId === container.id);
@@ -295,12 +297,13 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
           return {
             ...r,
             displayName,
-            teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
+            teamHref: teamId !== null && displayName !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
             logoUrl: logos?.dark ?? null,
             logoUrlLight: logos?.light ?? null,
           };
         });
-        showPoints = isPointsConfigActive(parseGroupConfig(container.config).pointsConfig);
+        const groupConfig = parseGroupConfig(container.config);
+        showPoints = groupConfig.type === "swiss" && groupConfig.pointsConfig !== null;
         qualificationRules = advancementRules.map((r) => ({
           rankFrom: r.rankFrom,
           rankTo: r.rankTo,
@@ -314,14 +317,14 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
   );
 
   const finalStandingsRaw = await finalStandingsPromise;
-  const finalStandingTeamIds = [...new Set(finalStandingsRaw.map((r) => entrantTeamIdById.get(r.entrantId) ?? null).filter((id): id is number => id !== null))];
+  const finalStandingTeamIds = [...new Set(finalStandingsRaw.map((r) => (r.entrantId !== null ? (entrantTeamIdById.get(r.entrantId) ?? null) : null)).filter((id): id is number => id !== null))];
   const finalStandingTeamRows = finalStandingTeamIds.length
     ? await db.select({ id: teams.id, shortName: teams.shortName }).from(teams).where(inArray(teams.id, finalStandingTeamIds))
     : [];
   const shortNameByTeamId = new Map(finalStandingTeamRows.map((t) => [t.id, t.shortName]));
   const finalStandings: PublicFinalStandingRow[] = finalStandingsRaw.map((r) => {
-    const displayName = entrantNameById.get(r.entrantId) ?? `#${r.entrantId}`;
-    const teamId = entrantTeamIdById.get(r.entrantId) ?? null;
+    const displayName = r.entrantId !== null ? (entrantNameById.get(r.entrantId) ?? `#${r.entrantId}`) : null;
+    const teamId = r.entrantId !== null ? (entrantTeamIdById.get(r.entrantId) ?? null) : null;
     const logos = teamId !== null ? teamLogos.get(teamId) : null;
     return {
       qualificationId: r.qualificationId,
@@ -333,7 +336,7 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
       entrantId: r.entrantId,
       displayName,
       shortName: teamId !== null ? (shortNameByTeamId.get(teamId) ?? null) : null,
-      teamHref: teamId !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
+      teamHref: teamId !== null && displayName !== null ? `/team/${teamId}/${slugify(displayName)}` : null,
       logoUrl: logos?.dark ?? null,
       logoUrlLight: logos?.light ?? null,
     };

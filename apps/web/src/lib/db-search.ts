@@ -5,11 +5,11 @@
  * Postgres `translate()`, used by admin lists and the global search.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql, getTableName, getViewName, is, View } from "drizzle-orm";
+import { sql, getTableName, getViewName, is, View, type SQL } from "drizzle-orm";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import type { PgTable, PgView } from "drizzle-orm/pg-core";
 
@@ -30,7 +30,12 @@ function escapeLikePattern(pattern: string): string {
  * lowercased/accent-stripped (see lib/search-typo.ts::typoVariants).
  */
 export function foldedIlike(column: AnyPgColumn, pattern: string) {
-  return sql`translate(lower(${column}), ${ACCENT_SRC}, ${ACCENT_DST}) LIKE ${`%${escapeLikePattern(pattern)}%`}`;
+  return foldedIlikeExpr(sql`${column}`, pattern);
+}
+
+/** `foldedIlike` over any SQL expression (a subquery alias, a computed column). */
+export function foldedIlikeExpr(expr: SQL, pattern: string) {
+  return sql`translate(lower(${expr}), ${ACCENT_SRC}, ${ACCENT_DST}) LIKE ${`%${escapeLikePattern(pattern)}%`}`;
 }
 
 /**

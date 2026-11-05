@@ -8,7 +8,7 @@
  * real matches, so its guards differ.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -26,7 +26,7 @@ import {
   generateGslGroup,
   validateGraph,
   type BracketGraph,
-} from "@gc-stats/bracket-engine";
+} from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { requireTournamentsActor, type BracketFormat } from "./admin-bracket-editor";

@@ -6,7 +6,7 @@
  * header.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -33,6 +33,7 @@ import {
   History,
   LineChart,
   Plug,
+  Settings,
 } from "lucide-react";
 import { PERMISSIONS } from "@gc-stats/db";
 
@@ -89,6 +90,7 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
       { href: "/admin/about", labelKey: "about", icon: Info, exact: false, permission: PERMISSIONS.aboutView },
       { href: "/admin/analytics", labelKey: "analytics", icon: LineChart, exact: false, permission: PERMISSIONS.analyticsView },
       { href: "/admin/activity-log", labelKey: "activityLog", icon: History, exact: false, permission: PERMISSIONS.activityLogView },
+      { href: "/admin/settings", labelKey: "settings", icon: Settings, exact: false, permission: PERMISSIONS.settingsView },
     ],
   },
 ];

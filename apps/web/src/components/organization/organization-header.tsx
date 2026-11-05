@@ -2,7 +2,7 @@
  * GC-Stats - organization-header
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
- * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
@@ -104,7 +104,7 @@ export async function OrganizationHeader({
         }}
       />
 
-      <div className="relative mx-auto max-w-[1400px] px-6 pt-9">
+      <div className="relative mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pt-9">
         <div className="flex flex-wrap items-start gap-6 pb-7">
           <div
             className="flex h-[118px] w-[118px] flex-none items-center justify-center rounded-2xl border border-neutral-800"
