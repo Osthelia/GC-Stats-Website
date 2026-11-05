@@ -285,7 +285,7 @@ async function buildStageView(game: GameSlug, stage: Awaited<ReturnType<typeof l
       let qualificationRules: PublicStageContainer["qualificationRules"];
       if (isGroup) {
         const [ranked, advancementRules] = await Promise.all([
-          computeContainerStandings(game, db, container.id, container.config),
+          computeContainerStandings(game, db, container.id, container.config, stage.containers),
           getContainerAdvancementRules(game, db, container.id),
         ]);
         standings = ranked.map((r) => {

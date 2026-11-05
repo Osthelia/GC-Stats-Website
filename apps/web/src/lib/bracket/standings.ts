@@ -10,6 +10,7 @@
  */
 
 import { and, eq, inArray } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { gameTables } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
 import { listMatchMapResults, type Tx } from "./repository";
@@ -72,27 +73,35 @@ async function computeMapRecord(game: GameSlug, tx: Tx, containerIds: number[]):
   return stats;
 }
 
-/** Which containers a group's matches are read from, and whether its table is limited to the pinned teams. */
-async function resolveMatchScope(game: GameSlug, tx: Tx, containerId: number, config: GroupContainerConfig): Promise<{ containerIds: number[]; pinnedOnly: boolean }> {
+type StageContainerRef = { id: number; containerType: string; config: unknown };
+
+/** Which containers a group's matches are read from, and whether its table is limited to the pinned teams.
+ *  `stageContainers` (every container of the group's stage) saves the lookup for callers that already hold them. */
+async function resolveMatchScope(game: GameSlug, tx: Tx, containerId: number, config: GroupContainerConfig, stageContainers?: StageContainerRef[]): Promise<{ containerIds: number[]; pinnedOnly: boolean }> {
   if (config.matchScope === "container") return { containerIds: [containerId], pinnedOnly: false };
-  const { stageContainers } = gameTables(game);
-  const [container] = await tx.select({ stageId: stageContainers.stageId }).from(stageContainers).where(eq(stageContainers.id, containerId));
-  if (!container) return { containerIds: [containerId], pinnedOnly: true };
-  const stageContainerRows = await tx
-    .select({ id: stageContainers.id, containerType: stageContainers.containerType, config: stageContainers.config })
-    .from(stageContainers)
-    .where(eq(stageContainers.stageId, container.stageId));
-  return { containerIds: stageContainerRows.filter(countsForStageScope).map((c) => c.id), pinnedOnly: true };
+  let siblings = stageContainers;
+  if (!siblings) {
+    const { stageContainers: containersTable } = gameTables(game);
+    const sibling = alias(containersTable, "sibling");
+    // One round trip: the group's stage and every container in it.
+    siblings = await tx
+      .select({ id: sibling.id, containerType: sibling.containerType, config: sibling.config })
+      .from(containersTable)
+      .innerJoin(sibling, eq(sibling.stageId, containersTable.stageId))
+      .where(eq(containersTable.id, containerId));
+  }
+  return { containerIds: siblings.filter(countsForStageScope).map((c) => c.id), pinnedOnly: true };
 }
 
 /** Ranked standings for a group container, using the calculator that
  *  matches its configured format (swiss vs round robin). Wins/losses are
  *  derived from the matches, and an entrant playing in the group without a
- *  `group_entries` row is still listed. */
-export async function computeContainerStandings(game: GameSlug, tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
+ *  `group_entries` row is still listed. Pass the stage's containers when
+ *  the caller already has them, a stage-scoped group then needs no lookup. */
+export async function computeContainerStandings(game: GameSlug, tx: Tx, containerId: number, rawConfig: unknown, stageContainers?: StageContainerRef[]): Promise<GroupStandingsEntry[]> {
   const { groupEntries, matches } = gameTables(game);
   const config = parseGroupConfig(rawConfig);
-  const { containerIds, pinnedOnly } = await resolveMatchScope(game, tx, containerId, config);
+  const { containerIds, pinnedOnly } = await resolveMatchScope(game, tx, containerId, config, stageContainers);
   const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
     recordsFromMatches(game, tx, containerIds),
