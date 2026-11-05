@@ -10,7 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, valorantTables } from "@gc-stats/db";
@@ -106,6 +106,7 @@ export async function resolveMatch(game: GameSlug, input: ResolveMatchInput): Pr
     if (justCompleted) {
       await completeContainer(game, tx, container);
     }
+    await completeStageScopedGroups(game, tx, container.stageId);
   });
 }
 
@@ -124,7 +125,8 @@ async function isContainerJustCompleted(
       return result.completed;
     }
     await advanceRoundRobinGroup(game, tx, { containerId: container.id, round, winnerEntrantId: winnerId, loserEntrantId: loserId });
-    return allMatchesCompleted(game, tx, container.id);
+    // A stage-scoped group counts matches stored elsewhere too, so completeStageScopedGroups decides for it.
+    return config.matchScope === "container" && (await allMatchesCompleted(game, tx, container.id));
   }
   // Bracket-type container (single/double/triple elim, GSL): done once
   // every match row in it is completed. No reset-match voiding to worry
@@ -138,6 +140,31 @@ async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number):
   const { matches } = gameTables(game);
   const rows = await tx.select().from(matches).where(eq(matches.containerId, containerId));
   return rows.length > 0 && rows.every((r) => r.status === "completed");
+}
+
+/**
+ * Cross-group play: a group with `matchScope: "stage"` counts the stage's
+ * matches that involve its pinned teams, wherever they are stored, so a result
+ * in any container of the stage can be the one that finishes it.
+ */
+async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number): Promise<void> {
+  const { stageContainers, groupEntries, matches } = gameTables(game);
+  const containers = await tx.select().from(stageContainers).where(eq(stageContainers.stageId, stageId));
+  const pending = containers.filter((c) => c.containerType === "group" && c.status !== "completed" && parseGroupConfig(c.config).matchScope === "stage");
+  if (pending.length === 0) return;
+
+  const [stageMatches, pinnedRows] = await Promise.all([
+    tx.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, status: matches.status }).from(matches).where(inArray(matches.containerId, containers.map((c) => c.id))),
+    tx.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, pending.map((c) => c.id))),
+  ]);
+
+  for (const group of pending) {
+    const pinned = new Set(pinnedRows.filter((r) => r.containerId === group.id).map((r) => r.entrantId));
+    const counted = stageMatches.filter((m) => (m.entrantAId !== null && pinned.has(m.entrantAId)) || (m.entrantBId !== null && pinned.has(m.entrantBId)));
+    if (counted.length > 0 && counted.every((m) => m.status === "completed")) {
+      await completeContainer(game, tx, group);
+    }
+  }
 }
 
 async function completeContainer(game: GameSlug, tx: Tx, container: typeof valorantTables.stageContainers.$inferSelect): Promise<void> {

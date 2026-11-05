@@ -9,11 +9,11 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { gameTables } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
 import { listMatchMapResults, type Tx } from "./repository";
-import { parseGroupConfig } from "./config-types";
+import { parseGroupConfig, type GroupContainerConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
 import { recordsFromMatches } from "./group-progression";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -34,7 +34,7 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
  * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
  * round count and would otherwise skew the differential.
  */
-async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
+async function computeMapRecord(game: GameSlug, tx: Tx, containerIds: number[]): Promise<Map<number, MapRecord>> {
   const { matches } = gameTables(game);
   const stats = new Map<number, MapRecord>();
   const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
@@ -48,7 +48,7 @@ async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Pr
     });
   };
 
-  const containerMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
+  const containerMatches = await tx.select().from(matches).where(inArray(matches.containerId, containerIds));
   if (containerMatches.length === 0) return stats;
   const matchById = new Map(containerMatches.map((m) => [m.id, m]));
 
@@ -72,6 +72,16 @@ async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Pr
   return stats;
 }
 
+/** Which containers a group's matches are read from, and whether its table is limited to the pinned teams. */
+async function resolveMatchScope(game: GameSlug, tx: Tx, containerId: number, config: GroupContainerConfig): Promise<{ containerIds: number[]; pinnedOnly: boolean }> {
+  if (config.matchScope === "container") return { containerIds: [containerId], pinnedOnly: false };
+  const { stageContainers } = gameTables(game);
+  const [container] = await tx.select({ stageId: stageContainers.stageId }).from(stageContainers).where(eq(stageContainers.id, containerId));
+  if (!container) return { containerIds: [containerId], pinnedOnly: true };
+  const stageContainerRows = await tx.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, container.stageId));
+  return { containerIds: stageContainerRows.map((c) => c.id), pinnedOnly: true };
+}
+
 /** Ranked standings for a group container, using the calculator that
  *  matches its configured format (swiss vs round robin). Wins/losses are
  *  derived from the matches, and an entrant playing in the group without a
@@ -79,21 +89,23 @@ async function computeMapRecord(game: GameSlug, tx: Tx, containerId: number): Pr
 export async function computeContainerStandings(game: GameSlug, tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
   const { groupEntries, matches } = gameTables(game);
   const config = parseGroupConfig(rawConfig);
+  const { containerIds, pinnedOnly } = await resolveMatchScope(game, tx, containerId, config);
   const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
-    recordsFromMatches(game, tx, containerId),
-    config.pointsConfig ? computeContainerPoints(game, tx, containerId, config.pointsConfig) : null,
-    computeMapRecord(game, tx, containerId),
+    recordsFromMatches(game, tx, containerIds),
+    config.pointsConfig ? computeContainerPoints(game, tx, containerIds, config.pointsConfig) : null,
+    computeMapRecord(game, tx, containerIds),
     // Head to head input, only read by round robin.
     config.type === "swiss"
       ? []
       : tx
           .select()
           .from(matches)
-          .where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
+          .where(and(inArray(matches.containerId, containerIds), eq(matches.status, "completed"))),
   ]);
   const storedById = new Map(storedEntries.map((e) => [e.entrantId, e]));
-  const entrantIds = [...new Set([...storedById.keys(), ...matchRecord.keys()])];
+  // Cross-group play: the table is its pinned teams only, whoever else played the counted matches.
+  const entrantIds = pinnedOnly ? [...storedById.keys()] : [...new Set([...storedById.keys(), ...matchRecord.keys()])];
   const entries = entrantIds.map((entrantId) => {
     const stored = storedById.get(entrantId);
     const r = matchRecord.get(entrantId) ?? { wins: 0, losses: 0 };
@@ -134,7 +146,7 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
     return withMapRecord(createSwissStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
   }
 
-  // round_robin: build head-to-head from completed matches in this container.
+  // round_robin: build head-to-head from the completed matches in scope.
   const dtos: StandingsEntry[] = entries.map((e) => {
     const headToHead = new Map<string, "win" | "loss">();
     for (const m of completedMatches) {

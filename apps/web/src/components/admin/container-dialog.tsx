@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
@@ -36,6 +37,7 @@ type FormState = {
   qualifyAtWins: string;
   eliminateAtLosses: string;
   maxRounds: string;
+  stageScope: boolean;
   matchWinPoints: string;
   mapWinPoints: string;
   roundWinPoints: string;
@@ -52,6 +54,7 @@ function emptyState(): FormState {
     qualifyAtWins: "3",
     eliminateAtLosses: "3",
     maxRounds: "5",
+    stageScope: false,
     matchWinPoints: "",
     mapWinPoints: "",
     roundWinPoints: "",
@@ -69,6 +72,7 @@ function stateFromContainer(container: AdminContainerRow): FormState {
 
   const config = parseGroupConfig(container.config);
   base.groupFormat = config.type;
+  base.stageScope = config.matchScope === "stage";
   if (config.type === "swiss") {
     base.qualifyAtWins = config.qualifyAtWins !== null ? String(config.qualifyAtWins) : "";
     base.eliminateAtLosses = config.eliminateAtLosses !== null ? String(config.eliminateAtLosses) : "";
@@ -138,6 +142,7 @@ export function ContainerDialog({
             status: form.status,
             containerType: "group",
             groupFormat: form.groupFormat,
+            matchScope: form.groupFormat === "round_robin" && form.stageScope ? "stage" : "container",
             qualifyAtWins: form.groupFormat === "swiss" && form.qualifyAtWins.trim() !== "" ? Number(form.qualifyAtWins) : null,
             eliminateAtLosses: form.groupFormat === "swiss" && form.eliminateAtLosses.trim() !== "" ? Number(form.eliminateAtLosses) : null,
             maxRounds: form.groupFormat === "swiss" ? Number(form.maxRounds) : null,
@@ -211,6 +216,17 @@ export function ContainerDialog({
                   <FormField label={t("fieldMaxRounds")} htmlFor="ctr-max-rounds" required error={err("maxRounds")}>
                     <Input id="ctr-max-rounds" type="number" min={1} value={form.maxRounds} onChange={(e) => set("maxRounds", e.target.value)} aria-invalid={!!fieldErrors.maxRounds} />
                   </FormField>
+                </div>
+              )}
+
+              {form.groupFormat === "round_robin" && (
+                <div className="flex flex-col gap-1">
+                  <label className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={form.stageScope} onCheckedChange={(checked) => set("stageScope", checked === true)} />
+                    {t("fieldMatchScope")}
+                  </label>
+                  <p className="text-xs text-muted-foreground">{t("fieldMatchScopeHint")}</p>
+                  {form.stageScope && container && container.groupEntryEntrantIds.length === 0 && <p className="text-xs text-destructive">{t("matchScopeNoTeams")}</p>}
                 </div>
               )}
 

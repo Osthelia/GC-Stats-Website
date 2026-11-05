@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { listMatchMapResults, type Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
@@ -17,13 +17,13 @@ import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Tallies the configurable points tiebreaker (2026-08-31 spec) for every
- * entrant with at least one completed match in `containerId`: match wins,
+ * entrant with at least one completed match in `containerIds`: match wins,
  * map wins, and round wins, each with a separate (optional) value for a
  * forfeited win. `maps.teamAScore`/`teamBScore` map to
  * `matches.entrantAId`/`entrantBId` — the same convention used throughout
  * the match-detail data layer (`match-page-data.ts`), not invented here.
  */
-export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
+export async function computeContainerPoints(game: GameSlug, tx: Tx, containerIds: number[], config: StandingsPointsConfig): Promise<Map<number, number>> {
   const { matches } = gameTables(game);
   const points = new Map<number, number>();
   const add = (entrantId: number | null, amount: number | null) => {
@@ -31,7 +31,7 @@ export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId
     points.set(entrantId, (points.get(entrantId) ?? 0) + amount);
   };
 
-  const completedMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
+  const completedMatches = await tx.select().from(matches).where(inArray(matches.containerId, containerIds));
   const finished = completedMatches.filter((m) => m.status === "completed" && m.winnerId !== null);
 
   if (config.matchWin !== null || config.matchForfeitWin !== null) {

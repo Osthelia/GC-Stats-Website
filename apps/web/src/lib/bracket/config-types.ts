@@ -36,8 +36,18 @@ export function isPointsConfigActive(config: StandingsPointsConfig | null): bool
   return config.matchWin !== null || config.mapWin !== null || config.roundWin !== null || config.matchForfeitWin !== null || config.mapForfeitWin !== null;
 }
 
+/**
+ * Which matches a group's table counts. `"container"` (default, and the only
+ * behaviour before this key existed) lists anyone who played a match stored in the group.
+ * `"stage"` lists only the pinned teams and counts their completed matches in
+ * any container of the same stage, for tournaments whose groups also play
+ * each other. Round robin only.
+ */
+export type GroupMatchScope = "container" | "stage";
+
 export interface SwissGroupConfig {
   type: "swiss";
+  matchScope: GroupMatchScope;
   qualifyAtWins: number | null;
   eliminateAtLosses: number | null;
   maxRounds: number;
@@ -48,6 +58,7 @@ export interface SwissGroupConfig {
 
 export interface RoundRobinGroupConfig {
   type: "round_robin";
+  matchScope: GroupMatchScope;
   tiebreakers: RoundRobinTiebreaker[];
   pointsConfig: StandingsPointsConfig | null;
 }
@@ -80,6 +91,7 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
     const c = config as Partial<SwissGroupConfig>;
     return {
       type: "swiss",
+      matchScope: "container",
       qualifyAtWins: c.qualifyAtWins ?? null,
       eliminateAtLosses: c.eliminateAtLosses ?? null,
       maxRounds: c.maxRounds ?? 5,
@@ -90,7 +102,12 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
   }
   if (type === "round_robin") {
     const c = config as Partial<RoundRobinGroupConfig>;
-    return { type: "round_robin", tiebreakers: c.tiebreakers ?? ["round_diff", "seed"], pointsConfig: parsePointsConfig(c.pointsConfig) };
+    return {
+      type: "round_robin",
+      matchScope: c.matchScope === "stage" ? "stage" : "container",
+      tiebreakers: c.tiebreakers ?? ["round_diff", "seed"],
+      pointsConfig: parsePointsConfig(c.pointsConfig),
+    };
   }
   throw new Error(`parseGroupConfig: unknown group config type "${String(type)}"`);
 }
