@@ -4923,7 +4923,7 @@
         "success": "{count, plural, one {# partida cargada} other {# partidas cargadas}}",
         "error": {
           "gameClaimed": "Estas partidas ya pertenecen a otro torneo, así que no se pueden vincular aquí.",
-          "invalidBasePage": "Usa un nombre de página sin # < > [ ] | { } y sin / al principio ni al final.",
+          "invalidBasePage": "Usa un nombre de página sin # < > [ ] | '{ }' y sin / al principio ni al final.",
           "notFound": "Torneo no encontrado.",
           "notLinked": "Guarda primero una página base.",
           "cooldown": "La lista de partidas se leyó hace menos de una hora. Inténtalo más tarde.",

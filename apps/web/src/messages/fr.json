@@ -4923,7 +4923,7 @@
         "success": "{count, plural, one {# match chargé} other {# matchs chargés}}",
         "error": {
           "gameClaimed": "Ces parties appartiennent déjà à un autre tournoi, elles ne peuvent donc pas être liées ici.",
-          "invalidBasePage": "Utilisez un nom de page sans # < > [ ] | { }, ni / au début ou à la fin.",
+          "invalidBasePage": "Utilisez un nom de page sans # < > [ ] | '{ }', ni / au début ou à la fin.",
           "notFound": "Tournoi introuvable.",
           "notLinked": "Enregistrez d'abord une page de base.",
           "cooldown": "La liste des parties a été lue il y a moins d'une heure. Réessaie plus tard.",
