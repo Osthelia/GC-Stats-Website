@@ -106,7 +106,9 @@ export async function resolveMatch(game: GameSlug, input: ResolveMatchInput): Pr
     if (justCompleted) {
       await completeContainer(game, tx, container);
     }
-    await completeStageScopedGroups(game, tx, container.stageId);
+    if (countsForStageScope(container)) {
+      await completeStageScopedGroups(game, tx, container.stageId);
+    }
   });
 }
 
