@@ -7430,6 +7430,21 @@
     "tabMaps": "マップ",
     "tabProduction": "プロダクション",
     "productionTitle": "{tournament} ・ プロダクション",
+    "statsGroupByLabel": "グループ化",
+    "statsGroupBy": {
+      "none": "グループ化なし",
+      "agent": "エージェント",
+      "role": "ロール",
+      "team": "チーム",
+      "nationality": "国籍"
+    },
+    "statsRole": {
+      "duelist": "デュエリスト",
+      "initiator": "イニシエーター",
+      "controller": "コントローラー",
+      "sentinel": "センチネル"
+    },
+    "statsGroupUnknown": "不明",
     "statsIdentityColumn": "選手",
     "statsAgentColumn": "エージェント",
     "statsNationalityColumn": "国籍",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "一致させる値…",
     "statsColumnFilterAddAnother": "フィルターを追加",
     "statsColumnFilterApply": "適用",
+    "statsColumnFilterSearch": "検索...",
+    "statsColumnFilterNoResult": "結果なし",
     "statsColumnFilterClear": "クリア",
     "previous": "前へ",
     "next": "次へ",

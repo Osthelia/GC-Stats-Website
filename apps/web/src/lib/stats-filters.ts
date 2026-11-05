@@ -42,6 +42,14 @@ export function parseStatsFilters(searchParams: StatsSearchParams): ParsedStatsF
   };
 }
 
+export const STATS_GROUP_BY_VALUES = ["none", "agent", "role", "team", "nationality"] as const;
+export type StatsGroupBy = (typeof STATS_GROUP_BY_VALUES)[number];
+
+export function parseStatsGroupBy(searchParams: StatsSearchParams): StatsGroupBy {
+  const value = raw(searchParams.groupBy);
+  return (STATS_GROUP_BY_VALUES as readonly string[]).includes(value) ? (value as StatsGroupBy) : "none";
+}
+
 /** Resolves the filters down to a concrete [from, to) date bound for the SQL query, or null for no date filter. */
 export function resolveDateBounds(filters: ParsedStatsFilters): { from: Date | null; to: Date | null } {
   if (filters.startDate || filters.endDate) {

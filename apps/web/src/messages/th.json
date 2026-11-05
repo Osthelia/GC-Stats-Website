@@ -7430,6 +7430,21 @@
     "tabMaps": "แมพ",
     "tabProduction": "โปรดักชัน",
     "productionTitle": "{tournament} · โปรดักชัน",
+    "statsGroupByLabel": "จัดกลุ่มตาม",
+    "statsGroupBy": {
+      "none": "ไม่จัดกลุ่ม",
+      "agent": "เอเจนต์",
+      "role": "บทบาท",
+      "team": "ทีม",
+      "nationality": "สัญชาติ"
+    },
+    "statsRole": {
+      "duelist": "ดูเอลลิสต์",
+      "initiator": "อินิทิเอเตอร์",
+      "controller": "คอนโทรลเลอร์",
+      "sentinel": "เซนทิเนล"
+    },
+    "statsGroupUnknown": "ไม่ทราบ",
     "statsIdentityColumn": "ผู้เล่น",
     "statsAgentColumn": "เอเจนต์",
     "statsNationalityColumn": "สัญชาติ",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "ค่าที่ต้องการค้นหา...",
     "statsColumnFilterAddAnother": "เพิ่มตัวกรองอีก",
     "statsColumnFilterApply": "ใช้",
+    "statsColumnFilterSearch": "ค้นหา...",
+    "statsColumnFilterNoResult": "ไม่พบผลลัพธ์",
     "statsColumnFilterClear": "ล้าง",
     "previous": "ก่อนหน้า",
     "next": "ถัดไป",

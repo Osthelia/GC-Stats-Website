@@ -7430,6 +7430,21 @@
     "tabMaps": "Mapy",
     "tabProduction": "Produkcja",
     "productionTitle": "{tournament} · Produkcja",
+    "statsGroupByLabel": "Grupuj według",
+    "statsGroupBy": {
+      "none": "Brak grupowania",
+      "agent": "Agent",
+      "role": "Rola",
+      "team": "Drużyna",
+      "nationality": "Narodowość"
+    },
+    "statsRole": {
+      "duelist": "Pojedynkowicz",
+      "initiator": "Inicjator",
+      "controller": "Kontroler",
+      "sentinel": "Strażnik"
+    },
+    "statsGroupUnknown": "Nieznane",
     "statsIdentityColumn": "Zawodniczka",
     "statsAgentColumn": "Agent",
     "statsNationalityColumn": "Narodowość",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Szukana wartość...",
     "statsColumnFilterAddAnother": "Dodaj kolejny filtr",
     "statsColumnFilterApply": "Zastosuj",
+    "statsColumnFilterSearch": "Szukaj...",
+    "statsColumnFilterNoResult": "Brak wyników",
     "statsColumnFilterClear": "Wyczyść",
     "previous": "Poprzednia",
     "next": "Następna",

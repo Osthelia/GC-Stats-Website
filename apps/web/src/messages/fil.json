@@ -7430,6 +7430,21 @@
     "tabMaps": "Mga Mapa",
     "tabProduction": "Production",
     "productionTitle": "{tournament} · Production",
+    "statsGroupByLabel": "Igrupo ayon sa",
+    "statsGroupBy": {
+      "none": "Walang pagpapangkat",
+      "agent": "Agent",
+      "role": "Papel",
+      "team": "Koponan",
+      "nationality": "Nasyonalidad"
+    },
+    "statsRole": {
+      "duelist": "Duelist",
+      "initiator": "Initiator",
+      "controller": "Controller",
+      "sentinel": "Sentinel"
+    },
+    "statsGroupUnknown": "Hindi alam",
     "statsIdentityColumn": "Manlalaro",
     "statsAgentColumn": "Agent",
     "statsNationalityColumn": "Nasyonalidad",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Value na itutugma...",
     "statsColumnFilterAddAnother": "Magdagdag ng isa pang filter",
     "statsColumnFilterApply": "Ilapat",
+    "statsColumnFilterSearch": "Maghanap...",
+    "statsColumnFilterNoResult": "Walang resulta",
     "statsColumnFilterClear": "Alisin",
     "previous": "Nakaraan",
     "next": "Susunod",

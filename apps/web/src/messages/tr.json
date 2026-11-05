@@ -7430,6 +7430,21 @@
     "tabMaps": "Haritalar",
     "tabProduction": "Prodüksiyon",
     "productionTitle": "{tournament} · Prodüksiyon",
+    "statsGroupByLabel": "Gruplandır",
+    "statsGroupBy": {
+      "none": "Gruplama yok",
+      "agent": "Ajan",
+      "role": "Rol",
+      "team": "Takım",
+      "nationality": "Uyruk"
+    },
+    "statsRole": {
+      "duelist": "Düellocu",
+      "initiator": "Başlatıcı",
+      "controller": "Kontrolcü",
+      "sentinel": "Nöbetçi"
+    },
+    "statsGroupUnknown": "Bilinmiyor",
     "statsIdentityColumn": "Oyuncu",
     "statsAgentColumn": "Ajan",
     "statsNationalityColumn": "Uyruk",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Eşleşecek değer...",
     "statsColumnFilterAddAnother": "Başka filtre ekle",
     "statsColumnFilterApply": "Uygula",
+    "statsColumnFilterSearch": "Ara...",
+    "statsColumnFilterNoResult": "Sonuç yok",
     "statsColumnFilterClear": "Temizle",
     "previous": "Önceki",
     "next": "Sonraki",

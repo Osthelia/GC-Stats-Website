@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import type { StatRow } from "@/lib/stats-aggregate";
 import {
   STAT_COLUMNS,
@@ -24,7 +24,7 @@ import {
 import { SegmentedTrack, SegmentedButton } from "@/components/stats/segmented";
 import { AgentIcon } from "@/components/match/agent-icon";
 import { RatingValue } from "@/components/stats/rating-value";
-import { ColumnFilterButton, ColumnFilterModal, type ColumnFilter, type ColumnFilterLabels } from "@/components/filters/column-filter-modal";
+import { ColumnFilterButton, ColumnFilterModal, type ColumnFilter, type ColumnFilterLabels, type ColumnFilterOption } from "@/components/filters/column-filter-modal";
 
 /**
  * Sortable/filterable stats table with a persisted column picker and a
@@ -40,6 +40,21 @@ export type StatsExtraColumn = {
   cells: Record<string, React.ReactNode>;
   /** Plain-text value per row for the "Filter" modal (the cell itself may be a logo/icon, not plain text) — falls back to an empty string (never matches) if omitted. */
   searchValues?: Record<string, string>;
+  /** Fixed values for the filter modal, shown as a dropdown instead of free text. */
+  filterOptions?: ColumnFilterOption[];
+  /** Plain-text value per row used to sort this column, falls back to `searchValues`. */
+  sortValues?: Record<string, string>;
+};
+
+const IDENTITY_SORT_KEY = "__identity__";
+
+/** A section the rows are listed under, a row may belong to several. */
+export type StatsRowGroup = { key: string; label: string; icon?: React.ReactNode };
+
+export type StatsGrouping = {
+  /** Groups per row (by `groupKey`), rows missing here land in `ungrouped`. */
+  rowGroups: Record<string, StatsRowGroup[]>;
+  ungrouped: StatsRowGroup;
 };
 
 const STATS_PAGE_SIZE = 50;
@@ -58,6 +73,7 @@ export function StatsTable({
   extraColumns = [],
   filterLabels,
   paginationLabels,
+  grouping,
 }: {
   rows: StatRow[];
   storageKey: string;
@@ -90,6 +106,8 @@ export function StatsTable({
   filterLabels: ColumnFilterLabels;
   /** Pager labels, same shape as `ListPagination` — `pageOf` keeps its `{page}`/`{total}` placeholders, filled in client-side since pagination here is a local page index, not a server route. */
   paginationLabels: { previous: string; next: string; pageOf: string };
+  /** Lists the rows under a header per group instead of one flat list. */
+  grouping?: StatsGrouping;
 }) {
   const weaponColumns = useMemo(() => buildWeaponColumns(rows), [rows]);
   const allColumns = useMemo(
@@ -109,11 +127,11 @@ export function StatsTable({
   const [activeFilters, setActiveFilters] = useState<ColumnFilter[]>([]);
   const [page, setPage] = useState(1);
 
-  const IDENTITY_FILTER_KEY = "__identity__";
+  const IDENTITY_FILTER_KEY = IDENTITY_SORT_KEY;
   const filterableColumns = useMemo(
     () => [
       { key: IDENTITY_FILTER_KEY, label: identityColumnLabel },
-      ...extraColumns.map((c) => ({ key: c.key, label: c.label })),
+      ...extraColumns.map((c) => ({ key: c.key, label: c.label, options: c.filterOptions })),
       ...STAT_COLUMNS.map((c) => ({
         key: c.key,
         label: columnLabels[c.key] ?? c.key,
@@ -150,11 +168,28 @@ export function StatsTable({
       setSortAsc((a) => !a);
     } else {
       setSortCol(key);
-      setSortAsc(false);
+      // Text columns start A to Z, numeric ones best first.
+      setSortAsc(key === IDENTITY_SORT_KEY || extraColumns.some((c) => c.key === key));
     }
   }
 
   const sorted = useMemo(() => {
+    const textValue =
+      sortCol === IDENTITY_SORT_KEY
+        ? (r: StatRow) => identities[r.groupKey]?.searchValue ?? r.groupKey
+        : (() => {
+            const extra = extraColumns.find((c) => c.key === sortCol);
+            return extra ? (r: StatRow) => extra.sortValues?.[r.groupKey] ?? extra.searchValues?.[r.groupKey] ?? "" : null;
+          })();
+    if (textValue) {
+      // Rows without a value always go last, whatever the direction.
+      return [...rows].sort((a, b) => {
+        const av = textValue(a);
+        const bv = textValue(b);
+        if (!av || !bv) return Number(!av) - Number(!bv);
+        return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      });
+    }
     const col = allColumns.find((c) => c.key === sortCol);
     if (!col) return rows;
     const withValue = rows.map((r) => ({ row: r, value: col.value(r, mode) }));
@@ -166,7 +201,7 @@ export function StatsTable({
       return sortAsc ? a.value - b.value : b.value - a.value;
     });
     return withValue.map((w) => w.row);
-  }, [rows, allColumns, sortCol, sortAsc, mode]);
+  }, [rows, allColumns, sortCol, sortAsc, mode, identities, extraColumns]);
 
   const shownColumns = allColumns.filter((c) => visibleCols.includes(c.key));
   const visibleWeaponCount = weaponColumns.filter((c) =>
@@ -197,12 +232,32 @@ export function StatsTable({
   // Any change upstream of pagination (new data from the server, a re-sort, a new filter) can shrink the result set below the current page — always land back on page 1 rather than showing an empty page.
   useEffect(() => {
     setPage(1);
-  }, [rows, sortCol, sortAsc, activeFilters]);
+  }, [rows, sortCol, sortAsc, activeFilters, grouping]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / STATS_PAGE_SIZE));
+  // Flat list of rows, repeated once per group when grouping, ordered by group then by the current sort.
+  const entries = useMemo(() => {
+    if (!grouping) return filtered.map((row) => ({ row, group: null as StatsRowGroup | null }));
+    const byGroup = new Map<string, { group: StatsRowGroup; rows: StatRow[] }>();
+    for (const row of filtered) {
+      const groups = grouping.rowGroups[row.groupKey];
+      for (const group of groups?.length ? groups : [grouping.ungrouped]) {
+        const bucket = byGroup.get(group.key) ?? { group, rows: [] };
+        bucket.rows.push(row);
+        byGroup.set(group.key, bucket);
+      }
+    }
+    const ordered = [...byGroup.values()].sort((a, b) => {
+      if (a.group.key === grouping.ungrouped.key) return 1;
+      if (b.group.key === grouping.ungrouped.key) return -1;
+      return a.group.label.localeCompare(b.group.label);
+    });
+    return ordered.flatMap((b) => b.rows.map((row) => ({ row, group: b.group })));
+  }, [filtered, grouping]);
+
+  const totalPages = Math.max(1, Math.ceil(entries.length / STATS_PAGE_SIZE));
   const paginated = useMemo(
-    () => filtered.slice((page - 1) * STATS_PAGE_SIZE, page * STATS_PAGE_SIZE),
-    [filtered, page],
+    () => entries.slice((page - 1) * STATS_PAGE_SIZE, page * STATS_PAGE_SIZE),
+    [entries, page],
   );
   const [scrolledX, setScrolledX] = useState(false);
 
@@ -336,23 +391,28 @@ export function StatsTable({
             <tr>
               <th
                 scope="col"
-                className={`${STICKY_CELL} border-b border-neutral-800/70 bg-[color-mix(in_srgb,var(--gcs-surface)_80%,black)] p-3 text-left`}
+                onClick={() => sortBy(IDENTITY_SORT_KEY)}
+                className={`${STICKY_CELL} cursor-pointer border-b border-neutral-800/70 bg-[color-mix(in_srgb,var(--gcs-surface)_80%,black)] p-3 text-left transition-colors hover:text-neutral-50 active:text-[#e4ae22]`}
               >
-                {identityColumnLabel}
+                <SortLabel
+                  label={identityColumnLabel}
+                  active={sortCol === IDENTITY_SORT_KEY}
+                  sortAsc={sortAsc}
+                  align="start"
+                />
               </th>
               {extraColumns.map((c) => (
-                <th
+                <StatsHeaderCell
                   key={c.key}
-                  scope="col"
-                  className="border-b border-neutral-800/70 p-3 text-center"
-                >
-                  {c.label}
-                </th>
+                  label={c.label}
+                  active={sortCol === c.key}
+                  sortAsc={sortAsc}
+                  onClick={() => sortBy(c.key)}
+                />
               ))}
               {shownColumns.map((c) => (
                 <StatsHeaderCell
                   key={c.key}
-                  col={c}
                   label={columnLabels[c.key] ?? c.key}
                   active={sortCol === c.key}
                   sortAsc={sortAsc}
@@ -362,15 +422,29 @@ export function StatsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-800/50">
-            {paginated.map((row) => (
-              <StatsBodyRow
-                key={row.groupKey}
-                row={row}
-                columns={shownColumns}
-                mode={mode}
-                identity={identities[row.groupKey]}
-                extraColumns={extraColumns}
-              />
+            {paginated.map(({ row, group }, i) => (
+              <Fragment key={`${group?.key ?? ""}:${row.groupKey}`}>
+                {group && group.key !== paginated[i - 1]?.group?.key && (
+                  <tr>
+                    <td
+                      colSpan={1 + extraColumns.length + shownColumns.length}
+                      className="border-b border-neutral-800/70 bg-black/30 px-3 py-2 text-[10px] font-black tracking-widest text-[#e4ae22] uppercase"
+                    >
+                      <span className="flex items-center gap-2">
+                        {group.icon}
+                        {group.label}
+                      </span>
+                    </td>
+                  </tr>
+                )}
+                <StatsBodyRow
+                  row={row}
+                  columns={shownColumns}
+                  mode={mode}
+                  identity={identities[row.groupKey]}
+                  extraColumns={extraColumns}
+                />
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -417,13 +491,11 @@ const STICKY_CELL =
   "sticky left-0 z-[1] group-data-[scrolled=true]/scroll:shadow-[6px_0_8px_-6px_rgba(0,0,0,0.7)]";
 
 function StatsHeaderCell({
-  col,
   label,
   active,
   sortAsc,
   onClick,
 }: {
-  col: StatColumn;
   label: string;
   active: boolean;
   sortAsc: boolean;
@@ -433,9 +505,26 @@ function StatsHeaderCell({
     <th
       scope="col"
       onClick={onClick}
-      className="cursor-pointer border-b border-neutral-800/70 p-3 text-center transition-colors hover:text-neutral-50"
+      className="cursor-pointer border-b border-neutral-800/70 p-3 text-center transition-colors hover:text-neutral-50 active:text-[#e4ae22]"
     >
-      <span className="flex items-center justify-center gap-1">
+      <SortLabel label={label} active={active} sortAsc={sortAsc} />
+    </th>
+  );
+}
+
+function SortLabel({
+  label,
+  active,
+  sortAsc,
+  align = "center",
+}: {
+  label: string;
+  active: boolean;
+  sortAsc: boolean;
+  align?: "start" | "center";
+}) {
+  return (
+      <span className={`flex items-center gap-1 ${align === "start" ? "justify-start" : "justify-center"}`}>
         {label}
         <span className="flex flex-col opacity-40">
           <svg
@@ -458,7 +547,6 @@ function StatsHeaderCell({
           </svg>
         </span>
       </span>
-    </th>
   );
 }
 

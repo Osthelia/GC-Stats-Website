@@ -7430,6 +7430,21 @@
     "tabMaps": "地图",
     "tabProduction": "制作团队",
     "productionTitle": "{tournament} · 制作团队",
+    "statsGroupByLabel": "分组依据",
+    "statsGroupBy": {
+      "none": "不分组",
+      "agent": "特工",
+      "role": "定位",
+      "team": "战队",
+      "nationality": "国籍"
+    },
+    "statsRole": {
+      "duelist": "决斗者",
+      "initiator": "先锋",
+      "controller": "控场者",
+      "sentinel": "哨卫"
+    },
+    "statsGroupUnknown": "未知",
     "statsIdentityColumn": "选手",
     "statsAgentColumn": "特工",
     "statsNationalityColumn": "国籍",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "要匹配的值…",
     "statsColumnFilterAddAnother": "添加另一个筛选条件",
     "statsColumnFilterApply": "应用",
+    "statsColumnFilterSearch": "搜索...",
+    "statsColumnFilterNoResult": "无结果",
     "statsColumnFilterClear": "清除",
     "previous": "上一页",
     "next": "下一页",

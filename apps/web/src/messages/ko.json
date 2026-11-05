@@ -7430,6 +7430,21 @@
     "tabMaps": "맵",
     "tabProduction": "프로덕션",
     "productionTitle": "{tournament} · 프로덕션",
+    "statsGroupByLabel": "그룹 기준",
+    "statsGroupBy": {
+      "none": "그룹화 안 함",
+      "agent": "요원",
+      "role": "역할",
+      "team": "팀",
+      "nationality": "국적"
+    },
+    "statsRole": {
+      "duelist": "듀얼리스트",
+      "initiator": "개시자",
+      "controller": "전략가",
+      "sentinel": "감시자"
+    },
+    "statsGroupUnknown": "알 수 없음",
     "statsIdentityColumn": "선수",
     "statsAgentColumn": "요원",
     "statsNationalityColumn": "국적",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "일치시킬 값...",
     "statsColumnFilterAddAnother": "필터 추가",
     "statsColumnFilterApply": "적용",
+    "statsColumnFilterSearch": "검색...",
+    "statsColumnFilterNoResult": "결과 없음",
     "statsColumnFilterClear": "초기화",
     "previous": "이전",
     "next": "다음",

@@ -7430,6 +7430,21 @@
     "tabMaps": "Mapas",
     "tabProduction": "Producción",
     "productionTitle": "{tournament} · Producción",
+    "statsGroupByLabel": "Agrupar por",
+    "statsGroupBy": {
+      "none": "Sin agrupar",
+      "agent": "Agente",
+      "role": "Rol",
+      "team": "Equipo",
+      "nationality": "Nacionalidad"
+    },
+    "statsRole": {
+      "duelist": "Duelista",
+      "initiator": "Iniciador",
+      "controller": "Controlador",
+      "sentinel": "Centinela"
+    },
+    "statsGroupUnknown": "Desconocido",
     "statsIdentityColumn": "Jugador",
     "statsAgentColumn": "Agente",
     "statsNationalityColumn": "Nacionalidad",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Valor a buscar...",
     "statsColumnFilterAddAnother": "Añadir otro filtro",
     "statsColumnFilterApply": "Aplicar",
+    "statsColumnFilterSearch": "Buscar...",
+    "statsColumnFilterNoResult": "Sin resultados",
     "statsColumnFilterClear": "Borrar",
     "previous": "Anterior",
     "next": "Siguiente",

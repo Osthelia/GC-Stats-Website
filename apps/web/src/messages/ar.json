@@ -7430,6 +7430,21 @@
     "tabMaps": "الخرائط",
     "tabProduction": "الإنتاج",
     "productionTitle": "{tournament} · الإنتاج",
+    "statsGroupByLabel": "تجميع حسب",
+    "statsGroupBy": {
+      "none": "بدون تجميع",
+      "agent": "العميل",
+      "role": "الدور",
+      "team": "الفريق",
+      "nationality": "الجنسية"
+    },
+    "statsRole": {
+      "duelist": "المبارزة",
+      "initiator": "المبادِرة",
+      "controller": "المتحكمة",
+      "sentinel": "الحارسة"
+    },
+    "statsGroupUnknown": "غير معروف",
     "statsIdentityColumn": "اللاعبة",
     "statsAgentColumn": "العميل",
     "statsNationalityColumn": "الجنسية",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "القيمة المطلوبة...",
     "statsColumnFilterAddAnother": "إضافة فلتر آخر",
     "statsColumnFilterApply": "تطبيق",
+    "statsColumnFilterSearch": "بحث...",
+    "statsColumnFilterNoResult": "لا توجد نتائج",
     "statsColumnFilterClear": "مسح",
     "previous": "السابق",
     "next": "التالي",

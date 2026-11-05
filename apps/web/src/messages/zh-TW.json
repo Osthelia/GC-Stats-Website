@@ -7430,6 +7430,21 @@
     "tabMaps": "地圖",
     "tabProduction": "製作團隊",
     "productionTitle": "{tournament} · 製作團隊",
+    "statsGroupByLabel": "分組依據",
+    "statsGroupBy": {
+      "none": "不分組",
+      "agent": "特工",
+      "role": "定位",
+      "team": "隊伍",
+      "nationality": "國籍"
+    },
+    "statsRole": {
+      "duelist": "決鬥者",
+      "initiator": "先鋒",
+      "controller": "控場者",
+      "sentinel": "哨衛"
+    },
+    "statsGroupUnknown": "未知",
     "statsIdentityColumn": "選手",
     "statsAgentColumn": "特工",
     "statsNationalityColumn": "國籍",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "要匹配的值…",
     "statsColumnFilterAddAnother": "新增另一個篩選條件",
     "statsColumnFilterApply": "應用",
+    "statsColumnFilterSearch": "搜尋...",
+    "statsColumnFilterNoResult": "無結果",
     "statsColumnFilterClear": "清除",
     "previous": "上一頁",
     "next": "下一頁",

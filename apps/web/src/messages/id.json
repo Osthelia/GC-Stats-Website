@@ -7430,6 +7430,21 @@
     "tabMaps": "Peta",
     "tabProduction": "Produksi",
     "productionTitle": "{tournament} · Produksi",
+    "statsGroupByLabel": "Kelompokkan berdasarkan",
+    "statsGroupBy": {
+      "none": "Tanpa pengelompokan",
+      "agent": "Agen",
+      "role": "Peran",
+      "team": "Tim",
+      "nationality": "Kewarganegaraan"
+    },
+    "statsRole": {
+      "duelist": "Duelist",
+      "initiator": "Initiator",
+      "controller": "Controller",
+      "sentinel": "Sentinel"
+    },
+    "statsGroupUnknown": "Tidak diketahui",
     "statsIdentityColumn": "Pemain",
     "statsAgentColumn": "Agen",
     "statsNationalityColumn": "Kewarganegaraan",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Nilai yang dicocokkan...",
     "statsColumnFilterAddAnother": "Tambah filter lain",
     "statsColumnFilterApply": "Terapkan",
+    "statsColumnFilterSearch": "Cari...",
+    "statsColumnFilterNoResult": "Tidak ada hasil",
     "statsColumnFilterClear": "Hapus",
     "previous": "Sebelumnya",
     "next": "Berikutnya",

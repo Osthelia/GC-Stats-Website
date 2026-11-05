@@ -7430,6 +7430,21 @@
     "tabMaps": "Bản đồ",
     "tabProduction": "Sản xuất",
     "productionTitle": "{tournament} · Sản xuất",
+    "statsGroupByLabel": "Nhóm theo",
+    "statsGroupBy": {
+      "none": "Không nhóm",
+      "agent": "Tướng",
+      "role": "Vai trò",
+      "team": "Đội",
+      "nationality": "Quốc tịch"
+    },
+    "statsRole": {
+      "duelist": "Đấu sĩ",
+      "initiator": "Khởi tranh",
+      "controller": "Kiểm soát",
+      "sentinel": "Hộ vệ"
+    },
+    "statsGroupUnknown": "Không rõ",
     "statsIdentityColumn": "Tuyển thủ",
     "statsAgentColumn": "Tướng",
     "statsNationalityColumn": "Quốc tịch",
@@ -7457,6 +7472,8 @@
     "statsColumnFilterValuePlaceholder": "Giá trị cần khớp...",
     "statsColumnFilterAddAnother": "Thêm bộ lọc khác",
     "statsColumnFilterApply": "Áp dụng",
+    "statsColumnFilterSearch": "Tìm kiếm...",
+    "statsColumnFilterNoResult": "Không có kết quả",
     "statsColumnFilterClear": "Xóa",
     "previous": "Trước",
     "next": "Sau",

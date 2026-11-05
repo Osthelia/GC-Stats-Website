@@ -17,7 +17,8 @@ import { TournamentStatsTable, type TournamentStatsPlayer } from "@/components/t
 import { StatsFilterBar } from "@/components/stats/stats-filter-bar";
 import { aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMNS, buildWeaponColumns, weaponNameFromColumnKey } from "@/lib/stats-columns";
-import { parseStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { parseStatsFilters, parseStatsGroupBy, STATS_GROUP_BY_VALUES, type StatsSearchParams } from "@/lib/stats-filters";
+
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 
@@ -44,6 +45,7 @@ export default async function TournamentStatsPage({
 
   const sp = await searchParams;
   const filters = parseStatsFilters(sp);
+  const groupBy = parseStatsGroupBy(sp);
 
   const scope = tournamentStatsScope(id, filters);
   const [rows, playerMeta, filterOptions, t] = await Promise.all([
@@ -84,10 +86,12 @@ export default async function TournamentStatsPage({
       <div className="mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 py-7 pb-[70px]">
         <StatsFilterBar
           basePath={`/tournaments/${basePath}/stats`}
-          filters={filters}
+          filters={{ ...filters, groupBy }}
           agentOptions={filterOptions.agents.map((a) => ({ value: a, label: a }))}
           mapOptions={filterOptions.maps.map((m) => ({ value: m, label: m }))}
+          groupByOptions={STATS_GROUP_BY_VALUES.map((v) => ({ value: v, label: t(`statsGroupBy.${v}`) }))}
           labels={{
+            groupByLabel: t("statsGroupByLabel"),
             periodLabel: t("statsFilterPeriod"),
             allTime: t("statsFilterAllTime"),
             last30: t("statsFilterLast30"),
@@ -112,7 +116,11 @@ export default async function TournamentStatsPage({
           modeTotalLabel={t("statsModeTotal")}
           noDataLabel={t("statsNoData")}
           identityColumnLabel={t("statsIdentityColumn")}
+          groupBy={groupBy}
           players={players}
+          roleLabels={{ duelist: t("statsRole.duelist"), initiator: t("statsRole.initiator"), controller: t("statsRole.controller"), sentinel: t("statsRole.sentinel") }}
+          ungroupedLabel={t("statsGroupUnknown")}
+          agentOptions={filterOptions.agents}
           agentLabel={t("statsAgentColumn")}
           nationalityLabel={t("statsNationalityColumn")}
           teamLabel={t("statsTeamColumn")}
@@ -125,6 +133,8 @@ export default async function TournamentStatsPage({
             addAnother: t("statsColumnFilterAddAnother"),
             apply: t("statsColumnFilterApply"),
             clear: t("statsColumnFilterClear"),
+            searchPlaceholder: t("statsColumnFilterSearch"),
+            noResult: t("statsColumnFilterNoResult"),
           }}
           paginationLabels={{ previous: t("previous"), next: t("next"), pageOf: t.raw("pageOf") }}
         />
