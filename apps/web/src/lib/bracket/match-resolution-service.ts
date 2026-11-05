@@ -18,7 +18,7 @@ import { resolveMatchInGraph } from "@gc-stats/bracket-engine";
 import { applyDownstreamPatches, hydrateOutgoingSubgraph, getMatch, type Tx } from "./repository";
 import { advanceSwissGroup, advanceRoundRobinGroup } from "./group-progression";
 import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "./qualification-resolution";
-import { countsForStageScope, parseGroupConfig } from "./config-types";
+import { countsForStageScope, parseGroupConfig, usesStageScope } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export class MatchResolutionValidationError extends Error {
@@ -153,7 +153,7 @@ async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number):
 async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number): Promise<void> {
   const { stageContainers, groupEntries, matches } = gameTables(game);
   const containers = await tx.select().from(stageContainers).where(eq(stageContainers.stageId, stageId));
-  const pending = containers.filter((c) => c.containerType === "group" && c.status !== "completed" && parseGroupConfig(c.config).matchScope === "stage");
+  const pending = containers.filter((c) => c.containerType === "group" && c.status !== "completed" && usesStageScope(c.config));
   if (pending.length === 0) return;
 
   const [stageMatches, pinnedRows] = await Promise.all([

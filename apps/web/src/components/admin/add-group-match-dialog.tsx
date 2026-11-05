@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { addGroupMatch, type AddGroupMatchFieldErrors } from "@/actions/admin-bracket-editor";
-import { parseGroupConfig } from "@/lib/bracket/config-types";
+import { usesStageScope } from "@/lib/bracket/config-types";
 import type { AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 import { useGame } from "@/lib/use-game";
 
@@ -59,7 +59,7 @@ export function AddGroupMatchDialog({
 
   // Restricted to the group's entrants once some are assigned (Swiss), otherwise every tournament entrant.
   // A stage-scoped group's pinned teams only define its table; its matches may be against any team.
-  const options = container.groupEntryEntrantIds.length > 0 && parseGroupConfig(container.config).matchScope === "container" ? entrants.filter((e) => container.groupEntryEntrantIds.includes(e.id)) : entrants;
+  const options = container.groupEntryEntrantIds.length > 0 && !usesStageScope(container.config) ? entrants.filter((e) => container.groupEntryEntrantIds.includes(e.id)) : entrants;
   const entrantItems: Record<string, string> = { [ENTRANT_TBD]: t("addMatchEntrantTbd"), ...Object.fromEntries(options.map((e) => [String(e.id), e.displayName])) };
 
   function handleSubmit() {

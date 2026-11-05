@@ -53,6 +53,12 @@ export function countsForStageScope(container: { containerType: string; config: 
   return container.containerType === "group" && (container.config as { type?: string } | null)?.type === "round_robin";
 }
 
+/** Whether a group's raw config opts in to stage scope. Safe on a missing or malformed config (legacy or converted containers), unlike `parseGroupConfig`. */
+export function usesStageScope(config: unknown): boolean {
+  const c = config as { type?: string; matchScope?: string } | null;
+  return c?.type === "round_robin" && c.matchScope === "stage";
+}
+
 export interface SwissGroupConfig {
   type: "swiss";
   matchScope: GroupMatchScope;

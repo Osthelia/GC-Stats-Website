@@ -28,7 +28,7 @@ import { deleteStage, toggleStageActive } from "@/actions/admin-stages";
 import { deleteContainer, moveContainer } from "@/actions/admin-containers";
 import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
 import { stageContainerStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
-import { parseGroupConfig } from "@/lib/bracket/config-types";
+import { usesStageScope } from "@/lib/bracket/config-types";
 import type { AdminStageRow, AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 import { useGame } from "@/lib/use-game";
 
@@ -53,7 +53,7 @@ function ContainerRow({ stage, container, tournamentId, entrants, isFirst, isLas
     if (other.id === container.id) continue;
     for (const entrantId of other.groupEntryEntrantIds) assignedElsewhere[entrantId] = other.name;
   }
-  const isStageScoped = isGroup && parseGroupConfig(container.config).matchScope === "stage";
+  const isStageScoped = isGroup && usesStageScope(container.config);
 
   function openDeleteConfirm() {
     setForceDelete(false);

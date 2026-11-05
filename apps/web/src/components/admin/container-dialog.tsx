@@ -20,7 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { createContainer, updateContainer, type ContainerFieldErrors, type ContainerInput, type PointsInput } from "@/actions/admin-containers";
-import { parseGroupConfig } from "@/lib/bracket/config-types";
+import { parseGroupConfig, usesStageScope } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
 import { useGame } from "@/lib/use-game";
@@ -124,7 +124,7 @@ export function ContainerDialog({
   }, [open, container]);
 
   // An existing group that has matches and isn't stage-scoped yet: its table would shrink to the pinned teams.
-  const switchesToStageScope = form.stageScope && !!container && container.containerType === "group" && container.matchCount > 0 && parseGroupConfig(container.config).matchScope === "container";
+  const switchesToStageScope = form.stageScope && !!container && container.containerType === "group" && container.matchCount > 0 && !usesStageScope(container.config);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
