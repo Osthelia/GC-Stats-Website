@@ -145,8 +145,8 @@ async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number):
 /**
  * Cross-group play: a group with `matchScope: "stage"` counts the stage's
  * matches (of the stage's round robin groups) that involve its pinned teams,
- * wherever they are stored, so a result in any of them can be the one that
- * finishes it.
+ * wherever they are stored, plus every match stored in the group itself, so a
+ * result in any of them can be the one that finishes it.
  */
 async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number): Promise<void> {
   const { stageContainers, groupEntries, matches } = gameTables(game);
@@ -155,13 +155,15 @@ async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number
   if (pending.length === 0) return;
 
   const [stageMatches, pinnedRows] = await Promise.all([
-    tx.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, status: matches.status }).from(matches).where(inArray(matches.containerId, containers.filter(countsForStageScope).map((c) => c.id))),
+    tx.select({ containerId: matches.containerId, entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, status: matches.status }).from(matches).where(inArray(matches.containerId, containers.filter(countsForStageScope).map((c) => c.id))),
     tx.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, pending.map((c) => c.id))),
   ]);
 
   for (const group of pending) {
     const pinned = new Set(pinnedRows.filter((r) => r.containerId === group.id).map((r) => r.entrantId));
-    const counted = stageMatches.filter((m) => (m.entrantAId !== null && pinned.has(m.entrantAId)) || (m.entrantBId !== null && pinned.has(m.entrantBId)));
+    const counted = stageMatches.filter(
+      (m) => m.containerId === group.id || (m.entrantAId !== null && pinned.has(m.entrantAId)) || (m.entrantBId !== null && pinned.has(m.entrantBId))
+    );
     if (counted.length > 0 && counted.every((m) => m.status === "completed")) {
       await completeContainer(game, tx, group);
     }
