@@ -17,18 +17,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { assignEntrantsToContainer } from "@/actions/admin-containers";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/use-game";
 
 export function AssignEntrantsDialog({
   containerId,
   entrants,
   alreadyAssignedIds,
+  assignedElsewhere,
   open,
   onOpenChange,
 }: {
   containerId: number;
   entrants: AdminEntrantRow[];
   alreadyAssignedIds: number[];
+  /** Entrant id -> name of the other group of the same stage it is already in. */
+  assignedElsewhere: Record<number, string>;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -76,11 +80,13 @@ export function AssignEntrantsDialog({
         <div className="flex max-h-80 flex-col gap-1 overflow-y-auto py-2">
           {entrants.length === 0 && <p className="text-sm text-muted-foreground">{t("assignEntrantsEmpty")}</p>}
           {entrants.map((entrant) => {
-            const locked = alreadyAssignedIds.includes(entrant.id);
+            const otherGroup = assignedElsewhere[entrant.id];
+            const locked = alreadyAssignedIds.includes(entrant.id) || otherGroup !== undefined;
             return (
-              <label key={entrant.id} className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
+              <label key={entrant.id} className={cn("flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent", otherGroup !== undefined && "opacity-50")}>
                 <Checkbox checked={selected.has(entrant.id)} disabled={locked} onCheckedChange={() => toggle(entrant.id)} />
                 <span className="flex-1 truncate">{entrant.displayName}</span>
+                {otherGroup !== undefined && <span className="text-xs text-muted-foreground">{t("assignEntrantsInGroup", { name: otherGroup })}</span>}
                 <span className="text-xs text-muted-foreground">{entrant.seed !== null ? `#${entrant.seed}` : ""}</span>
               </label>
             );

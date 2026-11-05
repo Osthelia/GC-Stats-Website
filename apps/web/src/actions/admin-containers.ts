@@ -18,7 +18,7 @@ import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
-import { defaultRoundRobinTiebreakers, type GroupContainerConfig, type StandingsPointsConfig } from "@/lib/bracket/config-types";
+import { defaultRoundRobinTiebreakers, type GroupContainerConfig, type GroupMatchScope, type StandingsPointsConfig } from "@/lib/bracket/config-types";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
@@ -33,6 +33,7 @@ export type ContainerField =
   | "qualifyAtWins"
   | "eliminateAtLosses"
   | "maxRounds"
+  | "matchScope"
   | "matchWinPoints"
   | "mapWinPoints"
   | "roundWinPoints"
@@ -54,7 +55,7 @@ export type PointsInput = {
 
 export type ContainerInput =
   | { name: string; status: StageStatus; containerType: "bracket" }
-  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
+  | ({ name: string; status: StageStatus; containerType: "group"; groupFormat: "swiss" | "round_robin"; matchScope?: GroupMatchScope; qualifyAtWins: number | null; eliminateAtLosses: number | null; maxRounds: number | null } & PointsInput);
 
 const POINTS_FIELDS: (keyof PointsInput)[] = ["matchWinPoints", "mapWinPoints", "roundWinPoints", "matchForfeitWinPoints", "mapForfeitWinPoints"];
 
@@ -71,6 +72,9 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
       if (input.eliminateAtLosses !== null && (!Number.isInteger(input.eliminateAtLosses) || input.eliminateAtLosses < 1)) fieldErrors.eliminateAtLosses = "invalid";
       if (!Number.isInteger(input.maxRounds) || (input.maxRounds ?? 0) < 1) fieldErrors.maxRounds = "invalid";
     }
+    // Swiss pairs inside one container and keeps per-container counters, so only round robin can count the whole stage.
+    if (input.matchScope === "stage" && input.groupFormat !== "round_robin") fieldErrors.matchScope = "roundRobinOnly";
+    else if (input.matchScope !== undefined && input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
     for (const field of POINTS_FIELDS) {
       const value = input[field];
       if (value !== null && !Number.isFinite(value)) fieldErrors[field] = "invalid";
@@ -96,10 +100,11 @@ function buildConfig(game: GameSlug, input: ContainerInput): GroupContainerConfi
   if (input.containerType === "bracket") return {};
   const pointsConfig = buildPointsConfig(input);
   if (input.groupFormat === "round_robin") {
-    return { type: "round_robin", tiebreakers: defaultRoundRobinTiebreakers(game, pointsConfig !== null), pointsConfig };
+    return { type: "round_robin", matchScope: input.matchScope ?? "container", tiebreakers: defaultRoundRobinTiebreakers(game, pointsConfig !== null), pointsConfig };
   }
   return {
     type: "swiss",
+    matchScope: "container",
     qualifyAtWins: input.qualifyAtWins,
     eliminateAtLosses: input.eliminateAtLosses,
     // Validated above, so never null here; the fallback matches parseGroupConfig's default and narrows the type.

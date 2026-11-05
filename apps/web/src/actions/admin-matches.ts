@@ -18,6 +18,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
+import { usesStageScope } from "@/lib/bracket/config-types";
 import { resolveMatch, MatchResolutionValidationError } from "@/lib/bracket/match-resolution-service";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { MAP_OPTIONS, MAP_UNKNOWN, VALORANT_MAP_POOL } from "@/lib/valorant-maps";
@@ -83,13 +84,13 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
       fieldErrors.entrantBId = "sameEntrant";
     }
     const [matchTournament] = await db
-      .select({ tournamentId: stages.tournamentId, containerType: stageContainers.containerType })
+      .select({ tournamentId: stages.tournamentId, containerType: stageContainers.containerType, config: stageContainers.config })
       .from(stageContainers)
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
       .where(eq(stageContainers.id, existing.containerId))
       .limit(1);
     const groupEntrantIds =
-      matchTournament!.containerType === "group"
+      matchTournament!.containerType === "group" && !usesStageScope(matchTournament!.config)
         ? new Set((await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, existing.containerId))).map((e) => e.entrantId))
         : new Set<number>();
     for (const [field, id] of [

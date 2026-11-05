@@ -36,8 +36,32 @@ export function isPointsConfigActive(config: StandingsPointsConfig | null): bool
   return config.matchWin !== null || config.mapWin !== null || config.roundWin !== null || config.matchForfeitWin !== null || config.mapForfeitWin !== null;
 }
 
+/**
+ * Which matches a group's table counts. `"container"` (default, and the only
+ * behaviour before this key existed) lists anyone who played a match stored in the group.
+ * `"stage"` lists only the pinned teams and counts their completed matches in
+ * any container of the same stage, for tournaments whose groups also play
+ * each other. Round robin only.
+ */
+export type GroupMatchScope = "container" | "stage";
+
+/**
+ * Whether a container's matches count towards a stage-scoped group. Only round
+ * robin groups do.
+ */
+export function countsForStageScope(container: { containerType: string; config: unknown }): boolean {
+  return container.containerType === "group" && (container.config as { type?: string } | null)?.type === "round_robin";
+}
+
+/** Whether a group's raw config opts in to stage scope. Safe on a missing or malformed config (legacy or converted containers), unlike `parseGroupConfig`. */
+export function usesStageScope(config: unknown): boolean {
+  const c = config as { type?: string; matchScope?: string } | null;
+  return c?.type === "round_robin" && c.matchScope === "stage";
+}
+
 export interface SwissGroupConfig {
   type: "swiss";
+  matchScope: GroupMatchScope;
   qualifyAtWins: number | null;
   eliminateAtLosses: number | null;
   maxRounds: number;
@@ -48,6 +72,7 @@ export interface SwissGroupConfig {
 
 export interface RoundRobinGroupConfig {
   type: "round_robin";
+  matchScope: GroupMatchScope;
   tiebreakers: RoundRobinTiebreaker[];
   pointsConfig: StandingsPointsConfig | null;
 }
@@ -80,6 +105,7 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
     const c = config as Partial<SwissGroupConfig>;
     return {
       type: "swiss",
+      matchScope: "container",
       qualifyAtWins: c.qualifyAtWins ?? null,
       eliminateAtLosses: c.eliminateAtLosses ?? null,
       maxRounds: c.maxRounds ?? 5,
@@ -90,7 +116,12 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
   }
   if (type === "round_robin") {
     const c = config as Partial<RoundRobinGroupConfig>;
-    return { type: "round_robin", tiebreakers: c.tiebreakers ?? ["round_diff", "seed"], pointsConfig: parsePointsConfig(c.pointsConfig) };
+    return {
+      type: "round_robin",
+      matchScope: c.matchScope === "stage" ? "stage" : "container",
+      tiebreakers: c.tiebreakers ?? ["round_diff", "seed"],
+      pointsConfig: parsePointsConfig(c.pointsConfig),
+    };
   }
   throw new Error(`parseGroupConfig: unknown group config type "${String(type)}"`);
 }

@@ -303,7 +303,7 @@ export async function computeStageLeaderboard(game: GameSlug, stageId: number, c
   const groupContainers = editorData.containers.filter((c) => c.containerType === "group" && c.status === "completed");
   const rankByContainerAndEntrant = new Map<number, Map<number, number>>();
   for (const c of groupContainers) {
-    const ranked = await computeContainerStandings(game, db, c.id, c.config);
+    const ranked = await computeContainerStandings(game, db, c.id, c.config, editorData.containers);
     rankByContainerAndEntrant.set(c.id, new Map(ranked.map((r) => [Number(r.id), r.rank])));
   }
 

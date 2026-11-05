@@ -274,7 +274,8 @@ export async function addGroupMatch(game: GameSlug, input: AddGroupMatchInput): 
 
   if (input.entrantAId !== null && input.entrantAId === input.entrantBId) fieldErrors.entrantBId = "sameEntrant";
 
-  const entries = await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, input.containerId));
+  // Stage-scoped groups play teams of other groups, so their pinned teams don't limit who can be in a match.
+  const entries = config.matchScope === "stage" ? [] : await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, input.containerId));
   const groupEntrantIds = new Set(entries.map((e) => e.entrantId));
   for (const [field, id] of [
     ["entrantAId", input.entrantAId],
