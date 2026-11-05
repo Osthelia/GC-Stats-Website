@@ -160,13 +160,17 @@ export async function computeContainerStandings(game: GameSlug, tx: Tx, containe
 
   // round_robin: build head-to-head from the completed matches in scope.
   const dtos: StandingsEntry[] = entries.map((e) => {
-    const headToHead = new Map<string, "win" | "loss">();
+    // Cross-group play lets a pair meet more than once, so tally per opponent instead of keeping the last result.
+    const tally = new Map<string, number>();
     for (const m of completedMatches) {
-      if (m.entrantAId === e.entrantId && m.entrantBId !== null) {
-        headToHead.set(String(m.entrantBId), m.winnerId === e.entrantId ? "win" : "loss");
-      } else if (m.entrantBId === e.entrantId && m.entrantAId !== null) {
-        headToHead.set(String(m.entrantAId), m.winnerId === e.entrantId ? "win" : "loss");
-      }
+      const opponentId = m.entrantAId === e.entrantId ? m.entrantBId : m.entrantBId === e.entrantId ? m.entrantAId : null;
+      if (opponentId === null) continue;
+      tally.set(String(opponentId), (tally.get(String(opponentId)) ?? 0) + (m.winnerId === e.entrantId ? 1 : -1));
+    }
+    // An even split has no head-to-head winner, so it is left out and the next tiebreaker decides.
+    const headToHead = new Map<string, "win" | "loss">();
+    for (const [opponentId, net] of tally) {
+      if (net !== 0) headToHead.set(opponentId, net > 0 ? "win" : "loss");
     }
     return {
       id: String(e.entrantId),
