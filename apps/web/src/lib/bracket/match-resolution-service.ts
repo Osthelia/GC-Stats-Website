@@ -18,7 +18,7 @@ import { resolveMatchInGraph } from "@gc-stats/bracket-engine";
 import { applyDownstreamPatches, hydrateOutgoingSubgraph, getMatch, type Tx } from "./repository";
 import { advanceSwissGroup, advanceRoundRobinGroup } from "./group-progression";
 import { resolveContainerRankQualifications, resolveContainerMatchQualifications } from "./qualification-resolution";
-import { parseGroupConfig } from "./config-types";
+import { countsForStageScope, parseGroupConfig } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export class MatchResolutionValidationError extends Error {
@@ -144,8 +144,9 @@ async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number):
 
 /**
  * Cross-group play: a group with `matchScope: "stage"` counts the stage's
- * matches that involve its pinned teams, wherever they are stored, so a result
- * in any container of the stage can be the one that finishes it.
+ * matches (of the stage's round robin groups) that involve its pinned teams,
+ * wherever they are stored, so a result in any of them can be the one that
+ * finishes it.
  */
 async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number): Promise<void> {
   const { stageContainers, groupEntries, matches } = gameTables(game);
@@ -154,7 +155,7 @@ async function completeStageScopedGroups(game: GameSlug, tx: Tx, stageId: number
   if (pending.length === 0) return;
 
   const [stageMatches, pinnedRows] = await Promise.all([
-    tx.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, status: matches.status }).from(matches).where(inArray(matches.containerId, containers.map((c) => c.id))),
+    tx.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, status: matches.status }).from(matches).where(inArray(matches.containerId, containers.filter(countsForStageScope).map((c) => c.id))),
     tx.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId }).from(groupEntries).where(inArray(groupEntries.containerId, pending.map((c) => c.id))),
   ]);
 

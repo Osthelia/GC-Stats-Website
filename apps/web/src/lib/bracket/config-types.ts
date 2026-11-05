@@ -45,6 +45,14 @@ export function isPointsConfigActive(config: StandingsPointsConfig | null): bool
  */
 export type GroupMatchScope = "container" | "stage";
 
+/**
+ * Whether a container's matches count towards a stage-scoped group. Only round
+ * robin groups do.
+ */
+export function countsForStageScope(container: { containerType: string; config: unknown }): boolean {
+  return container.containerType === "group" && (container.config as { type?: string } | null)?.type === "round_robin";
+}
+
 export interface SwissGroupConfig {
   type: "swiss";
   matchScope: GroupMatchScope;

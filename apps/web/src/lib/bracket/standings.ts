@@ -13,7 +13,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { gameTables } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@gc-stats/bracket-engine";
 import { listMatchMapResults, type Tx } from "./repository";
-import { parseGroupConfig, type GroupContainerConfig } from "./config-types";
+import { countsForStageScope, parseGroupConfig, type GroupContainerConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
 import { recordsFromMatches } from "./group-progression";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -78,8 +78,11 @@ async function resolveMatchScope(game: GameSlug, tx: Tx, containerId: number, co
   const { stageContainers } = gameTables(game);
   const [container] = await tx.select({ stageId: stageContainers.stageId }).from(stageContainers).where(eq(stageContainers.id, containerId));
   if (!container) return { containerIds: [containerId], pinnedOnly: true };
-  const stageContainerRows = await tx.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, container.stageId));
-  return { containerIds: stageContainerRows.map((c) => c.id), pinnedOnly: true };
+  const stageContainerRows = await tx
+    .select({ id: stageContainers.id, containerType: stageContainers.containerType, config: stageContainers.config })
+    .from(stageContainers)
+    .where(eq(stageContainers.stageId, container.stageId));
+  return { containerIds: stageContainerRows.filter(countsForStageScope).map((c) => c.id), pinnedOnly: true };
 }
 
 /** Ranked standings for a group container, using the calculator that
