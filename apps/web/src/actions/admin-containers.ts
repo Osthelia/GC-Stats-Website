@@ -14,7 +14,7 @@
 
 import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, entrants, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
+import { stageContainers, stages, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
@@ -273,41 +273,6 @@ export async function deleteContainer(id: number, stageId: number, force: boolea
     await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
   });
-  return { ok: true };
-}
-
-export type AssignEntrantsResult = { ok: true } | { ok: false; error: "notFound" };
-
-/** Populates `group_entries` for a group container from a set of the
- *  tournament's own entrants (their existing seed carried over) — the
- *  starting roster a Swiss/round-robin group pairs from. Re-runnable:
- *  entrants already present are left untouched (onConflictDoNothing on the
- *  (containerId, entrantId) pair isn't a declared unique constraint, so
- *  duplicates are avoided by checking first instead). */
-export async function assignEntrantsToContainer(containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
-  await requireTournamentsActor();
-
-  const [container] = await db
-    .select({ id: stageContainers.id, tournamentId: stages.tournamentId })
-    .from(stageContainers)
-    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(eq(stageContainers.id, containerId))
-    .limit(1);
-  if (!container) return { ok: false, error: "notFound" };
-
-  const already = await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, containerId));
-  const alreadyIds = new Set(already.map((r) => r.entrantId));
-
-  const entrantRows = await db.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(eq(entrants.tournamentId, container.tournamentId));
-  const validIds = new Set(entrantRows.map((r) => r.id));
-  const seedById = new Map(entrantRows.map((r) => [r.id, r.seed]));
-
-  const newIds = entrantIds.filter((id) => !alreadyIds.has(id));
-  const toAdd = newIds.filter((id) => validIds.has(id));
-  if (toAdd.length !== newIds.length) return { ok: false, error: "notFound" };
-  if (toAdd.length === 0) return { ok: true };
-
-  await db.insert(groupEntries).values(toAdd.map((entrantId) => ({ containerId, entrantId, seed: seedById.get(entrantId) ?? null })));
   return { ok: true };
 }
 

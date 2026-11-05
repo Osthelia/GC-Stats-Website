@@ -25,12 +25,12 @@ import { buildTree, resolveStatuses, subtreeOf, type TreeNode, type TreeRow } fr
 import { ContainerDialog, type SetOption } from "@/components/admin/container-dialog";
 import { SetDialog } from "@/components/admin/set-dialog";
 import { StageSetRow } from "@/components/admin/stage-set-row";
-import { AssignEntrantsDialog } from "@/components/admin/assign-entrants-dialog";
 import { AddGroupMatchDialog } from "@/components/admin/add-group-match-dialog";
+import { BulkGroupMatchesDialog } from "@/components/admin/bulk-group-matches-dialog";
 import { deleteStage, toggleStageActive } from "@/actions/admin-stages";
 import { deleteContainer } from "@/actions/admin-containers";
 import { DragHandle, DropSlot, StructureDnd, useStructureDnd } from "@/components/admin/structure-dnd";
-import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
+import { resetContainer } from "@/actions/admin-bracket-editor";
 import { stageContainerStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
 import type { AdminStageRow, AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 
@@ -46,15 +46,13 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [assigning, setAssigning] = useState(false);
   const [addingMatch, setAddingMatch] = useState(false);
+  const [bulkAdding, setBulkAdding] = useState(false);
   const [editingContainer, setEditingContainer] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [forceDelete, setForceDelete] = useState(false);
   const dnd = useStructureDnd();
 
-  const isSwiss = container.containerType === "group" && (container.config as { type?: string } | null)?.type === "swiss";
-  const swissStarted = container.matchCount > 0;
   const isGroup = container.containerType === "group";
 
   function openDeleteConfirm() {
@@ -88,18 +86,6 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
     });
   }
 
-  function handleStartSwiss() {
-    startTransition(async () => {
-      const result = await startSwissRound1(container.id);
-      if (!result.ok) {
-        toast.error(t(`error.${result.error}`));
-        return;
-      }
-      router.refresh();
-      toast.success(t("startSwissSuccess"));
-    });
-  }
-
   return (
     <div className={cn("flex items-center justify-between gap-3 rounded-md border px-3 py-2 transition-opacity", dnd.activeId === container.id && "opacity-40")}>
       <div className="flex items-center gap-2">
@@ -119,26 +105,20 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
       </div>
 
       <div className="flex items-center gap-2">
-        {isSwiss ? (
-          <>
-            <Button variant="outline" size="sm" onClick={() => setAssigning(true)} disabled={swissStarted}>
-              {t("assignEntrantsButton")}
-            </Button>
-            {!swissStarted && (
-              <Button size="sm" onClick={handleStartSwiss} disabled={isPending || container.groupEntryEntrantIds.length < 2}>
-                {t("startSwissButton")}
-              </Button>
-            )}
-          </>
-        ) : (
+        {!isGroup && (
           <Button variant="outline" size="sm" render={<Link href={`/admin/tournaments/${tournamentId}/stages/${stage.id}/editor`} />}>
             {t("openEditorButton")}
           </Button>
         )}
-        {isGroup && (!isSwiss || swissStarted) && (
-          <Button variant="outline" size="sm" onClick={() => setAddingMatch(true)}>
-            {t("addMatchButton")}
-          </Button>
+        {isGroup && (
+          <>
+            <Button variant="outline" size="sm" onClick={() => setAddingMatch(true)}>
+              {t("addMatchButton")}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setBulkAdding(true)}>
+              {t("bulkMatchesButton")}
+            </Button>
+          </>
         )}
         <Button variant="outline" size="sm" onClick={() => setEditingContainer(true)}>
           {t("editContainerButton")}
@@ -153,8 +133,8 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
         </Button>
       </div>
 
-      <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} open={assigning} onOpenChange={setAssigning} />
       {isGroup && <AddGroupMatchDialog stageId={stage.id} container={container} entrants={entrants} open={addingMatch} onOpenChange={setAddingMatch} />}
+      {isGroup && <BulkGroupMatchesDialog stageId={stage.id} container={container} entrants={entrants} open={bulkAdding} onOpenChange={setBulkAdding} />}
       <ContainerDialog stageId={stage.id} container={container} sets={sets} open={editingContainer} onOpenChange={setEditingContainer} />
       <ConfirmDialog
         open={confirmingDelete}
