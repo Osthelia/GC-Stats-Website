@@ -2031,7 +2031,8 @@
       "oauthClients": "OAuthクライアント",
       "settings": "設定",
       "discordImages": "Discord ボットの画像",
-      "rosterWatch": "ロスター監視"
+      "rosterWatch": "ロスター監視",
+      "teamRequests": "チームへのリクエスト"
     },
     "dashboard": {
       "title": "ダッシュボード",
@@ -2440,6 +2441,8 @@
         "fieldBio": "自己紹介",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipediaリンク",
+        "fieldContactEmail": "連絡用メールアドレス",
+        "contactEmailHint": "非公開です。スタッフのみ閲覧でき、サイトやAPIには表示されません。",
         "fieldActive": "アクティブなチーム",
         "save": "保存",
         "saveSuccess": "プロフィールを更新しました。",
@@ -2552,7 +2555,8 @@
           "saveFailed": "ロゴを保存できませんでした。しばらくしてからもう一度お試しください。",
           "empty": "画像を選択してください。",
           "requiresLeft": "脱退日を入力するには「チームを離脱済み」にチェックを入れてください。",
-          "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。"
+          "invalidDiscordId": "有効な Discord ユーザー ID(17〜20桁)またはサーバー招待(discord.gg/...)を入力してください。",
+          "invalidEmail": "有効なメールアドレスを入力してください。"
         },
         "fieldOrganization": "組織",
         "organizationPlaceholder": "組織を選択",
@@ -3471,7 +3475,8 @@
         "analytics": "アナリティクス",
         "oauthClients": "OAuthクライアント",
         "settings": "設定",
-        "rosterWatch": "ロスター監視"
+        "rosterWatch": "ロスター監視",
+        "teamRequests": "チームへのリクエスト"
       },
       "permissionNames": {
         "admin_access": "管理パネルへのアクセス",
@@ -3524,7 +3529,9 @@
         "settings_view": "設定と OpenData のモニタリングを表示",
         "settings_manage": "設定を編集",
         "roster_watch_view": "ロスター監視を表示",
-        "roster_watch_manage": "ロスター監視のツイートを確認し、フォロー中のアカウントを管理"
+        "roster_watch_manage": "ロスター監視のツイートを確認し、フォロー中のアカウントを管理",
+        "team_requests_view": "チームへのリクエストを表示",
+        "team_requests_manage": "チームに送る情報リクエストの準備と進行管理"
       },
       "create": {
         "button": "新規ロール",
@@ -5599,6 +5606,110 @@
       "columnType": "種類",
       "columnDate": "日付",
       "columnReview": "レビュー"
+    },
+    "teamRequests": {
+      "title": "チームへのリクエスト",
+      "subtitle": "チームへの情報リクエスト（ロゴ、SNS、ロースター）を管理して送信します。",
+      "tabs": {
+        "recommended": "おすすめ",
+        "pending": "進行中",
+        "done": "完了"
+      },
+      "scopeLabel": "表示するリクエスト",
+      "scope": {
+        "mine": "自分のリクエスト",
+        "all": "すべてのリクエスト"
+      },
+      "recommended": {
+        "pickTeam": "別のチームのリクエストを準備",
+        "pickPlaceholder": "チームを選択",
+        "searchPlaceholder": "チームを検索...",
+        "noResults": "チームが見つかりません。",
+        "empty": "おすすめのチームはありません。最近プレイしたチームにはすべてリクエストがあります。",
+        "emptyTitle": "チームが選択されていません",
+        "emptyHint": "右側でチームを選んでリクエストを準備してください。",
+        "listTitle": "おすすめのチーム ({count})"
+      },
+      "table": {
+        "empty": "ここにリクエストはありません。",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "メッセージ",
+        "markDone": "完了にする",
+        "reopen": "再開",
+        "markedDone": "リクエストを完了にしました。",
+        "reopened": "リクエストを再開しました。",
+        "openContact": "連絡先を開く"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "ウェブサイト",
+        "email": "メール",
+        "other": "その他"
+      },
+      "builder": {
+        "title": "{team}へのリクエスト",
+        "description": "緑は対応不要、赤はチームに情報を尋ねることを意味します。",
+        "loading": "チームのデータと直近の試合を読み込み中...",
+        "alreadyPending": "このチームにはすでに進行中のリクエストがあります。",
+        "dataTitle": "現在保有している情報",
+        "dataHint": "ステータスをクリックすると、緑（問題なし）と赤（要確認）が切り替わります。",
+        "toggle": "{item}のステータスを切り替え",
+        "logo": "ロゴ",
+        "roster": "ロースター",
+        "missing": "不足",
+        "rosterCount": "現在{current}人、過去{past}人",
+        "rosterCurrent": "現在のロースター",
+        "rosterPast": "過去のロースター",
+        "none": "なし",
+        "unlistedTitle": "ロースターに載っていないが直近の試合に出場",
+        "unlistedMatches": "{count, plural, other {#試合}}",
+        "messageTitle": "メッセージ",
+        "messageHint": "上のステータスから生成されます。コピーする前に編集できます。",
+        "copy": "コピー",
+        "copied": "コピーしました",
+        "copyFailed": "コピーに失敗しました。テキストを手動で選択してください。",
+        "contactTitle": "連絡先",
+        "noContact": "このチームの連絡先が不明です。先にチーム、運営組織、マネージャー、コーチのSNSを追加してください。",
+        "kind": {
+          "organization": "組織",
+          "manager": "マネージャー",
+          "coach": "コーチ",
+          "other": "その他"
+        },
+        "cancel": "キャンセル",
+        "validate": "リクエストを確定",
+        "created": "リクエストを追加しました。",
+        "rosterPlayers": "選手",
+        "rosterSubs": "控え",
+        "rosterStaff": "スタッフ",
+        "open": "この連絡先を開く",
+        "customFree": "その他の連絡先",
+        "customFreePlaceholder": "リンク、ハンドル、その他の連絡先",
+        "customEmail": "メール",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "チームを選択してください。",
+        "teamNotFound": "このチームは存在しません。",
+        "itemsInvalid": "無効な項目があります。",
+        "itemsRequired": "少なくとも1つの項目を赤にしてください。",
+        "messageRequired": "メッセージは必須です。",
+        "messageTooLong": "メッセージが長すぎます（最大4000文字）。",
+        "contactRequired": "連絡先を選択してください。",
+        "contactInvalid": "この連絡先は無効です。",
+        "contactTooLong": "この連絡先が長すぎます（最大300文字）。",
+        "urlInvalid": "ウェブサイトの連絡先は、http://またはhttps://で始まる有効なリンクにしてください。",
+        "alreadyPending": "このチームにはすでに進行中のリクエストがあります。",
+        "notFound": "このリクエストは存在しません。",
+        "invalidState": "このリクエストはすでにその状態です。",
+        "emailInvalid": "メールアドレスが正しくありません。",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

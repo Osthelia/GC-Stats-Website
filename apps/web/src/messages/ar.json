@@ -2031,7 +2031,8 @@
       "oauthClients": "عملاء OAuth",
       "settings": "الإعدادات",
       "discordImages": "صور بوت Discord",
-      "rosterWatch": "مراقبة التشكيلات"
+      "rosterWatch": "مراقبة التشكيلات",
+      "teamRequests": "طلبات الفرق"
     },
     "dashboard": {
       "title": "لوحة التحكم",
@@ -2440,6 +2441,8 @@
         "fieldBio": "النبذة",
         "fieldVlrId": "معرّف VLR",
         "fieldLiquipedia": "رابط Liquipedia",
+        "fieldContactEmail": "البريد الإلكتروني للتواصل",
+        "contactEmailHint": "خاص. يظهر للطاقم فقط ولا يُعرض أبدًا على الموقع أو في الـ API.",
         "fieldActive": "فريق نشط",
         "save": "حفظ",
         "saveSuccess": "تم تحديث الملف.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "تعذر حفظ الشعار. حاول مرة أخرى بعد قليل.",
           "empty": "يرجى اختيار صورة.",
           "requiresLeft": "حدد « غادر الفريق » لإدخال تاريخ المغادرة.",
-          "invalidDiscordId": "أدخل معرّف مستخدم Discord صالحًا (من 17 إلى 20 رقمًا) أو دعوة خادم (discord.gg/...)."
+          "invalidDiscordId": "أدخل معرّف مستخدم Discord صالحًا (من 17 إلى 20 رقمًا) أو دعوة خادم (discord.gg/...).",
+          "invalidEmail": "أدخل عنوان بريد إلكتروني صالحًا."
         },
         "fieldOrganization": "المؤسسة",
         "organizationPlaceholder": "اختر مؤسسة",
@@ -3471,7 +3475,8 @@
         "analytics": "الإحصاءات",
         "oauthClients": "عملاء OAuth",
         "settings": "الإعدادات",
-        "rosterWatch": "مراقبة التشكيلات"
+        "rosterWatch": "مراقبة التشكيلات",
+        "teamRequests": "طلبات الفرق"
       },
       "permissionNames": {
         "admin_access": "الوصول إلى لوحة الإدارة",
@@ -3524,7 +3529,9 @@
         "settings_view": "عرض الإعدادات ومراقبة OpenData",
         "settings_manage": "تعديل الإعدادات",
         "roster_watch_view": "عرض مراقبة التشكيلات",
-        "roster_watch_manage": "مراجعة تغريدات مراقبة التشكيلات وإدارة الحسابات المتابَعة"
+        "roster_watch_manage": "مراجعة تغريدات مراقبة التشكيلات وإدارة الحسابات المتابَعة",
+        "team_requests_view": "عرض طلبات الفرق",
+        "team_requests_manage": "إعداد ومتابعة طلبات المعلومات المرسلة إلى الفرق"
       },
       "create": {
         "button": "دور جديد",
@@ -5599,6 +5606,110 @@
       "columnType": "النوع",
       "columnDate": "التاريخ",
       "columnReview": "مراجعة"
+    },
+    "teamRequests": {
+      "title": "طلبات الفرق",
+      "subtitle": "تابع وأرسل طلباتنا للحصول على معلومات من الفرق: الشعار وحسابات التواصل والروستر.",
+      "tabs": {
+        "recommended": "الموصى بها",
+        "pending": "قيد التنفيذ",
+        "done": "مكتملة"
+      },
+      "scopeLabel": "الطلبات المعروضة",
+      "scope": {
+        "mine": "طلباتي",
+        "all": "كل الطلبات"
+      },
+      "recommended": {
+        "pickTeam": "إعداد طلب لفريق آخر",
+        "pickPlaceholder": "اختر فريقا",
+        "searchPlaceholder": "ابحث عن فريق...",
+        "noResults": "لم يتم العثور على أي فريق.",
+        "empty": "لا يوجد فريق موصى به. كل فريق لعب مؤخرا لديه طلب بالفعل.",
+        "emptyTitle": "لم يتم اختيار فريق",
+        "emptyHint": "اختر فريقًا من اليمين لإعداد طلب.",
+        "listTitle": "الفرق الموصى بها ({count})"
+      },
+      "table": {
+        "empty": "لا يوجد طلب هنا.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "الرسالة",
+        "markDone": "وضع علامة مكتمل",
+        "reopen": "إعادة الفتح",
+        "markedDone": "تم وضع علامة مكتمل على الطلب.",
+        "reopened": "تمت إعادة فتح الطلب.",
+        "openContact": "فتح جهة الاتصال"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "الموقع الإلكتروني",
+        "email": "البريد الإلكتروني",
+        "other": "أخرى"
+      },
+      "builder": {
+        "title": "طلب إلى {team}",
+        "description": "الأخضر يعني أنه لا يوجد شيء للقيام به، والأحمر يعني أننا نطلب المعلومة من الفريق.",
+        "loading": "جار تحميل بيانات الفريق وآخر مبارياته...",
+        "alreadyPending": "يوجد طلب قيد التنفيذ لهذا الفريق بالفعل.",
+        "dataTitle": "ما نملكه",
+        "dataHint": "انقر على حالة للتبديل بين الأخضر (كل شيء جيد) والأحمر (للطلب).",
+        "toggle": "تبديل حالة {item}",
+        "logo": "الشعار",
+        "roster": "الروستر",
+        "missing": "ناقص",
+        "rosterCount": "{current} حاليا، {past} سابقا",
+        "rosterCurrent": "الروستر الحالي",
+        "rosterPast": "الروستر السابق",
+        "none": "لا شيء",
+        "unlistedTitle": "لعبوا في آخر المباريات دون أن يكونوا في الروستر",
+        "unlistedMatches": "{count, plural, zero {لا مباريات} one {مباراة واحدة} two {مباراتان} few {# مباريات} many {# مباراة} other {# مباراة}}",
+        "messageTitle": "الرسالة",
+        "messageHint": "تم إنشاؤها من الحالات أعلاه، يمكنك تعديلها قبل نسخها.",
+        "copy": "نسخ",
+        "copied": "تم النسخ",
+        "copyFailed": "فشل النسخ، حدد النص يدويا.",
+        "contactTitle": "جهة الاتصال",
+        "noContact": "لا توجد جهة اتصال معروفة لهذا الفريق. أضف أولا حسابات التواصل للفريق أو لمنظمته أو لمديره أو لمدربه.",
+        "kind": {
+          "organization": "المنظمة",
+          "manager": "المدير",
+          "coach": "المدرب",
+          "other": "أخرى"
+        },
+        "cancel": "إلغاء",
+        "validate": "تأكيد الطلب",
+        "created": "تمت إضافة الطلب.",
+        "rosterPlayers": "اللاعبون",
+        "rosterSubs": "الاحتياطيون",
+        "rosterStaff": "الطاقم",
+        "open": "فتح جهة الاتصال هذه",
+        "customFree": "جهة اتصال أخرى",
+        "customFreePlaceholder": "رابط أو معرّف أو أي وسيلة تواصل",
+        "customEmail": "البريد الإلكتروني",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "اختر فريقا.",
+        "teamNotFound": "هذا الفريق غير موجود.",
+        "itemsInvalid": "أحد العناصر غير صالح.",
+        "itemsRequired": "ضع علامة حمراء على عنصر واحد على الأقل.",
+        "messageRequired": "الرسالة مطلوبة.",
+        "messageTooLong": "الرسالة طويلة جدا (4000 حرف كحد أقصى).",
+        "contactRequired": "اختر جهة اتصال.",
+        "contactInvalid": "جهة الاتصال هذه غير صالحة.",
+        "contactTooLong": "جهة الاتصال هذه طويلة جدا (300 حرف كحد أقصى).",
+        "urlInvalid": "يجب أن تكون جهة اتصال الموقع رابطا صالحا يبدأ بـ http:// أو https://.",
+        "alreadyPending": "يوجد طلب قيد التنفيذ لهذا الفريق بالفعل.",
+        "notFound": "هذا الطلب غير موجود.",
+        "invalidState": "هذا الطلب في هذه الحالة بالفعل.",
+        "emailInvalid": "عنوان البريد الإلكتروني غير صالح.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

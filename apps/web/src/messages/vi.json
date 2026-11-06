@@ -2031,7 +2031,8 @@
       "oauthClients": "Ứng dụng OAuth",
       "settings": "Cấu hình",
       "discordImages": "Hình ảnh của bot Discord",
-      "rosterWatch": "Theo dõi roster"
+      "rosterWatch": "Theo dõi roster",
+      "teamRequests": "Yêu cầu gửi đội"
     },
     "dashboard": {
       "title": "Bảng điều khiển",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Tiểu sử",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liên kết Liquipedia",
+        "fieldContactEmail": "Email liên hệ",
+        "contactEmailHint": "Riêng tư. Chỉ staff mới thấy, không bao giờ hiển thị trên trang web hay trong API.",
         "fieldActive": "Đội đang hoạt động",
         "save": "Lưu",
         "saveSuccess": "Đã cập nhật hồ sơ.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Không thể lưu logo. Hãy thử lại sau một lát.",
           "empty": "Vui lòng chọn một hình ảnh.",
           "requiresLeft": "Hãy chọn ô \"Đã rời đội\" để đặt ngày rời.",
-          "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...)."
+          "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...).",
+          "invalidEmail": "Nhập địa chỉ email hợp lệ."
         },
         "fieldOrganization": "Tổ chức",
         "organizationPlaceholder": "Chọn một tổ chức",
@@ -3471,7 +3475,8 @@
         "analytics": "Phân tích",
         "oauthClients": "Ứng dụng OAuth",
         "settings": "Cấu hình",
-        "rosterWatch": "Theo dõi roster"
+        "rosterWatch": "Theo dõi roster",
+        "teamRequests": "Yêu cầu gửi đội"
       },
       "permissionNames": {
         "admin_access": "Truy cập bảng quản trị",
@@ -3524,7 +3529,9 @@
         "settings_view": "Xem cấu hình và giám sát OpenData",
         "settings_manage": "Chỉnh sửa cấu hình",
         "roster_watch_view": "Xem theo dõi roster",
-        "roster_watch_manage": "Xem xét tweet theo dõi roster và quản lý các tài khoản đang theo dõi"
+        "roster_watch_manage": "Xem xét tweet theo dõi roster và quản lý các tài khoản đang theo dõi",
+        "team_requests_view": "Xem các yêu cầu gửi đội",
+        "team_requests_manage": "Chuẩn bị và theo dõi các yêu cầu thông tin gửi cho các đội"
       },
       "create": {
         "button": "Vai trò mới",
@@ -5599,6 +5606,110 @@
       "columnType": "Loại",
       "columnDate": "Ngày",
       "columnReview": "Xem xét"
+    },
+    "teamRequests": {
+      "title": "Yêu cầu gửi đội",
+      "subtitle": "Theo dõi và gửi các yêu cầu thông tin của chúng tôi cho các đội: logo, mạng xã hội và roster.",
+      "tabs": {
+        "recommended": "Đề xuất",
+        "pending": "Đang xử lý",
+        "done": "Đã xong"
+      },
+      "scopeLabel": "Yêu cầu hiển thị",
+      "scope": {
+        "mine": "Yêu cầu của tôi",
+        "all": "Tất cả yêu cầu"
+      },
+      "recommended": {
+        "pickTeam": "Chuẩn bị yêu cầu cho đội khác",
+        "pickPlaceholder": "Chọn một đội",
+        "searchPlaceholder": "Tìm một đội...",
+        "noResults": "Không tìm thấy đội nào.",
+        "empty": "Không có đội được đề xuất. Mọi đội đã thi đấu gần đây đều đã có yêu cầu.",
+        "emptyTitle": "Chưa chọn đội",
+        "emptyHint": "Chọn một đội ở bên phải để chuẩn bị yêu cầu.",
+        "listTitle": "Đội được đề xuất ({count})"
+      },
+      "table": {
+        "empty": "Không có yêu cầu nào ở đây.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Tin nhắn",
+        "markDone": "Đánh dấu đã xong",
+        "reopen": "Mở lại",
+        "markedDone": "Đã đánh dấu yêu cầu là đã xong.",
+        "reopened": "Đã mở lại yêu cầu.",
+        "openContact": "Mở liên hệ"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Trang web",
+        "email": "Email",
+        "other": "Khác"
+      },
+      "builder": {
+        "title": "Yêu cầu cho {team}",
+        "description": "Màu xanh nghĩa là không cần làm gì, màu đỏ nghĩa là chúng tôi hỏi đội thông tin này.",
+        "loading": "Đang tải dữ liệu đội và các trận gần nhất...",
+        "alreadyPending": "Đã có một yêu cầu đang xử lý cho đội này.",
+        "dataTitle": "Những gì chúng tôi có",
+        "dataHint": "Nhấp vào một trạng thái để chuyển giữa xanh (ổn) và đỏ (cần hỏi).",
+        "toggle": "Đổi trạng thái của {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Thiếu",
+        "rosterCount": "Hiện tại {current}, trước đây {past}",
+        "rosterCurrent": "Roster hiện tại",
+        "rosterPast": "Roster trước đây",
+        "none": "Không có",
+        "unlistedTitle": "Đã thi đấu ở các trận gần nhất mà không có trong roster",
+        "unlistedMatches": "{count, plural, other {# trận}}",
+        "messageTitle": "Tin nhắn",
+        "messageHint": "Được tạo từ các trạng thái ở trên, bạn có thể chỉnh sửa trước khi sao chép.",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "copyFailed": "Sao chép thất bại, hãy chọn văn bản thủ công.",
+        "contactTitle": "Liên hệ",
+        "noContact": "Chưa biết liên hệ nào của đội này. Hãy thêm mạng xã hội cho đội, tổ chức, quản lý hoặc huấn luyện viên của đội trước.",
+        "kind": {
+          "organization": "Tổ chức",
+          "manager": "Quản lý",
+          "coach": "Huấn luyện viên",
+          "other": "Khác"
+        },
+        "cancel": "Hủy",
+        "validate": "Xác nhận yêu cầu",
+        "created": "Đã thêm yêu cầu.",
+        "rosterPlayers": "Tuyển thủ",
+        "rosterSubs": "Dự bị",
+        "rosterStaff": "Nhân sự",
+        "open": "Mở liên hệ này",
+        "customFree": "Liên hệ khác",
+        "customFreePlaceholder": "Liên kết, tên tài khoản hoặc bất kỳ liên hệ nào",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "ten@vidu.com"
+      },
+      "error": {
+        "teamRequired": "Hãy chọn một đội.",
+        "teamNotFound": "Đội này không tồn tại.",
+        "itemsInvalid": "Một trong các mục không hợp lệ.",
+        "itemsRequired": "Hãy đánh dấu đỏ ít nhất một mục.",
+        "messageRequired": "Tin nhắn là bắt buộc.",
+        "messageTooLong": "Tin nhắn quá dài (tối đa 4000 ký tự).",
+        "contactRequired": "Hãy chọn một liên hệ.",
+        "contactInvalid": "Liên hệ này không hợp lệ.",
+        "contactTooLong": "Liên hệ này quá dài (tối đa 300 ký tự).",
+        "urlInvalid": "Liên hệ trang web phải là một liên kết hợp lệ bắt đầu bằng http:// hoặc https://.",
+        "alreadyPending": "Đã có một yêu cầu đang xử lý cho đội này.",
+        "notFound": "Yêu cầu này không tồn tại.",
+        "invalidState": "Yêu cầu này đã ở trạng thái đó.",
+        "emailInvalid": "Địa chỉ email không hợp lệ.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

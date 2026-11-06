@@ -2031,7 +2031,8 @@
       "oauthClients": "OAuth 客户端",
       "settings": "配置",
       "discordImages": "Discord 机器人图片",
-      "rosterWatch": "名单监控"
+      "rosterWatch": "名单监控",
+      "teamRequests": "团队请求"
     },
     "dashboard": {
       "title": "控制台",
@@ -2440,6 +2441,8 @@
         "fieldBio": "简介",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia 链接",
+        "fieldContactEmail": "联系邮箱",
+        "contactEmailHint": "私密信息。仅管理人员可见,绝不会显示在网站或 API 中。",
         "fieldActive": "活跃战队",
         "save": "保存",
         "saveSuccess": "资料已更新。",
@@ -2552,7 +2555,8 @@
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
           "requiresLeft": "勾选“已离开战队”后才能填写离开日期。",
-          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
+          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。",
+          "invalidEmail": "请输入有效的邮箱地址。"
         },
         "fieldOrganization": "组织",
         "organizationPlaceholder": "选择组织",
@@ -3471,7 +3475,8 @@
         "analytics": "统计分析",
         "oauthClients": "OAuth 客户端",
         "settings": "配置",
-        "rosterWatch": "名单监控"
+        "rosterWatch": "名单监控",
+        "teamRequests": "团队请求"
       },
       "permissionNames": {
         "admin_access": "访问管理面板",
@@ -3524,7 +3529,9 @@
         "settings_view": "查看配置和 OpenData 监控",
         "settings_manage": "编辑配置",
         "roster_watch_view": "查看名单监控",
-        "roster_watch_manage": "审核名单监控推文并管理已关注账号"
+        "roster_watch_manage": "审核名单监控推文并管理已关注账号",
+        "team_requests_view": "查看团队请求",
+        "team_requests_manage": "准备并跟进发送给团队的信息请求"
       },
       "create": {
         "button": "新建角色",
@@ -5599,6 +5606,110 @@
       "columnType": "类型",
       "columnDate": "日期",
       "columnReview": "审核"
+    },
+    "teamRequests": {
+      "title": "团队请求",
+      "subtitle": "跟进并发送我们向团队索取信息的请求：标志、社交账号和阵容。",
+      "tabs": {
+        "recommended": "推荐",
+        "pending": "进行中",
+        "done": "已完成"
+      },
+      "scopeLabel": "显示的请求",
+      "scope": {
+        "mine": "我的请求",
+        "all": "所有请求"
+      },
+      "recommended": {
+        "pickTeam": "为另一支团队准备请求",
+        "pickPlaceholder": "选择团队",
+        "searchPlaceholder": "搜索团队...",
+        "noResults": "未找到团队。",
+        "empty": "没有推荐的团队。最近比赛过的团队都已有请求。",
+        "emptyTitle": "未选择团队",
+        "emptyHint": "请在右侧选择一个团队以准备请求。",
+        "listTitle": "推荐团队 ({count})"
+      },
+      "table": {
+        "empty": "这里没有请求。",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "消息",
+        "markDone": "标记为已完成",
+        "reopen": "重新打开",
+        "markedDone": "请求已标记为已完成。",
+        "reopened": "请求已重新打开。",
+        "openContact": "打开联系方式"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "网站",
+        "email": "邮箱",
+        "other": "其他"
+      },
+      "builder": {
+        "title": "{team}的请求",
+        "description": "绿色表示无需处理，红色表示我们向团队索取该信息。",
+        "loading": "正在加载团队数据及其最近的比赛...",
+        "alreadyPending": "该团队已有一个进行中的请求。",
+        "dataTitle": "我们现有的信息",
+        "dataHint": "点击状态可在绿色（正常）和红色（待询问）之间切换。",
+        "toggle": "切换{item}的状态",
+        "logo": "标志",
+        "roster": "阵容",
+        "missing": "缺失",
+        "rosterCount": "当前 {current} 人，过往 {past} 人",
+        "rosterCurrent": "当前阵容",
+        "rosterPast": "过往阵容",
+        "none": "无",
+        "unlistedTitle": "在最近的比赛中出场但不在阵容中",
+        "unlistedMatches": "{count, plural, other {#场比赛}}",
+        "messageTitle": "消息",
+        "messageHint": "根据上方状态生成，复制前可以编辑。",
+        "copy": "复制",
+        "copied": "已复制",
+        "copyFailed": "复制失败，请手动选择文本。",
+        "contactTitle": "联系方式",
+        "noContact": "该团队没有已知的联系方式。请先为团队、其组织、经理或教练添加社交账号。",
+        "kind": {
+          "organization": "组织",
+          "manager": "经理",
+          "coach": "教练",
+          "other": "其他"
+        },
+        "cancel": "取消",
+        "validate": "确认请求",
+        "created": "请求已添加。",
+        "rosterPlayers": "选手",
+        "rosterSubs": "替补",
+        "rosterStaff": "工作人员",
+        "open": "打开此联系方式",
+        "customFree": "其他联系方式",
+        "customFreePlaceholder": "链接、用户名或任何联系方式",
+        "customEmail": "邮箱",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "请选择一支团队。",
+        "teamNotFound": "该团队不存在。",
+        "itemsInvalid": "其中一项无效。",
+        "itemsRequired": "请至少将一项标为红色。",
+        "messageRequired": "消息为必填项。",
+        "messageTooLong": "消息过长（最多 4000 个字符）。",
+        "contactRequired": "请选择一个联系方式。",
+        "contactInvalid": "该联系方式无效。",
+        "contactTooLong": "该联系方式过长（最多 300 个字符）。",
+        "urlInvalid": "网站联系方式必须是以 http:// 或 https:// 开头的有效链接。",
+        "alreadyPending": "该团队已有一个进行中的请求。",
+        "notFound": "该请求不存在。",
+        "invalidState": "该请求已处于此状态。",
+        "emailInvalid": "邮箱地址无效。",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

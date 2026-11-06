@@ -2031,7 +2031,8 @@
       "oauthClients": "Klien OAuth",
       "settings": "Konfigurasi",
       "discordImages": "Gambar bot Discord",
-      "rosterWatch": "Pantauan roster"
+      "rosterWatch": "Pantauan roster",
+      "teamRequests": "Permintaan tim"
     },
     "dashboard": {
       "title": "Dasbor",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "ID VLR",
         "fieldLiquipedia": "Tautan Liquipedia",
+        "fieldContactEmail": "Email kontak",
+        "contactEmailHint": "Privat. Hanya terlihat oleh staf, tidak pernah ditampilkan di situs atau di API.",
         "fieldActive": "Tim aktif",
         "save": "Simpan",
         "saveSuccess": "Profil diperbarui.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Logo tidak dapat disimpan. Coba lagi sebentar lagi.",
           "empty": "Silakan pilih gambar.",
           "requiresLeft": "Centang kotak \"Sudah keluar dari tim\" untuk mengatur tanggal keluar.",
-          "invalidDiscordId": "Masukkan ID pengguna Discord yang valid (17 sampai 20 digit) atau undangan server (discord.gg/...)."
+          "invalidDiscordId": "Masukkan ID pengguna Discord yang valid (17 sampai 20 digit) atau undangan server (discord.gg/...).",
+          "invalidEmail": "Masukkan alamat email yang valid."
         },
         "fieldOrganization": "Organisasi",
         "organizationPlaceholder": "Pilih organisasi",
@@ -3471,7 +3475,8 @@
         "analytics": "Analitik",
         "oauthClients": "Klien OAuth",
         "settings": "Konfigurasi",
-        "rosterWatch": "Pantauan roster"
+        "rosterWatch": "Pantauan roster",
+        "teamRequests": "Permintaan tim"
       },
       "permissionNames": {
         "admin_access": "Mengakses panel admin",
@@ -3524,7 +3529,9 @@
         "settings_view": "Melihat konfigurasi dan pemantauan OpenData",
         "settings_manage": "Mengubah konfigurasi",
         "roster_watch_view": "Lihat pantauan roster",
-        "roster_watch_manage": "Tinjau tweet pantauan roster dan kelola akun yang diikuti"
+        "roster_watch_manage": "Tinjau tweet pantauan roster dan kelola akun yang diikuti",
+        "team_requests_view": "Lihat permintaan tim",
+        "team_requests_manage": "Siapkan dan lacak permintaan informasi yang dikirim ke tim"
       },
       "create": {
         "button": "Peran baru",
@@ -5599,6 +5606,110 @@
       "columnType": "Tipe",
       "columnDate": "Tanggal",
       "columnReview": "Tinjau"
+    },
+    "teamRequests": {
+      "title": "Permintaan tim",
+      "subtitle": "Lacak dan kirim permintaan informasi kita ke tim: logo, media sosial, dan roster.",
+      "tabs": {
+        "recommended": "Direkomendasikan",
+        "pending": "Sedang berjalan",
+        "done": "Selesai"
+      },
+      "scopeLabel": "Permintaan yang ditampilkan",
+      "scope": {
+        "mine": "Permintaan saya",
+        "all": "Semua permintaan"
+      },
+      "recommended": {
+        "pickTeam": "Siapkan permintaan untuk tim lain",
+        "pickPlaceholder": "Pilih tim",
+        "searchPlaceholder": "Cari tim...",
+        "noResults": "Tim tidak ditemukan.",
+        "empty": "Tidak ada tim yang direkomendasikan. Setiap tim yang bermain belakangan ini sudah memiliki permintaan.",
+        "emptyTitle": "Belum ada tim dipilih",
+        "emptyHint": "Pilih tim di sebelah kanan untuk menyiapkan permintaan.",
+        "listTitle": "Tim yang direkomendasikan ({count})"
+      },
+      "table": {
+        "empty": "Tidak ada permintaan di sini.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Pesan",
+        "markDone": "Tandai selesai",
+        "reopen": "Buka kembali",
+        "markedDone": "Permintaan ditandai selesai.",
+        "reopened": "Permintaan dibuka kembali.",
+        "openContact": "Buka kontak"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Situs web",
+        "email": "Email",
+        "other": "Lainnya"
+      },
+      "builder": {
+        "title": "Permintaan untuk {team}",
+        "description": "Hijau berarti tidak ada yang perlu dilakukan, merah berarti kita meminta informasi ke tim.",
+        "loading": "Memuat data tim dan pertandingan terakhirnya...",
+        "alreadyPending": "Sudah ada permintaan yang sedang berjalan untuk tim ini.",
+        "dataTitle": "Yang kita miliki",
+        "dataHint": "Klik sebuah status untuk beralih antara hijau (semua baik) dan merah (perlu diminta).",
+        "toggle": "Ganti status {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Kurang",
+        "rosterCount": "{current} saat ini, {past} sebelumnya",
+        "rosterCurrent": "Roster saat ini",
+        "rosterPast": "Roster sebelumnya",
+        "none": "Tidak ada",
+        "unlistedTitle": "Bermain di pertandingan terakhir tanpa ada di roster",
+        "unlistedMatches": "{count, plural, other {# pertandingan}}",
+        "messageTitle": "Pesan",
+        "messageHint": "Dibuat dari status di atas, Anda dapat mengeditnya sebelum menyalin.",
+        "copy": "Salin",
+        "copied": "Tersalin",
+        "copyFailed": "Gagal menyalin, pilih teksnya secara manual.",
+        "contactTitle": "Kontak",
+        "noContact": "Tidak ada kontak yang diketahui untuk tim ini. Tambahkan dulu media sosial ke tim, organisasinya, manajernya, atau pelatihnya.",
+        "kind": {
+          "organization": "Organisasi",
+          "manager": "Manajer",
+          "coach": "Pelatih",
+          "other": "Lainnya"
+        },
+        "cancel": "Batal",
+        "validate": "Validasi permintaan",
+        "created": "Permintaan ditambahkan.",
+        "rosterPlayers": "Pemain",
+        "rosterSubs": "Cadangan",
+        "rosterStaff": "Staf",
+        "open": "Buka kontak ini",
+        "customFree": "Kontak lain",
+        "customFreePlaceholder": "Tautan, username, atau kontak apa pun",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "nama@contoh.com"
+      },
+      "error": {
+        "teamRequired": "Pilih tim.",
+        "teamNotFound": "Tim ini tidak ada.",
+        "itemsInvalid": "Salah satu item tidak valid.",
+        "itemsRequired": "Tandai merah setidaknya satu item.",
+        "messageRequired": "Pesan wajib diisi.",
+        "messageTooLong": "Pesan terlalu panjang (maksimal 4000 karakter).",
+        "contactRequired": "Pilih kontak.",
+        "contactInvalid": "Kontak ini tidak valid.",
+        "contactTooLong": "Kontak ini terlalu panjang (maksimal 300 karakter).",
+        "urlInvalid": "Kontak situs web harus berupa tautan valid yang diawali http:// atau https://.",
+        "alreadyPending": "Sudah ada permintaan yang sedang berjalan untuk tim ini.",
+        "notFound": "Permintaan ini tidak ada.",
+        "invalidState": "Permintaan ini sudah dalam status tersebut.",
+        "emailInvalid": "Alamat email tidak valid.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

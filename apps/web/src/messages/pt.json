@@ -2031,7 +2031,8 @@
       "oauthClients": "Clientes OAuth",
       "settings": "Configuração",
       "discordImages": "Imagens do bot Discord",
-      "rosterWatch": "Vigilância de rosters"
+      "rosterWatch": "Vigilância de rosters",
+      "teamRequests": "Pedidos às equipas"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "ID VLR",
         "fieldLiquipedia": "Link da Liquipedia",
+        "fieldContactEmail": "Email de contacto",
+        "contactEmailHint": "Privado. Visível apenas para a equipa de staff, nunca exibido no site nem na API.",
         "fieldActive": "Time ativo",
         "save": "Salvar",
         "saveSuccess": "Perfil atualizado.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Não foi possível guardar o logo. Tente novamente daqui a pouco.",
           "empty": "Escolha uma imagem.",
           "requiresLeft": "Marque « Saiu da equipe » para informar uma data de saída.",
-          "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...)."
+          "invalidDiscordId": "Insira um ID de usuário do Discord válido (17 a 20 dígitos) ou um convite de servidor (discord.gg/...).",
+          "invalidEmail": "Introduza um endereço de email válido."
         },
         "fieldOrganization": "Organização",
         "organizationPlaceholder": "Selecionar uma organização",
@@ -3471,7 +3475,8 @@
         "analytics": "Analytics",
         "oauthClients": "Clientes OAuth",
         "settings": "Configuração",
-        "rosterWatch": "Vigilância de rosters"
+        "rosterWatch": "Vigilância de rosters",
+        "teamRequests": "Pedidos às equipas"
       },
       "permissionNames": {
         "admin_access": "Acessar o painel admin",
@@ -3524,7 +3529,9 @@
         "settings_view": "Ver a configuração e o monitoramento do OpenData",
         "settings_manage": "Editar a configuração",
         "roster_watch_view": "Ver a vigilância de rosters",
-        "roster_watch_manage": "Revisar os tweets da vigilância de rosters e gerir as contas seguidas"
+        "roster_watch_manage": "Revisar os tweets da vigilância de rosters e gerir as contas seguidas",
+        "team_requests_view": "Ver os pedidos às equipas",
+        "team_requests_manage": "Preparar e acompanhar os pedidos de informação enviados às equipas"
       },
       "create": {
         "button": "Novo cargo",
@@ -5599,6 +5606,110 @@
       "columnType": "Tipo",
       "columnDate": "Data",
       "columnReview": "Revisar"
+    },
+    "teamRequests": {
+      "title": "Pedidos às equipas",
+      "subtitle": "Acompanhe e envie os nossos pedidos de informação às equipas: logo, redes sociais e roster.",
+      "tabs": {
+        "recommended": "Recomendados",
+        "pending": "Em curso",
+        "done": "Concluídos"
+      },
+      "scopeLabel": "Pedidos mostrados",
+      "scope": {
+        "mine": "Os meus pedidos",
+        "all": "Todos os pedidos"
+      },
+      "recommended": {
+        "pickTeam": "Preparar um pedido para outra equipa",
+        "pickPlaceholder": "Selecione uma equipa",
+        "searchPlaceholder": "Pesquisar uma equipa...",
+        "noResults": "Nenhuma equipa encontrada.",
+        "empty": "Nenhuma equipa recomendada. Todas as equipas que jogaram recentemente já têm um pedido.",
+        "emptyTitle": "Nenhuma equipa selecionada",
+        "emptyHint": "Escolha uma equipa à direita para preparar um pedido.",
+        "listTitle": "Equipas recomendadas ({count})"
+      },
+      "table": {
+        "empty": "Nenhum pedido aqui.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Mensagem",
+        "markDone": "Marcar como concluído",
+        "reopen": "Reabrir",
+        "markedDone": "Pedido marcado como concluído.",
+        "reopened": "Pedido reaberto.",
+        "openContact": "Abrir o contacto"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Site",
+        "email": "Email",
+        "other": "Outro"
+      },
+      "builder": {
+        "title": "Pedido para {team}",
+        "description": "Verde significa que não há nada a fazer, vermelho significa que pedimos a informação à equipa.",
+        "loading": "A carregar os dados da equipa e os seus últimos jogos...",
+        "alreadyPending": "Já existe um pedido em curso para esta equipa.",
+        "dataTitle": "O que temos",
+        "dataHint": "Clique num estado para alternar entre verde (tudo certo) e vermelho (a pedir).",
+        "toggle": "Alternar o estado de {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Em falta",
+        "rosterCount": "{current} atuais, {past} anteriores",
+        "rosterCurrent": "Roster atual",
+        "rosterPast": "Roster anterior",
+        "none": "Nenhum",
+        "unlistedTitle": "Jogaram nos últimos jogos sem estar no roster",
+        "unlistedMatches": "{count, plural, one {# jogo} other {# jogos}}",
+        "messageTitle": "Mensagem",
+        "messageHint": "Gerada a partir dos estados acima, pode editar o texto antes de copiar.",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "copyFailed": "Falha ao copiar, selecione o texto manualmente.",
+        "contactTitle": "Contacto",
+        "noContact": "Nenhum contacto conhecido para esta equipa. Adicione primeiro redes sociais à equipa, à sua organização, ao seu manager ou ao seu coach.",
+        "kind": {
+          "organization": "Organização",
+          "manager": "Manager",
+          "coach": "Coach",
+          "other": "Outro"
+        },
+        "cancel": "Cancelar",
+        "validate": "Validar o pedido",
+        "created": "Pedido adicionado.",
+        "rosterPlayers": "Jogadores",
+        "rosterSubs": "Suplentes",
+        "rosterStaff": "Staff",
+        "open": "Abrir este contacto",
+        "customFree": "Outro contacto",
+        "customFreePlaceholder": "Ligação, utilizador ou qualquer contacto",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "nome@exemplo.com"
+      },
+      "error": {
+        "teamRequired": "Selecione uma equipa.",
+        "teamNotFound": "Esta equipa não existe.",
+        "itemsInvalid": "Um dos itens não é válido.",
+        "itemsRequired": "Sinalize pelo menos um item a vermelho.",
+        "messageRequired": "A mensagem é obrigatória.",
+        "messageTooLong": "A mensagem é demasiado longa (máximo de 4000 caracteres).",
+        "contactRequired": "Selecione um contacto.",
+        "contactInvalid": "Este contacto não é válido.",
+        "contactTooLong": "Este contacto é demasiado longo (máximo de 300 caracteres).",
+        "urlInvalid": "O contacto do site deve ser uma ligação válida que comece por http:// ou https://.",
+        "alreadyPending": "Já existe um pedido em curso para esta equipa.",
+        "notFound": "Este pedido não existe.",
+        "invalidState": "Este pedido já se encontra nesse estado.",
+        "emailInvalid": "O endereço de email não é válido.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

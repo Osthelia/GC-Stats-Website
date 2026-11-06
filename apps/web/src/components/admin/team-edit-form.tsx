@@ -44,6 +44,7 @@ export function TeamEditForm({
   const [bio, setBio] = useState(team.bio ?? "");
   const [vlrId, setVlrId] = useState(team.vlrId ? String(team.vlrId) : "");
   const [liquipediaLink, setLiquipediaLink] = useState(team.liquipediaLink ?? "");
+  const [contactEmail, setContactEmail] = useState(team.contactEmail ?? "");
   const [organization, setOrganization] = useState<{ id: number; name: string } | null>(team.organizationId !== null ? { id: team.organizationId, name: team.organizationName ?? "" } : null);
   const [isActive, setIsActive] = useState(team.isActive);
   const [socials, setSocials] = useState<Record<string, string>>(team.socials);
@@ -52,7 +53,7 @@ export function TeamEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags });
+      const result = await updateTeamProfile(team.id, { name, shortName, countryCode, secondaryCountryCode, bio, vlrId, liquipediaLink, organizationId: organization?.id ?? null, isActive, socials, tags, contactEmail });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -114,6 +115,10 @@ export function TeamEditForm({
                   <Input id="team-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} />
                 </FormField>
               </div>
+
+              <FormField label={t("fieldContactEmail")} htmlFor="team-contact-email" error={err("contactEmail")} hint={t("contactEmailHint")}>
+                <Input id="team-contact-email" type="email" maxLength={254} value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} aria-invalid={!!errors.contactEmail} />
+              </FormField>
 
               <FormField label={t("fieldOrganization")} htmlFor="team-organization" error={err("organizationId")}>
                 <div className="flex items-center gap-2">

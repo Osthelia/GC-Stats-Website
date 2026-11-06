@@ -2031,7 +2031,8 @@
       "oauthClients": "OAuth istemcileri",
       "settings": "Yapılandırma",
       "discordImages": "Discord botu görselleri",
-      "rosterWatch": "Roster takibi"
+      "rosterWatch": "Roster takibi",
+      "teamRequests": "Takım talepleri"
     },
     "dashboard": {
       "title": "Panel",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Biyografi",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia bağlantısı",
+        "fieldContactEmail": "İletişim emaili",
+        "contactEmailHint": "Gizli. Yalnızca yetkililer görebilir, sitede veya API'de asla gösterilmez.",
         "fieldActive": "Aktif takım",
         "save": "Kaydet",
         "saveSuccess": "Profil güncellendi.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
           "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle.",
-          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
+          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin.",
+          "invalidEmail": "Geçerli bir email adresi girin."
         },
         "fieldOrganization": "Organizasyon",
         "organizationPlaceholder": "Bir organizasyon seç",
@@ -3471,7 +3475,8 @@
         "analytics": "Analitik",
         "oauthClients": "OAuth istemcileri",
         "settings": "Yapılandırma",
-        "rosterWatch": "Roster takibi"
+        "rosterWatch": "Roster takibi",
+        "teamRequests": "Takım talepleri"
       },
       "permissionNames": {
         "admin_access": "Yönetim paneline erişim",
@@ -3524,7 +3529,9 @@
         "settings_view": "Yapılandırmayı ve OpenData izlemesini görüntüleme",
         "settings_manage": "Yapılandırmayı düzenleme",
         "roster_watch_view": "Roster takibini görüntüle",
-        "roster_watch_manage": "Roster takibi tweetlerini incele ve takip edilen hesapları yönet"
+        "roster_watch_manage": "Roster takibi tweetlerini incele ve takip edilen hesapları yönet",
+        "team_requests_view": "Takım taleplerini görüntüle",
+        "team_requests_manage": "Takımlara gönderilen bilgi taleplerini hazırla ve takip et"
       },
       "create": {
         "button": "Yeni rol",
@@ -5599,6 +5606,110 @@
       "columnType": "Tür",
       "columnDate": "Tarih",
       "columnReview": "İncele"
+    },
+    "teamRequests": {
+      "title": "Takım talepleri",
+      "subtitle": "Takımlardan istediğimiz bilgileri takip edin ve gönderin: logo, sosyal medya hesapları ve roster.",
+      "tabs": {
+        "recommended": "Önerilenler",
+        "pending": "Devam eden",
+        "done": "Tamamlanan"
+      },
+      "scopeLabel": "Gösterilen talepler",
+      "scope": {
+        "mine": "Taleplerim",
+        "all": "Tüm talepler"
+      },
+      "recommended": {
+        "pickTeam": "Başka bir takım için talep hazırla",
+        "pickPlaceholder": "Bir takım seçin",
+        "searchPlaceholder": "Takım ara...",
+        "noResults": "Takım bulunamadı.",
+        "empty": "Önerilen takım yok. Yakın zamanda oynayan her takımın zaten bir talebi var.",
+        "emptyTitle": "Takım seçilmedi",
+        "emptyHint": "Talep hazırlamak için sağdan bir takım seçin.",
+        "listTitle": "Önerilen takımlar ({count})"
+      },
+      "table": {
+        "empty": "Burada talep yok.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Mesaj",
+        "markDone": "Tamamlandı olarak işaretle",
+        "reopen": "Yeniden aç",
+        "markedDone": "Talep tamamlandı olarak işaretlendi.",
+        "reopened": "Talep yeniden açıldı.",
+        "openContact": "İletişimi aç"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Web sitesi",
+        "email": "Email",
+        "other": "Diğer"
+      },
+      "builder": {
+        "title": "{team} için talep",
+        "description": "Yeşil yapılacak bir şey olmadığını, kırmızı bilgiyi takımdan istediğimizi gösterir.",
+        "loading": "Takım verileri ve son maçları yükleniyor...",
+        "alreadyPending": "Bu takım için zaten devam eden bir talep var.",
+        "dataTitle": "Elimizdekiler",
+        "dataHint": "Yeşil (sorun yok) ve kırmızı (istenecek) arasında geçiş yapmak için bir duruma tıklayın.",
+        "toggle": "{item} durumunu değiştir",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Eksik",
+        "rosterCount": "{current} güncel, {past} eski",
+        "rosterCurrent": "Güncel roster",
+        "rosterPast": "Eski roster",
+        "none": "Yok",
+        "unlistedTitle": "Son maçlarda roster listesinde olmadan oynadılar",
+        "unlistedMatches": "{count, plural, one {# maç} other {# maç}}",
+        "messageTitle": "Mesaj",
+        "messageHint": "Yukarıdaki durumlara göre oluşturuldu, kopyalamadan önce düzenleyebilirsiniz.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "copyFailed": "Kopyalama başarısız, metni elle seçin.",
+        "contactTitle": "İletişim",
+        "noContact": "Bu takım için bilinen bir iletişim yok. Önce takıma, organizasyonuna, menajerine veya koçuna sosyal medya hesapları ekleyin.",
+        "kind": {
+          "organization": "Organizasyon",
+          "manager": "Menajer",
+          "coach": "Koç",
+          "other": "Diğer"
+        },
+        "cancel": "İptal",
+        "validate": "Talebi onayla",
+        "created": "Talep eklendi.",
+        "rosterPlayers": "Oyuncular",
+        "rosterSubs": "Yedekler",
+        "rosterStaff": "Personel",
+        "open": "Bu iletişimi aç",
+        "customFree": "Diğer iletişim",
+        "customFreePlaceholder": "Bağlantı, kullanıcı adı veya herhangi bir iletişim",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "ad@ornek.com"
+      },
+      "error": {
+        "teamRequired": "Bir takım seçin.",
+        "teamNotFound": "Bu takım mevcut değil.",
+        "itemsInvalid": "Öğelerden biri geçerli değil.",
+        "itemsRequired": "En az bir öğeyi kırmızı olarak işaretleyin.",
+        "messageRequired": "Mesaj zorunludur.",
+        "messageTooLong": "Mesaj çok uzun (en fazla 4000 karakter).",
+        "contactRequired": "Bir iletişim seçin.",
+        "contactInvalid": "Bu iletişim geçerli değil.",
+        "contactTooLong": "Bu iletişim çok uzun (en fazla 300 karakter).",
+        "urlInvalid": "Web sitesi iletişimi http:// veya https:// ile başlayan geçerli bir bağlantı olmalıdır.",
+        "alreadyPending": "Bu takım için zaten devam eden bir talep var.",
+        "notFound": "Bu talep mevcut değil.",
+        "invalidState": "Bu talep zaten bu durumda.",
+        "emailInvalid": "Email adresi geçerli değil.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

@@ -2031,7 +2031,8 @@
       "oauthClients": "Mga OAuth client",
       "settings": "Configuration",
       "discordImages": "Mga larawan ng Discord bot",
-      "rosterWatch": "Roster watch"
+      "rosterWatch": "Roster watch",
+      "teamRequests": "Mga request sa team"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Link sa Liquipedia",
+        "fieldContactEmail": "Contact email",
+        "contactEmailHint": "Pribado. Makikita lang ng staff, hindi kailanman ipinapakita sa site o sa API.",
         "fieldActive": "Aktibong team",
         "save": "I-save",
         "saveSuccess": "Na-update ang profile.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Hindi ma-save ang logo. Subukan muli sa ilang sandali.",
           "empty": "Pumili ng larawan.",
           "requiresLeft": "Lagyan ng tsek ang kahong \"Umalis na sa team\" para magtakda ng petsa ng pag-alis.",
-          "invalidDiscordId": "Maglagay ng wastong Discord user ID (17 hanggang 20 digit) o imbitasyon sa server (discord.gg/...)."
+          "invalidDiscordId": "Maglagay ng wastong Discord user ID (17 hanggang 20 digit) o imbitasyon sa server (discord.gg/...).",
+          "invalidEmail": "Maglagay ng wastong email address."
         },
         "fieldOrganization": "Organisasyon",
         "organizationPlaceholder": "Pumili ng organisasyon",
@@ -3471,7 +3475,8 @@
         "analytics": "Analytics",
         "oauthClients": "Mga OAuth client",
         "settings": "Configuration",
-        "rosterWatch": "Roster watch"
+        "rosterWatch": "Roster watch",
+        "teamRequests": "Mga request sa team"
       },
       "permissionNames": {
         "admin_access": "I-access ang admin panel",
@@ -3524,7 +3529,9 @@
         "settings_view": "Tingnan ang configuration at ang monitoring ng OpenData",
         "settings_manage": "Baguhin ang configuration",
         "roster_watch_view": "Tingnan ang roster watch",
-        "roster_watch_manage": "Suriin ang mga tweet ng roster watch at pamahalaan ang mga sinusundan na account"
+        "roster_watch_manage": "Suriin ang mga tweet ng roster watch at pamahalaan ang mga sinusundan na account",
+        "team_requests_view": "Tingnan ang mga request sa team",
+        "team_requests_manage": "Ihanda at subaybayan ang mga request ng impormasyon na ipinapadala sa mga team"
       },
       "create": {
         "button": "Bagong tungkulin",
@@ -5599,6 +5606,110 @@
       "columnType": "Uri",
       "columnDate": "Petsa",
       "columnReview": "Suriin"
+    },
+    "teamRequests": {
+      "title": "Mga request sa team",
+      "subtitle": "Subaybayan at ipadala ang aming mga request ng impormasyon sa mga team: logo, socials, at roster.",
+      "tabs": {
+        "recommended": "Inirerekomenda",
+        "pending": "Isinasagawa",
+        "done": "Tapos na"
+      },
+      "scopeLabel": "Mga request na ipinapakita",
+      "scope": {
+        "mine": "Aking mga request",
+        "all": "Lahat ng request"
+      },
+      "recommended": {
+        "pickTeam": "Maghanda ng request para sa ibang team",
+        "pickPlaceholder": "Pumili ng team",
+        "searchPlaceholder": "Maghanap ng team...",
+        "noResults": "Walang nahanap na team.",
+        "empty": "Walang inirerekomendang team. Ang bawat team na naglaro kamakailan ay may request na.",
+        "emptyTitle": "Walang napiling team",
+        "emptyHint": "Pumili ng team sa kanan para maghanda ng request.",
+        "listTitle": "Mga inirerekomendang team ({count})"
+      },
+      "table": {
+        "empty": "Walang request dito.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Mensahe",
+        "markDone": "Markahan bilang tapos na",
+        "reopen": "Buksan muli",
+        "markedDone": "Namarkahang tapos na ang request.",
+        "reopened": "Binuksan muli ang request.",
+        "openContact": "Buksan ang contact"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Website",
+        "email": "Email",
+        "other": "Iba pa"
+      },
+      "builder": {
+        "title": "Request para sa {team}",
+        "description": "Ang berde ay nangangahulugang walang gagawin, ang pula ay nangangahulugang hihingin namin ang impormasyon sa team.",
+        "loading": "Kinukuha ang data ng team at ang mga huling laban nito...",
+        "alreadyPending": "May isinasagawa nang request para sa team na ito.",
+        "dataTitle": "Ang mayroon kami",
+        "dataHint": "Pindutin ang isang status para lumipat sa pagitan ng berde (maayos na) at pula (hihingin).",
+        "toggle": "Palitan ang status ng {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Kulang",
+        "rosterCount": "{current} kasalukuyan, {past} dati",
+        "rosterCurrent": "Kasalukuyang roster",
+        "rosterPast": "Dating roster",
+        "none": "Wala",
+        "unlistedTitle": "Naglaro sa mga huling laban nang wala sa roster",
+        "unlistedMatches": "{count, plural, one {# match} other {# match}}",
+        "messageTitle": "Mensahe",
+        "messageHint": "Binuo mula sa mga status sa itaas, maaari mo itong baguhin bago kopyahin.",
+        "copy": "Kopyahin",
+        "copied": "Nakopya na",
+        "copyFailed": "Hindi nakopya, piliin nang mano mano ang teksto.",
+        "contactTitle": "Contact",
+        "noContact": "Walang kilalang contact para sa team na ito. Magdagdag muna ng socials sa team, sa organisasyon nito, sa manager nito, o sa coach nito.",
+        "kind": {
+          "organization": "Organisasyon",
+          "manager": "Manager",
+          "coach": "Coach",
+          "other": "Iba pa"
+        },
+        "cancel": "Kanselahin",
+        "validate": "Pagtibayin ang request",
+        "created": "Naidagdag ang request.",
+        "rosterPlayers": "Mga manlalaro",
+        "rosterSubs": "Mga sub",
+        "rosterStaff": "Staff",
+        "open": "Buksan ang contact na ito",
+        "customFree": "Ibang contact",
+        "customFreePlaceholder": "Link, handle o anumang contact",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "pangalan@halimbawa.com"
+      },
+      "error": {
+        "teamRequired": "Pumili ng team.",
+        "teamNotFound": "Hindi umiiral ang team na ito.",
+        "itemsInvalid": "Hindi wasto ang isa sa mga item.",
+        "itemsRequired": "Markahan ng pula ang kahit isang item.",
+        "messageRequired": "Kailangan ang mensahe.",
+        "messageTooLong": "Masyadong mahaba ang mensahe (hanggang 4000 character).",
+        "contactRequired": "Pumili ng contact.",
+        "contactInvalid": "Hindi wasto ang contact na ito.",
+        "contactTooLong": "Masyadong mahaba ang contact na ito (hanggang 300 character).",
+        "urlInvalid": "Ang contact ng website ay dapat isang wastong link na nagsisimula sa http:// o https://.",
+        "alreadyPending": "May isinasagawa nang request para sa team na ito.",
+        "notFound": "Hindi umiiral ang request na ito.",
+        "invalidState": "Nasa status na iyon ang request na ito.",
+        "emailInvalid": "Hindi valid ang email address.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

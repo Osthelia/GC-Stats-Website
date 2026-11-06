@@ -30,6 +30,7 @@ import {
   Flag,
   ShieldAlert,
   Radar,
+  Send,
   MessagesSquare,
   Ban,
   History,
@@ -69,6 +70,7 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
       { href: "/admin/point-types", labelKey: "pointTypes", icon: Trophy, exact: false, permission: PERMISSIONS.pointTypesView },
       { href: "/admin/change-requests", labelKey: "changeRequests", icon: FileEdit, exact: false, permission: PERMISSIONS.changeRequestsView },
       { href: "/admin/roster-watch", labelKey: "rosterWatch", icon: Radar, exact: false, permission: PERMISSIONS.rosterWatchView },
+      { href: "/admin/team-requests", labelKey: "teamRequests", icon: Send, exact: false, permission: PERMISSIONS.teamRequestsView },
     ],
   },
   {

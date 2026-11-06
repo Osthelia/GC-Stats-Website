@@ -2031,7 +2031,8 @@
       "oauthClients": "OAuth-Clients",
       "settings": "Konfiguration",
       "discordImages": "Discord Bot Bilder",
-      "rosterWatch": "Roster Watch"
+      "rosterWatch": "Roster Watch",
+      "teamRequests": "Team Anfragen"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Biografie",
         "fieldVlrId": "VLR-ID",
         "fieldLiquipedia": "Liquipedia Link",
+        "fieldContactEmail": "Kontakt Email",
+        "contactEmailHint": "Privat. Nur für das Staff sichtbar, wird nie auf der Website oder in der API angezeigt.",
         "fieldActive": "Aktives Team",
         "save": "Speichern",
         "saveSuccess": "Profil aktualisiert.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Das Logo konnte nicht gespeichert werden. Versuche es gleich noch einmal.",
           "empty": "Bitte wählen Sie ein Bild aus.",
           "requiresLeft": "Aktiviere „Hat das Team verlassen“, um ein Austrittsdatum anzugeben.",
-          "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein."
+          "invalidDiscordId": "Gib eine gültige Discord Benutzer ID (17 bis 20 Ziffern) oder eine Server Einladung (discord.gg/...) ein.",
+          "invalidEmail": "Gib eine gültige Email Adresse ein."
         },
         "fieldOrganization": "Organisation",
         "organizationPlaceholder": "Organisation auswählen",
@@ -3471,7 +3475,8 @@
         "analytics": "Analytics",
         "oauthClients": "OAuth-Clients",
         "settings": "Konfiguration",
-        "rosterWatch": "Roster Watch"
+        "rosterWatch": "Roster Watch",
+        "teamRequests": "Team Anfragen"
       },
       "permissionNames": {
         "admin_access": "Zugriff auf das Admin Panel",
@@ -3524,7 +3529,9 @@
         "settings_view": "Konfiguration und OpenData Monitoring ansehen",
         "settings_manage": "Konfiguration bearbeiten",
         "roster_watch_view": "Roster Watch ansehen",
-        "roster_watch_manage": "Roster Watch Tweets prüfen und gefolgte Accounts verwalten"
+        "roster_watch_manage": "Roster Watch Tweets prüfen und gefolgte Accounts verwalten",
+        "team_requests_view": "Team Anfragen ansehen",
+        "team_requests_manage": "Informationsanfragen an Teams vorbereiten und verfolgen"
       },
       "create": {
         "button": "Neue Rolle",
@@ -5599,6 +5606,110 @@
       "columnType": "Typ",
       "columnDate": "Datum",
       "columnReview": "Prüfen"
+    },
+    "teamRequests": {
+      "title": "Team Anfragen",
+      "subtitle": "Verfolge und sende unsere Informationsanfragen an Teams: Logo, Social Media und Roster.",
+      "tabs": {
+        "recommended": "Empfohlen",
+        "pending": "In Bearbeitung",
+        "done": "Erledigt"
+      },
+      "scopeLabel": "Angezeigte Anfragen",
+      "scope": {
+        "mine": "Meine Anfragen",
+        "all": "Alle Anfragen"
+      },
+      "recommended": {
+        "pickTeam": "Eine Anfrage für ein anderes Team vorbereiten",
+        "pickPlaceholder": "Team auswählen",
+        "searchPlaceholder": "Team suchen...",
+        "noResults": "Kein Team gefunden.",
+        "empty": "Kein empfohlenes Team. Jedes Team, das kürzlich gespielt hat, hat bereits eine Anfrage.",
+        "emptyTitle": "Kein Team ausgewählt",
+        "emptyHint": "Wähle rechts ein Team aus, um eine Anfrage vorzubereiten.",
+        "listTitle": "Empfohlene Teams ({count})"
+      },
+      "table": {
+        "empty": "Keine Anfrage vorhanden.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Nachricht",
+        "markDone": "Als erledigt markieren",
+        "reopen": "Wieder öffnen",
+        "markedDone": "Anfrage als erledigt markiert.",
+        "reopened": "Anfrage wieder geöffnet.",
+        "openContact": "Kontakt öffnen"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Website",
+        "email": "Email",
+        "other": "Sonstige"
+      },
+      "builder": {
+        "title": "Anfrage für {team}",
+        "description": "Grün bedeutet nichts zu tun, Rot bedeutet, dass wir das Team um die Information bitten.",
+        "loading": "Teamdaten und letzte Matches werden geladen...",
+        "alreadyPending": "Für dieses Team läuft bereits eine Anfrage.",
+        "dataTitle": "Was wir haben",
+        "dataHint": "Klicke auf einen Status, um zwischen Grün (alles gut) und Rot (anzufragen) zu wechseln.",
+        "toggle": "Status von {item} umschalten",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Fehlt",
+        "rosterCount": "{current} aktuell, {past} früher",
+        "rosterCurrent": "Aktuelles Roster",
+        "rosterPast": "Früheres Roster",
+        "none": "Keine",
+        "unlistedTitle": "Haben zuletzt gespielt, ohne im Roster zu stehen",
+        "unlistedMatches": "{count, plural, one {# Match} other {# Matches}}",
+        "messageTitle": "Nachricht",
+        "messageHint": "Aus den obigen Status erzeugt, du kannst sie vor dem Kopieren bearbeiten.",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "copyFailed": "Kopieren fehlgeschlagen, markiere den Text manuell.",
+        "contactTitle": "Kontakt",
+        "noContact": "Für dieses Team ist kein Kontakt bekannt. Füge zuerst Social Media beim Team, seiner Organisation, seinem Manager oder seinem Coach hinzu.",
+        "kind": {
+          "organization": "Organisation",
+          "manager": "Manager",
+          "coach": "Coach",
+          "other": "Sonstige"
+        },
+        "cancel": "Abbrechen",
+        "validate": "Anfrage bestätigen",
+        "created": "Anfrage hinzugefügt.",
+        "rosterPlayers": "Spieler",
+        "rosterSubs": "Ersatzspieler",
+        "rosterStaff": "Staff",
+        "open": "Diesen Kontakt öffnen",
+        "customFree": "Anderer Kontakt",
+        "customFreePlaceholder": "Link, Handle oder beliebiger Kontakt",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "name@beispiel.de"
+      },
+      "error": {
+        "teamRequired": "Wähle ein Team aus.",
+        "teamNotFound": "Dieses Team existiert nicht.",
+        "itemsInvalid": "Eines der Elemente ist ungültig.",
+        "itemsRequired": "Markiere mindestens ein Element rot.",
+        "messageRequired": "Die Nachricht ist erforderlich.",
+        "messageTooLong": "Die Nachricht ist zu lang (maximal 4000 Zeichen).",
+        "contactRequired": "Wähle einen Kontakt aus.",
+        "contactInvalid": "Dieser Kontakt ist ungültig.",
+        "contactTooLong": "Dieser Kontakt ist zu lang (maximal 300 Zeichen).",
+        "urlInvalid": "Der Website Kontakt muss ein gültiger Link sein, der mit http:// oder https:// beginnt.",
+        "alreadyPending": "Für dieses Team läuft bereits eine Anfrage.",
+        "notFound": "Diese Anfrage existiert nicht.",
+        "invalidState": "Diese Anfrage hat bereits diesen Status.",
+        "emailInvalid": "Die Email Adresse ist ungültig.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

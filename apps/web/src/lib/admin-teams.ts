@@ -12,7 +12,7 @@
 
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, entrants, matches, rosterMemberships, people, teamNameHistory, organizations } from "@gc-stats/db";
+import { teams, entrants, matches, rosterMemberships, people, teamNameHistory, organizations, teamPrivateContacts } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
@@ -133,6 +133,8 @@ export type AdminTeamProfile = {
   organizationName: string | null;
   socials: Record<string, string>;
   tags: string[];
+  /** Private, admin only: never part of a public page, the API or an export. */
+  contactEmail: string | null;
 };
 
 export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null> {
@@ -144,6 +146,7 @@ export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null>
     .limit(1);
   if (!found) return null;
   const row = found.team;
+  const [contact] = await db.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, id)).limit(1);
   return {
     organizationId: row.organizationId,
     organizationName: found.organizationName,
@@ -159,6 +162,7 @@ export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null>
     isGhost: row.isGhost,
     socials: (row.socials as Record<string, string>) ?? {},
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
+    contactEmail: contact?.email ?? null,
   };
 }
 

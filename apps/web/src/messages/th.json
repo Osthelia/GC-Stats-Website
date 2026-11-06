@@ -2031,7 +2031,8 @@
       "oauthClients": "ไคลเอนต์ OAuth",
       "settings": "การตั้งค่า",
       "discordImages": "รูปภาพของบอท Discord",
-      "rosterWatch": "ติดตามรายชื่อผู้เล่น"
+      "rosterWatch": "ติดตามรายชื่อผู้เล่น",
+      "teamRequests": "คำขอถึงทีม"
     },
     "dashboard": {
       "title": "แดชบอร์ด",
@@ -2440,6 +2441,8 @@
         "fieldBio": "ประวัติย่อ",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "ลิงก์ Liquipedia",
+        "fieldContactEmail": "อีเมลติดต่อ",
+        "contactEmailHint": "เป็นข้อมูลส่วนตัว เฉพาะทีมงานเท่านั้นที่เห็นได้ และจะไม่แสดงบนเว็บไซต์หรือใน API",
         "fieldActive": "ทีมที่เคลื่อนไหว",
         "save": "บันทึก",
         "saveSuccess": "อัปเดตโปรไฟล์แล้ว",
@@ -2552,7 +2555,8 @@
           "saveFailed": "ไม่สามารถบันทึกโลโก้ได้ โปรดลองอีกครั้งในอีกสักครู่",
           "empty": "กรุณาเลือกรูปภาพ",
           "requiresLeft": "เลือก « ออกจากทีมแล้ว » เพื่อระบุวันที่ออก",
-          "invalidDiscordId": "กรอก Discord User ID ที่ถูกต้อง (17 ถึง 20 หลัก) หรือลิงก์เชิญเซิร์ฟเวอร์ (discord.gg/...)"
+          "invalidDiscordId": "กรอก Discord User ID ที่ถูกต้อง (17 ถึง 20 หลัก) หรือลิงก์เชิญเซิร์ฟเวอร์ (discord.gg/...)",
+          "invalidEmail": "กรอกที่อยู่อีเมลที่ถูกต้อง"
         },
         "fieldOrganization": "องค์กร",
         "organizationPlaceholder": "เลือกองค์กร",
@@ -3471,7 +3475,8 @@
         "analytics": "สถิติการใช้งาน",
         "oauthClients": "ไคลเอนต์ OAuth",
         "settings": "การตั้งค่า",
-        "rosterWatch": "ติดตามรายชื่อผู้เล่น"
+        "rosterWatch": "ติดตามรายชื่อผู้เล่น",
+        "teamRequests": "คำขอถึงทีม"
       },
       "permissionNames": {
         "admin_access": "เข้าถึงแผงผู้ดูแล",
@@ -3524,7 +3529,9 @@
         "settings_view": "ดูการตั้งค่าและการติดตาม OpenData",
         "settings_manage": "แก้ไขการตั้งค่า",
         "roster_watch_view": "ดูการติดตามรายชื่อผู้เล่น",
-        "roster_watch_manage": "ตรวจสอบทวีตของการติดตามรายชื่อผู้เล่นและจัดการบัญชีที่ติดตาม"
+        "roster_watch_manage": "ตรวจสอบทวีตของการติดตามรายชื่อผู้เล่นและจัดการบัญชีที่ติดตาม",
+        "team_requests_view": "ดูคำขอถึงทีม",
+        "team_requests_manage": "เตรียมและติดตามคำขอข้อมูลที่ส่งถึงทีม"
       },
       "create": {
         "button": "บทบาทใหม่",
@@ -5599,6 +5606,110 @@
       "columnType": "ประเภท",
       "columnDate": "วันที่",
       "columnReview": "ตรวจสอบ"
+    },
+    "teamRequests": {
+      "title": "คำขอถึงทีม",
+      "subtitle": "ติดตามและส่งคำขอข้อมูลถึงทีม ได้แก่ โลโก้ โซเชียล และโรสเตอร์",
+      "tabs": {
+        "recommended": "แนะนำ",
+        "pending": "กำลังดำเนินการ",
+        "done": "เสร็จแล้ว"
+      },
+      "scopeLabel": "คำขอที่แสดง",
+      "scope": {
+        "mine": "คำขอของฉัน",
+        "all": "คำขอทั้งหมด"
+      },
+      "recommended": {
+        "pickTeam": "เตรียมคำขอสำหรับทีมอื่น",
+        "pickPlaceholder": "เลือกทีม",
+        "searchPlaceholder": "ค้นหาทีม...",
+        "noResults": "ไม่พบทีม",
+        "empty": "ไม่มีทีมแนะนำ ทุกทีมที่เล่นเมื่อเร็วๆ นี้มีคำขออยู่แล้ว",
+        "emptyTitle": "ยังไม่ได้เลือกทีม",
+        "emptyHint": "เลือกทีมทางขวาเพื่อเตรียมคำขอ",
+        "listTitle": "ทีมที่แนะนำ ({count})"
+      },
+      "table": {
+        "empty": "ไม่มีคำขอที่นี่",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "ข้อความ",
+        "markDone": "ทำเครื่องหมายว่าเสร็จแล้ว",
+        "reopen": "เปิดใหม่",
+        "markedDone": "ทำเครื่องหมายคำขอว่าเสร็จแล้ว",
+        "reopened": "เปิดคำขอใหม่แล้ว",
+        "openContact": "เปิดช่องทางติดต่อ"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "เว็บไซต์",
+        "email": "อีเมล",
+        "other": "อื่น ๆ"
+      },
+      "builder": {
+        "title": "คำขอสำหรับ {team}",
+        "description": "สีเขียวหมายถึงไม่ต้องทำอะไร สีแดงหมายถึงเราจะขอข้อมูลจากทีม",
+        "loading": "กำลังโหลดข้อมูลทีมและแมตช์ล่าสุด...",
+        "alreadyPending": "มีคำขอที่กำลังดำเนินการสำหรับทีมนี้อยู่แล้ว",
+        "dataTitle": "ข้อมูลที่เรามี",
+        "dataHint": "คลิกที่สถานะเพื่อสลับระหว่างสีเขียว (ปกติดี) และสีแดง (ต้องขอ)",
+        "toggle": "สลับสถานะของ {item}",
+        "logo": "โลโก้",
+        "roster": "โรสเตอร์",
+        "missing": "ขาดหาย",
+        "rosterCount": "ปัจจุบัน {current} คน อดีต {past} คน",
+        "rosterCurrent": "โรสเตอร์ปัจจุบัน",
+        "rosterPast": "โรสเตอร์ในอดีต",
+        "none": "ไม่มี",
+        "unlistedTitle": "ลงเล่นในแมตช์ล่าสุดโดยไม่อยู่ในโรสเตอร์",
+        "unlistedMatches": "{count, plural, other {# แมตช์}}",
+        "messageTitle": "ข้อความ",
+        "messageHint": "สร้างจากสถานะด้านบน คุณแก้ไขได้ก่อนคัดลอก",
+        "copy": "คัดลอก",
+        "copied": "คัดลอกแล้ว",
+        "copyFailed": "คัดลอกไม่สำเร็จ โปรดเลือกข้อความด้วยตนเอง",
+        "contactTitle": "ผู้ติดต่อ",
+        "noContact": "ไม่มีข้อมูลติดต่อของทีมนี้ โปรดเพิ่มโซเชียลของทีม องค์กร ผู้จัดการ หรือโค้ชก่อน",
+        "kind": {
+          "organization": "องค์กร",
+          "manager": "ผู้จัดการ",
+          "coach": "โค้ช",
+          "other": "อื่น ๆ"
+        },
+        "cancel": "ยกเลิก",
+        "validate": "ยืนยันคำขอ",
+        "created": "เพิ่มคำขอแล้ว",
+        "rosterPlayers": "ผู้เล่น",
+        "rosterSubs": "ตัวสำรอง",
+        "rosterStaff": "สตาฟ",
+        "open": "เปิดช่องทางติดต่อนี้",
+        "customFree": "ช่องทางติดต่ออื่น",
+        "customFreePlaceholder": "ลิงก์ ชื่อผู้ใช้ หรือช่องทางติดต่อใดก็ได้",
+        "customEmail": "อีเมล",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "เลือกทีม",
+        "teamNotFound": "ไม่มีทีมนี้",
+        "itemsInvalid": "มีรายการหนึ่งที่ไม่ถูกต้อง",
+        "itemsRequired": "ทำเครื่องหมายสีแดงอย่างน้อยหนึ่งรายการ",
+        "messageRequired": "ต้องระบุข้อความ",
+        "messageTooLong": "ข้อความยาวเกินไป (สูงสุด 4000 ตัวอักษร)",
+        "contactRequired": "เลือกผู้ติดต่อ",
+        "contactInvalid": "ผู้ติดต่อนี้ไม่ถูกต้อง",
+        "contactTooLong": "ผู้ติดต่อนี้ยาวเกินไป (สูงสุด 300 ตัวอักษร)",
+        "urlInvalid": "ช่องทางติดต่อเว็บไซต์ต้องเป็นลิงก์ที่ถูกต้องซึ่งขึ้นต้นด้วย http:// หรือ https://",
+        "alreadyPending": "มีคำขอที่กำลังดำเนินการสำหรับทีมนี้อยู่แล้ว",
+        "notFound": "ไม่มีคำขอนี้",
+        "invalidState": "คำขอนี้อยู่ในสถานะนั้นแล้ว",
+        "emailInvalid": "ที่อยู่อีเมลไม่ถูกต้อง",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {

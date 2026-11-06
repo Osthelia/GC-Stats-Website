@@ -2031,7 +2031,8 @@
       "oauthClients": "Klienci OAuth",
       "settings": "Konfiguracja",
       "discordImages": "Obrazy bota Discord",
-      "rosterWatch": "Obserwacja rosterów"
+      "rosterWatch": "Obserwacja rosterów",
+      "teamRequests": "Prośby do zespołów"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2440,6 +2441,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "ID VLR",
         "fieldLiquipedia": "Link do Liquipedii",
+        "fieldContactEmail": "Email kontaktowy",
+        "contactEmailHint": "Prywatne. Widoczne tylko dla staffu, nigdy nie jest wyświetlane na stronie ani w API.",
         "fieldActive": "Aktywna drużyna",
         "save": "Zapisz",
         "saveSuccess": "Profil zaktualizowany.",
@@ -2552,7 +2555,8 @@
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
           "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia.",
-          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...)."
+          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...).",
+          "invalidEmail": "Wpisz prawidłowy adres email."
         },
         "fieldOrganization": "Organizacja",
         "organizationPlaceholder": "Wybierz organizację",
@@ -3471,7 +3475,8 @@
         "analytics": "Statystyki ruchu",
         "oauthClients": "Klienci OAuth",
         "settings": "Konfiguracja",
-        "rosterWatch": "Obserwacja rosterów"
+        "rosterWatch": "Obserwacja rosterów",
+        "teamRequests": "Prośby do zespołów"
       },
       "permissionNames": {
         "admin_access": "Dostęp do panelu admina",
@@ -3524,7 +3529,9 @@
         "settings_view": "Wyświetlanie konfiguracji i monitoringu OpenData",
         "settings_manage": "Edycja konfiguracji",
         "roster_watch_view": "Zobacz obserwację rosterów",
-        "roster_watch_manage": "Przeglądaj tweety z obserwacji rosterów i zarządzaj obserwowanymi kontami"
+        "roster_watch_manage": "Przeglądaj tweety z obserwacji rosterów i zarządzaj obserwowanymi kontami",
+        "team_requests_view": "Wyświetlanie próśb do zespołów",
+        "team_requests_manage": "Przygotowywanie i śledzenie próśb o informacje wysyłanych do zespołów"
       },
       "create": {
         "button": "Nowa rola",
@@ -5599,6 +5606,110 @@
       "columnType": "Typ",
       "columnDate": "Data",
       "columnReview": "Przegląd"
+    },
+    "teamRequests": {
+      "title": "Prośby do zespołów",
+      "subtitle": "Śledź i wysyłaj nasze prośby o informacje do zespołów: logo, social media i roster.",
+      "tabs": {
+        "recommended": "Polecane",
+        "pending": "W toku",
+        "done": "Zakończone"
+      },
+      "scopeLabel": "Wyświetlane prośby",
+      "scope": {
+        "mine": "Moje prośby",
+        "all": "Wszystkie prośby"
+      },
+      "recommended": {
+        "pickTeam": "Przygotuj prośbę dla innego zespołu",
+        "pickPlaceholder": "Wybierz zespół",
+        "searchPlaceholder": "Szukaj zespołu...",
+        "noResults": "Nie znaleziono zespołu.",
+        "empty": "Brak polecanych zespołów. Każdy zespół, który niedawno grał, ma już prośbę.",
+        "emptyTitle": "Nie wybrano zespołu",
+        "emptyHint": "Wybierz zespół po prawej, aby przygotować prośbę.",
+        "listTitle": "Polecane zespoły ({count})"
+      },
+      "table": {
+        "empty": "Brak próśb.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Wiadomość",
+        "markDone": "Oznacz jako zakończoną",
+        "reopen": "Otwórz ponownie",
+        "markedDone": "Prośba oznaczona jako zakończona.",
+        "reopened": "Prośba otwarta ponownie.",
+        "openContact": "Otwórz kontakt"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Strona internetowa",
+        "email": "Email",
+        "other": "Inne"
+      },
+      "builder": {
+        "title": "Prośba dla {team}",
+        "description": "Zielony oznacza, że nic nie trzeba robić, czerwony oznacza, że prosimy zespół o informację.",
+        "loading": "Wczytywanie danych zespołu i jego ostatnich meczów...",
+        "alreadyPending": "Dla tego zespołu trwa już prośba.",
+        "dataTitle": "Co posiadamy",
+        "dataHint": "Kliknij status, aby przełączać między zielonym (wszystko w porządku) a czerwonym (do zapytania).",
+        "toggle": "Przełącz status: {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Brakuje",
+        "rosterCount": "{current} obecnych, {past} dawnych",
+        "rosterCurrent": "Obecny roster",
+        "rosterPast": "Dawny roster",
+        "none": "Brak",
+        "unlistedTitle": "Grali w ostatnich meczach, nie będąc w rosterze",
+        "unlistedMatches": "{count, plural, one {# mecz} few {# mecze} many {# meczów} other {# meczu}}",
+        "messageTitle": "Wiadomość",
+        "messageHint": "Wygenerowana na podstawie statusów powyżej, możesz ją edytować przed skopiowaniem.",
+        "copy": "Kopiuj",
+        "copied": "Skopiowano",
+        "copyFailed": "Kopiowanie nie powiodło się, zaznacz tekst ręcznie.",
+        "contactTitle": "Kontakt",
+        "noContact": "Brak znanego kontaktu do tego zespołu. Najpierw dodaj social media zespołu, jego organizacji, managera lub trenera.",
+        "kind": {
+          "organization": "Organizacja",
+          "manager": "Manager",
+          "coach": "Trener",
+          "other": "Inne"
+        },
+        "cancel": "Anuluj",
+        "validate": "Zatwierdź prośbę",
+        "created": "Prośba dodana.",
+        "rosterPlayers": "Zawodnicy",
+        "rosterSubs": "Rezerwowi",
+        "rosterStaff": "Staff",
+        "open": "Otwórz ten kontakt",
+        "customFree": "Inny kontakt",
+        "customFreePlaceholder": "Link, nick lub dowolny kontakt",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "imie@przyklad.pl"
+      },
+      "error": {
+        "teamRequired": "Wybierz zespół.",
+        "teamNotFound": "Ten zespół nie istnieje.",
+        "itemsInvalid": "Jeden z elementów jest nieprawidłowy.",
+        "itemsRequired": "Oznacz na czerwono co najmniej jeden element.",
+        "messageRequired": "Wiadomość jest wymagana.",
+        "messageTooLong": "Wiadomość jest za długa (maksymalnie 4000 znaków).",
+        "contactRequired": "Wybierz kontakt.",
+        "contactInvalid": "Ten kontakt jest nieprawidłowy.",
+        "contactTooLong": "Ten kontakt jest za długi (maksymalnie 300 znaków).",
+        "urlInvalid": "Kontakt do strony internetowej musi być poprawnym linkiem zaczynającym się od http:// lub https://.",
+        "alreadyPending": "Dla tego zespołu trwa już prośba.",
+        "notFound": "Ta prośba nie istnieje.",
+        "invalidState": "Ta prośba ma już ten status.",
+        "emailInvalid": "Adres email jest nieprawidłowy.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
