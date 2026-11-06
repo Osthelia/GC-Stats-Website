@@ -20,7 +20,7 @@ const INSIGHT_COLORS: Record<ChampionInsight["label"], string> = {
 };
 
 /** The most icons a card shows; further tied champions are a "+N" and stay in the name line and its tooltip. */
-const STACKED_ICONS = 4;
+const STACKED_ICONS = 3;
 
 /** The icons of the champions on a card, overlapping; each one ringed in the card colour so the edges stay apart. */
 function ChampionStack({ names, iconUrls }: { names: string[]; iconUrls: Record<string, string | null> }) {
