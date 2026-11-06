@@ -3874,6 +3874,7 @@
             "points": "Punkty",
             "buchholz": "Buchholz",
             "map_diff": "Różnica map",
+            "game_diff": "Różnica gier",
             "round_diff": "Różnica rund",
             "head_to_head": "Bezpośrednie starcie",
             "seed": "Seed"
@@ -3882,10 +3883,12 @@
         "pointsConfig": {
           "title": "Punkty",
           "hint": "Każdy wygrany lub przegrany mecz, mapa i runda daje drużynie punkty. Rundy liczą się tylko na mapach z zapisanym wynikiem.",
+          "hintGames": "Każdy wygrany lub przegrany mecz i każda gra daje drużynie punkty.",
           "enable": "Używaj punktów",
           "scopes": {
             "match": "Mecz",
             "map": "Każda mapa",
+            "game": "Każda gra",
             "round": "Każda runda",
             "forfeit": "Walkower (zastępuje pozostałe)"
           },

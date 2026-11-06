@@ -3838,6 +3838,7 @@
             "points": "Puntos",
             "buchholz": "Buchholz",
             "map_diff": "Diperensya ng map",
+            "game_diff": "Diperensya ng laro",
             "round_diff": "Diperensya ng round",
             "head_to_head": "Head to head",
             "seed": "Seed"
@@ -3846,10 +3847,12 @@
         "pointsConfig": {
           "title": "Puntos",
           "hint": "Bawat match, map at round na naipanalo o natalo ay nagbibigay ng puntos sa team. Binibilang lang ang mga round sa mga map na may naitalang score.",
+          "hintGames": "Bawat match at laro na naipanalo o natalo ay nagbibigay ng puntos sa team.",
           "enable": "Gumamit ng puntos",
           "scopes": {
             "match": "Match",
             "map": "Bawat map",
+            "game": "Bawat laro",
             "round": "Bawat round",
             "forfeit": "Forfeit (pumapalit sa iba)"
           },

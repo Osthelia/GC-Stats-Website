@@ -3838,6 +3838,7 @@
             "points": "積分",
             "buchholz": "Buchholz",
             "map_diff": "地圖差",
+            "game_diff": "對局差",
             "round_diff": "回合差",
             "head_to_head": "直接對戰",
             "seed": "種子"
@@ -3846,10 +3847,12 @@
         "pointsConfig": {
           "title": "積分",
           "hint": "每場勝負的比賽、地圖和回合都會為隊伍帶來積分。回合僅在已記錄比分的地圖上計算。",
+          "hintGames": "每場勝負的比賽與對局都會為隊伍帶來積分。",
           "enable": "使用積分",
           "scopes": {
             "match": "比賽",
             "map": "每張地圖",
+            "game": "每場對局",
             "round": "每個回合",
             "forfeit": "棄權（取代其他項）"
           },

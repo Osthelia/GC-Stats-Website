@@ -283,7 +283,7 @@ export function ContainerDialog({
               <div className="flex flex-col gap-3 rounded-md border p-3">
                 <div>
                   <p className="text-sm font-medium">{t("pointsConfig.title")}</p>
-                  <p className="text-xs text-muted-foreground">{t("pointsConfig.hint")}</p>
+                  <p className="text-xs text-muted-foreground">{t(gameHasMaps(game) ? "pointsConfig.hint" : "pointsConfig.hintGames")}</p>
                 </div>
                 <label className="flex w-fit cursor-pointer items-center gap-2 text-sm">
                   <Checkbox checked={form.pointsOn} onCheckedChange={(checked) => set("pointsOn", checked === true)} />
@@ -293,7 +293,7 @@ export function ContainerDialog({
                   <div className="grid gap-3 sm:grid-cols-2">
                     {(["match", "map", "round", "forfeit"] as const).filter((scope) => scope !== "round" || gameHasMaps(game)).map((scope) => (
                       <div key={scope} className="flex flex-col gap-2 rounded-md border p-2.5">
-                        <p className="text-xs font-semibold text-muted-foreground">{t(`pointsConfig.scopes.${scope}`)}</p>
+                        <p className="text-xs font-semibold text-muted-foreground">{t(`pointsConfig.scopes.${scope === "map" && !gameHasMaps(game) ? "game" : scope}`)}</p>
                         <div className="flex gap-2">
                           {(["Win", "Loss"] as const).map((side) => {
                             const field = `${scope}${side}` as PointsField;

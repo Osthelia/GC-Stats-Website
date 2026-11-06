@@ -3874,6 +3874,7 @@
             "points": "포인트",
             "buchholz": "Buchholz",
             "map_diff": "맵 득실",
+            "game_diff": "게임 득실",
             "round_diff": "라운드 득실",
             "head_to_head": "상대 전적",
             "seed": "시드"
@@ -3882,10 +3883,12 @@
         "pointsConfig": {
           "title": "포인트",
           "hint": "이기거나 진 각 경기, 맵, 라운드가 팀에 포인트를 줍니다. 라운드는 점수가 기록된 맵에서만 계산됩니다.",
+          "hintGames": "이기거나 진 각 경기와 게임이 팀에 포인트를 줍니다.",
           "enable": "포인트 사용",
           "scopes": {
             "match": "경기",
             "map": "각 맵",
+            "game": "각 게임",
             "round": "각 라운드",
             "forfeit": "몰수 (다른 항목 대체)"
           },

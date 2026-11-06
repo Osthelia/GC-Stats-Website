@@ -3874,6 +3874,7 @@
             "points": "Puan",
             "buchholz": "Buchholz",
             "map_diff": "Harita farkı",
+            "game_diff": "Oyun farkı",
             "round_diff": "Raunt farkı",
             "head_to_head": "İkili averaj",
             "seed": "Seed"
@@ -3882,10 +3883,12 @@
         "pointsConfig": {
           "title": "Puan",
           "hint": "Kazanılan veya kaybedilen her maç, harita ve raunt takıma puan kazandırır. Rauntlar yalnızca skoru girilmiş haritalarda sayılır.",
+          "hintGames": "Kazanılan veya kaybedilen her maç ve oyun takıma puan kazandırır.",
           "enable": "Puan kullan",
           "scopes": {
             "match": "Maç",
             "map": "Her harita",
+            "game": "Her oyun",
             "round": "Her raunt",
             "forfeit": "Hükmen (diğerlerinin yerine geçer)"
           },

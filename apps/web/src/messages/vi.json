@@ -3838,6 +3838,7 @@
             "points": "Điểm",
             "buchholz": "Buchholz",
             "map_diff": "Hiệu số map",
+            "game_diff": "Hiệu số ván",
             "round_diff": "Hiệu số round",
             "head_to_head": "Đối đầu",
             "seed": "Seed"
@@ -3846,10 +3847,12 @@
         "pointsConfig": {
           "title": "Điểm",
           "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số.",
+          "hintGames": "Mỗi trận và ván thắng hoặc thua đều mang lại điểm cho đội.",
           "enable": "Dùng điểm",
           "scopes": {
             "match": "Trận",
             "map": "Mỗi map",
+            "game": "Mỗi ván",
             "round": "Mỗi round",
             "forfeit": "Xử thua (thay thế các mục khác)"
           },

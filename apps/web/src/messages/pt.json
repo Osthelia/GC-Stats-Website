@@ -3874,6 +3874,7 @@
             "points": "Pontos",
             "buchholz": "Buchholz",
             "map_diff": "Diferença de mapas",
+            "game_diff": "Diferença de jogos",
             "round_diff": "Diferença de rounds",
             "head_to_head": "Confronto direto",
             "seed": "Seed"
@@ -3882,10 +3883,12 @@
         "pointsConfig": {
           "title": "Pontos",
           "hint": "Cada partida, mapa e round ganho ou perdido dá pontos à equipe. Os rounds só contam nos mapas com placar registrado.",
+          "hintGames": "Cada partida e cada jogo ganho ou perdido dá pontos à equipe.",
           "enable": "Usar pontos",
           "scopes": {
             "match": "Partida",
             "map": "Cada mapa",
+            "game": "Cada jogo",
             "round": "Cada round",
             "forfeit": "W.O. (substitui os outros)"
           },

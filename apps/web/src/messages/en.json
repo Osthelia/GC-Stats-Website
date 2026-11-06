@@ -3882,6 +3882,7 @@
             "points": "Points",
             "buchholz": "Buchholz",
             "map_diff": "Map difference",
+            "game_diff": "Game difference",
             "round_diff": "Round difference",
             "head_to_head": "Head to head",
             "seed": "Seed"
@@ -3890,10 +3891,12 @@
         "pointsConfig": {
           "title": "Points",
           "hint": "Each match, map and round won or lost gives points to the team. Rounds count only on maps with a recorded score.",
+          "hintGames": "Each match and game won or lost gives points to the team.",
           "enable": "Use points",
           "scopes": {
             "match": "Match",
             "map": "Each map",
+            "game": "Each game",
             "round": "Each round",
             "forfeit": "Forfeit (replaces the others)"
           },

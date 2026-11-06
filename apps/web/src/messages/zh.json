@@ -3874,6 +3874,7 @@
             "points": "积分",
             "buchholz": "Buchholz",
             "map_diff": "地图差",
+            "game_diff": "局差",
             "round_diff": "回合差",
             "head_to_head": "相互战绩",
             "seed": "种子"
@@ -3882,10 +3883,12 @@
         "pointsConfig": {
           "title": "积分",
           "hint": "每场胜负的比赛、地图和回合都会为队伍带来积分。回合仅在已记录比分的地图上计算。",
+          "hintGames": "每场胜负的比赛与对局都会为队伍带来积分。",
           "enable": "使用积分",
           "scopes": {
             "match": "比赛",
             "map": "每张地图",
+            "game": "每局",
             "round": "每个回合",
             "forfeit": "弃权（取代其他项）"
           },
