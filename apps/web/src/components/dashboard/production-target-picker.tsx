@@ -19,6 +19,13 @@ import { RequiredMark } from "@/components/admin/required-mark";
 import { searchTournamentsForCredit, getMatchOptionsForCredit, getMapOptionsForCredit } from "@/actions/dashboard-production-credits";
 import type { ProductionCreditScope } from "@/lib/production-credit-validation";
 import { useGame } from "@/lib/use-game";
+import { GAME_INFO } from "@gc-stats/db/game";
+
+/** Translation keys of the map level of the credit picker: "Map" for Valorant, "Game" for LoL. */
+const PICKER_UNIT_KEYS = {
+  Map: { empty: "mapEmpty", search: "mapSearchPlaceholder", open: "openMaps", level: "level.map" },
+  Game: { empty: "gameEmpty", search: "gameSearchPlaceholder", open: "openGames", level: "level.game" },
+} as const;
 
 export type SelectedTarget = {
   scope: ProductionCreditScope;
@@ -74,7 +81,7 @@ export function ProductionTargetPicker({
           ? searchTournamentsForCredit(game, organizationId, filter).then((r) => r.map((x) => ({ id: x.id, label: x.name })))
           : level === "match"
             ? getMatchOptionsForCredit(game, organizationId, tournament!.id)
-            : getMapOptionsForCredit(organizationId, match!.id);
+            : getMapOptionsForCredit(game, organizationId, match!.id);
       request.then((result) => {
         if (cancelled) return;
         setRows(result);
@@ -127,8 +134,9 @@ export function ProductionTargetPicker({
     return 0;
   }
 
-  const emptyLabel = level === "tournament" ? t("tournamentNoResults") : level === "match" ? t("matchEmpty") : t("mapEmpty");
-  const searchPlaceholder = level === "tournament" ? t("tournamentSearchPlaceholder") : level === "match" ? t("matchSearchPlaceholder") : t("mapSearchPlaceholder");
+  const unitKeys = PICKER_UNIT_KEYS[GAME_INFO[game].seriesUnit];
+  const emptyLabel = level === "tournament" ? t("tournamentNoResults") : level === "match" ? t("matchEmpty") : t(unitKeys.empty);
+  const searchPlaceholder = level === "tournament" ? t("tournamentSearchPlaceholder") : level === "match" ? t("matchSearchPlaceholder") : t(unitKeys.search);
 
   return (
     <div className="flex flex-col gap-3">
@@ -211,7 +219,7 @@ export function ProductionTargetPicker({
                       aria-label={t("openLevel", { name: row.label })}
                       className="flex shrink-0 items-center gap-1.5 self-stretch border-l bg-muted/40 px-4 text-sm font-semibold transition-colors hover:bg-accent active:bg-accent/70"
                     >
-                      {level === "tournament" ? t("openMatches") : t("openMaps")}
+                      {level === "tournament" ? t("openMatches") : t(unitKeys.open)}
                       <ChevronRightIcon className="size-5" />
                     </button>
                   )}
@@ -233,7 +241,9 @@ export function ProductionTargetPicker({
 }
 
 function TargetSummary({ value, onChange }: { value: SelectedTarget[]; onChange: (next: SelectedTarget[]) => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.credits");
+  const mapLevelKey = PICKER_UNIT_KEYS[GAME_INFO[game].seriesUnit].level;
 
   return (
     <div className="flex flex-col gap-1.5 rounded-lg border border-dashed bg-muted/30 p-2.5">
@@ -250,7 +260,7 @@ function TargetSummary({ value, onChange }: { value: SelectedTarget[]; onChange:
         <ul className="flex flex-wrap gap-1.5">
           {value.map((v) => (
             <li key={keyOf(v.scope, v.id)} className="flex max-w-full items-center gap-1 rounded-md border bg-background py-0.5 pr-0.5 pl-2 text-xs">
-              <span className="shrink-0 font-semibold text-primary">{t(`level.${v.scope}`)}</span>
+              <span className="shrink-0 font-semibold text-primary">{t(v.scope === "map" ? mapLevelKey : `level.${v.scope}`)}</span>
               <span className="flex min-w-0 items-center gap-0.5 truncate">
                 {v.parents.map((p, i) => (
                   <span key={i} className="flex items-center gap-0.5 text-muted-foreground">

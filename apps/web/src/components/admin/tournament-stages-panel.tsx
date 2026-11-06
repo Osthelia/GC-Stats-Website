@@ -32,6 +32,7 @@ import { deleteContainer } from "@/actions/admin-containers";
 import { DragHandle, DropSlot, StructureDnd, useStructureDnd } from "@/components/admin/structure-dnd";
 import { startSwissRound1, resetContainer } from "@/actions/admin-bracket-editor";
 import { stageContainerStatusBadgeClass, tournamentActiveBadgeClass } from "@/lib/status-colors";
+import { usesStageScope } from "@/lib/bracket/config-types";
 import type { AdminStageRow, AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 import { useGame } from "@/lib/use-game";
 
@@ -58,6 +59,13 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
   const isSwiss = container.containerType === "group" && (container.config as { type?: string } | null)?.type === "swiss";
   const swissStarted = container.matchCount > 0;
   const isGroup = container.containerType === "group";
+  // Teams pinned to another group of this stage are taken: one team plays in one group per stage.
+  const assignedElsewhere: Record<number, string> = {};
+  for (const other of stage.containers) {
+    if (other.id === container.id) continue;
+    for (const entrantId of other.groupEntryEntrantIds) assignedElsewhere[entrantId] = other.name;
+  }
+  const isStageScoped = isGroup && usesStageScope(container.config);
 
   function openDeleteConfirm() {
     setForceDelete(false);
@@ -134,9 +142,16 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
             )}
           </>
         ) : (
-          <Button variant="outline" size="sm" render={<Link href={`/admin/tournaments/${tournamentId}/stages/${stage.id}/editor`} />}>
-            {t("openEditorButton")}
-          </Button>
+          <>
+            {isStageScoped && (
+              <Button variant="outline" size="sm" onClick={() => setAssigning(true)}>
+                {t("assignEntrantsButton")}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" render={<Link href={`/admin/tournaments/${tournamentId}/stages/${stage.id}/editor`} />}>
+              {t("openEditorButton")}
+            </Button>
+          </>
         )}
         {isGroup && (!isSwiss || swissStarted) && (
           <Button variant="outline" size="sm" onClick={() => setAddingMatch(true)}>
@@ -156,7 +171,7 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
         </Button>
       </div>
 
-      <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} open={assigning} onOpenChange={setAssigning} />
+      <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} assignedElsewhere={assignedElsewhere} open={assigning} onOpenChange={setAssigning} />
       {isGroup && <AddGroupMatchDialog stageId={stage.id} container={container} entrants={entrants} open={addingMatch} onOpenChange={setAddingMatch} />}
       <ContainerDialog stageId={stage.id} container={container} sets={sets} open={editingContainer} onOpenChange={setEditingContainer} />
       <ConfirmDialog

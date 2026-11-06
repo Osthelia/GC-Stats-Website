@@ -11,7 +11,7 @@ import { defineConfig } from "drizzle-kit";
 // `db:generate` only diffs the schema against ./drizzle — no live DB needed.
 // `db:migrate` needs DATABASE_URL pointing at a real Postgres instance.
 export default defineConfig({
-  schema: "./src/schema/*.ts",
+  schema: "./src/schema/index.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {

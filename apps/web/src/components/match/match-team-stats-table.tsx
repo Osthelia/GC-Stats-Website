@@ -10,12 +10,11 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
 import { slugify } from "@/lib/entity-id";
 import { formatSideScore } from "@/lib/match-score-format";
 import { AgentIcon } from "@/components/match/agent-icon";
 import type { MatchMapPlayerRow, MatchSide } from "@/lib/match-page-data";
-import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import { MatchScoreboardHeader } from "@/components/match/match-scoreboard-header";
 
 const GRID_COLS = "100px 160px minmax(16px,1fr) 44px 82px 42px 42px 54px 38px 16px 38px 54px 42px 42px 82px 44px minmax(16px,1fr) 160px 100px";
 const GRID_COLS_MOBILE = "32px minmax(90px,140px) 36px 66px 34px 34px 46px 32px";
@@ -51,34 +50,18 @@ export function MatchTeamStatsTable({
   score?: { a: number | null; b: number | null };
 }) {
   const t = useTranslations("matchPage");
-  const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoALight = a.logoUrlLight ?? a.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
-  const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
   const rowCount = Math.max(statsA.length, statsB.length);
   const maxAcs = statsA.concat(statsB).reduce<number | null>((max, s) => (max == null || s.acs > max ? s.acs : max), null);
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-neutral-800 px-5 py-4">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
-            <ThemedLogoImage dark={logoA} light={logoALight} alt={teamAName} width={28} height={28} className="h-6 w-6 object-contain" />
-          </div>
-          <span className="truncate text-sm font-black text-[var(--gcs-text)] italic">{teamAName}</span>
-        </div>
-        <div className="flex shrink-0 items-center gap-3 px-2 font-mono text-[11px] font-bold tracking-[0.3em] uppercase">
-          {score && <span className="text-sm text-[var(--gcs-text)]">{formatSideScore(score.a, a.entrantId)}</span>}
-          <span className="text-neutral-600">{t("vs")}</span>
-          {score && <span className="text-sm text-[var(--gcs-text)]">{formatSideScore(score.b, b.entrantId)}</span>}
-        </div>
-        <div className="flex min-w-0 items-center justify-end gap-2.5">
-          <span className="truncate text-sm font-black text-[var(--gcs-text)] italic">{teamBName}</span>
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
-            <ThemedLogoImage dark={logoB} light={logoBLight} alt={teamBName} width={28} height={28} className="h-6 w-6 object-contain" />
-          </div>
-        </div>
-      </div>
+      <MatchScoreboardHeader
+        a={a}
+        b={b}
+        teamAName={teamAName}
+        teamBName={teamBName}
+        scores={score && { a: formatSideScore(score.a, a.entrantId), b: formatSideScore(score.b, b.entrantId) }}
+      />
 
       <div className="no-scrollbar hidden w-full overflow-x-auto md:block">
         <div className="w-full min-w-[1180px]">
@@ -124,14 +107,14 @@ export function MatchTeamStatsTable({
               const rightAgents = right ? (right.agents.length ? right.agents : right.agentName ? [right.agentName] : []) : [];
 
               return (
-                <div key={i} className={`grid items-center gap-5 px-3 py-2.5 transition-colors hover:bg-white/[0.025] ${i % 2 === 1 ? "bg-white/[0.02]" : ""}`} style={{ gridTemplateColumns: GRID_COLS }}>
+                <div key={i} className={`grid items-center gap-5 px-3 py-2.5 transition-colors hover:bg-white/2.5 ${i % 2 === 1 ? "bg-white/2" : ""}`} style={{ gridTemplateColumns: GRID_COLS }}>
                   <div className="flex flex-wrap gap-1.5">
                     {leftAgents.map((agent, ai) => (
                       <AgentIcon key={ai} agent={agent} size="h-7 w-7" />
                     ))}
                   </div>
 
-                  <div className="min-w-0 text-[13px] font-black text-[var(--gcs-text)] uppercase italic">
+                  <div className="min-w-0 text-[13px] font-black text-(--gcs-text) uppercase italic">
                     {left && (
                       <div className="flex min-w-0 items-center gap-2">
                         <PlayerLink p={left} className="min-w-0 truncate px-1 transition-colors hover:text-[#e4ae22]">
@@ -147,7 +130,7 @@ export function MatchTeamStatsTable({
                   <div className="text-center text-[12.5px] whitespace-nowrap tabular-nums">
                     {left && (
                       <>
-                        <span className="font-black text-[var(--gcs-text)]">{left.kills}</span>
+                        <span className="font-black text-(--gcs-text)">{left.kills}</span>
                         <span className="mx-0.5 text-neutral-700">/</span>
                         <span className="font-black text-red-500/70">{left.deaths}</span>
                         <span className="mx-0.5 text-neutral-700">/</span>
@@ -169,7 +152,7 @@ export function MatchTeamStatsTable({
                   <div className="text-center text-[12.5px] whitespace-nowrap tabular-nums">
                     {right && (
                       <>
-                        <span className="font-black text-[var(--gcs-text)]">{right.kills}</span>
+                        <span className="font-black text-(--gcs-text)">{right.kills}</span>
                         <span className="mx-0.5 text-neutral-700">/</span>
                         <span className="font-black text-red-500/70">{right.deaths}</span>
                         <span className="mx-0.5 text-neutral-700">/</span>
@@ -180,7 +163,7 @@ export function MatchTeamStatsTable({
                   <div className="text-center font-mono text-[13px] font-bold text-neutral-300">{right?.acs ?? ""}</div>
                   <div aria-hidden />
 
-                  <div className="min-w-0 text-right text-[13px] font-black text-[var(--gcs-text)] uppercase italic">
+                  <div className="min-w-0 text-right text-[13px] font-black text-(--gcs-text) uppercase italic">
                     {right && (
                       <div className="flex min-w-0 items-center justify-end gap-2">
                         {maxAcs != null && right.acs === maxAcs && <span className="shrink-0 rounded bg-[#e4ae22] px-1.5 py-0.5 text-[9px] font-black text-black uppercase">{t("mvp")}</span>}
@@ -209,7 +192,7 @@ export function MatchTeamStatsTable({
           { name: teamBName, stats: statsB },
         ].map((team) => (
           <div key={team.name} className="py-3">
-            <div className="mb-2 px-3 text-center text-[13px] font-black tracking-wide text-[var(--gcs-text)] uppercase italic">{team.name}</div>
+            <div className="mb-2 px-3 text-center text-[13px] font-black tracking-wide text-(--gcs-text) uppercase italic">{team.name}</div>
             <div className="no-scrollbar overflow-x-auto">
               <div className="min-w-[420px] px-3">
                 <div className="grid items-center gap-2 pb-1.5 text-[9px] font-black tracking-wide text-neutral-500 uppercase" style={{ gridTemplateColumns: GRID_COLS_MOBILE }}>
@@ -237,14 +220,14 @@ export function MatchTeamStatsTable({
                             <AgentIcon key={ai} agent={agent} size="h-6 w-6" />
                           ))}
                         </div>
-                        <div className="min-w-0 text-[12px] font-black text-[var(--gcs-text)] uppercase italic">
+                        <div className="min-w-0 text-[12px] font-black text-(--gcs-text) uppercase italic">
                           <PlayerLink p={s} className="block min-w-0 truncate px-1 transition-colors hover:text-[#e4ae22]">
                             {s.handle}
                           </PlayerLink>
                         </div>
                         <div className="text-center font-mono text-[12px] font-bold text-neutral-300">{s.acs}</div>
                         <div className="text-center text-[11px] whitespace-nowrap">
-                          <span className="font-black text-[var(--gcs-text)]">{s.kills}</span>
+                          <span className="font-black text-(--gcs-text)">{s.kills}</span>
                           <span className="mx-0.5 text-neutral-700">/</span>
                           <span className="font-black text-red-500/70">{s.deaths}</span>
                           <span className="mx-0.5 text-neutral-700">/</span>

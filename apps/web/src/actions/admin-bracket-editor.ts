@@ -29,7 +29,7 @@ import {
   type SwissEntrant,
 } from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
-import { parseGroupConfig } from "@/lib/bracket/config-types";
+import { defaultRoundRobinTiebreakers, parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
@@ -131,7 +131,7 @@ export async function generateBracketFromTemplate(game: GameSlug, input: Generat
     // page and made it 500 (found 2026-09-12 auditing why real migrated
     // tournaments' pages were crashing; this is the still-live code path,
     // not just old migrated data — see SUIVI.md).
-    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: ["round_diff", "head_to_head", "seed"], pointsConfig: null });
+    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: defaultRoundRobinTiebreakers(game, false), pointsConfig: null });
     containerIdMap = { group: groupId };
     graph = generateRoundRobin({ containerId: "group", entrantCount, bestOf: input.bestOf, double: input.format === "round_robin_double" });
   } else {
@@ -276,7 +276,8 @@ export async function addGroupMatch(game: GameSlug, input: AddGroupMatchInput): 
 
   if (input.entrantAId !== null && input.entrantAId === input.entrantBId) fieldErrors.entrantBId = "sameEntrant";
 
-  const entries = await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, input.containerId));
+  // Stage-scoped groups play teams of other groups, so their pinned teams don't limit who can be in a match.
+  const entries = config.matchScope === "stage" ? [] : await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, input.containerId));
   const groupEntrantIds = new Set(entries.map((e) => e.entrantId));
   for (const [field, id] of [
     ["entrantAId", input.entrantAId],

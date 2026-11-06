@@ -33,7 +33,7 @@ import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { ShareMenuButton } from "@/components/site/share-menu-button";
 import { isViewerAdmin } from "@/lib/rbac";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, gameHasSeriesGames, gameHasStats, type GameSlug } from "@gc-stats/db/game";
 
 const SOCIAL_ICONS: Record<
   string,
@@ -119,6 +119,7 @@ const TABS = [
   "pickem",
   "stats",
   "maps",
+  "champions",
   "production",
 ] as const;
 
@@ -149,6 +150,7 @@ export async function TournamentHeader({
     pickem: `/tournaments/${basePath}/pickem`,
     stats: `/tournaments/${basePath}/stats`,
     maps: `/tournaments/${basePath}/maps`,
+    champions: `/tournaments/${basePath}/champions`,
     production: `/tournaments/${basePath}/production`,
   };
   const tabLabels: Record<(typeof TABS)[number], string> = {
@@ -157,6 +159,7 @@ export async function TournamentHeader({
     pickem: t("tabPickem"),
     stats: t("tabStats"),
     maps: t("tabMaps"),
+    champions: t("tabChampions"),
     production: t("tabProduction"),
   };
 
@@ -391,7 +394,7 @@ export async function TournamentHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.filter((tab) => (tab !== "maps" && tab !== "stats") || gameHasMaps(game)).map((tab) => ({
+          tabs={TABS.filter((tab) => (tab !== "maps" || gameHasMaps(game)) && (tab !== "champions" || gameHasSeriesGames(game)) && (tab !== "stats" || gameHasStats(game))).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

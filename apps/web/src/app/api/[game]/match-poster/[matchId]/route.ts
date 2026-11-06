@@ -11,7 +11,9 @@
 import { NextResponse } from "next/server";
 import { parseEntityId } from "@/lib/entity-id";
 import { aggregateMatchStats, getCompletedMatchStats, getMatchHeader, getMatchMaps, getMatchMapsStatsBatch } from "@/lib/match-page-data";
+import { getMatchLeagueGames } from "@/lib/match-league-games";
 import { gameFromParams } from "@/lib/game";
+import { gameHasSeriesGames } from "@gc-stats/db/game";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ matchId: string; game: string }> }) {
   const game = await gameFromParams(params);
@@ -20,6 +22,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ mat
 
   const match = await getMatchHeader(game, matchId);
   if (!match) return NextResponse.json({ error: "Match not found" }, { status: 404 });
+
+  if (gameHasSeriesGames(game)) {
+    const { games, averages } = await getMatchLeagueGames(matchId, match.patch, { entrantAId: match.a.entrantId, entrantBId: match.b.entrantId });
+    return NextResponse.json({ match, maps: [], aggregated: { playersA: [], playersB: [] }, roundsByMapId: {}, games, averages });
+  }
 
   const [maps, { roundsByMapId }] =
     match.status === "completed"

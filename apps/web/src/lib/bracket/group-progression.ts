@@ -115,7 +115,7 @@ async function generateAndInsertNextSwissRound(game: GameSlug, tx: Tx, container
   const { groupEntries, matches } = gameTables(game);
   const entries = (await getGroupEntries(game, tx, containerId)).filter((e) => e.status === "active");
   const history = await buildSwissHistory(game, tx, containerId);
-  const mapRecord = config.tiebreakers.includes("map_diff") ? await computeMapRecord(game, tx, containerId) : null;
+  const mapRecord = config.tiebreakers.includes("map_diff") ? await computeMapRecord(game, tx, [containerId]) : null;
   const dtos: SwissEntrant[] = entries.map((e) => ({
     id: String(e.entrantId),
     seed: e.seed ?? 0,
@@ -195,13 +195,13 @@ export async function advanceRoundRobinGroup(game: GameSlug, tx: Tx, m: Resolved
   await bumpRecordAfterMatch(game, tx, m);
 }
 
-/** Wins/losses per entrant from the container's completed matches (every entrant with a match is listed). */
-export async function recordsFromMatches(game: GameSlug, tx: Tx, containerId: number): Promise<Map<number, { wins: number; losses: number }>> {
+/** Wins/losses per entrant from the completed matches of the given containers (every entrant with a match is listed). */
+export async function recordsFromMatches(game: GameSlug, tx: Tx, containerIds: number[]): Promise<Map<number, { wins: number; losses: number }>> {
   const { matches } = gameTables(game);
   const containerMatches = await tx
     .select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId, winnerId: matches.winnerId, status: matches.status })
     .from(matches)
-    .where(eq(matches.containerId, containerId));
+    .where(inArray(matches.containerId, containerIds));
 
   const record = new Map<number, { wins: number; losses: number }>();
   for (const m of containerMatches) {
@@ -228,7 +228,7 @@ export async function rebuildGroupEntriesFromMatches(game: GameSlug, tx: Tx, con
   const { entrants, groupEntries } = gameTables(game);
   await tx.delete(groupEntries).where(eq(groupEntries.containerId, containerId));
 
-  const record = await recordsFromMatches(game, tx, containerId);
+  const record = await recordsFromMatches(game, tx, [containerId]);
   if (record.size === 0) return;
 
   const seedRows = await tx.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(inArray(entrants.id, [...record.keys()]));
@@ -247,7 +247,7 @@ export async function syncGroupRecordsFromMatches(game: GameSlug, tx: Tx, contai
   const { groupEntries } = gameTables(game);
   const entries = await getGroupEntries(game, tx, containerId);
   if (entries.length === 0) return;
-  const record = await recordsFromMatches(game, tx, containerId);
+  const record = await recordsFromMatches(game, tx, [containerId]);
   for (const entry of entries) {
     const r = record.get(entry.entrantId) ?? { wins: 0, losses: 0 };
     const wins = r.wins + (entry.hadBye ? 1 : 0);

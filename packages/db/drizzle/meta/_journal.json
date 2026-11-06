@@ -435,6 +435,20 @@
       "when": 1793792264252,
       "tag": "0061_shared_people",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1793792324252,
+      "tag": "0062_powerful_wolfpack",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1793792384252,
+      "tag": "0063_data_dragon_icon_sync",
+      "breakpoints": true
     }
   ]
 }

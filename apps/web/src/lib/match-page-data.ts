@@ -27,7 +27,7 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, seriesMapTableOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver, type TeamDisplayResolver } from "@/lib/historical-team-display";
 import {
   ECO_TIERS,
@@ -976,7 +976,7 @@ export async function getMatchStreams(game: GameSlug, matchId: number): Promise<
 
 export async function getMatchVods(game: GameSlug, matchId: number): Promise<MatchVod[]> {
   const { vods } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
+  const mapTable = seriesMapTableOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -992,11 +992,12 @@ export async function getMatchVods(game: GameSlug, matchId: number): Promise<Mat
   const mapIds = rows
     .map((r) => r.mapId)
     .filter((id): id is number => id != null);
+  // map_id is a Valorant map or a LoL game of the series, so the order comes from the table of the game.
   const mapOrders = mapIds.length
     ? await db
-        .select({ id: maps.id, order: maps.order })
-        .from(maps)
-        .where(inArray(maps.id, mapIds))
+        .select({ id: mapTable.id, order: mapTable.order })
+        .from(mapTable)
+        .where(inArray(mapTable.id, mapIds))
     : [];
   const orderByMapId = new Map(mapOrders.map((m) => [m.id, m.order]));
 
@@ -1035,6 +1036,19 @@ export async function getMatchPlayerPovs(
     .leftJoin(people, eq(people.id, matchPlayerPovs.personId))
     .where(eq(matchPlayerPovs.matchId, matchId));
   return rows;
+}
+
+export type LeaguepediaSourceGame = { order: number; url: string };
+
+/** The games of a LoL series imported from Leaguepedia, each with the wiki page it came from (its CC BY-SA attribution). */
+export async function getLeaguepediaSourceGames(matchId: number): Promise<LeaguepediaSourceGame[]> {
+  const { games } = leagueTablesOf("lol");
+  const rows = await db
+    .select({ order: games.order, riotMatchId: games.apiMatchId })
+    .from(games)
+    .where(and(eq(games.matchId, matchId), eq(games.source, "leaguepedia"), isNotNull(games.apiMatchId)))
+    .orderBy(asc(games.order));
+  return rows.map((row) => ({ order: row.order, url: `https://lol.fandom.com/wiki/V5_data:${row.riotMatchId}` }));
 }
 
 /** Per-player multi-kill breakdown (2k/3k/4k/5k rounds) + Sheriff kills, mirroring V1's MatchStatsService::performanceFor(). Keyed by person id. */

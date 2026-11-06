@@ -24,11 +24,13 @@ import { MatchScoreBackfillCard } from "@/components/admin/match-score-backfill-
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
 import { useGame } from "@/lib/use-game";
+import { gameHasMaps } from "@gc-stats/db/game";
 
 const ALL_CONTAINERS = "all";
 const BEST_OF_VALUES = ["1", "3", "5"] as const;
 
 export function TournamentOperationsPanel({ tournamentId, containers, matches }: { tournamentId: number; containers: AdminContainerOption[]; matches: AdminMatchListRow[] }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.operations");
 
   return (
@@ -36,7 +38,7 @@ export function TournamentOperationsPanel({ tournamentId, containers, matches }:
       <PatchCard tournamentId={tournamentId} containers={containers} />
       <BulkCreateCard tournamentId={tournamentId} containers={containers} />
       <BulkMatchStatusCard tournamentId={tournamentId} containers={containers} matches={matches} />
-      <MatchScoreBackfillCard tournamentId={tournamentId} />
+      {gameHasMaps(game) && <MatchScoreBackfillCard tournamentId={tournamentId} />}
       {containers.length === 0 && <p className="text-sm text-muted-foreground">{t("noContainers")}</p>}
     </div>
   );

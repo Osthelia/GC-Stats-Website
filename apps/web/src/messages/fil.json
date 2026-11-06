@@ -1718,7 +1718,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Talakayan",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD ng Laro {n}",
+    "games": "Mga Laro",
+    "gameTab": "Laro {order}",
+    "noGames": "Wala pang naitalang laro.",
+    "noGameData": "Walang datos para sa larong ito",
+    "duration": "Tagal",
+    "forfeit": "Forfeit",
+    "towers": "Towers",
+    "inhibitors": "Inhibitors",
+    "dragons": "Dragons",
+    "barons": "Barons",
+    "heralds": "Rift Heralds",
+    "grubs": "Void grubs",
+    "draftNotSet": "Walang naitalang draft para sa larong ito.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Mga pick na hindi pa nailalagay",
+    "colChampion": "Champion",
+    "allGames": "Lahat ng laro",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Lahat ng opisyal na kompetisyon ng Game Changers, sa isang lugar.",
@@ -3743,6 +3763,7 @@
         "assignEntrantsTitle": "Mga entrant ng group",
         "assignEntrantsDescription": "Piliin kung alin sa mga entrant ng torneo ang bahagi ng Swiss group na ito.",
         "assignEntrantsEmpty": "Walang entrant sa torneong ito.",
+        "assignEntrantsInGroup": "Sa {name}",
         "assignEntrantsSuccess": "Na-update ang mga entrant.",
         "startSwissButton": "Simulan ang round 1",
         "startSwissSuccess": "Nabuo ang round 1.",
@@ -3800,6 +3821,7 @@
           "sameEntrant": "Hindi maaaring parehong team ang nasa dalawang slot.",
           "entrantNotFound": "Hindi rehistrado sa torneo ang team na ito.",
           "entrantNotInGroup": "Hindi nakatalaga sa group na ito ang team na ito.",
+          "roundRobinOnly": "Mga round robin na group lang ang puwedeng magbilang ng mga laban mula sa buong stage.",
           "cannotMove": "Hindi na maililipat pa ang container na ito.",
           "parentInvalid": "Hindi magagamit ang set na ito rito.",
           "tiebreakersInvalid": "Gamitin ang bawat tiebreaker nang isang beses lang, mula sa listahan.",
@@ -3816,6 +3838,7 @@
             "points": "Puntos",
             "buchholz": "Buchholz",
             "map_diff": "Diperensya ng map",
+            "game_diff": "Diperensya ng laro",
             "round_diff": "Diperensya ng round",
             "head_to_head": "Head to head",
             "seed": "Seed"
@@ -3824,17 +3847,23 @@
         "pointsConfig": {
           "title": "Puntos",
           "hint": "Bawat match, map at round na naipanalo o natalo ay nagbibigay ng puntos sa team. Binibilang lang ang mga round sa mga map na may naitalang score.",
+          "hintGames": "Bawat match at laro na naipanalo o natalo ay nagbibigay ng puntos sa team.",
           "enable": "Gumamit ng puntos",
           "scopes": {
             "match": "Match",
             "map": "Bawat map",
+            "game": "Bawat laro",
             "round": "Bawat round",
             "forfeit": "Forfeit (pumapalit sa iba)"
           },
           "win": "Panalo",
           "loss": "Talo",
           "notUsed": "Inaayos lang ng puntos ang grupo kapag nasa mga tiebreaker ang Puntos."
-        }
+        },
+        "fieldMatchScope": "Naglalaro rin ang mga team laban sa mga team ng ibang group (bilangin ang mga laban ng buong stage)",
+        "fieldMatchScopeHint": "Ang mga team lang na naka-pin sa group na ito ang ililista, at mabibilang ang mga natapos nilang laban sa alinmang group ng stage na ito. I-pin ang mga team pagkatapos mag-save. Para lang sa round robin.",
+        "matchScopeNoTeams": "Wala pang naka-pin na team sa group na ito, kaya walang laman ang table nito. Mag-assign muna ng mga team dito.",
+        "matchScopeSwitchWarning": "Kapag lumipat sa stage scope, ang mga naka-pin na team lang ang ililista. Ang mga team na naglaro sa group na ito pero hindi naka-pin ay mawawala sa table nito hanggang i-pin mo sila."
       },
       "bracketPage": {
         "title": "Pamamahala ng bracket",
@@ -4403,7 +4432,164 @@
             "mergeMapNotFound": "Wala na ang mapang ito."
           }
         },
-        "liquipediaImportButton": "Liquipedia Match Import"
+        "liquipediaImportButton": "Liquipedia Match Import",
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft ng laro {order}",
+          "backToMatch": "Bumalik sa laban",
+          "description": "Ang pagkakasunod-sunod ng ban at pick ng larong ito. Iwanang walang laman ang isang hakbang kung hindi ito ginamit.",
+          "differsWarning": "Hindi tugma ang import sa naka-save na draft: ibang mga champion ang nakita sa muling pag-import. Suriin ang draft at mag-save para panatilihin ang sa iyo.",
+          "blueSide": "Blue side",
+          "blueLockedHint": "Itinakda ng import (blue team ng Riot).",
+          "firstPickLockedHint": "Itinakda ng import (ang side na gumawa ng unang ban).",
+          "firstPick": "Unang pick",
+          "phase": {
+            "ban1": "Ban phase 1",
+            "pick1": "Pick phase 1",
+            "ban2": "Ban phase 2",
+            "pick2": "Pick phase 2"
+          },
+          "side": {
+            "blue": "Blue",
+            "red": "Red"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Walang champion",
+          "searchPlaceholder": "Maghanap ng champion",
+          "noResults": "Walang tugmang champion",
+          "unplacedTitle": "Mga pick na hindi pa nailalagay",
+          "save": "I-save ang draft",
+          "saving": "Sine-save…",
+          "saved": "Na-save ang draft",
+          "error": {
+            "notFound": "Hindi mahanap ang larong ito.",
+            "entrantsUnset": "Dapat munang maitakda ang dalawang team ng laban.",
+            "blueNotAnEntrant": "Dapat isa sa dalawang team ng laban ang blue side.",
+            "blueLocked": "Ang blue side ng na-import na laro ay itinakda ng import.",
+            "firstPickLocked": "Ang unang pick ng na-import na laro ay itinakda ng import.",
+            "invalidFirstPick": "Dapat blue o red ang unang pick.",
+            "invalidStep": "Walang hakbang na {step} o dalawang beses itong ibinigay.",
+            "unknownChampion": "Wala ang {championName} sa listahan ng mga champion.",
+            "duplicateChampion": "Mahigit isang beses nasa draft ang {championName}."
+          }
+        },
+        "games": {
+          "heading": "Mga Laro",
+          "description": "Ang mga larong nilaro sa seryeng ito, ayon sa pagkakasunod-sunod.",
+          "empty": "Wala pang laro.",
+          "gameLabel": "Laro {order}",
+          "winnerLabel": "Nanalo: {name}",
+          "noWinner": "Wala pang nanalo",
+          "finished": "Tapos na",
+          "notFinished": "Hindi pa tapos",
+          "draftButton": "Draft",
+          "draftDiffers": "Iba ang import sa naka-save na draft",
+          "forfeit": "Forfeit",
+          "cancel": "Kanselahin",
+          "save": "I-save",
+          "saving": "Sine-save…",
+          "createButton": "Magdagdag ng laro",
+          "createTitle": "Magdagdag ng laro",
+          "editTitle": "I-edit ang laro",
+          "dialogDescription": "Ilagay ang resulta ng isang laro ng seryeng ito.",
+          "editButton": "I-edit",
+          "deleteButton": "Burahin",
+          "deleteTitle": "Burahin ang laro",
+          "deleteConfirm": "Burahin ang laro {order}? Kakalkulahin muli ang score ng laban mula sa natitirang mga laro.",
+          "deleteError": "Hindi nabura ang laro.",
+          "deleteSuccess": "Nabura ang laro.",
+          "saveError": "Hindi na-save ang laro.",
+          "saveSuccess": "Na-save ang laro.",
+          "fieldOrder": "Pagkakasunod-sunod",
+          "fieldWinner": "Nanalo",
+          "fieldWinnerNone": "Wala pang nanalo",
+          "fieldCompleted": "Tapos na",
+          "fieldForfeit": "Forfeit",
+          "fieldNote": "Tala",
+          "fieldError": {
+            "invalid": "Maglagay ng wastong halaga.",
+            "tooLong": "Masyadong mahaba.",
+            "duplicateOrder": "May ibang laro nang gumagamit ng pagkakasunod-sunod na ito.",
+            "winnerRequired": "Kailangan ng nanalo ang natapos na laro.",
+            "notAnEntrant": "Dapat isa sa dalawang team ang nanalo.",
+            "notCompleted": "Markahan ang laro bilang tapos na para makapagtakda ng nanalo.",
+            "invalidMatchId": "Gamitin ang format na EUW1_6123456789: code ng platform, underscore, at saka ang numero ng laban.",
+            "duplicateMatchId": "May ibang laro nang gumagamit ng Riot match ID na ito."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "Halimbawa: EUW1_6123456789. Mababasa mula rito ang platform.",
+          "leaguepedia": {
+            "label": "Laro sa Leaguepedia",
+            "none": "Wala",
+            "noData": "walang datos",
+            "gameNumber": "Laro {number}",
+            "fetch": "Kunin mula sa Leaguepedia",
+            "fetching": "Kinukuha…",
+            "renew": "I-renew",
+            "reprocess": "Iproseso muli",
+            "success": "Na-store ang laro mula sa Leaguepedia",
+            "error": {
+              "noData": "Walang V5 data ang larong ito sa Leaguepedia.",
+              "notInBucket": "Wala pa ang larong ito sa bucket. Kunin muna ito.",
+              "pageInvalid": "Hindi wastong match data ang mga pahina ng Leaguepedia para sa larong ito.",
+              "fetch": "Hindi mabasa ang Leaguepedia. Subukan muli mamaya.",
+              "missingConfig": "Hindi pa naka-set up sa server na ito ang bot login ng Leaguepedia.",
+              "sidesUnresolved": "Hindi tugma ang dalawang team ng larong ito sa dalawang entrant ng serye.",
+              "missingPlayers": "{count, plural, one {# player ang hindi pa naka-link sa isang tao} other {# player ang hindi pa naka-link sa isang tao}}",
+              "invalidUpload": "Hindi pumasa sa mga pagsusuri ng import ang datos ng laro.",
+              "storeFailed": "Hindi na-store ang laro.",
+              "invalidOrder": "Dapat buong numero ang numero ng laro, 1 o higit pa.",
+              "lolIdConflict": "May ibang tao nang naka-link sa Riot account na ito.",
+              "sidesInvalid": "Pumili ng dalawang magkaibang entrant para sa blue at red.",
+              "roleInvalid": "Hindi wasto ang isang role sa pagbabago.",
+              "orderTaken": "Naka-store na ang laro {order} ng seryeng ito na may ibang datos. Pumili ng ibang numero ng laro at mag-save muli.",
+              "dataDragonUnavailable": "Hindi available ngayon ang mga pangalan ng champion, subukan muli mamaya.",
+              "unknownChampions": "Hindi kilalang champion id: {ids}",
+              "storageUnavailable": "Hindi maabot ang bucket ng mga LoL import. Suriin ang configuration nito, saka subukan muli.",
+              "duplicateAccount": "Dalawang beses na-link ang parehong Riot account. I-link ang bawat account nang isang beses lang.",
+              "riotUnavailable": "Hindi mabasa ang datos ng Riot ngayon. Subukan muli mamaya.",
+              "tournamentRealm": "Nilaro ang larong ito sa tournament realm. Kunin ito sa Leaguepedia sa halip."
+            },
+            "searchPlaceholder": "Maghanap ayon sa team, laro o petsa",
+            "noResults": "Walang tugmang laro",
+            "previewTitle": "Suriin ang laro",
+            "previewDescription": "Piliin ang entrant para sa bawat side, at i-link ang bawat player na hindi pa naka-link.",
+            "back": "Bumalik",
+            "saveGame": "I-save ang laro",
+            "sideBlue": "Blue",
+            "sideRed": "Red",
+            "sidesTitle": "Mga side",
+            "blueSide": "Blue side",
+            "redSide": "Red side",
+            "chooseEntrant": "Pumili ng entrant",
+            "suggestedPlayers": "Iminungkahi mula sa mga naka-link na player",
+            "suggestedNames": "Iminungkahi mula sa mga pangalan ng team",
+            "winnerLabel": "Nanalo: {name}",
+            "noWinner": "Walang nanalo",
+            "lengthLabel": "Haba: {minutes} min",
+            "playersTitle": "Mga player",
+            "notLinked": "Hindi pa naka-link",
+            "linkExisting": "I-link sa umiiral",
+            "createNew": "Gumawa ng bago",
+            "newHandle": "Pangalan ng bagong tao",
+            "unresolvedHint": "Mag-link o gumawa ng tao para sa bawat player na hindi pa naka-link.",
+            "roleLabel": "Role",
+            "roleNone": "Walang role",
+            "positionRole": "Ang mga posisyon sa mapa ay nagmumungkahi ng {role}",
+            "alreadyStoredHere": "naka-store bilang laro {order} ng seryeng ito",
+            "alreadyStoredElsewhere": "naka-store sa ibang serye",
+            "refreshGames": "I-refresh ang listahan ng mga laro",
+            "refreshCooldown": "Na-refresh wala pang isang oras ang nakalipas. Subukan muli mamaya.",
+            "refreshed": "Na-refresh ang listahan ng mga laro ({count} laro)",
+            "refreshError": "Hindi ma-refresh ang listahan ng mga laro. Subukan muli mamaya.",
+            "riotFetch": "Kunin mula sa Riot",
+            "riotSuccess": "Na-store ang laro mula sa Riot",
+            "riotTournamentRealm": "Nilaro ang larong ito sa tournament realm, kaya hindi ito makukuha sa Riot API."
+          }
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4681,7 +4867,30 @@
         "wikicodeLabel": "Wikicode ng Liquipedia",
         "importingHint": "Ini-import at kinukuha ang data ng Riot, maaaring tumagal ito nang sandali.",
         "close": "Isara"
-      }
+      },
+      "leaguepedia": {
+        "title": "Mga laro sa Leaguepedia",
+        "description": "Galing sa mga Cargo table ng Leaguepedia ang listahan ng mga laro, para sa base page at lahat ng pahina sa ilalim nito.",
+        "basePageLabel": "Base page sa Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Binabasa ng pag-save ang mga laro mula sa Leaguepedia. Kapag nabigo ang pagbasa, walang masi-save.",
+        "save": "I-save at kunin ang mga laro",
+        "saving": "Kinukuha…",
+        "refresh": "I-refresh mula sa Leaguepedia",
+        "lastFetched": "Huling nakuha {date} · {count, plural, one {# laro} other {# laro}}",
+        "neverFetched": "Hindi pa nakukuha",
+        "success": "{count, plural, one {# laro} other {# laro}} ang nakuha",
+        "error": {
+          "gameClaimed": "Ang mga larong ito ay pag-aari na ng ibang tournament, kaya hindi puwedeng i-link dito.",
+          "invalidBasePage": "Gumamit ng pangalan ng pahina na walang # < > [ ] | '{ }', at walang / sa simula o dulo.",
+          "notFound": "Hindi nahanap ang tournament.",
+          "notLinked": "Mag-save muna ng base page.",
+          "cooldown": "Binasa ang listahan ng mga laro wala pang isang oras ang nakalipas. Subukan muli mamaya.",
+          "missingConfig": "Hindi pa naka-set up sa server na ito ang bot login ng Leaguepedia.",
+          "fetch": "Hindi mabasa ang Leaguepedia. Subukan muli mamaya."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Mga Ulat",
@@ -5575,7 +5784,8 @@
       "level": {
         "tournament": "Torneo",
         "match": "Laban",
-        "map": "Mapa"
+        "map": "Mapa",
+        "game": "Laro"
       },
       "matchSearchPlaceholder": "Maghanap ng laban…",
       "mapSearchPlaceholder": "Maghanap ng mapa…",
@@ -5594,7 +5804,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Mga Laban",
       "openMaps": "Mga Mapa",
-      "goBack": "Bumalik"
+      "goBack": "Bumalik",
+      "gameEmpty": "Walang laro sa laban na ito.",
+      "gameSearchPlaceholder": "Maghanap ng laro…",
+      "openGames": "Mga Laro"
     },
     "streams": {
       "title": "Mga stream channel",
@@ -5732,8 +5945,14 @@
         "matchNotInTournament": "Hindi kabilang sa napiling torneo ang laban na ito.",
         "mapNotFound": "Hindi nahanap ang mapa.",
         "mapNotInMatch": "Hindi kabilang sa napiling laban ang mapang ito.",
-        "notFound": "Hindi nahanap ang VOD."
-      }
+        "notFound": "Hindi nahanap ang VOD.",
+        "gameNotFound": "Hindi nahanap ang laro.",
+        "gameNotInMatch": "Hindi kabilang sa napiling laban ang larong ito."
+      },
+      "scopeGame": "Partikular na laro",
+      "gameLabel": "Laro",
+      "gamePlaceholder": "Pumili ng laro…",
+      "gameLoading": "Naglo-load…"
     },
     "apiKeys": {
       "title": "Mga API key",
@@ -6638,6 +6857,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "Estadistika",
     "tabMaps": "Mga Mapa",
+    "tabChampions": "Mga Champion",
+    "championsEmpty": "Wala pang nalalaro.",
+    "championsRolesColumn": "Mga role",
+    "championsRoleBansNote": "Ang mga ban at presence ay binibilang sa lahat ng role.",
+    "championsInsightMostPicked": "Pinakamaraming pick",
+    "championsInsightMostBanned": "Pinakamaraming ban",
+    "championsInsightHighestPresence": "Pinakamataas na presence",
+    "championsInsightHighestWinRate": "Pinakamataas na win rate",
+    "championsInsightHighestKda": "Pinakamataas na KDA",
     "tabProduction": "Production",
     "productionTitle": "{tournament} · Production",
     "statsIdentityColumn": "Manlalaro",
@@ -6657,6 +6885,15 @@
     "statsFilterAgentAll": "Lahat ng agent",
     "statsFilterMap": "Mapa",
     "statsFilterMapAll": "Lahat ng mapa",
+    "statsChampionColumn": "Mga Champion",
+    "statsFilterChampion": "Champion",
+    "statsFilterChampionAll": "Lahat ng champion",
+    "statsFilterChampionSearch": "Maghanap ng champion…",
+    "statsFilterChampionNoResult": "Walang nahanap na champion",
+    "statsFilterRole": "Role",
+    "statsFilterRoleAll": "Lahat ng role",
+    "statsFilterPatch": "Patch",
+    "statsFilterPatchAll": "Lahat ng patch",
     "statsFilterStartDate": "Mula",
     "statsFilterEndDate": "Hanggang",
     "statsFilterSubmit": "Ilapat ang mga filter",
@@ -6673,6 +6910,22 @@
     "pageOf": "Pahina {page} ng {total}",
     "statsColumns": {
       "played": "Mga Mapa",
+      "playedGames": "Mga laro",
+      "winRate": "Win rate",
+      "picks": "Mga pick",
+      "bans": "Mga ban",
+      "presence": "Presence",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "Mga Round",
       "acs": "ACS",
       "kills": "Kills",
@@ -6715,7 +6968,8 @@
     "mapsPickRatesShowMore": "Ipakita lahat",
     "mapsPickRatesShowLess": "Magpakita ng kaunti",
     "factOrganizer": "Organizer",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Mga laro"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6973,7 +7227,8 @@
     "copied": "Nakopya",
     "copyError": "Hindi makopya ang larawan. I-download na lang ito.",
     "exporting": "Binubuo",
-    "exportError": "Hindi mabuo ang larawan. Subukan muli."
+    "exportError": "Hindi mabuo ang larawan. Subukan muli.",
+    "descriptionGames": "PNG image na {width} px ang lapad, handa nang ibahagi. Piliin ang lahat ng laro o isang laro lang."
   },
   "share": {
     "button": "Ibahagi",
@@ -7373,5 +7628,9 @@
       "multikills_4k": "4K",
       "multikills_5k": "5K"
     }
+  },
+  "leaguepediaSource": {
+    "text": "May ilang datos ng laro sa pahinang ito na galing sa Leaguepedia (CC BY-SA). Tingnan ang mga orihinal na pahina:",
+    "game": "Laro {order}"
   }
 }

@@ -49,7 +49,7 @@ async function TournamentBody({ id, basePath, activeStageId, t, game }: { id: nu
     <>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <TournamentOverview basePath={basePath} stages={stages} activeStage={activeStage} />
+          <TournamentOverview game={game} basePath={basePath} stages={stages} activeStage={activeStage} />
         </div>
         <div className="lg:col-span-4">
           <RecentMatchesPanel

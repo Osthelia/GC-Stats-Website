@@ -19,9 +19,9 @@ import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression"
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
-import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type PointsField } from "@/lib/bracket/config-types";
+import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type GroupMatchScope, type PointsField } from "@/lib/bracket/config-types";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -35,6 +35,7 @@ export type ContainerField =
   | "qualifyAtWins"
   | "eliminateAtLosses"
   | "maxRounds"
+  | "matchScope"
   | "tiebreakers"
   | `points.${PointsField}`;
 export type ContainerFieldErrors = Partial<Record<ContainerField, string>>;
@@ -51,6 +52,8 @@ export type ContainerInput =
       containerType: "group";
       parentId: number | null;
       groupFormat: "swiss" | "round_robin";
+      // Round robin only, which matches the table counts. Missing means the group's own.
+      matchScope?: GroupMatchScope;
       qualifyAtWins: number | null;
       eliminateAtLosses: number | null;
       maxRounds: number | null;
@@ -72,6 +75,9 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
       if (input.eliminateAtLosses !== null && (!Number.isInteger(input.eliminateAtLosses) || input.eliminateAtLosses < 1)) fieldErrors.eliminateAtLosses = "invalid";
       if (!Number.isInteger(input.maxRounds) || (input.maxRounds ?? 0) < 1) fieldErrors.maxRounds = "invalid";
     }
+    // Swiss pairs inside one container and keeps per-container counters, so only round robin can count the whole stage.
+    if (input.matchScope === "stage" && input.groupFormat !== "round_robin") fieldErrors.matchScope = "roundRobinOnly";
+    else if (input.matchScope !== undefined && input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
     const allowed: readonly string[] = input.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS;
     const tiebreakers: unknown = input.tiebreakers;
     if (!Array.isArray(tiebreakers) || tiebreakers.some((tb) => !allowed.includes(tb)) || new Set(tiebreakers).size !== tiebreakers.length) {
@@ -93,12 +99,14 @@ function buildConfig(input: ContainerInput): Record<string, unknown> {
   if (input.containerType === "bracket") return {};
   const { tiebreakers } = input;
   const pointsConfig = input.pointsConfig && Object.fromEntries(POINTS_FIELDS.map((f) => [f, input.pointsConfig![f]]));
-  if (input.groupFormat === "round_robin") return { type: "round_robin", tiebreakers, pointsConfig };
+  if (input.groupFormat === "round_robin") return { type: "round_robin", matchScope: input.matchScope ?? "container", tiebreakers, pointsConfig };
   return {
     type: "swiss",
+    matchScope: "container",
     qualifyAtWins: input.qualifyAtWins,
     eliminateAtLosses: input.eliminateAtLosses,
-    maxRounds: input.maxRounds,
+    // Validated above, so never null here; the fallback matches parseGroupConfig's default and narrows the type.
+    maxRounds: input.maxRounds ?? 5,
     roundFormat: {},
     tiebreakers,
     pointsConfig,
@@ -258,7 +266,6 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
  *  container goes with every match, map and stat row underneath. */
 export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
   const { stageContainers, matches } = gameTables(game);
-  const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
@@ -277,9 +284,12 @@ export async function deleteContainer(game: GameSlug, id: number, stageId: numbe
   }
 
   await db.transaction(async (tx) => {
-    // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
-    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(inArray(matches.containerId, ids));
-    await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    if (gameHasMaps(game)) {
+      // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
+      const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
+      const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(inArray(matches.containerId, ids));
+      await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    }
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
   });
   return { ok: true };

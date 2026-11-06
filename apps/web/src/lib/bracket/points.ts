@@ -49,12 +49,12 @@ export function entrantPoints(config: StandingsPointsConfig, entrantId: number, 
   return total;
 }
 
-/** Points of every entrant of a group. Rounds come from the map scores, forfeited maps excluded. */
-export async function computeContainerPoints(game: GameSlug, tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
+/** Points of every entrant of a group, over the matches of `containerIds` (several when the group counts its whole stage). Rounds come from the map scores, forfeited maps excluded. */
+export async function computeContainerPoints(game: GameSlug, tx: Tx, containerIds: number[], config: StandingsPointsConfig): Promise<Map<number, number>> {
   const { matches, groupEntries } = gameTables(game);
   const [completed, entries] = await Promise.all([
-    tx.select().from(matches).where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
-    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+    tx.select().from(matches).where(and(inArray(matches.containerId, containerIds), eq(matches.status, "completed"))),
+    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)),
   ]);
 
   const rounds = new Map<number, { a: number; b: number }>();

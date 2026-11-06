@@ -9,14 +9,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { StatRow } from "@/lib/stats-aggregate";
+import type { ChampionStatRow, LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
 import {
-  STAT_COLUMNS,
-  DEFAULT_VISIBLE_COLUMNS,
-  buildWeaponColumns,
+  STAT_COLUMN_SETS,
   formatStatValue,
   clutchFraction,
   type StatColumn,
+  type StatColumnSet,
+  type StatColumnSetKey,
+  type StatRowByGame,
   type StatsMode,
 } from "@/lib/stats-columns";
 import { SegmentedTrack, SegmentedButton } from "@/components/stats/segmented";
@@ -41,22 +42,13 @@ export type StatsExtraColumn = {
 
 const STATS_PAGE_SIZE = 50;
 
-export function StatsTable({
-  rows,
-  storageKey,
-  columnLabels,
-  weaponsGroupLabel,
-  columnsButtonLabel,
-  modeAvgLabel,
-  modeTotalLabel,
-  noDataLabel,
-  identityColumnLabel,
-  identities,
-  extraColumns = [],
-  filterLabels,
-  paginationLabels,
-}: {
-  rows: StatRow[];
+/** The rows of either game, inside the table: the columns of `columnSet` are the ones that fit them. */
+type AnyStatRow = StatRow | LeagueStatRow | ChampionStatRow;
+
+export type StatsTableProps<K extends StatColumnSetKey> = {
+  rows: StatRowByGame[K][];
+  /** The columns of the game the rows are from, by key (see StatColumnSet). Required, so the rows and the columns can't mismatch. */
+  columnSet: K;
   storageKey: string;
   columnLabels: Record<string, string>;
   weaponsGroupLabel: string;
@@ -87,20 +79,41 @@ export function StatsTable({
   filterLabels: ColumnFilterLabels;
   /** Pager labels, same shape as `ListPagination` — `pageOf` keeps its `{page}`/`{total}` placeholders, filled in client-side since pagination here is a local page index, not a server route. */
   paginationLabels: { previous: string; next: string; pageOf: string };
-}) {
-  const weaponColumns = useMemo(() => buildWeaponColumns(rows), [rows]);
+};
+
+export function StatsTable<K extends StatColumnSetKey>({
+  rows: gameRows,
+  columnSet,
+  storageKey,
+  columnLabels,
+  weaponsGroupLabel,
+  columnsButtonLabel,
+  modeAvgLabel,
+  modeTotalLabel,
+  noDataLabel,
+  identityColumnLabel,
+  identities,
+  extraColumns = [],
+  filterLabels,
+  paginationLabels,
+}: StatsTableProps<K>) {
+  const rows: AnyStatRow[] = gameRows;
+  // The set is looked up by key, so its row type can't follow `rows`: the key says they match.
+  const { columns: fixedColumns, defaultSort, rowColumns } = STAT_COLUMN_SETS[columnSet] as unknown as StatColumnSet<AnyStatRow>;
+  const defaultVisibleColumns = useMemo(() => fixedColumns.filter((c) => c.defaultVisible).map((c) => c.key), [fixedColumns]);
+  const weaponColumns = useMemo(() => rowColumns?.(rows) ?? [], [rowColumns, rows]);
   const allColumns = useMemo(
-    () => [...STAT_COLUMNS, ...weaponColumns],
-    [weaponColumns],
+    () => [...fixedColumns, ...weaponColumns],
+    [fixedColumns, weaponColumns],
   );
 
-  const storageName = `gcs.stats.cols.${storageKey}`;
+  const storageName = columnSet === "valorant" ? `gcs.stats.cols.${storageKey}` : `gcs.stats.cols.${columnSet}.${storageKey}`;
   const [visibleCols, setVisibleCols] = useState<string[]>(
-    DEFAULT_VISIBLE_COLUMNS,
+    defaultVisibleColumns,
   );
   const [colPickerOpen, setColPickerOpen] = useState(false);
   const [mode, setMode] = useState<StatsMode>("avg");
-  const [sortCol, setSortCol] = useState("acs");
+  const [sortCol, setSortCol] = useState(defaultSort);
   const [sortAsc, setSortAsc] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<ColumnFilter[]>([]);
@@ -111,22 +124,24 @@ export function StatsTable({
     () => [
       { key: IDENTITY_FILTER_KEY, label: identityColumnLabel },
       ...extraColumns.map((c) => ({ key: c.key, label: c.label })),
-      ...STAT_COLUMNS.map((c) => ({
+      ...fixedColumns.map((c) => ({
         key: c.key,
         label: columnLabels[c.key] ?? c.key,
       })),
     ],
-    [identityColumnLabel, extraColumns, columnLabels],
+    [identityColumnLabel, extraColumns, columnLabels, fixedColumns],
   );
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(storageName);
-      if (stored) setVisibleCols(JSON.parse(stored));
+      // A column the set no longer has is dropped, the weapon columns are per rows and only known by their prefix.
+      const known = (key: string) => key.startsWith("weapon_") || fixedColumns.some((c) => c.key === key);
+      if (stored) setVisibleCols((JSON.parse(stored) as string[]).filter(known));
     } catch {
       // corrupted/blocked storage — keep defaults
     }
-  }, [storageName]);
+  }, [storageName, fixedColumns]);
 
   function toggleCol(key: string) {
     setVisibleCols((prev) => {
@@ -155,7 +170,11 @@ export function StatsTable({
     const col = allColumns.find((c) => c.key === sortCol);
     if (!col) return rows;
     const withValue = rows.map((r) => ({ row: r, value: col.value(r, mode) }));
-    withValue.sort((a, b) => (sortAsc ? a.value - b.value : b.value - a.value));
+    // A missing value (NaN, e.g. the K/D/A of a LoL champion that was only banned) sorts last either way.
+    withValue.sort((a, b) => {
+      if (Number.isNaN(a.value) || Number.isNaN(b.value)) return Number(Number.isNaN(a.value)) - Number(Number.isNaN(b.value));
+      return sortAsc ? a.value - b.value : b.value - a.value;
+    });
     return withValue.map((w) => w.row);
   }, [rows, allColumns, sortCol, sortAsc, mode]);
 
@@ -164,12 +183,12 @@ export function StatsTable({
     visibleCols.includes(c.key),
   ).length;
 
-  function cellSearchValue(row: StatRow, columnKey: string): string {
+  function cellSearchValue(row: AnyStatRow, columnKey: string): string {
     if (columnKey === IDENTITY_FILTER_KEY)
       return identities[row.groupKey]?.searchValue ?? row.groupKey;
     const extra = extraColumns.find((c) => c.key === columnKey);
     if (extra) return extra.searchValues?.[row.groupKey] ?? "";
-    const col = STAT_COLUMNS.find((c) => c.key === columnKey);
+    const col = fixedColumns.find((c) => c.key === columnKey);
     return col ? formatStatValue(col.value(row, mode), col.format) : "";
   }
 
@@ -257,7 +276,7 @@ export function StatsTable({
             />
             <div className="absolute top-11 left-2 z-50 w-56 space-y-0.5 rounded-lg border border-neutral-800 bg-[var(--gcs-surface-2)] p-2 shadow-2xl">
               <div className="max-h-64 space-y-0.5 overflow-y-auto">
-                {STAT_COLUMNS.map((c) => (
+                {fixedColumns.map((c) => (
                   <label
                     key={c.key}
                     className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-[11px] text-neutral-300 hover:bg-white/[0.04]"
@@ -460,8 +479,8 @@ function StatsBodyRow({
   identity,
   extraColumns,
 }: {
-  row: StatRow;
-  columns: StatColumn[];
+  row: AnyStatRow;
+  columns: StatColumn<AnyStatRow>[];
   mode: StatsMode;
   identity?: {
     icon?: React.ReactNode;
@@ -506,7 +525,7 @@ function StatsBodyRow({
           className="border-b border-neutral-800/40 p-2.5 text-center text-neutral-300"
         >
           {c.key === "clutches"
-            ? `${clutchFraction(row).won}/${clutchFraction(row).played}`
+            ? `${clutchFraction(row as StatRow).won}/${clutchFraction(row as StatRow).played}`
             : formatStatValue(c.value(row, mode), c.format)}
         </td>
       ))}
