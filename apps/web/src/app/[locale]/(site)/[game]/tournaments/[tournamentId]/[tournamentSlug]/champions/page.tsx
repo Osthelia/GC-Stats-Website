@@ -18,7 +18,7 @@ import { TournamentChampionInsights } from "@/components/tournament/tournament-c
 import { TournamentChampionsTable } from "@/components/tournament/tournament-champions-table";
 import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { STAT_COLUMN_SETS } from "@/lib/stats-columns";
-import { LEAGUE_ROLE_OPTIONS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { leagueRoleOptions, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
 import type { Metadata } from "next";
 import { tournamentPageMetadata } from "@/lib/page-metadata";
 import { gameFromParams } from "@/lib/game";
@@ -50,6 +50,7 @@ export default async function TournamentChampionsPage({
   const filters = { ...parseLeagueStatsFilters(await searchParams), champion: "" };
 
   const [{ rows, iconUrls }, patches, t] = await Promise.all([getTournamentChampionStats(game, id, filters), getTournamentPatches(game, id), getTranslations("tournamentPage")]);
+  const tLanes = await getTranslations("lanes");
   const set = STAT_COLUMN_SETS.lolChampions;
 
   const columnLabels: Record<string, string> = {};
@@ -64,7 +65,7 @@ export default async function TournamentChampionsPage({
           basePath={`/tournaments/${basePath}/champions`}
           filters={filters}
           patch={{ label: t("statsFilterPatch"), defaultLabel: t("statsFilterPatchAll"), options: patches.map((p) => ({ value: p, label: p })) }}
-          role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: LEAGUE_ROLE_OPTIONS }}
+          role={{ label: t(set.labels.mapFilter), defaultLabel: t(set.labels.mapFilterAll), options: leagueRoleOptions((lane) => tLanes(lane)) }}
         />
 
         {filters.role && <p className="-mt-3 mb-6 text-xs text-neutral-500">{t("championsRoleBansNote")}</p>}

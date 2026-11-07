@@ -3359,6 +3359,7 @@
           "entityNotFound": "참조된 팀 또는 선수가 더 이상 존재하지 않습니다.",
           "membershipNotFound": "로스터 항목이 더 이상 존재하지 않습니다.",
           "invalidRole": "역할이 더 이상 유효하지 않습니다.",
+          "invalidLane": "유효하지 않은 라인이 있습니다.",
           "logoNotFound": "로고 항목이 더 이상 존재하지 않습니다.",
           "alreadyLinked": "이 선수는 이미 다른 계정에 연동되어 있습니다.",
           "unknownField": "지원하지 않는 필드입니다.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "게임",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "탑",
+    "JUNGLE": "정글",
+    "MIDDLE": "미드",
+    "BOTTOM": "원딜",
+    "UTILITY": "서포터",
+    "label": "라인",
+    "fromGames": "경기 기준:",
+    "invalid": "다섯 개의 라인만 선택할 수 있습니다."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

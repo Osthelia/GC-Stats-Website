@@ -9,9 +9,10 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { StatsTable, type StatsExtraColumn, type StatsTableProps } from "@/components/stats/stats-table";
 import { LolIcon } from "@/components/match/lol-icon";
-import { LEAGUE_ROLE_LABELS } from "@/lib/stats-filters";
+import { isLane } from "@gc-stats/lol-stats-engine";
 
 export function TournamentChampionsTable({
   iconUrls,
@@ -24,6 +25,7 @@ export function TournamentChampionsTable({
   showRoles: boolean;
 }) {
   const { rows } = tableProps;
+  const tLanes = useTranslations("lanes");
   const { identities, extraColumns } = useMemo(() => {
     const identities: StatsTableProps<"lolChampions">["identities"] = {};
     const roles: StatsExtraColumn = { key: "roles", label: rolesLabel, cells: {}, searchValues: {} };
@@ -33,12 +35,12 @@ export function TournamentChampionsTable({
         label: row.groupKey,
         searchValue: row.groupKey,
       };
-      const names = row.roles.map((role) => LEAGUE_ROLE_LABELS[role] ?? role).join(", ");
+      const names = row.roles.map((role) => (isLane(role) ? tLanes(role) : role)).join(", ");
       roles.cells[row.groupKey] = names || "–";
       roles.searchValues![row.groupKey] = names;
     }
     return { identities, extraColumns: showRoles ? [roles] : [] };
-  }, [rows, iconUrls, rolesLabel, showRoles]);
+  }, [rows, iconUrls, rolesLabel, showRoles, tLanes]);
 
   return <StatsTable {...tableProps} columnSet="lolChampions" identities={identities} extraColumns={extraColumns} />;
 }

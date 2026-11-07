@@ -13,9 +13,13 @@ import { useTranslations } from "next-intl";
 import { CountryBadge } from "@/components/team/country-badge";
 import { PublicSelect } from "@/components/forms/public-select";
 import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
-import { ROSTER_ROLES, MAX_MEMBERSHIP_ADDITIONS, type MembershipOperation } from "@/lib/change-request-fields";
+import { MAX_MEMBERSHIP_ADDITIONS, type MembershipOperation } from "@/lib/change-request-fields";
+import { useGame } from "@/lib/use-game";
+import { gameHasLanes } from "@gc-stats/db/game";
+import { sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { PublicLanePicker } from "@/components/change-request/public-lane-picker";
 import { PublicRosterSourceField } from "@/components/change-request/public-roster-source-field";
-import { rosterRoleStyles } from "@/lib/roster-roles";
+import { rosterRoleStyles, rosterRolesFor, roleHasLanes } from "@/lib/roster-roles";
 
 const inputClass =
   "rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-2.5 py-1.5 text-[12.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
@@ -32,9 +36,11 @@ export type MembershipEntryView = {
   joinSource: string | null;
   leftSource: string | null;
   isCurrent: boolean;
+  /** League only. */
+  lanes: LeagueRole[];
 };
 
-type MembershipFields = { role: string; since: string; until: string; hasLeft: boolean; inactiveSince: string; joinSource: string; leftSource: string };
+type MembershipFields = { role: string; since: string; until: string; hasLeft: boolean; inactiveSince: string; joinSource: string; leftSource: string; lanes: LeagueRole[] };
 type EditState = MembershipFields & { deleted: boolean };
 type AddDraft = MembershipFields & { uid: number; entity: { id: number; label: string } | null };
 
@@ -62,18 +68,19 @@ export function MembershipHistorySection({
   entries: MembershipEntryView[];
   onChange: (ops: MembershipOperation[]) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("suggestEdit.membership");
   const tRole = useTranslations("suggestEdit.roster.roleOption");
 
   const [edits, setEdits] = useState<Record<number, EditState>>(() =>
     Object.fromEntries(
-      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", hasLeft: !e.isCurrent, inactiveSince: e.inactiveSince ?? "", joinSource: e.joinSource ?? "", leftSource: e.leftSource ?? "", deleted: false }])
+      entries.map((e) => [e.membershipId, { role: e.role, since: e.since ?? today(), until: e.until ?? "", hasLeft: !e.isCurrent, inactiveSince: e.inactiveSince ?? "", joinSource: e.joinSource ?? "", leftSource: e.leftSource ?? "", lanes: e.lanes, deleted: false }])
     )
   );
   const [additions, setAdditions] = useState<AddDraft[]>([]);
   const nextAddUid = useRef(0);
 
-  const roleOptions = ROSTER_ROLES.map((r) => ({ value: r, label: tRole(r.replace(/\s+/g, "_")) }));
+  const roleOptions = rosterRolesFor(game).map((r) => ({ value: r, label: tRole(r.replace(/\s+/g, "_")) }));
 
   function emit(nextEdits: Record<number, EditState>, nextAdditions: AddDraft[]) {
     const ops: MembershipOperation[] = [];
@@ -91,7 +98,8 @@ export function MembershipHistorySection({
         edit.hasLeft !== !entry.isCurrent ||
         (edit.inactiveSince || null) !== entry.inactiveSince ||
         (edit.joinSource.trim() || null) !== entry.joinSource ||
-        (edit.leftSource.trim() || null) !== entry.leftSource;
+        (edit.leftSource.trim() || null) !== entry.leftSource ||
+        (gameHasLanes(game) && roleHasLanes(edit.role) && sortLanes(edit.lanes).join() !== sortLanes(entry.lanes).join());
       if (changed) {
         ops.push({
           type: "edit",
@@ -103,6 +111,7 @@ export function MembershipHistorySection({
           inactiveSince: edit.inactiveSince || null,
           joinSource: edit.joinSource.trim() || null,
           leftSource: edit.hasLeft ? edit.leftSource.trim() || null : null,
+          ...(gameHasLanes(game) ? { lanes: roleHasLanes(edit.role) ? edit.lanes : [] } : {}),
         });
       }
     }
@@ -119,6 +128,7 @@ export function MembershipHistorySection({
         inactiveSince: draft.inactiveSince || null,
         joinSource: draft.joinSource.trim() || null,
         leftSource: draft.hasLeft ? draft.leftSource.trim() || null : null,
+        ...(gameHasLanes(game) ? { lanes: roleHasLanes(draft.role) ? draft.lanes : [] } : {}),
       });
     }
     onChange(ops);
@@ -132,7 +142,7 @@ export function MembershipHistorySection({
 
   function addRow() {
     if (additions.length >= MAX_MEMBERSHIP_ADDITIONS) return;
-    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", hasLeft: false, inactiveSince: "", joinSource: "", leftSource: "" }];
+    const next = [...additions, { uid: nextAddUid.current++, entity: null, role: "player", since: today(), until: "", hasLeft: false, inactiveSince: "", joinSource: "", leftSource: "", lanes: [] }];
     setAdditions(next);
   }
 
@@ -155,6 +165,7 @@ export function MembershipHistorySection({
     return (
       <div className="flex flex-col gap-2">
         <PublicSelect value={value.role} onChange={(v) => update({ role: v })} options={roleOptions} />
+        {gameHasLanes(game) && roleHasLanes(value.role) && <PublicLanePicker lanes={value.lanes} onChange={(lanes) => update({ lanes })} />}
         <div className="grid grid-cols-2 gap-1.5">
           <input type="date" value={value.since} onChange={(e) => update({ since: e.target.value })} className={inputClass} />
           <input type="date" value={value.until} disabled={!value.hasLeft} onChange={(e) => update({ until: e.target.value })} aria-label={t("untilLabel")} className={`${inputClass} disabled:opacity-40`} />

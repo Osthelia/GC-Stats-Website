@@ -27,7 +27,10 @@ import { RosterSourceField } from "@/components/admin/roster-source-field";
 import { MemberSortSelect, sortMembers, type MemberSortKey } from "@/components/admin/member-sort-select";
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { addTeamRosterMember, updateRosterMemberEntry, deleteRosterMembership, type AddRosterMemberFieldErrors, type RosterEntryFieldErrors } from "@/actions/admin-teams";
-import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
+import { ROSTER_ROLES, rosterRoleStyles, rosterRolesFor, roleHasLanes } from "@/lib/roster-roles";
+import { LanePicker } from "@/components/admin/lane-picker";
+import { gameHasLanes } from "@gc-stats/db/game";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import type { AdminTeamRosterMember } from "@/lib/admin-teams";
 import { useGame } from "@/lib/use-game";
@@ -54,6 +57,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
   const [inactiveSince, setInactiveSince] = useState(member.inactiveSince ?? "");
   const [joinSource, setJoinSource] = useState(member.joinSource ?? "");
   const [leftSource, setLeftSource] = useState(member.leftSource ?? "");
+  const [lanes, setLanes] = useState<LeagueRole[]>(member.lanes);
   const [fieldErrors, setFieldErrors] = useState<RosterEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -66,12 +70,12 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
     const closeIds = hasLeft ? [] : await resolveConflicts(member.personId, member.handle, teamId, member.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updateRosterMemberEntry(game, member.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await updateRosterMemberEntry(game, member.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds, lanes);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...member, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null });
+      onSaved({ ...member, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null, lanes: roleHasLanes(role) ? lanes : [] });
       toast.success(t("rosterAddSubmit"));
     });
   }
@@ -125,7 +129,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ROSTER_ROLES.map((r) => (
+                {rosterRolesFor(game).map((r) => (
                   <SelectItem key={r} value={r}>
                     {roleItems[r]}
                   </SelectItem>
@@ -138,6 +142,7 @@ function RosterRow({ member, teamId, onSaved, onDeleted }: { member: AdminTeamRo
               </p>
             )}
           </div>
+          {gameHasLanes(game) && roleHasLanes(role) && <LanePicker lanes={lanes} onChange={setLanes} gameLanes={member.gameLanes} invalid={!!fieldErrors.lanes} />}
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col gap-1">
               <Label className="text-[11px] text-muted-foreground">
@@ -215,6 +220,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
   const [inactiveSince, setInactiveSince] = useState("");
   const [joinSource, setJoinSource] = useState("");
   const [leftSource, setLeftSource] = useState("");
+  const [lanes, setLanes] = useState<LeagueRole[]>([]);
   const [fieldErrors, setFieldErrors] = useState<AddRosterMemberFieldErrors>({});
   const [sortKey, setSortKey] = useState<MemberSortKey>("joined");
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -226,7 +232,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
     const closeIds = person && !hasLeft ? await resolveConflicts(person.id, person.handle, teamId) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addTeamRosterMember(game, teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await addTeamRosterMember(game, teamId, person?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds, lanes);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -238,6 +244,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
       setInactiveSince("");
       setJoinSource("");
       setLeftSource("");
+      setLanes([]);
       toast.success(t("rosterAddSubmit"));
       // Refresh from the server instead of patching local state by hand.
       router.refresh();
@@ -295,7 +302,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {ROSTER_ROLES.map((r) => (
+                  {rosterRolesFor(game).map((r) => (
                     <SelectItem key={r} value={r}>
                       {roleItems[r]}
                     </SelectItem>
@@ -308,6 +315,7 @@ export function TeamRosterPanel({ teamId, initialMembers }: { teamId: number; in
                 </p>
               )}
             </div>
+            {gameHasLanes(game) && roleHasLanes(role) && <LanePicker lanes={lanes} onChange={setLanes} invalid={!!fieldErrors.lanes} />}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="roster-inactive-since">{t("rosterInactiveSinceLabel")}</Label>
               <Input id="roster-inactive-since" type="date" value={inactiveSince} onChange={(e) => setInactiveSince(e.target.value)} />

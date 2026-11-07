@@ -3363,6 +3363,7 @@
           "entityNotFound": "A referenced team or player no longer exists.",
           "membershipNotFound": "The roster entry no longer exists.",
           "invalidRole": "The role is no longer valid.",
+          "invalidLane": "A lane is not valid.",
           "logoNotFound": "The logo entry no longer exists.",
           "alreadyLinked": "This player is already linked to another account.",
           "unknownField": "Unsupported field.",
@@ -7408,6 +7409,16 @@
     "switcherLabel": "Game",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lanes",
+    "fromGames": "From games:",
+    "invalid": "Only the five lanes can be selected."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

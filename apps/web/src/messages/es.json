@@ -3363,6 +3363,7 @@
           "entityNotFound": "Un equipo o jugador referenciado ya no existe.",
           "membershipNotFound": "La entrada del roster ya no existe.",
           "invalidRole": "El rol ya no es válido.",
+          "invalidLane": "Una línea no es válida.",
           "logoNotFound": "La entrada del logo ya no existe.",
           "alreadyLinked": "Este jugador ya está vinculado a otra cuenta.",
           "unknownField": "Campo no compatible.",
@@ -7408,6 +7409,16 @@
     "switcherLabel": "Juego",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungla",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Soporte",
+    "label": "Líneas",
+    "fromGames": "Según las partidas:",
+    "invalid": "Solo se pueden seleccionar las cinco líneas."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

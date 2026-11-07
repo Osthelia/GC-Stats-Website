@@ -73,6 +73,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: true,
+      lanes: h.lanes,
     })),
     ...teamHistory.formers.map((h) => ({
       membershipId: h.membershipId,
@@ -86,6 +87,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: false,
+      lanes: h.lanes,
     })),
   ];
 

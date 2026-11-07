@@ -28,7 +28,7 @@ import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar
 import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
 import {
-  LEAGUE_ROLE_OPTIONS,
+  leagueRoleOptions,
     parseLeagueStatsFilters,
   parseStatsFilters,
   type LeagueStatsFilters,
@@ -212,6 +212,7 @@ async function loadValorantStats(game: GameSlug, tournamentId: number, filters: 
 
 async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: LeagueStatsFilters): Promise<TournamentStats> {
   const scope = leagueStatsScope(game, tournamentId, filters);
+  const tLanes = await getTranslations("lanes");
   const [rows, playerMeta, champions, patches] = await Promise.all([
     aggregateLeaguePlayerStatsSql(game, scope, "personId"),
     getLeagueStatsPlayerMeta(game, scope),
@@ -224,7 +225,7 @@ async function loadLeagueStats(game: GameSlug, tournamentId: number, filters: Le
     patches,
     players: await statsPlayers(game, rows, playerMeta),
     agentOptions: champions.map((c) => ({ value: c, label: c })),
-    mapOptions: LEAGUE_ROLE_OPTIONS,
+    mapOptions: leagueRoleOptions((lane) => tLanes(lane)),
     weaponColumns: [],
   };
 }

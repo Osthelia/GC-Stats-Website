@@ -24,7 +24,10 @@ import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
 import { getOrganizationMembers, type OrganizationMember } from "@/lib/organization-page-data";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+import { resolveEntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
 
 // Managers and coaches already show on the roster, the staff tab covers the rest of the organization.
 const ROSTER_ORGANIZATION_ROLES = ["manager"];
@@ -116,6 +119,8 @@ export type TeamRosterMember = {
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
+  /** Lanes (Top to Support), League only. */
+  lanes: LeagueRole[];
 };
 
 export type TeamFormerMember = {
@@ -131,6 +136,7 @@ export type TeamFormerMember = {
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
+  lanes: LeagueRole[];
 };
 
 export type TeamRosterOptions = {
@@ -181,7 +187,7 @@ export async function getTeamRoster(
         handle: r.handle,
         countryCode: r.countryCode,
         secondaryCountryCode: r.secondaryCountryCode,
-        role: r.role,
+        role: displayRosterRole(game, r.role),
         since: rangeLower(r.period),
         isStaff: STAFF_ROLES.has(r.role),
         inactiveSince: r.inactiveSince,
@@ -190,13 +196,14 @@ export async function getTeamRoster(
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
+        lanes: [],
       });
     } else {
       allFormers.push({
         membershipId: r.membershipId,
         personId: r.personId,
         handle: r.handle,
-        role: r.role,
+        role: displayRosterRole(game, r.role),
         since: rangeLower(r.period),
         until: rangeUpper(r.period),
         inactiveSince: r.inactiveSince,
@@ -205,6 +212,7 @@ export async function getTeamRoster(
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
+        lanes: [],
       });
     }
   }
@@ -213,6 +221,18 @@ export async function getTeamRoster(
   const current = [...currentByPersonId.values()].sort((a, b) => Number(a.isStaff) - Number(b.isStaff));
   allFormers.sort((a, b) => (b.until ?? "").localeCompare(a.until ?? ""));
   const formers = formersSlice ? allFormers.slice(formersSlice.offset, formersSlice.offset + formersSlice.limit) : allFormers;
+
+  // Lanes only for the members actually rendered.
+  if (gameHasLanes(game)) {
+    const shown = [...current, ...formers];
+    const rowByMembershipId = new Map(rows.map((r) => [r.membershipId, r]));
+    const entries = shown.map((m) => {
+      const r = rowByMembershipId.get(m.membershipId)!;
+      return { membershipId: m.membershipId, personId: m.personId, teamId, role: r.role, period: r.period, hasLeft: r.hasLeft };
+    });
+    const lanesByMembershipId = await resolveEntryLanes(entries);
+    for (const m of shown) m.lanes = lanesByMembershipId.get(m.membershipId)?.lanes ?? [];
+  }
 
   // Photos only for the members actually rendered.
   if (photos) {

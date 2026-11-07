@@ -69,6 +69,7 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       joinSource: m.joinSource,
       leftSource: m.leftSource,
       isCurrent: true,
+      lanes: m.lanes,
     })),
     ...roster.formers.map((m) => ({
       membershipId: m.membershipId,
@@ -82,6 +83,7 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       joinSource: m.joinSource,
       leftSource: m.leftSource,
       isCurrent: false,
+      lanes: m.lanes,
     })),
   ];
 

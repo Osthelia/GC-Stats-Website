@@ -26,7 +26,6 @@ import { notify } from "@/lib/notify";
 import {
   fieldsForSubject,
   readFieldValue,
-  ROSTER_ROLES,
   MAX_MEMBERSHIP_ADDITIONS,
   type ChangeRequestSubjectType,
   type MembershipOperation,
@@ -38,7 +37,10 @@ import {
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import { isRosterRoleOf } from "@/lib/roster-roles";
+import { areLanes } from "@gc-stats/lol-stats-engine";
+import { getStoredLanes, lanesToStore } from "@/lib/roster-lanes";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -58,6 +60,16 @@ const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, st
   pending: "userLinkPending",
   notFound: "notFound",
 };
+
+/** Lanes of a membership operation are optional, but when given they must be lanes. */
+function validLanes(lanes: unknown): boolean {
+  return lanes === undefined || (Array.isArray(lanes) && lanes.length <= 5 && lanes.every((lane) => typeof lane === "string") && areLanes(lanes));
+}
+
+/** The lanes of a membership operation as stored in the request: only League entries carry them, and only for roles that have lanes. */
+function lanesField(game: GameSlug, op: { role: string; lanes?: string[] }): { lanes?: string[] } {
+  return gameHasLanes(game) ? { lanes: lanesToStore(game, op.role, op.lanes ?? []) } : {};
+}
 
 /**
  * Proposes edits to a team or person profile — simple fields, logo history,
@@ -189,7 +201,7 @@ export async function submitChangeRequest(
 
     for (const op of ops) {
       if (op.type === "add") {
-        if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+        if (!isRosterRoleOf(game, op.role) || !validLanes(op.lanes)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
@@ -209,7 +221,7 @@ export async function submitChangeRequest(
         membershipItems.push({
           field: "membership_add",
           oldValue: null,
-          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
+          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource), ...lanesField(game, op) },
         });
       } else if (op.type === "edit" || op.type === "delete") {
         const [membership] = await db
@@ -223,7 +235,7 @@ export async function submitChangeRequest(
         if (op.type === "delete") {
           membershipItems.push({ field: "membership_delete", oldValue: { membershipId: op.membershipId }, newValue: null });
         } else {
-          if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+          if (!isRosterRoleOf(game, op.role) || !validLanes(op.lanes)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
@@ -245,8 +257,9 @@ export async function submitChangeRequest(
               inactiveSince: membership.inactiveSince,
               joinSource: membership.joinSource,
               leftSource: membership.leftSource,
+              ...(gameHasLanes(game) ? { lanes: (await getStoredLanes([op.membershipId])).get(op.membershipId) ?? [] } : {}),
             },
-            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
+            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource), ...lanesField(game, op) },
           });
         }
       }

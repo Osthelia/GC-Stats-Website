@@ -3359,6 +3359,7 @@
           "entityNotFound": "参照先のチームまたは選手がすでに存在しません。",
           "membershipNotFound": "このロスター項目はすでに存在しません。",
           "invalidRole": "このロールはすでに無効です。",
+          "invalidLane": "無効なレーンがあります。",
           "logoNotFound": "このロゴ項目はすでに存在しません。",
           "alreadyLinked": "この選手はすでに別のアカウントに連携されています。",
           "unknownField": "サポートされていないフィールドです。",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "ゲーム",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "トップ",
+    "JUNGLE": "ジャングル",
+    "MIDDLE": "ミッド",
+    "BOTTOM": "ボット",
+    "UTILITY": "サポート",
+    "label": "レーン",
+    "fromGames": "試合から:",
+    "invalid": "選択できるのは5つのレーンのみです。"
   },
   "liquipediaHub": {
     "title": "Liquipedia",
