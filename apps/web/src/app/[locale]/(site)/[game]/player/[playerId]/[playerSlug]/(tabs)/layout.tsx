@@ -25,11 +25,17 @@ export default async function PlayerTabsLayout({ children, params }: { children:
   const id = parseEntityId(playerId);
   if (id === null) notFound();
 
-  const [player, achievements, availability, personGames] = await Promise.all([getPlayerPageInfo(game, id), getPlayerAchievements(game, id), getPlayerTabAvailability(game, id), getPersonGames(id)]);
+  // League also needs the current roster entries for the lanes in the header. Started with the rest, and deduplicated with the overview's own read of the team history.
+  const [player, achievements, availability, personGames, teamHistory] = await Promise.all([
+    getPlayerPageInfo(game, id),
+    getPlayerAchievements(game, id),
+    getPlayerTabAvailability(game, id),
+    getPersonGames(id),
+    gameHasLanes(game) ? getPlayerTeamHistory(game, id) : null,
+  ]);
   if (!player) return playerNotInGame(game, id);
 
-  // League: the lanes of the current roster entries, deduplicated with the overview's own read of the team history.
-  const currentLanes = gameHasLanes(game) ? sortLanes((await getPlayerTeamHistory(game, id)).current.flatMap((entry) => entry.lanes)) : [];
+  const currentLanes = sortLanes(teamHistory?.current.flatMap((entry) => entry.lanes) ?? []);
 
   return (
     <div>
