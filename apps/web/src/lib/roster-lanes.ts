@@ -19,6 +19,7 @@ import { leagueTables } from "@gc-stats/db";
 import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
 import { lanesByCount, lanesPlayedInPeriod, sortLanes, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
+import type { ActivityChanges } from "@/lib/activity-log";
 import { ROLES_WITH_LANES, roleHasLanes } from "@/lib/roster-roles";
 
 export type EntryLanes = {
@@ -140,11 +141,16 @@ export function lanesToStore(game: GameSlug, role: string, lanes: readonly strin
   return gameHasLanes(game) && roleHasLanes(role) ? sortLanes(lanes) : [];
 }
 
-/** Replaces the lanes of an entry. An empty list clears them, the lanes then come from the games again. */
-export async function replaceEntryLanes(game: GameSlug, tx: Tx, membershipId: number, role: string, lanes: readonly string[]): Promise<void> {
-  if (!gameHasLanes(game)) return;
+/**
+ * Replaces the lanes of an entry. An empty list clears them, the lanes then come from the games again. Returns the
+ * before/after of the lanes when they changed (nothing when they did not), to go into the roster activity log entry.
+ */
+export async function replaceEntryLanes(game: GameSlug, tx: Tx, membershipId: number, role: string, lanes: readonly string[]): Promise<ActivityChanges> {
+  if (!gameHasLanes(game)) return {};
   const { rosterMembershipLanes } = leagueTables;
+  const previous = sortLanes((await tx.select({ lane: rosterMembershipLanes.lane }).from(rosterMembershipLanes).where(eq(rosterMembershipLanes.rosterMembershipId, membershipId))).map((row) => row.lane));
   await tx.delete(rosterMembershipLanes).where(eq(rosterMembershipLanes.rosterMembershipId, membershipId));
   const stored = lanesToStore(game, role, lanes);
   if (stored.length > 0) await tx.insert(rosterMembershipLanes).values(stored.map((lane) => ({ rosterMembershipId: membershipId, lane })));
+  return previous.join() === stored.join() ? {} : { lanes: { old: previous, new: stored } };
 }

@@ -378,8 +378,8 @@ export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId:
 
     const values = { role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
-    await replaceEntryLanes(game, tx, membershipId, role, lanes);
-    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
+    const laneChanges = await replaceEntryLanes(game, tx, membershipId, role, lanes);
+    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: { ...diffChanges(membership, values), ...laneChanges } });
   });
 
   return { ok: true };
