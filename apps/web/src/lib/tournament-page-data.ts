@@ -87,7 +87,7 @@ async function gameFallbackRoster(game: GameSlug, entrantIds: number[]) {
  * pas de reconstruction fiable possible").
  */
 export async function getTournamentParticipants(game: GameSlug, tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
-  const { entrants, entrantMembers, people, teams, matches, stageContainers } = gameTables(game);
+  const { entrants, entrantMembers, people, teams, matches, stageContainers, tournaments } = gameTables(game);
   let stageCondition;
   if (stageId != null) {
     const stageMatchRows = await db
@@ -120,7 +120,7 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
 
   const entrantIds = entrantRows.map((e) => e.id);
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
-  const [logosByTeamId, sourceByEntrant, lockedRows] = await Promise.all([
+  const [logosByTeamId, sourceByEntrant, lockedRows, [tournament]] = await Promise.all([
     getCurrentLogoUrlsThemed("team", teamIds, game),
     resolveEntrantQualificationSources(game, db, tournamentId, entrantRows),
     db
@@ -129,6 +129,8 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
       .innerJoin(people, eq(people.id, entrantMembers.personId))
       .where(and(inArray(entrantMembers.entrantId, entrantIds), eq(entrantMembers.isStarter, true)))
       .orderBy(people.handle),
+    // League lanes of a roster before its first game come from the roster entries covering the start date.
+    gameHasLanes(game) ? db.select({ startDate: tournaments.startDate }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1) : Promise.resolve([]),
   ]);
 
   const entrantIdsWithLockedRoster = new Set(lockedRows.map((r) => r.entrantId));
@@ -140,13 +142,9 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
   // League rosters show the lanes of each player, ordered Top to Support.
   const rosterRows = [...lockedRows, ...fallbackRows];
   let lanesByEntrantAndPerson = new Map<string, LeagueRole[]>();
-  if (gameHasLanes(game) && rosterRows.length > 0) {
-    const { tournaments } = gameTables(game);
-    const [tournament] = await db.select({ startDate: tournaments.startDate }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
+  if (tournament && rosterRows.length > 0) {
     const teamIdByEntrant = new Map(entrantRows.map((e) => [e.id, e.teamId]));
-    if (tournament) {
-      lanesByEntrantAndPerson = await getTournamentLanes(tournamentId, tournament.startDate, rosterRows.map((r) => ({ entrantId: r.entrantId, teamId: teamIdByEntrant.get(r.entrantId) ?? null, personId: r.personId })));
-    }
+    lanesByEntrantAndPerson = await getTournamentLanes(tournamentId, tournament.startDate, rosterRows.map((r) => ({ entrantId: r.entrantId, teamId: teamIdByEntrant.get(r.entrantId) ?? null, personId: r.personId })));
   }
 
   const rosterByEntrant = new Map<number, TournamentRosterPlayer[]>();

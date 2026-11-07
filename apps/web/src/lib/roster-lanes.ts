@@ -118,12 +118,23 @@ export async function getTournamentLanes(
   const keyOf = (entrantId: number, personId: number) => `${entrantId}:${personId}`;
 
   const { gamePlayerStats, entrants, rosterMemberships } = leagueTables;
-  const playedRows = await db
-    .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role })
-    .from(gamePlayerStats)
-    .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
-    .where(and(eq(entrants.tournamentId, tournamentId), inArray(gamePlayerStats.entrantId, [...new Set(people.map((p) => p.entrantId))]), isNotNull(gamePlayerStats.role)))
-    .groupBy(gamePlayerStats.entrantId, gamePlayerStats.personId, gamePlayerStats.role);
+  // The lanes played in the tournament and the roster entries covering its start are independent reads, so they run together.
+  // The entries are only used for the people without a game yet, a small set that costs less than waiting for the games first.
+  const withTeam = people.filter((p) => p.teamId !== null);
+  const [playedRows, entryRows] = await Promise.all([
+    db
+      .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role })
+      .from(gamePlayerStats)
+      .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
+      .where(and(eq(entrants.tournamentId, tournamentId), inArray(gamePlayerStats.entrantId, [...new Set(people.map((p) => p.entrantId))]), isNotNull(gamePlayerStats.role)))
+      .groupBy(gamePlayerStats.entrantId, gamePlayerStats.personId, gamePlayerStats.role),
+    withTeam.length === 0
+      ? Promise.resolve([])
+      : db
+          .select({ membershipId: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
+          .from(rosterMemberships)
+          .where(and(inArray(rosterMemberships.teamId, [...new Set(withTeam.map((p) => p.teamId!))]), inArray(rosterMemberships.personId, [...new Set(withTeam.map((p) => p.personId))]), inArray(rosterMemberships.role, [...ROLES_WITH_LANES]), sql`${rosterMemberships.period} @> ${startDate}::date`)),
+  ]);
   const played = new Map<string, string[]>();
   for (const row of playedRows) {
     if (row.personId === null) continue;
@@ -132,16 +143,12 @@ export async function getTournamentLanes(
   }
   for (const [key, playedLanes] of played) lanes.set(key, sortLanes(playedLanes));
 
-  const withoutGames = people.filter((p) => p.teamId !== null && !lanes.has(keyOf(p.entrantId, p.personId)));
+  const withoutGames = withTeam.filter((p) => !lanes.has(keyOf(p.entrantId, p.personId)));
   if (withoutGames.length === 0) return lanes;
-  const teamIds = [...new Set(withoutGames.map((p) => p.teamId!))];
-  const entryRows = await db
-    .select({ membershipId: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
-    .from(rosterMemberships)
-    .where(and(inArray(rosterMemberships.teamId, teamIds), inArray(rosterMemberships.personId, [...new Set(withoutGames.map((p) => p.personId))]), inArray(rosterMemberships.role, [...ROLES_WITH_LANES]), sql`${rosterMemberships.period} @> ${startDate}::date`));
-  const resolved = await resolveEntryLanes(entryRows);
+  const entryOf = (person: { personId: number; teamId: number | null }) => entryRows.find((row) => row.personId === person.personId && row.teamId === person.teamId);
+  const resolved = await resolveEntryLanes(withoutGames.flatMap((person) => entryOf(person) ?? []));
   for (const person of withoutGames) {
-    const entry = entryRows.find((row) => row.personId === person.personId && row.teamId === person.teamId);
+    const entry = entryOf(person);
     const entryLanes = entry && resolved.get(entry.membershipId)?.lanes;
     if (entryLanes && entryLanes.length > 0) lanes.set(keyOf(person.entrantId, person.personId), entryLanes);
   }
