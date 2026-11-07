@@ -24,6 +24,9 @@ import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import { SuggestEditForm } from "@/components/change-request/suggest-edit-form";
 import type { MembershipEntryView } from "@/components/change-request/membership-history-section";
 import { gameFromParams } from "@/lib/game";
+import { gameHasLanes } from "@gc-stats/db/game";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+import { getStoredLanes } from "@/lib/roster-lanes";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -60,6 +63,9 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
     getLinkedDiscordId(userId),
   ]);
 
+  // The form edits the lanes saved on an entry. Lanes taken from games are not saved ones, sending them back would store them.
+  const storedLanes = gameHasLanes(game) ? await getStoredLanes([...teamHistory.current, ...teamHistory.formers].map((h) => h.membershipId)) : new Map<number, LeagueRole[]>();
+
   const membershipEntries: MembershipEntryView[] = [
     ...teamHistory.current.map((h) => ({
       membershipId: h.membershipId,
@@ -73,7 +79,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: true,
-      lanes: h.lanes,
+      lanes: storedLanes.get(h.membershipId) ?? [],
     })),
     ...teamHistory.formers.map((h) => ({
       membershipId: h.membershipId,
@@ -87,7 +93,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: false,
-      lanes: h.lanes,
+      lanes: storedLanes.get(h.membershipId) ?? [],
     })),
   ];
 
