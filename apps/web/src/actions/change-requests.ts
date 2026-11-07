@@ -68,7 +68,7 @@ function validLanes(lanes: unknown): boolean {
 
 /** The lanes of a membership operation as stored in the request: only League entries carry them, and only for roles that have lanes. */
 function lanesField(game: GameSlug, op: { role: string; lanes?: string[] }): { lanes?: string[] } {
-  return gameHasLanes(game) ? { lanes: lanesToStore(game, op.role, op.lanes ?? []) } : {};
+  return gameHasLanes(game) && op.lanes !== undefined ? { lanes: lanesToStore(game, op.role, op.lanes) } : {};
 }
 
 /**
