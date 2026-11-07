@@ -17,7 +17,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine/lanes";
 
 type Props = {
   kind: "champion" | "item" | "rune" | "tree";

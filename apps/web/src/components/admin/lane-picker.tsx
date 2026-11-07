@@ -12,7 +12,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { LEAGUE_ROLES, sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { LEAGUE_ROLES, sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine/lanes";
 import { Label } from "@/components/ui/label";
 import { LaneIcons, laneIconUrl } from "@/components/match/lol-icon";
 import { cn } from "@/lib/utils";

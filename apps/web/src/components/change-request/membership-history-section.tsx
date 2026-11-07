@@ -16,7 +16,7 @@ import { PublicEntityPicker } from "@/components/forms/public-entity-picker";
 import { MAX_MEMBERSHIP_ADDITIONS, type MembershipOperation } from "@/lib/change-request-fields";
 import { useGame } from "@/lib/use-game";
 import { gameHasLanes } from "@gc-stats/db/game";
-import { sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine/lanes";
 import { PublicLanePicker } from "@/components/change-request/public-lane-picker";
 import { PublicRosterSourceField } from "@/components/change-request/public-roster-source-field";
 import { rosterRoleStyles, rosterRolesFor, roleHasLanes } from "@/lib/roster-roles";

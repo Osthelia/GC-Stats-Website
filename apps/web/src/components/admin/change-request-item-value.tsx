@@ -7,7 +7,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { sortLanes } from "@gc-stats/lol-stats-engine";
+import { sortLanes } from "@gc-stats/lol-stats-engine/lanes";
 import { LaneIcons } from "@/components/match/lol-icon";
 import { rosterSourceTextKey } from "@/lib/roster-source";
 

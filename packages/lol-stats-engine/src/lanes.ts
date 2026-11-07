@@ -2,14 +2,17 @@
  * GC-Stats — lanes module
  *
  * Lanes of a roster entry: keeping a stored set in lane order, taking the lanes a person played from their games
- * when none are stored, and ordering a roster by them. No database access, so the rules can be tested on their own.
+ * when none are stored, and ordering a roster by them. No database access and no imports, so the rules can be tested
+ * on their own and client components can import them from `@gc-stats/lol-stats-engine/lanes` without the rest of the
+ * engine.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { LEAGUE_ROLES, type LeagueRole } from "./game-summary";
+export const LEAGUE_ROLES = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"] as const;
+export type LeagueRole = (typeof LEAGUE_ROLES)[number];
 
 const LANE_RANK = new Map<string, number>(LEAGUE_ROLES.map((lane, i) => [lane, i]));
 

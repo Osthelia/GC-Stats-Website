@@ -13,7 +13,8 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { assignedRoles, buildGameSummary, LEAGUE_ROLES, roleOf } from "./game-summary";
+import { assignedRoles, buildGameSummary, roleOf } from "./game-summary";
+import { LEAGUE_ROLES } from "./lanes";
 import { inferRoles, resolvePlayerRoles } from "./infer-roles";
 import { namesForEveryChampion } from "./test-helpers";
 import type { RiotMatchDto, RiotTimelineDto } from "./types";

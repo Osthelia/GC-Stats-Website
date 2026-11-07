@@ -12,7 +12,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { LEAGUE_ROLES, sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { LEAGUE_ROLES, sortLanes, type LeagueRole } from "@gc-stats/lol-stats-engine/lanes";
 import { laneIconUrl } from "@/components/match/lol-icon";
 
 export function PublicLanePicker({ lanes, onChange }: { lanes: LeagueRole[]; onChange: (lanes: LeagueRole[]) => void }) {

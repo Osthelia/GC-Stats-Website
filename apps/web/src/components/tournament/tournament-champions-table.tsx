@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { StatsTable, type StatsExtraColumn, type StatsTableProps } from "@/components/stats/stats-table";
 import { LolIcon } from "@/components/match/lol-icon";
-import { isLane } from "@gc-stats/lol-stats-engine";
+import { isLane } from "@gc-stats/lol-stats-engine/lanes";
 
 export function TournamentChampionsTable({
   iconUrls,
