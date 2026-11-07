@@ -34,6 +34,11 @@ export function splitEntryLanes(entry: EntryLanes | undefined): { lanes: LeagueR
   return entry.fromGames ? { lanes: [], gameLanes: entry.lanes } : { lanes: entry.lanes, gameLanes: [] };
 }
 
+/** The lanes saved on an entry, for a form that sends them back: the ones taken from games are not saved, sending them would store them. */
+export function savedLanes(entry: { lanes: LeagueRole[]; lanesFromGames: boolean }): LeagueRole[] {
+  return entry.lanesFromGames ? [] : entry.lanes;
+}
+
 export type RosterEntryRef = { membershipId: number; personId: number; teamId: number; role: string; period: string; hasLeft: boolean };
 
 export async function getStoredLanes(membershipIds: number[]): Promise<Map<number, LeagueRole[]>> {

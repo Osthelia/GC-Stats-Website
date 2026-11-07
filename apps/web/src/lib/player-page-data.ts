@@ -154,6 +154,8 @@ export type PlayerTeamHistoryEntry = {
   teamLogoUrlLight: string | null;
   /** League only. */
   lanes: LeagueRole[];
+  /** True when the lanes come from imported games and are not saved on the entry. */
+  lanesFromGames: boolean;
 };
 
 /** Deduplicated per request: the overview reads it from two Suspense boundaries. */
@@ -204,6 +206,7 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
       lanes: lanesByMembershipId.get(r.membershipId)?.lanes ?? [],
+      lanesFromGames: lanesByMembershipId.get(r.membershipId)?.fromGames ?? false,
     };
     if (r.hasLeft) {
       formers.push(entry);

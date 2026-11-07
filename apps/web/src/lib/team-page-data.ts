@@ -121,6 +121,8 @@ export type TeamRosterMember = {
   pronouns: number | null;
   /** Lanes (Top to Support), League only. */
   lanes: LeagueRole[];
+  /** True when the lanes come from imported games and are not saved on the entry. */
+  lanesFromGames: boolean;
 };
 
 export type TeamFormerMember = {
@@ -137,6 +139,7 @@ export type TeamFormerMember = {
   photoUrlLight: string | null;
   pronouns: number | null;
   lanes: LeagueRole[];
+  lanesFromGames: boolean;
 };
 
 export type TeamRosterOptions = {
@@ -197,6 +200,7 @@ export async function getTeamRoster(
         photoUrlLight: null,
         pronouns: r.pronouns,
         lanes: [],
+        lanesFromGames: false,
       });
     } else {
       allFormers.push({
@@ -213,6 +217,7 @@ export async function getTeamRoster(
         photoUrlLight: null,
         pronouns: r.pronouns,
         lanes: [],
+        lanesFromGames: false,
       });
     }
   }
@@ -231,7 +236,11 @@ export async function getTeamRoster(
       return { membershipId: m.membershipId, personId: m.personId, teamId, role: r.role, period: r.period, hasLeft: r.hasLeft };
     });
     const lanesByMembershipId = await resolveEntryLanes(entries);
-    for (const m of shown) m.lanes = lanesByMembershipId.get(m.membershipId)?.lanes ?? [];
+    for (const m of shown) {
+      const entryLanes = lanesByMembershipId.get(m.membershipId);
+      m.lanes = entryLanes?.lanes ?? [];
+      m.lanesFromGames = entryLanes?.fromGames ?? false;
+    }
   }
 
   // Photos only for the members actually rendered.
