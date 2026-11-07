@@ -107,7 +107,7 @@ export async function OrganizationHeader({
       <div className="relative mx-auto max-w-[clamp(1500px,88vw,2400px)] px-6 pt-9">
         <div className="flex flex-wrap items-start gap-6 pb-7">
           <div
-            className="flex h-[118px] w-[118px] flex-none items-center justify-center rounded-2xl border border-neutral-800"
+            className="flex h-[118px] w-[118px] flex-none items-center justify-center overflow-hidden rounded-2xl border border-neutral-800"
             style={{
               background: "var(--gcs-surface-2)",
               boxShadow: "0 16px 36px rgba(0,0,0,0.5)",
@@ -118,9 +118,9 @@ export async function OrganizationHeader({
                 dark={organization.logoUrl ?? organization.logoUrlLight!}
                 light={organization.logoUrlLight ?? organization.logoUrl!}
                 alt={organization.name}
-                width={84}
-                height={84}
-                className="h-[84px] w-[84px] object-contain"
+                width={118}
+                height={118}
+                className="h-full w-full object-cover"
               />
             ) : (
               <span className="text-4xl font-black text-neutral-500">

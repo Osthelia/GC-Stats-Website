@@ -12,7 +12,12 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { gameTables } from "@gc-stats/db";
-import { getMatchStatsResponse, type ApiMatchStatsResponse } from "../../v1/queries/matches";
+import { getMatchStatsResponse, type ApiMatchStatsResponse, type ApiMapPlayerStat } from "../../v1/queries/matches";
+import { RatingAccumulator } from "../../v1/rating";
+import { getMatchesV2 } from "../../v2/queries/matches";
+import type { MatchesFilter } from "../../v2/params";
+import { getMatchMedia, type ApiMatchMedia } from "./match-media";
+import { withPhase, withPhasesPaginated, type WithPhase } from "./phases";
 import { getMatchEncounters } from "@/lib/match-page-data";
 import { buildHeadToHeadWidgetUrl } from "@/lib/widget-params";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -40,11 +45,82 @@ export type ApiPickemVotes = {
   team_b_percentage: number;
 };
 
-export type ApiMatchV3Response = ApiMatchStatsResponse & {
-  encounters: ApiMatchEncounters;
-  radar_chart_widget_url: string | null;
-  pickem: ApiPickemVotes;
+/** A player's stats combined over every completed map of the match. */
+export type ApiMatchPlayerTotals = {
+  person_id: number;
+  team_id: number;
+  agents: string[];
+  maps_played: number;
+  kills: number;
+  deaths: number;
+  assists: number;
+  kd_ratio: number | null;
+  acs: number;
+  adr: number;
+  first_kills: number;
+  first_deaths: number;
+  kast_percentage: number;
+  headshot_percentage: number;
+  rating: number | null;
+  rating_rounds: number | null;
 };
+
+export type ApiMatchV3Response = WithPhase<ApiMatchStatsResponse> &
+  ApiMatchMedia & {
+    player_stats: ApiMatchPlayerTotals[];
+    encounters: ApiMatchEncounters;
+    radar_chart_widget_url: string | null;
+    pickem: ApiPickemVotes;
+  };
+
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
+/** Totals summed, ACS/ADR/KAST/HS% and rating weighted by rounds played, team taken from the map with the most rounds. Only completed maps count. */
+function aggregateMatchPlayerStats(mapsStats: ApiMatchStatsResponse["maps"]): ApiMatchPlayerTotals[] {
+  type Agg = { rows: { stat: ApiMapPlayerStat; weight: number }[]; rating: RatingAccumulator; agents: Set<string> };
+  const byPlayer = new Map<number, Agg>();
+  for (const map of mapsStats) {
+    if (!map.is_completed) continue;
+    for (const stat of map.player_stats) {
+      if (stat.person_id == null) continue;
+      const agg = byPlayer.get(stat.person_id) ?? { rows: [], rating: new RatingAccumulator(), agents: new Set<string>() };
+      agg.rows.push({ stat, weight: Math.max(map.rounds.length, 1) });
+      agg.rating.add(stat.rating, stat.rating_rounds);
+      if (stat.agent_name) agg.agents.add(stat.agent_name);
+      byPlayer.set(stat.person_id, agg);
+    }
+  }
+
+  const avg = (rows: Agg["rows"], pick: (r: ApiMapPlayerStat) => number) => {
+    const totalWeight = rows.reduce((sum, r) => sum + r.weight, 0);
+    return round1(rows.reduce((sum, r) => sum + pick(r.stat) * r.weight, 0) / totalWeight);
+  };
+
+  return [...byPlayer.entries()].map(([personId, { rows, rating, agents }]) => {
+    const stats = rows.map((r) => r.stat);
+    const kills = stats.reduce((sum, r) => sum + r.kills, 0);
+    const deaths = stats.reduce((sum, r) => sum + r.deaths, 0);
+    const main = rows.reduce((best, r) => (r.weight > best.weight ? r : best));
+    return {
+      person_id: personId,
+      team_id: main.stat.team_id,
+      agents: [...agents],
+      maps_played: rows.length,
+      kills,
+      deaths,
+      assists: stats.reduce((sum, r) => sum + r.assists, 0),
+      kd_ratio: deaths > 0 ? Math.round((kills / deaths) * 100) / 100 : null,
+      acs: avg(rows, (r) => r.acs),
+      adr: avg(rows, (r) => r.adr),
+      first_kills: stats.reduce((sum, r) => sum + r.first_kills, 0),
+      first_deaths: stats.reduce((sum, r) => sum + r.first_deaths, 0),
+      kast_percentage: avg(rows, (r) => r.kast_percentage),
+      headshot_percentage: avg(rows, (r) => r.headshot_percentage),
+      rating: rating.value,
+      rating_rounds: rating.ratedRounds > 0 ? rating.ratedRounds : null,
+    };
+  });
+}
 
 function roundPct(n: number, total: number): number {
   return total > 0 ? Math.round((n / total) * 1000) / 10 : 0;
@@ -71,22 +147,26 @@ async function getMatchPickemVotes(game: GameSlug, matchId: number, entrantAId: 
 }
 
 /**
- * V3 = V2's full stats response, plus everything the public match page shows
- * beyond raw stats: past head to head encounters, a ready made link to the
- * OBS head to head radar chart widget (the API has no chart rendering of its
+ * V3 = V2's full stats response with `phase` (id, name, type, ...) and the
+ * match's `container` (with its chain of sets) instead of `phase_id`, plus
+ * everything the public match page shows beyond raw stats: streams, player
+ * POVs and VODs, past head to head encounters, a ready made link to the OBS
+ * head to head radar chart widget (the API has no chart rendering of its
  * own), and the pick'em vote split for this match.
  */
 export async function getMatchV3Response(game: GameSlug, matchId: number): Promise<ApiMatchV3Response | null> {
   const { matches } = gameTables(game);
-  const core = await getMatchStatsResponse(game, matchId);
-  if (!core) return null;
+  const stats = await getMatchStatsResponse(game, matchId);
+  if (!stats) return null;
 
   const [matchRow] = await db.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId }).from(matches).where(eq(matches.id, matchId)).limit(1);
 
-  const teamAId = core.team_a?.team.id ?? null;
-  const teamBId = core.team_b?.team.id ?? null;
+  const teamAId = stats.team_a?.team.id ?? null;
+  const teamBId = stats.team_b?.team.id ?? null;
 
-  const [encounters, pickem] = await Promise.all([
+  const [core, media, encounters, pickem] = await Promise.all([
+    withPhase(game, stats),
+    getMatchMedia(game, matchId),
     getMatchEncounters(game, matchId, teamAId, teamBId),
     getMatchPickemVotes(game, matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
   ]);
@@ -95,6 +175,8 @@ export async function getMatchV3Response(game: GameSlug, matchId: number): Promi
 
   return {
     ...core,
+    ...media,
+    player_stats: aggregateMatchPlayerStats(stats.maps),
     encounters: {
       team_a_wins: encounters.teamAWins,
       team_b_wins: encounters.teamBWins,
@@ -110,4 +192,9 @@ export async function getMatchV3Response(game: GameSlug, matchId: number): Promi
     radar_chart_widget_url: radarChartWidgetUrl,
     pickem,
   };
+}
+
+/** V2 global match listing with `phase` and `container` instead of `phase_id`. */
+export async function getMatchesV3(game: GameSlug, filter: MatchesFilter) {
+  return withPhasesPaginated(game, await getMatchesV2(game, filter));
 }

@@ -12,7 +12,7 @@
 
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, gameTables } from "@gc-stats/db";
+import { organizations, teamPrivateContacts, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
@@ -145,6 +145,8 @@ export type AdminTeamProfile = {
   organizationName: string | null;
   socials: Record<string, string>;
   tags: string[];
+  /** Private, admin only: never part of a public page, the API or an export. */
+  contactEmail: string | null;
 };
 
 export async function getAdminTeam(game: GameSlug, id: number): Promise<AdminTeamProfile | null> {
@@ -157,6 +159,10 @@ export async function getAdminTeam(game: GameSlug, id: number): Promise<AdminTea
     .limit(1);
   if (!found) return null;
   const row = found.team;
+  // The private contact points at val_teams, League teams have none.
+  const [contact] = game === "valorant"
+    ? await db.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, id)).limit(1)
+    : [];
   return {
     organizationId: row.organizationId,
     organizationName: found.organizationName,
@@ -172,6 +178,7 @@ export async function getAdminTeam(game: GameSlug, id: number): Promise<AdminTea
     isGhost: row.isGhost,
     socials: (row.socials as Record<string, string>) ?? {},
     tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
+    contactEmail: contact?.email ?? null,
   };
 }
 

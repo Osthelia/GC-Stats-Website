@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, desc, eq, gte, ilike, inArray, lt, or } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, inArray, lt, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
@@ -18,9 +18,11 @@ import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls
 import { escapeLike, exclusiveUpperBound, type MapsFilter, type StatsFilter } from "../params";
 import { fetchAvgStats, type ApiAvgStats } from "../avg-stats";
 import { fetchWeaponStats, type ApiWeaponStatsEntry } from "../weapon-stats";
+import { sumFloat } from "@/lib/stats-aggregate-sql";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
 import type { GameSlug } from "@gc-stats/db/game";
+import { ratedRoundsSql, roundRating, weightedRatingSql } from "../rating";
 
 async function personExists(game: GameSlug, id: number): Promise<boolean> {
   const { people } = gameTables(game);
@@ -169,19 +171,8 @@ export type ApiAgentStatsEntry = {
   total_first_deaths: number;
   avg_first_deaths: number;
   kd_ratio: number;
-};
-
-type AgentRow = {
-  agentName: string | null;
-  kills: number;
-  deaths: number;
-  assists: number;
-  acs: number;
-  adr: number;
-  kastPercentage: string;
-  headshotPercentage: string;
-  firstKills: number;
-  firstDeaths: number;
+  avg_rating: number | null;
+  rating_rounds: number | null;
 };
 
 /** Per-agent stats and pickrate for the player across all recorded maps. */
@@ -195,69 +186,64 @@ export async function getPlayerAgentStats(game: GameSlug, personId: number, filt
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
   if (filter.tournamentId) conditions.push(eq(stages.tournamentId, filter.tournamentId));
 
-  const rows: AgentRow[] = await db
+  const agentKey = sql<string>`coalesce(${mapPlayerStats.agentName}, '')`;
+  const rows = await db
     .select({
-      agentName: mapPlayerStats.agentName,
-      kills: mapPlayerStats.kills,
-      deaths: mapPlayerStats.deaths,
-      assists: mapPlayerStats.assists,
-      acs: mapPlayerStats.acs,
-      adr: mapPlayerStats.adr,
-      kastPercentage: mapPlayerStats.kastPercentage,
-      headshotPercentage: mapPlayerStats.headshotPercentage,
-      firstKills: mapPlayerStats.firstKills,
-      firstDeaths: mapPlayerStats.firstDeaths,
+      agentName: agentKey,
+      mapsPlayed: sql<number>`count(*)::int`,
+      kills: sumFloat(mapPlayerStats.kills),
+      deaths: sumFloat(mapPlayerStats.deaths),
+      assists: sumFloat(mapPlayerStats.assists),
+      acs: sumFloat(mapPlayerStats.acs),
+      adr: sumFloat(mapPlayerStats.adr),
+      kastPercentage: sumFloat(mapPlayerStats.kastPercentage),
+      headshotPercentage: sumFloat(mapPlayerStats.headshotPercentage),
+      firstKills: sumFloat(mapPlayerStats.firstKills),
+      firstDeaths: sumFloat(mapPlayerStats.firstDeaths),
+      rating: weightedRatingSql,
+      ratedRounds: ratedRoundsSql,
     })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
     .innerJoin(matches, eq(matches.id, maps.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(...conditions));
+    .where(and(...conditions))
+    .groupBy(agentKey);
 
-  const totalMaps = rows.length;
-  const byAgent = new Map<string, AgentRow[]>();
-  for (const row of rows) {
-    const agent = row.agentName ?? "";
-    const list = byAgent.get(agent) ?? [];
-    list.push(row);
-    byAgent.set(agent, list);
-  }
+  const totalMaps = rows.reduce((acc, r) => acc + Number(r.mapsPlayed), 0);
 
-  const entries = [...byAgent.entries()].map(([agentName, agentRows]) => {
-    const mapsPlayed = agentRows.length;
-    const sum = (f: (r: AgentRow) => number) => agentRows.reduce((acc, r) => acc + f(r), 0);
+  const entries = rows.map((row) => {
+    const mapsPlayed = Number(row.mapsPlayed);
     const avg = (total: number) => (mapsPlayed > 0 ? total / mapsPlayed : 0);
-    const totalKills = sum((r) => r.kills);
-    const totalDeaths = sum((r) => r.deaths);
-    const avgKills = avg(totalKills);
-    const avgDeaths = avg(totalDeaths);
-    const totalKast = sum((r) => Number(r.kastPercentage));
-    const totalHs = sum((r) => Number(r.headshotPercentage));
+    const avgKills = avg(row.kills);
+    const avgDeaths = avg(row.deaths);
 
     return {
-      agent_name: agentName,
+      agent_name: row.agentName,
       maps_played: mapsPlayed,
       pickrate: totalMaps > 0 ? mapsPlayed / totalMaps : 0,
-      total_kills: totalKills,
+      total_kills: row.kills,
       avg_kills: avgKills,
-      total_deaths: totalDeaths,
+      total_deaths: row.deaths,
       avg_deaths: avgDeaths,
-      total_assists: sum((r) => r.assists),
-      avg_assists: avg(sum((r) => r.assists)),
-      total_acs: sum((r) => r.acs),
-      avg_acs: avg(sum((r) => r.acs)),
-      total_adr: sum((r) => r.adr),
-      avg_adr: avg(sum((r) => r.adr)),
-      total_kast_percentage: totalKast,
-      avg_kast_percentage: avg(totalKast),
-      total_headshot_percentage: totalHs,
-      avg_headshot_percentage: avg(totalHs),
-      total_first_kills: sum((r) => r.firstKills),
-      avg_first_kills: avg(sum((r) => r.firstKills)),
-      total_first_deaths: sum((r) => r.firstDeaths),
-      avg_first_deaths: avg(sum((r) => r.firstDeaths)),
+      total_assists: row.assists,
+      avg_assists: avg(row.assists),
+      total_acs: row.acs,
+      avg_acs: avg(row.acs),
+      total_adr: row.adr,
+      avg_adr: avg(row.adr),
+      total_kast_percentage: row.kastPercentage,
+      avg_kast_percentage: avg(row.kastPercentage),
+      total_headshot_percentage: row.headshotPercentage,
+      avg_headshot_percentage: avg(row.headshotPercentage),
+      total_first_kills: row.firstKills,
+      avg_first_kills: avg(row.firstKills),
+      total_first_deaths: row.firstDeaths,
+      avg_first_deaths: avg(row.firstDeaths),
       kd_ratio: avgDeaths > 0 ? avgKills / avgDeaths : avgKills,
+      avg_rating: roundRating(row.rating),
+      rating_rounds: Number(row.ratedRounds) > 0 ? Number(row.ratedRounds) : null,
     };
   });
 

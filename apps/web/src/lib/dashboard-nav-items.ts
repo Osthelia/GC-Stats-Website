@@ -10,7 +10,7 @@
  */
 
 import type { ComponentType } from "react";
-import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText, Swords, Webhook } from "lucide-react";
+import { LayoutDashboard, Building2, Users, UsersRound, Clapperboard, KeyRound, KeySquare, Newspaper, UserRound, Radio, Film, ScrollText, Swords, Webhook, Bot } from "lucide-react";
 import { ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
 
 export type DashboardNavItem = {
@@ -110,6 +110,12 @@ export const DASHBOARD_API_KEY_NAV_ITEMS: { href: string; labelKey: string; icon
   { href: "/dashboard/api-keys/webhooks", labelKey: "webhooks", icon: Webhook },
 ];
 
+/** The Discord bot space (/dashboard/discord), gated by a linked Discord account (see dashboard-rbac.ts requireDiscordAccess). */
+export const DASHBOARD_DISCORD_HREF = "/dashboard/discord";
+export const DASHBOARD_DISCORD_NAV_ITEMS: { href: string; labelKey: string; icon: ComponentType<{ className?: string }>; exact?: boolean }[] = [
+  { href: DASHBOARD_DISCORD_HREF, labelKey: "discordServers", icon: Bot },
+];
+
 /** Resolves any /dashboard/{id}/*, /dashboard/author/* or /dashboard/api-keys/* pathname to its nav item's labelKey, mirroring matchAdminNavItem — used by dashboard-header.tsx to name the current page. */
 export function matchDashboardNavItemLabel(pathname: string): string {
   if (pathname === DASHBOARD_HOME_HREF) return "overview";
@@ -119,6 +125,7 @@ export function matchDashboardNavItemLabel(pathname: string): string {
     const authorItem = DASHBOARD_AUTHOR_NAV_ITEMS.find((i) => pathname === i.href);
     return authorItem?.labelKey ?? "myArticles";
   }
+  if (isDashboardPathIn(pathname, DASHBOARD_DISCORD_HREF)) return "discordServers";
   if (isDashboardPathIn(pathname, "/dashboard/api-keys/webhooks")) return "webhooks";
   if (isDashboardPathIn(pathname, "/dashboard/api-keys")) return "myApiKeys";
   const suffix = pathname.replace(/^\/dashboard\/\d+/, "");

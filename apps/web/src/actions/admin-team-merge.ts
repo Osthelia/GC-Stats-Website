@@ -15,7 +15,7 @@
 import { logoGameClause } from "@/lib/admin-logos";
 import { and, eq, inArray, ne, notInArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { logos, activityLog, PERMISSIONS, gameTables } from "@gc-stats/db";
+import { logos, activityLog, teamPrivateContacts, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { rangeLower, closeRange } from "@/lib/daterange";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
@@ -62,9 +62,22 @@ export async function mergeTeams(game: GameSlug, sourceTeamId: number, targetTea
   const [target] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, targetTeamId)).limit(1);
   if (!target) return { ok: false, error: "targetNotFound" };
 
-  const counts = { roster: 0, tournaments: 0, news: 0, logos: 0 };
+  const counts = { roster: 0, tournaments: 0, news: 0, logos: 0, contact: 0 };
 
   await db.transaction(async (tx) => {
+    // The private contact points at val_teams, so it only moves between Valorant teams.
+    // It moves (never duplicates) when the target has none; otherwise it stays with the source.
+    const [sourceContact] = game === "valorant"
+      ? await tx.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, sourceTeamId)).limit(1)
+      : [];
+    if (sourceContact) {
+      const moved = await tx.insert(teamPrivateContacts).values({ teamId: targetTeamId, email: sourceContact.email }).onConflictDoNothing().returning({ teamId: teamPrivateContacts.teamId });
+      if (moved.length > 0) {
+        await tx.delete(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, sourceTeamId));
+        counts.contact = 1;
+      }
+    }
+
     if (selection.roster.length) {
       const entries = await tx
         .select({ id: rosterMemberships.id, personId: rosterMemberships.personId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })

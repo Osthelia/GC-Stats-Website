@@ -35,6 +35,9 @@ export type ValorantTotals = {
   multi5k: number;
   clutchesWon: number;
   clutchesPlayed: number;
+  /** Sum of rating x rounds over rated maps, and the rounds behind it. */
+  ratingWeighted: number;
+  ratingRounds: number;
 };
 
 /** The sums over the games of one group. */

@@ -31,3 +31,5 @@ export { storeNewsImage, deleteNewsImage, newsImageUrl } from "./news";
 export type { StoredNewsImage } from "./news";
 export { emoteImageUrl, isSupportedEmoteMime, storeEmoteImage, copyTeamLogoAsEmote, deleteEmoteImageFile } from "./emotes";
 export type { StoredEmoteImage } from "./emotes";
+export { storeDiscordBackground, deleteDiscordBackground, discordBackgroundUrl } from "./discord-bot";
+export type { StoredDiscordBackground } from "./discord-bot";

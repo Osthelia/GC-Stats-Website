@@ -12,8 +12,8 @@
  */
 
 import { sql, eq } from "drizzle-orm";
-import { pgTable, pgView, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
-import { daterange } from "./custom-types";
+import { pgTable, pgView, serial, bigserial, bigint, integer, smallint, text, varchar, jsonb, boolean, date, timestamp, numeric, char, real, uuid, primaryKey, unique, uniqueIndex, index, check, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { daterange, jsonbValue } from "./custom-types";
 import { users } from "./auth";
 import { organizations, sharedPeople } from "./people";
 import { newsAuthors, newsLanguages } from "./content";
@@ -540,8 +540,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     id: bigserial("id", { mode: "number" }).primaryKey(),
     changeRequestId: bigint("change_request_id", { mode: "number" }).notNull().references(() => changeRequests.id, { onDelete: "cascade" }),
     field: text("field").notNull(),
-    oldValue: jsonb("old_value"),
-    newValue: jsonb("new_value"),
+    oldValue: jsonbValue("old_value"),
+    newValue: jsonbValue("new_value"),
     status: text("status").notNull().default("pending"),
     resolvedBy: text("resolved_by").references(() => users.id, { onDelete: "set null" }),
     resolvedAt: timestamp("resolved_at", { withTimezone: true }),
@@ -739,6 +739,19 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
 
 export type GameTables<P extends GamePrefix = "val"> = ReturnType<typeof defineGameTables<P>>;
 
+// GCS rating model (Valorant only, not per game): one row per recompute, the active one rates newly ingested maps.
+export const ratingModels = pgTable("rating_models", {
+  id: serial("id").primaryKey(),
+  formulaVersion: integer("formula_version").notNull(),
+  model: jsonb("model").notNull(), // win probability counts, baselines, calibration
+  report: jsonb("report").notNull().default({}), // validation figures of the recompute
+  sampleMaps: integer("sample_maps").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  index("rating_models_is_active_idx").on(t.isActive),
+]);
+
 // Valorant only: maps, raw/aggregated stats from the Riot relay, and the veto system.
 export function defineValorantTables(g: GameTables) {
   const { matches, entrants, tournaments } = g;
@@ -776,6 +789,8 @@ export function defineValorantTables(g: GameTables) {
     plantTimeMs: integer("plant_time_ms"),
   }, (t) => [
     index("val_map_rounds_raw_map_id_idx").on(t.mapId),
+    index("val_map_rounds_raw_atk_entrant_id_idx").on(t.atkEntrantId),
+    index("val_map_rounds_raw_def_entrant_id_idx").on(t.defEntrantId),
   ]);
 
   const mapRoundKillsRaw = pgTable("val_map_round_kills_raw", {
@@ -789,7 +804,7 @@ export function defineValorantTables(g: GameTables) {
     isSecondaryFire: boolean("is_secondary_fire"),
     assistantPersonIds: bigint("assistant_person_ids", { mode: "number" }).array(),
   }, (t) => [
-    index("val_map_round_kills_raw_map_round_id_idx").on(t.mapRoundId),
+    index("val_map_round_kills_raw_map_round_id_time_ms_idx").on(t.mapRoundId, t.timeMs),
   ]);
 
   const mapRoundDamagesRaw = pgTable("val_map_round_damages_raw", {
@@ -802,7 +817,7 @@ export function defineValorantTables(g: GameTables) {
     bodyshots: integer("bodyshots").notNull().default(0),
     legshots: integer("legshots").notNull().default(0),
   }, (t) => [
-    index("val_map_round_damages_raw_map_round_id_idx").on(t.mapRoundId),
+    index("val_map_round_damages_raw_map_round_id_attacker_idx").on(t.mapRoundId, t.attackerPersonId),
   ]);
 
   const mapRoundAliveStatesRaw = pgTable("val_map_round_alive_states_raw", {
@@ -853,6 +868,8 @@ export function defineValorantTables(g: GameTables) {
     armor: text("armor"),
   }, (t) => [
     index("val_map_round_player_loadouts_raw_map_round_id_idx").on(t.mapRoundId),
+    index("val_map_round_player_loadouts_raw_person_id_idx").on(t.personId),
+    index("val_map_round_player_loadouts_raw_entrant_id_idx").on(t.entrantId),
   ]);
 
   const mapPlayerStats = pgTable("val_map_player_stats", {
@@ -879,8 +896,15 @@ export function defineValorantTables(g: GameTables) {
     abilityKills: jsonb("ability_kills").notNull().default({}), // {"ability1": n, "ability2": n, "grenade": n, "ultimate": n}
     fallDeaths: integer("fall_deaths").notNull().default(0),
     weaponKills: jsonb("weapon_kills").notNull().default({}), // {"<weapon name>": n, ...}
+    // GCS rating, null when the map has no RAW data or no model exists yet.
+    rating: real("rating"),
+    ratingRounds: integer("rating_rounds"),
+    ratingComponents: jsonb("rating_components"), // {"imp": {value, z}, ..., "clutch": {won, bonus}}
+    ratingModelId: integer("rating_model_id").references(() => ratingModels.id, { onDelete: "set null" }),
   }, (t) => [
     index("val_map_player_stats_map_id_idx").on(t.mapId),
+    index("val_map_player_stats_entrant_id_idx").on(t.entrantId),
+    index("val_map_player_stats_person_id_idx").on(t.personId),
   ]);
 
   const mapTeamRoundSummary = pgTable("val_map_team_round_summary", {

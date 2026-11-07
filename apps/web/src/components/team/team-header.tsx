@@ -151,7 +151,7 @@ export async function TeamHeader({
             tabs, otherwise the tab bar rides up flush against the logo. */}
         <div className="flex flex-wrap items-start gap-6 pb-7">
           <div
-            className="flex h-[118px] w-[118px] flex-none items-center justify-center rounded-2xl border border-neutral-800"
+            className="flex h-[118px] w-[118px] flex-none items-center justify-center overflow-hidden rounded-2xl border border-neutral-800"
             style={{
               background: "var(--gcs-surface-2)",
               boxShadow: "0 16px 36px rgba(0,0,0,0.5)",
@@ -162,9 +162,9 @@ export async function TeamHeader({
                 dark={team.logoUrl ?? team.logoUrlLight!}
                 light={team.logoUrlLight ?? team.logoUrl!}
                 alt={team.name}
-                width={84}
-                height={84}
-                className="h-[84px] w-[84px] object-contain"
+                width={118}
+                height={118}
+                className="h-full w-full object-cover"
               />
             ) : (
               <span className="text-[40px] font-black text-neutral-600">

@@ -404,57 +404,169 @@
     {
       "idx": 57,
       "version": "7",
-      "when": 1793446664252,
-      "tag": "0057_games",
+      "when": 1793379251323,
+      "tag": "0057_discord_bot",
       "breakpoints": true
     },
     {
       "idx": 58,
       "version": "7",
-      "when": 1793533064252,
-      "tag": "0058_user_lol_fan_team",
+      "when": 1793385085333,
+      "tag": "0058_discord_bot_customization",
       "breakpoints": true
     },
     {
       "idx": 59,
       "version": "7",
-      "when": 1793619464252,
-      "tag": "0059_organization_games",
+      "when": 1793385465337,
+      "tag": "0059_discord_bot_templates",
       "breakpoints": true
     },
     {
       "idx": 60,
       "version": "7",
-      "when": 1793705864252,
-      "tag": "0060_activity_log_game",
+      "when": 1793403023389,
+      "tag": "0060_discord_bot_match_button",
       "breakpoints": true
     },
     {
       "idx": 61,
       "version": "7",
-      "when": 1793792264252,
-      "tag": "0061_shared_people",
+      "when": 1793482087562,
+      "tag": "0061_discord_bot_background_color",
       "breakpoints": true
     },
     {
       "idx": 62,
       "version": "7",
-      "when": 1793792324252,
-      "tag": "0062_powerful_wolfpack",
+      "when": 1793485873031,
+      "tag": "0062_discord_bot_image_moderation",
       "breakpoints": true
     },
     {
       "idx": 63,
       "version": "7",
-      "when": 1793792384252,
-      "tag": "0063_data_dragon_icon_sync",
+      "when": 1793490732366,
+      "tag": "0063_discord_bot_image_decisions",
       "breakpoints": true
     },
     {
       "idx": 64,
       "version": "7",
-      "when": 1793988338138,
-      "tag": "0064_lol_roster_membership_lanes",
+      "when": 1793570684819,
+      "tag": "0064_discord_bot_image_pins",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1793642976350,
+      "tag": "0065_gcs_rating",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1793642976351,
+      "tag": "0066_roster_watch",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1793642976352,
+      "tag": "0067_webhook_endpoint_kind",
+      "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1793651704194,
+      "tag": "0068_stats_query_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1793820007667,
+      "tag": "0069_roster_signal_translation",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1793932360409,
+      "tag": "0070_team_info_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1793933432993,
+      "tag": "0071_team_private_contacts",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1793933919625,
+      "tag": "0072_team_requests_one_pending",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1793940060000,
+      "tag": "0073_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1793940120000,
+      "tag": "0074_user_lol_fan_team",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1793940180000,
+      "tag": "0075_organization_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1793940240000,
+      "tag": "0076_activity_log_game",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1793940300000,
+      "tag": "0077_shared_people",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1793940360000,
+      "tag": "0078_powerful_wolfpack",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1793940420000,
+      "tag": "0079_data_dragon_icon_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1793940480000,
+      "tag": "0080_lol_roster_membership_lanes",
       "breakpoints": true
     }
   ]

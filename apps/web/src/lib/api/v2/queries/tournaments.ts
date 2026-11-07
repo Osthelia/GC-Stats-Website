@@ -27,6 +27,7 @@ import { toApiTournamentV2, type ApiTournamentV2, type ApiTournamentPhaseV2 } fr
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
 import type { GameSlug } from "@gc-stats/db/game";
+import { RatingAccumulator } from "../../v1/rating";
 
 export type ApiEntrantRosterPlayer = { person_id: number; handle: string };
 
@@ -150,7 +151,7 @@ async function tournamentExists(game: GameSlug, id: number): Promise<boolean> {
 }
 
 /** First tournament (by name asc, same order as the search endpoint) whose name starts with the given string — the sub endpoints (matches/maps/stats) resolve a single tournament, unlike the top level `by-name` which returns every match. */
-async function resolveTournamentIdByName(game: GameSlug, query: string): Promise<number | null> {
+export async function resolveTournamentIdByName(game: GameSlug, query: string): Promise<number | null> {
   const { tournaments } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
   const [row] = await db.select({ id: tournaments.id }).from(tournaments).where(and(ilike(tournaments.name, pattern), visibleTournament(game))).orderBy(asc(tournaments.name)).limit(1);
@@ -500,6 +501,8 @@ export type ApiTournamentStatsEntry = {
   total_first_deaths: number;
   avg_first_deaths: number;
   kd_ratio: number;
+  avg_rating: number | null;
+  rating_rounds: number | null;
 };
 
 function statsEntrantAlias(game: GameSlug) {
@@ -525,6 +528,8 @@ type TournamentStatRow = {
   headshotPercentage: string;
   firstKills: number;
   firstDeaths: number;
+  rating: number | null;
+  ratingRounds: number | null;
 };
 
 /**
@@ -573,6 +578,8 @@ export async function getTournamentStatsV2(game: GameSlug, tournamentId: number,
       headshotPercentage: mapPlayerStats.headshotPercentage,
       firstKills: mapPlayerStats.firstKills,
       firstDeaths: mapPlayerStats.firstDeaths,
+      rating: mapPlayerStats.rating,
+      ratingRounds: mapPlayerStats.ratingRounds,
     })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
@@ -600,6 +607,7 @@ export async function getTournamentStatsV2(game: GameSlug, tournamentId: number,
     hs: number;
     fk: number;
     fd: number;
+    rating: RatingAccumulator;
   };
 
   const groups = new Map<number, PersonAgg>();
@@ -607,7 +615,7 @@ export async function getTournamentStatsV2(game: GameSlug, tournamentId: number,
     if (r.personId == null) continue;
     let g = groups.get(r.personId);
     if (!g) {
-      g = { handle: r.handle, countryCode: r.countryCode, agents: new Set(), entrantCounts: new Map(), teamByEntrant: new Map(), mapsPlayed: 0, roundsPlayed: 0, kills: 0, deaths: 0, assists: 0, acs: 0, adr: 0, kast: 0, hs: 0, fk: 0, fd: 0 };
+      g = { handle: r.handle, countryCode: r.countryCode, agents: new Set(), entrantCounts: new Map(), teamByEntrant: new Map(), mapsPlayed: 0, roundsPlayed: 0, kills: 0, deaths: 0, assists: 0, acs: 0, adr: 0, kast: 0, hs: 0, fk: 0, fd: 0, rating: new RatingAccumulator() };
       groups.set(r.personId, g);
     }
     g.mapsPlayed += 1;
@@ -621,6 +629,7 @@ export async function getTournamentStatsV2(game: GameSlug, tournamentId: number,
     g.hs += Number(r.headshotPercentage) || 0;
     g.fk += r.firstKills;
     g.fd += r.firstDeaths;
+    g.rating.add(r.rating, r.ratingRounds);
     if (r.agentName) g.agents.add(r.agentName);
     g.entrantCounts.set(r.entrantId, (g.entrantCounts.get(r.entrantId) ?? 0) + 1);
     g.teamByEntrant.set(r.entrantId, { teamId: r.teamId, teamName: r.teamName });
@@ -670,6 +679,8 @@ export async function getTournamentStatsV2(game: GameSlug, tournamentId: number,
       total_first_deaths: g.fd,
       avg_first_deaths: avg(g.fd),
       kd_ratio: avgDeaths > 0 ? avgKills / avgDeaths : avgKills,
+      avg_rating: g.rating.value,
+      rating_rounds: g.rating.ratedRounds > 0 ? g.rating.ratedRounds : null,
     });
   }
 

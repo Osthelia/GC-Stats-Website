@@ -14,3 +14,6 @@ logo/
 # Stray tsc output next to the TypeScript sources
 packages/db/src/**/*.js
 packages/db/scripts/**/*.js
+
+# Source art for the map splashes (converted to public/valorant/maps)
+Loading_Screen_*.png

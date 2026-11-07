@@ -15,6 +15,7 @@ import { organizations, organizationAccess, organizationAccessRoles, organizatio
 import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
+import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import type { AppLocale } from "@/i18n/routing";
 import { GAMES } from "@gc-stats/db/game";
 
@@ -43,6 +44,8 @@ export type DashboardAccess = {
   hasApiKey: boolean;
   /** Site admin holding the global override (see hasGlobalOrgOverride): can browse every author profile and individual article from /dashboard/authors. */
   isAuthorAdmin: boolean;
+  /** Linked Discord account, the grant of the Discord bot space (/dashboard/discord): the servers they manage come from it. */
+  hasDiscord: boolean;
 };
 
 /** Adds the permissions every team-linked organization gets and strips those it can never hold (news). */
@@ -189,13 +192,14 @@ async function getCombinedDashboardMemberships(userId: string): Promise<Dashboar
 
 /** Cheap "should the nav show the dashboard link" check — same grants as requireDashboardAccess (organization_access, isAuthor, a personal API key, or the global admin override), no permission detail needed. */
 export async function hasDashboardAccess(userId: string): Promise<boolean> {
-  const [memberships, isAuthor, hasApiKey, isGlobalOrgAdmin] = await Promise.all([
+  const [memberships, isAuthor, hasApiKey, isGlobalOrgAdmin, discordId] = await Promise.all([
     getDashboardMemberships(userId),
     getIsAuthor(userId),
     getHasPersonalApiKey(userId),
     hasGlobalOrgOverride(userId),
+    getLinkedDiscordId(userId),
   ]);
-  return memberships.length > 0 || isAuthor || hasApiKey || isGlobalOrgAdmin;
+  return memberships.length > 0 || isAuthor || hasApiKey || isGlobalOrgAdmin || !!discordId;
 }
 
 /** Redirects to /login (no session) or / (logged in, but no organization_access, isAuthor grant, personal API key, or global admin override) — use at the top of the /dashboard layout. `memberships` already includes the global admin override entries (see getCombinedDashboardMemberships), so every caller reading it — picker, sidebar, org switcher, per-org access checks — sees every organization for such an admin without extra plumbing. */
@@ -204,15 +208,37 @@ export async function requireDashboardAccess(locale: AppLocale): Promise<Dashboa
   const userId = session?.user?.id;
   if (!userId) redirect({ href: "/login", locale });
 
-  const [memberships, isAuthor, hasApiKey, isAuthorAdmin] = await Promise.all([
+  const [memberships, isAuthor, hasApiKey, isAuthorAdmin, discordId] = await Promise.all([
     getCombinedDashboardMemberships(userId as string),
     getIsAuthor(userId as string),
     getHasPersonalApiKey(userId as string),
     hasGlobalOrgOverride(userId as string),
+    getLinkedDiscordId(userId as string),
   ]);
-  if (memberships.length === 0 && !isAuthor && !hasApiKey && !isAuthorAdmin) redirect({ href: "/", locale });
+  const hasDiscord = !!discordId;
+  if (memberships.length === 0 && !isAuthor && !hasApiKey && !isAuthorAdmin && !hasDiscord) redirect({ href: "/", locale });
 
-  return { userId: userId as string, memberships, isAuthor, hasApiKey, isAuthorAdmin };
+  return { userId: userId as string, memberships, isAuthor, hasApiKey, isAuthorAdmin, hasDiscord };
+}
+
+/** /dashboard/discord/* pages, the Discord bot space, gated strictly by a linked Discord account (not by any organization membership). Mirrors requireApiKeyAccess. */
+export async function requireDiscordAccess(locale: AppLocale): Promise<{ userId: string }> {
+  const session = await getSession();
+  const userId = session?.user?.id;
+  if (!userId) redirect({ href: "/login", locale });
+
+  if (!(await getLinkedDiscordId(userId as string))) redirect({ href: "/dashboard", locale });
+  return { userId: userId as string };
+}
+
+/** Server-action mirror of requireDiscordAccess, throws instead of redirecting. */
+export async function requireDiscordActor(): Promise<{ userId: string }> {
+  const session = await getSession();
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Not authenticated");
+
+  if (!(await getLinkedDiscordId(userId))) throw new Error("Not authorized");
+  return { userId };
 }
 
 /** /dashboard/authors/* pages, the admin view over every author profile and individual article. Same gate as the global organization override, so it grants nothing an admin couldn't already do. */

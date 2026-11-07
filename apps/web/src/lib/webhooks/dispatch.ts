@@ -164,10 +164,8 @@ export function signWebhookBody(secret: string, timestamp: number, body: string)
 
 export type SendResult = { ok: boolean; statusCode: number | null; error: string | null };
 
-/** One HTTPS POST, no redirect followed, private addresses refused at connection time. */
-export function postWebhook(url: string, secret: string, deliveryId: number, eventType: string, payload: unknown): Promise<SendResult> {
-  const body = JSON.stringify(payload);
-  const timestamp = Math.floor(Date.now() / 1000);
+/** One guarded HTTPS POST of a JSON body, no redirect followed, private addresses refused at connection time. */
+export function postJsonGuarded(url: string, body: string, headers: Record<string, string> = {}): Promise<SendResult> {
   return new Promise((resolve) => {
     let settled = false;
     let deadline: NodeJS.Timeout | undefined;
@@ -188,10 +186,7 @@ export function postWebhook(url: string, secret: string, deliveryId: number, eve
             "Content-Type": "application/json",
             "Content-Length": Buffer.byteLength(body),
             "User-Agent": "GCStats-Webhook/1.0",
-            "X-GCS-Event": eventType,
-            "X-GCS-Delivery": String(deliveryId),
-            "X-GCS-Timestamp": String(timestamp),
-            "X-GCS-Signature": `sha256=${signWebhookBody(secret, timestamp, body)}`,
+            ...headers,
           },
         },
         (response) => {
@@ -217,7 +212,27 @@ export function postWebhook(url: string, secret: string, deliveryId: number, eve
   });
 }
 
-type DueDelivery = { id: number; endpointId: number; eventType: string; payload: unknown; attempts: number; url: string; secretEncrypted: string; usable: boolean };
+/** Discord message of a delivery: the tweet link, or the text of a test ping. */
+function discordContent(payload: unknown): string {
+  const data = (payload as { data?: { tweet_url?: unknown; message?: unknown } } | null)?.data;
+  const content = typeof data?.tweet_url === "string" ? data.tweet_url : typeof data?.message === "string" ? data.message : "GCS webhook";
+  // Cut on code points so a surrogate pair is never split.
+  return Array.from(content).slice(0, 2000).join("");
+}
+
+/** Signed delivery of an API partner webhook. */
+export function postWebhook(url: string, secret: string, deliveryId: number, eventType: string, payload: unknown): Promise<SendResult> {
+  const body = JSON.stringify(payload);
+  const timestamp = Math.floor(Date.now() / 1000);
+  return postJsonGuarded(url, body, {
+    "X-GCS-Event": eventType,
+    "X-GCS-Delivery": String(deliveryId),
+    "X-GCS-Timestamp": String(timestamp),
+    "X-GCS-Signature": `sha256=${signWebhookBody(secret, timestamp, body)}`,
+  });
+}
+
+type DueDelivery = { id: number; endpointId: number; eventType: string; payload: unknown; attempts: number; kind: string; url: string; secretEncrypted: string; usable: boolean };
 
 /**
  * `scheduled`: failures are retried, then count toward disabling the endpoint.
@@ -228,9 +243,11 @@ type AttemptMode = "scheduled" | "manual" | "test";
 
 /** Sends one leased delivery and records the outcome on the delivery and its endpoint. */
 async function attempt(delivery: DueDelivery, mode: AttemptMode = "scheduled"): Promise<SendResult> {
-  const result: SendResult = delivery.usable
-    ? await postWebhook(delivery.url, decrypt(delivery.secretEncrypted), delivery.id, delivery.eventType, delivery.payload)
-    : { ok: false, statusCode: null, error: "endpoint disabled" };
+  const result: SendResult = !delivery.usable
+    ? { ok: false, statusCode: null, error: "endpoint disabled" }
+    : delivery.kind === "discord"
+      ? await postJsonGuarded(delivery.url, JSON.stringify({ content: discordContent(delivery.payload) }))
+      : await postWebhook(delivery.url, decrypt(delivery.secretEncrypted), delivery.id, delivery.eventType, delivery.payload);
   const attempts = delivery.attempts + 1;
 
   if (result.ok) {
@@ -264,7 +281,8 @@ async function attempt(delivery: DueDelivery, mode: AttemptMode = "scheduled"): 
       nextAttemptAt: finalAttempt ? sql`now()` : sql`now() + make_interval(secs => ${RETRY_DELAYS_S[attempts - 1]})`,
     })
     .where(eq(webhookDeliveries.id, delivery.id));
-  if (mode === "scheduled" && delivery.usable) {
+  // A rate limit (429) is retried later but says nothing about the endpoint health.
+  if (mode === "scheduled" && delivery.usable && result.statusCode !== 429) {
     await db
       .update(webhookEndpoints)
       .set({
@@ -291,6 +309,7 @@ async function leaseDeliveries(where: ReturnType<typeof sql>, limit: number): Pr
       eventType: webhookDeliveries.eventType,
       payload: webhookDeliveries.payload,
       attempts: webhookDeliveries.attempts,
+      kind: webhookEndpoints.kind,
       url: webhookEndpoints.url,
       secretEncrypted: webhookEndpoints.secretEncrypted,
       endpointActive: webhookEndpoints.isActive,
