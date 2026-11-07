@@ -16,7 +16,9 @@ import { db } from "@gc-stats/db/client";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import {
   organizations, newsAuthors, gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
-import { sortPatchesNewestFirst } from "@gc-stats/lol-stats-engine";
+import { sortLanes, sortPatchesNewestFirst, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { resolveEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -27,7 +29,7 @@ import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
 import type { LeagueStatsFilters, ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type PlayerPageInfo = {
   id: number;
@@ -150,6 +152,10 @@ export type PlayerTeamHistoryEntry = {
   leftSource: string | null;
   teamLogoUrl: string | null;
   teamLogoUrlLight: string | null;
+  /** League only. */
+  lanes: LeagueRole[];
+  /** True when the lanes come from imported games and are not saved on the entry. */
+  lanesFromGames: boolean;
 };
 
 /** Deduplicated per request: the overview reads it from two Suspense boundaries. */
@@ -175,7 +181,10 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
     .where(eq(rosterMemberships.personId, personId))
     .orderBy(desc(rosterMemberships.id));
 
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))], game);
+  const [logosByTeamId, lanesByMembershipId] = await Promise.all([
+    getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))], game),
+    gameHasLanes(game) ? resolveEntryLanes(rows.map((r) => ({ ...r, personId }))) : new Map<number, EntryLanes>(),
+  ]);
 
   const currentByTeamId = new Map<number, PlayerTeamHistoryEntry>();
   const formers: PlayerTeamHistoryEntry[] = [];
@@ -188,7 +197,7 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       teamShortName: r.teamShortName,
       teamCountryCode: r.teamCountryCode,
       teamSecondaryCountryCode: r.teamSecondaryCountryCode,
-      role: r.role,
+      role: displayRosterRole(game, r.role),
       since: rangeLower(r.period),
       until: rangeUpper(r.period),
       inactiveSince: r.inactiveSince,
@@ -196,6 +205,8 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       leftSource: r.leftSource,
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
+      lanes: lanesByMembershipId.get(r.membershipId)?.lanes ?? [],
+      lanesFromGames: lanesByMembershipId.get(r.membershipId)?.fromGames ?? false,
     };
     if (r.hasLeft) {
       formers.push(entry);
@@ -213,6 +224,17 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
   formers.sort((a, b) => (b.until ?? "").localeCompare(a.until ?? ""));
 
   return { current, formers };
+});
+
+export const getPlayerCurrentLanes = cache(async (game: GameSlug, personId: number): Promise<LeagueRole[]> => {
+  if (!gameHasLanes(game)) return [];
+  const { rosterMemberships } = gameTables(game);
+  const rows = await db
+    .select({ membershipId: rosterMemberships.id, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.hasLeft, false)));
+  const lanes = await resolveEntryLanes(rows.map((r) => ({ ...r, personId })));
+  return sortLanes([...lanes.values()].flatMap((entry) => entry.lanes));
 });
 
 /** Handle only, for the `/player/{id}` redirect to the canonical URL. */

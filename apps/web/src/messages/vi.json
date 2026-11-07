@@ -3319,6 +3319,7 @@
           "entityNotFound": "Một đội hoặc tuyển thủ được tham chiếu không còn tồn tại.",
           "membershipNotFound": "Mục đội hình không còn tồn tại.",
           "invalidRole": "Vai trò không còn hợp lệ.",
+          "invalidLane": "Có một đường không hợp lệ.",
           "logoNotFound": "Mục logo không còn tồn tại.",
           "alreadyLinked": "Tuyển thủ này đã được liên kết với một tài khoản khác.",
           "unknownField": "Trường không được hỗ trợ.",
@@ -7632,5 +7633,15 @@
   "leaguepediaSource": {
     "text": "Một số dữ liệu ván trên trang này lấy từ Leaguepedia (CC BY-SA). Xem các trang gốc:",
     "game": "Ván {order}"
+  },
+  "lanes": {
+    "TOP": "Đường trên",
+    "JUNGLE": "Đi rừng",
+    "MIDDLE": "Đường giữa",
+    "BOTTOM": "Xạ thủ",
+    "UTILITY": "Hỗ trợ",
+    "label": "Đường",
+    "fromGames": "Theo các trận:",
+    "invalid": "Chỉ có thể chọn năm đường."
   }
 }

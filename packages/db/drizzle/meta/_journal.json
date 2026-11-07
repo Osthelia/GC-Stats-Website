@@ -449,6 +449,13 @@
       "when": 1793792384252,
       "tag": "0063_data_dragon_icon_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1793988338138,
+      "tag": "0064_lol_roster_membership_lanes",
+      "breakpoints": true
     }
   ]
 }

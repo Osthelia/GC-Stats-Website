@@ -12,6 +12,7 @@ import type { TeamFormerMember } from "@/lib/team-page-data";
 import { displayMonthYear } from "@/lib/daterange";
 import { slugify } from "@/lib/entity-id";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import { LaneIcons } from "@/components/match/lol-icon";
 
 // Same role grouping as `TeamRoster` (mirrors V1's RosterRole), but dimmed
 // way down — former members should still read as gray/secondary at a glance,
@@ -86,7 +87,10 @@ export async function TeamFormerMembers({
                 )}
               </span>
               <span className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate text-[13.5px] font-semibold text-neutral-100">{m.handle}</span>
+                <span className="flex items-center gap-1.5 truncate text-[13.5px] font-semibold text-neutral-100">
+                  {m.handle}
+                  <LaneIcons lanes={m.lanes} size={14} />
+                </span>
                 <span className="font-mono text-[9.5px] tracking-widest uppercase" style={{ color: mutedRoleColor(m.role) }}>
                   {t.has(`role.${m.role}` as "role.player") ? t(`role.${m.role}` as "role.player", { pronouns: m.pronouns ?? 2 }) : m.role}
                 </span>

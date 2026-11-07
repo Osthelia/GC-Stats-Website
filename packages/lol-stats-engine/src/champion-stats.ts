@@ -9,7 +9,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { LEAGUE_ROLES } from "./game-summary";
+import { sortLanes } from "./lanes";
 import { kdaRatio } from "./series-stats";
 
 export interface ChampionPickRow {
@@ -74,7 +74,7 @@ export function buildChampionStatRows(pickRows: ChampionPickRow[], banRows: Cham
     row.mapsPlayed = p.picks;
     Object.assign(row.totals, { picks: p.picks, wins: p.wins, kills: p.kills, deaths: p.deaths, assists: p.assists });
     // Lane order. Roles can only be these five (overrides are validated, nulls are left out by the query).
-    row.roles = LEAGUE_ROLES.filter((role) => p.roles.includes(role));
+    row.roles = sortLanes(p.roles);
   }
   for (const b of banRows) rowOf(b.championName).totals.bans = b.bans;
 

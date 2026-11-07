@@ -947,7 +947,7 @@ export type ValorantOnlyTables = ReturnType<typeof defineValorantTables>;
 // League of Legends only: one row per game of a series, and what happened in it. Match-V5
 // (Riot) fills them on import; games entered by hand only get the `lol_games` row.
 export function defineLeagueTables(g: GameTables<"lol">) {
-  const { matches, entrants, tournaments, teams } = g;
+  const { matches, entrants, tournaments, teams, rosterMemberships } = g;
 
   // --- Games (one per game of a best-of-N series, the LoL counterpart of val_maps) -------
   const games = pgTable("lol_games", {
@@ -1149,7 +1149,18 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     storedAt: timestamp("stored_at", { withTimezone: true }).notNull().defaultNow(),
   }, (t) => [primaryKey({ columns: [t.kind, t.iconId] })]);
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };
+  // --- Lanes of a roster entry (flex players and subs hold several) ------------------------
+  // A side table so `val_roster_memberships` does not get a column it never uses. The five lanes
+  // are shown Top to Support, so there is no order column.
+  const rosterMembershipLanes = pgTable("lol_roster_membership_lanes", {
+    rosterMembershipId: bigint("roster_membership_id", { mode: "number" }).notNull().references(() => rosterMemberships.id, { onDelete: "cascade" }),
+    lane: text("lane").notNull(),
+  }, (t) => [
+    primaryKey({ columns: [t.rosterMembershipId, t.lane] }),
+    check("lol_roster_membership_lanes_lane_check", sql`${t.lane} IN ('TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY')`),
+  ]);
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, rosterMembershipLanes, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1264,6 +1275,7 @@ export const lolGameTeamStats = leagueOnly.gameTeamStats;
 export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
 export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
+export const lolRosterMembershipLanes = leagueOnly.rosterMembershipLanes;
 export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
 export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
 export const lolLeaguepediaTeamNames = leagueOnly.leaguepediaTeamNames;

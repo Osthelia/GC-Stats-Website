@@ -17,7 +17,8 @@
  */
 
 import type { RiotMatchDto, RiotParticipantFrameDto, RiotTimelineDto, RiotTeamId } from "./types";
-import { assignedRoles, LEAGUE_ROLES, sideForTeamId, type LeagueRole, type LeagueSide } from "./game-summary";
+import { assignedRoles, sideForTeamId, type LeagueSide } from "./game-summary";
+import { LEAGUE_ROLES, type LeagueRole } from "./lanes";
 
 type Point = { x: number; y: number };
 

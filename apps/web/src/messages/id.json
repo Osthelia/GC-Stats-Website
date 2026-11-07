@@ -3319,6 +3319,7 @@
           "entityNotFound": "Tim atau pemain yang dirujuk sudah tidak ada.",
           "membershipNotFound": "Entri roster sudah tidak ada.",
           "invalidRole": "Peran tidak lagi valid.",
+          "invalidLane": "Salah satu lane tidak valid.",
           "logoNotFound": "Entri logo sudah tidak ada.",
           "alreadyLinked": "Pemain ini sudah tertaut ke akun lain.",
           "unknownField": "Kolom tidak didukung.",
@@ -7632,5 +7633,15 @@
   "leaguepediaSource": {
     "text": "Sebagian data game di halaman ini berasal dari Leaguepedia (CC BY-SA). Lihat halaman aslinya:",
     "game": "Game {order}"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lane",
+    "fromGames": "Dari game:",
+    "invalid": "Hanya kelima lane yang dapat dipilih."
   }
 }

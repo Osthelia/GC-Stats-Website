@@ -22,7 +22,9 @@ import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_SOURCE_TEXTS, normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
-import { ROSTER_ROLES } from "@/lib/change-request-fields";
+import { isRosterRoleOf, roleHasLanes } from "@/lib/roster-roles";
+import { areLanes } from "@gc-stats/lol-stats-engine";
+import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
 import { ensureGameProfile, personExists, updatePersonIdentity, updatePersonProfile, setPersonUser } from "@/lib/person-service";
@@ -110,7 +112,7 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
   // of joined_at. Other open entries are closed only when the reviewer chose to.
   if (field === "roster") {
     const v = newValue as { role: string; team_id: number; joined_at: string; team_name?: string };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.team_id)).limit(1);
     if (!team) throw new Error("entityNotFound");
 
@@ -125,8 +127,9 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
 
   // --- Roster / team-history membership rows -------------------------------
   if (field === "membership_add") {
-    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null; lanes?: string[] };
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
+    if (v.lanes !== undefined && !areLanes(v.lanes)) throw new Error("invalidLane");
     if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const person = await personExists(db, v.personId);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
@@ -138,14 +141,16 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
     await db.transaction(async (tx) => {
       await ensureGameProfile(tx, game, v.personId);
       if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, v.personId, v.teamId, v.since);
-      await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince, ...(await membershipSources(request, v.personId, v, hasLeft)) });
+      const [created] = await tx.insert(rosterMemberships).values({ personId: v.personId, teamId: v.teamId, role: v.role, period, hasLeft, inactiveSince: v.inactiveSince, ...(await membershipSources(request, v.personId, v, hasLeft)) }).returning({ id: rosterMemberships.id });
+      await replaceEntryLanes(game, tx, created!.id, v.role, v.lanes ?? []);
     });
     return;
   }
 
   if (field === "membership_edit") {
-    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null; lanes?: string[] };
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
+    if (v.lanes !== undefined && !areLanes(v.lanes)) throw new Error("invalidLane");
     if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
     if (!membership) throw new Error("membershipNotFound");
@@ -156,6 +161,8 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
     await db.transaction(async (tx) => {
       if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, membership.personId, membership.teamId, v.since);
       await tx.update(rosterMemberships).set({ role: v.role, period, hasLeft, inactiveSince: v.inactiveSince, ...(await membershipSources(request, membership.personId, v, hasLeft)) }).where(eq(rosterMemberships.id, v.membershipId));
+      // A request without lanes (sent before they existed) keeps the saved ones, unless the new role has none.
+      if (v.lanes !== undefined || !roleHasLanes(v.role)) await replaceEntryLanes(game, tx, v.membershipId, v.role, v.lanes ?? []);
     });
     return;
   }

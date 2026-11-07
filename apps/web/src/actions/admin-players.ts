@@ -21,7 +21,9 @@ import { isValidCountryCode } from "@/lib/countries";
 import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
-import { ROSTER_ROLES } from "@/lib/roster-roles";
+import { isRosterRoleOf } from "@/lib/roster-roles";
+import { areLanes } from "@gc-stats/lol-stats-engine";
+import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
 import { searchTeamsQuery } from "@/lib/team-search";
@@ -280,7 +282,7 @@ export async function searchTeams(game: GameSlug, query: string) {
   return searchTeamsQuery(game, query);
 }
 
-export type AddTeamHistoryField = "team" | "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
+export type AddTeamHistoryField = "team" | "role" | "lanes" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type AddTeamHistoryFieldErrors = Partial<Record<AddTeamHistoryField, string>>;
 export type AddTeamHistoryResult = { ok: true } | { ok: false; fieldErrors: AddTeamHistoryFieldErrors };
 
@@ -295,7 +297,8 @@ export async function addPlayerTeamHistoryEntry(
   inactiveSince: string | null,
   joinSource: string,
   leftSource: string,
-  closeMembershipIds: number[] = []
+  closeMembershipIds: number[] = [],
+  lanes: string[] = []
 ): Promise<AddTeamHistoryResult> {
   const { people, teams, rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
@@ -303,7 +306,8 @@ export async function addPlayerTeamHistoryEntry(
   const fieldErrors: AddTeamHistoryFieldErrors = {};
 
   if (!teamId) fieldErrors.team = "required";
-  if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
+  if (!isRosterRoleOf(game, role)) fieldErrors.role = "invalidRole";
+  if (!areLanes(lanes)) fieldErrors.lanes = "invalidLane";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
@@ -329,25 +333,27 @@ export async function addPlayerTeamHistoryEntry(
   await db.transaction(async (tx) => {
     if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, personId, teamId as number, from);
 
-    await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) });
+    const [created] = await tx.insert(rosterMemberships).values({ personId, teamId: teamId as number, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) }).returning({ id: rosterMemberships.id });
+    await replaceEntryLanes(game, tx, created!.id, role, lanes);
     await logRosterChange(tx, { game, teamId: teamId as number, personId, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
 }
 
-export type TeamHistoryEntryField = "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
+export type TeamHistoryEntryField = "role" | "lanes" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type TeamHistoryEntryFieldErrors = Partial<Record<TeamHistoryEntryField, string>>;
 export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: TeamHistoryEntryFieldErrors };
 
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
-export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = []): Promise<TeamHistoryEntryResult> {
+export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = [], lanes: string[] = []): Promise<TeamHistoryEntryResult> {
   const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
 
   const fieldErrors: TeamHistoryEntryFieldErrors = {};
 
-  if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
+  if (!isRosterRoleOf(game, role)) fieldErrors.role = "invalidRole";
+  if (!areLanes(lanes)) fieldErrors.lanes = "invalidLane";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
@@ -372,7 +378,8 @@ export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId:
 
     const values = { role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
-    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
+    const laneChanges = await replaceEntryLanes(game, tx, membershipId, role, lanes);
+    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: { ...diffChanges(membership, values), ...laneChanges } });
   });
 
   return { ok: true };

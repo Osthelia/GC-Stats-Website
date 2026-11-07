@@ -11,6 +11,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { LEAGUE_ROLES, type LeagueRole } from "@gc-stats/lol-stats-engine";
+
 export type StatsSearchParams = Record<string, string | string[] | undefined>;
 
 export type ParsedStatsFilters = {
@@ -21,11 +23,10 @@ export type ParsedStatsFilters = {
   endDate: string;
 };
 
-/** The roles by the names the game uses for them, in lane order. */
-export const LEAGUE_ROLE_LABELS: Record<string, string> = { TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "Bot", UTILITY: "Support" };
-
-/** The role filter's options, in lane order. */
-export const LEAGUE_ROLE_OPTIONS = Object.entries(LEAGUE_ROLE_LABELS).map(([value, label]) => ({ value, label }));
+/** The role filter's options, in lane order. `laneLabel` names a lane in the visitor's language (the `lanes` messages). */
+export function leagueRoleOptions(laneLabel: (lane: LeagueRole) => string): { value: string; label: string }[] {
+  return LEAGUE_ROLES.map((lane) => ({ value: lane, label: laneLabel(lane) }));
+}
 
 /** The filters of the LoL tournament pages. */
 export type LeagueStatsFilters = { champion: string; role: string; patch: string };

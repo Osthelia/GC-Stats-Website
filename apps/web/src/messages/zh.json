@@ -3359,6 +3359,7 @@
           "entityNotFound": "被引用的战队或选手已不存在。",
           "membershipNotFound": "该名单记录已不存在。",
           "invalidRole": "该角色已不再有效。",
+          "invalidLane": "有一条分路无效。",
           "logoNotFound": "该商标记录已不存在。",
           "alreadyLinked": "该选手已绑定至另一个账户。",
           "unknownField": "不受支持的字段。",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "游戏",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "上路",
+    "JUNGLE": "打野",
+    "MIDDLE": "中路",
+    "BOTTOM": "下路",
+    "UTILITY": "辅助",
+    "label": "分路",
+    "fromGames": "来自比赛：",
+    "invalid": "只能选择这五条分路。"
   },
   "liquipediaHub": {
     "title": "Liquipedia",

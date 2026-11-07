@@ -3319,6 +3319,7 @@
           "entityNotFound": "被引用的戰隊或選手已不存在。",
           "membershipNotFound": "該名單記錄已不存在。",
           "invalidRole": "該角色已不再有效。",
+          "invalidLane": "有一條分路無效。",
           "logoNotFound": "該商標記錄已不存在。",
           "alreadyLinked": "該選手已綁定至另一個帳戶。",
           "unknownField": "不受支援的欄位。",
@@ -7632,5 +7633,15 @@
   "leaguepediaSource": {
     "text": "此頁面上的部分對局資料來自 Leaguepedia（CC BY-SA）。請參閱原始頁面：",
     "game": "第 {order} 場"
+  },
+  "lanes": {
+    "TOP": "上路",
+    "JUNGLE": "打野",
+    "MIDDLE": "中路",
+    "BOTTOM": "下路",
+    "UTILITY": "輔助",
+    "label": "分路",
+    "fromGames": "來自比賽：",
+    "invalid": "只能選擇這五條分路。"
   }
 }

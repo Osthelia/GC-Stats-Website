@@ -3359,6 +3359,7 @@
           "entityNotFound": "فريق أو لاعبة مشار إليها لم يعد موجودًا.",
           "membershipNotFound": "إدخال التشكيلة لم يعد موجودًا.",
           "invalidRole": "الدور لم يعد صالحًا.",
+          "invalidLane": "أحد المسارات غير صالح.",
           "logoNotFound": "إدخال الشعار لم يعد موجودًا.",
           "alreadyLinked": "هذه اللاعبة مرتبطة بالفعل بحساب آخر.",
           "unknownField": "حقل غير مدعوم.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "اللعبة",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "العلوي",
+    "JUNGLE": "الغابة",
+    "MIDDLE": "الأوسط",
+    "BOTTOM": "السفلي",
+    "UTILITY": "الدعم",
+    "label": "المسارات",
+    "fromGames": "من المباريات:",
+    "invalid": "يمكن اختيار المسارات الخمسة فقط."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

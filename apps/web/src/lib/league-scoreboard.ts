@@ -9,18 +9,12 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { LEAGUE_ROLES, type SeriesAverage } from "@gc-stats/lol-stats-engine";
+import { laneRank, type SeriesAverage } from "@gc-stats/lol-stats-engine";
 import type { LeagueMatchGame, PlayerRunes } from "@/lib/match-league-games";
 
 /** Game length as m:ss, e.g. 1985 seconds → "33:05". */
 export function formatGameDuration(seconds: number): string {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-}
-
-/** The lane order of a scoreboard, top to bottom. Players without a role keep their place at the end. */
-function roleRank(role: string | null): number {
-  const rank = role === null ? -1 : (LEAGUE_ROLES as readonly string[]).indexOf(role);
-  return rank === -1 ? LEAGUE_ROLES.length : rank;
 }
 
 export type LeagueScoreRow = {
@@ -45,7 +39,7 @@ export function championIconMap(games: LeagueMatchGame[]): Map<string, string | 
 export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): LeagueScoreRow[] {
   return game.players
     .filter((player) => player.entrantId === entrantId)
-    .sort((x, y) => roleRank(x.role) - roleRank(y.role))
+    .sort((x, y) => laneRank(x.role) - laneRank(y.role))
     .map((player) => ({
       personId: player.personId,
       handle: player.handle,
@@ -64,7 +58,7 @@ export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): 
 export function averageScoreRows(averages: SeriesAverage[], entrantId: number | null, iconByChampion: Map<string, string | null>): LeagueScoreRow[] {
   return averages
     .filter((average) => average.entrantId === entrantId)
-    .sort((x, y) => roleRank(x.role) - roleRank(y.role))
+    .sort((x, y) => laneRank(x.role) - laneRank(y.role))
     .map((average) => ({
       personId: average.personId,
       handle: average.handle,

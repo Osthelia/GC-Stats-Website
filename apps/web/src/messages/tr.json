@@ -3359,6 +3359,7 @@
           "entityNotFound": "Referans verilen bir takım veya oyuncu artık mevcut değil.",
           "membershipNotFound": "Kadro kaydı artık mevcut değil.",
           "invalidRole": "Rol artık geçerli değil.",
+          "invalidLane": "Koridorlardan biri geçerli değil.",
           "logoNotFound": "Logo kaydı artık mevcut değil.",
           "alreadyLinked": "Bu oyuncu zaten başka bir hesaba bağlı.",
           "unknownField": "Desteklenmeyen alan.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "Oyun",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Üst",
+    "JUNGLE": "Orman",
+    "MIDDLE": "Orta",
+    "BOTTOM": "Alt",
+    "UTILITY": "Destek",
+    "label": "Koridorlar",
+    "fromGames": "Maçlardan:",
+    "invalid": "Yalnızca beş koridor seçilebilir."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

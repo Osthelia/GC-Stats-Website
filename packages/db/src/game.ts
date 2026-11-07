@@ -55,3 +55,13 @@ export function gameHasStats(game: GameSlug): boolean {
 export function gameHasSeriesGames(game: GameSlug): boolean {
   return game === "lol";
 }
+
+// Roster entries carry lanes (Top to Support) in League of Legends.
+export function gameHasLanes(game: GameSlug): boolean {
+  return game === "lol";
+}
+
+// An in-game leader is a Valorant role, League rosters have none.
+export function gameHasIgl(game: GameSlug): boolean {
+  return game === "valorant";
+}

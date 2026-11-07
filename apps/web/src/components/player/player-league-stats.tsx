@@ -15,7 +15,7 @@ import { getLeaguePlayerStatsFilterOptions, getPlayerPageInfo, leaguePlayerStats
 import { aggregateLeaguePlayerStatsSql } from "@/lib/stats-aggregate-sql";
 import { getChampionIconLookup } from "@/lib/data-dragon-client";
 import { STAT_COLUMN_SETS } from "@/lib/stats-columns";
-import { LEAGUE_ROLE_OPTIONS, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
+import { leagueRoleOptions, parseLeagueStatsFilters, type StatsSearchParams } from "@/lib/stats-filters";
 import { StatsTable } from "@/components/stats/stats-table";
 import { LeagueStatsFilterBar } from "@/components/stats/league-stats-filter-bar";
 import { LolIcon } from "@/components/match/lol-icon";
@@ -26,13 +26,14 @@ export async function PlayerLeagueStats({ game, personId, searchParams }: { game
   const set = STAT_COLUMN_SETS.lol;
 
   // The column and filter labels are the LoL ones of the tournament pages; the table's own labels are the player page's.
-  const [player, rows, options, iconUrlOf, t, tLeague] = await Promise.all([
+  const [player, rows, options, iconUrlOf, t, tLeague, tLanes] = await Promise.all([
     getPlayerPageInfo(game, personId),
     aggregateLeaguePlayerStatsSql(game, leaguePlayerStatsScope(game, personId, filters), "championName"),
     getLeaguePlayerStatsFilterOptions(game, personId),
     getChampionIconLookup(),
     getTranslations("playerPage"),
     getTranslations("tournamentPage"),
+    getTranslations("lanes"),
   ]);
   if (!player) return playerNotInGame(game, personId);
 
@@ -51,7 +52,7 @@ export async function PlayerLeagueStats({ game, personId, searchParams }: { game
           basePath={`/player/${player.id}/${slugify(player.handle)}/stats`}
           filters={filters}
           patch={{ label: tLeague("statsFilterPatch"), defaultLabel: tLeague("statsFilterPatchAll"), options: options.patches.map((p) => ({ value: p, label: p })) }}
-          role={{ label: tLeague(set.labels.mapFilter), defaultLabel: tLeague(set.labels.mapFilterAll), options: LEAGUE_ROLE_OPTIONS }}
+          role={{ label: tLeague(set.labels.mapFilter), defaultLabel: tLeague(set.labels.mapFilterAll), options: leagueRoleOptions((lane) => tLanes(lane)) }}
           champion={{
             label: tLeague(set.labels.agentFilter),
             defaultLabel: tLeague(set.labels.agentFilterAll),

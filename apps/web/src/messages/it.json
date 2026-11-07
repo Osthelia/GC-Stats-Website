@@ -3359,6 +3359,7 @@
           "entityNotFound": "Un team o una giocatrice di riferimento non esiste più.",
           "membershipNotFound": "La voce del roster non esiste più.",
           "invalidRole": "Il ruolo non è più valido.",
+          "invalidLane": "Una lane non è valida.",
           "logoNotFound": "La voce del logo non esiste più.",
           "alreadyLinked": "Questa giocatrice è già collegata a un altro account.",
           "unknownField": "Campo non supportato.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "Gioco",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lane",
+    "fromGames": "Dalle partite:",
+    "invalid": "Si possono selezionare solo le cinque lane."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

@@ -15,7 +15,7 @@ import { and, asc, count, desc, eq, exists, gte, inArray, isNotNull, lte, or, sq
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
-import { buildChampionStatRows, sortPatchesNewestFirst, type ChampionStatRow } from "@gc-stats/lol-stats-engine";
+import { buildChampionStatRows, compareByLanes, sortPatchesNewestFirst, type ChampionStatRow, type LeagueRole } from "@gc-stats/lol-stats-engine";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getChampionIconLookup } from "@/lib/data-dragon-client";
 import { normalizeRegion } from "@/lib/tournament-regions";
@@ -25,9 +25,11 @@ import type { EntityMatchStatusFilter as MatchStatusFilter } from "@/lib/entity-
 import type { LeagueStatsFilters, ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
 import { resolveEntrantQualificationSources, type EntrantQualificationSource } from "@/lib/entrant-qualification-source";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { getTournamentLanes } from "@/lib/roster-lanes";
 
-export type TournamentRosterPlayer = { personId: number; handle: string };
+/** `lanes` (Top to Support) is League only, empty for Valorant. */
+export type TournamentRosterPlayer = { personId: number; handle: string; lanes: LeagueRole[] };
 
 export type TournamentParticipant = {
   entrantId: number;
@@ -85,7 +87,7 @@ async function gameFallbackRoster(game: GameSlug, entrantIds: number[]) {
  * pas de reconstruction fiable possible").
  */
 export async function getTournamentParticipants(game: GameSlug, tournamentId: number, stageId?: number | null): Promise<TournamentParticipant[]> {
-  const { entrants, entrantMembers, people, teams, matches, stageContainers } = gameTables(game);
+  const { entrants, entrantMembers, people, teams, matches, stageContainers, tournaments } = gameTables(game);
   let stageCondition;
   if (stageId != null) {
     const stageMatchRows = await db
@@ -118,7 +120,7 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
 
   const entrantIds = entrantRows.map((e) => e.id);
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
-  const [logosByTeamId, sourceByEntrant, lockedRows] = await Promise.all([
+  const [logosByTeamId, sourceByEntrant, lockedRows, [tournament]] = await Promise.all([
     getCurrentLogoUrlsThemed("team", teamIds, game),
     resolveEntrantQualificationSources(game, db, tournamentId, entrantRows),
     db
@@ -127,6 +129,8 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
       .innerJoin(people, eq(people.id, entrantMembers.personId))
       .where(and(inArray(entrantMembers.entrantId, entrantIds), eq(entrantMembers.isStarter, true)))
       .orderBy(people.handle),
+    // League lanes of a roster before its first game come from the roster entries covering the start date.
+    gameHasLanes(game) ? db.select({ startDate: tournaments.startDate }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1) : Promise.resolve([]),
   ]);
 
   const entrantIdsWithLockedRoster = new Set(lockedRows.map((r) => r.entrantId));
@@ -135,11 +139,20 @@ export async function getTournamentParticipants(game: GameSlug, tournamentId: nu
   // Without a locked roster, the roster is whoever has played for the entrant: the players of its maps or of its games.
   const fallbackRows = fallbackEntrantIds.length === 0 ? [] : gameHasMaps(game) ? await mapFallbackRoster(game, fallbackEntrantIds) : await gameFallbackRoster(game, fallbackEntrantIds);
 
-  const rosterByEntrant = new Map<number, TournamentRosterPlayer[]>();
-  for (const r of [...lockedRows, ...fallbackRows]) {
-    if (!rosterByEntrant.has(r.entrantId)) rosterByEntrant.set(r.entrantId, []);
-    rosterByEntrant.get(r.entrantId)!.push({ personId: r.personId, handle: r.handle });
+  // League rosters show the lanes of each player, ordered Top to Support.
+  const rosterRows = [...lockedRows, ...fallbackRows];
+  let lanesByEntrantAndPerson = new Map<string, LeagueRole[]>();
+  if (tournament && rosterRows.length > 0) {
+    const teamIdByEntrant = new Map(entrantRows.map((e) => [e.id, e.teamId]));
+    lanesByEntrantAndPerson = await getTournamentLanes(tournamentId, tournament.startDate, rosterRows.map((r) => ({ entrantId: r.entrantId, teamId: teamIdByEntrant.get(r.entrantId) ?? null, personId: r.personId })));
   }
+
+  const rosterByEntrant = new Map<number, TournamentRosterPlayer[]>();
+  for (const r of rosterRows) {
+    if (!rosterByEntrant.has(r.entrantId)) rosterByEntrant.set(r.entrantId, []);
+    rosterByEntrant.get(r.entrantId)!.push({ personId: r.personId, handle: r.handle, lanes: lanesByEntrantAndPerson.get(`${r.entrantId}:${r.personId}`) ?? [] });
+  }
+  for (const roster of rosterByEntrant.values()) roster.sort((a, b) => compareByLanes(a.lanes, b.lanes));
 
   return entrantRows.map((e) => ({
     entrantId: e.id,

@@ -3359,6 +3359,7 @@
           "entityNotFound": "ทีมหรือผู้เล่นที่อ้างอิงไม่มีอยู่แล้ว",
           "membershipNotFound": "รายการในโรสเตอร์ไม่มีอยู่แล้ว",
           "invalidRole": "บทบาทนี้ไม่ถูกต้องแล้ว",
+          "invalidLane": "มีเลนที่ไม่ถูกต้อง",
           "logoNotFound": "รายการโลโก้ไม่มีอยู่แล้ว",
           "alreadyLinked": "ผู้เล่นนี้เชื่อมโยงกับบัญชีอื่นแล้ว",
           "unknownField": "ไม่รองรับช่องนี้",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "เกม",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "ท็อป",
+    "JUNGLE": "จังเกิล",
+    "MIDDLE": "มิด",
+    "BOTTOM": "บอท",
+    "UTILITY": "ซัพพอร์ต",
+    "label": "เลน",
+    "fromGames": "จากเกม:",
+    "invalid": "เลือกได้เฉพาะห้าเลนเท่านั้น"
   },
   "liquipediaHub": {
     "title": "Liquipedia",

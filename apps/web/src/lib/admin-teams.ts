@@ -16,7 +16,11 @@ import { organizations, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import { resolveEntryLanes, splitEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+
 
 export type TeamSort = "name" | "country" | "lastActivity";
 export type SortDirection = "asc" | "desc";
@@ -204,6 +208,10 @@ export type AdminTeamRosterMember = {
   inactiveSince: string | null;
   joinSource: string | null;
   leftSource: string | null;
+  /** League only. */
+  lanes: LeagueRole[];
+  /** The lanes played in games, shown when none are saved. */
+  gameLanes: LeagueRole[];
 };
 
 /** Every stint, not just the current roster — join/left/inactive dates need to be visible directly on already-listed (past) members too, not just the currently active ones. */
@@ -228,10 +236,14 @@ export async function getAdminTeamRoster(game: GameSlug, teamId: number): Promis
     .where(eq(rosterMemberships.teamId, teamId))
     .orderBy(desc(rosterMemberships.id));
 
+  const lanes = gameHasLanes(game) ? await resolveEntryLanes(rows.map((r) => ({ ...r, teamId }))) : new Map<number, EntryLanes>();
+
   return rows.map((r) => ({
     ...r,
+    role: displayRosterRole(game, r.role),
     since: rangeLower(r.period),
     until: rangeUpper(r.period),
     isCurrent: !r.hasLeft,
+    ...splitEntryLanes(lanes.get(r.membershipId)),
   }));
 }

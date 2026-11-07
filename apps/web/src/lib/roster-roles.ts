@@ -15,7 +15,30 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
+import { gameHasIgl, type GameSlug } from "@gc-stats/db/game";
+
 export const ROSTER_ROLES = ["player", "player-igl", "sub", "coach", "assistant coach", "performance coach", "analyst", "manager"] as const;
+
+/** Only players and subs have lanes, a coach or analyst entry does not. */
+export const ROLES_WITH_LANES = ["player", "sub"] as const;
+
+export function roleHasLanes(role: string): boolean {
+  return (ROLES_WITH_LANES as readonly string[]).includes(role);
+}
+
+/** The roles a roster entry of this game can have: League has no in-game leader. */
+export function rosterRolesFor(game: GameSlug): readonly (typeof ROSTER_ROLES)[number][] {
+  return gameHasIgl(game) ? ROSTER_ROLES : ROSTER_ROLES.filter((role) => role !== "player-igl");
+}
+
+export function isRosterRoleOf(game: GameSlug, role: string): boolean {
+  return (rosterRolesFor(game) as readonly string[]).includes(role);
+}
+
+/** The role as the game shows it: an entry saved as in-game leader before League dropped that role reads as a player. */
+export function displayRosterRole(game: GameSlug, role: string): string {
+  return role === "player-igl" && !gameHasIgl(game) ? "player" : role;
+}
 
 // Mirrors V1's App\Helpers\RosterRole::group()/barClass()/badgeClass() —
 // buckets a role into a group purely for the card's accent color, then a

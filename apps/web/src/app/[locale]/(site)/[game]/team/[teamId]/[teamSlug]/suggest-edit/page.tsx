@@ -21,6 +21,7 @@ import { getCurrentUserId } from "@/lib/session";
 import { SuggestEditForm } from "@/components/change-request/suggest-edit-form";
 import type { MembershipEntryView } from "@/components/change-request/membership-history-section";
 import { gameFromParams } from "@/lib/game";
+import { savedLanes } from "@/lib/roster-lanes";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -56,6 +57,7 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
     db.select({ isActive: teams.isActive }).from(teams).where(eq(teams.id, id)).limit(1),
   ]);
 
+
   const membershipEntries: MembershipEntryView[] = [
     ...roster.current.map((m) => ({
       membershipId: m.membershipId,
@@ -69,6 +71,7 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       joinSource: m.joinSource,
       leftSource: m.leftSource,
       isCurrent: true,
+      lanes: savedLanes(m),
     })),
     ...roster.formers.map((m) => ({
       membershipId: m.membershipId,
@@ -82,6 +85,7 @@ export default async function TeamSuggestEditPage({ params }: { params: Promise<
       joinSource: m.joinSource,
       leftSource: m.leftSource,
       isCurrent: false,
+      lanes: savedLanes(m),
     })),
   ];
 

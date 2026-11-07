@@ -3319,6 +3319,7 @@
           "entityNotFound": "Wala na ang isang binanggit na team o manlalaro.",
           "membershipNotFound": "Wala na ang entry ng roster.",
           "invalidRole": "Hindi na wasto ang tungkulin.",
+          "invalidLane": "May lane na hindi wasto.",
           "logoNotFound": "Wala na ang entry ng logo.",
           "alreadyLinked": "Naka-link na ang manlalarong ito sa ibang account.",
           "unknownField": "Hindi suportadong field.",
@@ -7632,5 +7633,15 @@
   "leaguepediaSource": {
     "text": "May ilang datos ng laro sa pahinang ito na galing sa Leaguepedia (CC BY-SA). Tingnan ang mga orihinal na pahina:",
     "game": "Laro {order}"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Mga lane",
+    "fromGames": "Mula sa mga laro:",
+    "invalid": "Ang limang lane lang ang maaaring piliin."
   }
 }

@@ -12,6 +12,7 @@ import type { PlayerTeamHistoryEntry } from "@/lib/player-page-data";
 import { TeamBadge } from "@/components/home/team-badge";
 import { displayMonthYear } from "@/lib/daterange";
 import { slugify } from "@/lib/entity-id";
+import { LaneIcons } from "@/components/match/lol-icon";
 
 // Same muted role coloring as `TeamFormerMembers` — former teams should
 // read as gray/secondary at a glance, just with a faint hint of the role's
@@ -88,13 +89,16 @@ export async function PlayerFormerTeams({
                 <span className="truncate text-[13.5px] font-semibold text-neutral-100">
                   {team.teamName}
                 </span>
-                <span
-                  className="font-mono text-[9.5px] tracking-widest uppercase"
-                  style={{ color: mutedRoleColor(team.role) }}
-                >
-                  {tRoles.has(team.role)
-                    ? tRoles(team.role, { pronouns: pronouns ?? 2 })
-                    : team.role}
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="font-mono text-[9.5px] tracking-widest uppercase"
+                    style={{ color: mutedRoleColor(team.role) }}
+                  >
+                    {tRoles.has(team.role)
+                      ? tRoles(team.role, { pronouns: pronouns ?? 2 })
+                      : team.role}
+                  </span>
+                  <LaneIcons lanes={team.lanes} size={12} />
                 </span>
               </span>
               <span className="font-mono text-[10.5px] text-neutral-600">

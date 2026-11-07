@@ -3359,6 +3359,7 @@
           "entityNotFound": "Wskazana drużyna lub zawodniczka już nie istnieje.",
           "membershipNotFound": "Wpis w składzie już nie istnieje.",
           "invalidRole": "Rola nie jest już prawidłowa.",
+          "invalidLane": "Jedna z linii jest nieprawidłowa.",
           "logoNotFound": "Wpis logo już nie istnieje.",
           "alreadyLinked": "Ta zawodniczka jest już powiązana z innym kontem.",
           "unknownField": "Nieobsługiwane pole.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "Gra",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungla",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Linie",
+    "fromGames": "Z gier:",
+    "invalid": "Można wybrać tylko pięć linii."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

@@ -31,7 +31,10 @@ import {
 } from "@/actions/admin-players";
 import { deleteRosterMembership } from "@/actions/admin-teams";
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
-import { ROSTER_ROLES, rosterRoleStyles } from "@/lib/roster-roles";
+import { ROSTER_ROLES, rosterRoleStyles, rosterRolesFor, roleHasLanes } from "@/lib/roster-roles";
+import { LanePicker } from "@/components/admin/lane-picker";
+import { gameHasLanes } from "@gc-stats/db/game";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
 import { useGame } from "@/lib/use-game";
@@ -73,6 +76,7 @@ function TeamHistoryCard({
   const [inactiveSince, setInactiveSince] = useState(entry.inactiveSince ?? "");
   const [joinSource, setJoinSource] = useState(entry.joinSource ?? "");
   const [leftSource, setLeftSource] = useState(entry.leftSource ?? "");
+  const [lanes, setLanes] = useState<LeagueRole[]>(entry.lanes);
   const [fieldErrors, setFieldErrors] = useState<TeamHistoryEntryFieldErrors>({});
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
@@ -85,12 +89,12 @@ function TeamHistoryCard({
     const closeIds = hasLeft ? [] : await resolveConflicts(playerId, playerHandle, entry.teamId, entry.membershipId);
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await updatePlayerTeamHistoryEntry(game, entry.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await updatePlayerTeamHistoryEntry(game, entry.membershipId, role, from, until, hasLeft, inactiveSince, joinSource, hasLeft ? leftSource : "", closeIds, lanes);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
-      onSaved({ ...entry, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null });
+      onSaved({ ...entry, role, since: from, until: until || null, hasLeft, isCurrent: !hasLeft, inactiveSince: inactiveSince || null, joinSource: joinSource.trim() || null, leftSource: hasLeft ? leftSource.trim() || null : null, lanes: roleHasLanes(role) ? lanes : [] });
       toast.success(t("historyAddSubmit"));
     });
   }
@@ -141,7 +145,7 @@ function TeamHistoryCard({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ROSTER_ROLES.map((r) => (
+                {rosterRolesFor(game).map((r) => (
                   <SelectItem key={r} value={r}>
                     {roleItems[r]}
                   </SelectItem>
@@ -154,6 +158,7 @@ function TeamHistoryCard({
               </p>
             )}
           </div>
+          {gameHasLanes(game) && roleHasLanes(role) && <LanePicker lanes={lanes} onChange={setLanes} gameLanes={entry.gameLanes} invalid={!!fieldErrors.lanes} disabled={!canEdit} />}
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col gap-1">
               <Label className="text-[11px] text-muted-foreground">
@@ -242,6 +247,7 @@ export function PlayerTeamHistoryPanel({
   const [inactiveSince, setInactiveSince] = useState("");
   const [joinSource, setJoinSource] = useState("");
   const [leftSource, setLeftSource] = useState("");
+  const [lanes, setLanes] = useState<LeagueRole[]>([]);
   const [fieldErrors, setFieldErrors] = useState<AddTeamHistoryFieldErrors>({});
   const { resolveConflicts, dialog: conflictDialog } = useRosterConflicts();
 
@@ -252,7 +258,7 @@ export function PlayerTeamHistoryPanel({
     const closeIds = team && !hasLeft ? await resolveConflicts(playerId, playerHandle, team.id) : [];
     if (!closeIds) return;
     startTransition(async () => {
-      const result = await addPlayerTeamHistoryEntry(game, playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds);
+      const result = await addPlayerTeamHistoryEntry(game, playerId, team?.id ?? null, role, from, until, hasLeft, inactiveSince || null, joinSource, hasLeft ? leftSource : "", closeIds, lanes);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -264,6 +270,7 @@ export function PlayerTeamHistoryPanel({
       setInactiveSince("");
       setJoinSource("");
       setLeftSource("");
+      setLanes([]);
       // No toast here: redundant with the reload below (which is itself the
       // visual feedback) and would get cut off before it could ever be seen.
       // The refresh also picks up memberships closed through the conflict dialog.
@@ -323,7 +330,7 @@ export function PlayerTeamHistoryPanel({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {ROSTER_ROLES.map((r) => (
+                  {rosterRolesFor(game).map((r) => (
                     <SelectItem key={r} value={r}>
                       {roleItems[r]}
                     </SelectItem>
@@ -336,6 +343,7 @@ export function PlayerTeamHistoryPanel({
                 </p>
               )}
             </div>
+            {gameHasLanes(game) && roleHasLanes(role) && <LanePicker lanes={lanes} onChange={setLanes} invalid={!!fieldErrors.lanes} />}
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="history-inactive-since">{t("historyInactiveSinceLabel")}</Label>
               <Input id="history-inactive-since" type="date" value={inactiveSince} onChange={(e) => setInactiveSince(e.target.value)} aria-invalid={!!fieldErrors.inactiveSince} />

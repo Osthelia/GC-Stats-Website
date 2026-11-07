@@ -24,6 +24,7 @@ import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import { SuggestEditForm } from "@/components/change-request/suggest-edit-form";
 import type { MembershipEntryView } from "@/components/change-request/membership-history-section";
 import { gameFromParams } from "@/lib/game";
+import { savedLanes } from "@/lib/roster-lanes";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -60,6 +61,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
     getLinkedDiscordId(userId),
   ]);
 
+
   const membershipEntries: MembershipEntryView[] = [
     ...teamHistory.current.map((h) => ({
       membershipId: h.membershipId,
@@ -73,6 +75,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: true,
+      lanes: savedLanes(h),
     })),
     ...teamHistory.formers.map((h) => ({
       membershipId: h.membershipId,
@@ -86,6 +89,7 @@ export default async function PlayerSuggestEditPage({ params }: { params: Promis
       joinSource: h.joinSource,
       leftSource: h.leftSource,
       isCurrent: false,
+      lanes: savedLanes(h),
     })),
   ];
 

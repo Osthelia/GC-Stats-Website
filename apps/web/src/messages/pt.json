@@ -3359,6 +3359,7 @@
           "entityNotFound": "Um time ou jogadora referenciado não existe mais.",
           "membershipNotFound": "A entrada de roster não existe mais.",
           "invalidRole": "A função não é mais válida.",
+          "invalidLane": "Uma rota não é válida.",
           "logoNotFound": "A entrada de logo não existe mais.",
           "alreadyLinked": "Esta jogadora já está vinculada a outra conta.",
           "unknownField": "Campo não suportado.",
@@ -7221,6 +7222,16 @@
     "switcherLabel": "Jogo",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Topo",
+    "JUNGLE": "Selva",
+    "MIDDLE": "Meio",
+    "BOTTOM": "Bot",
+    "UTILITY": "Suporte",
+    "label": "Rotas",
+    "fromGames": "Das partidas:",
+    "invalid": "Só é possível selecionar as cinco rotas."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

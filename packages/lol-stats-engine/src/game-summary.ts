@@ -12,6 +12,7 @@
 
 import { championNameOf } from "./champion-catalog";
 import { banStepForPickTurn } from "./league-draft";
+import { LEAGUE_ROLES, type LeagueRole } from "./lanes";
 import type { RiotMatchDto, RiotParticipantDto, RiotTeamDto, RiotTeamId } from "./types";
 
 export type LeagueSide = "blue" | "red";
@@ -98,8 +99,6 @@ export interface LeagueSummaryContext {
 }
 
 const SIDE_BY_TEAM_ID: Record<RiotTeamId, LeagueSide> = { 100: "blue", 200: "red" };
-export const LEAGUE_ROLES = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"] as const;
-export type LeagueRole = (typeof LEAGUE_ROLES)[number];
 const LANE_ROLES = new Set<string>(LEAGUE_ROLES);
 
 /** A lane role from Riot's teamPosition. Anything else (empty, "AFK", "Invalid") is null, so it never pairs with a lane opponent. */
