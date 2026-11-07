@@ -17,7 +17,7 @@ import { db } from "@gc-stats/db/client";
 import type { adminDb } from "@gc-stats/db/client";
 import { leagueTables } from "@gc-stats/db";
 import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
-import { lanesPlayedInPeriod, sortLanes, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
+import { hasKnownPeriod, lanesPlayedInPeriod, sortLanes, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import type { ActivityChanges } from "@/lib/activity-log";
 import { ROLES_WITH_LANES, roleHasLanes } from "@/lib/roster-roles";
@@ -61,7 +61,7 @@ async function playedLanesByPersonAndTeam(entries: RosterEntryRef[]): Promise<Ma
   const ends: (string | null)[] = [];
   for (const entry of entries) {
     const end = rangeUpper(entry.period);
-    if (entry.hasLeft && end === null) continue; // an unknown end has no lanes from games, see lanesPlayedInPeriod
+    if (!hasKnownPeriod({ until: end, hasLeft: entry.hasLeft })) continue; // no lanes from games, so no games to fetch for it
     pairs.set(`${entry.personId}:${entry.teamId}`, sql`(${entry.personId}, ${entry.teamId})`);
     starts.push(rangeLower(entry.period));
     ends.push(end);

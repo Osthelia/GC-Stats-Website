@@ -242,7 +242,7 @@ export async function getAdminPlayerTeamHistory(game: GameSlug, personId: number
     .where(eq(rosterMemberships.personId, personId))
     .orderBy(desc(rosterMemberships.id));
 
-  const lanes = gameHasLanes(game) ? await resolveEntryLanes(rows.map((r) => ({ ...r, personId, teamId: r.teamId }))) : new Map<number, EntryLanes>();
+  const lanes = gameHasLanes(game) ? await resolveEntryLanes(rows.map((r) => ({ ...r, personId }))) : new Map<number, EntryLanes>();
 
   return rows.map((r) => ({
     ...r,

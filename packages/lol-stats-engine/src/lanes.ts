@@ -41,14 +41,19 @@ export interface PlayedLane {
   day: string | null;
 }
 
+/** False for an entry that was left with an unknown end (`hasLeft` without `until`)*/
+export function hasKnownPeriod(period: { until: string | null; hasLeft: boolean }): boolean {
+  return !(period.hasLeft && period.until === null);
+}
+
 /**
  * The lanes played within a roster entry's period, in lane order like saved lanes (Top to Support), so the icons and
  * the roster order do not depend on whether an admin saved the lanes. `since` is the first day of the period and
- * `until` the day after the last one (null for an open period), the way the daterange is stored. An entry that was
- * left with an unknown end (`hasLeft` without `until`) has no known period, so it gets no lanes from games.
+ * `until` the day after the last one (null for an open period), the way the daterange is stored. An entry without a
+ * known period (see hasKnownPeriod) gets no lanes from games.
  */
 export function lanesPlayedInPeriod(played: readonly PlayedLane[], period: { since: string | null; until: string | null; hasLeft: boolean }): LeagueRole[] {
-  if (period.hasLeft && period.until === null) return [];
+  if (!hasKnownPeriod(period)) return [];
   const inPeriod = played.filter(({ day }) => day !== null && (period.since === null || day >= period.since) && (period.until === null || day < period.until));
   return sortLanes(inPeriod.map(({ lane }) => lane));
 }
