@@ -9,9 +9,7 @@
 import { notFound } from "next/navigation";
 import { playerNotInGame, getPersonGames } from "@/lib/person-games-data";
 import { parseEntityId, slugify } from "@/lib/entity-id";
-import { getPlayerPageInfo, getPlayerAchievements, getPlayerTabAvailability, getPlayerTeamHistory } from "@/lib/player-page-data";
-import { sortLanes } from "@gc-stats/lol-stats-engine";
-import { gameHasLanes } from "@gc-stats/db/game";
+import { getPlayerPageInfo, getPlayerAchievements, getPlayerTabAvailability, getPlayerCurrentLanes } from "@/lib/player-page-data";
 import { LiquipediaSourceFooter } from "@/components/liquipedia-source-footer";
 import { PlayerHeader } from "@/components/player/player-header";
 import { AddGameProfileBanner } from "@/components/player/add-game-profile-banner";
@@ -25,17 +23,14 @@ export default async function PlayerTabsLayout({ children, params }: { children:
   const id = parseEntityId(playerId);
   if (id === null) notFound();
 
-  // League also needs the current roster entries for the lanes in the header. Started with the rest, and deduplicated with the overview's own read of the team history.
-  const [player, achievements, availability, personGames, teamHistory] = await Promise.all([
+  const [player, achievements, availability, personGames, currentLanes] = await Promise.all([
     getPlayerPageInfo(game, id),
     getPlayerAchievements(game, id),
     getPlayerTabAvailability(game, id),
     getPersonGames(id),
-    gameHasLanes(game) ? getPlayerTeamHistory(game, id) : null,
+    getPlayerCurrentLanes(game, id),
   ]);
   if (!player) return playerNotInGame(game, id);
-
-  const currentLanes = sortLanes(teamHistory?.current.flatMap((entry) => entry.lanes) ?? []);
 
   return (
     <div>

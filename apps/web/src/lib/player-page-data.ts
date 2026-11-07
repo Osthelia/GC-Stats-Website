@@ -16,7 +16,7 @@ import { db } from "@gc-stats/db/client";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import {
   organizations, newsAuthors, gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
-import { sortPatchesNewestFirst, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { sortLanes, sortPatchesNewestFirst, type LeagueRole } from "@gc-stats/lol-stats-engine";
 import { resolveEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
 import { displayRosterRole } from "@/lib/roster-roles";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
@@ -224,6 +224,17 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
   formers.sort((a, b) => (b.until ?? "").localeCompare(a.until ?? ""));
 
   return { current, formers };
+});
+
+export const getPlayerCurrentLanes = cache(async (game: GameSlug, personId: number): Promise<LeagueRole[]> => {
+  if (!gameHasLanes(game)) return [];
+  const { rosterMemberships } = gameTables(game);
+  const rows = await db
+    .select({ membershipId: rosterMemberships.id, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.hasLeft, false)));
+  const lanes = await resolveEntryLanes(rows.map((r) => ({ ...r, personId })));
+  return sortLanes([...lanes.values()].flatMap((entry) => entry.lanes));
 });
 
 /** Handle only, for the `/player/{id}` redirect to the canonical URL. */
