@@ -17,9 +17,9 @@ export function isLane(value: string | null | undefined): value is LeagueRole {
   return value != null && LANE_RANK.has(value);
 }
 
-/** True when every value is one of the five lanes. */
-export function areLanes(values: readonly string[]): boolean {
-  return values.every((value) => isLane(value));
+/** True when the value is a list of lanes. Takes any value, as its callers get it from a client or a stored request. */
+export function areLanes(values: unknown): boolean {
+  return Array.isArray(values) && values.every((value) => typeof value === "string" && isLane(value));
 }
 
 /** The position of a lane (Top 0 to Support 4). Anything that is not a lane, or no lane at all, ranks after Support. */

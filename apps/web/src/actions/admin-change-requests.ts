@@ -23,7 +23,7 @@ import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_SOURCE_TEXTS, normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { ROSTER_ROLES } from "@/lib/change-request-fields";
-import { roleHasLanes } from "@/lib/roster-roles";
+import { isRosterRoleOf, roleHasLanes } from "@/lib/roster-roles";
 import { areLanes } from "@gc-stats/lol-stats-engine";
 import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { notify, type NotificationType } from "@/lib/notify";
@@ -129,8 +129,8 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
   // --- Roster / team-history membership rows -------------------------------
   if (field === "membership_add") {
     const v = newValue as { personId: number; teamId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null; lanes?: string[] };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    if (!areLanes(v.lanes ?? [])) throw new Error("invalidLane");
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
+    if (v.lanes !== undefined && !areLanes(v.lanes)) throw new Error("invalidLane");
     if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const person = await personExists(db, v.personId);
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.teamId)).limit(1);
@@ -150,8 +150,8 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
 
   if (field === "membership_edit") {
     const v = newValue as { membershipId: number; role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null; lanes?: string[] };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
-    if (!areLanes(v.lanes ?? [])) throw new Error("invalidLane");
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
+    if (v.lanes !== undefined && !areLanes(v.lanes)) throw new Error("invalidLane");
     if (validateRosterSource(v.joinSource, "join", { allowSelfDeclared: true }) || validateRosterSource(v.leftSource, "left", { allowSelfDeclared: true })) throw new Error("invalidSource");
     const [membership] = await db.select({ id: rosterMemberships.id, personId: rosterMemberships.personId, teamId: rosterMemberships.teamId, hasLeft: rosterMemberships.hasLeft }).from(rosterMemberships).where(eq(rosterMemberships.id, v.membershipId)).limit(1);
     if (!membership) throw new Error("membershipNotFound");

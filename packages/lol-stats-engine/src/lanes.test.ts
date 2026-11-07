@@ -30,6 +30,11 @@ describe("areLanes", () => {
     expect(areLanes([])).toBe(true);
     expect(areLanes(["TOP", "top"])).toBe(false);
   });
+
+  it("rejects anything that is not a list", () => {
+    expect([null, undefined, "TOP", { 0: "TOP" }, 3].map(areLanes)).toEqual([false, false, false, false, false]);
+    expect(areLanes(["TOP", 1])).toBe(false);
+  });
 });
 
 describe("sortLanes", () => {

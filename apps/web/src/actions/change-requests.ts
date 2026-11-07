@@ -63,7 +63,7 @@ const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, st
 
 /** Lanes of a membership operation are optional, but when given they must be lanes. */
 function validLanes(lanes: unknown): boolean {
-  return lanes === undefined || (Array.isArray(lanes) && lanes.length <= 5 && lanes.every((lane) => typeof lane === "string") && areLanes(lanes));
+  return lanes === undefined || (areLanes(lanes) && (lanes as unknown[]).length <= 5);
 }
 
 /** The lanes of a membership operation as stored in the request: only League entries carry them, and only for roles that have lanes. */
