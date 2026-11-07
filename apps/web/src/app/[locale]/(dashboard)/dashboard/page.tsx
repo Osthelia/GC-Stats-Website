@@ -7,7 +7,7 @@
  */
 
 import type { Metadata } from "next";
-import { Newspaper, KeySquare, UsersRound } from "lucide-react";
+import { Newspaper, KeySquare, UsersRound, Bot } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import { requireDashboardAccess } from "@/lib/dashboard-rbac";
@@ -40,11 +40,12 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
   // always bouncing straight past it. The global admin override is never
   // counted here: an admin with no organization of their own but the
   // override still lands on the picker, to browse every organization.
-  const destinationCount = ownMemberships.length + (access.isAuthor ? 1 : 0) + (access.hasApiKey ? 1 : 0);
+  const destinationCount = ownMemberships.length + (access.isAuthor ? 1 : 0) + (access.hasApiKey ? 1 : 0) + (access.hasDiscord ? 1 : 0);
   if (destinationCount === 1) {
     if (ownMemberships.length === 1) redirect({ href: `/dashboard/${ownMemberships[0]!.organizationId}`, locale: locale as AppLocale });
     if (access.isAuthor) redirect({ href: "/dashboard/author", locale: locale as AppLocale });
-    redirect({ href: "/dashboard/api-keys", locale: locale as AppLocale });
+    if (access.hasApiKey) redirect({ href: "/dashboard/api-keys", locale: locale as AppLocale });
+    redirect({ href: "/dashboard/discord", locale: locale as AppLocale });
   }
 
   const t = await getTranslations({ locale, namespace: "dashboard.picker" });
@@ -94,6 +95,17 @@ export default async function DashboardHomePage({ params }: { params: Promise<{ 
                 <KeySquare className="size-5" />
               </span>
               <span className="min-w-0 truncate font-medium">{t("apiKeySpace")}</span>
+            </Link>
+          )}
+          {access.hasDiscord && (
+            <Link
+              href="/dashboard/discord"
+              className="flex items-center gap-3 rounded-lg border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:scale-[0.99]"
+            >
+              <span className="flex size-10 flex-none items-center justify-center rounded-md bg-muted text-muted-foreground">
+                <Bot className="size-5" />
+              </span>
+              <span className="min-w-0 truncate font-medium">{t("discordSpace")}</span>
             </Link>
           )}
           {ownMemberships.map((m) => (

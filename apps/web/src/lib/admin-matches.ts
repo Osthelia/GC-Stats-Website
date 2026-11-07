@@ -11,9 +11,10 @@
  */
 
 import { cache } from "react";
-import { and, asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
+import { compareMatchPlayers } from "@/lib/match-player-order";
 import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
 import { blueEntrantOf, type LeagueSide } from "@gc-stats/lol-stats-engine";
@@ -396,4 +397,56 @@ export async function getLeagueGameDraft(matchId: number, gameId: number, entran
     steps: rows.flatMap((row) => (row.order === null ? [] : [{ step: row.order, championName: row.championName }])),
     unplacedPicks: rows.flatMap((row) => (row.order === null && row.type === "pick" ? [{ side: sideOf(row.entrantId), championName: row.championName }] : [])),
   };
+}
+
+export type AdminPreviousLineupPlayer = {
+  personId: number;
+  handle: string;
+  valName: string | null;
+};
+
+/**
+ * Players of the last completed map a team played before the given map: an earlier map of the
+ * same match, or any map of an earlier match. Prefills the scoreboard of a map with no stats yet.
+ */
+export async function getTeamPreviousLineup(game: GameSlug, teamId: number, matchId: number, mapOrder: number, before: Date): Promise<AdminPreviousLineupPlayer[]> {
+  const { matches, entrants, people } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
+  const [last] = await db
+    .select({ mapId: maps.id })
+    .from(maps)
+    .innerJoin(matches, eq(matches.id, maps.matchId))
+    .where(
+      and(
+        eq(maps.isCompleted, true),
+        or(and(eq(matches.id, matchId), lt(maps.order, mapOrder)), lt(matches.scheduledAt, before)),
+        sql`exists (
+          select 1 from ${mapPlayerStats}
+          inner join ${entrants} on ${entrants.id} = ${mapPlayerStats.entrantId}
+          where ${mapPlayerStats.mapId} = ${maps.id} and ${entrants.teamId} = ${teamId}
+        )`
+      )
+    )
+    .orderBy(desc(matches.scheduledAt), desc(maps.order))
+    .limit(1);
+  if (!last) return [];
+
+  const rows = await db
+    .select({
+      personId: mapPlayerStats.personId,
+      handle: people.handle,
+      valName: mapPlayerStats.valName,
+      rating: mapPlayerStats.rating,
+      acs: mapPlayerStats.acs,
+      kills: mapPlayerStats.kills,
+      deaths: mapPlayerStats.deaths,
+    })
+    .from(mapPlayerStats)
+    .innerJoin(entrants, eq(entrants.id, mapPlayerStats.entrantId))
+    .innerJoin(people, eq(people.id, mapPlayerStats.personId))
+    .where(and(eq(mapPlayerStats.mapId, last.mapId), eq(entrants.teamId, teamId)));
+
+  return rows
+    .sort(compareMatchPlayers)
+    .map((r) => ({ personId: r.personId!, handle: r.handle, valName: r.valName }));
 }

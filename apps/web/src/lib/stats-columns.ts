@@ -15,7 +15,12 @@ import type { ChampionStatRow, LeagueStatRow, StatRow } from "@/lib/stats-aggreg
 
 export type StatsMode = "total" | "avg";
 
-export type StatColumnFormat = "int" | "decimal1" | "decimal2" | "percent" | "fraction";
+export type StatColumnFormat = "int" | "decimal1" | "decimal2" | "percent" | "fraction" | "rating";
+
+/** Round weighted GCS rating, NaN when no map of the row was rated. */
+export function rowRating(row: StatRow): number {
+  return row.totals.ratingRounds > 0 ? row.totals.ratingWeighted / row.totals.ratingRounds : Number.NaN;
+}
 
 export type StatColumn<Row = StatRow> = {
   key: string;
@@ -40,6 +45,7 @@ function perMap(total: number, mapsPlayed: number, mode: StatsMode): number {
 export const STAT_COLUMNS: StatColumn[] = [
   { key: "played", i18nKey: "played", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.mapsPlayed },
   { key: "roundsPlayed", i18nKey: "roundsPlayed", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.roundsPlayed },
+  { key: "rating", i18nKey: "rating", format: "rating", defaultVisible: true, modeInvariant: true, value: (r) => rowRating(r) },
   { key: "acs", i18nKey: "acs", format: "int", defaultVisible: true, value: (r, m) => perMap(r.totals.acs, r.mapsPlayed, m) },
   { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: false, value: (r, m) => perMap(r.totals.kills, r.mapsPlayed, m) },
   { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: false, value: (r, m) => perMap(r.totals.deaths, r.mapsPlayed, m) },
@@ -120,6 +126,28 @@ export const CHAMPION_STAT_COLUMNS: StatColumn<ChampionStatRow>[] = [
   { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => whenPicked(r, () => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists)) },
 ];
 
+/** Columns added after the column picker started saving a plain array: unknown to those saved choices. */
+const COLUMNS_ADDED_AFTER_LEGACY_STORAGE = ["rating"];
+
+type StoredColumns = { visible: string[]; known: string[] };
+type PickableColumn = Pick<StatColumn<unknown>, "key" | "defaultVisible">;
+
+/** Saved column choice, with the columns that existed at that time so a later default column still shows up. */
+export function storedVisibleColumns(visible: string[], columns: PickableColumn[]): StoredColumns {
+  return { visible, known: columns.map((c) => c.key) };
+}
+
+export function restoreVisibleColumns(stored: unknown, columns: PickableColumn[]): string[] {
+  const defaults = columns.filter((c) => c.defaultVisible).map((c) => c.key);
+  if (typeof stored !== "object" || stored === null) return defaults;
+  const legacy = Array.isArray(stored);
+  const value = (legacy ? { visible: stored, known: columns.map((c) => c.key).filter((k) => !COLUMNS_ADDED_AFTER_LEGACY_STORAGE.includes(k)) } : stored) as Partial<StoredColumns>;
+  if (!Array.isArray(value.visible)) return defaults;
+  const known = new Set(Array.isArray(value.known) ? value.known : []);
+  const newDefaults = defaults.filter((k) => !known.has(k) && !value.visible!.includes(k));
+  return [...value.visible.filter((k): k is string => typeof k === "string"), ...newDefaults];
+}
+
 /** Clutch column needs both won and played to render "won/played" — not expressible through the generic numeric `value()`. */
 export function clutchFraction(row: StatRow): { won: number; played: number } {
   return { won: row.totals.clutchesWon, played: row.totals.clutchesPlayed };
@@ -173,7 +201,7 @@ export type StatRowByGame = { valorant: StatRow; lol: LeagueStatRow; lolChampion
 export const STAT_COLUMN_SETS = {
   valorant: {
     columns: STAT_COLUMNS,
-    defaultSort: "acs",
+    defaultSort: "rating",
     rowColumns: buildWeaponColumns,
     labels: { agentColumn: "statsAgentColumn", agentFilter: "statsFilterAgent", agentFilterAll: "statsFilterAgentAll", mapFilter: "statsFilterMap", mapFilterAll: "statsFilterMapAll" },
   } satisfies StatColumnSet<StatRow>,
@@ -203,6 +231,8 @@ export function formatStatValue(value: number, format: StatColumnFormat): string
       return value.toFixed(2);
     case "percent":
       return `${value.toFixed(1)}%`;
+    case "rating":
+      return Number.isFinite(value) ? value.toFixed(2) : "-";
     default:
       return String(value);
   }

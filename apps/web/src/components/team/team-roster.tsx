@@ -103,7 +103,7 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
                         alt={m.handle}
                         width={40}
                         height={40}
-                        className="h-full w-full object-contain"
+                        className="h-full w-full object-cover"
                       />
                     ) : (
                       <span className="text-base font-black" style={{ color: avatarStyle.badgeText }}>

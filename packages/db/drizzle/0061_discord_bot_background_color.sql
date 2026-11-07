@@ -1,0 +1,1 @@
+ALTER TABLE "discord_bot_guild_settings" ADD COLUMN "color_background" text;

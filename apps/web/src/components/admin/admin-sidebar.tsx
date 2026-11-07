@@ -31,6 +31,14 @@ import {
 
 const STORAGE_PREFIX = "gcs_admin_nav_";
 
+const ALERT_LABEL_KEYS: Record<string, string> = {
+  "/admin/change-requests": "pendingChangeRequests",
+  "/admin/discord-images": "pendingDiscordImages",
+  "/admin/reports": "pendingReports",
+  "/admin/roster-watch": "pendingRosterWatch",
+  "/admin/moderation": "pendingModeration",
+};
+
 function NavGroup({
   groupKey,
   label,
@@ -108,11 +116,11 @@ function NavItemLabel({ item, label, hasAlert, alertLabel }: { item: NavItem; la
 export function AdminSidebar({
   permissions,
   isSuperAdmin,
-  hasPendingChangeRequests,
+  alerts,
 }: {
   permissions: string[];
   isSuperAdmin: boolean;
-  hasPendingChangeRequests: boolean;
+  alerts: Record<string, boolean>;
 }) {
   const t = useTranslations("admin.nav");
   const tGame = useTranslations("game");
@@ -169,6 +177,7 @@ export function AdminSidebar({
               <SidebarMenu className="gap-1.5">
                 {visibleGameItems.map((item) => {
                   const href = withGame(item.href, game);
+                  const alertKey = ALERT_LABEL_KEYS[item.href];
                   return (
                     <SidebarMenuItem key={href}>
                       <SidebarMenuButton
@@ -176,8 +185,12 @@ export function AdminSidebar({
                         tooltip={`${tGame(game)}: ${t(item.labelKey)}`}
                         render={<Link href={href} />}
                       >
-                        <item.icon className="size-3.5" />
-                        <span>{t(item.labelKey)}</span>
+                        <NavItemLabel
+                          item={item}
+                          label={t(item.labelKey)}
+                          hasAlert={alerts[item.href] === true}
+                          alertLabel={alertKey ? t(alertKey) : ""}
+                        />
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
@@ -189,22 +202,25 @@ export function AdminSidebar({
         {visibleGroups.map((group) => (
           <NavGroup key={group.key} groupKey={group.key} label={t(group.labelKey)}>
             <SidebarMenu className="gap-1.5">
-              {group.items.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    isActive={isActive(item)}
-                    tooltip={t(item.labelKey)}
-                    render={<Link href={item.href} />}
-                  >
-                    <NavItemLabel
-                      item={item}
-                      label={t(item.labelKey)}
-                      hasAlert={item.href === "/admin/change-requests" && hasPendingChangeRequests}
-                      alertLabel={t("pendingChangeRequests")}
-                    />
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {group.items.map((item) => {
+                const alertKey = ALERT_LABEL_KEYS[item.href];
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      isActive={isActive(item)}
+                      tooltip={t(item.labelKey)}
+                      render={<Link href={item.href} />}
+                    >
+                      <NavItemLabel
+                        item={item}
+                        label={t(item.labelKey)}
+                        hasAlert={alerts[item.href] === true}
+                        alertLabel={alertKey ? t(alertKey) : ""}
+                      />
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </NavGroup>
         ))}

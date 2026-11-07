@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { updateMapPlayerStats, type MapPlayerStatInput, type MapPlayerStatFieldErrors } from "@/actions/admin-matches";
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
-import type { AdminRosterMember, AdminMapPlayerStatRow } from "@/lib/admin-matches";
+import type { AdminRosterMember, AdminMapPlayerStatRow, AdminPreviousLineupPlayer } from "@/lib/admin-matches";
 import { useGame } from "@/lib/use-game";
 
 let rowKeySeq = 0;
@@ -29,11 +29,11 @@ function nextRowKey(): string {
 
 type ScoreboardRow = MapPlayerStatInput & { key: string; handle: string | null };
 
-function emptyRow(defaultPersonId: string): ScoreboardRow {
+function emptyRow(defaultPersonId: string, handle: string | null = null): ScoreboardRow {
   return {
     key: nextRowKey(),
     personId: defaultPersonId,
-    handle: null,
+    handle,
     agentName: VALORANT_AGENTS[0],
     valName: null,
     kills: "0",
@@ -48,10 +48,11 @@ function emptyRow(defaultPersonId: string): ScoreboardRow {
   };
 }
 
-// Saved rows when present, otherwise one row per starter of the roster.
-function initialRows(stats: AdminMapPlayerStatRow[], entrantId: number, roster: AdminRosterMember[]): ScoreboardRow[] {
+// Saved rows when present, then the previous lineup, otherwise one row per starter of the roster.
+function initialRows(stats: AdminMapPlayerStatRow[], entrantId: number, roster: AdminRosterMember[], previousLineup: AdminPreviousLineupPlayer[]): ScoreboardRow[] {
   const existing = rowsFromExisting(stats, entrantId);
   if (existing.length > 0) return existing;
+  if (previousLineup.length > 0) return previousLineup.map((p) => emptyRow(String(p.personId), p.handle));
   return roster.filter((p) => p.isStarter).map((p) => emptyRow(String(p.id)));
 }
 
@@ -227,6 +228,8 @@ export function MapScoreboardForm({
   rosterA,
   rosterB,
   initialStats,
+  previousLineupA,
+  previousLineupB,
   canManage,
 }: {
   mapId: number;
@@ -237,6 +240,8 @@ export function MapScoreboardForm({
   rosterA: AdminRosterMember[];
   rosterB: AdminRosterMember[];
   initialStats: AdminMapPlayerStatRow[];
+  previousLineupA: AdminPreviousLineupPlayer[];
+  previousLineupB: AdminPreviousLineupPlayer[];
   canManage: boolean;
 }) {
   const game = useGame();
@@ -244,8 +249,8 @@ export function MapScoreboardForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<MapPlayerStatFieldErrors>({});
-  const [rowsA, setRowsA] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantAId, rosterA));
-  const [rowsB, setRowsB] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantBId, rosterB));
+  const [rowsA, setRowsA] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantAId, rosterA, previousLineupA));
+  const [rowsB, setRowsB] = useState<ScoreboardRow[]>(() => initialRows(initialStats, entrantBId, rosterB, previousLineupB));
 
   function handleSave() {
     setFieldErrors({});

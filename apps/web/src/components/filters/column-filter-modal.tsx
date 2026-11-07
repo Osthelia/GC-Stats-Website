@@ -13,17 +13,19 @@
 
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { INTEGER_FILTER_PATTERN } from "@/lib/column-filter";
 
 export type ColumnFilter = { columnKey: string; value: string };
 
+export type ColumnFilterOption = { value: string; label: string; icon?: ReactNode };
+
 export type ColumnFilterColumn = {
   key: string;
   label: string;
   /** Value picked from this list instead of typed. */
-  options?: { value: string; label: string }[];
+  options?: ColumnFilterOption[];
   /** Typed value must be a whole number. */
   integer?: boolean;
 };
@@ -39,6 +41,9 @@ export type ColumnFilterLabels = {
   clear: string;
   /** Shown under an integer column holding something else. */
   integerRequired?: string;
+  /** Adds a search box to the value dropdowns. */
+  searchPlaceholder?: string;
+  noResult?: string;
 };
 
 type FilterRow = ColumnFilter & { key: number };
@@ -59,18 +64,24 @@ function FilterDropdown({
   options,
   ariaLabel,
   placeholder,
+  search,
 }: {
   value: string;
   onChange: (value: string) => void;
-  options: { value: string; label: string }[];
+  options: ColumnFilterOption[];
   ariaLabel: string;
   placeholder?: string;
+  search?: { placeholder: string; noResult: string };
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const [menuRect, setMenuRect] = useState<{ top: number; left: number; width: number } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const activeLabel = options.find((o) => o.value === value)?.label;
+  const activeOption = options.find((o) => o.value === value);
+  const activeLabel = activeOption?.label;
+  const normalizedQuery = query.trim().toLowerCase();
+  const visibleOptions = normalizedQuery ? options.filter((o) => o.label.toLowerCase().includes(normalizedQuery)) : options;
 
   // Portalled at fixed coordinates so the modal's scrolling list never clips the menu.
   useLayoutEffect(() => {
@@ -92,7 +103,10 @@ function FilterDropdown({
     if (!open) return;
     function onClickOutside(event: MouseEvent) {
       const target = event.target as Node;
-      if (!buttonRef.current?.contains(target) && !menuRef.current?.contains(target)) setOpen(false);
+      if (!buttonRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        setOpen(false);
+        setQuery("");
+      }
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
@@ -110,7 +124,10 @@ function FilterDropdown({
         className="flex w-full items-center justify-between gap-2 rounded-xl border border-neutral-800 px-3 py-2.5 text-left transition-colors hover:border-[#e4ae22]/30 active:bg-white/[0.03]"
         style={{ background: "var(--gcs-surface-2)" }}
       >
-        <span className={`truncate text-[12px] font-bold ${activeLabel ? "text-neutral-200" : "text-neutral-500"}`}>{activeLabel ?? placeholder ?? ""}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          {activeOption?.icon}
+          <span className={`truncate text-[12px] font-bold ${activeLabel ? "text-neutral-200" : "text-neutral-500"}`}>{activeLabel ?? placeholder ?? ""}</span>
+        </span>
         <svg
           width="11"
           height="11"
@@ -133,19 +150,36 @@ function FilterDropdown({
             className="fixed z-[60] max-h-56 overflow-y-auto rounded-xl border border-neutral-800 shadow-2xl"
             style={{ top: menuRect.top, left: menuRect.left, width: menuRect.width, background: "var(--gcs-surface-2)" }}
           >
-            {options.map((o) => (
+            {search && (
+              <div className="sticky top-0 border-b border-neutral-800 p-2" style={{ background: "var(--gcs-surface-2)" }}>
+                <input
+                  type="text"
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={search.placeholder}
+                  aria-label={search.placeholder}
+                  className="w-full rounded-lg border border-neutral-800 px-3 py-2 text-[12px] text-neutral-50 outline-none transition-colors placeholder:text-neutral-600 focus:border-[#e4ae22]/50"
+                  style={{ background: "var(--gcs-surface)" }}
+                />
+              </div>
+            )}
+            {search && visibleOptions.length === 0 && <p className="px-3 py-2 text-[12px] font-bold text-neutral-600">{search.noResult}</p>}
+            {visibleOptions.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 onClick={() => {
                   onChange(o.value);
                   setOpen(false);
+                  setQuery("");
                 }}
                 role="option"
                 aria-selected={value === o.value}
-                className={`block w-full truncate px-3 py-2 text-left text-[12px] font-bold transition-colors hover:bg-[var(--gcs-hover)] active:bg-white/[0.06] ${value === o.value ? "text-[#e4ae22]" : "text-neutral-300"}`}
+                className={`flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] font-bold transition-colors hover:bg-[var(--gcs-hover)] active:bg-white/[0.06] ${value === o.value ? "text-[#e4ae22]" : "text-neutral-300"}`}
               >
-                {o.label}
+                {o.icon}
+                <span className="truncate">{o.label}</span>
               </button>
             ))}
           </div>,
@@ -260,6 +294,7 @@ export function ColumnFilterModal({
                       options={column.options}
                       ariaLabel={labels.valueLabel}
                       placeholder={labels.valuePlaceholder}
+                      search={labels.searchPlaceholder && labels.noResult ? { placeholder: labels.searchPlaceholder, noResult: labels.noResult } : undefined}
                     />
                   ) : (
                     <input

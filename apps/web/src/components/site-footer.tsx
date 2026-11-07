@@ -50,6 +50,7 @@ export function SiteFooter() {
         { label: t("productTournaments"), href: "/tournaments" },
         { label: t("productOpenData"), href: "/opendata" },
         { label: t("productForum"), href: "/forum" },
+        { label: t("productDiscordBot"), href: "/discord-bot" },
       ],
     },
     {

@@ -29,8 +29,10 @@ import { aggregateLeaguePlayerStatsSql, aggregateMapPlayerStatsSql } from "@/lib
 import { STAT_COLUMN_SETS, buildWeaponColumns, weaponNameFromColumnKey, type StatColumn } from "@/lib/stats-columns";
 import {
   leagueRoleOptions,
-    parseLeagueStatsFilters,
+  parseLeagueStatsFilters,
   parseStatsFilters,
+  parseStatsGroupBy,
+  STATS_GROUP_BY_VALUES,
   type LeagueStatsFilters,
   type ParsedStatsFilters,
   type StatsSearchParams,
@@ -70,6 +72,8 @@ export default async function TournamentStatsPage({
   // The two games filter by different things, so each is parsed its own way.
   const filters = parseStatsFilters(sp);
   const leagueFilters = parseLeagueStatsFilters(sp);
+  // Grouping is a Valorant feature (by agent, role, team or country); the League table is always flat.
+  const groupBy = parseStatsGroupBy(sp);
 
   const [stats, t] = await Promise.all([league ? loadLeagueStats(game, id, leagueFilters) : loadValorantStats(game, id, filters), getTranslations("tournamentPage")]);
   const { players, agentOptions, mapOptions, weaponColumns } = stats;
@@ -90,6 +94,9 @@ export default async function TournamentStatsPage({
     noDataLabel: t("statsNoData"),
     identityColumnLabel: t("statsIdentityColumn"),
     players,
+    roleLabels: { duelist: t("statsRole.duelist"), initiator: t("statsRole.initiator"), controller: t("statsRole.controller"), sentinel: t("statsRole.sentinel") },
+    ungroupedLabel: t("statsGroupUnknown"),
+    agentOptions: agentOptions.map((a) => a.value),
     agentLabel: t(set.labels.agentColumn),
     nationalityLabel: t("statsNationalityColumn"),
     teamLabel: t("statsTeamColumn"),
@@ -102,6 +109,8 @@ export default async function TournamentStatsPage({
       addAnother: t("statsColumnFilterAddAnother"),
       apply: t("statsColumnFilterApply"),
       clear: t("statsColumnFilterClear"),
+      searchPlaceholder: t("statsColumnFilterSearch"),
+      noResult: t("statsColumnFilterNoResult"),
     },
     paginationLabels: { previous: t("previous"), next: t("next"), pageOf: t.raw("pageOf") },
   };
@@ -122,10 +131,12 @@ export default async function TournamentStatsPage({
         ) : (
           <StatsFilterBar
             basePath={`/tournaments/${basePath}/stats`}
-            filters={filters}
+            filters={{ ...filters, groupBy }}
             agentOptions={agentOptions}
             mapOptions={mapOptions}
+            groupByOptions={STATS_GROUP_BY_VALUES.map((v) => ({ value: v, label: t(`statsGroupBy.${v}`) }))}
             labels={{
+              groupByLabel: t("statsGroupByLabel"),
               periodLabel: t("statsFilterPeriod"),
               allTime: t("statsFilterAllTime"),
               last30: t("statsFilterLast30"),
@@ -142,9 +153,9 @@ export default async function TournamentStatsPage({
         )}
 
         {stats.columnSet === "lol" ? (
-          <TournamentStatsTable {...tableProps} columnSet="lol" rows={stats.rows} />
+          <TournamentStatsTable {...tableProps} groupBy="none" columnSet="lol" rows={stats.rows} />
         ) : (
-          <TournamentStatsTable {...tableProps} columnSet="valorant" rows={stats.rows} />
+          <TournamentStatsTable {...tableProps} groupBy={groupBy} columnSet="valorant" rows={stats.rows} />
         )}
       </div>
     </div>

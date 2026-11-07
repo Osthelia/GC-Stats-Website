@@ -32,7 +32,7 @@ export function OrgBadge({
       style={{ width: size, height: size, background: "var(--gcs-surface-2)" }}
     >
       {dark && light ? (
-        <ThemedLogoImage dark={dark} light={light} alt={name} width={size} height={size} className="h-full w-full object-contain" />
+        <ThemedLogoImage dark={dark} light={light} alt={name} width={size} height={size} className="h-full w-full object-cover" />
       ) : (
         <span className="font-black text-neutral-500" style={{ fontSize: Math.round(size * 0.4) }}>
           {name.charAt(0).toUpperCase()}

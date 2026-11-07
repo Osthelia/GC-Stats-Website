@@ -13,9 +13,10 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, PERMISSIONS, gameTables } from "@gc-stats/db";
+import { organizations, teamPrivateContacts, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
+import { isEmail } from "@/lib/team-requests/contact";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
 import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { isRosterRoleOf } from "@/lib/roster-roles";
@@ -52,9 +53,11 @@ export type TeamProfileInput = {
   isActive: boolean;
   socials: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
   tags: string[];
+  /** Private contact email, empty to remove it. */
+  contactEmail: string;
 };
 
-export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio" | "discord";
+export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio" | "discord" | "contactEmail";
 export type TeamProfileFieldErrors = Partial<Record<TeamProfileField, string>>;
 export type TeamProfileResult = { ok: true } | { ok: false; fieldErrors: TeamProfileFieldErrors };
 
@@ -80,6 +83,7 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
   const bio = input.bio.trim();
   const vlrId = input.vlrId.trim();
   const liquipediaLink = input.liquipediaLink.trim();
+  const contactEmail = input.contactEmail.trim();
 
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
@@ -98,6 +102,9 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
   }
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
+
+  if (contactEmail.length > 254) fieldErrors.contactEmail = "tooLong";
+  else if (contactEmail && !isEmail(contactEmail)) fieldErrors.contactEmail = "invalidEmail";
 
   if (input.organizationId !== null) {
     if (!Number.isSafeInteger(input.organizationId) || input.organizationId <= 0) fieldErrors.organizationId = "invalid";
@@ -142,7 +149,25 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
 
   await db.transaction(async (tx) => {
     await tx.update(teams).set(values).where(eq(teams.id, teamId));
+
     const changes = diffChanges(existing, values);
+    // The private contact points at val_teams, so only Valorant teams carry one.
+    if (game === "valorant") {
+      const [currentContact] = await tx.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, teamId)).limit(1);
+      const contactChanged = (currentContact?.email ?? "") !== contactEmail;
+      if (contactChanged) {
+        if (contactEmail) {
+          await tx
+            .insert(teamPrivateContacts)
+            .values({ teamId, email: contactEmail })
+            .onConflictDoUpdate({ target: teamPrivateContacts.teamId, set: { email: contactEmail, updatedAt: new Date() } });
+        } else {
+          await tx.delete(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, teamId));
+        }
+        // The address itself never goes in the activity log, only whether it was set, changed or removed.
+        changes.privateContact = { old: currentContact ? "set" : null, new: contactEmail ? "set" : null };
+      }
+    }
     if (Object.keys(changes).length > 0) {
       await logActivity({ game, subject: "team", subjectId: teamId, event: "updated", description: `Updated team #${teamId} (${name})`, actorUserId, changes }, tx);
     }

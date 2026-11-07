@@ -22,6 +22,8 @@
     "menu": "菜单"
   },
   "auth": {
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
     "login": {
       "title": "登录",
       "subtitle": "一个 GC-Stats 账户，多种登录方式。"
@@ -1014,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "合作伙伴密钥可以在其控制台中注册 HTTPS 接口：每当数据发生变化时，GC Stats 会发送一个 POST 请求。",
-      "events": "事件：新比赛、比赛已更新、新赛事、赛事已更新、战队已更新、选手已更新。",
+      "events": "事件：新比赛、比赛更新、新赛事、赛事更新、战队更新、选手更新、经我们团队确认的阵容变更（roster.updated）。",
       "filters": "筛选：赛事地区、是否官方、参赛战队。",
       "signature": "每个请求都带有 X-GCS-Event、X-GCS-Delivery、X-GCS-Timestamp 和 X-GCS-Signature 请求头。请使用接口密钥校验签名。",
       "retries": "请在 10 秒内返回 2xx 状态码。失败的推送会在约 9 小时内重试，频繁失败的接口将被关闭。",
-      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。"
+      "setup": "Payload 包含事件、事件时间和实体，字段与 OpenData 数据集相同。",
+      "discord": "Discord 类型的端点只接收 roster.updated 事件，并在你的频道中发布推文链接，不带签名。"
     }
   },
   "becomePublisher": {
@@ -1044,6 +1047,77 @@
       "discord": "通过 Discord 联系我们",
       "email": "通过邮箱联系"
     }
+  },
+  "discordBot": {
+    "title": "Discord 机器人",
+    "intro": "直接在你的 Discord 服务器中关注每一场 Game Changers 比赛，实时比分和结果会自动发布。",
+    "addBot": "添加到 Discord",
+    "comingSoon": "即将推出",
+    "openDashboard": "打开控制面板",
+    "features": {
+      "title": "功能",
+      "live": {
+        "title": "进行中的比赛",
+        "body": "比赛开始时会发布一条消息，比分会自动更新直到比赛结束。"
+      },
+      "finished": {
+        "title": "已结束的比赛",
+        "body": "比赛一结束，最终结果就会发布。"
+      },
+      "map": {
+        "title": "已结束的地图",
+        "body": "每张地图一结束就能收到比分，无需等待整场比赛结束。"
+      },
+      "filters": {
+        "title": "智能筛选",
+        "body": "可按地区、参赛战队以及官方或非官方赛事筛选提醒（默认官方赛事）。"
+      }
+    },
+    "dashboard": {
+      "title": "在控制面板中配置",
+      "body": "每个服务器都在 GC Stats 控制面板中配置：为每种提醒类型选择频道并设置筛选条件。",
+      "why": "你需要使用 Discord 登录，以便我们确认你管理哪些服务器。只有拥有服务器管理权限的成员才能更改其设置。"
+    },
+    "steps": {
+      "title": "使用方式",
+      "invite": {
+        "title": "添加机器人",
+        "body": "通过上方按钮将机器人邀请到你的服务器。"
+      },
+      "login": {
+        "title": "使用 Discord 登录",
+        "body": "打开控制面板，并用你的 Discord 账号登录。"
+      },
+      "configure": {
+        "title": "配置",
+        "body": "选择频道和筛选条件，提醒会立即开始。"
+      }
+    },
+    "help": {
+      "title": "需要帮助吗？",
+      "body": "有问题或建议？欢迎加入 <link>GC Stats Discord</link>。"
+    }
+  },
+  "discordBotMessages": {
+    "live": "直播中",
+    "finished": "比赛结束",
+    "mapFinished": "第 {number} 张地图结束",
+    "map": "第 {number} 张地图",
+    "maps": "地图",
+    "bestOf": "BO{count}",
+    "matchScore": "比赛比分：{score}",
+    "mvp": "MVP:{name}({acs} ACS)",
+    "vetoBan": "{team} 禁用 {map}",
+    "vetoPick": "{team} 选择 {map}",
+    "vetoDecider": "{map}(决胜地图)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "进攻方",
+    "sideDefense": "防守方",
+    "openMatch": "打开比赛",
+    "imageRemoved": "此提醒的图片已被 GC Stats 审核团队移除。"
   },
   "supportUs": {
     "title": "支持我们",
@@ -1523,6 +1597,7 @@
     "statsColumns": {
       "played": "地图数",
       "roundsPlayed": "回合",
+      "rating": "评分",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",
@@ -1694,10 +1769,12 @@
     "colKills": "击杀",
     "colDeaths": "死亡",
     "colAssists": "助攻",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "选手",
+    "ratingFull": "GCS Rating：1.00 代表同定位选手的平均水平",
     "acsFull": "场均战斗分数",
     "adrFull": "场均单局伤害",
     "kastFull": "击杀、助攻、拆包/装包、存活占比",
@@ -1779,7 +1856,8 @@
     "finance": "财务",
     "developers": "开发者",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discord 机器人"
   },
   "forum": {
     "overview": {
@@ -1972,6 +2050,10 @@
       "about": "关于 / 项目",
       "backToSite": "返回站点",
       "pendingChangeRequests": "待处理的变更请求",
+      "pendingDiscordImages": "待审核的 Discord 图片",
+      "pendingReports": "待处理的举报",
+      "pendingRosterWatch": "待审核的阵容信号",
+      "pendingModeration": "待审核的可疑对象",
       "tournaments": "赛事",
       "groupModeration": "管理",
       "reports": "举报",
@@ -1981,7 +2063,10 @@
       "activityLog": "活动日志",
       "analytics": "统计分析",
       "oauthClients": "OAuth 客户端",
-      "settings": "配置"
+      "settings": "配置",
+      "discordImages": "Discord 机器人图片",
+      "rosterWatch": "名单监控",
+      "teamRequests": "团队请求"
     },
     "dashboard": {
       "title": "控制台",
@@ -2230,7 +2315,8 @@
           "staff": "工作人员",
           "people": "人员",
           "apiKeys": "API 密钥",
-          "logs": "日志"
+          "logs": "日志",
+          "veto": "地图禁用"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "编辑资料（名称、社交账号、标签）",
@@ -2255,7 +2341,8 @@
           "organization_people_link_user": "将人员绑定至用户账户",
           "organization_people_edit_profile": "编辑人员资料（基本及高级信息）",
           "organization_api_keys_manage": "管理该机构的 API 密钥",
-          "organization_logs_view": "查看组织日志"
+          "organization_logs_view": "查看组织日志",
+          "organization_veto_manage": "管理所主办赛事的实时地图禁用"
         },
         "accessError": {
           "notFound": "未找到该机构。"
@@ -2390,6 +2477,8 @@
         "fieldBio": "简介",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia 链接",
+        "fieldContactEmail": "联系邮箱",
+        "contactEmailHint": "私密信息。仅管理人员可见,绝不会显示在网站或 API 中。",
         "fieldActive": "活跃战队",
         "save": "保存",
         "saveSuccess": "资料已更新。",
@@ -2502,7 +2591,8 @@
           "saveFailed": "无法保存徽标。请稍后再试。",
           "empty": "请选择一张图片。",
           "requiresLeft": "勾选“已离开战队”后才能填写离开日期。",
-          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。"
+          "invalidDiscordId": "请输入有效的 Discord 用户 ID(17 到 20 位数字)或服务器邀请链接(discord.gg/...)。",
+          "invalidEmail": "请输入有效的邮箱地址。"
         },
         "fieldOrganization": "组织",
         "organizationPlaceholder": "选择组织",
@@ -3449,7 +3539,9 @@
         "activityLog": "活动日志",
         "analytics": "统计分析",
         "oauthClients": "OAuth 客户端",
-        "settings": "配置"
+        "settings": "配置",
+        "rosterWatch": "名单监控",
+        "teamRequests": "团队请求"
       },
       "permissionNames": {
         "admin_access": "访问管理面板",
@@ -3500,7 +3592,11 @@
         "oauth_clients_view": "查看 OAuth 客户端",
         "oauth_clients_manage": "创建、编辑或删除 OAuth 客户端",
         "settings_view": "查看配置和 OpenData 监控",
-        "settings_manage": "编辑配置"
+        "settings_manage": "编辑配置",
+        "roster_watch_view": "查看名单监控",
+        "roster_watch_manage": "审核名单监控推文并管理已关注账号",
+        "team_requests_view": "查看团队请求",
+        "team_requests_manage": "准备并跟进发送给团队的信息请求"
       },
       "create": {
         "button": "新建角色",
@@ -3810,7 +3906,16 @@
         "addMatchSubmit": "添加",
         "addMatchSuccess": "比赛已添加。",
         "addMatchEntrantTbd": "待定",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "轮次",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "BO",
         "fieldMatchEntrantA": "队伍 A",
         "fieldMatchEntrantB": "队伍 B",
@@ -3858,6 +3963,10 @@
           "sameEntrant": "两个名额不能是同一支队伍。",
           "entrantNotFound": "该队伍未报名此赛事。",
           "entrantNotInGroup": "该队伍未分配到此小组。",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
           "roundRobinOnly": "只有循环赛小组可以统计整个阶段的比赛。",
           "cannotMove": "此容器无法再移动。",
           "parentInvalid": "此集合无法在此处使用。",
@@ -4362,6 +4471,7 @@
           "manualScoreboardDescription": "适用于没有 Riot 比赛 ID 可抓取的比赛（线下赛、过于久远等）。",
           "columnPlayer": "选手",
           "columnIgn": "IGN",
+          "previousLineupNote": "上一次阵容（最后打的地图），获取地图后将被替换。",
           "noPlayerData": "暂无选手数据。",
           "columnAgent": "特工",
           "columnKills": "击杀",
@@ -5017,6 +5127,88 @@
       "statDismissed": "已驳回",
       "error": {
         "notFound": "该条目已不存在。"
+      },
+      "images": {
+        "title": "Discord 机器人图片",
+        "subtitle": "由服务器自定义的提醒图片。已验证的图片会从列表中消失，只有被编辑后才会再次出现。",
+        "empty": "没有待审核的图片。",
+        "imageAlt": "某个服务器的提醒图片",
+        "openImage": "在新标签页中打开图片",
+        "event": {
+          "match_live": "比赛进行中",
+          "match_finished": "比赛已结束",
+          "map_finished": "地图已结束"
+        },
+        "server": "服务器",
+        "unknownUser": "未知账号",
+        "guildBlacklisted": "已列入黑名单的服务器",
+        "userBlacklisted": "已列入黑名单的用户",
+        "verifyButton": "验证",
+        "sanctionButton": "处罚",
+        "verifySuccess": "图片已验证。",
+        "error": {
+          "notFound": "此图片已被处理或不再存在。"
+        },
+        "sanction": {
+          "title": "处罚此图片",
+          "description": "选择对服务器以及上传此图片的人采取的措施。",
+          "sanctionsLabel": "处罚",
+          "option": {
+            "blacklistGuild": {
+              "label": "将服务器列入黑名单",
+              "hint": "该服务器将无法再使用控制面板，也不再收到提醒。"
+            },
+            "blacklistUser": {
+              "label": "将 Discord 账号列入黑名单",
+              "hint": "该 Discord 账号将无法在任何服务器上管理机器人。"
+            },
+            "resetImage": {
+              "label": "重置图片",
+              "hint": "自定义图片将被删除，服务器恢复为纯文本提醒。"
+            },
+            "editMessages": {
+              "label": "编辑已发送的带有此图片的消息",
+              "hint": "图片将从已发布的提醒中移除，并替换为一条说明 GC Stats 审核团队已将其移除的通知。"
+            }
+          },
+          "alreadyBlacklisted": "已在黑名单中。",
+          "reasonLabel": "原因",
+          "reasonHint": "将与黑名单条目一起保存。",
+          "cancel": "取消",
+          "submit": "处罚",
+          "submitting": "正在处罚...",
+          "success": "已执行处罚。",
+          "error": {
+            "notFound": "此图片已被处理或不再存在。",
+            "sanctions": {
+              "required": "请至少选择一项处罚。"
+            },
+            "blacklistUser": {
+              "noEditor": "最后编辑者的 Discord 账号未知。"
+            },
+            "reason": {
+              "required": "请输入原因。",
+              "tooLong": "原因太长（最多 {max} 个字符）。"
+            }
+          },
+          "successQueued": "已执行处罚，{count} 条消息将很快被编辑。"
+        },
+        "editor": "编辑者",
+        "history": {
+          "title": "历史记录",
+          "subtitle": "对警报图片做出的所有决定，即使图片被重置也会保留。",
+          "empty": "暂无决定。",
+          "verified": "已验证",
+          "sanctioned": "已处罚",
+          "moderator": "决定者",
+          "reason": "原因",
+          "sanction": {
+            "blacklist_guild": "服务器已加入黑名单",
+            "blacklist_user": "账号已加入黑名单",
+            "reset_image": "图片已重置",
+            "edit_messages": "消息已编辑"
+          }
+        }
       }
     },
     "forum": {
@@ -5201,6 +5393,119 @@
       "hasLeft": "已离开战队",
       "untilLabel": "离开于",
       "unknownHint": "结束日期未知，不知道时请留空。"
+    },
+    "vetoManagement": {
+      "title": "实时地图禁用",
+      "subtitle": "各队通过私有链接禁用地图，结果会实时填入比赛。",
+      "openPage": "实时地图禁用",
+      "backToTournament": "返回 {name}",
+      "enableTitle": "启用",
+      "enableDescription": "启用后，赛事中的每支队伍都会获得一个私有禁用链接，主办方可在其仪表盘中管理禁用。",
+      "enabled": "已启用",
+      "disabled": "已停用",
+      "enableButton": "启用地图禁用",
+      "disableButton": "停用地图禁用",
+      "enabledSuccess": "实时禁用已启用。",
+      "disabledSuccess": "实时禁用已停用。",
+      "settingsTitle": "设置",
+      "settingsDescription": "适用于赛事所有比赛的规则。",
+      "firstMoverLabel": "谁先禁用",
+      "mode": {
+        "coin_toss": "由抛硬币决定",
+        "coin_toss_winner": "由抛硬币胜者决定",
+        "advantage": "由优势队伍决定",
+        "predefined": "预先指定"
+      },
+      "modeHint": {
+        "coin_toss": "抛硬币决定先禁用的队伍。",
+        "coin_toss_winner": "抛硬币选出胜者，由其决定哪支队伍先禁用。",
+        "advantage": "被设为优势的队伍决定哪支队伍先禁用。",
+        "predefined": "所选位置的队伍（比赛的 A 队或 B 队）始终先禁用。"
+      },
+      "advantageLabel": "优势队伍",
+      "advantageNone": "选择一支队伍",
+      "slotLabel": "先手队伍",
+      "slotA": "A 队",
+      "slotB": "B 队",
+      "timeoutLabel": "每次操作时间（秒）",
+      "timeoutHint": "超时的队伍将随机获得地图或阵营。范围为 10 到 600。",
+      "poolLabel": "地图池",
+      "poolCount": "已选 {count} 张，需要 7 张。",
+      "patchLabel": "或使用某个版本的地图",
+      "patchHint": "未在上方选择地图时使用，例如 11.07。将使用该版本中进行过比赛的地图。",
+      "saveButton": "保存",
+      "saving": "保存中...",
+      "saveSuccess": "设置已保存。",
+      "saveFailed": "部分字段无效。",
+      "linksTitle": "队伍链接",
+      "linksDescription": "每支队伍在整个赛事中拥有一个私有链接。任何持有链接的人都可以代表队伍禁用，无需账号。",
+      "noEntrants": "此赛事暂无队伍。",
+      "noLink": "暂无链接",
+      "generate": "生成",
+      "copyLink": "复制链接",
+      "copied": "已复制",
+      "copyFailed": "无法复制链接。",
+      "regenerate": "重新生成",
+      "regenerated": "已生成新链接，旧链接已失效。",
+      "regenerateTitle": "重新生成此链接？",
+      "regenerateDescription": "{team} 的当前链接将立即失效。请把新链接发给该队伍。",
+      "cancel": "取消",
+      "matchesTitle": "比赛",
+      "matchesDescription": "调整比赛的地图池，或重置已开始的禁用。",
+      "noMatches": "暂无即将进行的比赛。",
+      "teamsUnknown": "队伍尚未确定",
+      "editPool": "地图池",
+      "matchPoolHint": "仅用于本场比赛的地图。未选择时，使用赛事地图池。",
+      "useTournamentPool": "使用赛事地图池",
+      "poolSaved": "地图池已保存。",
+      "reset": "重置",
+      "resetTitle": "重置此禁用？",
+      "resetDescription": "已选择的所有禁用、选择和阵营都将被清除，队伍需要重新准备。",
+      "resetDone": "禁用已重置。",
+      "status": {
+        "waiting": "等待中",
+        "choosing": "正在选择先手",
+        "running": "进行中",
+        "done": "已完成"
+      },
+      "error": {
+        "notFound": "未找到。",
+        "firstMoverMode": {
+          "invalid": "请选择有效的选项。"
+        },
+        "advantageEntrantId": {
+          "required": "请选择优势队伍。",
+          "invalid": "该队伍不在此赛事中。"
+        },
+        "predefinedSlot": {
+          "invalid": "请选择 A 队或 B 队。"
+        },
+        "actionTimeoutSeconds": {
+          "required": "请输入时间。",
+          "notInteger": "请输入整数秒数。",
+          "outOfRange": "请输入 10 到 600 秒之间的值。"
+        },
+        "mapPool": {
+          "required": "请选择 7 张地图，或指定一个版本。",
+          "invalidMap": "其中一张地图无效。",
+          "duplicateMap": "有地图被重复选择。",
+          "poolSize": "请恰好选择 7 张地图。",
+          "vetoRunning": "禁用正在进行，请等待结束或先重置，再更改地图池。"
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "请输入类似 11.07 的版本号。",
+          "patchUnknown": "该版本没有 7 张地图的地图池，请手动选择。"
+        },
+        "matchPool": {
+          "notFound": "未找到比赛。",
+          "invalidMap": "其中一张地图无效。",
+          "duplicateMap": "有地图被重复选择。",
+          "poolSize": "请恰好选择 7 张地图，或不选以使用赛事地图池。",
+          "vetoStarted": "禁用已开始，请先重置。"
+        }
+      },
+      "copyOverlay": "叠加层链接",
+      "overlayCopied": "叠加层链接已复制，请将其添加为浏览器源。"
     },
     "personPicker": {
       "notInGame": "尚未加入 {game}"
@@ -5426,6 +5731,247 @@
         "tooShort": "至少 {min} 个字符。",
         "tooLong": "最多 {max} 个字符。"
       }
+    },
+    "rosterWatch": {
+      "title": "名单监控",
+      "subtitle": "战队账号的推文由 AI 分类，以便人工审核名单变动。",
+      "empty": "这里没有需要审核的内容。",
+      "tabs": {
+        "roster": "名单",
+        "unsure": "待确认",
+        "done": "已审核"
+      },
+      "filters": {
+        "period": "时间段",
+        "periodAny": "任意时间段",
+        "periodDays": "最近 {days} 天",
+        "topic": "主题",
+        "topicAny": "任意主题"
+      },
+      "topic": {
+        "roster_join": "选手加入",
+        "roster_leave": "选手离队",
+        "roster_bench": "选手转替补",
+        "staff_change": "教练组变动",
+        "tryouts": "Tryouts",
+        "not_enough_info": "信息不足",
+        "wrong_game": "非本游戏",
+        "match_promo": "比赛宣传",
+        "match_result": "比赛结果",
+        "highlight": "精彩集锦",
+        "sponsor": "赞助商",
+        "merch": "周边",
+        "giveaway": "Giveaway",
+        "stream": "直播",
+        "content": "内容",
+        "community": "社区",
+        "other": "其他"
+      },
+      "verdict": {
+        "roster": "名单",
+        "not_roster": "非名单",
+        "unsure": "不确定"
+      },
+      "card": {
+        "openTweet": "打开推文",
+        "noText": "无文字",
+        "openPhoto": "打开照片",
+        "openVideo": "打开视频",
+        "players": "相关人员:"
+      },
+      "actions": {
+        "editTeam": "编辑战队",
+        "ignore": "忽略",
+        "notRoster": "非名单",
+        "done": "完成"
+      },
+      "deck": {
+        "next": "下一个",
+        "back": "返回",
+        "remaining": "本页还剩 {count} 条",
+        "allSeen": "你已看完本页所有推文。",
+        "restart": "重新开始",
+        "showOriginal": "显示原文",
+        "showTranslation": "显示英文翻译",
+        "explanation": "说明",
+        "explanationPlaceholder": "为什么与阵容无关？",
+        "confirm": "确认",
+        "pickTopic": "内容是关于什么的？"
+      },
+      "reviewed": {
+        "team_edited": "战队已编辑",
+        "ignored": "已忽略",
+        "marked_not_roster": "已标记为非名单",
+        "reported_missed": "已报告为漏检"
+      },
+      "error": {
+        "notFound": "该推文已不存在。",
+        "invalidState": "该推文无法执行此操作，可能已被审核。",
+        "invalidTopic": "请选择有效的主题。",
+        "noteTooLong": "备注太长（最多 1000 个字符）。"
+      },
+      "accounts": {
+        "title": "已关注账号",
+        "subtitle": "每天抓取一次的 X 账号。",
+        "team": "战队",
+        "teamPlaceholder": "选择战队",
+        "teamSearch": "搜索战队",
+        "teamNoResults": "未找到战队",
+        "handle": "X 用户名",
+        "add": "添加",
+        "added": "账号已添加。",
+        "enabled": "已启用",
+        "toastEnabled": "账号已启用。",
+        "toastDisabled": "账号已停用。",
+        "lastPolled": "上次抓取",
+        "lastError": "上次错误",
+        "empty": "尚未关注任何账号。",
+        "noResults": "没有与此搜索匹配的账号。",
+        "searchPlaceholder": "搜索战队或账号名",
+        "count": "{count, plural, other {# 个账号}}",
+        "previous": "上一页",
+        "next": "下一页",
+        "error": {
+          "notFound": "该账号已不存在。",
+          "teamRequired": "请选择战队。",
+          "teamNotFound": "该战队已不存在。",
+          "handleRequired": "请输入 X 用户名。",
+          "handleInvalid": "用户名必须是 1 到 15 个字母、数字或下划线。",
+          "handleTaken": "该用户名已被关注。"
+        }
+      },
+      "import": {
+        "button": "自动导入",
+        "title": "导入 X 账号",
+        "description": "关注赛事中每支战队社交链接里的 X 账号。",
+        "tournament": "赛事",
+        "tournamentPlaceholder": "选择赛事",
+        "tournamentSearch": "搜索赛事",
+        "tournamentNoResults": "未找到赛事",
+        "stage": "阶段",
+        "allStages": "所有阶段",
+        "cancel": "取消",
+        "submit": "导入",
+        "importing": "导入中...",
+        "success": "{added, plural, =0 {未添加任何账号} other {已添加 # 个账号}}。已关注：{alreadyFollowed}，无 X 账号：{noTwitter}，无效：{invalid}。",
+        "error": {
+          "tournamentRequired": "请选择赛事。",
+          "tournamentNotFound": "该赛事已不存在。",
+          "stageNotFound": "该阶段不属于此赛事。"
+        }
+      },
+      "searchPlaceholder": "搜索推文或战队",
+      "searchSubmit": "搜索",
+      "statusLabel": "状态",
+      "columnTeam": "战队",
+      "columnTweet": "推文",
+      "columnType": "类型",
+      "columnDate": "日期",
+      "columnReview": "审核"
+    },
+    "teamRequests": {
+      "title": "团队请求",
+      "subtitle": "跟进并发送我们向团队索取信息的请求：标志、社交账号和阵容。",
+      "tabs": {
+        "recommended": "推荐",
+        "pending": "进行中",
+        "done": "已完成"
+      },
+      "scopeLabel": "显示的请求",
+      "scope": {
+        "mine": "我的请求",
+        "all": "所有请求"
+      },
+      "recommended": {
+        "pickTeam": "为另一支团队准备请求",
+        "pickPlaceholder": "选择团队",
+        "searchPlaceholder": "搜索团队...",
+        "noResults": "未找到团队。",
+        "empty": "没有推荐的团队。最近比赛过的团队都已有请求。",
+        "emptyTitle": "未选择团队",
+        "emptyHint": "请在右侧选择一个团队以准备请求。",
+        "listTitle": "推荐团队 ({count})"
+      },
+      "table": {
+        "empty": "这里没有请求。",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "消息",
+        "markDone": "标记为已完成",
+        "reopen": "重新打开",
+        "markedDone": "请求已标记为已完成。",
+        "reopened": "请求已重新打开。",
+        "openContact": "打开联系方式"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "网站",
+        "email": "邮箱",
+        "other": "其他"
+      },
+      "builder": {
+        "title": "{team}的请求",
+        "description": "绿色表示无需处理，红色表示我们向团队索取该信息。",
+        "loading": "正在加载团队数据及其最近的比赛...",
+        "alreadyPending": "该团队已有一个进行中的请求。",
+        "dataTitle": "我们现有的信息",
+        "dataHint": "点击状态可在绿色（正常）和红色（待询问）之间切换。",
+        "toggle": "切换{item}的状态",
+        "logo": "标志",
+        "roster": "阵容",
+        "missing": "缺失",
+        "rosterCount": "当前 {current} 人，过往 {past} 人",
+        "rosterCurrent": "当前阵容",
+        "rosterPast": "过往阵容",
+        "none": "无",
+        "unlistedTitle": "在最近的比赛中出场但不在阵容中",
+        "unlistedMatches": "{count, plural, other {#场比赛}}",
+        "messageTitle": "消息",
+        "messageHint": "根据上方状态生成，复制前可以编辑。",
+        "copy": "复制",
+        "copied": "已复制",
+        "copyFailed": "复制失败，请手动选择文本。",
+        "contactTitle": "联系方式",
+        "noContact": "该团队没有已知的联系方式。请先为团队、其组织、经理或教练添加社交账号。",
+        "kind": {
+          "organization": "组织",
+          "manager": "经理",
+          "coach": "教练",
+          "other": "其他"
+        },
+        "cancel": "取消",
+        "validate": "确认请求",
+        "created": "请求已添加。",
+        "rosterPlayers": "选手",
+        "rosterSubs": "替补",
+        "rosterStaff": "工作人员",
+        "open": "打开此联系方式",
+        "customFree": "其他联系方式",
+        "customFreePlaceholder": "链接、用户名或任何联系方式",
+        "customEmail": "邮箱",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "请选择一支团队。",
+        "teamNotFound": "该团队不存在。",
+        "itemsInvalid": "其中一项无效。",
+        "itemsRequired": "请至少将一项标为红色。",
+        "messageRequired": "消息为必填项。",
+        "messageTooLong": "消息过长（最多 4000 个字符）。",
+        "contactRequired": "请选择一个联系方式。",
+        "contactInvalid": "该联系方式无效。",
+        "contactTooLong": "该联系方式过长（最多 300 个字符）。",
+        "urlInvalid": "网站联系方式必须是以 http:// 或 https:// 开头的有效链接。",
+        "alreadyPending": "该团队已有一个进行中的请求。",
+        "notFound": "该请求不存在。",
+        "invalidState": "该请求已处于此状态。",
+        "emailInvalid": "邮箱地址无效。",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5458,14 +6004,18 @@
       "allAuthors": "所有作者",
       "authorAdminSpace": "作者",
       "logs": "日志",
-      "webhooks": "Webhook"
+      "veto": "地图禁用",
+      "webhooks": "Webhook",
+      "discordSpace": "Discord 机器人",
+      "discordServers": "我的服务器"
     },
     "switcher": {
       "selectOrganization": "选择一个机构",
       "authorSpace": "作者空间",
       "apiKeySpace": "API 密钥空间",
       "adminAccess": "管理",
-      "authorAdminSpace": "作者"
+      "authorAdminSpace": "作者",
+      "discordSpace": "Discord 机器人"
     },
     "picker": {
       "title": "您的机构",
@@ -5478,7 +6028,8 @@
       "filterTagAll": "全部",
       "noResults": "未找到机构。",
       "adminBadge": "管理",
-      "authorAdminSpace": "作者"
+      "authorAdminSpace": "作者",
+      "discordSpace": "Discord 机器人"
     },
     "authors": {
       "title": "作者",
@@ -6243,9 +6794,15 @@
       "previous": "上一页",
       "next": "下一页"
     },
+    "veto": {
+      "title": "地图禁用",
+      "subtitle": "为你的组织主办的赛事设置实时禁用。",
+      "readOnlyHint": "你没有管理地图禁用的权限。",
+      "noTournaments": "你的组织没有启用地图禁用的赛事。GC Stats 管理员会为你启用。"
+    },
     "webhooks": {
       "title": "Webhook",
-      "description": "当比赛、赛事、战队或选手发生变化时，GC Stats 会向您的接口发送 HTTPS POST 请求。推送大约每分钟检查一次。",
+      "description": "当比赛、赛事、战队、选手或阵容发生变化时，GC Stats 会向你的端点发送 HTTPS POST。投递约每分钟检查一次。",
       "pageTitle": "Webhook",
       "pageSubtitle": "您的合作伙伴 API 密钥的接口与推送记录。",
       "keySwitcher": "合作伙伴 API 密钥",
@@ -6316,6 +6873,9 @@
         },
         "player": {
           "updated": "选手已更新"
+        },
+        "roster": {
+          "updated": "阵容变更已确认"
         }
       },
       "filtersTitle": "筛选",
@@ -6347,7 +6907,8 @@
           "invalid": "这不是有效的 URL。",
           "notHttps": "URL 必须以 https:// 开头。",
           "credentials": "URL 不能包含用户名或密码。",
-          "privateHost": "URL 必须指向公开地址。"
+          "privateHost": "URL 必须指向公开地址。",
+          "notDiscord": "这不是 Discord Webhook URL。"
         },
         "description": {
           "tooLong": "最多 {descriptionMaxLength} 个字符。"
@@ -6367,6 +6928,475 @@
         },
         "filterOfficial": {
           "invalid": "无效的值。"
+        },
+        "kind": {
+          "invalid": "请选择有效的类型。"
+        }
+      },
+      "kind": {
+        "label": "类型",
+        "standard": "标准",
+        "discord": "Discord",
+        "hint": {
+          "standard": "发送到你服务器的带签名 JSON 请求。",
+          "discord": "仅在 Discord 频道中发布推文链接。"
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL（服务器设置、集成、Webhooks）。"
+    },
+    "discord": {
+      "serversTitle": "Discord 服务器",
+      "serversSubtitle": "你可以管理 GC Stats 机器人的服务器。",
+      "serversUnavailable": "无法读取你的 Discord 服务器。请重新连接 Discord 账号后再试。",
+      "reconnectDiscord": "重新连接 Discord",
+      "serversEmpty": "你没有管理任何 Discord 服务器。配置机器人需要“管理服务器”权限。",
+      "subscriptionCount": "{count, plural, =0 {没有提醒} other {# 个提醒}}",
+      "botNotJoined": "未添加机器人",
+      "configure": "配置",
+      "addBot": "添加机器人",
+      "botUnavailable": "暂时无法添加机器人。",
+      "serverTitle": "Discord 服务器",
+      "serverSubtitle": "选择在哪个频道发布哪些提醒。",
+      "backToServers": "返回服务器列表",
+      "botNotJoinedBody": "机器人还不在此服务器中。请先添加机器人再配置提醒。",
+      "alertsTitle": "提醒",
+      "alertsDescription": "每个提醒会发布到一个频道，可按地区、战队和官方状态筛选。",
+      "add": "添加提醒",
+      "empty": "还没有提醒。添加一个即可在服务器中接收比赛信息。",
+      "channelsUnavailable": "机器人无法读取此服务器的频道。请确认它有查看权限，然后刷新页面。",
+      "channelMissing": "未找到频道",
+      "disabledLostChannel": "已关闭，机器人失去了此频道的访问权限。请选择频道并保存以重新开启。",
+      "active": "开启",
+      "inactive": "关闭",
+      "toggle": "开启或关闭此提醒",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteTitle": "删除此提醒？",
+      "deleteDescription": "机器人将不再发布该提醒。已发布的消息会保留在你的频道中。",
+      "cancel": "取消",
+      "save": "保存",
+      "saving": "保存中...",
+      "created": "提醒已添加",
+      "updated": "提醒已更新",
+      "deleted": "提醒已删除",
+      "addTitle": "添加提醒",
+      "editTitle": "编辑提醒",
+      "dialogDescription": "机器人会在所选频道发布每场符合筛选条件的比赛。",
+      "eventLabel": "提醒类型",
+      "channelLabel": "频道",
+      "channelPlaceholder": "选择频道",
+      "localeLabel": "消息语言",
+      "localeHint": "机器人发布消息所使用的语言。",
+      "filtersTitle": "筛选",
+      "filtersHint": "筛选留空即可接收全部。",
+      "regions": "地区",
+      "regionsHint": "仅限所选地区的赛事。",
+      "teams": "战队",
+      "teamsHint": "仅限这些战队参加的比赛。",
+      "teamsPlaceholder": "添加战队",
+      "teamsSearch": "搜索战队",
+      "teamsNoResults": "未找到战队",
+      "removeTeam": "移除 {name}",
+      "any": "全部",
+      "event": {
+        "match_live": "比赛进行中",
+        "match_finished": "比赛结束",
+        "map_finished": "地图结束"
+      },
+      "official": {
+        "label": "赛事",
+        "all": "所有赛事",
+        "official": "仅官方",
+        "unofficial": "仅非官方"
+      },
+      "error": {
+        "network": "网络错误，请重试。",
+        "notAuthenticated": "你必须先登录。",
+        "forbidden": "你无法管理此服务器。",
+        "blacklisted": "此服务器或你的 Discord 账号已被机器人屏蔽。",
+        "notFound": "此提醒已不存在。",
+        "invalid": "部分字段无效。",
+        "tooManySubscriptions": "每个服务器最多可有 {max} 个提醒。",
+        "channelsUnavailable": "机器人无法读取此服务器的频道。",
+        "channelId": {
+          "required": "请选择一个频道。",
+          "unknownChannel": "此频道在服务器中不存在。"
+        },
+        "event": {
+          "invalid": "未知的提醒类型。"
+        },
+        "locale": {
+          "invalid": "未知的语言。"
+        },
+        "filterRegions": {
+          "invalid": "未知的地区。",
+          "tooMany": "最多选择 {filterRegions} 个地区。"
+        },
+        "filterTeamIds": {
+          "invalid": "无效的战队。",
+          "tooMany": "最多选择 {filterTeams} 个战队。",
+          "unknownTeam": "其中一个战队不存在。"
+        },
+        "filterOfficial": {
+          "invalid": "未知的值。"
+        },
+        "color": {
+          "invalid": "颜色无效。"
+        }
+      },
+      "alertColorLabel": "嵌入消息颜色",
+      "alertColorHint": "覆盖此提醒所用的服务器颜色。",
+      "theme": {
+        "reset": "重置",
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "正在保存...",
+        "colorsTitle": "颜色",
+        "colorsDescription": "每种提醒类型的消息颜色和图片的默认背景。每条提醒都可以覆盖其颜色。",
+        "color": {
+          "live": "比赛进行中",
+          "finished": "比赛已结束",
+          "map": "地图已结束",
+          "background": "图片背景"
+        },
+        "colorsSaved": "颜色已保存",
+        "botTitle": "你自己的机器人",
+        "botDescription": "使用你自己的 Discord 机器人（名称和头像）发布提醒，而不是 GC Stats 机器人。",
+        "tokenLabel": "机器人 token",
+        "tokenHint": "可在应用的 Bot 标签页中的 Discord Developer Portal 找到。它会被加密存储。",
+        "botConnect": "使用此机器人",
+        "botConnecting": "正在检查...",
+        "botConnected": "机器人已连接，如有需要请邀请它加入你的服务器",
+        "botActive": "提醒由此机器人发布",
+        "botInvite": "邀请机器人",
+        "botDisconnect": "使用 GC Stats 机器人",
+        "botDisconnectTitle": "切换回 GC Stats 机器人？",
+        "botDisconnectDescription": "你的机器人 token 将被删除，如果 GC Stats 机器人在你的服务器中，提醒将重新由它发布。",
+        "botDisconnected": "已切换回 GC Stats 机器人",
+        "error": {
+          "network": "网络错误，请重试。",
+          "notAuthenticated": "你必须先登录。",
+          "forbidden": "你无权管理此服务器。",
+          "blacklisted": "此服务器或你的 Discord 账号已被机器人屏蔽。",
+          "invalid": "部分字段无效。",
+          "color": "颜色无效。",
+          "token": {
+            "required": "请输入机器人 token。",
+            "invalidToken": "Discord 拒绝了此 token，请确认它是机器人 token。",
+            "rateLimited": "尝试次数过多，请等待一分钟。"
+          }
+        },
+        "matchButton": "打开比赛的按钮",
+        "matchButtonHint": "在每条提醒下方添加一个按钮，用于打开 GC Stats 上的比赛页面。"
+      },
+      "templates": {
+        "title": "图片提醒",
+        "description": "将某类提醒的文本消息替换为根据你的模板生成的图片。仅限使用自有机器人的服务器。",
+        "usingImage": "以图片发布",
+        "usingText": "以文本消息发布",
+        "presetNone": "文本消息，无图片",
+        "presetChoose": "模板",
+        "presetSaved": "模板已保存",
+        "presetLabel": "起始设计",
+        "presetHint": "选择图片显示的信息，之后一切仍可编辑。",
+        "preset": {
+          "score": "仅比分",
+          "maps": "比分与地图",
+          "vetos": "比分与禁选",
+          "mvp": "比分与 MVP",
+          "full": "完整"
+        },
+        "footer": "页脚",
+        "footerHint": "在图片下方添加带有比赛链接的 GC Stats 横幅。",
+        "footerSaved": "页脚已更新",
+        "toggle": "此类提醒使用图片",
+        "enabled": "已启用图片提醒",
+        "disabled": "已恢复为文本消息",
+        "addBackground": "添加背景",
+        "changeBackground": "更换背景",
+        "removeBackground": "移除背景",
+        "backgroundSaved": "背景已保存",
+        "backgroundRemoved": "背景已移除",
+        "previewAlt": "提醒图片预览",
+        "previewError": "预览不可用",
+        "error": {
+          "network": "网络错误，请重试。",
+          "notAuthenticated": "你必须先登录。",
+          "forbidden": "你无法管理此服务器。",
+          "blacklisted": "此服务器或你的 Discord 账号已被机器人屏蔽。",
+          "invalid": "模板无效。",
+          "invalidImage": "此图片无效（PNG、JPEG 或 WebP，最短边至少 400 px）。",
+          "tooLarge": "此图片超过 10 MB。",
+          "storageFailed": "无法存储图片，请重试。"
+        },
+        "editDesign": "编辑设计",
+        "presetCustom": "已自定义"
+      },
+      "editor": {
+        "title": "提醒设计：{event}",
+        "description": "在画布上拖动、调整大小并旋转元素,在右侧设置样式,并仅在满足条件时显示。实际发送的预览使用与机器人完全相同的渲染。",
+        "addText": "文本",
+        "addShape": "形状",
+        "undo": "撤销",
+        "previewServer": "按发送效果预览",
+        "canvasHint": "画布显示示例数据。方向键可移动所选元素(按住 Shift 为 10 像素),按 Delete 可删除。变淡的元素是因条件而被隐藏。",
+        "previewTitle": "按发送效果预览",
+        "previewError": "无法生成预览。",
+        "canvasHeight": "图片高度",
+        "backgroundColor": "背景颜色",
+        "layers": "元素（最前面的在先）",
+        "noLayers": "暂无元素。",
+        "duplicate": "复制",
+        "delete": "删除",
+        "width": "宽度",
+        "height": "高度",
+        "field": {
+          "tournament": "赛事",
+          "teamA": "A 队名称",
+          "teamB": "B 队名称",
+          "scoreA": "A 队得分",
+          "scoreB": "B 队得分",
+          "score": "比分",
+          "status": "状态",
+          "bestOf": "Best of（几局几胜）",
+          "map": "地图名称",
+          "maps": "已结束的地图",
+          "matchScore": "比赛比分",
+          "mapsInline": "已结束的地图（单行）",
+          "vetos": "禁选",
+          "mvp": "MVP",
+          "custom": "自由文本",
+          "stage": "赛事阶段",
+          "bestOfShort": "Best of（简称，BO3）",
+          "teamAShort": "队伍 A 简称",
+          "teamBShort": "队伍 B 简称",
+          "mvpA": "队伍 A 的 MVP",
+          "mvpB": "队伍 B 的 MVP",
+          "dateTime": "日期和时间",
+          "date": "日期",
+          "time": "时间"
+        },
+        "customText": "文本",
+        "font": "字体",
+        "size": "大小",
+        "align": {
+          "label": "对齐",
+          "left": "左",
+          "center": "居中",
+          "right": "右"
+        },
+        "color": "颜色",
+        "bold": "粗体",
+        "uppercase": "大写",
+        "shape": "形状",
+        "opacity": "不透明度",
+        "radius": "圆角半径",
+        "sampleText": "你的文本",
+        "tooManyLayers": "一个模板最多可有 {max} 个元素。",
+        "saved": "设计已保存",
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中...",
+        "error": {
+          "network": "网络错误，请重试。",
+          "notAuthenticated": "你必须登录。",
+          "forbidden": "你无法管理此服务器。",
+          "blacklisted": "此服务器或你的 Discord 账号已被机器人屏蔽。",
+          "invalid": "模板无效。",
+          "invalidImage": "此图片无效。",
+          "tooLarge": "此图片过大。",
+          "storageFailed": "无法保存设计，请重试。"
+        },
+        "addImage": "图片",
+        "tabContent": "内容",
+        "tabLayout": "布局",
+        "tabStyle": "样式",
+        "tabVisibility": "条件",
+        "conditional": "满足条件时显示",
+        "sourceMap": "地图 {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "A 队标志",
+          "teamB": "B 队标志",
+          "mvp": "MVP 图片(若无则使用特工图标)",
+          "mapCurrent": "当前地图",
+          "mvpAgent": "MVP 特工图标",
+          "custom": "自定义图片"
+        },
+        "variableGroup": {
+          "match": "比赛",
+          "alert": "警报与 MVP",
+          "teams": "队伍",
+          "schedule": "日期和时间",
+          "mvp": "MVP",
+          "maps": "地图",
+          "vetos": "禁选"
+        },
+        "conditionValue": {
+          "live": "直播中",
+          "finished": "已结束的比赛",
+          "map": "已结束的地图",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "A 队",
+          "b": "B 队"
+        },
+        "customTextHint": "编写你自己的文本,并插入 {tournament} 或 {veto1.map} 等变量。",
+        "insertVariable": "插入变量",
+        "sourceLabel": "图片",
+        "fit": {
+          "label": "填充方式",
+          "cover": "填充(裁剪)",
+          "contain": "完整包含"
+        },
+        "imageFallbackHint": "没有图片时,会显示带有缩写字母的图块。",
+        "shapeHint": "形状没有内容,请在样式标签页中设置。",
+        "rotation": "旋转(度)",
+        "alignTitle": "对齐图片",
+        "addFolder": "新建文件夹",
+        "tooManyFolders": "一个模板最多可以有 {max} 个文件夹。",
+        "folderDefaultName": "文件夹 {n}",
+        "folderExpand": "展开文件夹",
+        "folderCollapse": "折叠文件夹",
+        "lockFolder": "锁定文件夹",
+        "unlockFolder": "解锁文件夹",
+        "lockLayer": "锁定元素",
+        "unlockLayer": "解锁元素",
+        "folder": "文件夹",
+        "folderName": "文件夹名称",
+        "folderNameRequired": "文件夹需要名称。",
+        "folderHint": "文件夹可以在列表中把元素分组。锁定文件夹会锁定其中所有元素。",
+        "deleteFolder": "删除文件夹",
+        "layerLockedHint": "此元素已锁定。请先解锁才能编辑或移动。",
+        "folderLockedHint": "此元素被所在文件夹锁定。请先解锁文件夹才能编辑或移动。",
+        "noFolder": "无文件夹",
+        "anchorPoint": "文字锚点",
+        "anchorX": "锚点位置 (X)",
+        "anchorHint": "无论文字多长，文字都会在此 X 位置开始、居中或结束。",
+        "anchor": {
+          "left": "文字开头",
+          "center": "文字中央",
+          "right": "文字结尾"
+        },
+        "alignLeft": "左对齐",
+        "alignCenterX": "水平居中",
+        "alignRight": "右对齐",
+        "alignTop": "顶部对齐",
+        "alignCenterY": "垂直居中",
+        "alignBottom": "底部对齐",
+        "letterSpacing": "字间距",
+        "lineHeight": "行高",
+        "shadow": "阴影",
+        "shadowColor": "阴影颜色",
+        "shadowBlur": "模糊",
+        "shadowX": "X 偏移",
+        "shadowY": "Y 偏移",
+        "borderWidth": "边框粗细",
+        "borderColor": "边框颜色",
+        "gradient": "渐变",
+        "color2": "第二种颜色",
+        "angle": "角度(度)",
+        "conditionsHint": "只有当下方所有条件都成立时,才会绘制此元素。",
+        "conditionKey": "变量",
+        "conditionOp": "条件",
+        "conditionValueLabel": "值",
+        "op": {
+          "is": "等于",
+          "isNot": "不等于",
+          "exists": "已填写",
+          "empty": "为空"
+        },
+        "addCondition": "添加条件",
+        "removeCondition": "移除此条件",
+        "footer": "GC Stats 页脚",
+        "artwork": "以地图美术图作为背景",
+        "artworkSource": "美术图来源",
+        "artworkDim": "暗化程度",
+        "artworkHint": "上传背景图片时会被忽略。",
+        "loadingMatch": "正在加载预览比赛",
+        "timezone": "时区",
+        "variableName": {
+          "tournament": "赛事名称",
+          "stage": "赛事阶段",
+          "status": "状态（直播中或已结束）",
+          "bestOf": "Best of（Best of 3）",
+          "bestOfShort": "Best of，简写（BO3）",
+          "score": "比赛或地图的比分",
+          "scoreA": "A 队的比分",
+          "scoreB": "B 队的比分",
+          "matchScore": "比赛的比分",
+          "teamA": "A 队的名称",
+          "teamB": "B 队的名称",
+          "teamAShort": "A 队的简称",
+          "teamBShort": "B 队的简称",
+          "dateTime": "比赛的日期和时间",
+          "date": "比赛的日期",
+          "time": "比赛的时间",
+          "scheduledAt": "预定开始时间",
+          "alert_kind": "提醒类型",
+          "map": "已结束地图的名称",
+          "currentMap_name": "进行中地图的名称",
+          "currentMap_number": "进行中地图的编号",
+          "maps": "已结束的地图（列表）",
+          "mapsInline": "已结束的地图（单行）",
+          "vetos": "Veto（单行）",
+          "mvp": "比赛或地图的 MVP",
+          "mvpA": "A 队的 MVP",
+          "mvpB": "B 队的 MVP",
+          "mvp_name": "MVP 选手",
+          "mvp_acs": "MVP 的 ACS",
+          "mvp_agent": "MVP 的特工",
+          "mvpA_name": "A 队的 MVP 选手",
+          "mvpA_acs": "A 队 MVP 的 ACS",
+          "mvpA_agent": "A 队 MVP 的特工",
+          "mvpB_name": "B 队的 MVP 选手",
+          "mvpB_acs": "B 队 MVP 的 ACS",
+          "mvpB_agent": "B 队 MVP 的特工",
+          "map_alias": "地图 {n} 的名称",
+          "map_name": "地图 {n} 的名称",
+          "map_score": "地图 {n} 的比分",
+          "map_scoreA": "A 队在地图 {n} 的比分",
+          "map_scoreB": "B 队在地图 {n} 的比分",
+          "veto_map": "Veto {n} 的地图",
+          "veto_action": "Veto {n} 的动作（ban, pick, decider）",
+          "veto_team": "Veto {n} 的队伍",
+          "veto_type": "Veto {n} 的类型",
+          "veto_side": "Veto {n} 的阵营（进攻方或防守方）"
+        },
+        "insertVariableHint": "点击变量即可将其插入文本中的光标位置。",
+        "templateLabel": "模板",
+        "applyTemplate": "用此模板替换设计",
+        "templateHint": "用模板替换所有图层。你可以撤销。",
+        "templateApplied": "模板已应用",
+        "layoutLayer": "布局",
+        "pickImage": "选择图片",
+        "pickImageHint": "每种图片类型都有自己的尺寸，之后可以修改。",
+        "imageCategory": {
+          "teams": "战队",
+          "mvp": "MVP",
+          "maps": "地图",
+          "vetos": "禁选",
+          "custom": "自定义图片"
+        },
+        "customUrl": "图片地址",
+        "customUrlHint": "指向图片的公开 https 链接。不会上传任何内容，图片保留在原网站，并在发送提醒时下载。",
+        "customUrlRequired": "图片地址为必填项。",
+        "customUrlInvalid": "请输入有效的 https 地址。",
+        "useImage": "使用此图片",
+        "sendTest": "发送测试",
+        "sendTestHint": "将此设计填入一场真实比赛，并发布到你选择的频道。未保存的修改也会包含在内。",
+        "testChannel": "频道",
+        "testChannelPlaceholder": "选择频道",
+        "sendTestAction": "发送",
+        "sending": "发送中",
+        "testSent": "测试已发送",
+        "testError": {
+          "required": "请选择一个频道。",
+          "unknownChannel": "服务器上不存在此频道。",
+          "rateLimited": "请等待几秒后再发送下一次测试。",
+          "channelsUnavailable": "无法读取服务器的频道。",
+          "sendFailed": "测试发送失败，请检查机器人是否有权在此频道发言。"
         }
       }
     }
@@ -6671,6 +7701,7 @@
       "title": "你的账户",
       "checkbox": "这是我：将我的账户绑定到 {name}",
       "hint": "在绑定到你的账户之前，工作人员会核实此资料确实属于你。",
+      "replaces": "你的账户目前绑定到 {previous}：批准后该绑定将被替换。",
       "state": {
         "linkedToYou": "此资料已绑定到你的账户。",
         "linkedToOther": "此资料已绑定到其他账户。如果你认为有误，请联系工作人员。",
@@ -6793,6 +7824,21 @@
     "championsInsightHighestKda": "KDA最高",
     "tabProduction": "制作团队",
     "productionTitle": "{tournament} · 制作团队",
+    "statsGroupByLabel": "分组依据",
+    "statsGroupBy": {
+      "none": "不分组",
+      "agent": "特工",
+      "role": "定位",
+      "team": "战队",
+      "nationality": "国籍"
+    },
+    "statsRole": {
+      "duelist": "决斗者",
+      "initiator": "先锋",
+      "controller": "控场者",
+      "sentinel": "哨卫"
+    },
+    "statsGroupUnknown": "未知",
     "statsIdentityColumn": "选手",
     "statsAgentColumn": "特工",
     "statsNationalityColumn": "国籍",
@@ -6829,6 +7875,8 @@
     "statsColumnFilterValuePlaceholder": "要匹配的值…",
     "statsColumnFilterAddAnother": "添加另一个筛选条件",
     "statsColumnFilterApply": "应用",
+    "statsColumnFilterSearch": "搜索...",
+    "statsColumnFilterNoResult": "无结果",
     "statsColumnFilterClear": "清除",
     "previous": "上一页",
     "next": "下一页",
@@ -6852,6 +7900,7 @@
       "csDiff10": "CS diff @10",
       "csDiff15": "CS diff @15",
       "roundsPlayed": "回合",
+      "rating": "评分",
       "acs": "ACS",
       "kills": "击杀",
       "deaths": "死亡",
@@ -7217,6 +8266,69 @@
     "points": "通过 {label} 积分晋级",
     "pointsUnknown": "通过积分晋级",
     "iconLabel": "晋级来源"
+  },
+  "veto": {
+    "title": "地图禁用",
+    "invalidLinkTitle": "禁用链接无效",
+    "invalidLinkHint": "此链接无效，或该赛事未启用禁用。请向主办方索取新链接。",
+    "noMatch": "暂无可禁用的比赛。下一场比赛准备好后，此页面会自动更新。",
+    "you": "你",
+    "opponent": "对手",
+    "ready": "已准备",
+    "bestOf": "BO{count}",
+    "poolError": "本场比赛的地图池尚不完整。请联系主办方进行设置。",
+    "waitingTitle": "准备好禁用了吗？",
+    "waitingHint": "双方队伍都准备好后，禁用才会开始。",
+    "readyButton": "我们已准备好",
+    "cancelReady": "尚未准备好",
+    "chooseFirstTitle": "谁先禁用？",
+    "chooseFirstHint": "由你选择哪支队伍先禁用。",
+    "weStart": "我们先手",
+    "opponentStarts": "{team} 先手",
+    "waitingChoice": "{team} 正在选择谁先禁用。",
+    "yourTurn": {
+      "ban": "轮到你了：禁用一张地图",
+      "pick": "轮到你了：选择一张地图",
+      "side": "轮到你了：选择阵营"
+    },
+    "stepWaiting": {
+      "ban": "对方正在选择要禁用的地图。",
+      "pick": "对方正在选择要选用的地图。",
+      "side": "对方正在选择阵营。"
+    },
+    "theirTurn": "{team} 正在操作",
+    "attack": "进攻",
+    "defense": "防守",
+    "toBeDecided": "待定",
+    "stepLabel": {
+      "ban": "禁用",
+      "pick": "选用",
+      "side": "阵营",
+      "decider": "决胜图"
+    },
+    "vetoDone": "禁用已结束。祝你比赛顺利！",
+    "gameFinishedHint": "比赛结束后，请按此按钮通知 GC Stats 工作人员。这不会通知赛事主办方。",
+    "gameFinishedButton": "比赛已结束",
+    "staffNotified": "已通知 GC Stats 工作人员（未通知赛事主办方）。",
+    "previousMatch": "上一场比赛",
+    "nextMatch": "下一场比赛",
+    "error": {
+      "unknown": "出了点问题，请重试。",
+      "network": "连接出现问题，请重试。",
+      "notFound": "此比赛不可用。",
+      "notAllowed": "你不属于这场比赛。",
+      "wrongPhase": "当前无法执行此操作。",
+      "notYourTurn": "还没轮到你。",
+      "wrongStep": "这不是预期的操作。",
+      "mapUnavailable": "此地图不可用。",
+      "invalidSide": "阵营无效。",
+      "noStep": "禁用已经结束。",
+      "poolInvalid": "本场比赛的地图池不完整。",
+      "alreadyNotified": "已通知过工作人员。",
+      "matchCompleted": "这场比赛已经结束。",
+      "rateLimited": "请求过多，请慢一点。",
+      "invalidRequest": "请求无效。"
+    }
   },
   "game": {
     "switcherLabel": "游戏",

@@ -373,7 +373,7 @@ export type ApiSidePostPlant = { atk: ApiPostPlantStats; def: ApiPostPlantStats 
 export type ApiTeamStatsResponse = ApiAvgStats & { situations: ApiSideSituations; post_plant: ApiSidePostPlant };
 
 const MAX_ALIVE_PER_SIDE = 5;
-type AliveRow = { round_id: number; winning_entrant_id: number | null; atk_alive: number | null; def_alive: number | null };
+type SituationRow = { team_alive: number; enemy_alive: number; played: number; won: number };
 
 async function fetchSituationsForSide(entrantIds: number[], filter: StatsFilter, side: "atk" | "def"): Promise<Record<string, ApiSituationEntry>> {
   const entries: Record<string, ApiSituationEntry> = {};
@@ -385,48 +385,29 @@ async function fetchSituationsForSide(entrantIds: number[], filter: StatsFilter,
   if (entrantIds.length === 0) return entries;
 
   const sideCol = side === "atk" ? sql`r.atk_entrant_id` : sql`r.def_entrant_id`;
-  const result = await db.execute<AliveRow>(sql`
-    SELECT r.id AS round_id, r.winning_entrant_id AS winning_entrant_id, a.atk_alive AS atk_alive, a.def_alive AS def_alive
+  const teamAliveCol = side === "atk" ? sql`a.atk_alive` : sql`a.def_alive`;
+  const enemyAliveCol = side === "atk" ? sql`a.def_alive` : sql`a.atk_alive`;
+
+  // Each round counts once per situation it went through, so distinct rounds are tallied per (team alive, enemy alive).
+  const result = await db.execute<SituationRow>(sql`
+    SELECT ${teamAliveCol} AS team_alive, ${enemyAliveCol} AS enemy_alive,
+      COUNT(DISTINCT r.id)::int AS played,
+      COUNT(DISTINCT r.id) FILTER (WHERE r.winning_entrant_id = ANY(${sql.param(entrantIds)}::bigint[]))::int AS won
     FROM ${valorantTables.mapRoundsRaw} r
     JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
     JOIN ${valorantTables.matches} m ON m.id = gm.match_id
-    LEFT JOIN ${valorantTables.mapRoundAliveStatesRaw} a ON a.map_round_id = r.id
-    WHERE ${sideCol} = ANY(${entrantIds}::bigint[])
+    JOIN ${valorantTables.mapRoundAliveStatesRaw} a ON a.map_round_id = r.id
+    WHERE ${sideCol} = ANY(${sql.param(entrantIds)}::bigint[])
+      AND a.atk_alive IS NOT NULL AND a.def_alive IS NOT NULL
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
-    ORDER BY r.id, a.sequence ASC
+    GROUP BY 1, 2
   `);
 
-  const tally = new Map<string, { played: number; won: number }>();
-
-  let currentRound: number | null = null;
-  let visited = new Set<string>();
-  let roundWon = false;
-
-  const flush = () => {
-    for (const key of visited) {
-      const entry = tally.get(key) ?? { played: 0, won: 0 };
-      entry.played += 1;
-      if (roundWon) entry.won += 1;
-      tally.set(key, entry);
-    }
-  };
-
   for (const row of result.rows) {
-    if (currentRound !== row.round_id) {
-      if (currentRound !== null) flush();
-      currentRound = row.round_id;
-      visited = new Set();
-      roundWon = row.winning_entrant_id != null && entrantIds.includes(row.winning_entrant_id);
-    }
-    if (row.atk_alive == null || row.def_alive == null) continue;
-    const [teamAlive, enemyAlive] = side === "atk" ? [row.atk_alive, row.def_alive] : [row.def_alive, row.atk_alive];
-    visited.add(`${teamAlive}v${enemyAlive}`);
-  }
-  if (currentRound !== null) flush();
-
-  for (const [key, { played, won }] of tally) {
-    entries[key] = { played, won, winrate: played > 0 ? won / played : 0 };
+    const played = Number(row.played);
+    const won = Number(row.won);
+    entries[`${row.team_alive}v${row.enemy_alive}`] = { played, won, winrate: played > 0 ? won / played : 0 };
   }
   return entries;
 }
@@ -442,11 +423,11 @@ async function fetchPostPlantForSide(entrantIds: number[], filter: StatsFilter, 
 
   const result = await db.execute<{ played: number; won: number }>(sql`
     SELECT COUNT(*)::int AS played,
-      COALESCE(SUM(CASE WHEN r.winning_entrant_id = ANY(${entrantIds}::bigint[]) THEN 1 ELSE 0 END), 0)::int AS won
+      COALESCE(SUM(CASE WHEN r.winning_entrant_id = ANY(${sql.param(entrantIds)}::bigint[]) THEN 1 ELSE 0 END), 0)::int AS won
     FROM ${valorantTables.mapRoundsRaw} r
     JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
     JOIN ${valorantTables.matches} m ON m.id = gm.match_id
-    WHERE r.plant_site IS NOT NULL AND ${sideCol} = ANY(${entrantIds}::bigint[])
+    WHERE r.plant_site IS NOT NULL AND ${sideCol} = ANY(${sql.param(entrantIds)}::bigint[])
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}
   `);

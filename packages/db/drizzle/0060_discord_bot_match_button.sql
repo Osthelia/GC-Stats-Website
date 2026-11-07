@@ -1,0 +1,1 @@
+ALTER TABLE "discord_bot_guild_settings" ADD COLUMN "match_button" boolean DEFAULT true NOT NULL;

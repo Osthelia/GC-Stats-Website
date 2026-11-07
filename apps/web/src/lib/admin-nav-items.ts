@@ -12,6 +12,7 @@
 
 import type { ComponentType } from "react";
 import {
+  ImageIcon,
   LayoutDashboard,
   Users,
   Shield,
@@ -28,6 +29,8 @@ import {
   Languages,
   Flag,
   ShieldAlert,
+  Radar,
+  Send,
   MessagesSquare,
   Ban,
   History,
@@ -67,11 +70,20 @@ export const ADMIN_GAME_ITEMS: AdminNavItem[] = [
 
 export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavItem[] }[] = [
   {
+    key: "content",
+    labelKey: "groupContent",
+    items: [
+      { href: "/admin/roster-watch", labelKey: "rosterWatch", icon: Radar, exact: false, permission: PERMISSIONS.rosterWatchView },
+      { href: "/admin/team-requests", labelKey: "teamRequests", icon: Send, exact: false, permission: PERMISSIONS.teamRequestsView },
+    ],
+  },
+  {
     key: "moderation",
     labelKey: "groupModeration",
     items: [
       { href: "/admin/reports", labelKey: "reports", icon: Flag, exact: false, permission: PERMISSIONS.reportsView },
       { href: "/admin/moderation", labelKey: "moderationAuto", icon: ShieldAlert, exact: false, permission: PERMISSIONS.moderationView },
+      { href: "/admin/discord-images", labelKey: "discordImages", icon: ImageIcon, exact: false, permission: PERMISSIONS.moderationView },
       { href: "/admin/forum", labelKey: "forumMessages", icon: MessagesSquare, exact: false, permission: PERMISSIONS.forumView },
       { href: "/admin/sanctions", labelKey: "sanctions", icon: Ban, exact: false, permission: PERMISSIONS.sanctionsView },
     ],

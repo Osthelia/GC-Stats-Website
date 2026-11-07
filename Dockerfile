@@ -5,7 +5,7 @@
 # Stages:
 #   deps     -> installs the full workspace tree (incl. devDependencies)
 #   builder  -> runs `next build` (output: "standalone", see next.config.mjs)
-#   migrator -> drizzle-orm + pg only, applies packages/db/drizzle (no drizzle-kit)
+#   migrator -> drizzle-orm + pg only, applies packages/db/drizzle and syncs the permissions (no drizzle-kit)
 #   runner   -> slim runtime image, only the traced standalone server
 
 ARG NODE_VERSION=24-slim
@@ -50,6 +50,8 @@ WORKDIR /app
 COPY --from=migrator-deps --chown=node:node /app/node_modules ./node_modules
 COPY --chown=node:node packages/db/migrate/package.json packages/db/migrate/migrate.mjs ./
 COPY --chown=node:node packages/db/drizzle ./drizzle
+# Permissions catalog, synced into the database after the migrations (see migrate.mjs).
+COPY --chown=node:node packages/db/src/permissions.ts ./permissions.ts
 USER node
 CMD ["node", "migrate.mjs"]
 
