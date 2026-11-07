@@ -12,7 +12,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, isNotNull, or, sql, type SQL } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import type { adminDb } from "@gc-stats/db/client";
 import { leagueTables } from "@gc-stats/db";
@@ -56,24 +56,34 @@ const gameDay = sql`(${leagueTables.games.startedAt} AT TIME ZONE 'UTC')::date`;
 async function playedLanesByPersonAndTeam(entries: RosterEntryRef[]): Promise<Map<string, PlayedLane[]>> {
   const played = new Map<string, PlayedLane[]>();
   const { gamePlayerStats, games, entrants } = leagueTables;
-  const periods = new Map<string, SQL>();
+  const pairs = new Map<string, SQL>();
+  const starts: (string | null)[] = [];
+  const ends: (string | null)[] = [];
   for (const entry of entries) {
-    const since = rangeLower(entry.period);
-    const until = rangeUpper(entry.period);
-    if (entry.hasLeft && until === null) continue; // an unknown end has no lanes from games, see lanesPlayedInPeriod
-    periods.set(
-      `${entry.personId}:${entry.teamId}:${since}:${until}`,
-      and(eq(gamePlayerStats.personId, entry.personId), eq(entrants.teamId, entry.teamId), since ? sql`${gameDay} >= ${since}::date` : undefined, until ? sql`${gameDay} < ${until}::date` : undefined)!,
-    );
+    const end = rangeUpper(entry.period);
+    if (entry.hasLeft && end === null) continue; // an unknown end has no lanes from games, see lanesPlayedInPeriod
+    pairs.set(`${entry.personId}:${entry.teamId}`, sql`(${entry.personId}, ${entry.teamId})`);
+    starts.push(rangeLower(entry.period));
+    ends.push(end);
   }
-  if (periods.size === 0) return played;
+  if (pairs.size === 0) return played;
+  // ISO dates sort as text. A period without a bound leaves the range open on that side.
+  const since = starts.includes(null) ? null : starts.sort()[0];
+  const until = ends.includes(null) ? null : ends.sort().at(-1)!;
 
   const rows = await db
     .select({ personId: gamePlayerStats.personId, teamId: entrants.teamId, lane: gamePlayerStats.role, day: sql<string>`${gameDay}::text` })
     .from(gamePlayerStats)
     .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
     .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
-    .where(and(isNotNull(gamePlayerStats.role), or(...periods.values())))
+    .where(
+      and(
+        isNotNull(gamePlayerStats.role),
+        sql`(${gamePlayerStats.personId}, ${entrants.teamId}) in (${sql.join([...pairs.values()], sql`, `)})`,
+        since ? sql`${gameDay} >= ${since}::date` : undefined,
+        until ? sql`${gameDay} < ${until}::date` : undefined,
+      ),
+    )
     .groupBy(gamePlayerStats.personId, entrants.teamId, gamePlayerStats.role, gameDay);
   for (const row of rows) {
     const key = `${row.personId}:${row.teamId}`;
