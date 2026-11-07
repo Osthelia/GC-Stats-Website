@@ -181,8 +181,9 @@ export async function replaceEntryLanes(game: GameSlug, tx: Tx, membershipId: nu
   if (!gameHasLanes(game)) return {};
   const { rosterMembershipLanes } = leagueTables;
   const previous = sortLanes((await tx.select({ lane: rosterMembershipLanes.lane }).from(rosterMembershipLanes).where(eq(rosterMembershipLanes.rosterMembershipId, membershipId))).map((row) => row.lane));
-  await tx.delete(rosterMembershipLanes).where(eq(rosterMembershipLanes.rosterMembershipId, membershipId));
   const stored = lanesToStore(game, role, lanes);
+  if (previous.join() === stored.join()) return {};
+  await tx.delete(rosterMembershipLanes).where(eq(rosterMembershipLanes.rosterMembershipId, membershipId));
   if (stored.length > 0) await tx.insert(rosterMembershipLanes).values(stored.map((lane) => ({ rosterMembershipId: membershipId, lane })));
-  return previous.join() === stored.join() ? {} : { lanes: { old: previous, new: stored } };
+  return { lanes: { old: previous, new: stored } };
 }
