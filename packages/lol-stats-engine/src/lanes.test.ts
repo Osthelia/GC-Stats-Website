@@ -10,9 +10,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { areLanes, compareByLanes, laneRank, lanesByCount, lanesPlayedInPeriod, sortLanes, type PlayedLane } from "./lanes";
+import { areLanes, compareByLanes, laneRank, lanesByGames, lanesPlayedInPeriod, sortLanes, type PlayedLane } from "./lanes";
 
-const game = (lane: string | null, day: string | null): PlayedLane => ({ lane, playedAt: day ? new Date(`${day}T18:00:00Z`) : null });
+const game = (lane: string | null, day: string | null, games = 1): PlayedLane => ({ lane, day, games });
 
 describe("laneRank", () => {
   it("numbers the lanes from Top to Support", () => {
@@ -42,19 +42,9 @@ describe("sortLanes", () => {
   });
 });
 
-describe("lanesByCount", () => {
-  it("puts the most played lane first", () => {
-    expect(lanesByCount(["MIDDLE", "TOP", "TOP", "TOP", "MIDDLE"])).toEqual(["TOP", "MIDDLE"]);
-    expect(lanesByCount(["BOTTOM", "UTILITY", "UTILITY"])).toEqual(["UTILITY", "BOTTOM"]);
-  });
-
-  it("breaks a tie in lane order", () => {
-    expect(lanesByCount(["UTILITY", "JUNGLE", "UTILITY", "JUNGLE"])).toEqual(["JUNGLE", "UTILITY"]);
-  });
-
-  it("ignores games without a known lane", () => {
-    expect(lanesByCount([null, "TOP", null])).toEqual(["TOP"]);
-    expect(lanesByCount([])).toEqual([]);
+describe("lanesByGames", () => {
+  it("adds up the games of a lane given in several rows", () => {
+    expect(lanesByGames([{ lane: "MIDDLE", games: 2 }, { lane: "TOP", games: 1 }, { lane: "MIDDLE", games: 1 }, { lane: "TOP", games: 1 }])).toEqual(["MIDDLE", "TOP"]);
   });
 });
 
@@ -76,6 +66,11 @@ describe("lanesPlayedInPeriod", () => {
 
   it("gives nothing for an entry left with an unknown end", () => {
     expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: null, hasLeft: true })).toEqual([]);
+  });
+
+  it("counts the games of a day, not the day itself", () => {
+    const heavy = [game("TOP", "2025-03-01", 1), game("MIDDLE", "2025-03-02", 3)];
+    expect(lanesPlayedInPeriod(heavy, { since: "2025-03-01", until: null, hasLeft: false })).toEqual(["MIDDLE", "TOP"]);
   });
 
   it("skips games without a date", () => {

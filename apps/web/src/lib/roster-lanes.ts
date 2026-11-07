@@ -12,12 +12,12 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import type { adminDb } from "@gc-stats/db/client";
 import { leagueTables } from "@gc-stats/db";
 import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
-import { lanesByCount, lanesPlayedInPeriod, sortLanes, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
+import { lanesByGames, lanesPlayedInPeriod, sortLanes, type LaneGames, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import type { ActivityChanges } from "@/lib/activity-log";
 import { ROLES_WITH_LANES, roleHasLanes } from "@/lib/roster-roles";
@@ -50,20 +50,34 @@ export async function getStoredLanes(membershipIds: number[]): Promise<Map<numbe
   return stored;
 }
 
-/** The games each person played for each team, as (lane, date) pairs: the input of lanesPlayedInPeriod. */
-async function playedLanesByPersonAndTeam(personIds: number[], teamIds: number[]): Promise<Map<string, PlayedLane[]>> {
+/** The UTC day a game started, as the date and as text (a date column would come back as a JS Date). */
+const gameDay = sql`(${leagueTables.games.startedAt} AT TIME ZONE 'UTC')::date`;
+
+async function playedLanesByPersonAndTeam(entries: RosterEntryRef[]): Promise<Map<string, PlayedLane[]>> {
   const played = new Map<string, PlayedLane[]>();
-  if (personIds.length === 0 || teamIds.length === 0) return played;
   const { gamePlayerStats, games, entrants } = leagueTables;
+  const periods = new Map<string, SQL>();
+  for (const entry of entries) {
+    const since = rangeLower(entry.period);
+    const until = rangeUpper(entry.period);
+    if (entry.hasLeft && until === null) continue; // an unknown end has no lanes from games, see lanesPlayedInPeriod
+    periods.set(
+      `${entry.personId}:${entry.teamId}:${since}:${until}`,
+      and(eq(gamePlayerStats.personId, entry.personId), eq(entrants.teamId, entry.teamId), since ? sql`${gameDay} >= ${since}::date` : undefined, until ? sql`${gameDay} < ${until}::date` : undefined)!,
+    );
+  }
+  if (periods.size === 0) return played;
+
   const rows = await db
-    .select({ personId: gamePlayerStats.personId, teamId: entrants.teamId, lane: gamePlayerStats.role, playedAt: games.startedAt })
+    .select({ personId: gamePlayerStats.personId, teamId: entrants.teamId, lane: gamePlayerStats.role, day: sql<string>`${gameDay}::text`, games: sql<number>`count(*)::int` })
     .from(gamePlayerStats)
     .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
     .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
-    .where(and(inArray(gamePlayerStats.personId, personIds), inArray(entrants.teamId, teamIds), isNotNull(gamePlayerStats.role)));
+    .where(and(isNotNull(gamePlayerStats.role), or(...periods.values())))
+    .groupBy(gamePlayerStats.personId, entrants.teamId, gamePlayerStats.role, gameDay);
   for (const row of rows) {
     const key = `${row.personId}:${row.teamId}`;
-    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, playedAt: row.playedAt }]);
+    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, day: row.day, games: row.games }]);
   }
   return played;
 }
@@ -73,7 +87,7 @@ export async function resolveEntryLanes(entries: RosterEntryRef[]): Promise<Map<
   const laneEntries = entries.filter((entry) => roleHasLanes(entry.role));
   const stored = await getStoredLanes(laneEntries.map((entry) => entry.membershipId));
   const withoutStored = laneEntries.filter((entry) => !stored.has(entry.membershipId));
-  const played = await playedLanesByPersonAndTeam([...new Set(withoutStored.map((entry) => entry.personId))], [...new Set(withoutStored.map((entry) => entry.teamId))]);
+  const played = await playedLanesByPersonAndTeam(withoutStored);
 
   const resolved = new Map<number, EntryLanes>();
   for (const entry of entries) {
@@ -105,17 +119,18 @@ export async function getTournamentLanes(
 
   const { gamePlayerStats, entrants, rosterMemberships } = leagueTables;
   const playedRows = await db
-    .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role })
+    .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role, games: sql<number>`count(*)::int` })
     .from(gamePlayerStats)
     .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
-    .where(and(eq(entrants.tournamentId, tournamentId), inArray(gamePlayerStats.entrantId, [...new Set(people.map((p) => p.entrantId))]), isNotNull(gamePlayerStats.role)));
-  const played = new Map<string, string[]>();
+    .where(and(eq(entrants.tournamentId, tournamentId), inArray(gamePlayerStats.entrantId, [...new Set(people.map((p) => p.entrantId))]), isNotNull(gamePlayerStats.role)))
+    .groupBy(gamePlayerStats.entrantId, gamePlayerStats.personId, gamePlayerStats.role);
+  const played = new Map<string, LaneGames[]>();
   for (const row of playedRows) {
     if (row.personId === null) continue;
     const key = keyOf(row.entrantId, row.personId);
-    played.set(key, [...(played.get(key) ?? []), row.lane!]);
+    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, games: row.games }]);
   }
-  for (const [key, playedLanes] of played) lanes.set(key, lanesByCount(playedLanes));
+  for (const [key, playedLanes] of played) lanes.set(key, lanesByGames(playedLanes));
 
   const withoutGames = people.filter((p) => p.teamId !== null && !lanes.has(keyOf(p.entrantId, p.personId)));
   if (withoutGames.length === 0) return lanes;
