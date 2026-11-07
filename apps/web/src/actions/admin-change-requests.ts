@@ -22,7 +22,6 @@ import { requireActorPermission } from "@/lib/rbac";
 import { openRangeFrom, closeRange } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { ROSTER_SOURCE_TEXTS, normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
-import { ROSTER_ROLES } from "@/lib/change-request-fields";
 import { isRosterRoleOf, roleHasLanes } from "@/lib/roster-roles";
 import { areLanes } from "@gc-stats/lol-stats-engine";
 import { replaceEntryLanes } from "@/lib/roster-lanes";
@@ -113,7 +112,7 @@ async function applyChangeRequestItem(request: RequestContext, subjectType: "tea
   // of joined_at. Other open entries are closed only when the reviewer chose to.
   if (field === "roster") {
     const v = newValue as { role: string; team_id: number; joined_at: string; team_name?: string };
-    if (!(ROSTER_ROLES as readonly string[]).includes(v.role)) throw new Error("invalidRole");
+    if (!isRosterRoleOf(game, v.role)) throw new Error("invalidRole");
     const [team] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, v.team_id)).limit(1);
     if (!team) throw new Error("entityNotFound");
 
