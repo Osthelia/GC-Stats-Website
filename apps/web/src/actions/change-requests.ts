@@ -39,7 +39,7 @@ import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
 import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
 import { isRosterRoleOf } from "@/lib/roster-roles";
-import { areLanes } from "@gc-stats/lol-stats-engine";
+import { areLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
 import { getStoredLanes, lanesToStore } from "@/lib/roster-lanes";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
@@ -199,6 +199,10 @@ export async function submitChangeRequest(
     const additions = ops.filter((op) => op.type === "add");
     if (additions.length > MAX_MEMBERSHIP_ADDITIONS) return { ok: false, fieldErrors: {}, formError: "tooManyAdditions" };
 
+    // The saved lanes of every edited entry, read once for the old values below.
+    const editedIds = ops.flatMap((op) => (op.type === "edit" && Number.isInteger(op.membershipId) ? [op.membershipId] : []));
+    const storedLanes = gameHasLanes(game) ? await getStoredLanes(editedIds) : new Map<number, LeagueRole[]>();
+
     for (const op of ops) {
       if (op.type === "add") {
         if (!isRosterRoleOf(game, op.role) || !validLanes(op.lanes)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
@@ -257,7 +261,7 @@ export async function submitChangeRequest(
               inactiveSince: membership.inactiveSince,
               joinSource: membership.joinSource,
               leftSource: membership.leftSource,
-              ...(gameHasLanes(game) ? { lanes: (await getStoredLanes([op.membershipId])).get(op.membershipId) ?? [] } : {}),
+              ...(gameHasLanes(game) ? { lanes: storedLanes.get(op.membershipId) ?? [] } : {}),
             },
             newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource), ...lanesField(game, op) },
           });
