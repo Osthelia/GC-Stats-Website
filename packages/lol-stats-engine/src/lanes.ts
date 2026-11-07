@@ -34,29 +34,23 @@ export function sortLanes(lanes: Iterable<string | null | undefined>): LeagueRol
   return LEAGUE_ROLES.filter((lane) => set.has(lane));
 }
 
-/** How many games were played in a lane: the aggregated form of a list of played lanes. */
-export interface LaneGames {
+/** A lane played on one day. */
+export interface PlayedLane {
   lane: string | null;
-  games: number;
-}
-
-/** The lanes by games played, most played first. A tie goes to the lane that comes first (Top to Support). */
-export function lanesByGames(played: Iterable<LaneGames>): LeagueRole[] {
-  const counts = new Map<LeagueRole, number>();
-  for (const { lane, games } of played) if (isLane(lane)) counts.set(lane, (counts.get(lane) ?? 0) + games);
-  return sortLanes(counts.keys()).sort((a, b) => counts.get(b)! - counts.get(a)!);
-}
-
-/** The games played in a lane on one day, as the database counts them. */
-export interface PlayedLane extends LaneGames {
-  /** The day the games were played (UTC, YYYY-MM-DD). A game without a date cannot be placed in a period. */
+  /** The day the game was played (UTC, YYYY-MM-DD). A game without a date cannot be placed in a period. */
   day: string | null;
 }
 
+/**
+ * The lanes played within a roster entry's period, in lane order like saved lanes (Top to Support), so the icons and
+ * the roster order do not depend on whether an admin saved the lanes. `since` is the first day of the period and
+ * `until` the day after the last one (null for an open period), the way the daterange is stored. An entry that was
+ * left with an unknown end (`hasLeft` without `until`) has no known period, so it gets no lanes from games.
+ */
 export function lanesPlayedInPeriod(played: readonly PlayedLane[], period: { since: string | null; until: string | null; hasLeft: boolean }): LeagueRole[] {
   if (period.hasLeft && period.until === null) return [];
   const inPeriod = played.filter(({ day }) => day !== null && (period.since === null || day >= period.since) && (period.until === null || day < period.until));
-  return lanesByGames(inPeriod);
+  return sortLanes(inPeriod.map(({ lane }) => lane));
 }
 
 /** Orders by first lane (Top to Support), people without a lane last. Equal ranks stay as they were (stable sort). */

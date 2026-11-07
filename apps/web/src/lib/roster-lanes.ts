@@ -17,7 +17,7 @@ import { db } from "@gc-stats/db/client";
 import type { adminDb } from "@gc-stats/db/client";
 import { leagueTables } from "@gc-stats/db";
 import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
-import { lanesByGames, lanesPlayedInPeriod, sortLanes, type LaneGames, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
+import { lanesPlayedInPeriod, sortLanes, type LeagueRole, type PlayedLane } from "@gc-stats/lol-stats-engine";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import type { ActivityChanges } from "@/lib/activity-log";
 import { ROLES_WITH_LANES, roleHasLanes } from "@/lib/roster-roles";
@@ -69,7 +69,7 @@ async function playedLanesByPersonAndTeam(entries: RosterEntryRef[]): Promise<Ma
   if (periods.size === 0) return played;
 
   const rows = await db
-    .select({ personId: gamePlayerStats.personId, teamId: entrants.teamId, lane: gamePlayerStats.role, day: sql<string>`${gameDay}::text`, games: sql<number>`count(*)::int` })
+    .select({ personId: gamePlayerStats.personId, teamId: entrants.teamId, lane: gamePlayerStats.role, day: sql<string>`${gameDay}::text` })
     .from(gamePlayerStats)
     .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
     .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
@@ -77,7 +77,7 @@ async function playedLanesByPersonAndTeam(entries: RosterEntryRef[]): Promise<Ma
     .groupBy(gamePlayerStats.personId, entrants.teamId, gamePlayerStats.role, gameDay);
   for (const row of rows) {
     const key = `${row.personId}:${row.teamId}`;
-    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, day: row.day, games: row.games }]);
+    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, day: row.day }]);
   }
   return played;
 }
@@ -105,7 +105,7 @@ export async function resolveEntryLanes(entries: RosterEntryRef[]): Promise<Map<
 
 /**
  * The lanes of the people on the rosters of a tournament, by entrant and person. The lanes played in that
- * tournament's games come first (most played first). A person with no game yet gets the lanes of their roster
+ * tournament's games come first, in lane order. A person with no game yet gets the lanes of their roster
  * entry for the entrant's team whose period covers the tournament start, stored ones or from earlier games.
  */
 export async function getTournamentLanes(
@@ -119,18 +119,18 @@ export async function getTournamentLanes(
 
   const { gamePlayerStats, entrants, rosterMemberships } = leagueTables;
   const playedRows = await db
-    .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role, games: sql<number>`count(*)::int` })
+    .select({ entrantId: gamePlayerStats.entrantId, personId: gamePlayerStats.personId, lane: gamePlayerStats.role })
     .from(gamePlayerStats)
     .innerJoin(entrants, eq(entrants.id, gamePlayerStats.entrantId))
     .where(and(eq(entrants.tournamentId, tournamentId), inArray(gamePlayerStats.entrantId, [...new Set(people.map((p) => p.entrantId))]), isNotNull(gamePlayerStats.role)))
     .groupBy(gamePlayerStats.entrantId, gamePlayerStats.personId, gamePlayerStats.role);
-  const played = new Map<string, LaneGames[]>();
+  const played = new Map<string, string[]>();
   for (const row of playedRows) {
     if (row.personId === null) continue;
     const key = keyOf(row.entrantId, row.personId);
-    played.set(key, [...(played.get(key) ?? []), { lane: row.lane, games: row.games }]);
+    played.set(key, [...(played.get(key) ?? []), row.lane!]);
   }
-  for (const [key, playedLanes] of played) lanes.set(key, lanesByGames(playedLanes));
+  for (const [key, playedLanes] of played) lanes.set(key, sortLanes(playedLanes));
 
   const withoutGames = people.filter((p) => p.teamId !== null && !lanes.has(keyOf(p.entrantId, p.personId)));
   if (withoutGames.length === 0) return lanes;

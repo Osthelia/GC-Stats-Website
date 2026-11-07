@@ -10,9 +10,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { areLanes, compareByLanes, laneRank, lanesByGames, lanesPlayedInPeriod, sortLanes, type PlayedLane } from "./lanes";
+import { areLanes, compareByLanes, laneRank, lanesPlayedInPeriod, sortLanes, type PlayedLane } from "./lanes";
 
-const game = (lane: string | null, day: string | null, games = 1): PlayedLane => ({ lane, day, games });
+const game = (lane: string | null, day: string | null): PlayedLane => ({ lane, day });
 
 describe("laneRank", () => {
   it("numbers the lanes from Top to Support", () => {
@@ -42,12 +42,6 @@ describe("sortLanes", () => {
   });
 });
 
-describe("lanesByGames", () => {
-  it("adds up the games of a lane given in several rows", () => {
-    expect(lanesByGames([{ lane: "MIDDLE", games: 2 }, { lane: "TOP", games: 1 }, { lane: "MIDDLE", games: 1 }, { lane: "TOP", games: 1 }])).toEqual(["MIDDLE", "TOP"]);
-  });
-});
-
 describe("lanesPlayedInPeriod", () => {
   const games = [game("TOP", "2025-02-01"), game("TOP", "2025-03-01"), game("MIDDLE", "2025-04-01"), game("MIDDLE", "2025-05-01"), game("MIDDLE", "2025-06-01"), game("JUNGLE", null)];
 
@@ -56,7 +50,7 @@ describe("lanesPlayedInPeriod", () => {
     expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: "2025-04-01", hasLeft: true })).toEqual(["TOP"]);
   });
 
-  it("counts every game from the start of an open period", () => {
+  it("takes every game from the start of an open period", () => {
     expect(lanesPlayedInPeriod(games, { since: "2025-04-01", until: null, hasLeft: false })).toEqual(["MIDDLE"]);
   });
 
@@ -68,9 +62,9 @@ describe("lanesPlayedInPeriod", () => {
     expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: null, hasLeft: true })).toEqual([]);
   });
 
-  it("counts the games of a day, not the day itself", () => {
-    const heavy = [game("TOP", "2025-03-01", 1), game("MIDDLE", "2025-03-02", 3)];
-    expect(lanesPlayedInPeriod(heavy, { since: "2025-03-01", until: null, hasLeft: false })).toEqual(["MIDDLE", "TOP"]);
+  it("puts the lanes in lane order, not by how often they were played", () => {
+    const flex = [game("MIDDLE", "2025-03-01"), game("MIDDLE", "2025-03-02"), game("MIDDLE", "2025-03-03"), game("TOP", "2025-03-04")];
+    expect(lanesPlayedInPeriod(flex, { since: null, until: null, hasLeft: false })).toEqual(["TOP", "MIDDLE"]);
   });
 
   it("skips games without a date", () => {
