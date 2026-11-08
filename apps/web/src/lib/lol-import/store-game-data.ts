@@ -5,9 +5,10 @@
  * teams, draft), the derived timeline stats on those rows, and the raw frame
  * and event rows. The raw match and timeline JSON are not stored here: they
  * go to the LoL imports bucket (PR 6b). A re-import replaces
- * everything the game had before. One transaction, guarded by an advisory lock
- * on the Riot match id, so two imports of the same game never interleave. The
- * series auto-complete runs after the commit, as for Valorant, so a failed
+ * everything the game had before. A series without a date and time gets the
+ * start of the game. One transaction, guarded by an advisory lock on the Riot
+ * match id, so two imports of the same game never interleave. The series
+ * auto-complete runs after the commit, as for Valorant, so a failed
  * auto-complete never rolls back the import.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
@@ -178,6 +179,8 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     // set patch if the match has no patch set, by the name fans use (the game version is Riot's internal number)
     const gamePatch = patchOf(match.info.gameVersion);
     if (gamePatch) await tx.update(matches).set({ patch: publicPatch(gamePatch) }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
+    // set the date and time of the match if it has none, to when this game started (a series without a schedule gets the time it was played)
+    await tx.update(matches).set({ scheduledAt: gameFields.startedAt }).where(and(eq(matches.id, input.matchId), isNull(matches.scheduledAt)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 
