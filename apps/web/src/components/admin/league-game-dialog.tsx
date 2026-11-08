@@ -29,7 +29,7 @@ import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
-import { isTournamentRealmMatchId, riotCluster } from "@gc-stats/lol-stats-engine";
+import { isTournamentRealm, riotCluster } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/use-game";
 
@@ -302,7 +302,7 @@ export function LeagueGameDialog({
               </Button>
             </div>
           )}
-          {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealmMatchId(form.apiMatchId) && (
+          {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealm(form.apiMatchId) && (
             <p className="text-xs text-muted-foreground">{t("leaguepedia.riotTournamentRealm")}</p>
           )}
 

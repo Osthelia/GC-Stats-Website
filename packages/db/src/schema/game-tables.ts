@@ -32,13 +32,6 @@ function valPersonColumns() {
   };
 }
 
-// Riot account id, only the League of Legends profile has it.
-function lolPersonColumns() {
-  return {
-    lolId: text("lol_id").unique(), // Riot puuid, null for people who never played competitively
-  };
-}
-
 // `mapIdRef` is only given for Valorant, the only game with a maps table.
 export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: () => AnyPgColumn) {
   const teams = pgTable(`${p}_teams` as `${P}_teams`, {
@@ -94,7 +87,8 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
 
   // The identity is shared by every game (`people`), this is the part that only concerns this
   // game. A row means the person exists in this game: public pages and searches of the game
-  // only list people who have one. Valorant alone has Riot and VLR ids.
+  // only list people who have one. Valorant alone has Riot and VLR ids. A League person's Riot
+  // accounts are rows of `lol_person_accounts`.
   const personProfiles = pgTable(`${p}_person_profiles` as `${P}_person_profiles`, {
     personId: bigint("person_id", { mode: "number" }).primaryKey().references(() => sharedPeople.id, { onDelete: "cascade" }),
     isActive: boolean("is_active").notNull().default(true),
@@ -104,7 +98,6 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
     // Set when data was imported from Liquipedia: shows the attribution footer on the public page.
     liquipediaSourced: boolean("liquipedia_sourced").notNull().default(false),
     ...(p === "val" ? valPersonColumns() : ({} as ReturnType<typeof valPersonColumns>)),
-    ...(p === "lol" ? lolPersonColumns() : ({} as ReturnType<typeof lolPersonColumns>)),
   });
 
   // Read model of a person in this game (identity + profile), same columns the old per-game
@@ -131,7 +124,6 @@ export function defineGameTables<const P extends GamePrefix>(p: P, mapIdRef?: ()
         valId: p === "val" ? personProfiles.valId : (sql<string | null>`NULL::text`.as("val_id") as unknown as typeof personProfiles.valId),
         esportsValId: p === "val" ? personProfiles.esportsValId : (sql<string | null>`NULL::text`.as("esports_val_id") as unknown as typeof personProfiles.esportsValId),
         vlrId: p === "val" ? personProfiles.vlrId : (sql<number | null>`NULL::integer`.as("vlr_id") as unknown as typeof personProfiles.vlrId),
-        lolId: p === "lol" ? personProfiles.lolId : (sql<string | null>`NULL::text`.as("lol_id") as unknown as typeof personProfiles.lolId),
       })
       .from(sharedPeople)
       .innerJoin(personProfiles, eq(personProfiles.personId, sharedPeople.id))
@@ -1184,7 +1176,26 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     check("lol_roster_membership_lanes_lane_check", sql`${t.lane} IN ('TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY')`),
   ]);
 
-  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, rosterMembershipLanes, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };
+  // --- Riot accounts of a person (a player can have several: alts, new accounts, the tournament realm) ---
+  const personAccounts = pgTable("lol_person_accounts", {
+    puuid: text("puuid").primaryKey(),
+    personId: bigint("person_id", { mode: "number" }).notNull().references(() => sharedPeople.id, { onDelete: "cascade" }),
+    // Null until the account was seen in a game. E.g. "EUW1", or "LOLTMNT01" from a tournament-realm match id.
+    platform: text("platform"),
+    // "americas" | "europe" | "asia" | "sea". From the platform, or before any game from the region the account was
+    // looked up in. Null for tournament-realm accounts.
+    cluster: text("cluster"),
+    riotId: text("riot_id"), // last known "name#tag"
+    source: text("source").notNull(), // 'leaguepedia' | 'riot' | 'admin' | 'suggestion'
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }), // start of the latest game played with the account
+  }, (t) => [
+    index("lol_person_accounts_person_id_idx").on(t.personId),
+    check("lol_person_accounts_cluster_check", sql`${t.cluster} IS NULL OR ${t.cluster} IN ('americas', 'europe', 'asia', 'sea')`),
+    check("lol_person_accounts_source_check", sql`${t.source} IN ('leaguepedia', 'riot', 'admin', 'suggestion')`),
+  ]);
+
+  return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, rosterMembershipLanes, personAccounts, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };
 }
 
 export type LeagueOnlyTables = ReturnType<typeof defineLeagueTables>;
@@ -1300,6 +1311,7 @@ export const lolGameFramesRaw = leagueOnly.gameFramesRaw;
 export const lolGameEventsRaw = leagueOnly.gameEventsRaw;
 export const lolGameDraft = leagueOnly.gameDraft;
 export const lolRosterMembershipLanes = leagueOnly.rosterMembershipLanes;
+export const lolPersonAccounts = leagueOnly.personAccounts;
 export const lolLeaguepediaTournaments = leagueOnly.leaguepediaTournaments;
 export const lolLeaguepediaGames = leagueOnly.leaguepediaGames;
 export const lolLeaguepediaTeamNames = leagueOnly.leaguepediaTeamNames;

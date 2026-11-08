@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { isTournamentRealmMatchId, riotCluster } from "./match-id";
+import { clusterForPlatform, clusterForRegion, isTournamentRealm, realmOf, platformOfMatchId, riotCluster } from "./match-id";
 
 describe("riotCluster", () => {
   it("routes a match to the cluster of its platform", () => {
@@ -26,10 +26,73 @@ describe("riotCluster", () => {
   });
 });
 
-describe("isTournamentRealmMatchId", () => {
-  it("recognises the LOLTMNT prefix whatever number follows it", () => {
-    expect(isTournamentRealmMatchId("LOLTMNT01_296476")).toBe(true);
-    expect(isTournamentRealmMatchId("LOLTMNT12_1")).toBe(true);
-    expect(isTournamentRealmMatchId("EUW1_296476")).toBe(false);
+describe("isTournamentRealm", () => {
+  it("recognises the LOLTMNT prefix on a match id whatever number follows it", () => {
+    expect(isTournamentRealm("LOLTMNT01_296476")).toBe(true);
+    expect(isTournamentRealm("LOLTMNT12_1")).toBe(true);
+    expect(isTournamentRealm("EUW1_296476")).toBe(false);
+  });
+
+  it("recognises the tournament realm's platforms as well", () => {
+    expect(isTournamentRealm("LOLTMNT01")).toBe(true);
+    expect(isTournamentRealm("EUW1")).toBe(false);
+  });
+});
+
+describe("platformOfMatchId", () => {
+  it("is the part before the number, for live and tournament-realm games", () => {
+    expect(platformOfMatchId("EUW1_123")).toBe("EUW1");
+    expect(platformOfMatchId("LOLTMNT01_296476")).toBe("LOLTMNT01");
+  });
+
+  it("is null for a malformed id", () => {
+    expect(platformOfMatchId("EUW1")).toBeNull();
+    expect(platformOfMatchId("euw1_1")).toBeNull();
+  });
+});
+
+describe("clusterForPlatform", () => {
+  it("maps live platforms to their cluster", () => {
+    expect(clusterForPlatform("EUW1")).toBe("europe");
+    expect(clusterForPlatform("TR1")).toBe("europe");
+    expect(clusterForPlatform("BR1")).toBe("americas");
+    expect(clusterForPlatform("JP1")).toBe("asia");
+    expect(clusterForPlatform("VN2")).toBe("sea");
+  });
+
+  it("is null for the tournament realm and unknown platforms", () => {
+    expect(clusterForPlatform("LOLTMNT03")).toBeNull();
+    expect(clusterForPlatform("XX9")).toBeNull();
+  });
+});
+
+describe("clusterForRegion", () => {
+  it("maps the regions with one home cluster", () => {
+    expect(clusterForRegion("emea")).toEqual({ kind: "cluster", cluster: "europe" });
+    expect(clusterForRegion("na")).toEqual({ kind: "cluster", cluster: "americas" });
+    expect(clusterForRegion("latam")).toEqual({ kind: "cluster", cluster: "americas" });
+    expect(clusterForRegion("brazil")).toEqual({ kind: "cluster", cluster: "americas" });
+    expect(clusterForRegion("korea")).toEqual({ kind: "cluster", cluster: "asia" });
+    expect(clusterForRegion("oceania")).toEqual({ kind: "cluster", cluster: "sea" });
+  });
+
+  it("leaves the choice to the admin when a region has no single cluster", () => {
+    for (const key of ["pacific", "international", "other", ""]) expect(clusterForRegion(key)).toEqual({ kind: "ask" });
+  });
+
+  it("marks China as unsupported", () => {
+    expect(clusterForRegion("china")).toEqual({ kind: "unsupported" });
+  });
+});
+
+describe("realmOf", () => {
+  it("is the cluster of a live platform and 'tournament' for the tournament realm", () => {
+    expect(realmOf({ platform: "EUW1", cluster: "europe" })).toBe("europe");
+    expect(realmOf({ platform: "LOLTMNT01", cluster: null })).toBe("tournament");
+  });
+
+  it("uses the stored cluster for an account never seen in a game", () => {
+    expect(realmOf({ platform: null, cluster: "asia" })).toBe("asia");
+    expect(realmOf({ platform: null, cluster: null })).toBeNull();
   });
 });

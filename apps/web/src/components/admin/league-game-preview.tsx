@@ -3,7 +3,8 @@
  *
  * The second step of a Leaguepedia game: the teams, winner, players and champions, the role of each player
  * (inferred from the positions, changeable by the admin), the entrant for blue and red, and a link to a
- * person for every Riot account that is not linked yet. Nothing is stored until Save.
+ * person for every Riot account that is not linked yet (suggested from the team on its side, or searched, or
+ * created). Linking a person who has another account says so. Nothing is stored until Save.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -22,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
-import { commitLeaguepediaGameForMatch, type GameRef, type LeaguepediaPreview, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
+import { commitLeaguepediaGameForMatch, getLolPersonAccounts, type GameRef, type LeaguepediaPreview, type PersonAccountSummary, type PersonRef, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
@@ -59,6 +60,8 @@ export function LeaguepediaGamePreview({
   const [sides, setSides] = useState<Partial<Record<LeagueSide, number>>>({ blue: preview.suggestedSides?.blue, red: preview.suggestedSides?.red });
   const [roles, setRoles] = useState<Record<string, string | null>>(() => Object.fromEntries(preview.players.map((p) => [p.puuid, p.role])));
   const unlinked = preview.players.filter((p) => p.person === null);
+  // The accounts of the people picked for an unlinked account, for the note that a second account is added.
+  const [accountsOf, setAccountsOf] = useState<Record<number, PersonAccountSummary[]>>({});
   const [mappings, setMappings] = useState<Record<string, Mapping>>(() =>
     Object.fromEntries(unlinked.map((p) => [p.puuid, { mode: "existing", person: null, handle: p.riotId.split("#")[0] ?? "" } satisfies Mapping]))
   );
@@ -76,6 +79,9 @@ export function LeaguepediaGamePreview({
 
   function setMapping(puuid: string, next: Partial<Mapping>) {
     setMappings((prev) => ({ ...prev, [puuid]: { ...prev[puuid]!, ...next } }));
+    const personId = next.person?.id;
+    if (personId === undefined || accountsOf[personId] !== undefined) return;
+    void getLolPersonAccounts(personId).then((accounts) => setAccountsOf((prev) => ({ ...prev, [personId]: accounts })));
   }
 
   function handleSave() {
@@ -149,6 +155,9 @@ export function LeaguepediaGamePreview({
             onRoleChange={(role) => setRoles((prev) => ({ ...prev, [p.puuid]: role }))}
             mapping={mappings[p.puuid]}
             onChange={(next) => setMapping(p.puuid, next)}
+            suggestions={sides[p.side] !== undefined ? (p.suggestions[sides[p.side]!] ?? []) : []}
+            existingAccounts={mappings[p.puuid]?.person ? accountsOf[mappings[p.puuid]!.person!.id] : undefined}
+            game={{ platform: preview.platform, realm: preview.realm }}
             sideLabel={t(p.side === "blue" ? "leaguepedia.sideBlue" : "leaguepedia.sideRed")}
           />
         ))}
@@ -173,6 +182,9 @@ function PlayerRow({
   onRoleChange,
   mapping,
   onChange,
+  suggestions,
+  existingAccounts,
+  game,
   sideLabel,
 }: {
   player: PreviewPlayer;
@@ -180,10 +192,14 @@ function PlayerRow({
   onRoleChange: (role: string | null) => void;
   mapping: Mapping | undefined;
   onChange: (next: Partial<Mapping>) => void;
+  suggestions: PersonRef[];
+  existingAccounts: PersonAccountSummary[] | undefined;
+  game: { platform: string; realm: "live" | "tournament" };
   sideLabel: string;
 }) {
   const t = useTranslations("admin.tournaments.matches.games");
   const kda = `${player.kills} / ${player.deaths} / ${player.assists}`;
+  const realmLabel = (realm: "live" | "tournament") => t(realm === "live" ? "leaguepedia.realmLive" : "leaguepedia.realmTournament");
   const roleItems: Record<string, string> = { [NO_ROLE]: t("leaguepedia.roleNone"), ...Object.fromEntries(ROLE_OPTIONS.map((r) => [r, r])) };
 
   return (
@@ -229,6 +245,16 @@ function PlayerRow({
                 {t("leaguepedia.createNew")}
               </Button>
             </div>
+            {mapping?.mode === "existing" && suggestions.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1">
+                <span className="text-xs text-muted-foreground">{t("leaguepedia.suggestedPeople")}</span>
+                {suggestions.map((person) => (
+                  <Button key={person.id} size="xs" variant={mapping.person?.id === person.id ? "default" : "outline"} onClick={() => onChange({ person })}>
+                    {person.handle}
+                  </Button>
+                ))}
+              </div>
+            )}
             {mapping?.mode === "existing" ? (
               <PersonPicker
                 value={mapping.person}
@@ -239,6 +265,16 @@ function PlayerRow({
               />
             ) : (
               <Input value={mapping?.handle ?? ""} onChange={(e) => onChange({ handle: e.target.value })} placeholder={t("leaguepedia.newHandle")} />
+            )}
+            {mapping?.mode === "existing" && mapping.person && existingAccounts !== undefined && existingAccounts.length > 0 && (
+              <p className="text-xs text-amber-500">
+                {t("leaguepedia.accountNote", {
+                  realm: realmLabel(game.realm),
+                  platform: game.platform,
+                  handle: mapping.person.handle,
+                  existing: existingAccounts.map((account) => `${realmLabel(account.realm)}${account.platform ? ` ${account.platform}` : ""}`).join(", "),
+                })}
+              </p>
             )}
           </div>
         )}

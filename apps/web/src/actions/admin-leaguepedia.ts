@@ -20,7 +20,7 @@ import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguep
 import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { getAdminMatch } from "@/lib/admin-matches";
-import { prepareLeaguepediaGame, commitLeaguepediaGame, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
+import { prepareLeaguepediaGame, commitLeaguepediaGame, getPersonAccountSummaries, type PersonAccountSummary, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
 import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 import { matchTag } from "@/lib/cache-tags";
@@ -81,7 +81,7 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
   return { ok: true, games: result.data };
 }
 
-export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
+export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, PersonAccountSummary, PersonRef, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
 
 export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode; gameId: number | null };
 export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
@@ -118,6 +118,13 @@ export async function commitLeaguepediaGameForMatch(tournamentId: number, matchI
     });
   }
   return result;
+}
+
+/** The Riot accounts a person already has, for the note in the import preview when a new one is added to them. */
+export async function getLolPersonAccounts(personId: number): Promise<PersonAccountSummary[]> {
+  await requireLolActor();
+  if (!Number.isInteger(personId)) return [];
+  return getPersonAccountSummaries(personId);
 }
 
 function fetchError(error: GameListError): LeaguepediaLinkError {

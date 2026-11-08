@@ -32,14 +32,55 @@ const CLUSTER_BY_PLATFORM: Record<string, string> = {
 
 const RIOT_MATCH_ID = /^([A-Z0-9]+)_[0-9]+$/;
 
-/** Riot's tournament realm. Its games are on Leaguepedia only. */
-export function isTournamentRealmMatchId(riotMatchId: string): boolean {
-  return riotMatchId.startsWith("LOLTMNT");
+const TOURNAMENT_REALM_PREFIX = "LOLTMNT";
+
+/** Checks if MatchId or Platform is from the tournament realm */
+export function isTournamentRealm(matchIdOrPlatform: string): boolean {
+  return matchIdOrPlatform.startsWith(TOURNAMENT_REALM_PREFIX);
+}
+
+/** The platform of a match id ("EUW1_123" → "EUW1", "LOLTMNT01_5" → "LOLTMNT01"). Null for a malformed id. */
+export function platformOfMatchId(riotMatchId: string): string | null {
+  return RIOT_MATCH_ID.exec(riotMatchId)?.[1] ?? null;
+}
+
+/** The routing cluster of a platform ("EUW1" → "europe"). Null for the tournament realm and unknown platforms. */
+export function clusterForPlatform(platform: string): string | null {
+  if (isTournamentRealm(platform)) return null;
+  return CLUSTER_BY_PLATFORM[platform] ?? null;
 }
 
 /** The routing cluster of a match id ("EUW1_123" → "europe"). Null when the relay cannot serve it. */
 export function riotCluster(riotMatchId: string): string | null {
-  const platform = RIOT_MATCH_ID.exec(riotMatchId)?.[1];
-  if (platform === undefined || isTournamentRealmMatchId(riotMatchId)) return null;
-  return CLUSTER_BY_PLATFORM[platform] ?? null;
+  const platform = platformOfMatchId(riotMatchId);
+  return platform === null ? null : clusterForPlatform(platform);
+}
+
+export const TOURNAMENT_REALM = "tournament";
+
+/** Where an account or a game lives: the cluster of a live platform, or "tournament". */
+export function realmOf(account: { platform: string | null; cluster: string | null }): string | null {
+  if (account.platform !== null) return isTournamentRealm(account.platform) ? TOURNAMENT_REALM : clusterForPlatform(account.platform);
+  return account.cluster;
+}
+
+export type RegionCluster = { kind: "cluster"; cluster: string } | { kind: "ask" } | { kind: "unsupported" };
+
+export function clusterForRegion(regionKey: string): RegionCluster {
+  switch (regionKey) {
+    case "emea":
+      return { kind: "cluster", cluster: "europe" };
+    case "na":
+    case "latam":
+    case "brazil":
+      return { kind: "cluster", cluster: "americas" };
+    case "korea":
+      return { kind: "cluster", cluster: "asia" };
+    case "oceania":
+      return { kind: "cluster", cluster: "sea" };
+    case "china":
+      return { kind: "unsupported" };
+    default:
+      return { kind: "ask" };
+  }
 }
