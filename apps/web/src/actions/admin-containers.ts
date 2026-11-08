@@ -14,7 +14,7 @@
 
 import { and, eq, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageContainers, stages, groupEntries, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
+import { stageContainers, stages, groupEntries, entrants, matches, bracketEdges, maps, mapRoundPlayerPositionsRaw, PERMISSIONS } from "@gc-stats/db";
 import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression";
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
@@ -287,5 +287,55 @@ export async function removeEntrantFromContainer(containerId: number, entrantId:
     .limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   await db.delete(groupEntries).where(eq(groupEntries.id, existing.id));
+  return { ok: true };
+}
+
+export type SetParticipantsResult =
+  | { ok: true }
+  | { ok: false; error: "invalid" | "notFound" | "notAGroup" | "entrantNotFound" | "entrantHasMatches" };
+
+/**
+ * Replaces the teams listed in a group without needing any match. An entrant
+ * that already plays a match in the group can't be removed from the list.
+ */
+export async function setContainerParticipants(containerId: number, stageId: number, entrantIds: number[]): Promise<SetParticipantsResult> {
+  await requireTournamentsActor();
+
+  if (!Number.isInteger(containerId) || !Number.isInteger(stageId) || !Array.isArray(entrantIds) || entrantIds.some((id) => !Number.isInteger(id))) {
+    return { ok: false, error: "invalid" };
+  }
+  const wanted = [...new Set(entrantIds)];
+
+  const [container] = await db
+    .select({ id: stageContainers.id, containerType: stageContainers.containerType, tournamentId: stages.tournamentId })
+    .from(stageContainers)
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(eq(stageContainers.id, containerId), eq(stageContainers.stageId, stageId)))
+    .limit(1);
+  if (!container) return { ok: false, error: "notFound" };
+  if (container.containerType !== "group") return { ok: false, error: "notAGroup" };
+
+  const found = wanted.length
+    ? await db.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(and(inArray(entrants.id, wanted), eq(entrants.tournamentId, container.tournamentId)))
+    : [];
+  if (found.length !== wanted.length) return { ok: false, error: "entrantNotFound" };
+
+  const [current, containerMatches] = await Promise.all([
+    db.select({ id: groupEntries.id, entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+    db.select({ a: matches.entrantAId, b: matches.entrantBId }).from(matches).where(eq(matches.containerId, containerId)),
+  ]);
+
+  const playing = new Set(containerMatches.flatMap((m) => [m.a, m.b]));
+  const wantedSet = new Set(wanted);
+  const toRemove = current.filter((e) => !wantedSet.has(e.entrantId));
+  if (toRemove.some((e) => playing.has(e.entrantId))) return { ok: false, error: "entrantHasMatches" };
+
+  const existing = new Set(current.map((e) => e.entrantId));
+  const toAdd = found.filter((e) => !existing.has(e.id));
+
+  await db.transaction(async (tx) => {
+    if (toRemove.length) await tx.delete(groupEntries).where(inArray(groupEntries.id, toRemove.map((e) => e.id)));
+    if (toAdd.length) await tx.insert(groupEntries).values(toAdd.map((e) => ({ containerId, entrantId: e.id, seed: e.seed })));
+  });
   return { ok: true };
 }
