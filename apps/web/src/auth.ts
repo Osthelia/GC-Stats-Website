@@ -30,6 +30,7 @@ import { getClientIp } from "@/lib/client-ip";
 import { checkLoginThrottle, checkTwoFactorThrottle } from "@/lib/auth-throttle";
 import { markEmailVerifiedFromProvider } from "@/lib/email-verification";
 import { logAccountActivity } from "@/lib/account-activity-log";
+import { getProviderUsername, syncProviderUsername } from "@/lib/oauth-profile";
 
 /** A failed log write must never block a login. */
 function logQuietly(input: Parameters<typeof logAccountActivity>[0]): Promise<void> {
@@ -223,6 +224,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               type: account.type,
               provider: account.provider,
               providerAccountId: account.providerAccountId,
+              providerUsername: getProviderUsername(account.provider, profile),
               refresh_token: account.refresh_token,
               access_token: account.access_token,
               expires_at: typeof account.expires_at === "number" ? account.expires_at : undefined,
@@ -232,6 +234,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               session_state: typeof account.session_state === "string" ? account.session_state : undefined,
             });
             await logQuietly({ userId: activeUserId, event: "updated", description: `Linked ${account.provider} account`, properties: { section: "linkedAccount", provider: account.provider } });
+          } else {
+            await syncProviderUsername(account.provider, account.providerAccountId, profile).catch((error) => console.error("[auth] provider username sync failed (%s)", account.provider, error));
           }
           await markEmailVerifiedFromProvider(activeUserId, account.provider, profile);
           return `/settings/account?linked=${account.provider}`;
@@ -313,7 +317,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account, profile }) {
       if (user.id) {
         await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
-        if (account) await markEmailVerifiedFromProvider(user.id, account.provider, profile);
+        if (account) {
+          await markEmailVerifiedFromProvider(user.id, account.provider, profile);
+          // The account row is only guaranteed to exist here, after the adapter linked it.
+          await syncProviderUsername(account.provider, account.providerAccountId, profile).catch((error) => console.error("[auth] provider username sync failed (%s)", account.provider, error));
+        }
         const method = account?.provider ?? "credentials";
         await logQuietly({ userId: user.id, event: "login", description: `Logged in with ${method}`, properties: { method } });
       }

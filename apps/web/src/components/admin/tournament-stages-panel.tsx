@@ -26,6 +26,7 @@ import { ContainerDialog, type SetOption } from "@/components/admin/container-di
 import { SetDialog } from "@/components/admin/set-dialog";
 import { StageSetRow } from "@/components/admin/stage-set-row";
 import { AddGroupMatchDialog } from "@/components/admin/add-group-match-dialog";
+import { GroupParticipantsDialog } from "@/components/admin/group-participants-dialog";
 import { BulkGroupMatchesDialog } from "@/components/admin/bulk-group-matches-dialog";
 import { AssignEntrantsDialog } from "@/components/admin/assign-entrants-dialog";
 import { deleteStage, toggleStageActive } from "@/actions/admin-stages";
@@ -53,6 +54,7 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
   const [addingMatch, setAddingMatch] = useState(false);
   const [bulkAdding, setBulkAdding] = useState(false);
   const [assigning, setAssigning] = useState(false);
+  const [editingParticipants, setEditingParticipants] = useState(false);
   const [editingContainer, setEditingContainer] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [forceDelete, setForceDelete] = useState(false);
@@ -125,6 +127,9 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
         )}
         {isGroup && (
           <>
+            <Button variant="outline" size="sm" onClick={() => setEditingParticipants(true)}>
+              {t("participantsButton")}
+            </Button>
             {isStageScoped && (
               <Button variant="outline" size="sm" onClick={() => setAssigning(true)}>
                 {t("assignEntrantsButton")}
@@ -153,6 +158,7 @@ function ContainerRow({ stage, container, sets, tournamentId, entrants }: { stag
 
       {isStageScoped && <AssignEntrantsDialog containerId={container.id} entrants={entrants} alreadyAssignedIds={container.groupEntryEntrantIds} assignedElsewhere={assignedElsewhere} open={assigning} onOpenChange={setAssigning} />}
       {isGroup && <AddGroupMatchDialog stageId={stage.id} container={container} entrants={entrants} open={addingMatch} onOpenChange={setAddingMatch} />}
+      {isGroup && <GroupParticipantsDialog stageId={stage.id} container={container} entrants={entrants} open={editingParticipants} onOpenChange={setEditingParticipants} />}
       {isGroup && <BulkGroupMatchesDialog stageId={stage.id} container={container} entrants={entrants} open={bulkAdding} onOpenChange={setBulkAdding} />}
       <ContainerDialog stageId={stage.id} container={container} sets={sets} open={editingContainer} onOpenChange={setEditingContainer} />
       <ConfirmDialog
