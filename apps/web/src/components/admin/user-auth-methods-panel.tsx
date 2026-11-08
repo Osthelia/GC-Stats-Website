@@ -82,7 +82,7 @@ export function UserAuthMethodsPanel({ userId, methods, canManage }: { userId: s
             <div className="flex flex-wrap justify-end gap-1">
               {methods.oauthAccounts.map((a) => (
                 <Badge key={a.provider} variant="outline">
-                  {a.provider}
+                  {a.provider}: {a.providerUsername ?? "-"}
                 </Badge>
               ))}
             </div>

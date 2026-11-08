@@ -33,7 +33,7 @@ export type AdminUserProfile = {
 export type AdminUserAuthMethods = {
   hasPassword: boolean;
   twoFactorEnabled: boolean;
-  oauthAccounts: { provider: string }[];
+  oauthAccounts: { provider: string; providerUsername: string | null }[];
   passkeyCount: number;
   activeSessionCount: number;
 };
@@ -170,7 +170,7 @@ export async function listUserReportsSubmitted(userId: string, limit = 15): Prom
 export async function getAdminUserAuthMethods(userId: string): Promise<AdminUserAuthMethods> {
   const [[user], oauthRows, passkeyCountRows, activeSessionCountRows] = await Promise.all([
     db.select({ passwordHash: users.passwordHash, twoFactorConfirmedAt: users.twoFactorConfirmedAt }).from(users).where(eq(users.id, userId)).limit(1),
-    db.select({ provider: accounts.provider }).from(accounts).where(eq(accounts.userId, userId)),
+    db.select({ provider: accounts.provider, providerUsername: accounts.providerUsername }).from(accounts).where(eq(accounts.userId, userId)),
     db.select({ passkeyCount: count() }).from(authenticators).where(eq(authenticators.userId, userId)),
     db.select({ activeSessionCount: count() }).from(sessions).where(eq(sessions.userId, userId)),
   ]);
