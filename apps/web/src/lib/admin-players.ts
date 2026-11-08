@@ -11,11 +11,11 @@
 
 import { sql, eq, or, and, desc, asc, getViewSelectedFields } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, gameTables, valorantTablesOf } from "@gc-stats/db";
+import { users, gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
-import { gameHasLanes, gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, gameHasMaps, gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
 import { resolveEntryLanes, splitEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
 import { displayRosterRole } from "@/lib/roster-roles";
 import type { LeagueRole } from "@gc-stats/lol-stats-engine";
@@ -57,11 +57,21 @@ function lastActivitySql(game: GameSlug) {
   const { people, matches, entrantMembers } = gameTables(game);
   // Other games have no map stats: the locked tournament roster is what says the person played a match.
   if (!gameHasMaps(game)) {
-    return sql<string | null>`(
+    const lockedRoster = sql`(
   SELECT MAX(m.scheduled_at) FROM ${entrantMembers} em
   JOIN ${matches} m ON em.entrant_id IN (m.entrant_a_id, m.entrant_b_id)
   WHERE em.person_id = ${qualifiedColumn(people, "id")}
 )`;
+    if (!gameHasSeriesGames(game)) return sql<string | null>`${lockedRoster}`;
+    // A series made of games also has the games the person played (player stats of a stored game): the start of the
+    // latest one, or the match's date for a game without a start time. GREATEST ignores the side that has no value.
+    const { games, gamePlayerStats } = leagueTablesOf(game);
+    return sql<string | null>`GREATEST(${lockedRoster}, (
+  SELECT MAX(COALESCE(g.started_at, m.scheduled_at)) FROM ${gamePlayerStats} s
+  JOIN ${games} g ON g.id = s.game_id
+  JOIN ${matches} m ON m.id = g.match_id
+  WHERE s.person_id = ${qualifiedColumn(people, "id")}
+))`;
   }
   const { maps, mapPlayerStats } = valorantTablesOf(game);
   return sql<string | null>`(
