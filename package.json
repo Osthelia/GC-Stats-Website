@@ -31,7 +31,9 @@
     },
     "@node-minify/core": {
       "glob": "13.0.6"
-    }
+    },
+    "minimatch": "^11.0.5",
+    "fflate": "^0.8.3"
   },
   "dependencies": {
     "@osthelia/bracket-engine": "^1.1.1"
