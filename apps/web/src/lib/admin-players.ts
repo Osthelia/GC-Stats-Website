@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { sql, eq, or, and, desc, asc, getViewSelectedFields } from "drizzle-orm";
+import { sql, eq, or, and, desc, asc, exists, getViewSelectedFields } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
+import { users, gameTables, leagueTablesOf, valorantTablesOf, lolPersonAccounts } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
@@ -105,6 +105,11 @@ export async function listAdminPlayers(game: GameSlug, opts: {
     if (numeric) {
       const n = Number(q);
       clauses.push(eq(people.id, n), eq(people.vlrId, n));
+    }
+    // A League player is also found by the Riot ID ("name#tag") of one of the Riot accounts linked to them.
+    if (game === "lol") {
+      const riotIdMatch = or(...variants.map((v) => foldedIlike(lolPersonAccounts.riotId, v)));
+      clauses.push(exists(db.select({ one: sql`1` }).from(lolPersonAccounts).where(and(eq(lolPersonAccounts.personId, people.id), riotIdMatch))));
     }
     conditions.push(or(...clauses));
   }
