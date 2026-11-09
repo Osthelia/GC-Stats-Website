@@ -279,7 +279,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
     await rememberLeaguepediaTeamNames({ blue: resolved.blue, red: resolved.red }, match.entrants, input.entrantIdBySide);
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
-    console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);
+    console.error("[leaguepedia] storing game %d of match #%s failed", input.order, input.matchId, err);
     return { ok: false, error: { kind: "storeFailed", message: describeStoreError(err) } };
   }
 }
