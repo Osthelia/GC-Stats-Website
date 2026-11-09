@@ -153,7 +153,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
     try {
       await storeLolImport(input.game.source, resolved.riotMatchId, { match: validation.match, timeline: validation.timeline });
     } catch (err) {
-      console.error(`[${input.game.source}] could not store game ${resolved.riotMatchId} in the imports bucket`, err);
+      console.error("[%s] could not store game %s in the imports bucket", input.game.source, resolved.riotMatchId, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
   }
