@@ -556,7 +556,7 @@ async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Pro
       stored = await readLolImport("riot", riotMatchId);
     } catch (err) {
       // A bucket that cannot be read is not a game that is missing: fetching from Riot would hide the setup problem.
-      console.error(`[riot] could not read game ${riotMatchId} from the imports bucket`, err);
+      console.error("[riot] could not read game %s from the imports bucket", riotMatchId, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
     if (stored) return { ok: true, payload: stored, fromBucket: true };
