@@ -440,7 +440,7 @@ async function loadStageLeaderboardContext(game: GameSlug, stageId: number): Pro
   const matchPickRows = allMatchPickRows.filter((r) => bracketMatchIds.has(r.matchId) || groupMatchIds.has(r.matchId));
 
   const groupContainers = matchesMode ? [] : editorData.containers.filter((c) => c.containerType === "group" && c.status === "completed");
-  const rankings = await Promise.all(groupContainers.map(async (c) => [c.id, await computeContainerStandings(game, db, c.id, c.config)] as const));
+  const rankings = await Promise.all(groupContainers.map(async (c) => [c.id, await computeContainerStandings(game, db, c.id, c.config, editorData.containers)] as const));
   const rankByContainerAndEntrant = new Map(rankings.map(([containerId, ranked]) => [containerId, new Map(ranked.map((r) => [Number(r.id), r.rank]))]));
 
   const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];

@@ -12,7 +12,7 @@
 import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { valorantTables, webhookDeliveries, webhookEndpoints } from "@gc-stats/db";
-import { isWebhookEvent, type WebhookDeliveryStatus, type WebhookDeliveryView, type WebhookEndpointView, type WebhookOfficialFilter } from "./shared";
+import { isWebhookEvent, type WebhookDeliveryStatus, type WebhookDeliveryView, type WebhookEndpointView, type WebhookKind, type WebhookOfficialFilter } from "./shared";
 
 const RECENT_DELIVERIES = 30;
 
@@ -25,6 +25,7 @@ export async function listWebhookEndpoints(apiKeyId: number): Promise<WebhookEnd
 
   return rows.map((r) => ({
     id: r.id,
+    kind: r.kind as WebhookKind,
     url: r.url,
     description: r.description,
     events: r.events.filter(isWebhookEvent),

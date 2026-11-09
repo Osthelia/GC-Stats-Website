@@ -19,9 +19,9 @@ import { rebuildGroupEntriesFromMatches } from "@/lib/bracket/group-progression"
 import { requireActorPermission } from "@/lib/rbac";
 import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
-import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type PointsField } from "@/lib/bracket/config-types";
+import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type GroupMatchScope, type PointsField } from "@/lib/bracket/config-types";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -35,6 +35,7 @@ export type ContainerField =
   | "qualifyAtWins"
   | "eliminateAtLosses"
   | "maxRounds"
+  | "matchScope"
   | "tiebreakers"
   | `points.${PointsField}`;
 export type ContainerFieldErrors = Partial<Record<ContainerField, string>>;
@@ -51,6 +52,8 @@ export type ContainerInput =
       containerType: "group";
       parentId: number | null;
       groupFormat: "swiss" | "round_robin";
+      // Round robin only, which matches the table counts. Missing means the group's own.
+      matchScope?: GroupMatchScope;
       qualifyAtWins: number | null;
       eliminateAtLosses: number | null;
       maxRounds: number | null;
@@ -72,6 +75,9 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
       if (input.eliminateAtLosses !== null && (!Number.isInteger(input.eliminateAtLosses) || input.eliminateAtLosses < 1)) fieldErrors.eliminateAtLosses = "invalid";
       if (!Number.isInteger(input.maxRounds) || (input.maxRounds ?? 0) < 1) fieldErrors.maxRounds = "invalid";
     }
+    // Swiss pairs inside one container and keeps per-container counters, so only round robin can count the whole stage.
+    if (input.matchScope === "stage" && input.groupFormat !== "round_robin") fieldErrors.matchScope = "roundRobinOnly";
+    else if (input.matchScope !== undefined && input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
     const allowed: readonly string[] = input.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS;
     const tiebreakers: unknown = input.tiebreakers;
     if (!Array.isArray(tiebreakers) || tiebreakers.some((tb) => !allowed.includes(tb)) || new Set(tiebreakers).size !== tiebreakers.length) {
@@ -93,12 +99,14 @@ function buildConfig(input: ContainerInput): Record<string, unknown> {
   if (input.containerType === "bracket") return {};
   const { tiebreakers } = input;
   const pointsConfig = input.pointsConfig && Object.fromEntries(POINTS_FIELDS.map((f) => [f, input.pointsConfig![f]]));
-  if (input.groupFormat === "round_robin") return { type: "round_robin", tiebreakers, pointsConfig };
+  if (input.groupFormat === "round_robin") return { type: "round_robin", matchScope: input.matchScope ?? "container", tiebreakers, pointsConfig };
   return {
     type: "swiss",
+    matchScope: "container",
     qualifyAtWins: input.qualifyAtWins,
     eliminateAtLosses: input.eliminateAtLosses,
-    maxRounds: input.maxRounds,
+    // Validated above, so never null here; the fallback matches parseGroupConfig's default and narrows the type.
+    maxRounds: input.maxRounds ?? 5,
     roundFormat: {},
     tiebreakers,
     pointsConfig,
@@ -258,7 +266,6 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
  *  container goes with every match, map and stat row underneath. */
 export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
   const { stageContainers, matches } = gameTables(game);
-  const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
@@ -277,9 +284,12 @@ export async function deleteContainer(game: GameSlug, id: number, stageId: numbe
   }
 
   await db.transaction(async (tx) => {
-    // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
-    const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(inArray(matches.containerId, ids));
-    await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    if (gameHasMaps(game)) {
+      // map_round_player_positions_raw.map_id has no ON DELETE CASCADE, cleared first so the maps can go.
+      const { maps, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
+      const containerMapIds = tx.select({ id: maps.id }).from(maps).innerJoin(matches, eq(matches.id, maps.matchId)).where(inArray(matches.containerId, ids));
+      await tx.delete(mapRoundPlayerPositionsRaw).where(inArray(mapRoundPlayerPositionsRaw.mapId, containerMapIds));
+    }
     await tx.delete(stageContainers).where(eq(stageContainers.id, id));
   });
   return { ok: true };
@@ -333,5 +343,56 @@ export async function removeEntrantFromContainer(game: GameSlug, containerId: nu
     .limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   await db.delete(groupEntries).where(eq(groupEntries.id, existing.id));
+  return { ok: true };
+}
+
+export type SetParticipantsResult =
+  | { ok: true }
+  | { ok: false; error: "invalid" | "notFound" | "notAGroup" | "entrantNotFound" | "entrantHasMatches" };
+
+/**
+ * Replaces the teams listed in a group without needing any match. An entrant
+ * that already plays a match in the group can't be removed from the list.
+ */
+export async function setContainerParticipants(game: GameSlug, containerId: number, stageId: number, entrantIds: number[]): Promise<SetParticipantsResult> {
+  const { stageContainers, stages, entrants, groupEntries, matches } = gameTables(game);
+  await requireTournamentsActor();
+
+  if (!Number.isInteger(containerId) || !Number.isInteger(stageId) || !Array.isArray(entrantIds) || entrantIds.some((id) => !Number.isInteger(id))) {
+    return { ok: false, error: "invalid" };
+  }
+  const wanted = [...new Set(entrantIds)];
+
+  const [container] = await db
+    .select({ id: stageContainers.id, containerType: stageContainers.containerType, tournamentId: stages.tournamentId })
+    .from(stageContainers)
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(and(eq(stageContainers.id, containerId), eq(stageContainers.stageId, stageId)))
+    .limit(1);
+  if (!container) return { ok: false, error: "notFound" };
+  if (container.containerType !== "group") return { ok: false, error: "notAGroup" };
+
+  const found = wanted.length
+    ? await db.select({ id: entrants.id, seed: entrants.seed }).from(entrants).where(and(inArray(entrants.id, wanted), eq(entrants.tournamentId, container.tournamentId)))
+    : [];
+  if (found.length !== wanted.length) return { ok: false, error: "entrantNotFound" };
+
+  const [current, containerMatches] = await Promise.all([
+    db.select({ id: groupEntries.id, entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+    db.select({ a: matches.entrantAId, b: matches.entrantBId }).from(matches).where(eq(matches.containerId, containerId)),
+  ]);
+
+  const playing = new Set(containerMatches.flatMap((m) => [m.a, m.b]));
+  const wantedSet = new Set(wanted);
+  const toRemove = current.filter((e) => !wantedSet.has(e.entrantId));
+  if (toRemove.some((e) => playing.has(e.entrantId))) return { ok: false, error: "entrantHasMatches" };
+
+  const existing = new Set(current.map((e) => e.entrantId));
+  const toAdd = found.filter((e) => !existing.has(e.id));
+
+  await db.transaction(async (tx) => {
+    if (toRemove.length) await tx.delete(groupEntries).where(inArray(groupEntries.id, toRemove.map((e) => e.id)));
+    if (toAdd.length) await tx.insert(groupEntries).values(toAdd.map((e) => ({ containerId, entrantId: e.id, seed: e.seed })));
+  });
   return { ok: true };
 }

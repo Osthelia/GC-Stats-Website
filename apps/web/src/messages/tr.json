@@ -22,6 +22,8 @@
     "menu": "Menü"
   },
   "auth": {
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle",
     "login": {
       "title": "Giriş yap",
       "subtitle": "Tek bir GC-Stats hesabı, dilediğin yöntemle giriş yap."
@@ -1014,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook'lar",
       "body": "Partner anahtarları panellerinden HTTPS endpoint'leri kaydedebilir: GC Stats veriler her değiştiğinde bir POST gönderir.",
-      "events": "Olaylar: yeni maç, maç güncellendi, yeni turnuva, turnuva güncellendi, takım güncellendi, oyuncu güncellendi.",
+      "events": "Olaylar: yeni maç, maç güncellendi, yeni turnuva, turnuva güncellendi, takım güncellendi, oyuncu güncellendi, ekibimiz tarafından doğrulanan roster değişikliği (roster.updated).",
       "filters": "Filtreler: turnuva bölgesi, resmi olup olmadığı, katılan takımlar.",
       "signature": "Her istek X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp ve X-GCS-Signature başlıklarını taşır. İmzayı endpoint'inizin gizli anahtarıyla doğrulayın.",
       "retries": "10 saniye içinde 2xx durum koduyla yanıt verin. Başarısız gönderimler yaklaşık 9 saat boyunca yeniden denenir, çok sık başarısız olan bir endpoint kapatılır.",
-      "setup": "Payload; olayı, tarihini ve varlığı OpenData veri setleriyle aynı alanlarla içerir."
+      "setup": "Payload; olayı, tarihini ve varlığı OpenData veri setleriyle aynı alanlarla içerir.",
+      "discord": "Discord türündeki bir endpoint yalnızca roster.updated olayını alır ve tweet bağlantısını kanalınızda paylaşır, imza olmadan."
     }
   },
   "becomePublisher": {
@@ -1044,6 +1047,77 @@
       "discord": "Discord üzerinden bize ulaşın",
       "email": "E posta ile iletişime geç"
     }
+  },
+  "discordBot": {
+    "title": "Discord botu",
+    "intro": "Tüm Game Changers maçlarını doğrudan Discord sunucunuzda takip edin, canlı skorlar ve sonuçlar otomatik olarak paylaşılır.",
+    "addBot": "Discord'a ekle",
+    "comingSoon": "Çok yakında",
+    "openDashboard": "Paneli aç",
+    "features": {
+      "title": "Özellikler",
+      "live": {
+        "title": "Canlı maçlar",
+        "body": "Bir maç başladığında mesaj gönderilir ve skoru maç bitene kadar kendiliğinden güncellenir."
+      },
+      "finished": {
+        "title": "Biten maçlar",
+        "body": "Maç sona erer ermez nihai sonuç paylaşılır."
+      },
+      "map": {
+        "title": "Biten haritalar",
+        "body": "Maçın bitmesini beklemeden her haritanın skorunu hemen alın."
+      },
+      "filters": {
+        "title": "Akıllı filtreler",
+        "body": "Uyarıları bölgeye, katılan takıma ve resmi veya gayriresmi turnuvalara göre filtreleyin (varsayılan olarak resmi)."
+      }
+    },
+    "dashboard": {
+      "title": "Panelden yapılandırın",
+      "body": "Her sunucu GC Stats panelinden yapılandırılır: her uyarı türü için kanalı seçin ve filtrelerinizi belirleyin.",
+      "why": "Hangi sunucuları yönettiğinizi doğrulayabilmemiz için Discord ile giriş yapmanız gerekir. Yalnızca bir sunucuyu yönetme yetkisi olan üyeler ayarlarını değiştirebilir."
+    },
+    "steps": {
+      "title": "Nasıl çalışır",
+      "invite": {
+        "title": "Botu ekleyin",
+        "body": "Yukarıdaki düğmeyle botu sunucunuza davet edin."
+      },
+      "login": {
+        "title": "Discord ile giriş yapın",
+        "body": "Paneli açın ve Discord hesabınızla oturum açın."
+      },
+      "configure": {
+        "title": "Yapılandırın",
+        "body": "Kanallarınızı ve filtrelerinizi seçin, uyarılar hemen başlar."
+      }
+    },
+    "help": {
+      "title": "Yardıma mı ihtiyacınız var?",
+      "body": "Sorularınız veya önerileriniz mi var? <link>GC Stats Discord</link> sunucumuza katılın."
+    }
+  },
+  "discordBotMessages": {
+    "live": "CANLI",
+    "finished": "Maç bitti",
+    "mapFinished": "Harita {number} bitti",
+    "map": "Harita {number}",
+    "maps": "Haritalar",
+    "bestOf": "Bo{count}",
+    "matchScore": "Maç skoru: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team}, {map} haritasını banlıyor",
+    "vetoPick": "{team}, {map} haritasını seçiyor",
+    "vetoDecider": "{map} (belirleyici harita)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Saldırı",
+    "sideDefense": "Savunma",
+    "openMatch": "Maçı aç",
+    "imageRemoved": "Bu uyarının görseli GC Stats moderasyonu tarafından kaldırıldı."
   },
   "supportUs": {
     "title": "Bize destek olun",
@@ -1523,6 +1597,7 @@
     "statsColumns": {
       "played": "Harita",
       "roundsPlayed": "Raunt",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",
@@ -1694,10 +1769,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Oyuncu",
+    "ratingFull": "GCS Rating: 1.00, aynı roldeki ortalama oyuncudur",
     "acsFull": "Ortalama Combat Score",
     "adrFull": "Round Başına Ortalama Hasar",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -1730,7 +1807,27 @@
     "teamTbd": "Belirlenecek",
     "teamBye": "BYE",
     "discussion": "Tartışma",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "Oyun {n} VOD",
+    "games": "Oyunlar",
+    "gameTab": "Oyun {order}",
+    "noGames": "Henüz kayıtlı oyun yok.",
+    "noGameData": "Bu oyun için veri yok",
+    "duration": "Süre",
+    "forfeit": "Teslim",
+    "towers": "Kuleler",
+    "inhibitors": "İnhibitörler",
+    "dragons": "Ejderhalar",
+    "barons": "Baronlar",
+    "heralds": "Heraldlar",
+    "grubs": "Boşluk kurtçukları",
+    "draftNotSet": "Bu oyun için kayıtlı draft yok.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Yerleştirilmemiş pickler",
+    "colChampion": "Şampiyon",
+    "allGames": "Tüm oyunlar",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Tüm resmi Game Changers yarışmaları, tek bir yerde.",
@@ -1759,7 +1856,8 @@
     "finance": "Finans",
     "developers": "Geliştiriciler",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discord botu"
   },
   "forum": {
     "overview": {
@@ -1952,6 +2050,10 @@
       "about": "Hakkımızda / Projeler",
       "backToSite": "Siteye dön",
       "pendingChangeRequests": "Bekleyen değişiklik talepleri",
+      "pendingDiscordImages": "İncelenecek Discord görselleri",
+      "pendingReports": "Bekleyen raporlar",
+      "pendingRosterWatch": "İncelenecek kadro sinyalleri",
+      "pendingModeration": "İncelenecek şüpheliler",
       "tournaments": "Turnuvalar",
       "groupModeration": "Moderasyon",
       "reports": "Raporlar",
@@ -1961,7 +2063,10 @@
       "activityLog": "Etkinlik günlüğü",
       "analytics": "Analitik",
       "oauthClients": "OAuth istemcileri",
-      "settings": "Yapılandırma"
+      "settings": "Yapılandırma",
+      "discordImages": "Discord botu görselleri",
+      "rosterWatch": "Roster takibi",
+      "teamRequests": "Takım talepleri"
     },
     "dashboard": {
       "title": "Panel",
@@ -2210,7 +2315,8 @@
           "staff": "Ekip",
           "people": "Kişiler",
           "apiKeys": "API anahtarları",
-          "logs": "Kayıtlar"
+          "logs": "Kayıtlar",
+          "veto": "Harita vetosu"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Profili düzenle (isim, sosyal medya, etiketler)",
@@ -2235,7 +2341,8 @@
           "organization_people_link_user": "Bir kişiyi kullanıcı hesabına bağla",
           "organization_people_edit_profile": "Bir kişinin profilini düzenle (temel ve gelişmiş bilgiler)",
           "organization_api_keys_manage": "Organizasyonun API anahtarlarını yönet",
-          "organization_logs_view": "Organizasyon kayıtlarını görüntüle"
+          "organization_logs_view": "Organizasyon kayıtlarını görüntüle",
+          "organization_veto_manage": "Düzenlenen turnuvaların canlı harita vetosunu yönet"
         },
         "accessError": {
           "notFound": "Organizasyon bulunamadı."
@@ -2370,6 +2477,8 @@
         "fieldBio": "Biyografi",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia bağlantısı",
+        "fieldContactEmail": "İletişim emaili",
+        "contactEmailHint": "Gizli. Yalnızca yetkililer görebilir, sitede veya API'de asla gösterilmez.",
         "fieldActive": "Aktif takım",
         "save": "Kaydet",
         "saveSuccess": "Profil güncellendi.",
@@ -2482,7 +2591,8 @@
           "saveFailed": "Logo kaydedilemedi. Birazdan tekrar deneyin.",
           "empty": "Lütfen bir görsel seçin.",
           "requiresLeft": "Ayrılış tarihi girmek için « Takımdan ayrıldı » kutusunu işaretle.",
-          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin."
+          "invalidDiscordId": "Geçerli bir Discord kullanıcı kimliği (17 ila 20 rakam) veya sunucu daveti (discord.gg/...) girin.",
+          "invalidEmail": "Geçerli bir email adresi girin."
         },
         "fieldOrganization": "Organizasyon",
         "organizationPlaceholder": "Bir organizasyon seç",
@@ -3339,6 +3449,7 @@
           "entityNotFound": "Referans verilen bir takım veya oyuncu artık mevcut değil.",
           "membershipNotFound": "Kadro kaydı artık mevcut değil.",
           "invalidRole": "Rol artık geçerli değil.",
+          "invalidLane": "Koridorlardan biri geçerli değil.",
           "logoNotFound": "Logo kaydı artık mevcut değil.",
           "alreadyLinked": "Bu oyuncu zaten başka bir hesaba bağlı.",
           "unknownField": "Desteklenmeyen alan.",
@@ -3428,7 +3539,9 @@
         "activityLog": "Etkinlik günlüğü",
         "analytics": "Analitik",
         "oauthClients": "OAuth istemcileri",
-        "settings": "Yapılandırma"
+        "settings": "Yapılandırma",
+        "rosterWatch": "Roster takibi",
+        "teamRequests": "Takım talepleri"
       },
       "permissionNames": {
         "admin_access": "Yönetim paneline erişim",
@@ -3479,7 +3592,11 @@
         "oauth_clients_view": "OAuth istemcilerini görüntüle",
         "oauth_clients_manage": "OAuth istemcileri oluştur, düzenle veya sil",
         "settings_view": "Yapılandırmayı ve OpenData izlemesini görüntüleme",
-        "settings_manage": "Yapılandırmayı düzenleme"
+        "settings_manage": "Yapılandırmayı düzenleme",
+        "roster_watch_view": "Roster takibini görüntüle",
+        "roster_watch_manage": "Roster takibi tweetlerini incele ve takip edilen hesapları yönet",
+        "team_requests_view": "Takım taleplerini görüntüle",
+        "team_requests_manage": "Takımlara gönderilen bilgi taleplerini hazırla ve takip et"
       },
       "create": {
         "button": "Yeni rol",
@@ -3779,6 +3896,7 @@
         "assignEntrantsTitle": "Grup katılımcıları",
         "assignEntrantsDescription": "Turnuvanın katılımcılarından hangilerinin bu İsviçre grubunda olduğunu seçin.",
         "assignEntrantsEmpty": "Bu turnuvada katılımcı yok.",
+        "assignEntrantsInGroup": "{name} grubunda",
         "assignEntrantsSuccess": "Katılımcılar güncellendi.",
         "startSwissButton": "1. turu başlat",
         "startSwissSuccess": "1. tur oluşturuldu.",
@@ -3788,7 +3906,22 @@
         "addMatchSubmit": "Ekle",
         "addMatchSuccess": "Maç eklendi.",
         "addMatchEntrantTbd": "TBD",
+        "participantsButton": "Takımlar",
+        "participantsTitle": "{name} takımları",
+        "participantsDescription": "Burada listelenen takımlar, henüz maç eklenmemiş olsa bile herkese açık sıralamada görünür.",
+        "participantsEmpty": "Bu turnuvaya henüz kayıtlı takım yok.",
+        "participantsCount": "{count, plural, one {# takım} other {# takım}}",
+        "participantsSuccess": "Takımlar güncellendi.",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "Tur",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "Best of",
         "fieldMatchEntrantA": "Takım A",
         "fieldMatchEntrantB": "Takım B",
@@ -3835,7 +3968,13 @@
           "roundAboveMax": "Bu tur, grubun azami tur sayısını aşıyor.",
           "sameEntrant": "İki slot aynı takımı içeremez.",
           "entrantNotFound": "Bu takım turnuvaya kayıtlı değil.",
+          "entrantHasMatches": "Bu grupta maçı olan bir takım kaldırılamaz.",
           "entrantNotInGroup": "Bu takım bu gruba atanmamış.",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Yalnızca round robin grupları tüm aşamadaki maçları sayabilir.",
           "cannotMove": "Bu konteyner daha fazla taşınamaz.",
           "parentInvalid": "Bu küme burada kullanılamaz.",
           "tiebreakersInvalid": "Her eşitlik bozucuyu önerilen listeden yalnızca bir kez kullanın.",
@@ -3852,6 +3991,7 @@
             "points": "Puan",
             "buchholz": "Buchholz",
             "map_diff": "Harita farkı",
+            "game_diff": "Oyun farkı",
             "round_diff": "Raunt farkı",
             "head_to_head": "İkili averaj",
             "seed": "Seed"
@@ -3860,17 +4000,23 @@
         "pointsConfig": {
           "title": "Puan",
           "hint": "Kazanılan veya kaybedilen her maç, harita ve raunt takıma puan kazandırır. Rauntlar yalnızca skoru girilmiş haritalarda sayılır.",
+          "hintGames": "Kazanılan veya kaybedilen her maç ve oyun takıma puan kazandırır.",
           "enable": "Puan kullan",
           "scopes": {
             "match": "Maç",
             "map": "Her harita",
+            "game": "Her oyun",
             "round": "Her raunt",
             "forfeit": "Hükmen (diğerlerinin yerine geçer)"
           },
           "win": "Kazanıldı",
           "loss": "Kaybedildi",
           "notUsed": "Puanlar, Puan eşitlik bozucular arasında olduğunda grubu sıralar."
-        }
+        },
+        "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (tüm aşamadaki maçlar sayılır)",
+        "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve bu aşamadaki herhangi bir gruptaki tamamlanmış maçları sayılır. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
+        "matchScopeNoTeams": "Bu gruba henüz takım atanmadı, bu yüzden tablosu boş. Önce takım atayın.",
+        "matchScopeSwitchWarning": "Aşama kapsamına geçmek yalnızca atanan takımları listeler. Bu grupta oynayıp atanmamış takımlar, siz atayana kadar tablodan kaybolur."
       },
       "bracketPage": {
         "title": "Braket yönetimi",
@@ -4332,6 +4478,7 @@
           "manualScoreboardDescription": "Getirilecek bir Riot maç kimliği olmayan oyunlar için (LAN, çok eski, vb).",
           "columnPlayer": "Oyuncu",
           "columnIgn": "IGN",
+          "previousLineupNote": "Önceki lineup (oynanan son harita), harita alındığında değiştirilir.",
           "noPlayerData": "Oyuncu verisi yok.",
           "columnAgent": "Ajan",
           "columnKills": "Öldürme",
@@ -4437,6 +4584,163 @@
             "mergeInvalidMatchId": "Riot maç kimliklerinden biri geçersiz.",
             "mergeInvalidRoundRange": "Her segmentin ilk round'u son round'undan önce olmalıdır.",
             "mergeMapNotFound": "Bu harita artık mevcut değil."
+          }
+        },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "{order}. oyunun draftı",
+          "backToMatch": "Maça dön",
+          "description": "Bu oyunun ban ve pick sırası. Kullanılmayan adımları boş bırakın.",
+          "differsWarning": "İçe aktarma kayıtlı draft ile uyuşmuyor: yeniden içe aktarmada farklı şampiyonlar bulundu. Draftı gözden geçirip kaydederek kendi draftınızı koruyun.",
+          "blueSide": "Mavi taraf",
+          "blueLockedHint": "İçe aktarma tarafından belirlenir (Riot'un mavi takımı).",
+          "firstPickLockedHint": "İçe aktarma tarafından belirlenir (ilk ban'ı yapan taraf).",
+          "firstPick": "İlk pick",
+          "phase": {
+            "ban1": "Ban aşaması 1",
+            "pick1": "Pick aşaması 1",
+            "ban2": "Ban aşaması 2",
+            "pick2": "Pick aşaması 2"
+          },
+          "side": {
+            "blue": "Mavi",
+            "red": "Kırmızı"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Şampiyon yok",
+          "searchPlaceholder": "Şampiyon ara",
+          "noResults": "Eşleşen şampiyon yok",
+          "unplacedTitle": "Henüz yerleştirilmemiş pickler",
+          "save": "Draftı kaydet",
+          "saving": "Kaydediliyor…",
+          "saved": "Draft kaydedildi",
+          "error": {
+            "notFound": "Bu oyun bulunamadı.",
+            "entrantsUnset": "Önce maçın iki takımı belirlenmelidir.",
+            "blueNotAnEntrant": "Mavi taraf, maçın iki takımından biri olmalıdır.",
+            "blueLocked": "İçe aktarılan oyunun mavi tarafı içe aktarma tarafından belirlenir.",
+            "firstPickLocked": "İçe aktarılan bir oyunun ilk pick'i içe aktarma tarafından belirlenir.",
+            "invalidFirstPick": "İlk pick mavi ya da kırmızı olmalıdır.",
+            "invalidStep": "{step}. adım yok ya da iki kez verilmiş.",
+            "unknownChampion": "{championName} şampiyon listesinde yok.",
+            "duplicateChampion": "{championName} draftta birden fazla kez var."
+          }
+        },
+        "games": {
+          "heading": "Oyunlar",
+          "description": "Bu seride oynanan oyunlar, sırasıyla.",
+          "empty": "Henüz oyun yok.",
+          "gameLabel": "Oyun {order}",
+          "winnerLabel": "Kazanan: {name}",
+          "noWinner": "Henüz kazanan yok",
+          "finished": "Tamamlandı",
+          "notFinished": "Tamamlanmadı",
+          "draftButton": "Draft",
+          "draftDiffers": "İçe aktarma kayıtlı draft ile uyuşmuyor",
+          "forfeit": "Hükmen",
+          "cancel": "İptal",
+          "save": "Kaydet",
+          "saving": "Kaydediliyor…",
+          "createButton": "Oyun ekle",
+          "createTitle": "Oyun ekle",
+          "editTitle": "Oyunu düzenle",
+          "dialogDescription": "Bu serideki bir oyunun sonucunu girin.",
+          "editButton": "Düzenle",
+          "deleteButton": "Sil",
+          "deleteTitle": "Oyunu sil",
+          "deleteConfirm": "{order}. oyun silinsin mi? Maç skoru kalan oyunlara göre yeniden hesaplanır.",
+          "deleteError": "Oyun silinemedi.",
+          "deleteSuccess": "Oyun silindi.",
+          "saveError": "Oyun kaydedilemedi.",
+          "saveSuccess": "Oyun kaydedildi.",
+          "fieldOrder": "Sıra",
+          "fieldWinner": "Kazanan",
+          "fieldWinnerNone": "Henüz kazanan yok",
+          "fieldCompleted": "Tamamlandı",
+          "fieldForfeit": "Hükmen",
+          "fieldNote": "Not",
+          "fieldError": {
+            "invalid": "Geçerli bir değer girin.",
+            "tooLong": "Çok uzun.",
+            "duplicateOrder": "Bu sıra başka bir oyun tarafından kullanılıyor.",
+            "winnerRequired": "Tamamlanan bir oyunun kazananı olmalı.",
+            "notAnEntrant": "Kazanan iki takımdan biri olmalı.",
+            "notCompleted": "Kazanan belirlemek için oyunu tamamlandı olarak işaretleyin.",
+            "invalidMatchId": "EUW1_6123456789 biçimini kullanın: bir platform kodu, bir alt çizgi, ardından maç numarası.",
+            "duplicateMatchId": "Başka bir oyun bu Riot maç kimliğini zaten kullanıyor."
+          },
+          "fieldApiMatchId": "Riot maç kimliği",
+          "fieldApiMatchIdHint": "Örneğin EUW1_6123456789. Platform bu kimlikten alınır.",
+          "leaguepedia": {
+            "label": "Leaguepedia maçı",
+            "none": "Yok",
+            "noData": "veri yok",
+            "gameNumber": "Maç {number}",
+            "fetch": "Leaguepedia'dan getir",
+            "fetching": "Getiriliyor…",
+            "renew": "Yenile",
+            "reprocess": "Yeniden işle",
+            "success": "Maç Leaguepedia'dan kaydedildi",
+            "error": {
+              "noData": "Bu maçın Leaguepedia'da V5 verisi yok.",
+              "notInBucket": "Bu maç henüz depoda yok. Önce getirin.",
+              "pageInvalid": "Bu maçın Leaguepedia sayfaları geçerli maç verisi değil.",
+              "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin.",
+              "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+              "sidesUnresolved": "Bu maçın iki takımı, serinin iki katılımcısıyla eşleşmiyor.",
+              "missingPlayers": "{count, plural, one {# oyuncu henüz bir kişiye bağlanmadı} other {# oyuncu henüz bir kişiye bağlanmadı}}",
+              "invalidUpload": "Maç verisi içe aktarma kontrollerinden geçemedi.",
+              "storeFailed": "Maç kaydedilemedi.",
+              "invalidOrder": "Maç numarası 1 veya daha büyük bir tam sayı olmalı.",
+              "lolIdConflict": "Bir Riot hesabı zaten başka bir kişiye bağlı.",
+              "sidesInvalid": "Mavi ve kırmızı için iki farklı katılımcı seçin.",
+              "roleInvalid": "Değişiklikteki bir rol geçersiz.",
+              "orderTaken": "Bu serinin {order}. maçı zaten başka verilerle kayıtlı. Başka bir maç numarası seçip yeniden kaydedin.",
+              "dataDragonUnavailable": "Şampiyon adları şu an kullanılamıyor. Daha sonra tekrar deneyin.",
+              "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
+              "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
+              "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın.",
+              "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin.",
+              "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın."
+            },
+            "searchPlaceholder": "Takım, maç veya tarihe göre ara",
+            "noResults": "Eşleşen maç yok",
+            "previewTitle": "Maçı kontrol edin",
+            "previewDescription": "Her taraf için katılımcıyı seçin ve henüz bağlı olmayan her oyuncuyu bağlayın.",
+            "back": "Geri",
+            "saveGame": "Maçı kaydet",
+            "sideBlue": "Mavi",
+            "sideRed": "Kırmızı",
+            "sidesTitle": "Taraflar",
+            "blueSide": "Mavi taraf",
+            "redSide": "Kırmızı taraf",
+            "chooseEntrant": "Bir katılımcı seçin",
+            "suggestedPlayers": "Bağlı oyunculardan önerildi",
+            "suggestedNames": "Takım adlarından önerildi",
+            "winnerLabel": "Kazanan: {name}",
+            "noWinner": "Kazanan yok",
+            "lengthLabel": "Süre: {minutes} dk",
+            "playersTitle": "Oyuncular",
+            "notLinked": "Henüz bağlı değil",
+            "linkExisting": "Mevcut olanı bağla",
+            "createNew": "Yeni oluştur",
+            "newHandle": "Yeni kişinin adı",
+            "unresolvedHint": "Henüz bağlı olmayan her oyuncu için bir kişi bağlayın veya oluşturun.",
+            "roleLabel": "Rol",
+            "roleNone": "Rol yok",
+            "positionRole": "Harita konumlarına göre {role}",
+            "alreadyStoredHere": "bu serinin {order}. maçı olarak kayıtlı",
+            "alreadyStoredElsewhere": "başka bir seride kayıtlı",
+            "refreshGames": "Maç listesini yenile",
+            "refreshCooldown": "Bir saatten kısa süre önce yenilendi. Daha sonra tekrar deneyin.",
+            "refreshed": "Maç listesi yenilendi ({count} maç)",
+            "refreshError": "Maç listesi yenilenemedi. Daha sonra tekrar deneyin.",
+            "riotFetch": "Riot'tan al",
+            "riotSuccess": "Maç Riot'tan kaydedildi",
+            "riotTournamentRealm": "Bu maç turnuva realm'inde oynandı, bu yüzden Riot API'sinden alınamaz."
           }
         },
         "liquipediaImportButton": "Liquipedia maç içe aktarma"
@@ -4721,7 +5025,30 @@
       "activeFilterLabel": "Aktivite",
       "activeFilterAny": "Tüm turnuvalar",
       "activeFilterActive": "Aktif",
-      "activeFilterInactive": "Pasif"
+      "activeFilterInactive": "Pasif",
+      "leaguepedia": {
+        "title": "Leaguepedia maçları",
+        "description": "Maç listesi, temel sayfa ve altındaki tüm sayfalar için Leaguepedia Cargo tablolarından gelir.",
+        "basePageLabel": "Leaguepedia temel sayfası",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Kaydetme, maçları Leaguepedia'dan okur. Okuma başarısız olursa hiçbir şey kaydedilmez.",
+        "save": "Kaydet ve maçları getir",
+        "saving": "Getiriliyor…",
+        "refresh": "Leaguepedia'dan yenile",
+        "lastFetched": "Son okuma {date} · {count, plural, one {# maç} other {# maç}}",
+        "neverFetched": "Henüz okunmadı",
+        "success": "{count, plural, one {# maç getirildi} other {# maç getirildi}}",
+        "error": {
+          "gameClaimed": "Bu maçlar zaten başka bir turnuvaya ait, bu yüzden buradan bağlanamaz.",
+          "invalidBasePage": "# < > [ ] | '{ }' içermeyen ve başında veya sonunda / bulunmayan bir sayfa adı kullanın.",
+          "notFound": "Turnuva bulunamadı.",
+          "notLinked": "Önce bir temel sayfa kaydedin.",
+          "cooldown": "Oyun listesi bir saatten kısa süre önce okundu. Daha sonra tekrar dene.",
+          "missingConfig": "Leaguepedia bot girişi bu sunucuda yapılandırılmamış.",
+          "fetch": "Leaguepedia okunamadı. Daha sonra tekrar deneyin."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Bildirimler",
@@ -4807,6 +5134,88 @@
       "statDismissed": "Reddedildi",
       "error": {
         "notFound": "Bu kayıt artık mevcut değil."
+      },
+      "images": {
+        "title": "Discord botu görselleri",
+        "subtitle": "Sunucuların özelleştirdiği uyarı görselleri. Doğrulanan görsel listeden çıkar ve yalnızca düzenlenirse geri gelir.",
+        "empty": "İncelenecek görsel yok.",
+        "imageAlt": "Bir sunucunun uyarı görseli",
+        "openImage": "Görseli yeni sekmede aç",
+        "event": {
+          "match_live": "Canlı maç",
+          "match_finished": "Maç bitti",
+          "map_finished": "Harita bitti"
+        },
+        "server": "Sunucu",
+        "unknownUser": "Bilinmeyen hesap",
+        "guildBlacklisted": "Kara listedeki sunucu",
+        "userBlacklisted": "Kara listedeki kullanıcı",
+        "verifyButton": "Doğrula",
+        "sanctionButton": "Yaptırım uygula",
+        "verifySuccess": "Görsel doğrulandı.",
+        "error": {
+          "notFound": "Bu görsel zaten işlendi veya artık mevcut değil."
+        },
+        "sanction": {
+          "title": "Bu görsele yaptırım uygula",
+          "description": "Sunucuya ve bu görseli yükleyen kişiye ne olacağını seç.",
+          "sanctionsLabel": "Yaptırımlar",
+          "option": {
+            "blacklistGuild": {
+              "label": "Sunucuyu kara listeye al",
+              "hint": "Sunucu artık paneli kullanamaz ve uyarı almaz."
+            },
+            "blacklistUser": {
+              "label": "Discord hesabını kara listeye al",
+              "hint": "Bu Discord hesabı artık hiçbir sunucuda botu yönetemez."
+            },
+            "resetImage": {
+              "label": "Görseli sıfırla",
+              "hint": "Özel görsel silinir ve sunucu yalnızca metin içeren uyarıya döner."
+            },
+            "editMessages": {
+              "label": "Bu görselle gönderilmiş mesajları düzenle",
+              "hint": "Görsel yayınlanmış uyarılardan kaldırılır ve yerine GC Stats moderasyonunun kaldırdığını belirten bir not konur."
+            }
+          },
+          "alreadyBlacklisted": "Zaten kara listede.",
+          "reasonLabel": "Sebep",
+          "reasonHint": "Kara liste kaydıyla birlikte saklanır.",
+          "cancel": "İptal",
+          "submit": "Yaptırım uygula",
+          "submitting": "Yaptırım uygulanıyor...",
+          "success": "Yaptırım uygulandı.",
+          "error": {
+            "notFound": "Bu görsel zaten işlendi veya artık mevcut değil.",
+            "sanctions": {
+              "required": "En az bir yaptırım seç."
+            },
+            "blacklistUser": {
+              "noEditor": "Son düzenleyenin Discord hesabı bilinmiyor."
+            },
+            "reason": {
+              "required": "Bir sebep gir.",
+              "tooLong": "Sebep çok uzun (en fazla {max} karakter)."
+            }
+          },
+          "successQueued": "Yaptırım uygulandı, {count} mesaj kısa süre içinde düzenlenecek."
+        },
+        "editor": "Düzenleyen",
+        "history": {
+          "title": "Geçmiş",
+          "subtitle": "Uyarı görselleri hakkında alınan tüm kararlar, görsel sıfırlandıktan sonra bile saklanır.",
+          "empty": "Henüz karar yok.",
+          "verified": "Doğrulandı",
+          "sanctioned": "Yaptırım uygulandı",
+          "moderator": "Karar veren",
+          "reason": "Gerekçe",
+          "sanction": {
+            "blacklist_guild": "Sunucu kara listeye alındı",
+            "blacklist_user": "Hesap kara listeye alındı",
+            "reset_image": "Görsel sıfırlandı",
+            "edit_messages": "Mesajlar düzenlendi"
+          }
+        }
       }
     },
     "forum": {
@@ -4991,6 +5400,119 @@
       "hasLeft": "Takımdan ayrıldı",
       "untilLabel": "Ayrılış tarihi",
       "unknownHint": "Bitiş tarihi bilinmiyor, bilmiyorsan boş bırak."
+    },
+    "vetoManagement": {
+      "title": "Canlı harita vetosu",
+      "subtitle": "Takımlar haritalarını özel bir bağlantıdan veto eder, sonuç maçı anlık olarak doldurur.",
+      "openPage": "Canlı harita vetosu",
+      "backToTournament": "{name} sayfasına dön",
+      "enableTitle": "Etkinleştirme",
+      "enableDescription": "Etkinleştirildiğinde turnuvanın her takımı özel bir veto bağlantısı alır ve organizatör vetoyu kendi panelinden yönetebilir.",
+      "enabled": "Etkin",
+      "disabled": "Devre dışı",
+      "enableButton": "Vetoyu etkinleştir",
+      "disableButton": "Vetoyu devre dışı bırak",
+      "enabledSuccess": "Canlı veto etkinleştirildi.",
+      "disabledSuccess": "Canlı veto devre dışı bırakıldı.",
+      "settingsTitle": "Ayarlar",
+      "settingsDescription": "Turnuvanın tüm maçlarına uygulanan kurallar.",
+      "firstMoverLabel": "Vetoyu kim başlatır",
+      "mode": {
+        "coin_toss": "Yazı tura belirler",
+        "coin_toss_winner": "Yazı tura kazananı belirler",
+        "advantage": "Avantajlı takım belirler",
+        "predefined": "Önceden belirlenmiş"
+      },
+      "modeHint": {
+        "coin_toss": "Yazı tura, ilk ban yapacak takımı seçer.",
+        "coin_toss_winner": "Yazı tura bir kazanan belirler, kazanan hangi takımın önce ban yapacağını seçer.",
+        "advantage": "Avantaj tanımlanan takım, hangi takımın önce ban yapacağını seçer.",
+        "predefined": "Seçilen yuvadaki takım (maçın A veya B takımı) her zaman önce ban yapar."
+      },
+      "advantageLabel": "Avantajlı takım",
+      "advantageNone": "Bir takım seç",
+      "slotLabel": "Başlayan takım",
+      "slotA": "A Takımı",
+      "slotB": "B Takımı",
+      "timeoutLabel": "Hamle başına süre (saniye)",
+      "timeoutHint": "Süresi dolan takıma rastgele bir harita veya taraf atanır. 10 ile 600 arasında.",
+      "poolLabel": "Harita havuzu",
+      "poolCount": "{count} seçildi, 7 gerekli.",
+      "patchLabel": "Veya bir yamanın haritalarını kullan",
+      "patchHint": "Yukarıda hiç harita seçilmediğinde kullanılır, örneğin 11.07. Bu yamada oynanan haritalar kullanılır.",
+      "saveButton": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "saveSuccess": "Ayarlar kaydedildi.",
+      "saveFailed": "Bazı alanlar geçersiz.",
+      "linksTitle": "Takım bağlantıları",
+      "linksDescription": "Her takımın tüm turnuva için tek bir özel bağlantısı vardır. Bağlantıya sahip herkes hesap gerekmeden takım adına veto yapabilir.",
+      "noEntrants": "Bu turnuvada henüz takım yok.",
+      "noLink": "Henüz bağlantı yok",
+      "generate": "Oluştur",
+      "copyLink": "Bağlantıyı kopyala",
+      "copied": "Kopyalandı",
+      "copyFailed": "Bağlantı kopyalanamadı.",
+      "regenerate": "Yeniden oluştur",
+      "regenerated": "Yeni bağlantı oluşturuldu, eskisi artık çalışmıyor.",
+      "regenerateTitle": "Bu bağlantı yeniden oluşturulsun mu?",
+      "regenerateDescription": "{team} takımının mevcut bağlantısı hemen çalışmayı durdurur. Yeni bağlantıyı takıma gönderin.",
+      "cancel": "İptal",
+      "matchesTitle": "Maçlar",
+      "matchesDescription": "Bir maçın harita havuzunu ayarlayın veya başlamış bir vetoyu sıfırlayın.",
+      "noMatches": "Yaklaşan maç yok.",
+      "teamsUnknown": "Takımlar henüz belli değil",
+      "editPool": "Harita havuzu",
+      "matchPoolHint": "Yalnızca bu maç için haritalar. Seçim yapılmazsa turnuva havuzu kullanılır.",
+      "useTournamentPool": "Turnuva havuzunu kullan",
+      "poolSaved": "Harita havuzu kaydedildi.",
+      "reset": "Sıfırla",
+      "resetTitle": "Bu veto sıfırlansın mı?",
+      "resetDescription": "Seçilmiş tüm banlar, pickler ve taraflar silinir ve takımların yeniden hazır olması gerekir.",
+      "resetDone": "Veto sıfırlandı.",
+      "status": {
+        "waiting": "Bekliyor",
+        "choosing": "Başlayan seçiliyor",
+        "running": "Devam ediyor",
+        "done": "Tamamlandı"
+      },
+      "error": {
+        "notFound": "Bulunamadı.",
+        "firstMoverMode": {
+          "invalid": "Geçerli bir seçenek seçin."
+        },
+        "advantageEntrantId": {
+          "required": "Avantajlı takımı seçin.",
+          "invalid": "Bu takım turnuvada yer almıyor."
+        },
+        "predefinedSlot": {
+          "invalid": "A veya B takımını seçin."
+        },
+        "actionTimeoutSeconds": {
+          "required": "Bir süre girin.",
+          "notInteger": "Tam sayı olarak saniye girin.",
+          "outOfRange": "10 ile 600 saniye arasında bir değer girin."
+        },
+        "mapPool": {
+          "required": "7 harita seçin veya bir yama belirtin.",
+          "invalidMap": "Haritalardan biri geçerli değil.",
+          "duplicateMap": "Bir harita iki kez seçilmiş.",
+          "poolSize": "Tam olarak 7 harita seçin.",
+          "vetoRunning": "Bir veto devam ediyor, havuzu değiştirmeden önce bitmesini bekleyin veya sıfırlayın."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "11.07 gibi bir yama girin.",
+          "patchUnknown": "Bu yama 7 haritalık bir havuz vermiyor, haritaları elle seçin."
+        },
+        "matchPool": {
+          "notFound": "Maç bulunamadı.",
+          "invalidMap": "Haritalardan biri geçerli değil.",
+          "duplicateMap": "Bir harita iki kez seçilmiş.",
+          "poolSize": "Tam olarak 7 harita seçin veya turnuva havuzunu kullanmak için hiç seçmeyin.",
+          "vetoStarted": "Veto zaten başladı, önce sıfırlayın."
+        }
+      },
+      "copyOverlay": "Overlay bağlantısı",
+      "overlayCopied": "Overlay bağlantısı kopyalandı, tarayıcı kaynağı olarak ekleyin."
     },
     "personPicker": {
       "notInGame": "Henüz {game} içinde değil"
@@ -5216,6 +5738,247 @@
         "tooShort": "En az {min} karakter.",
         "tooLong": "En fazla {max} karakter."
       }
+    },
+    "rosterWatch": {
+      "title": "Roster takibi",
+      "subtitle": "Takım hesaplarının tweetleri, roster değişiklikleri bir insan tarafından incelenebilsin diye bir yapay zeka ile sınıflandırılır.",
+      "empty": "Burada incelenecek bir şey yok.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Kontrol edilecek",
+        "done": "İncelendi"
+      },
+      "filters": {
+        "period": "Dönem",
+        "periodAny": "Herhangi bir dönem",
+        "periodDays": "Son {days} gün",
+        "topic": "Konu",
+        "topicAny": "Herhangi bir konu"
+      },
+      "topic": {
+        "roster_join": "Oyuncu katıldı",
+        "roster_leave": "Oyuncu ayrıldı",
+        "roster_bench": "Oyuncu yedeğe alındı",
+        "staff_change": "Staff değişikliği",
+        "tryouts": "Tryouts",
+        "not_enough_info": "Yeterli bilgi yok",
+        "wrong_game": "Yanlış oyun",
+        "match_promo": "Maç tanıtımı",
+        "match_result": "Maç sonucu",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Yayın",
+        "content": "İçerik",
+        "community": "Topluluk",
+        "other": "Diğer"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Roster değil",
+        "unsure": "Emin değil"
+      },
+      "card": {
+        "openTweet": "Tweeti aç",
+        "noText": "Metin yok",
+        "openPhoto": "Fotoğrafı aç",
+        "openVideo": "Videoyu aç",
+        "players": "Kişiler:"
+      },
+      "actions": {
+        "editTeam": "Takımı düzenle",
+        "ignore": "Yoksay",
+        "notRoster": "Roster değil",
+        "done": "Tamam"
+      },
+      "deck": {
+        "next": "Sonraki",
+        "back": "Geri",
+        "remaining": "Bu sayfada {count} kaldı",
+        "allSeen": "Bu sayfadaki tüm tweetleri inceledin.",
+        "restart": "Baştan başla",
+        "showOriginal": "Orijinali göster",
+        "showTranslation": "İngilizce çeviriyi göster",
+        "explanation": "Açıklama",
+        "explanationPlaceholder": "Neden roster ile ilgili değil?",
+        "confirm": "Onayla",
+        "pickTopic": "Ne hakkında?"
+      },
+      "reviewed": {
+        "team_edited": "Takım düzenlendi",
+        "ignored": "Yoksayıldı",
+        "marked_not_roster": "Roster değil olarak işaretlendi",
+        "reported_missed": "Kaçırılmış olarak bildirildi"
+      },
+      "error": {
+        "notFound": "Bu tweet artık mevcut değil.",
+        "invalidState": "Bu tweet bu işlemi kabul etmiyor, zaten incelenmiş olabilir.",
+        "invalidTopic": "Geçerli bir konu seç.",
+        "noteTooLong": "Not çok uzun (en fazla 1000 karakter)."
+      },
+      "accounts": {
+        "title": "Takip edilen hesaplar",
+        "subtitle": "Günde bir kez çekilen X hesapları.",
+        "team": "Takım",
+        "teamPlaceholder": "Bir takım seç",
+        "teamSearch": "Takım ara",
+        "teamNoResults": "Takım bulunamadı",
+        "handle": "X kullanıcı adı",
+        "add": "Ekle",
+        "added": "Hesap eklendi.",
+        "enabled": "Etkin",
+        "toastEnabled": "Hesap etkinleştirildi.",
+        "toastDisabled": "Hesap devre dışı bırakıldı.",
+        "lastPolled": "Son çekme",
+        "lastError": "Son hata",
+        "empty": "Henüz takip edilen hesap yok.",
+        "noResults": "Bu aramayla eşleşen hesap yok.",
+        "searchPlaceholder": "Bir takım veya kullanıcı adı ara",
+        "count": "{count, plural, one {# hesap} other {# hesap}}",
+        "previous": "Önceki sayfa",
+        "next": "Sonraki sayfa",
+        "error": {
+          "notFound": "Bu hesap artık mevcut değil.",
+          "teamRequired": "Bir takım seç.",
+          "teamNotFound": "Bu takım artık mevcut değil.",
+          "handleRequired": "Bir X kullanıcı adı gir.",
+          "handleInvalid": "Kullanıcı adı 1 ile 15 harf, rakam veya alt çizgiden oluşmalı.",
+          "handleTaken": "Bu kullanıcı adı zaten takip ediliyor."
+        }
+      },
+      "import": {
+        "button": "Otomatik içe aktarma",
+        "title": "X hesaplarını içe aktar",
+        "description": "Turnuvadaki her takımın sosyal medya bağlantılarında bulunan X hesabını takip eder.",
+        "tournament": "Turnuva",
+        "tournamentPlaceholder": "Bir turnuva seç",
+        "tournamentSearch": "Turnuva ara",
+        "tournamentNoResults": "Turnuva bulunamadı",
+        "stage": "Aşama",
+        "allStages": "Tüm aşamalar",
+        "cancel": "İptal",
+        "submit": "İçe aktar",
+        "importing": "İçe aktarılıyor...",
+        "success": "{added, plural, =0 {Hesap eklenmedi} one {# hesap eklendi} other {# hesap eklendi}}. Zaten takip edilen: {alreadyFollowed}, X hesabı olmayan: {noTwitter}, geçersiz: {invalid}.",
+        "error": {
+          "tournamentRequired": "Bir turnuva seç.",
+          "tournamentNotFound": "Bu turnuva artık mevcut değil.",
+          "stageNotFound": "Bu aşama turnuvaya ait değil."
+        }
+      },
+      "searchPlaceholder": "Bir tweet veya takım ara",
+      "searchSubmit": "Ara",
+      "statusLabel": "Durum",
+      "columnTeam": "Takım",
+      "columnTweet": "Tweet",
+      "columnType": "Tür",
+      "columnDate": "Tarih",
+      "columnReview": "İncele"
+    },
+    "teamRequests": {
+      "title": "Takım talepleri",
+      "subtitle": "Takımlardan istediğimiz bilgileri takip edin ve gönderin: logo, sosyal medya hesapları ve roster.",
+      "tabs": {
+        "recommended": "Önerilenler",
+        "pending": "Devam eden",
+        "done": "Tamamlanan"
+      },
+      "scopeLabel": "Gösterilen talepler",
+      "scope": {
+        "mine": "Taleplerim",
+        "all": "Tüm talepler"
+      },
+      "recommended": {
+        "pickTeam": "Başka bir takım için talep hazırla",
+        "pickPlaceholder": "Bir takım seçin",
+        "searchPlaceholder": "Takım ara...",
+        "noResults": "Takım bulunamadı.",
+        "empty": "Önerilen takım yok. Yakın zamanda oynayan her takımın zaten bir talebi var.",
+        "emptyTitle": "Takım seçilmedi",
+        "emptyHint": "Talep hazırlamak için sağdan bir takım seçin.",
+        "listTitle": "Önerilen takımlar ({count})"
+      },
+      "table": {
+        "empty": "Burada talep yok.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Mesaj",
+        "markDone": "Tamamlandı olarak işaretle",
+        "reopen": "Yeniden aç",
+        "markedDone": "Talep tamamlandı olarak işaretlendi.",
+        "reopened": "Talep yeniden açıldı.",
+        "openContact": "İletişimi aç"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Web sitesi",
+        "email": "Email",
+        "other": "Diğer"
+      },
+      "builder": {
+        "title": "{team} için talep",
+        "description": "Yeşil yapılacak bir şey olmadığını, kırmızı bilgiyi takımdan istediğimizi gösterir.",
+        "loading": "Takım verileri ve son maçları yükleniyor...",
+        "alreadyPending": "Bu takım için zaten devam eden bir talep var.",
+        "dataTitle": "Elimizdekiler",
+        "dataHint": "Yeşil (sorun yok) ve kırmızı (istenecek) arasında geçiş yapmak için bir duruma tıklayın.",
+        "toggle": "{item} durumunu değiştir",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Eksik",
+        "rosterCount": "{current} güncel, {past} eski",
+        "rosterCurrent": "Güncel roster",
+        "rosterPast": "Eski roster",
+        "none": "Yok",
+        "unlistedTitle": "Son maçlarda roster listesinde olmadan oynadılar",
+        "unlistedMatches": "{count, plural, one {# maç} other {# maç}}",
+        "messageTitle": "Mesaj",
+        "messageHint": "Yukarıdaki durumlara göre oluşturuldu, kopyalamadan önce düzenleyebilirsiniz.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "copyFailed": "Kopyalama başarısız, metni elle seçin.",
+        "contactTitle": "İletişim",
+        "noContact": "Bu takım için bilinen bir iletişim yok. Önce takıma, organizasyonuna, menajerine veya koçuna sosyal medya hesapları ekleyin.",
+        "kind": {
+          "organization": "Organizasyon",
+          "manager": "Menajer",
+          "coach": "Koç",
+          "other": "Diğer"
+        },
+        "cancel": "İptal",
+        "validate": "Talebi onayla",
+        "created": "Talep eklendi.",
+        "rosterPlayers": "Oyuncular",
+        "rosterSubs": "Yedekler",
+        "rosterStaff": "Personel",
+        "open": "Bu iletişimi aç",
+        "customFree": "Diğer iletişim",
+        "customFreePlaceholder": "Bağlantı, kullanıcı adı veya herhangi bir iletişim",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "ad@ornek.com"
+      },
+      "error": {
+        "teamRequired": "Bir takım seçin.",
+        "teamNotFound": "Bu takım mevcut değil.",
+        "itemsInvalid": "Öğelerden biri geçerli değil.",
+        "itemsRequired": "En az bir öğeyi kırmızı olarak işaretleyin.",
+        "messageRequired": "Mesaj zorunludur.",
+        "messageTooLong": "Mesaj çok uzun (en fazla 4000 karakter).",
+        "contactRequired": "Bir iletişim seçin.",
+        "contactInvalid": "Bu iletişim geçerli değil.",
+        "contactTooLong": "Bu iletişim çok uzun (en fazla 300 karakter).",
+        "urlInvalid": "Web sitesi iletişimi http:// veya https:// ile başlayan geçerli bir bağlantı olmalıdır.",
+        "alreadyPending": "Bu takım için zaten devam eden bir talep var.",
+        "notFound": "Bu talep mevcut değil.",
+        "invalidState": "Bu talep zaten bu durumda.",
+        "emailInvalid": "Email adresi geçerli değil.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5248,14 +6011,18 @@
       "allAuthors": "Tüm yazarlar",
       "authorAdminSpace": "Yazarlar",
       "logs": "Kayıtlar",
-      "webhooks": "Webhook'lar"
+      "veto": "Harita vetosu",
+      "webhooks": "Webhook'lar",
+      "discordSpace": "Discord botu",
+      "discordServers": "Sunucularım"
     },
     "switcher": {
       "selectOrganization": "Bir organizasyon seçin",
       "authorSpace": "Yazar alanı",
       "apiKeySpace": "API anahtarı alanı",
       "adminAccess": "Yönetici",
-      "authorAdminSpace": "Yazarlar"
+      "authorAdminSpace": "Yazarlar",
+      "discordSpace": "Discord botu"
     },
     "picker": {
       "title": "Organizasyonlarınız",
@@ -5268,7 +6035,8 @@
       "filterTagAll": "Tümü",
       "noResults": "Organizasyon bulunamadı.",
       "adminBadge": "Yönetici",
-      "authorAdminSpace": "Yazarlar"
+      "authorAdminSpace": "Yazarlar",
+      "discordSpace": "Discord botu"
     },
     "authors": {
       "title": "Yazarlar",
@@ -5504,7 +6272,8 @@
       "level": {
         "tournament": "Turnuva",
         "match": "Maç",
-        "map": "Harita"
+        "map": "Harita",
+        "game": "Oyun"
       },
       "matchSearchPlaceholder": "Maç ara…",
       "mapSearchPlaceholder": "Harita ara…",
@@ -5523,7 +6292,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Maçlar",
       "openMaps": "Haritalar",
-      "goBack": "Geri dön"
+      "goBack": "Geri dön",
+      "gameEmpty": "Bu maçta oyun yok.",
+      "gameSearchPlaceholder": "Bir oyun ara…",
+      "openGames": "Oyunlar"
     },
     "streams": {
       "title": "Yayın kanalları",
@@ -5661,8 +6433,14 @@
         "matchNotInTournament": "Bu maç seçilen turnuvaya ait değil.",
         "mapNotFound": "Harita bulunamadı.",
         "mapNotInMatch": "Bu harita seçilen maça ait değil.",
-        "notFound": "VOD bulunamadı."
-      }
+        "notFound": "VOD bulunamadı.",
+        "gameNotFound": "Oyun bulunamadı.",
+        "gameNotInMatch": "Bu oyun seçilen maça ait değil."
+      },
+      "scopeGame": "Belirli oyun",
+      "gameLabel": "Oyun",
+      "gamePlaceholder": "Bir oyun seçin…",
+      "gameLoading": "Yükleniyor…"
     },
     "apiKeys": {
       "title": "API anahtarları",
@@ -6023,9 +6801,15 @@
       "previous": "Önceki sayfa",
       "next": "Sonraki sayfa"
     },
+    "veto": {
+      "title": "Harita vetosu",
+      "subtitle": "Kuruluşunuzun düzenlediği turnuvaların canlı vetosunu ayarlayın.",
+      "readOnlyHint": "Harita vetosunu yönetme yetkiniz yok.",
+      "noTournaments": "Kuruluşunuzun hiçbir turnuvasında harita vetosu etkin değil. Bir GC Stats yöneticisi bunu sizin için etkinleştirir."
+    },
     "webhooks": {
       "title": "Webhook'lar",
-      "description": "Bir maç, turnuva, takım veya oyuncu değiştiğinde GC Stats endpoint'lerinize bir HTTPS POST gönderir. Gönderimler yaklaşık her dakika kontrol edilir.",
+      "description": "GC Stats, bir maç, turnuva, takım, oyuncu veya roster değiştiğinde endpoint'lerinize HTTPS POST gönderir. Gönderimler yaklaşık her dakika kontrol edilir.",
       "pageTitle": "Webhook'lar",
       "pageSubtitle": "Partner API anahtarlarınızın endpoint'leri ve gönderimleri.",
       "keySwitcher": "Partner API anahtarı",
@@ -6096,6 +6880,9 @@
         },
         "player": {
           "updated": "Oyuncu güncellendi"
+        },
+        "roster": {
+          "updated": "Roster değişikliği doğrulandı"
         }
       },
       "filtersTitle": "Filtreler",
@@ -6127,7 +6914,8 @@
           "invalid": "Bu geçerli bir URL değil.",
           "notHttps": "URL https:// ile başlamalıdır.",
           "credentials": "URL kullanıcı adı veya şifre içeremez.",
-          "privateHost": "URL genel bir adrese yönlendirmelidir."
+          "privateHost": "URL genel bir adrese yönlendirmelidir.",
+          "notDiscord": "Bu bir Discord Webhook URL'si değil."
         },
         "description": {
           "tooLong": "En fazla {descriptionMaxLength} karakter."
@@ -6147,6 +6935,475 @@
         },
         "filterOfficial": {
           "invalid": "Geçersiz değer."
+        },
+        "kind": {
+          "invalid": "Geçerli bir tür seçin."
+        }
+      },
+      "kind": {
+        "label": "Tür",
+        "standard": "Standart",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Sunucunuza gönderilen imzalı JSON isteği.",
+          "discord": "Bir Discord kanalına yalnızca tweet bağlantısını gönderir."
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL'si (Sunucu ayarları, Entegrasyonlar, Webhook'lar)."
+    },
+    "discord": {
+      "serversTitle": "Discord sunucuları",
+      "serversSubtitle": "GC Stats botunu yönetebildiğiniz sunucular.",
+      "serversUnavailable": "Discord sunucularınız okunamadı. Discord hesabınızı yeniden bağlayıp tekrar deneyin.",
+      "reconnectDiscord": "Discord'u yeniden bağla",
+      "serversEmpty": "Hiçbir Discord sunucusunu yönetmiyorsunuz. Botu yapılandırmak için Sunucuyu Yönet yetkisine sahip olmanız gerekir.",
+      "subscriptionCount": "{count, plural, =0 {Uyarı yok} one {# uyarı} other {# uyarı}}",
+      "botNotJoined": "Bot eklenmedi",
+      "configure": "Yapılandır",
+      "addBot": "Botu ekle",
+      "botUnavailable": "Bot henüz eklenemiyor.",
+      "serverTitle": "Discord sunucusu",
+      "serverSubtitle": "Hangi uyarıların hangi kanalda paylaşılacağını seçin.",
+      "backToServers": "Sunuculara dön",
+      "botNotJoinedBody": "Bot henüz bu sunucuda değil. Uyarıları yapılandırmaya başlamak için botu ekleyin.",
+      "alertsTitle": "Uyarılar",
+      "alertsDescription": "Her uyarı tek bir kanalda paylaşılır ve bölgeye, takıma ve resmi duruma göre filtrelenebilir.",
+      "add": "Uyarı ekle",
+      "empty": "Henüz uyarı yok. Sunucunuzda maçları almaya başlamak için bir uyarı ekleyin.",
+      "channelsUnavailable": "Bot bu sunucunun kanallarını okuyamıyor. Kanalları görüntüleyebildiğinden emin olun, ardından sayfayı yenileyin.",
+      "channelMissing": "Kanal bulunamadı",
+      "disabledLostChannel": "Kapatıldı, bot bu kanala erişimi kaybetti. Bir kanal seçip kaydederek yeniden açın.",
+      "active": "Açık",
+      "inactive": "Kapalı",
+      "toggle": "Bu uyarıyı aç veya kapat",
+      "edit": "Düzenle",
+      "delete": "Sil",
+      "deleteTitle": "Bu uyarı silinsin mi?",
+      "deleteDescription": "Bot artık bunu paylaşmayacak. Daha önce paylaşılan mesajlar kanalınızda kalır.",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "created": "Uyarı eklendi",
+      "updated": "Uyarı güncellendi",
+      "deleted": "Uyarı silindi",
+      "addTitle": "Uyarı ekle",
+      "editTitle": "Uyarıyı düzenle",
+      "dialogDescription": "Bot, filtrelerden geçen her maç için seçilen kanalda paylaşım yapar.",
+      "eventLabel": "Uyarı türü",
+      "channelLabel": "Kanal",
+      "channelPlaceholder": "Bir kanal seçin",
+      "localeLabel": "Mesaj dili",
+      "localeHint": "Botun paylaştığı mesajların dili.",
+      "filtersTitle": "Filtreler",
+      "filtersHint": "Her şeyi almak için filtreyi boş bırakın.",
+      "regions": "Bölgeler",
+      "regionsHint": "Yalnızca seçilen bölgelerin turnuvaları.",
+      "teams": "Takımlar",
+      "teamsHint": "Yalnızca bu takımlardan biri tarafından oynanan maçlar.",
+      "teamsPlaceholder": "Takım ekle",
+      "teamsSearch": "Takım ara",
+      "teamsNoResults": "Takım bulunamadı",
+      "removeTeam": "{name} takımını kaldır",
+      "any": "Hepsi",
+      "event": {
+        "match_live": "Canlı maç",
+        "match_finished": "Maç bitti",
+        "map_finished": "Harita bitti"
+      },
+      "official": {
+        "label": "Turnuvalar",
+        "all": "Tüm turnuvalar",
+        "official": "Yalnızca resmi",
+        "unofficial": "Yalnızca resmi olmayan"
+      },
+      "error": {
+        "network": "Ağ hatası, tekrar deneyin.",
+        "notAuthenticated": "Oturum açmanız gerekiyor.",
+        "forbidden": "Bu sunucuyu yönetemezsiniz.",
+        "blacklisted": "Bu sunucu veya Discord hesabın bottan engellendi.",
+        "notFound": "Bu uyarı artık mevcut değil.",
+        "invalid": "Bazı alanlar geçersiz.",
+        "tooManySubscriptions": "Bir sunucuda en fazla {max} uyarı olabilir.",
+        "channelsUnavailable": "Bot bu sunucunun kanallarını okuyamıyor.",
+        "channelId": {
+          "required": "Bir kanal seçin.",
+          "unknownChannel": "Bu kanal sunucuda mevcut değil."
+        },
+        "event": {
+          "invalid": "Bilinmeyen uyarı türü."
+        },
+        "locale": {
+          "invalid": "Bilinmeyen dil."
+        },
+        "filterRegions": {
+          "invalid": "Bilinmeyen bölge.",
+          "tooMany": "En fazla {filterRegions} bölge seçin."
+        },
+        "filterTeamIds": {
+          "invalid": "Geçersiz takım.",
+          "tooMany": "En fazla {filterTeams} takım seçin.",
+          "unknownTeam": "Takımlardan biri mevcut değil."
+        },
+        "filterOfficial": {
+          "invalid": "Bilinmeyen değer."
+        },
+        "color": {
+          "invalid": "Geçersiz renk."
+        }
+      },
+      "alertColorLabel": "Embed rengi",
+      "alertColorHint": "Bu uyarı için sunucu rengini geçersiz kılar.",
+      "theme": {
+        "reset": "Sıfırla",
+        "cancel": "İptal",
+        "save": "Kaydet",
+        "saving": "Kaydediliyor...",
+        "colorsTitle": "Renkler",
+        "colorsDescription": "Her uyarı türünün mesaj rengi ve görsellerin varsayılan arka planı. Her uyarı kendi rengini geçersiz kılabilir.",
+        "color": {
+          "live": "Canlı maç",
+          "finished": "Maç bitti",
+          "map": "Harita bitti",
+          "background": "Görsel arka planı"
+        },
+        "colorsSaved": "Renkler kaydedildi",
+        "botTitle": "Kendi botun",
+        "botDescription": "Uyarıları GC Stats botu yerine kendi Discord botunla (adı ve avatarıyla) gönder.",
+        "tokenLabel": "Bot token'ı",
+        "tokenHint": "Discord Developer Portal'da, uygulamanın Bot sekmesinde bulunur. Şifrelenmiş olarak saklanır.",
+        "botConnect": "Bu botu kullan",
+        "botConnecting": "Kontrol ediliyor...",
+        "botConnected": "Bot bağlandı, gerekirse sunucuna davet et",
+        "botActive": "Uyarılar bu bot tarafından gönderiliyor",
+        "botInvite": "Botu davet et",
+        "botDisconnect": "GC Stats botunu kullan",
+        "botDisconnectTitle": "GC Stats botuna dönülsün mü?",
+        "botDisconnectDescription": "Bot token'ın silinir ve uyarılar, sunucunda varsa yeniden GC Stats botu üzerinden gönderilir.",
+        "botDisconnected": "GC Stats botuna dönüldü",
+        "error": {
+          "network": "Ağ hatası, tekrar dene.",
+          "notAuthenticated": "Giriş yapmış olmalısın.",
+          "forbidden": "Bu sunucuyu yönetemezsin.",
+          "blacklisted": "Bu sunucu veya Discord hesabın bottan engellendi.",
+          "invalid": "Bazı alanlar geçersiz.",
+          "color": "Geçersiz renk.",
+          "token": {
+            "required": "Bot token'ını gir.",
+            "invalidToken": "Discord bu token'ı reddetti, bir bot token'ı olduğundan emin ol.",
+            "rateLimited": "Çok fazla deneme yapıldı, bir dakika bekle."
+          }
+        },
+        "matchButton": "Maçı açan düğme",
+        "matchButtonHint": "Her uyarının altına GC Stats üzerindeki maç sayfasını açan bir düğme ekler."
+      },
+      "templates": {
+        "title": "Görsel uyarılar",
+        "description": "Bir uyarı türünün metin mesajını, şablonunuzdan oluşturulan bir görselle değiştirir. Yalnızca kendi botunu kullanan sunuculara ayrılmıştır.",
+        "usingImage": "Görsel olarak gönderildi",
+        "usingText": "Metin mesajı olarak gönderildi",
+        "presetNone": "Metin mesajı, görsel yok",
+        "presetChoose": "Şablon",
+        "presetSaved": "Şablon kaydedildi",
+        "presetLabel": "Başlangıç tasarımı",
+        "presetHint": "Görselde gösterilecek bilgileri seçin. Sonrasında her şey düzenlenebilir.",
+        "preset": {
+          "score": "Yalnızca skor",
+          "maps": "Skor ve haritalar",
+          "vetos": "Skor ve vetolar",
+          "mvp": "Skor ve MVP",
+          "full": "Tam"
+        },
+        "footer": "Alt bilgi",
+        "footerHint": "Görselin altına maç bağlantılı GC Stats bandını ekler.",
+        "footerSaved": "Alt bilgi güncellendi",
+        "toggle": "Bu uyarı türü için görsel kullan",
+        "enabled": "Görsel uyarı etkin",
+        "disabled": "Metin mesajına geri dön",
+        "addBackground": "Arka plan ekle",
+        "changeBackground": "Arka planı değiştir",
+        "removeBackground": "Arka planı kaldır",
+        "backgroundSaved": "Arka plan kaydedildi",
+        "backgroundRemoved": "Arka plan kaldırıldı",
+        "previewAlt": "Uyarı görselinin önizlemesi",
+        "previewError": "Önizleme kullanılamıyor",
+        "error": {
+          "network": "Ağ hatası, tekrar deneyin.",
+          "notAuthenticated": "Giriş yapmış olmalısınız.",
+          "forbidden": "Bu sunucuyu yönetemezsiniz.",
+          "blacklisted": "Bu sunucu veya Discord hesabın bottan engellendi.",
+          "invalid": "Şablon geçersiz.",
+          "invalidImage": "Bu görsel geçerli değil (PNG, JPEG veya WebP, en kısa kenarı en az 400 px).",
+          "tooLarge": "Bu görsel 10 MB'tan büyük.",
+          "storageFailed": "Görsel kaydedilemedi, tekrar deneyin."
+        },
+        "editDesign": "Tasarımı düzenle",
+        "presetCustom": "Özelleştirilmiş"
+      },
+      "editor": {
+        "title": "Uyarı tasarımı: {event}",
+        "description": "Tuvaldeki öğeleri sürükle, yeniden boyutlandır ve döndür, sağdan stilini ayarla ve yalnızca belirli koşullarda göster. Gönderildiği haliyle önizleme, botun birebir aynı render çıktısını kullanır.",
+        "addText": "Metin",
+        "addShape": "Şekil",
+        "undo": "Geri al",
+        "previewServer": "Gönderildiği haliyle önizleme",
+        "canvasHint": "Tuval örnek veriler gösterir. Ok tuşları seçili öğeyi taşır (10 piksel için Shift), Delete onu kaldırır. Soluk öğeler koşulları nedeniyle gizlidir.",
+        "previewTitle": "Gönderildiği haliyle önizleme",
+        "previewError": "Önizleme oluşturulamadı.",
+        "canvasHeight": "Görsel yüksekliği",
+        "backgroundColor": "Arka plan rengi",
+        "layers": "Öğeler (önce en öndeki)",
+        "noLayers": "Henüz öğe yok.",
+        "duplicate": "Çoğalt",
+        "delete": "Sil",
+        "width": "Genişlik",
+        "height": "Yükseklik",
+        "field": {
+          "tournament": "Turnuva",
+          "teamA": "A takımının adı",
+          "teamB": "B takımının adı",
+          "scoreA": "A takımının skoru",
+          "scoreB": "B takımının skoru",
+          "score": "Skor",
+          "status": "Durum",
+          "bestOf": "Best of",
+          "map": "Harita adı",
+          "maps": "Biten haritalar",
+          "matchScore": "Maç skoru",
+          "mapsInline": "Biten haritalar (tek satır)",
+          "vetos": "Vetolar",
+          "mvp": "MVP",
+          "custom": "Serbest metin",
+          "stage": "Turnuva aşaması",
+          "bestOfShort": "Best of (kısa, BO3)",
+          "teamAShort": "A takımı kısa adı",
+          "teamBShort": "B takımı kısa adı",
+          "mvpA": "A takımının MVP'si",
+          "mvpB": "B takımının MVP'si",
+          "dateTime": "Tarih ve saat",
+          "date": "Tarih",
+          "time": "Saat"
+        },
+        "customText": "Metin",
+        "font": "Yazı tipi",
+        "size": "Boyut",
+        "align": {
+          "label": "Hizalama",
+          "left": "Sol",
+          "center": "Orta",
+          "right": "Sağ"
+        },
+        "color": "Renk",
+        "bold": "Kalın",
+        "uppercase": "Büyük harf",
+        "shape": "Şekil",
+        "opacity": "Opaklık",
+        "radius": "Köşe yarıçapı",
+        "sampleText": "Metniniz",
+        "tooManyLayers": "Bir şablon en fazla {max} öğe içerebilir.",
+        "saved": "Tasarım kaydedildi",
+        "cancel": "İptal",
+        "save": "Kaydet",
+        "saving": "Kaydediliyor...",
+        "error": {
+          "network": "Ağ hatası, tekrar deneyin.",
+          "notAuthenticated": "Oturum açmanız gerekiyor.",
+          "forbidden": "Bu sunucuyu yönetemezsiniz.",
+          "blacklisted": "Bu sunucu veya Discord hesabın bottan engellendi.",
+          "invalid": "Şablon geçersiz.",
+          "invalidImage": "Bu görsel geçerli değil.",
+          "tooLarge": "Bu görsel çok büyük.",
+          "storageFailed": "Tasarım kaydedilemedi, tekrar deneyin."
+        },
+        "addImage": "Görsel",
+        "tabContent": "İçerik",
+        "tabLayout": "Yerleşim",
+        "tabStyle": "Stil",
+        "tabVisibility": "Koşullar",
+        "conditional": "Koşullu gösterilir",
+        "sourceMap": "Harita {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "A takımının logosu",
+          "teamB": "B takımının logosu",
+          "mvp": "MVP görseli (yoksa ajan simgesi)",
+          "mapCurrent": "Mevcut harita",
+          "mvpAgent": "MVP ajan simgesi",
+          "custom": "Özel görsel"
+        },
+        "variableGroup": {
+          "match": "Maç",
+          "alert": "Uyarı ve MVP",
+          "teams": "Takımlar",
+          "schedule": "Tarih ve saat",
+          "mvp": "MVP",
+          "maps": "Haritalar",
+          "vetos": "Veto"
+        },
+        "conditionValue": {
+          "live": "Canlı",
+          "finished": "Biten maç",
+          "map": "Biten harita",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "A takımı",
+          "b": "B takımı"
+        },
+        "customTextHint": "Kendi metnini yaz ve {tournament} veya {veto1.map} gibi değişkenler ekle.",
+        "insertVariable": "Değişken ekle",
+        "sourceLabel": "Görsel",
+        "fit": {
+          "label": "Sığdırma",
+          "cover": "Doldur (kırp)",
+          "contain": "Sığdır"
+        },
+        "imageFallbackHint": "Görsel yoksa, baş harfleri olan bir kutucuk gösterilir.",
+        "shapeHint": "Şeklin içeriği yoktur, Stil sekmesinden stilini ayarla.",
+        "rotation": "Döndürme (derece)",
+        "alignTitle": "Görsele hizala",
+        "addFolder": "Yeni klasör",
+        "tooManyFolders": "Bir şablon en fazla {max} klasör içerebilir.",
+        "folderDefaultName": "Klasör {n}",
+        "folderExpand": "Klasörü genişlet",
+        "folderCollapse": "Klasörü daralt",
+        "lockFolder": "Klasörü kilitle",
+        "unlockFolder": "Klasörün kilidini aç",
+        "lockLayer": "Öğeyi kilitle",
+        "unlockLayer": "Öğenin kilidini aç",
+        "folder": "Klasör",
+        "folderName": "Klasör adı",
+        "folderNameRequired": "Klasörün bir adı olmalı.",
+        "folderHint": "Klasör, listedeki öğeleri gruplar. Kilitlemek içindeki tüm öğeleri kilitler.",
+        "deleteFolder": "Klasörü sil",
+        "layerLockedHint": "Bu öğe kilitli. Düzenlemek veya taşımak için kilidini aç.",
+        "folderLockedHint": "Bu öğe klasörü tarafından kilitlendi. Düzenlemek veya taşımak için klasörün kilidini aç.",
+        "noFolder": "Klasör yok",
+        "anchorPoint": "Metin sabitleme noktası",
+        "anchorX": "Sabitleme konumu (X)",
+        "anchorHint": "Metin, uzunluğu ne olursa olsun bu X konumunda başlar, ortalanır veya biter.",
+        "anchor": {
+          "left": "Metnin başı",
+          "center": "Metnin ortası",
+          "right": "Metnin sonu"
+        },
+        "alignLeft": "Sola hizala",
+        "alignCenterX": "Yatayda ortala",
+        "alignRight": "Sağa hizala",
+        "alignTop": "Üste hizala",
+        "alignCenterY": "Dikeyde ortala",
+        "alignBottom": "Alta hizala",
+        "letterSpacing": "Harf aralığı",
+        "lineHeight": "Satır yüksekliği",
+        "shadow": "Gölge",
+        "shadowColor": "Gölge rengi",
+        "shadowBlur": "Bulanıklık",
+        "shadowX": "X kaydırma",
+        "shadowY": "Y kaydırma",
+        "borderWidth": "Kenarlık kalınlığı",
+        "borderColor": "Kenarlık rengi",
+        "gradient": "Gradyan",
+        "color2": "İkinci renk",
+        "angle": "Açı (derece)",
+        "conditionsHint": "Öğe yalnızca aşağıdaki tüm koşullar doğru olduğunda çizilir.",
+        "conditionKey": "Değişken",
+        "conditionOp": "Koşul",
+        "conditionValueLabel": "Değer",
+        "op": {
+          "is": "eşittir",
+          "isNot": "eşit değildir",
+          "exists": "doludur",
+          "empty": "boştur"
+        },
+        "addCondition": "Koşul ekle",
+        "removeCondition": "Bu koşulu kaldır",
+        "footer": "GC Stats alt bilgisi",
+        "artwork": "Arka plan olarak harita görseli",
+        "artworkSource": "Görsel kaynağı",
+        "artworkDim": "Karartma",
+        "artworkHint": "Arka plan görseli yüklendiğinde yok sayılır.",
+        "loadingMatch": "Önizleme maçı yükleniyor",
+        "timezone": "Saat dilimi",
+        "variableName": {
+          "tournament": "Turnuva adı",
+          "stage": "Turnuva aşaması",
+          "status": "Durum (canlı veya bitti)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, kısa (BO3)",
+          "score": "Maçın veya haritanın skoru",
+          "scoreA": "A takımının skoru",
+          "scoreB": "B takımının skoru",
+          "matchScore": "Maçın skoru",
+          "teamA": "A takımının adı",
+          "teamB": "B takımının adı",
+          "teamAShort": "A takımının kısa adı",
+          "teamBShort": "B takımının kısa adı",
+          "dateTime": "Maçın tarihi ve saati",
+          "date": "Maçın tarihi",
+          "time": "Maçın saati",
+          "scheduledAt": "Planlanan başlangıç",
+          "alert_kind": "Uyarı türü",
+          "map": "Biten haritanın adı",
+          "currentMap_name": "Devam eden haritanın adı",
+          "currentMap_number": "Devam eden haritanın numarası",
+          "maps": "Biten haritalar (liste)",
+          "mapsInline": "Biten haritalar (tek satır)",
+          "vetos": "Vetolar (tek satır)",
+          "mvp": "Maçın veya haritanın MVP'si",
+          "mvpA": "A takımının MVP'si",
+          "mvpB": "B takımının MVP'si",
+          "mvp_name": "MVP oyuncu",
+          "mvp_acs": "MVP'nin ACS'si",
+          "mvp_agent": "MVP'nin ajanı",
+          "mvpA_name": "A takımının MVP oyuncusu",
+          "mvpA_acs": "A takımının MVP'sinin ACS'si",
+          "mvpA_agent": "A takımının MVP'sinin ajanı",
+          "mvpB_name": "B takımının MVP oyuncusu",
+          "mvpB_acs": "B takımının MVP'sinin ACS'si",
+          "mvpB_agent": "B takımının MVP'sinin ajanı",
+          "map_alias": "{n}. haritanın adı",
+          "map_name": "{n}. haritanın adı",
+          "map_score": "{n}. haritanın skoru",
+          "map_scoreA": "A takımının {n}. haritadaki skoru",
+          "map_scoreB": "B takımının {n}. haritadaki skoru",
+          "veto_map": "{n}. vetonun haritası",
+          "veto_action": "{n}. vetonun eylemi (ban, pick, decider)",
+          "veto_team": "{n}. vetonun takımı",
+          "veto_type": "{n}. vetonun türü",
+          "veto_side": "{n}. vetonun tarafı (Saldırı veya Savunma)"
+        },
+        "insertVariableHint": "Bir değişkene tıklayarak onu metne, imlecin bulunduğu yere ekleyebilirsin.",
+        "templateLabel": "Şablon",
+        "applyTemplate": "Tasarımı bu şablonla değiştir",
+        "templateHint": "Tüm katmanları şablonla değiştirir. Geri alabilirsin.",
+        "templateApplied": "Şablon uygulandı",
+        "layoutLayer": "Düzen",
+        "pickImage": "Bir görsel seç",
+        "pickImageHint": "Her görsel türünün kendi boyutu vardır, sonradan değiştirebilirsin.",
+        "imageCategory": {
+          "teams": "Takımlar",
+          "mvp": "MVP",
+          "maps": "Haritalar",
+          "vetos": "Vetolar",
+          "custom": "Özel görsel"
+        },
+        "customUrl": "Görsel adresi",
+        "customUrlHint": "Bir görsele giden herkese açık https bağlantısı. Hiçbir şey yüklenmez, görsel kendi sitesinde kalır ve uyarı gönderilirken indirilir.",
+        "customUrlRequired": "Görsel adresi zorunludur.",
+        "customUrlInvalid": "Geçerli bir https adresi gir.",
+        "useImage": "Bu görseli kullan",
+        "sendTest": "Test gönder",
+        "sendTestHint": "Bu tasarımı gerçek bir maçla doldurup seçtiğin kanalda paylaşır. Kaydedilmemiş değişiklikler dahildir.",
+        "testChannel": "Kanal",
+        "testChannelPlaceholder": "Bir kanal seç",
+        "sendTestAction": "Gönder",
+        "sending": "Gönderiliyor",
+        "testSent": "Test gönderildi",
+        "testError": {
+          "required": "Bir kanal seç.",
+          "unknownChannel": "Bu kanal sunucuda yok.",
+          "rateLimited": "Başka bir test göndermeden önce birkaç saniye bekle.",
+          "channelsUnavailable": "Sunucunun kanalları okunamıyor.",
+          "sendFailed": "Test gönderilemedi, botun bu kanala yazabildiğini kontrol et."
         }
       }
     }
@@ -6451,6 +7708,7 @@
       "title": "Hesabın",
       "checkbox": "Bu benim: hesabımı {name} ile bağla",
       "hint": "Ekip, bu profili hesabına bağlamadan önce gerçekten sana ait olduğunu kontrol edecek.",
+      "replaces": "Hesabın şu anda {previous} ile bağlı: onaylandığında bu bağlantı değiştirilecek.",
       "state": {
         "linkedToYou": "Bu profil zaten hesabına bağlı.",
         "linkedToOther": "Bu profil zaten başka bir hesaba bağlı. Bir hata olduğunu düşünüyorsan ekiple iletişime geç.",
@@ -6562,8 +7820,32 @@
     "tabPickem": "Pick'em",
     "tabStats": "İstatistikler",
     "tabMaps": "Haritalar",
+    "tabChampions": "Şampiyonlar",
+    "championsEmpty": "Henüz oynanmış oyun yok.",
+    "championsRolesColumn": "Roller",
+    "championsRoleBansNote": "Banlar ve varlık tüm rolleri sayar.",
+    "championsInsightMostPicked": "En çok seçilen",
+    "championsInsightMostBanned": "En çok banlanan",
+    "championsInsightHighestPresence": "En yüksek varlık",
+    "championsInsightHighestWinRate": "En yüksek galibiyet oranı",
+    "championsInsightHighestKda": "En yüksek KDA",
     "tabProduction": "Prodüksiyon",
     "productionTitle": "{tournament} · Prodüksiyon",
+    "statsGroupByLabel": "Gruplandır",
+    "statsGroupBy": {
+      "none": "Gruplama yok",
+      "agent": "Ajan",
+      "role": "Rol",
+      "team": "Takım",
+      "nationality": "Uyruk"
+    },
+    "statsRole": {
+      "duelist": "Düellocu",
+      "initiator": "Başlatıcı",
+      "controller": "Kontrolcü",
+      "sentinel": "Nöbetçi"
+    },
+    "statsGroupUnknown": "Bilinmiyor",
     "statsIdentityColumn": "Oyuncu",
     "statsAgentColumn": "Ajan",
     "statsNationalityColumn": "Uyruk",
@@ -6581,6 +7863,15 @@
     "statsFilterAgentAll": "Tüm ajanlar",
     "statsFilterMap": "Harita",
     "statsFilterMapAll": "Tüm haritalar",
+    "statsChampionColumn": "Şampiyonlar",
+    "statsFilterChampion": "Şampiyon",
+    "statsFilterChampionAll": "Tüm şampiyonlar",
+    "statsFilterChampionSearch": "Şampiyon ara…",
+    "statsFilterChampionNoResult": "Şampiyon bulunamadı",
+    "statsFilterRole": "Rol",
+    "statsFilterRoleAll": "Tüm roller",
+    "statsFilterPatch": "Yama",
+    "statsFilterPatchAll": "Tüm yamalar",
     "statsFilterStartDate": "Başlangıç",
     "statsFilterEndDate": "Bitiş",
     "statsFilterSubmit": "Filtreleri uygula",
@@ -6591,13 +7882,32 @@
     "statsColumnFilterValuePlaceholder": "Eşleşecek değer...",
     "statsColumnFilterAddAnother": "Başka filtre ekle",
     "statsColumnFilterApply": "Uygula",
+    "statsColumnFilterSearch": "Ara...",
+    "statsColumnFilterNoResult": "Sonuç yok",
     "statsColumnFilterClear": "Temizle",
     "previous": "Önceki",
     "next": "Sonraki",
     "pageOf": "Sayfa {page} / {total}",
     "statsColumns": {
       "played": "Haritalar",
+      "playedGames": "Oyunlar",
+      "winRate": "Kazanma oranı",
+      "picks": "Seçimler",
+      "bans": "Banlar",
+      "presence": "Varlık",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "Raunt",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Öldürme",
       "deaths": "Ölüm",
@@ -6639,7 +7949,8 @@
     "mapsPickRatesShowMore": "Tümünü göster",
     "mapsPickRatesShowLess": "Daha az göster",
     "factOrganizer": "Organizatör",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Oyunlar"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6853,6 +8164,10 @@
     "text": "Bu sayfadaki bazı bilgiler Liquipedia'dan alınmıştır.",
     "link": "Orijinal makaleye bak"
   },
+  "leaguepediaSource": {
+    "text": "Bu sayfadaki bazı maç verileri Leaguepedia'dan alınmıştır (CC BY-SA). Orijinal sayfalar:",
+    "game": "Oyun {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode'u",
     "title": "Liquipedia wikicode'u",
@@ -6897,7 +8212,8 @@
     "copied": "Kopyalandı",
     "copyError": "Görsel kopyalanamadı. Bunun yerine indir.",
     "exporting": "Oluşturuluyor",
-    "exportError": "Görsel oluşturulamadı. Tekrar dene."
+    "exportError": "Görsel oluşturulamadı. Tekrar dene.",
+    "descriptionGames": "Genişliği {width} px olan PNG görsel, paylaşıma hazır. Tüm oyunları veya tek bir oyunu seçin."
   },
   "share": {
     "button": "Paylaş",
@@ -6958,10 +8274,83 @@
     "pointsUnknown": "Puanlar üzerinden katıldı",
     "iconLabel": "Katılım kaynağı"
   },
+  "veto": {
+    "title": "Harita vetosu",
+    "invalidLinkTitle": "Geçersiz veto bağlantısı",
+    "invalidLinkHint": "Bu bağlantı geçerli değil veya bu turnuva için veto etkin değil. Organizatörlerden yeni bir bağlantı isteyin.",
+    "noMatch": "Şimdilik veto yapılacak maç yok. Sonraki maçınız hazır olduğunda bu sayfa kendiliğinden güncellenir.",
+    "you": "Siz",
+    "opponent": "Rakip",
+    "ready": "Hazır",
+    "bestOf": "BO{count}",
+    "poolError": "Bu maçın harita havuzu henüz tamamlanmadı. Organizatörlerden havuzu ayarlamalarını isteyin.",
+    "waitingTitle": "Veto için hazır mısınız?",
+    "waitingHint": "Veto, iki takım da hazır olduğunda başlar.",
+    "readyButton": "Hazırız",
+    "cancelReady": "Henüz hazır değiliz",
+    "chooseFirstTitle": "Vetoyu kim başlatır?",
+    "chooseFirstHint": "Hangi takımın önce ban yapacağını siz seçersiniz.",
+    "weStart": "Biz başlıyoruz",
+    "opponentStarts": "{team} başlıyor",
+    "waitingChoice": "{team} vetoyu kimin başlatacağını seçiyor.",
+    "yourTurn": {
+      "ban": "Sıra sizde: bir harita banlayın",
+      "pick": "Sıra sizde: bir harita seçin",
+      "side": "Sıra sizde: tarafınızı seçin"
+    },
+    "stepWaiting": {
+      "ban": "Banlanacak bir harita seçiyorlar.",
+      "pick": "Oynanacak bir harita seçiyorlar.",
+      "side": "Bir taraf seçiyorlar."
+    },
+    "theirTurn": "Sıra {team} takımında",
+    "attack": "Saldırı",
+    "defense": "Savunma",
+    "toBeDecided": "Belirlenecek",
+    "stepLabel": {
+      "ban": "Ban",
+      "pick": "Pick",
+      "side": "Taraf",
+      "decider": "Belirleyici"
+    },
+    "vetoDone": "Veto bitti. Maçınızda bol şans!",
+    "gameFinishedHint": "Oyununuz bittiğinde GC Stats ekibini bilgilendirmek için bu düğmeye basın. Bu, turnuva organizatörünü bilgilendirmez.",
+    "gameFinishedButton": "Oyun bitti",
+    "staffNotified": "GC Stats ekibi bilgilendirildi (turnuva organizatörü değil).",
+    "previousMatch": "Önceki maç",
+    "nextMatch": "Sonraki maç",
+    "error": {
+      "unknown": "Bir şeyler ters gitti, tekrar deneyin.",
+      "network": "Bağlantı sorunu, tekrar deneyin.",
+      "notFound": "Bu maç kullanılamıyor.",
+      "notAllowed": "Bu maçın parçası değilsiniz.",
+      "wrongPhase": "Bu işlem şu anda kullanılamıyor.",
+      "notYourTurn": "Sıra sizde değil.",
+      "wrongStep": "Beklenen işlem bu değil.",
+      "mapUnavailable": "Bu harita kullanılamıyor.",
+      "invalidSide": "Geçersiz taraf.",
+      "noStep": "Veto zaten bitti.",
+      "poolInvalid": "Bu maçın harita havuzu tamamlanmadı.",
+      "alreadyNotified": "Ekip zaten bilgilendirildi.",
+      "matchCompleted": "Bu maç zaten bitti.",
+      "rateLimited": "Çok fazla istek, yavaşlayın.",
+      "invalidRequest": "Geçersiz istek."
+    }
+  },
   "game": {
     "switcherLabel": "Oyun",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Üst",
+    "JUNGLE": "Orman",
+    "MIDDLE": "Orta",
+    "BOTTOM": "Alt",
+    "UTILITY": "Destek",
+    "label": "Koridorlar",
+    "fromGames": "Maçlardan:",
+    "invalid": "Yalnızca beş koridor seçilebilir."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

@@ -11,11 +11,13 @@
  */
 
 import { cache } from "react";
-import { and, asc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lt, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { compareMatchPlayers } from "@/lib/match-player-order";
+import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
+import { blueEntrantOf, type LeagueSide } from "@gc-stats/lol-stats-engine";
 
 export type AdminMatchListRow = {
   id: number;
@@ -157,6 +159,40 @@ export async function listMatchMaps(matchId: number): Promise<AdminMapRow[]> {
     .orderBy(asc(maps.order), asc(maps.id));
 }
 
+export type AdminLeagueGameRow = {
+  id: number;
+  order: number;
+  winnerEntrantId: number | null;
+  isCompleted: boolean;
+  isForfeit: boolean;
+  apiMatchId: string | null;
+  /** Where the game came from: "leaguepedia" or "riot". Null for a game entered by hand. */
+  source: string | null;
+  note: string | null;
+  /** A re-import found champions in the import that the saved draft does not have. */
+  draftImportDiffers: boolean;
+};
+
+/** The games of a LoL series, in order, for the admin match page. */
+export async function listLeagueMatchGames(matchId: number): Promise<AdminLeagueGameRow[]> {
+  const { games } = leagueTablesOf("lol");
+  return db
+    .select({
+      id: games.id,
+      order: games.order,
+      winnerEntrantId: games.winnerEntrantId,
+      isCompleted: games.isCompleted,
+      isForfeit: games.isForfeit,
+      apiMatchId: games.apiMatchId,
+      source: games.source,
+      note: games.note,
+      draftImportDiffers: games.draftImportDiffers,
+    })
+    .from(games)
+    .where(eq(games.matchId, matchId))
+    .orderBy(asc(games.order), asc(games.id));
+}
+
 /** Single map lookup for the dedicated admin map page (`.../matches/{matchId}/maps/{mapId}`). */
 export const getAdminMap = cache(async (mapId: number): Promise<AdminMapRow | null> => {
   const { maps } = valorantTables;
@@ -292,4 +328,125 @@ export async function listMatchVetos(matchId: number): Promise<AdminVetoRow[]> {
     side: (r.side as "atk" | "def" | null) ?? null,
     sidePickedByEntrantId: r.sidePickedByEntrantId,
   }));
+}
+
+export interface LeagueDraftView {
+  gameId: number;
+  order: number;
+  imported: boolean;
+  draftEditedAt: string | null;
+  /** Set by a re-import when the imported champions no longer match the saved draft. */
+  draftImportDiffers: boolean;
+  blueEntrantId: number | null;
+  /** The side with the first pick. Blue by default; it can differ from the blue side. */
+  firstPick: LeagueSide;
+  /** True when the import set the first pick (the side of Riot's first ban): it cannot be edited by hand. */
+  firstPickLocked: boolean;
+  steps: { step: number; championName: string }[];
+  unplacedPicks: { side: LeagueSide; championName: string }[];
+}
+
+/** The draft of a game of the series, or null when the game is not part of it. */
+export async function getLeagueGameDraft(matchId: number, gameId: number, entrants: { entrantAId: number | null; entrantBId: number | null }): Promise<LeagueDraftView | null> {
+  const { games, gameTeamStats, gameDraft } = leagueTablesOf("lol");
+  const [game] = await db
+    .select({
+      id: games.id,
+      order: games.order,
+      source: games.source,
+      draftEditedAt: games.draftEditedAt,
+      draftImportDiffers: games.draftImportDiffers,
+      draftFirstPick: games.draftFirstPick,
+      draftBlueEntrantId: games.draftBlueEntrantId,
+    })
+    .from(games)
+    .where(and(eq(games.id, gameId), eq(games.matchId, matchId)))
+    .limit(1);
+  if (!game) return null;
+
+  const rows = await db
+    .select({ entrantId: gameDraft.entrantId, type: gameDraft.type, championName: gameDraft.championName, order: gameDraft.order })
+    .from(gameDraft)
+    .where(eq(gameDraft.gameId, gameId));
+
+  // An import's blue side is Riot's blue team. A game by hand stores its blue entrant with the draft. A draft saved before
+  // that was stored has none: then a filled step tells it, since the first pick gives every step its side.
+  const firstPick: LeagueSide = game.draftFirstPick === "red" ? "red" : "blue";
+  let knownBlueEntrantId: number | null = game.draftBlueEntrantId;
+  if (game.source !== null) {
+    const [blueTeam] = await db
+      .select({ entrantId: gameTeamStats.entrantId })
+      .from(gameTeamStats)
+      .where(and(eq(gameTeamStats.gameId, gameId), eq(gameTeamStats.side, "blue")))
+      .limit(1);
+    knownBlueEntrantId = blueTeam?.entrantId ?? null;
+  }
+  const firstPlaced = rows.find((row): row is typeof row & { order: number } => row.order !== null) ?? null;
+  const blueEntrantId = blueEntrantOf({ knownBlueEntrantId, firstPick, entrantAId: entrants.entrantAId, entrantBId: entrants.entrantBId, firstPlaced });
+  const sideOf = (entrantId: number): LeagueSide => (entrantId === blueEntrantId ? "blue" : "red");
+
+  return {
+    gameId: game.id,
+    order: game.order,
+    imported: game.source !== null,
+    draftEditedAt: game.draftEditedAt?.toISOString() ?? null,
+    draftImportDiffers: game.draftImportDiffers,
+    blueEntrantId,
+    firstPick,
+    firstPickLocked: game.source !== null && game.draftFirstPick !== null,
+    steps: rows.flatMap((row) => (row.order === null ? [] : [{ step: row.order, championName: row.championName }])),
+    unplacedPicks: rows.flatMap((row) => (row.order === null && row.type === "pick" ? [{ side: sideOf(row.entrantId), championName: row.championName }] : [])),
+  };
+}
+
+export type AdminPreviousLineupPlayer = {
+  personId: number;
+  handle: string;
+  valName: string | null;
+};
+
+/**
+ * Players of the last completed map a team played before the given map: an earlier map of the
+ * same match, or any map of an earlier match. Prefills the scoreboard of a map with no stats yet.
+ */
+export async function getTeamPreviousLineup(game: GameSlug, teamId: number, matchId: number, mapOrder: number, before: Date): Promise<AdminPreviousLineupPlayer[]> {
+  const { matches, entrants, people } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
+  const [last] = await db
+    .select({ mapId: maps.id })
+    .from(maps)
+    .innerJoin(matches, eq(matches.id, maps.matchId))
+    .where(
+      and(
+        eq(maps.isCompleted, true),
+        or(and(eq(matches.id, matchId), lt(maps.order, mapOrder)), lt(matches.scheduledAt, before)),
+        sql`exists (
+          select 1 from ${mapPlayerStats}
+          inner join ${entrants} on ${entrants.id} = ${mapPlayerStats.entrantId}
+          where ${mapPlayerStats.mapId} = ${maps.id} and ${entrants.teamId} = ${teamId}
+        )`
+      )
+    )
+    .orderBy(desc(matches.scheduledAt), desc(maps.order))
+    .limit(1);
+  if (!last) return [];
+
+  const rows = await db
+    .select({
+      personId: mapPlayerStats.personId,
+      handle: people.handle,
+      valName: mapPlayerStats.valName,
+      rating: mapPlayerStats.rating,
+      acs: mapPlayerStats.acs,
+      kills: mapPlayerStats.kills,
+      deaths: mapPlayerStats.deaths,
+    })
+    .from(mapPlayerStats)
+    .innerJoin(entrants, eq(entrants.id, mapPlayerStats.entrantId))
+    .innerJoin(people, eq(people.id, mapPlayerStats.personId))
+    .where(and(eq(mapPlayerStats.mapId, last.mapId), eq(entrants.teamId, teamId)));
+
+  return rows
+    .sort(compareMatchPlayers)
+    .map((r) => ({ personId: r.personId!, handle: r.handle, valName: r.valName }));
 }

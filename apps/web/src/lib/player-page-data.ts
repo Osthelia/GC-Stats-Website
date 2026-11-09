@@ -15,7 +15,10 @@ import { and, desc, eq, gte, inArray, isNotNull, lte, sql, type SQLWrapper } fro
 import { db } from "@gc-stats/db/client";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import {
-  organizations, newsAuthors, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+  organizations, newsAuthors, gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { sortLanes, sortPatchesNewestFirst, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { resolveEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { rosterPeriodIsDated } from "@/lib/roster-sql";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
@@ -24,9 +27,9 @@ import type { HomeMatch } from "@/lib/home-data";
 import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
-import type { ParsedStatsFilters } from "@/lib/stats-filters";
+import type { LeagueStatsFilters, ParsedStatsFilters } from "@/lib/stats-filters";
 import { resolveDateBounds } from "@/lib/stats-filters";
-import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 export type PlayerPageInfo = {
   id: number;
@@ -101,14 +104,24 @@ export type PlayerTabAvailability = {
 export async function getPlayerTabAvailability(game: GameSlug, personId: number): Promise<PlayerTabAvailability> {
   const { people, rosterMemberships, organizationMemberships, productionCredits, entrantMembers } = gameTables(game);
   const exists = (sub: SQLWrapper) => sql<boolean>`exists(${sub})`.mapWith(Boolean);
+
+  // The traces of a match the player played. Valorant: map stats. LoL: game stats, or a locked roster for a match not played yet.
+  const matchTraces = (): SQLWrapper[] => {
+    if (gameHasMaps(game)) {
+      const { mapPlayerStats } = valorantTablesOf(game);
+      return [db.select({ one: sql`1` }).from(mapPlayerStats).where(eq(mapPlayerStats.personId, personId))];
+    }
+    const { gamePlayerStats } = leagueTablesOf(game);
+    return [
+      db.select({ one: sql`1` }).from(gamePlayerStats).where(eq(gamePlayerStats.personId, personId)),
+      db.select({ one: sql`1` }).from(entrantMembers).where(eq(entrantMembers.personId, personId)),
+    ];
+  };
+  const hasMatches = sql<boolean>`${sql.join(matchTraces().map((trace) => sql`exists(${trace})`), sql` or `)}`.mapWith(Boolean);
+
   const [row] = await db
     .select({
-      // Valorant: the player has map stats. Other games have no map stats, a locked tournament roster is the trace of a match played.
-      hasMatches: exists(
-        gameHasMaps(game)
-          ? db.select({ one: sql`1` }).from(valorantTablesOf(game).mapPlayerStats).where(eq(valorantTablesOf(game).mapPlayerStats.personId, personId))
-          : db.select({ one: sql`1` }).from(entrantMembers).where(eq(entrantMembers.personId, personId)),
-      ),
+      hasMatches,
       hasTeamHistory: exists(db.select({ one: sql`1` }).from(rosterMemberships).where(eq(rosterMemberships.personId, personId))),
       hasOrganization: exists(db.select({ one: sql`1` }).from(organizationMemberships).where(eq(organizationMemberships.personId, personId))),
       hasCredit: exists(db.select({ one: sql`1` }).from(productionCredits).where(eq(productionCredits.personId, personId))),
@@ -139,6 +152,10 @@ export type PlayerTeamHistoryEntry = {
   leftSource: string | null;
   teamLogoUrl: string | null;
   teamLogoUrlLight: string | null;
+  /** League only. */
+  lanes: LeagueRole[];
+  /** True when the lanes come from imported games and are not saved on the entry. */
+  lanesFromGames: boolean;
 };
 
 /** Deduplicated per request: the overview reads it from two Suspense boundaries. */
@@ -164,7 +181,10 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
     .where(eq(rosterMemberships.personId, personId))
     .orderBy(desc(rosterMemberships.id));
 
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))], game);
+  const [logosByTeamId, lanesByMembershipId] = await Promise.all([
+    getCurrentLogoUrlsThemed("team", [...new Set(rows.map((r) => r.teamId))], game),
+    gameHasLanes(game) ? resolveEntryLanes(rows.map((r) => ({ ...r, personId }))) : new Map<number, EntryLanes>(),
+  ]);
 
   const currentByTeamId = new Map<number, PlayerTeamHistoryEntry>();
   const formers: PlayerTeamHistoryEntry[] = [];
@@ -177,7 +197,7 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       teamShortName: r.teamShortName,
       teamCountryCode: r.teamCountryCode,
       teamSecondaryCountryCode: r.teamSecondaryCountryCode,
-      role: r.role,
+      role: displayRosterRole(game, r.role),
       since: rangeLower(r.period),
       until: rangeUpper(r.period),
       inactiveSince: r.inactiveSince,
@@ -185,6 +205,8 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
       leftSource: r.leftSource,
       teamLogoUrl: logosByTeamId.get(r.teamId)?.dark ?? null,
       teamLogoUrlLight: logosByTeamId.get(r.teamId)?.light ?? null,
+      lanes: lanesByMembershipId.get(r.membershipId)?.lanes ?? [],
+      lanesFromGames: lanesByMembershipId.get(r.membershipId)?.fromGames ?? false,
     };
     if (r.hasLeft) {
       formers.push(entry);
@@ -202,6 +224,17 @@ export const getPlayerTeamHistory = cache(async (game: GameSlug, personId: numbe
   formers.sort((a, b) => (b.until ?? "").localeCompare(a.until ?? ""));
 
   return { current, formers };
+});
+
+export const getPlayerCurrentLanes = cache(async (game: GameSlug, personId: number): Promise<LeagueRole[]> => {
+  if (!gameHasLanes(game)) return [];
+  const { rosterMemberships } = gameTables(game);
+  const rows = await db
+    .select({ membershipId: rosterMemberships.id, teamId: rosterMemberships.teamId, role: rosterMemberships.role, period: rosterMemberships.period, hasLeft: rosterMemberships.hasLeft })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.personId, personId), eq(rosterMemberships.hasLeft, false)));
+  const lanes = await resolveEntryLanes(rows.map((r) => ({ ...r, personId })));
+  return sortLanes([...lanes.values()].flatMap((entry) => entry.lanes));
 });
 
 /** Handle only, for the `/player/{id}` redirect to the canonical URL. */
@@ -313,6 +346,48 @@ export function playerStatsScope(personId: number, filters: ParsedStatsFilters):
     .select({ id: mapPlayerStats.id })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
+    .where(and(...conditions));
+}
+
+/** LoL: the champions and patches this person has played, for the stats page dropdowns (every option, whatever the filters). */
+export async function getLeaguePlayerStatsFilterOptions(game: GameSlug, personId: number): Promise<{ champions: string[]; patches: string[] }> {
+  const { matches } = gameTables(game);
+  const { games, gamePlayerStats } = leagueTablesOf(game);
+  const [championRows, patchRows] = await Promise.all([
+    db
+      .selectDistinct({ value: gamePlayerStats.championName })
+      .from(gamePlayerStats)
+      .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+      .where(and(eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true))),
+    db
+      .selectDistinct({ value: matches.patch })
+      .from(gamePlayerStats)
+      .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+      .innerJoin(matches, eq(matches.id, games.matchId))
+      .where(and(eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true), isNotNull(matches.patch))),
+  ]);
+
+  return {
+    champions: championRows.map((r) => r.value).sort(),
+    patches: sortPatchesNewestFirst(patchRows.map((r) => r.value!)),
+  };
+}
+
+/** LoL: rows of the player stats page, as a subquery for `aggregateLeaguePlayerStatsSql`. */
+export function leaguePlayerStatsScope(game: GameSlug, personId: number, filters: LeagueStatsFilters): SQLWrapper {
+  const { matches } = gameTables(game);
+  const { games, gamePlayerStats } = leagueTablesOf(game);
+
+  const conditions = [eq(gamePlayerStats.personId, personId), eq(games.isCompleted, true)];
+  if (filters.champion) conditions.push(eq(gamePlayerStats.championName, filters.champion));
+  if (filters.role) conditions.push(eq(gamePlayerStats.role, filters.role));
+  if (filters.patch) conditions.push(eq(matches.patch, filters.patch));
+
+  return db
+    .select({ id: gamePlayerStats.id })
+    .from(gamePlayerStats)
+    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+    .innerJoin(matches, eq(matches.id, games.matchId))
     .where(and(...conditions));
 }
 

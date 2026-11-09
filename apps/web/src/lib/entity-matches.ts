@@ -10,10 +10,10 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
-import { alias } from "drizzle-orm/pg-core";
+import { and, asc, desc, eq, gte, inArray, notExists, or, sql, type SQL } from "drizzle-orm";
+import { alias, unionAll } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { abbreviateTournamentName, type HomeMatch } from "@/lib/home-data";
@@ -95,17 +95,29 @@ function selfEntrant(game: GameSlug) {
 async function selfMatchesSubquery(game: GameSlug, entity: MatchEntity) {
   const { entrants, matches } = gameTables(game);
   if (entity.kind === "player" && !gameHasMaps(game)) {
-    // No map stats outside Valorant: a player played the matches of the entrants whose locked roster lists them.
+    // The matches the player played a game in. A match with no player stats at all (not played yet, or not imported)
+    // is listed through the locked roster of its entrants instead.
     const { entrantMembers } = gameTables(game);
-    return db
-      .selectDistinctOn([matches.id], {
-        matchId: sql<number>`${matches.id}`.mapWith(Number).as("self_match_id"),
-        entrantId: sql<number>`${entrantMembers.entrantId}`.mapWith(Number).as("self_entrant_id"),
-      })
+    const { games, gamePlayerStats } = leagueTablesOf(game);
+    const played = db
+      .select({ matchId: sql<number>`${games.matchId}`.mapWith(Number).as("match_id"), entrantId: sql<number>`${gamePlayerStats.entrantId}`.mapWith(Number).as("entrant_id"), source: sql<number>`0`.as("source") })
+      .from(gamePlayerStats)
+      .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+      .where(eq(gamePlayerStats.personId, entity.id));
+    const hasStats = db.select({ one: sql`1` }).from(games).innerJoin(gamePlayerStats, eq(gamePlayerStats.gameId, games.id)).where(eq(games.matchId, matches.id));
+    const rostered = db
+      .select({ matchId: sql<number>`${matches.id}`.mapWith(Number).as("match_id"), entrantId: sql<number>`${entrantMembers.entrantId}`.mapWith(Number).as("entrant_id"), source: sql<number>`1`.as("source") })
       .from(entrantMembers)
       .innerJoin(matches, or(eq(matches.entrantAId, entrantMembers.entrantId), eq(matches.entrantBId, entrantMembers.entrantId)))
-      .where(eq(entrantMembers.personId, entity.id))
-      .orderBy(matches.id)
+      .where(and(eq(entrantMembers.personId, entity.id), notExists(hasStats)));
+    const both = unionAll(played, rostered).as("self_both");
+    return db
+      .selectDistinctOn([both.matchId], {
+        matchId: sql<number>`${both.matchId}`.mapWith(Number).as("self_match_id"),
+        entrantId: sql<number>`${both.entrantId}`.mapWith(Number).as("self_entrant_id"),
+      })
+      .from(both)
+      .orderBy(both.matchId, both.source)
       .as("self_matches");
   }
   if (entity.kind === "player") {

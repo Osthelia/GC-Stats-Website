@@ -16,6 +16,20 @@ export const VALORANT_AGENTS = [
   "Viper", "Vyse", "Waylay", "Yoru",
 ] as const;
 
+export const AGENT_ROLES = ["duelist", "initiator", "controller", "sentinel"] as const;
+export type AgentRole = (typeof AGENT_ROLES)[number];
+
+const ROLE_AGENTS: Record<AgentRole, string[]> = {
+  duelist: ["Jett", "Phoenix", "Raze", "Reyna", "Yoru", "Neon", "Iso", "Waylay"],
+  initiator: ["Breach", "Skye", "Sova", "Fade", "Gekko", "KAY/O", "Tejo"],
+  controller: ["Astra", "Brimstone", "Clove", "Harbor", "Omen", "Viper"],
+  sentinel: ["Chamber", "Cypher", "Deadlock", "Killjoy", "Sage", "Vyse"],
+};
+
+export const AGENT_ROLE_BY_AGENT: Record<string, AgentRole> = Object.fromEntries(
+  AGENT_ROLES.flatMap((role) => ROLE_AGENTS[role].map((agent) => [agent, role] as const)),
+);
+
 /** Mirrors V1 App\Helpers\AgentRoles::slug() — agent display name to icon filename slug. */
 export function agentSlug(agentName: string): string {
   return agentName.toLowerCase().replace(/\//g, "");

@@ -15,6 +15,8 @@ export type StatsFilterState = {
   days: string;
   startDate: string;
   endDate: string;
+  /** Only on pages offering a group-by selector. */
+  groupBy?: string;
 };
 
 /**
@@ -28,13 +30,17 @@ export function StatsFilterBar({
   filters,
   agentOptions,
   mapOptions,
+  groupByOptions,
   labels,
 }: {
   basePath: string;
   filters: StatsFilterState;
   agentOptions?: { value: string; label: string }[];
   mapOptions: { value: string; label: string }[];
+  /** First option is the default grouping. */
+  groupByOptions?: { value: string; label: string }[];
   labels: {
+    groupByLabel?: string;
     periodLabel: string;
     allTime: string;
     last30: string;
@@ -53,6 +59,7 @@ export function StatsFilterBar({
     const qs = new URLSearchParams();
     if (next.agent) qs.set("agent", next.agent);
     if (next.map) qs.set("map", next.map);
+    if (next.groupBy && next.groupBy !== groupByOptions?.[0]?.value) qs.set("groupBy", next.groupBy);
     if (next.days && next.days !== "0") qs.set("days", next.days);
     if (next.startDate) qs.set("startDate", next.startDate);
     if (next.endDate) qs.set("endDate", next.endDate);
@@ -68,6 +75,11 @@ export function StatsFilterBar({
     ...o,
     href: buildHref({ map: o.value }),
   }));
+  const groupByLinkOptions = groupByOptions?.map((o) => ({
+    ...o,
+    href: buildHref({ groupBy: o.value }),
+  }));
+  const groupByActive = groupByOptions?.find((o) => o.value === (filters.groupBy || groupByOptions[0]?.value))?.label ?? null;
   const agentActive =
     agentOptions?.find((o) => o.value === filters.agent)?.label ?? null;
   const mapActive =
@@ -110,6 +122,18 @@ export function StatsFilterBar({
           <input type="hidden" name="agent" value={filters.agent} />
         )}
         {filters.map && <input type="hidden" name="map" value={filters.map} />}
+        {filters.groupBy && filters.groupBy !== groupByOptions?.[0]?.value && <input type="hidden" name="groupBy" value={filters.groupBy} />}
+        {groupByLinkOptions && labels.groupByLabel && (
+          <span>
+            <ListFilterDropdown
+              label={labels.groupByLabel}
+              defaultLabel={groupByLinkOptions[0]!.label}
+              defaultHref={groupByLinkOptions[0]!.href}
+              activeLabel={groupByActive}
+              options={groupByLinkOptions.slice(1)}
+            />
+          </span>
+        )}
         {filters.days && filters.days !== "0" && (
           <input type="hidden" name="days" value={filters.days} />
         )}

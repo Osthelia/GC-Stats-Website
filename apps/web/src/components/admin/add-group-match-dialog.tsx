@@ -14,14 +14,13 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
+import { EntrantSelect } from "@/components/admin/entrant-select";
 import { addGroupMatch, type AddGroupMatchFieldErrors } from "@/actions/admin-bracket-editor";
 import type { AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
 import { useGame } from "@/lib/use-game";
-
-const ENTRANT_TBD = "tbd";
 
 export function AddGroupMatchDialog({
   stageId,
@@ -43,34 +42,25 @@ export function AddGroupMatchDialog({
   const [fieldErrors, setFieldErrors] = useState<AddGroupMatchFieldErrors>({});
   const [round, setRound] = useState("1");
   const [bestOf, setBestOf] = useState("1");
-  const [entrantAId, setEntrantAId] = useState(ENTRANT_TBD);
-  const [entrantBId, setEntrantBId] = useState(ENTRANT_TBD);
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
+  const [entrantAId, setEntrantAId] = useState<number | null>(null);
+  const [entrantBId, setEntrantBId] = useState<number | null>(null);
 
   useEffect(() => {
     if (open) {
       setRound("1");
       setBestOf("1");
-      setEntrantAId(ENTRANT_TBD);
-      setEntrantBId(ENTRANT_TBD);
+      setScheduledAt(null);
+      setEntrantAId(null);
+      setEntrantBId(null);
       setFieldErrors({});
     }
   }, [open]);
 
-  // Restricted to the group's entrants once some are assigned (Swiss), otherwise every tournament entrant.
-  const options = container.groupEntryEntrantIds.length > 0 ? entrants.filter((e) => container.groupEntryEntrantIds.includes(e.id)) : entrants;
-  const entrantItems: Record<string, string> = { [ENTRANT_TBD]: t("addMatchEntrantTbd"), ...Object.fromEntries(options.map((e) => [String(e.id), e.displayName])) };
-
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addGroupMatch(game, {
-        stageId,
-        containerId: container.id,
-        round,
-        bestOf,
-        entrantAId: entrantAId === ENTRANT_TBD ? null : Number(entrantAId),
-        entrantBId: entrantBId === ENTRANT_TBD ? null : Number(entrantBId),
-      });
+      const result = await addGroupMatch(game, { stageId, containerId: container.id, round, bestOf, scheduledAt, entrantAId, entrantBId });
       if (!result.ok) {
         if (result.fieldErrors.container) toast.error(t(`error.${result.fieldErrors.container}`));
         setFieldErrors(result.fieldErrors);
@@ -83,24 +73,6 @@ export function AddGroupMatchDialog({
   }
 
   const err = (field: keyof AddGroupMatchFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
-
-  function entrantSelect(id: string, value: string, onChange: (v: string) => void, invalid: boolean) {
-    return (
-      <Select items={entrantItems} value={value} onValueChange={(v) => v && onChange(v)}>
-        <SelectTrigger id={id} className="w-full" aria-invalid={invalid}>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ENTRANT_TBD}>{t("addMatchEntrantTbd")}</SelectItem>
-          {options.map((e) => (
-            <SelectItem key={e.id} value={String(e.id)}>
-              {e.displayName}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
@@ -119,11 +91,14 @@ export function AddGroupMatchDialog({
               <Input id="gm-best-of" type="number" min={1} value={bestOf} onChange={(e) => setBestOf(e.target.value)} aria-invalid={!!fieldErrors.bestOf} />
             </FormField>
           </div>
+          <FormField label={t("fieldMatchScheduledAt")} htmlFor="gm-scheduled-at" error={err("scheduledAt")}>
+            <DateTimeInput id="gm-scheduled-at" value={scheduledAt} onChange={setScheduledAt} aria-invalid={!!fieldErrors.scheduledAt} />
+          </FormField>
           <FormField label={t("fieldMatchEntrantA")} htmlFor="gm-entrant-a" error={err("entrantAId")}>
-            {entrantSelect("gm-entrant-a", entrantAId, setEntrantAId, !!fieldErrors.entrantAId)}
+            <EntrantSelect id="gm-entrant-a" value={entrantAId} entrants={entrants} onChange={setEntrantAId} invalid={!!fieldErrors.entrantAId} />
           </FormField>
           <FormField label={t("fieldMatchEntrantB")} htmlFor="gm-entrant-b" error={err("entrantBId")}>
-            {entrantSelect("gm-entrant-b", entrantBId, setEntrantBId, !!fieldErrors.entrantBId)}
+            <EntrantSelect id="gm-entrant-b" value={entrantBId} entrants={entrants} onChange={setEntrantBId} invalid={!!fieldErrors.entrantBId} />
           </FormField>
         </div>
 

@@ -1,0 +1,1 @@
+ALTER TABLE "x_roster_signals" ADD COLUMN "text_en" text;

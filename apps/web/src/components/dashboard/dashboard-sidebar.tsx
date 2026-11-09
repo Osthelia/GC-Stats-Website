@@ -23,6 +23,8 @@ import {
   DASHBOARD_AUTHOR_ADMIN_HREF,
   DASHBOARD_ALL_ORGANIZATIONS_HREF,
   DASHBOARD_API_KEY_NAV_ITEMS,
+  DASHBOARD_DISCORD_HREF,
+  DASHBOARD_DISCORD_NAV_ITEMS,
   isDashboardPathIn,
   stripDashboardGame,
   type DashboardNavItem,
@@ -99,13 +101,16 @@ export function DashboardSidebar({ organizations, isAuthorAdmin = false }: { org
   const isAuthorAdminSpace = isDashboardPathIn(pathname, DASHBOARD_AUTHOR_ADMIN_HREF);
   const isAuthorSpace = isDashboardPathIn(pathname, "/dashboard/author");
   const isApiKeySpace = isDashboardPathIn(pathname, "/dashboard/api-keys");
+  const isDiscordSpace = isDashboardPathIn(pathname, DASHBOARD_DISCORD_HREF);
   const individualSpace = isAuthorAdminSpace
     ? { labelKey: "authorAdminSpace", items: DASHBOARD_AUTHOR_ADMIN_NAV_ITEMS }
     : isAuthorSpace
       ? { labelKey: "authorSpace", items: DASHBOARD_AUTHOR_NAV_ITEMS }
       : isApiKeySpace
         ? { labelKey: "apiKeySpace", items: DASHBOARD_API_KEY_NAV_ITEMS }
-        : null;
+        : isDiscordSpace
+          ? { labelKey: "discordSpace", items: DASHBOARD_DISCORD_NAV_ITEMS }
+          : null;
   const orgMatch = /^\/dashboard\/(\d+)/.exec(pathname);
   const activeOrgId = orgMatch ? Number(orgMatch[1]) : null;
   const activeOrg = organizations.find((o) => o.organizationId === activeOrgId) ?? null;

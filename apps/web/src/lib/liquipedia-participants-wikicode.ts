@@ -31,6 +31,10 @@ export type ParticipantTeam = {
 
 const SUB_ROLES = new Set(["sub", "stand_in"]);
 
+// Teams with fewer players are padded with blank slots to reach this count.
+const MIN_PLAYER_SLOTS = 5;
+const EMPTY_PERSON = "{{Person||flag=}}";
+
 function personTemplate(person: ParticipantPerson): string {
   const params = [person.handle];
   if (person.liquipediaName && person.liquipediaName.toLowerCase() !== person.handle.toLowerCase()) params.push(`link=${person.liquipediaName}`);
@@ -53,9 +57,12 @@ function opponentBlock(team: ParticipantTeam): string {
   const staff = team.people.filter((p) => p.kind === "staff");
   const lines = [`|{{Opponent|${team.name}`];
 
-  if (players.length + staff.length > 0) {
+  const emptySlots = Math.max(0, MIN_PLAYER_SLOTS - players.length);
+
+  if (players.length + staff.length + emptySlots > 0) {
     lines.push("  |players={{Persons");
     for (const person of players) lines.push(`    |${personTemplate(person)}`);
+    for (let i = 0; i < emptySlots; i++) lines.push(`    |${EMPTY_PERSON}`);
     if (players.length > 0 && staff.length > 0) lines.push("");
     for (const person of staff) lines.push(`    |${personTemplate(person)}`);
     lines.push("  }}");

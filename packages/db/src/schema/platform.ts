@@ -2,8 +2,8 @@
  * GC-Stats — platform module
  *
  * Finance entries, the About page tables (sections, projects, team
- * categories/settings), activity log, page view tracking, site wide
- * configuration and the OpenData portal monitoring.
+ * categories/settings), activity log, external API sessions, page view tracking,
+ * site wide configuration and the OpenData portal monitoring.
  *
  * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -75,6 +75,14 @@ export const activityLog = pgTable("activity_log", {
   attributeChanges: jsonb("attribute_changes"),
   properties: jsonb("properties"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Login state for an external API (Leaguepedia bot). A Worker keeps nothing between requests, so the
+// session cookie lives here, encrypted with apps/web/src/lib/encryption.ts.
+export const externalApiSessions = pgTable("external_api_sessions", {
+  service: text("service").primaryKey(), // e.g. "leaguepedia"
+  cookieEncrypted: text("cookie_encrypted").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const pageViews = pgTable("page_views", {

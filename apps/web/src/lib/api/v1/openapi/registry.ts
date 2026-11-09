@@ -34,6 +34,9 @@ import {
   ApiMatchFullResponseSchema,
   ApiMatchStatsResponseSchema,
   ApiMatchV3ResponseSchema,
+  ApiPaginatedMatchesV3Schema,
+  ApiTournamentGroupsSchema,
+  tournamentGroupsFilterQuerySchema,
   ApiMapFullResponseSchema,
   ApiRoundFullResponseSchema,
   ApiTeamFullResponseV2Schema,
@@ -324,13 +327,107 @@ registerRoute({
 registerRoute({
   method: "get",
   path: "/valorant/v3/matches/{id}",
-  summary: "Get a match's full stats, encounters, radar chart widget link and pick'em votes (V3)",
+  summary: "Get a match's full stats, media, encounters, radar chart widget link and pick'em votes (V3)",
   tags: ["Matches"],
   request: { params: idParams },
   response: jsonResponseSchema(
     ApiMatchV3ResponseSchema,
-    "The V2 match response, plus past head to head encounters, a link to the OBS head to head radar chart widget, and the pick'em vote split.",
+    "The V2 match response with a full phase object instead of phase_id, plus its container, streams, player POV streams, VODs, past head to head encounters, a link to the OBS head to head radar chart widget, and the pick'em vote split.",
   ),
+  notFound: true,
+});
+
+const PHASE_NOTE = "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.";
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/matches",
+  summary: "List matches (V3)",
+  tags: ["Matches"],
+  request: { query: matchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/teams/{id}/matches",
+  summary: "Get a team's match history (V3)",
+  tags: ["Teams"],
+  request: { params: idParams, query: teamMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/teams/by-name/{name}/matches",
+  summary: "Get a team's match history, resolved by name (V3)",
+  tags: ["Teams"],
+  request: { params: nameParams, query: teamMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/players/{id}/matches",
+  summary: "Get a player's match history (V3)",
+  tags: ["Players"],
+  request: { params: idParams, query: teamMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/players/by-name/{name}/matches",
+  summary: "Get a player's match history, resolved by name (V3)",
+  tags: ["Players"],
+  request: { params: nameParams, query: teamMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/tournaments/{id}/matches",
+  summary: "Get a tournament's match history (V3)",
+  tags: ["Tournaments"],
+  request: { params: idParams, query: tournamentMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/tournaments/by-name/{name}/matches",
+  summary: "Get a tournament's match history, resolved by name (V3)",
+  tags: ["Tournaments"],
+  request: { params: nameParams, query: tournamentMatchesFilterQuerySchema },
+  response: jsonResponseSchema(ApiPaginatedMatchesV3Schema, PHASE_NOTE),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/tournaments/{id}/groups",
+  summary: "Get a tournament's swiss and round robin groups (V3)",
+  tags: ["Tournaments"],
+  request: { params: idParams, query: tournamentGroupsFilterQuerySchema },
+  response: jsonResponseSchema(
+    ApiTournamentGroupsSchema,
+    "Every swiss and round robin group of the tournament, with its ranked standings (matches, maps and rounds won and lost, differences, buchholz, points) and its matches grouped by round in play order.",
+  ),
+  notFound: true,
+});
+
+registerRoute({
+  method: "get",
+  path: "/valorant/v3/tournaments/by-name/{name}/groups",
+  summary: "Get a tournament's swiss and round robin groups, resolved by name (V3)",
+  tags: ["Tournaments"],
+  request: { params: nameParams, query: tournamentGroupsFilterQuerySchema },
+  response: jsonResponseSchema(ApiTournamentGroupsSchema, "Same as /valorant/v3/tournaments/{id}/groups, for the first tournament whose name starts with the given string."),
   notFound: true,
 });
 

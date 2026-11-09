@@ -13,6 +13,8 @@ import { CountryBadge } from "@/components/team/country-badge";
 import { displayMonthYear } from "@/lib/daterange";
 import { slugify } from "@/lib/entity-id";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
+import { LaneIcons } from "@/components/match/lol-icon";
+import { compareByLanes } from "@gc-stats/lol-stats-engine";
 
 // Mirrors V1's App\Helpers\RosterRole — same grouping/order/accent colors,
 // ported so the "current roster" card here reads exactly like the V1 team
@@ -56,7 +58,9 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
     if (inactiveDiff !== 0) return inactiveDiff;
     const ai = ROLE_ORDER.indexOf(a.role);
     const bi = ROLE_ORDER.indexOf(b.role);
-    return (ai === -1 ? ROLE_ORDER.length : ai) - (bi === -1 ? ROLE_ORDER.length : bi);
+    const byRole = (ai === -1 ? ROLE_ORDER.length : ai) - (bi === -1 ? ROLE_ORDER.length : bi);
+    // Order by lane for lol. Valorant members have no lanes, so this keeps their order.
+    return byRole !== 0 ? byRole : compareByLanes(a.lanes, b.lanes);
   });
 
   return (
@@ -99,7 +103,7 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
                         alt={m.handle}
                         width={40}
                         height={40}
-                        className="h-full w-full object-contain"
+                        className="h-full w-full object-cover"
                       />
                     ) : (
                       <span className="text-base font-black" style={{ color: avatarStyle.badgeText }}>
@@ -112,6 +116,7 @@ export async function TeamRoster({ members }: { members: TeamRosterMember[] }) {
                     <p className="flex items-center gap-1.5 truncate text-sm font-bold tracking-tight text-[var(--gcs-text)] group-hover:text-[#e4ae22]">
                       <CountryBadge code={m.countryCode} secondaryCode={m.secondaryCountryCode} />
                       {m.handle}
+                      <LaneIcons lanes={m.lanes} size={16} />
                     </p>
                     <div className="mt-1 flex min-w-0 items-center gap-2">
                       <span

@@ -22,6 +22,8 @@
     "menu": "메뉴"
   },
   "auth": {
+    "showPassword": "비밀번호 표시",
+    "hidePassword": "비밀번호 숨기기",
     "login": {
       "title": "로그인",
       "subtitle": "하나의 GC-Stats 계정으로 원하는 방식으로 로그인하세요."
@@ -1014,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "파트너 키는 대시보드에서 HTTPS 엔드포인트를 등록할 수 있어요. 그러면 데이터가 변경될 때마다 GC Stats가 POST를 보내요.",
-      "events": "이벤트: 새 경기, 경기 업데이트, 새 대회, 대회 업데이트, 팀 업데이트, 선수 업데이트.",
+      "events": "이벤트: 새 경기, 경기 업데이트, 새 대회, 대회 업데이트, 팀 업데이트, 선수 업데이트, 운영팀이 확인한 로스터 변경 (roster.updated).",
       "filters": "필터: 대회 지역, 공식 여부, 참가 팀.",
       "signature": "각 요청에는 X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp, X-GCS-Signature 헤더가 포함돼요. 엔드포인트 시크릿으로 서명을 검증하세요.",
       "retries": "10초 이내에 2xx 상태로 응답하세요. 실패한 전송은 약 9시간 동안 재시도되며, 너무 자주 실패하는 엔드포인트는 꺼져요.",
-      "setup": "페이로드에는 이벤트, 발생 시각, 엔티티가 OpenData 데이터셋과 같은 필드로 담겨 있어요."
+      "setup": "페이로드에는 이벤트, 발생 시각, 엔티티가 OpenData 데이터셋과 같은 필드로 담겨 있어요.",
+      "discord": "Discord 유형 엔드포인트는 roster.updated 이벤트만 받으며, 서명 없이 트윗 링크를 채널에 게시합니다."
     }
   },
   "becomePublisher": {
@@ -1044,6 +1047,77 @@
       "discord": "Discord로 문의하기",
       "email": "이메일로 문의하기"
     }
+  },
+  "discordBot": {
+    "title": "디스코드 봇",
+    "intro": "Game Changers의 모든 경기를 실시간 점수와 자동 게시되는 결과와 함께 디스코드 서버에서 바로 확인하세요.",
+    "addBot": "디스코드에 추가",
+    "comingSoon": "곧 출시",
+    "openDashboard": "대시보드 열기",
+    "features": {
+      "title": "기능",
+      "live": {
+        "title": "진행 중인 경기",
+        "body": "경기가 시작되면 메시지가 게시되고, 끝날 때까지 점수가 자동으로 업데이트됩니다."
+      },
+      "finished": {
+        "title": "종료된 경기",
+        "body": "경기가 끝나는 즉시 최종 결과가 게시됩니다."
+      },
+      "map": {
+        "title": "종료된 맵",
+        "body": "경기가 끝나기를 기다리지 않고 각 맵이 끝나는 대로 점수를 받아보세요."
+      },
+      "filters": {
+        "title": "스마트 필터",
+        "body": "지역, 참가 팀, 공식 또는 비공식 대회별로 알림을 필터링하세요(기본값은 공식)."
+      }
+    },
+    "dashboard": {
+      "title": "대시보드에서 설정",
+      "body": "각 서버는 GC Stats 대시보드에서 설정합니다. 알림 유형별로 채널을 선택하고 필터를 지정하세요.",
+      "why": "관리 중인 서버를 확인하기 위해 디스코드로 로그인해야 합니다. 서버 관리 권한이 있는 멤버만 설정을 변경할 수 있습니다."
+    },
+    "steps": {
+      "title": "사용 방법",
+      "invite": {
+        "title": "봇 추가",
+        "body": "위의 버튼으로 서버에 봇을 초대하세요."
+      },
+      "login": {
+        "title": "디스코드로 로그인",
+        "body": "대시보드를 열고 디스코드 계정으로 로그인하세요."
+      },
+      "configure": {
+        "title": "설정",
+        "body": "채널과 필터를 선택하면 알림이 바로 시작됩니다."
+      }
+    },
+    "help": {
+      "title": "도움이 필요하신가요?",
+      "body": "질문이나 제안이 있으신가요? <link>GC Stats 디스코드</link>에 참여하세요."
+    }
+  },
+  "discordBotMessages": {
+    "live": "라이브",
+    "finished": "경기 종료",
+    "mapFinished": "맵 {number} 종료",
+    "map": "맵 {number}",
+    "maps": "맵",
+    "bestOf": "Bo{count}",
+    "matchScore": "경기 스코어: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team}이(가) {map} 밴",
+    "vetoPick": "{team}이(가) {map} 선택",
+    "vetoDecider": "{map} (결정 맵)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "공격",
+    "sideDefense": "수비",
+    "openMatch": "경기 열기",
+    "imageRemoved": "이 알림의 이미지는 GC Stats 운영진에 의해 삭제되었습니다."
   },
   "supportUs": {
     "title": "후원하기",
@@ -1523,6 +1597,7 @@
     "statsColumns": {
       "played": "맵 수",
       "roundsPlayed": "라운드",
+      "rating": "레이팅",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",
@@ -1694,10 +1769,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "선수",
+    "ratingFull": "GCS 레이팅: 1.00은 같은 역할의 평균 선수입니다",
     "acsFull": "평균 컴뱃 스코어",
     "adrFull": "라운드당 평균 데미지",
     "kastFull": "킬, 어시스트, 트레이드, 생존",
@@ -1730,7 +1807,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "토론",
-    "watchparty": "워치파티"
+    "watchparty": "워치파티",
+    "vodGame": "게임 {n} VOD",
+    "games": "게임",
+    "gameTab": "게임 {order}",
+    "noGames": "아직 기록된 게임이 없습니다.",
+    "noGameData": "이 게임의 데이터가 없습니다",
+    "duration": "경기 시간",
+    "forfeit": "기권",
+    "towers": "포탑",
+    "inhibitors": "억제기",
+    "dragons": "드래곤",
+    "barons": "바론",
+    "heralds": "전령",
+    "grubs": "공허 유충",
+    "draftNotSet": "이 게임의 밴픽 기록이 없습니다.",
+    "ban": "밴",
+    "pick": "픽",
+    "unplacedPicks": "배치되지 않은 픽",
+    "colChampion": "챔피언",
+    "allGames": "모든 게임",
+    "draft": "드래프트"
   },
   "footer": {
     "tagline": "모든 공식 Game Changers 대회를 한곳에서 만나보세요.",
@@ -1759,7 +1856,8 @@
     "finance": "재정",
     "developers": "개발자",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "디스코드 봇"
   },
   "forum": {
     "overview": {
@@ -1952,6 +2050,10 @@
       "about": "소개 / 프로젝트",
       "backToSite": "사이트로 돌아가기",
       "pendingChangeRequests": "대기 중인 변경 요청",
+      "pendingDiscordImages": "검토할 Discord 이미지",
+      "pendingReports": "대기 중인 신고",
+      "pendingRosterWatch": "검토할 로스터 신호",
+      "pendingModeration": "검토할 의심 대상",
       "tournaments": "대회",
       "groupModeration": "모더레이션",
       "reports": "신고",
@@ -1961,7 +2063,10 @@
       "activityLog": "활동 로그",
       "analytics": "분석",
       "oauthClients": "OAuth 클라이언트",
-      "settings": "설정"
+      "settings": "설정",
+      "discordImages": "Discord 봇 이미지",
+      "rosterWatch": "로스터 감시",
+      "teamRequests": "팀 요청"
     },
     "dashboard": {
       "title": "대시보드",
@@ -2210,7 +2315,8 @@
           "staff": "스태프",
           "people": "인물",
           "apiKeys": "API 키",
-          "logs": "로그"
+          "logs": "로그",
+          "veto": "맵 밴"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "프로필 편집(이름, 소셜 링크, 태그)",
@@ -2235,7 +2341,8 @@
           "organization_people_link_user": "인물을 사용자 계정에 연결",
           "organization_people_edit_profile": "인물 프로필 편집(기본 및 상세 정보)",
           "organization_api_keys_manage": "단체의 API 키 관리",
-          "organization_logs_view": "조직 로그 보기"
+          "organization_logs_view": "조직 로그 보기",
+          "organization_veto_manage": "주최한 대회의 실시간 맵 밴 관리"
         },
         "accessError": {
           "notFound": "단체를 찾을 수 없습니다."
@@ -2370,6 +2477,8 @@
         "fieldBio": "소개",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia 링크",
+        "fieldContactEmail": "연락용 이메일",
+        "contactEmailHint": "비공개입니다. 스태프만 볼 수 있으며 사이트나 API에는 표시되지 않습니다.",
         "fieldActive": "활성 팀",
         "save": "저장",
         "saveSuccess": "프로필이 업데이트되었습니다.",
@@ -2482,7 +2591,8 @@
           "saveFailed": "로고를 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.",
           "empty": "이미지를 선택해 주세요.",
           "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요.",
-          "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요."
+          "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요.",
+          "invalidEmail": "올바른 이메일 주소를 입력하세요."
         },
         "fieldOrganization": "조직",
         "organizationPlaceholder": "조직 선택",
@@ -3339,6 +3449,7 @@
           "entityNotFound": "참조된 팀 또는 선수가 더 이상 존재하지 않습니다.",
           "membershipNotFound": "로스터 항목이 더 이상 존재하지 않습니다.",
           "invalidRole": "역할이 더 이상 유효하지 않습니다.",
+          "invalidLane": "유효하지 않은 라인이 있습니다.",
           "logoNotFound": "로고 항목이 더 이상 존재하지 않습니다.",
           "alreadyLinked": "이 선수는 이미 다른 계정에 연동되어 있습니다.",
           "unknownField": "지원하지 않는 필드입니다.",
@@ -3428,7 +3539,9 @@
         "activityLog": "활동 로그",
         "analytics": "분석",
         "oauthClients": "OAuth 클라이언트",
-        "settings": "설정"
+        "settings": "설정",
+        "rosterWatch": "로스터 감시",
+        "teamRequests": "팀 요청"
       },
       "permissionNames": {
         "admin_access": "관리자 패널 접근",
@@ -3479,7 +3592,11 @@
         "oauth_clients_view": "OAuth 클라이언트 조회",
         "oauth_clients_manage": "OAuth 클라이언트 생성, 수정 또는 삭제",
         "settings_view": "설정 및 OpenData 모니터링 보기",
-        "settings_manage": "설정 수정"
+        "settings_manage": "설정 수정",
+        "roster_watch_view": "로스터 감시 보기",
+        "roster_watch_manage": "로스터 감시 트윗을 검토하고 팔로우 중인 계정을 관리",
+        "team_requests_view": "팀 요청 보기",
+        "team_requests_manage": "팀에 보내는 정보 요청을 준비하고 추적"
       },
       "create": {
         "button": "새 역할",
@@ -3779,6 +3896,7 @@
         "assignEntrantsTitle": "그룹 참가팀",
         "assignEntrantsDescription": "이 Swiss 그룹에 포함할 토너먼트 참가팀을 선택하세요.",
         "assignEntrantsEmpty": "이 토너먼트에 참가팀이 없습니다.",
+        "assignEntrantsInGroup": "{name} 소속",
         "assignEntrantsSuccess": "참가팀이 수정되었습니다.",
         "startSwissButton": "1라운드 시작",
         "startSwissSuccess": "1라운드가 생성되었습니다.",
@@ -3788,7 +3906,22 @@
         "addMatchSubmit": "추가",
         "addMatchSuccess": "경기가 추가되었습니다.",
         "addMatchEntrantTbd": "TBD",
+        "participantsButton": "팀",
+        "participantsTitle": "{name}의 팀",
+        "participantsDescription": "여기에 등록한 팀은 경기를 추가하기 전에도 공개 순위표에 표시됩니다.",
+        "participantsEmpty": "이 대회에는 아직 등록된 팀이 없습니다.",
+        "participantsCount": "{count, plural, other {#개 팀}}",
+        "participantsSuccess": "팀을 업데이트했습니다.",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "라운드",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "Best of",
         "fieldMatchEntrantA": "팀 A",
         "fieldMatchEntrantB": "팀 B",
@@ -3835,7 +3968,13 @@
           "roundAboveMax": "이 라운드는 그룹의 최대 라운드 수를 초과합니다.",
           "sameEntrant": "두 슬롯에 같은 팀을 넣을 수 없습니다.",
           "entrantNotFound": "이 팀은 토너먼트에 등록되어 있지 않습니다.",
+          "entrantHasMatches": "이 그룹에 경기가 있는 팀은 제거할 수 없습니다.",
           "entrantNotInGroup": "이 팀은 이 그룹에 배정되어 있지 않습니다.",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "라운드 로빈 그룹만 스테이지 전체 경기를 집계할 수 있습니다.",
           "cannotMove": "이 컨테이너는 더 이상 이동할 수 없습니다.",
           "parentInvalid": "이 세트는 여기에서 사용할 수 없습니다.",
           "tiebreakersInvalid": "제시된 목록에서 각 타이브레이커를 한 번만 사용하세요.",
@@ -3852,6 +3991,7 @@
             "points": "포인트",
             "buchholz": "Buchholz",
             "map_diff": "맵 득실",
+            "game_diff": "게임 득실",
             "round_diff": "라운드 득실",
             "head_to_head": "상대 전적",
             "seed": "시드"
@@ -3860,17 +4000,23 @@
         "pointsConfig": {
           "title": "포인트",
           "hint": "이기거나 진 각 경기, 맵, 라운드가 팀에 포인트를 줍니다. 라운드는 점수가 기록된 맵에서만 계산됩니다.",
+          "hintGames": "이기거나 진 각 경기와 게임이 팀에 포인트를 줍니다.",
           "enable": "포인트 사용",
           "scopes": {
             "match": "경기",
             "map": "각 맵",
+            "game": "각 게임",
             "round": "각 라운드",
             "forfeit": "몰수 (다른 항목 대체)"
           },
           "win": "승리",
           "loss": "패배",
           "notUsed": "포인트는 타이브레이커에 포인트가 있을 때만 그룹 순위에 반영됩니다."
-        }
+        },
+        "fieldMatchScope": "팀이 다른 그룹의 팀과도 경기함 (스테이지 전체 경기 집계)",
+        "fieldMatchScopeHint": "이 그룹에 배정된 팀만 표시되며, 이 스테이지의 모든 그룹에서 치른 해당 팀의 완료된 경기가 집계됩니다. 저장 후 팀을 배정하세요. 라운드 로빈 전용.",
+        "matchScopeNoTeams": "이 그룹에 배정된 팀이 아직 없어 표가 비어 있습니다. 먼저 팀을 배정하세요.",
+        "matchScopeSwitchWarning": "스테이지 범위로 전환하면 배정된 팀만 표시됩니다. 이 그룹에서 경기했지만 배정되지 않은 팀은 배정하기 전까지 표에서 사라집니다."
       },
       "bracketPage": {
         "title": "브래킷 관리",
@@ -4332,6 +4478,7 @@
           "manualScoreboardDescription": "가져올 라이엇 경기 ID가 없는 게임용입니다(LAN, 너무 오래된 경기 등).",
           "columnPlayer": "선수",
           "columnIgn": "IGN",
+          "previousLineupNote": "이전 라인업(마지막으로 플레이한 맵), 맵을 가져오면 교체됩니다.",
           "noPlayerData": "플레이어 데이터가 없습니다.",
           "columnAgent": "요원",
           "columnKills": "킬",
@@ -4437,6 +4584,163 @@
             "mergeInvalidMatchId": "라이엇 경기 ID 중 하나가 유효하지 않습니다.",
             "mergeInvalidRoundRange": "각 세그먼트의 시작 라운드는 종료 라운드보다 앞서야 합니다.",
             "mergeMapNotFound": "이 맵은 더 이상 존재하지 않습니다."
+          }
+        },
+        "draft": {
+          "metaTitle": "드래프트",
+          "title": "{order}번 게임 드래프트",
+          "backToMatch": "매치로 돌아가기",
+          "description": "이 게임의 밴과 픽 순서입니다. 사용되지 않은 단계는 비워 두세요.",
+          "differsWarning": "가져온 데이터가 저장된 드래프트와 다릅니다. 다시 가져오기에서 다른 챔피언이 발견되었습니다. 내용을 확인하고 저장하면 현재 드래프트가 유지됩니다.",
+          "blueSide": "블루 진영",
+          "blueLockedHint": "가져오기에서 정해집니다 (Riot의 블루 팀).",
+          "firstPickLockedHint": "가져오기로 설정됩니다 (첫 밴을 한 진영).",
+          "firstPick": "퍼스트 픽",
+          "phase": {
+            "ban1": "밴 1 단계",
+            "pick1": "픽 1 단계",
+            "ban2": "밴 2 단계",
+            "pick2": "픽 2 단계"
+          },
+          "side": {
+            "blue": "블루",
+            "red": "레드"
+          },
+          "type": {
+            "ban": "밴",
+            "pick": "픽"
+          },
+          "noChampion": "챔피언 없음",
+          "searchPlaceholder": "챔피언 검색",
+          "noResults": "일치하는 챔피언이 없습니다",
+          "unplacedTitle": "아직 배치되지 않은 픽",
+          "save": "드래프트 저장",
+          "saving": "저장 중…",
+          "saved": "드래프트를 저장했습니다",
+          "error": {
+            "notFound": "이 게임을 찾을 수 없습니다.",
+            "entrantsUnset": "먼저 매치의 두 팀을 설정해야 합니다.",
+            "blueNotAnEntrant": "블루 진영은 매치의 두 팀 중 하나여야 합니다.",
+            "blueLocked": "가져온 게임의 블루 진영은 가져오기에서 정해집니다.",
+            "firstPickLocked": "가져온 게임의 첫 픽은 가져오기로 설정됩니다.",
+            "invalidFirstPick": "퍼스트 픽은 블루 또는 레드여야 합니다.",
+            "invalidStep": "{step} 단계가 없거나 두 번 지정되었습니다.",
+            "unknownChampion": "{championName}은(는) 챔피언 목록에 없습니다.",
+            "duplicateChampion": "{championName}이(가) 드래프트에 두 번 이상 있습니다."
+          }
+        },
+        "games": {
+          "heading": "게임",
+          "description": "이 시리즈에서 진행된 게임을 순서대로 표시합니다.",
+          "empty": "아직 게임이 없습니다.",
+          "gameLabel": "게임 {order}",
+          "winnerLabel": "승자: {name}",
+          "noWinner": "아직 승자가 없습니다",
+          "finished": "완료",
+          "notFinished": "미완료",
+          "draftButton": "드래프트",
+          "draftDiffers": "가져온 데이터가 저장된 드래프트와 다릅니다",
+          "forfeit": "기권",
+          "cancel": "취소",
+          "save": "저장",
+          "saving": "저장 중…",
+          "createButton": "게임 추가",
+          "createTitle": "게임 추가",
+          "editTitle": "게임 수정",
+          "dialogDescription": "이 시리즈의 게임 한 판 결과를 입력합니다.",
+          "editButton": "수정",
+          "deleteButton": "삭제",
+          "deleteTitle": "게임 삭제",
+          "deleteConfirm": "{order} 게임을 삭제할까요? 나머지 게임으로 매치 점수를 다시 계산합니다.",
+          "deleteError": "게임을 삭제하지 못했습니다.",
+          "deleteSuccess": "게임을 삭제했습니다.",
+          "saveError": "게임을 저장하지 못했습니다.",
+          "saveSuccess": "게임을 저장했습니다.",
+          "fieldOrder": "순서",
+          "fieldWinner": "승자",
+          "fieldWinnerNone": "아직 승자가 없습니다",
+          "fieldCompleted": "완료",
+          "fieldForfeit": "기권",
+          "fieldNote": "메모",
+          "fieldError": {
+            "invalid": "올바른 값을 입력하세요.",
+            "tooLong": "너무 깁니다.",
+            "duplicateOrder": "이 순서는 이미 다른 게임에서 사용 중입니다.",
+            "winnerRequired": "완료된 게임에는 승자가 필요합니다.",
+            "notAnEntrant": "승자는 두 팀 중 하나여야 합니다.",
+            "notCompleted": "승자를 지정하려면 게임을 완료로 표시하세요.",
+            "invalidMatchId": "EUW1_6123456789 형식을 사용하세요: 플랫폼 코드, 밑줄, 그다음 매치 번호.",
+            "duplicateMatchId": "다른 게임이 이 Riot 매치 ID를 이미 사용 중입니다."
+          },
+          "fieldApiMatchId": "Riot 매치 ID",
+          "fieldApiMatchIdHint": "예: EUW1_6123456789. 플랫폼은 이 값에서 읽습니다.",
+          "leaguepedia": {
+            "label": "Leaguepedia 경기",
+            "none": "없음",
+            "noData": "데이터 없음",
+            "gameNumber": "{number}번째 경기",
+            "fetch": "Leaguepedia에서 가져오기",
+            "fetching": "가져오는 중…",
+            "renew": "갱신",
+            "reprocess": "다시 처리",
+            "success": "Leaguepedia에서 경기를 저장했습니다",
+            "error": {
+              "noData": "이 경기는 Leaguepedia에 V5 데이터가 없습니다.",
+              "notInBucket": "이 경기는 아직 저장소에 없습니다. 먼저 가져오세요.",
+              "pageInvalid": "이 경기의 Leaguepedia 페이지는 올바른 경기 데이터가 아닙니다.",
+              "fetch": "Leaguepedia를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+              "missingConfig": "이 서버에는 Leaguepedia 봇 로그인이 설정되어 있지 않습니다.",
+              "sidesUnresolved": "이 경기의 두 팀이 시리즈의 두 참가자와 일치하지 않습니다.",
+              "missingPlayers": "{count, plural, other {#명의 선수가 아직 사람과 연결되지 않았습니다}}",
+              "invalidUpload": "경기 데이터가 가져오기 검사를 통과하지 못했습니다.",
+              "storeFailed": "경기를 저장할 수 없습니다.",
+              "invalidOrder": "경기 번호는 1 이상의 정수여야 합니다.",
+              "lolIdConflict": "이 Riot 계정은 이미 다른 사람에게 연결되어 있습니다.",
+              "sidesInvalid": "블루와 레드에는 서로 다른 참가자 두 명을 선택하세요.",
+              "roleInvalid": "변경 사항의 역할이 올바르지 않습니다.",
+              "orderTaken": "이 시리즈의 {order}번째 경기는 이미 다른 데이터로 저장되어 있습니다. 다른 경기 번호를 선택하고 다시 저장하세요.",
+              "dataDragonUnavailable": "챔피언 이름을 지금은 가져올 수 없습니다. 나중에 다시 시도하세요.",
+              "unknownChampions": "알 수 없는 챔피언 ID: {ids}",
+              "storageUnavailable": "LoL 가져오기 저장소에 연결할 수 없습니다. 설정을 확인한 뒤 다시 시도하세요.",
+              "duplicateAccount": "같은 Riot 계정이 두 번 연결되었습니다. 계정마다 한 번만 연결하세요.",
+              "riotUnavailable": "지금은 Riot 데이터를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+              "tournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되었습니다. 대신 Leaguepedia에서 가져오세요."
+            },
+            "searchPlaceholder": "팀, 경기 또는 날짜로 검색",
+            "noResults": "일치하는 경기가 없습니다",
+            "previewTitle": "경기 확인",
+            "previewDescription": "각 진영의 참가자를 고르고, 아직 연결되지 않은 선수를 모두 연결하세요.",
+            "back": "뒤로",
+            "saveGame": "경기 저장",
+            "sideBlue": "블루",
+            "sideRed": "레드",
+            "sidesTitle": "진영",
+            "blueSide": "블루 진영",
+            "redSide": "레드 진영",
+            "chooseEntrant": "참가자 선택",
+            "suggestedPlayers": "연결된 선수 기준 추천",
+            "suggestedNames": "팀 이름 기준 추천",
+            "winnerLabel": "승자: {name}",
+            "noWinner": "승자 없음",
+            "lengthLabel": "경기 시간: {minutes}분",
+            "playersTitle": "선수",
+            "notLinked": "아직 연결되지 않음",
+            "linkExisting": "기존 사람에 연결",
+            "createNew": "새로 만들기",
+            "newHandle": "새 사람의 이름",
+            "unresolvedHint": "아직 연결되지 않은 선수마다 사람을 연결하거나 새로 만드세요.",
+            "roleLabel": "역할",
+            "roleNone": "역할 없음",
+            "positionRole": "맵 위치상 {role}",
+            "alreadyStoredHere": "이 시리즈의 {order}번째 경기로 저장됨",
+            "alreadyStoredElsewhere": "다른 시리즈에 저장됨",
+            "refreshGames": "게임 목록 새로고침",
+            "refreshCooldown": "1시간 이내에 새로고침했습니다. 나중에 다시 시도하세요.",
+            "refreshed": "게임 목록을 새로고침했습니다 ({count}개)",
+            "refreshError": "게임 목록을 새로고침하지 못했습니다. 나중에 다시 시도하세요.",
+            "riotFetch": "Riot에서 가져오기",
+            "riotSuccess": "Riot에서 게임을 저장했습니다",
+            "riotTournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되어 Riot API에서 가져올 수 없습니다."
           }
         },
         "liquipediaImportButton": "Liquipedia 경기 가져오기"
@@ -4721,7 +5025,30 @@
       "activeFilterLabel": "활동",
       "activeFilterAny": "모든 대회",
       "activeFilterActive": "활성",
-      "activeFilterInactive": "비활성"
+      "activeFilterInactive": "비활성",
+      "leaguepedia": {
+        "title": "Leaguepedia 경기",
+        "description": "경기 목록은 기본 페이지와 그 아래의 모든 페이지에 대해 Leaguepedia의 Cargo 테이블에서 가져옵니다.",
+        "basePageLabel": "Leaguepedia 기본 페이지",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "저장하면 Leaguepedia에서 경기를 읽습니다. 읽기에 실패하면 아무것도 저장되지 않습니다.",
+        "save": "저장하고 경기 가져오기",
+        "saving": "가져오는 중…",
+        "refresh": "Leaguepedia에서 새로고침",
+        "lastFetched": "마지막 가져오기 {date} · {count, plural, other {경기 #개}}",
+        "neverFetched": "아직 가져오지 않음",
+        "success": "{count, plural, other {경기 #개를 가져왔습니다}}",
+        "error": {
+          "gameClaimed": "이 게임들은 이미 다른 토너먼트에 속해 있어 여기서 연결할 수 없습니다.",
+          "invalidBasePage": "# < > [ ] | '{ }' 를 포함하지 않고, 앞뒤에 / 가 없는 페이지 이름을 사용하세요.",
+          "notFound": "대회를 찾을 수 없습니다.",
+          "notLinked": "먼저 기본 페이지를 저장하세요.",
+          "cooldown": "경기 목록은 1시간 이내에 읽었습니다. 나중에 다시 시도하세요.",
+          "missingConfig": "이 서버에는 Leaguepedia 봇 로그인이 설정되어 있지 않습니다.",
+          "fetch": "Leaguepedia를 읽을 수 없습니다. 나중에 다시 시도하세요."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "신고",
@@ -4807,6 +5134,88 @@
       "statDismissed": "기각됨",
       "error": {
         "notFound": "이 항목은 더 이상 존재하지 않습니다."
+      },
+      "images": {
+        "title": "Discord 봇 이미지",
+        "subtitle": "서버에서 직접 설정한 알림 이미지입니다. 확인된 이미지는 목록에서 사라지며 수정된 경우에만 다시 표시됩니다.",
+        "empty": "검토할 이미지가 없습니다.",
+        "imageAlt": "서버의 알림 이미지",
+        "openImage": "새 탭에서 이미지 열기",
+        "event": {
+          "match_live": "경기 진행 중",
+          "match_finished": "경기 종료",
+          "map_finished": "맵 종료"
+        },
+        "server": "서버",
+        "unknownUser": "알 수 없는 계정",
+        "guildBlacklisted": "블랙리스트에 등록된 서버",
+        "userBlacklisted": "블랙리스트에 등록된 사용자",
+        "verifyButton": "확인",
+        "sanctionButton": "제재",
+        "verifySuccess": "이미지를 확인했습니다.",
+        "error": {
+          "notFound": "이 이미지는 이미 처리되었거나 더 이상 존재하지 않습니다."
+        },
+        "sanction": {
+          "title": "이 이미지 제재",
+          "description": "서버와 이 이미지를 업로드한 사람에게 적용할 조치를 선택하세요.",
+          "sanctionsLabel": "제재",
+          "option": {
+            "blacklistGuild": {
+              "label": "서버를 블랙리스트에 등록",
+              "hint": "서버는 더 이상 대시보드를 사용할 수 없고 알림도 받지 못합니다."
+            },
+            "blacklistUser": {
+              "label": "Discord 계정을 블랙리스트에 등록",
+              "hint": "이 Discord 계정은 더 이상 어떤 서버에서도 봇을 관리할 수 없습니다."
+            },
+            "resetImage": {
+              "label": "이미지 초기화",
+              "hint": "사용자 지정 이미지가 삭제되고 서버는 텍스트만 있는 알림으로 돌아갑니다."
+            },
+            "editMessages": {
+              "label": "이 이미지로 이미 보낸 메시지 수정",
+              "hint": "게시된 알림에서 이미지가 제거되고 GC Stats 운영진이 삭제했다는 안내로 대체됩니다."
+            }
+          },
+          "alreadyBlacklisted": "이미 블랙리스트에 등록되어 있습니다.",
+          "reasonLabel": "사유",
+          "reasonHint": "블랙리스트 항목과 함께 저장됩니다.",
+          "cancel": "취소",
+          "submit": "제재",
+          "submitting": "제재 중...",
+          "success": "제재가 적용되었습니다.",
+          "error": {
+            "notFound": "이 이미지는 이미 처리되었거나 더 이상 존재하지 않습니다.",
+            "sanctions": {
+              "required": "제재를 하나 이상 선택하세요."
+            },
+            "blacklistUser": {
+              "noEditor": "마지막 편집자의 Discord 계정을 알 수 없습니다."
+            },
+            "reason": {
+              "required": "사유를 입력하세요.",
+              "tooLong": "사유가 너무 깁니다 (최대 {max}자)."
+            }
+          },
+          "successQueued": "제재가 적용되었습니다. 메시지 {count}개가 곧 수정됩니다."
+        },
+        "editor": "편집자",
+        "history": {
+          "title": "기록",
+          "subtitle": "알림 이미지에 내려진 모든 결정이며, 이미지가 초기화된 후에도 보관됩니다.",
+          "empty": "아직 결정이 없습니다.",
+          "verified": "확인됨",
+          "sanctioned": "제재됨",
+          "moderator": "결정한 사람",
+          "reason": "사유",
+          "sanction": {
+            "blacklist_guild": "서버 블랙리스트 등록됨",
+            "blacklist_user": "계정 블랙리스트 등록됨",
+            "reset_image": "이미지 초기화됨",
+            "edit_messages": "메시지 수정됨"
+          }
+        }
       }
     },
     "forum": {
@@ -4991,6 +5400,119 @@
       "hasLeft": "팀을 떠남",
       "untilLabel": "탈퇴일",
       "unknownHint": "종료일을 알 수 없습니다. 모르면 비워 두세요."
+    },
+    "vetoManagement": {
+      "title": "실시간 맵 밴",
+      "subtitle": "팀은 비공개 링크에서 맵을 밴하고, 결과는 진행에 맞춰 경기에 반영됩니다.",
+      "openPage": "실시간 맵 밴",
+      "backToTournament": "{name}(으)로 돌아가기",
+      "enableTitle": "활성화",
+      "enableDescription": "활성화하면 대회의 모든 팀이 비공개 밴 링크를 받고, 주최자는 대시보드에서 밴을 관리할 수 있습니다.",
+      "enabled": "활성화됨",
+      "disabled": "비활성화됨",
+      "enableButton": "밴 활성화",
+      "disableButton": "밴 비활성화",
+      "enabledSuccess": "실시간 밴이 활성화되었습니다.",
+      "disabledSuccess": "실시간 밴이 비활성화되었습니다.",
+      "settingsTitle": "설정",
+      "settingsDescription": "대회의 모든 경기에 적용되는 규칙입니다.",
+      "firstMoverLabel": "밴을 시작하는 팀",
+      "mode": {
+        "coin_toss": "동전 던지기로 결정",
+        "coin_toss_winner": "동전 던지기 승자가 결정",
+        "advantage": "어드밴티지 팀이 결정",
+        "predefined": "사전 지정"
+      },
+      "modeHint": {
+        "coin_toss": "동전 던지기로 먼저 밴할 팀을 정합니다.",
+        "coin_toss_winner": "동전 던지기로 승자를 정하고, 승자가 먼저 밴할 팀을 선택합니다.",
+        "advantage": "어드밴티지가 설정된 팀이 먼저 밴할 팀을 선택합니다.",
+        "predefined": "선택한 슬롯(경기의 A팀 또는 B팀)의 팀이 항상 먼저 밴합니다."
+      },
+      "advantageLabel": "어드밴티지 팀",
+      "advantageNone": "팀 선택",
+      "slotLabel": "시작하는 팀",
+      "slotA": "A팀",
+      "slotB": "B팀",
+      "timeoutLabel": "행동당 제한 시간(초)",
+      "timeoutHint": "시간이 초과된 팀에는 무작위 맵 또는 진영이 배정됩니다. 10에서 600 사이로 입력하세요.",
+      "poolLabel": "맵 풀",
+      "poolCount": "{count}개 선택됨, 7개가 필요합니다.",
+      "patchLabel": "또는 패치의 맵 사용",
+      "patchHint": "위에서 선택한 맵이 없을 때 사용됩니다(예: 11.07). 해당 패치에서 플레이된 맵이 사용됩니다.",
+      "saveButton": "저장",
+      "saving": "저장 중...",
+      "saveSuccess": "설정이 저장되었습니다.",
+      "saveFailed": "올바르지 않은 항목이 있습니다.",
+      "linksTitle": "팀 링크",
+      "linksDescription": "각 팀은 대회 전체에서 사용하는 비공개 링크가 하나 있습니다. 링크를 가진 사람은 누구나 계정 없이 팀을 대신해 밴할 수 있습니다.",
+      "noEntrants": "이 대회에는 아직 팀이 없습니다.",
+      "noLink": "아직 링크 없음",
+      "generate": "생성",
+      "copyLink": "링크 복사",
+      "copied": "복사됨",
+      "copyFailed": "링크를 복사하지 못했습니다.",
+      "regenerate": "재생성",
+      "regenerated": "새 링크가 생성되었습니다. 이전 링크는 더 이상 작동하지 않습니다.",
+      "regenerateTitle": "이 링크를 재생성할까요?",
+      "regenerateDescription": "{team}의 현재 링크는 즉시 작동하지 않게 됩니다. 새 링크를 팀에 전달하세요.",
+      "cancel": "취소",
+      "matchesTitle": "경기",
+      "matchesDescription": "경기의 맵 풀을 조정하거나 시작된 밴을 초기화합니다.",
+      "noMatches": "예정된 경기가 없습니다.",
+      "teamsUnknown": "팀이 아직 정해지지 않았습니다",
+      "editPool": "맵 풀",
+      "matchPoolHint": "이 경기에만 적용되는 맵입니다. 선택하지 않으면 대회 풀이 사용됩니다.",
+      "useTournamentPool": "대회 풀 사용",
+      "poolSaved": "맵 풀이 저장되었습니다.",
+      "reset": "초기화",
+      "resetTitle": "이 밴을 초기화할까요?",
+      "resetDescription": "이미 선택한 모든 밴, 픽, 진영이 삭제되며 팀은 다시 준비해야 합니다.",
+      "resetDone": "밴이 초기화되었습니다.",
+      "status": {
+        "waiting": "대기 중",
+        "choosing": "시작 팀 선택 중",
+        "running": "진행 중",
+        "done": "완료"
+      },
+      "error": {
+        "notFound": "찾을 수 없습니다.",
+        "firstMoverMode": {
+          "invalid": "올바른 옵션을 선택하세요."
+        },
+        "advantageEntrantId": {
+          "required": "어드밴티지 팀을 선택하세요.",
+          "invalid": "이 팀은 대회에 참가하지 않았습니다."
+        },
+        "predefinedSlot": {
+          "invalid": "A팀 또는 B팀을 선택하세요."
+        },
+        "actionTimeoutSeconds": {
+          "required": "시간을 입력하세요.",
+          "notInteger": "초는 정수로 입력하세요.",
+          "outOfRange": "10초에서 600초 사이로 입력하세요."
+        },
+        "mapPool": {
+          "required": "맵 7개를 선택하거나 패치를 지정하세요.",
+          "invalidMap": "올바르지 않은 맵이 있습니다.",
+          "duplicateMap": "같은 맵이 두 번 선택되었습니다.",
+          "poolSize": "정확히 7개의 맵을 선택하세요.",
+          "vetoRunning": "밴이 진행 중입니다. 풀을 변경하기 전에 종료될 때까지 기다리거나 초기화하세요."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "11.07과 같은 형식으로 패치를 입력하세요.",
+          "patchUnknown": "이 패치에서는 7개 맵의 풀을 만들 수 없습니다. 직접 선택하세요."
+        },
+        "matchPool": {
+          "notFound": "경기를 찾을 수 없습니다.",
+          "invalidMap": "올바르지 않은 맵이 있습니다.",
+          "duplicateMap": "같은 맵이 두 번 선택되었습니다.",
+          "poolSize": "정확히 7개의 맵을 선택하거나, 대회 풀을 사용하려면 선택하지 마세요.",
+          "vetoStarted": "밴이 이미 시작되었습니다. 먼저 초기화하세요."
+        }
+      },
+      "copyOverlay": "오버레이 링크",
+      "overlayCopied": "오버레이 링크가 복사되었습니다. 브라우저 소스로 추가하세요."
     },
     "personPicker": {
       "notInGame": "아직 {game}에 없음"
@@ -5216,6 +5738,247 @@
         "tooShort": "최소 {min}자 이상이어야 합니다.",
         "tooLong": "최대 {max}자까지 입력할 수 있습니다."
       }
+    },
+    "rosterWatch": {
+      "title": "로스터 감시",
+      "subtitle": "팀 계정의 트윗을 AI가 분류하여 사람이 로스터 변경을 검토할 수 있습니다.",
+      "empty": "검토할 항목이 없습니다.",
+      "tabs": {
+        "roster": "로스터",
+        "unsure": "확인 필요",
+        "done": "검토 완료"
+      },
+      "filters": {
+        "period": "기간",
+        "periodAny": "모든 기간",
+        "periodDays": "최근 {days}일",
+        "topic": "주제",
+        "topicAny": "모든 주제"
+      },
+      "topic": {
+        "roster_join": "선수 영입",
+        "roster_leave": "선수 이탈",
+        "roster_bench": "선수 벤치행",
+        "staff_change": "스태프 변경",
+        "tryouts": "Tryouts",
+        "not_enough_info": "정보 부족",
+        "wrong_game": "다른 게임",
+        "match_promo": "경기 홍보",
+        "match_result": "경기 결과",
+        "highlight": "하이라이트",
+        "sponsor": "스폰서",
+        "merch": "굿즈",
+        "giveaway": "Giveaway",
+        "stream": "방송",
+        "content": "콘텐츠",
+        "community": "커뮤니티",
+        "other": "기타"
+      },
+      "verdict": {
+        "roster": "로스터",
+        "not_roster": "로스터 아님",
+        "unsure": "불확실"
+      },
+      "card": {
+        "openTweet": "트윗 열기",
+        "noText": "텍스트 없음",
+        "openPhoto": "사진 열기",
+        "openVideo": "영상 열기",
+        "players": "인물:"
+      },
+      "actions": {
+        "editTeam": "팀 편집",
+        "ignore": "무시",
+        "notRoster": "로스터 아님",
+        "done": "완료"
+      },
+      "deck": {
+        "next": "다음",
+        "back": "뒤로",
+        "remaining": "이 페이지에 {count}개 남음",
+        "allSeen": "이 페이지의 모든 트윗을 확인했습니다.",
+        "restart": "처음부터 다시",
+        "showOriginal": "원문 보기",
+        "showTranslation": "영어 번역 보기",
+        "explanation": "설명",
+        "explanationPlaceholder": "로스터와 관련이 없는 이유는?",
+        "confirm": "확인",
+        "pickTopic": "무엇에 관한 내용인가요?"
+      },
+      "reviewed": {
+        "team_edited": "팀 편집됨",
+        "ignored": "무시됨",
+        "marked_not_roster": "로스터 아님으로 표시됨",
+        "reported_missed": "누락으로 신고됨"
+      },
+      "error": {
+        "notFound": "이 트윗은 더 이상 존재하지 않습니다.",
+        "invalidState": "이 트윗에는 이 작업을 할 수 없습니다. 이미 검토되었을 수 있습니다.",
+        "invalidTopic": "올바른 주제를 선택하세요.",
+        "noteTooLong": "메모가 너무 깁니다 (최대 1000자)."
+      },
+      "accounts": {
+        "title": "팔로우 중인 계정",
+        "subtitle": "하루에 한 번 가져오는 X 계정.",
+        "team": "팀",
+        "teamPlaceholder": "팀을 선택하세요",
+        "teamSearch": "팀 검색",
+        "teamNoResults": "팀을 찾을 수 없습니다",
+        "handle": "X 핸들",
+        "add": "추가",
+        "added": "계정이 추가되었습니다.",
+        "enabled": "활성화",
+        "toastEnabled": "계정이 활성화되었습니다.",
+        "toastDisabled": "계정이 비활성화되었습니다.",
+        "lastPolled": "마지막 가져오기",
+        "lastError": "마지막 오류",
+        "empty": "아직 팔로우 중인 계정이 없습니다.",
+        "noResults": "이 검색과 일치하는 계정이 없습니다.",
+        "searchPlaceholder": "팀 또는 핸들 검색",
+        "count": "{count, plural, other {#개 계정}}",
+        "previous": "이전 페이지",
+        "next": "다음 페이지",
+        "error": {
+          "notFound": "이 계정은 더 이상 존재하지 않습니다.",
+          "teamRequired": "팀을 선택하세요.",
+          "teamNotFound": "이 팀은 더 이상 존재하지 않습니다.",
+          "handleRequired": "X 핸들을 입력하세요.",
+          "handleInvalid": "핸들은 1자에서 15자의 영문, 숫자 또는 밑줄이어야 합니다.",
+          "handleTaken": "이 핸들은 이미 팔로우 중입니다."
+        }
+      },
+      "import": {
+        "button": "자동 가져오기",
+        "title": "X 계정 가져오기",
+        "description": "대회 각 팀의 소셜 링크에서 찾은 X 계정을 팔로우합니다.",
+        "tournament": "대회",
+        "tournamentPlaceholder": "대회 선택",
+        "tournamentSearch": "대회 검색",
+        "tournamentNoResults": "대회를 찾을 수 없습니다",
+        "stage": "스테이지",
+        "allStages": "모든 스테이지",
+        "cancel": "취소",
+        "submit": "가져오기",
+        "importing": "가져오는 중...",
+        "success": "{added, plural, =0 {추가된 계정 없음} other {계정 #개 추가됨}}. 이미 팔로우 중: {alreadyFollowed}, X 계정 없음: {noTwitter}, 유효하지 않음: {invalid}.",
+        "error": {
+          "tournamentRequired": "대회를 선택하세요.",
+          "tournamentNotFound": "이 대회는 더 이상 존재하지 않습니다.",
+          "stageNotFound": "이 스테이지는 대회에 속하지 않습니다."
+        }
+      },
+      "searchPlaceholder": "트윗 또는 팀 검색",
+      "searchSubmit": "검색",
+      "statusLabel": "상태",
+      "columnTeam": "팀",
+      "columnTweet": "트윗",
+      "columnType": "유형",
+      "columnDate": "날짜",
+      "columnReview": "검토"
+    },
+    "teamRequests": {
+      "title": "팀 요청",
+      "subtitle": "팀에 보내는 정보 요청(로고, SNS, 로스터)을 추적하고 전송합니다.",
+      "tabs": {
+        "recommended": "추천",
+        "pending": "진행 중",
+        "done": "완료"
+      },
+      "scopeLabel": "표시할 요청",
+      "scope": {
+        "mine": "내 요청",
+        "all": "모든 요청"
+      },
+      "recommended": {
+        "pickTeam": "다른 팀의 요청 준비",
+        "pickPlaceholder": "팀 선택",
+        "searchPlaceholder": "팀 검색...",
+        "noResults": "팀을 찾을 수 없습니다.",
+        "empty": "추천 팀이 없습니다. 최근 경기를 치른 모든 팀에 이미 요청이 있습니다.",
+        "emptyTitle": "선택된 팀 없음",
+        "emptyHint": "오른쪽에서 팀을 선택해 요청을 준비하세요.",
+        "listTitle": "추천 팀 ({count})"
+      },
+      "table": {
+        "empty": "여기에는 요청이 없습니다.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "메시지",
+        "markDone": "완료로 표시",
+        "reopen": "다시 열기",
+        "markedDone": "요청을 완료로 표시했습니다.",
+        "reopened": "요청을 다시 열었습니다.",
+        "openContact": "연락처 열기"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "웹사이트",
+        "email": "이메일",
+        "other": "기타"
+      },
+      "builder": {
+        "title": "{team} 요청",
+        "description": "초록색은 할 일이 없음을, 빨간색은 팀에 정보를 요청함을 의미합니다.",
+        "loading": "팀 데이터와 최근 경기를 불러오는 중...",
+        "alreadyPending": "이 팀에는 이미 진행 중인 요청이 있습니다.",
+        "dataTitle": "보유 중인 정보",
+        "dataHint": "상태를 클릭하면 초록색(문제 없음)과 빨간색(요청 필요)이 전환됩니다.",
+        "toggle": "{item} 상태 전환",
+        "logo": "로고",
+        "roster": "로스터",
+        "missing": "누락",
+        "rosterCount": "현재 {current}명, 과거 {past}명",
+        "rosterCurrent": "현재 로스터",
+        "rosterPast": "과거 로스터",
+        "none": "없음",
+        "unlistedTitle": "로스터에 없지만 최근 경기에 출전",
+        "unlistedMatches": "{count, plural, other {#경기}}",
+        "messageTitle": "메시지",
+        "messageHint": "위의 상태를 바탕으로 생성되었으며, 복사하기 전에 수정할 수 있습니다.",
+        "copy": "복사",
+        "copied": "복사됨",
+        "copyFailed": "복사에 실패했습니다. 텍스트를 직접 선택해 주세요.",
+        "contactTitle": "연락처",
+        "noContact": "이 팀의 연락처를 알 수 없습니다. 먼저 팀, 소속 조직, 매니저 또는 코치의 SNS를 추가해 주세요.",
+        "kind": {
+          "organization": "조직",
+          "manager": "매니저",
+          "coach": "코치",
+          "other": "기타"
+        },
+        "cancel": "취소",
+        "validate": "요청 확정",
+        "created": "요청이 추가되었습니다.",
+        "rosterPlayers": "선수",
+        "rosterSubs": "교체 선수",
+        "rosterStaff": "스태프",
+        "open": "이 연락처 열기",
+        "customFree": "기타 연락처",
+        "customFreePlaceholder": "링크, 아이디 또는 기타 연락처",
+        "customEmail": "이메일",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "팀을 선택해 주세요.",
+        "teamNotFound": "존재하지 않는 팀입니다.",
+        "itemsInvalid": "유효하지 않은 항목이 있습니다.",
+        "itemsRequired": "최소 하나의 항목을 빨간색으로 표시해 주세요.",
+        "messageRequired": "메시지는 필수입니다.",
+        "messageTooLong": "메시지가 너무 깁니다(최대 4000자).",
+        "contactRequired": "연락처를 선택해 주세요.",
+        "contactInvalid": "유효하지 않은 연락처입니다.",
+        "contactTooLong": "연락처가 너무 깁니다(최대 300자).",
+        "urlInvalid": "웹사이트 연락처는 http:// 또는 https://로 시작하는 유효한 링크여야 합니다.",
+        "alreadyPending": "이 팀에는 이미 진행 중인 요청이 있습니다.",
+        "notFound": "존재하지 않는 요청입니다.",
+        "invalidState": "이 요청은 이미 해당 상태입니다.",
+        "emailInvalid": "이메일 주소가 올바르지 않습니다.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5248,14 +6011,18 @@
       "allAuthors": "모든 작성자",
       "authorAdminSpace": "작성자",
       "logs": "로그",
-      "webhooks": "Webhook"
+      "veto": "맵 밴",
+      "webhooks": "Webhook",
+      "discordSpace": "Discord 봇",
+      "discordServers": "내 서버"
     },
     "switcher": {
       "selectOrganization": "조직 선택",
       "authorSpace": "작성자 공간",
       "apiKeySpace": "API 키 공간",
       "adminAccess": "관리자",
-      "authorAdminSpace": "작성자"
+      "authorAdminSpace": "작성자",
+      "discordSpace": "Discord 봇"
     },
     "picker": {
       "title": "내 조직",
@@ -5268,7 +6035,8 @@
       "filterTagAll": "전체",
       "noResults": "조직을 찾을 수 없습니다.",
       "adminBadge": "관리자",
-      "authorAdminSpace": "작성자"
+      "authorAdminSpace": "작성자",
+      "discordSpace": "Discord 봇"
     },
     "authors": {
       "title": "작성자",
@@ -5504,7 +6272,8 @@
       "level": {
         "tournament": "대회",
         "match": "경기",
-        "map": "맵"
+        "map": "맵",
+        "game": "게임"
       },
       "matchSearchPlaceholder": "경기 검색…",
       "mapSearchPlaceholder": "맵 검색…",
@@ -5523,7 +6292,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "경기",
       "openMaps": "맵",
-      "goBack": "뒤로 가기"
+      "goBack": "뒤로 가기",
+      "gameEmpty": "이 매치에 게임이 없습니다.",
+      "gameSearchPlaceholder": "게임 검색…",
+      "openGames": "게임"
     },
     "streams": {
       "title": "스트림 채널",
@@ -5661,8 +6433,14 @@
         "matchNotInTournament": "이 매치는 선택한 토너먼트에 속하지 않습니다.",
         "mapNotFound": "맵을 찾을 수 없습니다.",
         "mapNotInMatch": "이 맵은 선택한 매치에 속하지 않습니다.",
-        "notFound": "VOD를 찾을 수 없습니다."
-      }
+        "notFound": "VOD를 찾을 수 없습니다.",
+        "gameNotFound": "게임을 찾을 수 없습니다.",
+        "gameNotInMatch": "이 게임은 선택한 매치에 속하지 않습니다."
+      },
+      "scopeGame": "특정 게임",
+      "gameLabel": "게임",
+      "gamePlaceholder": "게임 선택…",
+      "gameLoading": "불러오는 중…"
     },
     "apiKeys": {
       "title": "API 키",
@@ -6023,9 +6801,15 @@
       "previous": "이전 페이지",
       "next": "다음 페이지"
     },
+    "veto": {
+      "title": "맵 밴",
+      "subtitle": "조직이 주최하는 대회의 실시간 밴을 설정합니다.",
+      "readOnlyHint": "맵 밴을 관리할 권한이 없습니다.",
+      "noTournaments": "조직의 대회 중 맵 밴이 활성화된 대회가 없습니다. GC Stats 관리자가 활성화해 드립니다."
+    },
     "webhooks": {
       "title": "Webhook",
-      "description": "경기, 대회, 팀 또는 선수가 변경되면 GC Stats가 엔드포인트로 HTTPS POST를 보내요. 전송은 약 1분마다 확인돼요.",
+      "description": "GC Stats는 경기, 대회, 팀, 선수 또는 로스터가 변경되면 엔드포인트로 HTTPS POST를 보냅니다. 전송은 약 1분마다 확인됩니다.",
       "pageTitle": "Webhook",
       "pageSubtitle": "파트너 API 키의 엔드포인트와 전송 내역.",
       "keySwitcher": "파트너 API 키",
@@ -6096,6 +6880,9 @@
         },
         "player": {
           "updated": "선수 업데이트"
+        },
+        "roster": {
+          "updated": "로스터 변경 확인됨"
         }
       },
       "filtersTitle": "필터",
@@ -6127,7 +6914,8 @@
           "invalid": "올바른 URL이 아니에요.",
           "notHttps": "URL은 https://로 시작해야 해요.",
           "credentials": "URL에 사용자 이름이나 비밀번호를 포함할 수 없어요.",
-          "privateHost": "URL은 공개 주소를 가리켜야 해요."
+          "privateHost": "URL은 공개 주소를 가리켜야 해요.",
+          "notDiscord": "Discord Webhook URL이 아닙니다."
         },
         "description": {
           "tooLong": "최대 {descriptionMaxLength}자까지 입력할 수 있어요."
@@ -6147,6 +6935,475 @@
         },
         "filterOfficial": {
           "invalid": "올바르지 않은 값이에요."
+        },
+        "kind": {
+          "invalid": "올바른 유형을 선택하세요."
+        }
+      },
+      "kind": {
+        "label": "유형",
+        "standard": "표준",
+        "discord": "Discord",
+        "hint": {
+          "standard": "서명된 JSON 요청을 서버로 보냅니다.",
+          "discord": "Discord 채널에 트윗 링크만 게시합니다."
+        }
+      },
+      "urlHintDiscord": "Discord Webhook URL (서버 설정, 연동, Webhook)."
+    },
+    "discord": {
+      "serversTitle": "Discord 서버",
+      "serversSubtitle": "GC Stats 봇을 관리할 수 있는 서버입니다.",
+      "serversUnavailable": "Discord 서버를 불러오지 못했습니다. Discord 계정을 다시 연결한 후 다시 시도하세요.",
+      "reconnectDiscord": "Discord 다시 연결",
+      "serversEmpty": "관리 중인 Discord 서버가 없습니다. 봇을 설정하려면 서버 관리하기 권한이 필요합니다.",
+      "subscriptionCount": "{count, plural, =0 {알림 없음} other {알림 #개}}",
+      "botNotJoined": "봇이 추가되지 않음",
+      "configure": "설정",
+      "addBot": "봇 추가",
+      "botUnavailable": "아직 봇을 추가할 수 없습니다.",
+      "serverTitle": "Discord 서버",
+      "serverSubtitle": "어떤 알림을 어느 채널에 게시할지 선택하세요.",
+      "backToServers": "서버 목록으로",
+      "botNotJoinedBody": "봇이 아직 이 서버에 없습니다. 알림을 설정하려면 봇을 추가하세요.",
+      "alertsTitle": "알림",
+      "alertsDescription": "각 알림은 하나의 채널에 게시되며 지역, 팀, 공식 여부로 필터링할 수 있습니다.",
+      "add": "알림 추가",
+      "empty": "아직 알림이 없습니다. 서버에서 경기 알림을 받으려면 추가하세요.",
+      "channelsUnavailable": "봇이 이 서버의 채널을 읽을 수 없습니다. 채널을 볼 수 있는지 확인한 후 페이지를 새로고침하세요.",
+      "channelMissing": "채널을 찾을 수 없음",
+      "disabledLostChannel": "꺼짐, 봇이 이 채널에 대한 접근 권한을 잃었습니다. 채널을 선택하고 저장하면 다시 켜집니다.",
+      "active": "켜짐",
+      "inactive": "꺼짐",
+      "toggle": "이 알림 켜기 또는 끄기",
+      "edit": "편집",
+      "delete": "삭제",
+      "deleteTitle": "이 알림을 삭제할까요?",
+      "deleteDescription": "봇이 더 이상 게시하지 않습니다. 이미 게시된 메시지는 채널에 남습니다.",
+      "cancel": "취소",
+      "save": "저장",
+      "saving": "저장 중...",
+      "created": "알림이 추가되었습니다",
+      "updated": "알림이 업데이트되었습니다",
+      "deleted": "알림이 삭제되었습니다",
+      "addTitle": "알림 추가",
+      "editTitle": "알림 편집",
+      "dialogDescription": "필터를 통과하는 모든 경기에 대해 선택한 채널에 게시합니다.",
+      "eventLabel": "알림 유형",
+      "channelLabel": "채널",
+      "channelPlaceholder": "채널 선택",
+      "localeLabel": "메시지 언어",
+      "localeHint": "봇이 게시하는 메시지의 언어입니다.",
+      "filtersTitle": "필터",
+      "filtersHint": "모든 알림을 받으려면 필터를 비워 두세요.",
+      "regions": "지역",
+      "regionsHint": "선택한 지역의 토너먼트만 해당됩니다.",
+      "teams": "팀",
+      "teamsHint": "이 팀들 중 하나가 참가하는 경기만 해당됩니다.",
+      "teamsPlaceholder": "팀 추가",
+      "teamsSearch": "팀 검색",
+      "teamsNoResults": "팀을 찾을 수 없음",
+      "removeTeam": "{name} 제거",
+      "any": "전체",
+      "event": {
+        "match_live": "경기 진행 중",
+        "match_finished": "경기 종료",
+        "map_finished": "맵 종료"
+      },
+      "official": {
+        "label": "토너먼트",
+        "all": "모든 토너먼트",
+        "official": "공식만",
+        "unofficial": "비공식만"
+      },
+      "error": {
+        "network": "네트워크 오류입니다. 다시 시도하세요.",
+        "notAuthenticated": "로그인이 필요합니다.",
+        "forbidden": "이 서버를 관리할 수 없습니다.",
+        "blacklisted": "이 서버 또는 회원님의 Discord 계정이 봇에서 차단되었습니다.",
+        "notFound": "이 알림은 더 이상 존재하지 않습니다.",
+        "invalid": "일부 항목이 올바르지 않습니다.",
+        "tooManySubscriptions": "서버당 알림은 최대 {max}개까지 가능합니다.",
+        "channelsUnavailable": "봇이 이 서버의 채널을 읽을 수 없습니다.",
+        "channelId": {
+          "required": "채널을 선택하세요.",
+          "unknownChannel": "이 채널은 서버에 존재하지 않습니다."
+        },
+        "event": {
+          "invalid": "알 수 없는 알림 유형입니다."
+        },
+        "locale": {
+          "invalid": "알 수 없는 언어입니다."
+        },
+        "filterRegions": {
+          "invalid": "알 수 없는 지역입니다.",
+          "tooMany": "지역은 최대 {filterRegions}개까지 선택할 수 있습니다."
+        },
+        "filterTeamIds": {
+          "invalid": "올바르지 않은 팀입니다.",
+          "tooMany": "팀은 최대 {filterTeams}개까지 선택할 수 있습니다.",
+          "unknownTeam": "존재하지 않는 팀이 있습니다."
+        },
+        "filterOfficial": {
+          "invalid": "알 수 없는 값입니다."
+        },
+        "color": {
+          "invalid": "잘못된 색상입니다."
+        }
+      },
+      "alertColorLabel": "임베드 색상",
+      "alertColorHint": "이 알림에 대해 서버 색상을 덮어씁니다.",
+      "theme": {
+        "reset": "초기화",
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중...",
+        "colorsTitle": "색상",
+        "colorsDescription": "알림 유형별 메시지 색상과 이미지의 기본 배경입니다. 각 알림에서 색상을 덮어쓸 수 있습니다.",
+        "color": {
+          "live": "경기 라이브",
+          "finished": "경기 종료",
+          "map": "맵 종료",
+          "background": "이미지 배경"
+        },
+        "colorsSaved": "색상이 저장되었습니다",
+        "botTitle": "나만의 봇",
+        "botDescription": "GC Stats 봇 대신 내 Discord 봇(이름과 아바타)으로 알림을 게시합니다.",
+        "tokenLabel": "봇 token",
+        "tokenHint": "애플리케이션의 Bot 탭에 있는 Discord Developer Portal에서 확인할 수 있습니다. 암호화되어 저장됩니다.",
+        "botConnect": "이 봇 사용",
+        "botConnecting": "확인 중...",
+        "botConnected": "봇이 연결되었습니다. 필요하면 서버에 초대하세요",
+        "botActive": "알림이 이 봇으로 게시됩니다",
+        "botInvite": "봇 초대",
+        "botDisconnect": "GC Stats 봇 사용",
+        "botDisconnectTitle": "GC Stats 봇으로 돌아갈까요?",
+        "botDisconnectDescription": "봇 token이 삭제되고, GC Stats 봇이 서버에 있다면 알림이 다시 GC Stats 봇으로 게시됩니다.",
+        "botDisconnected": "GC Stats 봇으로 돌아왔습니다",
+        "error": {
+          "network": "네트워크 오류입니다. 다시 시도해 주세요.",
+          "notAuthenticated": "로그인해야 합니다.",
+          "forbidden": "이 서버를 관리할 수 없습니다.",
+          "blacklisted": "이 서버 또는 회원님의 Discord 계정이 봇에서 차단되었습니다.",
+          "invalid": "일부 항목이 올바르지 않습니다.",
+          "color": "잘못된 색상입니다.",
+          "token": {
+            "required": "봇 token을 입력하세요.",
+            "invalidToken": "Discord가 이 token을 거부했습니다. 봇 token인지 확인하세요.",
+            "rateLimited": "시도 횟수가 너무 많습니다. 1분 기다려 주세요."
+          }
+        },
+        "matchButton": "경기 열기 버튼",
+        "matchButtonHint": "각 알림 아래에 GC Stats의 경기 페이지를 여는 버튼을 추가합니다."
+      },
+      "templates": {
+        "title": "이미지 알림",
+        "description": "알림 유형의 텍스트 메시지를 템플릿으로 만든 이미지로 대체합니다. 자체 봇을 사용하는 서버 전용입니다.",
+        "usingImage": "이미지로 게시됨",
+        "usingText": "텍스트 메시지로 게시됨",
+        "presetNone": "텍스트 메시지, 이미지 없음",
+        "presetChoose": "템플릿",
+        "presetSaved": "템플릿 저장됨",
+        "presetLabel": "시작 디자인",
+        "presetHint": "이미지에 표시할 정보를 선택하세요. 이후에도 모두 수정할 수 있습니다.",
+        "preset": {
+          "score": "점수만",
+          "maps": "점수와 맵",
+          "vetos": "점수와 밴픽",
+          "mvp": "점수와 MVP",
+          "full": "전체"
+        },
+        "footer": "푸터",
+        "footerHint": "이미지 아래에 매치 링크가 포함된 GC Stats 밴드를 추가합니다.",
+        "footerSaved": "푸터가 업데이트되었습니다",
+        "toggle": "이 알림 유형에 이미지 사용",
+        "enabled": "이미지 알림이 활성화되었습니다",
+        "disabled": "텍스트 메시지로 되돌렸습니다",
+        "addBackground": "배경 추가",
+        "changeBackground": "배경 변경",
+        "removeBackground": "배경 제거",
+        "backgroundSaved": "배경이 저장되었습니다",
+        "backgroundRemoved": "배경이 제거되었습니다",
+        "previewAlt": "알림 이미지 미리보기",
+        "previewError": "미리보기를 사용할 수 없습니다",
+        "error": {
+          "network": "네트워크 오류입니다. 다시 시도해 주세요.",
+          "notAuthenticated": "로그인이 필요합니다.",
+          "forbidden": "이 서버를 관리할 수 없습니다.",
+          "blacklisted": "이 서버 또는 회원님의 Discord 계정이 봇에서 차단되었습니다.",
+          "invalid": "템플릿이 올바르지 않습니다.",
+          "invalidImage": "올바르지 않은 이미지입니다(PNG, JPEG 또는 WebP, 짧은 변이 최소 400 px).",
+          "tooLarge": "이미지가 10 MB보다 큽니다.",
+          "storageFailed": "이미지를 저장하지 못했습니다. 다시 시도해 주세요."
+        },
+        "editDesign": "디자인 편집",
+        "presetCustom": "사용자 지정됨"
+      },
+      "editor": {
+        "title": "알림 디자인: {event}",
+        "description": "캔버스의 요소를 드래그하고 크기를 조절하고 회전하며, 오른쪽에서 스타일을 지정하고 조건에 따라서만 표시할 수 있습니다. 전송되는 미리보기는 봇과 완전히 동일한 렌더링을 사용합니다.",
+        "addText": "텍스트",
+        "addShape": "도형",
+        "undo": "실행 취소",
+        "previewServer": "전송된 그대로 미리보기",
+        "canvasHint": "캔버스에는 샘플 데이터가 표시됩니다. 방향키로 선택한 요소를 이동하고(Shift는 10픽셀), Delete로 삭제합니다. 흐리게 보이는 요소는 조건 때문에 숨겨진 것입니다.",
+        "previewTitle": "전송된 그대로 미리보기",
+        "previewError": "미리보기를 생성할 수 없습니다.",
+        "canvasHeight": "이미지 높이",
+        "backgroundColor": "배경색",
+        "layers": "요소 (앞쪽 먼저)",
+        "noLayers": "아직 요소가 없습니다.",
+        "duplicate": "복제",
+        "delete": "삭제",
+        "width": "너비",
+        "height": "높이",
+        "field": {
+          "tournament": "대회",
+          "teamA": "A팀 이름",
+          "teamB": "B팀 이름",
+          "scoreA": "A팀 점수",
+          "scoreB": "B팀 점수",
+          "score": "점수",
+          "status": "상태",
+          "bestOf": "Best of",
+          "map": "맵 이름",
+          "maps": "종료된 맵",
+          "matchScore": "매치 점수",
+          "mapsInline": "종료된 맵 (한 줄)",
+          "vetos": "밴픽",
+          "mvp": "MVP",
+          "custom": "자유 텍스트",
+          "stage": "대회 단계",
+          "bestOfShort": "Best of (축약형, BO3)",
+          "teamAShort": "팀 A 약칭",
+          "teamBShort": "팀 B 약칭",
+          "mvpA": "팀 A의 MVP",
+          "mvpB": "팀 B의 MVP",
+          "dateTime": "날짜 및 시간",
+          "date": "날짜",
+          "time": "시간"
+        },
+        "customText": "텍스트",
+        "font": "글꼴",
+        "size": "크기",
+        "align": {
+          "label": "정렬",
+          "left": "왼쪽",
+          "center": "가운데",
+          "right": "오른쪽"
+        },
+        "color": "색상",
+        "bold": "굵게",
+        "uppercase": "대문자",
+        "shape": "도형",
+        "opacity": "불투명도",
+        "radius": "모서리 둥글기",
+        "sampleText": "내 텍스트",
+        "tooManyLayers": "템플릿에는 최대 {max}개의 요소를 둘 수 있습니다.",
+        "saved": "디자인이 저장되었습니다",
+        "cancel": "취소",
+        "save": "저장",
+        "saving": "저장 중...",
+        "error": {
+          "network": "네트워크 오류입니다. 다시 시도하세요.",
+          "notAuthenticated": "로그인해야 합니다.",
+          "forbidden": "이 서버를 관리할 수 없습니다.",
+          "blacklisted": "이 서버 또는 회원님의 Discord 계정이 봇에서 차단되었습니다.",
+          "invalid": "템플릿이 올바르지 않습니다.",
+          "invalidImage": "이 이미지는 올바르지 않습니다.",
+          "tooLarge": "이 이미지는 너무 큽니다.",
+          "storageFailed": "디자인을 저장하지 못했습니다. 다시 시도하세요."
+        },
+        "addImage": "이미지",
+        "tabContent": "콘텐츠",
+        "tabLayout": "레이아웃",
+        "tabStyle": "스타일",
+        "tabVisibility": "조건",
+        "conditional": "조건부로 표시",
+        "sourceMap": "맵 {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "팀 A 로고",
+          "teamB": "팀 B 로고",
+          "mvp": "MVP 이미지 (없으면 요원 아이콘)",
+          "mapCurrent": "현재 맵",
+          "mvpAgent": "MVP 요원 아이콘",
+          "custom": "사용자 지정 이미지"
+        },
+        "variableGroup": {
+          "match": "매치",
+          "alert": "알림 및 MVP",
+          "teams": "팀",
+          "schedule": "날짜 및 시간",
+          "mvp": "MVP",
+          "maps": "맵",
+          "vetos": "밴픽"
+        },
+        "conditionValue": {
+          "live": "라이브",
+          "finished": "종료된 매치",
+          "map": "종료된 맵",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "팀 A",
+          "b": "팀 B"
+        },
+        "customTextHint": "원하는 텍스트를 작성하고 {tournament} 또는 {veto1.map} 같은 변수를 삽입하세요.",
+        "insertVariable": "변수 삽입",
+        "sourceLabel": "이미지",
+        "fit": {
+          "label": "맞춤",
+          "cover": "채우기(자르기)",
+          "contain": "포함"
+        },
+        "imageFallbackHint": "이미지가 없으면 이니셜이 있는 타일이 표시됩니다.",
+        "shapeHint": "도형에는 콘텐츠가 없습니다. 스타일 탭에서 스타일을 지정하세요.",
+        "rotation": "회전(도)",
+        "alignTitle": "이미지에 맞춰 정렬",
+        "addFolder": "새 폴더",
+        "tooManyFolders": "템플릿에는 폴더를 최대 {max}개까지 만들 수 있습니다.",
+        "folderDefaultName": "폴더 {n}",
+        "folderExpand": "폴더 펼치기",
+        "folderCollapse": "폴더 접기",
+        "lockFolder": "폴더 잠금",
+        "unlockFolder": "폴더 잠금 해제",
+        "lockLayer": "요소 잠금",
+        "unlockLayer": "요소 잠금 해제",
+        "folder": "폴더",
+        "folderName": "폴더 이름",
+        "folderNameRequired": "폴더에는 이름이 필요합니다.",
+        "folderHint": "폴더는 목록에서 요소를 묶어 줍니다. 폴더를 잠그면 안의 모든 요소가 잠깁니다.",
+        "deleteFolder": "폴더 삭제",
+        "layerLockedHint": "이 요소는 잠겨 있습니다. 편집하거나 옮기려면 잠금을 해제하세요.",
+        "folderLockedHint": "이 요소는 폴더에 의해 잠겨 있습니다. 편집하거나 옮기려면 폴더 잠금을 해제하세요.",
+        "noFolder": "폴더 없음",
+        "anchorPoint": "텍스트 기준점",
+        "anchorX": "기준점 위치 (X)",
+        "anchorHint": "텍스트 길이와 상관없이 이 X 위치에서 텍스트가 시작하거나, 가운데 놓이거나, 끝납니다.",
+        "anchor": {
+          "left": "텍스트 시작",
+          "center": "텍스트 가운데",
+          "right": "텍스트 끝"
+        },
+        "alignLeft": "왼쪽 정렬",
+        "alignCenterX": "가로 중앙 정렬",
+        "alignRight": "오른쪽 정렬",
+        "alignTop": "위쪽 정렬",
+        "alignCenterY": "세로 중앙 정렬",
+        "alignBottom": "아래쪽 정렬",
+        "letterSpacing": "글자 간격",
+        "lineHeight": "줄 높이",
+        "shadow": "그림자",
+        "shadowColor": "그림자 색상",
+        "shadowBlur": "흐림",
+        "shadowX": "오프셋 X",
+        "shadowY": "오프셋 Y",
+        "borderWidth": "테두리 두께",
+        "borderColor": "테두리 색상",
+        "gradient": "그라데이션",
+        "color2": "두 번째 색상",
+        "angle": "각도(도)",
+        "conditionsHint": "아래 조건이 모두 참일 때만 요소가 그려집니다.",
+        "conditionKey": "변수",
+        "conditionOp": "조건",
+        "conditionValueLabel": "값",
+        "op": {
+          "is": "같음",
+          "isNot": "같지 않음",
+          "exists": "채워져 있음",
+          "empty": "비어 있음"
+        },
+        "addCondition": "조건 추가",
+        "removeCondition": "이 조건 삭제",
+        "footer": "GC Stats 푸터",
+        "artwork": "맵 아트워크를 배경으로",
+        "artworkSource": "아트워크 대상",
+        "artworkDim": "어둡게 하기",
+        "artworkHint": "배경 이미지를 업로드하면 무시됩니다.",
+        "loadingMatch": "미리보기 경기를 불러오는 중",
+        "timezone": "시간대",
+        "variableName": {
+          "tournament": "대회 이름",
+          "stage": "대회 단계",
+          "status": "상태(라이브 또는 종료)",
+          "bestOf": "Best of(Best of 3)",
+          "bestOfShort": "Best of, 짧게(BO3)",
+          "score": "경기 또는 맵의 점수",
+          "scoreA": "팀 A의 점수",
+          "scoreB": "팀 B의 점수",
+          "matchScore": "경기 점수",
+          "teamA": "팀 A의 이름",
+          "teamB": "팀 B의 이름",
+          "teamAShort": "팀 A의 약칭",
+          "teamBShort": "팀 B의 약칭",
+          "dateTime": "경기 날짜와 시간",
+          "date": "경기 날짜",
+          "time": "경기 시간",
+          "scheduledAt": "예정 시작",
+          "alert_kind": "알림 유형",
+          "map": "종료된 맵의 이름",
+          "currentMap_name": "진행 중인 맵의 이름",
+          "currentMap_number": "진행 중인 맵의 번호",
+          "maps": "종료된 맵(목록)",
+          "mapsInline": "종료된 맵(한 줄)",
+          "vetos": "벤픽(한 줄)",
+          "mvp": "경기 또는 맵의 MVP",
+          "mvpA": "팀 A의 MVP",
+          "mvpB": "팀 B의 MVP",
+          "mvp_name": "MVP 선수",
+          "mvp_acs": "MVP의 ACS",
+          "mvp_agent": "MVP의 에이전트",
+          "mvpA_name": "팀 A의 MVP 선수",
+          "mvpA_acs": "팀 A의 MVP ACS",
+          "mvpA_agent": "팀 A의 MVP 에이전트",
+          "mvpB_name": "팀 B의 MVP 선수",
+          "mvpB_acs": "팀 B의 MVP ACS",
+          "mvpB_agent": "팀 B의 MVP 에이전트",
+          "map_alias": "맵 {n}의 이름",
+          "map_name": "맵 {n}의 이름",
+          "map_score": "맵 {n}의 점수",
+          "map_scoreA": "맵 {n}에서 팀 A의 점수",
+          "map_scoreB": "맵 {n}에서 팀 B의 점수",
+          "veto_map": "벤픽 {n}의 맵",
+          "veto_action": "벤픽 {n}의 동작(ban, pick, decider)",
+          "veto_team": "벤픽 {n}의 팀",
+          "veto_type": "벤픽 {n}의 유형",
+          "veto_side": "벤픽 {n}의 진영(공격 또는 수비)"
+        },
+        "insertVariableHint": "변수를 클릭하면 커서 위치의 텍스트에 삽입됩니다.",
+        "templateLabel": "템플릿",
+        "applyTemplate": "디자인을 이 템플릿으로 교체",
+        "templateHint": "모든 레이어를 템플릿으로 교체합니다. 되돌릴 수 있습니다.",
+        "templateApplied": "템플릿이 적용되었습니다",
+        "layoutLayer": "레이아웃",
+        "pickImage": "이미지 선택",
+        "pickImageHint": "이미지 종류마다 고유한 크기가 있으며, 나중에 바꿀 수 있습니다.",
+        "imageCategory": {
+          "teams": "팀",
+          "mvp": "MVP",
+          "maps": "맵",
+          "vetos": "벳",
+          "custom": "사용자 지정 이미지"
+        },
+        "customUrl": "이미지 주소",
+        "customUrlHint": "이미지로 연결되는 공개 https 링크입니다. 아무것도 업로드되지 않으며, 이미지는 원래 사이트에 남고 알림을 보낼 때 다운로드됩니다.",
+        "customUrlRequired": "이미지 주소는 필수입니다.",
+        "customUrlInvalid": "올바른 https 주소를 입력하세요.",
+        "useImage": "이 이미지 사용",
+        "sendTest": "테스트 전송",
+        "sendTestHint": "이 디자인을 실제 경기로 채워 선택한 채널에 게시합니다. 저장하지 않은 변경 사항도 포함됩니다.",
+        "testChannel": "채널",
+        "testChannelPlaceholder": "채널 선택",
+        "sendTestAction": "전송",
+        "sending": "전송 중",
+        "testSent": "테스트를 전송했습니다",
+        "testError": {
+          "required": "채널을 선택하세요.",
+          "unknownChannel": "이 채널은 서버에 없습니다.",
+          "rateLimited": "다음 테스트를 보내기 전에 몇 초 기다려 주세요.",
+          "channelsUnavailable": "서버의 채널을 읽을 수 없습니다.",
+          "sendFailed": "테스트를 보내지 못했습니다. 봇이 이 채널에 쓸 수 있는지 확인하세요."
         }
       }
     }
@@ -6451,6 +7708,7 @@
       "title": "내 계정",
       "checkbox": "본인입니다: 내 계정을 {name}에 연결",
       "hint": "계정에 연결하기 전에 스태프가 이 프로필이 실제로 본인의 것인지 확인합니다.",
+      "replaces": "현재 계정이 {previous}에 연결되어 있습니다. 승인되면 이 연결이 대체됩니다.",
       "state": {
         "linkedToYou": "이 프로필은 이미 내 계정에 연결되어 있습니다.",
         "linkedToOther": "이 프로필은 이미 다른 계정에 연결되어 있습니다. 오류라고 생각되면 스태프에게 문의하세요.",
@@ -6562,8 +7820,32 @@
     "tabPickem": "Pick'em",
     "tabStats": "통계",
     "tabMaps": "맵",
+    "tabChampions": "챔피언",
+    "championsEmpty": "아직 진행된 경기가 없습니다.",
+    "championsRolesColumn": "포지션",
+    "championsRoleBansNote": "밴과 참여율은 모든 포지션을 집계합니다.",
+    "championsInsightMostPicked": "최다 픽",
+    "championsInsightMostBanned": "최다 밴",
+    "championsInsightHighestPresence": "최고 참여율",
+    "championsInsightHighestWinRate": "최고 승률",
+    "championsInsightHighestKda": "최고 KDA",
     "tabProduction": "프로덕션",
     "productionTitle": "{tournament} · 프로덕션",
+    "statsGroupByLabel": "그룹 기준",
+    "statsGroupBy": {
+      "none": "그룹화 안 함",
+      "agent": "요원",
+      "role": "역할",
+      "team": "팀",
+      "nationality": "국적"
+    },
+    "statsRole": {
+      "duelist": "듀얼리스트",
+      "initiator": "개시자",
+      "controller": "전략가",
+      "sentinel": "감시자"
+    },
+    "statsGroupUnknown": "알 수 없음",
     "statsIdentityColumn": "선수",
     "statsAgentColumn": "요원",
     "statsNationalityColumn": "국적",
@@ -6581,6 +7863,15 @@
     "statsFilterAgentAll": "모든 요원",
     "statsFilterMap": "맵",
     "statsFilterMapAll": "모든 맵",
+    "statsChampionColumn": "챔피언",
+    "statsFilterChampion": "챔피언",
+    "statsFilterChampionAll": "모든 챔피언",
+    "statsFilterChampionSearch": "챔피언 검색…",
+    "statsFilterChampionNoResult": "챔피언을 찾을 수 없습니다",
+    "statsFilterRole": "포지션",
+    "statsFilterRoleAll": "모든 포지션",
+    "statsFilterPatch": "패치",
+    "statsFilterPatchAll": "모든 패치",
     "statsFilterStartDate": "시작일",
     "statsFilterEndDate": "종료일",
     "statsFilterSubmit": "필터 적용",
@@ -6591,13 +7882,32 @@
     "statsColumnFilterValuePlaceholder": "일치시킬 값...",
     "statsColumnFilterAddAnother": "필터 추가",
     "statsColumnFilterApply": "적용",
+    "statsColumnFilterSearch": "검색...",
+    "statsColumnFilterNoResult": "결과 없음",
     "statsColumnFilterClear": "초기화",
     "previous": "이전",
     "next": "다음",
     "pageOf": "{total} 중 {page} 페이지",
     "statsColumns": {
       "played": "맵 수",
+      "playedGames": "게임",
+      "winRate": "승률",
+      "picks": "픽",
+      "bans": "밴",
+      "presence": "참여율",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "라운드",
+      "rating": "레이팅",
       "acs": "ACS",
       "kills": "킬",
       "deaths": "데스",
@@ -6639,7 +7949,8 @@
     "mapsPickRatesShowMore": "전체 보기",
     "mapsPickRatesShowLess": "간단히 보기",
     "factOrganizer": "주최자",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "게임"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6853,6 +8164,10 @@
     "text": "이 페이지의 일부 정보는 Liquipedia에서 가져왔습니다.",
     "link": "원문 보기"
   },
+  "leaguepediaSource": {
+    "text": "이 페이지의 일부 게임 데이터는 Leaguepedia에서 가져왔습니다 (CC BY-SA). 원문 페이지:",
+    "game": "게임 {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
@@ -6897,7 +8212,8 @@
     "copied": "복사됨",
     "copyError": "이미지를 복사하지 못했습니다. 대신 다운로드해 주세요.",
     "exporting": "생성 중",
-    "exportError": "이미지를 생성하지 못했습니다. 다시 시도해 주세요."
+    "exportError": "이미지를 생성하지 못했습니다. 다시 시도해 주세요.",
+    "descriptionGames": "PNG 이미지 (너비 {width} px), 공유할 준비가 되었습니다. 모든 게임 또는 한 게임을 선택하세요."
   },
   "share": {
     "button": "공유",
@@ -6958,10 +8274,83 @@
     "pointsUnknown": "포인트로 진출",
     "iconLabel": "진출 경로"
   },
+  "veto": {
+    "title": "맵 밴",
+    "invalidLinkTitle": "올바르지 않은 밴 링크",
+    "invalidLinkHint": "이 링크가 올바르지 않거나 이 대회에서 밴이 활성화되지 않았습니다. 주최자에게 새 링크를 요청하세요.",
+    "noMatch": "지금은 밴할 경기가 없습니다. 다음 경기가 준비되면 이 페이지가 자동으로 업데이트됩니다.",
+    "you": "우리 팀",
+    "opponent": "상대 팀",
+    "ready": "준비 완료",
+    "bestOf": "BO{count}",
+    "poolError": "이 경기의 맵 풀이 아직 완성되지 않았습니다. 주최자에게 설정을 요청하세요.",
+    "waitingTitle": "밴할 준비가 되었나요?",
+    "waitingHint": "양 팀이 모두 준비되면 밴이 시작됩니다.",
+    "readyButton": "준비 완료",
+    "cancelReady": "아직 준비 안 됨",
+    "chooseFirstTitle": "누가 밴을 시작할까요?",
+    "chooseFirstHint": "먼저 밴할 팀을 선택하세요.",
+    "weStart": "우리가 시작",
+    "opponentStarts": "{team} 시작",
+    "waitingChoice": "{team}이(가) 시작 팀을 선택하고 있습니다.",
+    "yourTurn": {
+      "ban": "당신의 차례입니다: 맵을 밴하세요",
+      "pick": "당신의 차례입니다: 맵을 픽하세요",
+      "side": "당신의 차례입니다: 진영을 선택하세요"
+    },
+    "stepWaiting": {
+      "ban": "상대가 밴할 맵을 고르고 있습니다.",
+      "pick": "상대가 픽할 맵을 고르고 있습니다.",
+      "side": "상대가 진영을 고르고 있습니다."
+    },
+    "theirTurn": "{team}의 차례",
+    "attack": "공격",
+    "defense": "수비",
+    "toBeDecided": "미정",
+    "stepLabel": {
+      "ban": "밴",
+      "pick": "픽",
+      "side": "진영",
+      "decider": "디사이더"
+    },
+    "vetoDone": "밴이 끝났습니다. 경기 힘내세요!",
+    "gameFinishedHint": "경기가 끝나면 이 버튼을 눌러 GC Stats 스태프에게 알려 주세요. 대회 주최자에게는 알림이 가지 않습니다.",
+    "gameFinishedButton": "경기가 끝났습니다",
+    "staffNotified": "GC Stats 스태프에게 알렸습니다(대회 주최자에게는 알리지 않았습니다).",
+    "previousMatch": "이전 경기",
+    "nextMatch": "다음 경기",
+    "error": {
+      "unknown": "문제가 발생했습니다. 다시 시도하세요.",
+      "network": "연결에 문제가 있습니다. 다시 시도하세요.",
+      "notFound": "이 경기는 사용할 수 없습니다.",
+      "notAllowed": "이 경기의 참가자가 아닙니다.",
+      "wrongPhase": "지금은 이 행동을 할 수 없습니다.",
+      "notYourTurn": "당신의 차례가 아닙니다.",
+      "wrongStep": "예상된 행동이 아닙니다.",
+      "mapUnavailable": "이 맵은 사용할 수 없습니다.",
+      "invalidSide": "올바르지 않은 진영입니다.",
+      "noStep": "밴이 이미 끝났습니다.",
+      "poolInvalid": "이 경기의 맵 풀이 완성되지 않았습니다.",
+      "alreadyNotified": "스태프에게 이미 알렸습니다.",
+      "matchCompleted": "이 경기는 이미 끝났습니다.",
+      "rateLimited": "요청이 너무 많습니다. 잠시 기다려 주세요.",
+      "invalidRequest": "올바르지 않은 요청입니다."
+    }
+  },
   "game": {
     "switcherLabel": "게임",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "탑",
+    "JUNGLE": "정글",
+    "MIDDLE": "미드",
+    "BOTTOM": "원딜",
+    "UTILITY": "서포터",
+    "label": "라인",
+    "fromGames": "경기 기준:",
+    "invalid": "다섯 개의 라인만 선택할 수 있습니다."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

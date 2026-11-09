@@ -22,6 +22,8 @@
     "menu": "Menu"
   },
   "auth": {
+    "showPassword": "Pokaż hasło",
+    "hidePassword": "Ukryj hasło",
     "login": {
       "title": "Zaloguj się",
       "subtitle": "Jedno konto GC-Stats, niezależnie od sposobu logowania."
@@ -1014,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooki",
       "body": "Klucze partnerskie mogą rejestrować endpointy HTTPS w swoim panelu: GC Stats wysyła wtedy POST przy każdej zmianie danych.",
-      "events": "Zdarzenia: nowy mecz, mecz zaktualizowany, nowy turniej, turniej zaktualizowany, drużyna zaktualizowana, gracz zaktualizowany.",
+      "events": "Zdarzenia: nowy mecz, mecz zaktualizowany, nowy turniej, turniej zaktualizowany, drużyna zaktualizowana, gracz zaktualizowany, zmiana rosteru zatwierdzona przez nasz zespół (roster.updated).",
       "filters": "Filtry: region turnieju, oficjalny lub nie, uczestniczące drużyny.",
       "signature": "Każde zapytanie zawiera nagłówki X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp i X-GCS-Signature. Zweryfikuj podpis sekretem swojego endpointu.",
       "retries": "Odpowiedz statusem 2xx w ciągu 10 sekund. Nieudane wysyłki są ponawiane przez około 9 godzin, a endpoint, który zbyt często zawodzi, zostaje wyłączony.",
-      "setup": "Payload zawiera zdarzenie, jego datę i encję, z tymi samymi polami co zbiory danych OpenData."
+      "setup": "Payload zawiera zdarzenie, jego datę i encję, z tymi samymi polami co zbiory danych OpenData.",
+      "discord": "Endpoint typu Discord otrzymuje tylko zdarzenie roster.updated i publikuje link do tweeta na Twoim kanale, bez podpisu."
     }
   },
   "becomePublisher": {
@@ -1044,6 +1047,77 @@
       "discord": "Napisz do nas na Discordzie",
       "email": "Kontakt przez e-mail"
     }
+  },
+  "discordBot": {
+    "title": "Bot Discord",
+    "intro": "Śledź wszystkie mecze Game Changers bezpośrednio na swoim serwerze Discord, z wynikami na żywo i automatycznie publikowanymi rezultatami.",
+    "addBot": "Dodaj do Discorda",
+    "comingSoon": "Wkrótce",
+    "openDashboard": "Otwórz panel",
+    "features": {
+      "title": "Funkcje",
+      "live": {
+        "title": "Mecze na żywo",
+        "body": "Wiadomość jest publikowana, gdy mecz rusza na żywo, a jego wynik aktualizuje się sam aż do końca."
+      },
+      "finished": {
+        "title": "Zakończone mecze",
+        "body": "Wynik końcowy jest publikowany zaraz po zakończeniu meczu."
+      },
+      "map": {
+        "title": "Zakończone mapy",
+        "body": "Otrzymuj wynik każdej mapy od razu po jej zakończeniu, bez czekania na koniec meczu."
+      },
+      "filters": {
+        "title": "Inteligentne filtry",
+        "body": "Filtruj powiadomienia według regionu, uczestniczącej drużyny oraz turniejów oficjalnych lub nieoficjalnych (domyślnie oficjalnych)."
+      }
+    },
+    "dashboard": {
+      "title": "Konfiguracja w panelu",
+      "body": "Każdy serwer konfiguruje się w panelu GC Stats: wybierz kanał dla każdego typu powiadomień i ustaw filtry.",
+      "why": "Musisz zalogować się przez Discord, abyśmy mogli sprawdzić, którymi serwerami zarządzasz. Tylko członkowie z uprawnieniami do zarządzania serwerem mogą zmieniać jego ustawienia."
+    },
+    "steps": {
+      "title": "Jak to działa",
+      "invite": {
+        "title": "Dodaj bota",
+        "body": "Zaproś bota na swój serwer za pomocą przycisku powyżej."
+      },
+      "login": {
+        "title": "Zaloguj się przez Discord",
+        "body": "Otwórz panel i zaloguj się swoim kontem Discord."
+      },
+      "configure": {
+        "title": "Skonfiguruj",
+        "body": "Wybierz kanały i filtry, a powiadomienia ruszą od razu."
+      }
+    },
+    "help": {
+      "title": "Potrzebujesz pomocy?",
+      "body": "Pytania lub sugestie? Dołącz do <link>Discorda GC Stats</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "NA ŻYWO",
+    "finished": "Mecz zakończony",
+    "mapFinished": "Mapa {number} zakończona",
+    "map": "Mapa {number}",
+    "maps": "Mapy",
+    "bestOf": "Best of {count}",
+    "matchScore": "Wynik meczu: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team} banuje {map}",
+    "vetoPick": "{team} wybiera {map}",
+    "vetoDecider": "{map} (decider)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Atak",
+    "sideDefense": "Obrona",
+    "openMatch": "Otwórz mecz",
+    "imageRemoved": "Obraz tego alertu został usunięty przez moderację GC Stats."
   },
   "supportUs": {
     "title": "Wesprzyj nas",
@@ -1523,6 +1597,7 @@
     "statsColumns": {
       "played": "Mapy",
       "roundsPlayed": "Rundy",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Zabójstwa",
       "deaths": "Śmierci",
@@ -1694,10 +1769,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Zawodniczka",
+    "ratingFull": "Rating GCS: 1.00 to przeciętny gracz na tej samej roli",
     "acsFull": "Średni wynik bojowy",
     "adrFull": "Średnie obrażenia na rundę",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -1730,7 +1807,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Dyskusja",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD gry {n}",
+    "games": "Gry",
+    "gameTab": "Gra {order}",
+    "noGames": "Nie zarejestrowano jeszcze żadnych gier.",
+    "noGameData": "Brak danych dla tej gry",
+    "duration": "Czas trwania",
+    "forfeit": "Poddanie",
+    "towers": "Wieże",
+    "inhibitors": "Inhibitory",
+    "dragons": "Smoki",
+    "barons": "Barony",
+    "heralds": "Heroldy",
+    "grubs": "Larwy Pustki",
+    "draftNotSet": "Brak zapisanego draftu dla tej gry.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Niewystawione picki",
+    "colChampion": "Czempion",
+    "allGames": "Wszystkie gry",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Wszystkie oficjalne rozgrywki Game Changers w jednym miejscu.",
@@ -1759,7 +1856,8 @@
     "finance": "Finanse",
     "developers": "Deweloperzy",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Bot Discord"
   },
   "forum": {
     "overview": {
@@ -1952,6 +2050,10 @@
       "about": "O nas / Projekty",
       "backToSite": "Wróć na stronę",
       "pendingChangeRequests": "Oczekujące prośby o zmianę",
+      "pendingDiscordImages": "Obrazy Discord do sprawdzenia",
+      "pendingReports": "Oczekujące zgłoszenia",
+      "pendingRosterWatch": "Sygnały o składzie do sprawdzenia",
+      "pendingModeration": "Podejrzani do sprawdzenia",
       "tournaments": "Turnieje",
       "groupModeration": "Moderacja",
       "reports": "Zgłoszenia",
@@ -1961,7 +2063,10 @@
       "activityLog": "Dziennik aktywności",
       "analytics": "Statystyki ruchu",
       "oauthClients": "Klienci OAuth",
-      "settings": "Konfiguracja"
+      "settings": "Konfiguracja",
+      "discordImages": "Obrazy bota Discord",
+      "rosterWatch": "Obserwacja rosterów",
+      "teamRequests": "Prośby do zespołów"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2210,7 +2315,8 @@
           "staff": "Personel",
           "people": "Osoby",
           "apiKeys": "Klucze API",
-          "logs": "Logi"
+          "logs": "Logi",
+          "veto": "Weto map"
         },
         "accessPermissionNames": {
           "organization_profile_edit": "Edycja profilu (nazwa, social media, tagi)",
@@ -2235,7 +2341,8 @@
           "organization_people_link_user": "Łączenie osoby z kontem użytkownika",
           "organization_people_edit_profile": "Edycja profilu osoby (informacje podstawowe i zaawansowane)",
           "organization_api_keys_manage": "Zarządzanie kluczami API organizacji",
-          "organization_logs_view": "Wyświetlanie logów organizacji"
+          "organization_logs_view": "Wyświetlanie logów organizacji",
+          "organization_veto_manage": "Zarządzanie wetem map na żywo w organizowanych turniejach"
         },
         "accessError": {
           "notFound": "Nie znaleziono organizacji."
@@ -2370,6 +2477,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "ID VLR",
         "fieldLiquipedia": "Link do Liquipedii",
+        "fieldContactEmail": "Email kontaktowy",
+        "contactEmailHint": "Prywatne. Widoczne tylko dla staffu, nigdy nie jest wyświetlane na stronie ani w API.",
         "fieldActive": "Aktywna drużyna",
         "save": "Zapisz",
         "saveSuccess": "Profil zaktualizowany.",
@@ -2482,7 +2591,8 @@
           "saveFailed": "Nie udało się zapisać logo. Spróbuj ponownie za chwilę.",
           "empty": "Wybierz obraz.",
           "requiresLeft": "Zaznacz « Opuścił zespół », aby podać datę odejścia.",
-          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...)."
+          "invalidDiscordId": "Podaj prawidłowy identyfikator użytkownika Discord (17 do 20 cyfr) lub zaproszenie na serwer (discord.gg/...).",
+          "invalidEmail": "Wpisz prawidłowy adres email."
         },
         "fieldOrganization": "Organizacja",
         "organizationPlaceholder": "Wybierz organizację",
@@ -3339,6 +3449,7 @@
           "entityNotFound": "Wskazana drużyna lub zawodniczka już nie istnieje.",
           "membershipNotFound": "Wpis w składzie już nie istnieje.",
           "invalidRole": "Rola nie jest już prawidłowa.",
+          "invalidLane": "Jedna z linii jest nieprawidłowa.",
           "logoNotFound": "Wpis logo już nie istnieje.",
           "alreadyLinked": "Ta zawodniczka jest już powiązana z innym kontem.",
           "unknownField": "Nieobsługiwane pole.",
@@ -3428,7 +3539,9 @@
         "activityLog": "Dziennik aktywności",
         "analytics": "Statystyki ruchu",
         "oauthClients": "Klienci OAuth",
-        "settings": "Konfiguracja"
+        "settings": "Konfiguracja",
+        "rosterWatch": "Obserwacja rosterów",
+        "teamRequests": "Prośby do zespołów"
       },
       "permissionNames": {
         "admin_access": "Dostęp do panelu admina",
@@ -3479,7 +3592,11 @@
         "oauth_clients_view": "Podgląd klientów OAuth",
         "oauth_clients_manage": "Tworzenie, edycja lub usuwanie klientów OAuth",
         "settings_view": "Wyświetlanie konfiguracji i monitoringu OpenData",
-        "settings_manage": "Edycja konfiguracji"
+        "settings_manage": "Edycja konfiguracji",
+        "roster_watch_view": "Zobacz obserwację rosterów",
+        "roster_watch_manage": "Przeglądaj tweety z obserwacji rosterów i zarządzaj obserwowanymi kontami",
+        "team_requests_view": "Wyświetlanie próśb do zespołów",
+        "team_requests_manage": "Przygotowywanie i śledzenie próśb o informacje wysyłanych do zespołów"
       },
       "create": {
         "button": "Nowa rola",
@@ -3779,6 +3896,7 @@
         "assignEntrantsTitle": "Uczestnicy grupy",
         "assignEntrantsDescription": "Wybierz, którzy uczestnicy turnieju należą do tej grupy w systemie szwajcarskim.",
         "assignEntrantsEmpty": "Brak uczestników w tym turnieju.",
+        "assignEntrantsInGroup": "W grupie {name}",
         "assignEntrantsSuccess": "Uczestnicy zaktualizowani.",
         "startSwissButton": "Rozpocznij rundę 1",
         "startSwissSuccess": "Runda 1 wygenerowana.",
@@ -3788,7 +3906,22 @@
         "addMatchSubmit": "Dodaj",
         "addMatchSuccess": "Mecz dodany.",
         "addMatchEntrantTbd": "TBD",
+        "participantsButton": "Drużyny",
+        "participantsTitle": "Drużyny w {name}",
+        "participantsDescription": "Wymienione tu drużyny pojawiają się w publicznej tabeli, nawet zanim dodasz mecz.",
+        "participantsEmpty": "W tym turnieju nie ma jeszcze zapisanych drużyn.",
+        "participantsCount": "{count, plural, one {# drużyna} few {# drużyny} many {# drużyn} other {# drużyny}}",
+        "participantsSuccess": "Drużyny zaktualizowane.",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "Runda",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "Best of",
         "fieldMatchEntrantA": "Drużyna A",
         "fieldMatchEntrantB": "Drużyna B",
@@ -3835,7 +3968,13 @@
           "roundAboveMax": "Ta runda przekracza maksymalną liczbę rund grupy.",
           "sameEntrant": "Oba miejsca nie mogą zawierać tej samej drużyny.",
           "entrantNotFound": "Ta drużyna nie jest zapisana do turnieju.",
+          "entrantHasMatches": "Nie można usunąć drużyny, która ma mecze w tej grupie.",
           "entrantNotInGroup": "Ta drużyna nie jest przypisana do tej grupy.",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Tylko grupy round robin mogą liczyć mecze z całego etapu.",
           "cannotMove": "Tego kontenera nie można przesunąć dalej.",
           "parentInvalid": "Tego zestawu nie można tu użyć.",
           "tiebreakersInvalid": "Użyj każdego tiebreakera tylko raz, z podanej listy.",
@@ -3852,6 +3991,7 @@
             "points": "Punkty",
             "buchholz": "Buchholz",
             "map_diff": "Różnica map",
+            "game_diff": "Różnica gier",
             "round_diff": "Różnica rund",
             "head_to_head": "Bezpośrednie starcie",
             "seed": "Seed"
@@ -3860,17 +4000,23 @@
         "pointsConfig": {
           "title": "Punkty",
           "hint": "Każdy wygrany lub przegrany mecz, mapa i runda daje drużynie punkty. Rundy liczą się tylko na mapach z zapisanym wynikiem.",
+          "hintGames": "Każdy wygrany lub przegrany mecz i każda gra daje drużynie punkty.",
           "enable": "Używaj punktów",
           "scopes": {
             "match": "Mecz",
             "map": "Każda mapa",
+            "game": "Każda gra",
             "round": "Każda runda",
             "forfeit": "Walkower (zastępuje pozostałe)"
           },
           "win": "Wygrana",
           "loss": "Przegrana",
           "notUsed": "Punkty porządkują grupę tylko wtedy, gdy Punkty są w tiebreakerach."
-        }
+        },
+        "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z całego etapu)",
+        "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a liczą się ich zakończone mecze w dowolnej grupie tego etapu. Przypisz drużyny po zapisaniu. Tylko round robin.",
+        "matchScopeNoTeams": "Do tej grupy nie przypisano jeszcze drużyn, więc jej tabela jest pusta. Najpierw przypisz drużyny.",
+        "matchScopeSwitchWarning": "Przejście na zakres etapu wyświetla tylko przypisane drużyny. Drużyny, które grały w tej grupie, ale nie są przypisane, znikną z jej tabeli, dopóki ich nie przypiszesz."
       },
       "bracketPage": {
         "title": "Zarządzanie drabinką",
@@ -4332,6 +4478,7 @@
           "manualScoreboardDescription": "Dla gier bez identyfikatora meczu Riot do pobrania (LAN, zbyt stare itd.).",
           "columnPlayer": "Zawodniczka",
           "columnIgn": "IGN",
+          "previousLineupNote": "Poprzedni skład (ostatnia rozegrana mapa), zastąpiony po pobraniu mapy.",
           "noPlayerData": "Brak danych graczy.",
           "columnAgent": "Agent",
           "columnKills": "Zabójstwa",
@@ -4437,6 +4584,163 @@
             "mergeInvalidMatchId": "Jeden z identyfikatorów meczów Riot jest nieprawidłowy.",
             "mergeInvalidRoundRange": "Pierwsza runda każdego segmentu musi być przed ostatnią.",
             "mergeMapNotFound": "Ta mapa już nie istnieje."
+          }
+        },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft gry {order}",
+          "backToMatch": "Wróć do meczu",
+          "description": "Kolejność banów i picków tej gry. Zostaw krok pusty, jeśli nie został użyty.",
+          "differsWarning": "Import nie zgadza się z zapisanym draftem: ponowny import znalazł innych mistrzów. Sprawdź draft i zapisz, aby zachować swój.",
+          "blueSide": "Strona niebieska",
+          "blueLockedHint": "Ustawiane przez import (niebieska drużyna Riot).",
+          "firstPickLockedHint": "Ustawia import (strona, która wykonała pierwszy ban).",
+          "firstPick": "Pierwszy pick",
+          "phase": {
+            "ban1": "Faza banów 1",
+            "pick1": "Faza picków 1",
+            "ban2": "Faza banów 2",
+            "pick2": "Faza picków 2"
+          },
+          "side": {
+            "blue": "Niebieska",
+            "red": "Czerwona"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Brak mistrza",
+          "searchPlaceholder": "Szukaj mistrzów",
+          "noResults": "Brak pasujących mistrzów",
+          "unplacedTitle": "Picki jeszcze nieumieszczone",
+          "save": "Zapisz draft",
+          "saving": "Zapisywanie…",
+          "saved": "Draft zapisany",
+          "error": {
+            "notFound": "Nie znaleziono tej gry.",
+            "entrantsUnset": "Najpierw ustaw obie drużyny meczu.",
+            "blueNotAnEntrant": "Strona niebieska musi być jedną z dwóch drużyn meczu.",
+            "blueLocked": "Stronę niebieską importowanej gry ustala import.",
+            "firstPickLocked": "Pierwszy pick importowanej gry ustawia import.",
+            "invalidFirstPick": "Pierwszy pick musi być niebieski lub czerwony.",
+            "invalidStep": "Krok {step} nie istnieje albo jest podany dwa razy.",
+            "unknownChampion": "{championName} nie ma na liście mistrzów.",
+            "duplicateChampion": "{championName} występuje w drafcie więcej niż raz."
+          }
+        },
+        "games": {
+          "heading": "Gry",
+          "description": "Gry rozegrane w tej serii, w kolejności.",
+          "empty": "Brak gier.",
+          "gameLabel": "Gra {order}",
+          "winnerLabel": "Zwycięzca: {name}",
+          "noWinner": "Brak zwycięzcy",
+          "finished": "Zakończona",
+          "notFinished": "Niezakończona",
+          "draftButton": "Draft",
+          "draftDiffers": "Import nie zgadza się z zapisanym draftem",
+          "forfeit": "Walkower",
+          "cancel": "Anuluj",
+          "save": "Zapisz",
+          "saving": "Zapisywanie…",
+          "createButton": "Dodaj grę",
+          "createTitle": "Dodaj grę",
+          "editTitle": "Edytuj grę",
+          "dialogDescription": "Wpisz wynik jednej gry w tej serii.",
+          "editButton": "Edytuj",
+          "deleteButton": "Usuń",
+          "deleteTitle": "Usuń grę",
+          "deleteConfirm": "Usunąć grę {order}? Wynik meczu zostanie przeliczony na podstawie pozostałych gier.",
+          "deleteError": "Nie udało się usunąć gry.",
+          "deleteSuccess": "Gra usunięta.",
+          "saveError": "Nie udało się zapisać gry.",
+          "saveSuccess": "Gra zapisana.",
+          "fieldOrder": "Kolejność",
+          "fieldWinner": "Zwycięzca",
+          "fieldWinnerNone": "Brak zwycięzcy",
+          "fieldCompleted": "Zakończona",
+          "fieldForfeit": "Walkower",
+          "fieldNote": "Notatka",
+          "fieldError": {
+            "invalid": "Wpisz poprawną wartość.",
+            "tooLong": "Za długie.",
+            "duplicateOrder": "Inna gra ma już tę kolejność.",
+            "winnerRequired": "Zakończona gra wymaga zwycięzcy.",
+            "notAnEntrant": "Zwycięzcą musi być jedna z dwóch drużyn.",
+            "notCompleted": "Oznacz grę jako zakończoną, aby ustawić zwycięzcę.",
+            "invalidMatchId": "Użyj formatu EUW1_6123456789: kod platformy, podkreślnik, a potem numer meczu.",
+            "duplicateMatchId": "Inna gra używa już tego ID meczu Riot."
+          },
+          "fieldApiMatchId": "ID meczu Riot",
+          "fieldApiMatchIdHint": "Na przykład EUW1_6123456789. Platforma jest odczytywana z tego ID.",
+          "leaguepedia": {
+            "label": "Mecz Leaguepedia",
+            "none": "Brak",
+            "noData": "brak danych",
+            "gameNumber": "Mecz {number}",
+            "fetch": "Pobierz z Leaguepedia",
+            "fetching": "Pobieranie…",
+            "renew": "Odnów",
+            "reprocess": "Przetwórz ponownie",
+            "success": "Mecz zapisany z Leaguepedia",
+            "error": {
+              "noData": "Ten mecz nie ma danych V5 na Leaguepedia.",
+              "notInBucket": "Tego meczu nie ma jeszcze w magazynie. Najpierw go pobierz.",
+              "pageInvalid": "Strony Leaguepedia tego meczu nie zawierają poprawnych danych meczu.",
+              "fetch": "Nie udało się odczytać Leaguepedia. Spróbuj ponownie później.",
+              "missingConfig": "Logowanie bota Leaguepedia nie jest skonfigurowane na tym serwerze.",
+              "sidesUnresolved": "Drużyny tego meczu nie pasują do dwóch uczestników serii.",
+              "missingPlayers": "{count, plural, one {# gracz nie jest jeszcze przypisany do osoby} few {# graczy nie jest jeszcze przypisanych do osoby} many {# graczy nie jest jeszcze przypisanych do osoby} other {# graczy nie jest jeszcze przypisanych do osoby}}",
+              "invalidUpload": "Dane meczu nie przeszły kontroli importu.",
+              "storeFailed": "Nie udało się zapisać meczu.",
+              "invalidOrder": "Numer meczu musi być liczbą całkowitą, co najmniej 1.",
+              "lolIdConflict": "Konto Riot jest już połączone z inną osobą.",
+              "sidesInvalid": "Wybierz dwóch różnych uczestników dla niebieskiego i czerwonego.",
+              "roleInvalid": "Jedna z ról w zmianie jest nieprawidłowa.",
+              "orderTaken": "Mecz {order} tej serii jest już zapisany z innymi danymi. Wybierz inny numer meczu i zapisz ponownie.",
+              "dataDragonUnavailable": "Nazwy mistrzów są teraz niedostępne. Spróbuj ponownie później.",
+              "unknownChampions": "Nieznane identyfikatory mistrzów: {ids}",
+              "storageUnavailable": "Nie udało się połączyć z magazynem importów LoL. Sprawdź konfigurację i spróbuj ponownie.",
+              "duplicateAccount": "To samo konto Riot jest powiązane dwa razy. Powiąż każde konto tylko raz.",
+              "riotUnavailable": "Nie udało się teraz odczytać danych Riot. Spróbuj ponownie później.",
+              "tournamentRealm": "Ta gra odbyła się w realmie turniejowym. Pobierz ją z Leaguepedia."
+            },
+            "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
+            "noResults": "Brak pasujących meczów",
+            "previewTitle": "Sprawdź mecz",
+            "previewDescription": "Wybierz uczestnika dla każdej strony i połącz każdego gracza, który nie jest jeszcze połączony.",
+            "back": "Wstecz",
+            "saveGame": "Zapisz mecz",
+            "sideBlue": "Niebieski",
+            "sideRed": "Czerwony",
+            "sidesTitle": "Strony",
+            "blueSide": "Strona niebieska",
+            "redSide": "Strona czerwona",
+            "chooseEntrant": "Wybierz uczestnika",
+            "suggestedPlayers": "Podpowiedź z połączonych graczy",
+            "suggestedNames": "Podpowiedź z nazw drużyn",
+            "winnerLabel": "Zwycięzca: {name}",
+            "noWinner": "Brak zwycięzcy",
+            "lengthLabel": "Czas trwania: {minutes} min",
+            "playersTitle": "Gracze",
+            "notLinked": "Jeszcze niepołączony",
+            "linkExisting": "Połącz istniejącego",
+            "createNew": "Utwórz nowego",
+            "newHandle": "Nazwa nowej osoby",
+            "unresolvedHint": "Połącz lub utwórz osobę dla każdego gracza, który nie jest jeszcze połączony.",
+            "roleLabel": "Rola",
+            "roleNone": "Brak roli",
+            "positionRole": "Pozycje na mapie wskazują {role}",
+            "alreadyStoredHere": "zapisany jako mecz {order} tej serii",
+            "alreadyStoredElsewhere": "zapisany w innej serii",
+            "refreshGames": "Odśwież listę gier",
+            "refreshCooldown": "Odświeżono mniej niż godzinę temu. Spróbuj ponownie później.",
+            "refreshed": "Lista gier odświeżona (gier: {count})",
+            "refreshError": "Nie udało się odświeżyć listy gier. Spróbuj ponownie później.",
+            "riotFetch": "Pobierz z Riot",
+            "riotSuccess": "Gra zapisana z Riot",
+            "riotTournamentRealm": "Ta gra odbyła się w realmie turniejowym, więc nie można jej pobrać z API Riot."
           }
         },
         "liquipediaImportButton": "Import meczu z Liquipedii"
@@ -4721,7 +5025,30 @@
       "activeFilterLabel": "Aktywność",
       "activeFilterAny": "Wszystkie turnieje",
       "activeFilterActive": "Aktywne",
-      "activeFilterInactive": "Nieaktywne"
+      "activeFilterInactive": "Nieaktywne",
+      "leaguepedia": {
+        "title": "Mecze Leaguepedia",
+        "description": "Lista meczów pochodzi z tabel Cargo Leaguepedia, dla strony bazowej i wszystkich stron pod nią.",
+        "basePageLabel": "Strona bazowa Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Zapis odczytuje mecze z Leaguepedia. Jeśli odczyt się nie uda, nic nie zostanie zapisane.",
+        "save": "Zapisz i pobierz mecze",
+        "saving": "Pobieranie…",
+        "refresh": "Odśwież z Leaguepedia",
+        "lastFetched": "Ostatni odczyt {date} · {count, plural, one {# mecz} few {# mecze} many {# meczów} other {# meczów}}",
+        "neverFetched": "Jeszcze nie odczytano",
+        "success": "{count, plural, one {pobrano # mecz} few {pobrano # mecze} many {pobrano # meczów} other {pobrano # meczów}}",
+        "error": {
+          "gameClaimed": "Te gry należą już do innego turnieju, więc nie można ich tutaj powiązać.",
+          "invalidBasePage": "Użyj nazwy strony bez znaków # < > [ ] | '{ }' i bez / na początku lub końcu.",
+          "notFound": "Nie znaleziono turnieju.",
+          "notLinked": "Najpierw zapisz stronę bazową.",
+          "cooldown": "Lista gier została odczytana mniej niż godzinę temu. Spróbuj później.",
+          "missingConfig": "Logowanie bota Leaguepedia nie jest skonfigurowane na tym serwerze.",
+          "fetch": "Nie udało się odczytać Leaguepedia. Spróbuj ponownie później."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Zgłoszenia",
@@ -4807,6 +5134,88 @@
       "statDismissed": "Odrzucone",
       "error": {
         "notFound": "Ten wpis już nie istnieje."
+      },
+      "images": {
+        "title": "Obrazy bota Discord",
+        "subtitle": "Obrazy alertów dostosowane przez serwery. Zweryfikowany obraz znika z listy i wraca tylko po edycji.",
+        "empty": "Brak obrazów do sprawdzenia.",
+        "imageAlt": "Obraz alertu serwera",
+        "openImage": "Otwórz obraz w nowej karcie",
+        "event": {
+          "match_live": "Mecz na żywo",
+          "match_finished": "Mecz zakończony",
+          "map_finished": "Mapa zakończona"
+        },
+        "server": "Serwer",
+        "unknownUser": "Nieznane konto",
+        "guildBlacklisted": "Serwer na czarnej liście",
+        "userBlacklisted": "Użytkownik na czarnej liście",
+        "verifyButton": "Zweryfikuj",
+        "sanctionButton": "Ukaraj",
+        "verifySuccess": "Obraz zweryfikowany.",
+        "error": {
+          "notFound": "Ten obraz został już obsłużony lub już nie istnieje."
+        },
+        "sanction": {
+          "title": "Ukaraj ten obraz",
+          "description": "Wybierz, co stanie się z serwerem i osobą, która przesłała ten obraz.",
+          "sanctionsLabel": "Kary",
+          "option": {
+            "blacklistGuild": {
+              "label": "Dodaj serwer do czarnej listy",
+              "hint": "Serwer nie może już korzystać z panelu i nie otrzymuje więcej alertów."
+            },
+            "blacklistUser": {
+              "label": "Dodaj konto Discord do czarnej listy",
+              "hint": "To konto Discord nie może już zarządzać botem na żadnym serwerze."
+            },
+            "resetImage": {
+              "label": "Zresetuj obraz",
+              "hint": "Własny obraz zostaje usunięty, a serwer wraca do alertu w samym tekście."
+            },
+            "editMessages": {
+              "label": "Edytuj wiadomości już wysłane z tym obrazem",
+              "hint": "Obraz zostaje usunięty z opublikowanych alertów i zastąpiony informacją, że usunęła go moderacja GC Stats."
+            }
+          },
+          "alreadyBlacklisted": "Już na czarnej liście.",
+          "reasonLabel": "Powód",
+          "reasonHint": "Zapisywany razem z wpisem na czarnej liście.",
+          "cancel": "Anuluj",
+          "submit": "Ukaraj",
+          "submitting": "Nakładanie kary...",
+          "success": "Kara nałożona.",
+          "error": {
+            "notFound": "Ten obraz został już obsłużony lub już nie istnieje.",
+            "sanctions": {
+              "required": "Wybierz co najmniej jedną karę."
+            },
+            "blacklistUser": {
+              "noEditor": "Konto Discord ostatniego edytora jest nieznane."
+            },
+            "reason": {
+              "required": "Podaj powód.",
+              "tooLong": "Powód jest za długi (maks. {max} znaków)."
+            }
+          },
+          "successQueued": "Kara nałożona, {count} wiadomości zostanie wkrótce edytowanych."
+        },
+        "editor": "Edytowane przez",
+        "history": {
+          "title": "Historia",
+          "subtitle": "Wszystkie decyzje podjęte w sprawie obrazów alertów, zachowane nawet po zresetowaniu obrazu.",
+          "empty": "Brak decyzji.",
+          "verified": "Zweryfikowano",
+          "sanctioned": "Ukarano",
+          "moderator": "Decyzja podjęta przez",
+          "reason": "Powód",
+          "sanction": {
+            "blacklist_guild": "Serwer dodany do czarnej listy",
+            "blacklist_user": "Konto dodane do czarnej listy",
+            "reset_image": "Obraz zresetowany",
+            "edit_messages": "Wiadomości edytowane"
+          }
+        }
       }
     },
     "forum": {
@@ -4991,6 +5400,119 @@
       "hasLeft": "Opuścił zespół",
       "untilLabel": "Odejście",
       "unknownHint": "Data zakończenia nieznana, zostaw puste, jeśli jej nie znasz."
+    },
+    "vetoManagement": {
+      "title": "Weto map na żywo",
+      "subtitle": "Drużyny banują mapy z prywatnego linku, a wynik uzupełnia mecz na bieżąco.",
+      "openPage": "Weto map na żywo",
+      "backToTournament": "Wróć do {name}",
+      "enableTitle": "Aktywacja",
+      "enableDescription": "Po włączeniu każda drużyna turnieju otrzyma prywatny link do weta, a organizator będzie mógł zarządzać wetem ze swojego panelu.",
+      "enabled": "Włączone",
+      "disabled": "Wyłączone",
+      "enableButton": "Włącz weto",
+      "disableButton": "Wyłącz weto",
+      "enabledSuccess": "Weto na żywo włączone.",
+      "disabledSuccess": "Weto na żywo wyłączone.",
+      "settingsTitle": "Ustawienia",
+      "settingsDescription": "Zasady stosowane w każdym meczu turnieju.",
+      "firstMoverLabel": "Kto zaczyna weto",
+      "mode": {
+        "coin_toss": "Decyduje rzut monetą",
+        "coin_toss_winner": "Decyduje zwycięzca rzutu monetą",
+        "advantage": "Decyduje drużyna z przewagą",
+        "predefined": "Z góry ustalone"
+      },
+      "modeHint": {
+        "coin_toss": "Rzut monetą wybiera drużynę, która banuje jako pierwsza.",
+        "coin_toss_winner": "Rzut monetą wyłania zwycięzcę, który wybiera, która drużyna banuje jako pierwsza.",
+        "advantage": "Drużyna z przewagą wybiera, która drużyna banuje jako pierwsza.",
+        "predefined": "Drużyna z wybranego miejsca (drużyna A lub B meczu) zawsze banuje jako pierwsza."
+      },
+      "advantageLabel": "Drużyna z przewagą",
+      "advantageNone": "Wybierz drużynę",
+      "slotLabel": "Drużyna zaczynająca",
+      "slotA": "Drużyna A",
+      "slotB": "Drużyna B",
+      "timeoutLabel": "Czas na akcję (sekundy)",
+      "timeoutHint": "Drużyna, której skończy się czas, dostaje losową mapę lub stronę. Od 10 do 600.",
+      "poolLabel": "Pula map",
+      "poolCount": "Wybrano {count}, potrzeba 7.",
+      "patchLabel": "Lub użyj map z patcha",
+      "patchHint": "Używane, gdy powyżej nie wybrano żadnej mapy, na przykład 11.07. Używane są mapy rozgrywane w tym patchu.",
+      "saveButton": "Zapisz",
+      "saving": "Zapisywanie...",
+      "saveSuccess": "Ustawienia zapisane.",
+      "saveFailed": "Niektóre pola są nieprawidłowe.",
+      "linksTitle": "Linki drużyn",
+      "linksDescription": "Każda drużyna ma jeden prywatny link na cały turniej. Każdy, kto ma link, może banować w imieniu drużyny, bez konta.",
+      "noEntrants": "Brak drużyn w tym turnieju.",
+      "noLink": "Brak linku",
+      "generate": "Generuj",
+      "copyLink": "Kopiuj link",
+      "copied": "Skopiowano",
+      "copyFailed": "Nie udało się skopiować linku.",
+      "regenerate": "Generuj ponownie",
+      "regenerated": "Wygenerowano nowy link, stary już nie działa.",
+      "regenerateTitle": "Wygenerować ten link ponownie?",
+      "regenerateDescription": "Obecny link drużyny {team} przestanie działać natychmiast. Wyślij nowy link drużynie.",
+      "cancel": "Anuluj",
+      "matchesTitle": "Mecze",
+      "matchesDescription": "Dostosuj pulę map meczu lub zresetuj rozpoczęte weto.",
+      "noMatches": "Brak nadchodzących meczów.",
+      "teamsUnknown": "Drużyny nie są jeszcze znane",
+      "editPool": "Pula map",
+      "matchPoolHint": "Mapy tylko dla tego meczu. Bez wyboru używana jest pula turnieju.",
+      "useTournamentPool": "Użyj puli turnieju",
+      "poolSaved": "Pula map zapisana.",
+      "reset": "Resetuj",
+      "resetTitle": "Zresetować to weto?",
+      "resetDescription": "Wszystkie bany, wybory i strony zostaną usunięte, a drużyny będą musiały ponownie potwierdzić gotowość.",
+      "resetDone": "Weto zresetowane.",
+      "status": {
+        "waiting": "Oczekiwanie",
+        "choosing": "Wybór zaczynającego",
+        "running": "W toku",
+        "done": "Zakończone"
+      },
+      "error": {
+        "notFound": "Nie znaleziono.",
+        "firstMoverMode": {
+          "invalid": "Wybierz prawidłową opcję."
+        },
+        "advantageEntrantId": {
+          "required": "Wybierz drużynę z przewagą.",
+          "invalid": "Ta drużyna nie bierze udziału w turnieju."
+        },
+        "predefinedSlot": {
+          "invalid": "Wybierz drużynę A lub B."
+        },
+        "actionTimeoutSeconds": {
+          "required": "Podaj czas.",
+          "notInteger": "Podaj całkowitą liczbę sekund.",
+          "outOfRange": "Podaj wartość od 10 do 600 sekund."
+        },
+        "mapPool": {
+          "required": "Wybierz 7 map lub podaj patch.",
+          "invalidMap": "Jedna z map jest nieprawidłowa.",
+          "duplicateMap": "Mapa została wybrana dwa razy.",
+          "poolSize": "Wybierz dokładnie 7 map.",
+          "vetoRunning": "Weto jest w toku, poczekaj na jego koniec lub zresetuj je przed zmianą puli."
+        },
+        "mapPoolPatch": {
+          "invalidPatch": "Podaj patch w formacie 11.07.",
+          "patchUnknown": "Ten patch nie daje puli 7 map, wybierz je ręcznie."
+        },
+        "matchPool": {
+          "notFound": "Nie znaleziono meczu.",
+          "invalidMap": "Jedna z map jest nieprawidłowa.",
+          "duplicateMap": "Mapa została wybrana dwa razy.",
+          "poolSize": "Wybierz dokładnie 7 map lub żadnej, aby użyć puli turnieju.",
+          "vetoStarted": "Weto już się rozpoczęło, najpierw je zresetuj."
+        }
+      },
+      "copyOverlay": "Link do overlaya",
+      "overlayCopied": "Link do overlaya skopiowany, dodaj go jako źródło przeglądarki."
     },
     "personPicker": {
       "notInGame": "Jeszcze nie w {game}"
@@ -5216,6 +5738,247 @@
         "tooShort": "Co najmniej {min} znaków.",
         "tooLong": "Maksymalnie {max} znaków."
       }
+    },
+    "rosterWatch": {
+      "title": "Obserwacja rosterów",
+      "subtitle": "Tweety kont drużyn, posortowane przez AI, aby człowiek mógł sprawdzić zmiany w rosterach.",
+      "empty": "Nie ma tu nic do sprawdzenia.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Do sprawdzenia",
+        "done": "Sprawdzone"
+      },
+      "filters": {
+        "period": "Okres",
+        "periodAny": "Dowolny okres",
+        "periodDays": "Ostatnie {days} dni",
+        "topic": "Temat",
+        "topicAny": "Dowolny temat"
+      },
+      "topic": {
+        "roster_join": "Gracz dołącza",
+        "roster_leave": "Gracz odchodzi",
+        "roster_bench": "Gracz na ławce",
+        "staff_change": "Zmiana w staffie",
+        "tryouts": "Tryouts",
+        "not_enough_info": "Za mało informacji",
+        "wrong_game": "Inna gra",
+        "match_promo": "Promocja meczu",
+        "match_result": "Wynik meczu",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Treści",
+        "community": "Społeczność",
+        "other": "Inne"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Nie roster",
+        "unsure": "Niepewne"
+      },
+      "card": {
+        "openTweet": "Otwórz tweet",
+        "noText": "Brak tekstu",
+        "openPhoto": "Otwórz zdjęcie",
+        "openVideo": "Otwórz wideo",
+        "players": "Osoby:"
+      },
+      "actions": {
+        "editTeam": "Edytuj drużynę",
+        "ignore": "Ignoruj",
+        "notRoster": "Nie roster",
+        "done": "Gotowe"
+      },
+      "deck": {
+        "next": "Dalej",
+        "back": "Wstecz",
+        "remaining": "Pozostało {count} na tej stronie",
+        "allSeen": "Przejrzano wszystkie tweety na tej stronie.",
+        "restart": "Zacznij od nowa",
+        "showOriginal": "Pokaż oryginał",
+        "showTranslation": "Pokaż tłumaczenie na angielski",
+        "explanation": "Wyjaśnienie",
+        "explanationPlaceholder": "Dlaczego nie dotyczy składu?",
+        "confirm": "Potwierdź",
+        "pickTopic": "O czym to jest?"
+      },
+      "reviewed": {
+        "team_edited": "Drużyna edytowana",
+        "ignored": "Zignorowano",
+        "marked_not_roster": "Oznaczono jako nie roster",
+        "reported_missed": "Zgłoszono jako pominięte"
+      },
+      "error": {
+        "notFound": "Ten tweet już nie istnieje.",
+        "invalidState": "Ten tweet nie może przyjąć tej akcji, mógł już zostać sprawdzony.",
+        "invalidTopic": "Wybierz prawidłowy temat.",
+        "noteTooLong": "Notatka jest za długa (maksymalnie 1000 znaków)."
+      },
+      "accounts": {
+        "title": "Obserwowane konta",
+        "subtitle": "Konta X pobierane raz dziennie.",
+        "team": "Drużyna",
+        "teamPlaceholder": "Wybierz drużynę",
+        "teamSearch": "Szukaj drużyny",
+        "teamNoResults": "Nie znaleziono drużyny",
+        "handle": "Nazwa użytkownika X",
+        "add": "Dodaj",
+        "added": "Konto dodane.",
+        "enabled": "Włączone",
+        "toastEnabled": "Konto włączone.",
+        "toastDisabled": "Konto wyłączone.",
+        "lastPolled": "Ostatnie pobranie",
+        "lastError": "Ostatni błąd",
+        "empty": "Nie obserwujesz jeszcze żadnego konta.",
+        "noResults": "Żadne konto nie pasuje do tego wyszukiwania.",
+        "searchPlaceholder": "Szukaj drużyny lub nazwy użytkownika",
+        "count": "{count, plural, one {# konto} few {# konta} many {# kont} other {# konta}}",
+        "previous": "Poprzednia strona",
+        "next": "Następna strona",
+        "error": {
+          "notFound": "To konto już nie istnieje.",
+          "teamRequired": "Wybierz drużynę.",
+          "teamNotFound": "Ta drużyna już nie istnieje.",
+          "handleRequired": "Wpisz nazwę użytkownika X.",
+          "handleInvalid": "Nazwa użytkownika musi mieć od 1 do 15 liter, cyfr lub podkreśleń.",
+          "handleTaken": "Ta nazwa użytkownika jest już obserwowana."
+        }
+      },
+      "import": {
+        "button": "Automatyczny import",
+        "title": "Importuj konta X",
+        "description": "Obserwuje konto X znalezione w social mediach każdej drużyny turnieju.",
+        "tournament": "Turniej",
+        "tournamentPlaceholder": "Wybierz turniej",
+        "tournamentSearch": "Szukaj turnieju",
+        "tournamentNoResults": "Nie znaleziono turnieju",
+        "stage": "Etap",
+        "allStages": "Wszystkie etapy",
+        "cancel": "Anuluj",
+        "submit": "Importuj",
+        "importing": "Importowanie...",
+        "success": "{added, plural, =0 {Nie dodano żadnego konta} one {Dodano # konto} few {Dodano # konta} many {Dodano # kont} other {Dodano # konta}}. Już obserwowane: {alreadyFollowed}, bez konta X: {noTwitter}, nieprawidłowe: {invalid}.",
+        "error": {
+          "tournamentRequired": "Wybierz turniej.",
+          "tournamentNotFound": "Ten turniej już nie istnieje.",
+          "stageNotFound": "Ten etap nie należy do turnieju."
+        }
+      },
+      "searchPlaceholder": "Szukaj tweeta lub drużyny",
+      "searchSubmit": "Szukaj",
+      "statusLabel": "Status",
+      "columnTeam": "Drużyna",
+      "columnTweet": "Tweet",
+      "columnType": "Typ",
+      "columnDate": "Data",
+      "columnReview": "Przegląd"
+    },
+    "teamRequests": {
+      "title": "Prośby do zespołów",
+      "subtitle": "Śledź i wysyłaj nasze prośby o informacje do zespołów: logo, social media i roster.",
+      "tabs": {
+        "recommended": "Polecane",
+        "pending": "W toku",
+        "done": "Zakończone"
+      },
+      "scopeLabel": "Wyświetlane prośby",
+      "scope": {
+        "mine": "Moje prośby",
+        "all": "Wszystkie prośby"
+      },
+      "recommended": {
+        "pickTeam": "Przygotuj prośbę dla innego zespołu",
+        "pickPlaceholder": "Wybierz zespół",
+        "searchPlaceholder": "Szukaj zespołu...",
+        "noResults": "Nie znaleziono zespołu.",
+        "empty": "Brak polecanych zespołów. Każdy zespół, który niedawno grał, ma już prośbę.",
+        "emptyTitle": "Nie wybrano zespołu",
+        "emptyHint": "Wybierz zespół po prawej, aby przygotować prośbę.",
+        "listTitle": "Polecane zespoły ({count})"
+      },
+      "table": {
+        "empty": "Brak próśb.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Wiadomość",
+        "markDone": "Oznacz jako zakończoną",
+        "reopen": "Otwórz ponownie",
+        "markedDone": "Prośba oznaczona jako zakończona.",
+        "reopened": "Prośba otwarta ponownie.",
+        "openContact": "Otwórz kontakt"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Strona internetowa",
+        "email": "Email",
+        "other": "Inne"
+      },
+      "builder": {
+        "title": "Prośba dla {team}",
+        "description": "Zielony oznacza, że nic nie trzeba robić, czerwony oznacza, że prosimy zespół o informację.",
+        "loading": "Wczytywanie danych zespołu i jego ostatnich meczów...",
+        "alreadyPending": "Dla tego zespołu trwa już prośba.",
+        "dataTitle": "Co posiadamy",
+        "dataHint": "Kliknij status, aby przełączać między zielonym (wszystko w porządku) a czerwonym (do zapytania).",
+        "toggle": "Przełącz status: {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Brakuje",
+        "rosterCount": "{current} obecnych, {past} dawnych",
+        "rosterCurrent": "Obecny roster",
+        "rosterPast": "Dawny roster",
+        "none": "Brak",
+        "unlistedTitle": "Grali w ostatnich meczach, nie będąc w rosterze",
+        "unlistedMatches": "{count, plural, one {# mecz} few {# mecze} many {# meczów} other {# meczu}}",
+        "messageTitle": "Wiadomość",
+        "messageHint": "Wygenerowana na podstawie statusów powyżej, możesz ją edytować przed skopiowaniem.",
+        "copy": "Kopiuj",
+        "copied": "Skopiowano",
+        "copyFailed": "Kopiowanie nie powiodło się, zaznacz tekst ręcznie.",
+        "contactTitle": "Kontakt",
+        "noContact": "Brak znanego kontaktu do tego zespołu. Najpierw dodaj social media zespołu, jego organizacji, managera lub trenera.",
+        "kind": {
+          "organization": "Organizacja",
+          "manager": "Manager",
+          "coach": "Trener",
+          "other": "Inne"
+        },
+        "cancel": "Anuluj",
+        "validate": "Zatwierdź prośbę",
+        "created": "Prośba dodana.",
+        "rosterPlayers": "Zawodnicy",
+        "rosterSubs": "Rezerwowi",
+        "rosterStaff": "Staff",
+        "open": "Otwórz ten kontakt",
+        "customFree": "Inny kontakt",
+        "customFreePlaceholder": "Link, nick lub dowolny kontakt",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "imie@przyklad.pl"
+      },
+      "error": {
+        "teamRequired": "Wybierz zespół.",
+        "teamNotFound": "Ten zespół nie istnieje.",
+        "itemsInvalid": "Jeden z elementów jest nieprawidłowy.",
+        "itemsRequired": "Oznacz na czerwono co najmniej jeden element.",
+        "messageRequired": "Wiadomość jest wymagana.",
+        "messageTooLong": "Wiadomość jest za długa (maksymalnie 4000 znaków).",
+        "contactRequired": "Wybierz kontakt.",
+        "contactInvalid": "Ten kontakt jest nieprawidłowy.",
+        "contactTooLong": "Ten kontakt jest za długi (maksymalnie 300 znaków).",
+        "urlInvalid": "Kontakt do strony internetowej musi być poprawnym linkiem zaczynającym się od http:// lub https://.",
+        "alreadyPending": "Dla tego zespołu trwa już prośba.",
+        "notFound": "Ta prośba nie istnieje.",
+        "invalidState": "Ta prośba ma już ten status.",
+        "emailInvalid": "Adres email jest nieprawidłowy.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5248,14 +6011,18 @@
       "allAuthors": "Wszyscy autorzy",
       "authorAdminSpace": "Autorzy",
       "logs": "Logi",
-      "webhooks": "Webhooki"
+      "veto": "Weto map",
+      "webhooks": "Webhooki",
+      "discordSpace": "Bot Discord",
+      "discordServers": "Moje serwery"
     },
     "switcher": {
       "selectOrganization": "Wybierz organizację",
       "authorSpace": "Przestrzeń autora",
       "apiKeySpace": "Przestrzeń kluczy API",
       "adminAccess": "Admin",
-      "authorAdminSpace": "Autorzy"
+      "authorAdminSpace": "Autorzy",
+      "discordSpace": "Bot Discord"
     },
     "picker": {
       "title": "Twoje organizacje",
@@ -5268,7 +6035,8 @@
       "filterTagAll": "Wszystkie",
       "noResults": "Nie znaleziono organizacji.",
       "adminBadge": "Admin",
-      "authorAdminSpace": "Autorzy"
+      "authorAdminSpace": "Autorzy",
+      "discordSpace": "Bot Discord"
     },
     "authors": {
       "title": "Autorzy",
@@ -5504,7 +6272,8 @@
       "level": {
         "tournament": "Turniej",
         "match": "Mecz",
-        "map": "Mapa"
+        "map": "Mapa",
+        "game": "Gra"
       },
       "matchSearchPlaceholder": "Szukaj meczu…",
       "mapSearchPlaceholder": "Szukaj mapy…",
@@ -5523,7 +6292,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Mecze",
       "openMaps": "Mapy",
-      "goBack": "Wróć"
+      "goBack": "Wróć",
+      "gameEmpty": "Brak gier w tym meczu.",
+      "gameSearchPlaceholder": "Szukaj gry…",
+      "openGames": "Gry"
     },
     "streams": {
       "title": "Kanały streamingowe",
@@ -5661,8 +6433,14 @@
         "matchNotInTournament": "Ten mecz nie należy do wybranego turnieju.",
         "mapNotFound": "Nie znaleziono mapy.",
         "mapNotInMatch": "Ta mapa nie należy do wybranego meczu.",
-        "notFound": "Nie znaleziono VOD."
-      }
+        "notFound": "Nie znaleziono VOD.",
+        "gameNotFound": "Nie znaleziono gry.",
+        "gameNotInMatch": "Ta gra nie należy do wybranego meczu."
+      },
+      "scopeGame": "Konkretna gra",
+      "gameLabel": "Gra",
+      "gamePlaceholder": "Wybierz grę…",
+      "gameLoading": "Ładowanie…"
     },
     "apiKeys": {
       "title": "Klucze API",
@@ -6023,9 +6801,15 @@
       "previous": "Poprzednia strona",
       "next": "Następna strona"
     },
+    "veto": {
+      "title": "Weto map",
+      "subtitle": "Skonfiguruj weto na żywo w turniejach organizowanych przez Twoją organizację.",
+      "readOnlyHint": "Nie masz uprawnień do zarządzania wetem map.",
+      "noTournaments": "Żaden turniej Twojej organizacji nie ma włączonego weta map. Administrator GC Stats włączy je dla Ciebie."
+    },
     "webhooks": {
       "title": "Webhooki",
-      "description": "GC Stats wysyła POST HTTPS do Twoich endpointów, gdy zmienia się mecz, turniej, drużyna lub gracz. Wysyłki są sprawdzane mniej więcej co minutę.",
+      "description": "GC Stats wysyła HTTPS POST na Twoje endpointy, gdy zmieni się mecz, turniej, drużyna, gracz lub roster. Dostarczenia są sprawdzane mniej więcej co minutę.",
       "pageTitle": "Webhooki",
       "pageSubtitle": "Endpointy i dostarczenia Twoich kluczy API partnera.",
       "keySwitcher": "Klucz API partnera",
@@ -6096,6 +6880,9 @@
         },
         "player": {
           "updated": "Gracz zaktualizowany"
+        },
+        "roster": {
+          "updated": "Zmiana rosteru zatwierdzona"
         }
       },
       "filtersTitle": "Filtry",
@@ -6127,7 +6914,8 @@
           "invalid": "To nie jest prawidłowy URL.",
           "notHttps": "URL musi zaczynać się od https://.",
           "credentials": "URL nie może zawierać nazwy użytkownika ani hasła.",
-          "privateHost": "URL musi wskazywać na adres publiczny."
+          "privateHost": "URL musi wskazywać na adres publiczny.",
+          "notDiscord": "To nie jest URL Webhooka Discord."
         },
         "description": {
           "tooLong": "Maksymalnie {descriptionMaxLength} znaków."
@@ -6147,6 +6935,475 @@
         },
         "filterOfficial": {
           "invalid": "Nieprawidłowa wartość."
+        },
+        "kind": {
+          "invalid": "Wybierz prawidłowy typ."
+        }
+      },
+      "kind": {
+        "label": "Typ",
+        "standard": "Standardowy",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Podpisane żądanie JSON wysyłane na Twój serwer.",
+          "discord": "Publikuje tylko link do tweeta na kanale Discord."
+        }
+      },
+      "urlHintDiscord": "URL Webhooka Discord (Ustawienia serwera, Integracje, Webhooki)."
+    },
+    "discord": {
+      "serversTitle": "Serwery Discord",
+      "serversSubtitle": "Serwery, na których możesz zarządzać botem GC Stats.",
+      "serversUnavailable": "Nie udało się odczytać Twoich serwerów Discord. Połącz ponownie konto Discord i spróbuj jeszcze raz.",
+      "reconnectDiscord": "Połącz ponownie Discord",
+      "serversEmpty": "Nie zarządzasz żadnym serwerem Discord. Do konfiguracji bota potrzebujesz uprawnienia Zarządzanie serwerem.",
+      "subscriptionCount": "{count, plural, =0 {Brak alertów} one {# alert} few {# alerty} many {# alertów} other {# alertu}}",
+      "botNotJoined": "Bot nie został dodany",
+      "configure": "Konfiguruj",
+      "addBot": "Dodaj bota",
+      "botUnavailable": "Bota nie można jeszcze dodać.",
+      "serverTitle": "Serwer Discord",
+      "serverSubtitle": "Wybierz, które alerty są publikowane na którym kanale.",
+      "backToServers": "Wróć do serwerów",
+      "botNotJoinedBody": "Bota nie ma jeszcze na tym serwerze. Dodaj go, aby zacząć konfigurować alerty.",
+      "alertsTitle": "Alerty",
+      "alertsDescription": "Każdy alert jest publikowany na jednym kanale i można go filtrować według regionu, drużyny i statusu oficjalnego.",
+      "add": "Dodaj alert",
+      "empty": "Brak alertów. Dodaj jeden, aby otrzymywać mecze na swoim serwerze.",
+      "channelsUnavailable": "Bot nie może odczytać kanałów tego serwera. Sprawdź, czy ma do nich wgląd, a potem odśwież stronę.",
+      "channelMissing": "Nie znaleziono kanału",
+      "disabledLostChannel": "Wyłączony, bot utracił dostęp do tego kanału. Wybierz kanał i zapisz, aby włączyć alert ponownie.",
+      "active": "Włączony",
+      "inactive": "Wyłączony",
+      "toggle": "Włącz lub wyłącz ten alert",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "deleteTitle": "Usunąć ten alert?",
+      "deleteDescription": "Bot przestanie go publikować. Wiadomości już opublikowane pozostaną na Twoim kanale.",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie...",
+      "created": "Alert dodany",
+      "updated": "Alert zaktualizowany",
+      "deleted": "Alert usunięty",
+      "addTitle": "Dodaj alert",
+      "editTitle": "Edytuj alert",
+      "dialogDescription": "Bot publikuje na wybranym kanale każdy mecz, który spełnia filtry.",
+      "eventLabel": "Typ alertu",
+      "channelLabel": "Kanał",
+      "channelPlaceholder": "Wybierz kanał",
+      "localeLabel": "Język wiadomości",
+      "localeHint": "Język wiadomości publikowanych przez bota.",
+      "filtersTitle": "Filtry",
+      "filtersHint": "Zostaw filtr pusty, aby otrzymywać wszystko.",
+      "regions": "Regiony",
+      "regionsHint": "Tylko turnieje z wybranych regionów.",
+      "teams": "Drużyny",
+      "teamsHint": "Tylko mecze rozgrywane przez jedną z tych drużyn.",
+      "teamsPlaceholder": "Dodaj drużynę",
+      "teamsSearch": "Szukaj drużyny",
+      "teamsNoResults": "Nie znaleziono drużyny",
+      "removeTeam": "Usuń {name}",
+      "any": "Wszystkie",
+      "event": {
+        "match_live": "Mecz na żywo",
+        "match_finished": "Mecz zakończony",
+        "map_finished": "Mapa zakończona"
+      },
+      "official": {
+        "label": "Turnieje",
+        "all": "Wszystkie turnieje",
+        "official": "Tylko oficjalne",
+        "unofficial": "Tylko nieoficjalne"
+      },
+      "error": {
+        "network": "Błąd sieci, spróbuj ponownie.",
+        "notAuthenticated": "Musisz być zalogowany.",
+        "forbidden": "Nie możesz zarządzać tym serwerem.",
+        "blacklisted": "Ten serwer lub Twoje konto Discord jest zablokowane w bocie.",
+        "notFound": "Ten alert już nie istnieje.",
+        "invalid": "Niektóre pola są nieprawidłowe.",
+        "tooManySubscriptions": "Serwer może mieć maksymalnie {max} alertów.",
+        "channelsUnavailable": "Bot nie może odczytać kanałów tego serwera.",
+        "channelId": {
+          "required": "Wybierz kanał.",
+          "unknownChannel": "Ten kanał nie istnieje na serwerze."
+        },
+        "event": {
+          "invalid": "Nieznany typ alertu."
+        },
+        "locale": {
+          "invalid": "Nieznany język."
+        },
+        "filterRegions": {
+          "invalid": "Nieznany region.",
+          "tooMany": "Wybierz maksymalnie {filterRegions} regionów."
+        },
+        "filterTeamIds": {
+          "invalid": "Nieprawidłowa drużyna.",
+          "tooMany": "Wybierz maksymalnie {filterTeams} drużyn.",
+          "unknownTeam": "Jedna z drużyn nie istnieje."
+        },
+        "filterOfficial": {
+          "invalid": "Nieznana wartość."
+        },
+        "color": {
+          "invalid": "Nieprawidłowy kolor."
+        }
+      },
+      "alertColorLabel": "Kolor embeda",
+      "alertColorHint": "Zastępuje kolor serwera dla tego alertu.",
+      "theme": {
+        "reset": "Resetuj",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "saving": "Zapisywanie...",
+        "colorsTitle": "Kolory",
+        "colorsDescription": "Kolor wiadomości każdego typu alertu i domyślne tło obrazów. Każdy alert może zastąpić swój kolor.",
+        "color": {
+          "live": "Mecz na żywo",
+          "finished": "Mecz zakończony",
+          "map": "Mapa zakończona",
+          "background": "Tło obrazu"
+        },
+        "colorsSaved": "Kolory zapisane",
+        "botTitle": "Twój własny bot",
+        "botDescription": "Wysyłaj alerty swoim botem Discord (jego nazwa i awatar) zamiast botem GC Stats.",
+        "tokenLabel": "Token bota",
+        "tokenHint": "Znajdziesz go w Discord Developer Portal, w zakładce Bot Twojej aplikacji. Jest przechowywany w postaci zaszyfrowanej.",
+        "botConnect": "Użyj tego bota",
+        "botConnecting": "Sprawdzanie...",
+        "botConnected": "Bot połączony, w razie potrzeby zaproś go na swój serwer",
+        "botActive": "Alerty wysyła ten bot",
+        "botInvite": "Zaproś bota",
+        "botDisconnect": "Użyj bota GC Stats",
+        "botDisconnectTitle": "Wrócić do bota GC Stats?",
+        "botDisconnectDescription": "Token Twojego bota zostanie usunięty, a alerty znów będzie wysyłał bot GC Stats, jeśli jest na Twoim serwerze.",
+        "botDisconnected": "Powrót do bota GC Stats",
+        "error": {
+          "network": "Błąd sieci, spróbuj ponownie.",
+          "notAuthenticated": "Musisz być zalogowany.",
+          "forbidden": "Nie możesz zarządzać tym serwerem.",
+          "blacklisted": "Ten serwer lub Twoje konto Discord jest zablokowane w bocie.",
+          "invalid": "Niektóre pola są nieprawidłowe.",
+          "color": "Nieprawidłowy kolor.",
+          "token": {
+            "required": "Podaj token bota.",
+            "invalidToken": "Discord odrzucił ten token, sprawdź, czy to token bota.",
+            "rateLimited": "Zbyt wiele prób, poczekaj minutę."
+          }
+        },
+        "matchButton": "Przycisk otwierający mecz",
+        "matchButtonHint": "Dodaje pod każdym alertem przycisk otwierający stronę meczu w GC Stats."
+      },
+      "templates": {
+        "title": "Alerty w obrazie",
+        "description": "Zastępuje wiadomość tekstową danego typu alertu obrazem utworzonym na podstawie Twojego szablonu. Dostępne tylko dla serwerów z własnym botem.",
+        "usingImage": "Publikowane jako obraz",
+        "usingText": "Publikowane jako wiadomość tekstowa",
+        "presetNone": "Wiadomość tekstowa, bez obrazu",
+        "presetChoose": "Szablon",
+        "presetSaved": "Szablon zapisany",
+        "presetLabel": "Projekt startowy",
+        "presetHint": "Wybierz informacje wyświetlane na obrazie. Wszystko pozostaje później edytowalne.",
+        "preset": {
+          "score": "Tylko wynik",
+          "maps": "Wynik i mapy",
+          "vetos": "Wynik i vety",
+          "mvp": "Wynik i MVP",
+          "full": "Pełny"
+        },
+        "footer": "Stopka",
+        "footerHint": "Dodaje pod obrazem pasek GC Stats z linkiem do meczu.",
+        "footerSaved": "Stopka zaktualizowana",
+        "toggle": "Użyj obrazu dla tego typu alertu",
+        "enabled": "Alert w obrazie włączony",
+        "disabled": "Powrót do wiadomości tekstowej",
+        "addBackground": "Dodaj tło",
+        "changeBackground": "Zmień tło",
+        "removeBackground": "Usuń tło",
+        "backgroundSaved": "Tło zapisane",
+        "backgroundRemoved": "Tło usunięte",
+        "previewAlt": "Podgląd obrazu alertu",
+        "previewError": "Podgląd niedostępny",
+        "error": {
+          "network": "Błąd sieci, spróbuj ponownie.",
+          "notAuthenticated": "Musisz być zalogowany.",
+          "forbidden": "Nie możesz zarządzać tym serwerem.",
+          "blacklisted": "Ten serwer lub Twoje konto Discord jest zablokowane w bocie.",
+          "invalid": "Szablon jest nieprawidłowy.",
+          "invalidImage": "Ten obraz jest nieprawidłowy (PNG, JPEG lub WebP, co najmniej 400 px na krótszym boku).",
+          "tooLarge": "Ten obraz jest większy niż 10 MB.",
+          "storageFailed": "Nie udało się zapisać obrazu, spróbuj ponownie."
+        },
+        "editDesign": "Edytuj projekt",
+        "presetCustom": "Dostosowany"
+      },
+      "editor": {
+        "title": "Projekt alertu: {event}",
+        "description": "Przeciągaj, zmieniaj rozmiar i obracaj elementy na kanwie, stylizuj je po prawej i pokazuj tylko pod pewnymi warunkami. Podgląd w takiej postaci, w jakiej zostanie wysłany, używa dokładnie tego samego renderowania co bot.",
+        "addText": "Tekst",
+        "addShape": "Kształt",
+        "undo": "Cofnij",
+        "previewServer": "Podgląd w wysłanej postaci",
+        "canvasHint": "Kanwa pokazuje przykładowe dane. Strzałki przesuwają zaznaczony element (Shift dla 10 pikseli), Delete go usuwa. Wyblakłe elementy są ukryte przez swoje warunki.",
+        "previewTitle": "Podgląd w wysłanej postaci",
+        "previewError": "Nie udało się wygenerować podglądu.",
+        "canvasHeight": "Wysokość obrazu",
+        "backgroundColor": "Kolor tła",
+        "layers": "Elementy (najpierw pierwszy plan)",
+        "noLayers": "Brak elementów.",
+        "duplicate": "Duplikuj",
+        "delete": "Usuń",
+        "width": "Szerokość",
+        "height": "Wysokość",
+        "field": {
+          "tournament": "Turniej",
+          "teamA": "Nazwa drużyny A",
+          "teamB": "Nazwa drużyny B",
+          "scoreA": "Wynik drużyny A",
+          "scoreB": "Wynik drużyny B",
+          "score": "Wynik",
+          "status": "Status",
+          "bestOf": "Best of",
+          "map": "Nazwa mapy",
+          "maps": "Zakończone mapy",
+          "matchScore": "Wynik meczu",
+          "mapsInline": "Zakończone mapy (jedna linia)",
+          "vetos": "Vety",
+          "mvp": "MVP",
+          "custom": "Dowolny tekst",
+          "stage": "Faza turnieju",
+          "bestOfShort": "Best of (skrót, BO3)",
+          "teamAShort": "Skrócona nazwa drużyny A",
+          "teamBShort": "Skrócona nazwa drużyny B",
+          "mvpA": "MVP drużyny A",
+          "mvpB": "MVP drużyny B",
+          "dateTime": "Data i godzina",
+          "date": "Data",
+          "time": "Godzina"
+        },
+        "customText": "Tekst",
+        "font": "Czcionka",
+        "size": "Rozmiar",
+        "align": {
+          "label": "Wyrównanie",
+          "left": "Do lewej",
+          "center": "Do środka",
+          "right": "Do prawej"
+        },
+        "color": "Kolor",
+        "bold": "Pogrubienie",
+        "uppercase": "Wielkie litery",
+        "shape": "Kształt",
+        "opacity": "Krycie",
+        "radius": "Promień zaokrąglenia rogów",
+        "sampleText": "Twój tekst",
+        "tooManyLayers": "Szablon może mieć co najwyżej {max} elementów.",
+        "saved": "Zapisano projekt",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "saving": "Zapisywanie...",
+        "error": {
+          "network": "Błąd sieci, spróbuj ponownie.",
+          "notAuthenticated": "Musisz być zalogowany.",
+          "forbidden": "Nie możesz zarządzać tym serwerem.",
+          "blacklisted": "Ten serwer lub Twoje konto Discord jest zablokowane w bocie.",
+          "invalid": "Szablon jest nieprawidłowy.",
+          "invalidImage": "Ten obraz jest nieprawidłowy.",
+          "tooLarge": "Ten obraz jest za duży.",
+          "storageFailed": "Nie udało się zapisać projektu, spróbuj ponownie."
+        },
+        "addImage": "Obraz",
+        "tabContent": "Treść",
+        "tabLayout": "Układ",
+        "tabStyle": "Styl",
+        "tabVisibility": "Warunki",
+        "conditional": "Wyświetlany pod warunkami",
+        "sourceMap": "Mapa {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo drużyny A",
+          "teamB": "Logo drużyny B",
+          "mvp": "Obraz MVP (ikona agenta, jeśli brak)",
+          "mapCurrent": "Aktualna mapa",
+          "mvpAgent": "Ikona agenta MVP",
+          "custom": "Własny obraz"
+        },
+        "variableGroup": {
+          "match": "Mecz",
+          "alert": "Alert i MVP",
+          "teams": "Drużyny",
+          "schedule": "Data i godzina",
+          "mvp": "MVP",
+          "maps": "Mapy",
+          "vetos": "Vety"
+        },
+        "conditionValue": {
+          "live": "Na żywo",
+          "finished": "Zakończony mecz",
+          "map": "Zakończona mapa",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Drużyna A",
+          "b": "Drużyna B"
+        },
+        "customTextHint": "Napisz własny tekst i wstawiaj zmienne, takie jak {tournament} lub {veto1.map}.",
+        "insertVariable": "Wstaw zmienną",
+        "sourceLabel": "Obraz",
+        "fit": {
+          "label": "Dopasowanie",
+          "cover": "Wypełnij (przytnij)",
+          "contain": "Zmieść"
+        },
+        "imageFallbackHint": "Gdy nie ma obrazu, wyświetlany jest kafelek z inicjałami.",
+        "shapeHint": "Kształt nie ma treści, stylizuj go w zakładce Styl.",
+        "rotation": "Obrót (stopnie)",
+        "alignTitle": "Wyrównaj do obrazu",
+        "addFolder": "Nowy folder",
+        "tooManyFolders": "Szablon może zawierać maksymalnie {max} folderów.",
+        "folderDefaultName": "Folder {n}",
+        "folderExpand": "Rozwiń folder",
+        "folderCollapse": "Zwiń folder",
+        "lockFolder": "Zablokuj folder",
+        "unlockFolder": "Odblokuj folder",
+        "lockLayer": "Zablokuj element",
+        "unlockLayer": "Odblokuj element",
+        "folder": "Folder",
+        "folderName": "Nazwa folderu",
+        "folderNameRequired": "Folder musi mieć nazwę.",
+        "folderHint": "Folder grupuje elementy na liście. Zablokowanie go blokuje wszystkie elementy w środku.",
+        "deleteFolder": "Usuń folder",
+        "layerLockedHint": "Ten element jest zablokowany. Odblokuj go, aby go edytować lub przesuwać.",
+        "folderLockedHint": "Ten element jest zablokowany przez swój folder. Odblokuj folder, aby go edytować lub przesuwać.",
+        "noFolder": "Brak folderu",
+        "anchorPoint": "Kotwica tekstu",
+        "anchorX": "Pozycja kotwicy (X)",
+        "anchorHint": "Tekst zaczyna się, jest wyśrodkowany lub kończy się w tej pozycji X, niezależnie od jego długości.",
+        "anchor": {
+          "left": "Początek tekstu",
+          "center": "Środek tekstu",
+          "right": "Koniec tekstu"
+        },
+        "alignLeft": "Wyrównaj do lewej",
+        "alignCenterX": "Wyśrodkuj w poziomie",
+        "alignRight": "Wyrównaj do prawej",
+        "alignTop": "Wyrównaj do góry",
+        "alignCenterY": "Wyśrodkuj w pionie",
+        "alignBottom": "Wyrównaj do dołu",
+        "letterSpacing": "Odstęp między literami",
+        "lineHeight": "Wysokość wiersza",
+        "shadow": "Cień",
+        "shadowColor": "Kolor cienia",
+        "shadowBlur": "Rozmycie",
+        "shadowX": "Przesunięcie X",
+        "shadowY": "Przesunięcie Y",
+        "borderWidth": "Grubość obramowania",
+        "borderColor": "Kolor obramowania",
+        "gradient": "Gradient",
+        "color2": "Drugi kolor",
+        "angle": "Kąt (stopnie)",
+        "conditionsHint": "Element jest rysowany tylko wtedy, gdy wszystkie poniższe warunki są spełnione.",
+        "conditionKey": "Zmienna",
+        "conditionOp": "Warunek",
+        "conditionValueLabel": "Wartość",
+        "op": {
+          "is": "jest",
+          "isNot": "nie jest",
+          "exists": "jest wypełniona",
+          "empty": "jest pusta"
+        },
+        "addCondition": "Dodaj warunek",
+        "removeCondition": "Usuń ten warunek",
+        "footer": "Stopka GC Stats",
+        "artwork": "Grafika mapy jako tło",
+        "artworkSource": "Grafika z",
+        "artworkDim": "Przyciemnienie",
+        "artworkHint": "Ignorowane, gdy przesłano obraz tła.",
+        "loadingMatch": "Ładowanie meczu podglądu",
+        "timezone": "Strefa czasowa",
+        "variableName": {
+          "tournament": "Nazwa turnieju",
+          "stage": "Faza turnieju",
+          "status": "Status (na żywo lub zakończony)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, krótko (BO3)",
+          "score": "Wynik meczu lub mapy",
+          "scoreA": "Wynik drużyny A",
+          "scoreB": "Wynik drużyny B",
+          "matchScore": "Wynik meczu",
+          "teamA": "Nazwa drużyny A",
+          "teamB": "Nazwa drużyny B",
+          "teamAShort": "Krótka nazwa drużyny A",
+          "teamBShort": "Krótka nazwa drużyny B",
+          "dateTime": "Data i godzina meczu",
+          "date": "Data meczu",
+          "time": "Godzina meczu",
+          "scheduledAt": "Planowany start",
+          "alert_kind": "Typ alertu",
+          "map": "Nazwa zakończonej mapy",
+          "currentMap_name": "Nazwa trwającej mapy",
+          "currentMap_number": "Numer trwającej mapy",
+          "maps": "Zakończone mapy (lista)",
+          "mapsInline": "Zakończone mapy (w jednej linii)",
+          "vetos": "Vety (w jednej linii)",
+          "mvp": "MVP meczu lub mapy",
+          "mvpA": "MVP drużyny A",
+          "mvpB": "MVP drużyny B",
+          "mvp_name": "Gracz MVP",
+          "mvp_acs": "ACS MVP",
+          "mvp_agent": "Agent MVP",
+          "mvpA_name": "Gracz MVP drużyny A",
+          "mvpA_acs": "ACS MVP drużyny A",
+          "mvpA_agent": "Agent MVP drużyny A",
+          "mvpB_name": "Gracz MVP drużyny B",
+          "mvpB_acs": "ACS MVP drużyny B",
+          "mvpB_agent": "Agent MVP drużyny B",
+          "map_alias": "Nazwa mapy {n}",
+          "map_name": "Nazwa mapy {n}",
+          "map_score": "Wynik mapy {n}",
+          "map_scoreA": "Wynik drużyny A na mapie {n}",
+          "map_scoreB": "Wynik drużyny B na mapie {n}",
+          "veto_map": "Mapa weta {n}",
+          "veto_action": "Akcja weta {n} (ban, pick, decider)",
+          "veto_team": "Drużyna weta {n}",
+          "veto_type": "Typ weta {n}",
+          "veto_side": "Strona weta {n} (Atak lub Obrona)"
+        },
+        "insertVariableHint": "Kliknij zmienną, aby wstawić ją do tekstu w miejscu kursora.",
+        "templateLabel": "Szablon",
+        "applyTemplate": "Zastąp projekt tym szablonem",
+        "templateHint": "Zastępuje wszystkie warstwy szablonem. Możesz to cofnąć.",
+        "templateApplied": "Szablon zastosowany",
+        "layoutLayer": "Układ",
+        "pickImage": "Wybierz obraz",
+        "pickImageHint": "Każdy typ obrazu ma własny rozmiar, który możesz potem zmienić.",
+        "imageCategory": {
+          "teams": "Drużyny",
+          "mvp": "MVP",
+          "maps": "Mapy",
+          "vetos": "Vety",
+          "custom": "Własny obraz"
+        },
+        "customUrl": "Adres obrazu",
+        "customUrlHint": "Publiczny link https do obrazu. Nic nie jest przesyłane, obraz zostaje na swojej stronie i jest pobierany w chwili wysłania alertu.",
+        "customUrlRequired": "Adres obrazu jest wymagany.",
+        "customUrlInvalid": "Podaj prawidłowy adres https.",
+        "useImage": "Użyj tego obrazu",
+        "sendTest": "Wyślij test",
+        "sendTestHint": "Publikuje ten projekt, wypełniony prawdziwym meczem, na wybranym kanale. Niezapisane zmiany są uwzględnione.",
+        "testChannel": "Kanał",
+        "testChannelPlaceholder": "Wybierz kanał",
+        "sendTestAction": "Wyślij",
+        "sending": "Wysyłanie",
+        "testSent": "Test wysłany",
+        "testError": {
+          "required": "Wybierz kanał.",
+          "unknownChannel": "Ten kanał nie istnieje na serwerze.",
+          "rateLimited": "Poczekaj kilka sekund przed wysłaniem kolejnego testu.",
+          "channelsUnavailable": "Nie można odczytać kanałów serwera.",
+          "sendFailed": "Nie udało się wysłać testu, sprawdź, czy bot może pisać na tym kanale."
         }
       }
     }
@@ -6451,6 +7708,7 @@
       "title": "Twoje konto",
       "checkbox": "To ja: powiąż moje konto z {name}",
       "hint": "Zespół sprawdzi, czy ten profil naprawdę należy do Ciebie, zanim powiąże go z Twoim kontem.",
+      "replaces": "Twoje konto jest obecnie powiązane z {previous}: to powiązanie zostanie zastąpione po zatwierdzeniu.",
       "state": {
         "linkedToYou": "Ten profil jest już powiązany z Twoim kontem.",
         "linkedToOther": "Ten profil jest już powiązany z innym kontem. Skontaktuj się z zespołem, jeśli uważasz, że to błąd.",
@@ -6562,8 +7820,32 @@
     "tabPickem": "Pick'em",
     "tabStats": "Statystyki",
     "tabMaps": "Mapy",
+    "tabChampions": "Bohaterowie",
+    "championsEmpty": "Nie rozegrano jeszcze żadnych gier.",
+    "championsRolesColumn": "Role",
+    "championsRoleBansNote": "Bany i obecność liczą wszystkie role.",
+    "championsInsightMostPicked": "Najczęściej wybierany",
+    "championsInsightMostBanned": "Najczęściej banowany",
+    "championsInsightHighestPresence": "Największa obecność",
+    "championsInsightHighestWinRate": "Najwyższy współczynnik wygranych",
+    "championsInsightHighestKda": "Najwyższe KDA",
     "tabProduction": "Produkcja",
     "productionTitle": "{tournament} · Produkcja",
+    "statsGroupByLabel": "Grupuj według",
+    "statsGroupBy": {
+      "none": "Brak grupowania",
+      "agent": "Agent",
+      "role": "Rola",
+      "team": "Drużyna",
+      "nationality": "Narodowość"
+    },
+    "statsRole": {
+      "duelist": "Pojedynkowicz",
+      "initiator": "Inicjator",
+      "controller": "Kontroler",
+      "sentinel": "Strażnik"
+    },
+    "statsGroupUnknown": "Nieznane",
     "statsIdentityColumn": "Zawodniczka",
     "statsAgentColumn": "Agent",
     "statsNationalityColumn": "Narodowość",
@@ -6581,6 +7863,15 @@
     "statsFilterAgentAll": "Wszyscy agenci",
     "statsFilterMap": "Mapa",
     "statsFilterMapAll": "Wszystkie mapy",
+    "statsChampionColumn": "Czempioni",
+    "statsFilterChampion": "Czempion",
+    "statsFilterChampionAll": "Wszyscy czempioni",
+    "statsFilterChampionSearch": "Szukaj bohatera…",
+    "statsFilterChampionNoResult": "Nie znaleziono bohatera",
+    "statsFilterRole": "Rola",
+    "statsFilterRoleAll": "Wszystkie role",
+    "statsFilterPatch": "Patch",
+    "statsFilterPatchAll": "Wszystkie patche",
     "statsFilterStartDate": "Od",
     "statsFilterEndDate": "Do",
     "statsFilterSubmit": "Zastosuj filtry",
@@ -6591,13 +7882,32 @@
     "statsColumnFilterValuePlaceholder": "Szukana wartość...",
     "statsColumnFilterAddAnother": "Dodaj kolejny filtr",
     "statsColumnFilterApply": "Zastosuj",
+    "statsColumnFilterSearch": "Szukaj...",
+    "statsColumnFilterNoResult": "Brak wyników",
     "statsColumnFilterClear": "Wyczyść",
     "previous": "Poprzednia",
     "next": "Następna",
     "pageOf": "Strona {page} z {total}",
     "statsColumns": {
       "played": "Mapy",
+      "playedGames": "Gry",
+      "winRate": "Procent wygranych",
+      "picks": "Picki",
+      "bans": "Bany",
+      "presence": "Obecność",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "Rundy",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Zabójstwa",
       "deaths": "Śmierci",
@@ -6639,7 +7949,8 @@
     "mapsPickRatesShowMore": "Pokaż wszystkie",
     "mapsPickRatesShowLess": "Pokaż mniej",
     "factOrganizer": "Organizator",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Gry"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6853,6 +8164,10 @@
     "text": "Niektóre informacje na tej stronie pochodzą z Liquipedia.",
     "link": "Zobacz oryginalny artykuł"
   },
+  "leaguepediaSource": {
+    "text": "Niektóre dane meczów na tej stronie pochodzą z Leaguepedia (CC BY-SA). Oryginalne strony:",
+    "game": "Gra {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Wikicode Liquipedii",
     "title": "Wikicode Liquipedii",
@@ -6897,7 +8212,8 @@
     "copied": "Skopiowano",
     "copyError": "Nie udało się skopiować obrazu. Pobierz go zamiast tego.",
     "exporting": "Generowanie",
-    "exportError": "Nie udało się wygenerować obrazu. Spróbuj ponownie."
+    "exportError": "Nie udało się wygenerować obrazu. Spróbuj ponownie.",
+    "descriptionGames": "Obraz PNG o szerokości {width} px, gotowy do udostępnienia. Wybierz wszystkie gry lub jedną grę."
   },
   "share": {
     "button": "Udostępnij",
@@ -6958,10 +8274,83 @@
     "pointsUnknown": "Awans przez punkty",
     "iconLabel": "Źródło kwalifikacji"
   },
+  "veto": {
+    "title": "Weto map",
+    "invalidLinkTitle": "Nieprawidłowy link do weta",
+    "invalidLinkHint": "Ten link jest nieprawidłowy lub weto nie jest włączone w tym turnieju. Poproś organizatorów o nowy link.",
+    "noMatch": "Na razie brak meczu do weta. Ta strona odświeży się sama, gdy Twój następny mecz będzie gotowy.",
+    "you": "Ty",
+    "opponent": "Przeciwnik",
+    "ready": "Gotowi",
+    "bestOf": "BO{count}",
+    "poolError": "Pula map tego meczu nie jest jeszcze kompletna. Poproś organizatorów o jej ustawienie.",
+    "waitingTitle": "Gotowi na weto?",
+    "waitingHint": "Weto rozpoczyna się, gdy obie drużyny są gotowe.",
+    "readyButton": "Jesteśmy gotowi",
+    "cancelReady": "Jeszcze nie gotowi",
+    "chooseFirstTitle": "Kto zaczyna weto?",
+    "chooseFirstHint": "Wybierasz, która drużyna banuje jako pierwsza.",
+    "weStart": "My zaczynamy",
+    "opponentStarts": "{team} zaczyna",
+    "waitingChoice": "{team} wybiera, kto zaczyna weto.",
+    "yourTurn": {
+      "ban": "Twoja kolej: zbanuj mapę",
+      "pick": "Twoja kolej: wybierz mapę",
+      "side": "Twoja kolej: wybierz stronę"
+    },
+    "stepWaiting": {
+      "ban": "Wybierają mapę do zbanowania.",
+      "pick": "Wybierają mapę do gry.",
+      "side": "Wybierają stronę."
+    },
+    "theirTurn": "{team} wykonuje ruch",
+    "attack": "Atak",
+    "defense": "Obrona",
+    "toBeDecided": "Do ustalenia",
+    "stepLabel": {
+      "ban": "Ban",
+      "pick": "Wybór",
+      "side": "Strona",
+      "decider": "Decydująca"
+    },
+    "vetoDone": "Weto zakończone. Powodzenia w grze!",
+    "gameFinishedHint": "Gdy Twoja gra się skończy, naciśnij ten przycisk, aby powiadomić zespół GC Stats. To nie powiadamia organizatora turnieju.",
+    "gameFinishedButton": "Gra zakończona",
+    "staffNotified": "Zespół GC Stats został powiadomiony (nie organizator turnieju).",
+    "previousMatch": "Poprzedni mecz",
+    "nextMatch": "Następny mecz",
+    "error": {
+      "unknown": "Coś poszło nie tak, spróbuj ponownie.",
+      "network": "Problem z połączeniem, spróbuj ponownie.",
+      "notFound": "Ten mecz jest niedostępny.",
+      "notAllowed": "Nie bierzesz udziału w tym meczu.",
+      "wrongPhase": "Ta akcja jest teraz niedostępna.",
+      "notYourTurn": "To nie Twoja kolej.",
+      "wrongStep": "To nie jest oczekiwana akcja.",
+      "mapUnavailable": "Ta mapa jest niedostępna.",
+      "invalidSide": "Nieprawidłowa strona.",
+      "noStep": "Weto już się zakończyło.",
+      "poolInvalid": "Pula map tego meczu nie jest kompletna.",
+      "alreadyNotified": "Zespół został już powiadomiony.",
+      "matchCompleted": "Ten mecz już się zakończył.",
+      "rateLimited": "Zbyt wiele żądań, zwolnij.",
+      "invalidRequest": "Nieprawidłowe żądanie."
+    }
+  },
   "game": {
     "switcherLabel": "Gra",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungla",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Linie",
+    "fromGames": "Z gier:",
+    "invalid": "Można wybrać tylko pięć linii."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

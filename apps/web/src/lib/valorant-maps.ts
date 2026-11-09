@@ -26,3 +26,9 @@ export function mapSplashUrl(mapName: string | null): string | null {
   if (!(VALORANT_MAP_POOL as readonly string[]).includes(mapName)) return null;
   return `/valorant/maps/splash/${slug}.webp`;
 }
+
+/** High quality version of the splash, for the Discord alert images. */
+export function mapSplashHdUrl(mapName: string | null): string | null {
+  const url = mapSplashUrl(mapName);
+  return url ? url.replace("/splash/", "/splash-hd/") : null;
+}

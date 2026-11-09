@@ -1,0 +1,90 @@
+/**
+ * GC-Stats — lanes.test module
+ *
+ * Lane order of a roster entry, the lanes taken from games when none are stored, and the roster ordering. No
+ * network, no database.
+ *
+ * @copyright Copyright (c) 2026 Osthelia — GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import { describe, expect, it } from "vitest";
+import { areLanes, compareByLanes, laneRank, lanesPlayedInPeriod, sortLanes, type PlayedLane } from "./lanes";
+
+const game = (lane: string | null, day: string | null): PlayedLane => ({ lane, day });
+
+describe("laneRank", () => {
+  it("numbers the lanes from Top to Support", () => {
+    expect(["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"].map(laneRank)).toEqual([0, 1, 2, 3, 4]);
+  });
+
+  it("ranks anything that is not a lane after Support", () => {
+    expect([laneRank(null), laneRank(undefined), laneRank("AFK")]).toEqual([5, 5, 5]);
+  });
+});
+
+describe("areLanes", () => {
+  it("accepts lanes only", () => {
+    expect(areLanes(["TOP", "UTILITY"])).toBe(true);
+    expect(areLanes([])).toBe(true);
+    expect(areLanes(["TOP", "top"])).toBe(false);
+  });
+
+  it("rejects anything that is not a list", () => {
+    expect([null, undefined, "TOP", { 0: "TOP" }, 3].map(areLanes)).toEqual([false, false, false, false, false]);
+    expect(areLanes(["TOP", 1])).toBe(false);
+  });
+});
+
+describe("sortLanes", () => {
+  it("puts the lanes in order from Top to Support, once each", () => {
+    expect(sortLanes(["UTILITY", "TOP", "UTILITY", "MIDDLE"])).toEqual(["TOP", "MIDDLE", "UTILITY"]);
+  });
+
+  it("drops what is not a lane", () => {
+    expect(sortLanes(["BOTTOM", "AFK", "", null, undefined, "top"])).toEqual(["BOTTOM"]);
+  });
+});
+
+describe("lanesPlayedInPeriod", () => {
+  const games = [game("TOP", "2025-02-01"), game("TOP", "2025-03-01"), game("MIDDLE", "2025-04-01"), game("MIDDLE", "2025-05-01"), game("MIDDLE", "2025-06-01"), game("JUNGLE", null)];
+
+  it("counts only the games inside the period, the day after the last one excluded", () => {
+    expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: "2025-05-01", hasLeft: true })).toEqual(["TOP", "MIDDLE"]);
+    expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: "2025-04-01", hasLeft: true })).toEqual(["TOP"]);
+  });
+
+  it("takes every game from the start of an open period", () => {
+    expect(lanesPlayedInPeriod(games, { since: "2025-04-01", until: null, hasLeft: false })).toEqual(["MIDDLE"]);
+  });
+
+  it("gives nothing before the first game", () => {
+    expect(lanesPlayedInPeriod(games, { since: "2024-01-01", until: "2025-01-01", hasLeft: true })).toEqual([]);
+  });
+
+  it("gives nothing for an entry left with an unknown end", () => {
+    expect(lanesPlayedInPeriod(games, { since: "2025-02-01", until: null, hasLeft: true })).toEqual([]);
+  });
+
+  it("puts the lanes in lane order, not by how often they were played", () => {
+    const flex = [game("MIDDLE", "2025-03-01"), game("MIDDLE", "2025-03-02"), game("MIDDLE", "2025-03-03"), game("TOP", "2025-03-04")];
+    expect(lanesPlayedInPeriod(flex, { since: null, until: null, hasLeft: false })).toEqual(["TOP", "MIDDLE"]);
+  });
+
+  it("skips games without a date", () => {
+    expect(lanesPlayedInPeriod([game("JUNGLE", null)], { since: null, until: null, hasLeft: false })).toEqual([]);
+  });
+});
+
+describe("compareByLanes", () => {
+  it("orders by the first lane, Top before Support", () => {
+    const rows = [["UTILITY"], ["TOP", "JUNGLE"], ["MIDDLE"], ["JUNGLE"]];
+    expect(rows.sort(compareByLanes)).toEqual([["TOP", "JUNGLE"], ["JUNGLE"], ["MIDDLE"], ["UTILITY"]]);
+  });
+
+  it("puts people without a lane last", () => {
+    expect([[], ["UTILITY"]].sort(compareByLanes)).toEqual([["UTILITY"], []]);
+    expect(laneRank(undefined)).toBe(5);
+  });
+});

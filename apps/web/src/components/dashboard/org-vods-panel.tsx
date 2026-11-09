@@ -38,6 +38,13 @@ import {
   type VodFieldErrors,
 } from "@/actions/dashboard-vods";
 import { useGame } from "@/lib/use-game";
+import { GAME_INFO } from "@gc-stats/db/game";
+
+/** Translation keys of the map step of the VOD form: "Map" for Valorant, "Game" for LoL. */
+const VOD_UNIT_KEYS = {
+  Map: { scope: "scopeMap", label: "mapLabel", placeholder: "mapPlaceholder", loading: "mapLoading" },
+  Game: { scope: "scopeGame", label: "gameLabel", placeholder: "gamePlaceholder", loading: "gameLoading" },
+} as const;
 
 const NONE_MATCH = "__none__";
 type Scope = "wholeMatch" | "map";
@@ -171,7 +178,8 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
   const [languageCode, setLanguageCode] = useState(languages[0]?.code ?? "");
   const [fieldErrors, setFieldErrors] = useState<VodFieldErrors>({});
 
-  const scopeItems = { wholeMatch: t("scopeWholeMatch"), map: t("scopeMap") };
+  const unitKeys = VOD_UNIT_KEYS[GAME_INFO[game].seriesUnit];
+  const scopeItems = { wholeMatch: t("scopeWholeMatch"), map: t(unitKeys.scope) };
   const langItems = Object.fromEntries(languages.map((l) => [l.code, l.name]));
   const err = (field: keyof VodFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}` as "error.required") : undefined);
 
@@ -203,7 +211,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
     }
     let cancelled = false;
     setLoadingMaps(true);
-    getMapOptionsForVod(organizationId, matchId).then((rows) => {
+    getMapOptionsForVod(game, organizationId, matchId).then((rows) => {
       if (cancelled) return;
       setMapOptions(rows);
       setLoadingMaps(false);
@@ -237,7 +245,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
   }
 
   const matchItems = { [NONE_MATCH]: loadingMatches ? t("matchLoading") : !tournament ? t("matchPickTournamentFirst") : t("matchPlaceholder"), ...Object.fromEntries(matchOptions.map((m) => [String(m.id), m.label])) };
-  const mapItems = { [NONE_MATCH]: loadingMaps ? t("mapLoading") : t("mapPlaceholder"), ...Object.fromEntries(mapOptions.map((m) => [String(m.id), m.label])) };
+  const mapItems = { [NONE_MATCH]: loadingMaps ? t(unitKeys.loading) : t(unitKeys.placeholder), ...Object.fromEntries(mapOptions.map((m) => [String(m.id), m.label])) };
 
   return (
     <div className="flex flex-col gap-3 border-b pb-4">
@@ -298,7 +306,7 @@ function AddVodForm({ organizationId, languages, onAdded }: { organizationId: nu
         {scope === "map" && (
           <div className="flex flex-col gap-1.5">
             <Label>
-              {t("mapLabel")}
+              {t(unitKeys.label)}
               <RequiredMark />
             </Label>
             <Select items={mapItems} value={mapId !== null ? String(mapId) : NONE_MATCH} onValueChange={(v) => setMapId(v && v !== NONE_MATCH ? Number(v) : null)} disabled={loadingMaps}>

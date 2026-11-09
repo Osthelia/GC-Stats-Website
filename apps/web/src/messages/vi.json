@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhook",
       "body": "Khóa đối tác có thể đăng ký endpoint HTTPS từ bảng điều khiển: GC Stats sau đó gửi một POST mỗi khi dữ liệu thay đổi.",
-      "events": "Sự kiện: trận đấu mới, trận đấu được cập nhật, giải đấu mới, giải đấu được cập nhật, đội được cập nhật, tuyển thủ được cập nhật.",
+      "events": "Sự kiện: trận đấu mới, trận đấu cập nhật, giải đấu mới, giải đấu cập nhật, đội cập nhật, tuyển thủ cập nhật, thay đổi roster được đội ngũ của chúng tôi xác nhận (roster.updated).",
       "filters": "Bộ lọc: khu vực của giải đấu, chính thức hay không, các đội tham gia.",
       "signature": "Mỗi yêu cầu mang các header X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp và X-GCS-Signature. Kiểm tra chữ ký bằng secret của endpoint.",
       "retries": "Trả lời bằng trạng thái 2xx trong vòng 10 giây. Các lần gửi thất bại được thử lại trong khoảng 9 giờ, endpoint thất bại quá thường xuyên sẽ bị tắt.",
-      "setup": "Payload chứa sự kiện, thời điểm và thực thể, với các trường giống như các bộ dữ liệu OpenData."
+      "setup": "Payload chứa sự kiện, thời điểm và thực thể, với các trường giống như các bộ dữ liệu OpenData.",
+      "discord": "Endpoint loại Discord chỉ nhận sự kiện roster.updated và đăng liên kết tweet trong kênh của bạn, không có chữ ký."
     }
   },
   "becomePublisher": {
@@ -1046,6 +1047,77 @@
       "discord": "Liên hệ chúng tôi trên Discord",
       "email": "Liên hệ qua email"
     }
+  },
+  "discordBot": {
+    "title": "Bot Discord",
+    "intro": "Theo dõi mọi trận đấu Game Changers ngay trong máy chủ Discord của bạn, với tỷ số trực tiếp và kết quả được đăng tự động.",
+    "addBot": "Thêm vào Discord",
+    "comingSoon": "Sắp ra mắt",
+    "openDashboard": "Mở bảng điều khiển",
+    "features": {
+      "title": "Tính năng",
+      "live": {
+        "title": "Trận đang diễn ra",
+        "body": "Một tin nhắn được đăng khi trận đấu bắt đầu, và tỷ số tự cập nhật cho đến khi kết thúc."
+      },
+      "finished": {
+        "title": "Trận đã kết thúc",
+        "body": "Kết quả cuối cùng được đăng ngay khi trận đấu kết thúc."
+      },
+      "map": {
+        "title": "Map đã kết thúc",
+        "body": "Nhận tỷ số của từng map ngay khi map kết thúc, không cần chờ hết trận."
+      },
+      "filters": {
+        "title": "Bộ lọc thông minh",
+        "body": "Lọc thông báo theo khu vực, đội tham gia, và giải đấu chính thức hoặc không chính thức (mặc định là chính thức)."
+      }
+    },
+    "dashboard": {
+      "title": "Cấu hình từ bảng điều khiển",
+      "body": "Mỗi máy chủ được cấu hình từ bảng điều khiển GC Stats: chọn kênh cho từng loại thông báo và đặt bộ lọc của bạn.",
+      "why": "Bạn cần đăng nhập bằng Discord để chúng tôi kiểm tra bạn quản lý những máy chủ nào. Chỉ những thành viên có quyền quản lý máy chủ mới có thể thay đổi cài đặt của máy chủ đó."
+    },
+    "steps": {
+      "title": "Cách hoạt động",
+      "invite": {
+        "title": "Thêm bot",
+        "body": "Mời bot vào máy chủ của bạn bằng nút ở trên."
+      },
+      "login": {
+        "title": "Đăng nhập bằng Discord",
+        "body": "Mở bảng điều khiển và đăng nhập bằng tài khoản Discord của bạn."
+      },
+      "configure": {
+        "title": "Cấu hình",
+        "body": "Chọn kênh và bộ lọc, thông báo sẽ bắt đầu ngay."
+      }
+    },
+    "help": {
+      "title": "Cần hỗ trợ?",
+      "body": "Có câu hỏi hoặc góp ý? Hãy tham gia <link>Discord của GC Stats</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "TRỰC TIẾP",
+    "finished": "Trận đấu kết thúc",
+    "mapFinished": "Bản đồ {number} kết thúc",
+    "map": "Bản đồ {number}",
+    "maps": "Bản đồ",
+    "bestOf": "Best of {count}",
+    "matchScore": "Tỷ số trận đấu: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team} cấm {map}",
+    "vetoPick": "{team} chọn {map}",
+    "vetoDecider": "{map} (map quyết định)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Tấn công",
+    "sideDefense": "Phòng thủ",
+    "openMatch": "Mở trận đấu",
+    "imageRemoved": "Hình ảnh của cảnh báo này đã bị đội kiểm duyệt GC Stats gỡ bỏ."
   },
   "supportUs": {
     "title": "Ủng hộ chúng tôi",
@@ -1525,6 +1597,7 @@
     "statsColumns": {
       "played": "Bản đồ",
       "roundsPlayed": "Round",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",
@@ -1682,10 +1755,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Tuyển thủ",
+    "ratingFull": "Rating GCS: 1.00 là người chơi trung bình cùng vai trò",
     "acsFull": "Average Combat Score",
     "adrFull": "Average Damage per Round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -1718,7 +1793,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Thảo luận",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD ván {n}",
+    "games": "Các ván",
+    "gameTab": "Ván {order}",
+    "noGames": "Chưa có ván nào được ghi nhận.",
+    "noGameData": "Không có dữ liệu cho ván này",
+    "duration": "Thời lượng",
+    "forfeit": "Bỏ cuộc",
+    "towers": "Trụ",
+    "inhibitors": "Nhà lính",
+    "dragons": "Rồng",
+    "barons": "Baron",
+    "heralds": "Sứ Giả Khe Nứt",
+    "grubs": "Ấu trùng Hư Không",
+    "draftNotSet": "Chưa có draft nào được ghi nhận cho ván này.",
+    "ban": "Cấm",
+    "pick": "Chọn",
+    "unplacedPicks": "Lượt chọn chưa được xếp vị trí",
+    "colChampion": "Tướng",
+    "allGames": "Tất cả các ván",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Mọi giải đấu Game Changers chính thức, tại một nơi.",
@@ -1747,7 +1842,8 @@
     "finance": "Tài chính",
     "developers": "Nhà phát triển",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Bot Discord"
   },
   "forum": {
     "overview": {
@@ -1940,6 +2036,10 @@
       "about": "Giới thiệu / Dự án",
       "backToSite": "Quay lại trang web",
       "pendingChangeRequests": "Yêu cầu thay đổi đang chờ",
+      "pendingDiscordImages": "Hình ảnh Discord cần duyệt",
+      "pendingReports": "Báo cáo đang chờ",
+      "pendingRosterWatch": "Tín hiệu đội hình cần duyệt",
+      "pendingModeration": "Đối tượng nghi vấn cần duyệt",
       "tournaments": "Giải đấu",
       "groupModeration": "Kiểm duyệt",
       "reports": "Báo cáo",
@@ -1949,7 +2049,10 @@
       "activityLog": "Nhật ký hoạt động",
       "analytics": "Phân tích",
       "oauthClients": "Ứng dụng OAuth",
-      "settings": "Cấu hình"
+      "settings": "Cấu hình",
+      "discordImages": "Hình ảnh của bot Discord",
+      "rosterWatch": "Theo dõi roster",
+      "teamRequests": "Yêu cầu gửi đội"
     },
     "dashboard": {
       "title": "Bảng điều khiển",
@@ -2358,6 +2461,8 @@
         "fieldBio": "Tiểu sử",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liên kết Liquipedia",
+        "fieldContactEmail": "Email liên hệ",
+        "contactEmailHint": "Riêng tư. Chỉ staff mới thấy, không bao giờ hiển thị trên trang web hay trong API.",
         "fieldActive": "Đội đang hoạt động",
         "save": "Lưu",
         "saveSuccess": "Đã cập nhật hồ sơ.",
@@ -2470,7 +2575,8 @@
           "saveFailed": "Không thể lưu logo. Hãy thử lại sau một lát.",
           "empty": "Vui lòng chọn một hình ảnh.",
           "requiresLeft": "Hãy chọn ô \"Đã rời đội\" để đặt ngày rời.",
-          "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...)."
+          "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...).",
+          "invalidEmail": "Nhập địa chỉ email hợp lệ."
         },
         "fieldOrganization": "Tổ chức",
         "organizationPlaceholder": "Chọn một tổ chức",
@@ -3299,6 +3405,7 @@
           "entityNotFound": "Một đội hoặc tuyển thủ được tham chiếu không còn tồn tại.",
           "membershipNotFound": "Mục đội hình không còn tồn tại.",
           "invalidRole": "Vai trò không còn hợp lệ.",
+          "invalidLane": "Có một đường không hợp lệ.",
           "logoNotFound": "Mục logo không còn tồn tại.",
           "alreadyLinked": "Tuyển thủ này đã được liên kết với một tài khoản khác.",
           "unknownField": "Trường không được hỗ trợ.",
@@ -3388,7 +3495,9 @@
         "activityLog": "Nhật ký hoạt động",
         "analytics": "Phân tích",
         "oauthClients": "Ứng dụng OAuth",
-        "settings": "Cấu hình"
+        "settings": "Cấu hình",
+        "rosterWatch": "Theo dõi roster",
+        "teamRequests": "Yêu cầu gửi đội"
       },
       "permissionNames": {
         "admin_access": "Truy cập bảng quản trị",
@@ -3439,7 +3548,11 @@
         "oauth_clients_view": "Xem ứng dụng OAuth",
         "oauth_clients_manage": "Tạo, sửa hoặc xóa ứng dụng OAuth",
         "settings_view": "Xem cấu hình và giám sát OpenData",
-        "settings_manage": "Chỉnh sửa cấu hình"
+        "settings_manage": "Chỉnh sửa cấu hình",
+        "roster_watch_view": "Xem theo dõi roster",
+        "roster_watch_manage": "Xem xét tweet theo dõi roster và quản lý các tài khoản đang theo dõi",
+        "team_requests_view": "Xem các yêu cầu gửi đội",
+        "team_requests_manage": "Chuẩn bị và theo dõi các yêu cầu thông tin gửi cho các đội"
       },
       "create": {
         "button": "Vai trò mới",
@@ -3743,6 +3856,7 @@
         "assignEntrantsTitle": "Đội tham gia của bảng",
         "assignEntrantsDescription": "Chọn những đội tham gia nào của giải đấu thuộc bảng Swiss này.",
         "assignEntrantsEmpty": "Giải đấu này chưa có đội tham gia nào.",
+        "assignEntrantsInGroup": "Trong {name}",
         "assignEntrantsSuccess": "Đã cập nhật đội tham gia.",
         "startSwissButton": "Bắt đầu round 1",
         "startSwissSuccess": "Đã tạo round 1.",
@@ -3752,7 +3866,22 @@
         "addMatchSubmit": "Thêm",
         "addMatchSuccess": "Đã thêm trận đấu.",
         "addMatchEntrantTbd": "TBD",
+        "participantsButton": "Đội",
+        "participantsTitle": "Các đội trong {name}",
+        "participantsDescription": "Các đội được liệt kê ở đây sẽ hiển thị trong bảng xếp hạng công khai, kể cả khi chưa thêm trận nào.",
+        "participantsEmpty": "Giải đấu này chưa có đội nào đăng ký.",
+        "participantsCount": "{count, plural, other {# đội}}",
+        "participantsSuccess": "Đã cập nhật các đội.",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "Round",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "Best of",
         "fieldMatchEntrantA": "Đội A",
         "fieldMatchEntrantB": "Đội B",
@@ -3799,7 +3928,13 @@
           "roundAboveMax": "Round này vượt quá số round tối đa của bảng.",
           "sameEntrant": "Hai vị trí không thể cùng chứa một đội.",
           "entrantNotFound": "Đội này chưa đăng ký trong giải đấu.",
+          "entrantHasMatches": "Không thể xóa đội đã có trận trong bảng này.",
           "entrantNotInGroup": "Đội này chưa được gán vào bảng này.",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Chỉ các bảng đấu vòng tròn mới có thể tính các trận của cả giai đoạn.",
           "cannotMove": "Không thể di chuyển vùng chứa này thêm nữa.",
           "parentInvalid": "Không thể dùng bộ này ở đây.",
           "tiebreakersInvalid": "Chỉ dùng mỗi tiêu chí một lần, từ danh sách có sẵn.",
@@ -3816,6 +3951,7 @@
             "points": "Điểm",
             "buchholz": "Buchholz",
             "map_diff": "Hiệu số map",
+            "game_diff": "Hiệu số ván",
             "round_diff": "Hiệu số round",
             "head_to_head": "Đối đầu",
             "seed": "Seed"
@@ -3824,17 +3960,23 @@
         "pointsConfig": {
           "title": "Điểm",
           "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số.",
+          "hintGames": "Mỗi trận và ván thắng hoặc thua đều mang lại điểm cho đội.",
           "enable": "Dùng điểm",
           "scopes": {
             "match": "Trận",
             "map": "Mỗi map",
+            "game": "Mỗi ván",
             "round": "Mỗi round",
             "forfeit": "Xử thua (thay thế các mục khác)"
           },
           "win": "Thắng",
           "loss": "Thua",
           "notUsed": "Điểm chỉ xếp hạng bảng khi Điểm nằm trong các tiêu chí phụ."
-        }
+        },
+        "fieldMatchScope": "Các đội cũng đấu với đội của bảng khác (tính các trận của cả giai đoạn)",
+        "fieldMatchScopeHint": "Chỉ các đội được ghim vào bảng này được liệt kê, và các trận đã hoàn thành của họ ở bất kỳ bảng nào trong giai đoạn này đều được tính. Hãy ghim các đội sau khi lưu. Chỉ áp dụng cho vòng tròn.",
+        "matchScopeNoTeams": "Chưa có đội nào được ghim vào bảng này nên bảng xếp hạng đang trống. Hãy gán đội cho bảng trước.",
+        "matchScopeSwitchWarning": "Chuyển sang phạm vi giai đoạn sẽ chỉ liệt kê các đội đã ghim. Những đội đã thi đấu trong bảng này nhưng chưa được ghim sẽ biến mất khỏi bảng xếp hạng cho đến khi bạn ghim họ."
       },
       "bracketPage": {
         "title": "Quản lý nhánh đấu",
@@ -4296,6 +4438,7 @@
           "manualScoreboardDescription": "Dành cho các ván không có ID trận Riot để Fetch (LAN, quá cũ, v.v.).",
           "columnPlayer": "Tuyển thủ",
           "columnIgn": "IGN",
+          "previousLineupNote": "Lineup trước đó (map đã chơi gần nhất), sẽ được thay thế khi lấy xong map.",
           "noPlayerData": "Không có dữ liệu tuyển thủ.",
           "columnAgent": "Tướng",
           "columnKills": "Kills",
@@ -4403,7 +4546,164 @@
             "mergeMapNotFound": "Bản đồ này không còn tồn tại."
           }
         },
-        "liquipediaImportButton": "Nhập trận đấu từ Liquipedia"
+        "liquipediaImportButton": "Nhập trận đấu từ Liquipedia",
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft của ván {order}",
+          "backToMatch": "Quay lại trận đấu",
+          "description": "Thứ tự cấm và chọn tướng của ván này. Để trống một bước nếu bước đó không được dùng.",
+          "differsWarning": "Bản nhập không khớp với draft đã lưu: lần nhập lại cho ra các tướng khác. Hãy kiểm tra draft và lưu để giữ bản của bạn.",
+          "blueSide": "Đội xanh",
+          "blueLockedHint": "Do bản nhập quyết định (đội xanh của Riot).",
+          "firstPickLockedHint": "Do bản nhập quyết định (bên đã cấm tướng đầu tiên).",
+          "firstPick": "Chọn trước",
+          "phase": {
+            "ban1": "Giai đoạn cấm 1",
+            "pick1": "Giai đoạn chọn 1",
+            "ban2": "Giai đoạn cấm 2",
+            "pick2": "Giai đoạn chọn 2"
+          },
+          "side": {
+            "blue": "Xanh",
+            "red": "Đỏ"
+          },
+          "type": {
+            "ban": "Cấm",
+            "pick": "Chọn"
+          },
+          "noChampion": "Không có tướng",
+          "searchPlaceholder": "Tìm tướng",
+          "noResults": "Không có tướng nào khớp",
+          "unplacedTitle": "Lượt chọn chưa được xếp vị trí",
+          "save": "Lưu draft",
+          "saving": "Đang lưu…",
+          "saved": "Đã lưu draft",
+          "error": {
+            "notFound": "Không tìm thấy ván này.",
+            "entrantsUnset": "Cần xác định hai đội của trận đấu trước.",
+            "blueNotAnEntrant": "Đội xanh phải là một trong hai đội của trận đấu.",
+            "blueLocked": "Đội xanh của ván đã nhập do bản nhập quyết định.",
+            "firstPickLocked": "Bên chọn trước của ván đã nhập do bản nhập quyết định.",
+            "invalidFirstPick": "Bên chọn trước phải là xanh hoặc đỏ.",
+            "invalidStep": "Bước {step} không tồn tại hoặc bị đưa ra hai lần.",
+            "unknownChampion": "{championName} không có trong danh sách tướng.",
+            "duplicateChampion": "{championName} xuất hiện nhiều hơn một lần trong draft."
+          }
+        },
+        "games": {
+          "heading": "Các ván",
+          "description": "Các ván đã diễn ra trong loạt trận này, theo thứ tự.",
+          "empty": "Chưa có ván nào.",
+          "gameLabel": "Ván {order}",
+          "winnerLabel": "Thắng: {name}",
+          "noWinner": "Chưa có đội thắng",
+          "finished": "Đã kết thúc",
+          "notFinished": "Chưa kết thúc",
+          "draftButton": "Draft",
+          "draftDiffers": "Bản nhập khác với draft đã lưu",
+          "forfeit": "Bỏ cuộc",
+          "cancel": "Hủy",
+          "save": "Lưu",
+          "saving": "Đang lưu…",
+          "createButton": "Thêm ván",
+          "createTitle": "Thêm ván",
+          "editTitle": "Sửa ván",
+          "dialogDescription": "Nhập kết quả của một ván trong loạt trận này.",
+          "editButton": "Sửa",
+          "deleteButton": "Xóa",
+          "deleteTitle": "Xóa ván",
+          "deleteConfirm": "Xóa ván {order}? Tỷ số trận đấu sẽ được tính lại từ các ván còn lại.",
+          "deleteError": "Không thể xóa ván.",
+          "deleteSuccess": "Đã xóa ván.",
+          "saveError": "Không thể lưu ván.",
+          "saveSuccess": "Đã lưu ván.",
+          "fieldOrder": "Thứ tự",
+          "fieldWinner": "Đội thắng",
+          "fieldWinnerNone": "Chưa có đội thắng",
+          "fieldCompleted": "Đã hoàn thành",
+          "fieldForfeit": "Bỏ cuộc",
+          "fieldNote": "Ghi chú",
+          "fieldError": {
+            "invalid": "Hãy nhập giá trị hợp lệ.",
+            "tooLong": "Quá dài.",
+            "duplicateOrder": "Một ván khác đã dùng thứ tự này.",
+            "winnerRequired": "Ván đã hoàn thành cần có đội thắng.",
+            "notAnEntrant": "Đội thắng phải là một trong hai đội.",
+            "notCompleted": "Hãy đánh dấu ván là đã hoàn thành để chọn đội thắng.",
+            "invalidMatchId": "Dùng định dạng EUW1_6123456789: mã nền tảng, dấu gạch dưới, rồi đến số trận.",
+            "duplicateMatchId": "Một ván khác đã dùng Riot match ID này."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "Ví dụ EUW1_6123456789. Nền tảng được đọc từ ID này.",
+          "leaguepedia": {
+            "label": "Ván trên Leaguepedia",
+            "none": "Không có",
+            "noData": "không có dữ liệu",
+            "gameNumber": "Ván {number}",
+            "fetch": "Lấy từ Leaguepedia",
+            "fetching": "Đang lấy…",
+            "renew": "Làm mới",
+            "reprocess": "Xử lý lại",
+            "success": "Đã lưu ván từ Leaguepedia",
+            "error": {
+              "noData": "Ván này không có dữ liệu V5 trên Leaguepedia.",
+              "notInBucket": "Ván này chưa có trong bucket. Hãy lấy nó trước.",
+              "pageInvalid": "Các trang Leaguepedia của ván này không phải dữ liệu trận đấu hợp lệ.",
+              "fetch": "Không thể đọc Leaguepedia. Hãy thử lại sau.",
+              "missingConfig": "Chưa thiết lập đăng nhập bot Leaguepedia trên máy chủ này.",
+              "sidesUnresolved": "Hai đội của ván này không khớp với hai đội tham gia của loạt trận.",
+              "missingPlayers": "{count, plural, other {# tuyển thủ chưa được liên kết với một người}}",
+              "invalidUpload": "Dữ liệu ván không vượt qua các bước kiểm tra khi nhập.",
+              "storeFailed": "Không thể lưu ván.",
+              "invalidOrder": "Số ván phải là số nguyên từ 1 trở lên.",
+              "lolIdConflict": "Một tài khoản Riot đã được liên kết với người khác.",
+              "sidesInvalid": "Hãy chọn hai đội tham gia khác nhau cho bên xanh và bên đỏ.",
+              "roleInvalid": "Một vị trí trong thay đổi không hợp lệ.",
+              "orderTaken": "Ván {order} của loạt trận này đã được lưu với dữ liệu khác. Hãy chọn số ván khác rồi lưu lại.",
+              "dataDragonUnavailable": "Hiện không có tên tướng, hãy thử lại sau.",
+              "unknownChampions": "Champion id không xác định: {ids}",
+              "storageUnavailable": "Không thể kết nối tới bucket nhập LoL. Hãy kiểm tra cấu hình rồi thử lại.",
+              "duplicateAccount": "Cùng một tài khoản Riot được liên kết hai lần. Mỗi tài khoản chỉ liên kết một lần.",
+              "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau.",
+              "tournamentRealm": "Ván này được chơi trên tournament realm. Hãy lấy nó từ Leaguepedia thay thế."
+            },
+            "searchPlaceholder": "Tìm theo đội, ván hoặc ngày",
+            "noResults": "Không có ván nào khớp",
+            "previewTitle": "Kiểm tra ván",
+            "previewDescription": "Chọn đội tham gia cho mỗi bên, và liên kết mọi tuyển thủ chưa được liên kết.",
+            "back": "Quay lại",
+            "saveGame": "Lưu ván",
+            "sideBlue": "Xanh",
+            "sideRed": "Đỏ",
+            "sidesTitle": "Các bên",
+            "blueSide": "Bên xanh",
+            "redSide": "Bên đỏ",
+            "chooseEntrant": "Chọn đội tham gia",
+            "suggestedPlayers": "Gợi ý từ các tuyển thủ đã liên kết",
+            "suggestedNames": "Gợi ý từ tên đội",
+            "winnerLabel": "Thắng: {name}",
+            "noWinner": "Không có đội thắng",
+            "lengthLabel": "Thời lượng: {minutes} phút",
+            "playersTitle": "Tuyển thủ",
+            "notLinked": "Chưa liên kết",
+            "linkExisting": "Liên kết với người có sẵn",
+            "createNew": "Tạo mới",
+            "newHandle": "Tên của người mới",
+            "unresolvedHint": "Hãy liên kết hoặc tạo một người cho mỗi tuyển thủ chưa được liên kết.",
+            "roleLabel": "Vị trí",
+            "roleNone": "Không có vị trí",
+            "positionRole": "Vị trí trên bản đồ gợi ý {role}",
+            "alreadyStoredHere": "đã lưu là ván {order} của loạt trận này",
+            "alreadyStoredElsewhere": "đã lưu trong loạt trận khác",
+            "refreshGames": "Làm mới danh sách ván",
+            "refreshCooldown": "Đã làm mới cách đây chưa đến một giờ. Hãy thử lại sau.",
+            "refreshed": "Đã làm mới danh sách ván ({count} ván)",
+            "refreshError": "Không thể làm mới danh sách ván. Hãy thử lại sau.",
+            "riotFetch": "Lấy từ Riot",
+            "riotSuccess": "Đã lưu ván từ Riot",
+            "riotTournamentRealm": "Ván này được chơi trên tournament realm nên không thể lấy từ Riot API."
+          }
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4681,7 +4981,30 @@
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Đang nhập và lấy dữ liệu Riot, việc này có thể mất một lúc.",
         "close": "Đóng"
-      }
+      },
+      "leaguepedia": {
+        "title": "Các ván trên Leaguepedia",
+        "description": "Danh sách ván lấy từ các bảng Cargo của Leaguepedia, cho trang gốc và mọi trang bên dưới nó.",
+        "basePageLabel": "Trang gốc trên Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Khi lưu, các ván sẽ được đọc từ Leaguepedia. Nếu việc đọc thất bại thì sẽ không lưu gì.",
+        "save": "Lưu và lấy các ván",
+        "saving": "Đang lấy…",
+        "refresh": "Làm mới từ Leaguepedia",
+        "lastFetched": "Lấy lần cuối {date} · {count, plural, other {# ván}}",
+        "neverFetched": "Chưa lấy",
+        "success": "Đã lấy {count, plural, other {# ván}}",
+        "error": {
+          "gameClaimed": "Các ván này đã thuộc về giải đấu khác nên không thể liên kết ở đây.",
+          "invalidBasePage": "Dùng tên trang không có # < > [ ] | '{ }', và không có dấu / ở đầu hoặc cuối.",
+          "notFound": "Không tìm thấy giải đấu.",
+          "notLinked": "Hãy lưu trang gốc trước.",
+          "cooldown": "Danh sách ván được đọc cách đây chưa đến một giờ. Hãy thử lại sau.",
+          "missingConfig": "Chưa thiết lập đăng nhập bot Leaguepedia trên máy chủ này.",
+          "fetch": "Không thể đọc Leaguepedia. Hãy thử lại sau."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Báo cáo",
@@ -4767,6 +5090,88 @@
       "statDismissed": "Đã bác bỏ",
       "error": {
         "notFound": "Mục này không còn tồn tại."
+      },
+      "images": {
+        "title": "Hình ảnh của bot Discord",
+        "subtitle": "Hình ảnh cảnh báo do các máy chủ tùy chỉnh. Hình ảnh đã xác minh sẽ rời khỏi danh sách và chỉ quay lại nếu được chỉnh sửa.",
+        "empty": "Không có hình ảnh cần duyệt.",
+        "imageAlt": "Hình ảnh cảnh báo của một máy chủ",
+        "openImage": "Mở hình ảnh trong tab mới",
+        "event": {
+          "match_live": "Trận đang diễn ra",
+          "match_finished": "Trận đã kết thúc",
+          "map_finished": "Map đã kết thúc"
+        },
+        "server": "Máy chủ",
+        "unknownUser": "Tài khoản không xác định",
+        "guildBlacklisted": "Máy chủ trong danh sách đen",
+        "userBlacklisted": "Người dùng trong danh sách đen",
+        "verifyButton": "Xác minh",
+        "sanctionButton": "Xử phạt",
+        "verifySuccess": "Đã xác minh hình ảnh.",
+        "error": {
+          "notFound": "Hình ảnh này đã được xử lý hoặc không còn tồn tại."
+        },
+        "sanction": {
+          "title": "Xử phạt hình ảnh này",
+          "description": "Chọn điều sẽ xảy ra với máy chủ và người đã tải hình ảnh này lên.",
+          "sanctionsLabel": "Hình phạt",
+          "option": {
+            "blacklistGuild": {
+              "label": "Đưa máy chủ vào danh sách đen",
+              "hint": "Máy chủ không thể dùng dashboard nữa và không nhận thêm cảnh báo."
+            },
+            "blacklistUser": {
+              "label": "Đưa tài khoản Discord vào danh sách đen",
+              "hint": "Tài khoản Discord này không thể quản lý bot trên bất kỳ máy chủ nào nữa."
+            },
+            "resetImage": {
+              "label": "Đặt lại hình ảnh",
+              "hint": "Hình ảnh tùy chỉnh bị xóa và máy chủ quay lại cảnh báo chỉ có văn bản."
+            },
+            "editMessages": {
+              "label": "Chỉnh sửa các tin nhắn đã gửi kèm hình ảnh này",
+              "hint": "Hình ảnh bị gỡ khỏi các cảnh báo đã đăng và được thay bằng thông báo rằng đội kiểm duyệt GC Stats đã gỡ bỏ."
+            }
+          },
+          "alreadyBlacklisted": "Đã có trong danh sách đen.",
+          "reasonLabel": "Lý do",
+          "reasonHint": "Được lưu cùng mục trong danh sách đen.",
+          "cancel": "Hủy",
+          "submit": "Xử phạt",
+          "submitting": "Đang xử phạt...",
+          "success": "Đã áp dụng hình phạt.",
+          "error": {
+            "notFound": "Hình ảnh này đã được xử lý hoặc không còn tồn tại.",
+            "sanctions": {
+              "required": "Chọn ít nhất một hình phạt."
+            },
+            "blacklistUser": {
+              "noEditor": "Không xác định được tài khoản Discord của người chỉnh sửa gần nhất."
+            },
+            "reason": {
+              "required": "Nhập lý do.",
+              "tooLong": "Lý do quá dài (tối đa {max} ký tự)."
+            }
+          },
+          "successQueued": "Đã áp dụng hình phạt, {count} tin nhắn sẽ sớm được chỉnh sửa."
+        },
+        "editor": "Chỉnh sửa bởi",
+        "history": {
+          "title": "Lịch sử",
+          "subtitle": "Mọi quyết định đã đưa ra về hình ảnh cảnh báo, được giữ lại ngay cả sau khi hình ảnh được đặt lại.",
+          "empty": "Chưa có quyết định nào.",
+          "verified": "Đã xác minh",
+          "sanctioned": "Đã xử phạt",
+          "moderator": "Quyết định bởi",
+          "reason": "Lý do",
+          "sanction": {
+            "blacklist_guild": "Máy chủ đã bị đưa vào danh sách đen",
+            "blacklist_user": "Tài khoản đã bị đưa vào danh sách đen",
+            "reset_image": "Đã đặt lại hình ảnh",
+            "edit_messages": "Đã chỉnh sửa tin nhắn"
+          }
+        }
       }
     },
     "forum": {
@@ -5286,6 +5691,247 @@
         "tooShort": "Tối thiểu {min} ký tự.",
         "tooLong": "Tối đa {max} ký tự."
       }
+    },
+    "rosterWatch": {
+      "title": "Theo dõi roster",
+      "subtitle": "Tweet của các tài khoản đội, được AI phân loại để con người xem xét các thay đổi roster.",
+      "empty": "Không có gì cần xem xét ở đây.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "Cần kiểm tra",
+        "done": "Đã xem xét"
+      },
+      "filters": {
+        "period": "Khoảng thời gian",
+        "periodAny": "Mọi khoảng thời gian",
+        "periodDays": "{days} ngày qua",
+        "topic": "Chủ đề",
+        "topicAny": "Mọi chủ đề"
+      },
+      "topic": {
+        "roster_join": "Tuyển thủ gia nhập",
+        "roster_leave": "Tuyển thủ rời đi",
+        "roster_bench": "Tuyển thủ xuống dự bị",
+        "staff_change": "Thay đổi staff",
+        "tryouts": "Tryouts",
+        "not_enough_info": "Chưa đủ thông tin",
+        "wrong_game": "Sai game",
+        "match_promo": "Quảng bá trận đấu",
+        "match_result": "Kết quả trận đấu",
+        "highlight": "Highlight",
+        "sponsor": "Nhà tài trợ",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Nội dung",
+        "community": "Cộng đồng",
+        "other": "Khác"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Không phải roster",
+        "unsure": "Chưa chắc"
+      },
+      "card": {
+        "openTweet": "Mở tweet",
+        "noText": "Không có văn bản",
+        "openPhoto": "Mở ảnh",
+        "openVideo": "Mở video",
+        "players": "Nhân vật:"
+      },
+      "actions": {
+        "editTeam": "Sửa đội",
+        "ignore": "Bỏ qua",
+        "notRoster": "Không phải roster",
+        "done": "Xong"
+      },
+      "deck": {
+        "next": "Tiếp",
+        "back": "Quay lại",
+        "remaining": "Còn {count} ở trang này",
+        "allSeen": "Bạn đã xem hết các tweet của trang này.",
+        "restart": "Bắt đầu lại",
+        "showOriginal": "Hiện bản gốc",
+        "showTranslation": "Hiện bản dịch tiếng Anh",
+        "explanation": "Giải thích",
+        "explanationPlaceholder": "Vì sao không liên quan đến đội hình?",
+        "confirm": "Xác nhận",
+        "pickTopic": "Nội dung nói về gì?"
+      },
+      "reviewed": {
+        "team_edited": "Đã sửa đội",
+        "ignored": "Đã bỏ qua",
+        "marked_not_roster": "Đã đánh dấu không phải roster",
+        "reported_missed": "Đã báo cáo là bị sót"
+      },
+      "error": {
+        "notFound": "Tweet này không còn tồn tại.",
+        "invalidState": "Tweet này không thể thực hiện thao tác này, có thể đã được xem xét.",
+        "invalidTopic": "Chọn một chủ đề hợp lệ.",
+        "noteTooLong": "Ghi chú quá dài (tối đa 1000 ký tự)."
+      },
+      "accounts": {
+        "title": "Tài khoản đang theo dõi",
+        "subtitle": "Tài khoản X được lấy dữ liệu mỗi ngày một lần.",
+        "team": "Đội",
+        "teamPlaceholder": "Chọn một đội",
+        "teamSearch": "Tìm một đội",
+        "teamNoResults": "Không tìm thấy đội",
+        "handle": "Tên người dùng X",
+        "add": "Thêm",
+        "added": "Đã thêm tài khoản.",
+        "enabled": "Bật",
+        "toastEnabled": "Đã bật tài khoản.",
+        "toastDisabled": "Đã tắt tài khoản.",
+        "lastPolled": "Lần lấy cuối",
+        "lastError": "Lỗi gần nhất",
+        "empty": "Chưa theo dõi tài khoản nào.",
+        "noResults": "Không có tài khoản nào khớp với tìm kiếm này.",
+        "searchPlaceholder": "Tìm một đội hoặc một handle",
+        "count": "{count, plural, other {# tài khoản}}",
+        "previous": "Trang trước",
+        "next": "Trang sau",
+        "error": {
+          "notFound": "Tài khoản này không còn tồn tại.",
+          "teamRequired": "Chọn một đội.",
+          "teamNotFound": "Đội này không còn tồn tại.",
+          "handleRequired": "Nhập tên người dùng X.",
+          "handleInvalid": "Tên người dùng phải gồm 1 đến 15 chữ cái, chữ số hoặc dấu gạch dưới.",
+          "handleTaken": "Tên người dùng này đã được theo dõi."
+        }
+      },
+      "import": {
+        "button": "Nhập tự động",
+        "title": "Nhập tài khoản X",
+        "description": "Theo dõi tài khoản X có trong mạng xã hội của từng đội thuộc giải đấu.",
+        "tournament": "Giải đấu",
+        "tournamentPlaceholder": "Chọn một giải đấu",
+        "tournamentSearch": "Tìm giải đấu",
+        "tournamentNoResults": "Không tìm thấy giải đấu",
+        "stage": "Giai đoạn",
+        "allStages": "Tất cả giai đoạn",
+        "cancel": "Hủy",
+        "submit": "Nhập",
+        "importing": "Đang nhập...",
+        "success": "{added, plural, =0 {Không có tài khoản nào được thêm} other {Đã thêm # tài khoản}}. Đã theo dõi: {alreadyFollowed}, không có tài khoản X: {noTwitter}, không hợp lệ: {invalid}.",
+        "error": {
+          "tournamentRequired": "Hãy chọn một giải đấu.",
+          "tournamentNotFound": "Giải đấu này không còn tồn tại.",
+          "stageNotFound": "Giai đoạn này không thuộc giải đấu."
+        }
+      },
+      "searchPlaceholder": "Tìm tweet hoặc đội",
+      "searchSubmit": "Tìm kiếm",
+      "statusLabel": "Trạng thái",
+      "columnTeam": "Đội",
+      "columnTweet": "Tweet",
+      "columnType": "Loại",
+      "columnDate": "Ngày",
+      "columnReview": "Xem xét"
+    },
+    "teamRequests": {
+      "title": "Yêu cầu gửi đội",
+      "subtitle": "Theo dõi và gửi các yêu cầu thông tin của chúng tôi cho các đội: logo, mạng xã hội và roster.",
+      "tabs": {
+        "recommended": "Đề xuất",
+        "pending": "Đang xử lý",
+        "done": "Đã xong"
+      },
+      "scopeLabel": "Yêu cầu hiển thị",
+      "scope": {
+        "mine": "Yêu cầu của tôi",
+        "all": "Tất cả yêu cầu"
+      },
+      "recommended": {
+        "pickTeam": "Chuẩn bị yêu cầu cho đội khác",
+        "pickPlaceholder": "Chọn một đội",
+        "searchPlaceholder": "Tìm một đội...",
+        "noResults": "Không tìm thấy đội nào.",
+        "empty": "Không có đội được đề xuất. Mọi đội đã thi đấu gần đây đều đã có yêu cầu.",
+        "emptyTitle": "Chưa chọn đội",
+        "emptyHint": "Chọn một đội ở bên phải để chuẩn bị yêu cầu.",
+        "listTitle": "Đội được đề xuất ({count})"
+      },
+      "table": {
+        "empty": "Không có yêu cầu nào ở đây.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Tin nhắn",
+        "markDone": "Đánh dấu đã xong",
+        "reopen": "Mở lại",
+        "markedDone": "Đã đánh dấu yêu cầu là đã xong.",
+        "reopened": "Đã mở lại yêu cầu.",
+        "openContact": "Mở liên hệ"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Trang web",
+        "email": "Email",
+        "other": "Khác"
+      },
+      "builder": {
+        "title": "Yêu cầu cho {team}",
+        "description": "Màu xanh nghĩa là không cần làm gì, màu đỏ nghĩa là chúng tôi hỏi đội thông tin này.",
+        "loading": "Đang tải dữ liệu đội và các trận gần nhất...",
+        "alreadyPending": "Đã có một yêu cầu đang xử lý cho đội này.",
+        "dataTitle": "Những gì chúng tôi có",
+        "dataHint": "Nhấp vào một trạng thái để chuyển giữa xanh (ổn) và đỏ (cần hỏi).",
+        "toggle": "Đổi trạng thái của {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Thiếu",
+        "rosterCount": "Hiện tại {current}, trước đây {past}",
+        "rosterCurrent": "Roster hiện tại",
+        "rosterPast": "Roster trước đây",
+        "none": "Không có",
+        "unlistedTitle": "Đã thi đấu ở các trận gần nhất mà không có trong roster",
+        "unlistedMatches": "{count, plural, other {# trận}}",
+        "messageTitle": "Tin nhắn",
+        "messageHint": "Được tạo từ các trạng thái ở trên, bạn có thể chỉnh sửa trước khi sao chép.",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "copyFailed": "Sao chép thất bại, hãy chọn văn bản thủ công.",
+        "contactTitle": "Liên hệ",
+        "noContact": "Chưa biết liên hệ nào của đội này. Hãy thêm mạng xã hội cho đội, tổ chức, quản lý hoặc huấn luyện viên của đội trước.",
+        "kind": {
+          "organization": "Tổ chức",
+          "manager": "Quản lý",
+          "coach": "Huấn luyện viên",
+          "other": "Khác"
+        },
+        "cancel": "Hủy",
+        "validate": "Xác nhận yêu cầu",
+        "created": "Đã thêm yêu cầu.",
+        "rosterPlayers": "Tuyển thủ",
+        "rosterSubs": "Dự bị",
+        "rosterStaff": "Nhân sự",
+        "open": "Mở liên hệ này",
+        "customFree": "Liên hệ khác",
+        "customFreePlaceholder": "Liên kết, tên tài khoản hoặc bất kỳ liên hệ nào",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "ten@vidu.com"
+      },
+      "error": {
+        "teamRequired": "Hãy chọn một đội.",
+        "teamNotFound": "Đội này không tồn tại.",
+        "itemsInvalid": "Một trong các mục không hợp lệ.",
+        "itemsRequired": "Hãy đánh dấu đỏ ít nhất một mục.",
+        "messageRequired": "Tin nhắn là bắt buộc.",
+        "messageTooLong": "Tin nhắn quá dài (tối đa 4000 ký tự).",
+        "contactRequired": "Hãy chọn một liên hệ.",
+        "contactInvalid": "Liên hệ này không hợp lệ.",
+        "contactTooLong": "Liên hệ này quá dài (tối đa 300 ký tự).",
+        "urlInvalid": "Liên hệ trang web phải là một liên kết hợp lệ bắt đầu bằng http:// hoặc https://.",
+        "alreadyPending": "Đã có một yêu cầu đang xử lý cho đội này.",
+        "notFound": "Yêu cầu này không tồn tại.",
+        "invalidState": "Yêu cầu này đã ở trạng thái đó.",
+        "emailInvalid": "Địa chỉ email không hợp lệ.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5319,14 +5965,17 @@
       "authorAdminSpace": "Tác giả",
       "logs": "Nhật ký",
       "veto": "Veto bản đồ",
-      "webhooks": "Webhook"
+      "webhooks": "Webhook",
+      "discordSpace": "Bot Discord",
+      "discordServers": "Máy chủ của tôi"
     },
     "switcher": {
       "selectOrganization": "Chọn một tổ chức",
       "authorSpace": "Không gian tác giả",
       "apiKeySpace": "Không gian khóa API",
       "adminAccess": "Quản trị viên",
-      "authorAdminSpace": "Tác giả"
+      "authorAdminSpace": "Tác giả",
+      "discordSpace": "Bot Discord"
     },
     "picker": {
       "title": "Các tổ chức của bạn",
@@ -5339,7 +5988,8 @@
       "filterTagAll": "Tất cả",
       "noResults": "Không tìm thấy tổ chức.",
       "adminBadge": "Quản trị viên",
-      "authorAdminSpace": "Tác giả"
+      "authorAdminSpace": "Tác giả",
+      "discordSpace": "Bot Discord"
     },
     "authors": {
       "title": "Tác giả",
@@ -5575,7 +6225,8 @@
       "level": {
         "tournament": "Giải đấu",
         "match": "Trận đấu",
-        "map": "Bản đồ"
+        "map": "Bản đồ",
+        "game": "Ván"
       },
       "matchSearchPlaceholder": "Tìm một trận đấu…",
       "mapSearchPlaceholder": "Tìm một bản đồ…",
@@ -5594,7 +6245,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Trận đấu",
       "openMaps": "Bản đồ",
-      "goBack": "Quay lại"
+      "goBack": "Quay lại",
+      "gameEmpty": "Trận đấu này không có ván nào.",
+      "gameSearchPlaceholder": "Tìm một ván…",
+      "openGames": "Các ván"
     },
     "streams": {
       "title": "Kênh stream",
@@ -5732,8 +6386,14 @@
         "matchNotInTournament": "Trận đấu này không thuộc giải đấu đã chọn.",
         "mapNotFound": "Không tìm thấy bản đồ.",
         "mapNotInMatch": "Bản đồ này không thuộc trận đấu đã chọn.",
-        "notFound": "Không tìm thấy VOD."
-      }
+        "notFound": "Không tìm thấy VOD.",
+        "gameNotFound": "Không tìm thấy ván.",
+        "gameNotInMatch": "Ván này không thuộc trận đấu đã chọn."
+      },
+      "scopeGame": "Một ván cụ thể",
+      "gameLabel": "Ván",
+      "gamePlaceholder": "Chọn một ván…",
+      "gameLoading": "Đang tải…"
     },
     "apiKeys": {
       "title": "Khóa API",
@@ -6102,7 +6762,7 @@
     },
     "webhooks": {
       "title": "Webhook",
-      "description": "GC Stats gửi một POST HTTPS tới các endpoint của bạn khi một trận đấu, giải đấu, đội hoặc tuyển thủ thay đổi. Việc gửi được kiểm tra khoảng mỗi phút.",
+      "description": "GC Stats gửi một HTTPS POST đến các endpoint của bạn khi một trận đấu, giải đấu, đội, tuyển thủ hoặc roster thay đổi. Việc gửi được kiểm tra khoảng mỗi phút.",
       "pageTitle": "Webhook",
       "pageSubtitle": "Endpoint và các lần gửi của khóa API đối tác của bạn.",
       "keySwitcher": "Khóa API đối tác",
@@ -6173,6 +6833,9 @@
         },
         "player": {
           "updated": "Tuyển thủ được cập nhật"
+        },
+        "roster": {
+          "updated": "Thay đổi roster đã được xác nhận"
         }
       },
       "filtersTitle": "Bộ lọc",
@@ -6204,7 +6867,8 @@
           "invalid": "URL không hợp lệ.",
           "notHttps": "URL phải bắt đầu bằng https://.",
           "credentials": "URL không được chứa tên người dùng hoặc mật khẩu.",
-          "privateHost": "URL phải trỏ tới một địa chỉ công khai."
+          "privateHost": "URL phải trỏ tới một địa chỉ công khai.",
+          "notDiscord": "Đây không phải là URL Webhook Discord."
         },
         "description": {
           "tooLong": "Tối đa {descriptionMaxLength} ký tự."
@@ -6224,6 +6888,475 @@
         },
         "filterOfficial": {
           "invalid": "Giá trị không hợp lệ."
+        },
+        "kind": {
+          "invalid": "Hãy chọn một loại hợp lệ."
+        }
+      },
+      "kind": {
+        "label": "Loại",
+        "standard": "Tiêu chuẩn",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Yêu cầu JSON có chữ ký được gửi đến máy chủ của bạn.",
+          "discord": "Chỉ đăng liên kết tweet trong kênh Discord."
+        }
+      },
+      "urlHintDiscord": "URL Webhook Discord (Cài đặt máy chủ, Tích hợp, Webhook)."
+    },
+    "discord": {
+      "serversTitle": "Máy chủ Discord",
+      "serversSubtitle": "Các máy chủ mà bạn có thể quản lý bot GC Stats.",
+      "serversUnavailable": "Không thể đọc các máy chủ Discord của bạn. Hãy kết nối lại tài khoản Discord rồi thử lại.",
+      "reconnectDiscord": "Kết nối lại Discord",
+      "serversEmpty": "Bạn không quản lý máy chủ Discord nào. Bạn cần quyền Quản lý máy chủ để cấu hình bot.",
+      "subscriptionCount": "{count, plural, =0 {Không có cảnh báo} other {# cảnh báo}}",
+      "botNotJoined": "Chưa thêm bot",
+      "configure": "Cấu hình",
+      "addBot": "Thêm bot",
+      "botUnavailable": "Chưa thể thêm bot.",
+      "serverTitle": "Máy chủ Discord",
+      "serverSubtitle": "Chọn cảnh báo nào được đăng trong kênh nào.",
+      "backToServers": "Quay lại danh sách máy chủ",
+      "botNotJoinedBody": "Bot chưa có trong máy chủ này. Hãy thêm bot để bắt đầu cấu hình cảnh báo.",
+      "alertsTitle": "Cảnh báo",
+      "alertsDescription": "Mỗi cảnh báo được đăng trong một kênh và có thể lọc theo khu vực, đội và trạng thái chính thức.",
+      "add": "Thêm cảnh báo",
+      "empty": "Chưa có cảnh báo. Hãy thêm một cảnh báo để bắt đầu nhận các trận đấu trong máy chủ của bạn.",
+      "channelsUnavailable": "Bot không thể đọc các kênh của máy chủ này. Hãy kiểm tra bot có quyền xem kênh, sau đó tải lại trang.",
+      "channelMissing": "Không tìm thấy kênh",
+      "disabledLostChannel": "Đã tắt, bot mất quyền truy cập kênh này. Hãy chọn kênh và lưu để bật lại.",
+      "active": "Bật",
+      "inactive": "Tắt",
+      "toggle": "Bật hoặc tắt cảnh báo này",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "deleteTitle": "Xóa cảnh báo này?",
+      "deleteDescription": "Bot sẽ ngừng đăng cảnh báo này. Các tin nhắn đã đăng vẫn còn trong kênh của bạn.",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "created": "Đã thêm cảnh báo",
+      "updated": "Đã cập nhật cảnh báo",
+      "deleted": "Đã xóa cảnh báo",
+      "addTitle": "Thêm cảnh báo",
+      "editTitle": "Sửa cảnh báo",
+      "dialogDescription": "Bot đăng trong kênh đã chọn cho mọi trận đấu thỏa các bộ lọc.",
+      "eventLabel": "Loại cảnh báo",
+      "channelLabel": "Kênh",
+      "channelPlaceholder": "Chọn một kênh",
+      "localeLabel": "Ngôn ngữ tin nhắn",
+      "localeHint": "Ngôn ngữ của các tin nhắn do bot đăng.",
+      "filtersTitle": "Bộ lọc",
+      "filtersHint": "Để trống bộ lọc để nhận tất cả.",
+      "regions": "Khu vực",
+      "regionsHint": "Chỉ các giải đấu của khu vực đã chọn.",
+      "teams": "Đội",
+      "teamsHint": "Chỉ các trận do một trong những đội này thi đấu.",
+      "teamsPlaceholder": "Thêm đội",
+      "teamsSearch": "Tìm đội",
+      "teamsNoResults": "Không tìm thấy đội",
+      "removeTeam": "Xóa {name}",
+      "any": "Tất cả",
+      "event": {
+        "match_live": "Trận đang diễn ra",
+        "match_finished": "Trận đã kết thúc",
+        "map_finished": "Bản đồ đã kết thúc"
+      },
+      "official": {
+        "label": "Giải đấu",
+        "all": "Tất cả giải đấu",
+        "official": "Chỉ chính thức",
+        "unofficial": "Chỉ không chính thức"
+      },
+      "error": {
+        "network": "Lỗi mạng, hãy thử lại.",
+        "notAuthenticated": "Bạn phải đăng nhập.",
+        "forbidden": "Bạn không thể quản lý máy chủ này.",
+        "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
+        "notFound": "Cảnh báo này không còn tồn tại.",
+        "invalid": "Một số trường không hợp lệ.",
+        "tooManySubscriptions": "Một máy chủ có tối đa {max} cảnh báo.",
+        "channelsUnavailable": "Bot không thể đọc các kênh của máy chủ này.",
+        "channelId": {
+          "required": "Hãy chọn một kênh.",
+          "unknownChannel": "Kênh này không tồn tại trong máy chủ."
+        },
+        "event": {
+          "invalid": "Loại cảnh báo không xác định."
+        },
+        "locale": {
+          "invalid": "Ngôn ngữ không xác định."
+        },
+        "filterRegions": {
+          "invalid": "Khu vực không xác định.",
+          "tooMany": "Chọn tối đa {filterRegions} khu vực."
+        },
+        "filterTeamIds": {
+          "invalid": "Đội không hợp lệ.",
+          "tooMany": "Chọn tối đa {filterTeams} đội.",
+          "unknownTeam": "Một trong các đội không tồn tại."
+        },
+        "filterOfficial": {
+          "invalid": "Giá trị không xác định."
+        },
+        "color": {
+          "invalid": "Màu không hợp lệ."
+        }
+      },
+      "alertColorLabel": "Màu embed",
+      "alertColorHint": "Ghi đè màu của máy chủ cho cảnh báo này.",
+      "theme": {
+        "reset": "Đặt lại",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "saving": "Đang lưu...",
+        "colorsTitle": "Màu sắc",
+        "colorsDescription": "Màu tin nhắn của từng loại cảnh báo và nền mặc định của hình ảnh. Mỗi cảnh báo có thể ghi đè màu của nó.",
+        "color": {
+          "live": "Trận đang diễn ra",
+          "finished": "Trận đã kết thúc",
+          "map": "Map đã kết thúc",
+          "background": "Nền hình ảnh"
+        },
+        "colorsSaved": "Đã lưu màu sắc",
+        "botTitle": "Bot của riêng bạn",
+        "botDescription": "Đăng cảnh báo bằng bot Discord của riêng bạn (tên và ảnh đại diện của bot) thay vì bot GC Stats.",
+        "tokenLabel": "Token của bot",
+        "tokenHint": "Tìm thấy trong Discord Developer Portal, ở tab Bot của ứng dụng. Token được lưu ở dạng mã hóa.",
+        "botConnect": "Dùng bot này",
+        "botConnecting": "Đang kiểm tra...",
+        "botConnected": "Đã kết nối bot, hãy mời bot vào máy chủ của bạn nếu cần",
+        "botActive": "Cảnh báo được đăng bởi bot này",
+        "botInvite": "Mời bot",
+        "botDisconnect": "Dùng bot GC Stats",
+        "botDisconnectTitle": "Quay lại bot GC Stats?",
+        "botDisconnectDescription": "Token bot của bạn sẽ bị xóa và cảnh báo sẽ được đăng lại bởi bot GC Stats, nếu bot có trong máy chủ của bạn.",
+        "botDisconnected": "Đã quay lại bot GC Stats",
+        "error": {
+          "network": "Lỗi mạng, vui lòng thử lại.",
+          "notAuthenticated": "Bạn phải đăng nhập.",
+          "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
+          "invalid": "Một số trường không hợp lệ.",
+          "color": "Màu không hợp lệ.",
+          "token": {
+            "required": "Nhập token của bot.",
+            "invalidToken": "Discord đã từ chối token này, hãy kiểm tra xem đó có phải token bot không.",
+            "rateLimited": "Quá nhiều lần thử, hãy đợi một phút."
+          }
+        },
+        "matchButton": "Nút mở trận đấu",
+        "matchButtonHint": "Thêm một nút dưới mỗi thông báo để mở trang trận đấu trên GC Stats."
+      },
+      "templates": {
+        "title": "Cảnh báo bằng hình ảnh",
+        "description": "Thay tin nhắn văn bản của một loại cảnh báo bằng hình ảnh được tạo từ mẫu của bạn. Chỉ dành cho các máy chủ dùng bot riêng.",
+        "usingImage": "Đăng dưới dạng hình ảnh",
+        "usingText": "Đăng dưới dạng tin nhắn văn bản",
+        "presetNone": "Tin nhắn văn bản, không có hình ảnh",
+        "presetChoose": "Mẫu",
+        "presetSaved": "Đã lưu mẫu",
+        "presetLabel": "Thiết kế ban đầu",
+        "presetHint": "Chọn thông tin hiển thị trên ảnh. Sau đó mọi thứ vẫn có thể chỉnh sửa.",
+        "preset": {
+          "score": "Chỉ tỷ số",
+          "maps": "Tỷ số và map",
+          "vetos": "Tỷ số và veto",
+          "mvp": "Tỷ số và MVP",
+          "full": "Đầy đủ"
+        },
+        "footer": "Chân trang",
+        "footerHint": "Thêm dải GC Stats kèm liên kết trận đấu bên dưới ảnh.",
+        "footerSaved": "Đã cập nhật chân trang",
+        "toggle": "Dùng hình ảnh cho loại cảnh báo này",
+        "enabled": "Đã bật cảnh báo bằng hình ảnh",
+        "disabled": "Quay lại tin nhắn văn bản",
+        "addBackground": "Thêm nền",
+        "changeBackground": "Đổi nền",
+        "removeBackground": "Xóa nền",
+        "backgroundSaved": "Đã lưu nền",
+        "backgroundRemoved": "Đã xóa nền",
+        "previewAlt": "Xem trước hình ảnh cảnh báo",
+        "previewError": "Không có bản xem trước",
+        "error": {
+          "network": "Lỗi mạng, hãy thử lại.",
+          "notAuthenticated": "Bạn phải đăng nhập.",
+          "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
+          "invalid": "Mẫu không hợp lệ.",
+          "invalidImage": "Hình ảnh này không hợp lệ (PNG, JPEG hoặc WebP, cạnh ngắn nhất tối thiểu 400 px).",
+          "tooLarge": "Hình ảnh này lớn hơn 10 MB.",
+          "storageFailed": "Không thể lưu hình ảnh, hãy thử lại."
+        },
+        "editDesign": "Chỉnh sửa thiết kế",
+        "presetCustom": "Đã tùy chỉnh"
+      },
+      "editor": {
+        "title": "Thiết kế cảnh báo: {event}",
+        "description": "Kéo, đổi kích thước và xoay các phần tử trên canvas, tạo kiểu ở bên phải và chỉ hiển thị khi thỏa điều kiện. Bản xem trước như khi gửi dùng đúng cách hiển thị của bot.",
+        "addText": "Văn bản",
+        "addShape": "Hình dạng",
+        "undo": "Hoàn tác",
+        "previewServer": "Xem trước như khi gửi",
+        "canvasHint": "Canvas hiển thị dữ liệu mẫu. Phím mũi tên di chuyển phần tử đang chọn (Shift để di chuyển 10 pixel), Delete để xóa. Các phần tử bị mờ là do điều kiện của chúng đang ẩn.",
+        "previewTitle": "Xem trước như khi gửi",
+        "previewError": "Không thể tạo bản xem trước.",
+        "canvasHeight": "Chiều cao ảnh",
+        "backgroundColor": "Màu nền",
+        "layers": "Phần tử (lớp trên cùng trước)",
+        "noLayers": "Chưa có phần tử nào.",
+        "duplicate": "Nhân bản",
+        "delete": "Xóa",
+        "width": "Chiều rộng",
+        "height": "Chiều cao",
+        "field": {
+          "tournament": "Giải đấu",
+          "teamA": "Tên đội A",
+          "teamB": "Tên đội B",
+          "scoreA": "Điểm của đội A",
+          "scoreB": "Điểm của đội B",
+          "score": "Tỷ số",
+          "status": "Trạng thái",
+          "bestOf": "Best of",
+          "map": "Tên map",
+          "maps": "Các map đã kết thúc",
+          "matchScore": "Tỷ số trận đấu",
+          "mapsInline": "Các map đã kết thúc (một dòng)",
+          "vetos": "Veto",
+          "mvp": "MVP",
+          "custom": "Văn bản tự do",
+          "stage": "Giai đoạn giải đấu",
+          "bestOfShort": "Best of (rút gọn, BO3)",
+          "teamAShort": "Tên viết tắt đội A",
+          "teamBShort": "Tên viết tắt đội B",
+          "mvpA": "MVP đội A",
+          "mvpB": "MVP đội B",
+          "dateTime": "Ngày và giờ",
+          "date": "Ngày",
+          "time": "Giờ"
+        },
+        "customText": "Văn bản",
+        "font": "Phông chữ",
+        "size": "Cỡ chữ",
+        "align": {
+          "label": "Căn lề",
+          "left": "Trái",
+          "center": "Giữa",
+          "right": "Phải"
+        },
+        "color": "Màu",
+        "bold": "In đậm",
+        "uppercase": "Chữ hoa",
+        "shape": "Hình dạng",
+        "opacity": "Độ mờ đục",
+        "radius": "Bán kính bo góc",
+        "sampleText": "Văn bản của bạn",
+        "tooManyLayers": "Một mẫu có tối đa {max} phần tử.",
+        "saved": "Đã lưu thiết kế",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "saving": "Đang lưu...",
+        "error": {
+          "network": "Lỗi mạng, hãy thử lại.",
+          "notAuthenticated": "Bạn cần đăng nhập.",
+          "forbidden": "Bạn không thể quản lý máy chủ này.",
+          "blacklisted": "Máy chủ này hoặc tài khoản Discord của bạn bị chặn khỏi bot.",
+          "invalid": "Mẫu không hợp lệ.",
+          "invalidImage": "Hình ảnh này không hợp lệ.",
+          "tooLarge": "Hình ảnh này quá lớn.",
+          "storageFailed": "Không thể lưu thiết kế, hãy thử lại."
+        },
+        "addImage": "Hình ảnh",
+        "tabContent": "Nội dung",
+        "tabLayout": "Bố cục",
+        "tabStyle": "Kiểu dáng",
+        "tabVisibility": "Điều kiện",
+        "conditional": "Hiển thị theo điều kiện",
+        "sourceMap": "Map {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo đội A",
+          "teamB": "Logo đội B",
+          "mvp": "Ảnh MVP (biểu tượng tướng nếu không có)",
+          "mapCurrent": "Map hiện tại",
+          "mvpAgent": "Biểu tượng tướng của MVP",
+          "custom": "Hình ảnh tùy chỉnh"
+        },
+        "variableGroup": {
+          "match": "Trận đấu",
+          "alert": "Cảnh báo và MVP",
+          "teams": "Đội",
+          "schedule": "Ngày và giờ",
+          "mvp": "MVP",
+          "maps": "Bản đồ",
+          "vetos": "Veto"
+        },
+        "conditionValue": {
+          "live": "Trực tiếp",
+          "finished": "Trận đã kết thúc",
+          "map": "Map đã kết thúc",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Đội A",
+          "b": "Đội B"
+        },
+        "customTextHint": "Hãy viết nội dung của riêng bạn và chèn các biến như {tournament} hoặc {veto1.map}.",
+        "insertVariable": "Chèn một biến",
+        "sourceLabel": "Hình ảnh",
+        "fit": {
+          "label": "Cách vừa khớp",
+          "cover": "Lấp đầy (cắt)",
+          "contain": "Vừa khung"
+        },
+        "imageFallbackHint": "Khi không có hình ảnh, một ô chứa chữ cái đầu sẽ được hiển thị.",
+        "shapeHint": "Hình khối không có nội dung, hãy tạo kiểu trong tab Kiểu dáng.",
+        "rotation": "Góc xoay (độ)",
+        "alignTitle": "Căn theo hình ảnh",
+        "addFolder": "Thư mục mới",
+        "tooManyFolders": "Một template có tối đa {max} thư mục.",
+        "folderDefaultName": "Thư mục {n}",
+        "folderExpand": "Mở rộng thư mục",
+        "folderCollapse": "Thu gọn thư mục",
+        "lockFolder": "Khóa thư mục",
+        "unlockFolder": "Mở khóa thư mục",
+        "lockLayer": "Khóa phần tử",
+        "unlockLayer": "Mở khóa phần tử",
+        "folder": "Thư mục",
+        "folderName": "Tên thư mục",
+        "folderNameRequired": "Thư mục cần có tên.",
+        "folderHint": "Thư mục nhóm các phần tử trong danh sách. Khóa thư mục sẽ khóa mọi phần tử bên trong.",
+        "deleteFolder": "Xóa thư mục",
+        "layerLockedHint": "Phần tử này đang bị khóa. Hãy mở khóa để chỉnh sửa hoặc di chuyển.",
+        "folderLockedHint": "Phần tử này bị khóa bởi thư mục của nó. Hãy mở khóa thư mục để chỉnh sửa hoặc di chuyển.",
+        "noFolder": "Không có thư mục",
+        "anchorPoint": "Điểm neo văn bản",
+        "anchorX": "Vị trí điểm neo (X)",
+        "anchorHint": "Văn bản bắt đầu, nằm giữa hoặc kết thúc tại vị trí X này, dù dài bao nhiêu.",
+        "anchor": {
+          "left": "Đầu văn bản",
+          "center": "Giữa văn bản",
+          "right": "Cuối văn bản"
+        },
+        "alignLeft": "Căn trái",
+        "alignCenterX": "Căn giữa theo chiều ngang",
+        "alignRight": "Căn phải",
+        "alignTop": "Căn trên",
+        "alignCenterY": "Căn giữa theo chiều dọc",
+        "alignBottom": "Căn dưới",
+        "letterSpacing": "Khoảng cách chữ",
+        "lineHeight": "Chiều cao dòng",
+        "shadow": "Đổ bóng",
+        "shadowColor": "Màu bóng",
+        "shadowBlur": "Độ nhòe",
+        "shadowX": "Lệch X",
+        "shadowY": "Lệch Y",
+        "borderWidth": "Độ dày viền",
+        "borderColor": "Màu viền",
+        "gradient": "Gradient",
+        "color2": "Màu thứ hai",
+        "angle": "Góc (độ)",
+        "conditionsHint": "Phần tử chỉ được vẽ khi tất cả điều kiện bên dưới đều đúng.",
+        "conditionKey": "Biến",
+        "conditionOp": "Điều kiện",
+        "conditionValueLabel": "Giá trị",
+        "op": {
+          "is": "là",
+          "isNot": "không phải là",
+          "exists": "đã có giá trị",
+          "empty": "trống"
+        },
+        "addCondition": "Thêm điều kiện",
+        "removeCondition": "Xóa điều kiện này",
+        "footer": "Chân trang GC Stats",
+        "artwork": "Ảnh nghệ thuật của map làm nền",
+        "artworkSource": "Ảnh nghệ thuật của",
+        "artworkDim": "Độ tối",
+        "artworkHint": "Bị bỏ qua khi đã tải lên ảnh nền.",
+        "loadingMatch": "Đang tải trận đấu xem trước",
+        "timezone": "Múi giờ",
+        "variableName": {
+          "tournament": "Tên giải đấu",
+          "stage": "Giai đoạn giải đấu",
+          "status": "Trạng thái (trực tiếp hoặc đã kết thúc)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, viết gọn (BO3)",
+          "score": "Tỷ số của trận hoặc của map",
+          "scoreA": "Tỷ số của đội A",
+          "scoreB": "Tỷ số của đội B",
+          "matchScore": "Tỷ số của trận",
+          "teamA": "Tên đội A",
+          "teamB": "Tên đội B",
+          "teamAShort": "Tên ngắn của đội A",
+          "teamBShort": "Tên ngắn của đội B",
+          "dateTime": "Ngày và giờ của trận",
+          "date": "Ngày của trận",
+          "time": "Giờ của trận",
+          "scheduledAt": "Thời gian bắt đầu dự kiến",
+          "alert_kind": "Loại cảnh báo",
+          "map": "Tên map đã kết thúc",
+          "currentMap_name": "Tên map đang diễn ra",
+          "currentMap_number": "Số của map đang diễn ra",
+          "maps": "Các map đã kết thúc (danh sách)",
+          "mapsInline": "Các map đã kết thúc (trên một dòng)",
+          "vetos": "Veto (trên một dòng)",
+          "mvp": "MVP của trận hoặc của map",
+          "mvpA": "MVP của đội A",
+          "mvpB": "MVP của đội B",
+          "mvp_name": "Người chơi MVP",
+          "mvp_acs": "ACS của MVP",
+          "mvp_agent": "Agent của MVP",
+          "mvpA_name": "Người chơi MVP của đội A",
+          "mvpA_acs": "ACS của MVP đội A",
+          "mvpA_agent": "Agent của MVP đội A",
+          "mvpB_name": "Người chơi MVP của đội B",
+          "mvpB_acs": "ACS của MVP đội B",
+          "mvpB_agent": "Agent của MVP đội B",
+          "map_alias": "Tên map {n}",
+          "map_name": "Tên map {n}",
+          "map_score": "Tỷ số của map {n}",
+          "map_scoreA": "Tỷ số của đội A trên map {n}",
+          "map_scoreB": "Tỷ số của đội B trên map {n}",
+          "veto_map": "Map của veto {n}",
+          "veto_action": "Hành động của veto {n} (ban, pick, decider)",
+          "veto_team": "Đội của veto {n}",
+          "veto_type": "Loại của veto {n}",
+          "veto_side": "Bên của veto {n} (Tấn công hoặc Phòng thủ)"
+        },
+        "insertVariableHint": "Nhấp vào một biến để chèn nó vào văn bản, tại vị trí con trỏ.",
+        "templateLabel": "Mẫu",
+        "applyTemplate": "Thay thiết kế bằng mẫu này",
+        "templateHint": "Thay mọi lớp bằng mẫu. Bạn có thể hoàn tác.",
+        "templateApplied": "Đã áp dụng mẫu",
+        "layoutLayer": "Bố cục",
+        "pickImage": "Chọn hình ảnh",
+        "pickImageHint": "Mỗi loại hình ảnh có kích thước riêng, bạn có thể đổi sau.",
+        "imageCategory": {
+          "teams": "Đội",
+          "mvp": "MVP",
+          "maps": "Bản đồ",
+          "vetos": "Veto",
+          "custom": "Hình ảnh tùy chỉnh"
+        },
+        "customUrl": "Địa chỉ hình ảnh",
+        "customUrlHint": "Liên kết https công khai tới một hình ảnh. Không có gì được tải lên, hình ảnh vẫn nằm trên trang của nó và được tải về khi gửi thông báo.",
+        "customUrlRequired": "Địa chỉ hình ảnh là bắt buộc.",
+        "customUrlInvalid": "Hãy nhập địa chỉ https hợp lệ.",
+        "useImage": "Dùng hình ảnh này",
+        "sendTest": "Gửi thử",
+        "sendTestHint": "Đăng thiết kế này, điền bằng một trận đấu thật, vào kênh bạn chọn. Các thay đổi chưa lưu cũng được đưa vào.",
+        "testChannel": "Kênh",
+        "testChannelPlaceholder": "Chọn kênh",
+        "sendTestAction": "Gửi",
+        "sending": "Đang gửi",
+        "testSent": "Đã gửi thử",
+        "testError": {
+          "required": "Hãy chọn một kênh.",
+          "unknownChannel": "Kênh này không tồn tại trên máy chủ.",
+          "rateLimited": "Hãy chờ vài giây trước khi gửi thử lần nữa.",
+          "channelsUnavailable": "Không thể đọc các kênh của máy chủ.",
+          "sendFailed": "Không gửi thử được, hãy kiểm tra bot có quyền viết trong kênh này."
         }
       }
     }
@@ -6638,8 +7771,32 @@
     "tabPickem": "Pick'em",
     "tabStats": "Thống kê",
     "tabMaps": "Bản đồ",
+    "tabChampions": "Tướng",
+    "championsEmpty": "Chưa có ván nào được chơi.",
+    "championsRolesColumn": "Vị trí",
+    "championsRoleBansNote": "Lượt cấm và tỷ lệ xuất hiện được tính cho mọi vị trí.",
+    "championsInsightMostPicked": "Được chọn nhiều nhất",
+    "championsInsightMostBanned": "Bị cấm nhiều nhất",
+    "championsInsightHighestPresence": "Tỷ lệ xuất hiện cao nhất",
+    "championsInsightHighestWinRate": "Tỷ lệ thắng cao nhất",
+    "championsInsightHighestKda": "KDA cao nhất",
     "tabProduction": "Sản xuất",
     "productionTitle": "{tournament} · Sản xuất",
+    "statsGroupByLabel": "Nhóm theo",
+    "statsGroupBy": {
+      "none": "Không nhóm",
+      "agent": "Tướng",
+      "role": "Vai trò",
+      "team": "Đội",
+      "nationality": "Quốc tịch"
+    },
+    "statsRole": {
+      "duelist": "Đấu sĩ",
+      "initiator": "Khởi tranh",
+      "controller": "Kiểm soát",
+      "sentinel": "Hộ vệ"
+    },
+    "statsGroupUnknown": "Không rõ",
     "statsIdentityColumn": "Tuyển thủ",
     "statsAgentColumn": "Tướng",
     "statsNationalityColumn": "Quốc tịch",
@@ -6657,6 +7814,15 @@
     "statsFilterAgentAll": "Tất cả tướng",
     "statsFilterMap": "Bản đồ",
     "statsFilterMapAll": "Tất cả bản đồ",
+    "statsChampionColumn": "Tướng",
+    "statsFilterChampion": "Tướng",
+    "statsFilterChampionAll": "Tất cả các tướng",
+    "statsFilterChampionSearch": "Tìm tướng…",
+    "statsFilterChampionNoResult": "Không tìm thấy tướng",
+    "statsFilterRole": "Vị trí",
+    "statsFilterRoleAll": "Tất cả vị trí",
+    "statsFilterPatch": "Phiên bản",
+    "statsFilterPatchAll": "Tất cả phiên bản",
     "statsFilterStartDate": "Từ",
     "statsFilterEndDate": "Đến",
     "statsFilterSubmit": "Áp dụng bộ lọc",
@@ -6667,13 +7833,32 @@
     "statsColumnFilterValuePlaceholder": "Giá trị cần khớp...",
     "statsColumnFilterAddAnother": "Thêm bộ lọc khác",
     "statsColumnFilterApply": "Áp dụng",
+    "statsColumnFilterSearch": "Tìm kiếm...",
+    "statsColumnFilterNoResult": "Không có kết quả",
     "statsColumnFilterClear": "Xóa",
     "previous": "Trước",
     "next": "Sau",
     "pageOf": "Trang {page} trên {total}",
     "statsColumns": {
       "played": "Bản đồ",
+      "playedGames": "Số ván",
+      "winRate": "Tỷ lệ thắng",
+      "picks": "Lượt chọn",
+      "bans": "Lượt cấm",
+      "presence": "Tỷ lệ xuất hiện",
+      "kp": "KP",
+      "csPerMinute": "CS/phút",
+      "goldPerMinute": "Vàng/phút",
+      "damagePerMinute": "Sát thương/phút",
+      "visionPerMinute": "Tầm nhìn/phút",
+      "goldDiff10": "Chênh lệch vàng @10",
+      "goldDiff15": "Chênh lệch vàng @15",
+      "xpDiff10": "Chênh lệch XP @10",
+      "xpDiff15": "Chênh lệch XP @15",
+      "csDiff10": "Chênh lệch CS @10",
+      "csDiff15": "Chênh lệch CS @15",
       "roundsPlayed": "Round",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",
@@ -6715,7 +7900,8 @@
     "mapsPickRatesShowMore": "Hiện tất cả",
     "mapsPickRatesShowLess": "Hiện ít hơn",
     "factOrganizer": "Đơn vị tổ chức",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Ván"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6973,7 +8159,8 @@
     "copied": "Đã sao chép",
     "copyError": "Không thể sao chép hình ảnh. Hãy tải xuống thay thế.",
     "exporting": "Đang tạo",
-    "exportError": "Không thể tạo hình ảnh. Hãy thử lại."
+    "exportError": "Không thể tạo hình ảnh. Hãy thử lại.",
+    "descriptionGames": "Ảnh PNG rộng {width} px, sẵn sàng để chia sẻ. Chọn tất cả các ván hoặc chỉ một ván."
   },
   "share": {
     "button": "Chia sẻ",
@@ -7373,5 +8560,19 @@
       "multikills_4k": "4K",
       "multikills_5k": "5K"
     }
+  },
+  "leaguepediaSource": {
+    "text": "Một số dữ liệu ván trên trang này lấy từ Leaguepedia (CC BY-SA). Xem các trang gốc:",
+    "game": "Ván {order}"
+  },
+  "lanes": {
+    "TOP": "Đường trên",
+    "JUNGLE": "Đi rừng",
+    "MIDDLE": "Đường giữa",
+    "BOTTOM": "Xạ thủ",
+    "UTILITY": "Hỗ trợ",
+    "label": "Đường",
+    "fromGames": "Theo các trận:",
+    "invalid": "Chỉ có thể chọn năm đường."
   }
 }

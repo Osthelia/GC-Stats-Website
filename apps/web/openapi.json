@@ -375,6 +375,20 @@
           "kd_ratio": {
             "type": "number"
           },
+          "avg_rating": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating."
+          },
+          "rating_rounds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Rounds the rating is computed over, null when no rating is available."
+          },
           "by_side": {
             "type": "object",
             "properties": {
@@ -413,6 +427,8 @@
           "total_first_deaths",
           "avg_first_deaths",
           "kd_ratio",
+          "avg_rating",
+          "rating_rounds",
           "by_side"
         ]
       },
@@ -567,6 +583,20 @@
           },
           "kd_ratio": {
             "type": "number"
+          },
+          "avg_rating": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating."
+          },
+          "rating_rounds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Rounds the rating is computed over, null when no rating is available."
           }
         },
         "required": [
@@ -591,7 +621,9 @@
           "avg_first_kills",
           "total_first_deaths",
           "avg_first_deaths",
-          "kd_ratio"
+          "kd_ratio",
+          "avg_rating",
+          "rating_rounds"
         ]
       },
       "WeaponStatsEntry": {
@@ -1381,7 +1413,8 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/MapStatsFull"
-            }
+            },
+            "description": "Played maps, each with its own player_stats and rounds."
           }
         },
         "required": [
@@ -1412,13 +1445,15 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/MapPlayerStat"
-                }
+                },
+                "description": "Every player's stats on this map, with rating."
               },
               "rounds": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/RoundStatsFull"
-                }
+                },
+                "description": "Round by round detail: outcome, plant, per player stats and kill events."
               }
             },
             "required": [
@@ -1475,6 +1510,20 @@
           },
           "headshot_percentage": {
             "type": "number"
+          },
+          "rating": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "GCS rating for this map. Null when it could not be computed."
+          },
+          "rating_rounds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Rounds the rating is computed over, null when no rating is available."
           }
         },
         "required": [
@@ -1490,7 +1539,9 @@
           "first_kills",
           "first_deaths",
           "kast_percentage",
-          "headshot_percentage"
+          "headshot_percentage",
+          "rating",
+          "rating_rounds"
         ]
       },
       "RoundStatsFull": {
@@ -1643,33 +1694,492 @@
         ]
       },
       "MatchV3Response": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "tournament_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "round_number": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "round_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "best_of": {
+            "type": "integer"
+          },
+          "patch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "team_a": {
+            "$ref": "#/components/schemas/TeamWithScore"
+          },
+          "team_b": {
+            "$ref": "#/components/schemas/TeamWithScore"
+          },
+          "vetos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchVeto"
+            }
+          },
+          "maps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MapStatsFull"
+            },
+            "description": "Played maps, each with its own player_stats and rounds."
+          },
+          "phase": {
+            "$ref": "#/components/schemas/Phase"
+          },
+          "container": {
+            "$ref": "#/components/schemas/MatchContainer"
+          },
+          "player_stats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchPlayerTotals"
+            },
+            "description": "Per player stats combined over every completed map of the match. Per map stats are in maps[].player_stats."
+          },
+          "streams": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchStream"
+            }
+          },
+          "player_povs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchPlayerPov"
+            }
+          },
+          "vods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchVod"
+            }
+          },
+          "encounters": {
+            "$ref": "#/components/schemas/MatchEncounters"
+          },
+          "radar_chart_widget_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Absolute URL to the OBS head to head radar chart widget for these two teams, null if either side is a bye/TBD."
+          },
+          "pickem": {
+            "$ref": "#/components/schemas/PickemVotes"
+          }
+        },
+        "required": [
+          "id",
+          "tournament_id",
+          "round_number",
+          "round_name",
+          "scheduled_at",
+          "status",
+          "best_of",
+          "patch",
+          "team_a",
+          "team_b",
+          "vetos",
+          "maps",
+          "phase",
+          "container",
+          "player_stats",
+          "streams",
+          "player_povs",
+          "vods",
+          "encounters",
+          "radar_chart_widget_url",
+          "pickem"
+        ]
+      },
+      "Phase": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "bracket",
+              "swiss",
+              "round_robin",
+              "group",
+              "set",
+              "mixed",
+              null
+            ],
+            "description": "Format of the phase's containers, \"mixed\" when it holds several different ones, null when it has none yet."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "active",
+              "completed"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "description": "Position of the phase in its tournament, starting at the first one played."
+          },
+          "start_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "end_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "liquipedia_link": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "order",
+          "start_date",
+          "end_date",
+          "liquipedia_link"
+        ]
+      },
+      "MatchContainer": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/MatchStatsResponse"
+            "$ref": "#/components/schemas/ContainerPathItem"
           },
           {
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
-              "encounters": {
-                "$ref": "#/components/schemas/MatchEncounters"
-              },
-              "radar_chart_widget_url": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Absolute URL to the OBS head to head radar chart widget for these two teams, null if either side is a bye/TBD."
-              },
-              "pickem": {
-                "$ref": "#/components/schemas/PickemVotes"
+              "path": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContainerPathItem"
+                },
+                "description": "Sets above the container, outermost first, ending with the container itself (e.g. Group Stage, Group A, Lower Bracket)."
               }
             },
             "required": [
-              "encounters",
-              "radar_chart_widget_url",
-              "pickem"
+              "path"
             ]
           }
+        ]
+      },
+      "ContainerPathItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "bracket",
+              "swiss",
+              "round_robin",
+              "group",
+              "set"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "MatchPlayerTotals": {
+        "type": "object",
+        "properties": {
+          "person_id": {
+            "type": "integer"
+          },
+          "team_id": {
+            "type": "integer"
+          },
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Agents played across the completed maps."
+          },
+          "maps_played": {
+            "type": "integer"
+          },
+          "kills": {
+            "type": "integer"
+          },
+          "deaths": {
+            "type": "integer"
+          },
+          "assists": {
+            "type": "integer"
+          },
+          "kd_ratio": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "acs": {
+            "type": "number",
+            "description": "Average ACS per map."
+          },
+          "adr": {
+            "type": "number",
+            "description": "Average ADR per map."
+          },
+          "first_kills": {
+            "type": "integer"
+          },
+          "first_deaths": {
+            "type": "integer"
+          },
+          "kast_percentage": {
+            "type": "number",
+            "description": "Average KAST per map."
+          },
+          "headshot_percentage": {
+            "type": "number",
+            "description": "Average headshot percentage per map."
+          },
+          "rating": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "GCS rating over all completed maps, weighted by rated rounds."
+          },
+          "rating_rounds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Rounds the rating is computed over, null when no rating is available."
+          }
+        },
+        "required": [
+          "person_id",
+          "team_id",
+          "agents",
+          "maps_played",
+          "kills",
+          "deaths",
+          "assists",
+          "kd_ratio",
+          "acs",
+          "adr",
+          "first_kills",
+          "first_deaths",
+          "kast_percentage",
+          "headshot_percentage",
+          "rating",
+          "rating_rounds"
+        ]
+      },
+      "MatchStream": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "description": "youtube, twitch, tiktok or kick."
+          },
+          "type": {
+            "type": "string",
+            "description": "official or watchparty, official streams come first."
+          },
+          "url": {
+            "type": "string"
+          },
+          "language_code": {
+            "type": "string"
+          },
+          "organization_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "platform",
+          "type",
+          "url",
+          "language_code",
+          "organization_id"
+        ]
+      },
+      "MatchPlayerPov": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "team_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "player_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Null when the channel is the team's own."
+          },
+          "player_handle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "twitch_login": {
+            "type": "string"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "last_seen_live_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "team_id",
+          "player_id",
+          "player_handle",
+          "twitch_login",
+          "title",
+          "url",
+          "last_seen_live_at"
+        ]
+      },
+      "MatchVod": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "language_code": {
+            "type": "string"
+          },
+          "map_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Null for a VOD of the whole match."
+          },
+          "map_order": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "organization": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "language_code",
+          "map_id",
+          "map_order",
+          "organization"
         ]
       },
       "MatchEncounters": {
@@ -1765,6 +2275,510 @@
           "total",
           "team_a_percentage",
           "team_b_percentage"
+        ]
+      },
+      "PaginatedMatchesV3": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "total_pages": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamMatchEntryV3"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "per_page",
+          "total",
+          "total_pages",
+          "data"
+        ]
+      },
+      "TeamMatchEntryV3": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "tournament_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "round_number": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "round_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "best_of": {
+            "type": "integer"
+          },
+          "patch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "team_a": {
+            "$ref": "#/components/schemas/TeamWithScore"
+          },
+          "team_b": {
+            "$ref": "#/components/schemas/TeamWithScore"
+          },
+          "vetos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchVeto"
+            }
+          },
+          "phase": {
+            "$ref": "#/components/schemas/Phase"
+          },
+          "container": {
+            "$ref": "#/components/schemas/MatchContainer"
+          }
+        },
+        "required": [
+          "id",
+          "tournament_id",
+          "round_number",
+          "round_name",
+          "scheduled_at",
+          "status",
+          "best_of",
+          "patch",
+          "team_a",
+          "team_b",
+          "vetos",
+          "phase",
+          "container"
+        ]
+      },
+      "TournamentGroups": {
+        "type": "object",
+        "properties": {
+          "tournament_id": {
+            "type": "integer"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Group"
+            }
+          }
+        },
+        "required": [
+          "tournament_id",
+          "groups"
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "swiss",
+              "round_robin"
+            ]
+          },
+          "phase": {
+            "$ref": "#/components/schemas/Phase"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContainerPathItem"
+            },
+            "description": "Sets above the group, outermost first, ending with the group itself."
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "qualify_at_wins": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "eliminate_at_losses": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "max_rounds": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "tiebreakers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Tiebreakers applied in order after the number of wins."
+              },
+              "uses_points": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "qualify_at_wins",
+              "eliminate_at_losses",
+              "max_rounds",
+              "tiebreakers",
+              "uses_points"
+            ]
+          },
+          "standings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupStanding"
+            }
+          },
+          "rounds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "round": {
+                  "type": "integer"
+                },
+                "matches": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupMatch"
+                  }
+                }
+              },
+              "required": [
+                "round",
+                "matches"
+              ]
+            },
+            "description": "Matches grouped by round, in play order."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "format",
+          "phase",
+          "path",
+          "config",
+          "standings",
+          "rounds"
+        ]
+      },
+      "GroupStanding": {
+        "type": "object",
+        "properties": {
+          "entrant_id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "team": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "short_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "short_name",
+              "country_code"
+            ]
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "seed": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "active, qualified or eliminated."
+          },
+          "matches_won": {
+            "type": "integer"
+          },
+          "matches_lost": {
+            "type": "integer"
+          },
+          "map_wins": {
+            "type": "integer"
+          },
+          "map_losses": {
+            "type": "integer"
+          },
+          "map_diff": {
+            "type": "integer"
+          },
+          "round_wins": {
+            "type": "integer"
+          },
+          "round_losses": {
+            "type": "integer"
+          },
+          "round_diff": {
+            "type": "integer"
+          },
+          "buchholz": {
+            "type": "number"
+          },
+          "points": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Null when the group has no points scoring."
+          }
+        },
+        "required": [
+          "entrant_id",
+          "name",
+          "team",
+          "rank",
+          "seed",
+          "status",
+          "matches_won",
+          "matches_lost",
+          "map_wins",
+          "map_losses",
+          "map_diff",
+          "round_wins",
+          "round_losses",
+          "round_diff",
+          "buchholz",
+          "points"
+        ]
+      },
+      "GroupMatch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "round_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "best_of": {
+            "type": "integer"
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "team_a": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "entrant_id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "team": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "short_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "short_name",
+                  "country_code"
+                ]
+              }
+            },
+            "required": [
+              "entrant_id",
+              "name",
+              "team"
+            ]
+          },
+          "team_b": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "entrant_id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "team": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "short_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "country_code": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "short_name",
+                  "country_code"
+                ]
+              }
+            },
+            "required": [
+              "entrant_id",
+              "name",
+              "team"
+            ]
+          },
+          "score_a": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "score_b": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "winner_entrant_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "is_forfeit": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "round_name",
+          "status",
+          "best_of",
+          "scheduled_at",
+          "team_a",
+          "team_b",
+          "score_a",
+          "score_b",
+          "winner_entrant_id",
+          "is_forfeit"
         ]
       },
       "MapFullResponse": {
@@ -2600,6 +3614,20 @@
           },
           "kd_ratio": {
             "type": "number"
+          },
+          "avg_rating": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "GCS rating averaged over maps, weighted by rated rounds. Null when no map has a rating."
+          },
+          "rating_rounds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Rounds the rating is computed over, null when no rating is available."
           }
         },
         "required": [
@@ -2629,7 +3657,9 @@
           "avg_first_kills",
           "total_first_deaths",
           "avg_first_deaths",
-          "kd_ratio"
+          "kd_ratio",
+          "avg_rating",
+          "rating_rounds"
         ]
       },
       "OrganizationFullResponseV2": {
@@ -5337,7 +6367,7 @@
     },
     "/valorant/v3/matches/{id}": {
       "get": {
-        "summary": "Get a match's full stats, encounters, radar chart widget link and pick'em votes (V3)",
+        "summary": "Get a match's full stats, media, encounters, radar chart widget link and pick'em votes (V3)",
         "tags": [
           "Matches"
         ],
@@ -5362,11 +6392,1424 @@
         ],
         "responses": {
           "200": {
-            "description": "The V2 match response, plus past head to head encounters, a link to the OBS head to head radar chart widget, and the pick'em vote split.",
+            "description": "The V2 match response with a full phase object instead of phase_id, plus its container, streams, player POV streams, VODs, past head to head encounters, a link to the OBS head to head radar chart widget, and the pick'em vote split.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MatchV3Response"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/matches": {
+      "get": {
+        "summary": "List matches (V3)",
+        "tags": [
+          "Matches"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound on the match date (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound on the match date (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound on the match date (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound on the match date (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to matches where this team played, either side."
+            },
+            "required": false,
+            "description": "Restricts to matches where this team played, either side.",
+            "name": "team_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament.",
+            "name": "tournament_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single stage."
+            },
+            "required": false,
+            "description": "Restricts to a single stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/teams/{id}/matches": {
+      "get": {
+        "summary": "Get a team's match history (V3)",
+        "tags": [
+          "Teams"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "123",
+              "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\")."
+            },
+            "required": true,
+            "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\").",
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament.",
+            "name": "tournament_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to matches against this team id."
+            },
+            "required": false,
+            "description": "Restricts to matches against this team id.",
+            "name": "opponent_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/teams/by-name/{name}/matches": {
+      "get": {
+        "summary": "Get a team's match history, resolved by name (V3)",
+        "tags": [
+          "Teams"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "sentinels",
+              "description": "Case insensitive prefix match."
+            },
+            "required": true,
+            "description": "Case insensitive prefix match.",
+            "name": "name",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament.",
+            "name": "tournament_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to matches against this team id."
+            },
+            "required": false,
+            "description": "Restricts to matches against this team id.",
+            "name": "opponent_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/players/{id}/matches": {
+      "get": {
+        "summary": "Get a player's match history (V3)",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "123",
+              "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\")."
+            },
+            "required": true,
+            "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\").",
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament.",
+            "name": "tournament_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to matches against this team id."
+            },
+            "required": false,
+            "description": "Restricts to matches against this team id.",
+            "name": "opponent_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/players/by-name/{name}/matches": {
+      "get": {
+        "summary": "Get a player's match history, resolved by name (V3)",
+        "tags": [
+          "Players"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "sentinels",
+              "description": "Case insensitive prefix match."
+            },
+            "required": true,
+            "description": "Case insensitive prefix match.",
+            "name": "name",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament.",
+            "name": "tournament_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to matches against this team id."
+            },
+            "required": false,
+            "description": "Restricts to matches against this team id.",
+            "name": "opponent_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/tournaments/{id}/matches": {
+      "get": {
+        "summary": "Get a tournament's match history (V3)",
+        "tags": [
+          "Tournaments"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "123",
+              "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\")."
+            },
+            "required": true,
+            "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\").",
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single team's entrant(s)."
+            },
+            "required": false,
+            "description": "Restricts to a single team's entrant(s).",
+            "name": "team_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/tournaments/by-name/{name}/matches": {
+      "get": {
+        "summary": "Get a tournament's match history, resolved by name (V3)",
+        "tags": [
+          "Tournaments"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "sentinels",
+              "description": "Case insensitive prefix match."
+            },
+            "required": true,
+            "description": "Case insensitive prefix match.",
+            "name": "name",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-01-01",
+              "description": "Inclusive lower bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive lower bound (YYYY-MM-DD).",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "example": "2026-12-31",
+              "description": "Inclusive upper bound (YYYY-MM-DD)."
+            },
+            "required": false,
+            "description": "Inclusive upper bound (YYYY-MM-DD).",
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single team's entrant(s)."
+            },
+            "required": false,
+            "description": "Restricts to a single team's entrant(s).",
+            "name": "team_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Restricts to a single round label (e.g. \"Grand Final\")."
+            },
+            "required": false,
+            "description": "Restricts to a single round label (e.g. \"Grand Final\").",
+            "name": "round_name",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to a single tournament stage."
+            },
+            "required": false,
+            "description": "Restricts to a single tournament stage.",
+            "name": "phase_id",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "live",
+                "completed"
+              ]
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "1",
+              "description": "1 indexed, defaults to 1."
+            },
+            "required": false,
+            "description": "1 indexed, defaults to 1.",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "20",
+              "description": "Defaults to 20, capped at 50."
+            },
+            "required": false,
+            "description": "Defaults to 20, capped at 50.",
+            "name": "per_page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as the V2 endpoint, with a full phase object (id, name, type, status, order, dates) instead of phase_id on each match. The phase_id filter is unchanged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMatchesV3"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/tournaments/{id}/groups": {
+      "get": {
+        "summary": "Get a tournament's swiss and round robin groups (V3)",
+        "tags": [
+          "Tournaments"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "example": "123",
+              "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\")."
+            },
+            "required": true,
+            "description": "Positive integer id, passed as a URL path segment (e.g. \"/teams/123\").",
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to the groups of a single tournament phase."
+            },
+            "required": false,
+            "description": "Restricts to the groups of a single tournament phase.",
+            "name": "phase_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every swiss and round robin group of the tournament, with its ranked standings (matches, maps and rounds won and lost, differences, buchholz, points) and its matches grouped by round in play order.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentGroups"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A path or query parameter failed validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid x-api-key header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No resource matches the given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded for this API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/valorant/v3/tournaments/by-name/{name}/groups": {
+      "get": {
+        "summary": "Get a tournament's swiss and round robin groups, resolved by name (V3)",
+        "tags": [
+          "Tournaments"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "sentinels",
+              "description": "Case insensitive prefix match."
+            },
+            "required": true,
+            "description": "Case insensitive prefix match.",
+            "name": "name",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Restricts to the groups of a single tournament phase."
+            },
+            "required": false,
+            "description": "Restricts to the groups of a single tournament phase.",
+            "name": "phase_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Same as /valorant/v3/tournaments/{id}/groups, for the first tournament whose name starts with the given string.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentGroups"
                 }
               }
             }

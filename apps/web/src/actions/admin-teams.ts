@@ -13,12 +13,15 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, PERMISSIONS, gameTables } from "@gc-stats/db";
+import { organizations, teamPrivateContacts, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { isValidCountryCode } from "@/lib/countries";
+import { isEmail } from "@/lib/team-requests/contact";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
 import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
-import { ROSTER_ROLES } from "@/lib/roster-roles";
+import { isRosterRoleOf } from "@/lib/roster-roles";
+import { areLanes } from "@gc-stats/lol-stats-engine";
+import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 import { ensureGameProfile, personExists } from "@/lib/person-service";
@@ -50,9 +53,11 @@ export type TeamProfileInput = {
   isActive: boolean;
   socials: Partial<Record<(typeof SOCIAL_KEYS)[number], string>>;
   tags: string[];
+  /** Private contact email, empty to remove it. */
+  contactEmail: string;
 };
 
-export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio" | "discord";
+export type TeamProfileField = "name" | "shortName" | "countryCode" | "secondaryCountryCode" | "vlrId" | "liquipediaLink" | "organizationId" | "bio" | "discord" | "contactEmail";
 export type TeamProfileFieldErrors = Partial<Record<TeamProfileField, string>>;
 export type TeamProfileResult = { ok: true } | { ok: false; fieldErrors: TeamProfileFieldErrors };
 
@@ -78,6 +83,7 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
   const bio = input.bio.trim();
   const vlrId = input.vlrId.trim();
   const liquipediaLink = input.liquipediaLink.trim();
+  const contactEmail = input.contactEmail.trim();
 
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";
@@ -96,6 +102,9 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
   }
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
+
+  if (contactEmail.length > 254) fieldErrors.contactEmail = "tooLong";
+  else if (contactEmail && !isEmail(contactEmail)) fieldErrors.contactEmail = "invalidEmail";
 
   if (input.organizationId !== null) {
     if (!Number.isSafeInteger(input.organizationId) || input.organizationId <= 0) fieldErrors.organizationId = "invalid";
@@ -140,7 +149,25 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
 
   await db.transaction(async (tx) => {
     await tx.update(teams).set(values).where(eq(teams.id, teamId));
+
     const changes = diffChanges(existing, values);
+    // The private contact points at val_teams, so only Valorant teams carry one.
+    if (game === "valorant") {
+      const [currentContact] = await tx.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, teamId)).limit(1);
+      const contactChanged = (currentContact?.email ?? "") !== contactEmail;
+      if (contactChanged) {
+        if (contactEmail) {
+          await tx
+            .insert(teamPrivateContacts)
+            .values({ teamId, email: contactEmail })
+            .onConflictDoUpdate({ target: teamPrivateContacts.teamId, set: { email: contactEmail, updatedAt: new Date() } });
+        } else {
+          await tx.delete(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, teamId));
+        }
+        // The address itself never goes in the activity log, only whether it was set, changed or removed.
+        changes.privateContact = { old: currentContact ? "set" : null, new: contactEmail ? "set" : null };
+      }
+    }
     if (Object.keys(changes).length > 0) {
       await logActivity({ game, subject: "team", subjectId: teamId, event: "updated", description: `Updated team #${teamId} (${name})`, actorUserId, changes }, tx);
     }
@@ -274,7 +301,7 @@ export async function getRosterConflicts(game: GameSlug, personId: number, teamI
   return findOpenMembershipsElsewhere(game, personId, teamId, excludeMembershipId);
 }
 
-export type AddRosterMemberField = "person" | "role" | "from" | "until" | "joinSource" | "leftSource";
+export type AddRosterMemberField = "person" | "role" | "lanes" | "from" | "until" | "joinSource" | "leftSource";
 export type AddRosterMemberFieldErrors = Partial<Record<AddRosterMemberField, string>>;
 export type AddRosterMemberResult = { ok: true } | { ok: false; fieldErrors: AddRosterMemberFieldErrors };
 
@@ -288,7 +315,8 @@ export async function addTeamRosterMember(
   inactiveSince: string | null,
   joinSource: string,
   leftSource: string,
-  closeMembershipIds: number[] = []
+  closeMembershipIds: number[] = [],
+  lanes: string[] = []
 ): Promise<AddRosterMemberResult> {
   const { teams, rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId();
@@ -296,7 +324,8 @@ export async function addTeamRosterMember(
   const fieldErrors: AddRosterMemberFieldErrors = {};
 
   if (!personId) fieldErrors.person = "required";
-  if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
+  if (!isRosterRoleOf(game, role)) fieldErrors.role = "invalidRole";
+  if (!areLanes(lanes)) fieldErrors.lanes = "invalidLane";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
@@ -322,14 +351,15 @@ export async function addTeamRosterMember(
     await ensureGameProfile(tx, game, personId as number);
     if (isOngoing) await closeOpenMemberships(game, tx, closeMembershipIds, personId as number, teamId, from);
 
-    await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) });
+    const [created] = await tx.insert(rosterMemberships).values({ personId: personId as number, teamId, role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) }).returning({ id: rosterMemberships.id });
+    await replaceEntryLanes(game, tx, created!.id, role, lanes);
     await logRosterChange(tx, { game, teamId, personId: personId as number, role, actorUserId, action: "Added" });
   });
 
   return { ok: true };
 }
 
-export type RosterEntryField = "role" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
+export type RosterEntryField = "role" | "lanes" | "from" | "until" | "inactiveSince" | "joinSource" | "leftSource";
 export type RosterEntryFieldErrors = Partial<Record<RosterEntryField, string>>;
 export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterEntryFieldErrors };
 
@@ -339,13 +369,14 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  * (current and history alike) carries editable role/joined_at/left_at
  * inputs directly, not just newly-added ones.
  */
-export async function updateRosterMemberEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = []): Promise<RosterEntryResult> {
+export async function updateRosterMemberEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = [], lanes: string[] = []): Promise<RosterEntryResult> {
   const { rosterMemberships } = gameTables(game);
   const actorUserId = await requireAdminActorId();
 
   const fieldErrors: RosterEntryFieldErrors = {};
 
-  if (!(ROSTER_ROLES as readonly string[]).includes(role)) fieldErrors.role = "invalidRole";
+  if (!isRosterRoleOf(game, role)) fieldErrors.role = "invalidRole";
+  if (!areLanes(lanes)) fieldErrors.lanes = "invalidLane";
   if (!DATE_RE.test(from)) fieldErrors.from = "invalidDate";
   if (until && !DATE_RE.test(until)) fieldErrors.until = "invalidDate";
   if (!fieldErrors.from && !fieldErrors.until && isRangeOrderInvalid(from, until)) fieldErrors.until = "beforeStart";
@@ -370,7 +401,8 @@ export async function updateRosterMemberEntry(game: GameSlug, membershipId: numb
 
     const values = { role, period, hasLeft, inactiveSince: inactiveSince || null, joinSource: normalizeRosterSource(joinSource), leftSource: normalizeRosterSource(leftSource) };
     await tx.update(rosterMemberships).set(values).where(eq(rosterMemberships.id, membershipId));
-    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: diffChanges(membership, values) });
+    const laneChanges = await replaceEntryLanes(game, tx, membershipId, role, lanes);
+    await logRosterChange(tx, { game, teamId: membership.teamId, personId: membership.personId, role, actorUserId, action: "Updated", changes: { ...diffChanges(membership, values), ...laneChanges } });
   });
 
   return { ok: true };

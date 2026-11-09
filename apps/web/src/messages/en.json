@@ -1016,11 +1016,12 @@
     "webhooks": {
       "title": "Webhooks",
       "body": "Partner keys can register HTTPS endpoints from their dashboard: GC Stats then sends a POST each time the data changes.",
-      "events": "Events: new match, match updated, new tournament, tournament updated, team updated, player updated.",
+      "events": "Events: new match, match updated, new tournament, tournament updated, team updated, player updated, roster change validated by our team (roster.updated).",
       "filters": "Filters: tournament region, official or not, participating teams.",
       "signature": "Each request carries the X-GCS-Event, X-GCS-Delivery, X-GCS-Timestamp and X-GCS-Signature headers. Check the signature with your endpoint secret.",
       "retries": "Answer with a 2xx status within 10 seconds. Failed deliveries are retried for about 9 hours, an endpoint failing too often is switched off.",
-      "setup": "The payload holds the event, its date and the entity, with the same fields as the OpenData datasets."
+      "setup": "The payload holds the event, its date and the entity, with the same fields as the OpenData datasets.",
+      "discord": "A Discord type endpoint only receives the roster.updated event and posts the tweet link in your channel, without signature."
     }
   },
   "becomePublisher": {
@@ -1046,6 +1047,77 @@
       "discord": "Contact us on Discord",
       "email": "Contact by email"
     }
+  },
+  "discordBot": {
+    "title": "Discord bot",
+    "intro": "Follow every Game Changers match directly in your Discord server, with live scores and results posted automatically.",
+    "addBot": "Add to Discord",
+    "comingSoon": "Coming soon",
+    "openDashboard": "Open the dashboard",
+    "features": {
+      "title": "Features",
+      "live": {
+        "title": "Live matches",
+        "body": "A message is posted when a match goes live, and its score updates by itself until the end."
+      },
+      "finished": {
+        "title": "Finished matches",
+        "body": "The final result is posted as soon as a match ends."
+      },
+      "map": {
+        "title": "Finished maps",
+        "body": "Get the score of each map as soon as it is over, without waiting for the end of the match."
+      },
+      "filters": {
+        "title": "Smart filters",
+        "body": "Filter alerts by region, by participating team, and by official or unofficial tournaments (official by default)."
+      }
+    },
+    "dashboard": {
+      "title": "Configure from the dashboard",
+      "body": "Each server is configured from the GC Stats dashboard: choose the channel for each alert type and set your filters.",
+      "why": "You need to log in with Discord so we can check which servers you manage. Only members allowed to manage a server can change its settings."
+    },
+    "steps": {
+      "title": "How it works",
+      "invite": {
+        "title": "Add the bot",
+        "body": "Invite the bot to your server with the button above."
+      },
+      "login": {
+        "title": "Log in with Discord",
+        "body": "Open the dashboard and sign in with your Discord account."
+      },
+      "configure": {
+        "title": "Configure",
+        "body": "Pick your channels and filters, alerts start right away."
+      }
+    },
+    "help": {
+      "title": "Need help?",
+      "body": "Questions or suggestions? Join us on the <link>GC Stats Discord</link>."
+    }
+  },
+  "discordBotMessages": {
+    "live": "LIVE",
+    "finished": "Match finished",
+    "mapFinished": "Map {number} finished",
+    "map": "Map {number}",
+    "maps": "Maps",
+    "bestOf": "Best of {count}",
+    "matchScore": "Match score: {score}",
+    "mvp": "MVP: {name} ({acs} ACS)",
+    "vetoBan": "{team} bans {map}",
+    "vetoPick": "{team} picks {map}",
+    "vetoDecider": "{map} (decider)",
+    "footer": "GC Stats",
+    "actionBan": "Ban",
+    "actionPick": "Pick",
+    "actionDecider": "Decider",
+    "sideAttack": "Attack",
+    "sideDefense": "Defense",
+    "openMatch": "Open the match",
+    "imageRemoved": "The image of this alert was removed by GC Stats moderation."
   },
   "supportUs": {
     "title": "Support us",
@@ -1525,6 +1597,7 @@
     "statsColumns": {
       "played": "Maps",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",
@@ -1696,10 +1769,12 @@
     "colKills": "K",
     "colDeaths": "D",
     "colAssists": "A",
+    "colRating": "R",
     "colAcs": "ACS",
     "colAdr": "ADR",
     "colKast": "KAST",
     "colPlayer": "Player",
+    "ratingFull": "GCS Rating: 1.00 is the average player of the same role",
     "acsFull": "Average Combat Score",
     "adrFull": "Average Damage per Round",
     "kastFull": "Kill, Assist, Trade, Survive",
@@ -1732,7 +1807,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Discussion",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "Game {n} VOD",
+    "games": "Games",
+    "gameTab": "Game {order}",
+    "noGames": "No games recorded yet.",
+    "noGameData": "No data for this game",
+    "duration": "Duration",
+    "forfeit": "Forfeit",
+    "towers": "Towers",
+    "inhibitors": "Inhibitors",
+    "dragons": "Dragons",
+    "barons": "Barons",
+    "heralds": "Rift Heralds",
+    "grubs": "Void grubs",
+    "draftNotSet": "No draft recorded for this game.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Picks not placed yet",
+    "colChampion": "Champion",
+    "allGames": "All games",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Every official Game Changers competition, in one place.",
@@ -1761,7 +1856,8 @@
     "finance": "Finance",
     "developers": "Developers",
     "contributeLiquipedia": "Liquipedia",
-    "productOpenData": "OpenData"
+    "productOpenData": "OpenData",
+    "productDiscordBot": "Discord bot"
   },
   "forum": {
     "overview": {
@@ -1954,6 +2050,10 @@
       "about": "About / Projects",
       "backToSite": "Back to site",
       "pendingChangeRequests": "Pending change requests",
+      "pendingDiscordImages": "Discord images to review",
+      "pendingReports": "Pending reports",
+      "pendingRosterWatch": "Roster signals to review",
+      "pendingModeration": "Suspects to review",
       "tournaments": "Tournaments",
       "groupModeration": "Moderation",
       "reports": "Reports",
@@ -1963,7 +2063,10 @@
       "activityLog": "Activity log",
       "analytics": "Analytics",
       "oauthClients": "OAuth clients",
-      "settings": "Configuration"
+      "settings": "Configuration",
+      "discordImages": "Discord bot images",
+      "rosterWatch": "Roster watch",
+      "teamRequests": "Team requests"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -2374,6 +2477,8 @@
         "fieldBio": "Bio",
         "fieldVlrId": "VLR ID",
         "fieldLiquipedia": "Liquipedia link",
+        "fieldContactEmail": "Contact email",
+        "contactEmailHint": "Private. Only visible to the staff, never shown on the site or in the API.",
         "fieldActive": "Active team",
         "save": "Save",
         "saveSuccess": "Profile updated.",
@@ -2486,7 +2591,8 @@
           "saveFailed": "The logo couldn't be saved. Try again in a moment.",
           "empty": "Please choose an image.",
           "requiresLeft": "Pick the \"Has left the team\" box to set a leave date.",
-          "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...)."
+          "invalidDiscordId": "Enter a valid Discord user ID (17 to 20 digits) or a server invite (discord.gg/...).",
+          "invalidEmail": "Enter a valid email address."
         },
         "fieldOrganization": "Organization",
         "organizationPlaceholder": "Select an organization",
@@ -3343,6 +3449,7 @@
           "entityNotFound": "A referenced team or player no longer exists.",
           "membershipNotFound": "The roster entry no longer exists.",
           "invalidRole": "The role is no longer valid.",
+          "invalidLane": "A lane is not valid.",
           "logoNotFound": "The logo entry no longer exists.",
           "alreadyLinked": "This player is already linked to another account.",
           "unknownField": "Unsupported field.",
@@ -3432,7 +3539,9 @@
         "activityLog": "Activity log",
         "analytics": "Analytics",
         "oauthClients": "OAuth clients",
-        "settings": "Configuration"
+        "settings": "Configuration",
+        "rosterWatch": "Roster watch",
+        "teamRequests": "Team requests"
       },
       "permissionNames": {
         "admin_access": "Access the admin panel",
@@ -3483,7 +3592,11 @@
         "oauth_clients_view": "View OAuth clients",
         "oauth_clients_manage": "Create, edit or delete OAuth clients",
         "settings_view": "View the configuration and the OpenData monitoring",
-        "settings_manage": "Edit the configuration"
+        "settings_manage": "Edit the configuration",
+        "roster_watch_view": "View the roster watch",
+        "roster_watch_manage": "Review roster watch tweets and manage the followed accounts",
+        "team_requests_view": "View team requests",
+        "team_requests_manage": "Prepare and track the information requests sent to teams"
       },
       "create": {
         "button": "New role",
@@ -3787,6 +3900,7 @@
         "assignEntrantsTitle": "Group entrants",
         "assignEntrantsDescription": "Select which of the tournament's entrants are part of this Swiss group.",
         "assignEntrantsEmpty": "No entrants in this tournament.",
+        "assignEntrantsInGroup": "In {name}",
         "assignEntrantsSuccess": "Entrants updated.",
         "startSwissButton": "Start round 1",
         "startSwissSuccess": "Round 1 generated.",
@@ -3796,7 +3910,22 @@
         "addMatchSubmit": "Add",
         "addMatchSuccess": "Match added.",
         "addMatchEntrantTbd": "TBD",
+        "participantsButton": "Teams",
+        "participantsTitle": "Teams in {name}",
+        "participantsDescription": "Teams listed here appear in the public standings, even before any match is added.",
+        "participantsEmpty": "No team is registered in this tournament yet.",
+        "participantsCount": "{count, plural, one {# team} other {# teams}}",
+        "participantsSuccess": "Teams updated.",
+        "bulkMatchesButton": "Add many matches",
+        "bulkMatchesTitle": "Add many matches in {name}",
+        "bulkMatchesDescription": "Set the round, best of and date once, every match below inherits them. Teams can stay TBD. A Swiss match is named \"Round X (W-L)\" from the results already entered.",
+        "bulkMatchesSuccess": "{count, plural, one {# match added.} other {# matches added.}}",
+        "bulkMatchesAddRow": "Add a match",
+        "bulkMatchesAddFiveRows": "Add 5 matches",
+        "bulkMatchesRemoveRow": "Remove this match",
+        "bulkMatchesSubmit": "{count, plural, one {Add # match} other {Add # matches}}",
         "fieldMatchRound": "Round",
+        "fieldMatchScheduledAt": "Date and time",
         "fieldMatchBestOf": "Best of",
         "fieldMatchEntrantA": "Team A",
         "fieldMatchEntrantB": "Team B",
@@ -3843,7 +3972,13 @@
           "roundAboveMax": "This round exceeds the group's maximum number of rounds.",
           "sameEntrant": "Both slots can't hold the same team.",
           "entrantNotFound": "This team isn't registered in the tournament.",
+          "entrantHasMatches": "A team with matches in this group can't be removed.",
           "entrantNotInGroup": "This team isn't assigned to this group.",
+          "recordMismatch": "These two teams don't have the same win and loss record before this round.",
+          "invalidDate": "Invalid date.",
+          "noMatches": "Add at least one match.",
+          "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Only round robin groups can count matches from the whole stage.",
           "cannotMove": "This container can't be moved further.",
           "parentInvalid": "This set can't be used here.",
           "tiebreakersInvalid": "Use each tiebreaker once, from the list offered.",
@@ -3860,6 +3995,7 @@
             "points": "Points",
             "buchholz": "Buchholz",
             "map_diff": "Map difference",
+            "game_diff": "Game difference",
             "round_diff": "Round difference",
             "head_to_head": "Head to head",
             "seed": "Seed"
@@ -3868,17 +4004,23 @@
         "pointsConfig": {
           "title": "Points",
           "hint": "Each match, map and round won or lost gives points to the team. Rounds count only on maps with a recorded score.",
+          "hintGames": "Each match and game won or lost gives points to the team.",
           "enable": "Use points",
           "scopes": {
             "match": "Match",
             "map": "Each map",
+            "game": "Each game",
             "round": "Each round",
             "forfeit": "Forfeit (replaces the others)"
           },
           "win": "Won",
           "loss": "Lost",
           "notUsed": "Points only order the group once Points is in the tiebreakers."
-        }
+        },
+        "fieldMatchScope": "Teams also play teams from other groups (count matches from the whole stage)",
+        "fieldMatchScopeHint": "Only the teams pinned to this group are listed, and their completed matches in any group of this stage count. Pin the teams after saving. Round robin only.",
+        "matchScopeNoTeams": "No teams are pinned to this group yet, so its table is empty. Assign teams to it first.",
+        "matchScopeSwitchWarning": "Switching to stage scope lists only the pinned teams. Teams that played in this group but aren't pinned will disappear from its table until you pin them."
       },
       "bracketPage": {
         "title": "Bracket management",
@@ -4340,6 +4482,7 @@
           "manualScoreboardDescription": "For games without a Riot match ID to Fetch (LAN, too old, etc).",
           "columnPlayer": "Player",
           "columnIgn": "IGN",
+          "previousLineupNote": "Previous lineup (last map played), replaced once the map is fetched.",
           "noPlayerData": "No player data.",
           "columnAgent": "Agent",
           "columnKills": "Kills",
@@ -4445,6 +4588,163 @@
             "mergeInvalidMatchId": "One of the Riot match IDs is invalid.",
             "mergeInvalidRoundRange": "Each segment's first round must be before its last round.",
             "mergeMapNotFound": "This map no longer exists."
+          }
+        },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft of game {order}",
+          "backToMatch": "Back to match",
+          "description": "The ban and pick order of this game. Leave a step empty when it was not used.",
+          "differsWarning": "The import disagrees with the saved draft: a re-import found other champions. Review the draft and save to keep yours.",
+          "blueSide": "Blue side",
+          "blueLockedHint": "Set by the import (Riot's blue team).",
+          "firstPickLockedHint": "Set by the import (the side that made the first ban).",
+          "firstPick": "First pick",
+          "phase": {
+            "ban1": "Ban phase 1",
+            "pick1": "Pick phase 1",
+            "ban2": "Ban phase 2",
+            "pick2": "Pick phase 2"
+          },
+          "side": {
+            "blue": "Blue",
+            "red": "Red"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "No champion",
+          "searchPlaceholder": "Search champions",
+          "noResults": "No champions match",
+          "unplacedTitle": "Picks not placed yet",
+          "save": "Save draft",
+          "saving": "Saving…",
+          "saved": "Draft saved",
+          "error": {
+            "notFound": "This game could not be found.",
+            "entrantsUnset": "Both teams of the match must be set first.",
+            "blueNotAnEntrant": "The blue side must be one of the two teams of the match.",
+            "blueLocked": "The blue side of an imported game is set by the import.",
+            "firstPickLocked": "The first pick of an imported game is set by the import.",
+            "invalidFirstPick": "The first pick must be blue or red.",
+            "invalidStep": "Step {step} does not exist or is given twice.",
+            "unknownChampion": "{championName} is not in the champion list.",
+            "duplicateChampion": "{championName} is in the draft more than once."
+          }
+        },
+        "games": {
+          "heading": "Games",
+          "description": "The games played in this series, in order.",
+          "empty": "No games yet.",
+          "gameLabel": "Game {order}",
+          "winnerLabel": "Winner: {name}",
+          "noWinner": "No winner yet",
+          "finished": "Finished",
+          "notFinished": "Not finished",
+          "draftButton": "Draft",
+          "draftDiffers": "Import differs from the saved draft",
+          "forfeit": "Forfeit",
+          "cancel": "Cancel",
+          "save": "Save",
+          "saving": "Saving…",
+          "createButton": "Add game",
+          "createTitle": "Add game",
+          "editTitle": "Edit game",
+          "dialogDescription": "Enter the result of one game of this series.",
+          "editButton": "Edit",
+          "deleteButton": "Delete",
+          "deleteTitle": "Delete game",
+          "deleteConfirm": "Delete game {order}? The match score is recalculated from the remaining games.",
+          "deleteError": "The game could not be deleted.",
+          "deleteSuccess": "Game deleted.",
+          "saveError": "The game could not be saved.",
+          "saveSuccess": "Game saved.",
+          "fieldOrder": "Order",
+          "fieldWinner": "Winner",
+          "fieldWinnerNone": "No winner yet",
+          "fieldCompleted": "Completed",
+          "fieldForfeit": "Forfeit",
+          "fieldNote": "Note",
+          "fieldError": {
+            "invalid": "Enter a valid value.",
+            "tooLong": "Too long.",
+            "duplicateOrder": "Another game already uses this order.",
+            "winnerRequired": "A completed game needs a winner.",
+            "notAnEntrant": "The winner must be one of the two teams.",
+            "notCompleted": "Mark the game as completed to set a winner.",
+            "invalidMatchId": "Use the format EUW1_6123456789: a platform code, an underscore, then the match number.",
+            "duplicateMatchId": "Another game already uses this Riot match ID."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "For example EUW1_6123456789. The platform is read from it.",
+          "leaguepedia": {
+            "label": "Leaguepedia game",
+            "none": "None",
+            "noData": "no data",
+            "gameNumber": "Game {number}",
+            "fetch": "Fetch from Leaguepedia",
+            "fetching": "Fetching…",
+            "renew": "Renew",
+            "reprocess": "Reprocess",
+            "success": "Game stored from Leaguepedia",
+            "error": {
+              "noData": "This game has no V5 data on Leaguepedia.",
+              "notInBucket": "This game is not in the bucket yet. Fetch it first.",
+              "pageInvalid": "Leaguepedia's pages for this game are not valid match data.",
+              "fetch": "Leaguepedia could not be read. Try again later.",
+              "missingConfig": "The Leaguepedia bot login is not set up on this server.",
+              "sidesUnresolved": "The two teams of this game do not match the two entrants of the series.",
+              "missingPlayers": "{count, plural, one {# player is not linked to a person yet} other {# players are not linked to a person yet}}",
+              "invalidUpload": "The game data did not pass the import checks.",
+              "storeFailed": "The game could not be stored.",
+              "invalidOrder": "The game number must be a whole number, 1 or more.",
+              "lolIdConflict": "A Riot account is already linked to another person.",
+              "sidesInvalid": "Choose two different entrants for blue and red.",
+              "roleInvalid": "A role in the change is not valid.",
+              "orderTaken": "Game {order} of this series is already stored with other data. Choose another game number and save again.",
+              "dataDragonUnavailable": "Champion names are unavailable right now, try again later.",
+              "unknownChampions": "Unknown champion id(s): {ids}",
+              "storageUnavailable": "The LoL imports bucket could not be reached. Check its configuration, then try again.",
+              "duplicateAccount": "The same Riot account is linked twice. Link each account only once.",
+              "riotUnavailable": "Riot's data could not be read right now. Try again later.",
+              "tournamentRealm": "This game was played on the tournament realm. Fetch it from Leaguepedia instead."
+            },
+            "searchPlaceholder": "Search by team, game or date",
+            "noResults": "No games match",
+            "previewTitle": "Check the game",
+            "previewDescription": "Choose the entrant for each side, and link every player who is not linked yet.",
+            "back": "Back",
+            "saveGame": "Save game",
+            "sideBlue": "Blue",
+            "sideRed": "Red",
+            "sidesTitle": "Sides",
+            "blueSide": "Blue side",
+            "redSide": "Red side",
+            "chooseEntrant": "Choose an entrant",
+            "suggestedPlayers": "Suggested from the linked players",
+            "suggestedNames": "Suggested from the team names",
+            "winnerLabel": "Winner: {name}",
+            "noWinner": "No winner",
+            "lengthLabel": "Length: {minutes} min",
+            "playersTitle": "Players",
+            "notLinked": "Not linked yet",
+            "linkExisting": "Link existing",
+            "createNew": "Create new",
+            "newHandle": "Name of the new person",
+            "unresolvedHint": "Link or create a person for every player who is not linked yet.",
+            "roleLabel": "Role",
+            "roleNone": "No role",
+            "positionRole": "Map positions suggest {role}",
+            "alreadyStoredHere": "stored as game {order} of this series",
+            "alreadyStoredElsewhere": "stored in another series",
+            "refreshGames": "Refresh game list",
+            "refreshCooldown": "Refreshed less than an hour ago. Try again later.",
+            "refreshed": "Game list refreshed ({count} games)",
+            "refreshError": "The game list could not be refreshed. Try again later.",
+            "riotFetch": "Fetch from Riot",
+            "riotSuccess": "Game stored from Riot",
+            "riotTournamentRealm": "This game was played on the tournament realm, so it can't be fetched from the Riot API."
           }
         },
         "liquipediaImportButton": "Liquipedia Match Import"
@@ -4725,7 +5025,30 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "Importing and fetching Riot data, this can take a moment.",
         "close": "Close"
-      }
+      },
+      "leaguepedia": {
+        "title": "Leaguepedia games",
+        "description": "The game list comes from Leaguepedia's Cargo tables, for the base page and every page under it.",
+        "basePageLabel": "Leaguepedia base page",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Saving reads the games from Leaguepedia. If the read fails, nothing is saved.",
+        "save": "Save and fetch games",
+        "saving": "Fetching…",
+        "refresh": "Refresh from Leaguepedia",
+        "lastFetched": "Last fetched {date} · {count, plural, one {# game} other {# games}}",
+        "neverFetched": "Not fetched yet",
+        "success": "{count, plural, one {# game} other {# games}} fetched",
+        "error": {
+          "gameClaimed": "These games already belong to another tournament, so they cannot be linked here.",
+          "invalidBasePage": "Use a page name without # < > [ ] | '{ }', and no leading or trailing /.",
+          "notFound": "Tournament not found.",
+          "notLinked": "Save a base page first.",
+          "cooldown": "The game list was read less than an hour ago. Try again later.",
+          "missingConfig": "The Leaguepedia bot login is not set up on this server.",
+          "fetch": "Leaguepedia could not be read. Try again later."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Reports",
@@ -4811,6 +5134,88 @@
       "statDismissed": "Dismissed",
       "error": {
         "notFound": "This entry no longer exists."
+      },
+      "images": {
+        "title": "Discord bot images",
+        "subtitle": "Alert images customized by servers. A verified image leaves the list and comes back only if it is edited.",
+        "empty": "No image to review.",
+        "imageAlt": "Alert image of a server",
+        "openImage": "Open the image in a new tab",
+        "event": {
+          "match_live": "Live match",
+          "match_finished": "Match finished",
+          "map_finished": "Map finished"
+        },
+        "server": "Server",
+        "unknownUser": "Unknown account",
+        "guildBlacklisted": "Server blacklisted",
+        "userBlacklisted": "User blacklisted",
+        "verifyButton": "Verify",
+        "sanctionButton": "Sanction",
+        "verifySuccess": "Image verified.",
+        "error": {
+          "notFound": "This image was already handled or no longer exists."
+        },
+        "sanction": {
+          "title": "Sanction this image",
+          "description": "Choose what happens to the server and the person who uploaded this image.",
+          "sanctionsLabel": "Sanctions",
+          "option": {
+            "blacklistGuild": {
+              "label": "Blacklist the server",
+              "hint": "The server can no longer use the dashboard and receives no more alerts."
+            },
+            "blacklistUser": {
+              "label": "Blacklist the Discord account",
+              "hint": "This Discord account can no longer manage the bot on any server."
+            },
+            "resetImage": {
+              "label": "Reset the image",
+              "hint": "The custom image is deleted and the server goes back to the plain text alert."
+            },
+            "editMessages": {
+              "label": "Edit the messages already sent with this image",
+              "hint": "The image is removed from the posted alerts and replaced by a notice saying GC Stats moderation removed it."
+            }
+          },
+          "alreadyBlacklisted": "Already blacklisted.",
+          "reasonLabel": "Reason",
+          "reasonHint": "Kept with the blacklist entry.",
+          "cancel": "Cancel",
+          "submit": "Sanction",
+          "submitting": "Sanctioning...",
+          "success": "Sanction applied.",
+          "error": {
+            "notFound": "This image was already handled or no longer exists.",
+            "sanctions": {
+              "required": "Select at least one sanction."
+            },
+            "blacklistUser": {
+              "noEditor": "The Discord account of the last editor is unknown."
+            },
+            "reason": {
+              "required": "Enter a reason.",
+              "tooLong": "The reason is too long (max {max} characters)."
+            }
+          },
+          "successQueued": "Sanction applied, {count} messages will be edited shortly."
+        },
+        "editor": "Edited by",
+        "history": {
+          "title": "History",
+          "subtitle": "Every decision taken on alert images, kept even after the image is reset.",
+          "empty": "No decision yet.",
+          "verified": "Verified",
+          "sanctioned": "Sanctioned",
+          "moderator": "Decided by",
+          "reason": "Reason",
+          "sanction": {
+            "blacklist_guild": "Server blacklisted",
+            "blacklist_user": "Account blacklisted",
+            "reset_image": "Image reset",
+            "edit_messages": "Messages edited"
+          }
+        }
       }
     },
     "forum": {
@@ -5333,6 +5738,247 @@
         "tooShort": "At least {min} characters.",
         "tooLong": "At most {max} characters."
       }
+    },
+    "rosterWatch": {
+      "title": "Roster watch",
+      "subtitle": "Tweets of the team accounts, sorted by an AI so roster changes can be reviewed by a human.",
+      "empty": "Nothing to review here.",
+      "tabs": {
+        "roster": "Roster",
+        "unsure": "To check",
+        "done": "Reviewed"
+      },
+      "filters": {
+        "period": "Period",
+        "periodAny": "Any period",
+        "periodDays": "Last {days} days",
+        "topic": "Topic",
+        "topicAny": "Any topic"
+      },
+      "topic": {
+        "roster_join": "Player joins",
+        "roster_leave": "Player leaves",
+        "roster_bench": "Player benched",
+        "staff_change": "Staff change",
+        "tryouts": "Tryouts",
+        "not_enough_info": "Not enough info",
+        "wrong_game": "Wrong game",
+        "match_promo": "Match promo",
+        "match_result": "Match result",
+        "highlight": "Highlight",
+        "sponsor": "Sponsor",
+        "merch": "Merch",
+        "giveaway": "Giveaway",
+        "stream": "Stream",
+        "content": "Content",
+        "community": "Community",
+        "other": "Other"
+      },
+      "verdict": {
+        "roster": "Roster",
+        "not_roster": "Not roster",
+        "unsure": "Unsure"
+      },
+      "card": {
+        "openTweet": "Open the tweet",
+        "noText": "No text",
+        "openPhoto": "Open the photo",
+        "openVideo": "Open the video",
+        "players": "People:"
+      },
+      "actions": {
+        "editTeam": "Edit the team",
+        "ignore": "Ignore",
+        "notRoster": "Not roster",
+        "done": "Done"
+      },
+      "deck": {
+        "next": "Next",
+        "back": "Back",
+        "remaining": "{count} left on this page",
+        "allSeen": "You went through every tweet of this page.",
+        "restart": "Start over",
+        "showOriginal": "Show the original",
+        "showTranslation": "Show the English translation",
+        "explanation": "Explanation",
+        "explanationPlaceholder": "Why is it not about the roster?",
+        "confirm": "Confirm",
+        "pickTopic": "What is it about?"
+      },
+      "reviewed": {
+        "team_edited": "Team edited",
+        "ignored": "Ignored",
+        "marked_not_roster": "Marked as not roster",
+        "reported_missed": "Reported as missed"
+      },
+      "error": {
+        "notFound": "This tweet no longer exists.",
+        "invalidState": "This tweet cannot take this action, it may already be reviewed.",
+        "invalidTopic": "Pick a valid topic.",
+        "noteTooLong": "The note is too long (1000 characters max)."
+      },
+      "accounts": {
+        "title": "Followed accounts",
+        "subtitle": "X accounts fetched once a day.",
+        "team": "Team",
+        "teamPlaceholder": "Pick a team",
+        "teamSearch": "Search a team",
+        "teamNoResults": "No team found",
+        "handle": "X handle",
+        "add": "Add",
+        "added": "Account added.",
+        "enabled": "Enabled",
+        "toastEnabled": "Account enabled.",
+        "toastDisabled": "Account disabled.",
+        "lastPolled": "Last fetch",
+        "lastError": "Last error",
+        "empty": "No account followed yet.",
+        "noResults": "No account matches this search.",
+        "searchPlaceholder": "Search a team or a handle",
+        "count": "{count, plural, one {# account} other {# accounts}}",
+        "previous": "Previous page",
+        "next": "Next page",
+        "error": {
+          "notFound": "This account no longer exists.",
+          "teamRequired": "Pick a team.",
+          "teamNotFound": "This team no longer exists.",
+          "handleRequired": "Enter an X handle.",
+          "handleInvalid": "The handle must be 1 to 15 letters, digits or underscores.",
+          "handleTaken": "This handle is already followed."
+        }
+      },
+      "import": {
+        "button": "Auto import",
+        "title": "Import X accounts",
+        "description": "Follows the X account found in the socials of each team of the tournament.",
+        "tournament": "Tournament",
+        "tournamentPlaceholder": "Pick a tournament",
+        "tournamentSearch": "Search a tournament",
+        "tournamentNoResults": "No tournament found",
+        "stage": "Stage",
+        "allStages": "All stages",
+        "cancel": "Cancel",
+        "submit": "Import",
+        "importing": "Importing...",
+        "success": "{added, plural, =0 {No account added} one {# account added} other {# accounts added}}. Already followed: {alreadyFollowed}, no X account: {noTwitter}, invalid: {invalid}.",
+        "error": {
+          "tournamentRequired": "Pick a tournament.",
+          "tournamentNotFound": "This tournament no longer exists.",
+          "stageNotFound": "This stage does not belong to the tournament."
+        }
+      },
+      "searchPlaceholder": "Search a tweet or a team",
+      "searchSubmit": "Search",
+      "statusLabel": "Status",
+      "columnTeam": "Team",
+      "columnTweet": "Tweet",
+      "columnType": "Type",
+      "columnDate": "Date",
+      "columnReview": "Review"
+    },
+    "teamRequests": {
+      "title": "Team requests",
+      "subtitle": "Track and send our requests for information to teams: logo, socials and roster.",
+      "tabs": {
+        "recommended": "Recommended",
+        "pending": "In progress",
+        "done": "Done"
+      },
+      "scopeLabel": "Requests shown",
+      "scope": {
+        "mine": "My requests",
+        "all": "All requests"
+      },
+      "recommended": {
+        "pickTeam": "Prepare a request for another team",
+        "pickPlaceholder": "Select a team",
+        "searchPlaceholder": "Search a team...",
+        "noResults": "No team found.",
+        "empty": "No recommended team. Every team that played recently already has a request.",
+        "emptyTitle": "No team selected",
+        "emptyHint": "Pick a team on the right to prepare a request.",
+        "listTitle": "Recommended teams ({count})"
+      },
+      "table": {
+        "empty": "No request here.",
+        "contact": "{kind}, {channel}, {label}",
+        "message": "Message",
+        "markDone": "Mark as done",
+        "reopen": "Reopen",
+        "markedDone": "Request marked as done.",
+        "reopened": "Request reopened.",
+        "openContact": "Open contact"
+      },
+      "socials": {
+        "twitter": "Twitter",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "youtube": "YouTube",
+        "tiktok": "TikTok",
+        "discord": "Discord",
+        "website": "Website",
+        "email": "Email",
+        "other": "Other"
+      },
+      "builder": {
+        "title": "Request for {team}",
+        "description": "Green means nothing to do, red means we ask the team for the information.",
+        "loading": "Loading the team data and its latest matches...",
+        "alreadyPending": "A request is already in progress for this team.",
+        "dataTitle": "What we hold",
+        "dataHint": "Click a status to switch between green (all good) and red (to ask).",
+        "toggle": "Switch the status of {item}",
+        "logo": "Logo",
+        "roster": "Roster",
+        "missing": "Missing",
+        "rosterCount": "{current} current, {past} past",
+        "rosterCurrent": "Current roster",
+        "rosterPast": "Past roster",
+        "none": "None",
+        "unlistedTitle": "Played in the last matches without being on the roster",
+        "unlistedMatches": "{count, plural, one {# match} other {# matches}}",
+        "messageTitle": "Message",
+        "messageHint": "Generated from the statuses above, you can edit it before copying.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Copy failed, select the text manually.",
+        "contactTitle": "Contact",
+        "noContact": "No contact known for this team. Add socials to the team, its organization, its manager or its coach first.",
+        "kind": {
+          "organization": "Organization",
+          "manager": "Manager",
+          "coach": "Coach",
+          "other": "Other"
+        },
+        "cancel": "Cancel",
+        "validate": "Validate the request",
+        "created": "Request added.",
+        "rosterPlayers": "Players",
+        "rosterSubs": "Subs",
+        "rosterStaff": "Staff",
+        "open": "Open this contact",
+        "customFree": "Other contact",
+        "customFreePlaceholder": "Link, handle or any contact",
+        "customEmail": "Email",
+        "customEmailPlaceholder": "name@example.com"
+      },
+      "error": {
+        "teamRequired": "Select a team.",
+        "teamNotFound": "This team does not exist.",
+        "itemsInvalid": "One of the items is not valid.",
+        "itemsRequired": "Flag at least one item in red.",
+        "messageRequired": "The message is required.",
+        "messageTooLong": "The message is too long (4000 characters maximum).",
+        "contactRequired": "Select a contact.",
+        "contactInvalid": "This contact is not valid.",
+        "contactTooLong": "This contact is too long (300 characters maximum).",
+        "urlInvalid": "The website contact must be a valid link starting with http:// or https://.",
+        "alreadyPending": "A request is already in progress for this team.",
+        "notFound": "This request does not exist.",
+        "invalidState": "This request is already in that state.",
+        "emailInvalid": "The email address is not valid.",
+        "discordInvalid": "The Discord contact must be a Discord user ID or an invite link."
+      }
     }
   },
   "dashboard": {
@@ -5366,14 +6012,17 @@
       "authorAdminSpace": "Authors",
       "logs": "Logs",
       "veto": "Map veto",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "discordSpace": "Discord bot",
+      "discordServers": "My servers"
     },
     "switcher": {
       "selectOrganization": "Select an organization",
       "authorSpace": "Author space",
       "apiKeySpace": "API key space",
       "adminAccess": "Admin",
-      "authorAdminSpace": "Authors"
+      "authorAdminSpace": "Authors",
+      "discordSpace": "Discord bot"
     },
     "picker": {
       "title": "Your organizations",
@@ -5386,7 +6035,8 @@
       "filterTagAll": "All",
       "noResults": "No organizations found.",
       "adminBadge": "Admin",
-      "authorAdminSpace": "Authors"
+      "authorAdminSpace": "Authors",
+      "discordSpace": "Discord bot"
     },
     "authors": {
       "title": "Authors",
@@ -5622,7 +6272,8 @@
       "level": {
         "tournament": "Tournament",
         "match": "Match",
-        "map": "Map"
+        "map": "Map",
+        "game": "Game"
       },
       "matchSearchPlaceholder": "Search a match…",
       "mapSearchPlaceholder": "Search a map…",
@@ -5641,7 +6292,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Matches",
       "openMaps": "Maps",
-      "goBack": "Go back"
+      "goBack": "Go back",
+      "gameEmpty": "No games in this match.",
+      "gameSearchPlaceholder": "Search a game…",
+      "openGames": "Games"
     },
     "streams": {
       "title": "Stream channels",
@@ -5779,8 +6433,14 @@
         "matchNotInTournament": "This match doesn't belong to the selected tournament.",
         "mapNotFound": "Map not found.",
         "mapNotInMatch": "This map doesn't belong to the selected match.",
-        "notFound": "VOD not found."
-      }
+        "notFound": "VOD not found.",
+        "gameNotFound": "Game not found.",
+        "gameNotInMatch": "This game doesn't belong to the selected match."
+      },
+      "scopeGame": "Specific game",
+      "gameLabel": "Game",
+      "gamePlaceholder": "Select a game…",
+      "gameLoading": "Loading…"
     },
     "apiKeys": {
       "title": "API keys",
@@ -6149,7 +6809,7 @@
     },
     "webhooks": {
       "title": "Webhooks",
-      "description": "GC Stats sends an HTTPS POST to your endpoints when a match, a tournament, a team or a player changes. Deliveries are checked about every minute.",
+      "description": "GC Stats sends an HTTPS POST to your endpoints when a match, a tournament, a team, a player or a roster changes. Deliveries are checked about every minute.",
       "pageTitle": "Webhooks",
       "pageSubtitle": "Endpoints and deliveries of your partner API keys.",
       "keySwitcher": "Partner API key",
@@ -6220,6 +6880,9 @@
         },
         "player": {
           "updated": "Player updated"
+        },
+        "roster": {
+          "updated": "Roster change validated"
         }
       },
       "filtersTitle": "Filters",
@@ -6251,7 +6914,8 @@
           "invalid": "This is not a valid URL.",
           "notHttps": "The URL must start with https://.",
           "credentials": "The URL cannot contain a username or password.",
-          "privateHost": "The URL must point to a public address."
+          "privateHost": "The URL must point to a public address.",
+          "notDiscord": "This is not a Discord webhook URL."
         },
         "description": {
           "tooLong": "At most {descriptionMaxLength} characters."
@@ -6271,6 +6935,475 @@
         },
         "filterOfficial": {
           "invalid": "Invalid value."
+        },
+        "kind": {
+          "invalid": "Pick a valid type."
+        }
+      },
+      "kind": {
+        "label": "Type",
+        "standard": "Standard",
+        "discord": "Discord",
+        "hint": {
+          "standard": "Signed JSON request sent to your server.",
+          "discord": "Posts only the tweet link in a Discord channel."
+        }
+      },
+      "urlHintDiscord": "Discord webhook URL (Server settings, Integrations, Webhooks)."
+    },
+    "discord": {
+      "serversTitle": "Discord servers",
+      "serversSubtitle": "Servers where you can manage the GC Stats bot.",
+      "serversUnavailable": "We could not read your Discord servers. Reconnect your Discord account and try again.",
+      "reconnectDiscord": "Reconnect Discord",
+      "serversEmpty": "You do not manage any Discord server. You need the Manage Server permission to configure the bot.",
+      "subscriptionCount": "{count, plural, =0 {No alert} one {# alert} other {# alerts}}",
+      "botNotJoined": "Bot not added",
+      "configure": "Configure",
+      "addBot": "Add the bot",
+      "botUnavailable": "The bot cannot be added yet.",
+      "serverTitle": "Discord server",
+      "serverSubtitle": "Choose which alerts are posted in which channel.",
+      "backToServers": "Back to servers",
+      "botNotJoinedBody": "The bot is not in this server yet. Add it to start configuring alerts.",
+      "alertsTitle": "Alerts",
+      "alertsDescription": "Each alert posts in one channel and can be filtered by region, team and official status.",
+      "add": "Add an alert",
+      "empty": "No alert yet. Add one to start receiving matches in your server.",
+      "channelsUnavailable": "The bot cannot read the channels of this server. Check that it can view them, then reload the page.",
+      "channelMissing": "Channel not found",
+      "disabledLostChannel": "Switched off, the bot lost access to this channel. Pick a channel and save to turn it back on.",
+      "active": "On",
+      "inactive": "Off",
+      "toggle": "Turn this alert on or off",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete this alert?",
+      "deleteDescription": "The bot will stop posting it. Messages already posted stay in your channel.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "created": "Alert added",
+      "updated": "Alert updated",
+      "deleted": "Alert deleted",
+      "addTitle": "Add an alert",
+      "editTitle": "Edit the alert",
+      "dialogDescription": "The bot posts in the chosen channel for every match that passes the filters.",
+      "eventLabel": "Alert type",
+      "channelLabel": "Channel",
+      "channelPlaceholder": "Select a channel",
+      "localeLabel": "Message language",
+      "localeHint": "Language of the messages posted by the bot.",
+      "filtersTitle": "Filters",
+      "filtersHint": "Leave a filter empty to receive everything.",
+      "regions": "Regions",
+      "regionsHint": "Only tournaments of the selected regions.",
+      "teams": "Teams",
+      "teamsHint": "Only matches played by one of these teams.",
+      "teamsPlaceholder": "Add a team",
+      "teamsSearch": "Search a team",
+      "teamsNoResults": "No team found",
+      "removeTeam": "Remove {name}",
+      "any": "All",
+      "event": {
+        "match_live": "Match live",
+        "match_finished": "Match finished",
+        "map_finished": "Map finished"
+      },
+      "official": {
+        "label": "Tournaments",
+        "all": "All tournaments",
+        "official": "Official only",
+        "unofficial": "Unofficial only"
+      },
+      "error": {
+        "network": "Network error, try again.",
+        "notAuthenticated": "You must be signed in.",
+        "forbidden": "You cannot manage this server.",
+        "blacklisted": "This server or your Discord account is blocked from the bot.",
+        "notFound": "This alert no longer exists.",
+        "invalid": "Some fields are invalid.",
+        "tooManySubscriptions": "A server can have at most {max} alerts.",
+        "channelsUnavailable": "The bot cannot read the channels of this server.",
+        "channelId": {
+          "required": "Select a channel.",
+          "unknownChannel": "This channel does not exist in the server."
+        },
+        "event": {
+          "invalid": "Unknown alert type."
+        },
+        "locale": {
+          "invalid": "Unknown language."
+        },
+        "filterRegions": {
+          "invalid": "Unknown region.",
+          "tooMany": "Select at most {filterRegions} regions."
+        },
+        "filterTeamIds": {
+          "invalid": "Invalid team.",
+          "tooMany": "Select at most {filterTeams} teams.",
+          "unknownTeam": "One of the teams does not exist."
+        },
+        "filterOfficial": {
+          "invalid": "Unknown value."
+        },
+        "color": {
+          "invalid": "Invalid color."
+        }
+      },
+      "alertColorLabel": "Embed color",
+      "alertColorHint": "Overrides the server color for this alert.",
+      "theme": {
+        "reset": "Reset",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "colorsTitle": "Colors",
+        "colorsDescription": "Color of the message of each alert type and default background of the images. Each alert can override its color.",
+        "color": {
+          "live": "Match live",
+          "finished": "Match finished",
+          "map": "Map finished",
+          "background": "Image background"
+        },
+        "colorsSaved": "Colors saved",
+        "botTitle": "Your own bot",
+        "botDescription": "Post the alerts with your own Discord bot (its name and avatar) instead of the GC Stats bot.",
+        "tokenLabel": "Bot token",
+        "tokenHint": "Found in the Discord Developer Portal, in the Bot tab of your application. It is stored encrypted.",
+        "botConnect": "Use this bot",
+        "botConnecting": "Checking...",
+        "botConnected": "Bot connected, invite it to your server if needed",
+        "botActive": "Alerts are posted by this bot",
+        "botInvite": "Invite the bot",
+        "botDisconnect": "Use the GC Stats bot",
+        "botDisconnectTitle": "Go back to the GC Stats bot?",
+        "botDisconnectDescription": "Your bot token is deleted and alerts are posted by the GC Stats bot again, if it is in your server.",
+        "botDisconnected": "Back to the GC Stats bot",
+        "error": {
+          "network": "Network error, try again.",
+          "notAuthenticated": "You must be signed in.",
+          "forbidden": "You cannot manage this server.",
+          "blacklisted": "This server or your Discord account is blocked from the bot.",
+          "invalid": "Some fields are invalid.",
+          "color": "Invalid color.",
+          "token": {
+            "required": "Enter the bot token.",
+            "invalidToken": "Discord rejected this token, check that it is a bot token.",
+            "rateLimited": "Too many attempts, wait a minute."
+          }
+        },
+        "matchButton": "Button to open the match",
+        "matchButtonHint": "Adds a button under each alert that opens the match page on GC Stats."
+      },
+      "templates": {
+        "title": "Image alerts",
+        "description": "Replace the text message of an alert type by an image. Pick a template, or customize it fully.",
+        "usingImage": "Posted as an image",
+        "usingText": "Posted as a text message",
+        "presetNone": "Text message, no image",
+        "presetChoose": "Template",
+        "presetSaved": "Template saved",
+        "presetLabel": "Starting design",
+        "presetHint": "Choose the information shown by the image. Everything stays editable afterwards.",
+        "preset": {
+          "score": "Score only",
+          "maps": "Score and maps",
+          "vetos": "Score and vetos",
+          "mvp": "Score and MVP",
+          "full": "Complete"
+        },
+        "footer": "Footer",
+        "footerHint": "Adds the GC Stats band with the match link under the image.",
+        "footerSaved": "Footer updated",
+        "toggle": "Use an image for this alert type",
+        "enabled": "Image alert enabled",
+        "disabled": "Back to the text message",
+        "addBackground": "Add a background",
+        "changeBackground": "Change the background",
+        "removeBackground": "Remove the background",
+        "backgroundSaved": "Background saved",
+        "backgroundRemoved": "Background removed",
+        "previewAlt": "Preview of the alert image",
+        "previewError": "Preview unavailable",
+        "error": {
+          "network": "Network error, try again.",
+          "notAuthenticated": "You must be signed in.",
+          "forbidden": "You cannot manage this server.",
+          "blacklisted": "This server or your Discord account is blocked from the bot.",
+          "invalid": "The template is invalid.",
+          "invalidImage": "This image is not valid (PNG, JPEG or WebP, at least 400 px on its shortest side).",
+          "tooLarge": "This image is larger than 10 MB.",
+          "storageFailed": "The image could not be stored, try again."
+        },
+        "editDesign": "Edit the design",
+        "presetCustom": "Customized"
+      },
+      "editor": {
+        "title": "Design of the alert: {event}",
+        "description": "Drag, resize and rotate the elements on the canvas, style them on the right and show them only under conditions. The preview as sent uses the exact rendering of the bot.",
+        "addText": "Text",
+        "addShape": "Shape",
+        "undo": "Undo",
+        "previewServer": "Preview as sent",
+        "canvasHint": "The canvas shows sample data. Arrow keys move the selected element (Shift for 10 pixels), Delete removes it. Faded elements are hidden by their conditions.",
+        "previewTitle": "Preview as sent",
+        "previewError": "The preview could not be generated.",
+        "canvasHeight": "Image height",
+        "backgroundColor": "Background color",
+        "layers": "Elements (front first)",
+        "noLayers": "No element yet.",
+        "duplicate": "Duplicate",
+        "delete": "Delete",
+        "width": "Width",
+        "height": "Height",
+        "field": {
+          "tournament": "Tournament",
+          "teamA": "Team A name",
+          "teamB": "Team B name",
+          "scoreA": "Team A score",
+          "scoreB": "Team B score",
+          "score": "Score",
+          "status": "Status",
+          "bestOf": "Best of",
+          "map": "Map name",
+          "maps": "Finished maps",
+          "matchScore": "Match score",
+          "mapsInline": "Finished maps (one line)",
+          "vetos": "Vetos",
+          "mvp": "MVP",
+          "custom": "Custom text",
+          "stage": "Tournament phase",
+          "bestOfShort": "Best of (short, BO3)",
+          "teamAShort": "Team A short name",
+          "teamBShort": "Team B short name",
+          "mvpA": "MVP of team A",
+          "mvpB": "MVP of team B",
+          "dateTime": "Date and time",
+          "date": "Date",
+          "time": "Time"
+        },
+        "customText": "Text",
+        "font": "Font",
+        "size": "Size",
+        "align": {
+          "label": "Alignment",
+          "left": "Left",
+          "center": "Center",
+          "right": "Right"
+        },
+        "color": "Color",
+        "bold": "Bold",
+        "uppercase": "Uppercase",
+        "shape": "Shape",
+        "opacity": "Opacity",
+        "radius": "Corner radius",
+        "sampleText": "Your text",
+        "tooManyLayers": "A template can have at most {max} elements.",
+        "saved": "Design saved",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "error": {
+          "network": "Network error, try again.",
+          "notAuthenticated": "You must be signed in.",
+          "forbidden": "You cannot manage this server.",
+          "blacklisted": "This server or your Discord account is blocked from the bot.",
+          "invalid": "The template is invalid.",
+          "invalidImage": "This image is not valid.",
+          "tooLarge": "This image is too large.",
+          "storageFailed": "The design could not be stored, try again."
+        },
+        "addImage": "Image",
+        "tabContent": "Content",
+        "tabLayout": "Layout",
+        "tabStyle": "Style",
+        "tabVisibility": "Conditions",
+        "conditional": "Shown under conditions",
+        "sourceMap": "Map {n}",
+        "sourceVeto": "Veto {n}",
+        "source": {
+          "teamA": "Logo of team A",
+          "teamB": "Logo of team B",
+          "mvp": "MVP picture (agent icon if none)",
+          "mapCurrent": "Current map",
+          "mvpAgent": "MVP agent icon",
+          "custom": "Custom image"
+        },
+        "variableGroup": {
+          "match": "Match",
+          "alert": "Alert and MVP",
+          "teams": "Teams",
+          "schedule": "Date and time",
+          "mvp": "MVP",
+          "maps": "Maps",
+          "vetos": "Vetos"
+        },
+        "conditionValue": {
+          "live": "Live",
+          "finished": "Finished match",
+          "map": "Finished map",
+          "ban": "Ban",
+          "pick": "Pick",
+          "decider": "Decider",
+          "a": "Team A",
+          "b": "Team B"
+        },
+        "customTextHint": "Write your own text and insert variables such as {tournament} or {veto1.map}.",
+        "insertVariable": "Insert a variable",
+        "sourceLabel": "Picture",
+        "fit": {
+          "label": "Fit",
+          "cover": "Fill (crop)",
+          "contain": "Contain"
+        },
+        "imageFallbackHint": "When there is no picture, a tile with initials is shown.",
+        "shapeHint": "A shape has no content, style it in the Style tab.",
+        "rotation": "Rotation (degrees)",
+        "alignTitle": "Align on the image",
+        "addFolder": "New folder",
+        "tooManyFolders": "A template holds {max} folders at most.",
+        "folderDefaultName": "Folder {n}",
+        "folderExpand": "Expand the folder",
+        "folderCollapse": "Collapse the folder",
+        "lockFolder": "Lock the folder",
+        "unlockFolder": "Unlock the folder",
+        "lockLayer": "Lock the layer",
+        "unlockLayer": "Unlock the layer",
+        "folder": "Folder",
+        "folderName": "Folder name",
+        "folderNameRequired": "The folder needs a name.",
+        "folderHint": "A folder groups layers in the list. Locking it locks every layer inside.",
+        "deleteFolder": "Delete the folder",
+        "layerLockedHint": "This layer is locked, unlock it to edit or move it.",
+        "folderLockedHint": "This layer is locked by its folder, unlock the folder to edit or move it.",
+        "noFolder": "No folder",
+        "anchorPoint": "Text anchor",
+        "anchorX": "Anchor position (X)",
+        "anchorHint": "The text starts, is centered or ends at this X position, whatever its length.",
+        "anchor": {
+          "left": "Start of the text",
+          "center": "Center of the text",
+          "right": "End of the text"
+        },
+        "alignLeft": "Align left",
+        "alignCenterX": "Center horizontally",
+        "alignRight": "Align right",
+        "alignTop": "Align top",
+        "alignCenterY": "Center vertically",
+        "alignBottom": "Align bottom",
+        "letterSpacing": "Letter spacing",
+        "lineHeight": "Line height",
+        "shadow": "Shadow",
+        "shadowColor": "Shadow color",
+        "shadowBlur": "Blur",
+        "shadowX": "Offset X",
+        "shadowY": "Offset Y",
+        "borderWidth": "Border width",
+        "borderColor": "Border color",
+        "gradient": "Gradient",
+        "color2": "Second color",
+        "angle": "Angle (degrees)",
+        "conditionsHint": "The element is drawn only when every condition below is true.",
+        "conditionKey": "Variable",
+        "conditionOp": "Condition",
+        "conditionValueLabel": "Value",
+        "op": {
+          "is": "is",
+          "isNot": "is not",
+          "exists": "is filled",
+          "empty": "is empty"
+        },
+        "addCondition": "Add a condition",
+        "removeCondition": "Remove this condition",
+        "footer": "GC Stats footer",
+        "artwork": "Map artwork as background",
+        "artworkSource": "Artwork of",
+        "artworkDim": "Darkening",
+        "artworkHint": "Ignored when a background image is uploaded.",
+        "loadingMatch": "Loading the preview match",
+        "timezone": "Time zone",
+        "variableName": {
+          "tournament": "Tournament name",
+          "stage": "Tournament phase",
+          "status": "Status (live or finished)",
+          "bestOf": "Best of (Best of 3)",
+          "bestOfShort": "Best of, short (BO3)",
+          "score": "Score of the match or the map",
+          "scoreA": "Score of team A",
+          "scoreB": "Score of team B",
+          "matchScore": "Score of the match",
+          "teamA": "Name of team A",
+          "teamB": "Name of team B",
+          "teamAShort": "Short name of team A",
+          "teamBShort": "Short name of team B",
+          "dateTime": "Date and time of the match",
+          "date": "Date of the match",
+          "time": "Time of the match",
+          "scheduledAt": "Scheduled start",
+          "alert_kind": "Type of alert",
+          "map": "Name of the finished map",
+          "currentMap_name": "Name of the current map",
+          "currentMap_number": "Number of the current map",
+          "maps": "Finished maps (list)",
+          "mapsInline": "Finished maps (one line)",
+          "vetos": "Vetos (one line)",
+          "mvp": "MVP of the match or the map",
+          "mvpA": "MVP of team A",
+          "mvpB": "MVP of team B",
+          "mvp_name": "MVP player",
+          "mvp_acs": "MVP ACS",
+          "mvp_agent": "MVP agent",
+          "mvpA_name": "MVP player of team A",
+          "mvpA_acs": "MVP ACS of team A",
+          "mvpA_agent": "MVP agent of team A",
+          "mvpB_name": "MVP player of team B",
+          "mvpB_acs": "MVP ACS of team B",
+          "mvpB_agent": "MVP agent of team B",
+          "map_alias": "Name of map {n}",
+          "map_name": "Name of map {n}",
+          "map_score": "Score of map {n}",
+          "map_scoreA": "Score of team A on map {n}",
+          "map_scoreB": "Score of team B on map {n}",
+          "veto_map": "Map of veto {n}",
+          "veto_action": "Action of veto {n} (ban, pick, decider)",
+          "veto_team": "Team of veto {n}",
+          "veto_type": "Type of veto {n}",
+          "veto_side": "Side of veto {n} (attack or defense)"
+        },
+        "insertVariableHint": "Click a variable to insert it in the text at the cursor.",
+        "templateLabel": "Template",
+        "applyTemplate": "Replace the design by this template",
+        "templateHint": "Replaces every layer by the template. You can undo it.",
+        "templateApplied": "Template applied",
+        "layoutLayer": "Layout",
+        "pickImage": "Choose a picture",
+        "pickImageHint": "Each type of picture comes with its own size, you can change it afterwards.",
+        "imageCategory": {
+          "teams": "Teams",
+          "mvp": "MVP",
+          "maps": "Maps",
+          "vetos": "Vetos",
+          "custom": "Custom image"
+        },
+        "customUrl": "Image address",
+        "customUrlHint": "Public https link to an image. Nothing is uploaded, the image stays on its own site and is downloaded when the alert is sent.",
+        "customUrlRequired": "The image address is required.",
+        "customUrlInvalid": "Enter a valid https address.",
+        "useImage": "Use this image",
+        "sendTest": "Send a test",
+        "sendTestHint": "Posts this design, filled with a real match, in the channel of your choice. Unsaved changes are included.",
+        "testChannel": "Channel",
+        "testChannelPlaceholder": "Choose a channel",
+        "sendTestAction": "Send",
+        "sending": "Sending",
+        "testSent": "Test sent",
+        "testError": {
+          "required": "Choose a channel.",
+          "unknownChannel": "This channel does not exist on the server.",
+          "rateLimited": "Wait a few seconds before sending another test.",
+          "channelsUnavailable": "The channels of the server cannot be read.",
+          "sendFailed": "The test could not be sent, check that the bot may write in this channel."
         }
       }
     }
@@ -6575,6 +7708,7 @@
       "title": "Your account",
       "checkbox": "This is me: link my account to {name}",
       "hint": "Staff will check that this profile is really yours before linking it to your account.",
+      "replaces": "Your account is currently linked to {previous}: that link will be replaced once approved.",
       "state": {
         "linkedToYou": "This profile is already linked to your account.",
         "linkedToOther": "This profile is already linked to another account. Contact staff if you think it's a mistake.",
@@ -6686,8 +7820,32 @@
     "tabPickem": "Pick'em",
     "tabStats": "Stats",
     "tabMaps": "Maps",
+    "tabChampions": "Champions",
+    "championsEmpty": "No games played yet.",
+    "championsRolesColumn": "Roles",
+    "championsRoleBansNote": "Bans and presence count every role.",
+    "championsInsightMostPicked": "Most picked",
+    "championsInsightMostBanned": "Most banned",
+    "championsInsightHighestPresence": "Highest presence",
+    "championsInsightHighestWinRate": "Highest win rate",
+    "championsInsightHighestKda": "Highest KDA",
     "tabProduction": "Production",
     "productionTitle": "{tournament} · Production",
+    "statsGroupByLabel": "Group by",
+    "statsGroupBy": {
+      "none": "No grouping",
+      "agent": "Agent",
+      "role": "Role",
+      "team": "Team",
+      "nationality": "Nationality"
+    },
+    "statsRole": {
+      "duelist": "Duelist",
+      "initiator": "Initiator",
+      "controller": "Controller",
+      "sentinel": "Sentinel"
+    },
+    "statsGroupUnknown": "Unknown",
     "statsIdentityColumn": "Player",
     "statsAgentColumn": "Agent",
     "statsNationalityColumn": "Nationality",
@@ -6705,6 +7863,15 @@
     "statsFilterAgentAll": "All agents",
     "statsFilterMap": "Map",
     "statsFilterMapAll": "All maps",
+    "statsChampionColumn": "Champions",
+    "statsFilterChampion": "Champion",
+    "statsFilterChampionAll": "All champions",
+    "statsFilterChampionSearch": "Search champion…",
+    "statsFilterChampionNoResult": "No champion found",
+    "statsFilterRole": "Role",
+    "statsFilterRoleAll": "All roles",
+    "statsFilterPatch": "Patch",
+    "statsFilterPatchAll": "All patches",
     "statsFilterStartDate": "From",
     "statsFilterEndDate": "To",
     "statsFilterSubmit": "Apply filters",
@@ -6715,13 +7882,32 @@
     "statsColumnFilterValuePlaceholder": "Value to match...",
     "statsColumnFilterAddAnother": "Add another filter",
     "statsColumnFilterApply": "Apply",
+    "statsColumnFilterSearch": "Search...",
+    "statsColumnFilterNoResult": "No result",
     "statsColumnFilterClear": "Clear",
     "previous": "Previous",
     "next": "Next",
     "pageOf": "Page {page} of {total}",
     "statsColumns": {
       "played": "Maps",
+      "playedGames": "Games",
+      "winRate": "Win rate",
+      "picks": "Picks",
+      "bans": "Bans",
+      "presence": "Presence",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "Rounds",
+      "rating": "Rating",
       "acs": "ACS",
       "kills": "Kills",
       "deaths": "Deaths",
@@ -6763,7 +7949,8 @@
     "mapsPickRatesShowMore": "Show all",
     "mapsPickRatesShowLess": "Show less",
     "factOrganizer": "Organizer",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Games"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -6977,6 +8164,10 @@
     "text": "Some information on this page comes from Liquipedia.",
     "link": "See the original article"
   },
+  "leaguepediaSource": {
+    "text": "Some game data on this page comes from Leaguepedia (CC BY-SA). See the original pages:",
+    "game": "Game {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
@@ -7021,7 +8212,8 @@
     "copied": "Copied",
     "copyError": "The image could not be copied. Download it instead.",
     "exporting": "Generating",
-    "exportError": "The image could not be generated. Try again."
+    "exportError": "The image could not be generated. Try again.",
+    "descriptionGames": "PNG image {width} px wide, ready to share. Choose all games or a single game."
   },
   "share": {
     "button": "Share",
@@ -7149,6 +8341,16 @@
     "switcherLabel": "Game",
     "valorant": "VALORANT",
     "lol": "League of Legends"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lanes",
+    "fromGames": "From games:",
+    "invalid": "Only the five lanes can be selected."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

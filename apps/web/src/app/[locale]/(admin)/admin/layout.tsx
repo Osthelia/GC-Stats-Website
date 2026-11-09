@@ -16,6 +16,10 @@ import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { countPendingDiscordImages } from "@/lib/admin-discord-image-reviews";
+import { getAdminReportCounts } from "@/lib/admin-reports";
+import { getRosterWatchTabCounts } from "@/lib/admin-roster-watch";
+import { getAdminModerationSuspectCounts } from "@/lib/admin-moderation-suspects";
 
 // Overrides the root layout's "%s — GC-Stats" template for everything under
 // /admin — every admin page sets its own short `title` (via generateMetadata
@@ -38,14 +42,29 @@ export default async function AdminLayout({
   const permissions = new Set([...access.permissions, ...perGame.flatMap((a) => [...a.permissions])]);
   const isSuperAdmin = access.isSuperAdmin || perGame.some((a) => a.isSuperAdmin);
 
-  const pendingPerGame = await Promise.all(
+  const can = (permission: string) => isSuperAdmin || permissions.has(permission);
+  // Change requests exist per game: the badge shows when any game has a pending one the viewer may see.
+  const pendingChangeRequests = Promise.all(
     GAMES.map(async (game, i) => {
       const gameAccess = perGame[i]!;
       const canSee = access.isSuperAdmin || gameAccess.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView) || gameAccess.permissions.has(PERMISSIONS.changeRequestsView);
       return canSee && (await getAdminChangeRequestCounts(game)).pending > 0;
     })
-  );
-  const hasPendingChangeRequests = pendingPerGame.some(Boolean);
+  ).then((pending) => pending.some(Boolean));
+  const [changeRequests, discordImages, reports, rosterWatch, moderation] = await Promise.all([
+    pendingChangeRequests,
+    can(PERMISSIONS.moderationView) ? countPendingDiscordImages().then((count) => count > 0) : false,
+    can(PERMISSIONS.reportsView) ? getAdminReportCounts().then((counts) => counts.pending > 0) : false,
+    can(PERMISSIONS.rosterWatchView) ? getRosterWatchTabCounts().then((counts) => counts.roster + counts.unsure > 0) : false,
+    can(PERMISSIONS.moderationView) ? getAdminModerationSuspectCounts().then((counts) => counts.pending > 0) : false,
+  ]);
+  const alerts = {
+    "/admin/change-requests": changeRequests,
+    "/admin/discord-images": discordImages,
+    "/admin/reports": reports,
+    "/admin/roster-watch": rosterWatch,
+    "/admin/moderation": moderation,
+  };
 
   return (
     <NextIntlClientProvider>
@@ -53,7 +72,7 @@ export default async function AdminLayout({
         <AdminSidebar
           permissions={[...permissions]}
           isSuperAdmin={isSuperAdmin}
-          hasPendingChangeRequests={hasPendingChangeRequests}
+          alerts={alerts}
         />
         <SidebarInset>
           <AdminHeader />

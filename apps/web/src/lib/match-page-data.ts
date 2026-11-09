@@ -26,8 +26,10 @@ import {
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
+import { compareMatchPlayers } from "@/lib/match-player-order";
+import { getActiveRatingModelId } from "@/lib/rating/active-model";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, seriesMapTableOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { buildTeamDisplayResolver, type TeamDisplayResolver } from "@/lib/historical-team-display";
 import {
   ECO_TIERS,
@@ -264,6 +266,10 @@ export type MatchMapPlayerRow = {
   headshotPercentage: number;
   clutchesWon: number;
   clutchesPlayed: number;
+  /** GCS rating, null when the map could not be rated. */
+  rating: number | null;
+  /** Rounds behind the rating, used to weight it across maps. */
+  ratingRounds: number | null;
 };
 
 type ClutchesJson = Record<string, { won?: number; total?: number }>;
@@ -344,6 +350,8 @@ export async function getMatchMaps(
         firstDeaths: mapPlayerStats.firstDeaths,
         headshotPercentage: mapPlayerStats.headshotPercentage,
         clutches: mapPlayerStats.clutches,
+        rating: mapPlayerStats.rating,
+        ratingRounds: mapPlayerStats.ratingRounds,
       })
       .from(mapPlayerStats)
       .leftJoin(people, eq(people.id, mapPlayerStats.personId))
@@ -367,7 +375,7 @@ export async function getMatchMaps(
         kastPercentage: Number(s.kastPercentage),
         headshotPercentage: Number(s.headshotPercentage),
       }))
-      .sort((a, b) => b.acs - a.acs);
+      .sort(compareMatchPlayers);
 
     return {
       id: r.id,
@@ -395,18 +403,20 @@ export async function getMatchMaps(
  * Maps and per map stats of a completed match, cached a day. Invalidated by the admin match
  * and map fetch actions (`match:{id}`) and by player handle edits (`match-stats`).
  */
-export function getCompletedMatchStats(
+export async function getCompletedMatchStats(
   game: GameSlug, matchId: number,
   entrantAId: number | null,
   entrantBId: number | null,
 ): Promise<[MatchMap[], MatchMapsStats]> {
+  // Keyed by the active rating model: a rating recompute (run outside Next) cannot revalidate tags.
+  const ratingModelId = await getActiveRatingModelId();
   return unstable_cache(
     () =>
       Promise.all([
         getMatchMaps(game, matchId, entrantAId, entrantBId),
         getMatchMapsStatsBatch(matchId, entrantAId, entrantBId),
       ]),
-    ["completed-match-stats-v2", game, String(matchId), String(entrantAId), String(entrantBId)],
+    ["completed-match-stats-v3", game, String(matchId), String(entrantAId), String(entrantBId), String(ratingModelId)],
     { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }
@@ -438,6 +448,8 @@ export function aggregateMatchStats(
       firstDeaths: number;
       clutchesWon: number;
       clutchesPlayed: number;
+      ratingSum: number;
+      ratingRounds: number;
       n: number;
     }
   >();
@@ -464,6 +476,8 @@ export function aggregateMatchStats(
       firstDeaths: 0,
       clutchesWon: 0,
       clutchesPlayed: 0,
+      ratingSum: 0,
+      ratingRounds: 0,
       n: 0,
     };
     if (s.agentName) agg.agents.add(s.agentName);
@@ -478,6 +492,10 @@ export function aggregateMatchStats(
     agg.firstDeaths += s.firstDeaths;
     agg.clutchesWon += s.clutchesWon;
     agg.clutchesPlayed += s.clutchesPlayed;
+    if (s.rating != null && s.ratingRounds) {
+      agg.ratingSum += s.rating * s.ratingRounds;
+      agg.ratingRounds += s.ratingRounds;
+    }
     agg.n += 1;
     byPerson.set(key, agg);
   }
@@ -501,16 +519,18 @@ export function aggregateMatchStats(
       headshotPercentage: a.hsSum / a.n,
       clutchesWon: a.clutchesWon,
       clutchesPlayed: a.clutchesPlayed,
+      rating: a.ratingRounds > 0 ? a.ratingSum / a.ratingRounds : null,
+      ratingRounds: a.ratingRounds > 0 ? a.ratingRounds : null,
     }),
   );
 
   return {
     playersA: players
       .filter((p) => p.entrantId === entrantAId)
-      .sort((a, b) => b.acs - a.acs),
+      .sort(compareMatchPlayers),
     playersB: players
       .filter((p) => p.entrantId === entrantBId)
-      .sort((a, b) => b.acs - a.acs),
+      .sort(compareMatchPlayers),
   };
 }
 
@@ -976,7 +996,7 @@ export async function getMatchStreams(game: GameSlug, matchId: number): Promise<
 
 export async function getMatchVods(game: GameSlug, matchId: number): Promise<MatchVod[]> {
   const { vods } = gameTables(game);
-  const { maps } = valorantTablesOf(game);
+  const mapTable = seriesMapTableOf(game);
   const rows = await db
     .select({
       id: vods.id,
@@ -992,11 +1012,12 @@ export async function getMatchVods(game: GameSlug, matchId: number): Promise<Mat
   const mapIds = rows
     .map((r) => r.mapId)
     .filter((id): id is number => id != null);
+  // map_id is a Valorant map or a LoL game of the series, so the order comes from the table of the game.
   const mapOrders = mapIds.length
     ? await db
-        .select({ id: maps.id, order: maps.order })
-        .from(maps)
-        .where(inArray(maps.id, mapIds))
+        .select({ id: mapTable.id, order: mapTable.order })
+        .from(mapTable)
+        .where(inArray(mapTable.id, mapIds))
     : [];
   const orderByMapId = new Map(mapOrders.map((m) => [m.id, m.order]));
 
@@ -1035,6 +1056,19 @@ export async function getMatchPlayerPovs(
     .leftJoin(people, eq(people.id, matchPlayerPovs.personId))
     .where(eq(matchPlayerPovs.matchId, matchId));
   return rows;
+}
+
+export type LeaguepediaSourceGame = { order: number; url: string };
+
+/** The games of a LoL series imported from Leaguepedia, each with the wiki page it came from (its CC BY-SA attribution). */
+export async function getLeaguepediaSourceGames(matchId: number): Promise<LeaguepediaSourceGame[]> {
+  const { games } = leagueTablesOf("lol");
+  const rows = await db
+    .select({ order: games.order, riotMatchId: games.apiMatchId })
+    .from(games)
+    .where(and(eq(games.matchId, matchId), eq(games.source, "leaguepedia"), isNotNull(games.apiMatchId)))
+    .orderBy(asc(games.order));
+  return rows.map((row) => ({ order: row.order, url: `https://lol.fandom.com/wiki/V5_data:${row.riotMatchId}` }));
 }
 
 /** Per-player multi-kill breakdown (2k/3k/4k/5k rounds) + Sheriff kills, mirroring V1's MatchStatsService::performanceFor(). Keyed by person id. */

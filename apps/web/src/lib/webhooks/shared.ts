@@ -9,12 +9,19 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-export const WEBHOOK_EVENTS = ["match.created", "match.updated", "tournament.created", "tournament.updated", "team.updated", "player.updated"] as const;
+export const WEBHOOK_EVENTS = ["match.created", "match.updated", "tournament.created", "tournament.updated", "team.updated", "player.updated", "roster.updated"] as const;
 export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];
 
 export function isWebhookEvent(value: unknown): value is WebhookEvent {
   return typeof value === "string" && (WEBHOOK_EVENTS as readonly string[]).includes(value);
 }
+
+/** Event sent when an admin validates a roster watch signal, queued directly (no database trigger). */
+export const ROSTER_WEBHOOK_EVENT: WebhookEvent = "roster.updated";
+
+/** `standard` is a signed JSON POST, `discord` posts the tweet link only to a Discord webhook URL. */
+export const WEBHOOK_KINDS = ["standard", "discord"] as const;
+export type WebhookKind = (typeof WEBHOOK_KINDS)[number];
 
 /** Region and official filters only apply to these events, team and player events always pass them. */
 export const WEBHOOK_REGION_SCOPED_EVENTS: readonly WebhookEvent[] = ["match.created", "match.updated", "tournament.created", "tournament.updated"];
@@ -35,6 +42,7 @@ export type WebhookDeliveryStatus = (typeof WEBHOOK_DELIVERY_STATUSES)[number];
 
 export type WebhookEndpointView = {
   id: number;
+  kind: WebhookKind;
   url: string;
   description: string | null;
   events: WebhookEvent[];

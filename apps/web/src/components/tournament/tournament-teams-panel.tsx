@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { TeamBadge } from "@/components/home/team-badge";
 import { QualificationSourceIcon } from "@/components/tournament/qualification-source-icon";
 import { slugify } from "@/lib/entity-id";
+import { LaneIcons } from "@/components/match/lol-icon";
 import type { TournamentParticipant } from "@/lib/tournament-page-data";
 
 /**
@@ -108,8 +109,9 @@ export function TournamentTeamsPanel({
                 {rosterShown && hasRoster && (
                   <div className="flex w-full flex-col items-center justify-center gap-1 rounded-lg py-2" style={{ background: "var(--gcs-surface-3)" }}>
                     {p.roster.map((player) => (
-                      <span key={player.personId} className="w-full truncate text-[12px] font-semibold leading-tight text-neutral-200">
-                        {player.handle}
+                      <span key={player.personId} className="flex w-full items-center justify-center gap-1 truncate text-[12px] font-semibold leading-tight text-neutral-200">
+                        <LaneIcons lanes={player.lanes} size={14} />
+                        <span className="truncate">{player.handle}</span>
                       </span>
                     ))}
                   </div>

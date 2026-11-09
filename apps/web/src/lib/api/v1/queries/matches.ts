@@ -17,6 +17,7 @@ import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { toApiTeamFromJoined, type ApiTeam } from "../entities";
 import { resolveEntrantTeamIds } from "../entrant-teams";
 import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
+import { roundRating } from "../rating";
 
 function entrantAAlias(game: GameSlug) {
   const { entrants } = gameTables(game);
@@ -193,6 +194,8 @@ export type ApiMapPlayerStat = {
   first_deaths: number;
   kast_percentage: number;
   headshot_percentage: number;
+  rating: number | null;
+  rating_rounds: number | null;
 };
 
 export type ApiRoundKillEvent = { kill_player_id: number | null; victim_player_id: number; time_ms: number };
@@ -247,7 +250,8 @@ export async function getMatchStatsResponse(game: GameSlug, matchId: number): Pr
   const mapIds = mapRows.map((m) => m.id);
   if (mapIds.length === 0) return { ...core, vetos, maps: [] };
 
-  const [playerStatRows, roundRows] = await Promise.all([
+  // Round level tables are joined to their rounds by map, so every query runs in parallel instead of waiting for the round ids.
+  const [playerStatRows, roundRows, loadoutRows, damageRows, killRows] = await Promise.all([
     db
       .select({
         id: mapPlayerStats.id,
@@ -264,6 +268,8 @@ export async function getMatchStatsResponse(game: GameSlug, matchId: number): Pr
         firstDeaths: mapPlayerStats.firstDeaths,
         kastPercentage: mapPlayerStats.kastPercentage,
         headshotPercentage: mapPlayerStats.headshotPercentage,
+        rating: mapPlayerStats.rating,
+        ratingRounds: mapPlayerStats.ratingRounds,
       })
       .from(mapPlayerStats)
       .where(inArray(mapPlayerStats.mapId, mapIds)),
@@ -281,9 +287,41 @@ export async function getMatchStatsResponse(game: GameSlug, matchId: number): Pr
       .from(mapRoundsRaw)
       .where(inArray(mapRoundsRaw.mapId, mapIds))
       .orderBy(asc(mapRoundsRaw.roundNumber)),
+    db
+      .select({
+        mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
+        personId: mapRoundPlayerLoadoutsRaw.personId,
+        kills: mapRoundPlayerLoadoutsRaw.kills,
+        assists: mapRoundPlayerLoadoutsRaw.assists,
+        score: mapRoundPlayerLoadoutsRaw.score,
+        economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
+        economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
+        weapon: mapRoundPlayerLoadoutsRaw.weapon,
+        armor: mapRoundPlayerLoadoutsRaw.armor,
+      })
+      .from(mapRoundPlayerLoadoutsRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundPlayerLoadoutsRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds)),
+    db
+      .select({
+        mapRoundId: mapRoundDamagesRaw.mapRoundId,
+        attackerPersonId: mapRoundDamagesRaw.attackerPersonId,
+        damage: sql<number>`sum(${mapRoundDamagesRaw.damage})`,
+        headshots: sql<number>`sum(${mapRoundDamagesRaw.headshots})`,
+        bodyshots: sql<number>`sum(${mapRoundDamagesRaw.bodyshots})`,
+        legshots: sql<number>`sum(${mapRoundDamagesRaw.legshots})`,
+      })
+      .from(mapRoundDamagesRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundDamagesRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds))
+      .groupBy(mapRoundDamagesRaw.mapRoundId, mapRoundDamagesRaw.attackerPersonId),
+    db
+      .select({ mapRoundId: mapRoundKillsRaw.mapRoundId, killerPersonId: mapRoundKillsRaw.killerPersonId, victimPersonId: mapRoundKillsRaw.victimPersonId, timeMs: mapRoundKillsRaw.timeMs })
+      .from(mapRoundKillsRaw)
+      .innerJoin(mapRoundsRaw, eq(mapRoundsRaw.id, mapRoundKillsRaw.mapRoundId))
+      .where(inArray(mapRoundsRaw.mapId, mapIds))
+      .orderBy(asc(mapRoundKillsRaw.timeMs)),
   ]);
-
-  const roundIds = roundRows.map((r) => r.id);
 
   const entrantIds = [
     ...new Set(
@@ -291,43 +329,6 @@ export async function getMatchStatsResponse(game: GameSlug, matchId: number): Pr
     ),
   ];
   const teamByEntrant = await resolveEntrantTeamIds(game, entrantIds);
-
-  const [loadoutRows, damageRows, killRows] =
-    roundIds.length > 0
-      ? await Promise.all([
-          db
-            .select({
-              mapRoundId: mapRoundPlayerLoadoutsRaw.mapRoundId,
-              personId: mapRoundPlayerLoadoutsRaw.personId,
-              kills: mapRoundPlayerLoadoutsRaw.kills,
-              assists: mapRoundPlayerLoadoutsRaw.assists,
-              score: mapRoundPlayerLoadoutsRaw.score,
-              economySpent: mapRoundPlayerLoadoutsRaw.economySpent,
-              economyRemaining: mapRoundPlayerLoadoutsRaw.economyRemaining,
-              weapon: mapRoundPlayerLoadoutsRaw.weapon,
-              armor: mapRoundPlayerLoadoutsRaw.armor,
-            })
-            .from(mapRoundPlayerLoadoutsRaw)
-            .where(inArray(mapRoundPlayerLoadoutsRaw.mapRoundId, roundIds)),
-          db
-            .select({
-              mapRoundId: mapRoundDamagesRaw.mapRoundId,
-              attackerPersonId: mapRoundDamagesRaw.attackerPersonId,
-              damage: sql<number>`sum(${mapRoundDamagesRaw.damage})`,
-              headshots: sql<number>`sum(${mapRoundDamagesRaw.headshots})`,
-              bodyshots: sql<number>`sum(${mapRoundDamagesRaw.bodyshots})`,
-              legshots: sql<number>`sum(${mapRoundDamagesRaw.legshots})`,
-            })
-            .from(mapRoundDamagesRaw)
-            .where(inArray(mapRoundDamagesRaw.mapRoundId, roundIds))
-            .groupBy(mapRoundDamagesRaw.mapRoundId, mapRoundDamagesRaw.attackerPersonId),
-          db
-            .select({ mapRoundId: mapRoundKillsRaw.mapRoundId, killerPersonId: mapRoundKillsRaw.killerPersonId, victimPersonId: mapRoundKillsRaw.victimPersonId, timeMs: mapRoundKillsRaw.timeMs })
-            .from(mapRoundKillsRaw)
-            .where(inArray(mapRoundKillsRaw.mapRoundId, roundIds))
-            .orderBy(asc(mapRoundKillsRaw.timeMs)),
-        ])
-      : [[], [], []];
 
   const damageByRoundPlayer = new Map<string, { damage: number; headshots: number; bodyshots: number; legshots: number }>();
   for (const row of damageRows) {
@@ -401,6 +402,8 @@ export async function getMatchStatsResponse(game: GameSlug, matchId: number): Pr
       first_deaths: row.firstDeaths,
       kast_percentage: Number(row.kastPercentage),
       headshot_percentage: Number(row.headshotPercentage),
+      rating: roundRating(row.rating),
+      rating_rounds: row.rating != null ? row.ratingRounds : null,
     });
     playerStatsByMap.set(row.mapId, list);
   }

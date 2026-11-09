@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "team_info_requests_one_pending_idx" ON "team_info_requests" USING btree ("team_id") WHERE "team_info_requests"."status" = 'pending';
