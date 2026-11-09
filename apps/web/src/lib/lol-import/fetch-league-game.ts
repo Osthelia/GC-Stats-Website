@@ -229,7 +229,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
   try {
     stored = await readLolImport(input.game.source, resolved.riotMatchId);
   } catch (err) {
-    console.error(`[${input.game.source}] could not read game ${resolved.riotMatchId} from the imports bucket`, err);
+    console.error("[%s] could not read game %s from the imports bucket", input.game.source, resolved.riotMatchId, err);
     return { ok: false, error: { kind: "storageUnavailable" } };
   }
   if (!stored) return { ok: false, error: { kind: "notInBucket" } };
