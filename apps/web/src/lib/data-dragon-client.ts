@@ -17,7 +17,7 @@
 import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { adminDb as db, db as cachedDb } from "@gc-stats/db/client";
 import { lolDataDragonCatalogs, lolDataDragonIcons } from "@gc-stats/db";
-import { compareVersions, internalPatch, missingIcons, patchOf, pickDataDragonVersion, pickStoredVersion, summonersRiftItemIds, type DataDragonIconRef } from "@gc-stats/lol-stats-engine";
+import { compareVersions, internalPatch, missingIcons, patchOf, pickDataDragonVersion, pickStoredVersion, roleQuestItemIds, summonersRiftItemIds, type DataDragonIconRef } from "@gc-stats/lol-stats-engine";
 import { convertToWebp, putObject } from "@gc-stats/storage";
 import { lolIconKey, lolIconUrl, type LolIconKind } from "./lol-icons";
 
@@ -52,7 +52,7 @@ interface ChampionFile {
 }
 
 interface ItemFile {
-  data: Record<string, { name: string; maps?: Record<string, boolean> }>;
+  data: Record<string, { name: string; tags?: string[]; maps?: Record<string, boolean> }>;
 }
 
 interface SummonerFile {
@@ -334,13 +334,13 @@ async function syncIcons(version: string): Promise<boolean> {
   return results.every(Boolean);
 }
 
-/** Every icon of the version: all champions, the Summoner's Rift items, all summoner spells and the rune trees and perks. */
+/** Every icon of the version: all champions, the Summoner's Rift items and the role quest items, all summoner spells and the rune trees and perks. */
 function iconsOfVersion(version: string, champions: ChampionFile, items: ItemFile, spells: SummonerFile, runeStyles: RuneStyleFile[]): Icon[] {
   const icons: Icon[] = [];
   for (const champion of Object.values(champions.data)) {
     icons.push({ kind: "champions", id: champion.id, size: 128, url: `${CDN}/${version}/img/champion/${champion.id}.png` });
   }
-  for (const id of summonersRiftItemIds(items.data)) icons.push({ kind: "items", id, size: 64, url: `${CDN}/${version}/img/item/${id}.png` });
+  for (const id of [...summonersRiftItemIds(items.data), ...roleQuestItemIds(items.data)]) icons.push({ kind: "items", id, size: 64, url: `${CDN}/${version}/img/item/${id}.png` });
   // Data Dragon names each spell's image by its own name, so the numeric id comes from the file.
   for (const spell of Object.values(spells.data)) icons.push({ kind: "spells", id: spell.key, size: 64, url: `${CDN}/${version}/img/spell/${spell.image.full}` });
   for (const style of runeStyles) {

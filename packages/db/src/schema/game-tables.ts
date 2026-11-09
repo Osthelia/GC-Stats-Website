@@ -1006,6 +1006,7 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     damage: integer("damage").notNull().default(0), // damage dealt to champions
     vision: integer("vision").notNull().default(0), // Riot visionScore
     items: jsonb("items").notNull().default([]), // item ids, in slot order
+    roleBoundItem: integer("role_bound_item"), // the role quest item (Riot roleBoundItem), null when the player has none
     runes: jsonb("runes").notNull().default({}), // the whole rune page: primary and secondary trees with their runes, and the stat shards
     summoners: jsonb("summoners").notNull().default([]), // the two summoner spell ids (4 Flash, 14 Ignite...)
     // Lane diffs at 10 and 15 minutes, player minus lane opponent. Null without an opponent or a frame.

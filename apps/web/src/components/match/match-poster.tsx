@@ -324,6 +324,7 @@ function posterRows(rows: LeagueScoreRow[]): LeagueScoreRow[] {
     ...row,
     champions: row.champions.map((champion) => ({ ...champion, iconUrl: posterIcon(champion.iconUrl) })),
     items: row.items?.map((item) => ({ ...item, iconUrl: posterIcon(item.iconUrl) })),
+    roleItem: row.roleItem && { ...row.roleItem, iconUrl: posterIcon(row.roleItem.iconUrl) },
     runes: row.runes && { ...row.runes, keystoneIconUrl: posterIcon(row.runes.keystoneIconUrl), secondaryIconUrl: posterIcon(row.runes.secondaryIconUrl) },
   }));
 }

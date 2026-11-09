@@ -28,6 +28,7 @@ export type LeagueScoreRow = {
   csPerMinute: number | null;
   goldPerMinute: number | null;
   items?: { name: string; iconUrl: string | null }[];
+  roleItem?: { name: string; iconUrl: string | null } | null;
   runes?: PlayerRunes;
 };
 
@@ -51,6 +52,7 @@ export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): 
       csPerMinute: player.csPerMinute,
       goldPerMinute: player.goldPerMinute,
       items: player.items,
+      roleItem: player.roleItem,
       runes: player.runes,
     }));
 }

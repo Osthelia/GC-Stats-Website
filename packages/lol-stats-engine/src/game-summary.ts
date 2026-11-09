@@ -47,6 +47,8 @@ export interface LeaguePlayerStatsRow {
   damage: number;
   vision: number;
   items: number[];
+  /** The role quest item, null when the player has none. */
+  roleBoundItem: number | null;
   /** The whole rune page: both trees with every selected rune, in order, and the stat shards. */
   runes: { primaryStyle: number; primaryPerks: number[]; subStyle: number; subPerks: number[]; statPerks: { offense: number; flex: number; defense: number } | null };
   /** The two summoner spell ids (Flash, Ignite...), in the order the player took them. */
@@ -186,6 +188,7 @@ function buildPlayerRow(p: RiotParticipantDto, ctx: LeagueSummaryContext, assign
     vision: p.visionScore,
     // Slot order, empty slots dropped.
     items: [p.item0, p.item1, p.item2, p.item3, p.item4, p.item5, p.item6].filter((id) => id !== 0),
+    roleBoundItem: p.roleBoundItem ? p.roleBoundItem : null,
     runes: {
       primaryStyle: primary?.style ?? 0,
       primaryPerks: primary?.selections.map((s) => s.perk) ?? [],

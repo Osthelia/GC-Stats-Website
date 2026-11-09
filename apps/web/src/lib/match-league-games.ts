@@ -56,6 +56,8 @@ export type LeagueGamePlayer = {
   csPerMinute: number | null;
   goldPerMinute: number | null;
   items: { name: string; iconUrl: string | null }[];
+  /** The role quest item, shown under the trinket. Null when the player has none. */
+  roleItem: { name: string; iconUrl: string | null } | null;
   runes: PlayerRunes;
 };
 
@@ -151,6 +153,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
         cs: gamePlayerStats.cs,
         gold: gamePlayerStats.gold,
         items: gamePlayerStats.items,
+        roleBoundItem: gamePlayerStats.roleBoundItem,
         runes: gamePlayerStats.runes,
       })
       .from(gamePlayerStats)
@@ -218,6 +221,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
           csPerMinute: perMinute(row.cs, game.durationSeconds),
           goldPerMinute: perMinute(row.gold, game.durationSeconds),
           items: (row.items as number[]).map((id) => ({ name: itemNames[String(id)] ?? "Item", iconUrl: lolIconUrl("items", String(id)) })),
+          roleItem: row.roleBoundItem === null ? null : { name: itemNames[String(row.roleBoundItem)] ?? "Item", iconUrl: lolIconUrl("items", String(row.roleBoundItem)) },
           runes: runesOf(row.runes, runeNames),
         })),
     };

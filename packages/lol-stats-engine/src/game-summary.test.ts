@@ -126,3 +126,25 @@ describe("summoner spells and the rune page", () => {
     expect(row.runes.statPerks).toEqual(raw.perks.statPerks);
   });
 });
+
+describe("the role quest item", () => {
+  const withRoleItem = (roleBoundItem: number | undefined): RiotMatchDto => {
+    const copy: RiotMatchDto = structuredClone(match);
+    copy.info.participants.forEach((p, i) => {
+      p.roleBoundItem = i === 0 ? roleBoundItem : 0;
+    });
+    return copy;
+  };
+  const rowsOf = (m: RiotMatchDto) =>
+    buildGameSummary(m, { gameId: 1, order: 1, entrantIdBySide: { blue: 10, red: 20 }, personIdByPuuid, championNameById: namesForEveryChampion(m) }).players;
+
+  it("keeps Riot's roleBoundItem, and null for a player without one", () => {
+    const rows = rowsOf(withRoleItem(3865));
+    expect(rows.find((p) => p.personId === match.info.participants[0]!.participantId)!.roleBoundItem).toBe(3865);
+    expect(rows.filter((p) => p.roleBoundItem === null)).toHaveLength(9);
+  });
+
+  it("is null when the field is missing", () => {
+    expect(rowsOf(withRoleItem(undefined)).every((p) => p.roleBoundItem === null)).toBe(true);
+  });
+});

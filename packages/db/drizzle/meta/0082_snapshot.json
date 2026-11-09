@@ -2946,6 +2946,12 @@
           "notNull": true,
           "default": "'[]'::jsonb"
         },
+        "role_bound_item": {
+          "name": "role_bound_item",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "runes": {
           "name": "runes",
           "type": "jsonb",

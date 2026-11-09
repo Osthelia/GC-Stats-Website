@@ -27,6 +27,17 @@ export function summonersRiftItemIds(items: Record<string, { maps?: Record<strin
     .map(([id]) => id);
 }
 
+/**
+ * The ids of the role quest items (the quests and their rewards, e.g. "Top Lane Quest Reward"). Riot sends one of them
+ * as a player's `roleBoundItem`. They are flagged for no map and are not sold, so `summonersRiftItemIds` leaves them out;
+ * Data Dragon marks them with the Lane tag and "Quest" in the (English) name.
+ */
+export function roleQuestItemIds(items: Record<string, { name?: string; tags?: string[]; maps?: Record<string, boolean> }>): string[] {
+  return Object.entries(items)
+    .filter(([id, item]) => Number.isInteger(Number(id)) && item.maps?.[SUMMONERS_RIFT_MAP_ID] !== true && item.tags?.includes("Lane") === true && /quest/i.test(item.name ?? ""))
+    .map(([id]) => id);
+}
+
 /** The icons of a version that no stored row covers yet. Order and duplicates of `wanted` are kept apart: each icon comes back once. */
 export function missingIcons(wanted: DataDragonIconRef[], stored: DataDragonIconRef[]): DataDragonIconRef[] {
   const have = new Set(stored.map(iconKey));
