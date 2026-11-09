@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "Am Relay ist kein League-of-Legends-API-Key gesetzt oder seine Cache-Datenbank ist nicht erreichbar. Prüfe LOL_RIOT_API_KEY und die Datenbank am Relay.",
         "routeUnavailable": "Das Relay bietet die League-Routen, die diese Suche braucht, nicht an. Aktualisiere das Relay.",
         "relayUnreachable": "Das Riot-Relay ist nicht erreichbar. Prüfe, ob es läuft und ob RIOT_RELAY_URL stimmt.",
-        "riotUnavailable": "Die Daten von Riot konnten gerade nicht gelesen werden. Versuche es später erneut."
+        "riotUnavailable": "Die Daten von Riot konnten gerade nicht gelesen werden. Versuche es später erneut.",
+        "rateLimited": "Riot begrenzt die Anfragen dieses Schlüssels. Warte eine Minute, bevor du es erneut versuchst.",
+        "rateLimitedIn": "Riot begrenzt die Anfragen dieses Schlüssels. Versuche es in {seconds} s erneut.",
+        "invalidRequest": "Das Relay hat die Anfrage als ungültig abgelehnt. Prüfe Riot-ID, Region und Zeitfenster.",
+        "notFound": "Riot hat zu dieser Anfrage keine Daten: Das Konto oder Spiel existiert nicht oder gehört nicht zu dieser Region."
       }
     },
     "finance": {

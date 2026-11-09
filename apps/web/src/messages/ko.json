@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "릴레이에 League of Legends API 키가 설정되어 있지 않거나 캐시 데이터베이스를 사용할 수 없습니다. 릴레이의 LOL_RIOT_API_KEY와 데이터베이스를 확인하세요.",
         "routeUnavailable": "릴레이에 이 검색에 필요한 League 경로가 없습니다. 릴레이를 업데이트하세요.",
         "relayUnreachable": "Riot 릴레이에 연결할 수 없습니다. 실행 중인지, RIOT_RELAY_URL이 올바른지 확인하세요.",
-        "riotUnavailable": "지금은 Riot 데이터를 읽을 수 없습니다. 나중에 다시 시도하세요."
+        "riotUnavailable": "지금은 Riot 데이터를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+        "rateLimited": "Riot이 이 키의 요청을 제한하고 있습니다. 1분 후 다시 시도하세요.",
+        "rateLimitedIn": "Riot이 이 키의 요청을 제한하고 있습니다. {seconds}초 후 다시 시도하세요.",
+        "invalidRequest": "릴레이가 잘못된 요청으로 거부했습니다. Riot ID, 지역, 기간을 확인하세요.",
+        "notFound": "Riot에 이 요청에 대한 데이터가 없습니다. 계정이나 경기가 없거나 이 지역에 없습니다."
       }
     },
     "finance": {

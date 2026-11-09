@@ -49,7 +49,7 @@ export function PlayerRiotAccountsCard({ playerId, playerHandle, accounts, canEd
       case "alreadyOnPlayer":
         return t("riotAccountErrorAlreadyOnPlayer");
       default:
-        return isRiotErrorKind(result.error) ? riotText(result.error, result.riotId) : t("riotAccountErrorGeneric");
+        return isRiotErrorKind(result.error) ? riotText(result.error, result.riotId, result.retryAfterSeconds) : t("riotAccountErrorGeneric");
     }
   }
 

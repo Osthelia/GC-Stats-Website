@@ -42,8 +42,8 @@ import {
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
-import { getLolMatch, getLolTimeline, relayProblemKind, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
-import type { RelayProblemKind } from "@/lib/riot-errors";
+import { getLolMatch, getLolTimeline, relayProblem, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import type { RelayProblem } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
@@ -76,7 +76,7 @@ export type GameImportError =
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
   | { kind: "storageUnavailable" }
-  | { kind: RelayProblemKind }
+  | RelayProblem
   | { kind: "tournamentRealm" }
   | { kind: "storeFailed"; message: string };
 
@@ -471,7 +471,7 @@ function riotLoadError(error: RiotGameError): GameImportError {
     case "storageUnavailable":
       return { kind: "storageUnavailable" };
     case "riotUnavailable":
-      return { kind: relayProblemKind(error.error) };
+      return relayProblem(error.error);
   }
 }
 

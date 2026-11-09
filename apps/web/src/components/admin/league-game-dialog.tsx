@@ -30,7 +30,7 @@ import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { GameImportPreview } from "@/components/admin/league-game-preview";
 import { LeagueGameFind, type FindSaved } from "@/components/admin/league-game-find";
 import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
-import { isRelayProblemKind } from "@/lib/riot-errors";
+import { isRelayProblemKind, retryAfterOf } from "@/lib/riot-errors";
 import type { FoundGame } from "@/actions/admin-leaguepedia";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
@@ -191,7 +191,7 @@ export function LeagueGameDialog({
         const { error } = result;
         toast.error(
           isRelayProblemKind(error.kind)
-            ? riotText(error.kind)
+            ? riotText(error.kind, undefined, retryAfterOf(error))
             : t(`gameImport.error.${error.kind}`, {
                 count: error.kind === "missingPlayers" ? error.count : 0,
                 ids: error.kind === "unknownChampions" ? error.ids.join(", ") : "",

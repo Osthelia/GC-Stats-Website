@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "リレーに League of Legends の API キーが設定されていないか、キャッシュデータベースが利用できません。リレー側の LOL_RIOT_API_KEY とデータベースを確認してください。",
         "routeUnavailable": "リレーに、この検索に必要な League のルートがありません。リレーを更新してください。",
         "relayUnreachable": "Riot リレーに接続できません。起動していることと RIOT_RELAY_URL が正しいことを確認してください。",
-        "riotUnavailable": "Riot のデータを現在読み込めません。しばらくしてから再度お試しください。"
+        "riotUnavailable": "Riot のデータを現在読み込めません。しばらくしてから再度お試しください。",
+        "rateLimited": "Riot がこのキーのリクエストを制限しています。1 分待ってからもう一度お試しください。",
+        "rateLimitedIn": "Riot がこのキーのリクエストを制限しています。{seconds} 秒後にもう一度お試しください。",
+        "invalidRequest": "リレーがリクエストを無効として拒否しました。Riot ID、リージョン、期間を確認してください。",
+        "notFound": "Riot にこのリクエストのデータがありません。アカウントまたは試合が存在しないか、このリージョンにありません。"
       }
     },
     "finance": {

@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "Le relais n'a pas de clé d'API League of Legends configurée, ou sa base de données de cache est indisponible. Vérifiez LOL_RIOT_API_KEY et la base de données du relais.",
         "routeUnavailable": "Le relais ne propose pas les routes League nécessaires à cette recherche. Mettez le relais à jour.",
         "relayUnreachable": "Le relais Riot est injoignable. Vérifiez qu'il fonctionne et que RIOT_RELAY_URL est correcte.",
-        "riotUnavailable": "Les données de Riot n'ont pas pu être lues pour le moment. Réessayez plus tard."
+        "riotUnavailable": "Les données de Riot n'ont pas pu être lues pour le moment. Réessayez plus tard.",
+        "rateLimited": "Riot limite les requêtes de cette clé. Attendez une minute avant de réessayer.",
+        "rateLimitedIn": "Riot limite les requêtes de cette clé. Réessayez dans {seconds} s.",
+        "invalidRequest": "Le relais a refusé la requête comme invalide. Vérifiez le Riot ID, la région et la fenêtre de temps.",
+        "notFound": "Riot n'a aucune donnée pour cette requête : le compte ou la partie n'existe pas, ou n'est pas sur cette région."
       }
     },
     "finance": {

@@ -2865,7 +2865,11 @@
         "relayLeagueUnavailable": "Relay tidak memiliki kunci API League of Legends atau database cache-nya tidak tersedia. Periksa LOL_RIOT_API_KEY dan database di relay.",
         "routeUnavailable": "Relay tidak menyediakan rute League yang dibutuhkan pencarian ini. Perbarui relay.",
         "relayUnreachable": "Relay Riot tidak dapat dijangkau. Pastikan relay berjalan dan RIOT_RELAY_URL benar.",
-        "riotUnavailable": "Data Riot tidak dapat dibaca saat ini. Coba lagi nanti."
+        "riotUnavailable": "Data Riot tidak dapat dibaca saat ini. Coba lagi nanti.",
+        "rateLimited": "Riot membatasi permintaan kunci ini. Tunggu semenit sebelum mencoba lagi.",
+        "rateLimitedIn": "Riot membatasi permintaan kunci ini. Coba lagi dalam {seconds} dtk.",
+        "invalidRequest": "Relay menolak permintaan karena tidak valid. Periksa Riot ID, wilayah, dan rentang waktu.",
+        "notFound": "Riot tidak punya data untuk permintaan ini: akun atau game tidak ada, atau tidak berada di wilayah ini."
       }
     },
     "finance": {

@@ -2865,7 +2865,11 @@
         "relayLeagueUnavailable": "Walang naka-set na League of Legends API key ang relay, o hindi available ang cache database nito. Suriin ang LOL_RIOT_API_KEY at ang database sa relay.",
         "routeUnavailable": "Wala sa relay ang mga League route na kailangan ng paghahanap na ito. I-update ang relay.",
         "relayUnreachable": "Hindi maabot ang Riot relay. Tiyaking tumatakbo ito at tama ang RIOT_RELAY_URL.",
-        "riotUnavailable": "Hindi mabasa ang datos ng Riot ngayon. Subukan muli mamaya."
+        "riotUnavailable": "Hindi mabasa ang datos ng Riot ngayon. Subukan muli mamaya.",
+        "rateLimited": "Nililimitahan ng Riot ang mga request ng key na ito. Maghintay ng isang minuto bago subukan ulit.",
+        "rateLimitedIn": "Nililimitahan ng Riot ang mga request ng key na ito. Subukan ulit sa loob ng {seconds} s.",
+        "invalidRequest": "Tinanggihan ng relay ang request dahil hindi valid. Suriin ang Riot ID, ang region at ang time window.",
+        "notFound": "Walang data ang Riot para sa request na ito: wala ang account o laro, o wala ito sa region na ito."
       }
     },
     "finance": {

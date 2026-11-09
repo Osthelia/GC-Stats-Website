@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "中继没有设置 League of Legends API 密钥，或其缓存数据库不可用。请检查中继上的 LOL_RIOT_API_KEY 和数据库。",
         "routeUnavailable": "中继没有此搜索所需的 League 路由。请更新中继。",
         "relayUnreachable": "无法连接到 Riot 中继。请检查它是否在运行，以及 RIOT_RELAY_URL 是否正确。",
-        "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。"
+        "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。",
+        "rateLimited": "Riot 正在限制此密钥的请求。请等待一分钟后再试。",
+        "rateLimitedIn": "Riot 正在限制此密钥的请求。请在 {seconds} 秒后重试。",
+        "invalidRequest": "中继认为该请求无效并拒绝了它。请检查 Riot ID、地区和时间范围。",
+        "notFound": "Riot 没有此请求的数据：账号或比赛不存在，或不在此地区。"
       }
     },
     "finance": {

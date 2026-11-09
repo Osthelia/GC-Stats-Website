@@ -14,7 +14,7 @@
 
 import type { RiotMatchDto, RiotTimelineDto } from "@gc-stats/lol-stats-engine";
 import { callRelay, relayConfig, type RelayResult, type RiotRelayError } from "./riot-relay-transport";
-import type { RelayProblemKind } from "./riot-errors";
+import type { RelayProblem, RelayProblemKind } from "./riot-errors";
 
 function matchPath(cluster: string, riotMatchId: string, suffix: string): string {
   return `/lol/match/${cluster}/${encodeURIComponent(riotMatchId)}${suffix}`;
@@ -93,9 +93,21 @@ export function relayProblemKind(error: RiotRelayError): RelayProblemKind {
     case "relayUnreachable":
     case "networkError":
       return "relayUnreachable";
+    case "rateLimited":
+      return "rateLimited";
+    case "invalidRequest":
+      return "invalidRequest";
+    case "notFound":
+      return "notFound";
     default:
       return "riotUnavailable";
   }
+}
+
+/** The cause and, for a rate limit, the seconds Riot asked to wait, so the admin knows when trying again is worth it. */
+export function relayProblem(error: RiotRelayError): RelayProblem {
+  const kind = relayProblemKind(error);
+  return error.kind === "rateLimited" && error.retryAfterSeconds !== null ? { kind, retryAfterSeconds: Math.ceil(error.retryAfterSeconds) } : { kind };
 }
 
 function missingConfig(): { ok: false; error: RiotRelayError } {

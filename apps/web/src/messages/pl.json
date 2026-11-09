@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "Przekaźnik nie ma ustawionego klucza API League of Legends albo jego baza danych pamięci podręcznej jest niedostępna. Sprawdź LOL_RIOT_API_KEY i bazę danych przekaźnika.",
         "routeUnavailable": "Przekaźnik nie udostępnia tras League potrzebnych do tego wyszukiwania. Zaktualizuj przekaźnik.",
         "relayUnreachable": "Nie można połączyć się z przekaźnikiem Riot. Sprawdź, czy działa i czy RIOT_RELAY_URL jest poprawny.",
-        "riotUnavailable": "Nie udało się teraz odczytać danych Riot. Spróbuj ponownie później."
+        "riotUnavailable": "Nie udało się teraz odczytać danych Riot. Spróbuj ponownie później.",
+        "rateLimited": "Riot ogranicza zapytania tego klucza. Poczekaj minutę, zanim spróbujesz ponownie.",
+        "rateLimitedIn": "Riot ogranicza zapytania tego klucza. Spróbuj ponownie za {seconds} s.",
+        "invalidRequest": "Relay odrzucił zapytanie jako nieprawidłowe. Sprawdź Riot ID, region i przedział czasu.",
+        "notFound": "Riot nie ma danych dla tego zapytania: konto lub gra nie istnieje albo nie jest z tego regionu."
       }
     },
     "finance": {

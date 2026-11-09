@@ -2865,7 +2865,11 @@
         "relayLeagueUnavailable": "Relay chưa đặt khóa API League of Legends hoặc cơ sở dữ liệu cache của nó không khả dụng. Hãy kiểm tra LOL_RIOT_API_KEY và cơ sở dữ liệu trên relay.",
         "routeUnavailable": "Relay không cung cấp các route League mà tìm kiếm này cần. Hãy cập nhật relay.",
         "relayUnreachable": "Không thể kết nối tới relay Riot. Hãy kiểm tra relay đang chạy và RIOT_RELAY_URL đúng.",
-        "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau."
+        "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau.",
+        "rateLimited": "Riot đang giới hạn yêu cầu của khóa này. Hãy đợi một phút rồi thử lại.",
+        "rateLimitedIn": "Riot đang giới hạn yêu cầu của khóa này. Hãy thử lại sau {seconds} giây.",
+        "invalidRequest": "Relay từ chối yêu cầu vì không hợp lệ. Hãy kiểm tra Riot ID, khu vực và khoảng thời gian.",
+        "notFound": "Riot không có dữ liệu cho yêu cầu này: tài khoản hoặc ván đấu không tồn tại hoặc không thuộc khu vực này."
       }
     },
     "finance": {

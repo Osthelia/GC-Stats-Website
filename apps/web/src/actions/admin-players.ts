@@ -24,7 +24,7 @@ import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source
 import { isRosterRoleOf } from "@/lib/roster-roles";
 import { areLanes, formatRiotId, isRiotCluster, parseRiotId } from "@gc-stats/lol-stats-engine";
 import { accountHolder, insertAccount } from "@/lib/lol-accounts";
-import { getLolAccountByRiotId, relayProblemKind } from "@/lib/lol-relay-client";
+import { getLolAccountByRiotId, relayProblem } from "@/lib/lol-relay-client";
 import type { RiotErrorKind } from "@/lib/riot-errors";
 import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
@@ -431,7 +431,7 @@ export async function addPlayerToGame(targetGame: string, personId: number): Pro
 }
 
 export type RiotAccountError = "notLeague" | "playerNotFound" | "clusterInvalid" | "heldByOther" | "alreadyOnPlayer" | RiotErrorKind;
-export type AddRiotAccountResult = { ok: true } | { ok: false; error: RiotAccountError; /** The typed Riot ID, for riotIdInvalid and riotIdNotFound. */ riotId?: string; /** The person who holds the account, for heldByOther. */ holder?: string };
+export type AddRiotAccountResult = { ok: true } | { ok: false; error: RiotAccountError; /** The typed Riot ID, for riotIdInvalid and riotIdNotFound. */ riotId?: string; /** The person who holds the account, for heldByOther. */ holder?: string; /** Seconds Riot asked to wait, for rateLimited. */ retryAfterSeconds?: number };
 
 /**
  * Adds a Riot account to a League player by Riot ID and region. The relay resolves it to a PUUID (so a typo is
@@ -448,7 +448,11 @@ export async function addPlayerRiotAccount(game: GameSlug, playerId: number, rio
   if (!player) return { ok: false, error: "playerNotFound" };
 
   const account = await getLolAccountByRiotId(cluster, parsed.gameName, parsed.tagLine);
-  if (!account.ok) return account.error.kind === "notFound" ? { ok: false, error: "riotIdNotFound", riotId: riotIdText.trim() } : { ok: false, error: relayProblemKind(account.error) };
+  if (!account.ok) {
+    if (account.error.kind === "notFound") return { ok: false, error: "riotIdNotFound", riotId: riotIdText.trim() };
+    const { kind, retryAfterSeconds } = relayProblem(account.error);
+    return { ok: false, error: kind, retryAfterSeconds };
+  }
 
   const holder = await accountHolder(account.data.puuid);
   if (holder) return holder.personId === playerId ? { ok: false, error: "alreadyOnPlayer" } : { ok: false, error: "heldByOther", holder: holder.handle };

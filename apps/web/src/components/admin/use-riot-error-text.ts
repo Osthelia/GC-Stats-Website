@@ -14,8 +14,8 @@
 import { useTranslations } from "next-intl";
 import type { RiotErrorKind } from "@/lib/riot-errors";
 
-/** `riotId` is the typed Riot ID, for riotIdInvalid and riotIdNotFound. */
-export function useRiotErrorText(): (kind: RiotErrorKind, riotId?: string) => string {
+/** `riotId` is the typed Riot ID, for riotIdInvalid and riotIdNotFound. `retryAfterSeconds` is how long Riot asked to wait, for rateLimited. */
+export function useRiotErrorText(): (kind: RiotErrorKind, riotId?: string, retryAfterSeconds?: number) => string {
   const t = useTranslations("admin.riotAccounts.error");
-  return (kind, riotId = "") => t(kind, { riotId });
+  return (kind, riotId = "", retryAfterSeconds) => (kind === "rateLimited" && retryAfterSeconds ? t("rateLimitedIn", { seconds: retryAfterSeconds }) : t(kind, { riotId }));
 }

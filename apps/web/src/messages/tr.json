@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "Aktarıcıda League of Legends API anahtarı ayarlı değil veya önbellek veritabanı kullanılamıyor. Aktarıcıdaki LOL_RIOT_API_KEY'i ve veritabanını kontrol edin.",
         "routeUnavailable": "Aktarıcı, bu aramanın ihtiyaç duyduğu League rotalarını sunmuyor. Aktarıcıyı güncelleyin.",
         "relayUnreachable": "Riot aktarıcısına ulaşılamadı. Çalıştığını ve RIOT_RELAY_URL'nin doğru olduğunu kontrol edin.",
-        "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin."
+        "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin.",
+        "rateLimited": "Riot bu anahtarın isteklerini sınırlıyor. Tekrar denemeden önce bir dakika bekleyin.",
+        "rateLimitedIn": "Riot bu anahtarın isteklerini sınırlıyor. {seconds} sn sonra tekrar deneyin.",
+        "invalidRequest": "Relay isteği geçersiz diyerek reddetti. Riot ID'yi, bölgeyi ve zaman aralığını kontrol edin.",
+        "notFound": "Riot'ta bu istek için veri yok: hesap veya oyun mevcut değil ya da bu bölgede değil."
       }
     },
     "finance": {

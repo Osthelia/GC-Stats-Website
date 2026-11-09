@@ -11,9 +11,31 @@
  */
 
 /** A 503 is either a missing League key or the relay's database, so both share relayLeagueUnavailable. */
-export const RELAY_PROBLEM_KINDS = ["relayNotConfigured", "relayUnauthorized", "riotKeyRejected", "relayLeagueUnavailable", "routeUnavailable", "relayUnreachable", "riotUnavailable"] as const;
+export const RELAY_PROBLEM_KINDS = [
+  "relayNotConfigured",
+  "relayUnauthorized",
+  "riotKeyRejected",
+  "relayLeagueUnavailable",
+  "routeUnavailable",
+  "relayUnreachable",
+  // Riot limits the key (429): waiting is the fix, and Retry-After says how long.
+  "rateLimited",
+  // The relay refused the request as malformed (400).
+  "invalidRequest",
+  // Riot has no such account or game (404).
+  "notFound",
+  "riotUnavailable",
+] as const;
 
 export type RelayProblemKind = (typeof RELAY_PROBLEM_KINDS)[number];
+
+/** A relay problem as it reaches the admin: the cause, and for rateLimited how many seconds Riot asked to wait. */
+export type RelayProblem = { kind: RelayProblemKind; retryAfterSeconds?: number };
+
+/** The seconds to wait carried by an error object, when it has them. */
+export function retryAfterOf(error: object): number | undefined {
+  return "retryAfterSeconds" in error && typeof error.retryAfterSeconds === "number" ? error.retryAfterSeconds : undefined;
+}
 
 export function isRelayProblemKind(value: string): value is RelayProblemKind {
   return (RELAY_PROBLEM_KINDS as readonly string[]).includes(value);

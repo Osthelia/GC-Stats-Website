@@ -2909,7 +2909,11 @@
         "relayLeagueUnavailable": "relay ไม่ได้ตั้งค่า API key ของ League of Legends หรือฐานข้อมูลแคชใช้งานไม่ได้ ตรวจสอบ LOL_RIOT_API_KEY และฐานข้อมูลที่ relay",
         "routeUnavailable": "relay ไม่มี route ของ League ที่การค้นหานี้ต้องใช้ กรุณาอัปเดต relay",
         "relayUnreachable": "เชื่อมต่อกับ Riot relay ไม่ได้ ตรวจสอบว่า relay ทำงานอยู่และ RIOT_RELAY_URL ถูกต้อง",
-        "riotUnavailable": "ตอนนี้ไม่สามารถอ่านข้อมูลจาก Riot ได้ โปรดลองอีกครั้งภายหลัง"
+        "riotUnavailable": "ตอนนี้ไม่สามารถอ่านข้อมูลจาก Riot ได้ โปรดลองอีกครั้งภายหลัง",
+        "rateLimited": "Riot กำลังจำกัดคำขอของคีย์นี้ รอสักครู่แล้วลองใหม่",
+        "rateLimitedIn": "Riot กำลังจำกัดคำขอของคีย์นี้ ลองใหม่ในอีก {seconds} วินาที",
+        "invalidRequest": "รีเลย์ปฏิเสธคำขอเพราะไม่ถูกต้อง ตรวจสอบ Riot ID ภูมิภาค และช่วงเวลา",
+        "notFound": "Riot ไม่มีข้อมูลสำหรับคำขอนี้ ไม่มีบัญชีหรือเกมนี้ หรือไม่ได้อยู่ในภูมิภาคนี้"
       }
     },
     "finance": {

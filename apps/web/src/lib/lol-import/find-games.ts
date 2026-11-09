@@ -36,8 +36,8 @@ import {
   type RegionCluster,
   type RiotCluster,
 } from "@gc-stats/lol-stats-engine";
-import { getLolAccountByRiotId, getLolMatch, getLolTourneyMatchIds, relayProblemKind } from "@/lib/lol-relay-client";
-import type { RelayProblemKind } from "@/lib/riot-errors";
+import { getLolAccountByRiotId, getLolMatch, getLolTourneyMatchIds, relayProblem } from "@/lib/lol-relay-client";
+import type { RelayProblem } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { findMatchEntrants, knownPeopleOf, loadKnownPeople, type KnownAccount } from "./fetch-league-game";
@@ -49,8 +49,8 @@ export type FindGamesError =
   | { kind: "riotIdInvalid"; riotId: string }
   | { kind: "riotIdNotFound"; riotId: string }
   | { kind: "noSeeds" }
-  // The relay cannot run the search, with the cause (see relayProblemKind).
-  | { kind: RelayProblemKind };
+  // The relay cannot run the search, with the cause (see relayProblem).
+  | RelayProblem;
 
 export interface FindGamesBasis {
   /** What the tournament region says about where to search. */
@@ -173,7 +173,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const accounts = await Promise.all(typed.map((entry) => getLolAccountByRiotId(cluster, entry.gameName, entry.tagLine)));
   const typedPuuids: string[] = [];
   for (const [index, account] of accounts.entries()) {
-    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: typed[index]!.riotId } : { kind: relayProblemKind(account.error) } };
+    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: typed[index]!.riotId } : relayProblem(account.error) };
     typedPuuids.push(account.data.puuid);
   }
 
@@ -188,7 +188,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   // (throttled, unavailable) may pass, so it is reported with the result instead of silently shrinking the search.
   const failures = lists.flatMap((list) => (list.ok ? [] : [list.error]));
   const seedFailures = failures.filter(mayPass);
-  if (seedFailures[0] && failures.length === lists.length) return { ok: false, error: { kind: relayProblemKind(seedFailures[0]) } };
+  if (seedFailures[0] && failures.length === lists.length) return { ok: false, error: relayProblem(seedFailures[0]) };
   const idListOf = new Map(seeds.map((puuid, index) => [puuid, idsOf(lists[index]!)] as const));
   const listsOf = (puuids: string[]) => puuids.flatMap((puuid) => {
     const list = idListOf.get(puuid);
@@ -207,7 +207,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   ]);
   const importedBy = new Map(stored.flatMap((game) => (game.apiMatchId ? [[game.apiMatchId, { order: game.order, matchId: game.matchId }] as const] : [])));
   const firstFailure = matches.find((match) => !match.ok);
-  if (firstFailure && !firstFailure.ok && matches.every((match) => !match.ok)) return { ok: false, error: { kind: relayProblemKind(firstFailure.error) } };
+  if (firstFailure && !firstFailure.ok && matches.every((match) => !match.ok)) return { ok: false, error: relayProblem(firstFailure.error) };
   const matchFailures = matches.flatMap((match) => (match.ok ? [] : [match.error])).filter(mayPass);
   const incomplete = incompleteOf([...seedFailures, ...matchFailures], seeds.length + ids.length);
 

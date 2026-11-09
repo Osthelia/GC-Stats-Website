@@ -25,7 +25,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { FormattedDate } from "@/components/formatted-date";
 import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
-import { isRiotErrorKind, type RiotErrorKind } from "@/lib/riot-errors";
+import { isRiotErrorKind, retryAfterOf, type RiotErrorKind } from "@/lib/riot-errors";
 import { findGamesForMatch, getFindGamesBasisForMatch, type FindGamesBasis, type FindGamesError, type FindGamesResult, type FoundGame } from "@/actions/admin-leaguepedia";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import { RIOT_CLUSTERS, type RiotCluster } from "@gc-stats/lol-stats-engine";
@@ -231,7 +231,7 @@ export function LeagueGameFind({
 
 type Translate = ReturnType<typeof useTranslations>;
 
-function errorText(t: Translate, riotText: (kind: RiotErrorKind, riotId?: string) => string, error: FindGamesError): string {
+function errorText(t: Translate, riotText: (kind: RiotErrorKind, riotId?: string, retryAfterSeconds?: number) => string, error: FindGamesError): string {
   switch (error.kind) {
     case "windowInvalid":
       return t("find.error.windowInvalid");
@@ -241,7 +241,7 @@ function errorText(t: Translate, riotText: (kind: RiotErrorKind, riotId?: string
     case "riotIdNotFound":
       return riotText(error.kind, error.riotId);
     default:
-      return isRiotErrorKind(error.kind) ? riotText(error.kind) : t("find.error.generic");
+      return isRiotErrorKind(error.kind) ? riotText(error.kind, undefined, retryAfterOf(error)) : t("find.error.generic");
   }
 }
 

@@ -2865,7 +2865,11 @@
         "relayLeagueUnavailable": "中繼沒有設定 League of Legends API 金鑰，或其快取資料庫無法使用。請檢查中繼上的 LOL_RIOT_API_KEY 和資料庫。",
         "routeUnavailable": "中繼沒有此搜尋所需的 League 路由。請更新中繼。",
         "relayUnreachable": "無法連線到 Riot 中繼。請檢查它是否在執行，以及 RIOT_RELAY_URL 是否正確。",
-        "riotUnavailable": "目前無法讀取 Riot 的資料，請稍後再試。"
+        "riotUnavailable": "目前無法讀取 Riot 的資料，請稍後再試。",
+        "rateLimited": "Riot 正在限制此金鑰的請求。請等待一分鐘後再試。",
+        "rateLimitedIn": "Riot 正在限制此金鑰的請求。請在 {seconds} 秒後重試。",
+        "invalidRequest": "中繼認為該請求無效並拒絕了它。請檢查 Riot ID、地區和時間範圍。",
+        "notFound": "Riot 沒有此請求的資料：帳號或比賽不存在，或不在此地區。"
       }
     },
     "finance": {
