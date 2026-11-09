@@ -21,7 +21,7 @@ import {
   logos,
   activityLog,
   sharedPeople,
-  PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
+  PERMISSIONS, gameTables, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { rangeLower, closeRange } from "@/lib/daterange";
@@ -45,6 +45,8 @@ export type PlayerMergeSelection = {
   logos: string[];
   matchStats: number[];
   linkedAccount: boolean;
+  /** Moves the Riot accounts (League only). */
+  riotAccounts: boolean;
   /** Removes the source from this game once everything is moved (its identity too when no other game has it). */
   removeSource: boolean;
 };
@@ -75,7 +77,7 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
   // admin explicitly asked to move this one item, so a conflict here is worth a clear rejection.
   if (selection.linkedAccount && source.userId && target.userId) return { ok: false, error: "targetAlreadyLinked" };
 
-  const counts = { teamHistory: 0, organizations: 0, productionCredits: 0, news: 0, logos: 0, matchStats: 0, linkedAccount: false, sourceRemoved: false };
+  const counts = { teamHistory: 0, organizations: 0, productionCredits: 0, news: 0, logos: 0, matchStats: 0, riotAccounts: 0, linkedAccount: false, sourceRemoved: false };
 
   try {
     await db.transaction(async (tx) => {
@@ -285,6 +287,12 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
         await setPersonUser(tx, sourcePersonId, null);
         await setPersonUser(tx, targetPersonId, linkedUserId);
         counts.linkedAccount = true;
+      }
+
+      if (game === "lol" && selection.riotAccounts) {
+        // The PUUID is the key, so the accounts cannot collide: they change hands as they are.
+        const moved = await tx.update(lolPersonAccounts).set({ personId: targetPersonId }).where(eq(lolPersonAccounts.personId, sourcePersonId)).returning({ puuid: lolPersonAccounts.puuid });
+        counts.riotAccounts = moved.length;
       }
 
       if (selection.removeSource) {
