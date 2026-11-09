@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Não foi possível alcançar o relay da Riot. Verifique se ele está em execução e se RIOT_RELAY_URL está correto."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Partida da Leaguepedia",
             "none": "Nenhuma",
             "noData": "sem dados",

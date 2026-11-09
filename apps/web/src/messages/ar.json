@@ -4727,7 +4727,7 @@
               "relayUnreachable": "تعذّر الوصول إلى وسيط Riot. تحقق من أنه يعمل ومن صحة RIOT_RELAY_URL."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "مباراة Leaguepedia",
             "none": "لا شيء",
             "noData": "لا توجد بيانات",

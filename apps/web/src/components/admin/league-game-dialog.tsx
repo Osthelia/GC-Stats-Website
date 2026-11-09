@@ -25,9 +25,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { FormField } from "@/components/admin/form-field";
 import { SearchablePicker } from "@/components/admin/searchable-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
-import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type GameRef, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { prepareGameForMatch, refreshLeaguepediaGameList, type GameRef, type GamePreview } from "@/actions/admin-leaguepedia";
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
-import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
+import { GameImportPreview } from "@/components/admin/league-game-preview";
 import { LeagueGameFind, type FindSaved } from "@/components/admin/league-game-find";
 import type { FoundGame } from "@/actions/admin-leaguepedia";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
@@ -101,7 +101,7 @@ export function LeagueGameDialog({
   const [isRefreshing, startRefreshing] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<LeagueGameFieldErrors>({});
   const [form, setForm] = useState<FormState>(emptyState(nextOrder));
-  const [preview, setPreview] = useState<LeaguepediaPreview | null>(null);
+  const [preview, setPreview] = useState<GamePreview | null>(null);
   // "Find games" is its own view of the dialog. The search is kept here so the preview can come back to it.
   const [view, setView] = useState<"form" | "find">("form");
   const [findSaved, setFindSaved] = useState<FindSaved | null>(null);
@@ -136,8 +136,8 @@ export function LeagueGameDialog({
   const leaguepediaLabel = (g: LeaguepediaGameOption) => {
     const date = g.playedAt ? new Date(g.playedAt).toLocaleDateString(locale) : "";
     // A game already stored is greyed out, except the one being edited, which keeps its own Leaguepedia game.
-    const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "leaguepedia.alreadyStoredHere" : "leaguepedia.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
-    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("leaguepedia.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("leaguepedia.noData"), stored].filter(Boolean).join(" · ");
+    const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "gameImport.alreadyStoredHere" : "gameImport.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
+    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("gameImport.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("gameImport.noData"), stored].filter(Boolean).join(" · ");
   };
   const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({
     id: g.leaguepediaGameId,
@@ -160,11 +160,11 @@ export function LeagueGameDialog({
     startRefreshing(async () => {
       const result = await refreshLeaguepediaGameList(tournamentId);
       if (!result.ok) {
-        toast.error(t("leaguepedia.refreshError"));
+        toast.error(t("gameImport.refreshError"));
         return;
       }
       router.refresh();
-      toast.success(t("leaguepedia.refreshed", { count: result.games }));
+      toast.success(t("gameImport.refreshed", { count: result.games }));
     });
   }
 
@@ -172,7 +172,7 @@ export function LeagueGameDialog({
   const refreshGamesButton = (
     <Button variant="ghost" size="sm" aria-disabled={refreshBlocked} onClick={handleRefreshGames} className={cn(refreshBlocked && "cursor-not-allowed opacity-50")}>
       {isRefreshing ? <Loader2Icon className="animate-spin" /> : <RefreshCwIcon />}
-      {isRefreshing ? t("leaguepedia.fetching") : t("leaguepedia.refreshGames")}
+      {isRefreshing ? t("gameImport.fetching") : t("gameImport.refreshGames")}
     </Button>
   );
 
@@ -183,10 +183,10 @@ export function LeagueGameDialog({
   // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
   function handlePrepare(mode: "fetch" | "renew" | "reprocess", ref: GameRef = gameRef) {
     startTransition(async () => {
-      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { game: ref, mode, gameId: editing?.id ?? null });
+      const result = await prepareGameForMatch(tournamentId, matchId, { game: ref, mode, gameId: editing?.id ?? null });
       if (!result.ok) {
         toast.error(
-          t(`leaguepedia.error.${result.error.kind}`, {
+          t(`gameImport.error.${result.error.kind}`, {
             count: result.error.kind === "missingPlayers" ? result.error.count : 0,
             ids: result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "",
           })
@@ -208,10 +208,10 @@ export function LeagueGameDialog({
       <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{t("leaguepedia.previewTitle")}</DialogTitle>
-            <DialogDescription>{t("leaguepedia.previewDescription")}</DialogDescription>
+            <DialogTitle>{t("gameImport.previewTitle")}</DialogTitle>
+            <DialogDescription>{t("gameImport.previewDescription")}</DialogDescription>
           </DialogHeader>
-          <LeaguepediaGamePreview
+          <GameImportPreview
             tournamentId={tournamentId}
             matchId={matchId}
             gameId={editing?.id ?? null}
@@ -302,16 +302,16 @@ export function LeagueGameDialog({
           </div>
 
           {leaguepediaGames.length > 0 && (
-            <FormField label={t("leaguepedia.label")} htmlFor="game-leaguepedia">
+            <FormField label={t("gameImport.label")} htmlFor="game-leaguepedia">
               <SearchablePicker
                 id="game-leaguepedia"
                 value={form.leaguepediaGameId === NO_LEAGUEPEDIA ? null : form.leaguepediaGameId}
                 options={leaguepediaOptions}
                 onChange={(id) => selectLeaguepediaGame(id ?? NO_LEAGUEPEDIA)}
-                placeholder={t("leaguepedia.none")}
-                noneLabel={t("leaguepedia.none")}
-                searchPlaceholder={t("leaguepedia.searchPlaceholder")}
-                noResultsLabel={t("leaguepedia.noResults")}
+                placeholder={t("gameImport.none")}
+                noneLabel={t("gameImport.none")}
+                searchPlaceholder={t("gameImport.searchPlaceholder")}
+                noResultsLabel={t("gameImport.noResults")}
               />
             </FormField>
           )}
@@ -321,7 +321,7 @@ export function LeagueGameDialog({
               {onCooldown ? (
                 <Tooltip>
                   <TooltipTrigger render={refreshGamesButton} />
-                  <TooltipContent>{t("leaguepedia.refreshCooldown")}</TooltipContent>
+                  <TooltipContent>{t("gameImport.refreshCooldown")}</TooltipContent>
                 </Tooltip>
               ) : (
                 refreshGamesButton
@@ -336,18 +336,18 @@ export function LeagueGameDialog({
           {fetchSource !== null && (
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
-                {isPending ? t("leaguepedia.fetching") : t(fetchSource === "riot" ? "leaguepedia.riotFetch" : "leaguepedia.fetch")}
+                {isPending ? t("gameImport.fetching") : t(fetchSource === "riot" ? "gameImport.riotFetch" : "gameImport.fetch")}
               </Button>
               <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
-                {t("leaguepedia.renew")}
+                {t("gameImport.renew")}
               </Button>
               <Button variant="outline" onClick={() => handlePrepare("reprocess")} disabled={isPending}>
-                {t("leaguepedia.reprocess")}
+                {t("gameImport.reprocess")}
               </Button>
             </div>
           )}
           {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealm(form.apiMatchId) && (
-            <p className="text-xs text-muted-foreground">{t("leaguepedia.riotTournamentRealm")}</p>
+            <p className="text-xs text-muted-foreground">{t("gameImport.riotTournamentRealm")}</p>
           )}
 
           {!editing && (

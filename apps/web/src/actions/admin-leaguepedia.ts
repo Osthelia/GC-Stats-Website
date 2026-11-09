@@ -1,8 +1,9 @@
 /**
  * GC-Stats - admin-leaguepedia
  *
- * Admin server actions for a LoL tournament's Leaguepedia link. Both read the game list from
- * Leaguepedia, so each one is a request and the result says what happened to the list.
+ * Admin server actions of a LoL tournament's games: the Leaguepedia link (base page and game list, each a
+ * request to Leaguepedia whose result says what happened to the list) and the games of a series, from loading a
+ * game into the import preview and storing it (from Leaguepedia or Riot) to "Find games".
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -20,8 +21,7 @@ import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguep
 import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { getAdminMatch } from "@/lib/admin-matches";
-import { prepareLeaguepediaGame, commitLeaguepediaGame, getPersonAccountSummaries, type PersonAccountSummary, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
-import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
+import { prepareGame, commitGame, getPersonAccountSummaries, type GameLoadMode, type PersonAccountSummary, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
 import { isRiotCluster, type LeagueSide } from "@gc-stats/lol-stats-engine";
 import { findGames, getFindGamesBasis, type FindGamesBasis, type FindGamesInput, type FindGamesResult } from "@/lib/lol-import/find-games";
 import { matchTag } from "@/lib/cache-tags";
@@ -82,13 +82,13 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
   return { ok: true, games: result.data };
 }
 
-export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, PersonAccountSummary, PersonRef, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
+export type { GamePreview, PreviewPlayer, PlayerMapping, PersonAccountSummary, PersonRef, GameImportError, GameRef } from "@/lib/lol-import/fetch-league-game";
 export type { FindGamesBasis, FindGamesError, FindGamesResult, FoundGame, FoundGameSide } from "@/lib/lol-import/find-games";
 
 export type FindGamesRequest = Pick<FindGamesInput, "cluster" | "start" | "end" | "riotIds">;
 
-export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode; gameId: number | null };
-export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
+export type PrepareGameInput = { game: GameRef; mode: GameLoadMode; gameId: number | null };
+export type CommitGameInput = { mode: GameLoadMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
 
 /** The match, when it exists and belongs to the tournament in the URL. */
 async function matchOfTournament(tournamentId: number, matchId: number) {
@@ -97,18 +97,18 @@ async function matchOfTournament(tournamentId: number, matchId: number) {
 }
 
 /** Loads a Leaguepedia game for the preview. Nothing is written except the raw copy in the bucket. */
-export async function prepareLeaguepediaGameForMatch(tournamentId: number, matchId: number, input: PrepareGameInput): Promise<PrepareResult> {
+export async function prepareGameForMatch(tournamentId: number, matchId: number, input: PrepareGameInput): Promise<PrepareResult> {
   await requireLolActor();
   if (!(await matchOfTournament(tournamentId, matchId))) return { ok: false, error: { kind: "noData" } };
-  return prepareLeaguepediaGame({ tournamentId, matchId, ...input });
+  return prepareGame({ tournamentId, matchId, ...input });
 }
 
 /** Stores the game with the admin's player links and entrant sides. */
-export async function commitLeaguepediaGameForMatch(tournamentId: number, matchId: number, input: CommitGameInput): Promise<CommitResult> {
+export async function commitGameForMatch(tournamentId: number, matchId: number, input: CommitGameInput): Promise<CommitResult> {
   const actorUserId = await requireLolActor();
   if (!(await matchOfTournament(tournamentId, matchId))) return { ok: false, error: { kind: "noData" } };
 
-  const result = await commitLeaguepediaGame({ tournamentId, matchId, ...input });
+  const result = await commitGame({ tournamentId, matchId, ...input });
   if (result.ok) {
     updateTag(matchTag(matchId));
     await logActivity({

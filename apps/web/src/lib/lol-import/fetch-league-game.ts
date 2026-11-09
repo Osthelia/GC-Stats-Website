@@ -50,12 +50,15 @@ import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { compareTeamNames } from "@/lib/liquipedia-team-match";
 import { importGame } from "./import-game";
-import { loadLeaguepediaGame, type LeaguepediaGameMode } from "./leaguepedia-game";
+import { loadLeaguepediaGame } from "./leaguepedia-game";
+
+/** fetch: the bucket, or the source (Leaguepedia, Riot) when the game is not there. renew: the source, always. reprocess: the bucket only. */
+export type GameLoadMode = "fetch" | "renew" | "reprocess";
 
 /** Where a game comes from: a Leaguepedia list entry, or a Riot match id that RiotRelay serves. */
 export type GameRef = { source: "leaguepedia"; leaguepediaGameId: string } | { source: "riot"; riotMatchId: string };
 
-export type LeaguepediaGameError =
+export type GameImportError =
   | { kind: "noData" }
   | { kind: "notInBucket" }
   | { kind: "pageInvalid" }
@@ -99,9 +102,9 @@ export interface PersonRef {
   handle: string;
 }
 
-export interface LeaguepediaPreview {
+export interface GamePreview {
   game: GameRef;
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   riotMatchId: string;
   /** The platform the game was played on ("EUW1", or "LOLTMNT01" for the tournament realm) and the realm it makes. */
   platform: string;
@@ -118,13 +121,13 @@ export interface LeaguepediaPreview {
   roleOverrides: Record<string, string | null>;
 }
 
-export type PrepareResult = { ok: true; preview: LeaguepediaPreview } | { ok: false; error: LeaguepediaGameError };
+export type PrepareResult = { ok: true; preview: GamePreview } | { ok: false; error: GameImportError };
 
 export interface PrepareInput {
   tournamentId: number;
   matchId: number;
   game: GameRef;
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   /** The stored game being replaced, null when a new game is created. Its stored players say nothing about the sides. */
   gameId: number | null;
 }
@@ -138,7 +141,7 @@ export interface PlayerMapping {
 
 export interface CommitInput {
   /** How the game was loaded, for the activity log. */
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   tournamentId: number;
   matchId: number;
   /** The game being edited, null when a new game is created. */
@@ -151,9 +154,9 @@ export interface CommitInput {
   roleOverrides: Record<string, string | null>;
 }
 
-export type CommitResult = { ok: true; gameId: number } | { ok: false; error: LeaguepediaGameError };
+export type CommitResult = { ok: true; gameId: number } | { ok: false; error: GameImportError };
 
-export async function prepareLeaguepediaGame(input: PrepareInput): Promise<PrepareResult> {
+export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
   const resolved = await resolveGame(input.tournamentId, input.game);
   if (!resolved) return { ok: false, error: { kind: "noData" } };
 
@@ -237,7 +240,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   };
 }
 
-export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitResult> {
+export async function commitGame(input: CommitInput): Promise<CommitResult> {
   if (!Number.isInteger(input.order) || input.order < 1) return { ok: false, error: { kind: "invalidOrder" } };
 
   const resolved = await resolveGame(input.tournamentId, input.game);
@@ -451,8 +454,8 @@ async function resolveGame(tournamentId: number, game: GameRef): Promise<{ riotM
 async function loadGame(
   riotMatchId: string,
   game: GameRef,
-  mode: LeaguepediaGameMode
-): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: LeaguepediaGameError }> {
+  mode: GameLoadMode
+): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: GameImportError }> {
   if (game.source === "riot") {
     const loaded = await loadRiotGame(riotMatchId, mode);
     return loaded.ok ? loaded : { ok: false, error: riotLoadError(loaded.error) };
@@ -461,7 +464,7 @@ async function loadGame(
   return loaded.ok ? loaded : { ok: false, error: loadError(loaded.error) };
 }
 
-function riotLoadError(error: RiotGameError): LeaguepediaGameError {
+function riotLoadError(error: RiotGameError): GameImportError {
   switch (error.kind) {
     case "tournamentRealm":
       return { kind: "tournamentRealm" };
@@ -713,7 +716,7 @@ type RiotGameResult = { ok: true; payload: LolImportPayload; fromBucket: boolean
  * game is refused before any request, because the public API does not serve it and the request would only use up rate limit.
  * fetch: the bucket, or RiotRelay when the game is not there. renew: RiotRelay, always. reprocess: the bucket only.
  */
-async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Promise<RiotGameResult> {
+async function loadRiotGame(riotMatchId: string, mode: GameLoadMode): Promise<RiotGameResult> {
   if (isTournamentRealm(riotMatchId)) return { ok: false, error: { kind: "tournamentRealm" } };
   const cluster = riotCluster(riotMatchId);
   if (cluster === null) return { ok: false, error: { kind: "riotUnavailable", error: { kind: "invalidRequest" } } };
@@ -738,7 +741,7 @@ async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Pro
   return { ok: true, payload: { match: match.data, timeline: timeline.data }, fromBucket: false };
 }
 
-function loadError(error: { kind: string; error?: { kind: string } }): LeaguepediaGameError {
+function loadError(error: { kind: string; error?: { kind: string } }): GameImportError {
   switch (error.kind) {
     case "notInBucket":
       return { kind: "notInBucket" };

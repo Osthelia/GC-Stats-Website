@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Riot リレーに接続できません。起動していることと RIOT_RELAY_URL が正しいことを確認してください。"
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Leaguepedia の試合",
             "none": "なし",
             "noData": "データなし",

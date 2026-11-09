@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Nie można połączyć się z przekaźnikiem Riot. Sprawdź, czy działa i czy RIOT_RELAY_URL jest poprawny."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Mecz Leaguepedia",
             "none": "Brak",
             "noData": "brak danych",

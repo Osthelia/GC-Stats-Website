@@ -4688,7 +4688,7 @@
               "relayUnreachable": "Hindi maabot ang Riot relay. Tiyaking tumatakbo ito at tama ang RIOT_RELAY_URL."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Laro sa Leaguepedia",
             "none": "Wala",
             "noData": "walang datos",

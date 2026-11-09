@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Riot 릴레이에 연결할 수 없습니다. 실행 중인지, RIOT_RELAY_URL이 올바른지 확인하세요."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Leaguepedia 경기",
             "none": "없음",
             "noData": "데이터 없음",

@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Das Riot-Relay ist nicht erreichbar. Prüfe, ob es läuft und ob RIOT_RELAY_URL stimmt."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Leaguepedia-Spiel",
             "none": "Keins",
             "noData": "keine Daten",

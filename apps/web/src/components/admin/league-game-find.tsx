@@ -214,7 +214,7 @@ export function LeagueGameFind({
 
       <DialogFooter>
         <Button variant="outline" onClick={onBack} disabled={busy}>
-          {t("leaguepedia.back")}
+          {t("gameImport.back")}
         </Button>
       </DialogFooter>
     </div>
@@ -234,7 +234,7 @@ function errorText(t: Translate, error: FindGamesError): string {
     case "noSeeds":
       return t("find.riotIdRequired");
     case "riotUnavailable":
-      return t("leaguepedia.error.riotUnavailable");
+      return t("gameImport.error.riotUnavailable");
     case "missingConfig":
     case "relayUnauthorized":
     case "riotKeyRejected":
@@ -265,7 +265,7 @@ function GameRow({ game, matchId, teamName, busy, onPick, t }: { game: FoundGame
         <div className="mt-1 flex flex-col gap-0.5">
           {(["blue", "red"] as const).map((side) => (
             <div key={side} className="flex items-center gap-2">
-              <LolSideBadge side={side} label={t(side === "blue" ? "leaguepedia.sideBlue" : "leaguepedia.sideRed")} />
+              <LolSideBadge side={side} label={t(side === "blue" ? "gameImport.sideBlue" : "gameImport.sideRed")} />
               <span>{t("find.sideSummary", { team: teamName(game.sides[side].entrantId), known: game.sides[side].known, players: game.sides[side].players })}</span>
             </div>
           ))}

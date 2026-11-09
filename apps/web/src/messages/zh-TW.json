@@ -4688,7 +4688,7 @@
               "relayUnreachable": "無法連線到 Riot 中繼。請檢查它是否在執行，以及 RIOT_RELAY_URL 是否正確。"
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Leaguepedia 對局",
             "none": "無",
             "noData": "無資料",

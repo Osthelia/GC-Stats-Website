@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
-import { commitLeaguepediaGameForMatch, getLolPersonAccounts, type GameRef, type LeaguepediaPreview, type PersonAccountSummary, type PersonRef, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
+import { commitGameForMatch, getLolPersonAccounts, type GameRef, type GamePreview, type PersonAccountSummary, type PersonRef, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
@@ -33,7 +33,7 @@ type Mapping = { mode: "existing" | "create"; person: PersonChoice | null; handl
 const NO_ROLE = "none";
 const ROLE_OPTIONS = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"] as const;
 
-export function LeaguepediaGamePreview({
+export function GameImportPreview({
   tournamentId,
   matchId,
   gameId,
@@ -50,7 +50,7 @@ export function LeaguepediaGamePreview({
   /** Where the game comes from, as the admin picked it. Saved with the game. */
   game: GameRef;
   order: number;
-  preview: LeaguepediaPreview;
+  preview: GamePreview;
   onBack: () => void;
   onSaved: () => void;
 }) {
@@ -75,7 +75,7 @@ export function LeaguepediaGamePreview({
   });
   const canSave = sidesChosen && mappingsResolved && !isPending;
   const winnerName = preview.winner && sides[preview.winner] !== undefined ? entrantName(sides[preview.winner]) : null;
-  const winnerText = preview.winner ? t("leaguepedia.winnerLabel", { name: winnerName || t(preview.winner === "blue" ? "leaguepedia.sideBlue" : "leaguepedia.sideRed") }) : t("leaguepedia.noWinner");
+  const winnerText = preview.winner ? t("gameImport.winnerLabel", { name: winnerName || t(preview.winner === "blue" ? "gameImport.sideBlue" : "gameImport.sideRed") }) : t("gameImport.noWinner");
 
   function setMapping(puuid: string, next: Partial<Mapping>) {
     setMappings((prev) => ({ ...prev, [puuid]: { ...prev[puuid]!, ...next } }));
@@ -92,7 +92,7 @@ export function LeaguepediaGamePreview({
       });
       // Only the roles the admin changed from the lobby roles are kept; the others keep following the lobby.
       const roleOverrides = Object.fromEntries(preview.players.filter((p) => (roles[p.puuid] ?? null) !== p.assignedRole).map((p) => [p.puuid, roles[p.puuid] ?? null]));
-      const result = await commitLeaguepediaGameForMatch(tournamentId, matchId, {
+      const result = await commitGameForMatch(tournamentId, matchId, {
         mode: preview.mode,
         gameId,
         game,
@@ -105,12 +105,12 @@ export function LeaguepediaGamePreview({
         const count = result.error.kind === "missingPlayers" ? result.error.count : 0;
         const ids = result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "";
         const description = result.error.kind === "storeFailed" ? result.error.message : result.error.kind === "invalidUpload" ? result.error.errors.join("; ") : undefined;
-        toast.error(t(`leaguepedia.error.${result.error.kind}`, { count, order, ids }), { description });
+        toast.error(t(`gameImport.error.${result.error.kind}`, { count, order, ids }), { description });
         return;
       }
       onSaved();
       router.refresh();
-      toast.success(t(game.source === "riot" ? "leaguepedia.riotSuccess" : "leaguepedia.success"));
+      toast.success(t(game.source === "riot" ? "gameImport.riotSuccess" : "gameImport.success"));
     });
   }
 
@@ -119,16 +119,16 @@ export function LeaguepediaGamePreview({
       <div className="flex flex-col gap-1 text-sm">
         <div className="font-semibold">{t("gameLabel", { order })}</div>
         <div className="text-muted-foreground">{winnerText}</div>
-        <div className="text-muted-foreground">{t("leaguepedia.lengthLabel", { minutes: Math.round(preview.durationSeconds / 60) })}</div>
+        <div className="text-muted-foreground">{t("gameImport.lengthLabel", { minutes: Math.round(preview.durationSeconds / 60) })}</div>
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="text-sm font-semibold">{t("leaguepedia.sidesTitle")}</div>
+        <div className="text-sm font-semibold">{t("gameImport.sidesTitle")}</div>
         {(["blue", "red"] as const).map((side) => (
-          <FormField key={side} label={t(side === "blue" ? "leaguepedia.blueSide" : "leaguepedia.redSide")} htmlFor={`side-${side}`}>
+          <FormField key={side} label={t(side === "blue" ? "gameImport.blueSide" : "gameImport.redSide")} htmlFor={`side-${side}`}>
             <Select items={entrantItems} value={sides[side] !== undefined ? String(sides[side]) : ""} onValueChange={(v) => setSides((prev) => ({ ...prev, [side]: Number(v) }))}>
               <SelectTrigger id={`side-${side}`} className="w-full">
-                <SelectValue placeholder={t("leaguepedia.chooseEntrant")} />
+                <SelectValue placeholder={t("gameImport.chooseEntrant")} />
               </SelectTrigger>
               <SelectContent>
                 {preview.entrants.map((e) => (
@@ -141,12 +141,12 @@ export function LeaguepediaGamePreview({
           </FormField>
         ))}
         {preview.suggestionFrom && (
-          <p className="text-xs text-muted-foreground">{t(preview.suggestionFrom === "players" ? "leaguepedia.suggestedPlayers" : "leaguepedia.suggestedNames")}</p>
+          <p className="text-xs text-muted-foreground">{t(preview.suggestionFrom === "players" ? "gameImport.suggestedPlayers" : "gameImport.suggestedNames")}</p>
         )}
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="text-sm font-semibold">{t("leaguepedia.playersTitle")}</div>
+        <div className="text-sm font-semibold">{t("gameImport.playersTitle")}</div>
         {preview.players.map((p) => (
           <PlayerRow
             key={p.puuid}
@@ -158,18 +158,18 @@ export function LeaguepediaGamePreview({
             suggestions={sides[p.side] !== undefined ? (p.suggestions[sides[p.side]!] ?? []) : []}
             existingAccounts={mappings[p.puuid]?.person ? accountsOf[mappings[p.puuid]!.person!.id] : undefined}
             game={{ platform: preview.platform, realm: preview.realm }}
-            sideLabel={t(p.side === "blue" ? "leaguepedia.sideBlue" : "leaguepedia.sideRed")}
+            sideLabel={t(p.side === "blue" ? "gameImport.sideBlue" : "gameImport.sideRed")}
           />
         ))}
-        {unlinked.length > 0 && <p className="text-xs text-muted-foreground">{t("leaguepedia.unresolvedHint")}</p>}
+        {unlinked.length > 0 && <p className="text-xs text-muted-foreground">{t("gameImport.unresolvedHint")}</p>}
       </div>
 
       <DialogFooter>
         <Button variant="outline" onClick={onBack} disabled={isPending}>
-          {t("leaguepedia.back")}
+          {t("gameImport.back")}
         </Button>
         <Button onClick={handleSave} disabled={!canSave}>
-          {isPending ? t("saving") : t("leaguepedia.saveGame")}
+          {isPending ? t("saving") : t("gameImport.saveGame")}
         </Button>
       </DialogFooter>
     </div>
@@ -199,8 +199,8 @@ function PlayerRow({
 }) {
   const t = useTranslations("admin.tournaments.matches.games");
   const kda = `${player.kills} / ${player.deaths} / ${player.assists}`;
-  const realmLabel = (realm: "live" | "tournament") => t(realm === "live" ? "leaguepedia.realmLive" : "leaguepedia.realmTournament");
-  const roleItems: Record<string, string> = { [NO_ROLE]: t("leaguepedia.roleNone"), ...Object.fromEntries(ROLE_OPTIONS.map((r) => [r, r])) };
+  const realmLabel = (realm: "live" | "tournament") => t(realm === "live" ? "gameImport.realmLive" : "gameImport.realmTournament");
+  const roleItems: Record<string, string> = { [NO_ROLE]: t("gameImport.roleNone"), ...Object.fromEntries(ROLE_OPTIONS.map((r) => [r, r])) };
 
   return (
     <div className="grid grid-cols-1 gap-2 rounded-lg border p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -214,11 +214,11 @@ function PlayerRow({
         </div>
         <div className="mt-1 flex items-center gap-2">
           <Select items={roleItems} value={role ?? NO_ROLE} onValueChange={(v) => onRoleChange(v === NO_ROLE ? null : (v as string))}>
-            <SelectTrigger className="h-7 w-32 text-xs" aria-label={t("leaguepedia.roleLabel")}>
+            <SelectTrigger className="h-7 w-32 text-xs" aria-label={t("gameImport.roleLabel")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_ROLE}>{t("leaguepedia.roleNone")}</SelectItem>
+              <SelectItem value={NO_ROLE}>{t("gameImport.roleNone")}</SelectItem>
               {ROLE_OPTIONS.map((r) => (
                 <SelectItem key={r} value={r}>
                   {r}
@@ -227,7 +227,7 @@ function PlayerRow({
             </SelectContent>
           </Select>
           {player.positionRole !== null && player.positionRole !== player.assignedRole && (
-            <span className="text-xs text-amber-500">{t("leaguepedia.positionRole", { role: player.positionRole })}</span>
+            <span className="text-xs text-amber-500">{t("gameImport.positionRole", { role: player.positionRole })}</span>
           )}
         </div>
       </div>
@@ -239,15 +239,15 @@ function PlayerRow({
           <div className="flex flex-col gap-2">
             <div className="flex gap-1">
               <Button size="sm" variant={mapping?.mode === "existing" ? "default" : "outline"} onClick={() => onChange({ mode: "existing" })}>
-                {t("leaguepedia.linkExisting")}
+                {t("gameImport.linkExisting")}
               </Button>
               <Button size="sm" variant={mapping?.mode === "create" ? "default" : "outline"} onClick={() => onChange({ mode: "create" })}>
-                {t("leaguepedia.createNew")}
+                {t("gameImport.createNew")}
               </Button>
             </div>
             {mapping?.mode === "existing" && suggestions.length > 0 && (
               <div className="flex flex-wrap items-center gap-1">
-                <span className="text-xs text-muted-foreground">{t("leaguepedia.suggestedPeople")}</span>
+                <span className="text-xs text-muted-foreground">{t("gameImport.suggestedPeople")}</span>
                 {suggestions.map((person) => (
                   <Button key={person.id} size="xs" variant={mapping.person?.id === person.id ? "default" : "outline"} onClick={() => onChange({ person })}>
                     {person.handle}
@@ -259,16 +259,16 @@ function PlayerRow({
               <PersonPicker
                 value={mapping.person}
                 onChange={(person) => onChange({ person: person ? { id: person.id, handle: person.handle } : null })}
-                placeholder={t("leaguepedia.notLinked")}
-                searchPlaceholder={t("leaguepedia.linkExisting")}
-                noResultsLabel={t("leaguepedia.noResults")}
+                placeholder={t("gameImport.notLinked")}
+                searchPlaceholder={t("gameImport.linkExisting")}
+                noResultsLabel={t("gameImport.noResults")}
               />
             ) : (
-              <Input value={mapping?.handle ?? ""} onChange={(e) => onChange({ handle: e.target.value })} placeholder={t("leaguepedia.newHandle")} />
+              <Input value={mapping?.handle ?? ""} onChange={(e) => onChange({ handle: e.target.value })} placeholder={t("gameImport.newHandle")} />
             )}
             {mapping?.mode === "existing" && mapping.person && existingAccounts !== undefined && existingAccounts.length > 0 && (
               <p className="text-xs text-amber-500">
-                {t("leaguepedia.accountNote", {
+                {t("gameImport.accountNote", {
                   realm: realmLabel(game.realm),
                   platform: game.platform,
                   handle: mapping.person.handle,

@@ -4727,7 +4727,7 @@
               "relayUnreachable": "Riot aktarıcısına ulaşılamadı. Çalıştığını ve RIOT_RELAY_URL'nin doğru olduğunu kontrol edin."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Leaguepedia maçı",
             "none": "Yok",
             "noData": "veri yok",

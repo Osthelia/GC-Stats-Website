@@ -4688,7 +4688,7 @@
               "relayUnreachable": "Relay Riot tidak dapat dijangkau. Pastikan relay berjalan dan RIOT_RELAY_URL benar."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Game Leaguepedia",
             "none": "Tidak ada",
             "noData": "tidak ada data",

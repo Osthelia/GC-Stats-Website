@@ -4688,7 +4688,7 @@
               "relayUnreachable": "Không thể kết nối tới relay Riot. Hãy kiểm tra relay đang chạy và RIOT_RELAY_URL đúng."
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "Ván trên Leaguepedia",
             "none": "Không có",
             "noData": "không có dữ liệu",

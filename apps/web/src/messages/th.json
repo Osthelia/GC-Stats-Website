@@ -4727,7 +4727,7 @@
               "relayUnreachable": "เชื่อมต่อกับ Riot relay ไม่ได้ ตรวจสอบว่า relay ทำงานอยู่และ RIOT_RELAY_URL ถูกต้อง"
             }
           },
-          "leaguepedia": {
+          "gameImport": {
             "label": "การแข่งขันจาก Leaguepedia",
             "none": "ไม่มี",
             "noData": "ไม่มีข้อมูล",
