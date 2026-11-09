@@ -8657,5 +8657,9 @@
     "label": "Mga lane",
     "fromGames": "Mula sa mga laro:",
     "invalid": "Ang limang lane lang ang maaaring piliin."
+  },
+  "game": {
+    "notPublicBadge": "Hindi pa pampubliko",
+    "previewBanner": "Hindi pa pampubliko ang {game}. Admin lang ang nakakakita ng page na ito."
   }
 }

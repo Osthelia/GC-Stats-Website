@@ -8423,7 +8423,9 @@
   "game": {
     "switcherLabel": "اللعبة",
     "valorant": "VALORANT",
-    "lol": "League of Legends"
+    "lol": "League of Legends",
+    "notPublicBadge": "غير عام",
+    "previewBanner": "{game} غير متاح للعامة بعد. يمكن للمشرفين فقط رؤية هذه الصفحة."
   },
   "lanes": {
     "TOP": "العلوي",

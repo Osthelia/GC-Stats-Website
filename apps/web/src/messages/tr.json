@@ -8423,7 +8423,9 @@
   "game": {
     "switcherLabel": "Oyun",
     "valorant": "VALORANT",
-    "lol": "League of Legends"
+    "lol": "League of Legends",
+    "notPublicBadge": "Herkese açık değil",
+    "previewBanner": "{game} henüz herkese açık değil. Bu sayfayı yalnızca yöneticiler görebilir."
   },
   "lanes": {
     "TOP": "Üst",

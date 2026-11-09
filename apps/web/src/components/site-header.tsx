@@ -27,6 +27,7 @@ import { defaultNewsLanguages } from "@/lib/news-languages-default";
 import { stripAccents } from "@/lib/search-typo";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
 import { GameDropdown, GameSwitcher } from "@/components/site/game-switcher";
+import type { ViewableGame } from "@/lib/rbac";
 import { useGame } from "@/lib/use-game";
 
 const NAV_ITEMS = ["matches", "tournaments", "calendar"] as const;
@@ -42,10 +43,12 @@ export function SiteHeader({
   isAdmin,
   isDashboard,
   newsLanguageOptions,
+  games,
 }: {
   isAdmin: boolean;
   isDashboard: boolean;
   newsLanguageOptions: { code: string; name: string }[];
+  games: ViewableGame[];
 }) {
   const t = useTranslations("nav");
   const tSettings = useTranslations("settings");
@@ -166,6 +169,7 @@ export function SiteHeader({
           />
 
           <GameDropdown
+            games={games}
             open={gameOpen}
             onToggle={(next) => {
               setGameOpen(next);
@@ -235,7 +239,7 @@ export function SiteHeader({
         >
           {mobilePanel === "menu" && (
             <>
-              <GameSwitcher className="mb-4 w-fit" />
+              <GameSwitcher games={games} className="mb-4 w-fit" />
               <div className="mb-4">
                 <GlobalSearch />
               </div>

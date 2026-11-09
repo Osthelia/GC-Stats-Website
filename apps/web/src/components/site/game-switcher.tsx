@@ -15,10 +15,11 @@
  */
 
 import { useTranslations } from "next-intl";
-import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { GameMark, GameSwitchTabs } from "@/components/game-switch-tabs";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useGame, useRouteGame } from "@/lib/use-game";
+import type { ViewableGame } from "@/lib/rbac";
 import { cn } from "@/lib/utils";
 
 const KEPT_LISTINGS = ["tournaments", "match", "news"];
@@ -32,14 +33,14 @@ function targetFor(pathname: string, game: GameSlug): string {
   return segments.length === 2 && listing && KEPT_LISTINGS.includes(listing) ? `/${game}/${listing}` : `/${game}`;
 }
 
-export function GameSwitcher({ className }: { className?: string }) {
+export function GameSwitcher({ games, className }: { games: ViewableGame[]; className?: string }) {
   const t = useTranslations("game");
   const pathname = usePathname();
   const current = useRouteGame();
 
   return (
     <GameSwitchTabs
-      items={GAMES.map((game) => ({ game, href: targetFor(pathname, game), label: t(game) }))}
+      items={games.map(({ game, preview }) => ({ game, href: targetFor(pathname, game), label: t(game), notPublic: preview ? t("notPublicBadge") : undefined }))}
       current={current}
       groupLabel={t("switcherLabel")}
       className={cn("flex-none", className)}
@@ -48,11 +49,14 @@ export function GameSwitcher({ className }: { className?: string }) {
 }
 
 /** Header dropdown, built like the language one: the mark of the current game and an arrow, the games in a panel. */
-export function GameDropdown({ open, onToggle }: { open: boolean; onToggle: (open: boolean) => void }) {
+export function GameDropdown({ games, open, onToggle }: { games: ViewableGame[]; open: boolean; onToggle: (open: boolean) => void }) {
   const t = useTranslations("game");
   const pathname = usePathname();
   const routeGame = useRouteGame();
   const game = useGame();
+
+  // Nothing to switch to with a single game.
+  if (games.length < 2) return null;
 
   return (
     <div className="relative flex-none">
@@ -80,7 +84,7 @@ export function GameDropdown({ open, onToggle }: { open: boolean; onToggle: (ope
           onClick={(e) => e.stopPropagation()}
           className="absolute right-0 top-[46px] z-[70] w-[186px] rounded-xl border border-neutral-800 bg-[var(--gcs-surface-3)] p-1.5 shadow-[0_20px_48px_rgba(0,0,0,.7)]"
         >
-          {GAMES.map((slug) => {
+          {games.map(({ game: slug, preview }) => {
             const active = slug === routeGame;
             return (
               <Link
@@ -98,6 +102,7 @@ export function GameDropdown({ open, onToggle }: { open: boolean; onToggle: (ope
               >
                 <GameMark game={slug} />
                 <span>{t(slug)}</span>
+                {preview && <span className="ml-auto rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-400">{t("notPublicBadge")}</span>}
               </Link>
             );
           })}

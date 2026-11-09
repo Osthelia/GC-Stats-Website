@@ -18,6 +18,7 @@ import { parseHeadToHeadWidgetParams } from "@/lib/widget-params";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
 import { SITE_URL, dateParamError, intParamError, parseDateBound, searchParamsToRecord, widgetError, widgetJson, widgetPreflight } from "@/lib/widget-api";
 import { gameFromParams } from "@/lib/game";
+import { publicGameGate } from "@/lib/api/game-gate";
 import { gameHasMaps } from "@gc-stats/db/game";
 
 export function OPTIONS() {
@@ -31,6 +32,8 @@ function absoluteUrl(url: string | null): string | null {
 
 export async function GET(request: Request, { params }: { params: Promise<{ game: string }> }) {
   const game = await gameFromParams(params);
+  const hidden = publicGameGate(game);
+  if (hidden) return hidden;
   if (!gameHasMaps(game)) return widgetError(404, "Widget not available for this game");
   const { teams } = gameTables(game);
   const { searchParams } = new URL(request.url);

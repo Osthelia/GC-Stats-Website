@@ -13,10 +13,13 @@ import { parseEntityId } from "@/lib/entity-id";
 import { aggregateMatchStats, getCompletedMatchStats, getMatchHeader, getMatchMaps, getMatchMapsStatsBatch } from "@/lib/match-page-data";
 import { getMatchLeagueGames } from "@/lib/match-league-games";
 import { gameFromParams } from "@/lib/game";
+import { viewableGameGate } from "@/lib/api/game-gate";
 import { gameHasSeriesGames } from "@gc-stats/db/game";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ matchId: string; game: string }> }) {
   const game = await gameFromParams(params);
+  const hidden = await viewableGameGate(game);
+  if (hidden) return hidden;
   const matchId = parseEntityId((await params).matchId);
   if (matchId == null) return NextResponse.json({ error: "Invalid match id" }, { status: 400 });
 

@@ -8423,7 +8423,9 @@
   "game": {
     "switcherLabel": "游戏",
     "valorant": "VALORANT",
-    "lol": "League of Legends"
+    "lol": "League of Legends",
+    "notPublicBadge": "未公开",
+    "previewBanner": "{game} 尚未公开，只有管理员可以看到此页面。"
   },
   "lanes": {
     "TOP": "上路",

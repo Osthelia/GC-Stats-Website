@@ -5,7 +5,7 @@
  * convention to "proxy"), matches all routes except API, internal Next.js
  * assets, and files with an extension. Also sends game-less URLs of
  * per-game pages ("/team/3") to the game the visitor browsed last, and
- * remembers the game of the page being visited.
+ * remembers the game of the page being visited (public games only, see PUBLIC_GAMES).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -17,6 +17,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_GAME, isGameSlug } from "@gc-stats/db/game";
 import { routing } from "./i18n/routing";
 import { withGame } from "./lib/game-href";
+import { fallbackPublicGame, isGamePublic } from "./lib/public-games";
 
 const GAME_COOKIE = "gcs-game";
 const GAME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -31,7 +32,8 @@ export default function proxy(request: NextRequest) {
   const rest = "/" + segments.join("/");
 
   const cookieGame = request.cookies.get(GAME_COOKIE)?.value;
-  const preferred = isGameSlug(cookieGame) ? cookieGame : DEFAULT_GAME;
+  // A visitor is never sent into a game that is not public yet, whatever the cookie says.
+  const preferred = fallbackPublicGame(isGameSlug(cookieGame) ? cookieGame : DEFAULT_GAME);
   const completed = withGame(rest, preferred);
   if (completed !== rest) {
     const url = request.nextUrl.clone();
@@ -42,7 +44,8 @@ export default function proxy(request: NextRequest) {
 
   const response = intlMiddleware(request);
   const visited = segments[0] === "admin" ? segments[1] : segments[0];
-  if (isGameSlug(visited) && visited !== cookieGame) {
+  // Only public games are remembered: an admin previewing a hidden game doesn't get redirected into it later.
+  if (isGameSlug(visited) && visited !== cookieGame && isGamePublic(visited)) {
     response.cookies.set(GAME_COOKIE, visited, { path: "/", maxAge: GAME_COOKIE_MAX_AGE, sameSite: "lax" });
   }
   return response;

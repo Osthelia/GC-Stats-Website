@@ -13,7 +13,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { GAMES, GAME_INFO, type GameSlug } from "@gc-stats/db/game";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -57,7 +57,8 @@ export function GameMark({ game, className }: { game: GameSlug; className?: stri
   );
 }
 
-export type GameSwitchItem = { game: GameSlug; href: string; label: string };
+// `notPublic` is the "not public" text of a game visitors can't see yet but the viewer may open.
+export type GameSwitchItem = { game: GameSlug; href: string; label: string; notPublic?: string };
 
 export function GameSwitchTabs({
   items,
@@ -70,8 +71,10 @@ export function GameSwitchTabs({
   groupLabel: string;
   className?: string;
 }) {
+  // Nothing to switch to with a single game.
+  if (items.length < 2) return null;
   const theme = current ? THEME[current] : NEUTRAL_THEME;
-  const index = current ? Math.max(0, GAMES.indexOf(current)) : 0;
+  const index = Math.max(0, items.findIndex((item) => item.game === current));
 
   return (
     <div
@@ -86,14 +89,14 @@ export function GameSwitchTabs({
           className={cn("pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-[4px] transition-all duration-300 ease-out", theme.thumb)}
         />
       )}
-      {items.map(({ game, href, label }) => {
+      {items.map(({ game, href, label, notPublic }) => {
         const active = game === current;
         return (
           <Link
             key={game}
             href={href}
             aria-current={active ? "true" : undefined}
-            title={label}
+            title={notPublic ? `${label} · ${notPublic}` : label}
             className={cn(
               "relative z-10 flex items-center justify-center gap-1.5 px-3 py-1.5 text-[12px] font-extrabold uppercase tracking-[0.1em] transition-colors duration-300 active:scale-[0.95]",
               active ? theme.onThumb : cn("text-neutral-400", theme.idleHover),
@@ -101,6 +104,7 @@ export function GameSwitchTabs({
           >
             <GameMark game={game} />
             <span>{GAME_INFO[game].shortName}</span>
+            {notPublic && <span aria-hidden="true" className="absolute right-1 top-1 size-1.5 rounded-full bg-amber-400" />}
           </Link>
         );
       })}

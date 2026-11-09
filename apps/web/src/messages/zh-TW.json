@@ -8657,5 +8657,9 @@
     "label": "分路",
     "fromGames": "來自比賽：",
     "invalid": "只能選擇這五條分路。"
+  },
+  "game": {
+    "notPublicBadge": "未公開",
+    "previewBanner": "{game} 尚未公開，只有管理員可以看到此頁面。"
   }
 }

@@ -9,6 +9,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { GameSlug } from "@gc-stats/db/game";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { HeaderAuthStatus } from "@/components/header-auth-status";
 import { usePathname } from "@/i18n/navigation";
@@ -22,12 +23,14 @@ export function DashboardHeader({
   hasApiKey = false,
   hasDiscord = false,
   isAuthorAdmin = false,
+  games,
 }: {
   organizations: DashboardOrgSwitcherItem[];
   isAuthor?: boolean;
   hasApiKey?: boolean;
   hasDiscord?: boolean;
   isAuthorAdmin?: boolean;
+  games: GameSlug[];
 }) {
   const t = useTranslations("dashboard.nav");
   const pathname = stripDashboardGame(usePathname());
@@ -39,7 +42,7 @@ export function DashboardHeader({
         <span className="text-sm font-medium">{t(matchDashboardNavItemLabel(pathname))}</span>
       </div>
       <div className="ml-auto flex items-center gap-3">
-        <DashboardGameSwitcher />
+        <DashboardGameSwitcher games={games} />
         <OrgSwitcher organizations={organizations} isAuthor={isAuthor} hasApiKey={hasApiKey} hasDiscord={hasDiscord} isAuthorAdmin={isAuthorAdmin} />
         <HeaderAuthStatus isDashboard />
       </div>

@@ -8423,7 +8423,9 @@
   "game": {
     "switcherLabel": "게임",
     "valorant": "VALORANT",
-    "lol": "League of Legends"
+    "lol": "League of Legends",
+    "notPublicBadge": "비공개",
+    "previewBanner": "{game}은(는) 아직 공개되지 않았습니다. 관리자만 이 페이지를 볼 수 있습니다."
   },
   "lanes": {
     "TOP": "탑",

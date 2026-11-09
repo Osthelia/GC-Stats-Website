@@ -8423,7 +8423,9 @@
   "game": {
     "switcherLabel": "เกม",
     "valorant": "VALORANT",
-    "lol": "League of Legends"
+    "lol": "League of Legends",
+    "notPublicBadge": "ยังไม่เปิดสาธารณะ",
+    "previewBanner": "{game} ยังไม่เปิดให้ใช้งานสาธารณะ เฉพาะผู้ดูแลระบบเท่านั้นที่เห็นหน้านี้"
   },
   "lanes": {
     "TOP": "ท็อป",

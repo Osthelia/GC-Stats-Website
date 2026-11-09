@@ -8657,5 +8657,9 @@
     "label": "Đường",
     "fromGames": "Theo các trận:",
     "invalid": "Chỉ có thể chọn năm đường."
+  },
+  "game": {
+    "notPublicBadge": "Chưa công khai",
+    "previewBanner": "{game} chưa công khai. Chỉ quản trị viên mới xem được trang này."
   }
 }

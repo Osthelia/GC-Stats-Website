@@ -8657,5 +8657,9 @@
     "label": "Lane",
     "fromGames": "Dari game:",
     "invalid": "Hanya kelima lane yang dapat dipilih."
+  },
+  "game": {
+    "notPublicBadge": "Belum publik",
+    "previewBanner": "{game} belum publik. Hanya admin yang dapat melihat halaman ini."
   }
 }

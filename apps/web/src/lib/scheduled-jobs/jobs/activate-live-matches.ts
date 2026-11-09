@@ -17,6 +17,7 @@ import { db } from "@gc-stats/db/client";
 import { gameTables } from "@gc-stats/db";
 import { postDiscordWebhook } from "@/lib/discord-webhook";
 import { logAutoActivation } from "../log-auto-activation";
+import { isGamePublic } from "@/lib/public-games";
 
 /** Only matches scheduled within the last N minutes are eligible, so a match that's simply been sitting in the past (imported historical data, a schedule that was never updated) is never swept up. */
 const ACTIVATION_WINDOW_MINUTES = 5;
@@ -115,7 +116,8 @@ async function activateLiveMatchesForGame(game: GameSlug): Promise<string> {
 
     const entrantAName = match.entrantAId !== null ? (entrantNameById.get(match.entrantAId) ?? "TBD") : "TBD";
     const entrantBName = match.entrantBId !== null ? (entrantNameById.get(match.entrantBId) ?? "TBD") : "TBD";
-    await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${entrantAName} vs ${entrantBName}\n${tournament.tournamentName}`);
+    // The match is activated either way, the notice is only sent for a public game.
+    if (isGamePublic(game)) await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${entrantAName} vs ${entrantBName}\n${tournament.tournamentName}`);
 
     activated++;
   }

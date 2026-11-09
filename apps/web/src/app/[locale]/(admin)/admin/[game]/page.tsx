@@ -12,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { Users, Shield, Trophy, User, Gamepad2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { AdminGameSwitcher } from "@/components/admin/admin-game-switcher";
+import { publicGames } from "@/lib/public-games";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
 import { DashboardTournamentsWidget } from "@/components/admin/dashboard-tournaments-widget";
 import { DashboardMatchesWidget } from "@/components/admin/dashboard-matches-widget";
@@ -65,7 +66,7 @@ export default async function AdminDashboardPage({ params, searchParams }: { par
           <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <AdminGameSwitcher />
+        <AdminGameSwitcher publicGames={publicGames()} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
