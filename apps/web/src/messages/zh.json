@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "时间范围最长为 48 小时。",
               "generic": "无法执行搜索。"
-            }
+            },
+            "incompleteRateLimited": "Riot 限制了 {total} 次查询中的 {failed} 次，此列表可能不完整，或包含其他系列赛的比赛。请等待一分钟后重新搜索。",
+            "incomplete": "{total} 次查询中有 {failed} 次失败，此列表可能不完整，或包含其他系列赛的比赛。请重新搜索。"
           },
           "gameImport": {
             "label": "Leaguepedia 比赛",

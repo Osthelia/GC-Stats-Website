@@ -4756,7 +4756,9 @@
             "error": {
               "windowInvalid": "La plage horaire doit faire 48 heures au maximum.",
               "generic": "La recherche n'a pas pu être lancée."
-            }
+            },
+            "incompleteRateLimited": "Riot a limité {failed} requêtes sur {total} : la liste peut être incomplète ou contenir des parties d'autres séries. Attendez une minute et relancez la recherche.",
+            "incomplete": "{failed} requêtes sur {total} ont échoué : la liste peut être incomplète ou contenir des parties d'autres séries. Relancez la recherche."
           },
           "gameImport": {
             "label": "Match Leaguepedia",

@@ -4713,7 +4713,9 @@
             "error": {
               "windowInvalid": "時間範圍最長為 48 小時。",
               "generic": "無法執行搜尋。"
-            }
+            },
+            "incompleteRateLimited": "Riot 限制了 {total} 次查詢中的 {failed} 次，此清單可能不完整，或包含其他系列賽的比賽。請等待一分鐘後重新搜尋。",
+            "incomplete": "{total} 次查詢中有 {failed} 次失敗，此清單可能不完整，或包含其他系列賽的比賽。請重新搜尋。"
           },
           "gameImport": {
             "label": "Leaguepedia 對局",

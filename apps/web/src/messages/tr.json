@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "Zaman aralığı en fazla 48 saat olabilir.",
               "generic": "Arama çalıştırılamadı."
-            }
+            },
+            "incompleteRateLimited": "Riot {total} sorgudan {failed} tanesini sınırladı; bu liste eksik olabilir veya başka serilerin oyunlarını içerebilir. Bir dakika bekleyip tekrar arayın.",
+            "incomplete": "{total} sorgudan {failed} tanesi başarısız oldu; bu liste eksik olabilir veya başka serilerin oyunlarını içerebilir. Tekrar arayın."
           },
           "gameImport": {
             "label": "Leaguepedia maçı",

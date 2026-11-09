@@ -4713,7 +4713,9 @@
             "error": {
               "windowInvalid": "Khoảng thời gian tối đa là 48 giờ.",
               "generic": "Không thể chạy tìm kiếm."
-            }
+            },
+            "incompleteRateLimited": "Riot đã giới hạn {failed} trong {total} lượt tra cứu, nên danh sách này có thể thiếu hoặc lẫn ván của loạt trận khác. Hãy đợi một phút rồi tìm lại.",
+            "incomplete": "{failed} trong {total} lượt tra cứu thất bại, nên danh sách này có thể thiếu hoặc lẫn ván của loạt trận khác. Hãy tìm lại."
           },
           "gameImport": {
             "label": "Ván trên Leaguepedia",

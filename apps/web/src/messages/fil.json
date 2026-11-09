@@ -4713,7 +4713,9 @@
             "error": {
               "windowInvalid": "Ang saklaw ng oras ay hindi dapat lumampas sa 48 oras.",
               "generic": "Hindi naisagawa ang paghahanap."
-            }
+            },
+            "incompleteRateLimited": "Nilimitahan ng Riot ang {failed} sa {total} na lookup, kaya maaaring kulang ang listahang ito o may kasamang laro ng ibang serye. Maghintay ng isang minuto at maghanap ulit.",
+            "incomplete": "Nabigo ang {failed} sa {total} na lookup, kaya maaaring kulang ang listahang ito o may kasamang laro ng ibang serye. Maghanap ulit."
           },
           "gameImport": {
             "label": "Laro sa Leaguepedia",

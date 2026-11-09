@@ -4756,7 +4756,9 @@
             "error": {
               "windowInvalid": "El intervalo de tiempo debe ser de 48 horas como máximo.",
               "generic": "No se pudo realizar la búsqueda."
-            }
+            },
+            "incompleteRateLimited": "Riot limitó {failed} de {total} consultas, así que la lista puede estar incompleta o incluir partidas de otras series. Espera un minuto y vuelve a buscar.",
+            "incomplete": "Fallaron {failed} de {total} consultas, así que la lista puede estar incompleta o incluir partidas de otras series. Vuelve a buscar."
           },
           "gameImport": {
             "label": "Partida de Leaguepedia",

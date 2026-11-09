@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "Der Zeitraum darf höchstens 48 Stunden umfassen.",
               "generic": "Die Suche konnte nicht ausgeführt werden."
-            }
+            },
+            "incompleteRateLimited": "Riot hat {failed} von {total} Abfragen gedrosselt, daher kann diese Liste unvollständig sein oder Spiele anderer Serien enthalten. Warte eine Minute und suche erneut.",
+            "incomplete": "{failed} von {total} Abfragen sind fehlgeschlagen, daher kann diese Liste unvollständig sein oder Spiele anderer Serien enthalten. Suche erneut."
           },
           "gameImport": {
             "label": "Leaguepedia-Spiel",

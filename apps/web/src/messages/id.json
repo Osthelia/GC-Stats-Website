@@ -4713,7 +4713,9 @@
             "error": {
               "windowInvalid": "Rentang waktu maksimal 48 jam.",
               "generic": "Pencarian tidak dapat dijalankan."
-            }
+            },
+            "incompleteRateLimited": "Riot membatasi {failed} dari {total} permintaan, jadi daftar ini mungkin tidak lengkap atau memuat game dari seri lain. Tunggu semenit lalu cari lagi.",
+            "incomplete": "{failed} dari {total} permintaan gagal, jadi daftar ini mungkin tidak lengkap atau memuat game dari seri lain. Cari lagi."
           },
           "gameImport": {
             "label": "Game Leaguepedia",

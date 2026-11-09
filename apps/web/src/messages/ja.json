@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "時間範囲は最大 48 時間です。",
               "generic": "検索を実行できませんでした。"
-            }
+            },
+            "incompleteRateLimited": "Riot が {total} 件中 {failed} 件の照会を制限したため、この一覧は不完全であるか、他のシリーズの試合を含む可能性があります。1 分待ってからもう一度検索してください。",
+            "incomplete": "{total} 件中 {failed} 件の照会に失敗したため、この一覧は不完全であるか、他のシリーズの試合を含む可能性があります。もう一度検索してください。"
           },
           "gameImport": {
             "label": "Leaguepedia の試合",

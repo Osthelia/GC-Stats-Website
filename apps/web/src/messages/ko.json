@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "시간 범위는 최대 48시간입니다.",
               "generic": "검색을 실행할 수 없습니다."
-            }
+            },
+            "incompleteRateLimited": "Riot이 조회 {total}건 중 {failed}건을 제한하여 이 목록이 불완전하거나 다른 시리즈의 경기를 포함할 수 있습니다. 1분 후 다시 검색하세요.",
+            "incomplete": "조회 {total}건 중 {failed}건이 실패하여 이 목록이 불완전하거나 다른 시리즈의 경기를 포함할 수 있습니다. 다시 검색하세요."
           },
           "gameImport": {
             "label": "Leaguepedia 경기",

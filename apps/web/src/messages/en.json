@@ -4756,7 +4756,9 @@
             "error": {
               "windowInvalid": "The time window must be a range of at most 48 hours.",
               "generic": "The search could not be run."
-            }
+            },
+            "incompleteRateLimited": "Riot throttled {failed} of {total} lookups, so this list may be incomplete or include games of other series. Wait a minute and search again.",
+            "incomplete": "{failed} of {total} lookups failed, so this list may be incomplete or include games of other series. Search again."
           },
           "gameImport": {
             "label": "Leaguepedia game",

@@ -85,7 +85,7 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
 
 export type { GamePreview, PreviewPlayer, PlayerMapping, PersonRef, GameImportError, GameRef } from "@/lib/lol-import/fetch-league-game";
 export type { PersonAccountSummary } from "@/lib/lol-accounts";
-export type { FindGamesBasis, FindGamesError, FindGamesResult, FoundGame, FoundGameSide } from "@/lib/lol-import/find-games";
+export type { FindGamesBasis, FindGamesError, FindGamesIncomplete, FindGamesResult, FoundGame, FoundGameSide } from "@/lib/lol-import/find-games";
 
 export type FindGamesRequest = Pick<FindGamesInput, "cluster" | "start" | "end" | "riotIds">;
 

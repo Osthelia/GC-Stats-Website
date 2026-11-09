@@ -38,6 +38,7 @@ import {
 } from "@gc-stats/lol-stats-engine";
 import { getLolAccountByRiotId, getLolMatch, getLolTourneyMatchIds, relayProblemKind } from "@/lib/lol-relay-client";
 import type { RelayProblemKind } from "@/lib/riot-errors";
+import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { findMatchEntrants, knownPeopleOf, loadKnownPeople, type KnownAccount } from "./fetch-league-game";
 
@@ -97,7 +98,15 @@ export interface FoundGame {
   possibleRemake: boolean;
 }
 
-export type FindGamesResult = { ok: true; games: FoundGame[] } | { ok: false; error: FindGamesError };
+/** Lookups of the search that failed for a reason that may pass (throttled, Riot or the relay down), so the list can be missing games or hold more than the series. */
+export interface FindGamesIncomplete {
+  failed: number;
+  total: number;
+  /** At least one of them was throttled: trying again a moment later usually works. */
+  rateLimited: boolean;
+}
+
+export type FindGamesResult = { ok: true; games: FoundGame[]; incomplete: FindGamesIncomplete | null } | { ok: false; error: FindGamesError };
 
 interface TeamKnowledge {
   entrantId: number;
@@ -176,10 +185,11 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
 
   const range = { startTime: Math.floor(window.start.getTime() / 1000), endTime: Math.floor(window.end.getTime() / 1000), count: SEED_MATCH_COUNT };
   const lists = await Promise.all(seeds.map((puuid) => getLolTourneyMatchIds(cluster, puuid, range)));
-  // A seed Riot refuses (a PUUID issued to another key, say) only drops that account from the search.
+  // A seed Riot refuses (a PUUID issued to another key, say) only drops that account from the search. Any other failure
+  // (throttled, unavailable) may pass, so it is reported with the result instead of silently shrinking the search.
   const failures = lists.flatMap((list) => (list.ok ? [] : [list.error]));
-  const hardFailure = failures.find((error) => error.kind !== "invalidRequest" && error.kind !== "notFound");
-  if (hardFailure && failures.length === lists.length) return { ok: false, error: { kind: relayProblemKind(hardFailure) } };
+  const seedFailures = failures.filter(mayPass);
+  if (seedFailures[0] && failures.length === lists.length) return { ok: false, error: { kind: relayProblemKind(seedFailures[0]) } };
   const idListOf = new Map(seeds.map((puuid, index) => [puuid, idsOf(lists[index]!)] as const));
   const listsOf = (puuids: string[]) => puuids.flatMap((puuid) => {
     const list = idListOf.get(puuid);
@@ -190,7 +200,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const groups = [...typedPuuids.map((puuid) => listsOf([puuid])), listsOf(seedsA), listsOf(seedsB)].filter((group) => group.length > 0);
   const shared = sharedMatchIds(groups);
   const ids = shared.length > 0 ? shared : mergeMatchIds([...idListOf.values()].flatMap((list) => (list ? [list] : [])));
-  if (ids.length === 0) return { ok: true, games: [] };
+  if (ids.length === 0) return { ok: true, games: [], incomplete: incompleteOf(seedFailures, seeds.length) };
 
   const [matches, stored] = await Promise.all([
     Promise.all(ids.map((id) => getLolMatch(cluster, id))),
@@ -199,6 +209,8 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const importedBy = new Map(stored.flatMap((game) => (game.apiMatchId ? [[game.apiMatchId, { order: game.order, matchId: game.matchId }] as const] : [])));
   const firstFailure = matches.find((match) => !match.ok);
   if (firstFailure && !firstFailure.ok && matches.every((match) => !match.ok)) return { ok: false, error: { kind: relayProblemKind(firstFailure.error) } };
+  const matchFailures = matches.flatMap((match) => (match.ok ? [] : [match.error])).filter(mayPass);
+  const incomplete = incompleteOf([...seedFailures, ...matchFailures], seeds.length + ids.length);
 
   const knowledge = {
     accounts: { a: new Set(teams.a.accounts.map((account) => account.puuid)), b: new Set(teams.b.accounts.map((account) => account.puuid)) },
@@ -237,9 +249,19 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const shown = withAllTyped.length > 0 ? withAllTyped : games;
   // The games with more of the typed IDs first, then by start time.
   shown.sort((a, b) => b.typedMatches - a.typedMatches || a.startedAt.localeCompare(b.startedAt));
-  return { ok: true, games: shown };
+  return { ok: true, games: shown, incomplete };
 }
 
+
+/** A failure that may pass, as opposed to Riot refusing the request or not knowing the account. */
+function mayPass(error: RiotRelayError): boolean {
+  return error.kind !== "invalidRequest" && error.kind !== "notFound";
+}
+
+function incompleteOf(failures: RiotRelayError[], total: number): FindGamesIncomplete | null {
+  if (failures.length === 0) return null;
+  return { failed: failures.length, total, rateLimited: failures.some((error) => error.kind === "rateLimited") };
+}
 
 /** The ids of one seed's list, null when Riot refused the seed. */
 function idsOf(result: { ok: true; data: string[] } | { ok: false; error: unknown }): string[] | null {

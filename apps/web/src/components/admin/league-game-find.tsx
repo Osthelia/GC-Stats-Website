@@ -195,6 +195,12 @@ export function LeagueGameFind({
       </div>
 
       {result && !result.ok && <p className="text-sm text-destructive">{errorText(t, riotText, result.error)}</p>}
+      {result?.ok && result.incomplete && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-500">
+          <TriangleAlertIcon className="mt-0.5 size-3.5 flex-none" />
+          <p>{t(result.incomplete.rateLimited ? "find.incompleteRateLimited" : "find.incomplete", { failed: result.incomplete.failed, total: result.incomplete.total })}</p>
+        </div>
+      )}
       {result?.ok && result.games.length === 0 && (
         <div className="flex flex-col gap-1 text-sm">
           <div className="font-semibold">{t("find.emptyTitle")}</div>

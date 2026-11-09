@@ -4752,7 +4752,9 @@
             "error": {
               "windowInvalid": "Przedział czasu może mieć najwyżej 48 godzin.",
               "generic": "Nie udało się wykonać wyszukiwania."
-            }
+            },
+            "incompleteRateLimited": "Riot ograniczył {failed} z {total} zapytań, więc lista może być niepełna lub zawierać gry z innych serii. Poczekaj minutę i wyszukaj ponownie.",
+            "incomplete": "{failed} z {total} zapytań nie powiodło się, więc lista może być niepełna lub zawierać gry z innych serii. Wyszukaj ponownie."
           },
           "gameImport": {
             "label": "Mecz Leaguepedia",
