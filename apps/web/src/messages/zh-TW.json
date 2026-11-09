@@ -2851,7 +2851,8 @@
           "sourceNotFound": "未找到該選手。",
           "targetNotFound": "未找到目標選手。",
           "targetAlreadyLinked": "目標選手已綁定帳戶。"
-        }
+        },
+        "riotAccountsLost": "{name} 的 {count} 個 Riot 帳號不會被移動，並將隨選手一併永久刪除。日後匯入時，使用這些帳號的比賽將顯示為未連結。"
       }
     },
     "riotAccounts": {

@@ -2851,7 +2851,8 @@
           "sourceNotFound": "Pemain tidak ditemukan.",
           "targetNotFound": "Pemain tujuan tidak ditemukan.",
           "targetAlreadyLinked": "Pemain tujuan sudah memiliki akun tertaut."
-        }
+        },
+        "riotAccountsLost": "{count} akun Riot milik {name} tidak dipindahkan dan akan dihapus permanen bersama pemain. Game dengan akun itu akan tampil belum terhubung pada impor berikutnya."
       }
     },
     "riotAccounts": {

@@ -2851,7 +2851,8 @@
           "sourceNotFound": "Không tìm thấy tuyển thủ.",
           "targetNotFound": "Không tìm thấy tuyển thủ đích.",
           "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết."
-        }
+        },
+        "riotAccountsLost": "{count} tài khoản Riot của {name} sẽ không được chuyển và sẽ bị xóa vĩnh viễn cùng người chơi. Các ván có tài khoản đó sẽ hiển thị là chưa liên kết ở lần nhập sau."
       }
     },
     "riotAccounts": {

@@ -2885,7 +2885,8 @@
           "sourceStillUsed": "Bu oyuncu hâlâ bu oyundaki katılımcılar veya maç istatistikleri tarafından kullanılıyor. Onları da seç ya da profili koru."
         },
         "removeSource": "Birleştirdikten sonra {game} oyunundan kaldır",
-        "removeSourceHint": "{name}, her şey taşındığında bu oyundan, başka hiçbir oyunda bu profil yoksa tamamen kaldırılır. Katılımcılar veya maç istatistikleri hâlâ kullanıyorsa reddedilir."
+        "removeSourceHint": "{name}, her şey taşındığında bu oyundan, başka hiçbir oyunda bu profil yoksa tamamen kaldırılır. Katılımcılar veya maç istatistikleri hâlâ kullanıyorsa reddedilir.",
+        "riotAccountsLost": "{name} oyuncusunun {count} Riot hesabı taşınmayacak ve oyuncuyla birlikte kalıcı olarak silinecek. Bu hesaplarla oynanan oyunlar sonraki içe aktarmalarda bağlantısız görünecek."
       },
       "duplicatesLink": "Olası kopyalar",
       "duplicates": {

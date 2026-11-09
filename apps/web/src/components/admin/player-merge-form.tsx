@@ -160,6 +160,8 @@ export function PlayerMergeForm({
 
   const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + (linkedAccount ? 1 : 0) + (riotAccounts && riotAccountCount > 0 ? 1 : 0);
   const canSubmit = totalSelected > 0 || removeSource;
+  // Removing the source deletes the Riot accounts it still holds, which is for good: the admin is told before and again at the confirmation.
+  const losesRiotAccounts = removeSource && game === "lol" && riotAccountCount > 0 && !riotAccounts;
 
   function handleSubmit() {
     if (!target) return;
@@ -276,6 +278,11 @@ export function PlayerMergeForm({
             <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t("removeSource", { game: GAME_INFO[game].name })}</span>
           </label>
           <p className="mt-1 text-xs text-muted-foreground">{t("removeSourceHint", { name: playerHandle })}</p>
+          {losesRiotAccounts && (
+            <p role="alert" className="mt-2 text-xs text-destructive">
+              {t("riotAccountsLost", { name: playerHandle, count: riotAccountCount })}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3 border-t pt-4">
@@ -298,7 +305,7 @@ export function PlayerMergeForm({
           open={confirmOpen}
           onOpenChange={setConfirmOpen}
           title={t("confirmTitle")}
-          description={t("confirm", { source: playerHandle, target: target.handle })}
+          description={losesRiotAccounts ? `${t("confirm", { source: playerHandle, target: target.handle })} ${t("riotAccountsLost", { name: playerHandle, count: riotAccountCount })}` : t("confirm", { source: playerHandle, target: target.handle })}
           confirmLabel={t("submit")}
           cancelLabel={t("cancel")}
           onConfirm={runMerge}

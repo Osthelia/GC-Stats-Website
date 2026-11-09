@@ -2885,7 +2885,8 @@
           "sourceStillUsed": "Este jugador aún lo usan participantes o estadísticas de partidas de este juego. Selecciónalos también, o conserva el perfil."
         },
         "removeSource": "Quitar de {game} tras fusionar",
-        "removeSourceHint": "{name} se quita de este juego cuando todo se ha movido, y por completo si ningún otro juego tiene este perfil. Se rechaza si participantes o estadísticas de partidas lo siguen usando."
+        "removeSourceHint": "{name} se quita de este juego cuando todo se ha movido, y por completo si ningún otro juego tiene este perfil. Se rechaza si participantes o estadísticas de partidas lo siguen usando.",
+        "riotAccountsLost": "{count} cuenta(s) de Riot de {name} no se mueven y se eliminarán definitivamente con el jugador. Las partidas con ellas aparecerán como sin vincular en futuras importaciones."
       },
       "duplicatesLink": "Posibles duplicados",
       "duplicates": {

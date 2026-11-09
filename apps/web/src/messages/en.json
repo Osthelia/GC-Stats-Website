@@ -2885,7 +2885,8 @@
           "sourceStillUsed": "This player is still used by entrants or match stats of this game. Select them too, or keep the profile."
         },
         "removeSource": "Remove from {game} after merging",
-        "removeSourceHint": "{name} is removed from this game once everything is moved, and entirely when no other game has this profile. Refused if entrants or match stats still use it."
+        "removeSourceHint": "{name} is removed from this game once everything is moved, and entirely when no other game has this profile. Refused if entrants or match stats still use it.",
+        "riotAccountsLost": "{count} Riot account(s) of {name} are not moved and will be deleted for good with the player. Games with them will show as unlinked in future imports."
       },
       "duplicatesLink": "Possible duplicates",
       "duplicates": {

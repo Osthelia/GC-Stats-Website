@@ -2885,7 +2885,8 @@
           "sourceStillUsed": "Ce joueur est encore utilisé par des participants ou des stats de match de ce jeu. Sélectionnez aussi ces éléments, ou gardez le profil."
         },
         "removeSource": "Retirer de {game} après la fusion",
-        "removeSourceHint": "{name} est retiré de ce jeu une fois tout déplacé, et entièrement si aucun autre jeu n'a ce profil. Refusé si des participants ou des stats de match l'utilisent encore."
+        "removeSourceHint": "{name} est retiré de ce jeu une fois tout déplacé, et entièrement si aucun autre jeu n'a ce profil. Refusé si des participants ou des stats de match l'utilisent encore.",
+        "riotAccountsLost": "{count} compte(s) Riot de {name} ne sont pas déplacés et seront supprimés définitivement avec le joueur. Les parties jouées avec eux apparaîtront comme non liées lors des prochains imports."
       },
       "duplicatesLink": "Doublons potentiels",
       "duplicates": {

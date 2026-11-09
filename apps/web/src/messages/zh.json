@@ -2885,7 +2885,8 @@
           "sourceStillUsed": "该选手仍被此游戏的参赛者或比赛统计使用。请一并选择它们，或保留该资料。"
         },
         "removeSource": "合并后从 {game} 中移除",
-        "removeSourceHint": "全部迁移后，{name} 会从此游戏中移除，若其他游戏没有该资料则完全移除。如果参赛者或比赛统计仍在使用，则会被拒绝。"
+        "removeSourceHint": "全部迁移后，{name} 会从此游戏中移除，若其他游戏没有该资料则完全移除。如果参赛者或比赛统计仍在使用，则会被拒绝。",
+        "riotAccountsLost": "{name} 的 {count} 个 Riot 账号不会被移动，并将随选手一并永久删除。今后导入时，使用这些账号的比赛将显示为未关联。"
       },
       "duplicatesLink": "可能的重复项",
       "duplicates": {

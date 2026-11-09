@@ -2851,7 +2851,8 @@
           "sourceNotFound": "Hindi nahanap ang manlalaro.",
           "targetNotFound": "Hindi nahanap ang target na manlalaro.",
           "targetAlreadyLinked": "May naka-link nang account ang target na manlalaro."
-        }
+        },
+        "riotAccountsLost": "Ang {count} Riot account ni {name} ay hindi ililipat at permanenteng made-delete kasama ng player. Ang mga laro nila ay lalabas na hindi naka-link sa mga susunod na import."
       }
     },
     "riotAccounts": {
