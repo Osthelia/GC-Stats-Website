@@ -48,6 +48,15 @@ const NEUTRAL_THEME = {
   idleHover: "hover:text-white",
 };
 
+/** The official mark of a game, in the colour of the surrounding text. */
+export function GameMark({ game, className }: { game: GameSlug; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn("size-4 flex-none fill-current", className)}>
+      <path d={MARK_PATHS[game]} />
+    </svg>
+  );
+}
+
 export type GameSwitchItem = { game: GameSlug; href: string; label: string };
 
 export function GameSwitchTabs({
@@ -90,9 +99,7 @@ export function GameSwitchTabs({
               active ? theme.onThumb : cn("text-neutral-400", theme.idleHover),
             )}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 flex-none fill-current">
-              <path d={MARK_PATHS[game]} />
-            </svg>
+            <GameMark game={game} />
             <span>{GAME_INFO[game].shortName}</span>
           </Link>
         );
