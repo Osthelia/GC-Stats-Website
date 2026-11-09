@@ -1186,13 +1186,13 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     // looked up in. Null for tournament-realm accounts.
     cluster: text("cluster"),
     riotId: text("riot_id"), // last known "name#tag"
-    source: text("source").notNull(), // 'leaguepedia' | 'riot' | 'admin' | 'suggestion'
+    source: text("source").notNull(), // 'leaguepedia' | 'riot' | 'admin'
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     lastSeenAt: timestamp("last_seen_at", { withTimezone: true }), // start of the latest game played with the account
   }, (t) => [
     index("lol_person_accounts_person_id_idx").on(t.personId),
     check("lol_person_accounts_cluster_check", sql`${t.cluster} IS NULL OR ${t.cluster} IN ('americas', 'europe', 'asia', 'sea')`),
-    check("lol_person_accounts_source_check", sql`${t.source} IN ('leaguepedia', 'riot', 'admin', 'suggestion')`),
+    check("lol_person_accounts_source_check", sql`${t.source} IN ('leaguepedia', 'riot', 'admin')`),
   ]);
 
   return { games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw, rosterMembershipLanes, personAccounts, leaguepediaTournaments, leaguepediaGames, leaguepediaTeamNames, dataDragonCatalogs, dataDragonIcons };

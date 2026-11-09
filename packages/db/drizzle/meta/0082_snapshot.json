@@ -5041,7 +5041,7 @@
         },
         "lol_person_accounts_source_check": {
           "name": "lol_person_accounts_source_check",
-          "value": "\"lol_person_accounts\".\"source\" IN ('leaguepedia', 'riot', 'admin', 'suggestion')"
+          "value": "\"lol_person_accounts\".\"source\" IN ('leaguepedia', 'riot', 'admin')"
         }
       },
       "isRLSEnabled": false

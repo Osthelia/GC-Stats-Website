@@ -8,7 +8,7 @@ CREATE TABLE "lol_person_accounts" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_seen_at" timestamp with time zone,
 	CONSTRAINT "lol_person_accounts_cluster_check" CHECK ("lol_person_accounts"."cluster" IS NULL OR "lol_person_accounts"."cluster" IN ('americas', 'europe', 'asia', 'sea')),
-	CONSTRAINT "lol_person_accounts_source_check" CHECK ("lol_person_accounts"."source" IN ('leaguepedia', 'riot', 'admin', 'suggestion'))
+	CONSTRAINT "lol_person_accounts_source_check" CHECK ("lol_person_accounts"."source" IN ('leaguepedia', 'riot', 'admin'))
 );
 --> statement-breakpoint
 DROP VIEW "public"."lol_people";--> statement-breakpoint
