@@ -15,7 +15,7 @@ import { gameFromParams } from "@/lib/game";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string; game: string }> }) {
   const game = await gameFromParams(params);
-  return withApiV1(request, "/v1/teams/:id", async () => {
+  return withApiV1(request, game, "/v1/teams/:id", async () => {
     const { id } = await params;
     return getTeamById(game, parsePathId(id));
   });
