@@ -45,7 +45,7 @@ import { getChampionCatalog } from "@/lib/data-dragon-client";
 import { getLolMatch, getLolTimeline, relayProblemKind, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
 import type { RelayProblemKind } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
-import { createPerson, ensureGameProfile } from "@/lib/person-service";
+import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { compareTeamNames } from "@/lib/liquipedia-team-match";
 import { accountHolder, insertAccount } from "@/lib/lol-accounts";
@@ -281,16 +281,21 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
 
   const platform = gamePlatform(validation.match, resolved.riotMatchId);
   const seenAt = new Date(validation.match.info.gameCreation);
-  for (const participant of validation.match.info.participants) {
-    const mapping = mappingByPuuid.get(participant.puuid);
-    // A mapping for an account that is already linked is ignored: the link is not the admin's to move.
-    if (linked.has(participant.puuid) || !mapping) continue;
-    const conflict = await linkAccount(mapping, { platform, riotId: formatRiotId(participant), seenAt, source: input.game.source });
-    if (conflict) return { ok: false, error: { kind: "accountConflict", puuid: conflict } };
-  }
-
-  const relinked = await linkedPeopleByPuuid(puuids);
-  const personIdByPuuid = new Map([...relinked].map(([puuid, person]) => [puuid, person.id]));
+  const linkPeople = async (tx: PersonWriteClient): Promise<Map<string, number>> => {
+    const personIdByPuuid = new Map<string, number>();
+    for (const participant of validation.match.info.participants) {
+      const known = linked.get(participant.puuid);
+      // A mapping for an account that is already linked is ignored: the link is not the admin's to move.
+      if (known) {
+        personIdByPuuid.set(participant.puuid, known.id);
+        continue;
+      }
+      const mapping = mappingByPuuid.get(participant.puuid);
+      if (!mapping) continue;
+      personIdByPuuid.set(participant.puuid, await linkAccount(tx, mapping, { platform, riotId: formatRiotId(participant), seenAt, source: input.game.source }));
+    }
+    return personIdByPuuid;
+  };
   try {
     const stored = await importGame({
       matchId: input.matchId,
@@ -299,7 +304,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
       timeline: validation.timeline,
       source: input.game.source,
       entrantIdBySide: input.entrantIdBySide,
-      personIdByPuuid,
+      personIdByPuuid: linkPeople,
       roleOverrides: input.roleOverrides,
       replaceGameId: input.gameId,
       rawStored: true,
@@ -309,6 +314,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
     await refreshAccounts(validation.match, platform, seenAt);
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
+    if (err instanceof AccountConflictError) return { ok: false, error: { kind: "accountConflict", puuid: err.puuid } };
     console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);
     return { ok: false, error: { kind: "storeFailed", message: describeStoreError(err) } };
   }
@@ -350,13 +356,21 @@ function gamePlatform(match: RiotMatchDto, riotMatchId: string): string {
   return platformOfMatchId(riotMatchId) ?? match.info.platformId;
 }
 
+/** An account another person holds, or that could not be linked: thrown inside the store transaction so it rolls back. */
+class AccountConflictError extends Error {
+  constructor(readonly puuid: string) {
+    super(`Account ${puuid} could not be linked`);
+  }
+}
+
 /**
- * Links one Riot account to a person, or creates the person with it. A known person with a new account gets it added
- * next to the ones they have. An account that another person already holds is never moved; the caller gets its puuid
- * back as the conflict.
+ * Links one Riot account to a person, or creates the person with it, and returns the person. A known person with a new
+ * account gets it added next to the ones they have. An account that another person already holds is never moved:
+ * that throws AccountConflictError, which aborts the transaction it runs in. Runs on the store transaction, so the
+ * writes only stay when the game is stored.
  */
-async function linkAccount(mapping: PlayerMapping, sighting: AccountSighting): Promise<string | null> {
-  const holder = await accountHolder(mapping.puuid);
+async function linkAccount(tx: PersonWriteClient, mapping: PlayerMapping, sighting: AccountSighting): Promise<number> {
+  const holder = await accountHolder(mapping.puuid, tx);
   const values = {
     puuid: mapping.puuid,
     platform: sighting.platform,
@@ -367,22 +381,23 @@ async function linkAccount(mapping: PlayerMapping, sighting: AccountSighting): P
   };
   try {
     if (mapping.personId !== null) {
-      if (holder) return holder.personId === mapping.personId ? null : mapping.puuid;
-      await ensureGameProfile(db, "lol", mapping.personId);
-      await insertAccount(db, { ...values, personId: mapping.personId });
-      return null;
+      if (holder) {
+        if (holder.personId === mapping.personId) return holder.personId;
+        throw new AccountConflictError(mapping.puuid);
+      }
+      await ensureGameProfile(tx, "lol", mapping.personId);
+      await insertAccount(tx, { ...values, personId: mapping.personId });
+      return mapping.personId;
     }
-    if (holder) return mapping.puuid;
-    const handle = (mapping.createHandle ?? "").trim();
-    await db.transaction(async (tx) => {
-      const personId = await createPerson(tx, "lol", { handle });
-      await insertAccount(tx, { ...values, personId });
-    });
-    return null;
+    if (holder) throw new AccountConflictError(mapping.puuid);
+    const personId = await createPerson(tx, "lol", { handle: (mapping.createHandle ?? "").trim() });
+    await insertAccount(tx, { ...values, personId });
+    return personId;
   } catch (err) {
-    // The primary key on puuid catches a concurrent link of the same account.
+    if (err instanceof AccountConflictError) throw err;
+    // The primary key on puuid catches a concurrent link of the same account; a taken handle lands here too.
     console.warn(`[leaguepedia] account ${mapping.puuid} could not be linked: ${err instanceof Error ? err.message : String(err)}`);
-    return mapping.puuid;
+    throw new AccountConflictError(mapping.puuid);
   }
 }
 

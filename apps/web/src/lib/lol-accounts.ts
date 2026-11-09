@@ -57,8 +57,8 @@ export async function countPersonAccounts(personId: number): Promise<number> {
 }
 
 /** The person who holds the account, null when nobody does. */
-export async function accountHolder(puuid: string): Promise<{ personId: number; handle: string } | null> {
-  const [holder] = await db
+export async function accountHolder(puuid: string, client: Pick<typeof db, "select"> = db): Promise<{ personId: number; handle: string } | null> {
+  const [holder] = await client
     .select({ personId: lolPersonAccounts.personId, handle: sharedPeople.handle })
     .from(lolPersonAccounts)
     .innerJoin(sharedPeople, eq(sharedPeople.id, lolPersonAccounts.personId))
