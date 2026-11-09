@@ -13,7 +13,7 @@
 
 import { NextResponse } from "next/server";
 import type { GameSlug } from "@gc-stats/db/game";
-import { isGamePublic } from "@/lib/public-games";
+import { isGamePublic, isHiddenGamePath } from "@/lib/public-games";
 import { canViewGame } from "@/lib/rbac";
 
 function notFound(): NextResponse {
@@ -23,6 +23,11 @@ function notFound(): NextResponse {
 /** 404 unless `game` is public. */
 export function publicGameGate(game: GameSlug): NextResponse | null {
   return isGamePublic(game) ? null : notFound();
+}
+
+/** 404 when the request's path holds a game that is not public yet (see isHiddenGamePath). */
+export function hiddenGamePathGate(request: Request): NextResponse | null {
+  return isHiddenGamePath(new URL(request.url).pathname) ? notFound() : null;
 }
 
 /** 404 unless `game` is public or the viewer is an admin of it. */

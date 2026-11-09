@@ -18,7 +18,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ game
   const game = await gameFromParams(params);
   return withApiV1(
     request,
-    game,
     "/v2/organization/by-name/:name",
     async () => {
       const { name } = await params;

@@ -14,8 +14,7 @@ import { apiRequestLog, GameFeatureUnavailableError } from "@gc-stats/db";
 import { resolveApiKey } from "./auth";
 import { checkRateLimit } from "./rate-limit";
 import { getPublicApiConfig } from "@/lib/public-api/config";
-import { publicGameGate } from "@/lib/api/game-gate";
-import type { GameSlug } from "@gc-stats/db/game";
+import { hiddenGamePathGate } from "@/lib/api/game-gate";
 /** Thrown by a query/route to short-circuit `withApiV1` with a specific status (400 bad params, ...). */
 export class ApiV1Error extends Error {
   constructor(
@@ -71,15 +70,16 @@ function logRequest(request: Request, endpointTemplate: string, apiKeyId: number
  * never the literal request path — `apiRequestLog.endpoint` is grouped by it
  * for the per-endpoint stats already built on /admin + /dashboard.
  *
- * `game` is the game of the route; a game that is not public yet answers 404 (see publicGameGate).
+ * A request for a game that is not public yet answers 404 (see hiddenGamePathGate).
  * `handler` returning `null` is treated as 404 (resource not found).
  * `cost` (default 1) is how much of the per-minute window this call consumes
  * — heavier endpoints (teams/players V2) charge more than 1.
  */
-export async function withApiV1<T>(request: Request, game: GameSlug, endpointTemplate: string, handler: () => Promise<T | null>, cost = 1): Promise<NextResponse> {
-  // A game that is not public yet answers 404 before anything else, so the key check can't reveal it exists. `game`
-  // is the route's validated [game] param (gameFromParams) and is required, so a route can't skip the gate.
-  const hidden = publicGameGate(game);
+export async function withApiV1<T>(request: Request, endpointTemplate: string, handler: () => Promise<T | null>, cost = 1): Promise<NextResponse> {
+  // A game that is not public yet answers 404 before anything else, so the key check can't reveal it exists. Every
+  // path segment is checked, not a fixed position: the route's [game] param is always one of them, so a moved route
+  // or an extra prefix can't skip the gate.
+  const hidden = hiddenGamePathGate(request);
   if (hidden) return hidden;
   const startedAt = Date.now();
   const key = await resolveApiKey(request);

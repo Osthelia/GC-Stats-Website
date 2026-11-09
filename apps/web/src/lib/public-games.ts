@@ -42,6 +42,25 @@ export function isGamePublic(game: GameSlug): boolean {
   return publicGames().includes(game);
 }
 
+/**
+ * True when any segment of the path is a game that is not public yet. A route serves a game through its [game]
+ * param, which is always one of the path's segments, so this catches every request for a hidden game wherever
+ * the route sits (prefix, trailing slash, a moved route). Segments are decoded like Next decodes the param, so
+ * "%6Col" counts as "lol". While a game is hidden, any other segment that is exactly its slug (a name lookup
+ * such as /teams/by-name/lol) is refused too: it fails safe and ends with the game's launch.
+ */
+export function isHiddenGamePath(pathname: string): boolean {
+  return pathname.split("/").some((segment) => {
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(segment);
+    } catch {
+      return false;
+    }
+    return isGameSlug(decoded) && !isGamePublic(decoded);
+  });
+}
+
 /** `preferred` when it is public, else the first public game (for redirects). */
 export function fallbackPublicGame(preferred: GameSlug): GameSlug {
   const games = publicGames();

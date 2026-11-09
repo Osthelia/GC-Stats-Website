@@ -15,7 +15,7 @@ import { gameFromParams } from "@/lib/game";
 
 export async function GET(request: Request, { params }: { params: Promise<{ name: string; game: string }> }) {
   const game = await gameFromParams(params);
-  return withApiV1(request, game, "/v3/tournaments/by-name/:name/groups", async () => {
+  return withApiV1(request, "/v3/tournaments/by-name/:name/groups", async () => {
     const { name } = await params;
     const phaseId = parsePositiveIntParam(new URL(request.url).searchParams, "phase_id");
     return getTournamentGroupsByNameV3(game, name, phaseId);

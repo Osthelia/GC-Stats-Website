@@ -15,7 +15,7 @@ import { getTeamLogoHistory } from "@/lib/api/v1/queries/teams";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string; game: string }> }) {
   const game = await gameFromParams(params);
-  return withApiV1(request, game, "/v1/teams/:id/logos", async () => {
+  return withApiV1(request, "/v1/teams/:id/logos", async () => {
     const { id } = await params;
     return getTeamLogoHistory(game, parsePathId(id));
   });

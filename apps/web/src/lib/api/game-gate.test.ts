@@ -11,7 +11,7 @@ vi.mock("./v1/auth", () => ({ resolveApiKey: (request: Request) => resolveApiKey
 vi.mock("./v1/rate-limit", () => ({ checkRateLimit: vi.fn() }));
 vi.mock("@/lib/public-api/config", () => ({ getPublicApiConfig: vi.fn() }));
 
-import { publicGameGate } from "./game-gate";
+import { hiddenGamePathGate, publicGameGate } from "./game-gate";
 import { withApiV1 } from "./v1/handler";
 
 beforeEach(() => {
@@ -32,10 +32,41 @@ describe("publicGameGate", () => {
   });
 });
 
+describe("hiddenGamePathGate", () => {
+  const gate = (url: string) => hiddenGamePathGate(new Request(url))?.status ?? null;
+
+  it("refuses a hidden game wherever its segment sits", () => {
+    expect(gate("http://localhost/api/valorant/lol/v2/teams")).toBe(404);
+    expect(gate("http://localhost/prefix/api/valorant/lol/v2/teams")).toBe(404);
+    expect(gate("http://localhost/api/valorant/lol/v2/teams/")).toBe(404);
+    expect(gate("http://localhost/api/v4/lol/teams")).toBe(404);
+  });
+
+  it("refuses the hidden game when its segment is percent-encoded", () => {
+    expect(gate("http://localhost/api/valorant/%6Col/v2/teams")).toBe(404);
+  });
+
+  it("lets a public game through", () => {
+    expect(gate("http://localhost/api/valorant/valorant/v2/teams")).toBeNull();
+    expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lolita")).toBeNull();
+  });
+
+  it("refuses a segment that is exactly the hidden slug, and lets it through once the game is public", () => {
+    expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lol")).toBe(404);
+    vi.stubEnv("PUBLIC_GAMES", "valorant,lol");
+    expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lol")).toBeNull();
+    expect(gate("http://localhost/api/valorant/lol/v2/teams")).toBeNull();
+  });
+
+  it("ignores a segment that can't be decoded", () => {
+    expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/%E0%A4%A")).toBeNull();
+  });
+});
+
 describe("withApiV1", () => {
   it("answers 404 for a hidden game before the key is checked or the handler runs", async () => {
     const handler = vi.fn();
-    const response = await withApiV1(new Request("http://localhost/api/valorant/lol/v2/teams"), "lol", "/v2/teams", handler);
+    const response = await withApiV1(new Request("http://localhost/api/valorant/lol/v2/teams"), "/v2/teams", handler);
     expect(response.status).toBe(404);
     expect(resolveApiKey).not.toHaveBeenCalled();
     expect(handler).not.toHaveBeenCalled();
@@ -43,7 +74,15 @@ describe("withApiV1", () => {
 
   it("goes on to the key check for a public game", async () => {
     resolveApiKey.mockResolvedValue(null);
-    const response = await withApiV1(new Request("http://localhost/api/valorant/valorant/v2/teams"), "valorant", "/v2/teams", vi.fn());
+    const response = await withApiV1(new Request("http://localhost/api/valorant/valorant/v2/teams"), "/v2/teams", vi.fn());
     expect(response.status).toBe(401);
+  });
+
+  it("answers 404 for a hidden game behind an extra path prefix too", async () => {
+    const handler = vi.fn();
+    const response = await withApiV1(new Request("http://localhost/mounted/api/valorant/lol/v2/teams"), "/v2/teams", handler);
+    expect(response.status).toBe(404);
+    expect(resolveApiKey).not.toHaveBeenCalled();
+    expect(handler).not.toHaveBeenCalled();
   });
 });

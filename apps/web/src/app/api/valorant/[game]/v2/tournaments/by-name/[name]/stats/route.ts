@@ -15,7 +15,7 @@ import { gameFromParams } from "@/lib/game";
 
 export async function GET(request: Request, { params }: { params: Promise<{ name: string; game: string }> }) {
   const game = await gameFromParams(params);
-  return withApiV1(request, game, "/v2/tournaments/by-name/:name/stats", async () => {
+  return withApiV1(request, "/v2/tournaments/by-name/:name/stats", async () => {
     const { name } = await params;
     const filter = parseTournamentStatsFilter(new URL(request.url).searchParams);
     return getTournamentStatsByNameV2(game, name, filter);
