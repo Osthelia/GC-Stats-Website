@@ -259,6 +259,7 @@ export function LeagueGameDialog({
             </FormField>
           </div>
 
+          {leaguepediaGames.length > 0 && (
           <FormField label={t("leaguepedia.label")} htmlFor="game-leaguepedia">
             <SearchablePicker
               id="game-leaguepedia"
@@ -271,6 +272,7 @@ export function LeagueGameDialog({
               noResultsLabel={t("leaguepedia.noResults")}
             />
           </FormField>
+          )}
 
           {form.leaguepediaGameId === NO_LEAGUEPEDIA && leaguepediaLink.linked && (
             <div>
