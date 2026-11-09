@@ -26,7 +26,7 @@ import {
 import { defaultNewsLanguages } from "@/lib/news-languages-default";
 import { stripAccents } from "@/lib/search-typo";
 import { GcStatsWordmark } from "@/components/site/gc-stats-wordmark";
-import { GameSwitcher } from "@/components/site/game-switcher";
+import { GameDropdown, GameSwitcher } from "@/components/site/game-switcher";
 import { useGame } from "@/lib/use-game";
 
 const NAV_ITEMS = ["matches", "tournaments", "calendar"] as const;
@@ -55,6 +55,7 @@ export function SiteHeader({
   const { status: sessionStatus } = useSession();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [gameOpen, setGameOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<
     "menu" | "settings" | "timezone" | "language" | "newsLanguages"
@@ -65,6 +66,7 @@ export function SiteHeader({
     const onDocClick = () => {
       setSettingsOpen(false);
       setLangOpen(false);
+      setGameOpen(false);
     };
     window.addEventListener("click", onDocClick);
     return () => window.removeEventListener("click", onDocClick);
@@ -114,12 +116,7 @@ export function SiteHeader({
       ref={rootRef}
       className="sticky top-0 z-[60] border-b border-neutral-800 bg-[var(--gcs-bg)]/90 backdrop-blur-xl"
     >
-      <div className="absolute inset-y-0 left-0 hidden items-center px-4 md:flex">
-        <GameSwitcher />
-      </div>
-
-      {/* Left padding keeps the content clear of the switcher on narrow desktops */}
-      <div className="mx-auto flex h-[62px] max-w-[clamp(1500px,88vw,2400px)] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9 md:pl-[max(1.5rem,calc(11rem_-_(100vw_-_clamp(1500px,88vw,2400px))/2))]">
+      <div className="mx-auto flex h-[62px] max-w-[clamp(1500px,88vw,2400px)] items-center gap-3 px-3 sm:h-[66px] sm:gap-5 sm:px-6 md:gap-9">
         <Link href={homeHref} className="flex flex-none items-center gap-2.5">
           <div className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[#e4ae22] text-[13px] font-bold tracking-tight text-[#0e0e0e]">
             GC
@@ -140,6 +137,7 @@ export function SiteHeader({
                 e.stopPropagation();
                 setSettingsOpen((v) => !v);
                 setLangOpen(false);
+                setGameOpen(false);
               }}
               className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] border transition-colors"
               style={{
@@ -159,7 +157,24 @@ export function SiteHeader({
             )}
           </div>
 
-          <LanguageSwitcher open={langOpen} onToggle={setLangOpen} />
+          <LanguageSwitcher
+            open={langOpen}
+            onToggle={(next) => {
+              setLangOpen(next);
+              if (next) setGameOpen(false);
+            }}
+          />
+
+          <GameDropdown
+            open={gameOpen}
+            onToggle={(next) => {
+              setGameOpen(next);
+              if (next) {
+                setSettingsOpen(false);
+                setLangOpen(false);
+              }
+            }}
+          />
 
           <NotificationBell />
 
