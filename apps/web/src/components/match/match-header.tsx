@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GOLD, RED, tint } from "@/lib/theme-colors";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
+import { defaultTeamLogos } from "@/lib/default-logos";
 import { slugify } from "@/lib/entity-id";
 import type { MatchHeader as MatchHeaderData, MatchSide } from "@/lib/match-page-data";
 import { FormattedDate } from "@/components/formatted-date";
@@ -21,16 +21,17 @@ import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { ShareMenuButton } from "@/components/site/share-menu-button";
 import { isViewerAdmin } from "@/lib/rbac";
 
-function TeamBlock({ side, name, align }: { side: MatchSide; name: string; align: "left" | "right" }) {
+function TeamBlock({ game, side, name, align }: { game: GameSlug; side: MatchSide; name: string; align: "left" | "right" }) {
   const reversed = align === "right";
+  const defaults = defaultTeamLogos(game);
   const logo = (
     <div
       className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl border border-neutral-800 transition-transform duration-300 group-hover:scale-105 md:h-16 md:w-16"
       style={{ background: "var(--gcs-surface-2)" }}
     >
       <ThemedLogoImage
-        dark={side.logoUrl ?? DEFAULT_TEAM_LOGO_DARK}
-        light={side.logoUrlLight ?? side.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT}
+        dark={side.logoUrl ?? defaults.dark}
+        light={side.logoUrlLight ?? side.logoUrl ?? defaults.light}
         alt={name}
         width={56}
         height={56}
@@ -123,7 +124,7 @@ export async function MatchHeader({ game, match, children }: { game: GameSlug; m
         </div>
 
         <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
-          <TeamBlock side={match.a} name={teamAName} align="left" />
+          <TeamBlock game={game} side={match.a} name={teamAName} align="left" />
 
           <div className="flex flex-none flex-col items-center gap-2 px-2">
             {match.patch && <span className="mb-1 font-mono text-[10px] text-neutral-600">{t("patch", { patch: match.patch })}</span>}
@@ -163,7 +164,7 @@ export async function MatchHeader({ game, match, children }: { game: GameSlug; m
             )}
           </div>
 
-          <TeamBlock side={match.b} name={teamBName} align="right" />
+          <TeamBlock game={game} side={match.b} name={teamBName} align="right" />
         </div>
 
         {children}

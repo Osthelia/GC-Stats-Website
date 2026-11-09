@@ -14,7 +14,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { DEFAULT_TEAM_LOGO_DARK } from "@/lib/default-logos";
+import { defaultTeamLogos } from "@/lib/default-logos";
+import { useGame } from "@/lib/use-game";
 import { GOLD, tint } from "@/lib/theme-colors";
 import { agentIconUrl, winTypeIconUrl } from "@/lib/valorant-agents";
 import { mapSplashUrl } from "@/lib/valorant-maps";
@@ -57,7 +58,8 @@ function assetSrc(url: string): string {
 
 function PosterLogo({ url, alt, size }: { url: string | null; alt: string; size: number }) {
   const [failed, setFailed] = useState(false);
-  const src = failed || !url ? DEFAULT_TEAM_LOGO_DARK : assetSrc(url);
+  const fallback = defaultTeamLogos(useGame()).dark;
+  const src = failed || !url ? fallback : assetSrc(url);
   return <img src={src} alt={alt} width={size} height={size} style={{ width: size, height: size }} className="object-contain" onError={() => setFailed(true)} />;
 }
 

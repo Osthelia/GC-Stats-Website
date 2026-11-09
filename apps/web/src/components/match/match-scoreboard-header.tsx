@@ -12,7 +12,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
+import { defaultTeamLogos } from "@/lib/default-logos";
+import { useGame } from "@/lib/use-game";
 import type { MatchSide } from "@/lib/match-page-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 
@@ -36,10 +37,11 @@ export function MatchScoreboardHeader({
   winner?: "a" | "b" | null;
 }) {
   const t = useTranslations("matchPage");
-  const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoALight = a.logoUrlLight ?? a.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
-  const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
+  const defaults = defaultTeamLogos(useGame());
+  const logoA = a.logoUrl ?? defaults.dark;
+  const logoALight = a.logoUrlLight ?? a.logoUrl ?? defaults.light;
+  const logoB = b.logoUrl ?? defaults.dark;
+  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? defaults.light;
 
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-neutral-800 px-5 py-4">
