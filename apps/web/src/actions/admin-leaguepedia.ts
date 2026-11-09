@@ -22,7 +22,8 @@ import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { getAdminMatch } from "@/lib/admin-matches";
 import { prepareLeaguepediaGame, commitLeaguepediaGame, getPersonAccountSummaries, type PersonAccountSummary, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
 import type { LeaguepediaGameMode } from "@/lib/lol-import/leaguepedia-game";
-import type { LeagueSide } from "@gc-stats/lol-stats-engine";
+import { isRiotCluster, type LeagueSide } from "@gc-stats/lol-stats-engine";
+import { findGames, getFindGamesBasis, type FindGamesBasis, type FindGamesInput, type FindGamesResult } from "@/lib/lol-import/find-games";
 import { matchTag } from "@/lib/cache-tags";
 import { updateTag } from "next/cache";
 
@@ -82,6 +83,9 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
 }
 
 export type { LeaguepediaPreview, PreviewPlayer, PlayerMapping, PersonAccountSummary, PersonRef, LeaguepediaGameError, GameRef } from "@/lib/lol-import/fetch-league-game";
+export type { FindGamesBasis, FindGamesError, FindGamesResult, FoundGame, FoundGameSide } from "@/lib/lol-import/find-games";
+
+export type FindGamesRequest = Pick<FindGamesInput, "cluster" | "start" | "end" | "riotIds">;
 
 export type PrepareGameInput = { game: GameRef; mode: LeaguepediaGameMode; gameId: number | null };
 export type CommitGameInput = { mode: LeaguepediaGameMode; gameId: number | null; game: GameRef; order: number; entrantIdBySide: Record<LeagueSide, number>; mappings: PlayerMapping[]; roleOverrides: Record<string, string | null> };
@@ -125,6 +129,21 @@ export async function getLolPersonAccounts(personId: number): Promise<PersonAcco
   await requireLolActor();
   if (!Number.isInteger(personId)) return [];
   return getPersonAccountSummaries(personId);
+}
+
+/** The region, schedule, default window and per-team account counts "Find games" starts from. */
+export async function getFindGamesBasisForMatch(tournamentId: number, matchId: number, cluster: string | null): Promise<FindGamesBasis | null> {
+  await requireLolActor();
+  if (!(await matchOfTournament(tournamentId, matchId))) return null;
+  return getFindGamesBasis(tournamentId, matchId, isRiotCluster(cluster) ? cluster : null);
+}
+
+/** Searches the tournament-code games of the series. Returns the games it found; nothing is stored. */
+export async function findGamesForMatch(tournamentId: number, matchId: number, request: FindGamesRequest): Promise<FindGamesResult> {
+  await requireLolActor();
+  if (!(await matchOfTournament(tournamentId, matchId))) return { ok: false, error: { kind: "noData" } };
+  const riotIds = Array.isArray(request.riotIds) ? request.riotIds.filter((id): id is string => typeof id === "string").slice(0, 10) : [];
+  return findGames({ tournamentId, matchId, cluster: String(request.cluster), start: String(request.start), end: String(request.end), riotIds });
 }
 
 function fetchError(error: GameListError): LeaguepediaLinkError {

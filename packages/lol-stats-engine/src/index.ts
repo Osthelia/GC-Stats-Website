@@ -18,6 +18,7 @@ export * from "./game-summary";
 export * from "./infer-roles";
 export * from "./lanes";
 export * from "./account-suggestions";
+export * from "./find-games";
 export * from "./timeline-rows";
 export * from "./timeline-stats";
 export * from "./series-stats";

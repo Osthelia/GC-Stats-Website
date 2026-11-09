@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { clusterForPlatform, clusterForRegion, isTournamentRealm, realmOf, platformOfMatchId, riotCluster } from "./match-id";
+import { accountsOnRealm, clusterForPlatform, clusterForRegion, formatRiotId, isRiotCluster, isTournamentRealm, parseRiotId, platformOfMatchId, realmOf, riotCluster } from "./match-id";
 
 describe("riotCluster", () => {
   it("routes a match to the cluster of its platform", () => {
@@ -94,5 +94,58 @@ describe("realmOf", () => {
   it("uses the stored cluster for an account never seen in a game", () => {
     expect(realmOf({ platform: null, cluster: "asia" })).toBe("asia");
     expect(realmOf({ platform: null, cluster: null })).toBeNull();
+  });
+});
+
+describe("parseRiotId", () => {
+  it("splits name and tag at the last hash", () => {
+    expect(parseRiotId("SLYA Pivotless#EUW")).toEqual({ gameName: "SLYA Pivotless", tagLine: "EUW" });
+    expect(parseRiotId("  Caps#1234 ")).toEqual({ gameName: "Caps", tagLine: "1234" });
+  });
+
+  it("is null without a tag or with a name or tag outside Riot's limits", () => {
+    expect(parseRiotId("Caps")).toBeNull();
+    expect(parseRiotId("Ab#EUW")).toBeNull();
+    expect(parseRiotId("AVeryLongRiotNameX#EUW")).toBeNull();
+    expect(parseRiotId("Caps#EU")).toBeNull();
+    expect(parseRiotId("Caps#EUWEST")).toBeNull();
+    expect(parseRiotId("Ca/ps#EUW")).toBeNull();
+    expect(parseRiotId("#EUW")).toBeNull();
+  });
+});
+
+describe("formatRiotId", () => {
+  it("joins name and tag", () => {
+    expect(formatRiotId({ riotIdGameName: "SLYA Pivotless", riotIdTagline: "EUW" })).toBe("SLYA Pivotless#EUW");
+  });
+
+  it("is the name alone without a tag, and null without a name", () => {
+    expect(formatRiotId({ riotIdGameName: "Caps" })).toBe("Caps");
+    expect(formatRiotId({ riotIdTagline: "EUW" })).toBeNull();
+    expect(formatRiotId({})).toBeNull();
+  });
+});
+
+describe("isRiotCluster", () => {
+  it("is true for the four clusters only", () => {
+    for (const cluster of ["americas", "europe", "asia", "sea"]) expect(isRiotCluster(cluster)).toBe(true);
+    for (const other of ["tournament", "EUW1", "", null, undefined, 3]) expect(isRiotCluster(other)).toBe(false);
+  });
+});
+
+describe("accountsOnRealm", () => {
+  const account = (puuid: string, platform: string | null, cluster: string | null = null) => ({ puuid, platform, cluster });
+  const accounts = [account("a", "EUW1"), account("b", "KR"), account("c", "LOLTMNT01"), account("d", null, "europe"), account("e", null, null)];
+
+  it("keeps the accounts of a live cluster, including ones only looked up there", () => {
+    expect(accountsOnRealm(accounts, "europe").map((a) => a.puuid)).toEqual(["a", "d"]);
+  });
+
+  it("keeps the tournament realm accounts for 'tournament'", () => {
+    expect(accountsOnRealm(accounts, "tournament").map((a) => a.puuid)).toEqual(["c"]);
+  });
+
+  it("is empty for an unknown realm", () => {
+    expect(accountsOnRealm(accounts, null)).toEqual([]);
   });
 });

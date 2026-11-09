@@ -20,9 +20,11 @@ import { and, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonAccounts, lolRosterMembershipLanes, lolRosterMemberships, lolTeams } from "@gc-stats/db";
 import {
+  accountsOnRealm,
   assignedRoles,
   championNameOf,
   clusterForPlatform,
+  formatRiotId,
   inferRoles,
   isTournamentRealm,
   LEAGUE_ROLES,
@@ -37,11 +39,12 @@ import {
   type SuggestionCandidate,
   validateImport,
   type LeagueSide,
+  type Realm,
   type RiotMatchDto,
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
-import { getLolMatch, getLolTimeline, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import { getLolMatch, getLolTimeline, relayFailureKind, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
@@ -216,7 +219,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
         const person = linked.get(p.puuid) ?? null;
         return {
           puuid: p.puuid,
-          riotId: p.riotIdGameName ? `${p.riotIdGameName}${p.riotIdTagline ? `#${p.riotIdTagline}` : ""}` : p.puuid.slice(0, 8),
+          riotId: formatRiotId(p) ?? p.puuid.slice(0, 8),
           side: sideForTeamId(p.teamId),
           role: effective.get(p.participantId) ?? null,
           assignedRole: assigned.get(p.participantId) ?? null,
@@ -280,7 +283,7 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
     const mapping = mappingByPuuid.get(participant.puuid);
     // A mapping for an account that is already linked is ignored: the link is not the admin's to move.
     if (linked.has(participant.puuid) || !mapping) continue;
-    const conflict = await linkAccount(mapping, { platform, riotId: riotIdOf(participant), seenAt, source: input.game.source });
+    const conflict = await linkAccount(mapping, { platform, riotId: formatRiotId(participant), seenAt, source: input.game.source });
     if (conflict) return { ok: false, error: { kind: "accountConflict", puuid: conflict } };
   }
 
@@ -356,11 +359,6 @@ interface AccountSighting {
   source: "leaguepedia" | "riot";
 }
 
-/** "name#tag" of a participant, null without a name. Riot IDs change, so this is only the last one seen. */
-function riotIdOf(participant: { riotIdGameName?: string; riotIdTagline?: string }): string | null {
-  return participant.riotIdGameName ? `${participant.riotIdGameName}${participant.riotIdTagline ? `#${participant.riotIdTagline}` : ""}` : null;
-}
-
 /** The platform a game was played on. The match id says it for the tournament realm too ("LOLTMNT01_..."). */
 function gamePlatform(match: RiotMatchDto, riotMatchId: string): string {
   return platformOfMatchId(riotMatchId) ?? match.info.platformId;
@@ -414,7 +412,7 @@ async function refreshAccounts(match: RiotMatchDto, platform: string, seenAt: Da
   try {
     await db.transaction(async (tx) => {
       for (const participant of match.info.participants) {
-        const riotId = riotIdOf(participant);
+        const riotId = formatRiotId(participant);
         await tx
           .update(a)
           .set({
@@ -472,7 +470,7 @@ function riotLoadError(error: RiotGameError): LeaguepediaGameError {
     case "storageUnavailable":
       return { kind: "storageUnavailable" };
     case "riotUnavailable":
-      return error.error.kind === "missingConfig" ? { kind: "missingConfig" } : { kind: "riotUnavailable" };
+      return { kind: relayFailureKind(error.error) };
   }
 }
 
@@ -488,7 +486,7 @@ export interface SeriesEntrant {
   leaguepediaName: string | null;
 }
 
-async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
+export async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
   const [match] = await db.select({ entrantAId: lolMatches.entrantAId, entrantBId: lolMatches.entrantBId }).from(lolMatches).where(eq(lolMatches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
   const rows = await db
@@ -519,7 +517,7 @@ async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number;
  * belongs to one tournament, so this covers the earlier games of the series and of the tournament, without a roster.
  * The game being replaced is left out: it may have been saved with the sides swapped, which a re-import is there to fix.
  */
-async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
+export async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
   const [roster, played] = await Promise.all([
     getEntrantPersonIds("lol", entrantId),
     db
@@ -532,14 +530,13 @@ async function knownPeopleOf(entrantId: number, replacedGameId: number | null): 
 }
 
 /** suggests candiatias from the given persons of given teams */
-async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, realm: string | null): Promise<Map<number, SuggestionCandidate[]>> {
+async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, realm: Realm | null): Promise<Map<number, SuggestionCandidate[]>> {
   const personIds = [...new Set([...knownByEntrant.values()].flatMap((ids) => [...ids]))];
   const result = new Map<number, SuggestionCandidate[]>([...knownByEntrant.keys()].map((entrantId) => [entrantId, []]));
   if (personIds.length === 0) return result;
 
-  const [people, accounts, played, saved] = await Promise.all([
-    db.select({ id: lolPeople.id, handle: lolPeople.handle, aliases: lolPeople.aliases }).from(lolPeople).where(inArray(lolPeople.id, personIds)),
-    db.select({ personId: lolPersonAccounts.personId, platform: lolPersonAccounts.platform, cluster: lolPersonAccounts.cluster }).from(lolPersonAccounts).where(inArray(lolPersonAccounts.personId, personIds)),
+  const [known, played, saved] = await Promise.all([
+    loadKnownPeople(personIds),
     db.selectDistinct({ personId: lolGamePlayerStats.personId, lane: lolGamePlayerStats.role }).from(lolGamePlayerStats).where(inArray(lolGamePlayerStats.personId, personIds)),
     db
       .select({ personId: lolRosterMemberships.personId, lane: lolRosterMembershipLanes.lane })
@@ -548,19 +545,49 @@ async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, re
       .where(inArray(lolRosterMemberships.personId, personIds)),
   ]);
 
-  const hasAccountOnRealm = new Set(realm === null ? [] : accounts.filter((account) => realmOf(account) === realm).map((account) => account.personId));
+  const hasAccountOnRealm = new Set(accountsOnRealm([...known.values()].flatMap((person) => person.accounts), realm).map((account) => account.personId));
   const lanesOf = new Map<number, string[]>();
   for (const row of [...played, ...saved]) if (row.personId !== null && row.lane !== null) lanesOf.set(row.personId, [...(lanesOf.get(row.personId) ?? []), row.lane]);
   const candidateById = new Map(
-    people
+    [...known.values()]
       .filter((person) => !hasAccountOnRealm.has(person.id))
-      .map((person): [number, SuggestionCandidate] => [
-        person.id,
-        { id: person.id, handle: person.handle, aliases: Array.isArray(person.aliases) ? (person.aliases as string[]) : [], lanes: sortLanes(lanesOf.get(person.id) ?? []) },
-      ])
+      .map((person): [number, SuggestionCandidate] => [person.id, { id: person.id, handle: person.handle, aliases: person.aliases, lanes: sortLanes(lanesOf.get(person.id) ?? []) }])
   );
   for (const [entrantId, ids] of knownByEntrant) result.set(entrantId, [...ids].flatMap((id) => candidateById.get(id) ?? []));
   return result;
+}
+
+/** A Riot account of a person, as the search and the suggestions read it. */
+export interface KnownAccount {
+  puuid: string;
+  personId: number;
+  platform: string | null;
+  cluster: string | null;
+  lastSeenAt: Date | null;
+}
+
+export interface KnownPerson {
+  id: number;
+  handle: string;
+  aliases: string[];
+  accounts: KnownAccount[];
+}
+
+/** The people with their names and Riot accounts. A person without a League profile is left out. */
+export async function loadKnownPeople(personIds: readonly number[]): Promise<Map<number, KnownPerson>> {
+  const ids = [...new Set(personIds)];
+  const known = new Map<number, KnownPerson>();
+  if (ids.length === 0) return known;
+  const [people, accounts] = await Promise.all([
+    db.select({ id: lolPeople.id, handle: lolPeople.handle, aliases: lolPeople.aliases }).from(lolPeople).where(inArray(lolPeople.id, ids)),
+    db
+      .select({ puuid: lolPersonAccounts.puuid, personId: lolPersonAccounts.personId, platform: lolPersonAccounts.platform, cluster: lolPersonAccounts.cluster, lastSeenAt: lolPersonAccounts.lastSeenAt })
+      .from(lolPersonAccounts)
+      .where(inArray(lolPersonAccounts.personId, ids)),
+  ]);
+  for (const person of people) known.set(person.id, { id: person.id, handle: person.handle, aliases: Array.isArray(person.aliases) ? (person.aliases as string[]) : [], accounts: [] });
+  for (const account of accounts) known.get(account.personId)?.accounts.push(account);
+  return known;
 }
 
 /** The ranked suggestions of one unlinked participant, per entrant. */
