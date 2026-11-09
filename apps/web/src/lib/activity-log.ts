@@ -17,7 +17,7 @@ export type ActivityLogClient = Pick<typeof adminDb, "insert">;
 export type ActivitySubject = "team" | "organization" | "player" | "tournament" | "match" | "map" | "user" | "author" | "news" | "stream" | "vod" | "credit" | "apiKey" | "siteConfig";
 
 /** Category shown in the log filter, defaults to the subject. */
-export type ActivityLogName = ActivitySubject | "account" | "moderation";
+export type ActivityLogName = ActivitySubject | "account" | "moderation" | "rosterWatch" | "teamRequest";
 
 export type ActivityEvent = "created" | "updated" | "deleted" | "login" | "login_failed" | "logout";
 
