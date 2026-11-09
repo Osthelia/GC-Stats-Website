@@ -2669,6 +2669,25 @@
         },
         "sectionProfile": "Profil",
         "sectionSocials": "Tautan media sosial",
+        "sectionRiotAccounts": "Akun Riot",
+        "riotAccountsHint": "Akun League of Legends yang dimainkan pemain ini. Game yang diimpor ditautkan ke pemain lewat akun-akun ini.",
+        "riotAccountsEmpty": "Belum ada akun Riot. Akun ditambahkan saat game diimpor, atau di sini.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Realm turnamen",
+        "riotAccountSourceAdmin": "Ditambahkan manual",
+        "riotAccountLastSeen": "Terakhir terlihat <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Wilayah",
+        "riotAccountAdd": "Tambah akun",
+        "riotAccountAdding": "Menambahkan…",
+        "riotAccountAdded": "Akun Riot ditambahkan.",
+        "riotAccountRemoved": "Akun Riot dihapus.",
+        "riotAccountRemove": "Hapus",
+        "riotAccountRemoveTitle": "Hapus akun Riot ini?",
+        "riotAccountRemoveDescription": "{riotId} tidak akan lagi ditautkan ke {handle}. Game yang sudah diimpor tetap bersama pemain.",
+        "riotAccountErrorHeldByOther": "Akun Riot ini sudah milik {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Pemain ini sudah memiliki akun Riot ini.",
+        "riotAccountErrorGeneric": "Akun Riot tidak dapat diubah.",
         "sectionHistory": "Riwayat tim",
         "sectionLogo": "Logo",
         "logoNoneYet": "Belum ada logo.",
@@ -2809,11 +2828,13 @@
           "matchStats": "Partisipasi pertandingan",
           "news": "Berita",
           "logos": "Logo",
+          "riotAccounts": "Akun Riot ({count})",
           "linkedAccount": "Akun tertaut"
         },
         "matchStatsHint": "Juga memindahkan data ronde demi ronde (kill, damage, posisi) di balik setiap peta. Kredit roster terkunci untuk peserta turnamen hanya dipindahkan setelah setiap peta peserta tersebut dipilih.",
         "periodOngoing": "sejak {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Akun Riot berpindah ke pemain yang kamu pertahankan, agar game-nya tetap tertaut ke pemain itu.",
         "linkedAccountHint": "Memindahkan akun yang saat ini tertaut ke pemain ini. Hanya ditampilkan jika ada yang tertaut dan tujuan belum memilikinya.",
         "nothingToMove": "Pemain ini belum memiliki apa pun untuk dipindahkan.",
         "confirm": "Gabungkan item yang dipilih dari {source} ke {target}? Tindakan ini tidak dapat dibatalkan secara otomatis.",
@@ -2830,6 +2851,19 @@
           "targetNotFound": "Pemain tujuan tidak ditemukan.",
           "targetAlreadyLinked": "Pemain tujuan sudah memiliki akun tertaut."
         }
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} bukan Riot ID (nama#tag).",
+        "riotIdNotFound": "Tidak ada akun Riot dengan nama {riotId}.",
+        "relayNotConfigured": "Relay Riot belum diatur di server ini.",
+        "relayUnauthorized": "Relay menolak kredensial kami. Periksa RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot menolak kunci API League of Legends milik relay. Mungkin sudah kedaluwarsa atau salah (periksa LOL_RIOT_API_KEY di relay).",
+        "relayLeagueUnavailable": "Relay tidak memiliki kunci API League of Legends atau database cache-nya tidak tersedia. Periksa LOL_RIOT_API_KEY dan database di relay.",
+        "routeUnavailable": "Relay tidak menyediakan rute League yang dibutuhkan pencarian ini. Perbarui relay.",
+        "relayUnreachable": "Relay Riot tidak dapat dijangkau. Pastikan relay berjalan dan RIOT_RELAY_URL benar.",
+        "riotUnavailable": "Data Riot tidak dapat dibaca saat ini. Coba lagi nanti."
       }
     },
     "finance": {
@@ -4676,16 +4710,8 @@
             "emptyWindow": "Rentang waktunya salah. Perlebar.",
             "emptyRegion": "Game dimainkan di wilayah lain. Cari di sana.",
             "error": {
-              "riotIdInvalid": "{riotId} bukan Riot ID (nama#tag).",
-              "riotIdNotFound": "Tidak ada akun Riot dengan nama {riotId}.",
               "windowInvalid": "Rentang waktu maksimal 48 jam.",
-              "missingConfig": "Relay Riot belum diatur di server ini.",
-              "generic": "Pencarian tidak dapat dijalankan.",
-              "relayUnauthorized": "Relay menolak kredensial kami. Periksa RIOT_RELAY_TOKEN.",
-              "riotKeyRejected": "Riot menolak kunci API League of Legends milik relay. Mungkin sudah kedaluwarsa atau salah (periksa LOL_RIOT_API_KEY di relay).",
-              "relayLeagueUnavailable": "Relay tidak memiliki kunci API League of Legends atau database cache-nya tidak tersedia. Periksa LOL_RIOT_API_KEY dan database di relay.",
-              "routeUnavailable": "Relay tidak menyediakan rute League yang dibutuhkan pencarian ini. Perbarui relay.",
-              "relayUnreachable": "Relay Riot tidak dapat dijangkau. Pastikan relay berjalan dan RIOT_RELAY_URL benar."
+              "generic": "Pencarian tidak dapat dijalankan."
             }
           },
           "gameImport": {
@@ -4717,7 +4743,6 @@
               "unknownChampions": "Champion id tidak dikenal: {ids}",
               "storageUnavailable": "Bucket impor LoL tidak dapat dijangkau. Periksa konfigurasinya, lalu coba lagi.",
               "duplicateAccount": "Akun Riot yang sama ditautkan dua kali. Tautkan setiap akun hanya sekali.",
-              "riotUnavailable": "Data Riot tidak dapat dibaca saat ini. Coba lagi nanti.",
               "tournamentRealm": "Game ini dimainkan di tournament realm. Ambil dari Leaguepedia sebagai gantinya."
             },
             "searchPlaceholder": "Cari berdasarkan tim, game, atau tanggal",

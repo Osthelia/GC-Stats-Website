@@ -39,6 +39,7 @@ export function PlayerMergeForm({
   newsItems,
   logoItems,
   matchStatItems,
+  riotAccountCount,
   initialTarget = null,
 }: {
   playerId: number;
@@ -51,6 +52,8 @@ export function PlayerMergeForm({
   newsItems: MergeNewsEntry[];
   logoItems: AdminLogoEntry[];
   matchStatItems: MergeMapStatEntry[];
+  /** The Riot accounts of the player (League only, 0 elsewhere). */
+  riotAccountCount: number;
   initialTarget?: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null;
 }) {
   const game = useGame();
@@ -69,6 +72,7 @@ export function PlayerMergeForm({
   const [logosSel, setLogosSel] = useState<Set<string>>(new Set());
   const [matchStats, setMatchStats] = useState<Set<string>>(new Set());
   const [linkedAccount, setLinkedAccount] = useState(false);
+  const [riotAccounts, setRiotAccounts] = useState(true);
   const [removeSource, setRemoveSource] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -154,7 +158,7 @@ export function PlayerMergeForm({
     return (checked: boolean) => setter(checked ? new Set(items.map((i) => i.id)) : new Set());
   }
 
-  const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + (linkedAccount ? 1 : 0);
+  const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + (linkedAccount ? 1 : 0) + (riotAccounts && riotAccountCount > 0 ? 1 : 0);
   const canSubmit = totalSelected > 0 || removeSource;
 
   function handleSubmit() {
@@ -175,6 +179,7 @@ export function PlayerMergeForm({
         logos: [...logosSel],
         matchStats: [...matchStats].map(Number),
         linkedAccount,
+        riotAccounts: riotAccounts && riotAccountCount > 0,
         removeSource,
       });
       if (!result.ok) {
@@ -240,6 +245,16 @@ export function PlayerMergeForm({
           <MergeCategorySection title={t("categories.news")} items={newsOptions} selected={news} onToggle={makeToggle(news, setNews)} onToggleAll={makeToggleAll(newsOptions, setNews)} />
           <MergeCategorySection title={t("categories.logos")} items={logoOptions} selected={logosSel} onToggle={makeToggle(logosSel, setLogosSel)} onToggleAll={makeToggleAll(logoOptions, setLogosSel)} />
 
+          {riotAccountCount > 0 && (
+            <div className="border-t pt-4">
+              <label className="flex cursor-pointer items-center gap-2">
+                <Checkbox checked={riotAccounts} onCheckedChange={(checked) => setRiotAccounts(checked === true)} />
+                <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t("categories.riotAccounts", { count: riotAccountCount })}</span>
+              </label>
+              <p className="mt-1 text-xs text-muted-foreground">{t("riotAccountsHint")}</p>
+            </div>
+          )}
+
           {hasLinkedAccount && (
             <div className="border-t pt-4">
               <label className="flex cursor-pointer items-center gap-2">
@@ -251,7 +266,7 @@ export function PlayerMergeForm({
           )}
         </div>
 
-        {teamHistoryOptions.length + organizationOptions.length + productionOptions.length + newsOptions.length + logoOptions.length + matchStatOptions.length === 0 && !hasLinkedAccount && (
+        {teamHistoryOptions.length + organizationOptions.length + productionOptions.length + newsOptions.length + logoOptions.length + matchStatOptions.length === 0 && !hasLinkedAccount && riotAccountCount === 0 && (
           <p className="text-sm text-muted-foreground">{t("nothingToMove")}</p>
         )}
 

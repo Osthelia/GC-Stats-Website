@@ -12,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminPlayer, getAdminPlayerTeamHistory } from "@/lib/admin-players";
+import { listPersonAccounts } from "@/lib/lol-accounts";
 import { getEntityLogos } from "@/lib/admin-logos";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
@@ -22,6 +23,7 @@ import { EntityLogoPanel } from "@/components/admin/entity-logo-panel";
 import { PlayerLinkedAccountCard } from "@/components/admin/player-linked-account-card";
 import { PlayerDeleteButton } from "@/components/admin/player-delete-button";
 import { PlayerGamesCard } from "@/components/admin/player-games-card";
+import { PlayerRiotAccountsCard } from "@/components/admin/player-riot-accounts-card";
 import { getPersonGames } from "@/lib/person-games-data";
 import { GhostBadge } from "@/components/admin/ghost-badge";
 import { GhostPromoteButton } from "@/components/admin/ghost-promote-button";
@@ -50,11 +52,12 @@ export default async function AdminPlayerPage({
 
   const access = await requireAdminPermission(locale as AppLocale, PERMISSIONS.playersView, game);
   const t = await getTranslations({ locale, namespace: "admin.players.edit" });
-  const [player, history, logos, personGames] = await Promise.all([
+  const [player, history, logos, personGames, riotAccounts] = await Promise.all([
     getAdminPlayer(game, id),
     getAdminPlayerTeamHistory(game, id),
     getEntityLogos("person", id),
     getPersonGames(id),
+    game === "lol" ? listPersonAccounts(id) : Promise.resolve([]),
   ]);
   if (!player) notFound();
 
@@ -98,6 +101,7 @@ export default async function AdminPlayerPage({
               canEdit={hasAccess(access, PERMISSIONS.playersEdit)}
             />
             <PlayerGamesCard playerId={player.id} currentGame={game} games={personGames?.games ?? [game]} canAdd={hasAccess(access, PERMISSIONS.playersCreate)} />
+            {game === "lol" && <PlayerRiotAccountsCard playerId={player.id} playerHandle={player.handle} accounts={riotAccounts} canEdit={hasAccess(access, PERMISSIONS.playersEdit)} />}
             <PlayerLinkedAccountCard playerId={player.id} linkedUser={player.linkedUser} />
           </>
         }

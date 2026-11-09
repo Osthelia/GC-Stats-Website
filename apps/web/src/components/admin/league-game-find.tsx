@@ -24,12 +24,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { FormattedDate } from "@/components/formatted-date";
+import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
+import { isRiotErrorKind, type RiotErrorKind } from "@/lib/riot-errors";
 import { findGamesForMatch, getFindGamesBasisForMatch, type FindGamesBasis, type FindGamesError, type FindGamesResult, type FoundGame } from "@/actions/admin-leaguepedia";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import { RIOT_CLUSTERS, type RiotCluster } from "@gc-stats/lol-stats-engine";
+import { RIOT_CLUSTER_NAMES } from "@/lib/tournament-regions";
 
-// Proper names of Riot's regions, so they are not translated.
-const CLUSTER_NAMES: Record<RiotCluster, string> = { americas: "Americas", europe: "Europe", asia: "Asia", sea: "SEA" };
 
 /** What the admin set for a search. Kept by the dialog, so coming back from the preview shows the same search. */
 export interface FindCriteria {
@@ -64,6 +65,7 @@ export function LeagueGameFind({
   onBack: () => void;
 }) {
   const t = useTranslations("admin.tournaments.matches.games");
+  const riotText = useRiotErrorText();
   const [isSearching, startSearching] = useTransition();
   const [basis, setBasis] = useState<FindGamesBasis | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -134,18 +136,18 @@ export function LeagueGameFind({
 
       {basis && (
         <div className="flex flex-col gap-3">
-          {basis.region.kind === "cluster" && <p className="text-xs text-muted-foreground">{t("find.regionInferred", { cluster: CLUSTER_NAMES[basis.region.cluster] })}</p>}
+          {basis.region.kind === "cluster" && <p className="text-xs text-muted-foreground">{t("find.regionInferred", { cluster: RIOT_CLUSTER_NAMES[basis.region.cluster] })}</p>}
           {basis.region.kind === "unsupported" && <p className="text-sm text-destructive">{t("find.regionUnsupported")}</p>}
           {basis.region.kind === "ask" && (
             <FormField label={t("find.regionLabel")} htmlFor="find-cluster" hint={t("find.regionAsk")}>
-              <Select items={CLUSTER_NAMES} value={criteria.cluster ?? ""} onValueChange={(value) => set({ cluster: value as RiotCluster })}>
+              <Select items={RIOT_CLUSTER_NAMES} value={criteria.cluster ?? ""} onValueChange={(value) => set({ cluster: value as RiotCluster })}>
                 <SelectTrigger id="find-cluster" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {RIOT_CLUSTERS.map((key) => (
                     <SelectItem key={key} value={key}>
-                      {CLUSTER_NAMES[key]}
+                      {RIOT_CLUSTER_NAMES[key]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -192,7 +194,7 @@ export function LeagueGameFind({
         </Button>
       </div>
 
-      {result && !result.ok && <p className="text-sm text-destructive">{errorText(t, result.error)}</p>}
+      {result && !result.ok && <p className="text-sm text-destructive">{errorText(t, riotText, result.error)}</p>}
       {result?.ok && result.games.length === 0 && (
         <div className="flex flex-col gap-1 text-sm">
           <div className="font-semibold">{t("find.emptyTitle")}</div>
@@ -223,27 +225,17 @@ export function LeagueGameFind({
 
 type Translate = ReturnType<typeof useTranslations>;
 
-function errorText(t: Translate, error: FindGamesError): string {
+function errorText(t: Translate, riotText: (kind: RiotErrorKind, riotId?: string) => string, error: FindGamesError): string {
   switch (error.kind) {
-    case "riotIdInvalid":
-      return t("find.error.riotIdInvalid", { riotId: error.riotId });
-    case "riotIdNotFound":
-      return t("find.error.riotIdNotFound", { riotId: error.riotId });
     case "windowInvalid":
       return t("find.error.windowInvalid");
     case "noSeeds":
       return t("find.riotIdRequired");
-    case "riotUnavailable":
-      return t("gameImport.error.riotUnavailable");
-    case "missingConfig":
-    case "relayUnauthorized":
-    case "riotKeyRejected":
-    case "relayLeagueUnavailable":
-    case "routeUnavailable":
-    case "relayUnreachable":
-      return t(`find.error.${error.kind}`);
+    case "riotIdInvalid":
+    case "riotIdNotFound":
+      return riotText(error.kind, error.riotId);
     default:
-      return t("find.error.generic");
+      return isRiotErrorKind(error.kind) ? riotText(error.kind) : t("find.error.generic");
   }
 }
 

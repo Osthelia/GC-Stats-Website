@@ -73,6 +73,13 @@ export function realmOf(account: { platform: string | null; cluster: string | nu
   return isRiotCluster(account.cluster) ? account.cluster : null;
 }
 
+/** The realm of an account as an admin sees it: the tournament realm by its platform, else live (also before it was seen in a game). */
+export type AccountRealm = "live" | "tournament";
+
+export function accountRealm(platform: string | null): AccountRealm {
+  return platform !== null && isTournamentRealm(platform) ? "tournament" : "live";
+}
+
 /** The accounts that live on the realm. None for an unknown realm (null). */
 export function accountsOnRealm<T extends { platform: string | null; cluster: string | null }>(accounts: readonly T[], realm: Realm | null): T[] {
   return realm === null ? [] : accounts.filter((account) => realmOf(account) === realm);
@@ -113,7 +120,12 @@ export function parseRiotId(text: string): { gameName: string; tagLine: string }
   return nameFits && /^[A-Za-z0-9]{3,5}$/.test(tagLine) ? { gameName, tagLine } : null;
 }
 
-/** "name#tag" of a participant, null without a name. Riot IDs change, so this is only the last one seen. */
-export function formatRiotId(participant: { riotIdGameName?: string; riotIdTagline?: string }): string | null {
-  return participant.riotIdGameName ? `${participant.riotIdGameName}${participant.riotIdTagline ? `#${participant.riotIdTagline}` : ""}` : null;
+/**
+ * "name#tag" of a match participant (`riotIdGameName` / `riotIdTagline`) or of an account (`gameName` / `tagLine`),
+ * null without a name. Riot IDs change, so this is only the last one seen.
+ */
+export function formatRiotId(riotId: { riotIdGameName?: string; riotIdTagline?: string } | { gameName: string; tagLine: string }): string | null {
+  const name = "gameName" in riotId ? riotId.gameName : riotId.riotIdGameName;
+  const tag = "gameName" in riotId ? riotId.tagLine : riotId.riotIdTagline;
+  return name ? `${name}${tag ? `#${tag}` : ""}` : null;
 }

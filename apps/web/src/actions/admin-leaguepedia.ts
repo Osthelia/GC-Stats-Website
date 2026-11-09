@@ -21,7 +21,8 @@ import { getLeaguepediaLinkStatus, normalizeBasePage } from "@/lib/admin-leaguep
 import { refreshGameList, type GameListError } from "@/lib/leaguepedia-games";
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { getAdminMatch } from "@/lib/admin-matches";
-import { prepareGame, commitGame, getPersonAccountSummaries, type GameLoadMode, type PersonAccountSummary, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
+import { prepareGame, commitGame, type GameLoadMode, type GameRef, type PrepareResult, type CommitResult, type PlayerMapping } from "@/lib/lol-import/fetch-league-game";
+import { listPersonAccounts, type PersonAccountSummary } from "@/lib/lol-accounts";
 import { isRiotCluster, type LeagueSide } from "@gc-stats/lol-stats-engine";
 import { findGames, getFindGamesBasis, type FindGamesBasis, type FindGamesInput, type FindGamesResult } from "@/lib/lol-import/find-games";
 import { matchTag } from "@/lib/cache-tags";
@@ -82,7 +83,8 @@ export async function refreshLeaguepediaGameList(tournamentId: number): Promise<
   return { ok: true, games: result.data };
 }
 
-export type { GamePreview, PreviewPlayer, PlayerMapping, PersonAccountSummary, PersonRef, GameImportError, GameRef } from "@/lib/lol-import/fetch-league-game";
+export type { GamePreview, PreviewPlayer, PlayerMapping, PersonRef, GameImportError, GameRef } from "@/lib/lol-import/fetch-league-game";
+export type { PersonAccountSummary } from "@/lib/lol-accounts";
 export type { FindGamesBasis, FindGamesError, FindGamesResult, FoundGame, FoundGameSide } from "@/lib/lol-import/find-games";
 
 export type FindGamesRequest = Pick<FindGamesInput, "cluster" | "start" | "end" | "riotIds">;
@@ -128,7 +130,7 @@ export async function commitGameForMatch(tournamentId: number, matchId: number, 
 export async function getLolPersonAccounts(personId: number): Promise<PersonAccountSummary[]> {
   await requireLolActor();
   if (!Number.isInteger(personId)) return [];
-  return getPersonAccountSummaries(personId);
+  return (await listPersonAccounts(personId)).map(({ platform, realm }) => ({ platform, realm }));
 }
 
 /** The region, schedule, default window and per-team account counts "Find games" starts from. */

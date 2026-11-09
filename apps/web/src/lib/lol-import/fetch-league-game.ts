@@ -20,6 +20,7 @@ import { and, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonAccounts, lolRosterMembershipLanes, lolRosterMemberships, lolTeams } from "@gc-stats/db";
 import {
+  accountRealm,
   accountsOnRealm,
   assignedRoles,
   championNameOf,
@@ -44,11 +45,13 @@ import {
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
-import { getLolMatch, getLolTimeline, relayFailureKind, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import { getLolMatch, getLolTimeline, relayProblemKind, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import type { RelayProblemKind } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { compareTeamNames } from "@/lib/liquipedia-team-match";
+import { accountHolder, insertAccount } from "@/lib/lol-accounts";
 import { importGame } from "./import-game";
 import { loadLeaguepediaGame } from "./leaguepedia-game";
 
@@ -76,7 +79,7 @@ export type GameImportError =
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
   | { kind: "storageUnavailable" }
-  | { kind: "riotUnavailable" }
+  | { kind: RelayProblemKind }
   | { kind: "tournamentRealm" }
   | { kind: "storeFailed"; message: string };
 
@@ -211,7 +214,7 @@ export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
       mode: input.mode,
       riotMatchId: resolved.riotMatchId,
       platform,
-      realm: isTournamentRealm(platform) ? "tournament" : "live",
+      realm: accountRealm(platform),
       teams: { blue: resolved.blue, red: resolved.red },
       winner: winnerTeam ? sideForTeamId(winnerTeam.teamId) : null,
       durationSeconds: riotMatch.info.gameDuration,
@@ -336,22 +339,6 @@ function isMapped(mapping: PlayerMapping | undefined): boolean {
   return mapping !== undefined && (mapping.personId !== null || (mapping.createHandle ?? "").trim() !== "");
 }
 
-/** A Riot account of a person, as the import preview shows it next to a new one. */
-export interface PersonAccountSummary {
-  platform: string | null;
-  realm: "live" | "tournament";
-}
-
-/** The accounts a person already has, newest first. */
-export async function getPersonAccountSummaries(personId: number): Promise<PersonAccountSummary[]> {
-  const rows = await db
-    .select({ platform: lolPersonAccounts.platform })
-    .from(lolPersonAccounts)
-    .where(eq(lolPersonAccounts.personId, personId))
-    .orderBy(sql`${lolPersonAccounts.lastSeenAt} DESC NULLS LAST`);
-  return rows.map((row) => ({ platform: row.platform, realm: row.platform !== null && isTournamentRealm(row.platform) ? "tournament" : "live" }));
-}
-
 /** What a game says about one Riot account, as it is stored on the account. */
 interface AccountSighting {
   platform: string;
@@ -373,7 +360,7 @@ function gamePlatform(match: RiotMatchDto, riotMatchId: string): string {
  * back as the conflict.
  */
 async function linkAccount(mapping: PlayerMapping, sighting: AccountSighting): Promise<string | null> {
-  const [holder] = await db.select({ personId: lolPersonAccounts.personId }).from(lolPersonAccounts).where(eq(lolPersonAccounts.puuid, mapping.puuid)).limit(1);
+  const holder = await accountHolder(mapping.puuid);
   const values = {
     puuid: mapping.puuid,
     platform: sighting.platform,
@@ -386,14 +373,14 @@ async function linkAccount(mapping: PlayerMapping, sighting: AccountSighting): P
     if (mapping.personId !== null) {
       if (holder) return holder.personId === mapping.personId ? null : mapping.puuid;
       await ensureGameProfile(db, "lol", mapping.personId);
-      await db.insert(lolPersonAccounts).values({ ...values, personId: mapping.personId });
+      await insertAccount(db, { ...values, personId: mapping.personId });
       return null;
     }
     if (holder) return mapping.puuid;
     const handle = (mapping.createHandle ?? "").trim();
     await db.transaction(async (tx) => {
       const personId = await createPerson(tx, "lol", { handle });
-      await tx.insert(lolPersonAccounts).values({ ...values, personId });
+      await insertAccount(tx, { ...values, personId });
     });
     return null;
   } catch (err) {
@@ -473,7 +460,7 @@ function riotLoadError(error: RiotGameError): GameImportError {
     case "storageUnavailable":
       return { kind: "storageUnavailable" };
     case "riotUnavailable":
-      return { kind: relayFailureKind(error.error) };
+      return { kind: relayProblemKind(error.error) };
   }
 }
 

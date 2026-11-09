@@ -25,6 +25,8 @@ import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { commitGameForMatch, getLolPersonAccounts, type GameRef, type GamePreview, type PersonAccountSummary, type PersonRef, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
+import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
+import { isRelayProblemKind } from "@/lib/riot-errors";
 import type { LeagueSide } from "@gc-stats/lol-stats-engine";
 
 type PersonChoice = { id: number; handle: string };
@@ -55,6 +57,7 @@ export function GameImportPreview({
   onSaved: () => void;
 }) {
   const t = useTranslations("admin.tournaments.matches.games");
+  const riotText = useRiotErrorText();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [sides, setSides] = useState<Partial<Record<LeagueSide, number>>>({ blue: preview.suggestedSides?.blue, red: preview.suggestedSides?.red });
@@ -105,7 +108,7 @@ export function GameImportPreview({
         const count = result.error.kind === "missingPlayers" ? result.error.count : 0;
         const ids = result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "";
         const description = result.error.kind === "storeFailed" ? result.error.message : result.error.kind === "invalidUpload" ? result.error.errors.join("; ") : undefined;
-        toast.error(t(`gameImport.error.${result.error.kind}`, { count, order, ids }), { description });
+        toast.error(isRelayProblemKind(result.error.kind) ? riotText(result.error.kind) : t(`gameImport.error.${result.error.kind}`, { count, order, ids }), { description });
         return;
       }
       onSaved();

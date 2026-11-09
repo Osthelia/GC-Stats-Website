@@ -14,6 +14,7 @@
 
 import type { RiotMatchDto, RiotTimelineDto } from "@gc-stats/lol-stats-engine";
 import { callRelay, relayConfig, type RelayResult, type RiotRelayError } from "./riot-relay-transport";
+import type { RelayProblemKind } from "./riot-errors";
 
 function matchPath(cluster: string, riotMatchId: string, suffix: string): string {
   return `/lol/match/${cluster}/${encodeURIComponent(riotMatchId)}${suffix}`;
@@ -76,8 +77,25 @@ export async function getLolTourneyMatchIds(cluster: string, puuid: string, wind
   return callRelay<string[]>(`/lol/matches/${cluster}/by-puuid/${encodeURIComponent(puuid)}?${query}`, { method: "GET" }, config);
 }
 
-export function relayFailureKind(error: RiotRelayError): "missingConfig" | "riotUnavailable" {
-  return error.kind === "missingConfig" ? "missingConfig" : "riotUnavailable";
+/** What a failed relay call means for an admin: the cause, see RelayProblemKind. */
+export function relayProblemKind(error: RiotRelayError): RelayProblemKind {
+  switch (error.kind) {
+    case "missingConfig":
+      return "relayNotConfigured";
+    case "relayUnauthorized":
+      return "relayUnauthorized";
+    case "riotUnauthorized":
+      return "riotKeyRejected";
+    case "cacheUnavailable":
+      return "relayLeagueUnavailable";
+    case "routeUnavailable":
+      return "routeUnavailable";
+    case "relayUnreachable":
+    case "networkError":
+      return "relayUnreachable";
+    default:
+      return "riotUnavailable";
+  }
 }
 
 function missingConfig(): { ok: false; error: RiotRelayError } {

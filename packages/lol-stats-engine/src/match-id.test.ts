@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { accountsOnRealm, clusterForPlatform, clusterForRegion, formatRiotId, isRiotCluster, isTournamentRealm, parseRiotId, platformOfMatchId, realmOf, riotCluster } from "./match-id";
+import { accountRealm, accountsOnRealm, clusterForPlatform, clusterForRegion, formatRiotId, isRiotCluster, isTournamentRealm, parseRiotId, platformOfMatchId, realmOf, riotCluster } from "./match-id";
 
 describe("riotCluster", () => {
   it("routes a match to the cluster of its platform", () => {
@@ -119,6 +119,10 @@ describe("formatRiotId", () => {
     expect(formatRiotId({ riotIdGameName: "SLYA Pivotless", riotIdTagline: "EUW" })).toBe("SLYA Pivotless#EUW");
   });
 
+  it("formats an account the same way", () => {
+    expect(formatRiotId({ gameName: "SLYA Pivotless", tagLine: "EUW" })).toBe("SLYA Pivotless#EUW");
+  });
+
   it("is the name alone without a tag, and null without a name", () => {
     expect(formatRiotId({ riotIdGameName: "Caps" })).toBe("Caps");
     expect(formatRiotId({ riotIdTagline: "EUW" })).toBeNull();
@@ -147,5 +151,13 @@ describe("accountsOnRealm", () => {
 
   it("is empty for an unknown realm", () => {
     expect(accountsOnRealm(accounts, null)).toEqual([]);
+  });
+});
+
+describe("accountRealm", () => {
+  it("is the tournament realm for its platforms and live for everything else, also before a game was seen", () => {
+    expect(accountRealm("LOLTMNT01")).toBe("tournament");
+    expect(accountRealm("EUW1")).toBe("live");
+    expect(accountRealm(null)).toBe("live");
   });
 });

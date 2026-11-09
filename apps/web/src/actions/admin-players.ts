@@ -14,7 +14,7 @@
 import { and, eq, ne } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, sharedPeople, PERMISSIONS, gameTables } from "@gc-stats/db";
+import { users, sharedPeople, PERMISSIONS, gameTables, lolPeople, lolPersonAccounts } from "@gc-stats/db";
 import { requireActorAccess, requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { isValidCountryCode } from "@/lib/countries";
@@ -22,7 +22,10 @@ import { isRangeOrderInvalid, openRangeFrom } from "@/lib/daterange";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { isRosterRoleOf } from "@/lib/roster-roles";
-import { areLanes } from "@gc-stats/lol-stats-engine";
+import { areLanes, formatRiotId, isRiotCluster, parseRiotId } from "@gc-stats/lol-stats-engine";
+import { accountHolder, insertAccount } from "@/lib/lol-accounts";
+import { getLolAccountByRiotId, relayProblemKind } from "@/lib/lol-relay-client";
+import type { RiotErrorKind } from "@/lib/riot-errors";
 import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { searchUsersQuery, type UserPickerResult } from "@/lib/user-search";
@@ -425,4 +428,55 @@ export async function addPlayerToGame(targetGame: string, personId: number): Pro
 
   await logActivity({ game: targetGame, subject: "player", subjectId: personId, event: "updated", description: `Added the ${targetGame} profile of player #${personId} (${person.handle})`, actorUserId });
   return { ok: true };
+}
+
+export type RiotAccountError = "notLeague" | "playerNotFound" | "clusterInvalid" | "heldByOther" | "alreadyOnPlayer" | RiotErrorKind;
+export type AddRiotAccountResult = { ok: true } | { ok: false; error: RiotAccountError; /** The typed Riot ID, for riotIdInvalid and riotIdNotFound. */ riotId?: string; /** The person who holds the account, for heldByOther. */ holder?: string };
+
+/**
+ * Adds a Riot account to a League player by Riot ID and region. The relay resolves it to a PUUID (so a typo is
+ * refused at once), it is stored with source "admin". An account another person holds is never moved.
+ */
+export async function addPlayerRiotAccount(game: GameSlug, playerId: number, riotIdText: string, cluster: string): Promise<AddRiotAccountResult> {
+  if (game !== "lol") return { ok: false, error: "notLeague" };
+  const actorUserId = await requireActorPermission(PERMISSIONS.playersEdit, game).then((access) => access.userId);
+
+  const parsed = parseRiotId(riotIdText);
+  if (!parsed) return { ok: false, error: "riotIdInvalid", riotId: riotIdText.trim() };
+  if (!isRiotCluster(cluster)) return { ok: false, error: "clusterInvalid" };
+  const [player] = await db.select({ id: lolPeople.id, handle: lolPeople.handle }).from(lolPeople).where(eq(lolPeople.id, playerId)).limit(1);
+  if (!player) return { ok: false, error: "playerNotFound" };
+
+  const account = await getLolAccountByRiotId(cluster, parsed.gameName, parsed.tagLine);
+  if (!account.ok) return account.error.kind === "notFound" ? { ok: false, error: "riotIdNotFound", riotId: riotIdText.trim() } : { ok: false, error: relayProblemKind(account.error) };
+
+  const holder = await accountHolder(account.data.puuid);
+  if (holder) return holder.personId === playerId ? { ok: false, error: "alreadyOnPlayer" } : { ok: false, error: "heldByOther", holder: holder.handle };
+
+  const riotId = formatRiotId(account.data);
+  try {
+    await db.transaction(async (tx) => {
+      await insertAccount(tx, { puuid: account.data.puuid, personId: playerId, cluster, riotId, source: "admin" });
+      await logActivity({ game, subject: "player", subjectId: playerId, event: "updated", description: `Added the Riot account ${riotId ?? account.data.puuid} to player #${playerId} (${player.handle})`, actorUserId, properties: { riotAccount: "added", riotId, puuid: account.data.puuid, cluster } }, tx);
+    });
+  } catch {
+    // The primary key on the PUUID: someone linked this account between the check and the insert.
+    return { ok: false, error: "heldByOther" };
+  }
+  return { ok: true };
+}
+
+/** Removes a Riot account from a League player. The player's imported stats stay, they are stored per person. */
+export async function removePlayerRiotAccount(game: GameSlug, playerId: number, puuid: string): Promise<{ ok: true } | { ok: false; error: "notLeague" | "notFound" }> {
+  if (game !== "lol") return { ok: false, error: "notLeague" };
+  const actorUserId = await requireActorPermission(PERMISSIONS.playersEdit, game).then((access) => access.userId);
+
+  const removed = await db.transaction(async (tx) => {
+    const [row] = await tx.delete(lolPersonAccounts).where(and(eq(lolPersonAccounts.puuid, puuid), eq(lolPersonAccounts.personId, playerId))).returning({ riotId: lolPersonAccounts.riotId });
+    if (!row) return false;
+    const [player] = await tx.select({ handle: sharedPeople.handle }).from(sharedPeople).where(eq(sharedPeople.id, playerId)).limit(1);
+    await logActivity({ game, subject: "player", subjectId: playerId, event: "updated", description: `Removed the Riot account ${row.riotId ?? puuid} from player #${playerId} (${player?.handle ?? ""})`, actorUserId, properties: { riotAccount: "removed", riotId: row.riotId, puuid } }, tx);
+    return true;
+  });
+  return removed ? { ok: true } : { ok: false, error: "notFound" };
 }

@@ -2809,6 +2809,25 @@
         },
         "fieldDiscordId": "Discord",
         "discordIdHint": "Discord kullanıcı kimliği (Geliştirici modu, profile sağ tık, Kullanıcı Kimliğini Kopyala) veya sunucu davet bağlantısı.",
+        "sectionRiotAccounts": "Riot hesapları",
+        "riotAccountsHint": "Oyuncunun oynadığı League of Legends hesapları. İçe aktarılan oyunlar oyuncuya bu hesaplar üzerinden bağlanır.",
+        "riotAccountsEmpty": "Henüz Riot hesabı yok. Bir oyun içe aktarılırken veya buradan eklenir.",
+        "riotAccountLive": "Canlı",
+        "riotAccountTournament": "Turnuva alemi",
+        "riotAccountSourceAdmin": "Elle eklendi",
+        "riotAccountLastSeen": "Son görülme <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Bölge",
+        "riotAccountAdd": "Hesap ekle",
+        "riotAccountAdding": "Ekleniyor…",
+        "riotAccountAdded": "Riot hesabı eklendi.",
+        "riotAccountRemoved": "Riot hesabı kaldırıldı.",
+        "riotAccountRemove": "Kaldır",
+        "riotAccountRemoveTitle": "Bu Riot hesabı kaldırılsın mı?",
+        "riotAccountRemoveDescription": "{riotId} artık {handle} ile bağlantılı olmayacak. Önceden içe aktarılan oyunlar oyuncuda kalır.",
+        "riotAccountErrorHeldByOther": "Bu Riot hesabı zaten {handle} adlı kişiye ait.",
+        "riotAccountErrorAlreadyOnPlayer": "Bu oyuncunun bu Riot hesabı zaten var.",
+        "riotAccountErrorGeneric": "Riot hesabı değiştirilemedi.",
         "sectionGames": "Oyunlar",
         "gamesHint": "Bir kişi, oyun başına bir profil. Ad, ülke, zamirler, biyografi, takma adlar, sosyal bağlantılar, fotoğraf ve bağlı hesap ortaktır, geri kalanı her oyuna aittir.",
         "sharedHint": "Ad, ülke, zamirler, biyografi, takma adlar, sosyal bağlantılar ve fotoğraf bu kişinin diğer oyunlarıyla ortaktır.",
@@ -2840,11 +2859,13 @@
           "matchStats": "Maç katılımı",
           "news": "Haberler",
           "logos": "Logolar",
+          "riotAccounts": "Riot hesapları ({count})",
           "linkedAccount": "Bağlı hesap"
         },
         "matchStatsHint": "Her haritanın arkasındaki tur tur verileri de (öldürmeler, hasarlar, konumlar) taşır. Bir turnuva katılımcısının kilitli kadro katkısı, yalnızca bu katılımcının her haritası seçildiğinde taşınır.",
         "periodOngoing": "{since} tarihinden beri",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Riot hesapları tuttuğunuz oyuncuya geçer, böylece oyunları ona bağlı kalır.",
         "linkedAccountHint": "Bu oyuncuya şu anda bağlı olan hesabı aktarır. Yalnızca bir hesap bağlıyken ve hedefte hiçbiri yokken gösterilir.",
         "nothingToMove": "Bu oyuncunun henüz taşınacak bir şeyi yok.",
         "confirm": "{source} kaynağından seçilen öğeler {target} hedefine taşınsın mı? Bu işlem otomatik olarak geri alınamaz.",
@@ -2874,6 +2895,19 @@
         "columnTarget": "Diğer profil",
         "merge": "Birleştir",
         "empty": "Kopya bulunamadı."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} bir Riot ID değil (ad#etiket).",
+        "riotIdNotFound": "{riotId} adında bir Riot hesabı yok.",
+        "relayNotConfigured": "Riot aktarıcısı bu sunucuda kurulu değil.",
+        "relayUnauthorized": "Aktarıcı kimlik bilgilerimizi reddetti. RIOT_RELAY_TOKEN'ı kontrol edin.",
+        "riotKeyRejected": "Riot, aktarıcının League of Legends API anahtarını reddetti. Süresi dolmuş veya yanlış olabilir (aktarıcıda LOL_RIOT_API_KEY'i kontrol edin).",
+        "relayLeagueUnavailable": "Aktarıcıda League of Legends API anahtarı ayarlı değil veya önbellek veritabanı kullanılamıyor. Aktarıcıdaki LOL_RIOT_API_KEY'i ve veritabanını kontrol edin.",
+        "routeUnavailable": "Aktarıcı, bu aramanın ihtiyaç duyduğu League rotalarını sunmuyor. Aktarıcıyı güncelleyin.",
+        "relayUnreachable": "Riot aktarıcısına ulaşılamadı. Çalıştığını ve RIOT_RELAY_URL'nin doğru olduğunu kontrol edin.",
+        "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin."
       }
     },
     "finance": {
@@ -4715,16 +4749,8 @@
             "emptyWindow": "Zaman aralığı yanlıştı. Genişletin.",
             "emptyRegion": "Oyunlar başka bir bölgede oynandı. Orada arayın.",
             "error": {
-              "riotIdInvalid": "{riotId} bir Riot ID değil (ad#etiket).",
-              "riotIdNotFound": "{riotId} adında bir Riot hesabı yok.",
               "windowInvalid": "Zaman aralığı en fazla 48 saat olabilir.",
-              "missingConfig": "Riot aktarıcısı bu sunucuda kurulu değil.",
-              "generic": "Arama çalıştırılamadı.",
-              "relayUnauthorized": "Aktarıcı kimlik bilgilerimizi reddetti. RIOT_RELAY_TOKEN'ı kontrol edin.",
-              "riotKeyRejected": "Riot, aktarıcının League of Legends API anahtarını reddetti. Süresi dolmuş veya yanlış olabilir (aktarıcıda LOL_RIOT_API_KEY'i kontrol edin).",
-              "relayLeagueUnavailable": "Aktarıcıda League of Legends API anahtarı ayarlı değil veya önbellek veritabanı kullanılamıyor. Aktarıcıdaki LOL_RIOT_API_KEY'i ve veritabanını kontrol edin.",
-              "routeUnavailable": "Aktarıcı, bu aramanın ihtiyaç duyduğu League rotalarını sunmuyor. Aktarıcıyı güncelleyin.",
-              "relayUnreachable": "Riot aktarıcısına ulaşılamadı. Çalıştığını ve RIOT_RELAY_URL'nin doğru olduğunu kontrol edin."
+              "generic": "Arama çalıştırılamadı."
             }
           },
           "gameImport": {
@@ -4756,7 +4782,6 @@
               "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
               "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
               "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın.",
-              "riotUnavailable": "Riot verileri şu an okunamadı. Daha sonra tekrar deneyin.",
               "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın."
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",

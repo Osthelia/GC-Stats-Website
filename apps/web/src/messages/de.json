@@ -2809,6 +2809,25 @@
         },
         "fieldDiscordId": "Discord",
         "discordIdHint": "Discord Benutzer ID (Entwicklermodus, Rechtsklick auf das Profil, Benutzer ID kopieren) oder Server Einladungslink.",
+        "sectionRiotAccounts": "Riot-Konten",
+        "riotAccountsHint": "Die League-of-Legends-Konten, auf denen der Spieler spielt. Importierte Spiele werden dem Spieler über diese Konten zugeordnet.",
+        "riotAccountsEmpty": "Noch kein Riot-Konto. Es wird beim Import eines Spiels oder hier hinzugefügt.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Turnier-Realm",
+        "riotAccountSourceAdmin": "Manuell hinzugefügt",
+        "riotAccountLastSeen": "Zuletzt gesehen <date></date>",
+        "riotAccountIdLabel": "Riot-ID",
+        "riotAccountRegionLabel": "Region",
+        "riotAccountAdd": "Konto hinzufügen",
+        "riotAccountAdding": "Wird hinzugefügt…",
+        "riotAccountAdded": "Riot-Konto hinzugefügt.",
+        "riotAccountRemoved": "Riot-Konto entfernt.",
+        "riotAccountRemove": "Entfernen",
+        "riotAccountRemoveTitle": "Dieses Riot-Konto entfernen?",
+        "riotAccountRemoveDescription": "{riotId} ist dann nicht mehr mit {handle} verknüpft. Bereits importierte Spiele bleiben beim Spieler.",
+        "riotAccountErrorHeldByOther": "Dieses Riot-Konto gehört bereits {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Dieser Spieler hat dieses Riot-Konto bereits.",
+        "riotAccountErrorGeneric": "Das Riot-Konto konnte nicht geändert werden.",
         "sectionGames": "Spiele",
         "gamesHint": "Eine Person, ein Profil pro Spiel. Name, Land, Pronomen, Bio, Aliasse, Social Links, Foto und verknüpftes Konto werden geteilt, der Rest gehört zum jeweiligen Spiel.",
         "sharedHint": "Name, Land, Pronomen, Bio, Aliasse, Social Links und Foto werden mit den anderen Spielen dieser Person geteilt.",
@@ -2840,11 +2859,13 @@
           "matchStats": "Match Teilnahmen",
           "news": "News",
           "logos": "Logos",
+          "riotAccounts": "Riot-Konten ({count})",
           "linkedAccount": "Verknüpftes Konto"
         },
         "matchStatsHint": "Verschiebt auch die rundenweisen Daten (Kills, Schaden, Positionen) hinter jeder Map. Der gesperrte Roster Credit für eine:n Turnierteilnehmer:in wird erst verschoben, sobald jede Map dieser Teilnahme ausgewählt ist.",
         "periodOngoing": "seit {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Die Riot-Konten wechseln zum Spieler, den du behältst, damit seine Spiele ihm zugeordnet bleiben.",
         "linkedAccountHint": "Überträgt das Konto, das derzeit mit diese:r Spieler:in verknüpft ist. Wird nur angezeigt, wenn eines verknüpft ist und das Ziel keines hat.",
         "nothingToMove": "Diese:r Spieler:in hat noch nichts zu verschieben.",
         "confirm": "Die ausgewählten Elemente von {source} in {target} zusammenführen? Dies kann nicht automatisch rückgängig gemacht werden.",
@@ -2874,6 +2895,19 @@
         "columnTarget": "Anderes Profil",
         "merge": "Zusammenführen",
         "empty": "Keine Duplikate gefunden."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} ist keine Riot-ID (Name#Tag).",
+        "riotIdNotFound": "Kein Riot-Account mit dem Namen {riotId}.",
+        "relayNotConfigured": "Das Riot-Relay ist auf diesem Server nicht eingerichtet.",
+        "relayUnauthorized": "Das Relay hat unsere Zugangsdaten abgelehnt. Prüfe RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot hat den League-of-Legends-API-Key des Relays abgelehnt. Er ist vielleicht abgelaufen oder falsch (LOL_RIOT_API_KEY am Relay prüfen).",
+        "relayLeagueUnavailable": "Am Relay ist kein League-of-Legends-API-Key gesetzt oder seine Cache-Datenbank ist nicht erreichbar. Prüfe LOL_RIOT_API_KEY und die Datenbank am Relay.",
+        "routeUnavailable": "Das Relay bietet die League-Routen, die diese Suche braucht, nicht an. Aktualisiere das Relay.",
+        "relayUnreachable": "Das Riot-Relay ist nicht erreichbar. Prüfe, ob es läuft und ob RIOT_RELAY_URL stimmt.",
+        "riotUnavailable": "Die Daten von Riot konnten gerade nicht gelesen werden. Versuche es später erneut."
       }
     },
     "finance": {
@@ -4715,16 +4749,8 @@
             "emptyWindow": "Der Zeitraum war falsch. Erweitere ihn.",
             "emptyRegion": "Die Spiele wurden in einer anderen Region gespielt. Suche dort.",
             "error": {
-              "riotIdInvalid": "{riotId} ist keine Riot-ID (Name#Tag).",
-              "riotIdNotFound": "Kein Riot-Account mit dem Namen {riotId}.",
               "windowInvalid": "Der Zeitraum darf höchstens 48 Stunden umfassen.",
-              "missingConfig": "Das Riot-Relay ist auf diesem Server nicht eingerichtet.",
-              "generic": "Die Suche konnte nicht ausgeführt werden.",
-              "relayUnauthorized": "Das Relay hat unsere Zugangsdaten abgelehnt. Prüfe RIOT_RELAY_TOKEN.",
-              "riotKeyRejected": "Riot hat den League-of-Legends-API-Key des Relays abgelehnt. Er ist vielleicht abgelaufen oder falsch (LOL_RIOT_API_KEY am Relay prüfen).",
-              "relayLeagueUnavailable": "Am Relay ist kein League-of-Legends-API-Key gesetzt oder seine Cache-Datenbank ist nicht erreichbar. Prüfe LOL_RIOT_API_KEY und die Datenbank am Relay.",
-              "routeUnavailable": "Das Relay bietet die League-Routen, die diese Suche braucht, nicht an. Aktualisiere das Relay.",
-              "relayUnreachable": "Das Riot-Relay ist nicht erreichbar. Prüfe, ob es läuft und ob RIOT_RELAY_URL stimmt."
+              "generic": "Die Suche konnte nicht ausgeführt werden."
             }
           },
           "gameImport": {
@@ -4756,7 +4782,6 @@
               "unknownChampions": "Unbekannte Champion-IDs: {ids}",
               "storageUnavailable": "Der Speicher für LoL-Importe konnte nicht erreicht werden. Prüfe die Konfiguration und versuche es erneut.",
               "duplicateAccount": "Dasselbe Riot-Konto ist doppelt verknüpft. Verknüpfe jedes Konto nur einmal.",
-              "riotUnavailable": "Die Daten von Riot konnten gerade nicht gelesen werden. Versuche es später erneut.",
               "tournamentRealm": "Dieses Spiel wurde im Turnier-Realm gespielt. Rufe es stattdessen von Leaguepedia ab."
             },
             "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",

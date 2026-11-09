@@ -2809,6 +2809,25 @@
         },
         "fieldDiscordId": "Discord",
         "discordIdHint": "معرّف مستخدم Discord (وضع المطور، نقر بزر الماوس الأيمن على الملف الشخصي، نسخ معرّف المستخدم) أو رابط دعوة خادم.",
+        "sectionRiotAccounts": "حسابات Riot",
+        "riotAccountsHint": "حسابات League of Legends التي يلعب بها اللاعب. تُربط المباريات المستوردة باللاعب عبر هذه الحسابات.",
+        "riotAccountsEmpty": "لا يوجد حساب Riot بعد. تُضاف الحسابات عند استيراد مباراة أو من هنا.",
+        "riotAccountLive": "مباشر",
+        "riotAccountTournament": "عالم البطولات",
+        "riotAccountSourceAdmin": "أُضيف يدويًا",
+        "riotAccountLastSeen": "شوهد آخر مرة <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "المنطقة",
+        "riotAccountAdd": "إضافة حساب",
+        "riotAccountAdding": "جارٍ الإضافة…",
+        "riotAccountAdded": "تمت إضافة حساب Riot.",
+        "riotAccountRemoved": "تمت إزالة حساب Riot.",
+        "riotAccountRemove": "إزالة",
+        "riotAccountRemoveTitle": "إزالة حساب Riot هذا؟",
+        "riotAccountRemoveDescription": "لن يكون {riotId} مرتبطًا بـ {handle} بعد الآن. تبقى المباريات المستوردة مع اللاعب.",
+        "riotAccountErrorHeldByOther": "حساب Riot هذا ينتمي بالفعل إلى {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "لدى هذا اللاعب حساب Riot هذا بالفعل.",
+        "riotAccountErrorGeneric": "تعذّر تغيير حساب Riot.",
         "sectionGames": "الألعاب",
         "gamesHint": "شخص واحد وملف واحد لكل لعبة. الاسم والبلد والضمائر والنبذة والأسماء المستعارة والحسابات الاجتماعية والصورة والحساب المرتبط مشتركة، والباقي يخص كل لعبة.",
         "sharedHint": "الاسم والبلد والضمائر والنبذة والأسماء المستعارة والحسابات الاجتماعية والصورة مشتركة مع الألعاب الأخرى لهذا الشخص.",
@@ -2840,11 +2859,13 @@
           "matchStats": "المشاركة في المباريات",
           "news": "الأخبار",
           "logos": "الشعارات",
+          "riotAccounts": "حسابات Riot ({count})",
           "linkedAccount": "الحساب المرتبط"
         },
         "matchStatsHint": "ينقل أيضًا بيانات الجولات (عمليات القتل، الضرر، المواقع) لكل خريطة. لا يُنقل اعتماد التشكيلة المثبّتة لمشارك في بطولة إلا عند تحديد كل خرائط ذلك المشارك.",
         "periodOngoing": "منذ {since}",
         "periodRange": "{since} ← {until}",
+        "riotAccountsHint": "تنتقل حسابات Riot إلى اللاعب الذي تحتفظ به ليبقى ارتباط مبارياته به.",
         "linkedAccountHint": "ينقل الحساب المرتبط حاليًا بهذه اللاعبة. يظهر فقط عند وجود حساب مرتبط وعدم وجود حساب لدى الهدف.",
         "nothingToMove": "لا يوجد لدى هذه اللاعبة ما يُنقل بعد.",
         "confirm": "هل تريد دمج العناصر المحددة من {source} في {target}؟ لا يمكن التراجع عن ذلك تلقائيًا.",
@@ -2874,6 +2895,19 @@
         "columnTarget": "الملف الآخر",
         "merge": "دمج",
         "empty": "لم يتم العثور على تكرارات."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} ليس Riot ID (الاسم#الوسم).",
+        "riotIdNotFound": "لا يوجد حساب Riot بالاسم {riotId}.",
+        "relayNotConfigured": "لم يتم إعداد وسيط Riot على هذا الخادم.",
+        "relayUnauthorized": "رفض الوسيط بيانات اعتمادنا. تحقق من RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "رفضت Riot مفتاح API الخاص بـ League of Legends لدى الوسيط. قد تكون صلاحيته انتهت أو يكون خاطئًا (تحقق من LOL_RIOT_API_KEY في الوسيط).",
+        "relayLeagueUnavailable": "لم يتم ضبط مفتاح API الخاص بـ League of Legends في الوسيط، أو أن قاعدة بيانات الذاكرة المؤقتة غير متاحة. تحقق من LOL_RIOT_API_KEY وقاعدة البيانات في الوسيط.",
+        "routeUnavailable": "لا يوفّر الوسيط مسارات League التي يحتاجها هذا البحث. حدّث الوسيط.",
+        "relayUnreachable": "تعذّر الوصول إلى وسيط Riot. تحقق من أنه يعمل ومن صحة RIOT_RELAY_URL.",
+        "riotUnavailable": "تعذّرت قراءة بيانات Riot الآن. حاول لاحقًا."
       }
     },
     "finance": {
@@ -4715,16 +4749,8 @@
             "emptyWindow": "كان النطاق الزمني خاطئًا. وسّعه.",
             "emptyRegion": "لُعبت المباريات في منطقة أخرى. ابحث هناك.",
             "error": {
-              "riotIdInvalid": "{riotId} ليس Riot ID (الاسم#الوسم).",
-              "riotIdNotFound": "لا يوجد حساب Riot بالاسم {riotId}.",
               "windowInvalid": "يجب ألا يتجاوز النطاق الزمني 48 ساعة.",
-              "missingConfig": "لم يتم إعداد وسيط Riot على هذا الخادم.",
-              "generic": "تعذّر تنفيذ البحث.",
-              "relayUnauthorized": "رفض الوسيط بيانات اعتمادنا. تحقق من RIOT_RELAY_TOKEN.",
-              "riotKeyRejected": "رفضت Riot مفتاح API الخاص بـ League of Legends لدى الوسيط. قد تكون صلاحيته انتهت أو يكون خاطئًا (تحقق من LOL_RIOT_API_KEY في الوسيط).",
-              "relayLeagueUnavailable": "لم يتم ضبط مفتاح API الخاص بـ League of Legends في الوسيط، أو أن قاعدة بيانات الذاكرة المؤقتة غير متاحة. تحقق من LOL_RIOT_API_KEY وقاعدة البيانات في الوسيط.",
-              "routeUnavailable": "لا يوفّر الوسيط مسارات League التي يحتاجها هذا البحث. حدّث الوسيط.",
-              "relayUnreachable": "تعذّر الوصول إلى وسيط Riot. تحقق من أنه يعمل ومن صحة RIOT_RELAY_URL."
+              "generic": "تعذّر تنفيذ البحث."
             }
           },
           "gameImport": {
@@ -4756,7 +4782,6 @@
               "unknownChampions": "معرّفات أبطال غير معروفة: {ids}",
               "storageUnavailable": "تعذّر الوصول إلى مخزن استيراد LoL. تحقق من إعداداته ثم حاول مرة أخرى.",
               "duplicateAccount": "تم ربط الحساب نفسه مرتين. اربط كل حساب مرة واحدة.",
-              "riotUnavailable": "تعذّرت قراءة بيانات Riot الآن. حاول لاحقًا.",
               "tournamentRealm": "لُعبت هذه المباراة على خادم البطولات. اجلبها من Leaguepedia بدلاً من ذلك."
             },
             "searchPlaceholder": "ابحث بالفريق أو المباراة أو التاريخ",

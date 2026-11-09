@@ -8,6 +8,8 @@
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
+import type { RiotCluster } from "@gc-stats/lol-stats-engine";
+
 export type RegionKey = "emea" | "na" | "latam" | "brazil" | "pacific" | "oceania" | "china" | "korea" | "international" | "other";
 // VCT region branding: the Americas regions share one orange.
 export const REGIONS: Record<RegionKey, { label: string; color: string; short: string }> = {
@@ -41,3 +43,6 @@ export function normalizeRegion(raw: string | null | undefined): RegionKey {
   if (!raw) return "other";
   return REGION_LABEL_TO_KEY[raw] ?? "other";
 }
+
+// Riot's routing regions (where a League game or account is searched) by their proper names, so not translated.
+export const RIOT_CLUSTER_NAMES: Record<RiotCluster, string> = { americas: "Americas", europe: "Europe", asia: "Asia", sea: "SEA" };

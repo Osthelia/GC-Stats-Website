@@ -2669,6 +2669,25 @@
         },
         "sectionProfile": "資料",
         "sectionSocials": "社群連結",
+        "sectionRiotAccounts": "Riot 帳號",
+        "riotAccountsHint": "該選手使用的 League of Legends 帳號。已匯入的對局透過這些帳號關聯到選手。",
+        "riotAccountsEmpty": "尚無 Riot 帳號。匯入對局時或在此處新增。",
+        "riotAccountLive": "正式服",
+        "riotAccountTournament": "賽事服",
+        "riotAccountSourceAdmin": "手動新增",
+        "riotAccountLastSeen": "最近出現 <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "區域",
+        "riotAccountAdd": "新增帳號",
+        "riotAccountAdding": "新增中…",
+        "riotAccountAdded": "已新增 Riot 帳號。",
+        "riotAccountRemoved": "已移除 Riot 帳號。",
+        "riotAccountRemove": "移除",
+        "riotAccountRemoveTitle": "移除此 Riot 帳號？",
+        "riotAccountRemoveDescription": "{riotId} 將不再關聯到 {handle}。已匯入的對局仍屬於該選手。",
+        "riotAccountErrorHeldByOther": "此 Riot 帳號已屬於 {handle}。",
+        "riotAccountErrorAlreadyOnPlayer": "該選手已有此 Riot 帳號。",
+        "riotAccountErrorGeneric": "無法變更 Riot 帳號。",
         "sectionHistory": "戰隊歷史",
         "sectionLogo": "商標",
         "logoNoneYet": "暫無商標。",
@@ -2809,11 +2828,13 @@
           "matchStats": "參賽記錄",
           "news": "資訊",
           "logos": "商標",
+          "riotAccounts": "Riot 帳號（{count}）",
           "linkedAccount": "已綁定帳戶"
         },
         "matchStatsHint": "同時會遷移每張地圖背後的逐回合資料（擊殺、傷害、位置）。只有當該參賽方的每張地圖都被選中時，其鎖定的名單署名才會一併遷移。",
         "periodOngoing": "自 {since} 起",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Riot 帳號會轉移給保留的選手，使其對局保持關聯。",
         "linkedAccountHint": "遷移當前綁定至該選手的帳戶，僅在有綁定帳戶且目標選手尚未綁定時顯示。",
         "nothingToMove": "該選手暫無可遷移的資料。",
         "confirm": "確定要將所選專案從 {source} 合併至 {target} 嗎？此操作無法自動撤銷。",
@@ -2830,6 +2851,19 @@
           "targetNotFound": "未找到目標選手。",
           "targetAlreadyLinked": "目標選手已綁定帳戶。"
         }
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} 不是 Riot ID（名稱#標籤）。",
+        "riotIdNotFound": "沒有名為 {riotId} 的 Riot 帳號。",
+        "relayNotConfigured": "此伺服器未設定 Riot 中繼。",
+        "relayUnauthorized": "中繼拒絕了我們的憑證。請檢查 RIOT_RELAY_TOKEN。",
+        "riotKeyRejected": "Riot 拒絕了中繼的 League of Legends API 金鑰。它可能已過期或有誤（請檢查中繼上的 LOL_RIOT_API_KEY）。",
+        "relayLeagueUnavailable": "中繼沒有設定 League of Legends API 金鑰，或其快取資料庫無法使用。請檢查中繼上的 LOL_RIOT_API_KEY 和資料庫。",
+        "routeUnavailable": "中繼沒有此搜尋所需的 League 路由。請更新中繼。",
+        "relayUnreachable": "無法連線到 Riot 中繼。請檢查它是否在執行，以及 RIOT_RELAY_URL 是否正確。",
+        "riotUnavailable": "目前無法讀取 Riot 的資料，請稍後再試。"
       }
     },
     "finance": {
@@ -4676,16 +4710,8 @@
             "emptyWindow": "時間範圍不對。請擴大範圍。",
             "emptyRegion": "對局在其他區域進行。請在那裡搜尋。",
             "error": {
-              "riotIdInvalid": "{riotId} 不是 Riot ID（名稱#標籤）。",
-              "riotIdNotFound": "沒有名為 {riotId} 的 Riot 帳號。",
               "windowInvalid": "時間範圍最長為 48 小時。",
-              "missingConfig": "此伺服器未設定 Riot 中繼。",
-              "generic": "無法執行搜尋。",
-              "relayUnauthorized": "中繼拒絕了我們的憑證。請檢查 RIOT_RELAY_TOKEN。",
-              "riotKeyRejected": "Riot 拒絕了中繼的 League of Legends API 金鑰。它可能已過期或有誤（請檢查中繼上的 LOL_RIOT_API_KEY）。",
-              "relayLeagueUnavailable": "中繼沒有設定 League of Legends API 金鑰，或其快取資料庫無法使用。請檢查中繼上的 LOL_RIOT_API_KEY 和資料庫。",
-              "routeUnavailable": "中繼沒有此搜尋所需的 League 路由。請更新中繼。",
-              "relayUnreachable": "無法連線到 Riot 中繼。請檢查它是否在執行，以及 RIOT_RELAY_URL 是否正確。"
+              "generic": "無法執行搜尋。"
             }
           },
           "gameImport": {
@@ -4717,7 +4743,6 @@
               "unknownChampions": "未知的英雄 ID：{ids}",
               "storageUnavailable": "無法連線到 LoL 匯入 bucket。請檢查其設定後再試。",
               "duplicateAccount": "同一個 Riot 帳號被連結了兩次。每個帳號只能連結一次。",
-              "riotUnavailable": "目前無法讀取 Riot 的資料，請稍後再試。",
               "tournamentRealm": "此對局是在錦標賽伺服器（tournament realm）上進行的，請改從 Leaguepedia 取得。"
             },
             "searchPlaceholder": "依隊伍、對局或日期搜尋",

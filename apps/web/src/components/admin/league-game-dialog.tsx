@@ -29,6 +29,8 @@ import { prepareGameForMatch, refreshLeaguepediaGameList, type GameRef, type Gam
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
 import { GameImportPreview } from "@/components/admin/league-game-preview";
 import { LeagueGameFind, type FindSaved } from "@/components/admin/league-game-find";
+import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
+import { isRelayProblemKind } from "@/lib/riot-errors";
 import type { FoundGame } from "@/actions/admin-leaguepedia";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
@@ -95,6 +97,7 @@ export function LeagueGameDialog({
   const game = useGame();
   const locale = useLocale();
   const t = useTranslations("admin.tournaments.matches.games");
+  const riotText = useRiotErrorText();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   // Its own transition, so the refresh shows its spinner and the save button does not.
@@ -185,11 +188,14 @@ export function LeagueGameDialog({
     startTransition(async () => {
       const result = await prepareGameForMatch(tournamentId, matchId, { game: ref, mode, gameId: editing?.id ?? null });
       if (!result.ok) {
+        const { error } = result;
         toast.error(
-          t(`gameImport.error.${result.error.kind}`, {
-            count: result.error.kind === "missingPlayers" ? result.error.count : 0,
-            ids: result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "",
-          })
+          isRelayProblemKind(error.kind)
+            ? riotText(error.kind)
+            : t(`gameImport.error.${error.kind}`, {
+                count: error.kind === "missingPlayers" ? error.count : 0,
+                ids: error.kind === "unknownChampions" ? error.ids.join(", ") : "",
+              })
         );
         return;
       }

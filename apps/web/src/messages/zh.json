@@ -2809,6 +2809,25 @@
         },
         "fieldDiscordId": "Discord",
         "discordIdHint": "Discord 用户 ID(开发者模式,右键点击个人资料,复制用户 ID)或服务器邀请链接。",
+        "sectionRiotAccounts": "Riot 账号",
+        "riotAccountsHint": "该选手使用的 League of Legends 账号。已导入的对局通过这些账号关联到选手。",
+        "riotAccountsEmpty": "暂无 Riot 账号。导入对局时或在此处添加。",
+        "riotAccountLive": "正式服",
+        "riotAccountTournament": "赛事服",
+        "riotAccountSourceAdmin": "手动添加",
+        "riotAccountLastSeen": "最近出现 <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "区域",
+        "riotAccountAdd": "添加账号",
+        "riotAccountAdding": "添加中…",
+        "riotAccountAdded": "已添加 Riot 账号。",
+        "riotAccountRemoved": "已移除 Riot 账号。",
+        "riotAccountRemove": "移除",
+        "riotAccountRemoveTitle": "移除此 Riot 账号？",
+        "riotAccountRemoveDescription": "{riotId} 将不再关联到 {handle}。已导入的对局仍属于该选手。",
+        "riotAccountErrorHeldByOther": "此 Riot 账号已属于 {handle}。",
+        "riotAccountErrorAlreadyOnPlayer": "该选手已有此 Riot 账号。",
+        "riotAccountErrorGeneric": "无法更改 Riot 账号。",
         "sectionGames": "游戏",
         "gamesHint": "一个人，每个游戏一份资料。名称、国家、代词、简介、别名、社交链接、照片和绑定账户是共享的，其余内容属于各个游戏。",
         "sharedHint": "名称、国家、代词、简介、别名、社交链接和照片与此人的其他游戏共享。",
@@ -2840,11 +2859,13 @@
           "matchStats": "参赛记录",
           "news": "资讯",
           "logos": "商标",
+          "riotAccounts": "Riot 账号（{count}）",
           "linkedAccount": "已绑定账户"
         },
         "matchStatsHint": "同时会迁移每张地图背后的逐回合数据（击杀、伤害、位置）。只有当该参赛方的每张地图都被选中时，其锁定的名单署名才会一并迁移。",
         "periodOngoing": "自 {since} 起",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Riot 账号会转移给保留的选手，使其对局保持关联。",
         "linkedAccountHint": "迁移当前绑定至该选手的账户，仅在有绑定账户且目标选手尚未绑定时显示。",
         "nothingToMove": "该选手暂无可迁移的数据。",
         "confirm": "确定要将所选项目从 {source} 合并至 {target} 吗？此操作无法自动撤销。",
@@ -2874,6 +2895,19 @@
         "columnTarget": "另一份资料",
         "merge": "合并",
         "empty": "未发现重复项。"
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} 不是 Riot ID（名称#标签）。",
+        "riotIdNotFound": "没有名为 {riotId} 的 Riot 账号。",
+        "relayNotConfigured": "此服务器未配置 Riot 中继。",
+        "relayUnauthorized": "中继拒绝了我们的凭据。请检查 RIOT_RELAY_TOKEN。",
+        "riotKeyRejected": "Riot 拒绝了中继的 League of Legends API 密钥。它可能已过期或有误（请检查中继上的 LOL_RIOT_API_KEY）。",
+        "relayLeagueUnavailable": "中继没有设置 League of Legends API 密钥，或其缓存数据库不可用。请检查中继上的 LOL_RIOT_API_KEY 和数据库。",
+        "routeUnavailable": "中继没有此搜索所需的 League 路由。请更新中继。",
+        "relayUnreachable": "无法连接到 Riot 中继。请检查它是否在运行，以及 RIOT_RELAY_URL 是否正确。",
+        "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。"
       }
     },
     "finance": {
@@ -4715,16 +4749,8 @@
             "emptyWindow": "时间范围不对。请扩大范围。",
             "emptyRegion": "对局在其他区域进行。请在那里搜索。",
             "error": {
-              "riotIdInvalid": "{riotId} 不是 Riot ID（名称#标签）。",
-              "riotIdNotFound": "没有名为 {riotId} 的 Riot 账号。",
               "windowInvalid": "时间范围最长为 48 小时。",
-              "missingConfig": "此服务器未配置 Riot 中继。",
-              "generic": "无法执行搜索。",
-              "relayUnauthorized": "中继拒绝了我们的凭据。请检查 RIOT_RELAY_TOKEN。",
-              "riotKeyRejected": "Riot 拒绝了中继的 League of Legends API 密钥。它可能已过期或有误（请检查中继上的 LOL_RIOT_API_KEY）。",
-              "relayLeagueUnavailable": "中继没有设置 League of Legends API 密钥，或其缓存数据库不可用。请检查中继上的 LOL_RIOT_API_KEY 和数据库。",
-              "routeUnavailable": "中继没有此搜索所需的 League 路由。请更新中继。",
-              "relayUnreachable": "无法连接到 Riot 中继。请检查它是否在运行，以及 RIOT_RELAY_URL 是否正确。"
+              "generic": "无法执行搜索。"
             }
           },
           "gameImport": {
@@ -4756,7 +4782,6 @@
               "unknownChampions": "未知的英雄 ID：{ids}",
               "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。",
               "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。",
-              "riotUnavailable": "暂时无法读取 Riot 数据，请稍后再试。",
               "tournamentRealm": "该对局在赛事服务器进行，请改从 Leaguepedia 获取。"
             },
             "searchPlaceholder": "按队伍、局数或日期搜索",

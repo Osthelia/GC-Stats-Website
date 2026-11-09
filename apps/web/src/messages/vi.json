@@ -2669,6 +2669,25 @@
         },
         "sectionProfile": "Hồ sơ",
         "sectionSocials": "Liên kết mạng xã hội",
+        "sectionRiotAccounts": "Tài khoản Riot",
+        "riotAccountsHint": "Các tài khoản League of Legends mà tuyển thủ chơi. Các ván đã nhập được liên kết với tuyển thủ qua những tài khoản này.",
+        "riotAccountsEmpty": "Chưa có tài khoản Riot. Tài khoản được thêm khi nhập một ván đấu, hoặc tại đây.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Máy chủ giải đấu",
+        "riotAccountSourceAdmin": "Thêm thủ công",
+        "riotAccountLastSeen": "Thấy lần cuối <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Khu vực",
+        "riotAccountAdd": "Thêm tài khoản",
+        "riotAccountAdding": "Đang thêm…",
+        "riotAccountAdded": "Đã thêm tài khoản Riot.",
+        "riotAccountRemoved": "Đã xóa tài khoản Riot.",
+        "riotAccountRemove": "Xóa",
+        "riotAccountRemoveTitle": "Xóa tài khoản Riot này?",
+        "riotAccountRemoveDescription": "{riotId} sẽ không còn liên kết với {handle}. Các ván đã nhập vẫn thuộc về tuyển thủ.",
+        "riotAccountErrorHeldByOther": "Tài khoản Riot này đã thuộc về {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Tuyển thủ này đã có tài khoản Riot này.",
+        "riotAccountErrorGeneric": "Không thể thay đổi tài khoản Riot.",
         "sectionHistory": "Lịch sử đội",
         "sectionLogo": "Logo",
         "logoNoneYet": "Chưa có logo.",
@@ -2809,11 +2828,13 @@
           "matchStats": "Tham gia trận đấu",
           "news": "Tin tức",
           "logos": "Logo",
+          "riotAccounts": "Tài khoản Riot ({count})",
           "linkedAccount": "Tài khoản đã liên kết"
         },
         "matchStatsHint": "Cũng chuyển dữ liệu từng round (kills, sát thương, vị trí) đằng sau mỗi bản đồ. Ghi công đội hình bị khóa cho một đội tham gia giải đấu chỉ được chuyển khi mọi bản đồ của đội đó đã được chọn.",
         "periodOngoing": "từ {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Các tài khoản Riot chuyển sang tuyển thủ bạn giữ lại, để các ván của họ vẫn được liên kết.",
         "linkedAccountHint": "Chuyển tài khoản hiện đang liên kết với tuyển thủ này. Chỉ hiển thị khi có tài khoản liên kết và đích chưa có.",
         "nothingToMove": "Tuyển thủ này chưa có gì để chuyển.",
         "confirm": "Gộp các mục đã chọn từ {source} vào {target}? Không thể hoàn tác tự động.",
@@ -2830,6 +2851,19 @@
           "targetNotFound": "Không tìm thấy tuyển thủ đích.",
           "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết."
         }
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} không phải là Riot ID (tên#tag).",
+        "riotIdNotFound": "Không có tài khoản Riot nào tên {riotId}.",
+        "relayNotConfigured": "Relay Riot chưa được thiết lập trên máy chủ này.",
+        "relayUnauthorized": "Relay đã từ chối thông tin xác thực của chúng tôi. Hãy kiểm tra RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot đã từ chối khóa API League of Legends của relay. Khóa có thể đã hết hạn hoặc sai (kiểm tra LOL_RIOT_API_KEY trên relay).",
+        "relayLeagueUnavailable": "Relay chưa đặt khóa API League of Legends hoặc cơ sở dữ liệu cache của nó không khả dụng. Hãy kiểm tra LOL_RIOT_API_KEY và cơ sở dữ liệu trên relay.",
+        "routeUnavailable": "Relay không cung cấp các route League mà tìm kiếm này cần. Hãy cập nhật relay.",
+        "relayUnreachable": "Không thể kết nối tới relay Riot. Hãy kiểm tra relay đang chạy và RIOT_RELAY_URL đúng.",
+        "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau."
       }
     },
     "finance": {
@@ -4676,16 +4710,8 @@
             "emptyWindow": "Khoảng thời gian chưa đúng. Hãy mở rộng ra.",
             "emptyRegion": "Các ván được chơi ở khu vực khác. Hãy tìm ở đó.",
             "error": {
-              "riotIdInvalid": "{riotId} không phải là Riot ID (tên#tag).",
-              "riotIdNotFound": "Không có tài khoản Riot nào tên {riotId}.",
               "windowInvalid": "Khoảng thời gian tối đa là 48 giờ.",
-              "missingConfig": "Relay Riot chưa được thiết lập trên máy chủ này.",
-              "generic": "Không thể chạy tìm kiếm.",
-              "relayUnauthorized": "Relay đã từ chối thông tin xác thực của chúng tôi. Hãy kiểm tra RIOT_RELAY_TOKEN.",
-              "riotKeyRejected": "Riot đã từ chối khóa API League of Legends của relay. Khóa có thể đã hết hạn hoặc sai (kiểm tra LOL_RIOT_API_KEY trên relay).",
-              "relayLeagueUnavailable": "Relay chưa đặt khóa API League of Legends hoặc cơ sở dữ liệu cache của nó không khả dụng. Hãy kiểm tra LOL_RIOT_API_KEY và cơ sở dữ liệu trên relay.",
-              "routeUnavailable": "Relay không cung cấp các route League mà tìm kiếm này cần. Hãy cập nhật relay.",
-              "relayUnreachable": "Không thể kết nối tới relay Riot. Hãy kiểm tra relay đang chạy và RIOT_RELAY_URL đúng."
+              "generic": "Không thể chạy tìm kiếm."
             }
           },
           "gameImport": {
@@ -4717,7 +4743,6 @@
               "unknownChampions": "Champion id không xác định: {ids}",
               "storageUnavailable": "Không thể kết nối tới bucket nhập LoL. Hãy kiểm tra cấu hình rồi thử lại.",
               "duplicateAccount": "Cùng một tài khoản Riot được liên kết hai lần. Mỗi tài khoản chỉ liên kết một lần.",
-              "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau.",
               "tournamentRealm": "Ván này được chơi trên tournament realm. Hãy lấy nó từ Leaguepedia thay thế."
             },
             "searchPlaceholder": "Tìm theo đội, ván hoặc ngày",

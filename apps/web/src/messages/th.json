@@ -2809,6 +2809,25 @@
         },
         "fieldDiscordId": "Discord",
         "discordIdHint": "Discord User ID (โหมดนักพัฒนา, คลิกขวาที่โปรไฟล์, คัดลอก User ID) หรือลิงก์เชิญเซิร์ฟเวอร์",
+        "sectionRiotAccounts": "บัญชี Riot",
+        "riotAccountsHint": "บัญชี League of Legends ที่ผู้เล่นใช้เล่น เกมที่นำเข้าจะเชื่อมกับผู้เล่นผ่านบัญชีเหล่านี้",
+        "riotAccountsEmpty": "ยังไม่มีบัญชี Riot บัญชีจะถูกเพิ่มเมื่อนำเข้าเกม หรือเพิ่มที่นี่",
+        "riotAccountLive": "ไลฟ์",
+        "riotAccountTournament": "เรียลม์ทัวร์นาเมนต์",
+        "riotAccountSourceAdmin": "เพิ่มด้วยตนเอง",
+        "riotAccountLastSeen": "พบล่าสุด <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "ภูมิภาค",
+        "riotAccountAdd": "เพิ่มบัญชี",
+        "riotAccountAdding": "กำลังเพิ่ม…",
+        "riotAccountAdded": "เพิ่มบัญชี Riot แล้ว",
+        "riotAccountRemoved": "นำบัญชี Riot ออกแล้ว",
+        "riotAccountRemove": "นำออก",
+        "riotAccountRemoveTitle": "นำบัญชี Riot นี้ออกหรือไม่",
+        "riotAccountRemoveDescription": "{riotId} จะไม่เชื่อมกับ {handle} อีกต่อไป เกมที่นำเข้าแล้วจะยังอยู่กับผู้เล่น",
+        "riotAccountErrorHeldByOther": "บัญชี Riot นี้เป็นของ {handle} อยู่แล้ว",
+        "riotAccountErrorAlreadyOnPlayer": "ผู้เล่นคนนี้มีบัญชี Riot นี้อยู่แล้ว",
+        "riotAccountErrorGeneric": "ไม่สามารถเปลี่ยนบัญชี Riot ได้",
         "sectionGames": "เกม",
         "gamesHint": "หนึ่งคนมีหนึ่งโปรไฟล์ต่อเกม ชื่อ ประเทศ สรรพนาม ประวัติ ชื่อเรียกอื่น โซเชียล รูปภาพ และบัญชีที่เชื่อมโยงใช้ร่วมกัน ส่วนที่เหลือเป็นของแต่ละเกม",
         "sharedHint": "ชื่อ ประเทศ สรรพนาม ประวัติ ชื่อเรียกอื่น โซเชียล และรูปภาพ ใช้ร่วมกับเกมอื่นของบุคคลนี้",
@@ -2840,11 +2859,13 @@
           "matchStats": "การลงแข่งในแมตช์",
           "news": "ข่าว",
           "logos": "โลโก้",
+          "riotAccounts": "บัญชี Riot ({count})",
           "linkedAccount": "บัญชีที่เชื่อมโยง"
         },
         "matchStatsHint": "ย้ายข้อมูลรายรอบ (คิล ความเสียหาย ตำแหน่ง) ของแต่ละแมพด้วย เครดิตในโรสเตอร์ที่ล็อกไว้ของผู้เข้าแข่งขันในทัวร์นาเมนต์จะถูกย้ายก็ต่อเมื่อเลือกทุกแมพของผู้เข้าแข่งขันนั้นแล้ว",
         "periodOngoing": "ตั้งแต่ {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "บัญชี Riot จะย้ายไปยังผู้เล่นที่คุณเก็บไว้ เพื่อให้เกมของเขายังเชื่อมอยู่",
         "linkedAccountHint": "โอนบัญชีที่เชื่อมโยงกับผู้เล่นนี้อยู่ในปัจจุบัน แสดงเฉพาะเมื่อมีบัญชีเชื่อมโยงอยู่และปลายทางยังไม่มี",
         "nothingToMove": "ผู้เล่นนี้ยังไม่มีอะไรให้ย้าย",
         "confirm": "รวมรายการที่เลือกจาก {source} เข้ากับ {target} ใช่ไหม? ไม่สามารถย้อนกลับได้โดยอัตโนมัติ",
@@ -2874,6 +2895,19 @@
         "columnTarget": "โปรไฟล์อื่น",
         "merge": "รวม",
         "empty": "ไม่พบรายการซ้ำ"
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} ไม่ใช่ Riot ID (ชื่อ#แท็ก)",
+        "riotIdNotFound": "ไม่มีบัญชี Riot ชื่อ {riotId}",
+        "relayNotConfigured": "เซิร์ฟเวอร์นี้ยังไม่ได้ตั้งค่า Riot relay",
+        "relayUnauthorized": "relay ปฏิเสธข้อมูลรับรองของเรา ตรวจสอบ RIOT_RELAY_TOKEN",
+        "riotKeyRejected": "Riot ปฏิเสธ API key ของ League of Legends ที่ relay ใช้ อาจหมดอายุหรือไม่ถูกต้อง (ตรวจสอบ LOL_RIOT_API_KEY ที่ relay)",
+        "relayLeagueUnavailable": "relay ไม่ได้ตั้งค่า API key ของ League of Legends หรือฐานข้อมูลแคชใช้งานไม่ได้ ตรวจสอบ LOL_RIOT_API_KEY และฐานข้อมูลที่ relay",
+        "routeUnavailable": "relay ไม่มี route ของ League ที่การค้นหานี้ต้องใช้ กรุณาอัปเดต relay",
+        "relayUnreachable": "เชื่อมต่อกับ Riot relay ไม่ได้ ตรวจสอบว่า relay ทำงานอยู่และ RIOT_RELAY_URL ถูกต้อง",
+        "riotUnavailable": "ตอนนี้ไม่สามารถอ่านข้อมูลจาก Riot ได้ โปรดลองอีกครั้งภายหลัง"
       }
     },
     "finance": {
@@ -4715,16 +4749,8 @@
             "emptyWindow": "ช่วงเวลาไม่ตรง ขยายช่วงเวลา",
             "emptyRegion": "เกมเล่นในภูมิภาคอื่น ค้นหาที่นั่น",
             "error": {
-              "riotIdInvalid": "{riotId} ไม่ใช่ Riot ID (ชื่อ#แท็ก)",
-              "riotIdNotFound": "ไม่มีบัญชี Riot ชื่อ {riotId}",
               "windowInvalid": "ช่วงเวลาต้องไม่เกิน 48 ชั่วโมง",
-              "missingConfig": "เซิร์ฟเวอร์นี้ยังไม่ได้ตั้งค่า Riot relay",
-              "generic": "ไม่สามารถค้นหาได้",
-              "relayUnauthorized": "relay ปฏิเสธข้อมูลรับรองของเรา ตรวจสอบ RIOT_RELAY_TOKEN",
-              "riotKeyRejected": "Riot ปฏิเสธ API key ของ League of Legends ที่ relay ใช้ อาจหมดอายุหรือไม่ถูกต้อง (ตรวจสอบ LOL_RIOT_API_KEY ที่ relay)",
-              "relayLeagueUnavailable": "relay ไม่ได้ตั้งค่า API key ของ League of Legends หรือฐานข้อมูลแคชใช้งานไม่ได้ ตรวจสอบ LOL_RIOT_API_KEY และฐานข้อมูลที่ relay",
-              "routeUnavailable": "relay ไม่มี route ของ League ที่การค้นหานี้ต้องใช้ กรุณาอัปเดต relay",
-              "relayUnreachable": "เชื่อมต่อกับ Riot relay ไม่ได้ ตรวจสอบว่า relay ทำงานอยู่และ RIOT_RELAY_URL ถูกต้อง"
+              "generic": "ไม่สามารถค้นหาได้"
             }
           },
           "gameImport": {
@@ -4756,7 +4782,6 @@
               "unknownChampions": "ไม่รู้จักรหัสแชมเปี้ยน: {ids}",
               "storageUnavailable": "ไม่สามารถเชื่อมต่อกับที่เก็บข้อมูลการนำเข้า LoL ได้ ตรวจสอบการตั้งค่าแล้วลองอีกครั้ง",
               "duplicateAccount": "บัญชี Riot เดียวกันถูกเชื่อมสองครั้ง เชื่อมแต่ละบัญชีเพียงครั้งเดียว",
-              "riotUnavailable": "ตอนนี้ไม่สามารถอ่านข้อมูลจาก Riot ได้ โปรดลองอีกครั้งภายหลัง",
               "tournamentRealm": "เกมนี้เล่นบนเซิร์ฟเวอร์ทัวร์นาเมนต์ ให้ดึงจาก Leaguepedia แทน"
             },
             "searchPlaceholder": "ค้นหาตามทีม เกม หรือวันที่",

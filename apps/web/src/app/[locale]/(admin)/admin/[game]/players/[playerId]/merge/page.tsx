@@ -12,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminPlayer, getAdminPlayerTeamHistory } from "@/lib/admin-players";
+import { countPersonAccounts } from "@/lib/lol-accounts";
 import { getMergeablePlayerMapStats, getMergeablePlayerNews } from "@/lib/admin-player-merge";
 import { getPersonOrganizations } from "@/lib/person-organizations-data";
 import { getPersonProductionsPage } from "@/lib/production-credits-data";
@@ -45,7 +46,7 @@ export default async function AdminPlayerMergePage({
   await requireAdminPermission(locale as AppLocale, PERMISSIONS.playersMerge, game);
   const t = await getTranslations({ locale, namespace: "admin.players.merge" });
 
-  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems, initialTarget] = await Promise.all([
+  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems, initialTarget, riotAccountCount] = await Promise.all([
     getAdminPlayer(game, id),
     getAdminPlayerTeamHistory(game, id),
     getPersonOrganizations(game, id),
@@ -54,6 +55,7 @@ export default async function AdminPlayerMergePage({
     getEntityLogos("person", id),
     getMergeablePlayerMapStats(game, id),
     targetId !== null && targetId !== id ? getPersonSummary(targetId) : Promise.resolve(null),
+    game === "lol" ? countPersonAccounts(id) : Promise.resolve(0),
   ]);
   if (!player) notFound();
 
@@ -77,6 +79,7 @@ export default async function AdminPlayerMergePage({
         newsItems={newsItems}
         logoItems={logoItems}
         matchStatItems={matchStatItems}
+        riotAccountCount={riotAccountCount}
         initialTarget={initialTarget}
       />
     </div>

@@ -36,8 +36,8 @@ import {
   type RegionCluster,
   type RiotCluster,
 } from "@gc-stats/lol-stats-engine";
-import { getLolAccountByRiotId, getLolMatch, getLolTourneyMatchIds } from "@/lib/lol-relay-client";
-import type { RiotRelayError } from "@/lib/riot-relay-transport";
+import { getLolAccountByRiotId, getLolMatch, getLolTourneyMatchIds, relayProblemKind } from "@/lib/lol-relay-client";
+import type { RelayProblemKind } from "@/lib/riot-errors";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { findMatchEntrants, knownPeopleOf, loadKnownPeople, type KnownAccount } from "./fetch-league-game";
 
@@ -48,14 +48,8 @@ export type FindGamesError =
   | { kind: "riotIdInvalid"; riotId: string }
   | { kind: "riotIdNotFound"; riotId: string }
   | { kind: "noSeeds" }
-  // The relay cannot run the search. Each cause has its own kind, so the admin knows what to fix.
-  | { kind: "missingConfig" } // this server has no RIOT_RELAY_URL / RIOT_RELAY_TOKEN
-  | { kind: "relayUnauthorized" } // the relay rejected our token
-  | { kind: "riotKeyRejected" } // Riot rejected the relay's League API key (expired or wrong)
-  | { kind: "relayLeagueUnavailable" } // the relay has no League API key set, or its cache database is down
-  | { kind: "routeUnavailable" } // the relay does not have the League route (an older relay)
-  | { kind: "relayUnreachable" }
-  | { kind: "riotUnavailable" };
+  // The relay cannot run the search, with the cause (see relayProblemKind).
+  | { kind: RelayProblemKind };
 
 export interface FindGamesBasis {
   /** What the tournament region says about where to search. */
@@ -171,7 +165,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const typedPuuids: string[] = [];
   for (const entry of typed) {
     const account = await getLolAccountByRiotId(cluster, entry.gameName, entry.tagLine);
-    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: entry.riotId } : findRelayError(account.error) };
+    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: entry.riotId } : { kind: relayProblemKind(account.error) } };
     typedPuuids.push(account.data.puuid);
   }
 
@@ -185,7 +179,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   // A seed Riot refuses (a PUUID issued to another key, say) only drops that account from the search.
   const failures = lists.flatMap((list) => (list.ok ? [] : [list.error]));
   const hardFailure = failures.find((error) => error.kind !== "invalidRequest" && error.kind !== "notFound");
-  if (hardFailure && failures.length === lists.length) return { ok: false, error: findRelayError(hardFailure) };
+  if (hardFailure && failures.length === lists.length) return { ok: false, error: { kind: relayProblemKind(hardFailure) } };
   const idListOf = new Map(seeds.map((puuid, index) => [puuid, idsOf(lists[index]!)] as const));
   const listsOf = (puuids: string[]) => puuids.flatMap((puuid) => {
     const list = idListOf.get(puuid);
@@ -204,7 +198,7 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   ]);
   const importedBy = new Map(stored.flatMap((game) => (game.apiMatchId ? [[game.apiMatchId, { order: game.order, matchId: game.matchId }] as const] : [])));
   const firstFailure = matches.find((match) => !match.ok);
-  if (firstFailure && !firstFailure.ok && matches.every((match) => !match.ok)) return { ok: false, error: findRelayError(firstFailure.error) };
+  if (firstFailure && !firstFailure.ok && matches.every((match) => !match.ok)) return { ok: false, error: { kind: relayProblemKind(firstFailure.error) } };
 
   const knowledge = {
     accounts: { a: new Set(teams.a.accounts.map((account) => account.puuid)), b: new Set(teams.b.accounts.map((account) => account.puuid)) },
@@ -250,25 +244,4 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
 /** The ids of one seed's list, null when Riot refused the seed. */
 function idsOf(result: { ok: true; data: string[] } | { ok: false; error: unknown }): string[] | null {
   return result.ok && Array.isArray(result.data) ? result.data : null;
-}
-
-/** What a failed relay call means for the search. A 503 from the relay is either a missing League key or its database. */
-function findRelayError(error: RiotRelayError): FindGamesError {
-  switch (error.kind) {
-    case "missingConfig":
-      return { kind: "missingConfig" };
-    case "relayUnauthorized":
-      return { kind: "relayUnauthorized" };
-    case "riotUnauthorized":
-      return { kind: "riotKeyRejected" };
-    case "cacheUnavailable":
-      return { kind: "relayLeagueUnavailable" };
-    case "routeUnavailable":
-      return { kind: "routeUnavailable" };
-    case "relayUnreachable":
-    case "networkError":
-      return { kind: "relayUnreachable" };
-    default:
-      return { kind: "riotUnavailable" };
-  }
 }
