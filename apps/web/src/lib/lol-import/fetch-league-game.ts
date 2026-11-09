@@ -48,7 +48,7 @@ import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { compareTeamNames } from "@/lib/liquipedia-team-match";
-import { accountHolder, insertAccount } from "@/lib/lol-accounts";
+import { accountHolder, insertAccount, isAccountTaken } from "@/lib/lol-accounts";
 import { importGame } from "./import-game";
 import { loadLeaguepediaGame } from "./leaguepedia-game";
 
@@ -356,7 +356,7 @@ function gamePlatform(match: RiotMatchDto, riotMatchId: string): string {
   return platformOfMatchId(riotMatchId) ?? match.info.platformId;
 }
 
-/** An account another person holds, or that could not be linked: thrown inside the store transaction so it rolls back. */
+/** An account another person holds: thrown inside the store transaction so it rolls back. */
 class AccountConflictError extends Error {
   constructor(readonly puuid: string) {
     super(`Account ${puuid} could not be linked`);
@@ -394,10 +394,10 @@ async function linkAccount(tx: PersonWriteClient, mapping: PlayerMapping, sighti
     await insertAccount(tx, { ...values, personId });
     return personId;
   } catch (err) {
-    if (err instanceof AccountConflictError) throw err;
-    // The primary key on puuid catches a concurrent link of the same account; a taken handle lands here too.
-    console.warn(`[leaguepedia] account ${mapping.puuid} could not be linked: ${err instanceof Error ? err.message : String(err)}`);
-    throw new AccountConflictError(mapping.puuid);
+    // The primary key on puuid catches a concurrent link of the same account. Anything else (a dropped connection, a
+    // failed check) is a real failure and surfaces as one.
+    if (isAccountTaken(err)) throw new AccountConflictError(mapping.puuid);
+    throw err;
   }
 }
 

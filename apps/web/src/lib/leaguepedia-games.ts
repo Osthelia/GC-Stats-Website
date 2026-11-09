@@ -13,6 +13,7 @@
 import { eq } from "drizzle-orm";
 import { lolLeaguepediaGames, lolLeaguepediaTournaments } from "@gc-stats/db";
 import { db } from "@gc-stats/db/client";
+import { isUniqueViolation } from "./db-errors";
 import { fetchLeaguepediaCargo, type CargoQuery, type CargoRow, type LeaguepediaError } from "./leaguepedia-client";
 
 export type LeaguepediaGameRow = Omit<typeof lolLeaguepediaGames.$inferInsert, "id" | "tournamentId">;
@@ -87,15 +88,6 @@ export async function refreshGameList(tournamentId: number, overviewPage: string
     return { ok: false, error: { kind: "gameClaimed" } };
   }
   return { ok: true, data: games.length };
-}
-
-/** Drizzle wraps the driver's error, so the Postgres code and constraint can sit on the error or on one of its causes. */
-function isUniqueViolation(err: unknown, constraint: string): boolean {
-  for (let current: unknown = err; current; current = (current as { cause?: unknown }).cause) {
-    const { code, constraint: name } = current as { code?: string; constraint?: string };
-    if (code === "23505" && name === constraint) return true;
-  }
-  return false;
 }
 
 /** One transaction: the tournament's link is set and stamped, and its game rows are replaced. */

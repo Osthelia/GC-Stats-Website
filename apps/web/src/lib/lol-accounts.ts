@@ -14,6 +14,7 @@ import { asc, eq, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { lolPersonAccounts, sharedPeople } from "@gc-stats/db";
 import { accountRealm, type AccountRealm } from "@gc-stats/lol-stats-engine";
+import { isUniqueViolation } from "@/lib/db-errors";
 import type { PersonWriteClient } from "@/lib/person-service";
 
 /** A Riot account of a person. */
@@ -67,7 +68,15 @@ export async function accountHolder(puuid: string, client: Pick<typeof db, "sele
   return holder ?? null;
 }
 
-/** Adds an account to a person. The primary key on the PUUID refuses an account that is already held. */
+/** The primary key of `lol_person_accounts` (the PUUID), under Postgres' default name. */
+const ACCOUNT_PUUID_CONSTRAINT = "lol_person_accounts_pkey";
+
+/** Whether `err` is the primary key on the PUUID refusing an account that is already held; any other error is a real failure. */
+export function isAccountTaken(err: unknown): boolean {
+  return isUniqueViolation(err, ACCOUNT_PUUID_CONSTRAINT);
+}
+
+/** Adds an account to a person. The primary key on the PUUID refuses an account that is already held (see `isAccountTaken`). */
 export async function insertAccount(client: PersonWriteClient, account: typeof lolPersonAccounts.$inferInsert): Promise<void> {
   await client.insert(lolPersonAccounts).values(account);
 }

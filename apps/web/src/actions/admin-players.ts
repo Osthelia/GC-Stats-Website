@@ -23,7 +23,7 @@ import { closeOpenMemberships } from "@/lib/roster-close";
 import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 import { isRosterRoleOf } from "@/lib/roster-roles";
 import { areLanes, formatRiotId, isRiotCluster, parseRiotId } from "@gc-stats/lol-stats-engine";
-import { accountHolder, insertAccount } from "@/lib/lol-accounts";
+import { accountHolder, insertAccount, isAccountTaken } from "@/lib/lol-accounts";
 import { getLolAccountByRiotId, relayProblem } from "@/lib/lol-relay-client";
 import type { RiotErrorKind } from "@/lib/riot-errors";
 import { replaceEntryLanes } from "@/lib/roster-lanes";
@@ -463,9 +463,12 @@ export async function addPlayerRiotAccount(game: GameSlug, playerId: number, rio
       await insertAccount(tx, { puuid: account.data.puuid, personId: playerId, cluster, riotId, source: "admin" });
       await logActivity({ game, subject: "player", subjectId: playerId, event: "updated", description: `Added the Riot account ${riotId ?? account.data.puuid} to player #${playerId} (${player.handle})`, actorUserId, properties: { riotAccount: "added", riotId, puuid: account.data.puuid, cluster } }, tx);
     });
-  } catch {
-    // The primary key on the PUUID: someone linked this account between the check and the insert.
-    return { ok: false, error: "heldByOther" };
+  } catch (err) {
+    if (!isAccountTaken(err)) throw err;
+    // Someone linked this account between the check and the insert.
+    const winner = await accountHolder(account.data.puuid);
+    if (winner?.personId === playerId) return { ok: false, error: "alreadyOnPlayer" };
+    return { ok: false, error: "heldByOther", holder: winner?.handle };
   }
   return { ok: true };
 }
