@@ -21,7 +21,6 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonAccounts, lolRosterMembershipLanes, lolRosterMemberships, lolTeams } from "@gc-stats/db";
 import {
   accountRealm,
-  accountsOnRealm,
   assignedRoles,
   championNameOf,
   clusterForPlatform,
@@ -32,7 +31,6 @@ import {
   missingChampionIds,
   platformOfMatchId,
   rankSuggestions,
-  realmOf,
   resolvePlayerRoles,
   riotCluster,
   sideForTeamId,
@@ -40,7 +38,6 @@ import {
   type SuggestionCandidate,
   validateImport,
   type LeagueSide,
-  type Realm,
   type RiotMatchDto,
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
@@ -203,8 +200,7 @@ export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
     b: match.entrantBId,
   });
   const platform = gamePlatform(riotMatch, resolved.riotMatchId);
-  const realm = realmOf({ platform, cluster: null });
-  const candidates = await suggestionCandidates(new Map([[match.entrantAId, peopleA], [match.entrantBId, peopleB]]), realm);
+  const candidates = await suggestionCandidates(new Map([[match.entrantAId, peopleA], [match.entrantBId, peopleB]]), new Set([...linked.values()].map((person) => person.id)));
 
   const winnerTeam = riotMatch.info.teams.find((t) => t.win);
   return {
@@ -519,8 +515,12 @@ export async function knownPeopleOf(entrantId: number, replacedGameId: number | 
   return roster;
 }
 
-/** suggests candiatias from the given persons of given teams */
-async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, realm: Realm | null): Promise<Map<number, SuggestionCandidate[]>> {
+/**
+ * The people of each team who could be an unlinked participant. A person who already has another account on the realm
+ * stays a candidate (an alt or a new account is the case this exists for); only the people already linked to a
+ * participant of this game are left out, since one person plays one slot.
+ */
+async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, linkedInGame: ReadonlySet<number>): Promise<Map<number, SuggestionCandidate[]>> {
   const personIds = [...new Set([...knownByEntrant.values()].flatMap((ids) => [...ids]))];
   const result = new Map<number, SuggestionCandidate[]>([...knownByEntrant.keys()].map((entrantId) => [entrantId, []]));
   if (personIds.length === 0) return result;
@@ -535,12 +535,11 @@ async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, re
       .where(inArray(lolRosterMemberships.personId, personIds)),
   ]);
 
-  const hasAccountOnRealm = new Set(accountsOnRealm([...known.values()].flatMap((person) => person.accounts), realm).map((account) => account.personId));
   const lanesOf = new Map<number, string[]>();
   for (const row of [...played, ...saved]) if (row.personId !== null && row.lane !== null) lanesOf.set(row.personId, [...(lanesOf.get(row.personId) ?? []), row.lane]);
   const candidateById = new Map(
     [...known.values()]
-      .filter((person) => !hasAccountOnRealm.has(person.id))
+      .filter((person) => !linkedInGame.has(person.id))
       .map((person): [number, SuggestionCandidate] => [person.id, { id: person.id, handle: person.handle, aliases: person.aliases, lanes: sortLanes(lanesOf.get(person.id) ?? []) }])
   );
   for (const [entrantId, ids] of knownByEntrant) result.set(entrantId, [...ids].flatMap((id) => candidateById.get(id) ?? []));
