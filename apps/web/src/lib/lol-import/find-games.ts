@@ -170,11 +170,10 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
   const teams = await loadTeams(input.matchId);
   if (!teams) return { ok: false, error: { kind: "noData" } };
 
-  // A typo is caught here, before any search: the lookup answers "no such account" at once.
+  const accounts = await Promise.all(typed.map((entry) => getLolAccountByRiotId(cluster, entry.gameName, entry.tagLine)));
   const typedPuuids: string[] = [];
-  for (const entry of typed) {
-    const account = await getLolAccountByRiotId(cluster, entry.gameName, entry.tagLine);
-    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: entry.riotId } : { kind: relayProblemKind(account.error) } };
+  for (const [index, account] of accounts.entries()) {
+    if (!account.ok) return { ok: false, error: account.error.kind === "notFound" ? { kind: "riotIdNotFound", riotId: typed[index]!.riotId } : { kind: relayProblemKind(account.error) } };
     typedPuuids.push(account.data.puuid);
   }
 
