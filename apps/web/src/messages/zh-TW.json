@@ -2625,6 +2625,7 @@
       "title": "選手",
       "subtitle": "管理選手資料及戰隊歸屬。",
       "searchPlaceholder": "使用者名稱、ID 或 VLR ID…",
+      "searchPlaceholderLol": "使用者名稱、ID 或 Riot ID…",
       "searchSubmit": "搜尋",
       "activeWithinLabel": "近期活躍度",
       "activeWithinAny": "任意時間",

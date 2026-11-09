@@ -2641,6 +2641,7 @@
       "title": "선수",
       "subtitle": "프로필과 소속 팀을 관리합니다.",
       "searchPlaceholder": "핸들, ID 또는 VLR ID…",
+      "searchPlaceholderLol": "핸들, ID 또는 Riot ID…",
       "searchSubmit": "검색",
       "activeWithinLabel": "최근 활동",
       "activeWithinAny": "전체 기간",

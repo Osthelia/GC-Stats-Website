@@ -2641,6 +2641,7 @@
       "title": "ผู้เล่น",
       "subtitle": "จัดการโปรไฟล์และสังกัดทีม",
       "searchPlaceholder": "ชื่อในวงการ ID หรือ VLR ID…",
+      "searchPlaceholderLol": "ชื่อในวงการ ID หรือ Riot ID…",
       "searchSubmit": "ค้นหา",
       "activeWithinLabel": "กิจกรรมล่าสุด",
       "activeWithinAny": "ทุกช่วงเวลา",

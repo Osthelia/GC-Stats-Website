@@ -2641,6 +2641,7 @@
       "title": "Spieler:innen",
       "subtitle": "Profile und Teamzugehörigkeit verwalten.",
       "searchPlaceholder": "Handle, ID oder VLR-ID…",
+      "searchPlaceholderLol": "Handle, ID oder Riot-ID…",
       "searchSubmit": "Suchen",
       "activeWithinLabel": "Letzte Aktivität",
       "activeWithinAny": "Jeder Zeitraum",

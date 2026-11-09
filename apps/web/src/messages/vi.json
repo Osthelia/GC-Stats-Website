@@ -2625,6 +2625,7 @@
       "title": "Tuyển thủ",
       "subtitle": "Quản lý hồ sơ và đội trực thuộc.",
       "searchPlaceholder": "Biệt danh, ID hoặc VLR ID…",
+      "searchPlaceholderLol": "Biệt danh, ID hoặc Riot ID…",
       "searchSubmit": "Tìm kiếm",
       "activeWithinLabel": "Hoạt động gần đây",
       "activeWithinAny": "Bất kỳ lúc nào",

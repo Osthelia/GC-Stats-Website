@@ -2641,6 +2641,7 @@
       "title": "選手",
       "subtitle": "プロフィールとチーム所属を管理します。",
       "searchPlaceholder": "ハンドル、IDまたはVLR ID…",
+      "searchPlaceholderLol": "ハンドル、IDまたはRiot ID…",
       "searchSubmit": "検索",
       "activeWithinLabel": "最近の活動",
       "activeWithinAny": "いつでも",

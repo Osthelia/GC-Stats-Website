@@ -2641,6 +2641,7 @@
       "title": "اللاعبات",
       "subtitle": "إدارة الملفات والانتماء إلى الفرق.",
       "searchPlaceholder": "الاسم المستعار أو ID أو معرّف VLR…",
+      "searchPlaceholderLol": "الاسم المستعار أو ID أو Riot ID…",
       "searchSubmit": "بحث",
       "activeWithinLabel": "النشاط الأخير",
       "activeWithinAny": "أي وقت",

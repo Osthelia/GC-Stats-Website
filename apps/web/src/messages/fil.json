@@ -2625,6 +2625,7 @@
       "title": "Mga Manlalaro",
       "subtitle": "Pamahalaan ang mga profile at kaugnayan sa team.",
       "searchPlaceholder": "Handle, ID o VLR ID…",
+      "searchPlaceholderLol": "Handle, ID o Riot ID…",
       "searchSubmit": "Maghanap",
       "activeWithinLabel": "Kamakailang aktibidad",
       "activeWithinAny": "Anumang oras",

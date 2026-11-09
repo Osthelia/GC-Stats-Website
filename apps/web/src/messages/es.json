@@ -2641,6 +2641,7 @@
       "title": "Jugadores",
       "subtitle": "Gestiona los perfiles y la pertenencia a equipos.",
       "searchPlaceholder": "Alias, ID o ID de VLR…",
+      "searchPlaceholderLol": "Alias, ID o Riot ID…",
       "searchSubmit": "Buscar",
       "activeWithinLabel": "Actividad reciente",
       "activeWithinAny": "En cualquier momento",

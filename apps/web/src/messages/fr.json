@@ -2641,6 +2641,7 @@
       "title": "Joueur·se·s",
       "subtitle": "Gérer les profils et l'affiliation d'équipe.",
       "searchPlaceholder": "Pseudo, ID ou VLR ID…",
+      "searchPlaceholderLol": "Pseudo, ID ou Riot ID…",
       "searchSubmit": "Rechercher",
       "activeWithinLabel": "Activité récente",
       "activeWithinAny": "Toute période",

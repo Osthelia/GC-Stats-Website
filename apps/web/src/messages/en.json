@@ -2641,6 +2641,7 @@
       "title": "Players",
       "subtitle": "Manage profiles and team affiliation.",
       "searchPlaceholder": "Handle, ID or VLR ID…",
+      "searchPlaceholderLol": "Handle, ID or Riot ID…",
       "searchSubmit": "Search",
       "activeWithinLabel": "Recent activity",
       "activeWithinAny": "Any time",

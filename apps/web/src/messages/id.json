@@ -2625,6 +2625,7 @@
       "title": "Pemain",
       "subtitle": "Kelola profil dan afiliasi tim.",
       "searchPlaceholder": "Handle, ID, atau ID VLR…",
+      "searchPlaceholderLol": "Handle, ID, atau Riot ID…",
       "searchSubmit": "Cari",
       "activeWithinLabel": "Aktivitas terbaru",
       "activeWithinAny": "Kapan saja",

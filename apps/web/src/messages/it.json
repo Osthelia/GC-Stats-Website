@@ -2641,6 +2641,7 @@
       "title": "Giocatrici",
       "subtitle": "Gestisci i profili e l'appartenenza ai team.",
       "searchPlaceholder": "Nickname, ID o ID VLR…",
+      "searchPlaceholderLol": "Nickname, ID o Riot ID…",
       "searchSubmit": "Cerca",
       "activeWithinLabel": "Attività recente",
       "activeWithinAny": "Qualsiasi periodo",
