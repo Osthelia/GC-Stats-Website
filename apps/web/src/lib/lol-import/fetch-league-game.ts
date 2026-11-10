@@ -410,21 +410,18 @@ async function refreshAccounts(match: RiotMatchDto, platform: string, seenAt: Da
   const cluster = clusterForPlatform(platform);
   const seen = sql`${seenAt.toISOString()}::timestamptz`;
   const isNewest = sql`(${a.lastSeenAt} IS NULL OR ${a.lastSeenAt} <= ${seen})`;
+  const participants = sql.join(match.info.participants.map((participant) => sql`(${participant.puuid}::text, ${formatRiotId(participant)}::text)`), sql`, `);
   try {
-    await db.transaction(async (tx) => {
-      for (const participant of match.info.participants) {
-        const riotId = formatRiotId(participant);
-        await tx
-          .update(a)
-          .set({
-            platform: sql`CASE WHEN ${isNewest} THEN ${platform}::text ELSE COALESCE(${a.platform}, ${platform}::text) END`,
-            cluster: sql`CASE WHEN ${isNewest} THEN ${cluster}::text ELSE COALESCE(${a.cluster}, ${cluster}::text) END`,
-            riotId: riotId === null ? sql`${a.riotId}` : sql`CASE WHEN ${isNewest} THEN ${riotId}::text ELSE COALESCE(${a.riotId}, ${riotId}::text) END`,
-            lastSeenAt: sql`GREATEST(${a.lastSeenAt}, ${seen})`,
-          })
-          .where(eq(a.puuid, participant.puuid));
-      }
-    });
+    await db
+      .update(a)
+      .set({
+        platform: sql`CASE WHEN ${isNewest} THEN ${platform}::text ELSE COALESCE(${a.platform}, ${platform}::text) END`,
+        cluster: sql`CASE WHEN ${isNewest} THEN ${cluster}::text ELSE COALESCE(${a.cluster}, ${cluster}::text) END`,
+        riotId: sql`CASE WHEN v.riot_id IS NULL THEN ${a.riotId} WHEN ${isNewest} THEN v.riot_id ELSE COALESCE(${a.riotId}, v.riot_id) END`,
+        lastSeenAt: sql`GREATEST(${a.lastSeenAt}, ${seen})`,
+      })
+      .from(sql`(VALUES ${participants}) AS v(puuid, riot_id)`)
+      .where(sql`${a.puuid} = v.puuid`);
   } catch (err) {
     // The game is stored; a stale Riot ID is not worth failing the save for.
     console.error(`[leaguepedia] could not refresh the accounts of game ${match.metadata.matchId}`, err);
