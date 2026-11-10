@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "معرّف مباراة Riot",
           "mergeSegmentStartRound": "الجولة الأولى",
           "mergeSegmentEndRound": "الجولة الأخيرة",
+          "mergeToLastRound": "حتى الجولة الأخيرة من هذه المباراة",
+          "mergeRenumber": "المتابعة بعد الجولات السابقة (أرقام جولات هذه المباراة لا تتابع الجولات السابقة)",
           "mergeAddSegment": "إضافة مقطع",
           "mergeRemoveSegment": "إزالة",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "أعاد الـ relay استجابة غير متوقعة.",
             "unknown": "خطأ غير متوقع أثناء الاتصال بالـ relay.",
             "mergeCountOutOfRange": "قدّم من 2 إلى 5 مقاطع.",
+            "roundOverlap": "تتشارك هذه المقاطع أرقام الجولات نفسها. فعّل خيار «المتابعة بعد الجولات السابقة» في المقطع اللاحق، أو عدّل نطاقات الجولات.",
             "mergeInvalid": "هذه المنطقة غير صالحة.",
             "mergeInvalidMatchId": "أحد معرّفات مباريات Riot غير صالح.",
             "mergeInvalidRoundRange": "يجب أن تسبق الجولة الأولى لكل مقطع جولته الأخيرة.",

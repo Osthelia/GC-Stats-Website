@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot試合ID",
           "mergeSegmentStartRound": "最初のラウンド",
           "mergeSegmentEndRound": "最後のラウンド",
+          "mergeToLastRound": "この試合の最後のラウンドまで",
+          "mergeRenumber": "前のラウンドの後から続ける（この試合のラウンド番号は続いていません）",
           "mergeAddSegment": "セグメントを追加",
           "mergeRemoveSegment": "削除",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "Relayが予期しない応答を返しました。",
             "unknown": "Relayとの通信中に予期しないエラーが発生しました。",
             "mergeCountOutOfRange": "2〜5個のセグメントを指定してください。",
+            "roundOverlap": "これらのセグメントは同じラウンド番号を含んでいます。後のセグメントで「前のラウンドの後から続ける」にチェックを入れるか、ラウンドの範囲を調整してください。",
             "mergeInvalid": "この地域は無効です。",
             "mergeInvalidMatchId": "Riot試合IDのいずれかが無効です。",
             "mergeInvalidRoundRange": "各セグメントの最初のラウンドは最後のラウンドより前である必要があります。",

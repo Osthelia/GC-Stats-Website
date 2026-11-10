@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot match ID",
           "mergeSegmentStartRound": "รอบแรก",
           "mergeSegmentEndRound": "รอบสุดท้าย",
+          "mergeToLastRound": "ถึงรอบสุดท้ายของแมตช์นี้",
+          "mergeRenumber": "ดำเนินต่อหลังจากรอบก่อนหน้า (หมายเลขรอบของแมตช์นี้ไม่ได้ต่อเนื่องกัน)",
           "mergeAddSegment": "เพิ่มเซกเมนต์",
           "mergeRemoveSegment": "นำออก",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "relay ส่งการตอบกลับที่ไม่คาดคิด",
             "unknown": "เกิดข้อผิดพลาดที่ไม่คาดคิดขณะติดต่อ relay",
             "mergeCountOutOfRange": "ระบุ 2 ถึง 5 เซกเมนต์",
+            "roundOverlap": "เซกเมนต์เหล่านี้มีหมายเลขรอบที่ซ้ำกัน เลือก \"ดำเนินต่อหลังจากรอบก่อนหน้า\" ที่เซกเมนต์ถัดไป หรือปรับช่วงรอบใหม่",
             "mergeInvalid": "ภูมิภาคนี้ไม่ถูกต้อง",
             "mergeInvalidMatchId": "Riot match ID หนึ่งรายการไม่ถูกต้อง",
             "mergeInvalidRoundRange": "รอบแรกของแต่ละเซกเมนต์ต้องอยู่ก่อนรอบสุดท้าย",

@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot maç kimliği",
           "mergeSegmentStartRound": "İlk round",
           "mergeSegmentEndRound": "Son round",
+          "mergeToLastRound": "Bu maçın son round'una kadar",
+          "mergeRenumber": "Önceki roundlardan sonra devam et (bu maçın round numaraları devam etmiyor)",
           "mergeAddSegment": "Segment ekle",
           "mergeRemoveSegment": "Kaldır",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "Relay beklenmeyen bir yanıt döndürdü.",
             "unknown": "Relay ile iletişim kurulurken beklenmeyen hata.",
             "mergeCountOutOfRange": "2 ile 5 arasında segment sağlayın.",
+            "roundOverlap": "Bu segmentler aynı round numaralarını paylaşıyor. Sonraki segmentte \"Önceki roundlardan sonra devam et\" seçeneğini işaretleyin veya round aralıklarını düzenleyin.",
             "mergeInvalid": "Bu bölge geçerli değil.",
             "mergeInvalidMatchId": "Riot maç kimliklerinden biri geçersiz.",
             "mergeInvalidRoundRange": "Her segmentin ilk round'u son round'undan önce olmalıdır.",

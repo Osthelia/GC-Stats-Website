@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "ID trận Riot",
           "mergeSegmentStartRound": "Round đầu",
           "mergeSegmentEndRound": "Round cuối",
+          "mergeToLastRound": "Đến round cuối cùng của trận này",
+          "mergeRenumber": "Tiếp tục sau các round trước (số round của trận này không nối tiếp)",
           "mergeAddSegment": "Thêm một đoạn",
           "mergeRemoveSegment": "Gỡ bỏ",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "Relay trả về một phản hồi không mong đợi.",
             "unknown": "Lỗi không mong đợi khi liên hệ với relay.",
             "mergeCountOutOfRange": "Hãy cung cấp từ 2 đến 5 đoạn.",
+            "roundOverlap": "Các đoạn này dùng chung số round. Hãy đánh dấu “Tiếp tục sau các round trước” ở đoạn sau, hoặc điều chỉnh khoảng round.",
             "mergeInvalid": "Khu vực này không hợp lệ.",
             "mergeInvalidMatchId": "Một trong các ID trận Riot không hợp lệ.",
             "mergeInvalidRoundRange": "Round đầu của mỗi đoạn phải trước round cuối của nó.",

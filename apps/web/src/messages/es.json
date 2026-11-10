@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "ID de partido de Riot",
           "mergeSegmentStartRound": "Primera ronda",
           "mergeSegmentEndRound": "Última ronda",
+          "mergeToLastRound": "Hasta la última ronda de esta partida",
+          "mergeRenumber": "Colocar a continuación de las rondas anteriores (la numeración de esta partida no continúa)",
           "mergeAddSegment": "Añadir un segmento",
           "mergeRemoveSegment": "Quitar",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "El relay ha devuelto una respuesta inesperada.",
             "unknown": "Error inesperado al contactar con el relay.",
             "mergeCountOutOfRange": "Indica entre 2 y 5 segmentos.",
+            "roundOverlap": "Estos segmentos comparten números de ronda. Marque « Colocar a continuación de las rondas anteriores » en el segmento siguiente, o ajuste los rangos de rondas.",
             "mergeInvalid": "Esta región no es válida.",
             "mergeInvalidMatchId": "Uno de los ID de partido de Riot no es válido.",
             "mergeInvalidRoundRange": "La primera ronda de cada segmento debe ser anterior a su última ronda.",

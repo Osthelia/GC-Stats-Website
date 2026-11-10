@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "라이엇 경기 ID",
           "mergeSegmentStartRound": "시작 라운드",
           "mergeSegmentEndRound": "종료 라운드",
+          "mergeToLastRound": "이 경기의 마지막 라운드까지",
+          "mergeRenumber": "이전 라운드 이후부터 이어서 진행 (이 경기의 라운드 번호가 이어지지 않음)",
           "mergeAddSegment": "세그먼트 추가",
           "mergeRemoveSegment": "제거",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "릴레이가 예상치 못한 응답을 반환했습니다.",
             "unknown": "릴레이 연결 중 예상치 못한 오류가 발생했습니다.",
             "mergeCountOutOfRange": "2개에서 5개 사이의 세그먼트를 입력하세요.",
+            "roundOverlap": "이 세그먼트들은 같은 라운드 번호를 공유합니다. 뒤쪽 세그먼트에서 “이전 라운드 이후부터 이어서 진행”을 체크하거나 라운드 범위를 조정하세요.",
             "mergeInvalid": "이 지역은 유효하지 않습니다.",
             "mergeInvalidMatchId": "라이엇 경기 ID 중 하나가 유효하지 않습니다.",
             "mergeInvalidRoundRange": "각 세그먼트의 시작 라운드는 종료 라운드보다 앞서야 합니다.",

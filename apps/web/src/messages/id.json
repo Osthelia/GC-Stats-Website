@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "ID pertandingan Riot",
           "mergeSegmentStartRound": "Ronde pertama",
           "mergeSegmentEndRound": "Ronde terakhir",
+          "mergeToLastRound": "Sampai ronde terakhir dari pertandingan ini",
+          "mergeRenumber": "Lanjutkan setelah ronde sebelumnya (nomor ronde pertandingan ini tidak berurutan)",
           "mergeAddSegment": "Tambah segmen",
           "mergeRemoveSegment": "Hapus",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "Relay mengembalikan respons yang tidak terduga.",
             "unknown": "Kesalahan tak terduga saat menghubungi relay.",
             "mergeCountOutOfRange": "Berikan antara 2 dan 5 segmen.",
+            "roundOverlap": "Segmen ini memakai nomor ronde yang sama. Centang \"Lanjutkan setelah ronde sebelumnya\" pada segmen berikutnya, atau sesuaikan rentang ronde.",
             "mergeInvalid": "Wilayah ini tidak valid.",
             "mergeInvalidMatchId": "Salah satu ID pertandingan Riot tidak valid.",
             "mergeInvalidRoundRange": "Ronde pertama setiap segmen harus sebelum ronde terakhirnya.",

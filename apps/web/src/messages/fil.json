@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot match ID",
           "mergeSegmentStartRound": "Unang round",
           "mergeSegmentEndRound": "Huling round",
+          "mergeToLastRound": "Hanggang sa huling round ng match na ito",
+          "mergeRenumber": "Magpatuloy pagkatapos ng mga naunang round (hindi sumusunod ang mga numero ng round ng match na ito)",
           "mergeAddSegment": "Magdagdag ng segment",
           "mergeRemoveSegment": "Alisin",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "May ibinalik na hindi inaasahang response ang relay.",
             "unknown": "Hindi inaasahang error habang kinokontak ang relay.",
             "mergeCountOutOfRange": "Magbigay ng 2 hanggang 5 segment.",
+            "roundOverlap": "Magkapareho ang numero ng round ng mga segment na ito. Lagyan ng tsek ang \"Magpatuloy pagkatapos ng mga naunang round\" sa susunod na segment, o baguhin ang saklaw ng mga round.",
             "mergeInvalid": "Hindi wasto ang rehiyong ito.",
             "mergeInvalidMatchId": "Hindi wasto ang isa sa mga Riot match ID.",
             "mergeInvalidRoundRange": "Dapat nauuna ang unang round ng bawat segment sa huling round nito.",

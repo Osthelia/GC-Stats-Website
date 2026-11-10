@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot 比賽 ID",
           "mergeSegmentStartRound": "起始回合",
           "mergeSegmentEndRound": "結束回合",
+          "mergeToLastRound": "直到本場比賽的最後一個回合",
+          "mergeRenumber": "在前面的回合之後繼續（本場比賽的回合編號不連續）",
           "mergeAddSegment": "新增分段",
           "mergeRemoveSegment": "移除",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "中繼返回了意外的響應。",
             "unknown": "聯絡中繼時發生了意外錯誤。",
             "mergeCountOutOfRange": "請提供 2 到 5 個分段。",
+            "roundOverlap": "這些分段的回合編號有重疊。請在後面的分段勾選「在前面的回合之後繼續」，或調整回合範圍。",
             "mergeInvalid": "該地區無效。",
             "mergeInvalidMatchId": "其中一個 Riot 比賽 ID 無效。",
             "mergeInvalidRoundRange": "每個分段的起始回合必須早於其結束回合。",

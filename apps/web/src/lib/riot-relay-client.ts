@@ -32,6 +32,7 @@ export type RiotRelayError =
   | { kind: "riotError"; status: number }
   | { kind: "networkError" }
   | { kind: "invalidResponse" }
+  | { kind: "roundOverlap" }
   | { kind: "unknown"; status: number };
 
 export type RiotRelayResult<T> = { ok: true; data: T; servedByRegion: RiotRelayRegion } | { ok: false; error: RiotRelayError };
@@ -56,6 +57,7 @@ async function classifyErrorResponse(response: Response): Promise<RiotRelayError
   }
   if (response.status === 403) return { kind: "riotUnauthorized" };
   if (response.status === 404) return { kind: "notFound" };
+  if (response.status === 409) return { kind: "roundOverlap" };
   if (response.status === 429) {
     const retryAfter = response.headers.get("retry-after");
     return { kind: "rateLimited", retryAfterSeconds: retryAfter ? Number(retryAfter) || null : null };
@@ -121,7 +123,10 @@ export interface MergeSegmentInput {
   matchId: string;
   /** 1-indexed round numbers as entered by the operator; converted to Riot's 0-indexed `roundNum` before the call. */
   startRound: number;
-  endRound: number;
+  /** `null` takes every round up to the segment match's last one. */
+  endRound: number | null;
+  /** Appends the selected rounds after the previous segments instead of keeping their own numbering. */
+  renumber: boolean;
 }
 
 /** Fuses 2-5 Riot match ids (a game split by a reconnection) into one synthetic "GCS-..." match id. No region retry — the operator picks the region explicitly. */
@@ -130,7 +135,7 @@ export async function mergeMatch(region: RiotRelayRegion, segments: MergeSegment
   if (!config) return { ok: false, error: { kind: "missingConfig" } };
 
   const body = JSON.stringify({
-    segments: segments.map((s) => ({ matchId: s.matchId, startRound: s.startRound - 1, endRound: s.endRound - 1 })),
+    segments: segments.map((s) => ({ matchId: s.matchId, startRound: s.startRound - 1, endRound: s.endRound === null ? null : s.endRound - 1, renumber: s.renumber })),
   });
 
   const result = await callRelay<RiotMatchDto>(`/match/${region}/merge`, { method: "POST", headers: { "Content-Type": "application/json" }, body }, config);

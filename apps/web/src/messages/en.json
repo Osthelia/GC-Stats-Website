@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "Riot match ID",
           "mergeSegmentStartRound": "First round",
           "mergeSegmentEndRound": "Last round",
+          "mergeToLastRound": "Up to the last round of this match",
+          "mergeRenumber": "Continue after the previous rounds (this match's round numbers do not follow on)",
           "mergeAddSegment": "Add a segment",
           "mergeRemoveSegment": "Remove",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "The relay returned an unexpected response.",
             "unknown": "Unexpected error while contacting the relay.",
             "mergeCountOutOfRange": "Provide between 2 and 5 segments.",
+            "roundOverlap": "These segments share round numbers. Tick \"Continue after the previous rounds\" on the later segment, or adjust the round ranges.",
             "mergeInvalid": "This region isn't valid.",
             "mergeInvalidMatchId": "One of the Riot match IDs is invalid.",
             "mergeInvalidRoundRange": "Each segment's first round must be before its last round.",

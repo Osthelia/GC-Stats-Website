@@ -4480,6 +4480,8 @@
           "mergeSegmentMatchId": "ID meczu Riot",
           "mergeSegmentStartRound": "Pierwsza runda",
           "mergeSegmentEndRound": "Ostatnia runda",
+          "mergeToLastRound": "Do ostatniej rundy tego meczu",
+          "mergeRenumber": "Kontynuuj po poprzednich rundach (numery rund tego meczu nie są kontynuacją)",
           "mergeAddSegment": "Dodaj segment",
           "mergeRemoveSegment": "Usuń",
           "error": {
@@ -4503,6 +4505,7 @@
             "invalidResponse": "Relay zwrócił nieoczekiwaną odpowiedź.",
             "unknown": "Nieoczekiwany błąd podczas komunikacji z relayem.",
             "mergeCountOutOfRange": "Podaj od 2 do 5 segmentów.",
+            "roundOverlap": "Te segmenty mają wspólne numery rund. Zaznacz opcję „Kontynuuj po poprzednich rundach” w późniejszym segmencie lub popraw zakresy rund.",
             "mergeInvalid": "Ten region jest nieprawidłowy.",
             "mergeInvalidMatchId": "Jeden z identyfikatorów meczów Riot jest nieprawidłowy.",
             "mergeInvalidRoundRange": "Pierwsza runda każdego segmentu musi być przed ostatnią.",
