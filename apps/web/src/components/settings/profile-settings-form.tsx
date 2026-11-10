@@ -84,7 +84,7 @@ function FanTeamField({ game, state, onChange, error }: { game: GameSlug; state:
 }
 
 /** `games` are the games whose fan team can be picked: the public ones. */
-export function ProfileSettingsForm({ profile, games }: { profile: MyProfile; games: GameSlug[] }) {
+export function ProfileSettingsForm({ profile, games }: { profile: MyProfile; games: readonly GameSlug[] }) {
   const t = useTranslations("accountSettings.profile");
   const { update } = useSession();
   const router = useRouter();

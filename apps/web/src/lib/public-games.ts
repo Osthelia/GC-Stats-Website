@@ -33,9 +33,19 @@ export function parsePublicGames(value: string | undefined): GameSlug[] {
   return games.length > 0 ? games : [DEFAULT_GAME];
 }
 
-/** The games visitors may see, from the `PUBLIC_GAMES` environment variable. */
-export function publicGames(): GameSlug[] {
-  return parsePublicGames(process.env.PUBLIC_GAMES);
+// The parse of the last value seen: it is read on hot paths (every request, every game of a list), and keyed on the
+// raw string, so a changed variable is still picked up.
+let lastRaw: string | undefined;
+let lastParsed: readonly GameSlug[] | null = null;
+
+/** The games visitors may see, from the `PUBLIC_GAMES` environment variable. Shared between calls, so not to be changed. */
+export function publicGames(): readonly GameSlug[] {
+  const raw = process.env.PUBLIC_GAMES;
+  if (lastParsed === null || raw !== lastRaw) {
+    lastParsed = parsePublicGames(raw);
+    lastRaw = raw;
+  }
+  return lastParsed;
 }
 
 export function isGamePublic(game: GameSlug): boolean {

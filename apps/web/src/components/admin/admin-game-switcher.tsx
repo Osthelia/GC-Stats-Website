@@ -16,7 +16,7 @@ import { GameSwitchTabs } from "@/components/game-switch-tabs";
 import { useRouteGame } from "@/lib/use-game";
 
 /** `publicGames` are the games visitors can see: the other ones get a "not public" mark. */
-export function AdminGameSwitcher({ publicGames }: { publicGames: GameSlug[] }) {
+export function AdminGameSwitcher({ publicGames }: { publicGames: readonly GameSlug[] }) {
   const t = useTranslations("game");
   const current = useRouteGame();
 

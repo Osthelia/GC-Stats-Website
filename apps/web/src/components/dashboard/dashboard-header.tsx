@@ -30,7 +30,7 @@ export function DashboardHeader({
   hasApiKey?: boolean;
   hasDiscord?: boolean;
   isAuthorAdmin?: boolean;
-  games: GameSlug[];
+  games: readonly GameSlug[];
 }) {
   const t = useTranslations("dashboard.nav");
   const pathname = stripDashboardGame(usePathname());

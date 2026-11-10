@@ -41,7 +41,7 @@ function scopeOf(pathname: string): Scope | null {
 }
 
 /** `games` are the public games: organisations are not admins, so a game visitors can't see yet is left out. */
-export function DashboardGameSwitcher({ games }: { games: GameSlug[] }) {
+export function DashboardGameSwitcher({ games }: { games: readonly GameSlug[] }) {
   const t = useTranslations("game");
   const scope = scopeOf(usePathname());
   if (!scope) return null;

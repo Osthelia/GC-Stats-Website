@@ -45,6 +45,15 @@ describe("environment", () => {
     vi.stubEnv("PUBLIC_GAMES", "valorant,lol");
     expect(isGamePublic("lol")).toBe(true);
   });
+
+  it("parses an unchanged value once, and follows a changed one", () => {
+    vi.stubEnv("PUBLIC_GAMES", "valorant,lol");
+    const first = publicGames();
+    expect(publicGames()).toBe(first);
+    vi.stubEnv("PUBLIC_GAMES", "valorant");
+    expect(publicGames()).toEqual(["valorant"]);
+    expect(isGamePublic("lol")).toBe(false);
+  });
 });
 
 describe("fallbackPublicGame", () => {
