@@ -20,6 +20,20 @@ describe("nameCloseness", () => {
     expect(nameCloseness("Mr. Fox", "mrfox")).toBe(1);
   });
 
+  it("keeps names in Hangul, Kana, Han and Cyrillic instead of emptying them", () => {
+    expect(nameCloseness("페이커", "페이커")).toBe(1);
+    expect(nameCloseness("田中", "田中")).toBe(1);
+    expect(nameCloseness("ガイ", "ガイ")).toBe(1);
+    expect(nameCloseness("ガイ", "ｶﾞｲ")).toBe(1);
+    expect(nameCloseness("Дмитрий", "дмитрий")).toBe(1);
+    expect(nameCloseness("페이 커", "페이커!")).toBe(1);
+  });
+
+  it("tells different names in the same script apart", () => {
+    expect(nameCloseness("페이커", "쵸비")).toBe(0);
+    expect(nameCloseness("田中", "山田")).toBe(0);
+  });
+
   it("is high when the Riot name holds the handle (team tag plus handle)", () => {
     expect(nameCloseness("Pivotless", "SLYA Pivotless")).toBe(0.9);
   });
@@ -33,6 +47,13 @@ describe("nameCloseness", () => {
     expect(close).toBeGreaterThan(0.5);
     expect(nameCloseness("Caps", "Zzzzz")).toBe(0);
     expect(nameCloseness("", "Caps")).toBe(0);
+  });
+});
+
+describe("rankSuggestions with non-Latin names", () => {
+  it("puts the player whose Hangul handle is the Riot name first", () => {
+    const roster = [person(1, "쵸비"), person(2, "페이커"), person(3, "구마유시")];
+    expect(rankSuggestions("페이커", null, roster)[0]?.id).toBe(2);
   });
 });
 

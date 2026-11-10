@@ -22,12 +22,18 @@ const LANE_BONUS = 0.25;
 /** Shorter names would match inside almost anything. */
 const MIN_CONTAINED_LENGTH = 3;
 
+/**
+ * Lower case, without accents, punctuation and spaces, but with the letters and digits of every script, so Hangul, Kana,
+ * Han and Cyrillic names (the regions this is for) stay names. NFC puts back what NFKD took apart: Hangul syllables
+ * would otherwise be compared as single jamo, and kana with a voiced mark as two characters.
+ */
 function normalizeName(name: string): string {
   return name
     .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
+    .normalize("NFC")
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+    .replace(/[^\p{L}\p{N}]/gu, "");
 }
 
 function bigrams(text: string): Map<string, number> {
