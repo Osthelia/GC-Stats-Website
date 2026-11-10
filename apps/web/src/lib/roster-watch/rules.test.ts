@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyRules, compileRuleRegex, DEFAULT_RULES } from "./rules";
+import { applyRules, compileRuleRegex, countWords, DEFAULT_RULES } from "./rules";
 
 describe("rule regexes", () => {
   it("compiles every regex of rules.json", () => {
@@ -43,13 +43,13 @@ describe("applyRules", () => {
 
   it("matches whole words only", () => {
     expect(text("What a nice place")).toEqual({ excluded: false });
-    expect(text("benchmark results")).toEqual({ excluded: false });
+    expect(text("Our benchmark results are in for the team")).toEqual({ excluded: false });
   });
 
   it("applies requires_media only when the media type is present", () => {
-    expect(text("insane clutch")).toEqual({ excluded: false });
-    expect(text("insane clutch", ["photo"])).toEqual({ excluded: false });
-    expect(text("insane clutch", ["video"])).toEqual({ excluded: true, ruleId: "highlight" });
+    expect(text("What an insane clutch from our player")).toEqual({ excluded: false });
+    expect(text("What an insane clutch from our player", ["photo"])).toEqual({ excluded: false });
+    expect(text("What an insane clutch from our player", ["video"])).toEqual({ excluded: true, ruleId: "highlight" });
   });
 
   it("excludes stream, giveaway and promo code tweets", () => {
@@ -86,7 +86,29 @@ describe("applyRules", () => {
     expect(text("Deadlock main joins the team")).toEqual({ excluded: false });
   });
 
+  it("excludes very short reactions and stretched hype", () => {
+    expect(text("SEE YOU THERE 🫵 https://t.co/x")).toEqual({ excluded: true, ruleId: "short_reaction" });
+    expect(text("https://t.co/x https://t.co/x")).toEqual({ excluded: true, ruleId: "short_reaction" });
+    expect(text("VAMOOOOOOOOOS ahora mismo vamos")).toEqual({ excluded: true, ruleId: "hype_stretch" });
+    expect(text("Happy birthday @someone, enjoy your day and see you soon")).toEqual({ excluded: true, ruleId: "birthday" });
+  });
+
+  it("keeps short tweets with a roster or announcement word", () => {
+    expect(text("Welcome Nova")).toEqual({ excluded: false });
+    expect(text("Comunicado oficial 📰")).toEqual({ excluded: false });
+    expect(text("Nouvelle recrue 👀")).toEqual({ excluded: false });
+  });
+
+  it("excludes other game events seen in the wild", () => {
+    expect(text("It's time to settle this. #CRL26")).toEqual({ excluded: true, ruleId: "other_game" });
+    expect(text("Comunicado Oficial KRÜ ingresa a EA FC 27")).toEqual({ excluded: true, ruleId: "other_game" });
+  });
+
+  it("counts words without links, mentions, hashtags or emojis", () => {
+    expect(countWords("🔥 @user #tag https://t.co/x one two")).toBe(2);
+  });
+
   it("sends unknown tweets to the LLM", () => {
-    expect(text("Something is coming")).toEqual({ excluded: false });
+    expect(text("Something big is coming to the team soon")).toEqual({ excluded: false });
   });
 });
