@@ -35,11 +35,16 @@ describe("publicGameGate", () => {
 describe("hiddenGamePathGate", () => {
   const gate = (url: string) => hiddenGamePathGate(new Request(url))?.status ?? null;
 
-  it("refuses a hidden game wherever its segment sits", () => {
+  it("refuses a hidden game before the API version, wherever the route sits", () => {
     expect(gate("http://localhost/api/valorant/lol/v2/teams")).toBe(404);
     expect(gate("http://localhost/prefix/api/valorant/lol/v2/teams")).toBe(404);
     expect(gate("http://localhost/api/valorant/lol/v2/teams/")).toBe(404);
-    expect(gate("http://localhost/api/v4/lol/teams")).toBe(404);
+    expect(gate("http://localhost/api/valorant/lol/extra/v3/matches")).toBe(404);
+  });
+
+  it("checks every segment of a path without an API version (fails closed)", () => {
+    expect(gate("http://localhost/api/lol/teams")).toBe(404);
+    expect(gate("http://localhost/api/valorant/teams/lol")).toBe(404);
   });
 
   it("refuses the hidden game when its segment is percent-encoded", () => {
@@ -51,15 +56,19 @@ describe("hiddenGamePathGate", () => {
     expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lolita")).toBeNull();
   });
 
-  it("refuses a segment that is exactly the hidden slug, and lets it through once the game is public", () => {
-    expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lol")).toBe(404);
-    vi.stubEnv("PUBLIC_GAMES", "valorant,lol");
+  it("lets a name after the API version through even when it is a hidden game's slug", () => {
     expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/lol")).toBeNull();
+    expect(gate("http://localhost/api/valorant/valorant/v1/players/by-name/%6Col/matches")).toBeNull();
+  });
+
+  it("lets the game through once it is public", () => {
+    vi.stubEnv("PUBLIC_GAMES", "valorant,lol");
     expect(gate("http://localhost/api/valorant/lol/v2/teams")).toBeNull();
   });
 
   it("ignores a segment that can't be decoded", () => {
     expect(gate("http://localhost/api/valorant/valorant/v2/teams/by-name/%E0%A4%A")).toBeNull();
+    expect(gate("http://localhost/api/valorant/%E0%A4%A/lol/v2/teams")).toBe(404);
   });
 });
 
