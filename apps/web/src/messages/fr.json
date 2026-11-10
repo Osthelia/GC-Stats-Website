@@ -3835,6 +3835,8 @@
         "addMatchTitle": "Ajouter un match dans {name}",
         "addMatchDescription": "Le match est ajouté à la ronde choisie, même si le groupe a déjà commencé. Les équipes peuvent rester à déterminer et être assignées ensuite depuis la page du match.",
         "addMatchSubmit": "Ajouter",
+        "forceAdd": "Forcer l'ajout",
+        "recordMismatchForceHint": "Certains matchs opposent des équipes avec des bilans différents. Forcer l'ajout les nomme simplement « Round X ».",
         "addMatchSuccess": "Match ajouté.",
         "addMatchEntrantTbd": "À déterminer",
         "participantsButton": "Équipes",

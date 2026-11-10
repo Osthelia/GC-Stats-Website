@@ -3835,6 +3835,8 @@
         "addMatchTitle": "在 {name} 中添加比赛",
         "addMatchDescription": "即使小组已经开始，比赛也会添加到所选轮次。队伍可以暂定为待定，之后在比赛页面分配。",
         "addMatchSubmit": "添加",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "比赛已添加。",
         "addMatchEntrantTbd": "待定",
         "participantsButton": "队伍",

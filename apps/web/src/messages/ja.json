@@ -3835,6 +3835,8 @@
         "addMatchTitle": "{name} に試合を追加",
         "addMatchDescription": "グループが既に開始していても、選択したラウンドに試合が追加されます。チームはTBDのままにして、後で試合ページから割り当てられます。",
         "addMatchSubmit": "追加",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "試合を追加しました。",
         "addMatchEntrantTbd": "TBD",
         "participantsButton": "チーム",

@@ -3835,6 +3835,8 @@
         "addMatchTitle": "Dodaj mecz w {name}",
         "addMatchDescription": "Mecz zostanie dodany do wybranej rundy, nawet jeśli grupa już się rozpoczęła. Drużyny mogą pozostać TBD i zostać przypisane później na stronie meczu.",
         "addMatchSubmit": "Dodaj",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "Mecz dodany.",
         "addMatchEntrantTbd": "TBD",
         "participantsButton": "Drużyny",

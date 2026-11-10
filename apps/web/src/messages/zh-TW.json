@@ -3835,6 +3835,8 @@
         "addMatchTitle": "在 {name} 中新增比賽",
         "addMatchDescription": "即使小組已經開始，比賽也會新增到所選輪次。隊伍可以暫定為待定，之後在比賽頁面分配。",
         "addMatchSubmit": "新增",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "比賽已新增。",
         "addMatchEntrantTbd": "待定",
         "participantsButton": "隊伍",

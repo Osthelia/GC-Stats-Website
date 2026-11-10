@@ -3835,6 +3835,8 @@
         "addMatchTitle": "Magdagdag ng laban sa {name}",
         "addMatchDescription": "Idinadagdag ang laban sa napiling round, kahit nagsimula na ang group. Maaaring manatiling TBD ang mga team at itakda sa huli mula sa pahina ng laban.",
         "addMatchSubmit": "Idagdag",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "Naidagdag ang laban.",
         "addMatchEntrantTbd": "TBD",
         "participantsButton": "Mga koponan",

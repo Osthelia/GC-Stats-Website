@@ -202,7 +202,7 @@ async function resolveSeedSlots(containerIds: number[]): Promise<void> {
 }
 
 export type GroupMatchSlots = { entrantAId: number | null; entrantBId: number | null };
-export type AddGroupMatchInput = GroupMatchSlots & { stageId: number; containerId: number; round: string; bestOf: string; scheduledAt: string | null };
+export type AddGroupMatchInput = GroupMatchSlots & { stageId: number; containerId: number; round: string; bestOf: string; scheduledAt: string | null; force?: boolean };
 export type AddGroupMatchField = "container" | "round" | "bestOf" | "scheduledAt" | "entrantAId" | "entrantBId";
 export type AddGroupMatchFieldErrors = Partial<Record<AddGroupMatchField, string>>;
 export type AddGroupMatchResult = { ok: true } | { ok: false; fieldErrors: AddGroupMatchFieldErrors };
@@ -285,8 +285,11 @@ async function insertGroupMatches(input: Omit<AddGroupMatchInput, "entrantAId" |
     if (isSwiss && !fieldErrors.round) {
       const known = [m.entrantAId, m.entrantBId].filter((id): id is number => id !== null).map((id) => records.get(id) ?? { wins: 0, losses: 0 });
       const [first, second] = known;
-      if (first && second && (first.wins !== second.wins || first.losses !== second.losses)) errs.entrantBId ??= "recordMismatch";
-      else if (first) label = `Round ${round} (${first.wins}-${first.losses})`;
+      if (first && second && (first.wins !== second.wins || first.losses !== second.losses)) {
+        // Forced: the record label would be wrong, so the match is named just "Round X"
+        if (input.force) label = `Round ${round}`;
+        else errs.entrantBId ??= "recordMismatch";
+      } else if (first) label = `Round ${round} (${first.wins}-${first.losses})`;
       else label = round === 1 ? `Round ${round} (0-0)` : `Round ${round}`;
     }
     labels.push(label);

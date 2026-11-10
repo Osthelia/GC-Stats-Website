@@ -3835,6 +3835,8 @@
         "addMatchTitle": "{name}에 경기 추가",
         "addMatchDescription": "그룹이 이미 시작되었더라도 선택한 라운드에 경기가 추가됩니다. 팀은 TBD로 두었다가 나중에 경기 페이지에서 배정할 수 있습니다.",
         "addMatchSubmit": "추가",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "경기가 추가되었습니다.",
         "addMatchEntrantTbd": "TBD",
         "participantsButton": "팀",

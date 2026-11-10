@@ -3835,6 +3835,8 @@
         "addMatchTitle": "{name} içine maç ekle",
         "addMatchDescription": "Maç, grup başlamış olsa bile seçilen tura eklenir. Takımlar TBD kalabilir ve daha sonra maç sayfasından atanabilir.",
         "addMatchSubmit": "Ekle",
+        "forceAdd": "Force add",
+        "recordMismatchForceHint": "Some matches pair teams with different win and loss records. Forcing the add names them just \"Round X\".",
         "addMatchSuccess": "Maç eklendi.",
         "addMatchEntrantTbd": "TBD",
         "participantsButton": "Takımlar",
