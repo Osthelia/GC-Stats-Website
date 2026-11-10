@@ -184,11 +184,10 @@ export async function findGames(input: FindGamesInput): Promise<FindGamesResult>
 
   const range = { startTime: Math.floor(window.start.getTime() / 1000), endTime: Math.floor(window.end.getTime() / 1000), count: SEED_MATCH_COUNT };
   const lists = await Promise.all(seeds.map((puuid) => getLolTourneyMatchIds(cluster, puuid, range)));
-  // A seed Riot refuses (a PUUID issued to another key, say) only drops that account from the search. Any other failure
-  // (throttled, unavailable) may pass, so it is reported with the result instead of silently shrinking the search.
+  
   const failures = lists.flatMap((list) => (list.ok ? [] : [list.error]));
   const seedFailures = failures.filter(mayPass);
-  if (seedFailures[0] && failures.length === lists.length) return { ok: false, error: relayProblem(seedFailures[0]) };
+  if (failures.length === lists.length) return { ok: false, error: relayProblem(seedFailures[0] ?? failures[0]!) };
   const idListOf = new Map(seeds.map((puuid, index) => [puuid, idsOf(lists[index]!)] as const));
   const listsOf = (puuids: string[]) => puuids.flatMap((puuid) => {
     const list = idListOf.get(puuid);
