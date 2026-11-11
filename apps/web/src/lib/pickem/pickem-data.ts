@@ -388,7 +388,7 @@ export async function saveGroupMatchPick(userId: string, stageId: number, matchI
 
 export type LeaderboardEntry = {
   userId: string;
-  username: string | null;
+  name: string | null;
   score: number;
   totalMatchPicks: number;
   correctMatchPicks: number;
@@ -406,7 +406,7 @@ type StageLeaderboardContext = {
   matchPickRows: (typeof pickemMatchPicks.$inferSelect)[];
   standingPickRows: (typeof pickemStandingPicks.$inferSelect)[];
   rankByContainerAndEntrant: Map<number, Map<number, number>>;
-  userNameById: Map<string, string | null>;
+  nameById: Map<string, string | null>;
 };
 
 /** Everything a stage leaderboard needs, loaded once and scored for as many scoring configs as needed. */
@@ -435,10 +435,12 @@ async function loadStageLeaderboardContext(stageId: number): Promise<StageLeader
   const rankByContainerAndEntrant = new Map(rankings.map(([containerId, ranked]) => [containerId, new Map(ranked.map((r) => [Number(r.id), r.rank]))]));
 
   const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];
-  const userNameById = new Map<string, string | null>();
+  const nameById = new Map<string, string | null>();
   if (participantIds.length > 0) {
-    const userRows = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, participantIds));
-    for (const u of userRows) userNameById.set(u.id, u.username);
+    const userRows = await db.select({ id: users.id, username: users.username, name: users.name }).from(users).where(inArray(users.id, participantIds));
+    for (const u of userRows) {
+      nameById.set(u.id, u.name);
+    }
   }
 
   return {
@@ -451,7 +453,7 @@ async function loadStageLeaderboardContext(stageId: number): Promise<StageLeader
     matchPickRows,
     standingPickRows,
     rankByContainerAndEntrant,
-    userNameById,
+    nameById
   };
 }
 
@@ -527,7 +529,7 @@ function scoreStageLeaderboard(ctx: StageLeaderboardContext, config: PhaseScorin
 
     entries.push({
       userId,
-      username: ctx.userNameById.get(userId) ?? null,
+      name: ctx.nameById.get(userId) ?? null,
       score,
       totalMatchPicks: userMatchPicks.length,
       correctMatchPicks,

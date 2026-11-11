@@ -42,7 +42,7 @@ export async function PickemLeaderboardTable({ entries, rewardsByUserId, current
             return (
               <TableRow key={entry.userId} className={entry.userId === currentUserId ? "bg-primary/5" : "odd:bg-muted/20"}>
                 <TableCell className="text-sm text-muted-foreground">{rank}</TableCell>
-                <TableCell className="font-medium">{entry.username ?? t("unknownUser")}</TableCell>
+                <TableCell className="font-medium">{entry.name ?? t("unknownUser")}</TableCell>
                 <TableCell className="text-sm">{entry.score}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
