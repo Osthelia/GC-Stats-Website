@@ -62,6 +62,8 @@ export interface RiotParticipantDto {
   item4: number;
   item5: number;
   item6: number;
+  /** The role quest item (support or jungle quest). Not one of the item slots; 0 or missing when there is none. */
+  roleBoundItem?: number;
   perks: { styles: RiotPerkStyleDto[]; statPerks?: RiotStatPerksDto };
   spell1Id: number; // summoner spell ids, e.g. 4 Flash, 14 Ignite
   spell2Id: number;

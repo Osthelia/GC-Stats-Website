@@ -16,22 +16,36 @@ being benched, moved to substitute, returning, or changing role.
 
 Return:
 - verdict "roster" if the tweet announces or clearly confirms a roster change.
-- verdict "not_roster" ONLY if you can confidently identify what the tweet IS about,
-  using one of the specific topics (match_promo, match_result, highlight, sponsor,
-  merch, giveaway, stream, content, community). If you cannot name a specific topic
-  with confidence, you must not use "not_roster".
-- verdict "unsure" in every other case: ambiguous wording, teasers ("something is
-  coming", "new era"), image/video with little text, unfamiliar format, or anything
-  you do not fully understand.
+- verdict "not_roster" when the tweet is clearly about something else. Pick the topic:
+  match_promo, match_result, highlight, sponsor, merch, giveaway, stream, content,
+  community, wrong_game (another game than VALORANT, or an org wide news about
+  another game) or noise (see below).
+- verdict "unsure" ONLY when the tweet really could be a roster change: it announces
+  or teases a reveal ("announcement tomorrow", "our new recruit"), or names a person
+  in a context of arrival, departure, or role change that you cannot settle.
+
+Be decisive. Most tweets are not roster related, and "unsure" is not a default.
+
+"noise" (not_roster) covers tweets with no roster signal at all:
+- hype and reactions ("LET'S GOOO", "3 more rounds", "same...", "SAY IT"), emoji only,
+  link only, stretched words, memes, jokes, GIFs, mood posts.
+- praise, shout outs, birthday wishes, or a handle tagged in a joke or meme.
+- a matchday or tournament teaser with no person ("See you in Brooklyn", "Tomorrow").
+- an image or video with little text and nothing readable about a player or staff.
 
 Rules:
-- If the tweet mentions a person in a context that could mean arrival, departure or
-  role change, even ambiguously, it cannot be "not_roster".
-- A short text with only an image or video and no clear meaning is "unsure" unless the
-  image itself is clearly readable and conclusive.
-- Farewell and thank-you messages to a person are roster_leave unless clearly about
-  something else (e.g. thanking fans after a match).
-- When hesitating between "not_roster" and "unsure", choose "unsure".
+- A person in a roster context (welcome, farewell, joins, leaves, new coach...) is
+  never "not_roster", even in a short or joking tweet.
+- A person merely tagged, praised or mentioned in a match, reaction or meme is not a
+  roster signal.
+- A lineup or "our roster" listed for one event or match is match_promo, not a change.
+- An end of run message (eliminated, our campaign ends, thanks to the fans) is
+  match_result or community. Thanks addressed to named players after the run can be a
+  farewell: then it is "unsure" unless they are clearly coming back next season.
+- Traveling or arriving at an event is match_promo. An organization expanding into
+  another game, or a roster of another game, is wrong_game.
+- Ambiguous official statements ("Comunicado oficial" naming people or the team) are
+  "unsure". A talent search or open applications is topic "tryouts" with "unsure".
 - Tweets may be in any language.
 - "players": handles or names of the people concerned, empty if none.
 - "reason": one short sentence explaining the decision.`;

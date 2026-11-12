@@ -16,7 +16,8 @@ import { db } from "@gc-stats/db/client";
 import { users, forumMessages, newsAuthors, gameTables } from "@gc-stats/db";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { getEntityLogos, getCurrentLogoUrlsThemed, themedLogoUrls } from "@/lib/admin-logos";
-import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
+import { publicGames } from "@/lib/public-games";
 import { FAN_TEAM_COLUMNS } from "@/lib/fan-team-columns";
 
 export type UserProfileInfo = {
@@ -148,7 +149,7 @@ export async function getUserProfileStats(userId: string): Promise<UserProfileSt
   let hasNewsArticles = false;
   if (authorRow) {
     const found = await Promise.all(
-      GAMES.map(async (game) => {
+      publicGames().map(async (game) => {
         const { news } = gameTables(game);
         const [articleRow] = await db
           .select({ id: news.id })

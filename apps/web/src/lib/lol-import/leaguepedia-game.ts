@@ -13,10 +13,8 @@
 
 import { readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import type { RiotMatchDto, RiotTimelineDto } from "@gc-stats/lol-stats-engine";
+import type { GameLoadMode } from "./fetch-league-game";
 import { fetchLeaguepediaPages, type LeaguepediaError, type LeaguepediaPage } from "@/lib/leaguepedia-client";
-
-/** fetch: the bucket, or Leaguepedia when the game is not there. renew: Leaguepedia, always. reprocess: the bucket only. */
-export type LeaguepediaGameMode = "fetch" | "renew" | "reprocess";
 
 export type LeaguepediaGameError =
   | { kind: "leaguepedia"; error: LeaguepediaError }
@@ -36,7 +34,7 @@ interface Participant {
 
 const DATA_VERSION = "2";
 
-export async function loadLeaguepediaGame(riotMatchId: string, mode: LeaguepediaGameMode): Promise<LeaguepediaGameResult> {
+export async function loadLeaguepediaGame(riotMatchId: string, mode: GameLoadMode): Promise<LeaguepediaGameResult> {
   if (mode !== "renew") {
     let stored: LolImportPayload | null;
     try {

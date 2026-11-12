@@ -123,7 +123,8 @@ function EmptySlot({ size }: { size: number }) {
 }
 
 /**
- * The runes (keystone and secondary, in one column) and the items, with the trinket last. A build always has
+ * The runes (keystone and secondary, in one column) and the items, with the trinket last, and the role quest item
+ * (if the player has one) under the trinket. A build always has
  * ITEM_SLOTS items and a trinket, so the trinket is in the same place on every row. The right side reverses them.
  * With `line` everything is a plain icon in the parent's row.
  */
@@ -135,7 +136,10 @@ function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow;
       ]
     : [];
   const itemIcons = (row.items ?? []).map((item, i) => <LolIcon key={`item-${i}`} kind="item" url={item.iconUrl} name={item.name} size={size} />);
-  const trinket = itemIcons.pop() ?? (row.items ? <EmptySlot key="trinket" size={size} /> : undefined);
+  const trinketIcon = itemIcons.pop() ?? (row.items ? <EmptySlot key="trinket" size={size} /> : undefined);
+  const roleIcon = row.roleItem ? <LolIcon key="role-item" kind="item" url={row.roleItem.iconUrl} name={row.roleItem.name} size={size} /> : undefined;
+  // In a column the role quest item sits under the trinket; in a line there is no under, so it follows the trinket.
+  const trinket = roleIcon && !line ? <div className="flex flex-col items-center">{trinketIcon}{roleIcon}</div> : trinketIcon;
   if (row.items) {
     while (itemIcons.length < ITEM_SLOTS) itemIcons.push(<EmptySlot key={`empty-${itemIcons.length}`} size={size} />);
   }
@@ -145,6 +149,7 @@ function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow;
         {runeIcons}
         {itemIcons}
         {trinket}
+        {roleIcon}
       </>
     );
   }

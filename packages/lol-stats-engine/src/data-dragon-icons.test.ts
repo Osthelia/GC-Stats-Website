@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { missingIcons, summonersRiftItemIds } from "./data-dragon-icons";
+import { missingIcons, roleQuestItemIds, summonersRiftItemIds } from "./data-dragon-icons";
 
 describe("summonersRiftItemIds", () => {
   it("keeps the items bought on Summoner's Rift and drops the ones of other maps", () => {
@@ -24,6 +24,27 @@ describe("summonersRiftItemIds", () => {
 
   it("drops items without a map list and keys that are not ids", () => {
     expect(summonersRiftItemIds({ "1001": {}, "x": { maps: { "11": true } } })).toEqual([]);
+  });
+});
+
+describe("roleQuestItemIds", () => {
+  it("keeps the quest items that no map sells and drops everything else", () => {
+    const items = {
+      "1221": { name: "Top Lane Quest Reward", tags: ["Lane"], maps: { "11": false } },
+      "1203": { name: "Support Quest", tags: ["Lane"], maps: { "11": false } },
+      "1090": { name: "Quest: Top", tags: ["Lane"] },
+      "3865": { name: "World Atlas", tags: ["Lane"], maps: { "11": true } },
+      "3869": { name: "Celestial Opposition", tags: ["Lane"], maps: { "11": true } },
+      "2049": { name: "Guardian's Amulet", tags: ["Lane"], maps: { "11": false } },
+      "9999": { name: "Quest Hat", tags: ["Boots"], maps: { "11": false } },
+      "x": { name: "Quest", tags: ["Lane"] },
+    };
+    expect(roleQuestItemIds(items)).toEqual(["1090", "1203", "1221"]);
+  });
+
+  it("never returns an item that summonersRiftItemIds already has", () => {
+    const items = { "1": { name: "Support Quest", tags: ["Lane"], maps: { "11": true } } };
+    expect(roleQuestItemIds(items)).toEqual([]);
   });
 });
 

@@ -12,7 +12,8 @@ import { and, eq, isNull, isNotNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { newsAuthors, users, gameTables } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
-import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
+import { publicGames } from "@/lib/public-games";
 
 export type DashboardAuthorRow = {
   id: number;
@@ -26,7 +27,7 @@ export type DashboardAuthorRow = {
   organizationCount: number;
 };
 
-/** Article counts add up the articles of every game. */
+/** Article counts add up the articles of every public game. */
 export async function listDashboardAuthors(): Promise<DashboardAuthorRow[]> {
   const [rows, countsPerGame] = await Promise.all([
     db
@@ -35,7 +36,7 @@ export async function listDashboardAuthors(): Promise<DashboardAuthorRow[]> {
       .leftJoin(users, eq(users.id, newsAuthors.userId))
       .orderBy(newsAuthors.name),
     Promise.all(
-      GAMES.map((game) => {
+      publicGames().map((game) => {
         const { news } = gameTables(game);
         return db
           .select({

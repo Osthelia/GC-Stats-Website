@@ -34,6 +34,7 @@ export function SearchablePicker({
   noneLabel,
   searchPlaceholder,
   noResultsLabel,
+  invalid,
 }: {
   id?: string;
   /** The chosen option's id, or null for none. */
@@ -44,6 +45,7 @@ export function SearchablePicker({
   noneLabel: string;
   searchPlaceholder: string;
   noResultsLabel: string;
+  invalid?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -130,6 +132,7 @@ export function SearchablePicker({
         id={id}
         ref={triggerRef}
         type="button"
+        aria-invalid={invalid}
         onClick={() => {
           setActive(0);
           setOpen((o) => !o);
@@ -142,7 +145,7 @@ export function SearchablePicker({
           setActive(startingRow(event.key));
           setOpen(true);
         }}
-        className="flex h-8 w-full items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+        className="flex h-8 w-full min-w-0 items-center justify-between gap-1.5 rounded-lg border border-input bg-transparent px-2.5 py-1 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40"
       >
         <span className={cn("truncate", !label && "text-muted-foreground")}>{label ?? placeholder}</span>
         <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />

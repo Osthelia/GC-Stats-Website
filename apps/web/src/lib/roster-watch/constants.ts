@@ -12,7 +12,7 @@ export const VERDICTS = ["roster", "not_roster", "unsure"] as const;
 export type Verdict = (typeof VERDICTS)[number];
 
 export const ROSTER_TOPICS = ["roster_join", "roster_leave", "roster_bench", "staff_change"] as const;
-export const NON_ROSTER_TOPICS = ["match_promo", "match_result", "highlight", "sponsor", "merch", "giveaway", "stream", "content", "community"] as const;
+export const NON_ROSTER_TOPICS = ["match_promo", "match_result", "highlight", "sponsor", "merch", "giveaway", "stream", "content", "community", "noise", "wrong_game"] as const;
 export const TOPICS = [...ROSTER_TOPICS, "tryouts", ...NON_ROSTER_TOPICS, "other"] as const;
 export type Topic = (typeof TOPICS)[number];
 

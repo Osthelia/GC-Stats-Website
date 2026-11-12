@@ -8,7 +8,7 @@ const NOW = new Date("2026-06-10T12:00:00Z");
 
 function tweet(id: number | string, overrides: Partial<ProviderTweet> = {}): ProviderTweet {
   const numeric = Number(id);
-  return { id: String(id), url: `https://x.com/i/status/${id}`, text: `tweet ${id}`, media: [], tweetedAt: new Date(NOW.getTime() - (1000 - numeric) * 60_000), isRetweet: false, isReply: false, ...overrides };
+  return { id: String(id), url: `https://x.com/i/status/${id}`, text: `tweet number ${id} posted by the team today`, media: [], tweetedAt: new Date(NOW.getTime() - (1000 - numeric) * 60_000), isRetweet: false, isReply: false, ...overrides };
 }
 
 /** Serves tweets newest first in pages of `size`, counting the calls. */
@@ -96,7 +96,7 @@ describe("collectAccountTweets", () => {
 describe("runRosterWatch", () => {
   it("stores excluded and classified tweets, and a re-run neither duplicates nor calls the LLM again", async () => {
     const store = memoryStore();
-    const provider = fakeProvider([tweet(1, { text: "Matchday today" }), tweet(2, { text: "Something is coming" })], 10);
+    const provider = fakeProvider([tweet(1, { text: "Matchday today" }), tweet(2, { text: "Something big is coming to the team soon" })], 10);
     const classify = vi.fn().mockResolvedValue(classification);
 
     const first = await runRosterWatch({ store, provider, classify, now: NOW });

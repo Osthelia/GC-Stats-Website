@@ -64,7 +64,7 @@ export function TournamentLeaguepediaPanel({ tournamentId, status, canManage }: 
           <Input
             id="leaguepedia-base-page"
             value={basePage}
-            onChange={(event) => setBasePage(event.target.value)}
+            onChange={(event) => setBasePage(event.target.value.replaceAll("_", " "))}
             placeholder={t("basePagePlaceholder")}
             disabled={!canManage || isPending}
           />

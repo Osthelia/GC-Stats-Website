@@ -5,9 +5,12 @@
  * teams, draft), the derived timeline stats on those rows, and the raw frame
  * and event rows. The raw match and timeline JSON are not stored here: they
  * go to the LoL imports bucket (PR 6b). A re-import replaces
- * everything the game had before. One transaction, guarded by an advisory lock
- * on the Riot match id, so two imports of the same game never interleave. The
- * series auto-complete runs after the commit, as for Valorant, so a failed
+ * everything the game had before. A series without a date and time gets the
+ * start of the game. One transaction, guarded by an advisory lock on the Riot
+ * match id, so two imports of the same game never interleave. The people of the
+ * game can be linked inside that same transaction (see StoreGameInput), so a
+ * game that fails to store leaves no new people or account links behind. The series
+ * auto-complete runs after the commit, as for Valorant, so a failed
  * auto-complete never rolls back the import.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
@@ -40,6 +43,7 @@ import {
   type RiotTimelineDto,
 } from "@gc-stats/lol-stats-engine";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
+import type { PersonWriteClient } from "@/lib/person-service";
 
 export interface StoreGameInput {
   /** The series (`matches.id`) this game belongs to. */
@@ -53,7 +57,7 @@ export interface StoreGameInput {
   source: "leaguepedia" | "riot" | null;
   entrantIdBySide: Record<LeagueSide, number>;
   /** Person for every Riot puuid in the game. Every participant must be mapped. */
-  personIdByPuuid: Map<string, number>;
+  personIdByPuuid: Map<string, number> | ((tx: PersonWriteClient) => Promise<Map<string, number>>);
   /** The game being edited: its row is replaced in place, so a manual game becomes the Riot game without a second row. */
   replaceGameId?: number | null;
   championNameById: Map<number, string>;
@@ -64,48 +68,51 @@ export interface StoreGameInput {
 }
 
 export async function storeGameData(input: StoreGameInput): Promise<{ gameId: number }> {
-  const { match, timeline, personIdByPuuid } = input;
+  const { match, timeline } = input;
   const apiMatchId = match.metadata.matchId;
-
-  const unmapped = match.info.participants.filter((p) => !personIdByPuuid.has(p.puuid));
-  if (unmapped.length > 0) {
-    throw new Error(`Game ${apiMatchId} has ${unmapped.length} participant(s) without a person; map them before storing`);
-  }
 
   const { matches, games, gamePlayerStats, gameTeamStats, gameDraft, gameFramesRaw, gameEventsRaw } = leagueTablesOf("lol");
 
-  const summaryContext = (gameId: number): LeagueSummaryContext => ({
-    gameId,
-    order: input.order,
-    entrantIdBySide: input.entrantIdBySide,
-    personIdByPuuid,
-    championNameById: input.championNameById,
-    roleByParticipantId: input.roleByParticipantId,
-  });
-
-  const timelineContext = (gameId: number): LeagueTimelineContext => ({
-    gameId,
-    personIdByParticipantId: new Map(match.info.participants.map((p) => [p.participantId, personIdByPuuid.get(p.puuid)!])),
-    sideByParticipantId: new Map(match.info.participants.map((p) => [p.participantId, sideForTeamId(p.teamId)])),
-  });
-
-  const lanePlayers: LanePlayer[] = match.info.participants.map((p) => ({
-    personId: personIdByPuuid.get(p.puuid)!,
-    side: sideForTeamId(p.teamId),
-    role: input.roleByParticipantId.get(p.participantId) ?? null,
-  }));
-
-  // The game row does not need its own id, so its fields come from a first pass.
-  const gameFields = {
-    ...buildGameSummary(match, summaryContext(0)).game,
-    matchId: input.matchId,
-    source: input.source,
-    roleOverrides: input.roleOverrides,
-  };
   const importedFirstPick = { draftFirstPick: firstPickSideOf(match) };
 
   const gameId = await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${apiMatchId}))`);
+
+    // Inside the transaction: new people and account links commit with the game or not at all.
+    const personIdByPuuid = typeof input.personIdByPuuid === "function" ? await input.personIdByPuuid(tx) : input.personIdByPuuid;
+    const unmapped = match.info.participants.filter((p) => !personIdByPuuid.has(p.puuid));
+    if (unmapped.length > 0) {
+      throw new Error(`Game ${apiMatchId} has ${unmapped.length} participant(s) without a person; map them before storing`);
+    }
+
+    const summaryContext = (gameId: number): LeagueSummaryContext => ({
+      gameId,
+      order: input.order,
+      entrantIdBySide: input.entrantIdBySide,
+      personIdByPuuid,
+      championNameById: input.championNameById,
+      roleByParticipantId: input.roleByParticipantId,
+    });
+
+    const timelineContext = (gameId: number): LeagueTimelineContext => ({
+      gameId,
+      personIdByParticipantId: new Map(match.info.participants.map((p) => [p.participantId, personIdByPuuid.get(p.puuid)!])),
+      sideByParticipantId: new Map(match.info.participants.map((p) => [p.participantId, sideForTeamId(p.teamId)])),
+    });
+
+    const lanePlayers: LanePlayer[] = match.info.participants.map((p) => ({
+      personId: personIdByPuuid.get(p.puuid)!,
+      side: sideForTeamId(p.teamId),
+      role: input.roleByParticipantId.get(p.participantId) ?? null,
+    }));
+
+    // The game row does not need its own id, so its fields come from a first pass.
+    const gameFields = {
+      ...buildGameSummary(match, summaryContext(0)).game,
+      matchId: input.matchId,
+      source: input.source,
+      roleOverrides: input.roleOverrides,
+    };
 
     const [byRiotId] = await tx.select({ id: games.id, matchId: games.matchId, draftEditedAt: games.draftEditedAt }).from(games).where(eq(games.apiMatchId, apiMatchId)).limit(1);
     let existing = byRiotId;
@@ -178,6 +185,8 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     // set patch if the match has no patch set, by the name fans use (the game version is Riot's internal number)
     const gamePatch = patchOf(match.info.gameVersion);
     if (gamePatch) await tx.update(matches).set({ patch: publicPatch(gamePatch) }).where(and(eq(matches.id, input.matchId), isNull(matches.patch)));
+    // set the date and time of the match if it has none, to when this game started (a series without a schedule gets the time it was played)
+    await tx.update(matches).set({ scheduledAt: gameFields.startedAt }).where(and(eq(matches.id, input.matchId), isNull(matches.scheduledAt)));
     if (rows.frames.length) await tx.insert(gameFramesRaw).values(rows.frames);
     if (rows.events.length) await tx.insert(gameEventsRaw).values(rows.events);
 

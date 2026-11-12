@@ -80,7 +80,7 @@ export default async function AdminPlayersPage({
       </div>
 
       <AdminSearchSortBar
-        searchPlaceholder={t("searchPlaceholder")}
+        searchPlaceholder={t(game === "lol" ? "searchPlaceholderLol" : "searchPlaceholder")}
         searchSubmitLabel={t("searchSubmit")}
         searchValue={q}
         sort={sort}

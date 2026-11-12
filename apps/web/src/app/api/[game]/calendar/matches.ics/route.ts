@@ -8,9 +8,12 @@
 
 import { calendarResponse } from "@/lib/calendar-ics";
 import { gameFromParams } from "@/lib/game";
+import { publicGameGate } from "@/lib/api/game-gate";
 
 /** iCalendar feed of all matches (recent results and upcoming). */
 export async function GET(request: Request, { params }: { params: Promise<{ game: string }> }) {
   const game = await gameFromParams(params);
+  const hidden = publicGameGate(game);
+  if (hidden) return hidden;
   return calendarResponse(game, request, { kind: "all" });
 }

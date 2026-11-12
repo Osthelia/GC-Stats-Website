@@ -11,11 +11,10 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { gameTables } from "@gc-stats/db";
-import { pairRound, recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@osthelia/bracket-engine";
+import { recomputeBuchholz, type SwissEntrant, type SwissHistoryEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import type { SwissGroupConfig } from "./config-types";
 import type { GameSlug } from "@gc-stats/db/game";
-import { computeMapRecord } from "./standings";
 
 export interface ResolvedGroupMatch {
   containerId: number;
@@ -104,71 +103,15 @@ async function isRoundComplete(game: GameSlug, tx: Tx, containerId: number, roun
   return rows.every((r) => r.status === "completed");
 }
 
-/**
- * Generates and persists the next Swiss round directly (no `bracketEdges`/
- * `matchSeeds` — Swiss pairing is dynamic, per spec). A bye pairing doesn't
- * create a match row at all: it's an immediate win, applied straight to
- * `group_entries` (wins+1, hadBye=true) since there's no opponent to
- * resolve a match against.
- */
-async function generateAndInsertNextSwissRound(game: GameSlug, tx: Tx, containerId: number, config: SwissGroupConfig, currentRound: number): Promise<void> {
-  const { groupEntries, matches } = gameTables(game);
-  const entries = (await getGroupEntries(game, tx, containerId)).filter((e) => e.status === "active");
-  const history = await buildSwissHistory(game, tx, containerId);
-  const mapRecord = config.tiebreakers.includes("map_diff") ? await computeMapRecord(game, tx, [containerId]) : null;
-  const dtos: SwissEntrant[] = entries.map((e) => ({
-    id: String(e.entrantId),
-    seed: e.seed ?? 0,
-    wins: e.wins,
-    losses: e.losses,
-    buchholz: e.buchholz,
-    roundDiff: e.roundDiff,
-    mapDiff: (mapRecord?.get(e.entrantId)?.mapWins ?? 0) - (mapRecord?.get(e.entrantId)?.mapLosses ?? 0),
-    hadBye: e.hadBye,
-    status: e.status,
-  }));
-
-  const result = pairRound({
-    round: currentRound + 1,
-    entrants: dtos,
-    history,
-    config: {
-      qualifyAtWins: config.qualifyAtWins,
-      eliminateAtLosses: config.eliminateAtLosses,
-      maxRounds: config.maxRounds,
-      roundFormat: config.roundFormat,
-      tiebreakers: config.tiebreakers,
-    },
-  });
-
-  for (const pairing of result.pairings) {
-    if (pairing.bId === null) {
-      const entry = entries.find((e) => String(e.entrantId) === pairing.aId)!;
-      await tx.update(groupEntries).set({ wins: entry.wins + 1, hadBye: true }).where(eq(groupEntries.id, entry.id));
-      continue;
-    }
-    await tx.insert(matches).values({
-      containerId,
-      round: result.round,
-      bestOf: result.bestOf,
-      status: "pending",
-      entrantAId: Number(pairing.aId),
-      entrantBId: Number(pairing.bId),
-    });
-  }
-}
-
 export interface SwissAdvanceResult {
-  /** Whether the group is fully decided (no more rounds to generate). */
+  /** Whether the group is fully decided (no active entrant left, or `maxRounds` reached). */
   completed: boolean;
 }
 
 /**
  * Called after a Swiss group's match is committed as completed: updates the
- * record, recomputes Buchholz, checks qualify/eliminate thresholds, and —
- * once every match of the just-finished round is completed — either
- * generates the next round or reports the group is done (all active
- * entrants resolved, or `maxRounds` reached).
+ * record, recomputes Buchholz, checks qualify/eliminate thresholds, and
+ * reports whether the group is done once its current round is finished.
  */
 export async function advanceSwissGroup(game: GameSlug, tx: Tx, config: SwissGroupConfig, m: ResolvedGroupMatch): Promise<SwissAdvanceResult> {
   await bumpRecordAfterMatch(game, tx, m);
@@ -184,7 +127,7 @@ export async function advanceSwissGroup(game: GameSlug, tx: Tx, config: SwissGro
     return { completed: true };
   }
 
-  await generateAndInsertNextSwissRound(game, tx, m.containerId, config, m.round);
+  // Rounds are never generated automatically, admins create them (bulk create).
   return { completed: false };
 }
 

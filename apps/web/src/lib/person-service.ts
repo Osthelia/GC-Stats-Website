@@ -13,7 +13,7 @@
 
 import { eq, or } from "drizzle-orm";
 import type { adminDb } from "@gc-stats/db/client";
-import { sharedPeople, gameTables, valorantTablesOf } from "@gc-stats/db";
+import { sharedPeople, gameTables, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 /** The client or transaction a write runs on. */
@@ -118,6 +118,7 @@ export async function removePersonFromGame(client: PersonWriteClient, game: Game
   await client.delete(liquipediaPersonNames).where(eq(liquipediaPersonNames.personId, personId));
   await client.delete(entrantMembers).where(eq(entrantMembers.personId, personId));
   await client.delete(matchPlayerPovs).where(eq(matchPlayerPovs.personId, personId));
+  if (game === "lol") await client.delete(lolPersonAccounts).where(eq(lolPersonAccounts.personId, personId));
   await client.delete(personProfiles).where(eq(personProfiles.personId, personId));
 
   for (const other of GAMES.filter((g) => g !== game)) {

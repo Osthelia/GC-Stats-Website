@@ -1,7 +1,8 @@
 /**
  * GC-Stats - league-game-dialog
  *
- * Adds or edits one game of a League of Legends series.
+ * Adds or edits one game of a League of Legends series. A game comes from a Leaguepedia list entry, a Riot match id,
+ * or "Find games", which searches the series' tournament-code games on Riot and hands the picked one to the preview.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
@@ -13,7 +14,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, RefreshCwIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,12 +25,16 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { FormField } from "@/components/admin/form-field";
 import { SearchablePicker } from "@/components/admin/searchable-picker";
 import { addLeagueGame, updateLeagueGame, type LeagueGameFieldErrors, type LeagueGameInput } from "@/actions/admin-lol-games";
-import { prepareLeaguepediaGameForMatch, refreshLeaguepediaGameList, type GameRef, type LeaguepediaPreview } from "@/actions/admin-leaguepedia";
+import { prepareGameForMatch, refreshLeaguepediaGameList, type GameRef, type GamePreview } from "@/actions/admin-leaguepedia";
 import { isGameListOnCooldown } from "@/lib/leaguepedia-game-list-cooldown";
-import { LeaguepediaGamePreview } from "@/components/admin/league-game-preview";
+import { GameImportPreview } from "@/components/admin/league-game-preview";
+import { LeagueGameFind, type FindSaved } from "@/components/admin/league-game-find";
+import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
+import { isRelayProblemKind, retryAfterOf } from "@/lib/riot-errors";
+import type { FoundGame } from "@/actions/admin-leaguepedia";
 import type { AdminLeagueGameRow } from "@/lib/admin-matches";
 import type { LeaguepediaGameOption } from "@/lib/admin-leaguepedia";
-import { isTournamentRealmMatchId, riotCluster } from "@gc-stats/lol-stats-engine";
+import { isTournamentRealm, riotCluster } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/use-game";
 
@@ -92,13 +97,17 @@ export function LeagueGameDialog({
   const game = useGame();
   const locale = useLocale();
   const t = useTranslations("admin.tournaments.matches.games");
+  const riotText = useRiotErrorText();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   // Its own transition, so the refresh shows its spinner and the save button does not.
   const [isRefreshing, startRefreshing] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<LeagueGameFieldErrors>({});
   const [form, setForm] = useState<FormState>(emptyState(nextOrder));
-  const [preview, setPreview] = useState<LeaguepediaPreview | null>(null);
+  const [preview, setPreview] = useState<GamePreview | null>(null);
+  // "Find games" is its own view of the dialog. The search is kept here so the preview can come back to it.
+  const [view, setView] = useState<"form" | "find">("form");
+  const [findSaved, setFindSaved] = useState<FindSaved | null>(null);
 
   // Opening the dialog or switching game resets the form. A new game list (after a refresh) must not wipe what was typed.
   useEffect(() => {
@@ -109,6 +118,14 @@ export function LeagueGameDialog({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editing, nextOrder]);
+
+  // Opening the dialog or switching game starts on the form again.
+  useEffect(() => {
+    if (open) {
+      setView("form");
+      setFindSaved(null);
+    }
+  }, [open, editing]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
   const fieldErr = (field: keyof LeagueGameFieldErrors) => (fieldErrors[field] ? t(`fieldError.${fieldErrors[field]}`) : undefined);
@@ -122,8 +139,8 @@ export function LeagueGameDialog({
   const leaguepediaLabel = (g: LeaguepediaGameOption) => {
     const date = g.playedAt ? new Date(g.playedAt).toLocaleDateString(locale) : "";
     // A game already stored is greyed out, except the one being edited, which keeps its own Leaguepedia game.
-    const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "leaguepedia.alreadyStoredHere" : "leaguepedia.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
-    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("leaguepedia.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("leaguepedia.noData"), stored].filter(Boolean).join(" · ");
+    const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "gameImport.alreadyStoredHere" : "gameImport.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
+    return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("gameImport.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("gameImport.noData"), stored].filter(Boolean).join(" · ");
   };
   const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({
     id: g.leaguepediaGameId,
@@ -146,19 +163,19 @@ export function LeagueGameDialog({
     startRefreshing(async () => {
       const result = await refreshLeaguepediaGameList(tournamentId);
       if (!result.ok) {
-        toast.error(t("leaguepedia.refreshError"));
+        toast.error(t("gameImport.refreshError"));
         return;
       }
       router.refresh();
-      toast.success(t("leaguepedia.refreshed", { count: result.games }));
+      toast.success(t("gameImport.refreshed", { count: result.games }));
     });
   }
 
   const refreshBlocked = onCooldown || isRefreshing;
   const refreshGamesButton = (
-    <Button variant="outline" size="sm" aria-disabled={refreshBlocked} onClick={handleRefreshGames} className={cn(refreshBlocked && "cursor-not-allowed opacity-50")}>
-      {isRefreshing ? <Loader2Icon className="animate-spin" /> : null}
-      {isRefreshing ? t("leaguepedia.fetching") : t("leaguepedia.refreshGames")}
+    <Button variant="ghost" size="sm" aria-disabled={refreshBlocked} onClick={handleRefreshGames} className={cn(refreshBlocked && "cursor-not-allowed opacity-50")}>
+      {isRefreshing ? <Loader2Icon className="animate-spin" /> : <RefreshCwIcon />}
+      {isRefreshing ? t("gameImport.fetching") : t("gameImport.refreshGames")}
     </Button>
   );
 
@@ -167,15 +184,18 @@ export function LeagueGameDialog({
     form.leaguepediaGameId === NO_LEAGUEPEDIA ? { source: "riot", riotMatchId: form.apiMatchId } : { source: "leaguepedia", leaguepediaGameId: form.leaguepediaGameId };
 
   // Loads the game for the preview. Nothing is stored yet: the admin checks the players and sides first.
-  function handlePrepare(mode: "fetch" | "renew" | "reprocess") {
+  function handlePrepare(mode: "fetch" | "renew" | "reprocess", ref: GameRef = gameRef) {
     startTransition(async () => {
-      const result = await prepareLeaguepediaGameForMatch(tournamentId, matchId, { game: gameRef, mode, gameId: editing?.id ?? null });
+      const result = await prepareGameForMatch(tournamentId, matchId, { game: ref, mode, gameId: editing?.id ?? null });
       if (!result.ok) {
+        const { error } = result;
         toast.error(
-          t(`leaguepedia.error.${result.error.kind}`, {
-            count: result.error.kind === "missingPlayers" ? result.error.count : 0,
-            ids: result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "",
-          })
+          isRelayProblemKind(error.kind)
+            ? riotText(error.kind, undefined, retryAfterOf(error))
+            : t(`gameImport.error.${error.kind}`, {
+                count: error.kind === "missingPlayers" ? error.count : 0,
+                ids: error.kind === "unknownChampions" ? error.ids.join(", ") : "",
+              })
         );
         return;
       }
@@ -183,15 +203,21 @@ export function LeagueGameDialog({
     });
   }
 
+  // A found game is a Riot match id: it takes the next free game number and opens in the preview like a typed one.
+  function handlePick(found: FoundGame) {
+    setForm((prev) => ({ ...prev, apiMatchId: found.riotMatchId, leaguepediaGameId: NO_LEAGUEPEDIA, order: String(nextOrder) }));
+    handlePrepare("fetch", { source: "riot", riotMatchId: found.riotMatchId });
+  }
+
   if (preview) {
     return (
       <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>{t("leaguepedia.previewTitle")}</DialogTitle>
-            <DialogDescription>{t("leaguepedia.previewDescription")}</DialogDescription>
+            <DialogTitle>{t("gameImport.previewTitle")}</DialogTitle>
+            <DialogDescription>{t("gameImport.previewDescription")}</DialogDescription>
           </DialogHeader>
-          <LeaguepediaGamePreview
+          <GameImportPreview
             tournamentId={tournamentId}
             matchId={matchId}
             gameId={editing?.id ?? null}
@@ -200,6 +226,28 @@ export function LeagueGameDialog({
             preview={preview}
             onBack={() => setPreview(null)}
             onSaved={() => onOpenChange(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (view === "find") {
+    return (
+      <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{t("find.title")}</DialogTitle>
+            <DialogDescription>{t("find.description")}</DialogDescription>
+          </DialogHeader>
+          <LeagueGameFind
+            tournamentId={tournamentId}
+            matchId={matchId}
+            saved={findSaved}
+            busy={isPending}
+            onSearched={setFindSaved}
+            onPick={handlePick}
+            onBack={() => setView("form")}
           />
         </DialogContent>
       </Dialog>
@@ -259,25 +307,27 @@ export function LeagueGameDialog({
             </FormField>
           </div>
 
-          <FormField label={t("leaguepedia.label")} htmlFor="game-leaguepedia">
-            <SearchablePicker
-              id="game-leaguepedia"
-              value={form.leaguepediaGameId === NO_LEAGUEPEDIA ? null : form.leaguepediaGameId}
-              options={leaguepediaOptions}
-              onChange={(id) => selectLeaguepediaGame(id ?? NO_LEAGUEPEDIA)}
-              placeholder={t("leaguepedia.none")}
-              noneLabel={t("leaguepedia.none")}
-              searchPlaceholder={t("leaguepedia.searchPlaceholder")}
-              noResultsLabel={t("leaguepedia.noResults")}
-            />
-          </FormField>
+          {leaguepediaGames.length > 0 && (
+            <FormField label={t("gameImport.label")} htmlFor="game-leaguepedia">
+              <SearchablePicker
+                id="game-leaguepedia"
+                value={form.leaguepediaGameId === NO_LEAGUEPEDIA ? null : form.leaguepediaGameId}
+                options={leaguepediaOptions}
+                onChange={(id) => selectLeaguepediaGame(id ?? NO_LEAGUEPEDIA)}
+                placeholder={t("gameImport.none")}
+                noneLabel={t("gameImport.none")}
+                searchPlaceholder={t("gameImport.searchPlaceholder")}
+                noResultsLabel={t("gameImport.noResults")}
+              />
+            </FormField>
+          )}
 
           {form.leaguepediaGameId === NO_LEAGUEPEDIA && leaguepediaLink.linked && (
             <div>
               {onCooldown ? (
                 <Tooltip>
                   <TooltipTrigger render={refreshGamesButton} />
-                  <TooltipContent>{t("leaguepedia.refreshCooldown")}</TooltipContent>
+                  <TooltipContent>{t("gameImport.refreshCooldown")}</TooltipContent>
                 </Tooltip>
               ) : (
                 refreshGamesButton
@@ -292,18 +342,31 @@ export function LeagueGameDialog({
           {fetchSource !== null && (
             <div className="flex flex-wrap gap-2">
               <Button onClick={() => handlePrepare("fetch")} disabled={isPending}>
-                {isPending ? t("leaguepedia.fetching") : t(fetchSource === "riot" ? "leaguepedia.riotFetch" : "leaguepedia.fetch")}
+                {isPending ? t("gameImport.fetching") : t(fetchSource === "riot" ? "gameImport.riotFetch" : "gameImport.fetch")}
               </Button>
               <Button variant="outline" onClick={() => handlePrepare("renew")} disabled={isPending}>
-                {t("leaguepedia.renew")}
+                {t("gameImport.renew")}
               </Button>
               <Button variant="outline" onClick={() => handlePrepare("reprocess")} disabled={isPending}>
-                {t("leaguepedia.reprocess")}
+                {t("gameImport.reprocess")}
               </Button>
             </div>
           )}
-          {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealmMatchId(form.apiMatchId) && (
-            <p className="text-xs text-muted-foreground">{t("leaguepedia.riotTournamentRealm")}</p>
+          {form.leaguepediaGameId === NO_LEAGUEPEDIA && isTournamentRealm(form.apiMatchId) && (
+            <p className="text-xs text-muted-foreground">{t("gameImport.riotTournamentRealm")}</p>
+          )}
+
+          {!editing && (
+            <div className="flex flex-col gap-1.5 rounded-lg border p-3">
+              <div className="text-sm font-medium">{t("find.openLabel")}</div>
+              <p className="text-xs text-muted-foreground">{t("find.openHint")}</p>
+              <div>
+                <Button size="sm" onClick={() => setView("find")}>
+                  <SearchIcon />
+                  {t("find.open")}
+                </Button>
+              </div>
+            </div>
           )}
 
           <FormField label={t("fieldNote")} htmlFor="game-note" error={fieldErr("note")}>

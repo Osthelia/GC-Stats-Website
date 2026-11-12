@@ -12,6 +12,7 @@
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { DEFAULT_GAME, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { fallbackPublicGame } from "@/lib/public-games";
 
 export const GAME_COOKIE = "gcs-game";
 
@@ -22,8 +23,8 @@ export async function gameFromParams(params: Promise<{ game: string }>): Promise
   return game;
 }
 
-/** Last game the visitor browsed, falling back to the default one. */
+/** Last game the visitor browsed, falling back to the default one. Never a game that is not public yet (stale cookie). */
 export async function getPreferredGame(): Promise<GameSlug> {
   const value = (await cookies()).get(GAME_COOKIE)?.value;
-  return isGameSlug(value) ? value : DEFAULT_GAME;
+  return fallbackPublicGame(isGameSlug(value) ? value : DEFAULT_GAME);
 }

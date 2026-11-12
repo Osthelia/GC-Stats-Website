@@ -80,7 +80,7 @@ export function BulkGroupMatchesDialog({
     setRows((prev) => prev.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   }
 
-  function handleSubmit() {
+  function handleSubmit(force = false) {
     setFieldErrors({});
     setRowErrors({});
     startTransition(async () => {
@@ -90,6 +90,7 @@ export function BulkGroupMatchesDialog({
         round,
         bestOf,
         scheduledAt,
+        force,
         matches: rows.map((r) => ({ entrantAId: r.entrantAId, entrantBId: r.entrantBId })),
       });
       if (!result.ok) {
@@ -105,6 +106,8 @@ export function BulkGroupMatchesDialog({
   }
 
   const err = (field: keyof AddGroupMatchFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
+
+  const recordMismatch = Object.values(rowErrors).some((e) => e.entrantBId === "recordMismatch");
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
@@ -158,13 +161,20 @@ export function BulkGroupMatchesDialog({
               {t("bulkMatchesAddFiveRows")}
             </Button>
           </div>
+
+          {recordMismatch && <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">{t("recordMismatchForceHint")}</p>}
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
             {t("cancel")}
           </Button>
-          <Button onClick={handleSubmit} disabled={isPending || rows.length === 0}>
+          {recordMismatch && (
+            <Button variant="secondary" onClick={() => handleSubmit(true)} disabled={isPending}>
+              {t("forceAdd")}
+            </Button>
+          )}
+          <Button onClick={() => handleSubmit()} disabled={isPending || rows.length === 0}>
             {isPending ? t("saving") : t("bulkMatchesSubmit", { count: rows.length })}
           </Button>
         </DialogFooter>

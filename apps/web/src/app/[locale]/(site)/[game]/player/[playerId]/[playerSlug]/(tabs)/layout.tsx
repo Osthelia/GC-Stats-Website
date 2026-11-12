@@ -27,7 +27,7 @@ export default async function PlayerTabsLayout({ children, params }: { children:
     getPlayerPageInfo(game, id),
     getPlayerAchievements(game, id),
     getPlayerTabAvailability(game, id),
-    getPersonGames(id),
+    getPersonGames(id, true),
     getPlayerCurrentLanes(game, id),
   ]);
   if (!player) return playerNotInGame(game, id);

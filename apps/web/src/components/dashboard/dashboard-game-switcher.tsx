@@ -14,7 +14,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { GAMES, gameHasVeto, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { gameHasVeto, isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { GameSwitchTabs } from "@/components/game-switch-tabs";
 import { usePathname } from "@/i18n/navigation";
 
@@ -40,14 +40,15 @@ function scopeOf(pathname: string): Scope | null {
   };
 }
 
-export function DashboardGameSwitcher() {
+/** `games` are the public games: organisations are not admins, so a game visitors can't see yet is left out. */
+export function DashboardGameSwitcher({ games }: { games: readonly GameSlug[] }) {
   const t = useTranslations("game");
   const scope = scopeOf(usePathname());
   if (!scope) return null;
 
   return (
     <GameSwitchTabs
-      items={GAMES.map((game) => ({ game, href: scope.hrefFor(game), label: t(game) }))}
+      items={games.map((game) => ({ game, href: scope.hrefFor(game), label: t(game) }))}
       current={scope.current}
       groupLabel={t("switcherLabel")}
     />

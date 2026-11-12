@@ -6,7 +6,7 @@
  * the raw pair in the bucket and returns a preview: teams, winner, players, champions, and the entrant
  * sides suggested from the linked players or the team names. Nothing else is written. `commit` takes the
  * admin's choices (which person each unknown Riot account is, and which entrant is blue and red), writes
- * the lol_id links with conflict handling, stores the game through importGame, and remembers which team each
+ * the Riot account links with conflict handling, stores the game through importGame, and remembers which team each
  * Leaguepedia team name stands for, for the side suggestions of later imports. No auth here: the actions
  * check the permission and call these.
  *
@@ -18,35 +18,47 @@
 import { and, eq, inArray, ne, or, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier (Hyperdrive caches `db` for 60s).
 import { adminDb as db } from "@gc-stats/db/client";
-import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonProfiles, lolTeams } from "@gc-stats/db";
+import { lolEntrants, lolGamePlayerStats, lolGames, lolLeaguepediaGames, lolLeaguepediaTeamNames, lolMatches, lolPeople, lolPersonAccounts, lolRosterMembershipLanes, lolRosterMemberships, lolTeams } from "@gc-stats/db";
 import {
+  accountRealm,
   assignedRoles,
   championNameOf,
+  clusterForPlatform,
+  formatRiotId,
   inferRoles,
-  isTournamentRealmMatchId,
+  isTournamentRealm,
   LEAGUE_ROLES,
   missingChampionIds,
+  platformOfMatchId,
+  rankSuggestions,
   resolvePlayerRoles,
   riotCluster,
   sideForTeamId,
+  sortLanes,
+  type SuggestionCandidate,
   validateImport,
   type LeagueSide,
   type RiotMatchDto,
 } from "@gc-stats/lol-stats-engine";
 import { storeLolImport, readLolImport, type LolImportPayload } from "@gc-stats/storage";
 import { getChampionCatalog } from "@/lib/data-dragon-client";
-import { getLolMatch, getLolTimeline, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import { getLolMatch, getLolTimeline, relayProblem, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
+import type { RelayProblem } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
-import { createPerson, ensureGameProfile } from "@/lib/person-service";
+import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { compareTeamNames } from "@/lib/liquipedia-team-match";
+import { accountHolder, insertAccount, isAccountTaken } from "@/lib/lol-accounts";
 import { importGame } from "./import-game";
-import { loadLeaguepediaGame, type LeaguepediaGameMode } from "./leaguepedia-game";
+import { loadLeaguepediaGame } from "./leaguepedia-game";
+
+/** fetch: the bucket, or the source (Leaguepedia, Riot) when the game is not there. renew: the source, always. reprocess: the bucket only. */
+export type GameLoadMode = "fetch" | "renew" | "reprocess";
 
 /** Where a game comes from: a Leaguepedia list entry, or a Riot match id that RiotRelay serves. */
 export type GameRef = { source: "leaguepedia"; leaguepediaGameId: string } | { source: "riot"; riotMatchId: string };
 
-export type LeaguepediaGameError =
+export type GameImportError =
   | { kind: "noData" }
   | { kind: "notInBucket" }
   | { kind: "pageInvalid" }
@@ -58,13 +70,13 @@ export type LeaguepediaGameError =
   | { kind: "roleInvalid" }
   | { kind: "orderTaken"; order: number }
   | { kind: "missingPlayers"; count: number }
-  | { kind: "lolIdConflict"; puuid: string }
+  | { kind: "accountConflict"; puuid: string }
   | { kind: "duplicateAccount" }
   | { kind: "invalidUpload"; errors: string[] }
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
   | { kind: "storageUnavailable" }
-  | { kind: "riotUnavailable" }
+  | RelayProblem
   | { kind: "tournamentRealm" }
   | { kind: "storeFailed"; message: string };
 
@@ -76,18 +88,27 @@ export interface PreviewPlayer {
   kills: number;
   deaths: number;
   assists: number;
-  person: { id: number; handle: string } | null;
+  person: PersonRef | null;
   role: string | null;
-  /** The lobby role (positionAssignedByMatchmaking, or the lobby order for older games), before any override. */
   assignedRole: string | null;
-  /** The role the map positions of the first minutes suggest, null when they cannot tell. Only a check: the preview shows it when it differs. */
+  /** Only a check: the preview shows it when it differs the assignedRole. */
   positionRole: string | null;
+  /** Accounts that could be the player. */
+  suggestions: Record<number, PersonRef[]>;
 }
 
-export interface LeaguepediaPreview {
+export interface PersonRef {
+  id: number;
+  handle: string;
+}
+
+export interface GamePreview {
   game: GameRef;
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   riotMatchId: string;
+  /** The platform the game was played on ("EUW1", or "LOLTMNT01" for the tournament realm) and the realm it makes. */
+  platform: string;
+  realm: "live" | "tournament";
   teams: { blue: string | null; red: string | null };
   winner: LeagueSide | null;
   durationSeconds: number;
@@ -100,13 +121,13 @@ export interface LeaguepediaPreview {
   roleOverrides: Record<string, string | null>;
 }
 
-export type PrepareResult = { ok: true; preview: LeaguepediaPreview } | { ok: false; error: LeaguepediaGameError };
+export type PrepareResult = { ok: true; preview: GamePreview } | { ok: false; error: GameImportError };
 
 export interface PrepareInput {
   tournamentId: number;
   matchId: number;
   game: GameRef;
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   /** The stored game being replaced, null when a new game is created. Its stored players say nothing about the sides. */
   gameId: number | null;
 }
@@ -120,7 +141,7 @@ export interface PlayerMapping {
 
 export interface CommitInput {
   /** How the game was loaded, for the activity log. */
-  mode: LeaguepediaGameMode;
+  mode: GameLoadMode;
   tournamentId: number;
   matchId: number;
   /** The game being edited, null when a new game is created. */
@@ -133,9 +154,9 @@ export interface CommitInput {
   roleOverrides: Record<string, string | null>;
 }
 
-export type CommitResult = { ok: true; gameId: number } | { ok: false; error: LeaguepediaGameError };
+export type CommitResult = { ok: true; gameId: number } | { ok: false; error: GameImportError };
 
-export async function prepareLeaguepediaGame(input: PrepareInput): Promise<PrepareResult> {
+export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
   const resolved = await resolveGame(input.tournamentId, input.game);
   if (!resolved) return { ok: false, error: { kind: "noData" } };
 
@@ -178,6 +199,8 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
     a: match.entrantAId,
     b: match.entrantBId,
   });
+  const platform = gamePlatform(riotMatch, resolved.riotMatchId);
+  const candidates = await suggestionCandidates(new Map([[match.entrantAId, peopleA], [match.entrantBId, peopleB]]), new Set([...linked.values()].map((person) => person.id)));
 
   const winnerTeam = riotMatch.info.teams.find((t) => t.win);
   return {
@@ -186,6 +209,8 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
       game: input.game,
       mode: input.mode,
       riotMatchId: resolved.riotMatchId,
+      platform,
+      realm: accountRealm(platform),
       teams: { blue: resolved.blue, red: resolved.red },
       winner: winnerTeam ? sideForTeamId(winnerTeam.teamId) : null,
       durationSeconds: riotMatch.info.gameDuration,
@@ -196,7 +221,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
         const person = linked.get(p.puuid) ?? null;
         return {
           puuid: p.puuid,
-          riotId: p.riotIdGameName ? `${p.riotIdGameName}${p.riotIdTagline ? `#${p.riotIdTagline}` : ""}` : p.puuid.slice(0, 8),
+          riotId: formatRiotId(p) ?? p.puuid.slice(0, 8),
           side: sideForTeamId(p.teamId),
           role: effective.get(p.participantId) ?? null,
           assignedRole: assigned.get(p.participantId) ?? null,
@@ -206,6 +231,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
           deaths: p.deaths,
           assists: p.assists,
           person: person ? { id: person.id, handle: person.handle } : null,
+          suggestions: person ? {} : suggestionsFor(p, effective.get(p.participantId) ?? null, candidates),
         };
       }),
       roleOverrides,
@@ -213,7 +239,7 @@ export async function prepareLeaguepediaGame(input: PrepareInput): Promise<Prepa
   };
 }
 
-export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitResult> {
+export async function commitGame(input: CommitInput): Promise<CommitResult> {
   if (!Number.isInteger(input.order) || input.order < 1) return { ok: false, error: { kind: "invalidOrder" } };
 
   const resolved = await resolveGame(input.tournamentId, input.game);
@@ -253,15 +279,23 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
   // The same account twice in one save would race its own link, so it is refused before anything is written.
   if (new Set(input.mappings.map((m) => m.puuid)).size !== input.mappings.length) return { ok: false, error: { kind: "duplicateAccount" } };
 
-  for (const puuid of puuids) {
-    const mapping = mappingByPuuid.get(puuid);
-    if (linked.has(puuid) || !mapping) continue;
-    const conflict = await persistMapping(mapping);
-    if (conflict) return { ok: false, error: { kind: "lolIdConflict", puuid: conflict } };
-  }
-
-  const relinked = await linkedPeopleByPuuid(puuids);
-  const personIdByPuuid = new Map([...relinked].map(([puuid, person]) => [puuid, person.id]));
+  const platform = gamePlatform(validation.match, resolved.riotMatchId);
+  const seenAt = new Date(validation.match.info.gameCreation);
+  const linkPeople = async (tx: PersonWriteClient): Promise<Map<string, number>> => {
+    const personIdByPuuid = new Map<string, number>();
+    for (const participant of validation.match.info.participants) {
+      const known = linked.get(participant.puuid);
+      // A mapping for an account that is already linked is ignored: the link is not the admin's to move.
+      if (known) {
+        personIdByPuuid.set(participant.puuid, known.id);
+        continue;
+      }
+      const mapping = mappingByPuuid.get(participant.puuid);
+      if (!mapping) continue;
+      personIdByPuuid.set(participant.puuid, await linkAccount(tx, mapping, { platform, riotId: formatRiotId(participant), seenAt, source: input.game.source }));
+    }
+    return personIdByPuuid;
+  };
   try {
     const stored = await importGame({
       matchId: input.matchId,
@@ -270,16 +304,18 @@ export async function commitLeaguepediaGame(input: CommitInput): Promise<CommitR
       timeline: validation.timeline,
       source: input.game.source,
       entrantIdBySide: input.entrantIdBySide,
-      personIdByPuuid,
+      personIdByPuuid: linkPeople,
       roleOverrides: input.roleOverrides,
       replaceGameId: input.gameId,
       rawStored: true,
     });
     if (!stored.ok) return { ok: false, error: stored.error };
     await rememberLeaguepediaTeamNames({ blue: resolved.blue, red: resolved.red }, match.entrants, input.entrantIdBySide);
+    await refreshAccounts(validation.match, platform, seenAt);
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
-    console.error("[leaguepedia] storing game %d of match #%s failed", input.order, input.matchId, err);
+    if (err instanceof AccountConflictError) return { ok: false, error: { kind: "accountConflict", puuid: err.puuid } };
+    console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);
     return { ok: false, error: { kind: "storeFailed", message: describeStoreError(err) } };
   }
 }
@@ -305,31 +341,90 @@ function isMapped(mapping: PlayerMapping | undefined): boolean {
   return mapping !== undefined && (mapping.personId !== null || (mapping.createHandle ?? "").trim() !== "");
 }
 
+/** What a game says about one Riot account, as it is stored on the account. */
+interface AccountSighting {
+  platform: string;
+  /** "name#tag", null when the game does not carry it. */
+  riotId: string | null;
+  /** When the game started. */
+  seenAt: Date;
+  source: "leaguepedia" | "riot";
+}
+
+/** The platform a game was played on. The match id says it for the tournament realm too ("LOLTMNT01_..."). */
+function gamePlatform(match: RiotMatchDto, riotMatchId: string): string {
+  return platformOfMatchId(riotMatchId) ?? match.info.platformId;
+}
+
+/** An account another person holds: thrown inside the store transaction so it rolls back. */
+class AccountConflictError extends Error {
+  constructor(readonly puuid: string) {
+    super(`Account ${puuid} could not be linked`);
+  }
+}
+
 /**
- * Links one Riot account to a person, or creates the person with it. An account that another person
- * already holds is never moved; the caller gets its puuid back as the conflict.
+ * Links one Riot account to a person, or creates the person with it, and returns the person. A known person with a new
+ * account gets it added next to the ones they have. An account that another person already holds is never moved:
+ * that throws AccountConflictError, which aborts the transaction it runs in. Runs on the store transaction, so the
+ * writes only stay when the game is stored.
  */
-async function persistMapping(mapping: PlayerMapping): Promise<string | null> {
-  const [holder] = await db.select({ personId: lolPersonProfiles.personId }).from(lolPersonProfiles).where(eq(lolPersonProfiles.lolId, mapping.puuid)).limit(1);
+async function linkAccount(tx: PersonWriteClient, mapping: PlayerMapping, sighting: AccountSighting): Promise<number> {
+  const holder = await accountHolder(mapping.puuid, tx);
+  const values = {
+    puuid: mapping.puuid,
+    platform: sighting.platform,
+    cluster: clusterForPlatform(sighting.platform),
+    riotId: sighting.riotId,
+    source: sighting.source,
+    lastSeenAt: sighting.seenAt,
+  };
   try {
     if (mapping.personId !== null) {
-      if (holder?.personId === mapping.personId) return null;
-      if (holder) return mapping.puuid;
-      // A person keeps the account they already have: replacing it would drop that link.
-      const [own] = await db.select({ lolId: lolPersonProfiles.lolId }).from(lolPersonProfiles).where(eq(lolPersonProfiles.personId, mapping.personId)).limit(1);
-      if (own?.lolId) return mapping.puuid;
-      await ensureGameProfile(db, "lol", mapping.personId);
-      await db.update(lolPersonProfiles).set({ lolId: mapping.puuid }).where(eq(lolPersonProfiles.personId, mapping.personId));
-      return null;
+      if (holder) {
+        if (holder.personId === mapping.personId) return holder.personId;
+        throw new AccountConflictError(mapping.puuid);
+      }
+      await ensureGameProfile(tx, "lol", mapping.personId);
+      await insertAccount(tx, { ...values, personId: mapping.personId });
+      return mapping.personId;
     }
-    if (holder) return mapping.puuid;
-    const handle = (mapping.createHandle ?? "").trim();
-    await db.transaction(async (tx) => createPerson(tx, "lol", { handle }, { lolId: mapping.puuid }));
-    return null;
+    if (holder) throw new AccountConflictError(mapping.puuid);
+    const personId = await createPerson(tx, "lol", { handle: (mapping.createHandle ?? "").trim() });
+    await insertAccount(tx, { ...values, personId });
+    return personId;
   } catch (err) {
-    // The unique constraint on lol_id catches a concurrent link of the same account.
-    console.warn(`[leaguepedia] lol_id ${mapping.puuid} could not be linked: ${err instanceof Error ? err.message : String(err)}`);
-    return mapping.puuid;
+    // The primary key on puuid catches a concurrent link of the same account. Anything else (a dropped connection, a
+    // failed check) is a real failure and surfaces as one.
+    if (isAccountTaken(err)) throw new AccountConflictError(mapping.puuid);
+    throw err;
+  }
+}
+
+/**
+ * After a game is stored: the platform, cluster, Riot ID and last seen time of every linked account in it. A game older
+ * than the last one seen only fills what is still empty, so importing an old game does not turn an account back.
+ */
+async function refreshAccounts(match: RiotMatchDto, platform: string, seenAt: Date): Promise<void> {
+  const a = lolPersonAccounts;
+  const cluster = clusterForPlatform(platform);
+  const seen = sql`${seenAt.toISOString()}::timestamptz`;
+  const isNewest = sql`(${a.lastSeenAt} IS NULL OR ${a.lastSeenAt} <= ${seen})`;
+  const participants = sql.join(match.info.participants.map((participant) => sql`(${participant.puuid}::text, ${formatRiotId(participant)}::text)`), sql`, `);
+  try {
+    await db
+      .update(a)
+      .set({
+        platform: sql`CASE WHEN ${isNewest} THEN ${platform}::text ELSE COALESCE(${a.platform}, ${platform}::text) END`,
+        cluster: sql`CASE WHEN ${isNewest} THEN ${cluster}::text ELSE COALESCE(${a.cluster}, ${cluster}::text) END`,
+        riotId: sql`CASE WHEN v.riot_id IS NULL THEN ${a.riotId} WHEN ${isNewest} THEN v.riot_id ELSE COALESCE(${a.riotId}, v.riot_id) END`,
+        lastSeenAt: sql`GREATEST(${a.lastSeenAt}, ${seen})`,
+      })
+      .from(sql`(VALUES ${participants}) AS v(puuid, riot_id)`)
+      .where(sql`${a.puuid} = v.puuid`);
+  } catch (err) {
+    // The game is stored; a stale Riot ID is not worth failing the save for.
+    console.error(`[leaguepedia] could not refresh the accounts of game ${match.metadata.matchId}`, err);
   }
 }
 
@@ -354,8 +449,8 @@ async function resolveGame(tournamentId: number, game: GameRef): Promise<{ riotM
 async function loadGame(
   riotMatchId: string,
   game: GameRef,
-  mode: LeaguepediaGameMode
-): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: LeaguepediaGameError }> {
+  mode: GameLoadMode
+): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: GameImportError }> {
   if (game.source === "riot") {
     const loaded = await loadRiotGame(riotMatchId, mode);
     return loaded.ok ? loaded : { ok: false, error: riotLoadError(loaded.error) };
@@ -364,7 +459,7 @@ async function loadGame(
   return loaded.ok ? loaded : { ok: false, error: loadError(loaded.error) };
 }
 
-function riotLoadError(error: RiotGameError): LeaguepediaGameError {
+function riotLoadError(error: RiotGameError): GameImportError {
   switch (error.kind) {
     case "tournamentRealm":
       return { kind: "tournamentRealm" };
@@ -373,7 +468,7 @@ function riotLoadError(error: RiotGameError): LeaguepediaGameError {
     case "storageUnavailable":
       return { kind: "storageUnavailable" };
     case "riotUnavailable":
-      return error.error.kind === "missingConfig" ? { kind: "missingConfig" } : { kind: "riotUnavailable" };
+      return relayProblem(error.error);
   }
 }
 
@@ -389,7 +484,7 @@ export interface SeriesEntrant {
   leaguepediaName: string | null;
 }
 
-async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
+export async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
   const [match] = await db.select({ entrantAId: lolMatches.entrantAId, entrantBId: lolMatches.entrantBId }).from(lolMatches).where(eq(lolMatches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
   const rows = await db
@@ -420,7 +515,7 @@ async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number;
  * belongs to one tournament, so this covers the earlier games of the series and of the tournament, without a roster.
  * The game being replaced is left out: it may have been saved with the sides swapped, which a re-import is there to fix.
  */
-async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
+export async function knownPeopleOf(entrantId: number, replacedGameId: number | null): Promise<Set<number>> {
   const [roster, played] = await Promise.all([
     getEntrantPersonIds("lol", entrantId),
     db
@@ -430,6 +525,76 @@ async function knownPeopleOf(entrantId: number, replacedGameId: number | null): 
   ]);
   for (const row of played) if (row.personId !== null) roster.add(row.personId);
   return roster;
+}
+
+/**
+ * The people of each team who could be an unlinked participant. A person who already has another account on the realm
+ * stays a candidate (an alt or a new account is the case this exists for); only the people already linked to a
+ * participant of this game are left out, since one person plays one slot.
+ */
+async function suggestionCandidates(knownByEntrant: Map<number, Set<number>>, linkedInGame: ReadonlySet<number>): Promise<Map<number, SuggestionCandidate[]>> {
+  const personIds = [...new Set([...knownByEntrant.values()].flatMap((ids) => [...ids]))];
+  const result = new Map<number, SuggestionCandidate[]>([...knownByEntrant.keys()].map((entrantId) => [entrantId, []]));
+  if (personIds.length === 0) return result;
+
+  const [known, played, saved] = await Promise.all([
+    loadKnownPeople(personIds),
+    db.selectDistinct({ personId: lolGamePlayerStats.personId, lane: lolGamePlayerStats.role }).from(lolGamePlayerStats).where(inArray(lolGamePlayerStats.personId, personIds)),
+    db
+      .select({ personId: lolRosterMemberships.personId, lane: lolRosterMembershipLanes.lane })
+      .from(lolRosterMembershipLanes)
+      .innerJoin(lolRosterMemberships, eq(lolRosterMemberships.id, lolRosterMembershipLanes.rosterMembershipId))
+      .where(inArray(lolRosterMemberships.personId, personIds)),
+  ]);
+
+  const lanesOf = new Map<number, string[]>();
+  for (const row of [...played, ...saved]) if (row.personId !== null && row.lane !== null) lanesOf.set(row.personId, [...(lanesOf.get(row.personId) ?? []), row.lane]);
+  const candidateById = new Map(
+    [...known.values()]
+      .filter((person) => !linkedInGame.has(person.id))
+      .map((person): [number, SuggestionCandidate] => [person.id, { id: person.id, handle: person.handle, aliases: person.aliases, lanes: sortLanes(lanesOf.get(person.id) ?? []) }])
+  );
+  for (const [entrantId, ids] of knownByEntrant) result.set(entrantId, [...ids].flatMap((id) => candidateById.get(id) ?? []));
+  return result;
+}
+
+/** A Riot account of a person, as the search and the suggestions read it. */
+export interface KnownAccount {
+  puuid: string;
+  personId: number;
+  platform: string | null;
+  cluster: string | null;
+  lastSeenAt: Date | null;
+}
+
+export interface KnownPerson {
+  id: number;
+  handle: string;
+  aliases: string[];
+  accounts: KnownAccount[];
+}
+
+/** The people with their names and Riot accounts. A person without a League profile is left out. */
+export async function loadKnownPeople(personIds: readonly number[]): Promise<Map<number, KnownPerson>> {
+  const ids = [...new Set(personIds)];
+  const known = new Map<number, KnownPerson>();
+  if (ids.length === 0) return known;
+  const [people, accounts] = await Promise.all([
+    db.select({ id: lolPeople.id, handle: lolPeople.handle, aliases: lolPeople.aliases }).from(lolPeople).where(inArray(lolPeople.id, ids)),
+    db
+      .select({ puuid: lolPersonAccounts.puuid, personId: lolPersonAccounts.personId, platform: lolPersonAccounts.platform, cluster: lolPersonAccounts.cluster, lastSeenAt: lolPersonAccounts.lastSeenAt })
+      .from(lolPersonAccounts)
+      .where(inArray(lolPersonAccounts.personId, ids)),
+  ]);
+  for (const person of people) known.set(person.id, { id: person.id, handle: person.handle, aliases: Array.isArray(person.aliases) ? (person.aliases as string[]) : [], accounts: [] });
+  for (const account of accounts) known.get(account.personId)?.accounts.push(account);
+  return known;
+}
+
+/** The ranked suggestions of one unlinked participant, per entrant. */
+function suggestionsFor(participant: { riotIdGameName?: string }, lane: string | null, candidates: Map<number, SuggestionCandidate[]>): Record<number, PersonRef[]> {
+  const riotName = participant.riotIdGameName ?? "";
+  return Object.fromEntries([...candidates].map(([entrantId, list]) => [entrantId, rankSuggestions(riotName, lane, list).map(({ id, handle }) => ({ id, handle }))]));
 }
 
 /** Links each side's Leaguepedia team name to the team of the entrant . */
@@ -460,8 +625,12 @@ async function rememberLeaguepediaTeamNames(names: { blue: string | null; red: s
 }
 
 async function linkedPeopleByPuuid(puuids: string[]) {
-  const rows = await db.select({ id: lolPeople.id, handle: lolPeople.handle, lolId: lolPeople.lolId }).from(lolPeople).where(inArray(lolPeople.lolId, puuids));
-  return new Map(rows.flatMap((row) => (row.lolId ? [[row.lolId, { id: row.id, handle: row.handle }] as const] : [])));
+  const rows = await db
+    .select({ puuid: lolPersonAccounts.puuid, id: lolPeople.id, handle: lolPeople.handle })
+    .from(lolPersonAccounts)
+    .innerJoin(lolPeople, eq(lolPeople.id, lolPersonAccounts.personId))
+    .where(inArray(lolPersonAccounts.puuid, puuids));
+  return new Map(rows.map((row) => [row.puuid, { id: row.id, handle: row.handle }] as const));
 }
 
 /**
@@ -545,8 +714,8 @@ type RiotGameResult = { ok: true; payload: LolImportPayload; fromBucket: boolean
  * game is refused before any request, because the public API does not serve it and the request would only use up rate limit.
  * fetch: the bucket, or RiotRelay when the game is not there. renew: RiotRelay, always. reprocess: the bucket only.
  */
-async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Promise<RiotGameResult> {
-  if (isTournamentRealmMatchId(riotMatchId)) return { ok: false, error: { kind: "tournamentRealm" } };
+async function loadRiotGame(riotMatchId: string, mode: GameLoadMode): Promise<RiotGameResult> {
+  if (isTournamentRealm(riotMatchId)) return { ok: false, error: { kind: "tournamentRealm" } };
   const cluster = riotCluster(riotMatchId);
   if (cluster === null) return { ok: false, error: { kind: "riotUnavailable", error: { kind: "invalidRequest" } } };
 
@@ -570,7 +739,7 @@ async function loadRiotGame(riotMatchId: string, mode: LeaguepediaGameMode): Pro
   return { ok: true, payload: { match: match.data, timeline: timeline.data }, fromBucket: false };
 }
 
-function loadError(error: { kind: string; error?: { kind: string } }): LeaguepediaGameError {
+function loadError(error: { kind: string; error?: { kind: string } }): GameImportError {
   switch (error.kind) {
     case "notInBucket":
       return { kind: "notInBucket" };

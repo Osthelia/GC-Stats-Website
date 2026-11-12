@@ -13,11 +13,12 @@
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { sharedPeople, gameTables } from "@gc-stats/db";
-import { GAMES, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { publicGames, isGamePublic } from "@/lib/public-games";
 import { getCurrentUserId } from "@/lib/session";
 import { logActivity } from "@/lib/activity-log";
 
-/** Games the person has no profile in, only answered to the account linked to that person. */
+/** Public games the person has no profile in, only answered to the account linked to that person. */
 export async function getMyMissingGameProfiles(personId: number): Promise<GameSlug[]> {
   const userId = await getCurrentUserId();
   if (!userId || !Number.isInteger(personId) || personId <= 0) return [];
@@ -26,7 +27,7 @@ export async function getMyMissingGameProfiles(personId: number): Promise<GameSl
   if (!owned) return [];
 
   const missing: GameSlug[] = [];
-  for (const game of GAMES) {
+  for (const game of publicGames()) {
     const { personProfiles } = gameTables(game);
     const [profile] = await db.select({ id: personProfiles.personId }).from(personProfiles).where(eq(personProfiles.personId, personId)).limit(1);
     if (!profile) missing.push(game);
@@ -40,7 +41,7 @@ export type AddGameProfileResult = { ok: true } | { ok: false; error: "unauthent
 export async function addMyGameProfile(game: string, personId: number): Promise<AddGameProfileResult> {
   const userId = await getCurrentUserId();
   if (!userId) return { ok: false, error: "unauthenticated" };
-  if (!isGameSlug(game)) return { ok: false, error: "invalidGame" };
+  if (!isGameSlug(game) || !isGamePublic(game)) return { ok: false, error: "invalidGame" };
 
   const [owned] = await db.select({ id: sharedPeople.id, handle: sharedPeople.handle }).from(sharedPeople).where(and(eq(sharedPeople.id, personId), eq(sharedPeople.userId, userId))).limit(1);
   if (!owned) return { ok: false, error: "notYours" };

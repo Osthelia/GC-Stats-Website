@@ -15,9 +15,12 @@ import { searchGlobal } from "@/lib/search";
 import { getClientIp } from "@/lib/client-ip";
 import { checkSearchThrottle } from "@/lib/search-throttle";
 import { gameFromParams } from "@/lib/game";
+import { viewableGameGate } from "@/lib/api/game-gate";
 
 export async function GET(request: Request, { params }: { params: Promise<{ game: string }> }) {
   const game = await gameFromParams(params);
+  const hidden = await viewableGameGate(game);
+  if (hidden) return hidden;
   const ip = getClientIp(request.headers);
   try {
     if (!(await checkSearchThrottle(ip))) {

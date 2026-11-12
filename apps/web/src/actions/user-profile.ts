@@ -19,6 +19,7 @@ import { getCurrentUserId } from "@/lib/session";
 import { diffChanges, logActivity } from "@/lib/activity-log";
 import { validateUserProfileInput, type UserProfileInput, type UserProfileFieldErrors } from "@/lib/user-profile-validation";
 import { GAMES, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { isGamePublic, publicGames } from "@/lib/public-games";
 import { FAN_TEAM_COLUMNS } from "@/lib/fan-team-columns";
 
 async function requireUserId(): Promise<string> {
@@ -82,7 +83,8 @@ export async function getMyProfile(): Promise<MyProfile> {
   ]);
   if (!row) throw new Error("User not found");
 
-  const loaded = await Promise.all(GAMES.map((game) => loadFanTeam(game, fanIds[game].teamId, fanIds[game].teamTag)));
+  // The fan team of a game visitors can't see yet is kept but not shown.
+  const loaded = await Promise.all(GAMES.map((game) => (isGamePublic(game) ? loadFanTeam(game, fanIds[game].teamId, fanIds[game].teamTag) : { team: null, teamTag: "" })));
   const fanTeams = {} as Record<GameSlug, MyFanTeam>;
   GAMES.forEach((game, index) => {
     fanTeams[game] = loaded[index]!;
@@ -117,7 +119,8 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
   // Fan team pick, per game: the team must exist in that game, and a chosen tag must be one of
   // that team's own tags (mirrors V1's ProfileSettingsController::updateFanTeam).
   const picks = {} as Record<GameSlug, { teamId: number | null; teamTag: string | null }>;
-  for (const game of GAMES) {
+  const shown = publicGames();
+  for (const game of shown) {
     const { teams } = gameTables(game);
     const pick = input.fanTeams[game] ?? { teamId: null, teamTag: "" };
     picks[game] = { teamId: null, teamTag: null };
@@ -148,7 +151,7 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
 
   const fanBefore: Record<string, unknown> = {};
   const fanAfter: Record<string, unknown> = {};
-  for (const game of GAMES) {
+  for (const game of shown) {
     fanBefore[`${game}TeamId`] = currentFan[game].teamId;
     fanBefore[`${game}TeamTag`] = currentFan[game].teamTag || null;
     fanAfter[`${game}TeamId`] = picks[game].teamId;
@@ -157,7 +160,7 @@ export async function updateMyProfile(input: UserProfileInput): Promise<UpdatePr
 
   await db.transaction(async (tx) => {
     await tx.update(users).set({ name, username, pronouns, bio: bio || null, socials }).where(eq(users.id, userId));
-    for (const game of GAMES) {
+    for (const game of shown) {
       const columns = FAN_TEAM_COLUMNS[game];
       await tx.execute(sql`update users set ${sql.identifier(columns.team)} = ${picks[game].teamId}, ${sql.identifier(columns.tag)} = ${picks[game].teamTag} where id = ${userId}`);
     }

@@ -15,7 +15,8 @@ import { users, gameTables } from "@gc-stats/db";
 import { slugify } from "@/lib/entity-id";
 import { getStageEditorData } from "@/lib/admin-bracket-editor-data";
 import { computeStageLeaderboard } from "./pickem-data";
-import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
+import { publicGames } from "@/lib/public-games";
 
 /**
  * Rewards are a permanent snapshot of a completed phase's PUBLIC (default
@@ -82,7 +83,7 @@ export type UserRewardRow = { kind: "top1pct" | "top5pct" | "perfect"; tournamen
 
 export async function getUserRewards(userId: string): Promise<UserRewardRow[]> {
   const perGame = await Promise.all(
-    GAMES.map(async (game) => {
+    publicGames().map(async (game) => {
       const { pickemRewards, stages, tournaments } = gameTables(game);
       const rows = await db
         .select({ kind: pickemRewards.kind, awardedAt: pickemRewards.awardedAt, stageName: stages.name, tournamentId: tournaments.id, tournamentName: tournaments.name })

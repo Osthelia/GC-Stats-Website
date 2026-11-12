@@ -23,6 +23,7 @@ import { getLinkedDiscordId, hasJoinedDiscordGuild } from "@/lib/discord-guild-m
 import { sendDiscordNotification, type DiscordButton, type DiscordContainer, type DiscordEmbed } from "@/lib/discord-notifications-client";
 import { buildSanctionEmbed, buildReportEmbed, buildChangeRequestDecisionContainer, buildForumContainer, isForumContainerType } from "@/lib/discord-notification-format";
 import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { isGamePublic } from "@/lib/public-games";
 
 export { EMAIL_CATEGORIES, type EmailCategory, type NotificationType };
 
@@ -74,6 +75,10 @@ export async function notify(input: NotifyInput): Promise<void> {
     })
     .returning({ id: notifications.id });
   if (!row) return;
+
+  // A game visitors can't see yet only gets the in-app notification: nothing leaves the site for it.
+  const game = input.data?.game;
+  if (isGameSlug(game) && !isGamePublic(game)) return;
 
   after(() => maybeSendEmail(input, row.id));
   after(() => maybeSendDiscordDM(input, row.id));
@@ -216,6 +221,8 @@ async function maybeSendDiscordDM(input: NotifyInput, notificationId: number): P
 
 /** The flush side of the change request Discord debounce — rebuilds the container from the current DB state (every item's latest status), never from whichever resolution last fired. Called by the per-minute scheduled job. */
 export async function sendChangeRequestDiscordDecision(game: GameSlug, changeRequestId: number): Promise<boolean> {
+  // The job claims the notice before calling this, so a notice queued while the game was hidden is dropped, not sent at launch.
+  if (!isGamePublic(game)) return false;
   try {
     const t = await getTranslations({ locale: "en" });
     const link = `${APP_BASE_URL}/settings/change-requests/${game}/${changeRequestId}`;

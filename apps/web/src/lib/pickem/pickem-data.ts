@@ -396,7 +396,7 @@ export async function saveGroupMatchPick(game: GameSlug, userId: string, stageId
 
 export type LeaderboardEntry = {
   userId: string;
-  username: string | null;
+  name: string | null;
   score: number;
   totalMatchPicks: number;
   correctMatchPicks: number;
@@ -414,7 +414,7 @@ type StageLeaderboardContext = {
   matchPickRows: (typeof valorantTables.pickemMatchPicks.$inferSelect)[];
   standingPickRows: (typeof valorantTables.pickemStandingPicks.$inferSelect)[];
   rankByContainerAndEntrant: Map<number, Map<number, number>>;
-  userNameById: Map<string, string | null>;
+  nameById: Map<string, string | null>;
 };
 
 /** Everything a stage leaderboard needs, loaded once and scored for as many scoring configs as needed. */
@@ -444,10 +444,12 @@ async function loadStageLeaderboardContext(game: GameSlug, stageId: number): Pro
   const rankByContainerAndEntrant = new Map(rankings.map(([containerId, ranked]) => [containerId, new Map(ranked.map((r) => [Number(r.id), r.rank]))]));
 
   const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];
-  const userNameById = new Map<string, string | null>();
+  const nameById = new Map<string, string | null>();
   if (participantIds.length > 0) {
-    const userRows = await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, participantIds));
-    for (const u of userRows) userNameById.set(u.id, u.username);
+    const userRows = await db.select({ id: users.id, username: users.username, name: users.name }).from(users).where(inArray(users.id, participantIds));
+    for (const u of userRows) {
+      nameById.set(u.id, u.name);
+    }
   }
 
   return {
@@ -460,7 +462,7 @@ async function loadStageLeaderboardContext(game: GameSlug, stageId: number): Pro
     matchPickRows,
     standingPickRows,
     rankByContainerAndEntrant,
-    userNameById,
+    nameById
   };
 }
 
@@ -536,7 +538,7 @@ function scoreStageLeaderboard(ctx: StageLeaderboardContext, config: PhaseScorin
 
     entries.push({
       userId,
-      username: ctx.userNameById.get(userId) ?? null,
+      name: ctx.nameById.get(userId) ?? null,
       score,
       totalMatchPicks: userMatchPicks.length,
       correctMatchPicks,
@@ -585,7 +587,7 @@ export type PickemGroupDetail = {
   ownerUserId: string;
   scoringMode: "default" | "custom";
   joinCode: string;
-  members: { userId: string; username: string | null }[];
+  members: { userId: string; name: string | null }[];
 };
 
 export async function getGroupDetail(game: GameSlug, groupId: number): Promise<PickemGroupDetail | null> {
@@ -594,7 +596,7 @@ export async function getGroupDetail(game: GameSlug, groupId: number): Promise<P
   if (!group) return null;
 
   const memberRows = await db
-    .select({ userId: pickemGroupMembers.userId, username: users.username })
+    .select({ userId: pickemGroupMembers.userId, name: users.name })
     .from(pickemGroupMembers)
     .innerJoin(users, eq(users.id, pickemGroupMembers.userId))
     .where(eq(pickemGroupMembers.groupId, groupId));

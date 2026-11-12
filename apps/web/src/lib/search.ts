@@ -20,7 +20,7 @@ import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo
 import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, defaultTournamentLogo } from "@/lib/default-logos";
+import { defaultTeamLogos, defaultTournamentLogo } from "@/lib/default-logos";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -166,8 +166,8 @@ export async function searchGlobal(game: GameSlug, rawTerm: string, opts: { perT
       subtitle: t.shortName,
       countryCode: t.countryCode,
       secondaryCountryCode: t.secondaryCountryCode,
-      logoUrl: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").dark ?? DEFAULT_TEAM_LOGO_DARK,
-      logoUrlLight: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").light ?? DEFAULT_TEAM_LOGO_LIGHT,
+      logoUrl: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").dark ?? defaultTeamLogos(game).dark,
+      logoUrlLight: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").light ?? defaultTeamLogos(game).light,
       // team/player use a separate id/slug segment pair (/team/{id}/{slug}), same as tournaments.
       path: `team/${t.id}/${slugify(t.name)}`,
       score,

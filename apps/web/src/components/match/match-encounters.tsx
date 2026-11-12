@@ -23,14 +23,14 @@ export async function MatchEncounters({ a, b, teamAWins, teamBWins, items }: { a
       </div>
 
       <div className="flex items-center justify-between gap-3 border-b border-neutral-800 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <TeamBadge tag={a.shortName ?? "?"} logoUrl={a.logoUrl} logoUrlLight={a.logoUrlLight} size={26} />
           <span className="truncate text-[12px] font-bold tracking-tight text-neutral-200 uppercase">{a.shortName ?? a.displayName}</span>
         </div>
-        <span className="font-mono text-[13px] font-black text-[var(--gcs-text)]">
+        <span className="flex-none font-mono text-[13px] font-black whitespace-nowrap text-[var(--gcs-text)]">
           {teamAWins} – {teamBWins}
         </span>
-        <div className="flex min-w-0 items-center justify-end gap-2">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
           <span className="truncate text-[12px] font-bold tracking-tight text-neutral-200 uppercase">{b.shortName ?? b.displayName}</span>
           <TeamBadge tag={b.shortName ?? "?"} logoUrl={b.logoUrl} logoUrlLight={b.logoUrlLight} size={26} />
         </div>

@@ -19,12 +19,14 @@ export type RiotRelayError =
   | { kind: "relayUnauthorized" }
   | { kind: "riotUnauthorized" }
   | { kind: "notFound" }
+  | { kind: "routeUnavailable" }
   | { kind: "rateLimited"; retryAfterSeconds: number | null }
   | { kind: "relayUnreachable" }
   | { kind: "cacheUnavailable" }
   | { kind: "riotError"; status: number }
   | { kind: "networkError" }
   | { kind: "invalidResponse" }
+  | { kind: "roundOverlap" }
   | { kind: "unknown"; status: number };
 
 export type RelayResult<T> = { ok: true; data: T } | { ok: false; error: RiotRelayError };
@@ -48,7 +50,13 @@ async function classifyErrorResponse(response: Response): Promise<RiotRelayError
     return { kind: "riotUnauthorized" };
   }
   if (response.status === 403) return { kind: "riotUnauthorized" };
-  if (response.status === 404) return { kind: "notFound" };
+  // The relay and Riot answer a missing resource with a JSON body. The relay's own unknown-route 404 has none, so an
+  // empty one means the relay does not have the route, not that the account or match is missing.
+  if (response.status === 404) {
+    const body = await response.text().catch(() => "");
+    return body.trim() === "" ? { kind: "routeUnavailable" } : { kind: "notFound" };
+  }
+  if (response.status === 409) return { kind: "roundOverlap" };
   if (response.status === 429) {
     const retryAfter = response.headers.get("retry-after");
     return { kind: "rateLimited", retryAfterSeconds: retryAfter ? Number(retryAfter) || null : null };

@@ -83,7 +83,8 @@ function FanTeamField({ game, state, onChange, error }: { game: GameSlug; state:
   );
 }
 
-export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
+/** `games` are the games whose fan team can be picked: the public ones. */
+export function ProfileSettingsForm({ profile, games }: { profile: MyProfile; games: readonly GameSlug[] }) {
   const t = useTranslations("accountSettings.profile");
   const { update } = useSession();
   const router = useRouter();
@@ -177,7 +178,7 @@ export function ProfileSettingsForm({ profile }: { profile: MyProfile }) {
             {err("pronouns") && <span className="text-[12px] text-[#e08585]">{err("pronouns")}</span>}
           </label>
 
-          {GAMES.map((game) => (
+          {games.map((game) => (
             <FanTeamField key={game} game={game} state={fanTeams[game]} onChange={(state) => setFanTeams((prev) => ({ ...prev, [game]: state }))} error={err(`teamTag.${game}`)} />
           ))}
 

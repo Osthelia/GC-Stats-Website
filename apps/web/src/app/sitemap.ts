@@ -14,7 +14,8 @@ import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
 import { slugify } from "@/lib/entity-id";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import { routing } from "@/i18n/routing";
-import { GAMES, type GameSlug } from "@gc-stats/db/game";
+import type { GameSlug } from "@gc-stats/db/game";
+import { publicGames } from "@/lib/public-games";
 
 /**
  * Native Next.js sitemap served on /sitemap.xml (replaces V1's
@@ -57,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
   const base = siteUrl.endsWith("/") ? siteUrl.slice(0, -1) : siteUrl;
   const localize = (path: string) => localizedEntry(base, path);
-  const perGame = await Promise.all(GAMES.map((game) => gameEntries(game, localize)));
+  const perGame = await Promise.all(publicGames().map((game) => gameEntries(game, localize)));
   return [...STATIC_PATHS.map(({ path, priority, changeFrequency }) => ({ ...localize(path), priority, changeFrequency })), ...perGame.flat()];
 }
 

@@ -17,6 +17,7 @@ import { db } from "@gc-stats/db/client";
 import { gameTables } from "@gc-stats/db";
 import { postDiscordWebhook } from "@/lib/discord-webhook";
 import { logAutoActivation } from "../log-auto-activation";
+import { isGamePublic } from "@/lib/public-games";
 
 const WINDOW_DAYS = 1;
 
@@ -58,7 +59,8 @@ async function activateLiveTournamentsForGame(game: GameSlug): Promise<string> {
     });
     if (!didActivate) continue;
 
-    await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${tournament.name}`);
+    // The tournament is activated either way, the notice is only sent for a public game.
+    if (isGamePublic(game)) await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${tournament.name}`);
     activated++;
   }
 

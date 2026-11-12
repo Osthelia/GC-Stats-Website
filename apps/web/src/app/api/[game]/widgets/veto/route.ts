@@ -20,6 +20,7 @@ import { getVetoMatchHeader } from "@/lib/veto/team-view";
 import { SITE_URL, intParamError, widgetPreflight } from "@/lib/widget-api";
 import { mapSplashUrl } from "@/lib/valorant-maps";
 import { gameFromParams } from "@/lib/game";
+import { publicGameGate } from "@/lib/api/game-gate";
 import { gameHasMaps } from "@gc-stats/db/game";
 
 const HEADERS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Cache-Control": "no-store" };
@@ -39,6 +40,8 @@ export function OPTIONS() {
 
 export async function GET(request: Request, { params }: { params: Promise<{ game: string }> }) {
   const game = await gameFromParams(params);
+  const hidden = publicGameGate(game);
+  if (hidden) return hidden;
   if (!gameHasMaps(game)) return error(404, "Widget not available for this game");
   const { matches, stageContainers, stages, tournaments } = gameTables(game);
   if (!(await checkRateLimitDb(`veto-widget:${getClientIp(request.headers)}`, 10_000, 150))) return error(429, "Too many requests");

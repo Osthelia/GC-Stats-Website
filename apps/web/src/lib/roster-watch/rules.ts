@@ -11,7 +11,8 @@
 import rulesJson from "./rules.json";
 
 export type RuleMedia = "photo" | "video";
-export type ExcludeRule = { id: string; anyKeywords?: string[]; regex?: string; requiresMedia?: RuleMedia };
+/** maxWords: the tweet must have at most that many words (links, mentions and hashtags excluded), alone it is the whole condition. */
+export type ExcludeRule = { id: string; anyKeywords?: string[]; regex?: string; requiresMedia?: RuleMedia; maxWords?: number };
 export type OtherGames = { anyKeywords: string[]; caseSensitiveKeywords: string[] };
 export type RulesConfig = { otherGames?: OtherGames; neverExclude: { anyKeywords: string[] }; exclude: ExcludeRule[] };
 
@@ -60,8 +61,20 @@ export function compileRuleRegex(pattern: string): RegExp | null {
   return compiled;
 }
 
+/** Words made of letters or digits, so emojis, links, mentions and hashtags do not count. */
+export function countWords(text: string): number {
+  return text
+    .replace(/https?:\/\/\S+|[@#][\p{L}\p{N}_]+/gu, " ")
+    .split(/\s+/)
+    .filter((token) => /[\p{L}\p{N}]/u.test(token)).length;
+}
+
 function ruleMatches(rule: ExcludeRule, input: RuleInput): boolean {
   if (rule.requiresMedia && !input.mediaTypes.includes(rule.requiresMedia)) return false;
+  if (rule.maxWords !== undefined) {
+    if (countWords(input.text) > rule.maxWords) return false;
+    if (!rule.anyKeywords && !rule.regex) return true;
+  }
   if (rule.anyKeywords && matchesAnyKeyword(input.text, rule.anyKeywords)) return true;
   if (rule.regex && compileRuleRegex(rule.regex)?.test(input.text)) return true;
   return false;
