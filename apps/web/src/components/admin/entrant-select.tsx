@@ -9,43 +9,37 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchablePicker } from "@/components/admin/searchable-picker";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
 
-const TBD = "tbd";
-
-/** Entrant picker of a tournament, null meaning TBD. */
+/** Entrant picker of a tournament that can be searched by typing, null meaning TBD. */
 export function EntrantSelect({
   id,
   value,
   entrants,
   onChange,
   invalid,
-  className,
 }: {
   id?: string;
   value: number | null;
   entrants: AdminEntrantRow[];
   onChange: (entrantId: number | null) => void;
   invalid?: boolean;
-  className?: string;
 }) {
   const t = useTranslations("admin.tournaments.stages");
-  const items: Record<string, string> = { [TBD]: t("addMatchEntrantTbd"), ...Object.fromEntries(entrants.map((e) => [String(e.id), e.displayName])) };
+  const tEntrants = useTranslations("admin.tournaments.entrants");
 
   return (
-    <Select items={items} value={value === null ? TBD : String(value)} onValueChange={(v) => v && onChange(v === TBD ? null : Number(v))}>
-      <SelectTrigger id={id} className={className ?? "w-full"} aria-invalid={invalid}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={TBD}>{t("addMatchEntrantTbd")}</SelectItem>
-        {entrants.map((e) => (
-          <SelectItem key={e.id} value={String(e.id)}>
-            {e.displayName}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <SearchablePicker
+      id={id}
+      value={value === null ? null : String(value)}
+      options={entrants.map((e) => ({ id: String(e.id), label: e.displayName }))}
+      onChange={(entrantId) => onChange(entrantId === null ? null : Number(entrantId))}
+      placeholder={t("addMatchEntrantTbd")}
+      noneLabel={t("addMatchEntrantTbd")}
+      searchPlaceholder={tEntrants("fieldTeamSearchPlaceholder")}
+      noResultsLabel={tEntrants("fieldTeamNoResults")}
+      invalid={invalid}
+    />
   );
 }
