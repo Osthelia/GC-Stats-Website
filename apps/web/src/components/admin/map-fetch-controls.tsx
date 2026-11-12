@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
@@ -56,6 +57,8 @@ function relayErrorKey(error: RiotRelayError): string {
       return "error.networkError";
     case "invalidResponse":
       return "error.invalidResponse";
+    case "roundOverlap":
+      return "error.roundOverlap";
     default:
       return "error.unknown";
   }
@@ -198,9 +201,9 @@ function TeamColorAmbiguousDialog({
   );
 }
 
-type SegmentInput = { matchId: string; startRound: string; endRound: string };
+type SegmentInput = { matchId: string; startRound: string; endRound: string; toLastRound: boolean; renumber: boolean };
 function emptySegment(): SegmentInput {
-  return { matchId: "", startRound: "", endRound: "" };
+  return { matchId: "", startRound: "", endRound: "", toLastRound: false, renumber: false };
 }
 
 function MergeSegmentsDialog({
@@ -279,25 +282,39 @@ function MergeSegmentsDialog({
 
           <div className="flex flex-col gap-3">
             {segments.map((segment, index) => (
-              <div key={index} className="grid grid-cols-[1fr_6rem_6rem_auto] items-end gap-2">
-                <FormField label={t("mergeSegmentMatchId")} htmlFor={`merge-matchid-${index}`} required>
-                  <Input id={`merge-matchid-${index}`} className="font-mono text-xs" value={segment.matchId} onChange={(e) => updateSegment(index, { matchId: e.target.value })} />
-                </FormField>
-                <FormField label={t("mergeSegmentStartRound")} htmlFor={`merge-start-${index}`} required>
-                  <Input id={`merge-start-${index}`} type="number" min={1} value={segment.startRound} onChange={(e) => updateSegment(index, { startRound: e.target.value })} />
-                </FormField>
-                <FormField label={t("mergeSegmentEndRound")} htmlFor={`merge-end-${index}`} required>
-                  <Input id={`merge-end-${index}`} type="number" min={1} value={segment.endRound} onChange={(e) => updateSegment(index, { endRound: e.target.value })} />
-                </FormField>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={segments.length <= 2}
-                  onClick={() => setSegments((prev) => prev.filter((_, i) => i !== index))}
-                >
-                  {t("mergeRemoveSegment")}
-                </Button>
+              <div key={index} className="flex flex-col gap-2 rounded-lg border p-3">
+                <div className="grid grid-cols-[1fr_6rem_6rem_auto] items-end gap-2">
+                  <FormField label={t("mergeSegmentMatchId")} htmlFor={`merge-matchid-${index}`} required>
+                    <Input id={`merge-matchid-${index}`} className="font-mono text-xs" value={segment.matchId} onChange={(e) => updateSegment(index, { matchId: e.target.value })} />
+                  </FormField>
+                  <FormField label={t("mergeSegmentStartRound")} htmlFor={`merge-start-${index}`} required>
+                    <Input id={`merge-start-${index}`} type="number" min={1} value={segment.startRound} onChange={(e) => updateSegment(index, { startRound: e.target.value })} />
+                  </FormField>
+                  <FormField label={t("mergeSegmentEndRound")} htmlFor={`merge-end-${index}`} required>
+                    <Input id={`merge-end-${index}`} type="number" min={1} disabled={segment.toLastRound} value={segment.toLastRound ? "" : segment.endRound} onChange={(e) => updateSegment(index, { endRound: e.target.value })} />
+                  </FormField>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={segments.length <= 2}
+                    onClick={() => setSegments((prev) => prev.filter((_, i) => i !== index))}
+                  >
+                    {t("mergeRemoveSegment")}
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  <label className="flex cursor-pointer items-center gap-2 text-xs">
+                    <Checkbox checked={segment.toLastRound} onCheckedChange={(checked) => updateSegment(index, { toLastRound: checked === true })} />
+                    {t("mergeToLastRound")}
+                  </label>
+                  {index > 0 && (
+                    <label className="flex cursor-pointer items-center gap-2 text-xs">
+                      <Checkbox checked={segment.renumber} onCheckedChange={(checked) => updateSegment(index, { renumber: checked === true })} />
+                      {t("mergeRenumber")}
+                    </label>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -26,6 +26,7 @@ export type RiotRelayError =
   | { kind: "riotError"; status: number }
   | { kind: "networkError" }
   | { kind: "invalidResponse" }
+  | { kind: "roundOverlap" }
   | { kind: "unknown"; status: number };
 
 export type RelayResult<T> = { ok: true; data: T } | { ok: false; error: RiotRelayError };
@@ -55,6 +56,7 @@ async function classifyErrorResponse(response: Response): Promise<RiotRelayError
     const body = await response.text().catch(() => "");
     return body.trim() === "" ? { kind: "routeUnavailable" } : { kind: "notFound" };
   }
+  if (response.status === 409) return { kind: "roundOverlap" };
   if (response.status === 429) {
     const retryAfter = response.headers.get("retry-after");
     return { kind: "rateLimited", retryAfterSeconds: retryAfter ? Number(retryAfter) || null : null };

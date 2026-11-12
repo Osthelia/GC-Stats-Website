@@ -63,9 +63,8 @@ export default async function PickemGroupDetailPage({ params }: { params: Promis
   for (const entries of leaderboardByStage.values()) {
     for (const entry of entries) totalScoreByUserId.set(entry.userId, (totalScoreByUserId.get(entry.userId) ?? 0) + entry.score);
   }
-  const usernameByUserId = new Map(group.members.map((m) => [m.userId, m.username]));
   const overallLeaderboard = group.members
-    .map((m) => ({ userId: m.userId, username: usernameByUserId.get(m.userId) ?? null, score: totalScoreByUserId.get(m.userId) ?? 0, totalMatchPicks: 0, correctMatchPicks: 0, totalStandingPicks: 0, correctStandingPicks: 0 }))
+    .map((m) => ({ userId: m.userId, name: m.name, score: totalScoreByUserId.get(m.userId) ?? 0, totalMatchPicks: 0, correctMatchPicks: 0, totalStandingPicks: 0, correctStandingPicks: 0 }))
     .sort((a, b) => b.score - a.score);
 
   return (

@@ -57,10 +57,10 @@ export function AddGroupMatchDialog({
     }
   }, [open]);
 
-  function handleSubmit() {
+  function handleSubmit(force = false) {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addGroupMatch(game, { stageId, containerId: container.id, round, bestOf, scheduledAt, entrantAId, entrantBId });
+      const result = await addGroupMatch(game, { stageId, containerId: container.id, round, bestOf, scheduledAt, entrantAId, entrantBId, force });
       if (!result.ok) {
         if (result.fieldErrors.container) toast.error(t(`error.${result.fieldErrors.container}`));
         setFieldErrors(result.fieldErrors);
@@ -73,6 +73,8 @@ export function AddGroupMatchDialog({
   }
 
   const err = (field: keyof AddGroupMatchFieldErrors) => (fieldErrors[field] ? t(`error.${fieldErrors[field]}`) : undefined);
+
+  const recordMismatch = fieldErrors.entrantBId === "recordMismatch";
 
   return (
     <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
@@ -100,13 +102,19 @@ export function AddGroupMatchDialog({
           <FormField label={t("fieldMatchEntrantB")} htmlFor="gm-entrant-b" error={err("entrantBId")}>
             <EntrantSelect id="gm-entrant-b" value={entrantBId} entrants={entrants} onChange={setEntrantBId} invalid={!!fieldErrors.entrantBId} />
           </FormField>
+          {recordMismatch && <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">{t("recordMismatchForceHint")}</p>}
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
             {t("cancel")}
           </Button>
-          <Button onClick={handleSubmit} disabled={isPending}>
+          {recordMismatch && (
+            <Button variant="secondary" onClick={() => handleSubmit(true)} disabled={isPending}>
+              {t("forceAdd")}
+            </Button>
+          )}
+          <Button onClick={() => handleSubmit()} disabled={isPending}>
             {isPending ? t("saving") : t("addMatchSubmit")}
           </Button>
         </DialogFooter>

@@ -136,7 +136,7 @@ export async function renewMapData(game: GameSlug, mapId: number, apiMatchId?: s
   return result.ok ? { ok: true } : { ok: false, error: result.error };
 }
 
-export type MergeSegmentInput = { matchId: string; startRound: string; endRound: string };
+export type MergeSegmentInput = { matchId: string; startRound: string; endRound: string; toLastRound: boolean; renumber: boolean };
 export type MergeSegmentsInput = { region: RiotRelayRegion; segments: MergeSegmentInput[] };
 export type MergeSegmentsFieldErrors = Partial<Record<"region" | "segments", string>>;
 export type MergeSegmentsResult = { ok: true; apiMatchId: string } | { ok: false; fieldErrors?: MergeSegmentsFieldErrors; error?: RiotRelayError };
@@ -153,7 +153,7 @@ export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput)
   else {
     for (const segment of input.segments) {
       const start = Number(segment.startRound);
-      const end = Number(segment.endRound);
+      const end = segment.toLastRound ? start : Number(segment.endRound);
       if (!MATCH_ID_RE.test(segment.matchId.trim())) {
         fieldErrors.segments = "invalidMatchId";
         break;
@@ -171,7 +171,12 @@ export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput)
 
   const result = await mergeMatch(
     input.region,
-    input.segments.map((s) => ({ matchId: s.matchId.trim(), startRound: Number(s.startRound), endRound: Number(s.endRound) }))
+    input.segments.map((s, index) => ({
+      matchId: s.matchId.trim(),
+      startRound: Number(s.startRound),
+      endRound: s.toLastRound ? null : Number(s.endRound),
+      renumber: index > 0 && s.renumber,
+    }))
   );
   if (!result.ok) return { ok: false, error: result.error };
 
