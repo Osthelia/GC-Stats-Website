@@ -70,17 +70,17 @@ export function pickSeedAccounts<T extends SeedAccountInput>(accounts: readonly 
     .slice(0, limit);
 }
 
-/** Merge multiple sets of matchIds into on list. Ids that appear more often come first */
+/** Merge multiple lists of matchIds into one list. Ids that appear in more lists come first */
 export function mergeMatchIds(lists: readonly (readonly string[])[], limit = MAX_CANDIDATES): string[] {
   const inLists = new Map<string, number>();
   const longest = Math.max(0, ...lists.map((list) => list.length));
-  for (let i = 0; i < longest; i++) {
+  for (let position = 0; position < longest; position++) {
     for (const list of lists) {
-      const id = list[i];
-      if (id !== undefined) inLists.set(id, (inLists.get(id) ?? 0) + (list.indexOf(id) === i ? 1 : 0));
+      const id = list[position];
+      if (id !== undefined) inLists.set(id, (inLists.get(id) ?? 0) + 1);
     }
   }
-  // Array.sort is stable: equal counts keep the round-robin order the map was filled in.
+  
   return [...inLists.keys()].sort((a, b) => inLists.get(b)! - inLists.get(a)!).slice(0, limit);
 }
 
