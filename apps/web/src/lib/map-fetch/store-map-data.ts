@@ -14,7 +14,7 @@
 import { eq, sql } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 import { computeAliveTimeline, computeMapAggregates, computeRoundSides, rateMap, ratingInputFromRiot, type RiotMatchDto } from "@gc-stats/map-stats-engine";
 import { resolveAgentName, resolveEquipName, resolveMapName } from "@/lib/riot-content-client";
 import { getActiveRatingModel, RATING_LOCK_KEY } from "@/lib/rating/active-model";
@@ -49,6 +49,7 @@ async function rateIncomingMap(tx: Tx, match: RiotMatchDto, ctx: RawMapperContex
  * never interleaves across two transactions.
  */
 export async function storeMapData(match: RiotMatchDto, ctx: RawMapperContext): Promise<void> {
+  const { maps, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundAliveStatesRaw, mapRoundPlayerPositionsRaw, mapRoundPlayerLoadoutsRaw, mapPlayerStats, mapTeamRoundSummary } = valorantTables;
   await db.transaction(async (tx) => {
     await tx.execute(sql`select pg_advisory_xact_lock(${ctx.mapId})`);
     // Shared with other ingestions, exclusive for a rating recompute: the model read below is never replaced mid-write.

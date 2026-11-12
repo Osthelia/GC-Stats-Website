@@ -14,7 +14,7 @@
 
 import { eq, inArray, lt, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stages, stageContainers, matches, matchSeeds, bracketEdges, groupEntries, entrants, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { nextContainerDisplayOrder } from "@/lib/bracket/container-order";
 import { requireActorPermission } from "@/lib/rbac";
 import {
@@ -27,10 +27,11 @@ import {
   type BracketGraph,
 } from "@osthelia/bracket-engine";
 import { persistGeneratedGraph } from "@/lib/bracket/repository";
-import { parseGroupConfig } from "@/lib/bracket/config-types";
+import { defaultRoundRobinTiebreakers, parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -49,7 +50,8 @@ export type GenerateTemplateInput = {
 
 export type GenerateTemplateResult = { ok: true } | { ok: false; error: string };
 
-export async function generateBracketFromTemplate(input: GenerateTemplateInput): Promise<GenerateTemplateResult> {
+export async function generateBracketFromTemplate(game: GameSlug, input: GenerateTemplateInput): Promise<GenerateTemplateResult> {
+  const { stages, stageContainers, matches } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
@@ -74,7 +76,7 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
   // the id map to the generator/repository — same shared function whether
   // this graph comes from a template or (eventually) the visual editor.
   async function makeContainer(name: string, containerType: "bracket" | "group" | "set" = "bracket", config: Record<string, unknown> = {}, parentId: number | null = null) {
-    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, parentId, config, displayOrder: nextContainerDisplayOrder(input.stageId) }).returning({ id: stageContainers.id });
+    const [row] = await db.insert(stageContainers).values({ stageId: input.stageId, name, containerType, parentId, config, displayOrder: nextContainerDisplayOrder(game, input.stageId) }).returning({ id: stageContainers.id });
     if (!row) throw new Error("container insert failed");
     return row.id;
   }
@@ -127,7 +129,7 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
     // page and made it 500 (found 2026-09-12 auditing why real migrated
     // tournaments' pages were crashing; this is the still-live code path,
     // not just old migrated data — see SUIVI.md).
-    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: ["round_diff", "head_to_head", "seed"], pointsConfig: null });
+    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: defaultRoundRobinTiebreakers(game, false), pointsConfig: null });
     containerIdMap = { group: groupId };
     graph = generateRoundRobin({ containerId: "group", entrantCount, bestOf: input.bestOf, double: input.format === "round_robin_double" });
   } else {
@@ -174,8 +176,8 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
     })),
   };
 
-  await persistGeneratedGraph(containerIdMap, graphWithRealSeeds);
-  await resolveSeedSlots(Object.values(containerIdMap));
+  await persistGeneratedGraph(game, containerIdMap, graphWithRealSeeds);
+  await resolveSeedSlots(game, Object.values(containerIdMap));
 
   return { ok: true };
 }
@@ -189,7 +191,8 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
  * editor's save, both of which end with a freshly persisted graph in this
  * same shape.
  */
-async function resolveSeedSlots(containerIds: number[]): Promise<void> {
+async function resolveSeedSlots(game: GameSlug, containerIds: number[]): Promise<void> {
+  const { matches, matchSeeds } = gameTables(game);
   const insertedMatches = await db.select().from(matches).where(inArray(matches.containerId, containerIds));
   const insertedSeeds = await db.select().from(matchSeeds).where(inArray(matchSeeds.matchId, insertedMatches.map((m) => m.id)));
   for (const seedRow of insertedSeeds) {
@@ -214,7 +217,8 @@ export type AddGroupMatchesResult =
   | { ok: false; fieldErrors: AddGroupMatchFieldErrors; rowErrors: Record<number, Pick<AddGroupMatchFieldErrors, "entrantAId" | "entrantBId">> };
 
 /** Win/loss record of every entrant over the completed matches of the container played before `round`. */
-async function recordsBeforeRound(containerId: number, round: number): Promise<Map<number, { wins: number; losses: number }>> {
+async function recordsBeforeRound(game: GameSlug, containerId: number, round: number): Promise<Map<number, { wins: number; losses: number }>> {
+  const { matches } = gameTables(game);
   const played = await db
     .select({ a: matches.entrantAId, b: matches.entrantBId, winnerId: matches.winnerId })
     .from(matches)
@@ -235,7 +239,8 @@ async function recordsBeforeRound(containerId: number, round: number): Promise<M
 }
 
 /** Validates and inserts matches that share a round, best of and date in a group container. A Swiss match is named "Round X (W-L)" from the record of its teams. */
-async function insertGroupMatches(input: Omit<AddGroupMatchInput, "entrantAId" | "entrantBId"> & { matches: GroupMatchSlots[] }): Promise<AddGroupMatchesResult> {
+async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput, "entrantAId" | "entrantBId"> & { matches: GroupMatchSlots[] }): Promise<AddGroupMatchesResult> {
+  const { stages, stageContainers, matches, entrants } = gameTables(game);
   const fail = (fieldErrors: AddGroupMatchFieldErrors, rowErrors: Record<number, Pick<AddGroupMatchFieldErrors, "entrantAId" | "entrantBId">> = {}): AddGroupMatchesResult => ({ ok: false, fieldErrors, rowErrors });
 
   const [row] = await db
@@ -271,7 +276,7 @@ async function insertGroupMatches(input: Omit<AddGroupMatchInput, "entrantAId" |
 
   const tournamentEntrants = await db.select({ id: entrants.id }).from(entrants).where(eq(entrants.tournamentId, row.tournamentId));
   const validIds = new Set(tournamentEntrants.map((e) => e.id));
-  const records = isSwiss && !fieldErrors.round ? await recordsBeforeRound(input.containerId, round) : new Map<number, { wins: number; losses: number }>();
+  const records = isSwiss && !fieldErrors.round ? await recordsBeforeRound(game, input.containerId, round) : new Map<number, { wins: number; losses: number }>();
 
   const rowErrors: Record<number, Pick<AddGroupMatchFieldErrors, "entrantAId" | "entrantBId">> = {};
   const labels: (string | null)[] = [];
@@ -305,18 +310,18 @@ async function insertGroupMatches(input: Omit<AddGroupMatchInput, "entrantAId" |
 }
 
 /** Adds a single match to a group, allowed even once the group has started (insert only, nothing existing is touched). */
-export async function addGroupMatch(input: AddGroupMatchInput): Promise<AddGroupMatchResult> {
+export async function addGroupMatch(game: GameSlug, input: AddGroupMatchInput): Promise<AddGroupMatchResult> {
   await requireTournamentsActor();
   const { entrantAId, entrantBId, ...shared } = input;
-  const result = await insertGroupMatches({ ...shared, matches: [{ entrantAId, entrantBId }] });
+  const result = await insertGroupMatches(game, { ...shared, matches: [{ entrantAId, entrantBId }] });
   if (result.ok) return { ok: true };
   return { ok: false, fieldErrors: { ...result.fieldErrors, ...result.rowErrors[0] } };
 }
 
 /** Adds many matches at once that inherit the same round, best of and date. */
-export async function addGroupMatches(input: AddGroupMatchesInput): Promise<AddGroupMatchesResult> {
+export async function addGroupMatches(game: GameSlug, input: AddGroupMatchesInput): Promise<AddGroupMatchesResult> {
   await requireTournamentsActor();
-  return insertGroupMatches(input);
+  return insertGroupMatches(game, input);
 }
 
 export type DeleteBracketMatchesResult = { ok: true } | { ok: false; error: string };
@@ -324,7 +329,8 @@ export type DeleteBracketMatchesResult = { ok: true } | { ok: false; error: stri
 /** Wipes generated matches/edges/seeds for a container so it can be
  *  regenerated — only while the container has no completed matches
  *  (cascades from `matches` handle edges/seeds). */
-export async function resetContainer(containerId: number, stageId: number): Promise<DeleteBracketMatchesResult> {
+export async function resetContainer(game: GameSlug, containerId: number, stageId: number): Promise<DeleteBracketMatchesResult> {
+  const { stageContainers, matches, groupEntries } = gameTables(game);
   await requireTournamentsActor();
 
   const [container] = await db.select({ id: stageContainers.id }).from(stageContainers).where(and(eq(stageContainers.id, containerId), eq(stageContainers.stageId, stageId))).limit(1);
@@ -377,7 +383,8 @@ export type SaveManualGraphInput = { stageId: number; containerIds: number[]; ma
 export type SaveManualGraphResult = { ok: true } | { ok: false; error: string; validationErrors?: string[] };
 
 /** Every entrant used by a slot must belong to the stage's tournament. */
-async function findEntrantMismatch(input: SaveManualGraphInput, tournamentId: number): Promise<"entrantMismatch" | null> {
+async function findEntrantMismatch(game: GameSlug, input: SaveManualGraphInput, tournamentId: number): Promise<"entrantMismatch" | null> {
+  const { entrants } = gameTables(game);
   const entrantIds = new Set<number>();
   for (const m of input.matches) {
     if (m.slotA.type === "entrant") entrantIds.add(m.slotA.entrantId);
@@ -419,7 +426,8 @@ function buildSaveGraph(input: SaveManualGraphInput): BracketGraph {
  * as drawn. Only allowed while the stage is pending and none of its matches
  * is live or completed: the full replace would wipe their results and stats.
  */
-export async function saveManualGraph(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+export async function saveManualGraph(game: GameSlug, input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+  const { stages, stageContainers, matches } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
@@ -442,7 +450,7 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
     if (playedMatch) return { ok: false, error: "bracketStarted" };
   }
 
-  const entrantError = await findEntrantMismatch(input, stage.tournamentId);
+  const entrantError = await findEntrantMismatch(game, input, stage.tournamentId);
   if (entrantError) return { ok: false, error: entrantError };
 
   const graph = buildSaveGraph(input);
@@ -453,8 +461,8 @@ export async function saveManualGraph(input: SaveManualGraphInput): Promise<Save
   const containerIdMap = Object.fromEntries(input.containerIds.map((id) => [String(id), id]));
 
   await db.delete(matches).where(inArray(matches.containerId, input.containerIds));
-  const { matchIdMap } = await persistGeneratedGraph(containerIdMap, graph);
-  await resolveSeedSlots(input.containerIds);
+  const { matchIdMap } = await persistGeneratedGraph(game, containerIdMap, graph);
+  await resolveSeedSlots(game, input.containerIds);
 
   // persistGeneratedGraph only knows the shared engine's MatchNode shape
   // (no displayOrder field) — applied as a second pass here, keyed off the
@@ -479,7 +487,8 @@ const edgeKey = (from: string | number, result: string, to: string | number, slo
  * their round, best of and entrants and can't be deleted, but their links can
  * be changed. A new link from a completed match fills a pending target slot.
  */
-export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+export async function saveBracketInPlace(game: GameSlug, input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
+  const { stages, stageContainers, matches, matchSeeds, bracketEdges } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
@@ -492,7 +501,7 @@ export async function saveBracketInPlace(input: SaveManualGraphInput): Promise<S
     .where(and(inArray(stageContainers.id, input.containerIds), eq(stageContainers.stageId, input.stageId)));
   if (ownedContainers.length !== input.containerIds.length) return { ok: false, error: "containerMismatch" };
 
-  const entrantError = await findEntrantMismatch(input, stage.tournamentId);
+  const entrantError = await findEntrantMismatch(game, input, stage.tournamentId);
   if (entrantError) return { ok: false, error: entrantError };
 
   const validation = validateEditorGraph(buildSaveGraph(input));
@@ -639,7 +648,8 @@ export type SetRoundScheduledAtResult = { ok: true; count: number } | { ok: fals
  * saved yet in the visual editor has no rows to update — `count` reports
  * how many were actually touched so the UI can surface that).
  */
-export async function setRoundScheduledAt(containerId: number, stageId: number, round: number, scheduledAtIso: string | null): Promise<SetRoundScheduledAtResult> {
+export async function setRoundScheduledAt(game: GameSlug, containerId: number, stageId: number, round: number, scheduledAtIso: string | null): Promise<SetRoundScheduledAtResult> {
+  const { stageContainers, matches } = gameTables(game);
   await requireTournamentsActor();
 
   if (!Number.isInteger(round) || round < 1) return { ok: false, error: "invalidRound" };

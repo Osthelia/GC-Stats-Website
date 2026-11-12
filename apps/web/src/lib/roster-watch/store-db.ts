@@ -10,9 +10,11 @@
 
 import { and, desc, eq, gte, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, xMonitoredAccounts, xRosterSignals } from "@gc-stats/db";
+import { xMonitoredAccounts, xRosterSignals, valorantTables } from "@gc-stats/db";
 import type { ClassifierResult } from "./classifier";
 import type { NewSignal, RosterWatchStore } from "./run";
+
+const { teams } = valorantTables;
 
 function classificationColumns(c: ClassifierResult) {
   return {

@@ -14,8 +14,10 @@
 
 import { and, eq, gte, isNotNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, teams, tournaments, xMonitoredAccounts } from "@gc-stats/db";
+import { xMonitoredAccounts, valorantTables } from "@gc-stats/db";
 import { normalizeXHandle } from "../src/lib/roster-watch/review";
+
+const { entrants, teams, tournaments } = valorantTables;
 
 const DRY_RUN = process.argv.includes("--dry-run");
 

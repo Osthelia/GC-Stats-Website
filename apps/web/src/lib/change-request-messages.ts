@@ -11,7 +11,8 @@
 
 import { asc, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { changeRequestMessages, users } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // changeRequestMessages has no createdAt column (schema/content.ts) — id
 // order is the only chronology available, which is fine for an append-only
@@ -24,7 +25,8 @@ export type ChangeRequestMessageRow = {
   body: string;
 };
 
-export async function listChangeRequestMessages(changeRequestId: number): Promise<ChangeRequestMessageRow[]> {
+export async function listChangeRequestMessages(game: GameSlug, changeRequestId: number): Promise<ChangeRequestMessageRow[]> {
+  const { changeRequestMessages } = gameTables(game);
   const rows = await db
     .select({ id: changeRequestMessages.id, userId: changeRequestMessages.userId, username: users.username, type: changeRequestMessages.type, body: changeRequestMessages.body })
     .from(changeRequestMessages)

@@ -15,8 +15,10 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { deletePlayer } from "@/actions/admin-players";
+import { useGame } from "@/lib/use-game";
 
 export function PlayerDeleteButton({ playerId, playerHandle }: { playerId: number; playerHandle: string }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -25,7 +27,7 @@ export function PlayerDeleteButton({ playerId, playerHandle }: { playerId: numbe
   function handleDelete() {
     setConfirmOpen(false);
     startTransition(async () => {
-      const result = await deletePlayer(playerId);
+      const result = await deletePlayer(game, playerId);
       if (!result.ok) {
         toast.error(t(`deleteError.${result.error}`));
         return;

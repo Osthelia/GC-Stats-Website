@@ -11,10 +11,13 @@
  */
 
 import { and, eq, ne, gte, lt, lte, inArray, isNotNull } from "drizzle-orm";
+import { forEachGame } from "../for-each-game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { matches, entrants, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { postDiscordWebhook } from "@/lib/discord-webhook";
 import { logAutoActivation } from "../log-auto-activation";
+import { isGamePublic } from "@/lib/public-games";
 
 /** Only matches scheduled within the last N minutes are eligible, so a match that's simply been sitting in the past (imported historical data, a schedule that was never updated) is never swept up. */
 const ACTIVATION_WINDOW_MINUTES = 5;
@@ -26,7 +29,8 @@ const CHAIN_GAP_HOURS = 3;
 const CHAIN_MIN_GAP_HOURS = 1;
 
 /** Flips a match from `pending` to `live` right as its scheduled time hits, and notifies Discord. Mirrors V1's matches:activate-live. */
-export async function activateLiveMatches(): Promise<string> {
+async function activateLiveMatchesForGame(game: GameSlug): Promise<string> {
+  const { matches, entrants, stageContainers, stages, tournaments } = gameTables(game);
   const now = new Date();
   const windowStart = new Date(now.getTime() - ACTIVATION_WINDOW_MINUTES * 60 * 1000);
 
@@ -93,7 +97,7 @@ export async function activateLiveMatches(): Promise<string> {
     if (!tournament) continue;
 
     const sameTournamentContainerIds = containerIdsByTournament.get(tournament.tournamentId) ?? [];
-    if (await isChainedToUnfinishedMatch(match.id, sameTournamentContainerIds, match.scheduledAt)) continue;
+    if (await isChainedToUnfinishedMatch(game, match.id, sameTournamentContainerIds, match.scheduledAt)) continue;
 
     // Conditional on status="pending" so a concurrent tick (cron ticks can overlap) can't double-activate the same match.
     // Update + activity log run in the same transaction so a log insert failure never leaves a match "live" without an audit trail.
@@ -112,7 +116,8 @@ export async function activateLiveMatches(): Promise<string> {
 
     const entrantAName = match.entrantAId !== null ? (entrantNameById.get(match.entrantAId) ?? "TBD") : "TBD";
     const entrantBName = match.entrantBId !== null ? (entrantNameById.get(match.entrantBId) ?? "TBD") : "TBD";
-    await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${entrantAName} vs ${entrantBName}\n${tournament.tournamentName}`);
+    // The match is activated either way, the notice is only sent for a public game.
+    if (isGamePublic(game)) await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${entrantAName} vs ${entrantBName}\n${tournament.tournamentName}`);
 
     activated++;
   }
@@ -121,7 +126,8 @@ export async function activateLiveMatches(): Promise<string> {
 }
 
 /** True when a match of the same tournament, scheduled shortly before this one, hasn't wrapped up yet. */
-async function isChainedToUnfinishedMatch(matchId: number, sameTournamentContainerIds: number[], scheduledAt: Date): Promise<boolean> {
+async function isChainedToUnfinishedMatch(game: GameSlug, matchId: number, sameTournamentContainerIds: number[], scheduledAt: Date): Promise<boolean> {
+  const { matches } = gameTables(game);
   if (sameTournamentContainerIds.length === 0) return false;
 
   const chainWindowStart = new Date(scheduledAt.getTime() - CHAIN_GAP_HOURS * 60 * 60 * 1000);
@@ -142,4 +148,8 @@ async function isChainedToUnfinishedMatch(matchId: number, sameTournamentContain
     .limit(1);
 
   return blocking.length > 0;
+}
+
+export function activateLiveMatches(): Promise<string> {
+  return forEachGame(activateLiveMatchesForGame);
 }

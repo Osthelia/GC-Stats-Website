@@ -22,9 +22,11 @@ import { RequiredMark } from "@/components/admin/required-mark";
 import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { TiebreakerOrder } from "@/components/admin/tiebreaker-order";
 import { createContainer, updateContainer, moveContainerToSet, type ContainerFieldErrors, type ContainerInput } from "@/actions/admin-containers";
-import { EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, parseGroupConfig, type PointsField } from "@/lib/bracket/config-types";
+import { EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, defaultRoundRobinTiebreakers, parseGroupConfig, usesStageScope, type PointsField } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
+import { useGame } from "@/lib/use-game";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 type ContainerType = "bracket" | "group";
 type GroupFormat = "swiss" | "round_robin";
@@ -43,16 +45,18 @@ type FormState = {
   qualifyAtWins: string;
   eliminateAtLosses: string;
   maxRounds: string;
+  stageScope: boolean;
   tiebreakers: string[];
   pointsOn: boolean;
   points: Record<PointsField, string>;
 };
 
-const DEFAULT_TIEBREAKERS: Record<GroupFormat, string[]> = { swiss: ["buchholz", "round_diff", "seed"], round_robin: ["round_diff", "head_to_head", "seed"] };
+// Round robin ranks on map or round difference depending on the game, a game without rounds has no round difference.
+const defaultTiebreakers = (game: GameSlug, format: GroupFormat): string[] => (format === "swiss" ? ["buchholz", "round_diff", "seed"] : defaultRoundRobinTiebreakers(game, false));
 
 const pointsState = (values: Record<PointsField, number>) => Object.fromEntries(POINTS_FIELDS.map((f) => [f, String(values[f])])) as Record<PointsField, string>;
 
-function emptyState(parentId: number | null = null): FormState {
+function emptyState(game: GameSlug, parentId: number | null = null): FormState {
   return {
     name: "",
     parentId: parentId === null ? ROOT_VALUE : String(parentId),
@@ -62,14 +66,15 @@ function emptyState(parentId: number | null = null): FormState {
     qualifyAtWins: "3",
     eliminateAtLosses: "3",
     maxRounds: "5",
-    tiebreakers: DEFAULT_TIEBREAKERS.swiss,
+    stageScope: false,
+    tiebreakers: defaultTiebreakers(game, "swiss"),
     pointsOn: false,
     points: pointsState(EMPTY_POINTS),
   };
 }
 
-function stateFromContainer(container: AdminContainerRow): FormState {
-  const base = emptyState();
+function stateFromContainer(game: GameSlug, container: AdminContainerRow): FormState {
+  const base = emptyState(game);
   base.name = container.name;
   base.parentId = container.parentId === null ? ROOT_VALUE : String(container.parentId);
   base.status = container.status;
@@ -78,6 +83,7 @@ function stateFromContainer(container: AdminContainerRow): FormState {
 
   const config = parseGroupConfig(container.config);
   base.groupFormat = config.type;
+  base.stageScope = config.matchScope === "stage";
   if (config.type === "swiss") {
     base.qualifyAtWins = config.qualifyAtWins !== null ? String(config.qualifyAtWins) : "";
     base.eliminateAtLosses = config.eliminateAtLosses !== null ? String(config.eliminateAtLosses) : "";
@@ -106,18 +112,22 @@ export function ContainerDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<ContainerFieldErrors>({});
-  const [form, setForm] = useState<FormState>(emptyState());
+  const [form, setForm] = useState<FormState>(emptyState(game));
 
   useEffect(() => {
     if (open) {
-      setForm(container ? stateFromContainer(container) : emptyState(defaultParentId));
+      setForm(container ? stateFromContainer(game, container) : emptyState(game, defaultParentId));
       setFieldErrors({});
     }
-  }, [open, container, defaultParentId]);
+  }, [open, container, defaultParentId, game]);
+
+  // An existing group that has matches and isn't stage-scoped yet: its table would shrink to the pinned teams.
+  const switchesToStageScope = form.stageScope && !!container && container.containerType === "group" && container.matchCount > 0 && !usesStageScope(container.config);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -137,6 +147,7 @@ export function ContainerDialog({
             containerType: "group",
             parentId,
             groupFormat: form.groupFormat,
+            matchScope: form.groupFormat === "round_robin" && form.stageScope ? "stage" : "container",
             qualifyAtWins: form.groupFormat === "swiss" && form.qualifyAtWins.trim() !== "" ? Number(form.qualifyAtWins) : null,
             eliminateAtLosses: form.groupFormat === "swiss" && form.eliminateAtLosses.trim() !== "" ? Number(form.eliminateAtLosses) : null,
             maxRounds: form.groupFormat === "swiss" ? Number(form.maxRounds) : null,
@@ -144,13 +155,13 @@ export function ContainerDialog({
             pointsConfig,
           };
     startTransition(async () => {
-      const result = container ? await updateContainer(container.id, stageId, input) : await createContainer(stageId, input);
+      const result = container ? await updateContainer(game, container.id, stageId, input) : await createContainer(game, stageId, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
       }
       if (container && parentId !== container.parentId) {
-        const moved = await moveContainerToSet(container.id, stageId, parentId);
+        const moved = await moveContainerToSet(game, container.id, stageId, parentId);
         if (!moved.ok) {
           setFieldErrors({ parentId: moved.error === "parentInvalid" ? "parentInvalid" : "invalid" });
           return;
@@ -218,7 +229,7 @@ export function ContainerDialog({
           {form.containerType === "group" && (
             <>
               <FormField label={t("fieldGroupFormat")} htmlFor="ctr-group-format" required>
-                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: DEFAULT_TIEBREAKERS[v as GroupFormat] }))}>
+                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: defaultTiebreakers(game, v as GroupFormat) }))}>
                   <SelectTrigger id="ctr-group-format" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -243,6 +254,18 @@ export function ContainerDialog({
                 </div>
               )}
 
+              {form.groupFormat === "round_robin" && (
+                <div className="flex flex-col gap-1">
+                  <label className="flex items-center gap-2 text-sm">
+                    <Checkbox checked={form.stageScope} onCheckedChange={(checked) => set("stageScope", checked === true)} />
+                    {t("fieldMatchScope")}
+                  </label>
+                  <p className="text-xs text-muted-foreground">{t("fieldMatchScopeHint")}</p>
+                  {form.stageScope && container && container.groupEntryEntrantIds.length === 0 && <p className="text-xs text-destructive">{t("matchScopeNoTeams")}</p>}
+                  {switchesToStageScope && <p className="text-xs text-destructive">{t("matchScopeSwitchWarning")}</p>}
+                </div>
+              )}
+
               <div className="flex flex-col gap-2">
                 <p className="text-sm font-medium">
                   {t("tiebreakerOrder.title")}
@@ -260,7 +283,7 @@ export function ContainerDialog({
               <div className="flex flex-col gap-3 rounded-md border p-3">
                 <div>
                   <p className="text-sm font-medium">{t("pointsConfig.title")}</p>
-                  <p className="text-xs text-muted-foreground">{t("pointsConfig.hint")}</p>
+                  <p className="text-xs text-muted-foreground">{t(gameHasMaps(game) ? "pointsConfig.hint" : "pointsConfig.hintGames")}</p>
                 </div>
                 <label className="flex w-fit cursor-pointer items-center gap-2 text-sm">
                   <Checkbox checked={form.pointsOn} onCheckedChange={(checked) => set("pointsOn", checked === true)} />
@@ -268,9 +291,9 @@ export function ContainerDialog({
                 </label>
                 {form.pointsOn && (
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {(["match", "map", "round", "forfeit"] as const).map((scope) => (
+                    {(["match", "map", "round", "forfeit"] as const).filter((scope) => scope !== "round" || gameHasMaps(game)).map((scope) => (
                       <div key={scope} className="flex flex-col gap-2 rounded-md border p-2.5">
-                        <p className="text-xs font-semibold text-muted-foreground">{t(`pointsConfig.scopes.${scope}`)}</p>
+                        <p className="text-xs font-semibold text-muted-foreground">{t(`pointsConfig.scopes.${scope === "map" && !gameHasMaps(game) ? "game" : scope}`)}</p>
                         <div className="flex gap-2">
                           {(["Win", "Loss"] as const).map((side) => {
                             const field = `${scope}${side}` as PointsField;

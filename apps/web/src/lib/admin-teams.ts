@@ -12,10 +12,15 @@
 
 import { sql, eq, or, and, desc, asc } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, entrants, matches, rosterMemberships, people, teamNameHistory, organizations, teamPrivateContacts } from "@gc-stats/db";
+import { organizations, teamPrivateContacts, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import { resolveEntryLanes, splitEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+
 
 export type TeamSort = "name" | "country" | "lastActivity";
 export type SortDirection = "asc" | "desc";
@@ -37,22 +42,28 @@ export type AdminTeamRow = {
 
 // Correlated subqueries — `teams` here refers to the outer query's FROM
 // table, same pattern as V1's PlayerController::latestMatchSubquery().
-const lastActivitySql = sql<string | null>`(
+function lastActivitySql(game: GameSlug) {
+  const { teams, entrants, matches } = gameTables(game);
+  return sql<string | null>`(
   SELECT MAX(m.scheduled_at) FROM ${matches} m
   JOIN ${entrants} e ON (e.id = m.entrant_a_id OR e.id = m.entrant_b_id)
   WHERE e.team_id = ${qualifiedColumn(teams, "id")}
 )`;
+}
 
-const rosterCountSql = sql<number>`(
+function rosterCountSql(game: GameSlug) {
+  const { teams, rosterMemberships } = gameTables(game);
+  return sql<number>`(
   SELECT COUNT(*) FROM ${rosterMemberships} rm
   WHERE rm.team_id = ${qualifiedColumn(teams, "id")} AND rm.role = 'player' AND rm.period @> CURRENT_DATE
 )`;
+}
 
 const ACTIVE_WITHIN_DAYS: Record<Exclude<ActiveWithin, "">, number> = { "60d": 60, "120d": 120 };
 
 export const TEAMS_PAGE_SIZE = 30;
 
-export async function listAdminTeams(opts: {
+export async function listAdminTeams(game: GameSlug, opts: {
   q: string;
   sort: TeamSort;
   direction: SortDirection;
@@ -60,6 +71,7 @@ export async function listAdminTeams(opts: {
   status: StatusFilter;
   page: number;
 }): Promise<{ rows: AdminTeamRow[]; total: number }> {
+  const { teams } = gameTables(game);
   const { q, sort, direction, activeWithin, status, page } = opts;
   const conditions = [];
 
@@ -79,10 +91,10 @@ export async function listAdminTeams(opts: {
 
   if (activeWithin) {
     const days = ACTIVE_WITHIN_DAYS[activeWithin];
-    conditions.push(sql`${lastActivitySql} >= NOW() - ${sql.raw(`INTERVAL '${days} days'`)}`);
+    conditions.push(sql`${lastActivitySql(game)} >= NOW() - ${sql.raw(`INTERVAL '${days} days'`)}`);
   }
 
-  const sortCol = sort === "country" ? teams.countryCode : sort === "lastActivity" ? lastActivitySql : teams.name;
+  const sortCol = sort === "country" ? teams.countryCode : sort === "lastActivity" ? lastActivitySql(game) : teams.name;
   const orderBy = direction === "desc" ? desc(sortCol) : asc(sortCol);
   const where = conditions.length ? and(...conditions) : undefined;
 
@@ -97,8 +109,8 @@ export async function listAdminTeams(opts: {
         isActive: teams.isActive,
         isGhost: teams.isGhost,
         vlrId: teams.vlrId,
-        rosterCount: rosterCountSql,
-        lastActivityAt: lastActivitySql,
+        rosterCount: rosterCountSql(game),
+        lastActivityAt: lastActivitySql(game),
       })
       .from(teams)
       .where(where)
@@ -137,7 +149,8 @@ export type AdminTeamProfile = {
   contactEmail: string | null;
 };
 
-export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null> {
+export async function getAdminTeam(game: GameSlug, id: number): Promise<AdminTeamProfile | null> {
+  const { teams } = gameTables(game);
   const [found] = await db
     .select({ team: teams, organizationName: organizations.name })
     .from(teams)
@@ -146,7 +159,10 @@ export async function getAdminTeam(id: number): Promise<AdminTeamProfile | null>
     .limit(1);
   if (!found) return null;
   const row = found.team;
-  const [contact] = await db.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, id)).limit(1);
+  // The private contact points at val_teams, League teams have none.
+  const [contact] = game === "valorant"
+    ? await db.select({ email: teamPrivateContacts.email }).from(teamPrivateContacts).where(eq(teamPrivateContacts.teamId, id)).limit(1)
+    : [];
   return {
     organizationId: row.organizationId,
     organizationName: found.organizationName,
@@ -174,7 +190,8 @@ export type AdminTeamNameHistoryEntry = {
   isVisible: boolean;
 };
 
-export async function getAdminTeamNameHistory(teamId: number): Promise<AdminTeamNameHistoryEntry[]> {
+export async function getAdminTeamNameHistory(game: GameSlug, teamId: number): Promise<AdminTeamNameHistoryEntry[]> {
+  const { teamNameHistory } = gameTables(game);
   const rows = await db
     .select({ id: teamNameHistory.id, name: teamNameHistory.name, period: teamNameHistory.period, isVisible: teamNameHistory.isVisible })
     .from(teamNameHistory)
@@ -198,10 +215,15 @@ export type AdminTeamRosterMember = {
   inactiveSince: string | null;
   joinSource: string | null;
   leftSource: string | null;
+  /** League only. */
+  lanes: LeagueRole[];
+  /** The lanes played in games, shown when none are saved. */
+  gameLanes: LeagueRole[];
 };
 
 /** Every stint, not just the current roster — join/left/inactive dates need to be visible directly on already-listed (past) members too, not just the currently active ones. */
-export async function getAdminTeamRoster(teamId: number): Promise<AdminTeamRosterMember[]> {
+export async function getAdminTeamRoster(game: GameSlug, teamId: number): Promise<AdminTeamRosterMember[]> {
+  const { rosterMemberships, people } = gameTables(game);
   const rows = await db
     .select({
       membershipId: rosterMemberships.id,
@@ -221,10 +243,14 @@ export async function getAdminTeamRoster(teamId: number): Promise<AdminTeamRoste
     .where(eq(rosterMemberships.teamId, teamId))
     .orderBy(desc(rosterMemberships.id));
 
+  const lanes = gameHasLanes(game) ? await resolveEntryLanes(rows.map((r) => ({ ...r, teamId }))) : new Map<number, EntryLanes>();
+
   return rows.map((r) => ({
     ...r,
+    role: displayRosterRole(game, r.role),
     since: rangeLower(r.period),
     until: rangeUpper(r.period),
     isCurrent: !r.hasLeft,
+    ...splitEntryLanes(lanes.get(r.membershipId)),
   }));
 }

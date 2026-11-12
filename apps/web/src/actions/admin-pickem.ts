@@ -13,9 +13,10 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { pickemStageSettings, pickemMatchPicks, pickemStandingPicks, stages, stageContainers, matches, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -28,7 +29,8 @@ export type StagePickemSettingsInput = { enabled: boolean; opensAt: string | nul
 export type StagePickemSettingsFieldErrors = Partial<Record<"opensAt" | "groupPickMode", string>>;
 
 /** Whether users already saved picks of the kind the other group mode would drop. */
-async function hasPicksOfMode(stageId: number, mode: GroupPickMode): Promise<boolean> {
+async function hasPicksOfMode(game: GameSlug, stageId: number, mode: GroupPickMode): Promise<boolean> {
+  const { pickemStandingPicks, pickemMatchPicks, matches, stageContainers } = gameTables(game);
   if (mode === "standings") {
     const [row] = await db.select({ id: pickemStandingPicks.id }).from(pickemStandingPicks).where(eq(pickemStandingPicks.stageId, stageId)).limit(1);
     return !!row;
@@ -43,7 +45,8 @@ async function hasPicksOfMode(stageId: number, mode: GroupPickMode): Promise<boo
 }
 export type StagePickemSettingsResult = { ok: true } | { ok: false; fieldErrors: StagePickemSettingsFieldErrors };
 
-export async function updateStagePickemSettings(stageId: number, input: StagePickemSettingsInput): Promise<StagePickemSettingsResult> {
+export async function updateStagePickemSettings(game: GameSlug, stageId: number, input: StagePickemSettingsInput): Promise<StagePickemSettingsResult> {
+  const { pickemStageSettings, stages, stageContainers } = gameTables(game);
   await requireTournamentsActor();
 
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
@@ -64,7 +67,7 @@ export async function updateStagePickemSettings(stageId: number, input: StagePic
     .where(and(eq(stageContainers.stageId, stageId), eq(stageContainers.containerType, "group")))
     .limit(1);
   const groupPickMode = groupContainer ? input.groupPickMode : currentMode;
-  if (groupPickMode !== currentMode && (await hasPicksOfMode(stageId, currentMode))) return { ok: false, fieldErrors: { groupPickMode: "hasPicks" } };
+  if (groupPickMode !== currentMode && (await hasPicksOfMode(game, stageId, currentMode))) return { ok: false, fieldErrors: { groupPickMode: "hasPicks" } };
 
   const opensAt = parsedOpensAt ?? new Date();
 

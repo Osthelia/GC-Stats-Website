@@ -12,10 +12,11 @@
 
 import { and, eq, gte, inArray, lt, sql, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { playerRoundsPlayedSql, sumFloat } from "@/lib/stats-aggregate-sql";
 import { exclusiveUpperBound, type StatsFilter } from "./params";
 import { ratedRoundsSql, roundRating, weightedRatingSql } from "./rating";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Who an aggregate stats query is scoped to — a team (any of its entrants across tournaments) or a single player. */
 export type EntityScope = { kind: "team"; entrantIds: number[] } | { kind: "player"; personId: number };
@@ -73,10 +74,13 @@ function isEmptyTeamScope(scope: EntityScope): boolean {
 }
 
 function mapPlayerStatsScopeCondition(scope: EntityScope): SQL {
+  const { mapPlayerStats } = valorantTables;
   return scope.kind === "team" ? inArray(mapPlayerStats.entrantId, scope.entrantIds) : eq(mapPlayerStats.personId, scope.personId);
 }
 
-function baseFilterConditions(filter: StatsFilter): SQL[] {
+function baseFilterConditions(game: GameSlug, filter: StatsFilter): SQL[] {
+  const { matches, stages } = gameTables(game);
+  const { mapPlayerStats } = valorantTablesOf(game);
   const conditions: SQL[] = [];
   if (filter.from) conditions.push(gte(matches.scheduledAt, new Date(`${filter.from}T00:00:00.000Z`)));
   if (filter.to) conditions.push(lt(matches.scheduledAt, exclusiveUpperBound(filter.to)));
@@ -182,16 +186,16 @@ async function fetchSideStats(scope: EntityScope, filter: StatsFilter, side: "at
       COALESCE(SUM(d.headshots), 0)::int AS total_headshots,
       COALESCE(SUM(d.bodyshots), 0)::int AS total_bodyshots,
       COALESCE(SUM(d.legshots), 0)::int AS total_legshots
-    FROM map_round_player_loadouts_raw ps
-    JOIN map_rounds_raw r ON r.id = ps.map_round_id
-    JOIN maps gm ON gm.id = r.map_id
-    JOIN matches m ON m.id = gm.match_id
-    JOIN stage_containers sc ON sc.id = m.container_id
-    JOIN stages st ON st.id = sc.stage_id
-    JOIN map_player_stats mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
+    FROM ${valorantTables.mapRoundPlayerLoadoutsRaw} ps
+    JOIN ${valorantTables.mapRoundsRaw} r ON r.id = ps.map_round_id
+    JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
+    JOIN ${valorantTables.matches} m ON m.id = gm.match_id
+    JOIN ${valorantTables.stageContainers} sc ON sc.id = m.container_id
+    JOIN ${valorantTables.stages} st ON st.id = sc.stage_id
+    JOIN ${valorantTables.mapPlayerStats} mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
     LEFT JOIN LATERAL (
       SELECT SUM(dm.damage) AS damage, SUM(dm.headshots) AS headshots, SUM(dm.bodyshots) AS bodyshots, SUM(dm.legshots) AS legshots
-      FROM map_round_damages_raw dm
+      FROM ${valorantTables.mapRoundDamagesRaw} dm
       WHERE dm.map_round_id = ps.map_round_id AND dm.attacker_person_id = ps.person_id
     ) d ON true
     WHERE ${sideEntrantCol} = ps.entrant_id AND ${roundScopeSql(scope)} ${rawFilterSql(filter)}
@@ -240,16 +244,16 @@ async function fetchFirstBloodCounts(scope: EntityScope, filter: StatsFilter, si
     SELECT
       COUNT(*) FILTER (WHERE fk.killer_person_id = ps.person_id)::int AS first_kills,
       COUNT(*) FILTER (WHERE fk.victim_person_id = ps.person_id)::int AS first_deaths
-    FROM map_round_player_loadouts_raw ps
-    JOIN map_rounds_raw r ON r.id = ps.map_round_id
-    JOIN maps gm ON gm.id = r.map_id
-    JOIN matches m ON m.id = gm.match_id
-    JOIN stage_containers sc ON sc.id = m.container_id
-    JOIN stages st ON st.id = sc.stage_id
-    JOIN map_player_stats mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
+    FROM ${valorantTables.mapRoundPlayerLoadoutsRaw} ps
+    JOIN ${valorantTables.mapRoundsRaw} r ON r.id = ps.map_round_id
+    JOIN ${valorantTables.maps} gm ON gm.id = r.map_id
+    JOIN ${valorantTables.matches} m ON m.id = gm.match_id
+    JOIN ${valorantTables.stageContainers} sc ON sc.id = m.container_id
+    JOIN ${valorantTables.stages} st ON st.id = sc.stage_id
+    JOIN ${valorantTables.mapPlayerStats} mps ON mps.map_id = r.map_id AND mps.person_id = ps.person_id
     JOIN LATERAL (
       SELECT k.killer_person_id, k.victim_person_id
-      FROM map_round_kills_raw k
+      FROM ${valorantTables.mapRoundKillsRaw} k
       WHERE k.map_round_id = r.id
       ORDER BY k.time_ms ASC
       LIMIT 1
@@ -268,12 +272,14 @@ async function fetchFirstBloodCounts(scope: EntityScope, filter: StatsFilter, si
  * player), which the Rust API summed/averaged over directly — a latent bug
  * there this port doesn't reproduce.
  */
-export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Promise<ApiAvgStats> {
+export async function fetchAvgStats(game: GameSlug, scope: EntityScope, filter: StatsFilter): Promise<ApiAvgStats> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { mapPlayerStats, maps } = valorantTablesOf(game);
   if (isEmptyTeamScope(scope)) return ZERO_AVG_STATS;
 
   const sidesPromise = Promise.all([fetchSideStats(scope, filter, "atk"), fetchSideStats(scope, filter, "def")]);
 
-  const where = and(mapPlayerStatsScopeCondition(scope), ...baseFilterConditions(filter));
+  const where = and(mapPlayerStatsScopeCondition(scope), ...baseFilterConditions(game, filter));
 
   const totalsQuery = db
     .select({
@@ -299,7 +305,7 @@ export async function fetchAvgStats(scope: EntityScope, filter: StatsFilter): Pr
 
   // A team scope has one row per player per map, so each (map, entrant) is counted once.
   const perMapEntrant = db
-    .selectDistinctOn([mapPlayerStats.mapId, mapPlayerStats.entrantId], { rounds: sql<number>`${playerRoundsPlayedSql}`.as("rounds") })
+    .selectDistinctOn([mapPlayerStats.mapId, mapPlayerStats.entrantId], { rounds: sql<number>`${playerRoundsPlayedSql()}`.as("rounds") })
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
     .innerJoin(matches, eq(matches.id, maps.matchId))

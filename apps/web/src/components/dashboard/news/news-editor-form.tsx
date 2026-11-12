@@ -34,6 +34,7 @@ import { NewsStatusActions } from "@/components/dashboard/news/news-status-actio
 import { NewsConversationPanel } from "@/components/dashboard/news/news-conversation-panel";
 import type { DashboardNewsArticleDetail, DashboardNewsMessage } from "@/lib/dashboard-news-data";
 import type { EntityOption } from "@/components/dashboard/news/entity-multi-picker";
+import { useGame } from "@/lib/use-game";
 
 export function NewsEditorForm({
   organizationId,
@@ -58,6 +59,7 @@ export function NewsEditorForm({
   canDelete: boolean;
   listHref: string;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.news.editor");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -88,7 +90,7 @@ export function NewsEditorForm({
 
     startTransition(async () => {
       if (!article) {
-        const result = await createDashboardNewsArticle(organizationId, input);
+        const result = await createDashboardNewsArticle(game, organizationId, input);
         if (!result.ok) {
           setFieldErrors(result.fieldErrors);
           return;
@@ -98,13 +100,13 @@ export function NewsEditorForm({
         return;
       }
 
-      const result = await updateDashboardNewsArticle(organizationId, article.id, input);
+      const result = await updateDashboardNewsArticle(game, organizationId, article.id, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         if (result.error) toast.error(t(`error.${result.error}`));
         return;
       }
-      const relationsResult = await syncDashboardNewsRelations(organizationId, article.id, {
+      const relationsResult = await syncDashboardNewsRelations(game, organizationId, article.id, {
         teamIds: relations.teams.map((r) => r.id),
         personIds: relations.people.map((r) => r.id),
         tournamentIds: relations.tournaments.map((r) => r.id),
@@ -180,7 +182,7 @@ export function NewsEditorForm({
                       ? async (file) => {
                           const formData = new FormData();
                           formData.append("file", file);
-                          const result = await uploadDashboardNewsImage(organizationId, article.id, formData);
+                          const result = await uploadDashboardNewsImage(game, organizationId, article.id, formData);
                           if (!result.ok) {
                             toast.error(t(`error.${result.error}`));
                             return null;

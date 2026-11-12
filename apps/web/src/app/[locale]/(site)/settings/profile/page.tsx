@@ -12,6 +12,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { redirect } from "@/i18n/navigation";
 import { getCurrentUserId } from "@/lib/session";
 import { getMyProfile } from "@/actions/user-profile";
+import { publicGames } from "@/lib/public-games";
 import { SettingsNav } from "@/components/settings/settings-nav";
 import { ProfileSettingsForm } from "@/components/settings/profile-settings-form";
 
@@ -43,7 +44,7 @@ export default async function ProfileSettingsPage({ params }: { params: Promise<
 
       <SettingsNav active="profile" />
 
-      <ProfileSettingsForm profile={profile} />
+      <ProfileSettingsForm profile={profile} games={publicGames()} />
     </div>
   );
 }

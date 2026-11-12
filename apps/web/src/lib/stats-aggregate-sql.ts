@@ -3,18 +3,21 @@
  *
  * Aggregates `map_player_stats` rows (one per player per map) into
  * `StatRow`s, in Postgres so the stats pages never load every per map row
- * (and its JSONB) into memory.
+ * (and its JSONB) into memory. `aggregateLeaguePlayerStatsSql` does the same
+ * for LoL: `lol_game_player_stats` rows (one per player per game) into
+ * `LeagueStatRow`s.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { inArray, sql, type SQL, type SQLWrapper } from "drizzle-orm";
+import { and, eq, inArray, sql, type SQL, type SQLWrapper } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { mapPlayerStats, mapTeamRoundSummary } from "@gc-stats/db";
-import type { StatRow } from "@/lib/stats-aggregate";
+import { leagueTablesOf, valorantTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
+import type { LeagueStatRow, StatRow } from "@/lib/stats-aggregate";
 
 /** A `select map_player_stats.id ...` subquery picking the rows to aggregate. */
 export type MapPlayerStatsScope = SQLWrapper;
@@ -28,18 +31,21 @@ function jsonKey(column: PgColumn, key: string) {
   return sql`coalesce((${column} ->> ${key})::numeric, 0)`;
 }
 
-/** Rounds the player's team played on that map (both sides), correlated on the `map_player_stats` row. */
-export const playerRoundsPlayedSql = sql<number>`(
+export function playerRoundsPlayedSql() {
+  const { mapPlayerStats, mapTeamRoundSummary } = valorantTables;
+  return sql<number>`(
   select coalesce(sum(${mapTeamRoundSummary.roundsPlayed}), 0)
   from ${mapTeamRoundSummary}
   where ${mapTeamRoundSummary.mapId} = ${mapPlayerStats.mapId} and ${mapTeamRoundSummary.entrantId} = ${mapPlayerStats.entrantId}
 )`;
+}
 
 type TotalsRow = StatRow["totals"] & { groupKey: string; mapsPlayed: number; roundsPlayed: number };
 
 export const sumFloat = (expr: SQL | PgColumn) => sql<number>`coalesce(sum(${expr}), 0)::float8`;
 
 export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, groupBy: "agentName" | "personId"): Promise<StatRow[]> {
+  const { mapPlayerStats } = valorantTables;
   const groupKey = groupBy === "agentName" ? sql<string>`coalesce(${mapPlayerStats.agentName}, '?')` : sql<string>`coalesce(${mapPlayerStats.personId}::text, '?')`;
   const inScope = inArray(mapPlayerStats.id, scope);
   const clutchSum = (field: "won" | "total") =>
@@ -49,7 +55,7 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
       .select({
         groupKey,
         mapsPlayed: sql<number>`count(*)::int`,
-        roundsPlayed: sql<number>`coalesce(sum(${playerRoundsPlayedSql}), 0)::int`,
+        roundsPlayed: sql<number>`coalesce(sum(${playerRoundsPlayedSql()}), 0)::int`,
         kills: sumFloat(mapPlayerStats.kills),
         deaths: sumFloat(mapPlayerStats.deaths),
         assists: sumFloat(mapPlayerStats.assists),
@@ -99,4 +105,56 @@ export async function aggregateMapPlayerStatsSql(scope: MapPlayerStatsScope, gro
     const { groupKey: key, mapsPlayed, roundsPlayed, ...totals } = row;
     return { groupKey: key, mapsPlayed, roundsPlayed, totals, weaponKills: weaponsByGroup.get(key) ?? {} };
   });
+}
+
+/** The average over the rows that have a value: a lane diff is null in a game without a lane opponent, and so is the average of none. */
+const avgFloat = (column: PgColumn) => sql<number | null>`avg(${column})::float8`;
+
+/** No lane opponent in any game: NaN, which the stats table shows as "–" and sorts last. */
+const orNaN = (average: number | null) => average ?? NaN;
+
+/** The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person or per champion. */
+export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWrapper, groupBy: "championName" | "personId"): Promise<LeagueStatRow[]> {
+  const { games, gamePlayerStats, gameTeamStats } = leagueTablesOf(game);
+
+  const rows = await db
+    .select({
+      groupKey: groupBy === "personId" ? sql<string>`coalesce(${gamePlayerStats.personId}::text, '?')` : sql<string>`${gamePlayerStats.championName}`,
+      mapsPlayed: sql<number>`count(*)::int`,
+      wins: sumFloat(sql`case when ${games.winnerEntrantId} = ${gamePlayerStats.entrantId} then 1 else 0 end`),
+      kills: sumFloat(gamePlayerStats.kills),
+      deaths: sumFloat(gamePlayerStats.deaths),
+      assists: sumFloat(gamePlayerStats.assists),
+      teamKills: sumFloat(gameTeamStats.kills),
+      cs: sumFloat(gamePlayerStats.cs),
+      gold: sumFloat(gamePlayerStats.gold),
+      damage: sumFloat(gamePlayerStats.damage),
+      vision: sumFloat(gamePlayerStats.vision),
+      minutes: sumFloat(sql`${games.durationSeconds} / 60.0`),
+      goldDiff10: avgFloat(gamePlayerStats.goldDiff10),
+      goldDiff15: avgFloat(gamePlayerStats.goldDiff15),
+      xpDiff10: avgFloat(gamePlayerStats.xpDiff10),
+      xpDiff15: avgFloat(gamePlayerStats.xpDiff15),
+      csDiff10: avgFloat(gamePlayerStats.csDiff10),
+      csDiff15: avgFloat(gamePlayerStats.csDiff15),
+    })
+    .from(gamePlayerStats)
+    .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
+    .leftJoin(gameTeamStats, and(eq(gameTeamStats.gameId, gamePlayerStats.gameId), eq(gameTeamStats.entrantId, gamePlayerStats.entrantId)))
+    .where(inArray(gamePlayerStats.id, scope))
+    .groupBy(groupBy === "personId" ? gamePlayerStats.personId : gamePlayerStats.championName);
+
+  return rows.map(({ groupKey, mapsPlayed, goldDiff10, goldDiff15, xpDiff10, xpDiff15, csDiff10, csDiff15, ...totals }) => ({
+    groupKey,
+    mapsPlayed,
+    totals,
+    averages: {
+      goldDiff10: orNaN(goldDiff10),
+      goldDiff15: orNaN(goldDiff15),
+      xpDiff10: orNaN(xpDiff10),
+      xpDiff15: orNaN(xpDiff15),
+      csDiff10: orNaN(csDiff10),
+      csDiff15: orNaN(csDiff15),
+    },
+  }));
 }

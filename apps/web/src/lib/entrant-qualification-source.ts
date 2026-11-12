@@ -13,7 +13,8 @@
 import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import type { db } from "@gc-stats/db/client";
-import { entrants, matches, pointTypes, stageContainers, stageQualifications, qualificationResults, stages, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export const QUALIFICATION_SOURCE_TYPES = ["tournament", "invite", "points"] as const;
 export type QualificationSourceType = (typeof QUALIFICATION_SOURCE_TYPES)[number];
@@ -44,7 +45,8 @@ export type EntrantSourceInput = {
 type Db = typeof db;
 
 /** Most recent source tournament per team, from the qualification results that land in this tournament's containers. */
-async function findAutoSources(client: Db, tournamentId: number, teamIds: number[]): Promise<Map<number, EntrantQualificationSource>> {
+async function findAutoSources(game: GameSlug, client: Db, tournamentId: number, teamIds: number[]): Promise<Map<number, EntrantQualificationSource>> {
+  const { entrants, matches, stageContainers, stageQualifications, qualificationResults, stages, tournaments } = gameTables(game);
   const result = new Map<number, EntrantQualificationSource>();
   if (teamIds.length === 0) return result;
 
@@ -96,9 +98,10 @@ async function findAutoSources(client: Db, tournamentId: number, teamIds: number
 }
 
 /** Effective source of each entrant (manual choice wins, else the qualification rules), keyed by entrant id. Entrants without any source are absent. */
-export async function resolveEntrantQualificationSources(client: Db, tournamentId: number, rows: EntrantSourceInput[]): Promise<Map<number, EntrantQualificationSource>> {
+export async function resolveEntrantQualificationSources(game: GameSlug, client: Db, tournamentId: number, rows: EntrantSourceInput[]): Promise<Map<number, EntrantQualificationSource>> {
+  const { pointTypes, tournaments } = gameTables(game);
   const autoTeamIds = rows.filter((r) => !r.qualificationSourceManual && r.teamId !== null).map((r) => r.teamId as number);
-  const autoByTeam = await findAutoSources(client, tournamentId, [...new Set(autoTeamIds)]);
+  const autoByTeam = await findAutoSources(game, client, tournamentId, [...new Set(autoTeamIds)]);
 
   const manualTournamentIds = [...new Set(rows.filter((r) => r.qualificationSourceManual && r.qualificationSourceTournamentId !== null).map((r) => r.qualificationSourceTournamentId as number))];
   const manualTournaments = manualTournamentIds.length

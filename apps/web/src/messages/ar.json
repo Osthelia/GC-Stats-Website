@@ -6,8 +6,8 @@
     "home": "الرئيسية",
     "matches": "المباريات",
     "tournaments": "البطولات",
-    "news": "الأخبار",
     "calendar": "التقويم",
+    "news": "الأخبار",
     "forum": "المنتدى",
     "about": "من نحن",
     "search": "بحث",
@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · الإنتاج",
     "formerOrganizations": "المنظمات السابقة",
     "noFormerOrganizations": "لا توجد منظمات سابقة مسجّلة.",
-    "unknownDate": "غير معروف"
+    "unknownDate": "غير معروف",
+    "addGameProfile": {
+      "title": "هل تلعب أيضاً في {game}؟",
+      "description": "أضف ملفك في {game} بنقرة واحدة. يعيد استخدام اسمك وصورتك وروابطك دون ملء أي شيء من جديد.",
+      "button": "إضافة ملفي في {game}",
+      "adding": "جارٍ الإضافة...",
+      "done": "ملفك في {game} جاهز.",
+      "open": "عرض ملفي في {game}",
+      "error": {
+        "unauthenticated": "يجب تسجيل الدخول.",
+        "notYours": "هذا اللاعب غير مرتبط بحسابك.",
+        "invalidGame": "هذه اللعبة غير موجودة."
+      }
+    },
+    "alsoOn": "أيضاً في {game}"
   },
   "organizationPage": {
     "tabOverview": "نظرة عامة",
@@ -1793,7 +1807,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "النقاش",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "تسجيل اللعبة {n}",
+    "games": "المباريات",
+    "gameTab": "المباراة {order}",
+    "noGames": "لم تُسجَّل أي مباريات بعد.",
+    "noGameData": "لا توجد بيانات لهذه المباراة",
+    "duration": "المدة",
+    "forfeit": "انسحاب",
+    "towers": "الأبراج",
+    "inhibitors": "المثبطات",
+    "dragons": "التنانين",
+    "barons": "البارونات",
+    "heralds": "رائد الشق",
+    "grubs": "يرقات الفراغ",
+    "draftNotSet": "لم يُسجَّل اختيار الأبطال لهذه المباراة.",
+    "ban": "حظر",
+    "pick": "اختيار",
+    "unplacedPicks": "اختيارات لم تُوضع بعد",
+    "colChampion": "البطل",
+    "allGames": "كل المباريات",
+    "draft": "المسودة"
   },
   "footer": {
     "tagline": "كل مسابقات Game Changers الرسمية في مكان واحد.",
@@ -2095,7 +2129,8 @@
       "error": {
         "userNotFound": "المستخدم غير موجود.",
         "roleNotFound": "أحد الأدوار المحددة لم يعد موجودًا.",
-        "selfDemote": "لا يمكنك إزالة صلاحية الإدارة الخاصة بك."
+        "selfDemote": "لا يمكنك إزالة صلاحية الإدارة الخاصة بك.",
+        "gameNotFound": "هذه اللعبة غير موجودة."
       },
       "authMethods": {
         "heading": "المصادقة",
@@ -2376,7 +2411,8 @@
           "ownerOnly": "المالك وحده يمكنه منح دور المالك أو تعديله.",
           "userNotFound": "الحساب غير موجود.",
           "alreadyHasAccess": "هذا الحساب لديه وصول إلى هذه المنظمة بالفعل."
-        }
+        },
+        "fieldGames": "الألعاب"
       },
       "filterKindLabel": "نوع المؤسسة",
       "filterKindAll": "كل المؤسسات",
@@ -2605,6 +2641,7 @@
       "title": "اللاعبات",
       "subtitle": "إدارة الملفات والانتماء إلى الفرق.",
       "searchPlaceholder": "الاسم المستعار أو ID أو معرّف VLR…",
+      "searchPlaceholderLol": "الاسم المستعار أو ID أو Riot ID…",
       "searchSubmit": "بحث",
       "activeWithinLabel": "النشاط الأخير",
       "activeWithinAny": "أي وقت",
@@ -2772,11 +2809,45 @@
           "requiresLeft": "حدد « غادر الفريق » لإدخال تاريخ المغادرة."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "معرّف مستخدم Discord (وضع المطور، نقر بزر الماوس الأيمن على الملف الشخصي، نسخ معرّف المستخدم) أو رابط دعوة خادم."
+        "discordIdHint": "معرّف مستخدم Discord (وضع المطور، نقر بزر الماوس الأيمن على الملف الشخصي، نسخ معرّف المستخدم) أو رابط دعوة خادم.",
+        "sectionRiotAccounts": "حسابات Riot",
+        "riotAccountsHint": "حسابات League of Legends التي يلعب بها اللاعب. تُربط المباريات المستوردة باللاعب عبر هذه الحسابات.",
+        "riotAccountsEmpty": "لا يوجد حساب Riot بعد. تُضاف الحسابات عند استيراد مباراة أو من هنا.",
+        "riotAccountLive": "مباشر",
+        "riotAccountTournament": "عالم البطولات",
+        "riotAccountSourceAdmin": "أُضيف يدويًا",
+        "riotAccountLastSeen": "شوهد آخر مرة <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "المنطقة",
+        "riotAccountAdd": "إضافة حساب",
+        "riotAccountAdding": "جارٍ الإضافة…",
+        "riotAccountAdded": "تمت إضافة حساب Riot.",
+        "riotAccountRemoved": "تمت إزالة حساب Riot.",
+        "riotAccountRemove": "إزالة",
+        "riotAccountRemoveTitle": "إزالة حساب Riot هذا؟",
+        "riotAccountRemoveDescription": "لن يكون {riotId} مرتبطًا بـ {handle} بعد الآن. تبقى المباريات المستوردة مع اللاعب.",
+        "riotAccountErrorHeldByOther": "حساب Riot هذا ينتمي بالفعل إلى {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "لدى هذا اللاعب حساب Riot هذا بالفعل.",
+        "riotAccountErrorGeneric": "تعذّر تغيير حساب Riot.",
+        "sectionGames": "الألعاب",
+        "gamesHint": "شخص واحد وملف واحد لكل لعبة. الاسم والبلد والضمائر والنبذة والأسماء المستعارة والحسابات الاجتماعية والصورة والحساب المرتبط مشتركة، والباقي يخص كل لعبة.",
+        "sharedHint": "الاسم والبلد والضمائر والنبذة والأسماء المستعارة والحسابات الاجتماعية والصورة مشتركة مع الألعاب الأخرى لهذا الشخص.",
+        "gameCurrent": "اللعبة الحالية",
+        "gameHasProfile": "لديه ملف",
+        "gameNoProfile": "لا يوجد ملف بعد",
+        "gameOpen": "فتح",
+        "gameAddButton": "إضافة إلى {game}",
+        "gameAdding": "جارٍ الإضافة...",
+        "gameAddSuccess": "تمت الإضافة إلى {game}.",
+        "gameAddError": {
+          "invalidGame": "هذه اللعبة غير موجودة.",
+          "notFound": "هذا اللاعب لم يعد موجوداً.",
+          "alreadyThere": "لدى هذا اللاعب ملف في هذه اللعبة بالفعل."
+        }
       },
       "merge": {
         "title": "دمج اللاعبة",
-        "description": "اختر الملف الذي سيبقى، وحدد لكل فئة العناصر التي ستُنقل إليه من بيانات {name}. لا يُحذف ملف {name} نفسه هنا.",
+        "description": "اختر الملف الذي سيبقى، وحدد لكل فئة العناصر التي ستُنقل إليه من بيانات {name}.",
         "backToPlayer": "→ العودة إلى اللاعبة",
         "selectTarget": "الدمج في",
         "targetPlaceholder": "اختر لاعبة…",
@@ -2789,11 +2860,13 @@
           "matchStats": "المشاركة في المباريات",
           "news": "الأخبار",
           "logos": "الشعارات",
+          "riotAccounts": "حسابات Riot ({count})",
           "linkedAccount": "الحساب المرتبط"
         },
         "matchStatsHint": "ينقل أيضًا بيانات الجولات (عمليات القتل، الضرر، المواقع) لكل خريطة. لا يُنقل اعتماد التشكيلة المثبّتة لمشارك في بطولة إلا عند تحديد كل خرائط ذلك المشارك.",
         "periodOngoing": "منذ {since}",
         "periodRange": "{since} ← {until}",
+        "riotAccountsHint": "تنتقل حسابات Riot إلى اللاعب الذي تحتفظ به ليبقى ارتباط مبارياته به.",
         "linkedAccountHint": "ينقل الحساب المرتبط حاليًا بهذه اللاعبة. يظهر فقط عند وجود حساب مرتبط وعدم وجود حساب لدى الهدف.",
         "nothingToMove": "لا يوجد لدى هذه اللاعبة ما يُنقل بعد.",
         "confirm": "هل تريد دمج العناصر المحددة من {source} في {target}؟ لا يمكن التراجع عن ذلك تلقائيًا.",
@@ -2808,8 +2881,39 @@
           "samePlayer": "اختر لاعبة مختلفة كهدف للدمج.",
           "sourceNotFound": "اللاعبة غير موجودة.",
           "targetNotFound": "اللاعبة الهدف غير موجودة.",
-          "targetAlreadyLinked": "اللاعبة الهدف لديها حساب مرتبط بالفعل."
-        }
+          "targetAlreadyLinked": "اللاعبة الهدف لديها حساب مرتبط بالفعل.",
+          "sourceStillUsed": "لا يزال هذا اللاعب مستخدماً من قبل مشاركين أو إحصاءات مباريات في هذه اللعبة. حددها أيضاً أو احتفظ بالملف."
+        },
+        "removeSource": "الإزالة من {game} بعد الدمج",
+        "removeSourceHint": "تتم إزالة {name} من هذه اللعبة بعد نقل كل شيء، وبالكامل إذا لم تكن لأي لعبة أخرى هذا الملف. يُرفض إذا كان المشاركون أو إحصاءات المباريات لا تزال تستخدمه.",
+        "riotAccountsLost": "لن يتم نقل {count} من حسابات Riot الخاصة بـ {name} وسيتم حذفها نهائيًا مع اللاعب. ستظهر المباريات التي لُعبت بها غير مرتبطة في عمليات الاستيراد القادمة."
+      },
+      "duplicatesLink": "تكرارات محتملة",
+      "duplicates": {
+        "title": "تكرارات محتملة",
+        "description": "أشخاص بنفس الاسم يوجد كل منهم في لعبة مختلفة. ادمج ملف {game} مع الآخر للاحتفاظ بملف واحد.",
+        "backToList": "العودة إلى اللاعبين",
+        "columnSource": "في {game}",
+        "columnTarget": "الملف الآخر",
+        "merge": "دمج",
+        "empty": "لم يتم العثور على تكرارات."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} ليس Riot ID (الاسم#الوسم).",
+        "riotIdNotFound": "لا يوجد حساب Riot بالاسم {riotId}.",
+        "relayNotConfigured": "لم يتم إعداد وسيط Riot على هذا الخادم.",
+        "relayUnauthorized": "رفض الوسيط بيانات اعتمادنا. تحقق من RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "رفضت Riot مفتاح API الخاص بـ League of Legends لدى الوسيط. قد تكون صلاحيته انتهت أو يكون خاطئًا (تحقق من LOL_RIOT_API_KEY في الوسيط).",
+        "relayLeagueUnavailable": "لم يتم ضبط مفتاح API الخاص بـ League of Legends في الوسيط، أو أن قاعدة بيانات الذاكرة المؤقتة غير متاحة. تحقق من LOL_RIOT_API_KEY وقاعدة البيانات في الوسيط.",
+        "routeUnavailable": "لا يوفّر الوسيط مسارات League التي يحتاجها هذا البحث. حدّث الوسيط.",
+        "relayUnreachable": "تعذّر الوصول إلى وسيط Riot. تحقق من أنه يعمل ومن صحة RIOT_RELAY_URL.",
+        "riotUnavailable": "تعذّرت قراءة بيانات Riot الآن. حاول لاحقًا.",
+        "rateLimited": "تقيّد Riot طلبات هذا المفتاح. انتظر دقيقة قبل المحاولة مرة أخرى.",
+        "rateLimitedIn": "تقيّد Riot طلبات هذا المفتاح. حاول مرة أخرى بعد {seconds} ثانية.",
+        "invalidRequest": "رفض المرحّل الطلب لأنه غير صالح. تحقق من Riot ID والمنطقة والفترة الزمنية.",
+        "notFound": "لا تملك Riot بيانات لهذا الطلب: الحساب أو المباراة غير موجود أو ليس في هذه المنطقة."
       }
     },
     "finance": {
@@ -3385,6 +3489,7 @@
           "entityNotFound": "فريق أو لاعبة مشار إليها لم يعد موجودًا.",
           "membershipNotFound": "إدخال التشكيلة لم يعد موجودًا.",
           "invalidRole": "الدور لم يعد صالحًا.",
+          "invalidLane": "أحد المسارات غير صالح.",
           "logoNotFound": "إدخال الشعار لم يعد موجودًا.",
           "alreadyLinked": "هذه اللاعبة مرتبطة بالفعل بحساب آخر.",
           "unknownField": "حقل غير مدعوم.",
@@ -3576,10 +3681,6 @@
       "subtitle": "إنشاء البطولات وإدارتها، مع مراحلها وشجراتها والمشاركين فيها.",
       "searchPlaceholder": "اسم البطولة…",
       "searchSubmit": "بحث",
-      "activeFilterLabel": "النشاط",
-      "activeFilterAny": "جميع البطولات",
-      "activeFilterActive": "نشطة",
-      "activeFilterInactive": "غير نشطة",
       "heading": "البطولات",
       "statTotal": "إجمالي البطولات",
       "columnName": "الاسم",
@@ -3831,6 +3932,14 @@
         "fieldEliminateAtLossesHint": "عدد الهزائم. اتركه فارغًا لنظام سويسري حر بلا حد.",
         "fieldMaxRounds": "الحد الأقصى للجولات",
         "openEditorButton": "فتح محرر الشجرة",
+        "assignEntrantsButton": "إدارة المشاركين",
+        "assignEntrantsTitle": "مشاركو المجموعة",
+        "assignEntrantsDescription": "حدد أيّ مشاركي البطولة ينتمون إلى هذه المجموعة السويسرية.",
+        "assignEntrantsEmpty": "لا يوجد مشاركون في هذه البطولة.",
+        "assignEntrantsInGroup": "في {name}",
+        "assignEntrantsSuccess": "تم تحديث المشاركين.",
+        "startSwissButton": "بدء الجولة 1",
+        "startSwissSuccess": "تم إنشاء الجولة 1.",
         "addMatchButton": "إضافة مباراة",
         "addMatchTitle": "إضافة مباراة في {name}",
         "addMatchDescription": "تُضاف المباراة إلى الجولة المختارة حتى لو بدأت المجموعة بالفعل. يمكن أن تبقى الفرق بحالة TBD وتُسند لاحقًا من صفحة المباراة.",
@@ -3907,6 +4016,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "فقط مجموعات الدوري (Round robin) يمكنها احتساب مباريات المرحلة كلها.",
           "cannotMove": "لا يمكن نقل هذه الحاوية أكثر.",
           "parentInvalid": "لا يمكن استخدام هذه المجموعة هنا.",
           "tiebreakersInvalid": "استخدم كل معيار مرة واحدة فقط من القائمة المقترحة.",
@@ -3923,6 +4033,7 @@
             "points": "النقاط",
             "buchholz": "Buchholz",
             "map_diff": "فارق الخرائط",
+            "game_diff": "فارق الألعاب",
             "round_diff": "فارق الجولات",
             "head_to_head": "المواجهة المباشرة",
             "seed": "التصنيف"
@@ -3931,17 +4042,23 @@
         "pointsConfig": {
           "title": "النقاط",
           "hint": "كل مباراة وخريطة وجولة يفوز بها الفريق أو يخسرها تمنحه نقاطاً. لا تُحتسب الجولات إلا على الخرائط ذات النتيجة المسجلة.",
+          "hintGames": "كل مباراة ولعبة يفوز بها الفريق أو يخسرها تمنحه نقاطاً.",
           "enable": "استخدام النقاط",
           "scopes": {
             "match": "المباراة",
             "map": "كل خريطة",
+            "game": "كل لعبة",
             "round": "كل جولة",
             "forfeit": "الانسحاب (يحل محل الباقي)"
           },
           "win": "فوز",
           "loss": "خسارة",
           "notUsed": "لا ترتّب النقاط المجموعة إلا إذا كانت النقاط ضمن معايير كسر التعادل."
-        }
+        },
+        "fieldMatchScope": "الفرق تلعب أيضًا ضد فرق من مجموعات أخرى (احتساب مباريات المرحلة كلها)",
+        "fieldMatchScopeHint": "تُعرض فقط الفرق المعيّنة لهذه المجموعة، وتُحتسب مبارياتها المكتملة في أي مجموعة من هذه المرحلة. عيّن الفرق بعد الحفظ. دوري فقط (Round robin).",
+        "matchScopeNoTeams": "لم تُعيَّن أي فرق لهذه المجموعة بعد، لذا جدولها فارغ. عيّن لها فرقًا أولًا.",
+        "matchScopeSwitchWarning": "التبديل إلى نطاق المرحلة يعرض الفرق المعيّنة فقط. الفرق التي لعبت في هذه المجموعة ولم تُعيَّن ستختفي من جدولها حتى تعيّنها."
       },
       "bracketPage": {
         "title": "إدارة الشجرة",
@@ -4514,6 +4631,213 @@
             "mergeMapNotFound": "هذه الخريطة لم تعد موجودة."
           }
         },
+        "draft": {
+          "metaTitle": "التشكيلة",
+          "title": "تشكيلة اللعبة {order}",
+          "backToMatch": "العودة إلى المباراة",
+          "description": "ترتيب الحظر والاختيار في هذه اللعبة. اترك الخانة فارغة إذا لم تُستخدم.",
+          "differsWarning": "الاستيراد يختلف عن التشكيلة المحفوظة: وجدت إعادة الاستيراد أبطالًا مختلفين. راجع التشكيلة واحفظها للاحتفاظ بتشكيلتك.",
+          "blueSide": "الجانب الأزرق",
+          "blueLockedHint": "يحدده الاستيراد (الفريق الأزرق لدى Riot).",
+          "firstPickLockedHint": "يحدده الاستيراد (الجانب الذي قام بأول حظر).",
+          "firstPick": "أول اختيار",
+          "phase": {
+            "ban1": "مرحلة الحظر 1",
+            "pick1": "مرحلة الاختيار 1",
+            "ban2": "مرحلة الحظر 2",
+            "pick2": "مرحلة الاختيار 2"
+          },
+          "side": {
+            "blue": "أزرق",
+            "red": "أحمر"
+          },
+          "type": {
+            "ban": "حظر",
+            "pick": "اختيار"
+          },
+          "noChampion": "بدون بطل",
+          "searchPlaceholder": "ابحث عن الأبطال",
+          "noResults": "لا توجد أبطال مطابقة",
+          "unplacedTitle": "اختيارات لم تُوضع بعد",
+          "save": "حفظ التشكيلة",
+          "saving": "جارٍ الحفظ…",
+          "saved": "تم حفظ التشكيلة",
+          "error": {
+            "notFound": "تعذر العثور على هذه اللعبة.",
+            "entrantsUnset": "يجب تحديد الفريقين في المباراة أولًا.",
+            "blueNotAnEntrant": "يجب أن يكون الجانب الأزرق أحد الفريقين في المباراة.",
+            "blueLocked": "يحدد الاستيراد الجانب الأزرق للعبة المستوردة.",
+            "firstPickLocked": "يحدد الاستيراد أول اختيار لمباراة مستوردة.",
+            "invalidFirstPick": "يجب أن يكون أول اختيار أزرق أو أحمر.",
+            "invalidStep": "الخطوة {step} غير موجودة أو مذكورة أكثر من مرة.",
+            "unknownChampion": "{championName} غير موجود في قائمة الأبطال.",
+            "duplicateChampion": "{championName} موجود في التشكيلة أكثر من مرة."
+          }
+        },
+        "games": {
+          "heading": "الألعاب",
+          "description": "الألعاب التي لُعبت في هذه السلسلة، بالترتيب.",
+          "empty": "لا توجد ألعاب بعد.",
+          "gameLabel": "اللعبة {order}",
+          "winnerLabel": "الفائز: {name}",
+          "noWinner": "لا يوجد فائز بعد",
+          "finished": "مكتملة",
+          "notFinished": "غير مكتملة",
+          "draftButton": "التشكيلة",
+          "draftDiffers": "الاستيراد يختلف عن التشكيلة المحفوظة",
+          "forfeit": "انسحاب",
+          "cancel": "إلغاء",
+          "save": "حفظ",
+          "saving": "جارٍ الحفظ…",
+          "createButton": "إضافة لعبة",
+          "createTitle": "إضافة لعبة",
+          "editTitle": "تعديل اللعبة",
+          "dialogDescription": "أدخل نتيجة لعبة واحدة من هذه السلسلة.",
+          "editButton": "تعديل",
+          "deleteButton": "حذف",
+          "deleteTitle": "حذف اللعبة",
+          "deleteConfirm": "هل تريد حذف اللعبة {order}؟ سيُعاد حساب نتيجة المواجهة من الألعاب المتبقية.",
+          "deleteError": "تعذّر حذف اللعبة.",
+          "deleteSuccess": "تم حذف اللعبة.",
+          "saveError": "تعذّر حفظ اللعبة.",
+          "saveSuccess": "تم حفظ اللعبة.",
+          "fieldOrder": "الترتيب",
+          "fieldWinner": "الفائز",
+          "fieldWinnerNone": "لا يوجد فائز بعد",
+          "fieldCompleted": "مكتملة",
+          "fieldForfeit": "انسحاب",
+          "fieldNote": "ملاحظة",
+          "fieldError": {
+            "invalid": "أدخل قيمة صحيحة.",
+            "tooLong": "طويل جدًا.",
+            "duplicateOrder": "لعبة أخرى تستخدم هذا الترتيب بالفعل.",
+            "winnerRequired": "اللعبة المكتملة تحتاج إلى فائز.",
+            "notAnEntrant": "يجب أن يكون الفائز أحد الفريقين.",
+            "notCompleted": "حدّد اللعبة كمكتملة لتعيين فائز.",
+            "invalidMatchId": "استخدم الصيغة EUW1_6123456789: رمز المنصة، ثم شرطة سفلية، ثم رقم المباراة.",
+            "duplicateMatchId": "مباراة أخرى تستخدم معرّف مباراة Riot هذا بالفعل."
+          },
+          "fieldApiMatchId": "معرّف مباراة Riot",
+          "fieldApiMatchIdHint": "مثال: EUW1_6123456789. تُستخرج المنصة منه.",
+          "find": {
+            "open": "البحث عن المباريات",
+            "openLabel": "البحث عن المباراة في Riot",
+            "openHint": "يبحث عن المباريات التي لُعبت برموز البطولة. لا يعمل مع المباريات التي لُعبت على عميل البطولة.",
+            "title": "البحث عن المباريات",
+            "description": "يبحث عن المباريات التي لُعبت برموز البطولة في سجل مباريات اللاعبين.",
+            "relayWarning": "لا يعمل «البحث عن المباريات» إلا إذا كان لدى وسيط Riot مفتاح API صالح للعبة League of Legends. تنتهي صلاحية مفاتيح التطوير بعد 24 ساعة.",
+            "teamAccounts": "{name}: {count} من {total} لاعبين لديهم حساب Riot",
+            "regionInferred": "البحث في {cluster} بحسب منطقة البطولة.",
+            "regionLabel": "البحث في",
+            "regionAsk": "لا تحدد منطقة البطولة مكان لعب مبارياتها. اختر منطقة.",
+            "regionUnsupported": "لا يمكن البحث عن المباريات على الخوادم الصينية.",
+            "windowStart": "من",
+            "windowEnd": "إلى",
+            "windowHint": "تبدأ قبل الوقت المحدد بساعة وتنتهي بعده بأربع ساعات. غيّرها إذا أُقيمت السلسلة في وقت آخر.",
+            "noSchedule": "ليس لهذه السلسلة وقت محدد. أدخل النطاق الزمني.",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "حساب لأحد اللاعبين، مثل حساب بديل. يُحفظ فقط إذا ظهر في مباراة تحفظها.",
+            "riotIdRequired": "لا يملك أي فريق حساب Riot في هذه المنطقة بعد. أدخل Riot ID واحدًا على الأقل.",
+            "addRiotId": "إضافة آخر",
+            "search": "بحث",
+            "searching": "جارٍ البحث…",
+            "resultsCount": "{count, plural, zero {لم يتم العثور على مباريات} one {تم العثور على مباراة واحدة} two {تم العثور على مباراتين} few {تم العثور على # مباريات} many {تم العثور على # مباراة} other {تم العثور على # مباراة}}",
+            "minutes": "{minutes} د",
+            "sideSummary": "{team} · معروف {known} من {players}",
+            "sideUnknown": "فريق غير معروف",
+            "badgeBoth": "تم العثور على الفريقين",
+            "badgeOne": "تم العثور على {name} فقط، تحقق من الخصوم",
+            "badgeNames": "{count} من {total} أسماء تطابق {name}",
+            "badgeImported": "مستوردة بالفعل كمباراة {order}",
+            "badgeImportedElsewhere": "مستوردة بالفعل في سلسلة أخرى",
+            "badgeRemake": "إعادة؟",
+            "badgeRiotIds": "يحتوي على {count} من {total} من Riot ID التي أدخلتها",
+            "use": "استخدام هذه المباراة",
+            "emptyTitle": "لم يتم العثور على مباريات. الأسباب المحتملة:",
+            "emptyNoCode": "لم يكن للغرفة رمز بطولة. الصق معرّف المباراة أو استخدم Leaguepedia.",
+            "emptyOtherAccount": "استخدم لاعب حسابًا آخر. جرّب Riot ID آخر.",
+            "emptyWindow": "كان النطاق الزمني خاطئًا. وسّعه.",
+            "emptyRegion": "لُعبت المباريات في منطقة أخرى. ابحث هناك.",
+            "error": {
+              "windowInvalid": "يجب ألا يتجاوز النطاق الزمني 48 ساعة.",
+              "generic": "تعذّر تنفيذ البحث."
+            },
+            "incompleteRateLimited": "قيّدت Riot {failed} من أصل {total} عمليات بحث، لذا قد تكون هذه القائمة ناقصة أو تتضمن مباريات من سلاسل أخرى. انتظر دقيقة ثم ابحث مرة أخرى.",
+            "incomplete": "فشلت {failed} من أصل {total} عمليات بحث، لذا قد تكون هذه القائمة ناقصة أو تتضمن مباريات من سلاسل أخرى. ابحث مرة أخرى."
+          },
+          "gameImport": {
+            "label": "مباراة Leaguepedia",
+            "none": "لا شيء",
+            "noData": "لا توجد بيانات",
+            "gameNumber": "المباراة {number}",
+            "fetch": "جلب من Leaguepedia",
+            "fetching": "جارٍ الجلب…",
+            "renew": "تجديد",
+            "reprocess": "إعادة المعالجة",
+            "success": "تم حفظ المباراة من Leaguepedia",
+            "error": {
+              "noData": "لا تحتوي هذه المباراة على بيانات V5 في Leaguepedia.",
+              "notInBucket": "هذه المباراة غير موجودة في التخزين بعد. اجلبها أولاً.",
+              "pageInvalid": "صفحات Leaguepedia لهذه المباراة ليست بيانات مباراة صالحة.",
+              "fetch": "تعذرت قراءة Leaguepedia. حاول مرة أخرى لاحقاً.",
+              "missingConfig": "تسجيل دخول بوت Leaguepedia غير مُعد على هذا الخادم.",
+              "sidesUnresolved": "الفريقان في هذه المباراة لا يطابقان المشاركين الاثنين في السلسلة.",
+              "missingPlayers": "{count, plural, zero {لا يوجد لاعبون غير مرتبطين} one {لاعب واحد غير مرتبط بشخص بعد} two {لاعبان غير مرتبطين بشخص بعد} few {# لاعبين غير مرتبطين بشخص بعد} many {# لاعباً غير مرتبط بشخص بعد} other {# لاعب غير مرتبط بشخص بعد}}",
+              "invalidUpload": "لم تجتز بيانات المباراة فحوص الاستيراد.",
+              "storeFailed": "تعذر حفظ المباراة.",
+              "invalidOrder": "يجب أن يكون رقم المباراة عدداً صحيحاً أكبر من أو يساوي 1.",
+              "accountConflict": "حساب Riot هذا مرتبط بالفعل بشخص آخر.",
+              "sidesInvalid": "اختر مشاركين مختلفين للجانب الأزرق والأحمر.",
+              "roleInvalid": "أحد الأدوار في التغيير غير صالح.",
+              "orderTaken": "المباراة {order} من هذه السلسلة محفوظة بالفعل ببيانات أخرى. اختر رقم مباراة آخر واحفظ مرة أخرى.",
+              "dataDragonUnavailable": "أسماء الأبطال غير متاحة الآن. حاول لاحقًا.",
+              "unknownChampions": "معرّفات أبطال غير معروفة: {ids}",
+              "storageUnavailable": "تعذّر الوصول إلى مخزن استيراد LoL. تحقق من إعداداته ثم حاول مرة أخرى.",
+              "duplicateAccount": "تم ربط الحساب نفسه مرتين. اربط كل حساب مرة واحدة.",
+              "tournamentRealm": "لُعبت هذه المباراة على خادم البطولات. اجلبها من Leaguepedia بدلاً من ذلك."
+            },
+            "searchPlaceholder": "ابحث بالفريق أو المباراة أو التاريخ",
+            "noResults": "لا توجد مباريات مطابقة",
+            "previewTitle": "راجع المباراة",
+            "previewDescription": "اختر المشارك لكل جانب واربط كل لاعب لم يُربط بعد.",
+            "back": "رجوع",
+            "saveGame": "حفظ المباراة",
+            "sideBlue": "أزرق",
+            "sideRed": "أحمر",
+            "sidesTitle": "الجوانب",
+            "blueSide": "الجانب الأزرق",
+            "redSide": "الجانب الأحمر",
+            "chooseEntrant": "اختر مشاركاً",
+            "suggestedPlayers": "اقتراح من اللاعبين المرتبطين",
+            "suggestedNames": "اقتراح من أسماء الفرق",
+            "winnerLabel": "الفائز: {name}",
+            "noWinner": "لا يوجد فائز",
+            "lengthLabel": "المدة: {minutes} دقيقة",
+            "playersTitle": "اللاعبون",
+            "notLinked": "غير مرتبط بعد",
+            "linkExisting": "ربط بشخص موجود",
+            "createNew": "إنشاء جديد",
+            "newHandle": "اسم الشخص الجديد",
+            "unresolvedHint": "اربط أو أنشئ شخصاً لكل لاعب لم يُربط بعد.",
+            "suggestedPeople": "مقترحون من الفريق:",
+            "realmLive": "مباشر",
+            "realmTournament": "عالم البطولات",
+            "accountNote": "يضيف حسابًا آخر ({realm}، {platform}). لدى {handle} بالفعل: {existing}.",
+            "roleLabel": "الدور",
+            "roleNone": "بلا دور",
+            "positionRole": "مواقع الخريطة تشير إلى {role}",
+            "alreadyStoredHere": "محفوظة كمباراة {order} في هذه السلسلة",
+            "alreadyStoredElsewhere": "محفوظة في سلسلة أخرى",
+            "refreshGames": "تحديث قائمة المباريات",
+            "refreshCooldown": "تم التحديث منذ أقل من ساعة. حاول لاحقًا.",
+            "refreshed": "تم تحديث قائمة المباريات ({count} مباراة)",
+            "refreshError": "تعذّر تحديث قائمة المباريات. حاول لاحقًا.",
+            "riotFetch": "جلب من Riot",
+            "riotSuccess": "تم حفظ المباراة من Riot",
+            "riotTournamentRealm": "لُعبت هذه المباراة على خادم البطولات، لذا لا يمكن جلبها من واجهة Riot البرمجية."
+          }
+        },
         "liquipediaImportButton": "استيراد مباراة من Liquipedia"
       },
       "liquipediaButton": "Liquipedia",
@@ -4792,7 +5116,34 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "جارٍ الاستيراد وجلب بيانات Riot، قد يستغرق ذلك لحظة.",
         "close": "إغلاق"
-      }
+      },
+      "activeFilterLabel": "النشاط",
+      "activeFilterAny": "جميع البطولات",
+      "activeFilterActive": "نشطة",
+      "activeFilterInactive": "غير نشطة",
+      "leaguepedia": {
+        "title": "مباريات Leaguepedia",
+        "description": "تأتي قائمة المباريات من جداول Cargo في Leaguepedia، للصفحة الأساسية وكل الصفحات تحتها.",
+        "basePageLabel": "الصفحة الأساسية في Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "يقرأ الحفظ المباريات من Leaguepedia. إذا فشلت القراءة فلن يُحفظ شيء.",
+        "save": "حفظ وجلب المباريات",
+        "saving": "جارٍ الجلب…",
+        "refresh": "تحديث من Leaguepedia",
+        "lastFetched": "آخر قراءة {date} · {count, plural, zero {لا توجد مباريات} one {مباراة واحدة} two {مباراتان} few {# مباريات} many {# مباراة} other {# مباراة}}",
+        "neverFetched": "لم تتم القراءة بعد",
+        "success": "{count, plural, zero {لا توجد مباريات} one {تم جلب مباراة واحدة} two {تم جلب مباراتين} few {تم جلب # مباريات} many {تم جلب # مباراة} other {تم جلب # مباراة}}",
+        "error": {
+          "gameClaimed": "هذه المباريات تابعة لبطولة أخرى بالفعل، لذا لا يمكن ربطها هنا.",
+          "invalidBasePage": "استخدم اسم صفحة لا يحتوي على # < > [ ] | '{ }' ولا يبدأ أو ينتهي بـ /.",
+          "notFound": "لم يتم العثور على البطولة.",
+          "notLinked": "احفظ صفحة أساسية أولاً.",
+          "cooldown": "تمت قراءة قائمة المباريات قبل أقل من ساعة. حاول لاحقًا.",
+          "missingConfig": "تسجيل دخول بوت Leaguepedia غير مُعد على هذا الخادم.",
+          "fetch": "تعذرت قراءة Leaguepedia. حاول مرة أخرى لاحقاً."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "البلاغات",
@@ -5258,6 +5609,9 @@
       "copyOverlay": "رابط العرض",
       "overlayCopied": "تم نسخ رابط العرض، أضفه كمصدر متصفح."
     },
+    "personPicker": {
+      "notInGame": "ليس في {game} بعد"
+    },
     "rosterSource": {
       "placeholder": "رابط الإعلان",
       "error": {
@@ -5503,7 +5857,6 @@
         "staff_change": "تغيير في الطاقم",
         "tryouts": "Tryouts",
         "not_enough_info": "معلومات غير كافية",
-
         "wrong_game": "لعبة خاطئة",
         "noise": "ضوضاء",
         "match_promo": "ترويج مباراة",
@@ -5546,7 +5899,6 @@
         "explanation": "الشرح",
         "explanationPlaceholder": "لماذا لا يتعلق بالتشكيلة؟",
         "confirm": "تأكيد",
-
         "pickTopic": "عن ماذا يتحدث؟"
       },
       "reviewed": {
@@ -6016,7 +6368,8 @@
       "level": {
         "tournament": "بطولة",
         "match": "مباراة",
-        "map": "خريطة"
+        "map": "خريطة",
+        "game": "اللعبة"
       },
       "matchSearchPlaceholder": "ابحث عن مباراة…",
       "mapSearchPlaceholder": "ابحث عن خريطة…",
@@ -6035,7 +6388,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "المباريات",
       "openMaps": "الخرائط",
-      "goBack": "رجوع"
+      "goBack": "رجوع",
+      "gameEmpty": "لا توجد ألعاب في هذه المواجهة.",
+      "gameSearchPlaceholder": "ابحث عن لعبة…",
+      "openGames": "الألعاب"
     },
     "streams": {
       "title": "قنوات البث",
@@ -6173,8 +6529,14 @@
         "matchNotInTournament": "هذه المباراة لا تنتمي إلى البطولة المحددة.",
         "mapNotFound": "الخريطة غير موجودة.",
         "mapNotInMatch": "هذه الخريطة لا تنتمي إلى المباراة المحددة.",
-        "notFound": "التسجيل غير موجود."
-      }
+        "notFound": "التسجيل غير موجود.",
+        "gameNotFound": "اللعبة غير موجودة.",
+        "gameNotInMatch": "هذه اللعبة لا تنتمي إلى المواجهة المختارة."
+      },
+      "scopeGame": "لعبة محددة",
+      "gameLabel": "اللعبة",
+      "gamePlaceholder": "اختر لعبة…",
+      "gameLoading": "جارٍ التحميل…"
     },
     "apiKeys": {
       "title": "مفاتيح API",
@@ -7446,7 +7808,8 @@
       "state": {
         "linkedToYou": "هذا الملف مرتبط بحسابك بالفعل.",
         "linkedToOther": "هذا الملف مرتبط بحساب آخر بالفعل. تواصل مع الفريق إذا كنت تعتقد أن هذا خطأ.",
-        "pending": "لديك بالفعل طلب ربط حساب قيد المراجعة."
+        "pending": "لديك بالفعل طلب ربط حساب قيد المراجعة.",
+        "linkedToAnotherPerson": "حسابك مرتبط بالفعل بلاعب آخر. إذا كان الملفان لنفس الشخص، اطلب من الفريق دمجهما."
       }
     },
     "error": {
@@ -7477,6 +7840,7 @@
       "invalidType": "يُقبل فقط صور بصيغة JPG أو PNG أو WebP.",
       "tooSmall": "هذه الصورة صغيرة جدًا (400 بكسل على الأقل على أقصر ضلع).",
       "invalidDiscordId": "أدخل معرّف مستخدم Discord صالحًا (من 17 إلى 20 رقمًا) أو دعوة خادم (discord.gg/...).",
+      "userLinkOtherPerson": "حسابك مرتبط بالفعل بلاعب آخر. إذا كان الملفان لنفس الشخص، اطلب من الفريق دمجهما.",
       "sourceTooLong": "هذا الرابط طويل جداً (الحد الأقصى 500 حرف).",
       "invalidSource": "هذا الخيار غير متاح هنا.",
       "leftSourceRequiresLeft": "يتطلب مصدر المغادرة تعليم العضو كمغادر."
@@ -7552,6 +7916,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "الإحصائيات",
     "tabMaps": "الخرائط",
+    "tabChampions": "الأبطال",
+    "championsEmpty": "لم تُلعب أي مباراة بعد.",
+    "championsRolesColumn": "الأدوار",
+    "championsRoleBansNote": "يحتسب الحظر والحضور جميع الأدوار.",
+    "championsInsightMostPicked": "الأكثر اختيارًا",
+    "championsInsightMostBanned": "الأكثر حظرًا",
+    "championsInsightHighestPresence": "الأعلى حضورًا",
+    "championsInsightHighestWinRate": "أعلى نسبة فوز",
+    "championsInsightHighestKda": "أعلى KDA",
     "tabProduction": "الإنتاج",
     "productionTitle": "{tournament} · الإنتاج",
     "statsGroupByLabel": "تجميع حسب",
@@ -7586,6 +7959,15 @@
     "statsFilterAgentAll": "كل العملاء",
     "statsFilterMap": "الخريطة",
     "statsFilterMapAll": "كل الخرائط",
+    "statsChampionColumn": "الأبطال",
+    "statsFilterChampion": "البطل",
+    "statsFilterChampionAll": "كل الأبطال",
+    "statsFilterChampionSearch": "ابحث عن بطل…",
+    "statsFilterChampionNoResult": "لم يتم العثور على بطل",
+    "statsFilterRole": "الدور",
+    "statsFilterRoleAll": "كل الأدوار",
+    "statsFilterPatch": "التحديث",
+    "statsFilterPatchAll": "كل التحديثات",
     "statsFilterStartDate": "من",
     "statsFilterEndDate": "إلى",
     "statsFilterSubmit": "تطبيق الفلاتر",
@@ -7604,6 +7986,22 @@
     "pageOf": "الصفحة {page} من {total}",
     "statsColumns": {
       "played": "الخرائط",
+      "playedGames": "الألعاب",
+      "winRate": "نسبة الفوز",
+      "picks": "الاختيارات",
+      "bans": "الحظر",
+      "presence": "الحضور",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "الجولات",
       "rating": "التقييم",
       "acs": "ACS",
@@ -7647,7 +8045,8 @@
     "mapsPickRatesShowMore": "عرض الكل",
     "mapsPickRatesShowLess": "عرض أقل",
     "factOrganizer": "المنظم",
-    "vs": "ضد"
+    "vs": "ضد",
+    "standingsGames": "الألعاب"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7861,6 +8260,10 @@
     "text": "بعض المعلومات في هذه الصفحة مأخوذة من Liquipedia.",
     "link": "عرض المقال الأصلي"
   },
+  "leaguepediaSource": {
+    "text": "بعض بيانات المباريات في هذه الصفحة مأخوذة من Leaguepedia (CC BY-SA). الصفحات الأصلية:",
+    "game": "اللعبة {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "wikicode لـ Liquipedia",
     "title": "wikicode لـ Liquipedia",
@@ -7905,7 +8308,8 @@
     "copied": "تم النسخ",
     "copyError": "تعذر نسخ الصورة. نزّلها بدلاً من ذلك.",
     "exporting": "جارٍ الإنشاء",
-    "exportError": "تعذر إنشاء الصورة. حاول مرة أخرى."
+    "exportError": "تعذر إنشاء الصورة. حاول مرة أخرى.",
+    "descriptionGames": "صورة PNG بعرض {width} بكسل، جاهزة للمشاركة. اختر كل المباريات أو مباراة واحدة."
   },
   "share": {
     "button": "مشاركة",
@@ -8028,6 +8432,23 @@
       "rateLimited": "طلبات كثيرة جدًا، تمهّل.",
       "invalidRequest": "طلب غير صالح."
     }
+  },
+  "game": {
+    "switcherLabel": "اللعبة",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "غير عام",
+    "previewBanner": "{game} غير متاح للعامة بعد. يمكن للمشرفين فقط رؤية هذه الصفحة."
+  },
+  "lanes": {
+    "TOP": "العلوي",
+    "JUNGLE": "الغابة",
+    "MIDDLE": "الأوسط",
+    "BOTTOM": "السفلي",
+    "UTILITY": "الدعم",
+    "label": "المسارات",
+    "fromGames": "من المباريات:",
+    "invalid": "يمكن اختيار المسارات الخمسة فقط."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

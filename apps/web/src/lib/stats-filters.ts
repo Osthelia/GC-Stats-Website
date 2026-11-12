@@ -11,6 +11,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { LEAGUE_ROLES, type LeagueRole } from "@gc-stats/lol-stats-engine";
+
 export type StatsSearchParams = Record<string, string | string[] | undefined>;
 
 export type ParsedStatsFilters = {
@@ -20,6 +22,19 @@ export type ParsedStatsFilters = {
   startDate: string;
   endDate: string;
 };
+
+/** The role filter's options, in lane order. `laneLabel` names a lane in the visitor's language (the `lanes` messages). */
+export function leagueRoleOptions(laneLabel: (lane: LeagueRole) => string): { value: string; label: string }[] {
+  return LEAGUE_ROLES.map((lane) => ({ value: lane, label: laneLabel(lane) }));
+}
+
+/** The filters of the LoL tournament pages. */
+export type LeagueStatsFilters = { champion: string; role: string; patch: string };
+
+/** A shared LoL link reads `?champion=Ahri&role=MIDDLE&patch=15.18`. */
+export function parseLeagueStatsFilters(searchParams: StatsSearchParams): LeagueStatsFilters {
+  return { champion: raw(searchParams.champion), role: raw(searchParams.role), patch: raw(searchParams.patch) };
+}
 
 const DAYS_VALUES = new Set(["0", "30", "60"]);
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -51,7 +66,7 @@ export function parseStatsGroupBy(searchParams: StatsSearchParams): StatsGroupBy
 }
 
 /** Resolves the filters down to a concrete [from, to) date bound for the SQL query, or null for no date filter. */
-export function resolveDateBounds(filters: ParsedStatsFilters): { from: Date | null; to: Date | null } {
+export function resolveDateBounds(filters: Pick<ParsedStatsFilters, "days" | "startDate" | "endDate">): { from: Date | null; to: Date | null } {
   if (filters.startDate || filters.endDate) {
     return {
       from: filters.startDate ? new Date(`${filters.startDate}T00:00:00.000Z`) : null,

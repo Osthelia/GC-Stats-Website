@@ -20,6 +20,7 @@ import { loadTeamCompMatches, type LoadTeamCompMatchesResult } from "@/actions/t
 import type { MapsFilters } from "@/lib/maps-filters";
 import type { TeamMapComp, TeamMapCompMatch, TeamMapPoolRow } from "@/lib/team-maps-data";
 import type { TournamentMapPickRate } from "@/lib/tournament-maps-data";
+import { useGame } from "@/lib/use-game";
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -61,6 +62,7 @@ export function TeamMapCompsPanel({
   compsByMap: Record<string, TeamMapComp[]>;
   pickRatesByMap: Record<string, TournamentMapPickRate[]>;
 }) {
+  const game = useGame();
   const t = useTranslations("teamPage");
   const [activeMap, setActiveMap] = useState(mapPool[0]?.mapName ?? "");
   const [openComps, setOpenComps] = useState<Set<string>>(new Set());
@@ -76,7 +78,7 @@ export function TeamMapCompsPanel({
   const loadMatches = async (key: string, comp: TeamMapComp) => {
     let result: LoadTeamCompMatchesResult | null = null;
     try {
-      result = await loadTeamCompMatches(teamId, activeMap, comp.agents, filters);
+      result = await loadTeamCompMatches(game, teamId, activeMap, comp.agents, filters);
     } catch {
       result = null;
     }

@@ -7,6 +7,7 @@
  */
 
 import { getTranslations } from "next-intl/server";
+import { gameHasStats, type GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import type {
@@ -14,6 +15,8 @@ import type {
   PlayerAchievement,
   PlayerTabAvailability,
 } from "@/lib/player-page-data";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+import { LaneIcons } from "@/components/match/lol-icon";
 import { CountryBadge, hasCountryFlag } from "@/components/team/country-badge";
 import { AchievementsList } from "@/components/site/achievements-list";
 import { abbreviateTournamentName } from "@/lib/home-data";
@@ -52,15 +55,20 @@ const TABS = ["overview", "matches", "stats", "history", "production"] as const;
 
 /** Rendered once by the tabs layout, the active tab follows the URL. */
 export async function PlayerHeader({
+  game,
   player,
   segment,
   achievements,
   availability,
+  lanes,
 }: {
+  game: GameSlug;
   player: PlayerPageInfo;
   segment: string;
   achievements: { items: PlayerAchievement[]; titles: number; podiums: number };
   availability: PlayerTabAvailability;
+  /** Lanes of the current roster entries (League), empty otherwise. */
+  lanes: LeagueRole[];
 }) {
   const [t, tNav, isAdmin] = await Promise.all([getTranslations("playerPage"), getTranslations("nav"), isViewerAdmin()]);
 
@@ -107,7 +115,7 @@ export async function PlayerHeader({
   const tabAvailable: Record<(typeof TABS)[number], boolean> = {
     overview: true,
     matches: availability.hasMatches,
-    stats: availability.hasMatches,
+    stats: gameHasStats(game) && availability.hasMatches,
     history: availability.hasTeamHistory,
     production: availability.hasProduction,
   };
@@ -196,6 +204,7 @@ export async function PlayerHeader({
                 <h1 className="text-[46px] leading-none font-black tracking-tight text-[var(--gcs-text)]">
                   {player.handle}
                 </h1>
+                <LaneIcons lanes={lanes} size={24} className="self-center" />
                 {!player.isActive && (
                   <span className="text-xs font-medium text-neutral-500">
                     {t("inactive")}

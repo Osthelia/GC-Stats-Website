@@ -3,9 +3,10 @@
 import { headers } from "next/headers";
 import { getClientIp } from "@/lib/client-ip";
 import { checkSearchThrottle } from "@/lib/search-throttle";
+import type { GameSlug } from "@gc-stats/db/game";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
 
-export async function searchCalendarTeams(query: string): Promise<TeamPickerResult[]> {
+export async function searchCalendarTeams(game: GameSlug, query: string): Promise<TeamPickerResult[]> {
   if (typeof query !== "string") return [];
   const term = query.trim().slice(0, 100);
   if (term.length < 2) return [];
@@ -20,5 +21,5 @@ export async function searchCalendarTeams(query: string): Promise<TeamPickerResu
   }
   if (!allowed) throw new Error("Too many search requests");
 
-  return searchTeamsQuery(term);
+  return searchTeamsQuery(game, term);
 }

@@ -10,9 +10,10 @@
  */
 
 import { and, eq, inArray } from "drizzle-orm";
-import { groupEntries, matches, maps } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import type { Tx } from "./repository";
 import type { StandingsPointsConfig } from "./config-types";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 // What the points need of a completed match
 export interface PointsMatch {
@@ -48,15 +49,18 @@ export function entrantPoints(config: StandingsPointsConfig, entrantId: number, 
   return total;
 }
 
-/** Points of every entrant of a group. Rounds come from the map scores, forfeited maps excluded. */
-export async function computeContainerPoints(tx: Tx, containerId: number, config: StandingsPointsConfig): Promise<Map<number, number>> {
+/** Points of every entrant of a group, over the matches of `containerIds` (several when the group counts its whole stage). Rounds come from the map scores, forfeited maps excluded. */
+export async function computeContainerPoints(game: GameSlug, tx: Tx, containerIds: number[], config: StandingsPointsConfig): Promise<Map<number, number>> {
+  const { matches, groupEntries } = gameTables(game);
   const [completed, entries] = await Promise.all([
-    tx.select().from(matches).where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
-    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(eq(groupEntries.containerId, containerId)),
+    tx.select().from(matches).where(and(inArray(matches.containerId, containerIds), eq(matches.status, "completed"))),
+    tx.select({ entrantId: groupEntries.entrantId, hadBye: groupEntries.hadBye }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)),
   ]);
 
   const rounds = new Map<number, { a: number; b: number }>();
-  if (completed.length > 0) {
+  // Only Valorant matches have maps, other games score on the match itself.
+  if (completed.length > 0 && gameHasMaps(game)) {
+    const { maps } = valorantTablesOf(game);
     const mapRows = await tx.select().from(maps).where(inArray(maps.matchId, completed.map((m) => m.id)));
     for (const mp of mapRows) {
       if (!mp.isCompleted || mp.isForfeit || mp.teamAScore === null || mp.teamBScore === null) continue;

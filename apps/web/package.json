@@ -36,6 +36,7 @@
     "@fontsource/teko": "^5.3.0",
     "@fullcalendar/react": "^7.1.2",
     "@gc-stats/db": "*",
+    "@gc-stats/lol-stats-engine": "*",
     "@gc-stats/map-stats-engine": "*",
     "@gc-stats/storage": "*",
     "@osthelia/bracket-engine": "*",

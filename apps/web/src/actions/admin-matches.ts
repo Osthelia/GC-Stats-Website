@@ -15,9 +15,10 @@
 import { eq, ne, and, asc, inArray, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, entrants, maps, matchVetos, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw, stageContainers, stages, groupEntries, teams, liquipediaTeamNames, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
+import { usesStageScope } from "@/lib/bracket/config-types";
 import { resolveMatch, MatchResolutionValidationError } from "@/lib/bracket/match-resolution-service";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { MAP_OPTIONS, MAP_UNKNOWN, VALORANT_MAP_POOL } from "@/lib/valorant-maps";
@@ -31,18 +32,19 @@ import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
   return access.userId;
 }
 
-type MapLogInput = { mapId: number; matchId: number; actorUserId: string; description: string; event?: "created" | "updated" | "deleted"; changes?: ActivityChanges; properties?: Record<string, unknown> };
+type MapLogInput = { game: GameSlug; mapId: number; matchId: number; actorUserId: string; description: string; event?: "created" | "updated" | "deleted"; changes?: ActivityChanges; properties?: Record<string, unknown> };
 
 /** Map edits are logged on the map itself, with its match in the properties. */
 function logMapChange(client: ActivityLogClient, input: MapLogInput) {
-  const { mapId, matchId, actorUserId, description, event = "updated", changes, properties } = input;
-  return logActivity({ subject: "map", subjectId: mapId, event, description, actorUserId, changes, properties: { matchId, ...properties } }, client);
+  const { game, mapId, matchId, actorUserId, description, event = "updated", changes, properties } = input;
+  return logActivity({ game, subject: "map", subjectId: mapId, event, description, actorUserId, changes, properties: { matchId, ...properties } }, client);
 }
 
 // --- Match details (non-result fields) -------------------------------------
@@ -60,7 +62,8 @@ export type MatchDetailsInput = {
 };
 export type MatchDetailsResult = { ok: true } | { ok: false; fieldErrors: MatchDetailsFieldErrors };
 
-export async function updateMatchDetails(matchId: number, input: MatchDetailsInput): Promise<MatchDetailsResult> {
+export async function updateMatchDetails(game: GameSlug, matchId: number, input: MatchDetailsInput): Promise<MatchDetailsResult> {
+  const { matches, entrants, stageContainers, stages, groupEntries } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -81,13 +84,13 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
       fieldErrors.entrantBId = "sameEntrant";
     }
     const [matchTournament] = await db
-      .select({ tournamentId: stages.tournamentId, containerType: stageContainers.containerType })
+      .select({ tournamentId: stages.tournamentId, containerType: stageContainers.containerType, config: stageContainers.config })
       .from(stageContainers)
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
       .where(eq(stageContainers.id, existing.containerId))
       .limit(1);
     const groupEntrantIds =
-      matchTournament!.containerType === "group"
+      matchTournament!.containerType === "group" && !usesStageScope(matchTournament!.config)
         ? new Set((await db.select({ entrantId: groupEntries.entrantId }).from(groupEntries).where(eq(groupEntries.containerId, existing.containerId))).map((e) => e.entrantId))
         : new Set<number>();
     for (const [field, id] of [
@@ -134,7 +137,7 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
     await tx.update(matches).set(values).where(eq(matches.id, matchId));
     const changes = diffChanges(existing, values);
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
     }
   });
   updateTag(matchTag(matchId));
@@ -145,7 +148,8 @@ export async function updateMatchDetails(matchId: number, input: MatchDetailsInp
 export type DeleteMatchResult = { ok: true } | { ok: false; error: "notFound" | "completedLocked" };
 
 /** V1's admin/matches/show.blade.php delete button — a completed match is locked (mirrors the same guard already used for entrant/status/bestOf edits above: its result may already be propagated through the bracket). */
-export async function deleteMatch(matchId: number): Promise<DeleteMatchResult> {
+export async function deleteMatch(game: GameSlug, matchId: number): Promise<DeleteMatchResult> {
+  const { matches } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: matches.id, status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -154,7 +158,7 @@ export async function deleteMatch(matchId: number): Promise<DeleteMatchResult> {
 
   await db.transaction(async (tx) => {
     await tx.delete(matches).where(eq(matches.id, matchId));
-    await logActivity({ subject: "match", subjectId: matchId, event: "deleted", description: `Deleted match #${matchId}`, actorUserId }, tx);
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "deleted", description: `Deleted match #${matchId}`, actorUserId }, tx);
   });
   return { ok: true };
 }
@@ -169,7 +173,7 @@ export type ReportResultFieldErrors = Partial<Record<ReportResultField, string>>
 export type ReportResultInput = { winnerId: number; scoreA: string; scoreB: string };
 export type ReportResultResult = { ok: true } | { ok: false; fieldErrors: ReportResultFieldErrors };
 
-export async function reportMatchResult(matchId: number, input: ReportResultInput): Promise<ReportResultResult> {
+export async function reportMatchResult(game: GameSlug, matchId: number, input: ReportResultInput): Promise<ReportResultResult> {
   const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: ReportResultFieldErrors = {};
@@ -181,7 +185,7 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   try {
-    await resolveMatch({ matchId, winnerId: input.winnerId, scoreA, scoreB });
+    await resolveMatch(game, { matchId, winnerId: input.winnerId, scoreA, scoreB });
   } catch (err) {
     if (err instanceof MatchResolutionValidationError) {
       const mapped: ReportResultFieldErrors = {};
@@ -195,6 +199,7 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
     throw err;
   }
   await logActivity({
+    game,
     subject: "match",
     subjectId: matchId,
     event: "updated",
@@ -208,7 +213,8 @@ export async function reportMatchResult(matchId: number, input: ReportResultInpu
 }
 
 /** Running score of an undecided series (e.g. 1-1 in a BO3): stored as is, the match stays open and nothing propagates. */
-export async function saveMatchLiveScore(matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
+export async function saveMatchLiveScore(game: GameSlug, matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
+  const { matches } = gameTables(game);
   const actorUserId = await requireTournamentsActor();
 
   const scoreA = Number(input.scoreA);
@@ -223,7 +229,7 @@ export async function saveMatchLiveScore(matchId: number, input: { scoreA: strin
     await tx.update(matches).set({ scoreA, scoreB }).where(eq(matches.id, matchId));
     const changes = diffChanges(match, { scoreA, scoreB });
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
     }
   });
   updateTag(matchTag(matchId));
@@ -243,7 +249,9 @@ export type VetoRowInput = {
 export type VetoFieldErrors = Partial<Record<"rows", string>>;
 export type SaveVetoResult = { ok: true } | { ok: false; fieldErrors: VetoFieldErrors };
 
-export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Promise<SaveVetoResult> {
+export async function saveMatchVeto(game: GameSlug, matchId: number, rows: VetoRowInput[]): Promise<SaveVetoResult> {
+  const { matches } = gameTables(game);
+  const { matchVetos } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -294,11 +302,11 @@ export async function saveMatchVeto(matchId: number, rows: VetoRowInput[]): Prom
 
     await syncPlayedMapsFromVeto(tx, matchId, rows);
     await logActivity(
-      { subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
+      { game, subject: "match", subjectId: matchId, event: "updated", description: `Saved veto of match #${matchId}`, actorUserId, properties: { section: "veto", rows: rows.map((r) => ({ entrantId: r.entrantId, mapName: r.mapName, type: r.type, side: r.side })) } },
       tx
     );
   });
-  await syncMatchScoreFromMaps(matchId);
+  await syncMatchScoreFromMaps(game, matchId);
   updateTag(matchTag(matchId));
 
   return { ok: true };
@@ -322,6 +330,7 @@ export type MapResult = { ok: true; id: number } | { ok: false; fieldErrors: Map
 const API_MATCH_ID_RE = /^[A-Za-z0-9_-]{1,100}$/;
 
 async function validateMapInput(input: MapInput, currentMapId: number | null): Promise<MapFieldErrors> {
+  const { maps } = valorantTables;
   const fieldErrors: MapFieldErrors = {};
   if (!MAP_OPTIONS.includes(input.mapName as (typeof MAP_OPTIONS)[number])) fieldErrors.mapName = "invalid";
 
@@ -359,9 +368,9 @@ async function validateMapInput(input: MapInput, currentMapId: number | null): P
 }
 
 /** Keeps the match score in line with its maps after a manual map change; never fails the map save itself. */
-async function syncMatchScoreFromMaps(matchId: number): Promise<void> {
+async function syncMatchScoreFromMaps(game: GameSlug, matchId: number): Promise<void> {
   try {
-    await maybeAutoCompleteMatchFromMaps(matchId);
+    await maybeAutoCompleteMatchFromMaps(game, matchId);
   } catch (err) {
     console.warn(`[admin-matches] match score sync failed for match #${matchId}: ${err instanceof Error ? err.message : String(err)}`);
   }
@@ -371,7 +380,9 @@ function deriveMapIsForfeit(input: MapInput): boolean {
   return Number(input.teamAScore) === -1 || Number(input.teamBScore) === -1;
 }
 
-export async function addMap(matchId: number, input: MapInput): Promise<MapResult> {
+export async function addMap(game: GameSlug, matchId: number, input: MapInput): Promise<MapResult> {
+  const { matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [match] = await db.select({ id: matches.id }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -396,17 +407,18 @@ export async function addMap(matchId: number, input: MapInput): Promise<MapResul
       })
       .returning({ id: maps.id });
     if (!row) throw new Error("Insert returned no row");
-    await logMapChange(tx, { mapId: row.id, matchId, actorUserId, event: "created", description: `Added map ${input.mapName} to match #${matchId}`, properties: { mapName: input.mapName, order: Number(input.order) } });
-    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Added map ${input.mapName} to match #${matchId}`, actorUserId, properties: { section: "maps", mapId: row.id } }, tx);
+    await logMapChange(tx, { game, mapId: row.id, matchId, actorUserId, event: "created", description: `Added map ${input.mapName} to match #${matchId}`, properties: { mapName: input.mapName, order: Number(input.order) } });
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Added map ${input.mapName} to match #${matchId}`, actorUserId, properties: { section: "maps", mapId: row.id } }, tx);
     return row;
   });
-  await syncMatchScoreFromMaps(matchId);
+  await syncMatchScoreFromMaps(game, matchId);
   updateTag(matchTag(matchId));
 
   return { ok: true, id: created.id };
 }
 
-export async function updateMap(mapId: number, input: MapInput): Promise<MapResult> {
+export async function updateMap(game: GameSlug, mapId: number, input: MapInput): Promise<MapResult> {
+  const { maps } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select().from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -429,10 +441,10 @@ export async function updateMap(mapId: number, input: MapInput): Promise<MapResu
     await tx.update(maps).set(values).where(eq(maps.id, mapId));
     const changes = diffChanges(existing, values);
     if (Object.keys(changes).length > 0) {
-      await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Updated map #${mapId} of match #${existing.matchId}`, changes });
+      await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, description: `Updated map #${mapId} of match #${existing.matchId}`, changes });
     }
   });
-  await syncMatchScoreFromMaps(existing.matchId);
+  await syncMatchScoreFromMaps(game, existing.matchId);
   updateTag(matchTag(existing.matchId));
 
   return { ok: true, id: mapId };
@@ -440,7 +452,8 @@ export async function updateMap(mapId: number, input: MapInput): Promise<MapResu
 
 export type DeleteMapResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function deleteMap(mapId: number): Promise<DeleteMapResult> {
+export async function deleteMap(game: GameSlug, mapId: number): Promise<DeleteMapResult> {
+  const { maps } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName }).from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -448,10 +461,10 @@ export async function deleteMap(mapId: number): Promise<DeleteMapResult> {
 
   await db.transaction(async (tx) => {
     await tx.delete(maps).where(eq(maps.id, mapId));
-    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, event: "deleted", description: `Deleted map ${existing.mapName} of match #${existing.matchId}` });
-    await logActivity({ subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
+    await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, event: "deleted", description: `Deleted map ${existing.mapName} of match #${existing.matchId}` });
+    await logActivity({ game, subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
   });
-  await syncMatchScoreFromMaps(existing.matchId);
+  await syncMatchScoreFromMaps(game, existing.matchId);
   updateTag(matchTag(existing.matchId));
   return { ok: true };
 }
@@ -459,7 +472,8 @@ export async function deleteMap(mapId: number): Promise<DeleteMapResult> {
 export type ResetMapResult = { ok: true } | { ok: false; error: "notFound" };
 
 /** V1's "Reset map" (admin.matches.maps.reset) — wipes stats/rounds/score but keeps apiMatchId/mapName so a Fetch can be retried. */
-export async function resetMap(mapId: number): Promise<ResetMapResult> {
+export async function resetMap(game: GameSlug, mapId: number): Promise<ResetMapResult> {
+  const { maps, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -470,9 +484,9 @@ export async function resetMap(mapId: number): Promise<ResetMapResult> {
     await tx.delete(mapTeamRoundSummary).where(eq(mapTeamRoundSummary.mapId, mapId));
     await tx.delete(mapRoundsRaw).where(eq(mapRoundsRaw.mapId, mapId)); // cascades to kills/loadouts/positions
     await tx.update(maps).set({ teamAScore: null, teamBScore: null, isCompleted: false, isForfeit: false }).where(eq(maps.id, mapId));
-    await logMapChange(tx, { mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
+    await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
   });
-  await syncMatchScoreFromMaps(existing.matchId);
+  await syncMatchScoreFromMaps(game, existing.matchId);
   updateTag(matchTag(existing.matchId));
 
   return { ok: true };
@@ -527,7 +541,9 @@ function validatePlayerStatRow(row: MapPlayerStatInput, prefix: string, errors: 
 }
 
 /** Replaces every `map_player_stats` row for this map (idempotent, mirrors the Fetch pipeline's delete+reinsert convention) with the manually entered scoreboard. Used when no Riot match id exists to Fetch from. */
-export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerStatInput[], playersB: MapPlayerStatInput[]): Promise<UpdateMapPlayerStatsResult> {
+export async function updateMapPlayerStats(game: GameSlug, mapId: number, playersA: MapPlayerStatInput[], playersB: MapPlayerStatInput[]): Promise<UpdateMapPlayerStatsResult> {
+  const { matches } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const [map] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -563,7 +579,7 @@ export async function updateMapPlayerStats(mapId: number, playersA: MapPlayerSta
   await db.transaction(async (tx) => {
     await tx.delete(mapPlayerStats).where(eq(mapPlayerStats.mapId, mapId));
     if (rowsToInsert.length > 0) await tx.insert(mapPlayerStats).values(rowsToInsert);
-    await logMapChange(tx, { mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
+    await logMapChange(tx, { game, mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
   });
   updateTag(matchTag(map.matchId));
 
@@ -615,7 +631,8 @@ export type ImportWikicodeResult =
 type LiquipediaLinkPlan = { teamId: number; name: string; conflict: LiquipediaImportConflict | null };
 
 /** Compares the wikicode's opponents with the Liquipedia table, one plan per slot that has both a team and a name. */
-async function planLiquipediaLinks(wikicode: string, entrantIds: [number, number]): Promise<LiquipediaLinkPlan[]> {
+async function planLiquipediaLinks(game: GameSlug, wikicode: string, entrantIds: [number, number]): Promise<LiquipediaLinkPlan[]> {
+  const { entrants, teams } = gameTables(game);
   const names = parseMatchOpponentNames(wikicode);
   const entrantRows = await db
     .select({ id: entrants.id, teamId: entrants.teamId, teamName: teams.name })
@@ -635,7 +652,7 @@ async function planLiquipediaLinks(wikicode: string, entrantIds: [number, number
   if (slots.length === 0) return [];
 
   const mappings = await findLiquipediaMappings(
-    slots.map((s) => s.teamId),
+    game, slots.map((s) => s.teamId),
     slots.map((s) => s.name)
   );
   const plans: LiquipediaLinkPlan[] = [];
@@ -660,10 +677,12 @@ async function planLiquipediaLinks(wikicode: string, entrantIds: [number, number
 }
 
 export async function importMatchWikicode(
-  matchId: number,
+  game: GameSlug, matchId: number,
   wikicode: string,
   resolutions: Partial<Record<"1" | "2", LiquipediaConflictResolution>> = {}
 ): Promise<ImportWikicodeResult> {
+  const { matches, liquipediaTeamNames } = gameTables(game);
+  const { maps, matchVetos, mapPlayerStats } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const trimmed = wikicode.trim();
@@ -693,7 +712,7 @@ export async function importMatchWikicode(
     }
   }
 
-  const linkPlans = await planLiquipediaLinks(trimmed, [match.entrantAId, match.entrantBId]);
+  const linkPlans = await planLiquipediaLinks(game, trimmed, [match.entrantAId, match.entrantBId]);
   const conflicts = linkPlans.map((p) => p.conflict).filter((c): c is LiquipediaImportConflict => c !== null);
   for (const conflict of conflicts) {
     const resolution = resolutions[String(conflict.slot) as "1" | "2"];
@@ -789,12 +808,12 @@ export async function importMatchWikicode(
 
     const staleMapIds = existingMaps.filter((m) => m.order > playOrder.length && !hasData(m)).map((m) => m.id);
     if (staleMapIds.length > 0) await tx.delete(maps).where(inArray(maps.id, staleMapIds));
-    await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
+    await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
   });
   updateTag(matchTag(matchId));
 
-  const fetches = await fetchImportedMaps(matchId, fetchOrders, actorUserId);
-  await syncVetoSidesFromRounds(matchId, match.entrantAId, match.entrantBId);
+  const fetches = await fetchImportedMaps(game, matchId, fetchOrders, actorUserId);
+  await syncVetoSidesFromRounds(game, matchId, match.entrantAId, match.entrantBId);
   updateTag(matchTag(matchId));
 
   return { ok: true, linkedNames: linksToWrite.length, fetches };
@@ -811,7 +830,8 @@ function colorFromMapScore(rosters: TeamColorRoster[], teamAScore: number | null
 }
 
 /** Runs the Riot fetch of the given map orders one by one. A fetch asking for an admin step is reported as is, the map keeps its data. */
-async function fetchImportedMaps(matchId: number, orders: number[], actorUserId: string): Promise<ImportMapFetch[]> {
+async function fetchImportedMaps(game: GameSlug, matchId: number, orders: number[], actorUserId: string): Promise<ImportMapFetch[]> {
+  const { maps } = valorantTablesOf(game);
   if (orders.length === 0) return [];
   const rows = await db.select({ id: maps.id, order: maps.order, mapName: maps.mapName, teamAScore: maps.teamAScore, teamBScore: maps.teamBScore }).from(maps).where(and(eq(maps.matchId, matchId), inArray(maps.order, orders))).orderBy(asc(maps.order));
 
@@ -819,14 +839,14 @@ async function fetchImportedMaps(matchId: number, orders: number[], actorUserId:
   for (const row of rows) {
     const base = { mapId: row.id, order: row.order, mapName: row.mapName ?? "" };
     try {
-      let result = await runFetchMapData(row.id);
+      let result = await runFetchMapData(game, row.id);
       // Rosters can't tell the teams apart: the map's own score says which Riot team is entrant A.
       if (!result.ok && result.error.kind === "teamColorAmbiguous") {
         const teamAColor = colorFromMapScore(result.error.rosters, row.teamAScore, row.teamBScore);
-        if (teamAColor) result = await runFetchMapData(row.id, { teamAColor });
+        if (teamAColor) result = await runFetchMapData(game, row.id, { teamAColor });
       }
       if (result.ok) {
-        await logMapChange(db, { mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
+        await logMapChange(db, { game, mapId: row.id, matchId, actorUserId, description: `Fetched data of map #${row.id}`, properties: { section: "fetch" } });
         outcomes.push({ ...base, status: "fetched" });
       } else {
         outcomes.push({ ...base, status: "needsStep", reason: result.error.kind });
@@ -845,7 +865,8 @@ async function fetchImportedMaps(matchId: number, orders: number[], actorUserId:
  * side belongs to the team choosing it (the team that did not pick the map,
  * or the decider's team), as in the veto form.
  */
-async function syncVetoSidesFromRounds(matchId: number, entrantAId: number, entrantBId: number): Promise<void> {
+async function syncVetoSidesFromRounds(game: GameSlug, matchId: number, entrantAId: number, entrantBId: number): Promise<void> {
+  const { maps, matchVetos, mapRoundsRaw } = valorantTablesOf(game);
   const mapRows = await db.select({ id: maps.id, order: maps.order }).from(maps).where(eq(maps.matchId, matchId));
   if (mapRows.length === 0) return;
   const firstRounds = await db
@@ -862,7 +883,7 @@ async function syncVetoSidesFromRounds(matchId: number, entrantAId: number, entr
     if (!map) continue;
     let atkEntrantId = atkByMapId.get(map.id) ?? null;
     if (!atkEntrantId) {
-      const attacker = await detectStartingAttacker(map.id);
+      const attacker = await detectStartingAttacker(game, map.id);
       atkEntrantId = attacker === "a" ? entrantAId : attacker === "b" ? entrantBId : null;
     }
     if (!atkEntrantId) continue;

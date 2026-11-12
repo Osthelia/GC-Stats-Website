@@ -17,7 +17,7 @@ import crypto from "node:crypto";
 import https from "node:https";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { apiKeys, tournaments, webhookDeliveries, webhookEndpoints } from "@gc-stats/db";
+import { apiKeys, valorantTables, webhookDeliveries, webhookEndpoints } from "@gc-stats/db";
 import { decrypt } from "@/lib/encryption";
 import { queryOpenDataRowsByIds } from "@/lib/opendata/datasets";
 import type { OpenDataDataset, OpenDataRow } from "@/lib/opendata/datasets-meta";
@@ -64,8 +64,10 @@ function matchesEndpoint(endpoint: ActiveEndpoint, event: WebhookEvent, context:
   return true;
 }
 
+// Webhooks cover Valorant data only.
 async function loadTournamentOfficial(ids: number[]): Promise<Map<number, boolean>> {
   if (ids.length === 0) return new Map();
+  const { tournaments } = valorantTables;
   const rows = await db.select({ id: tournaments.id, isOfficial: tournaments.isOfficial }).from(tournaments).where(inArray(tournaments.id, ids));
   return new Map(rows.map((r) => [r.id, r.isOfficial]));
 }
@@ -91,7 +93,7 @@ async function loadEntities(entity: string, ids: number[]): Promise<Map<number, 
     const officialById = await loadTournamentOfficial([...rows.keys()]);
     const entrants = rows.size
       ? await db.execute<{ tournament_id: number; team_ids: number[] }>(
-          sql`select tournament_id::int, array_agg(distinct team_id)::int[] as team_ids from entrants where team_id is not null and tournament_id = any(${sql.raw(`array[${[...rows.keys()].join(",")}]::bigint[]`)}) group by tournament_id`,
+          sql`select tournament_id::int, array_agg(distinct team_id)::int[] as team_ids from val_entrants where team_id is not null and tournament_id = any(${sql.raw(`array[${[...rows.keys()].join(",")}]::bigint[]`)}) group by tournament_id`,
         )
       : { rows: [] };
     const teamsByTournament = new Map(entrants.rows.map((r) => [r.tournament_id, r.team_ids]));

@@ -13,8 +13,9 @@ import { buttonVariants } from "@/components/ui/button";
 import type { AdminUserLinkedPlayer } from "@/lib/admin-user-detail";
 
 /** Mirrors V1's admin user detail "player" card — resources/views/admin/users/show.blade.php. */
-export async function LinkedPlayerPanel({ player }: { player: AdminUserLinkedPlayer | null }) {
+export async function LinkedPlayerPanel({ players }: { players: AdminUserLinkedPlayer[] }) {
   const t = await getTranslations("admin.users.linkedPlayer");
+  const tGame = await getTranslations("game");
 
   return (
     <Card>
@@ -22,13 +23,14 @@ export async function LinkedPlayerPanel({ player }: { player: AdminUserLinkedPla
         <CardTitle>{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        {!player ? (
+        {players.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("none")}</p>
         ) : (
-          <>
+          players.map((player) => (
+          <div key={player.game} className="mb-4 last:mb-0">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">{player.handle}</span>
-              <Link href={`/admin/players/${player.id}`} className={buttonVariants({ size: "sm", variant: "outline" })}>
+              <span className="text-sm font-medium">{player.handle} <span className="text-xs font-normal text-muted-foreground">({tGame(player.game)})</span></span>
+              <Link href={`/admin/${player.game}/players/${player.id}`} className={buttonVariants({ size: "sm", variant: "outline" })}>
                 {t("view")}
               </Link>
             </div>
@@ -40,7 +42,7 @@ export async function LinkedPlayerPanel({ player }: { player: AdminUserLinkedPla
                 {player.currentTeams.map((team) => (
                   <Link
                     key={team.id}
-                    href={`/admin/teams/${team.id}`}
+                    href={`/admin/${player.game}/teams/${team.id}`}
                     className="rounded-md border bg-muted px-2 py-1 text-xs font-medium transition-colors hover:bg-muted/70"
                   >
                     {team.name}
@@ -48,7 +50,8 @@ export async function LinkedPlayerPanel({ player }: { player: AdminUserLinkedPla
                 ))}
               </div>
             )}
-          </>
+          </div>
+          ))
         )}
       </CardContent>
     </Card>

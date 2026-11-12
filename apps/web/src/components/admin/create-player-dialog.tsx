@@ -26,8 +26,10 @@ import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
 import { TeamPicker } from "@/components/admin/team-picker";
 import { createPlayer, type CreatePlayerFieldErrors } from "@/actions/admin-players";
+import { useGame } from "@/lib/use-game";
 
 export function CreatePlayerDialog() {
+  const game = useGame();
   const t = useTranslations("admin.players");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -50,7 +52,7 @@ export function CreatePlayerDialog() {
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createPlayer({ handle, countryCode, vlrId, teamId: team ? String(team.id) : "" });
+      const result = await createPlayer(game, { handle, countryCode, vlrId, teamId: team ? String(team.id) : "" });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

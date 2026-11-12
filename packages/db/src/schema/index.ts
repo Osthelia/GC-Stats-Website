@@ -12,7 +12,7 @@ export * from "./custom-types";
 export * from "./auth";
 export * from "./people";
 export * from "./bracket";
-export * from "./stats";
+export * from "./game-tables";
 export * from "./content";
 export * from "./notifications";
 export * from "./platform";

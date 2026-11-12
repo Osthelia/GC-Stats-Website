@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { setContainerParticipants } from "@/actions/admin-containers";
 import type { AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 /** Teams shown in a Swiss or round robin on the public page, with or without matches. */
 export function GroupParticipantsDialog({
@@ -32,6 +33,7 @@ export function GroupParticipantsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -56,7 +58,7 @@ export function GroupParticipantsDialog({
   function handleSubmit() {
     setError(null);
     startTransition(async () => {
-      const result = await setContainerParticipants(container.id, stageId, [...selected]);
+      const result = await setContainerParticipants(game, container.id, stageId, [...selected]);
       if (!result.ok) {
         setError(t(`error.${result.error}`));
         return;

@@ -9,6 +9,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useGame } from "@/lib/use-game";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
@@ -39,6 +40,7 @@ export function SetDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -57,8 +59,8 @@ export function SetDialog({
     setFieldErrors({});
     startTransition(async () => {
       const result = existing
-        ? await renameContainerSet(existing.id, stageId, { name })
-        : await createContainerSet(stageId, { name, parentId: parentId === ROOT_VALUE ? null : Number(parentId) });
+        ? await renameContainerSet(game, existing.id, stageId, { name })
+        : await createContainerSet(game, stageId, { name, parentId: parentId === ROOT_VALUE ? null : Number(parentId) });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

@@ -11,10 +11,13 @@
  */
 
 import { and, eq, gte, lte } from "drizzle-orm";
+import { forEachGame } from "../for-each-game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { postDiscordWebhook } from "@/lib/discord-webhook";
 import { logAutoActivation } from "../log-auto-activation";
+import { isGamePublic } from "@/lib/public-games";
 
 const WINDOW_DAYS = 1;
 
@@ -24,7 +27,8 @@ const WINDOW_DAYS = 1;
  * automatically, most editors can't edit a finished tournament. Mirrors
  * V1's tournaments:activate-live.
  */
-export async function activateLiveTournaments(): Promise<string> {
+async function activateLiveTournamentsForGame(game: GameSlug): Promise<string> {
+  const { tournaments } = gameTables(game);
   const now = new Date();
   const windowStart = new Date(now.getTime() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
   const windowEnd = new Date(now.getTime() + WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -55,9 +59,14 @@ export async function activateLiveTournaments(): Promise<string> {
     });
     if (!didActivate) continue;
 
-    await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${tournament.name}`);
+    // The tournament is activated either way, the notice is only sent for a public game.
+    if (isGamePublic(game)) await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🔴 **LIVE** : ${tournament.name}`);
     activated++;
   }
 
   return `activated ${activated}/${candidates.length} tournament(s)`;
+}
+
+export function activateLiveTournaments(): Promise<string> {
+  return forEachGame(activateLiveTournamentsForGame);
 }

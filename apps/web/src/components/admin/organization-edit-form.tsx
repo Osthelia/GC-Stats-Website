@@ -18,7 +18,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FormField } from "@/components/admin/form-field";
 import { CountrySelect } from "@/components/admin/country-select";
-import { updateOrganizationProfile, type OrganizationProfileFieldErrors } from "@/actions/admin-organizations";
+import { type GameSlug } from "@gc-stats/db/game";
+import { GameChips } from "@/components/admin/game-chips";
+import { updateOrganizationProfile, type AdminOrganizationProfileFieldErrors } from "@/actions/admin-organizations";
 import type { AdminOrganizationProfile } from "@/lib/admin-organizations";
 import { ORGANIZATION_TAGS } from "@/lib/organization-tags";
 import { cn } from "@/lib/utils";
@@ -36,7 +38,7 @@ export function OrganizationEditForm({
   const t = useTranslations("admin.organizations.edit");
   const tTags = useTranslations("admin.organizations.tagOptions");
   const [isPending, startTransition] = useTransition();
-  const [errors, setErrors] = useState<OrganizationProfileFieldErrors>({});
+  const [errors, setErrors] = useState<AdminOrganizationProfileFieldErrors>({});
 
   const [name, setName] = useState(organization.name);
   const [slug, setSlug] = useState(organization.slug);
@@ -45,12 +47,13 @@ export function OrganizationEditForm({
   const [bio, setBio] = useState(organization.bio ?? "");
   const [liquipediaLink, setLiquipediaLink] = useState(organization.liquipediaLink ?? "");
   const [socials, setSocials] = useState<Record<string, string>>(organization.socials);
+  const [games, setGames] = useState<GameSlug[]>(organization.games);
   const [tags, setTags] = useState<string[]>(organization.tags);
 
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags });
+      const result = await updateOrganizationProfile(organization.id, { name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags, games });
       if (!result.ok) {
         setErrors(result.fieldErrors);
         toast.error(t("save"));
@@ -60,7 +63,7 @@ export function OrganizationEditForm({
     });
   }
 
-  const err = (field: keyof OrganizationProfileFieldErrors) => (errors[field] ? t(`error.${errors[field]}`) : undefined);
+  const err = (field: keyof AdminOrganizationProfileFieldErrors) => (errors[field] ? t(`error.${errors[field]}`) : undefined);
 
   return (
     <div className="flex flex-col gap-4">
@@ -73,6 +76,10 @@ export function OrganizationEditForm({
             <CardContent className="flex flex-col gap-4">
               <FormField label={t("fieldName")} htmlFor="organization-name" required error={err("name")}>
                 <Input id="organization-name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errors.name} />
+              </FormField>
+
+              <FormField label={t("fieldGames")} htmlFor="organization-games" required error={err("games")}>
+                <GameChips id="organization-games" value={games} onChange={setGames} invalid={!!errors.games} />
               </FormField>
 
               <FormField label={t("fieldSlug")} htmlFor="organization-slug" required hint={t("fieldSlugHint")} error={err("slug")}>

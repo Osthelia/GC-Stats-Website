@@ -13,12 +13,13 @@
 
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, liquipediaTeamNames, liquipediaPersonNames, people, stageContainers, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { findLiquipediaMappings, findLiquipediaPersonMappings, findTeamStaffByLiquipediaName, getTournamentLiquipediaBrackets } from "@/lib/admin-liquipedia";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { validateLiquipediaName, type LiquipediaNameError } from "@/lib/liquipedia-name-validation";
 import { validateBracketTemplate, type BracketTemplateError } from "@/lib/liquipedia-bracket-wikicode";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaRowError = { error: LiquipediaNameError | "duplicate" | "nameTaken" | "teamNotInTournament"; teamName?: string };
 
@@ -28,8 +29,9 @@ export type SaveLiquipediaNamesResult =
 
 const MAX_ROWS = 300;
 
-export async function saveLiquipediaTeamNames(tournamentId: number, rows: { teamId: number; name: string }[]): Promise<SaveLiquipediaNamesResult> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function saveLiquipediaTeamNames(game: GameSlug, tournamentId: number, rows: { teamId: number; name: string }[]): Promise<SaveLiquipediaNamesResult> {
+  const { entrants, liquipediaTeamNames } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 
   if (!Number.isInteger(tournamentId) || !Array.isArray(rows)) return { ok: false, error: "empty", rowErrors: {} };
   if (rows.length === 0) return { ok: false, error: "empty", rowErrors: {} };
@@ -72,7 +74,7 @@ export async function saveLiquipediaTeamNames(tournamentId: number, rows: { team
   for (const row of cleaned) if (!registeredIds.has(row.teamId)) rowErrors[row.teamId] = { error: "teamNotInTournament" };
 
   // A name already held by a team outside this submission stays with it.
-  const existing = await findLiquipediaMappings([], cleaned.map((r) => r.name));
+  const existing = await findLiquipediaMappings(game, [], cleaned.map((r) => r.name));
   for (const mapping of existing) {
     if (seenTeams.has(mapping.teamId)) continue;
     const row = cleaned.find((r) => r.name.toLowerCase() === mapping.name.toLowerCase());
@@ -88,7 +90,7 @@ export async function saveLiquipediaTeamNames(tournamentId: number, rows: { team
     });
   } catch (error) {
     // A concurrent save took one of the names between the check and the insert.
-    const raced = await findLiquipediaMappings([], cleaned.map((r) => r.name));
+    const raced = await findLiquipediaMappings(game, [], cleaned.map((r) => r.name));
     for (const mapping of raced) {
       if (seenTeams.has(mapping.teamId)) continue;
       const row = cleaned.find((r) => r.name.toLowerCase() === mapping.name.toLowerCase());
@@ -107,8 +109,9 @@ export type SaveLiquipediaPersonNamesResult =
   | { ok: true; saved: number }
   | { ok: false; error?: "empty" | "tooMany"; rowErrors: Record<number, LiquipediaPersonRowError> };
 
-export async function saveLiquipediaPersonNames(tournamentId: number, rows: { personId: number; name: string }[]): Promise<SaveLiquipediaPersonNamesResult> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function saveLiquipediaPersonNames(game: GameSlug, tournamentId: number, rows: { personId: number; name: string }[]): Promise<SaveLiquipediaPersonNamesResult> {
+  const { liquipediaPersonNames, people } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 
   if (!Number.isInteger(tournamentId) || !Array.isArray(rows)) return { ok: false, error: "empty", rowErrors: {} };
   if (rows.length === 0) return { ok: false, error: "empty", rowErrors: {} };
@@ -145,7 +148,7 @@ export async function saveLiquipediaPersonNames(tournamentId: number, rows: { pe
   for (const row of cleaned) if (!existingIds.has(row.personId)) rowErrors[row.personId] = { error: "personNotFound" };
 
   // A name already held by a person outside this submission stays with them.
-  const existing = await findLiquipediaPersonMappings([], cleaned.map((r) => r.name));
+  const existing = await findLiquipediaPersonMappings(game, [], cleaned.map((r) => r.name));
   for (const mapping of existing) {
     if (seenPeople.has(mapping.personId)) continue;
     const row = cleaned.find((r) => r.name.toLowerCase() === mapping.name.toLowerCase());
@@ -161,7 +164,7 @@ export async function saveLiquipediaPersonNames(tournamentId: number, rows: { pe
     });
   } catch (error) {
     // A concurrent save took one of the names between the check and the insert.
-    const raced = await findLiquipediaPersonMappings([], cleaned.map((r) => r.name));
+    const raced = await findLiquipediaPersonMappings(game, [], cleaned.map((r) => r.name));
     for (const mapping of raced) {
       if (seenPeople.has(mapping.personId)) continue;
       const row = cleaned.find((r) => r.name.toLowerCase() === mapping.name.toLowerCase());
@@ -175,13 +178,13 @@ export async function saveLiquipediaPersonNames(tournamentId: number, rows: { pe
 }
 
 /** Person picker search for the mapping table: with no query, the staff of the line's team come first. */
-export async function searchLiquipediaPeople(query: string, liquipediaTeamName: string | null): Promise<PersonPickerResult[]> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function searchLiquipediaPeople(game: GameSlug, query: string, liquipediaTeamName: string | null): Promise<PersonPickerResult[]> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   if (typeof query !== "string" || query.length > 100) return [];
-  const staff = !query.trim() && liquipediaTeamName ? await findTeamStaffByLiquipediaName(liquipediaTeamName, 8) : [];
+  const staff = !query.trim() && liquipediaTeamName ? await findTeamStaffByLiquipediaName(game, liquipediaTeamName, 8) : [];
   if (staff.length >= 8) return staff;
   const staffIds = new Set(staff.map((p) => p.id));
-  const others = (await searchPeopleQuery(query)).filter((p) => !staffIds.has(p.id));
+  const others = (await searchPeopleQuery(game, query)).filter((p) => !staffIds.has(p.id));
   return [...staff, ...others].slice(0, 8);
 }
 
@@ -192,14 +195,15 @@ export type SaveLiquipediaBracketTemplatesResult =
   | { ok: false; error?: "empty" | "tooMany"; rowErrors: Record<number, LiquipediaBracketRowError> };
 
 /** `rows[].bracketId` is the id of a bracket group's first container (see `getTournamentLiquipediaBrackets`). */
-export async function saveLiquipediaBracketTemplates(tournamentId: number, rows: { bracketId: number; template: string }[]): Promise<SaveLiquipediaBracketTemplatesResult> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function saveLiquipediaBracketTemplates(game: GameSlug, tournamentId: number, rows: { bracketId: number; template: string }[]): Promise<SaveLiquipediaBracketTemplatesResult> {
+  const { stageContainers } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 
   if (!Number.isInteger(tournamentId) || !Array.isArray(rows)) return { ok: false, error: "empty", rowErrors: {} };
   if (rows.length === 0) return { ok: false, error: "empty", rowErrors: {} };
   if (rows.length > MAX_ROWS) return { ok: false, error: "tooMany", rowErrors: {} };
 
-  const brackets = new Map((await getTournamentLiquipediaBrackets(tournamentId)).map((b) => [b.id, b]));
+  const brackets = new Map((await getTournamentLiquipediaBrackets(game, tournamentId)).map((b) => [b.id, b]));
   const rowErrors: Record<number, LiquipediaBracketRowError> = {};
   const cleaned: { containerIds: number[]; template: string }[] = [];
   const seen = new Set<number>();

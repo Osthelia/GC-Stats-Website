@@ -11,8 +11,9 @@
 
 import { asc, desc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { streamChannels, matchStreams, matches, entrants, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { normalizeScheduledAt } from "@/lib/match-schedule";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrganizationStreamChannelRow = {
   id: number;
@@ -24,7 +25,8 @@ export type OrganizationStreamChannelRow = {
   isActive: boolean;
 };
 
-export async function listOrganizationStreamChannelRows(organizationId: number): Promise<OrganizationStreamChannelRow[]> {
+export async function listOrganizationStreamChannelRows(game: GameSlug, organizationId: number): Promise<OrganizationStreamChannelRow[]> {
+  const { streamChannels } = gameTables(game);
   const rows = await db
     .select({ id: streamChannels.id, name: streamChannels.name, platform: streamChannels.platform, type: streamChannels.type, url: streamChannels.url, languageCode: streamChannels.languageCode, isActive: streamChannels.isActive })
     .from(streamChannels)
@@ -47,7 +49,8 @@ export type OrganizationStreamLink = {
 };
 
 /** Every match currently linked to one of this organization's channels — match_streams has no id of its own, its composite key (matchId, channelId) is the identity used to unlink. */
-export async function listOrganizationStreamLinks(organizationId: number): Promise<OrganizationStreamLink[]> {
+export async function listOrganizationStreamLinks(game: GameSlug, organizationId: number): Promise<OrganizationStreamLink[]> {
+  const { streamChannels, matchStreams, matches, entrants, stageContainers, stages, tournaments } = gameTables(game);
   const channels = await db.select({ id: streamChannels.id, name: streamChannels.name }).from(streamChannels).where(eq(streamChannels.organizationId, organizationId));
   if (channels.length === 0) return [];
   const channelById = new Map(channels.map((c) => [c.id, c.name]));

@@ -22,7 +22,6 @@ import { REACTABLE_TYPES, getReactionSummary, type ReactableType, type ReactionS
 import { notify } from "@/lib/notify";
 import { resolveForumThreadLink } from "@/lib/forum-thread-link";
 import { excerpt } from "@/lib/text-excerpt";
-
 export type ReactionActionResult = ({ ok: true; reactions: ReactionSummary[] }) | { ok: false; error: PostGuardError | "guest" | "invalidType" | "invalidEmote" | "notFound" };
 
 async function findReactableForumMessage(reactableType: ReactableType, reactableId: number): Promise<{ id: number; userId: string | null; threadId: number; body: string } | null> {

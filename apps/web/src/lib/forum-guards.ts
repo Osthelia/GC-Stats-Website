@@ -14,6 +14,7 @@ import { adminDb, db } from "@gc-stats/db/client";
 import { forumMessages, forumThreads, sanctions, userReports, users } from "@gc-stats/db";
 import { ADMIN_ACCESS_PERMISSION, getGlobalAccess, hasAccess } from "@/lib/rbac";
 import { notify } from "@/lib/notify";
+import type { GameSlug } from "@gc-stats/db/game";
 
 const THREAD_CREATE_LIMIT = 3;
 const THREAD_CREATE_WINDOW_MS = 10 * 60 * 1000;
@@ -99,8 +100,8 @@ export async function canSubmitReport(userId: string): Promise<boolean> {
 }
 
 /** System-issued mute from automod (never mutes staff, never stacks on an existing mute). Mirrors V1's SanctionService::issueSystemMute. */
-export async function issueAutomodMute(userId: string, reason: string): Promise<void> {
-  const access = await getGlobalAccess(userId);
+export async function issueAutomodMute(game: GameSlug, userId: string, reason: string): Promise<void> {
+  const access = await getGlobalAccess(userId, game);
   if (hasAccess(access, ADMIN_ACCESS_PERMISSION)) return;
   if (await activeGlobalSanction(userId, ["mute"])) return;
 

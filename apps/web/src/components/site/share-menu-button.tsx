@@ -13,6 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { CalendarPlusIcon, CheckIcon, Code2Icon, CopyIcon, ImageIcon, LayersIcon, Share2Icon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { MatchPosterDialog } from "@/components/match/match-poster-dialog";
+import { useGame } from "@/lib/use-game";
 
 const ICONS = { match: Code2Icon, tournament: LayersIcon } as const;
 
@@ -23,6 +24,7 @@ const ITEM_CLASS =
 
 /** "Share" button of the public entity headers, opening a small menu of links. `calendarPath` adds the match calendar feed entries, `posterMatchId` the match screenshot entry. */
 export function ShareMenuButton({ items = [], calendarPath, posterMatchId }: { items?: ShareMenuItem[]; calendarPath?: string; posterMatchId?: number }) {
+  const game = useGame();
   const t = useTranslations("share");
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -50,7 +52,7 @@ export function ShareMenuButton({ items = [], calendarPath, posterMatchId }: { i
   }, [copied]);
 
   // Only rendered once the menu is open, so always client side.
-  const calendarUrl = () => `${window.location.origin}${calendarPath}?lang=${locale}`;
+  const calendarUrl = () => `${window.location.origin}${calendarPath?.replace("/api/", `/api/${game}/`)}?lang=${locale}`;
   const webcalUrl = () => calendarUrl().replace(/^https?:/, "webcal:");
 
   const copyCalendar = async () => {

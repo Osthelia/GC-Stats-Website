@@ -11,14 +11,19 @@
 
 import { and, desc, eq, gt, isNull, ne, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, accounts, people, rosterMemberships, teams, organizationMemberships, organizations, changeRequests, changeRequestItems, sanctions } from "@gc-stats/db";
+import { users, accounts, organizations, sanctions, gameTables } from "@gc-stats/db";
 import { rangeIsOpen, rangeLower, rangeUpper } from "@/lib/daterange";
 import type { OAuthScope } from "@/lib/oauth/scope-list";
+import { DEFAULT_GAME, type GameSlug } from "@gc-stats/db/game";
 
 export { OAUTH_SCOPES, isOAuthScope, parseScopeParam, type OAuthScope } from "@/lib/oauth/scope-list";
 
-/** Builds the userinfo claims object for exactly the scopes granted to a token — never more than what was consented to. */
-export async function resolveOAuthClaims(userId: string, scopes: OAuthScope[]): Promise<Record<string, unknown>> {
+/**
+ * Builds the userinfo claims object for exactly the scopes granted to a token — never more than what was consented to.
+ * The player, teams, org and link_player claims describe the profile of one game, Valorant for apps that name none.
+ */
+export async function resolveOAuthClaims(userId: string, scopes: OAuthScope[], game: GameSlug = DEFAULT_GAME): Promise<Record<string, unknown>> {
+  const { people, rosterMemberships, teams, organizationMemberships, changeRequests, changeRequestItems } = gameTables(game);
   const claims: Record<string, unknown> = { sub: userId };
 
   if (scopes.includes("profile")) {

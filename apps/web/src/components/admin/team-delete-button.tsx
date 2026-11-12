@@ -15,8 +15,10 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { deleteTeam } from "@/actions/admin-teams";
+import { useGame } from "@/lib/use-game";
 
 export function TeamDeleteButton({ teamId, teamName }: { teamId: number; teamName: string }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.edit");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -24,7 +26,7 @@ export function TeamDeleteButton({ teamId, teamName }: { teamId: number; teamNam
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteTeam(teamId);
+      const result = await deleteTeam(game, teamId);
       if (!result.ok) {
         setConfirmOpen(false);
         toast.error(t(`deleteError.${result.error}`));

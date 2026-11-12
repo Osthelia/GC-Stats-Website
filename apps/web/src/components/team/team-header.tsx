@@ -7,6 +7,7 @@
  */
 
 import { getTranslations } from "next-intl/server";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import { discordHref } from "@/lib/person-social-keys";
@@ -50,10 +51,12 @@ const TABS = ["overview", "matches", "maps", "history", "staff"] as const;
 
 /** Rendered once by the tabs layout, the active tab follows the URL. */
 export async function TeamHeader({
+  game,
   team,
   segment,
   achievements,
 }: {
+  game: GameSlug;
   team: TeamPageInfo;
   segment: string;
   achievements: { items: TeamAchievement[]; titles: number; podiums: number };
@@ -277,7 +280,7 @@ export async function TeamHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.filter((tab) => tab !== "staff" || team.organizationId !== null).map((tab) => ({
+          tabs={TABS.filter((tab) => (tab !== "staff" || team.organizationId !== null) && (tab !== "maps" || gameHasMaps(game))).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

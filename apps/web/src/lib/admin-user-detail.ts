@@ -9,13 +9,14 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, roles, userRoles, accounts, authenticators, sessions, people, teams, sanctions, userReports, organizationAccess, organizations, organizationAccessRoles, organizationRoles } from "@gc-stats/db";
+import { users, roles, userRoles, accounts, authenticators, sessions, sanctions, userReports, organizationAccess, organizations, organizationAccessRoles, organizationRoles, valorantTables, gameTables } from "@gc-stats/db";
 import type { AdminUserRole } from "@/lib/admin-users";
 import { getAdminPlayerTeamHistory } from "@/lib/admin-players";
 import { statusOf, type SanctionStatus, type SanctionType } from "@/lib/admin-sanctions";
 import type { ReportStatus } from "@/lib/admin-reports";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 export type AdminUserProfile = {
   id: string;
@@ -28,6 +29,8 @@ export type AdminUserProfile = {
   lastLoginAt: Date | null;
   isAuthor: boolean;
   roles: AdminUserRole[];
+  /** Roles limited to one game. */
+  gameRoles: Record<GameSlug, AdminUserRole[]>;
 };
 
 export type AdminUserAuthMethods = {
@@ -60,25 +63,39 @@ export async function getAdminUserProfile(userId: string): Promise<AdminUserProf
     .select({ id: roles.id, name: roles.name, isSuperAdmin: roles.isSuperAdmin })
     .from(userRoles)
     .innerJoin(roles, eq(roles.id, userRoles.roleId))
-    .where(and(eq(userRoles.userId, userId), eq(roles.scopeType, "global"), isNull(userRoles.scopeId)));
+    .where(and(eq(userRoles.userId, userId), eq(roles.scopeType, "global"), isNull(userRoles.scopeId), isNull(userRoles.game)));
 
-  return { ...row, socials: (row.socials as Record<string, string>) ?? {}, roles: roleRows };
+  // Roles limited to one game (content permissions of that game).
+  const gameRoleRows = await db
+    .select({ id: roles.id, name: roles.name, isSuperAdmin: roles.isSuperAdmin, game: userRoles.game })
+    .from(userRoles)
+    .innerJoin(roles, eq(roles.id, userRoles.roleId))
+    .where(and(eq(userRoles.userId, userId), eq(roles.scopeType, "global"), isNull(userRoles.scopeId), isNotNull(userRoles.game)));
+  const gameRoles = Object.fromEntries(GAMES.map((game) => [game, gameRoleRows.filter((r) => r.game === game).map(({ id, name, isSuperAdmin }) => ({ id, name, isSuperAdmin }))])) as Record<GameSlug, typeof roleRows>;
+
+  return { ...row, socials: (row.socials as Record<string, string>) ?? {}, roles: roleRows, gameRoles };
 }
 
 export type AdminUserLinkedPlayer = {
+  game: GameSlug;
   id: number;
   handle: string;
   currentTeams: { id: number; name: string }[];
 };
 
-/** Mirrors V1's admin user detail "linked player" section — reuses the same team-history query the player page itself uses, filtered to open stints. */
-export async function getAdminUserLinkedPlayer(userId: string): Promise<AdminUserLinkedPlayer | null> {
-  const [person] = await db.select({ id: people.id, handle: people.handle }).from(people).where(eq(people.userId, userId)).limit(1);
-  if (!person) return null;
-
-  const history = await getAdminPlayerTeamHistory(person.id);
-  const currentTeams = history.filter((h) => h.isCurrent).map((h) => ({ id: h.teamId, name: h.teamName }));
-  return { id: person.id, handle: person.handle, currentTeams };
+/** Mirrors V1's admin user detail "linked player" section, one entry per game where the account is linked to a person. */
+export async function getAdminUserLinkedPlayers(userId: string): Promise<AdminUserLinkedPlayer[]> {
+  const perGame = await Promise.all(
+    GAMES.map(async (game) => {
+      const { people } = gameTables(game);
+      const [person] = await db.select({ id: people.id, handle: people.handle }).from(people).where(eq(people.userId, userId)).limit(1);
+      if (!person) return null;
+      const history = await getAdminPlayerTeamHistory(game, person.id);
+      const currentTeams = history.filter((h) => h.isCurrent).map((h) => ({ id: h.teamId, name: h.teamName }));
+      return { game, id: person.id, handle: person.handle, currentTeams };
+    })
+  );
+  return perGame.filter((p): p is AdminUserLinkedPlayer => p !== null);
 }
 
 export type AdminUserOrganizationRow = {
@@ -125,6 +142,8 @@ export type AdminUserSanctionRow = {
 };
 
 export async function listUserSanctions(userId: string, limit = 15): Promise<AdminUserSanctionRow[]> {
+  // Sanction teams come from the V1 data, which was Valorant only.
+  const { teams } = valorantTables;
   const rows = await db
     .select({ id: sanctions.id, teamId: sanctions.teamId, teamName: teams.name, type: sanctions.type, reason: sanctions.reason, endsAt: sanctions.endsAt, revokedAt: sanctions.revokedAt })
     .from(sanctions)

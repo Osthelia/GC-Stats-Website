@@ -11,6 +11,7 @@
 
 import { adminDb } from "@gc-stats/db/client";
 import { activityLog } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ActivityLogClient = Pick<typeof adminDb, "insert">;
 
@@ -24,6 +25,8 @@ export type ActivityEvent = "created" | "updated" | "deleted" | "login" | "login
 export type ActivityChanges = Record<string, { old: unknown; new: unknown }>;
 
 type LogActivityInput = {
+  /** Game of a per-game subject (team, player); entries without it count as valorant. */
+  game?: GameSlug;
   subject: ActivitySubject;
   /** Null when the subject is unknown (login attempt on an unregistered email). */
   subjectId: number | string | null;
@@ -37,7 +40,7 @@ type LogActivityInput = {
 
 /** Writes one entry (pass the transaction as `client` to commit it with the edit itself). */
 export async function logActivity(input: LogActivityInput, client: ActivityLogClient = adminDb): Promise<void> {
-  const { subject, subjectId, event, logName, description, actorUserId, changes, properties } = input;
+  const { game, subject, subjectId, event, logName, description, actorUserId, changes, properties } = input;
   await client.insert(activityLog).values({
     logName: logName ?? subject,
     description,
@@ -45,7 +48,7 @@ export async function logActivity(input: LogActivityInput, client: ActivityLogCl
     subjectId: subjectId === null ? null : String(subjectId),
     event,
     attributeChanges: changes && Object.keys(changes).length > 0 ? changes : null,
-    properties: { ...properties, actorUserId },
+    properties: { ...properties, actorUserId, ...(game ? { game } : {}) },
   });
 }
 

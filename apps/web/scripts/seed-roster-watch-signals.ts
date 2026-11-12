@@ -14,7 +14,9 @@
 
 import { asc, eq, like } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, xMonitoredAccounts, xRosterSignals, type XSignalMedia } from "@gc-stats/db";
+import { xMonitoredAccounts, xRosterSignals, type XSignalMedia, valorantTables } from "@gc-stats/db";
+
+const { teams } = valorantTables;
 
 const TEST_HANDLE = "gcs_roster_watch_test";
 const TWEET_PREFIX = "test-";

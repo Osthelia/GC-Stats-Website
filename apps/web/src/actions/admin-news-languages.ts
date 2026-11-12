@@ -14,9 +14,10 @@
 import { eq } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { newsLanguages, news, PERMISSIONS } from "@gc-stats/db";
+import { newsLanguages, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { NEWS_LANGUAGES_TAG } from "@/lib/cache-tags";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireNewsLanguagesActor(): Promise<void> {
   // Re-checked here, not just relied on from the /admin layout guard — a
@@ -95,7 +96,8 @@ export async function updateNewsLanguage(code: string, input: NewsLanguageInput)
 
 export type DeleteNewsLanguageResult = { ok: true } | { ok: false; error: "notFound" | "inUse" };
 
-export async function deleteNewsLanguage(code: string): Promise<DeleteNewsLanguageResult> {
+export async function deleteNewsLanguage(game: GameSlug, code: string): Promise<DeleteNewsLanguageResult> {
+  const { news } = gameTables(game);
   await requireNewsLanguagesActor();
 
   const [existing] = await db.select({ code: newsLanguages.code }).from(newsLanguages).where(eq(newsLanguages.code, code)).limit(1);

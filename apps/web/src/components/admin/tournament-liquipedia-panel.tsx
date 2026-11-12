@@ -27,6 +27,7 @@ import { parseParticipantNames, suggestTeamMatches } from "@/lib/liquipedia-team
 import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import type { LiquipediaStage, LiquipediaStageTeam } from "@/lib/admin-liquipedia";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
 
 function initialRows(teams: LiquipediaStageTeam[]): Record<number, RowState> {
   return Object.fromEntries(
@@ -69,6 +70,7 @@ export function TournamentLiquipediaPanel({ tournamentId, stages, canManage }: {
 }
 
 function StagePanel({ tournamentId, stage, canManage }: { tournamentId: number; stage: LiquipediaStage; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipedia");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -146,7 +148,7 @@ function StagePanel({ tournamentId, stage, canManage }: { tournamentId: number; 
     }
 
     startTransition(async () => {
-      const result = await saveLiquipediaTeamNames(tournamentId, payload);
+      const result = await saveLiquipediaTeamNames(game, tournamentId, payload);
       if (!result.ok) {
         setRowErrors(result.rowErrors);
         if (result.error) setFormError(t(`error.${result.error}`));

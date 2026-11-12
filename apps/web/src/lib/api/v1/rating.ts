@@ -10,7 +10,9 @@
  */
 
 import { sql } from "drizzle-orm";
-import { mapPlayerStats } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
+
+const { mapPlayerStats } = valorantTables;
 
 /** Rounds covered by a rating, only counting rows that have one. */
 export const ratedRoundsSql = sql<number>`coalesce(sum(${mapPlayerStats.ratingRounds}) filter (where ${mapPlayerStats.rating} is not null), 0)::int`;

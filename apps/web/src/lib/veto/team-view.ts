@@ -12,6 +12,7 @@
 
 import { getMatchHeader, type MatchSide } from "@/lib/match-page-data";
 import { getTeamContext, getVetoState, listTeamMatches, type VetoPublicState } from "./service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type VetoSideDisplay = Pick<MatchSide, "displayName" | "shortName" | "logoUrl" | "logoUrlLight">;
 
@@ -36,18 +37,18 @@ export type TeamVetoView = {
   nextMatchId: number | null;
 };
 
-export async function getVetoMatchHeader(matchId: number): Promise<VetoMatchHeader | null> {
-  const header = await getMatchHeader(matchId);
+export async function getVetoMatchHeader(game: GameSlug, matchId: number): Promise<VetoMatchHeader | null> {
+  const header = await getMatchHeader(game, matchId);
   if (!header) return null;
   const side = (s: MatchSide): VetoSideDisplay => ({ displayName: s.displayName, shortName: s.shortName, logoUrl: s.logoUrl, logoUrlLight: s.logoUrlLight });
   return { tournamentName: header.tournamentName, label: header.label, scheduledAt: header.scheduledAt?.toISOString() ?? null, a: side(header.a), b: side(header.b) };
 }
 
-export async function getTeamVetoView(token: string, requestedMatchId: number | null): Promise<TeamVetoView | null> {
-  const context = await getTeamContext(token);
+export async function getTeamVetoView(game: GameSlug, token: string, requestedMatchId: number | null): Promise<TeamVetoView | null> {
+  const context = await getTeamContext(game, token);
   if (!context) return null;
 
-  const list = await listTeamMatches(context.entrantId);
+  const list = await listTeamMatches(game, context.entrantId);
   const chrono = [...list].sort((a, b) => (a.scheduledAt?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.scheduledAt?.getTime() ?? Number.MAX_SAFE_INTEGER) || a.id - b.id);
   // Default is the first unfinished match, or the last one when all are finished.
   const current = chrono.find((m) => m.id === requestedMatchId) ?? chrono.find((m) => m.status !== "completed") ?? chrono[chrono.length - 1] ?? null;
@@ -55,7 +56,7 @@ export async function getTeamVetoView(token: string, requestedMatchId: number | 
   const prev = currentIndex > 0 ? chrono[currentIndex - 1] : null;
   const next = currentIndex >= 0 ? (chrono[currentIndex + 1] ?? null) : null;
 
-  const [state, header] = current ? await Promise.all([getVetoState(current.id), getVetoMatchHeader(current.id)]) : [null, null];
+  const [state, header] = current ? await Promise.all([getVetoState(game, current.id), getVetoMatchHeader(game, current.id)]) : [null, null];
   return {
     serverNow: new Date().toISOString(),
     tournamentName: context.tournamentName,

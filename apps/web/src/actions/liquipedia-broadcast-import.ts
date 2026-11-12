@@ -13,7 +13,8 @@
 
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { liquipediaPersonNames, organizations, people, productionCredits, tournaments, PERMISSIONS } from "@gc-stats/db";
+import { gameTables, organizations, PERMISSIONS } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { parseBroadcasterCards, type BroadcastCredit } from "@/lib/liquipedia-broadcast-wikicode";
@@ -35,8 +36,9 @@ export type BroadcastPreviewRow = {
 
 export type BroadcastPreviewResult = { ok: true; rows: BroadcastPreviewRow[] } | { ok: false; error: "invalid" | "tooLong" | "noCards" };
 
-export async function previewBroadcastImport(tournamentId: number, wikicode: string): Promise<BroadcastPreviewResult> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function previewBroadcastImport(game: GameSlug, tournamentId: number, wikicode: string): Promise<BroadcastPreviewResult> {
+  const { liquipediaPersonNames, people, productionCredits } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   if (!Number.isInteger(tournamentId) || typeof wikicode !== "string") return { ok: false, error: "invalid" };
   if (wikicode.length > MAX_WIKICODE_LENGTH) return { ok: false, error: "tooLong" };
 
@@ -94,8 +96,9 @@ export type BroadcastImportResult =
   | { ok: true; created: number; skipped: number; mapped: number }
   | { ok: false; error?: "empty" | "tooMany" | "tournamentNotFound"; rowErrors: Record<string, BroadcastRowError> };
 
-export async function importBroadcastCredits(tournamentId: number, rows: BroadcastImportRow[]): Promise<BroadcastImportResult> {
-  const { userId } = await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function importBroadcastCredits(game: GameSlug, tournamentId: number, rows: BroadcastImportRow[]): Promise<BroadcastImportResult> {
+  const { liquipediaPersonNames, people, productionCredits, tournaments } = gameTables(game);
+  const { userId } = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 
   if (!Number.isInteger(tournamentId) || !Array.isArray(rows) || rows.length === 0) return { ok: false, error: "empty", rowErrors: {} };
   if (rows.length > MAX_ROWS) return { ok: false, error: "tooMany", rowErrors: {} };
@@ -160,7 +163,7 @@ export async function importBroadcastCredits(tournamentId: number, rows: Broadca
     }
     if (toInsert.length > 0) {
       await tx.insert(productionCredits).values(toInsert);
-      await logActivity({ subject: "credit", subjectId: null, event: "created", description: `Imported ${toInsert.length} production credit(s) from Liquipedia on tournament #${tournamentId}`, actorUserId: userId, properties: { tournamentId, personIds, organizationIds } }, tx);
+      await logActivity({ game, subject: "credit", subjectId: null, event: "created", description: `Imported ${toInsert.length} production credit(s) from Liquipedia on tournament #${tournamentId}`, actorUserId: userId, properties: { tournamentId, personIds, organizationIds } }, tx);
     }
 
     // Remember the Liquipedia page so the info import reads the profile, never taking a name or a person already mapped.

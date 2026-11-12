@@ -67,7 +67,7 @@ export default async function MyChangeRequestsPage({
           {rows.map((row) => (
             <Link
               key={row.id}
-              href={`/settings/change-requests/${row.id}`}
+              href={`/settings/change-requests/${row.game}/${row.id}`}
               className="flex items-center gap-3 rounded-xl border border-neutral-800/70 bg-[var(--gcs-surface-3)] p-4 transition-all hover:translate-x-1 hover:border-neutral-700"
             >
               <div className="min-w-0 flex-1">

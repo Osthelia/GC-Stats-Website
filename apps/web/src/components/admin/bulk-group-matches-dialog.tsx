@@ -23,6 +23,7 @@ import { FormField } from "@/components/admin/form-field";
 import { EntrantSelect } from "@/components/admin/entrant-select";
 import { addGroupMatches, type AddGroupMatchFieldErrors, type AddGroupMatchesResult } from "@/actions/admin-bracket-editor";
 import type { AdminContainerRow, AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 type Row = { key: number; entrantAId: number | null; entrantBId: number | null };
 type RowErrors = Extract<AddGroupMatchesResult, { ok: false }>["rowErrors"];
@@ -46,6 +47,7 @@ export function BulkGroupMatchesDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -82,7 +84,7 @@ export function BulkGroupMatchesDialog({
     setFieldErrors({});
     setRowErrors({});
     startTransition(async () => {
-      const result = await addGroupMatches({
+      const result = await addGroupMatches(game, {
         stageId,
         containerId: container.id,
         round,

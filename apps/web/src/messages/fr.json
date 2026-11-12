@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · Production",
     "formerOrganizations": "Anciennes organisations",
     "noFormerOrganizations": "Aucune organisation précédente enregistrée.",
-    "unknownDate": "Inconnue"
+    "unknownDate": "Inconnue",
+    "addGameProfile": {
+      "title": "Aussi sur {game} ?",
+      "description": "Ajoutez votre profil {game} en un clic. Il réutilise votre nom, votre photo et vos liens, rien à remplir à nouveau.",
+      "button": "Ajouter mon profil {game}",
+      "adding": "Ajout en cours...",
+      "done": "Votre profil {game} est prêt.",
+      "open": "Voir mon profil {game}",
+      "error": {
+        "unauthenticated": "Vous devez être connecté.",
+        "notYours": "Ce joueur n'est pas lié à votre compte.",
+        "invalidGame": "Ce jeu n'existe pas."
+      }
+    },
+    "alsoOn": "Aussi sur {game}"
   },
   "organizationPage": {
     "tabOverview": "Aperçu",
@@ -1793,7 +1807,27 @@
     "teamTbd": "À déterminer",
     "teamBye": "BYE",
     "discussion": "Discussion",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD partie {n}",
+    "games": "Parties",
+    "gameTab": "Partie {order}",
+    "noGames": "Aucune partie enregistrée pour l'instant.",
+    "noGameData": "Aucune donnée pour cette partie",
+    "duration": "Durée",
+    "forfeit": "Forfait",
+    "towers": "Tours",
+    "inhibitors": "Inhibiteurs",
+    "dragons": "Dragons",
+    "barons": "Barons",
+    "heralds": "Hérauts",
+    "grubs": "Larves du Vide",
+    "draftNotSet": "Aucune sélection enregistrée pour cette partie.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Picks non placés",
+    "colChampion": "Champion",
+    "allGames": "Toutes les parties",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Toutes les compétitions officielles Game Changers, au même endroit.",
@@ -2095,7 +2129,8 @@
       "error": {
         "userNotFound": "Utilisateur introuvable.",
         "roleNotFound": "Un des rôles sélectionnés n'existe plus.",
-        "selfDemote": "Vous ne pouvez pas retirer votre propre accès admin."
+        "selfDemote": "Vous ne pouvez pas retirer votre propre accès admin.",
+        "gameNotFound": "Ce jeu n'existe pas."
       },
       "authMethods": {
         "heading": "Authentification",
@@ -2376,7 +2411,8 @@
           "ownerOnly": "Seul un propriétaire peut donner ou modifier le rôle propriétaire.",
           "userNotFound": "Compte introuvable.",
           "alreadyHasAccess": "Ce compte a déjà accès à cette organisation."
-        }
+        },
+        "fieldGames": "Jeux"
       },
       "filterKindLabel": "Type d'organisation",
       "filterKindAll": "Toutes les organisations",
@@ -2605,6 +2641,7 @@
       "title": "Joueur·se·s",
       "subtitle": "Gérer les profils et l'affiliation d'équipe.",
       "searchPlaceholder": "Pseudo, ID ou VLR ID…",
+      "searchPlaceholderLol": "Pseudo, ID ou Riot ID…",
       "searchSubmit": "Rechercher",
       "activeWithinLabel": "Activité récente",
       "activeWithinAny": "Toute période",
@@ -2772,11 +2809,45 @@
           "requiresLeft": "Coche « A quitté la team » pour renseigner une date de départ."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur."
+        "discordIdHint": "ID utilisateur Discord (Mode développeur, clic droit sur le profil, Copier l'identifiant) ou lien d'invitation de serveur.",
+        "sectionRiotAccounts": "Comptes Riot",
+        "riotAccountsHint": "Les comptes League of Legends sur lesquels le joueur joue. Les parties importées sont liées au joueur via ces comptes.",
+        "riotAccountsEmpty": "Aucun compte Riot pour l'instant. Ils sont ajoutés à l'import d'une partie, ou ici.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Royaume des tournois",
+        "riotAccountSourceAdmin": "Ajouté manuellement",
+        "riotAccountLastSeen": "Vu pour la dernière fois <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Région",
+        "riotAccountAdd": "Ajouter le compte",
+        "riotAccountAdding": "Ajout…",
+        "riotAccountAdded": "Compte Riot ajouté.",
+        "riotAccountRemoved": "Compte Riot retiré.",
+        "riotAccountRemove": "Retirer",
+        "riotAccountRemoveTitle": "Retirer ce compte Riot ?",
+        "riotAccountRemoveDescription": "{riotId} ne sera plus lié à {handle}. Les parties déjà importées restent avec le joueur.",
+        "riotAccountErrorHeldByOther": "Ce compte Riot appartient déjà à {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Ce joueur a déjà ce compte Riot.",
+        "riotAccountErrorGeneric": "Le compte Riot n'a pas pu être modifié.",
+        "sectionGames": "Jeux",
+        "gamesHint": "Une personne, un profil par jeu. Le nom, le pays, les pronoms, la bio, les alias, les réseaux, la photo et le compte lié sont partagés, le reste appartient à chaque jeu.",
+        "sharedHint": "Le nom, le pays, les pronoms, la bio, les alias, les réseaux et la photo sont partagés avec les autres jeux de cette personne.",
+        "gameCurrent": "Jeu actuel",
+        "gameHasProfile": "A un profil",
+        "gameNoProfile": "Pas encore de profil",
+        "gameOpen": "Ouvrir",
+        "gameAddButton": "Ajouter à {game}",
+        "gameAdding": "Ajout en cours...",
+        "gameAddSuccess": "Ajouté à {game}.",
+        "gameAddError": {
+          "invalidGame": "Ce jeu n'existe pas.",
+          "notFound": "Ce joueur n'existe plus.",
+          "alreadyThere": "Ce joueur a déjà un profil dans ce jeu."
+        }
       },
       "merge": {
         "title": "Fusionner le joueur·se",
-        "description": "Choisis un·e survivant·e et, par catégorie, les données de {name} à lui transférer. {name} lui-même n'est pas supprimé ici.",
+        "description": "Choisis un·e survivant·e et, par catégorie, les données de {name} à lui transférer.",
         "backToPlayer": "← Retour au joueur·se",
         "selectTarget": "Fusionner vers",
         "targetPlaceholder": "Sélectionner un·e joueur·se…",
@@ -2789,11 +2860,13 @@
           "matchStats": "Participations en match",
           "news": "Actualités",
           "logos": "Logos",
+          "riotAccounts": "Comptes Riot ({count})",
           "linkedAccount": "Compte lié"
         },
         "matchStatsHint": "Déplace aussi les données round par round (kills, dégâts, positions) derrière chaque map. Le crédit de roster verrouillé d'un entrant de tournoi n'est déplacé que si toutes les maps de cet entrant sont sélectionnées.",
         "periodOngoing": "depuis {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Les comptes Riot passent au joueur que vous conservez, pour que ses parties lui restent liées.",
         "linkedAccountHint": "Transfère le compte actuellement lié à ce joueur·se. Affiché uniquement si un compte est lié et que la cible n'en a aucun.",
         "nothingToMove": "Ce joueur·se n'a encore rien à transférer.",
         "confirm": "Fusionner les éléments sélectionnés de {source} vers {target} ? Cette action ne peut pas être annulée automatiquement.",
@@ -2808,8 +2881,39 @@
           "samePlayer": "Choisis un·e autre joueur·se comme cible de fusion.",
           "sourceNotFound": "Joueur·se introuvable.",
           "targetNotFound": "Joueur·se cible introuvable.",
-          "targetAlreadyLinked": "Le·la joueur·se cible a déjà un compte lié."
-        }
+          "targetAlreadyLinked": "Le·la joueur·se cible a déjà un compte lié.",
+          "sourceStillUsed": "Ce joueur est encore utilisé par des participants ou des stats de match de ce jeu. Sélectionnez aussi ces éléments, ou gardez le profil."
+        },
+        "removeSource": "Retirer de {game} après la fusion",
+        "removeSourceHint": "{name} est retiré de ce jeu une fois tout déplacé, et entièrement si aucun autre jeu n'a ce profil. Refusé si des participants ou des stats de match l'utilisent encore.",
+        "riotAccountsLost": "{count} compte(s) Riot de {name} ne sont pas déplacés et seront supprimés définitivement avec le joueur. Les parties jouées avec eux apparaîtront comme non liées lors des prochains imports."
+      },
+      "duplicatesLink": "Doublons potentiels",
+      "duplicates": {
+        "title": "Doublons potentiels",
+        "description": "Personnes avec le même pseudo qui existent chacune dans un jeu différent. Fusionnez le profil {game} dans l'autre pour garder un seul profil.",
+        "backToList": "Retour aux joueurs",
+        "columnSource": "Dans {game}",
+        "columnTarget": "Autre profil",
+        "merge": "Fusionner",
+        "empty": "Aucun doublon trouvé."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} n'est pas un Riot ID (nom#tag).",
+        "riotIdNotFound": "Aucun compte Riot ne porte le nom {riotId}.",
+        "relayNotConfigured": "Le relais Riot n'est pas configuré sur ce serveur.",
+        "relayUnauthorized": "Le relais a rejeté nos identifiants. Vérifiez RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot a rejeté la clé d'API League of Legends du relais. Elle a peut-être expiré ou est incorrecte (vérifiez LOL_RIOT_API_KEY sur le relais).",
+        "relayLeagueUnavailable": "Le relais n'a pas de clé d'API League of Legends configurée, ou sa base de données de cache est indisponible. Vérifiez LOL_RIOT_API_KEY et la base de données du relais.",
+        "routeUnavailable": "Le relais ne propose pas les routes League nécessaires à cette recherche. Mettez le relais à jour.",
+        "relayUnreachable": "Le relais Riot est injoignable. Vérifiez qu'il fonctionne et que RIOT_RELAY_URL est correcte.",
+        "riotUnavailable": "Les données de Riot n'ont pas pu être lues pour le moment. Réessayez plus tard.",
+        "rateLimited": "Riot limite les requêtes de cette clé. Attendez une minute avant de réessayer.",
+        "rateLimitedIn": "Riot limite les requêtes de cette clé. Réessayez dans {seconds} s.",
+        "invalidRequest": "Le relais a refusé la requête comme invalide. Vérifiez le Riot ID, la région et la fenêtre de temps.",
+        "notFound": "Riot n'a aucune donnée pour cette requête : le compte ou la partie n'existe pas, ou n'est pas sur cette région."
       }
     },
     "finance": {
@@ -3385,6 +3489,7 @@
           "entityNotFound": "Une équipe ou un joueur référencé n'existe plus.",
           "membershipNotFound": "Cette entrée de roster n'existe plus.",
           "invalidRole": "Ce rôle n'est plus valide.",
+          "invalidLane": "Une lane n'est pas valide.",
           "logoNotFound": "Cette entrée de logo n'existe plus.",
           "alreadyLinked": "Ce joueur est déjà lié à un autre compte.",
           "unknownField": "Champ non pris en charge.",
@@ -3831,6 +3936,14 @@
         "fieldEliminateAtLossesHint": "Nombre de défaites. Laissez vide pour un Swiss libre sans seuil.",
         "fieldMaxRounds": "Nombre de rounds maximum",
         "openEditorButton": "Ouvrir l'éditeur de bracket",
+        "assignEntrantsButton": "Gérer les entrants",
+        "assignEntrantsTitle": "Entrants du groupe",
+        "assignEntrantsDescription": "Sélectionnez les entrants du tournoi qui participent à ce groupe Swiss.",
+        "assignEntrantsEmpty": "Aucun entrant dans ce tournoi.",
+        "assignEntrantsInGroup": "Dans {name}",
+        "assignEntrantsSuccess": "Entrants mis à jour.",
+        "startSwissButton": "Démarrer le round 1",
+        "startSwissSuccess": "Round 1 généré.",
         "addMatchButton": "Ajouter un match",
         "addMatchTitle": "Ajouter un match dans {name}",
         "addMatchDescription": "Le match est ajouté à la ronde choisie, même si le groupe a déjà commencé. Les équipes peuvent rester à déterminer et être assignées ensuite depuis la page du match.",
@@ -3907,6 +4020,7 @@
           "invalidDate": "Date invalide.",
           "noMatches": "Ajoute au moins un match.",
           "tooManyMatches": "Tu peux ajouter 500 matchs au maximum à la fois.",
+          "roundRobinOnly": "Seuls les groupes en round robin peuvent compter les matchs de toute la phase.",
           "cannotMove": "Ce container ne peut pas aller plus loin.",
           "parentInvalid": "Cet ensemble ne peut pas être utilisé ici.",
           "tiebreakersInvalid": "Utilisez chaque départage une seule fois, parmi la liste proposée.",
@@ -3923,6 +4037,7 @@
             "points": "Points",
             "buchholz": "Buchholz",
             "map_diff": "Différence de maps",
+            "game_diff": "Différence de parties",
             "round_diff": "Différence de rounds",
             "head_to_head": "Confrontation directe",
             "seed": "Seed"
@@ -3931,17 +4046,23 @@
         "pointsConfig": {
           "title": "Points",
           "hint": "Chaque match, map et round gagné ou perdu rapporte des points à l'équipe. Les rounds ne comptent que sur les maps dont le score est saisi.",
+          "hintGames": "Chaque match et chaque partie gagnés ou perdus rapporte des points à l'équipe.",
           "enable": "Utiliser des points",
           "scopes": {
             "match": "Match",
             "map": "Chaque map",
+            "game": "Chaque partie",
             "round": "Chaque round",
             "forfeit": "Forfait (remplace les autres)"
           },
           "win": "Gagné",
           "loss": "Perdu",
           "notUsed": "Les points n'ordonnent le groupe que si Points figure dans les départages."
-        }
+        },
+        "fieldMatchScope": "Les équipes jouent aussi contre celles d'autres groupes (compter les matchs de toute la phase)",
+        "fieldMatchScopeHint": "Seules les équipes assignées à ce groupe sont listées, et leurs matchs terminés dans n'importe quel groupe de cette phase comptent. Assignez les équipes après l'enregistrement. Round robin uniquement.",
+        "matchScopeNoTeams": "Aucune équipe n'est encore assignée à ce groupe, son classement est donc vide. Assignez-lui d'abord des équipes.",
+        "matchScopeSwitchWarning": "Passer à la portée de la phase ne liste que les équipes assignées. Les équipes qui ont joué dans ce groupe sans être assignées disparaîtront de son classement tant que vous ne les assignez pas."
       },
       "bracketPage": {
         "title": "Gestion du bracket",
@@ -4514,6 +4635,213 @@
             "mergeMapNotFound": "Cette map n'existe plus."
           }
         },
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft de la partie {order}",
+          "backToMatch": "Retour au match",
+          "description": "L'ordre des bans et des picks de cette partie. Laissez une étape vide si elle n'a pas été utilisée.",
+          "differsWarning": "L'import ne correspond pas à la draft enregistrée : une réimportation a trouvé d'autres champions. Vérifiez la draft et enregistrez pour garder la vôtre.",
+          "blueSide": "Côté bleu",
+          "blueLockedHint": "Défini par l'import (équipe bleue de Riot).",
+          "firstPickLockedHint": "Défini par l'import (le camp qui a fait le premier ban).",
+          "firstPick": "Premier pick",
+          "phase": {
+            "ban1": "Phase de bans 1",
+            "pick1": "Phase de picks 1",
+            "ban2": "Phase de bans 2",
+            "pick2": "Phase de picks 2"
+          },
+          "side": {
+            "blue": "Bleu",
+            "red": "Rouge"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Aucun champion",
+          "searchPlaceholder": "Rechercher des champions",
+          "noResults": "Aucun champion ne correspond",
+          "unplacedTitle": "Picks non placés",
+          "save": "Enregistrer la draft",
+          "saving": "Enregistrement…",
+          "saved": "Draft enregistrée",
+          "error": {
+            "notFound": "Cette partie est introuvable.",
+            "entrantsUnset": "Les deux équipes du match doivent d'abord être définies.",
+            "blueNotAnEntrant": "Le côté bleu doit être l'une des deux équipes du match.",
+            "blueLocked": "Le côté bleu d'une partie importée est défini par l'import.",
+            "firstPickLocked": "Le premier pick d'une partie importée est défini par l'import.",
+            "invalidFirstPick": "Le premier pick doit être bleu ou rouge.",
+            "invalidStep": "L'étape {step} n'existe pas ou est donnée deux fois.",
+            "unknownChampion": "{championName} n'est pas dans la liste des champions.",
+            "duplicateChampion": "{championName} apparaît plus d'une fois dans la draft."
+          }
+        },
+        "games": {
+          "heading": "Parties",
+          "description": "Les parties jouées dans cette série, dans l'ordre.",
+          "empty": "Aucune partie pour le moment.",
+          "gameLabel": "Partie {order}",
+          "winnerLabel": "Vainqueur : {name}",
+          "noWinner": "Pas encore de vainqueur",
+          "finished": "Terminée",
+          "notFinished": "Non terminée",
+          "draftButton": "Draft",
+          "draftDiffers": "L'import ne correspond pas à la draft enregistrée",
+          "forfeit": "Forfait",
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "saving": "Enregistrement…",
+          "createButton": "Ajouter une partie",
+          "createTitle": "Ajouter une partie",
+          "editTitle": "Modifier la partie",
+          "dialogDescription": "Saisis le résultat d'une partie de cette série.",
+          "editButton": "Modifier",
+          "deleteButton": "Supprimer",
+          "deleteTitle": "Supprimer la partie",
+          "deleteConfirm": "Supprimer la partie {order} ? Le score du match est recalculé à partir des autres parties.",
+          "deleteError": "La partie n'a pas pu être supprimée.",
+          "deleteSuccess": "Partie supprimée.",
+          "saveError": "La partie n'a pas pu être enregistrée.",
+          "saveSuccess": "Partie enregistrée.",
+          "fieldOrder": "Ordre",
+          "fieldWinner": "Vainqueur",
+          "fieldWinnerNone": "Pas encore de vainqueur",
+          "fieldCompleted": "Terminée",
+          "fieldForfeit": "Forfait",
+          "fieldNote": "Note",
+          "fieldError": {
+            "invalid": "Saisis une valeur valide.",
+            "tooLong": "Trop long.",
+            "duplicateOrder": "Une autre partie utilise déjà cet ordre.",
+            "winnerRequired": "Une partie terminée a besoin d'un vainqueur.",
+            "notAnEntrant": "Le vainqueur doit être l'une des deux équipes.",
+            "notCompleted": "Marque la partie comme terminée pour définir un vainqueur.",
+            "invalidMatchId": "Utilise le format EUW1_6123456789 : un code de plateforme, un tiret bas, puis le numéro du match.",
+            "duplicateMatchId": "Une autre partie utilise déjà cet ID de match Riot."
+          },
+          "fieldApiMatchId": "ID de match Riot",
+          "fieldApiMatchIdHint": "Par exemple EUW1_6123456789. La plateforme en est déduite.",
+          "find": {
+            "open": "Trouver des parties",
+            "openLabel": "Trouver la partie chez Riot",
+            "openHint": "Cherche les parties jouées avec des codes de tournoi. Ne fonctionne pas pour les parties jouées sur le client de tournoi.",
+            "title": "Trouver des parties",
+            "description": "Cherche les parties jouées avec des codes de tournoi dans l'historique des joueurs.",
+            "relayWarning": "« Trouver des parties » ne fonctionne que si le relais Riot dispose d'une clé d'API League of Legends valide. Les clés de développement expirent au bout de 24 heures.",
+            "teamAccounts": "{name} : {count} joueurs sur {total} ont un compte Riot",
+            "regionInferred": "Recherche sur {cluster}, d'après la région du tournoi.",
+            "regionLabel": "Rechercher sur",
+            "regionAsk": "La région du tournoi n'indique pas où ses parties sont jouées. Choisissez une région.",
+            "regionUnsupported": "Les parties sur les serveurs chinois ne peuvent pas être recherchées.",
+            "windowStart": "De",
+            "windowEnd": "À",
+            "windowHint": "Commence une heure avant et se termine quatre heures après l'heure prévue. Modifiez-la si la série a eu lieu à un autre moment.",
+            "noSchedule": "Cette série n'a pas d'heure prévue. Saisissez la plage horaire.",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "Un compte d'un joueur, par exemple un compte secondaire. Il n'est enregistré que s'il apparaît dans une partie que vous enregistrez.",
+            "riotIdRequired": "Aucune équipe n'a encore de compte Riot sur cette région. Saisissez au moins un Riot ID.",
+            "addRiotId": "En ajouter un autre",
+            "search": "Rechercher",
+            "searching": "Recherche…",
+            "resultsCount": "{count, plural, one {# partie trouvée} other {# parties trouvées}}",
+            "minutes": "{minutes} min",
+            "sideSummary": "{team} · {known} sur {players} connus",
+            "sideUnknown": "équipe inconnue",
+            "badgeBoth": "Les deux équipes trouvées",
+            "badgeOne": "Seule {name} a été trouvée, vérifiez les adversaires",
+            "badgeNames": "{count} noms sur {total} correspondent à {name}",
+            "badgeImported": "Déjà importée comme partie {order}",
+            "badgeImportedElsewhere": "Déjà importée dans une autre série",
+            "badgeRemake": "Remake ?",
+            "badgeRiotIds": "Contient {count} de vos {total} Riot ID",
+            "use": "Utiliser cette partie",
+            "emptyTitle": "Aucune partie trouvée. Causes possibles :",
+            "emptyNoCode": "Le salon n'avait pas de code de tournoi. Collez un identifiant de partie ou utilisez Leaguepedia.",
+            "emptyOtherAccount": "Un joueur a utilisé un autre compte. Essayez un autre Riot ID.",
+            "emptyWindow": "La plage horaire était mauvaise. Élargissez-la.",
+            "emptyRegion": "Les parties ont été jouées dans une autre région. Cherchez-y.",
+            "error": {
+              "windowInvalid": "La plage horaire doit faire 48 heures au maximum.",
+              "generic": "La recherche n'a pas pu être lancée."
+            },
+            "incompleteRateLimited": "Riot a limité {failed} requêtes sur {total} : la liste peut être incomplète ou contenir des parties d'autres séries. Attendez une minute et relancez la recherche.",
+            "incomplete": "{failed} requêtes sur {total} ont échoué : la liste peut être incomplète ou contenir des parties d'autres séries. Relancez la recherche."
+          },
+          "gameImport": {
+            "label": "Match Leaguepedia",
+            "none": "Aucun",
+            "noData": "pas de données",
+            "gameNumber": "Match {number}",
+            "fetch": "Charger depuis Leaguepedia",
+            "fetching": "Chargement…",
+            "renew": "Renouveler",
+            "reprocess": "Retraiter",
+            "success": "Match enregistré depuis Leaguepedia",
+            "error": {
+              "noData": "Ce match n'a pas de données V5 sur Leaguepedia.",
+              "notInBucket": "Ce match n'est pas encore dans le stockage. Chargez-le d'abord.",
+              "pageInvalid": "Les pages Leaguepedia de ce match ne sont pas des données de match valides.",
+              "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard.",
+              "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
+              "sidesUnresolved": "Les deux équipes de ce match ne correspondent pas aux deux participants de la série.",
+              "missingPlayers": "{count, plural, one {# joueur n'est pas encore lié à une personne} other {# joueurs ne sont pas encore liés à une personne}}",
+              "invalidUpload": "Les données du match n'ont pas passé les contrôles d'import.",
+              "storeFailed": "Le match n'a pas pu être enregistré.",
+              "invalidOrder": "Le numéro du match doit être un entier égal ou supérieur à 1.",
+              "accountConflict": "Un compte Riot est déjà lié à une autre personne.",
+              "sidesInvalid": "Choisissez deux participants différents pour bleu et rouge.",
+              "roleInvalid": "Un rôle de la modification n'est pas valide.",
+              "orderTaken": "Le match {order} de cette série est déjà enregistré avec d'autres données. Choisissez un autre numéro et enregistrez à nouveau.",
+              "dataDragonUnavailable": "Les noms des champions sont indisponibles pour le moment. Réessayez plus tard.",
+              "unknownChampions": "ID de champion inconnus : {ids}",
+              "storageUnavailable": "Le stockage des imports LoL est injoignable. Vérifiez sa configuration, puis réessayez.",
+              "duplicateAccount": "Le même compte Riot est lié deux fois. Liez chaque compte une seule fois.",
+              "tournamentRealm": "Cette partie a été jouée sur le royaume du tournoi. Récupérez-la plutôt depuis Leaguepedia."
+            },
+            "searchPlaceholder": "Rechercher par équipe, match ou date",
+            "noResults": "Aucun match ne correspond",
+            "previewTitle": "Vérifier le match",
+            "previewDescription": "Choisissez le participant de chaque côté, et liez chaque joueur qui ne l'est pas encore.",
+            "back": "Retour",
+            "saveGame": "Enregistrer le match",
+            "sideBlue": "Bleu",
+            "sideRed": "Rouge",
+            "sidesTitle": "Côtés",
+            "blueSide": "Côté bleu",
+            "redSide": "Côté rouge",
+            "chooseEntrant": "Choisir un participant",
+            "suggestedPlayers": "Suggestion d'après les joueurs liés",
+            "suggestedNames": "Suggestion d'après les noms d'équipe",
+            "winnerLabel": "Vainqueur : {name}",
+            "noWinner": "Aucun vainqueur",
+            "lengthLabel": "Durée : {minutes} min",
+            "playersTitle": "Joueurs",
+            "notLinked": "Pas encore lié",
+            "linkExisting": "Lier un existant",
+            "createNew": "Créer",
+            "newHandle": "Nom de la nouvelle personne",
+            "unresolvedHint": "Liez ou créez une personne pour chaque joueur non encore lié.",
+            "suggestedPeople": "Suggestions de l'équipe :",
+            "realmLive": "live",
+            "realmTournament": "royaume des tournois",
+            "accountNote": "Ajoute un autre compte ({realm}, {platform}). {handle} a déjà : {existing}.",
+            "roleLabel": "Rôle",
+            "roleNone": "Aucun rôle",
+            "positionRole": "Les positions sur la carte suggèrent {role}",
+            "alreadyStoredHere": "enregistré comme match {order} de cette série",
+            "alreadyStoredElsewhere": "enregistré dans une autre série",
+            "refreshGames": "Actualiser la liste des parties",
+            "refreshCooldown": "Actualisée il y a moins d'une heure. Réessayez plus tard.",
+            "refreshed": "Liste des parties actualisée ({count} parties)",
+            "refreshError": "La liste des parties n'a pas pu être actualisée. Réessayez plus tard.",
+            "riotFetch": "Récupérer depuis Riot",
+            "riotSuccess": "Partie enregistrée depuis Riot",
+            "riotTournamentRealm": "Cette partie a été jouée sur le royaume du tournoi, elle ne peut donc pas être récupérée depuis l'API de Riot."
+          }
+        },
         "liquipediaImportButton": "Import de match Liquipedia"
       },
       "liquipediaButton": "Liquipedia",
@@ -4792,7 +5120,30 @@
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Import et récupération des données Riot en cours, cela peut prendre un moment.",
         "close": "Fermer"
-      }
+      },
+      "leaguepedia": {
+        "title": "Matchs Leaguepedia",
+        "description": "La liste des matchs vient des tables Cargo de Leaguepedia, pour la page de base et toutes les pages en dessous.",
+        "basePageLabel": "Page de base Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "L'enregistrement lit les matchs sur Leaguepedia. Rien n'est enregistré si la lecture échoue.",
+        "save": "Enregistrer et charger les matchs",
+        "saving": "Chargement…",
+        "refresh": "Actualiser depuis Leaguepedia",
+        "lastFetched": "Dernière lecture {date} · {count, plural, one {# match} other {# matchs}}",
+        "neverFetched": "Pas encore lu",
+        "success": "{count, plural, one {# match chargé} other {# matchs chargés}}",
+        "error": {
+          "gameClaimed": "Ces parties appartiennent déjà à un autre tournoi, elles ne peuvent donc pas être liées ici.",
+          "invalidBasePage": "Utilisez un nom de page sans # < > [ ] | '{ }', ni / au début ou à la fin.",
+          "notFound": "Tournoi introuvable.",
+          "notLinked": "Enregistrez d'abord une page de base.",
+          "cooldown": "La liste des parties a été lue il y a moins d'une heure. Réessaie plus tard.",
+          "missingConfig": "Le compte bot Leaguepedia n'est pas configuré sur ce serveur.",
+          "fetch": "Leaguepedia n'a pas pu être lu. Réessayez plus tard."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Signalements",
@@ -5257,6 +5608,9 @@
       },
       "copyOverlay": "Lien de l'overlay",
       "overlayCopied": "Lien de l'overlay copié, ajoutez-le comme source navigateur."
+    },
+    "personPicker": {
+      "notInGame": "Pas encore dans {game}"
     },
     "rosterSource": {
       "placeholder": "Lien de l'annonce",
@@ -6014,7 +6368,8 @@
       "level": {
         "tournament": "Tournoi",
         "match": "Match",
-        "map": "Map"
+        "map": "Map",
+        "game": "Partie"
       },
       "matchSearchPlaceholder": "Rechercher un match…",
       "mapSearchPlaceholder": "Rechercher une map…",
@@ -6033,7 +6388,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Matchs",
       "openMaps": "Maps",
-      "goBack": "Retour"
+      "goBack": "Retour",
+      "gameEmpty": "Aucune partie dans ce match.",
+      "gameSearchPlaceholder": "Rechercher une partie…",
+      "openGames": "Parties"
     },
     "streams": {
       "title": "Chaînes de stream",
@@ -6171,8 +6529,14 @@
         "matchNotInTournament": "Ce match n'appartient pas au tournoi sélectionné.",
         "mapNotFound": "Map introuvable.",
         "mapNotInMatch": "Cette map n'appartient pas au match sélectionné.",
-        "notFound": "VOD introuvable."
-      }
+        "notFound": "VOD introuvable.",
+        "gameNotFound": "Partie introuvable.",
+        "gameNotInMatch": "Cette partie n'appartient pas au match sélectionné."
+      },
+      "scopeGame": "Partie précise",
+      "gameLabel": "Partie",
+      "gamePlaceholder": "Sélectionner une partie…",
+      "gameLoading": "Chargement…"
     },
     "apiKeys": {
       "title": "Clés API",
@@ -7444,7 +7808,8 @@
       "state": {
         "linkedToYou": "Ce profil est déjà lié à votre compte.",
         "linkedToOther": "Ce profil est déjà lié à un autre compte. Contactez le staff si vous pensez que c'est une erreur.",
-        "pending": "Vous avez déjà une demande de lien de compte en attente de validation."
+        "pending": "Vous avez déjà une demande de lien de compte en attente de validation.",
+        "linkedToAnotherPerson": "Votre compte est déjà lié à un autre joueur. Si les deux profils sont la même personne, demandez au staff de les fusionner."
       }
     },
     "error": {
@@ -7475,6 +7840,7 @@
       "invalidType": "Seules les photos JPG, PNG ou WebP sont acceptées.",
       "tooSmall": "Cette photo est trop petite (400 px minimum sur le plus petit côté).",
       "invalidDiscordId": "Indiquez une ID utilisateur Discord valide (17 à 20 chiffres) ou une invitation de serveur (discord.gg/...).",
+      "userLinkOtherPerson": "Votre compte est déjà lié à un autre joueur. Si les deux profils sont la même personne, demandez au staff de les fusionner.",
       "sourceTooLong": "Ce lien est trop long (500 caractères maximum).",
       "invalidSource": "Cette option n'est pas disponible ici.",
       "leftSourceRequiresLeft": "Une source de départ nécessite que le membre soit marqué comme parti."
@@ -7550,6 +7916,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "Stats",
     "tabMaps": "Maps",
+    "tabChampions": "Champions",
+    "championsEmpty": "Aucune partie jouée pour le moment.",
+    "championsRolesColumn": "Rôles",
+    "championsRoleBansNote": "Les bans et la présence comptent tous les rôles.",
+    "championsInsightMostPicked": "Le plus pické",
+    "championsInsightMostBanned": "Le plus banni",
+    "championsInsightHighestPresence": "Plus forte présence",
+    "championsInsightHighestWinRate": "Taux de victoire le plus élevé",
+    "championsInsightHighestKda": "KDA le plus élevé",
     "tabProduction": "Production",
     "productionTitle": "{tournament} · Production",
     "statsGroupByLabel": "Grouper par",
@@ -7584,6 +7959,15 @@
     "statsFilterAgentAll": "Tous les agents",
     "statsFilterMap": "Map",
     "statsFilterMapAll": "Toutes les maps",
+    "statsChampionColumn": "Champions",
+    "statsFilterChampion": "Champion",
+    "statsFilterChampionAll": "Tous les champions",
+    "statsFilterChampionSearch": "Rechercher un champion…",
+    "statsFilterChampionNoResult": "Aucun champion trouvé",
+    "statsFilterRole": "Rôle",
+    "statsFilterRoleAll": "Tous les rôles",
+    "statsFilterPatch": "Patch",
+    "statsFilterPatchAll": "Tous les patchs",
     "statsFilterStartDate": "Du",
     "statsFilterEndDate": "Au",
     "statsFilterSubmit": "Appliquer les filtres",
@@ -7602,6 +7986,22 @@
     "pageOf": "Page {page} sur {total}",
     "statsColumns": {
       "played": "Maps",
+      "playedGames": "Parties",
+      "winRate": "Taux de victoire",
+      "picks": "Picks",
+      "bans": "Bans",
+      "presence": "Présence",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "Rounds",
       "rating": "Rating",
       "acs": "ACS",
@@ -7645,7 +8045,8 @@
     "mapsPickRatesShowMore": "Tout afficher",
     "mapsPickRatesShowLess": "Réduire",
     "factOrganizer": "Organisateur",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Parties"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7859,6 +8260,10 @@
     "text": "Certaines informations de cette page proviennent de Liquipedia.",
     "link": "Voir l'article d'origine"
   },
+  "leaguepediaSource": {
+    "text": "Certaines données de parties de cette page proviennent de Leaguepedia (CC BY-SA). Pages d'origine :",
+    "game": "Partie {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Wikicode Liquipedia",
     "title": "Wikicode Liquipedia",
@@ -7903,7 +8308,8 @@
     "copied": "Copié",
     "copyError": "L'image n'a pas pu être copiée. Télécharge-la à la place.",
     "exporting": "Génération en cours",
-    "exportError": "L'image n'a pas pu être générée. Réessaie."
+    "exportError": "L'image n'a pas pu être générée. Réessaie.",
+    "descriptionGames": "Image PNG de {width} px de large, prête à partager. Choisissez toutes les parties ou une seule."
   },
   "share": {
     "button": "Partager",
@@ -8026,6 +8432,23 @@
       "rateLimited": "Trop de requêtes, ralentissez.",
       "invalidRequest": "Requête invalide."
     }
+  },
+  "game": {
+    "switcherLabel": "Jeu",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "Non public",
+    "previewBanner": "{game} n'est pas encore public. Seuls les admins voient cette page."
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lanes",
+    "fromGames": "D'après les games :",
+    "invalid": "Seules les cinq lanes peuvent être sélectionnées."
   },
   "liquipediaHub": {
     "title": "Liquipedia",

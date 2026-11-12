@@ -9,6 +9,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { TwitchIcon, YoutubeIcon, STREAM_PLATFORM_ICONS, WebsiteIcon } from "@/components/icons/brand-icons";
 import { languageFlagClass } from "@/lib/countries";
+import { GAME_INFO, type GameSlug } from "@gc-stats/db/game";
 import type { MatchStream, MatchVod, MatchPlayerPov } from "@/lib/match-page-data";
 
 // Renders nothing when the language has no flag sprite, so no empty box is left in the link.
@@ -43,7 +44,7 @@ function filterStreamsByLocale(streams: MatchStream[], locale: string): MatchStr
   return matching.length > 0 ? matching : streams;
 }
 
-export async function MatchMedia({ streams: allStreams, vods, povs, isCompleted }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean }) {
+export async function MatchMedia({ streams: allStreams, vods, povs, isCompleted, game }: { streams: MatchStream[]; vods: MatchVod[]; povs: MatchPlayerPov[]; isCompleted: boolean; game: GameSlug }) {
   const [t, locale] = await Promise.all([getTranslations("matchPage"), getLocale()]);
   const streams = filterStreamsByLocale(allStreams, locale);
   const primaryCount = isCompleted ? vods.length : streams.length;
@@ -61,7 +62,7 @@ export async function MatchMedia({ streams: allStreams, vods, povs, isCompleted 
               ? vods.map((v) => (
                   <a key={v.id} href={v.url} target="_blank" rel="noreferrer noopener" className={linkClassName}>
                     <YoutubeIcon className="h-3.5 w-3.5 flex-none text-neutral-400" />
-                    {v.mapOrder != null ? t("vodMap", { n: v.mapOrder }) : t("vodFull")}
+                    {v.mapOrder != null ? t(`vod${GAME_INFO[game].seriesUnit}`, { n: v.mapOrder }) : t("vodFull")}
                     <LanguageFlag code={v.languageCode} />
                   </a>
                 ))

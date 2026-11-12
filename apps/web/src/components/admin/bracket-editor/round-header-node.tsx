@@ -17,6 +17,7 @@ import { useRouter } from "@/i18n/navigation";
 import { DateTimeInput } from "@/components/ui/datetime-input";
 import { Button } from "@/components/ui/button";
 import { setRoundScheduledAt } from "@/actions/admin-bracket-editor";
+import { useGame } from "@/lib/use-game";
 
 export type RoundHeaderNodeData = {
   containerId: number;
@@ -38,6 +39,7 @@ export type RoundHeaderNodeData = {
  * actions/admin-matches.ts::updateMatchDetails).
  */
 export function RoundHeaderNode({ data }: NodeProps & { data: RoundHeaderNodeData }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.editor");
   const router = useRouter();
   const [value, setValue] = useState<string | null>(data.commonScheduledAt);
@@ -45,7 +47,7 @@ export function RoundHeaderNode({ data }: NodeProps & { data: RoundHeaderNodeDat
 
   function apply() {
     startTransition(async () => {
-      const result = await setRoundScheduledAt(data.containerId, data.stageId, data.round, value);
+      const result = await setRoundScheduledAt(game, data.containerId, data.stageId, data.round, value);
       if (!result.ok) {
         toast.error(t(`bulkDateError.${result.error}`));
         return;

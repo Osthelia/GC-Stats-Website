@@ -11,7 +11,7 @@
 
 import { eq, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matches, pickemMatchPicks } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { getMatchStatsResponse, type ApiMatchStatsResponse, type ApiMapPlayerStat } from "../../v1/queries/matches";
 import { RatingAccumulator } from "../../v1/rating";
 import { getMatchesV2 } from "../../v2/queries/matches";
@@ -20,6 +20,7 @@ import { getMatchMedia, type ApiMatchMedia } from "./match-media";
 import { withPhase, withPhasesPaginated, type WithPhase } from "./phases";
 import { getMatchEncounters } from "@/lib/match-page-data";
 import { buildHeadToHeadWidgetUrl } from "@/lib/widget-params";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiMatchEncounter = {
   match_id: number;
@@ -125,7 +126,8 @@ function roundPct(n: number, total: number): number {
   return total > 0 ? Math.round((n / total) * 1000) / 10 : 0;
 }
 
-async function getMatchPickemVotes(matchId: number, entrantAId: number | null, entrantBId: number | null): Promise<ApiPickemVotes> {
+async function getMatchPickemVotes(game: GameSlug, matchId: number, entrantAId: number | null, entrantBId: number | null): Promise<ApiPickemVotes> {
+  const { pickemMatchPicks } = gameTables(game);
   if (entrantAId == null && entrantBId == null) return { team_a: 0, team_b: 0, total: 0, team_a_percentage: 0, team_b_percentage: 0 };
 
   const rows = await db
@@ -152,8 +154,9 @@ async function getMatchPickemVotes(matchId: number, entrantAId: number | null, e
  * head to head radar chart widget (the API has no chart rendering of its
  * own), and the pick'em vote split for this match.
  */
-export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Response | null> {
-  const stats = await getMatchStatsResponse(matchId);
+export async function getMatchV3Response(game: GameSlug, matchId: number): Promise<ApiMatchV3Response | null> {
+  const { matches } = gameTables(game);
+  const stats = await getMatchStatsResponse(game, matchId);
   if (!stats) return null;
 
   const [matchRow] = await db.select({ entrantAId: matches.entrantAId, entrantBId: matches.entrantBId }).from(matches).where(eq(matches.id, matchId)).limit(1);
@@ -162,10 +165,10 @@ export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Res
   const teamBId = stats.team_b?.team.id ?? null;
 
   const [core, media, encounters, pickem] = await Promise.all([
-    withPhase(stats),
-    getMatchMedia(matchId),
-    getMatchEncounters(matchId, teamAId, teamBId),
-    getMatchPickemVotes(matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
+    withPhase(game, stats),
+    getMatchMedia(game, matchId),
+    getMatchEncounters(game, matchId, teamAId, teamBId),
+    getMatchPickemVotes(game, matchId, matchRow?.entrantAId ?? null, matchRow?.entrantBId ?? null),
   ]);
 
   const radarChartWidgetUrl = teamAId != null && teamBId != null ? buildHeadToHeadWidgetUrl({ teamA: teamAId, teamB: teamBId }) : null;
@@ -192,6 +195,6 @@ export async function getMatchV3Response(matchId: number): Promise<ApiMatchV3Res
 }
 
 /** V2 global match listing with `phase` and `container` instead of `phase_id`. */
-export async function getMatchesV3(filter: MatchesFilter) {
-  return withPhasesPaginated(await getMatchesV2(filter));
+export async function getMatchesV3(game: GameSlug, filter: MatchesFilter) {
+  return withPhasesPaginated(game, await getMatchesV2(game, filter));
 }

@@ -11,7 +11,7 @@
 
 import { pgTable, bigserial, bigint, text, boolean, jsonb, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { matches } from "./bracket";
+import { valMatches } from "./game-tables";
 
 export const discordBotSubscriptions = pgTable("discord_bot_subscriptions", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
@@ -120,7 +120,7 @@ export const discordBotBlacklist = pgTable("discord_bot_blacklist", {
 export const discordBotMessages = pgTable("discord_bot_messages", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   subscriptionId: bigint("subscription_id", { mode: "number" }).notNull().references(() => discordBotSubscriptions.id, { onDelete: "cascade" }),
-  matchId: bigint("match_id", { mode: "number" }).notNull().references(() => matches.id, { onDelete: "cascade" }),
+  matchId: bigint("match_id", { mode: "number" }).notNull().references(() => valMatches.id, { onDelete: "cascade" }),
   kind: text("kind").notNull(), // 'live' | 'finished' | 'map:<mapId>'
   // Null while the claim is held and the message is being sent.
   messageId: text("message_id"),

@@ -10,10 +10,11 @@
  */
 import { NextResponse, after } from "next/server";
 import { db } from "@gc-stats/db/client";
-import { apiRequestLog } from "@gc-stats/db";
+import { apiRequestLog, GameFeatureUnavailableError } from "@gc-stats/db";
 import { resolveApiKey } from "./auth";
 import { checkRateLimit } from "./rate-limit";
 import { getPublicApiConfig } from "@/lib/public-api/config";
+import { hiddenGamePathGate } from "@/lib/api/game-gate";
 /** Thrown by a query/route to short-circuit `withApiV1` with a specific status (400 bad params, ...). */
 export class ApiV1Error extends Error {
   constructor(
@@ -69,11 +70,17 @@ function logRequest(request: Request, endpointTemplate: string, apiKeyId: number
  * never the literal request path — `apiRequestLog.endpoint` is grouped by it
  * for the per-endpoint stats already built on /admin + /dashboard.
  *
+ * A request for a game that is not public yet answers 404 (see hiddenGamePathGate).
  * `handler` returning `null` is treated as 404 (resource not found).
  * `cost` (default 1) is how much of the per-minute window this call consumes
  * — heavier endpoints (teams/players V2) charge more than 1.
  */
 export async function withApiV1<T>(request: Request, endpointTemplate: string, handler: () => Promise<T | null>, cost = 1): Promise<NextResponse> {
+  // A game that is not public yet answers 404 before anything else, so the key check can't reveal it exists. Every
+  // path segment is checked, not a fixed position: the route's [game] param is always one of them, so a moved route
+  // or an extra prefix can't skip the gate.
+  const hidden = hiddenGamePathGate(request);
+  if (hidden) return hidden;
   const startedAt = Date.now();
   const key = await resolveApiKey(request);
   if (!key) {
@@ -100,6 +107,10 @@ export async function withApiV1<T>(request: Request, endpointTemplate: string, h
     logRequest(request, endpointTemplate, key.id, startedAt, 200);
     return NextResponse.json(result);
   } catch (err) {
+    if (err instanceof GameFeatureUnavailableError) {
+      logRequest(request, endpointTemplate, key.id, startedAt, 404);
+      return NextResponse.json({ error: "Not available for this game" }, { status: 404 });
+    }
     if (err instanceof ApiV1Error) {
       logRequest(request, endpointTemplate, key.id, startedAt, err.status);
       return NextResponse.json({ error: err.message }, { status: err.status });

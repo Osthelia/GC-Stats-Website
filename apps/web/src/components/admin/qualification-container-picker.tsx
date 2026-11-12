@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useAnchorRect } from "@/hooks/use-anchor-rect";
 import { searchQualificationDestinationContainers } from "@/actions/admin-bracket-qualifications";
 import type { QualificationContainerSearchResult } from "@/lib/admin-bracket-qualifications";
+import { useGame } from "@/lib/use-game";
 
 /** Searchable, cross-tournament container picker for a qualification rule's destination — mirrors TeamPicker's portal/positioning pattern (see that file). A rule can advance an entrant into a different tournament entirely (e.g. regional -> major), so this isn't scoped to the current tournament. */
 export function QualificationContainerPicker({
@@ -31,6 +32,7 @@ export function QualificationContainerPicker({
   searchPlaceholder: string;
   noResultsLabel: string;
 }) {
+  const game = useGame();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<QualificationContainerSearchResult[]>([]);
@@ -59,7 +61,7 @@ export function QualificationContainerPicker({
     const id = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      searchQualificationDestinationContainers(query).then((rows) => {
+      searchQualificationDestinationContainers(game, query).then((rows) => {
         if (id === requestId.current) {
           setResults(rows);
           setLoading(false);

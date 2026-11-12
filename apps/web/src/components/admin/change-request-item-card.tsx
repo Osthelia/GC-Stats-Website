@@ -17,6 +17,7 @@ import { resolveChangeRequestItem, getItemRosterTarget } from "@/actions/admin-c
 import { useRosterConflicts } from "@/components/admin/roster-conflict-dialog";
 import { ChangeRequestValue } from "@/components/admin/change-request-item-value";
 import type { AdminChangeRequestItem } from "@/lib/admin-change-requests";
+import { useGame } from "@/lib/use-game";
 
 const STRUCTURAL_FIELDS = new Set([
   "membership_add",
@@ -63,6 +64,7 @@ const STATUS_STYLES: Record<AdminChangeRequestItem["status"], string> = {
 };
 
 export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: AdminChangeRequestItem; canManage: boolean; onResolved: (updated: AdminChangeRequestItem) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.changeRequests.detail");
   const tField = useTranslations("suggestEdit.field");
   const [note, setNote] = useState("");
@@ -72,7 +74,7 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
   async function resolve(action: "approve" | "reject") {
     let closeIds: number[] = [];
     if (action === "approve") {
-      const target = await getItemRosterTarget(item.id);
+      const target = await getItemRosterTarget(game, item.id);
       if (target) {
         const answer = await resolveConflicts(target.personId, target.handle, target.teamId, target.excludeMembershipId);
         if (!answer) return;
@@ -80,7 +82,7 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
       }
     }
     startTransition(async () => {
-      const result = await resolveChangeRequestItem(item.id, action, note, closeIds);
+      const result = await resolveChangeRequestItem(game, item.id, action, note, closeIds);
       if (!result.ok) {
         toast.error(t("actionError"));
         return;

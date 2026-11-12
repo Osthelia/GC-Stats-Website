@@ -15,6 +15,7 @@
 import { and, eq, inArray, isNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
 import { users, roles, userRoles, permissions, rolePermissions } from "@gc-stats/db";
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { ADMIN_ACCESS_PERMISSION, requireSuperAdminActor } from "@/lib/rbac";
 import { diffChanges } from "@/lib/activity-log";
 import { logAccountActivity } from "@/lib/account-activity-log";
@@ -33,8 +34,11 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
  * a real global role) even though the dialog only lets you pick from a
  * fetched list — the list can go stale between page load and submit.
  */
-export async function updateUserGlobalRoles(targetUserId: string, roleIds: number[]): Promise<ActionResult> {
+export async function updateUserGlobalRoles(targetUserId: string, roleIds: number[], game: GameSlug | null = null): Promise<ActionResult> {
   const actorId = (await requireSuperAdminActor()).userId;
+  if (game !== null && !isGameSlug(game)) return { ok: false, error: "gameNotFound" };
+  // Assignments limited to a game are a separate set: the every-game one and each game's own never touch each other.
+  const scopeFilter = and(eq(userRoles.userId, targetUserId), isNull(userRoles.scopeId), game === null ? isNull(userRoles.game) : eq(userRoles.game, game));
 
   const [targetUser] = await db.select({ id: users.id }).from(users).where(eq(users.id, targetUserId)).limit(1);
   if (!targetUser) return { ok: false, error: "userNotFound" };
@@ -48,21 +52,21 @@ export async function updateUserGlobalRoles(targetUserId: string, roleIds: numbe
     : [];
   if (validRoles.length !== uniqueRoleIds.length) return { ok: false, error: "roleNotFound" };
 
-  if (targetUserId === actorId) {
+  if (targetUserId === actorId && game === null) {
     const willKeepAdminAccess = await roleSetGrantsAdminAccess(validRoles.map((r) => r.id));
     if (!willKeepAdminAccess) return { ok: false, error: "selfDemote" };
   }
 
-  const previousRoles = await db.select({ roleId: userRoles.roleId }).from(userRoles).where(and(eq(userRoles.userId, targetUserId), isNull(userRoles.scopeId)));
+  const previousRoles = await db.select({ roleId: userRoles.roleId }).from(userRoles).where(scopeFilter);
 
   await db.transaction(async (tx) => {
-    await tx.delete(userRoles).where(and(eq(userRoles.userId, targetUserId), isNull(userRoles.scopeId)));
+    await tx.delete(userRoles).where(scopeFilter);
     if (uniqueRoleIds.length) {
-      await tx.insert(userRoles).values(uniqueRoleIds.map((roleId) => ({ userId: targetUserId, roleId, scopeId: null })));
+      await tx.insert(userRoles).values(uniqueRoleIds.map((roleId) => ({ userId: targetUserId, roleId, scopeId: null, game })));
     }
     const changes = diffChanges({ roleIds: previousRoles.map((r) => r.roleId).sort((a, b) => a - b) }, { roleIds: [...uniqueRoleIds].sort((a, b) => a - b) });
     if (Object.keys(changes).length > 0) {
-      await logAccountActivity({ userId: targetUserId, actorUserId: actorId, event: "updated", description: "Global roles updated", changes, properties: { section: "roles" } }, tx);
+      await logAccountActivity({ userId: targetUserId, actorUserId: actorId, event: "updated", description: game === null ? "Global roles updated" : `Roles updated for ${game}`, changes, properties: { section: "roles", game } }, tx);
     }
   });
 

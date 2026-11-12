@@ -16,7 +16,7 @@
 import { and, eq, ne } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, tournaments, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data";
@@ -24,6 +24,7 @@ import type { FetchMapResult } from "@/lib/map-fetch/types";
 import { mergeMatch, renewMatch, RIOT_RELAY_REGIONS, type RiotRelayError, type RiotRelayRegion } from "@/lib/riot-relay-client";
 import { resolveRiotRegion } from "@/lib/map-fetch/riot-region";
 import { logActivity } from "@/lib/activity-log";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // Re-exported so client components only ever import fetch-map TYPES through
 // this "use server" boundary (never straight from lib/map-fetch/*, which
@@ -46,7 +47,9 @@ function logMapFetchChange(mapId: number, matchId: number, actorUserId: string, 
   return logActivity({ subject: "map", subjectId: mapId, event: "updated", description, actorUserId, properties: { matchId, ...properties } });
 }
 
-async function loadMapRegionContext(mapId: number) {
+async function loadMapRegionContext(game: GameSlug, mapId: number) {
+  const { matches, stageContainers, stages, tournaments } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const [row] = await db
     .select({ apiMatchId: maps.apiMatchId, tournamentRegion: tournaments.region })
     .from(maps)
@@ -67,6 +70,7 @@ const API_MATCH_ID_RE = /^[A-Za-z0-9_-]{1,100}$/;
  * Empty or malformed input leaves the stored id alone.
  */
 async function applyFormMatchId(mapId: number, apiMatchId: string | undefined, actorUserId: string): Promise<{ ok: true } | { ok: false; error: { kind: "duplicateMatchId" } }> {
+  const { maps } = valorantTables;
   const trimmed = apiMatchId?.trim() ?? "";
   if (!trimmed || !API_MATCH_ID_RE.test(trimmed)) return { ok: true };
   const [current] = await db.select({ apiMatchId: maps.apiMatchId, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
@@ -93,14 +97,15 @@ async function applyFormMatchId(mapId: number, apiMatchId: string | undefined, a
 
 export type FetchMapOptions = { puuidMapping?: Record<string, number>; teamAColor?: "Red" | "Blue"; apiMatchId?: string };
 
-export async function fetchMapData(mapId: number, options?: FetchMapOptions): Promise<FetchMapResult> {
+export async function fetchMapData(game: GameSlug, mapId: number, options?: FetchMapOptions): Promise<FetchMapResult> {
+  const { maps } = valorantTablesOf(game);
   const actorUserId = await requireTournamentsActor();
 
   const applied = await applyFormMatchId(mapId, options?.apiMatchId, actorUserId);
   if (!applied.ok) return applied;
 
   const puuidMapping = options?.puuidMapping ? new Map(Object.entries(options.puuidMapping)) : undefined;
-  const result = await runFetchMapData(mapId, { puuidMapping, teamAColor: options?.teamAColor });
+  const result = await runFetchMapData(game, mapId, { puuidMapping, teamAColor: options?.teamAColor });
   if (result.ok) {
     const [map] = await db.select({ matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
     if (map) {
@@ -114,13 +119,13 @@ export async function fetchMapData(mapId: number, options?: FetchMapOptions): Pr
 export type RenewMapError = RiotRelayError | { kind: "mapNotFound" } | { kind: "noMatchId" } | { kind: "regionNotConfigured" } | { kind: "duplicateMatchId" };
 export type RenewMapResult = { ok: true } | { ok: false; error: RenewMapError };
 
-export async function renewMapData(mapId: number, apiMatchId?: string): Promise<RenewMapResult> {
+export async function renewMapData(game: GameSlug, mapId: number, apiMatchId?: string): Promise<RenewMapResult> {
   const actorUserId = await requireTournamentsActor();
 
   const applied = await applyFormMatchId(mapId, apiMatchId, actorUserId);
   if (!applied.ok) return applied;
 
-  const row = await loadMapRegionContext(mapId);
+  const row = await loadMapRegionContext(game, mapId);
   if (!row) return { ok: false, error: { kind: "mapNotFound" } };
   if (!row.apiMatchId) return { ok: false, error: { kind: "noMatchId" } };
 
@@ -139,6 +144,7 @@ export type MergeSegmentsResult = { ok: true; apiMatchId: string } | { ok: false
 const MATCH_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
 export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput): Promise<MergeSegmentsResult> {
+  const { maps } = valorantTables;
   const actorUserId = await requireTournamentsActor();
 
   const fieldErrors: MergeSegmentsFieldErrors = {};

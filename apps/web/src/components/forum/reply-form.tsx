@@ -17,8 +17,10 @@ import { EmoteInsertButton } from "@/components/forum/emote-insert-button";
 import { MentionTextarea, type MentionTextareaHandle } from "@/components/forum/mention-textarea";
 import { useForumReply } from "@/components/forum/forum-reply-context";
 import type { PickerEmote } from "@/lib/reactions";
+import { useGame } from "@/lib/use-game";
 
 export function ReplyForm({ threadId, pickerEmotes }: { threadId: number; pickerEmotes: PickerEmote[] }) {
+  const game = useGame();
   const t = useTranslations("forum.reply");
   const tMessage = useTranslations("forum.message");
   const router = useRouter();
@@ -33,7 +35,7 @@ export function ReplyForm({ threadId, pickerEmotes }: { threadId: number; picker
     setError(null);
     setPending(true);
 
-    const result = await postForumMessage({ threadId, body, parentId: replyTarget?.id ?? null });
+    const result = await postForumMessage(game, { threadId, body, parentId: replyTarget?.id ?? null });
     setPending(false);
 
     if (!result.ok) {

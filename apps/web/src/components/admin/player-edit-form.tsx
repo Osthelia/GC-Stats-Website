@@ -23,6 +23,8 @@ import { TagsInput } from "@/components/admin/tags-input";
 import { updatePlayerProfile, type PlayerProfileFieldErrors } from "@/actions/admin-players";
 import type { AdminPlayerProfile } from "@/lib/admin-players";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
+import { useGame } from "@/lib/use-game";
+
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
 export function PlayerEditForm({
@@ -35,6 +37,7 @@ export function PlayerEditForm({
   /** Rendered in the right column, below Socials — e.g. the logo panel. */
   rightExtra?: React.ReactNode;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.players.edit");
   const [isPending, startTransition] = useTransition();
   const [errors, setErrors] = useState<PlayerProfileFieldErrors>({});
@@ -57,7 +60,7 @@ export function PlayerEditForm({
   function handleSave() {
     setErrors({});
     startTransition(async () => {
-      const result = await updatePlayerProfile(player.id, {
+      const result = await updatePlayerProfile(game, player.id, {
         handle,
         aliases,
         firstName,
@@ -93,6 +96,7 @@ export function PlayerEditForm({
               <CardTitle>{t("sectionProfile")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
+              <p className="text-xs text-muted-foreground">{t("sharedHint")}</p>
               <FormField label={t("fieldHandle")} htmlFor="player-handle" required error={err("handle")}>
                 <Input id="player-handle" value={handle} onChange={(e) => setHandle(e.target.value)} aria-invalid={!!errors.handle} disabled={!canEdit} />
               </FormField>
@@ -153,9 +157,11 @@ export function PlayerEditForm({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <FormField label={t("fieldVlrId")} htmlFor="player-vlr-id" error={err("vlrId")}>
-                  <Input id="player-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} disabled={!canEdit} />
-                </FormField>
+                {game === "valorant" && (
+                  <FormField label={t("fieldVlrId")} htmlFor="player-vlr-id" error={err("vlrId")}>
+                    <Input id="player-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} disabled={!canEdit} />
+                  </FormField>
+                )}
                 <FormField label={t("fieldLiquipedia")} htmlFor="player-liquipedia" error={err("liquipediaLink")}>
                   <Input id="player-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!errors.liquipediaLink} disabled={!canEdit} />
                 </FormField>
@@ -190,6 +196,7 @@ export function PlayerEditForm({
             </CardContent>
           </Card>
 
+          {game === "valorant" && (
           <Card>
             <CardHeader>
               <CardTitle>{t("sectionIdentifiers")}</CardTitle>
@@ -203,6 +210,7 @@ export function PlayerEditForm({
               </FormField>
             </CardContent>
           </Card>
+          )}
         </div>
 
         <div className="flex flex-col gap-4">

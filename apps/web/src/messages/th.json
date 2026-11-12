@@ -6,8 +6,8 @@
     "home": "หน้าแรก",
     "matches": "แมตช์",
     "tournaments": "ทัวร์นาเมนต์",
-    "news": "ข่าว",
     "calendar": "ปฏิทินการแข่งขัน",
+    "news": "ข่าว",
     "forum": "ฟอรัม",
     "about": "เกี่ยวกับเรา",
     "search": "ค้นหา",
@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · โปรดักชัน",
     "formerOrganizations": "องค์กรเก่า",
     "noFormerOrganizations": "ไม่มีองค์กรเก่าที่บันทึกไว้",
-    "unknownDate": "ไม่ทราบ"
+    "unknownDate": "ไม่ทราบ",
+    "addGameProfile": {
+      "title": "เล่น {game} ด้วยหรือไม่?",
+      "description": "เพิ่มโปรไฟล์ {game} ของคุณได้ในคลิกเดียว ใช้ชื่อ รูปภาพ และลิงก์เดิม ไม่ต้องกรอกใหม่",
+      "button": "เพิ่มโปรไฟล์ {game} ของฉัน",
+      "adding": "กำลังเพิ่ม...",
+      "done": "โปรไฟล์ {game} ของคุณพร้อมแล้ว",
+      "open": "ดูโปรไฟล์ {game} ของฉัน",
+      "error": {
+        "unauthenticated": "คุณต้องเข้าสู่ระบบ",
+        "notYours": "ผู้เล่นนี้ไม่ได้เชื่อมโยงกับบัญชีของคุณ",
+        "invalidGame": "ไม่มีเกมนี้"
+      }
+    },
+    "alsoOn": "เล่น {game} ด้วย"
   },
   "organizationPage": {
     "tabOverview": "ภาพรวม",
@@ -1793,7 +1807,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "การสนทนา",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD เกม {n}",
+    "games": "เกม",
+    "gameTab": "เกม {order}",
+    "noGames": "ยังไม่มีการบันทึกเกม",
+    "noGameData": "ไม่มีข้อมูลสำหรับเกมนี้",
+    "duration": "ระยะเวลา",
+    "forfeit": "ยอมแพ้",
+    "towers": "ป้อม",
+    "inhibitors": "อินฮิบิเตอร์",
+    "dragons": "ดราก้อน",
+    "barons": "บารอน",
+    "heralds": "เฮรัลด์",
+    "grubs": "วอยด์กรับ",
+    "draftNotSet": "ยังไม่มีการบันทึกดราฟต์ของเกมนี้",
+    "ban": "แบน",
+    "pick": "พิก",
+    "unplacedPicks": "พิกที่ยังไม่ได้วาง",
+    "colChampion": "แชมป์",
+    "allGames": "ทุกเกม",
+    "draft": "ดราฟต์"
   },
   "footer": {
     "tagline": "ทุกการแข่งขัน Game Changers อย่างเป็นทางการ ในที่เดียว",
@@ -2095,7 +2129,8 @@
       "error": {
         "userNotFound": "ไม่พบผู้ใช้",
         "roleNotFound": "บทบาทที่เลือกบางรายการไม่มีอยู่แล้ว",
-        "selfDemote": "คุณไม่สามารถลบสิทธิ์ผู้ดูแลของตัวเองได้"
+        "selfDemote": "คุณไม่สามารถลบสิทธิ์ผู้ดูแลของตัวเองได้",
+        "gameNotFound": "ไม่มีเกมนี้"
       },
       "authMethods": {
         "heading": "การยืนยันตัวตน",
@@ -2376,7 +2411,8 @@
           "ownerOnly": "เฉพาะเจ้าของเท่านั้นที่สามารถให้หรือแก้ไขบทบาทเจ้าของได้",
           "userNotFound": "ไม่พบบัญชี",
           "alreadyHasAccess": "บัญชีนี้มีสิทธิ์เข้าถึงองค์กรนี้อยู่แล้ว"
-        }
+        },
+        "fieldGames": "เกม"
       },
       "filterKindLabel": "ประเภทองค์กร",
       "filterKindAll": "ทุกองค์กร",
@@ -2605,6 +2641,7 @@
       "title": "ผู้เล่น",
       "subtitle": "จัดการโปรไฟล์และสังกัดทีม",
       "searchPlaceholder": "ชื่อในวงการ ID หรือ VLR ID…",
+      "searchPlaceholderLol": "ชื่อในวงการ ID หรือ Riot ID…",
       "searchSubmit": "ค้นหา",
       "activeWithinLabel": "กิจกรรมล่าสุด",
       "activeWithinAny": "ทุกช่วงเวลา",
@@ -2772,11 +2809,45 @@
           "requiresLeft": "เลือก « ออกจากทีมแล้ว » เพื่อระบุวันที่ออก"
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "Discord User ID (โหมดนักพัฒนา, คลิกขวาที่โปรไฟล์, คัดลอก User ID) หรือลิงก์เชิญเซิร์ฟเวอร์"
+        "discordIdHint": "Discord User ID (โหมดนักพัฒนา, คลิกขวาที่โปรไฟล์, คัดลอก User ID) หรือลิงก์เชิญเซิร์ฟเวอร์",
+        "sectionRiotAccounts": "บัญชี Riot",
+        "riotAccountsHint": "บัญชี League of Legends ที่ผู้เล่นใช้เล่น เกมที่นำเข้าจะเชื่อมกับผู้เล่นผ่านบัญชีเหล่านี้",
+        "riotAccountsEmpty": "ยังไม่มีบัญชี Riot บัญชีจะถูกเพิ่มเมื่อนำเข้าเกม หรือเพิ่มที่นี่",
+        "riotAccountLive": "ไลฟ์",
+        "riotAccountTournament": "เรียลม์ทัวร์นาเมนต์",
+        "riotAccountSourceAdmin": "เพิ่มด้วยตนเอง",
+        "riotAccountLastSeen": "พบล่าสุด <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "ภูมิภาค",
+        "riotAccountAdd": "เพิ่มบัญชี",
+        "riotAccountAdding": "กำลังเพิ่ม…",
+        "riotAccountAdded": "เพิ่มบัญชี Riot แล้ว",
+        "riotAccountRemoved": "นำบัญชี Riot ออกแล้ว",
+        "riotAccountRemove": "นำออก",
+        "riotAccountRemoveTitle": "นำบัญชี Riot นี้ออกหรือไม่",
+        "riotAccountRemoveDescription": "{riotId} จะไม่เชื่อมกับ {handle} อีกต่อไป เกมที่นำเข้าแล้วจะยังอยู่กับผู้เล่น",
+        "riotAccountErrorHeldByOther": "บัญชี Riot นี้เป็นของ {handle} อยู่แล้ว",
+        "riotAccountErrorAlreadyOnPlayer": "ผู้เล่นคนนี้มีบัญชี Riot นี้อยู่แล้ว",
+        "riotAccountErrorGeneric": "ไม่สามารถเปลี่ยนบัญชี Riot ได้",
+        "sectionGames": "เกม",
+        "gamesHint": "หนึ่งคนมีหนึ่งโปรไฟล์ต่อเกม ชื่อ ประเทศ สรรพนาม ประวัติ ชื่อเรียกอื่น โซเชียล รูปภาพ และบัญชีที่เชื่อมโยงใช้ร่วมกัน ส่วนที่เหลือเป็นของแต่ละเกม",
+        "sharedHint": "ชื่อ ประเทศ สรรพนาม ประวัติ ชื่อเรียกอื่น โซเชียล และรูปภาพ ใช้ร่วมกับเกมอื่นของบุคคลนี้",
+        "gameCurrent": "เกมปัจจุบัน",
+        "gameHasProfile": "มีโปรไฟล์",
+        "gameNoProfile": "ยังไม่มีโปรไฟล์",
+        "gameOpen": "เปิด",
+        "gameAddButton": "เพิ่มใน {game}",
+        "gameAdding": "กำลังเพิ่ม...",
+        "gameAddSuccess": "เพิ่มใน {game} แล้ว",
+        "gameAddError": {
+          "invalidGame": "ไม่มีเกมนี้",
+          "notFound": "ไม่มีผู้เล่นนี้แล้ว",
+          "alreadyThere": "ผู้เล่นนี้มีโปรไฟล์ในเกมนี้แล้ว"
+        }
       },
       "merge": {
         "title": "รวมผู้เล่น",
-        "description": "เลือกโปรไฟล์ที่จะคงไว้ และเลือกรายการข้อมูลของ {name} ในแต่ละหมวดที่จะย้ายไป {name} จะไม่ถูกลบในขั้นตอนนี้",
+        "description": "เลือกโปรไฟล์ที่จะคงไว้ และเลือกรายการข้อมูลของ {name} ในแต่ละหมวดที่จะย้ายไป",
         "backToPlayer": "← กลับไปที่ผู้เล่น",
         "selectTarget": "รวมเข้ากับ",
         "targetPlaceholder": "เลือกผู้เล่น…",
@@ -2789,11 +2860,13 @@
           "matchStats": "การลงแข่งในแมตช์",
           "news": "ข่าว",
           "logos": "โลโก้",
+          "riotAccounts": "บัญชี Riot ({count})",
           "linkedAccount": "บัญชีที่เชื่อมโยง"
         },
         "matchStatsHint": "ย้ายข้อมูลรายรอบ (คิล ความเสียหาย ตำแหน่ง) ของแต่ละแมพด้วย เครดิตในโรสเตอร์ที่ล็อกไว้ของผู้เข้าแข่งขันในทัวร์นาเมนต์จะถูกย้ายก็ต่อเมื่อเลือกทุกแมพของผู้เข้าแข่งขันนั้นแล้ว",
         "periodOngoing": "ตั้งแต่ {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "บัญชี Riot จะย้ายไปยังผู้เล่นที่คุณเก็บไว้ เพื่อให้เกมของเขายังเชื่อมอยู่",
         "linkedAccountHint": "โอนบัญชีที่เชื่อมโยงกับผู้เล่นนี้อยู่ในปัจจุบัน แสดงเฉพาะเมื่อมีบัญชีเชื่อมโยงอยู่และปลายทางยังไม่มี",
         "nothingToMove": "ผู้เล่นนี้ยังไม่มีอะไรให้ย้าย",
         "confirm": "รวมรายการที่เลือกจาก {source} เข้ากับ {target} ใช่ไหม? ไม่สามารถย้อนกลับได้โดยอัตโนมัติ",
@@ -2808,8 +2881,39 @@
           "samePlayer": "เลือกผู้เล่นคนอื่นเป็นปลายทางในการรวม",
           "sourceNotFound": "ไม่พบผู้เล่น",
           "targetNotFound": "ไม่พบผู้เล่นปลายทาง",
-          "targetAlreadyLinked": "ผู้เล่นปลายทางมีบัญชีที่เชื่อมโยงอยู่แล้ว"
-        }
+          "targetAlreadyLinked": "ผู้เล่นปลายทางมีบัญชีที่เชื่อมโยงอยู่แล้ว",
+          "sourceStillUsed": "ผู้เล่นนี้ยังถูกใช้โดยผู้เข้าร่วมหรือสถิติแมตช์ของเกมนี้ เลือกรายการเหล่านั้นด้วย หรือเก็บโปรไฟล์ไว้"
+        },
+        "removeSource": "ลบออกจาก {game} หลังรวม",
+        "removeSourceHint": "{name} จะถูกลบออกจากเกมนี้เมื่อย้ายทุกอย่างแล้ว และลบทั้งหมดหากไม่มีเกมอื่นมีโปรไฟล์นี้ จะถูกปฏิเสธหากผู้เข้าร่วมหรือสถิติแมตช์ยังใช้อยู่",
+        "riotAccountsLost": "บัญชี Riot {count} บัญชีของ {name} จะไม่ถูกย้ายและจะถูกลบถาวรพร้อมผู้เล่น เกมที่ใช้บัญชีเหล่านี้จะแสดงเป็นยังไม่เชื่อมโยงในการนำเข้าครั้งถัดไป"
+      },
+      "duplicatesLink": "รายการที่อาจซ้ำ",
+      "duplicates": {
+        "title": "รายการที่อาจซ้ำ",
+        "description": "บุคคลที่ใช้ชื่อเดียวกันและอยู่คนละเกม รวมโปรไฟล์ {game} เข้ากับอีกฝั่งเพื่อให้เหลือโปรไฟล์เดียว",
+        "backToList": "กลับไปยังรายชื่อผู้เล่น",
+        "columnSource": "ใน {game}",
+        "columnTarget": "โปรไฟล์อื่น",
+        "merge": "รวม",
+        "empty": "ไม่พบรายการซ้ำ"
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} ไม่ใช่ Riot ID (ชื่อ#แท็ก)",
+        "riotIdNotFound": "ไม่มีบัญชี Riot ชื่อ {riotId}",
+        "relayNotConfigured": "เซิร์ฟเวอร์นี้ยังไม่ได้ตั้งค่า Riot relay",
+        "relayUnauthorized": "relay ปฏิเสธข้อมูลรับรองของเรา ตรวจสอบ RIOT_RELAY_TOKEN",
+        "riotKeyRejected": "Riot ปฏิเสธ API key ของ League of Legends ที่ relay ใช้ อาจหมดอายุหรือไม่ถูกต้อง (ตรวจสอบ LOL_RIOT_API_KEY ที่ relay)",
+        "relayLeagueUnavailable": "relay ไม่ได้ตั้งค่า API key ของ League of Legends หรือฐานข้อมูลแคชใช้งานไม่ได้ ตรวจสอบ LOL_RIOT_API_KEY และฐานข้อมูลที่ relay",
+        "routeUnavailable": "relay ไม่มี route ของ League ที่การค้นหานี้ต้องใช้ กรุณาอัปเดต relay",
+        "relayUnreachable": "เชื่อมต่อกับ Riot relay ไม่ได้ ตรวจสอบว่า relay ทำงานอยู่และ RIOT_RELAY_URL ถูกต้อง",
+        "riotUnavailable": "ตอนนี้ไม่สามารถอ่านข้อมูลจาก Riot ได้ โปรดลองอีกครั้งภายหลัง",
+        "rateLimited": "Riot กำลังจำกัดคำขอของคีย์นี้ รอสักครู่แล้วลองใหม่",
+        "rateLimitedIn": "Riot กำลังจำกัดคำขอของคีย์นี้ ลองใหม่ในอีก {seconds} วินาที",
+        "invalidRequest": "รีเลย์ปฏิเสธคำขอเพราะไม่ถูกต้อง ตรวจสอบ Riot ID ภูมิภาค และช่วงเวลา",
+        "notFound": "Riot ไม่มีข้อมูลสำหรับคำขอนี้ ไม่มีบัญชีหรือเกมนี้ หรือไม่ได้อยู่ในภูมิภาคนี้"
       }
     },
     "finance": {
@@ -3385,6 +3489,7 @@
           "entityNotFound": "ทีมหรือผู้เล่นที่อ้างอิงไม่มีอยู่แล้ว",
           "membershipNotFound": "รายการในโรสเตอร์ไม่มีอยู่แล้ว",
           "invalidRole": "บทบาทนี้ไม่ถูกต้องแล้ว",
+          "invalidLane": "มีเลนที่ไม่ถูกต้อง",
           "logoNotFound": "รายการโลโก้ไม่มีอยู่แล้ว",
           "alreadyLinked": "ผู้เล่นนี้เชื่อมโยงกับบัญชีอื่นแล้ว",
           "unknownField": "ไม่รองรับช่องนี้",
@@ -3576,10 +3681,6 @@
       "subtitle": "สร้างและจัดการทัวร์นาเมนต์ สเตจ สายการแข่งขัน และผู้เข้าแข่งขัน",
       "searchPlaceholder": "ชื่อทัวร์นาเมนต์…",
       "searchSubmit": "ค้นหา",
-      "activeFilterLabel": "กิจกรรม",
-      "activeFilterAny": "ทัวร์นาเมนต์ทั้งหมด",
-      "activeFilterActive": "ใช้งานอยู่",
-      "activeFilterInactive": "ไม่ได้ใช้งาน",
       "heading": "ทัวร์นาเมนต์",
       "statTotal": "ทัวร์นาเมนต์ทั้งหมด",
       "columnName": "ชื่อ",
@@ -3831,6 +3932,14 @@
         "fieldEliminateAtLossesHint": "จำนวนครั้งที่แพ้ เว้นว่างไว้สำหรับ Swiss แบบอิสระที่ไม่มีเกณฑ์",
         "fieldMaxRounds": "จำนวนรอบสูงสุด",
         "openEditorButton": "เปิดตัวแก้ไขสายการแข่งขัน",
+        "assignEntrantsButton": "จัดการผู้เข้าแข่งขัน",
+        "assignEntrantsTitle": "ผู้เข้าแข่งขันในกลุ่ม",
+        "assignEntrantsDescription": "เลือกผู้เข้าแข่งขันของทัวร์นาเมนต์ที่อยู่ในกลุ่ม Swiss นี้",
+        "assignEntrantsEmpty": "ไม่มีผู้เข้าแข่งขันในทัวร์นาเมนต์นี้",
+        "assignEntrantsInGroup": "อยู่ใน {name}",
+        "assignEntrantsSuccess": "อัปเดตผู้เข้าแข่งขันแล้ว",
+        "startSwissButton": "เริ่มรอบที่ 1",
+        "startSwissSuccess": "สร้างรอบที่ 1 แล้ว",
         "addMatchButton": "เพิ่มแมตช์",
         "addMatchTitle": "เพิ่มแมตช์ใน {name}",
         "addMatchDescription": "แมตช์จะถูกเพิ่มในรอบที่เลือก แม้กลุ่มจะเริ่มแล้วก็ตาม ทีมสามารถเป็น TBD และกำหนดภายหลังจากหน้าแมตช์ได้",
@@ -3907,6 +4016,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "เฉพาะกลุ่ม round robin เท่านั้นที่นับแมตช์ของทั้งสเตจได้",
           "cannotMove": "ไม่สามารถย้ายคอนเทนเนอร์นี้ต่อได้",
           "parentInvalid": "ไม่สามารถใช้ชุดนี้ที่นี่ได้",
           "tiebreakersInvalid": "ใช้แต่ละเกณฑ์ได้เพียงครั้งเดียวจากรายการที่มีให้",
@@ -3923,6 +4033,7 @@
             "points": "คะแนน",
             "buchholz": "Buchholz",
             "map_diff": "ผลต่างแมพ",
+            "game_diff": "ผลต่างเกม",
             "round_diff": "ผลต่างรอบ",
             "head_to_head": "ผลการพบกัน",
             "seed": "ซีด"
@@ -3931,17 +4042,23 @@
         "pointsConfig": {
           "title": "คะแนน",
           "hint": "แต่ละแมตช์ แมพ และรอบที่ชนะหรือแพ้จะให้คะแนนแก่ทีม รอบจะนับเฉพาะแมพที่บันทึกสกอร์แล้ว",
+          "hintGames": "แต่ละแมตช์และเกมที่ชนะหรือแพ้จะให้คะแนนแก่ทีม",
           "enable": "ใช้คะแนน",
           "scopes": {
             "match": "แมตช์",
             "map": "แต่ละแมพ",
+            "game": "แต่ละเกม",
             "round": "แต่ละรอบ",
             "forfeit": "สละสิทธิ์ (แทนที่รายการอื่น)"
           },
           "win": "ชนะ",
           "loss": "แพ้",
           "notUsed": "คะแนนจะใช้จัดอันดับกลุ่มก็ต่อเมื่อมีคะแนนอยู่ในเกณฑ์ตัดสินเสมอ"
-        }
+        },
+        "fieldMatchScope": "ทีมแข่งกับทีมจากกลุ่มอื่นด้วย (นับแมตช์ของทั้งสเตจ)",
+        "fieldMatchScopeHint": "แสดงเฉพาะทีมที่กำหนดให้กลุ่มนี้ และนับแมตช์ที่จบแล้วของทีมเหล่านั้นในทุกกลุ่มของสเตจนี้ กำหนดทีมหลังบันทึก ใช้ได้เฉพาะ round robin",
+        "matchScopeNoTeams": "ยังไม่มีทีมที่กำหนดให้กลุ่มนี้ ตารางจึงว่างเปล่า โปรดกำหนดทีมก่อน",
+        "matchScopeSwitchWarning": "การเปลี่ยนเป็นขอบเขตทั้งสเตจจะแสดงเฉพาะทีมที่กำหนดไว้ ทีมที่เคยแข่งในกลุ่มนี้แต่ไม่ได้กำหนดจะหายจากตารางจนกว่าจะกำหนด"
       },
       "bracketPage": {
         "title": "จัดการสายการแข่งขัน",
@@ -4514,6 +4631,213 @@
             "mergeMapNotFound": "แมพนี้ไม่มีอยู่แล้ว"
           }
         },
+        "draft": {
+          "metaTitle": "ดราฟต์",
+          "title": "ดราฟต์ของเกมที่ {order}",
+          "backToMatch": "กลับไปที่แมตช์",
+          "description": "ลำดับแบนและพิคของเกมนี้ เว้นช่องว่างไว้หากไม่ได้ใช้",
+          "differsWarning": "การนำเข้าไม่ตรงกับดราฟต์ที่บันทึกไว้: การนำเข้าซ้ำพบแชมเปี้ยนอื่น ตรวจสอบดราฟต์และบันทึกเพื่อคงของคุณไว้",
+          "blueSide": "ฝั่งบลู",
+          "blueLockedHint": "กำหนดโดยการนำเข้า (ทีมบลูของ Riot)",
+          "firstPickLockedHint": "กำหนดโดยการนำเข้า (ฝ่ายที่แบนก่อนเป็นคนแรก).",
+          "firstPick": "พิคแรก",
+          "phase": {
+            "ban1": "ช่วงแบนที่ 1",
+            "pick1": "ช่วงพิคที่ 1",
+            "ban2": "ช่วงแบนที่ 2",
+            "pick2": "ช่วงพิคที่ 2"
+          },
+          "side": {
+            "blue": "บลู",
+            "red": "เรด"
+          },
+          "type": {
+            "ban": "แบน",
+            "pick": "พิค"
+          },
+          "noChampion": "ไม่มีแชมเปี้ยน",
+          "searchPlaceholder": "ค้นหาแชมเปี้ยน",
+          "noResults": "ไม่พบแชมเปี้ยนที่ตรงกัน",
+          "unplacedTitle": "พิคที่ยังไม่ได้วาง",
+          "save": "บันทึกดราฟต์",
+          "saving": "กำลังบันทึก…",
+          "saved": "บันทึกดราฟต์แล้ว",
+          "error": {
+            "notFound": "ไม่พบเกมนี้",
+            "entrantsUnset": "ต้องกำหนดทั้งสองทีมของแมตช์ก่อน",
+            "blueNotAnEntrant": "ฝั่งบลูต้องเป็นหนึ่งในสองทีมของแมตช์",
+            "blueLocked": "ฝั่งบลูของเกมที่นำเข้าถูกกำหนดโดยการนำเข้า",
+            "firstPickLocked": "การเลือกก่อนของเกมที่นำเข้าถูกกำหนดโดยการนำเข้า",
+            "invalidFirstPick": "ฝั่งพิคแรกต้องเป็นบลูหรือเรด",
+            "invalidStep": "ไม่มีขั้น {step} หรือกำหนดซ้ำ",
+            "unknownChampion": "{championName} ไม่อยู่ในรายชื่อแชมเปี้ยน",
+            "duplicateChampion": "{championName} อยู่ในดราฟต์มากกว่าหนึ่งครั้ง"
+          }
+        },
+        "games": {
+          "heading": "เกม",
+          "description": "เกมที่เล่นในซีรีส์นี้ เรียงตามลำดับ",
+          "empty": "ยังไม่มีเกม",
+          "gameLabel": "เกมที่ {order}",
+          "winnerLabel": "ผู้ชนะ: {name}",
+          "noWinner": "ยังไม่มีผู้ชนะ",
+          "finished": "จบแล้ว",
+          "notFinished": "ยังไม่จบ",
+          "draftButton": "ดราฟต์",
+          "draftDiffers": "การนำเข้าไม่ตรงกับดราฟต์ที่บันทึกไว้",
+          "forfeit": "สละสิทธิ์",
+          "cancel": "ยกเลิก",
+          "save": "บันทึก",
+          "saving": "กำลังบันทึก…",
+          "createButton": "เพิ่มเกม",
+          "createTitle": "เพิ่มเกม",
+          "editTitle": "แก้ไขเกม",
+          "dialogDescription": "กรอกผลของเกมหนึ่งเกมในซีรีส์นี้",
+          "editButton": "แก้ไข",
+          "deleteButton": "ลบ",
+          "deleteTitle": "ลบเกม",
+          "deleteConfirm": "ลบเกมที่ {order} ใช่ไหม? คะแนนของแมตช์จะคำนวณใหม่จากเกมที่เหลือ",
+          "deleteError": "ไม่สามารถลบเกมได้",
+          "deleteSuccess": "ลบเกมแล้ว",
+          "saveError": "ไม่สามารถบันทึกเกมได้",
+          "saveSuccess": "บันทึกเกมแล้ว",
+          "fieldOrder": "ลำดับ",
+          "fieldWinner": "ผู้ชนะ",
+          "fieldWinnerNone": "ยังไม่มีผู้ชนะ",
+          "fieldCompleted": "จบแล้ว",
+          "fieldForfeit": "สละสิทธิ์",
+          "fieldNote": "หมายเหตุ",
+          "fieldError": {
+            "invalid": "กรอกค่าที่ถูกต้อง",
+            "tooLong": "ยาวเกินไป",
+            "duplicateOrder": "มีเกมอื่นที่ใช้ลำดับนี้อยู่แล้ว",
+            "winnerRequired": "เกมที่จบแล้วต้องมีผู้ชนะ",
+            "notAnEntrant": "ผู้ชนะต้องเป็นหนึ่งในสองทีม",
+            "notCompleted": "ทำเครื่องหมายว่าเกมจบแล้วก่อนเลือกผู้ชนะ",
+            "invalidMatchId": "ใช้รูปแบบ EUW1_6123456789: รหัสแพลตฟอร์ม เครื่องหมายขีดล่าง แล้วตามด้วยหมายเลขแมตช์",
+            "duplicateMatchId": "มีเกมอื่นที่ใช้รหัสแมตช์ Riot นี้อยู่แล้ว"
+          },
+          "fieldApiMatchId": "รหัสแมตช์ Riot",
+          "fieldApiMatchIdHint": "เช่น EUW1_6123456789 ระบบจะอ่านแพลตฟอร์มจากรหัสนี้",
+          "find": {
+            "open": "ค้นหาเกม",
+            "openLabel": "ค้นหาเกมจาก Riot",
+            "openHint": "ค้นหาเกมที่เล่นด้วยโค้ดทัวร์นาเมนต์ ใช้ไม่ได้กับเกมที่เล่นบนไคลเอนต์ทัวร์นาเมนต์",
+            "title": "ค้นหาเกม",
+            "description": "ค้นหาเกมที่เล่นด้วยโค้ดทัวร์นาเมนต์จากประวัติการแข่งของผู้เล่น",
+            "relayWarning": "ค้นหาเกมใช้ได้ก็ต่อเมื่อ Riot relay มี API key ของ League of Legends ที่ใช้งานได้ โดย key สำหรับพัฒนาจะหมดอายุหลัง 24 ชั่วโมง",
+            "teamAccounts": "{name}: ผู้เล่น {count} จาก {total} คนมีบัญชี Riot",
+            "regionInferred": "กำลังค้นหาใน {cluster} ตามภูมิภาคของทัวร์นาเมนต์",
+            "regionLabel": "ค้นหาใน",
+            "regionAsk": "ภูมิภาคของทัวร์นาเมนต์ไม่ได้บอกว่าเล่นเกมที่ไหน กรุณาเลือกภูมิภาค",
+            "regionUnsupported": "ไม่สามารถค้นหาเกมบนเซิร์ฟเวอร์จีนได้",
+            "windowStart": "ตั้งแต่",
+            "windowEnd": "ถึง",
+            "windowHint": "เริ่มก่อนเวลาที่กำหนด 1 ชั่วโมงและสิ้นสุดหลังจากนั้น 4 ชั่วโมง เปลี่ยนได้หากซีรีส์เล่นเวลาอื่น",
+            "noSchedule": "ซีรีส์นี้ไม่มีเวลาที่กำหนด กรุณากรอกช่วงเวลา",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "บัญชีของผู้เล่น เช่น บัญชีสำรอง จะถูกบันทึกก็ต่อเมื่อปรากฏในเกมที่คุณบันทึก",
+            "riotIdRequired": "ยังไม่มีทีมใดมีบัญชี Riot ในภูมิภาคนี้ กรุณากรอก Riot ID อย่างน้อยหนึ่งรายการ",
+            "addRiotId": "เพิ่มอีก",
+            "search": "ค้นหา",
+            "searching": "กำลังค้นหา…",
+            "resultsCount": "พบ {count} เกม",
+            "minutes": "{minutes} นาที",
+            "sideSummary": "{team} · รู้จัก {known} จาก {players}",
+            "sideUnknown": "ทีมที่ไม่รู้จัก",
+            "badgeBoth": "พบทั้งสองทีม",
+            "badgeOne": "พบเฉพาะ {name} ตรวจสอบฝ่ายตรงข้าม",
+            "badgeNames": "ชื่อ {count} จาก {total} ตรงกับ {name}",
+            "badgeImported": "นำเข้าแล้วเป็นเกมที่ {order}",
+            "badgeImportedElsewhere": "นำเข้าแล้วในซีรีส์อื่น",
+            "badgeRemake": "รีเมค?",
+            "badgeRiotIds": "มี Riot ID ที่คุณกรอก {count} จาก {total} รายการ",
+            "use": "ใช้เกมนี้",
+            "emptyTitle": "ไม่พบเกม สาเหตุที่เป็นไปได้:",
+            "emptyNoCode": "ล็อบบี้ไม่มีโค้ดทัวร์นาเมนต์ วางแมตช์ ID หรือใช้ Leaguepedia",
+            "emptyOtherAccount": "ผู้เล่นใช้บัญชีอื่น ลองใช้ Riot ID อื่น",
+            "emptyWindow": "ช่วงเวลาไม่ตรง ขยายช่วงเวลา",
+            "emptyRegion": "เกมเล่นในภูมิภาคอื่น ค้นหาที่นั่น",
+            "error": {
+              "windowInvalid": "ช่วงเวลาต้องไม่เกิน 48 ชั่วโมง",
+              "generic": "ไม่สามารถค้นหาได้"
+            },
+            "incompleteRateLimited": "Riot จำกัดการค้นหา {failed} จาก {total} ครั้ง รายการนี้จึงอาจไม่ครบหรือมีเกมของซีรีส์อื่นปนอยู่ รอสักครู่แล้วค้นหาอีกครั้ง",
+            "incomplete": "การค้นหา {failed} จาก {total} ครั้งล้มเหลว รายการนี้จึงอาจไม่ครบหรือมีเกมของซีรีส์อื่นปนอยู่ ค้นหาอีกครั้ง"
+          },
+          "gameImport": {
+            "label": "การแข่งขันจาก Leaguepedia",
+            "none": "ไม่มี",
+            "noData": "ไม่มีข้อมูล",
+            "gameNumber": "เกมที่ {number}",
+            "fetch": "ดึงจาก Leaguepedia",
+            "fetching": "กำลังดึง…",
+            "renew": "ดึงใหม่",
+            "reprocess": "ประมวลผลใหม่",
+            "success": "บันทึกเกมจาก Leaguepedia แล้ว",
+            "error": {
+              "noData": "เกมนี้ไม่มีข้อมูล V5 บน Leaguepedia",
+              "notInBucket": "เกมนี้ยังไม่อยู่ในที่เก็บ กรุณาดึงก่อน",
+              "pageInvalid": "หน้า Leaguepedia ของเกมนี้ไม่ใช่ข้อมูลการแข่งขันที่ถูกต้อง",
+              "fetch": "ไม่สามารถอ่าน Leaguepedia ได้ โปรดลองใหม่ภายหลัง",
+              "missingConfig": "ยังไม่ได้ตั้งค่าการล็อกอินบอทของ Leaguepedia บนเซิร์ฟเวอร์นี้",
+              "sidesUnresolved": "สองทีมของเกมนี้ไม่ตรงกับผู้เข้าแข่งขันสองฝ่ายของซีรีส์",
+              "missingPlayers": "ผู้เล่น {count} คนยังไม่ได้เชื่อมกับบุคคล",
+              "invalidUpload": "ข้อมูลเกมไม่ผ่านการตรวจสอบการนำเข้า",
+              "storeFailed": "ไม่สามารถบันทึกเกมได้",
+              "invalidOrder": "หมายเลขเกมต้องเป็นจำนวนเต็มตั้งแต่ 1 ขึ้นไป",
+              "accountConflict": "บัญชี Riot นี้เชื่อมกับบุคคลอื่นอยู่แล้ว",
+              "sidesInvalid": "เลือกผู้เข้าแข่งขันที่ต่างกันสองทีมสำหรับฝั่งฟ้าและแดง",
+              "roleInvalid": "บทบาทในการเปลี่ยนแปลงไม่ถูกต้อง",
+              "orderTaken": "เกมที่ {order} ของซีรีส์นี้ถูกบันทึกไว้แล้วด้วยข้อมูลอื่น เลือกหมายเลขเกมอื่นแล้วบันทึกอีกครั้ง",
+              "dataDragonUnavailable": "ตอนนี้ไม่สามารถดึงชื่อแชมเปี้ยนได้ โปรดลองอีกครั้งภายหลัง",
+              "unknownChampions": "ไม่รู้จักรหัสแชมเปี้ยน: {ids}",
+              "storageUnavailable": "ไม่สามารถเชื่อมต่อกับที่เก็บข้อมูลการนำเข้า LoL ได้ ตรวจสอบการตั้งค่าแล้วลองอีกครั้ง",
+              "duplicateAccount": "บัญชี Riot เดียวกันถูกเชื่อมสองครั้ง เชื่อมแต่ละบัญชีเพียงครั้งเดียว",
+              "tournamentRealm": "เกมนี้เล่นบนเซิร์ฟเวอร์ทัวร์นาเมนต์ ให้ดึงจาก Leaguepedia แทน"
+            },
+            "searchPlaceholder": "ค้นหาตามทีม เกม หรือวันที่",
+            "noResults": "ไม่พบการแข่งขันที่ตรงกัน",
+            "previewTitle": "ตรวจสอบเกม",
+            "previewDescription": "เลือกผู้เข้าแข่งขันของแต่ละฝั่ง และเชื่อมผู้เล่นทุกคนที่ยังไม่ได้เชื่อม",
+            "back": "ย้อนกลับ",
+            "saveGame": "บันทึกเกม",
+            "sideBlue": "ฟ้า",
+            "sideRed": "แดง",
+            "sidesTitle": "ฝั่ง",
+            "blueSide": "ฝั่งฟ้า",
+            "redSide": "ฝั่งแดง",
+            "chooseEntrant": "เลือกผู้เข้าแข่งขัน",
+            "suggestedPlayers": "แนะนำจากผู้เล่นที่เชื่อมแล้ว",
+            "suggestedNames": "แนะนำจากชื่อทีม",
+            "winnerLabel": "ผู้ชนะ: {name}",
+            "noWinner": "ไม่มีผู้ชนะ",
+            "lengthLabel": "ความยาว: {minutes} นาที",
+            "playersTitle": "ผู้เล่น",
+            "notLinked": "ยังไม่ได้เชื่อม",
+            "linkExisting": "เชื่อมกับบุคคลที่มีอยู่",
+            "createNew": "สร้างใหม่",
+            "newHandle": "ชื่อของบุคคลใหม่",
+            "unresolvedHint": "เชื่อมหรือสร้างบุคคลให้ผู้เล่นทุกคนที่ยังไม่ได้เชื่อม",
+            "suggestedPeople": "แนะนำจากทีม:",
+            "realmLive": "ไลฟ์",
+            "realmTournament": "เรียลม์ทัวร์นาเมนต์",
+            "accountNote": "เพิ่มบัญชีอีกบัญชี ({realm}, {platform}) {handle} มี {existing} อยู่แล้ว",
+            "roleLabel": "บทบาท",
+            "roleNone": "ไม่มีบทบาท",
+            "positionRole": "ตำแหน่งบนแผนที่ชี้ว่าเป็น {role}",
+            "alreadyStoredHere": "บันทึกเป็นเกมที่ {order} ของซีรีส์นี้แล้ว",
+            "alreadyStoredElsewhere": "บันทึกในซีรีส์อื่นแล้ว",
+            "refreshGames": "รีเฟรชรายการเกม",
+            "refreshCooldown": "รีเฟรชไปแล้วภายในหนึ่งชั่วโมงที่ผ่านมา โปรดลองอีกครั้งภายหลัง",
+            "refreshed": "รีเฟรชรายการเกมแล้ว ({count} เกม)",
+            "refreshError": "ไม่สามารถรีเฟรชรายการเกมได้ โปรดลองอีกครั้งภายหลัง",
+            "riotFetch": "ดึงจาก Riot",
+            "riotSuccess": "บันทึกเกมจาก Riot แล้ว",
+            "riotTournamentRealm": "เกมนี้เล่นบนเซิร์ฟเวอร์ทัวร์นาเมนต์ จึงไม่สามารถดึงจาก Riot API ได้"
+          }
+        },
         "liquipediaImportButton": "นำเข้าแมตช์จาก Liquipedia"
       },
       "liquipediaButton": "Liquipedia",
@@ -4792,7 +5116,34 @@
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "กำลังนำเข้าและดึงข้อมูล Riot อาจใช้เวลาสักครู่",
         "close": "ปิด"
-      }
+      },
+      "activeFilterLabel": "กิจกรรม",
+      "activeFilterAny": "ทัวร์นาเมนต์ทั้งหมด",
+      "activeFilterActive": "ใช้งานอยู่",
+      "activeFilterInactive": "ไม่ได้ใช้งาน",
+      "leaguepedia": {
+        "title": "การแข่งขันจาก Leaguepedia",
+        "description": "รายการการแข่งขันมาจากตาราง Cargo ของ Leaguepedia สำหรับหน้าหลักและทุกหน้าที่อยู่ภายใต้หน้านั้น",
+        "basePageLabel": "หน้าหลักของ Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "การบันทึกจะอ่านการแข่งขันจาก Leaguepedia หากการอ่านล้มเหลว จะไม่มีการบันทึกใด ๆ",
+        "save": "บันทึกและดึงการแข่งขัน",
+        "saving": "กำลังดึง…",
+        "refresh": "รีเฟรชจาก Leaguepedia",
+        "lastFetched": "ดึงล่าสุด {date} · {count, plural, other {# การแข่งขัน}}",
+        "neverFetched": "ยังไม่ได้ดึง",
+        "success": "ดึงแล้ว {count, plural, other {# การแข่งขัน}}",
+        "error": {
+          "gameClaimed": "เกมเหล่านี้เป็นของทัวร์นาเมนต์อื่นอยู่แล้ว จึงเชื่อมที่นี่ไม่ได้",
+          "invalidBasePage": "ใช้ชื่อหน้าที่ไม่มี # < > [ ] | '{ }' และไม่มี / ขึ้นต้นหรือลงท้าย",
+          "notFound": "ไม่พบรายการแข่งขันนี้",
+          "notLinked": "กรุณาบันทึกหน้าหลักก่อน",
+          "cooldown": "อ่านรายการเกมไปเมื่อไม่ถึงหนึ่งชั่วโมงที่แล้ว ลองใหม่ภายหลัง",
+          "missingConfig": "ยังไม่ได้ตั้งค่าการล็อกอินบอทของ Leaguepedia บนเซิร์ฟเวอร์นี้",
+          "fetch": "ไม่สามารถอ่าน Leaguepedia ได้ โปรดลองใหม่ภายหลัง"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "การรายงาน",
@@ -5258,6 +5609,9 @@
       "copyOverlay": "ลิงก์โอเวอร์เลย์",
       "overlayCopied": "คัดลอกลิงก์โอเวอร์เลย์แล้ว เพิ่มเป็นแหล่งที่มาของเบราว์เซอร์"
     },
+    "personPicker": {
+      "notInGame": "ยังไม่อยู่ใน {game}"
+    },
     "rosterSource": {
       "placeholder": "ลิงก์ประกาศ",
       "error": {
@@ -5503,7 +5857,6 @@
         "staff_change": "เปลี่ยนแปลงสตาฟ",
         "tryouts": "Tryouts",
         "not_enough_info": "ข้อมูลไม่เพียงพอ",
-
         "wrong_game": "ผิดเกม",
         "noise": "สัญญาณรบกวน",
         "match_promo": "โปรโมตแมตช์",
@@ -5546,7 +5899,6 @@
         "explanation": "คำอธิบาย",
         "explanationPlaceholder": "ทำไมจึงไม่เกี่ยวกับรอสเตอร์?",
         "confirm": "ยืนยัน",
-
         "pickTopic": "เกี่ยวกับเรื่องอะไร?"
       },
       "reviewed": {
@@ -6016,7 +6368,8 @@
       "level": {
         "tournament": "ทัวร์นาเมนต์",
         "match": "แมตช์",
-        "map": "แมป"
+        "map": "แมป",
+        "game": "เกม"
       },
       "matchSearchPlaceholder": "ค้นหาแมตช์…",
       "mapSearchPlaceholder": "ค้นหาแมป…",
@@ -6035,7 +6388,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "แมตช์",
       "openMaps": "แมป",
-      "goBack": "ย้อนกลับ"
+      "goBack": "ย้อนกลับ",
+      "gameEmpty": "ไม่มีเกมในแมตช์นี้",
+      "gameSearchPlaceholder": "ค้นหาเกม…",
+      "openGames": "เกม"
     },
     "streams": {
       "title": "ช่องสตรีม",
@@ -6173,8 +6529,14 @@
         "matchNotInTournament": "แมตช์นี้ไม่ได้อยู่ในทัวร์นาเมนต์ที่เลือก",
         "mapNotFound": "ไม่พบแมพ",
         "mapNotInMatch": "แมพนี้ไม่ได้อยู่ในแมตช์ที่เลือก",
-        "notFound": "ไม่พบ VOD"
-      }
+        "notFound": "ไม่พบ VOD",
+        "gameNotFound": "ไม่พบเกม",
+        "gameNotInMatch": "เกมนี้ไม่ได้อยู่ในแมตช์ที่เลือก"
+      },
+      "scopeGame": "เกมที่เลือก",
+      "gameLabel": "เกม",
+      "gamePlaceholder": "เลือกเกม…",
+      "gameLoading": "กำลังโหลด…"
     },
     "apiKeys": {
       "title": "API key",
@@ -7446,7 +7808,8 @@
       "state": {
         "linkedToYou": "โปรไฟล์นี้เชื่อมโยงกับบัญชีของคุณแล้ว",
         "linkedToOther": "โปรไฟล์นี้เชื่อมโยงกับบัญชีอื่นแล้ว ติดต่อทีมงานหากคุณคิดว่าเป็นความผิดพลาด",
-        "pending": "คุณมีคำขอเชื่อมโยงบัญชีที่รอการตรวจสอบอยู่แล้ว"
+        "pending": "คุณมีคำขอเชื่อมโยงบัญชีที่รอการตรวจสอบอยู่แล้ว",
+        "linkedToAnotherPerson": "บัญชีของคุณเชื่อมโยงกับผู้เล่นอื่นแล้ว หากทั้งสองโปรไฟล์เป็นคนเดียวกัน โปรดขอให้ทีมงานรวมโปรไฟล์"
       }
     },
     "error": {
@@ -7477,6 +7840,7 @@
       "invalidType": "รับเฉพาะรูปภาพ JPG, PNG หรือ WebP เท่านั้น",
       "tooSmall": "รูปภาพนี้เล็กเกินไป (ด้านสั้นที่สุดต้องไม่น้อยกว่า 400 px)",
       "invalidDiscordId": "กรอก Discord User ID ที่ถูกต้อง (17 ถึง 20 หลัก) หรือลิงก์เชิญเซิร์ฟเวอร์ (discord.gg/...)",
+      "userLinkOtherPerson": "บัญชีของคุณเชื่อมโยงกับผู้เล่นอื่นแล้ว หากทั้งสองโปรไฟล์เป็นคนเดียวกัน โปรดขอให้ทีมงานรวมโปรไฟล์",
       "sourceTooLong": "ลิงก์นี้ยาวเกินไป (สูงสุด 500 ตัวอักษร)",
       "invalidSource": "ตัวเลือกนี้ใช้ไม่ได้ที่นี่",
       "leftSourceRequiresLeft": "แหล่งที่มาของการออกต้องทำเครื่องหมายว่าสมาชิกออกแล้ว"
@@ -7552,6 +7916,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "สถิติ",
     "tabMaps": "แมพ",
+    "tabChampions": "แชมเปียน",
+    "championsEmpty": "ยังไม่มีเกมที่เล่น",
+    "championsRolesColumn": "ตำแหน่ง",
+    "championsRoleBansNote": "การแบนและการปรากฏตัวนับรวมทุกตำแหน่ง",
+    "championsInsightMostPicked": "ถูกเลือกมากที่สุด",
+    "championsInsightMostBanned": "ถูกแบนมากที่สุด",
+    "championsInsightHighestPresence": "การปรากฏตัวสูงสุด",
+    "championsInsightHighestWinRate": "อัตราชนะสูงสุด",
+    "championsInsightHighestKda": "KDA สูงสุด",
     "tabProduction": "โปรดักชัน",
     "productionTitle": "{tournament} · โปรดักชัน",
     "statsGroupByLabel": "จัดกลุ่มตาม",
@@ -7586,6 +7959,15 @@
     "statsFilterAgentAll": "ทุกเอเจนต์",
     "statsFilterMap": "แมพ",
     "statsFilterMapAll": "ทุกแมพ",
+    "statsChampionColumn": "แชมเปี้ยน",
+    "statsFilterChampion": "แชมเปี้ยน",
+    "statsFilterChampionAll": "ทุกแชมเปี้ยน",
+    "statsFilterChampionSearch": "ค้นหาแชมเปียน…",
+    "statsFilterChampionNoResult": "ไม่พบแชมเปียน",
+    "statsFilterRole": "ตำแหน่ง",
+    "statsFilterRoleAll": "ทุกตำแหน่ง",
+    "statsFilterPatch": "แพตช์",
+    "statsFilterPatchAll": "ทุกแพตช์",
     "statsFilterStartDate": "ตั้งแต่",
     "statsFilterEndDate": "ถึง",
     "statsFilterSubmit": "ใช้ตัวกรอง",
@@ -7604,6 +7986,22 @@
     "pageOf": "หน้า {page} จาก {total}",
     "statsColumns": {
       "played": "แมพ",
+      "playedGames": "เกม",
+      "winRate": "อัตราชนะ",
+      "picks": "การเลือก",
+      "bans": "การแบน",
+      "presence": "การปรากฏตัว",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "รอบ",
       "rating": "เรตติ้ง",
       "acs": "ACS",
@@ -7647,7 +8045,8 @@
     "mapsPickRatesShowMore": "แสดงทั้งหมด",
     "mapsPickRatesShowLess": "แสดงน้อยลง",
     "factOrganizer": "ผู้จัด",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "เกม"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7861,6 +8260,10 @@
     "text": "ข้อมูลบางส่วนในหน้านี้มาจาก Liquipedia",
     "link": "ดูบทความต้นฉบับ"
   },
+  "leaguepediaSource": {
+    "text": "ข้อมูลเกมบางส่วนในหน้านี้มาจาก Leaguepedia (CC BY-SA) หน้าต้นฉบับ:",
+    "game": "เกมที่ {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "wikicode ของ Liquipedia",
     "title": "wikicode ของ Liquipedia",
@@ -7905,7 +8308,8 @@
     "copied": "คัดลอกแล้ว",
     "copyError": "ไม่สามารถคัดลอกรูปภาพได้ ลองดาวน์โหลดแทน",
     "exporting": "กำลังสร้าง",
-    "exportError": "ไม่สามารถสร้างรูปภาพได้ ลองอีกครั้ง"
+    "exportError": "ไม่สามารถสร้างรูปภาพได้ ลองอีกครั้ง",
+    "descriptionGames": "ภาพ PNG กว้าง {width} px พร้อมแชร์ เลือกทุกเกมหรือเกมเดียว"
   },
   "share": {
     "button": "แชร์",
@@ -8028,6 +8432,23 @@
       "rateLimited": "คำขอมากเกินไป กรุณาช้าลง",
       "invalidRequest": "คำขอไม่ถูกต้อง"
     }
+  },
+  "game": {
+    "switcherLabel": "เกม",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "ยังไม่เปิดสาธารณะ",
+    "previewBanner": "{game} ยังไม่เปิดให้ใช้งานสาธารณะ เฉพาะผู้ดูแลระบบเท่านั้นที่เห็นหน้านี้"
+  },
+  "lanes": {
+    "TOP": "ท็อป",
+    "JUNGLE": "จังเกิล",
+    "MIDDLE": "มิด",
+    "BOTTOM": "บอท",
+    "UTILITY": "ซัพพอร์ต",
+    "label": "เลน",
+    "fromGames": "จากเกม:",
+    "invalid": "เลือกได้เฉพาะห้าเลนเท่านั้น"
   },
   "liquipediaHub": {
     "title": "Liquipedia",

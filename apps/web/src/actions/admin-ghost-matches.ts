@@ -14,13 +14,15 @@
 
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { tournaments, stages, stageContainers, entrants, entrantMembers, matches, maps, teams, people, rosterMemberships, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
+import { createPerson } from "@/lib/person-service";
 import { searchTeamsQuery, type TeamPickerResult } from "@/lib/team-search";
 import { searchPeopleQuery, type PersonPickerResult } from "@/lib/person-search";
 import { GHOST_MATCH_BEST_OF_VALUES, GHOST_MATCH_PLAYER_SLOTS } from "@/lib/ghost-match";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -48,24 +50,26 @@ export type GhostMatchFieldErrors = Partial<Record<GhostMatchField, string>> & {
 };
 export type GhostMatchResult = { ok: true; tournamentId: number; matchId: number } | { ok: false; fieldErrors: GhostMatchFieldErrors };
 
-export async function searchGhostTeams(query: string): Promise<TeamPickerResult[]> {
+export async function searchGhostTeams(game: GameSlug, query: string): Promise<TeamPickerResult[]> {
   await requireTournamentsActor();
-  return searchTeamsQuery(query, undefined, "only");
+  return searchTeamsQuery(game, query, undefined, "only");
 }
 
-export async function searchGhostPeople(query: string): Promise<PersonPickerResult[]> {
+export async function searchGhostPeople(game: GameSlug, query: string): Promise<PersonPickerResult[]> {
   await requireTournamentsActor();
-  return searchPeopleQuery(query, undefined, undefined, "only");
+  return searchPeopleQuery(game, query, undefined, undefined, "only");
 }
 
 /** GC side can field an uncovered stand-in, so public and ghost people are both valid. */
-export async function searchPeopleIncludingGhosts(query: string): Promise<PersonPickerResult[]> {
+export async function searchPeopleIncludingGhosts(game: GameSlug, query: string): Promise<PersonPickerResult[]> {
   await requireTournamentsActor();
-  return searchPeopleQuery(query, undefined, undefined, "include");
+  return searchPeopleQuery(game, query, undefined, undefined, "include");
 }
 
 /** Riot puuid mapping on a map fetch: ghost people are only offered on a ghost tournament's match. */
-export async function searchPeopleForMapFetch(mapId: number, query: string): Promise<PersonPickerResult[]> {
+export async function searchPeopleForMapFetch(game: GameSlug, mapId: number, query: string): Promise<PersonPickerResult[]> {
+  const { tournaments, stages, stageContainers, matches } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   await requireTournamentsActor();
   const [row] = await db
     .select({ isGhost: tournaments.isGhost })
@@ -76,11 +80,12 @@ export async function searchPeopleForMapFetch(mapId: number, query: string): Pro
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
     .where(eq(maps.id, mapId))
     .limit(1);
-  return searchPeopleQuery(query, undefined, undefined, row?.isGhost ? "include" : "exclude");
+  return searchPeopleQuery(game, query, undefined, undefined, row?.isGhost ? "include" : "exclude");
 }
 
 /** Current player roster of a GC team, to prefill its side of the form. */
-export async function getTeamCurrentPlayers(teamId: number): Promise<{ id: number; handle: string }[]> {
+export async function getTeamCurrentPlayers(game: GameSlug, teamId: number): Promise<{ id: number; handle: string }[]> {
+  const { people, rosterMemberships } = gameTables(game);
   await requireTournamentsActor();
   return db
     .select({ id: people.id, handle: people.handle })
@@ -99,7 +104,8 @@ export async function getTeamCurrentPlayers(teamId: number): Promise<{ id: numbe
 }
 
 /** Last roster fielded by a ghost team, to prefill the opponent side when reusing it. */
-export async function getGhostTeamLastPlayers(teamId: number): Promise<{ id: number; handle: string }[]> {
+export async function getGhostTeamLastPlayers(game: GameSlug, teamId: number): Promise<{ id: number; handle: string }[]> {
+  const { entrants, entrantMembers, teams, people } = gameTables(game);
   await requireTournamentsActor();
   const [last] = await db
     .select({ id: entrants.id })
@@ -118,7 +124,8 @@ export async function getGhostTeamLastPlayers(teamId: number): Promise<{ id: num
     .limit(GHOST_MATCH_PLAYER_SLOTS);
 }
 
-async function validatePlayers(rows: GhostMatchPlayerInput[], ghostOnly: boolean): Promise<Record<number, string>> {
+async function validatePlayers(game: GameSlug, rows: GhostMatchPlayerInput[], ghostOnly: boolean): Promise<Record<number, string>> {
+  const { people } = gameTables(game);
   const errors: Record<number, string> = {};
   if (rows.length !== GHOST_MATCH_PLAYER_SLOTS) {
     for (let i = 0; i < GHOST_MATCH_PLAYER_SLOTS; i++) errors[i] = "required";
@@ -146,7 +153,8 @@ async function validatePlayers(rows: GhostMatchPlayerInput[], ghostOnly: boolean
   return errors;
 }
 
-export async function createGhostMatch(input: GhostMatchInput): Promise<GhostMatchResult> {
+export async function createGhostMatch(game: GameSlug, input: GhostMatchInput): Promise<GhostMatchResult> {
+  const { tournaments, stages, stageContainers, entrants, entrantMembers, matches, teams } = gameTables(game);
   await requireTournamentsActor();
 
   const fieldErrors: GhostMatchFieldErrors = {};
@@ -185,9 +193,9 @@ export async function createGhostMatch(input: GhostMatchInput): Promise<GhostMat
   } else if (!opponentTeamName) fieldErrors.opponent = "required";
   else if (opponentTeamName.length > 255) fieldErrors.opponent = "tooLong";
 
-  const gcPlayerErrors = await validatePlayers(input.gcPlayers, false);
+  const gcPlayerErrors = await validatePlayers(game, input.gcPlayers, false);
   if (Object.keys(gcPlayerErrors).length > 0) fieldErrors.gcPlayers = gcPlayerErrors;
-  const opponentPlayerErrors = await validatePlayers(input.opponentPlayers, true);
+  const opponentPlayerErrors = await validatePlayers(game, input.opponentPlayers, true);
   if (Object.keys(opponentPlayerErrors).length > 0) fieldErrors.opponentPlayers = opponentPlayerErrors;
 
   // A person can't play on both sides of the same match.
@@ -258,8 +266,7 @@ export async function createGhostMatch(input: GhostMatchInput): Promise<GhostMat
       for (const row of rows) {
         let personId = row.personId;
         if (personId === null) {
-          const [person] = await tx.insert(people).values({ handle: row.handle.trim(), isGhost: true, isActive: true, socials: {} }).returning({ id: people.id });
-          personId = person!.id;
+          personId = await createPerson(tx, game, { handle: row.handle.trim(), socials: {} }, { isGhost: true, isActive: true });
         }
         await tx.insert(entrantMembers).values({ entrantId, personId, role: "player" }).onConflictDoNothing();
       }
@@ -281,18 +288,20 @@ export async function createGhostMatch(input: GhostMatchInput): Promise<GhostMat
 export type PromoteGhostResult = { ok: true } | { ok: false; error: "notFound" };
 
 /** A ghost profile that ends up covered becomes a regular public one, stats included. */
-export async function promoteGhostTeam(teamId: number): Promise<PromoteGhostResult> {
-  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.teamsEdit);
+export async function promoteGhostTeam(game: GameSlug, teamId: number): Promise<PromoteGhostResult> {
+  const { teams } = gameTables(game);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.teamsEdit, game);
   const updated = await db.update(teams).set({ isGhost: false }).where(and(eq(teams.id, teamId), eq(teams.isGhost, true))).returning({ id: teams.id });
   if (!updated.length) return { ok: false, error: "notFound" };
-  await logActivity({ subject: "team", subjectId: teamId, event: "updated", description: `Promoted ghost team #${teamId} to a public team`, actorUserId, changes: { isGhost: { old: true, new: false } } });
+  await logActivity({ game, subject: "team", subjectId: teamId, event: "updated", description: `Promoted ghost team #${teamId} to a public team`, actorUserId, changes: { isGhost: { old: true, new: false } } });
   return { ok: true };
 }
 
-export async function promoteGhostPlayer(personId: number): Promise<PromoteGhostResult> {
-  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.playersEdit);
-  const updated = await db.update(people).set({ isGhost: false }).where(and(eq(people.id, personId), eq(people.isGhost, true))).returning({ id: people.id });
+export async function promoteGhostPlayer(game: GameSlug, personId: number): Promise<PromoteGhostResult> {
+  const { personProfiles } = gameTables(game);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.playersEdit, game);
+  const updated = await db.update(personProfiles).set({ isGhost: false }).where(and(eq(personProfiles.personId, personId), eq(personProfiles.isGhost, true))).returning({ id: personProfiles.personId });
   if (!updated.length) return { ok: false, error: "notFound" };
-  await logActivity({ subject: "player", subjectId: personId, event: "updated", description: `Promoted ghost player #${personId} to a public player`, actorUserId, changes: { isGhost: { old: true, new: false } } });
+  await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description: `Promoted ghost player #${personId} to a public player`, actorUserId, changes: { isGhost: { old: true, new: false } } });
   return { ok: true };
 }

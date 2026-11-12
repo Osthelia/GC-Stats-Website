@@ -10,12 +10,12 @@
  */
 
 import { pgTable, bigserial, bigint, text, boolean, jsonb, integer, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { teams } from "./people";
+import { valTeams } from "./game-tables";
 import { users } from "./auth";
 
 export const xMonitoredAccounts = pgTable("x_monitored_accounts", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
+  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => valTeams.id, { onDelete: "cascade" }),
   xHandle: text("x_handle").notNull(),
   // Resolved on the first fetch.
   xUserId: text("x_user_id"),
@@ -36,7 +36,7 @@ export const xRosterSignals = pgTable("x_roster_signals", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   tweetId: text("tweet_id").notNull().unique(),
   accountId: bigint("account_id", { mode: "number" }).notNull().references(() => xMonitoredAccounts.id, { onDelete: "cascade" }),
-  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
+  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => valTeams.id, { onDelete: "cascade" }),
   tweetUrl: text("tweet_url").notNull(),
   text: text("text").notNull(),
   // English translation (DeepL), null when not translated or already in English.

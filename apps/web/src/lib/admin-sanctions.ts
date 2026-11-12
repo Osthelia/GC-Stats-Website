@@ -12,11 +12,10 @@
 import { and, asc, desc, eq, gt, isNull, isNotNull, lte, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { sanctions, users, teams } from "@gc-stats/db";
+import { sanctions, users, valorantTables } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 import { SANCTION_TYPES, type SanctionType } from "@/lib/sanction-constants";
-
 export { SANCTION_TYPES, type SanctionType };
 
 export const SANCTIONS_PAGE_SIZE = 30;
@@ -55,6 +54,8 @@ export async function listAdminSanctions(opts: {
   direction: SortDirection;
   page: number;
 }): Promise<{ rows: AdminSanctionRow[]; total: number }> {
+  // Sanction teams come from the V1 data, which was Valorant only.
+  const { teams } = valorantTables;
   const { q, status, type, sort, direction, page } = opts;
 
   const issuedBy = alias(users, "issued_by_user");

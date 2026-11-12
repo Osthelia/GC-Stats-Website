@@ -21,6 +21,7 @@ import { ActiveStatusBadge } from "@/components/admin/active-status-badge";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { deleteNewsLanguage } from "@/actions/admin-news-languages";
 import type { AdminNewsLanguageRow, SortDirection } from "@/lib/admin-news-languages";
+import { useGame } from "@/lib/use-game";
 
 export function NewsLanguagesPanel({
   languages,
@@ -33,6 +34,7 @@ export function NewsLanguagesPanel({
   sortable: { pathname: string; sort: string; direction: SortDirection; query: Record<string, string> };
   pagination: { page: number; totalPages: number; total: number };
 }) {
+  const game = useGame();
   const t = useTranslations("admin.newsLanguages");
   const router = useRouter();
   const [editing, setEditing] = useState<AdminNewsLanguageRow | null>(null);
@@ -42,7 +44,7 @@ export function NewsLanguagesPanel({
 
   function handleDelete(language: AdminNewsLanguageRow) {
     startTransition(async () => {
-      const result = await deleteNewsLanguage(language.code);
+      const result = await deleteNewsLanguage(game, language.code);
       setDeleting(null);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));

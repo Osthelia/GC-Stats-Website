@@ -22,6 +22,7 @@ import { FormField } from "@/components/admin/form-field";
 import { updateMatchDetails, reportMatchResult, saveMatchLiveScore, type MatchDetailsFieldErrors, type ReportResultFieldErrors } from "@/actions/admin-matches";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
 import type { AdminMatchDetail } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 const ENTRANT_NONE = "none";
 const STATUS_VALUES = ["pending", "live"] as const;
@@ -47,6 +48,7 @@ export function MatchForm({
   entrants: { id: number; displayName: string }[];
   canManage: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -79,7 +81,7 @@ export function MatchForm({
     setDetailsErrors({});
     setResultErrors({});
     startTransition(async () => {
-      const detailsResult = await updateMatchDetails(match.id, {
+      const detailsResult = await updateMatchDetails(game, match.id, {
         entrantAId: entrantAId === ENTRANT_NONE ? null : Number(entrantAId),
         entrantBId: entrantBId === ENTRANT_NONE ? null : Number(entrantBId),
         status,
@@ -119,8 +121,8 @@ export function MatchForm({
         const winsNeeded = Number(bestOf) === 1 ? 13 : Math.ceil(Number(bestOf) / 2);
         const decided = a === -1 || b === -1 || (a !== b && Math.max(a, b) >= winsNeeded);
         const resultResult = decided
-          ? await reportMatchResult(match.id, { winnerId: a === -1 || (b !== -1 && b > a) ? Number(entrantBId) : Number(entrantAId), scoreA, scoreB })
-          : await saveMatchLiveScore(match.id, { scoreA, scoreB });
+          ? await reportMatchResult(game, match.id, { winnerId: a === -1 || (b !== -1 && b > a) ? Number(entrantBId) : Number(entrantAId), scoreA, scoreB })
+          : await saveMatchLiveScore(game, match.id, { scoreA, scoreB });
         if (!resultResult.ok) {
           setResultErrors(resultResult.fieldErrors);
           return;

@@ -13,13 +13,15 @@
 
 import { and, asc, eq, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, groupEntries, matches, stageContainers, stages, teams, tournaments, xMonitoredAccounts, xRosterSignals, PERMISSIONS } from "@gc-stats/db";
+import { xMonitoredAccounts, xRosterSignals, PERMISSIONS, valorantTables } from "@gc-stats/db";
 import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tournament-search";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { normalizeXHandle, planReview, type ReviewError, type ReviewInput } from "@/lib/roster-watch/review";
 import { queueRosterWebhooks } from "@/lib/webhooks/roster";
 import type { SignalStatus, Stage, Verdict } from "@/lib/roster-watch/constants";
+
+const { entrants, groupEntries, matches, stageContainers, stages, teams, tournaments } = valorantTables;
 
 export type ReviewSignalResult =
   | { ok: true; status: SignalStatus; teamId: number }
@@ -125,7 +127,7 @@ export async function addMonitoredAccount(input: { teamId: number | null; handle
 
 export async function searchTournamentsForRosterWatch(query: string): Promise<TournamentPickerResult[]> {
   await requireActorPermission(PERMISSIONS.rosterWatchManage);
-  return searchTournamentsQuery(typeof query === "string" ? query.slice(0, 100) : "");
+  return searchTournamentsQuery("valorant", typeof query === "string" ? query.slice(0, 100) : "");
 }
 
 export async function listTournamentStagesForRosterWatch(tournamentId: number): Promise<{ id: number; name: string }[]> {

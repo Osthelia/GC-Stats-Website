@@ -1,0 +1,75 @@
+/**
+ * GC-Stats - league-scoreboard
+ *
+ * The rows of a LoL scoreboard, built from a game's players or from the averages over a series. Shared by the match
+ * page and the poster, so both list the same players in the same order. Client safe.
+ *
+ * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia License v1.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import { laneRank, type SeriesAverage } from "@gc-stats/lol-stats-engine";
+import type { LeagueMatchGame, PlayerRunes } from "@/lib/match-league-games";
+
+/** Game length as m:ss, e.g. 1985 seconds → "33:05". */
+export function formatGameDuration(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+export type LeagueScoreRow = {
+  personId: number | null;
+  handle: string;
+  champions: { name: string; iconUrl: string | null }[];
+  kills: number;
+  deaths: number;
+  assists: number;
+  killParticipation: number;
+  csPerMinute: number | null;
+  goldPerMinute: number | null;
+  items?: { name: string; iconUrl: string | null }[];
+  roleItem?: { name: string; iconUrl: string | null } | null;
+  runes?: PlayerRunes;
+};
+
+/** The champion icon of each name, from any game it was played in: the averages only know the name. */
+export function championIconMap(games: LeagueMatchGame[]): Map<string, string | null> {
+  return new Map(games.flatMap((game) => game.players).map((player): [string, string | null] => [player.championName, player.championIconUrl]));
+}
+
+export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): LeagueScoreRow[] {
+  return game.players
+    .filter((player) => player.entrantId === entrantId)
+    .sort((x, y) => laneRank(x.role) - laneRank(y.role))
+    .map((player) => ({
+      personId: player.personId,
+      handle: player.handle,
+      champions: [{ name: player.championName, iconUrl: player.championIconUrl }],
+      kills: player.kills,
+      deaths: player.deaths,
+      assists: player.assists,
+      killParticipation: player.killParticipation,
+      csPerMinute: player.csPerMinute,
+      goldPerMinute: player.goldPerMinute,
+      items: player.items,
+      roleItem: player.roleItem,
+      runes: player.runes,
+    }));
+}
+
+export function averageScoreRows(averages: SeriesAverage[], entrantId: number | null, iconByChampion: Map<string, string | null>): LeagueScoreRow[] {
+  return averages
+    .filter((average) => average.entrantId === entrantId)
+    .sort((x, y) => laneRank(x.role) - laneRank(y.role))
+    .map((average) => ({
+      personId: average.personId,
+      handle: average.handle,
+      champions: average.champions.map((name) => ({ name, iconUrl: iconByChampion.get(name) ?? null })),
+      kills: average.kills,
+      deaths: average.deaths,
+      assists: average.assists,
+      killParticipation: average.killParticipation,
+      csPerMinute: average.csPerMinute,
+      goldPerMinute: average.goldPerMinute,
+    }));
+}

@@ -17,6 +17,7 @@ import { getPlayerPageInfo } from "@/lib/player-page-data";
 import { getTeamPageInfo } from "@/lib/team-page-data";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
 import { getOrganizationPageInfo } from "@/lib/organization-page-data";
+import type { GameSlug } from "@gc-stats/db/game";
 
 type LocaleParams = Promise<{ locale: string }>;
 
@@ -48,22 +49,22 @@ async function entityMetadata(
   return { title: withSection(name, t(tabKey)) };
 }
 
-export async function playerPageMetadata(locale: string, playerId: string, tabKey?: string): Promise<Metadata> {
+export async function playerPageMetadata(game: GameSlug, locale: string, playerId: string, tabKey?: string): Promise<Metadata> {
   const id = parseEntityId(playerId);
-  const player = id === null ? null : await getPlayerPageInfo(id);
+  const player = id === null ? null : await getPlayerPageInfo(game, id);
   return entityMetadata(locale, player?.handle, "playerPage", tabKey);
 }
 
-export async function teamPageMetadata(locale: string, teamId: string, tabKey?: string): Promise<Metadata> {
+export async function teamPageMetadata(game: GameSlug, locale: string, teamId: string, tabKey?: string): Promise<Metadata> {
   const id = parseEntityId(teamId);
-  const team = id === null ? null : await getTeamPageInfo(id);
+  const team = id === null ? null : await getTeamPageInfo(game, id);
   return entityMetadata(locale, team?.name, "teamPage", tabKey);
 }
 
 // tabKey is a full key ("tournamentPage.tabStats") since pick'em sections live in another namespace.
-export async function tournamentPageMetadata(locale: string, tournamentId: string, tabKey?: string): Promise<Metadata> {
+export async function tournamentPageMetadata(game: GameSlug, locale: string, tournamentId: string, tabKey?: string): Promise<Metadata> {
   const id = parseEntityId(tournamentId);
-  const tournament = id === null ? null : await getPublicTournamentHeader(id);
+  const tournament = id === null ? null : await getPublicTournamentHeader(game, id);
   if (!tournament || !tabKey) return entityMetadata(locale, tournament?.name, "tournamentPage");
   const dot = tabKey.lastIndexOf(".");
   return entityMetadata(locale, tournament.name, tabKey.slice(0, dot), tabKey.slice(dot + 1));

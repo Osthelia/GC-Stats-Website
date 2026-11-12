@@ -9,6 +9,7 @@
 "use client";
 
 import { useState, useTransition, type ReactNode } from "react";
+import { useGame } from "@/lib/use-game";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
@@ -44,6 +45,7 @@ export function StageSetRow({
   playedMatchCount: number;
   children: ReactNode;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -56,7 +58,7 @@ export function StageSetRow({
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteContainer(set.id, stageId, forceDelete);
+      const result = await deleteContainer(game, set.id, stageId, forceDelete);
       if (!result.ok) {
         toast.error(t(`error.${result.error === "hasPlayedMatches" ? "hasPlayedMatchesForceHint" : result.error}`));
         return;
