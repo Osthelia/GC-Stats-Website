@@ -174,7 +174,7 @@ export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
     try {
       await storeLolImport(input.game.source, resolved.riotMatchId, { match: validation.match, timeline: validation.timeline });
     } catch (err) {
-      console.error(`[${input.game.source}] could not store game ${resolved.riotMatchId} in the imports bucket`, err);
+      console.error("[%s] could not store game %s in the imports bucket", input.game.source, resolved.riotMatchId, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
   }
@@ -255,7 +255,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
   try {
     stored = await readLolImport(input.game.source, resolved.riotMatchId);
   } catch (err) {
-    console.error(`[${input.game.source}] could not read game ${resolved.riotMatchId} from the imports bucket`, err);
+    console.error("[%s] could not read game %s from the imports bucket", input.game.source, resolved.riotMatchId, err);
     return { ok: false, error: { kind: "storageUnavailable" } };
   }
   if (!stored) return { ok: false, error: { kind: "notInBucket" } };
@@ -725,7 +725,7 @@ async function loadRiotGame(riotMatchId: string, mode: GameLoadMode): Promise<Ri
       stored = await readLolImport("riot", riotMatchId);
     } catch (err) {
       // A bucket that cannot be read is not a game that is missing: fetching from Riot would hide the setup problem.
-      console.error(`[riot] could not read game ${riotMatchId} from the imports bucket`, err);
+      console.error("[riot] could not read game %s from the imports bucket", riotMatchId, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
     if (stored) return { ok: true, payload: stored, fromBucket: true };
