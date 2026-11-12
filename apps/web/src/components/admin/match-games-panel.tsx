@@ -66,6 +66,7 @@ export function MatchGamesPanel({
   entrants,
   leaguepediaGames,
   leaguepediaLink,
+  relayAvailable,
   canManage,
 }: {
   tournamentId: number;
@@ -74,6 +75,7 @@ export function MatchGamesPanel({
   entrants: LeagueGameEntrant[];
   leaguepediaGames: LeaguepediaGameOption[];
   leaguepediaLink: LeaguepediaLinkView;
+  relayAvailable: boolean;
   canManage: boolean;
 }) {
   const game = useGame();
@@ -134,6 +136,7 @@ export function MatchGamesPanel({
         entrants={entrants}
         leaguepediaGames={leaguepediaGames}
         leaguepediaLink={leaguepediaLink}
+        relayAvailable={relayAvailable}
         editing={editing}
         nextOrder={games.length + 1}
         open={creating || editing !== null}
