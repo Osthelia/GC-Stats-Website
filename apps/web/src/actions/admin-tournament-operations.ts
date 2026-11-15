@@ -21,6 +21,7 @@ import { matchTag } from "@/lib/cache-tags";
 import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
 import { logActivity } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
+import { PATCH_MAX_LENGTH } from "@/lib/match-patch";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -56,7 +57,7 @@ export async function bulkPatchMatches(game: GameSlug, tournamentId: number, inp
   const fieldErrors: BulkPatchFieldErrors = {};
   const patch = input.patch.trim();
   if (!patch) fieldErrors.patch = "required";
-  else if (patch.length > 20) fieldErrors.patch = "tooLong";
+  else if (patch.length > PATCH_MAX_LENGTH) fieldErrors.patch = "tooLong";
 
   if (input.dateFrom && !isValidDate(input.dateFrom)) fieldErrors.dateFrom = "invalid";
   if (input.dateTo && !isValidDate(input.dateTo)) fieldErrors.dateTo = "invalid";

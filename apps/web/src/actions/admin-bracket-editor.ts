@@ -31,6 +31,7 @@ import { defaultRoundRobinTiebreakers, parseGroupConfig } from "@/lib/bracket/co
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import { PATCH_MAX_LENGTH } from "@/lib/match-patch";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export async function requireTournamentsActor(): Promise<void> {
@@ -273,7 +274,7 @@ async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput
 
   // Same limit as the patch field of the match page.
   const patch = (input.patch ?? "").trim();
-  if (patch.length > 20) fieldErrors.patch = "tooLong";
+  if (patch.length > PATCH_MAX_LENGTH) fieldErrors.patch = "tooLong";
 
   if (input.matches.length === 0) fieldErrors.container = "noMatches";
   if (input.matches.length > 500) fieldErrors.container = "tooManyMatches";

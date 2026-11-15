@@ -36,6 +36,7 @@ import { detectStartingAttacker } from "@/lib/map-fetch/detect-start-side";
 import type { FetchMapError, TeamColorRoster } from "@/lib/map-fetch/types";
 import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
 
@@ -125,7 +126,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
 
   const scheduledAt = input.scheduledAt ? parseIsoInstant(input.scheduledAt) : null;
   if (input.scheduledAt && !scheduledAt) fieldErrors.scheduledAt = "invalid";
-  if (input.patch.trim().length > 20) fieldErrors.patch = "tooLong";
+  if (input.patch.trim().length > PATCH_MAX_LENGTH) fieldErrors.patch = "tooLong";
   if (input.label.trim().length > 255) fieldErrors.label = "tooLong";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
