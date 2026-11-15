@@ -205,8 +205,8 @@ async function resolveSeedSlots(game: GameSlug, containerIds: number[]): Promise
 }
 
 export type GroupMatchSlots = { entrantAId: number | null; entrantBId: number | null };
-export type AddGroupMatchInput = GroupMatchSlots & { stageId: number; containerId: number; round: string; bestOf: string; scheduledAt: string | null; force?: boolean };
-export type AddGroupMatchField = "container" | "round" | "bestOf" | "scheduledAt" | "entrantAId" | "entrantBId";
+export type AddGroupMatchInput = GroupMatchSlots & { stageId: number; containerId: number; round: string; bestOf: string; scheduledAt: string | null; /** Optional, the same for every match. Empty means no patch. */ patch?: string; force?: boolean };
+export type AddGroupMatchField = "container" | "round" | "bestOf" | "scheduledAt" | "patch" | "entrantAId" | "entrantBId";
 export type AddGroupMatchFieldErrors = Partial<Record<AddGroupMatchField, string>>;
 export type AddGroupMatchResult = { ok: true } | { ok: false; fieldErrors: AddGroupMatchFieldErrors };
 
@@ -271,6 +271,10 @@ async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput
     if (!scheduledAt) fieldErrors.scheduledAt = "invalidDate";
   }
 
+  // Same limit as the patch field of the match page.
+  const patch = (input.patch ?? "").trim();
+  if (patch.length > 20) fieldErrors.patch = "tooLong";
+
   if (input.matches.length === 0) fieldErrors.container = "noMatches";
   if (input.matches.length > 500) fieldErrors.container = "tooManyMatches";
 
@@ -304,7 +308,7 @@ async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput
   if (Object.keys(fieldErrors).length > 0 || Object.keys(rowErrors).length > 0) return fail(fieldErrors, rowErrors);
 
   await db.insert(matches).values(
-    input.matches.map((m, i) => ({ containerId: input.containerId, round, bestOf, status: "pending" as const, scheduledAt, label: labels[i], entrantAId: m.entrantAId, entrantBId: m.entrantBId }))
+    input.matches.map((m, i) => ({ containerId: input.containerId, round, bestOf, status: "pending" as const, scheduledAt, patch: patch || null, label: labels[i], entrantAId: m.entrantAId, entrantBId: m.entrantBId }))
   );
   return { ok: true, count: input.matches.length };
 }

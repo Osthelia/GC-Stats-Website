@@ -1,7 +1,7 @@
 /**
  * GC-Stats - bulk-group-matches-dialog
  *
- * Adds many matches to a round robin or Swiss group at once, all inheriting one round, best of and date.
+ * Adds many matches to a round robin or Swiss group at once, all inheriting one round, best of, patch and date.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -49,12 +49,14 @@ export function BulkGroupMatchesDialog({
 }) {
   const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
+  const tMatches = useTranslations("admin.tournaments.matches");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<AddGroupMatchFieldErrors>({});
   const [rowErrors, setRowErrors] = useState<RowErrors>({});
   const [round, setRound] = useState("1");
   const [bestOf, setBestOf] = useState("1");
+  const [patch, setPatch] = useState("");
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const [nextKey, setNextKey] = useState(0);
@@ -63,6 +65,7 @@ export function BulkGroupMatchesDialog({
     if (open) {
       setRound("1");
       setBestOf("1");
+      setPatch("");
       setScheduledAt(null);
       setRows(blankRows(0, INITIAL_ROWS));
       setNextKey(INITIAL_ROWS);
@@ -89,6 +92,7 @@ export function BulkGroupMatchesDialog({
         containerId: container.id,
         round,
         bestOf,
+        patch,
         scheduledAt,
         force,
         matches: rows.map((r) => ({ entrantAId: r.entrantAId, entrantBId: r.entrantBId })),
@@ -118,12 +122,15 @@ export function BulkGroupMatchesDialog({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[8rem_8rem_1fr]">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[5rem_5rem_6rem_1fr]">
             <FormField label={t("fieldMatchRound")} htmlFor="bm-round" required error={err("round")}>
               <Input id="bm-round" type="number" min={1} value={round} onChange={(e) => setRound(e.target.value)} aria-invalid={!!fieldErrors.round} />
             </FormField>
             <FormField label={t("fieldMatchBestOf")} htmlFor="bm-best-of" required error={err("bestOf")}>
               <Input id="bm-best-of" type="number" min={1} value={bestOf} onChange={(e) => setBestOf(e.target.value)} aria-invalid={!!fieldErrors.bestOf} />
+            </FormField>
+            <FormField label={tMatches("fieldPatch")} htmlFor="bm-patch" error={err("patch")}>
+              <Input id="bm-patch" placeholder="9.03" value={patch} onChange={(e) => setPatch(e.target.value)} aria-invalid={!!fieldErrors.patch} />
             </FormField>
             <FormField label={t("fieldMatchScheduledAt")} htmlFor="bm-scheduled-at" error={err("scheduledAt")}>
               <DateTimeInput id="bm-scheduled-at" value={scheduledAt} onChange={setScheduledAt} aria-invalid={!!fieldErrors.scheduledAt} />

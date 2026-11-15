@@ -37,11 +37,13 @@ export function AddGroupMatchDialog({
 }) {
   const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
+  const tMatches = useTranslations("admin.tournaments.matches");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<AddGroupMatchFieldErrors>({});
   const [round, setRound] = useState("1");
   const [bestOf, setBestOf] = useState("1");
+  const [patch, setPatch] = useState("");
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [entrantAId, setEntrantAId] = useState<number | null>(null);
   const [entrantBId, setEntrantBId] = useState<number | null>(null);
@@ -50,6 +52,7 @@ export function AddGroupMatchDialog({
     if (open) {
       setRound("1");
       setBestOf("1");
+      setPatch("");
       setScheduledAt(null);
       setEntrantAId(null);
       setEntrantBId(null);
@@ -60,7 +63,7 @@ export function AddGroupMatchDialog({
   function handleSubmit(force = false) {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addGroupMatch(game, { stageId, containerId: container.id, round, bestOf, scheduledAt, entrantAId, entrantBId, force });
+      const result = await addGroupMatch(game, { stageId, containerId: container.id, round, bestOf, patch, scheduledAt, entrantAId, entrantBId, force });
       if (!result.ok) {
         if (result.fieldErrors.container) toast.error(t(`error.${result.fieldErrors.container}`));
         setFieldErrors(result.fieldErrors);
@@ -85,12 +88,15 @@ export function AddGroupMatchDialog({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <FormField label={t("fieldMatchRound")} htmlFor="gm-round" required error={err("round")}>
               <Input id="gm-round" type="number" min={1} value={round} onChange={(e) => setRound(e.target.value)} aria-invalid={!!fieldErrors.round} />
             </FormField>
             <FormField label={t("fieldMatchBestOf")} htmlFor="gm-best-of" required error={err("bestOf")}>
               <Input id="gm-best-of" type="number" min={1} value={bestOf} onChange={(e) => setBestOf(e.target.value)} aria-invalid={!!fieldErrors.bestOf} />
+            </FormField>
+            <FormField label={tMatches("fieldPatch")} htmlFor="gm-patch" error={err("patch")}>
+              <Input id="gm-patch" placeholder="9.03" value={patch} onChange={(e) => setPatch(e.target.value)} aria-invalid={!!fieldErrors.patch} />
             </FormField>
           </div>
           <FormField label={t("fieldMatchScheduledAt")} htmlFor="gm-scheduled-at" error={err("scheduledAt")}>
