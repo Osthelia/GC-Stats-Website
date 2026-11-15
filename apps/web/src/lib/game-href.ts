@@ -21,6 +21,8 @@ const PUBLIC_RE = new RegExp(String.raw`^/(${PUBLIC_GAME_SEGMENTS.join("|")})${E
 const USER_NEWS_RE = new RegExp(String.raw`^/user/([^/?#]+)/news${END}`);
 // Admin content sections, under /admin/{game}/...
 const ADMIN_RE = new RegExp(String.raw`^/admin/(teams|players|tournaments|organizations|change-requests|point-types)${END}`);
+// The admin dashboard itself, /admin/{game} (its pagination and tab links keep their query).
+const ADMIN_DASHBOARD_RE = /^\/admin(?=[?#]|$)/;
 // Dashboard sections that depend on the game, under /dashboard/{organizationId}/{game}/...
 const DASHBOARD_ORG_RE = new RegExp(String.raw`^/dashboard/(\d+)/(news|streams|vods|veto|credits|members)${END}`);
 // The author sections keep their game segment: a path that already has one is left alone.
@@ -32,6 +34,7 @@ export function withGame(href: string, game: GameSlug): string {
   if (PUBLIC_RE.test(href)) return `/${game}${href}`;
   if (USER_NEWS_RE.test(href)) return href.replace(/^\/user\//, `/${game}/user/`);
   if (ADMIN_RE.test(href)) return href.replace(/^\/admin\//, `/admin/${game}/`);
+  if (ADMIN_DASHBOARD_RE.test(href)) return href.replace(/^\/admin/, `/admin/${game}`);
   const org = DASHBOARD_ORG_RE.exec(href);
   if (org) return href.replace(`/dashboard/${org[1]}/`, `/dashboard/${org[1]}/${game}/`);
   const author = DASHBOARD_AUTHOR_RE.exec(href);
