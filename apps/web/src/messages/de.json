@@ -4465,6 +4465,47 @@
               "relay": "Riot hat dieses Match nicht geliefert, versuche es später erneut. Bestehende Daten wurden beibehalten.",
               "other": "Der Abruf konnte nicht ausgeführt werden, prüfe die Map Seite. Bestehende Daten wurden beibehalten."
             }
+          },
+          "league": {
+            "description": "Füge das Liquipedia '{{Match}}' dieser Serie ein. Die Spiele und Drafts werden ergänzt, wo sie noch leer sind.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Diesen Wikicode importieren? Noch leere Spiele und Drafts werden ergänzt. Riot- und Leaguepedia-Daten, von Hand bearbeitete Drafts und bereits Eingetragenes bleiben erhalten.",
+            "importSuccess": "Wikicode importiert: Spiele und Drafts aktualisiert.",
+            "liquipediaHint": "Die Gegner (opponent1, opponent2) werden auch als Liquipedia Namen der Teams gespeichert.",
+            "error": {
+              "missingTeams": "Beide Teams müssen festgelegt sein, bevor Spiele importiert werden.",
+              "oneMatchOnly": "Der Wikicode muss genau ein '{{Match}}' enthalten.",
+              "noGames": "Keine gespielten Spiele in diesem Wikicode gefunden.",
+              "unknownChampions": "Unbekannte Champions im Wikicode: {names}. Es wurde nichts importiert.",
+              "duplicateChampion": "Spiel {order}: {champion} kommt im Draft mehrfach vor. Es wurde nichts importiert."
+            },
+            "results": {
+              "forfeit": "Der Wikicode zeigt einen Forfeit. Es wurde nichts importiert, setze den Forfeit am Match von Hand.",
+              "gameLabel": "Spiel {order}",
+              "created": "Spiel aus dem Wikicode angelegt.",
+              "filled": "Ergänzt: {fields}.",
+              "differs": "Weicht vom Wikicode ab, behalten: {fields}.",
+              "field": {
+                "winner": "Sieger",
+                "duration": "Spieldauer"
+              },
+              "draft": {
+                "written": "Draft importiert.",
+                "kept": {
+                  "editedByHand": "Draft behalten: er wurde von Hand bearbeitet.",
+                  "riotData": "Draft behalten: das Spiel hat Riot-Daten.",
+                  "leaguepediaData": "Draft behalten: das Spiel hat Leaguepedia-Daten.",
+                  "existingDraft": "Draft behalten: das Spiel hat bereits einen Draft."
+                },
+                "none": {
+                  "noDraft": "Kein Draft im Wikicode.",
+                  "noSide": "Kein Draft importiert: Der Wikicode sagt nicht, auf welcher Seite Team 1 gespielt hat."
+                }
+              },
+              "patchSet": "Patch {patch} am Match gesetzt.",
+              "bestOfDiffers": "Der Wikicode sagt Best of {bestOf}, das Match behält sein eigenes.",
+              "firstPickAssumed": "Der Wikicode sagt nicht, wer den First Pick hatte, deshalb wurde Blue angenommen. Prüfe den Draft."
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "Import abgeschlossen.",
         "wikicodeLabel": "Liquipedia Wikicode",
         "importingHint": "Import und Abruf der Riot Daten laufen, das kann einen Moment dauern.",
-        "close": "Schließen"
+        "close": "Schließen",
+        "league": {
+          "dialogDescription": "Füge den Wikicode des Matches ein. Die Spiele und Drafts werden ergänzt, wo sie noch leer sind.",
+          "importingHint": "Import läuft, das kann einen Moment dauern.",
+          "legend": {
+            "partial": "Spiele ohne Spielerdaten oder Draft",
+            "done": "Spielerdaten und Draft in jedem Spiel"
+          }
+        }
       },
       "activeFilterLabel": "Aktivität",
       "activeFilterAny": "Alle Turniere",

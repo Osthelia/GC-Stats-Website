@@ -4425,6 +4425,47 @@
               "relay": "Riot không trả về trận đấu này, hãy thử lại sau. Dữ liệu hiện có được giữ nguyên.",
               "other": "Không thể thực hiện việc lấy dữ liệu, hãy kiểm tra trang bản đồ. Dữ liệu hiện có được giữ nguyên."
             }
+          },
+          "league": {
+            "description": "Dán '{{Match}}' trên Liquipedia của series này. Các ván và draft sẽ được điền vào chỗ còn trống.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Nhập wikicode này? Các ván và draft còn trống sẽ được điền. Dữ liệu Riot và Leaguepedia, draft đã chỉnh tay và mọi thứ đã nhập sẽ được giữ nguyên.",
+            "importSuccess": "Đã nhập wikicode: các ván và draft đã được cập nhật.",
+            "liquipediaHint": "Các đối thủ (opponent1, opponent2) cũng được lưu làm tên Liquipedia của các đội.",
+            "error": {
+              "missingTeams": "Phải đặt cả hai đội trước khi nhập các ván.",
+              "oneMatchOnly": "Wikicode phải chứa đúng một '{{Match}}'.",
+              "noGames": "Không tìm thấy ván đã chơi nào trong wikicode này.",
+              "unknownChampions": "Có tướng không xác định trong wikicode: {names}. Chưa nhập gì cả.",
+              "duplicateChampion": "Ván {order}: {champion} xuất hiện nhiều hơn một lần trong draft. Chưa nhập gì cả."
+            },
+            "results": {
+              "forfeit": "Wikicode cho thấy một trận bỏ cuộc. Chưa nhập gì cả, hãy đặt kết quả bỏ cuộc cho trận bằng tay.",
+              "gameLabel": "Ván {order}",
+              "created": "Ván được tạo từ wikicode.",
+              "filled": "Đã điền: {fields}.",
+              "differs": "Khác với wikicode, được giữ lại: {fields}.",
+              "field": {
+                "winner": "đội thắng",
+                "duration": "thời lượng"
+              },
+              "draft": {
+                "written": "Đã nhập draft.",
+                "kept": {
+                  "editedByHand": "Giữ draft: draft đã được chỉnh tay.",
+                  "riotData": "Giữ draft: ván này có dữ liệu Riot.",
+                  "leaguepediaData": "Giữ draft: ván này có dữ liệu Leaguepedia.",
+                  "existingDraft": "Giữ draft: ván này đã có draft."
+                },
+                "none": {
+                  "noDraft": "Wikicode không có draft.",
+                  "noSide": "Chưa nhập draft: wikicode không cho biết đội 1 chơi ở phe nào."
+                }
+              },
+              "patchSet": "Đã đặt bản vá {patch} cho trận.",
+              "bestOfDiffers": "Wikicode ghi best of {bestOf}, trận giữ nguyên giá trị của mình.",
+              "firstPickAssumed": "Wikicode không cho biết ai chọn trước, nên đã giả định là phe xanh. Hãy kiểm tra draft."
+            }
           }
         },
         "veto": {
@@ -5075,7 +5116,15 @@
         "doneDescription": "Đã nhập xong.",
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Đang nhập và lấy dữ liệu Riot, việc này có thể mất một lúc.",
-        "close": "Đóng"
+        "close": "Đóng",
+        "league": {
+          "dialogDescription": "Dán wikicode của trận. Các ván và draft sẽ được điền vào chỗ còn trống.",
+          "importingHint": "Đang nhập, việc này có thể mất một lúc.",
+          "legend": {
+            "partial": "Ván chưa có dữ liệu người chơi hoặc draft",
+            "done": "Ván nào cũng có dữ liệu người chơi và draft"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Các ván trên Leaguepedia",

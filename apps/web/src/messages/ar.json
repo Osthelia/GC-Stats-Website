@@ -4465,6 +4465,47 @@
               "relay": "لم تُرجع Riot هذه المباراة، حاول مرة أخرى لاحقًا. تم الاحتفاظ بالبيانات الموجودة.",
               "other": "تعذر تنفيذ الجلب، تحقق من صفحة الخريطة. تم الاحتفاظ بالبيانات الموجودة."
             }
+          },
+          "league": {
+            "description": "الصق '{{Match}}' الخاص بهذه السلسلة من Liquipedia. ستُملأ الألعاب والتشكيلات في الأماكن التي لا تزال فارغة.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "هل تريد استيراد هذا الـ wikicode؟ ستُملأ الألعاب والتشكيلات التي لا تزال فارغة. تُحفظ بيانات Riot وLeaguepedia والتشكيلات المعدّلة يدويًا وكل ما أُدخل مسبقًا.",
+            "importSuccess": "تم استيراد الـ wikicode: تم تحديث الألعاب والتشكيلات.",
+            "liquipediaHint": "يُحفظ الخصمان (opponent1 وopponent2) أيضًا كأسماء Liquipedia للفريقين.",
+            "error": {
+              "missingTeams": "يجب تحديد الفريقين قبل استيراد الألعاب.",
+              "oneMatchOnly": "يجب أن يحتوي الـ wikicode على '{{Match}}' واحد بالضبط.",
+              "noGames": "لم يُعثر على ألعاب مُلعبة في هذا الـ wikicode.",
+              "unknownChampions": "أبطال غير معروفين في الـ wikicode: {names}. لم يتم استيراد أي شيء.",
+              "duplicateChampion": "اللعبة {order}: {champion} يظهر أكثر من مرة في التشكيلة. لم يتم استيراد أي شيء."
+            },
+            "results": {
+              "forfeit": "يُظهر الـ wikicode انسحابًا. لم يتم استيراد أي شيء، اضبط الانسحاب في المباراة يدويًا.",
+              "gameLabel": "اللعبة {order}",
+              "created": "أُنشئت اللعبة من الـ wikicode.",
+              "filled": "تم الملء: {fields}.",
+              "differs": "يختلف عن الـ wikicode، تم الإبقاء عليه: {fields}.",
+              "field": {
+                "winner": "الفائز",
+                "duration": "المدة"
+              },
+              "draft": {
+                "written": "تم استيراد التشكيلة.",
+                "kept": {
+                  "editedByHand": "تم الإبقاء على التشكيلة: عُدّلت يدويًا.",
+                  "riotData": "تم الإبقاء على التشكيلة: اللعبة لديها بيانات Riot.",
+                  "leaguepediaData": "تم الإبقاء على التشكيلة: اللعبة لديها بيانات Leaguepedia.",
+                  "existingDraft": "تم الإبقاء على التشكيلة: اللعبة لديها تشكيلة بالفعل."
+                },
+                "none": {
+                  "noDraft": "لا توجد تشكيلة في الـ wikicode.",
+                  "noSide": "لم تُستورد التشكيلة: لا يذكر الـ wikicode أي جانب لعب عليه الفريق 1."
+                }
+              },
+              "patchSet": "تم ضبط الإصدار {patch} للمباراة.",
+              "bestOfDiffers": "يذكر الـ wikicode أفضل من {bestOf}، وتحتفظ المباراة بقيمتها.",
+              "firstPickAssumed": "لا يذكر الـ wikicode من كان له أول اختيار، لذا افتُرض الجانب الأزرق. راجع التشكيلة."
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "اكتمل الاستيراد.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "جارٍ الاستيراد وجلب بيانات Riot، قد يستغرق ذلك لحظة.",
-        "close": "إغلاق"
+        "close": "إغلاق",
+        "league": {
+          "dialogDescription": "الصق الـ wikicode الخاص بالمباراة. ستُملأ الألعاب والتشكيلات في الأماكن التي لا تزال فارغة.",
+          "importingHint": "جارٍ الاستيراد، قد يستغرق هذا بعض الوقت.",
+          "legend": {
+            "partial": "ألعاب بلا بيانات لاعبين أو تشكيلة",
+            "done": "بيانات اللاعبين والتشكيلة في كل لعبة"
+          }
+        }
       },
       "activeFilterLabel": "النشاط",
       "activeFilterAny": "جميع البطولات",

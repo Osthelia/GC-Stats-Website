@@ -4465,6 +4465,47 @@
               "relay": "Riot ไม่ส่งแมตช์นี้กลับมา ลองใหม่อีกครั้งภายหลัง ข้อมูลเดิมถูกเก็บไว้",
               "other": "ไม่สามารถดึงข้อมูลได้ ตรวจสอบหน้าแมพ ข้อมูลเดิมถูกเก็บไว้"
             }
+          },
+          "league": {
+            "description": "วาง '{{Match}}' จาก Liquipedia ของซีรีส์นี้ เกมและดราฟต์จะถูกเติมในส่วนที่ยังว่างอยู่",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "นำเข้า wikicode นี้หรือไม่? เกมและดราฟต์ที่ยังว่างจะถูกเติม ข้อมูลจาก Riot และ Leaguepedia ดราฟต์ที่แก้ไขด้วยมือ และทุกอย่างที่กรอกไว้แล้วจะถูกเก็บไว้",
+            "importSuccess": "นำเข้า wikicode แล้ว: อัปเดตเกมและดราฟต์แล้ว",
+            "liquipediaHint": "คู่แข่ง (opponent1, opponent2) จะถูกบันทึกเป็นชื่อ Liquipedia ของทีมด้วย",
+            "error": {
+              "missingTeams": "ต้องกำหนดทั้งสองทีมก่อนนำเข้าเกม",
+              "oneMatchOnly": "wikicode ต้องมี '{{Match}}' เพียงหนึ่งรายการ",
+              "noGames": "ไม่พบเกมที่เล่นแล้วใน wikicode นี้",
+              "unknownChampions": "พบแชมเปียนที่ไม่รู้จักใน wikicode: {names} ไม่ได้นำเข้าอะไรเลย",
+              "duplicateChampion": "เกมที่ {order}: {champion} ปรากฏในดราฟต์มากกว่าหนึ่งครั้ง ไม่ได้นำเข้าอะไรเลย"
+            },
+            "results": {
+              "forfeit": "wikicode ระบุว่ามีการสละสิทธิ์ ไม่ได้นำเข้าอะไรเลย โปรดตั้งค่าการสละสิทธิ์ที่แมตช์ด้วยตนเอง",
+              "gameLabel": "เกมที่ {order}",
+              "created": "สร้างเกมจาก wikicode แล้ว",
+              "filled": "เติมแล้ว: {fields}",
+              "differs": "ต่างจาก wikicode เก็บไว้: {fields}",
+              "field": {
+                "winner": "ผู้ชนะ",
+                "duration": "ความยาวเกม"
+              },
+              "draft": {
+                "written": "นำเข้าดราฟต์แล้ว",
+                "kept": {
+                  "editedByHand": "เก็บดราฟต์ไว้: แก้ไขด้วยมือแล้ว",
+                  "riotData": "เก็บดราฟต์ไว้: เกมนี้มีข้อมูลจาก Riot",
+                  "leaguepediaData": "เก็บดราฟต์ไว้: เกมนี้มีข้อมูลจาก Leaguepedia",
+                  "existingDraft": "เก็บดราฟต์ไว้: เกมนี้มีดราฟต์อยู่แล้ว"
+                },
+                "none": {
+                  "noDraft": "ไม่มีดราฟต์ใน wikicode",
+                  "noSide": "ไม่ได้นำเข้าดราฟต์: wikicode ไม่ระบุว่าทีม 1 เล่นฝั่งไหน"
+                }
+              },
+              "patchSet": "ตั้งแพตช์ {patch} ให้แมตช์แล้ว",
+              "bestOfDiffers": "wikicode ระบุ best of {bestOf} แต่แมตช์ยังใช้ค่าเดิมของตัวเอง",
+              "firstPickAssumed": "wikicode ไม่ระบุว่าใครได้พิคแรก จึงสมมติว่าเป็นฝั่งบลู โปรดตรวจสอบดราฟต์"
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "นำเข้าเสร็จแล้ว",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "กำลังนำเข้าและดึงข้อมูล Riot อาจใช้เวลาสักครู่",
-        "close": "ปิด"
+        "close": "ปิด",
+        "league": {
+          "dialogDescription": "วาง wikicode ของแมตช์ เกมและดราฟต์จะถูกเติมในส่วนที่ยังว่างอยู่",
+          "importingHint": "กำลังนำเข้า อาจใช้เวลาสักครู่",
+          "legend": {
+            "partial": "เกมที่ไม่มีข้อมูลผู้เล่นหรือดราฟต์",
+            "done": "ทุกเกมมีข้อมูลผู้เล่นและดราฟต์"
+          }
+        }
       },
       "activeFilterLabel": "กิจกรรม",
       "activeFilterAny": "ทัวร์นาเมนต์ทั้งหมด",

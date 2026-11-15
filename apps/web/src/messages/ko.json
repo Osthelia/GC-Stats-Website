@@ -4465,6 +4465,47 @@
               "relay": "Riot이 이 경기를 반환하지 않았습니다. 나중에 다시 시도하세요. 기존 데이터는 유지되었습니다.",
               "other": "가져오기를 실행할 수 없었습니다. 맵 페이지를 확인하세요. 기존 데이터는 유지되었습니다."
             }
+          },
+          "league": {
+            "description": "이 시리즈의 Liquipedia '{{Match}}'를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "이 위키코드를 가져올까요? 아직 비어 있는 게임과 드래프트가 채워집니다. Riot과 Leaguepedia 데이터, 수동으로 편집한 드래프트, 이미 입력된 내용은 유지됩니다.",
+            "importSuccess": "위키코드를 가져왔습니다: 게임과 드래프트가 업데이트되었습니다.",
+            "liquipediaHint": "상대 팀(opponent1, opponent2)도 팀의 Liquipedia 이름으로 저장됩니다.",
+            "error": {
+              "missingTeams": "게임을 가져오기 전에 두 팀이 모두 설정되어 있어야 합니다.",
+              "oneMatchOnly": "위키코드에는 '{{Match}}'가 정확히 하나만 있어야 합니다.",
+              "noGames": "이 위키코드에서 진행된 게임을 찾을 수 없습니다.",
+              "unknownChampions": "위키코드에 알 수 없는 챔피언이 있습니다: {names}. 아무것도 가져오지 않았습니다.",
+              "duplicateChampion": "{order}번 게임: {champion}이(가) 드래프트에 두 번 이상 나타납니다. 아무것도 가져오지 않았습니다."
+            },
+            "results": {
+              "forfeit": "위키코드가 기권을 나타냅니다. 아무것도 가져오지 않았습니다. 매치의 기권은 직접 설정하세요.",
+              "gameLabel": "{order}번 게임",
+              "created": "위키코드에서 게임을 만들었습니다.",
+              "filled": "채움: {fields}.",
+              "differs": "위키코드와 달라 유지함: {fields}.",
+              "field": {
+                "winner": "승자",
+                "duration": "경기 시간"
+              },
+              "draft": {
+                "written": "드래프트를 가져왔습니다.",
+                "kept": {
+                  "editedByHand": "드래프트 유지: 수동으로 편집되었습니다.",
+                  "riotData": "드래프트 유지: 이 게임에는 Riot 데이터가 있습니다.",
+                  "leaguepediaData": "드래프트 유지: 이 게임에는 Leaguepedia 데이터가 있습니다.",
+                  "existingDraft": "드래프트 유지: 이 게임에는 이미 드래프트가 있습니다."
+                },
+                "none": {
+                  "noDraft": "위키코드에 드래프트가 없습니다.",
+                  "noSide": "드래프트를 가져오지 않았습니다: 위키코드에 1팀이 어느 진영이었는지 나와 있지 않습니다."
+                }
+              },
+              "patchSet": "매치에 패치 {patch}을(를) 설정했습니다.",
+              "bestOfDiffers": "위키코드는 Best of {bestOf}이지만 매치는 자체 값을 유지합니다.",
+              "firstPickAssumed": "위키코드에 퍼스트 픽 팀이 나와 있지 않아 블루 진영으로 가정했습니다. 드래프트를 확인하세요."
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "가져오기가 끝났습니다.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "가져오는 중이며 Riot 데이터를 불러오고 있습니다. 잠시 걸릴 수 있습니다.",
-        "close": "닫기"
+        "close": "닫기",
+        "league": {
+          "dialogDescription": "매치의 위키코드를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+          "importingHint": "가져오는 중입니다. 잠시 걸릴 수 있습니다.",
+          "legend": {
+            "partial": "선수 데이터나 드래프트가 없는 게임",
+            "done": "모든 게임에 선수 데이터와 드래프트 있음"
+          }
+        }
       },
       "activeFilterLabel": "활동",
       "activeFilterAny": "모든 대회",

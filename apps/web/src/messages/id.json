@@ -4425,6 +4425,47 @@
               "relay": "Riot tidak mengembalikan pertandingan ini, coba lagi nanti. Data yang ada dipertahankan.",
               "other": "Pengambilan tidak dapat dijalankan, periksa halaman peta. Data yang ada dipertahankan."
             }
+          },
+          "league": {
+            "description": "Tempel '{{Match}}' Liquipedia dari seri ini. Game dan draft diisi di tempat yang masih kosong.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Impor wikicode ini? Game dan draft yang masih kosong akan diisi. Data Riot dan Leaguepedia, draft yang diedit manual, serta semua yang sudah dimasukkan tetap dipertahankan.",
+            "importSuccess": "Wikicode diimpor: game dan draft diperbarui.",
+            "liquipediaHint": "Lawan (opponent1, opponent2) juga disimpan sebagai nama Liquipedia tim.",
+            "error": {
+              "missingTeams": "Kedua tim harus sudah ditentukan sebelum mengimpor game.",
+              "oneMatchOnly": "Wikicode harus berisi tepat satu '{{Match}}'.",
+              "noGames": "Tidak ada game yang dimainkan di wikicode ini.",
+              "unknownChampions": "Champion tidak dikenal di wikicode: {names}. Tidak ada yang diimpor.",
+              "duplicateChampion": "Game {order}: {champion} muncul lebih dari sekali di draft. Tidak ada yang diimpor."
+            },
+            "results": {
+              "forfeit": "Wikicode menunjukkan forfeit. Tidak ada yang diimpor, atur forfeit pada match secara manual.",
+              "gameLabel": "Game {order}",
+              "created": "Game dibuat dari wikicode.",
+              "filled": "Diisi: {fields}.",
+              "differs": "Berbeda dari wikicode, dipertahankan: {fields}.",
+              "field": {
+                "winner": "pemenang",
+                "duration": "durasi"
+              },
+              "draft": {
+                "written": "Draft diimpor.",
+                "kept": {
+                  "editedByHand": "Draft dipertahankan: diedit secara manual.",
+                  "riotData": "Draft dipertahankan: game ini punya data Riot.",
+                  "leaguepediaData": "Draft dipertahankan: game ini punya data Leaguepedia.",
+                  "existingDraft": "Draft dipertahankan: game ini sudah punya draft."
+                },
+                "none": {
+                  "noDraft": "Tidak ada draft di wikicode.",
+                  "noSide": "Draft tidak diimpor: wikicode tidak menyebutkan di sisi mana tim 1 bermain."
+                }
+              },
+              "patchSet": "Patch {patch} diatur pada match.",
+              "bestOfDiffers": "Wikicode menyebut best of {bestOf}, match tetap memakai miliknya.",
+              "firstPickAssumed": "Wikicode tidak menyebutkan siapa yang mendapat first pick, jadi blue diasumsikan. Periksa draft."
+            }
           }
         },
         "veto": {
@@ -5075,7 +5116,15 @@
         "doneDescription": "Impor selesai.",
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Mengimpor dan mengambil data Riot, ini dapat memakan waktu.",
-        "close": "Tutup"
+        "close": "Tutup",
+        "league": {
+          "dialogDescription": "Tempel wikicode match. Game dan draft diisi di tempat yang masih kosong.",
+          "importingHint": "Sedang mengimpor, ini mungkin butuh beberapa saat.",
+          "legend": {
+            "partial": "Game tanpa data pemain atau draft",
+            "done": "Data pemain dan draft di setiap game"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Game Leaguepedia",

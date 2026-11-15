@@ -4465,6 +4465,47 @@
               "relay": "Riot 没有返回这场比赛，请稍后再试。现有数据已保留。",
               "other": "无法执行获取，请检查地图页面。现有数据已保留。"
             }
+          },
+          "league": {
+            "description": "粘贴本系列赛在 Liquipedia 上的 '{{Match}}'。对局和选角中仍为空的部分会被补全。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "导入此 wikicode？仍为空的对局和选角会被补全。Riot 和 Leaguepedia 的数据、手动编辑过的选角以及已录入的内容都会保留。",
+            "importSuccess": "已导入 wikicode：对局和选角已更新。",
+            "liquipediaHint": "对阵双方（opponent1、opponent2）也会保存为战队的 Liquipedia 名称。",
+            "error": {
+              "missingTeams": "导入对局前必须先设置双方战队。",
+              "oneMatchOnly": "wikicode 必须恰好包含一个 '{{Match}}'。",
+              "noGames": "在此 wikicode 中未找到已进行的对局。",
+              "unknownChampions": "wikicode 中有未知英雄：{names}。未导入任何内容。",
+              "duplicateChampion": "第 {order} 局：{champion} 在选角中出现了多次。未导入任何内容。"
+            },
+            "results": {
+              "forfeit": "wikicode 显示为弃权。未导入任何内容，请手动设置该比赛的弃权。",
+              "gameLabel": "第 {order} 局",
+              "created": "已根据 wikicode 创建对局。",
+              "filled": "已补全：{fields}。",
+              "differs": "与 wikicode 不同，已保留：{fields}。",
+              "field": {
+                "winner": "胜者",
+                "duration": "时长"
+              },
+              "draft": {
+                "written": "已导入选角。",
+                "kept": {
+                  "editedByHand": "已保留选角：已被手动编辑。",
+                  "riotData": "已保留选角：该局已有 Riot 数据。",
+                  "leaguepediaData": "已保留选角：该局已有 Leaguepedia 数据。",
+                  "existingDraft": "已保留选角：该局已有选角。"
+                },
+                "none": {
+                  "noDraft": "wikicode 中没有选角。",
+                  "noSide": "未导入选角：wikicode 未说明 1 队所在的阵营。"
+                }
+              },
+              "patchSet": "已为比赛设置版本 {patch}。",
+              "bestOfDiffers": "wikicode 为 BO{bestOf}，比赛保留自己的设置。",
+              "firstPickAssumed": "wikicode 未说明谁拥有先选权，因此假定为蓝方。请检查选角。"
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "导入已完成。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "正在导入并获取 Riot 数据，可能需要一些时间。",
-        "close": "关闭"
+        "close": "关闭",
+        "league": {
+          "dialogDescription": "粘贴比赛的 wikicode。对局和选角中仍为空的部分会被补全。",
+          "importingHint": "正在导入，可能需要一点时间。",
+          "legend": {
+            "partial": "缺少选手数据或选角的对局",
+            "done": "每局都有选手数据和选角"
+          }
+        }
       },
       "activeFilterLabel": "活跃状态",
       "activeFilterAny": "所有赛事",

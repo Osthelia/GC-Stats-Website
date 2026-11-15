@@ -4465,6 +4465,47 @@
               "relay": "Riotがこの試合を返しませんでした。後でもう一度お試しください。既存のデータは保持されました。",
               "other": "取得を実行できませんでした。マップのページを確認してください。既存のデータは保持されました。"
             }
+          },
+          "league": {
+            "description": "このシリーズのLiquipediaの'{{Match}}'を貼り付けてください。ゲームとドラフトは、まだ空の部分だけが補完されます。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "このwikicodeをインポートしますか？まだ空のゲームとドラフトが補完されます。RiotとLeaguepediaのデータ、手動で編集したドラフト、すでに入力済みの内容は保持されます。",
+            "importSuccess": "wikicodeをインポートしました。ゲームとドラフトを更新しました。",
+            "liquipediaHint": "対戦相手（opponent1、opponent2）もチームのLiquipedia名として保存されます。",
+            "error": {
+              "missingTeams": "ゲームをインポートする前に、両チームを設定する必要があります。",
+              "oneMatchOnly": "wikicodeには'{{Match}}'がちょうど1つ含まれている必要があります。",
+              "noGames": "このwikicodeにプレイ済みのゲームが見つかりません。",
+              "unknownChampions": "wikicodeに不明なチャンピオンがあります: {names}。何もインポートされませんでした。",
+              "duplicateChampion": "ゲーム {order}: {champion} がドラフト内に複数回現れます。何もインポートされませんでした。"
+            },
+            "results": {
+              "forfeit": "wikicodeは不戦勝を示しています。何もインポートされませんでした。マッチの不戦勝は手動で設定してください。",
+              "gameLabel": "ゲーム {order}",
+              "created": "wikicodeからゲームを作成しました。",
+              "filled": "補完しました: {fields}。",
+              "differs": "wikicodeと異なるため保持しました: {fields}。",
+              "field": {
+                "winner": "勝者",
+                "duration": "試合時間"
+              },
+              "draft": {
+                "written": "ドラフトをインポートしました。",
+                "kept": {
+                  "editedByHand": "ドラフトを保持しました: 手動で編集されています。",
+                  "riotData": "ドラフトを保持しました: このゲームにはRiotのデータがあります。",
+                  "leaguepediaData": "ドラフトを保持しました: このゲームにはLeaguepediaのデータがあります。",
+                  "existingDraft": "ドラフトを保持しました: このゲームにはすでにドラフトがあります。"
+                },
+                "none": {
+                  "noDraft": "wikicodeにドラフトがありません。",
+                  "noSide": "ドラフトをインポートしませんでした: wikicodeにチーム1のサイドが指定されていません。"
+                }
+              },
+              "patchSet": "パッチ {patch} をマッチに設定しました。",
+              "bestOfDiffers": "wikicodeはBest of {bestOf}ですが、マッチは自身の設定を保持します。",
+              "firstPickAssumed": "wikicodeにファーストピックのチームが指定されていないため、ブルー側と仮定しました。ドラフトを確認してください。"
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "インポートが完了しました。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "インポートとRiotデータの取得中です。しばらくお待ちください。",
-        "close": "閉じる"
+        "close": "閉じる",
+        "league": {
+          "dialogDescription": "マッチのwikicodeを貼り付けてください。ゲームとドラフトは、まだ空の部分だけが補完されます。",
+          "importingHint": "インポート中です。しばらくお待ちください。",
+          "legend": {
+            "partial": "プレイヤーデータまたはドラフトのないゲーム",
+            "done": "すべてのゲームにプレイヤーデータとドラフトあり"
+          }
+        }
       },
       "activeFilterLabel": "アクティビティ",
       "activeFilterAny": "すべての大会",

@@ -4425,6 +4425,47 @@
               "relay": "Hindi ibinalik ng Riot ang laban na ito, subukan muli mamaya. Pinanatili ang umiiral na data.",
               "other": "Hindi maisagawa ang pagkuha, suriin ang pahina ng mapa. Pinanatili ang umiiral na data."
             }
+          },
+          "league": {
+            "description": "I-paste ang Liquipedia '{{Match}}' ng seryeng ito. Pupunan ang mga laro at draft kung saan wala pang laman.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "I-import ang wikicode na ito? Pupunan ang mga laro at draft na wala pang laman. Pananatilihin ang data ng Riot at Leaguepedia, ang mga draft na manu-manong na-edit, at lahat ng naipasok na.",
+            "importSuccess": "Na-import ang wikicode: na-update ang mga laro at draft.",
+            "liquipediaHint": "Ang mga kalaban (opponent1, opponent2) ay sine-save rin bilang mga pangalan ng mga team sa Liquipedia.",
+            "error": {
+              "missingTeams": "Dapat naitakda ang dalawang koponan bago mag-import ng mga laro.",
+              "oneMatchOnly": "Dapat eksaktong isang '{{Match}}' ang laman ng wikicode.",
+              "noGames": "Walang nakitang nalaro na laro sa wikicode na ito.",
+              "unknownChampions": "May mga hindi kilalang champion sa wikicode: {names}. Walang na-import.",
+              "duplicateChampion": "Laro {order}: lumalabas nang higit sa isang beses sa draft ang {champion}. Walang na-import."
+            },
+            "results": {
+              "forfeit": "Nagpapakita ng forfeit ang wikicode. Walang na-import, itakda ang forfeit sa match nang mano-mano.",
+              "gameLabel": "Laro {order}",
+              "created": "Ginawa ang laro mula sa wikicode.",
+              "filled": "Napunan: {fields}.",
+              "differs": "Iba sa wikicode, pinanatili: {fields}.",
+              "field": {
+                "winner": "panalo",
+                "duration": "haba"
+              },
+              "draft": {
+                "written": "Na-import ang draft.",
+                "kept": {
+                  "editedByHand": "Pinanatili ang draft: manu-mano itong na-edit.",
+                  "riotData": "Pinanatili ang draft: may data ng Riot ang laro.",
+                  "leaguepediaData": "Pinanatili ang draft: may data ng Leaguepedia ang laro.",
+                  "existingDraft": "Pinanatili ang draft: may draft na ang laro."
+                },
+                "none": {
+                  "noDraft": "Walang draft sa wikicode.",
+                  "noSide": "Walang na-import na draft: hindi sinasabi ng wikicode kung aling side naglaro ang team 1."
+                }
+              },
+              "patchSet": "Naitakda ang patch {patch} sa match.",
+              "bestOfDiffers": "Best of {bestOf} ang sabi ng wikicode, pinapanatili ng match ang sarili nito.",
+              "firstPickAssumed": "Hindi sinasabi ng wikicode kung sino ang may unang pick, kaya ipinagpalagay na blue. Suriin ang draft."
+            }
           }
         },
         "veto": {
@@ -5075,7 +5116,15 @@
         "doneDescription": "Tapos na ang pag-import.",
         "wikicodeLabel": "Wikicode ng Liquipedia",
         "importingHint": "Ini-import at kinukuha ang data ng Riot, maaaring tumagal ito nang sandali.",
-        "close": "Isara"
+        "close": "Isara",
+        "league": {
+          "dialogDescription": "I-paste ang wikicode ng match. Pupunan ang mga laro at draft kung saan wala pang laman.",
+          "importingHint": "Nag-i-import, maaaring tumagal nang sandali.",
+          "legend": {
+            "partial": "Mga laro na walang data ng manlalaro o draft",
+            "done": "May data ng manlalaro at draft sa bawat laro"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Mga laro sa Leaguepedia",

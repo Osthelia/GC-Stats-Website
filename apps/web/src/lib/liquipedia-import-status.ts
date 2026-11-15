@@ -12,11 +12,41 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: the page must show the import that just ran.
 import { adminDb as db } from "@gc-stats/db/client";
-import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
 import type { LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
+
+/**
+ * League: done when every game of the match has player data (a Riot or Leaguepedia import) and a draft, partial when the
+ * match has games but not all of them do, none when it has no games.
+ */
+async function getLeagueImportStatuses(game: GameSlug, tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
+  const gameRows = await db
+    .select({ id: games.id, matchId: games.matchId })
+    .from(games)
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(eq(stages.tournamentId, tournamentId));
+  if (gameRows.length === 0) return {};
+
+  const gameIds = gameRows.map((g) => g.id);
+  const [withPlayers, withDraft] = await Promise.all([
+    db.selectDistinct({ gameId: gamePlayerStats.gameId }).from(gamePlayerStats).where(inArray(gamePlayerStats.gameId, gameIds)),
+    db.selectDistinct({ gameId: gameDraft.gameId }).from(gameDraft).where(inArray(gameDraft.gameId, gameIds)),
+  ]);
+  const players = new Set(withPlayers.map((r) => r.gameId));
+  const drafts = new Set(withDraft.map((r) => r.gameId));
+
+  const complete = new Map<number, boolean>();
+  for (const row of gameRows) complete.set(row.matchId, (complete.get(row.matchId) ?? true) && players.has(row.id) && drafts.has(row.id));
+  return Object.fromEntries([...complete].map(([matchId, isComplete]) => [matchId, isComplete ? "done" : "partial"] as const));
+}
 
 export async function getTournamentImportStatuses(game: GameSlug, tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+  if (gameHasSeriesGames(game)) return getLeagueImportStatuses(game, tournamentId);
   const { matches, stageContainers, stages } = gameTables(game);
   const { maps, mapPlayerStats } = valorantTablesOf(game);
   const mapRows = await db

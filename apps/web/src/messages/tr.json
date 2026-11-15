@@ -4465,6 +4465,47 @@
               "relay": "Riot bu maçı döndürmedi, daha sonra tekrar deneyin. Mevcut veriler korundu.",
               "other": "Alma işlemi çalıştırılamadı, harita sayfasını kontrol edin. Mevcut veriler korundu."
             }
+          },
+          "league": {
+            "description": "Bu serinin Liquipedia '{{Match}}' kodunu yapıştırın. Oyunlar ve draftlar, henüz boş oldukları yerlerde doldurulur.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Bu wikicode içe aktarılsın mı? Henüz boş olan oyunlar ve draftlar doldurulur. Riot ve Leaguepedia verileri, elle düzenlenmiş draftlar ve önceden girilmiş her şey korunur.",
+            "importSuccess": "Wikicode içe aktarıldı: oyunlar ve draftlar güncellendi.",
+            "liquipediaHint": "Rakipler (opponent1, opponent2) takımların Liquipedia adı olarak da kaydedilir.",
+            "error": {
+              "missingTeams": "Oyunları içe aktarmadan önce iki takım da belirlenmiş olmalı.",
+              "oneMatchOnly": "Wikicode tam olarak bir '{{Match}}' içermeli.",
+              "noGames": "Bu wikicode içinde oynanmış oyun bulunamadı.",
+              "unknownChampions": "Wikicode içinde bilinmeyen şampiyonlar: {names}. Hiçbir şey içe aktarılmadı.",
+              "duplicateChampion": "{order}. oyun: {champion} draftta birden fazla kez geçiyor. Hiçbir şey içe aktarılmadı."
+            },
+            "results": {
+              "forfeit": "Wikicode bir hükmen sonucu gösteriyor. Hiçbir şey içe aktarılmadı, hükmen sonucu maçta elle ayarlayın.",
+              "gameLabel": "{order}. oyun",
+              "created": "Oyun wikicode'dan oluşturuldu.",
+              "filled": "Dolduruldu: {fields}.",
+              "differs": "Wikicode'dan farklı, korundu: {fields}.",
+              "field": {
+                "winner": "kazanan",
+                "duration": "süre"
+              },
+              "draft": {
+                "written": "Draft içe aktarıldı.",
+                "kept": {
+                  "editedByHand": "Draft korundu: elle düzenlenmiş.",
+                  "riotData": "Draft korundu: oyunda Riot verisi var.",
+                  "leaguepediaData": "Draft korundu: oyunda Leaguepedia verisi var.",
+                  "existingDraft": "Draft korundu: oyunda zaten bir draft var."
+                },
+                "none": {
+                  "noDraft": "Wikicode içinde draft yok.",
+                  "noSide": "Draft içe aktarılmadı: wikicode 1. takımın hangi tarafta oynadığını belirtmiyor."
+                }
+              },
+              "patchSet": "Maça {patch} yaması ayarlandı.",
+              "bestOfDiffers": "Wikicode best of {bestOf} diyor, maç kendi değerini koruyor.",
+              "firstPickAssumed": "Wikicode ilk pick'in kimde olduğunu belirtmiyor, bu yüzden mavi taraf varsayıldı. Drafta göz atın."
+            }
           }
         },
         "veto": {
@@ -5115,7 +5156,15 @@
         "doneDescription": "İçe aktarma tamamlandı.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "İçe aktarılıyor ve Riot verileri alınıyor, biraz sürebilir.",
-        "close": "Kapat"
+        "close": "Kapat",
+        "league": {
+          "dialogDescription": "Maçın wikicode'unu yapıştırın. Oyunlar ve draftlar, henüz boş oldukları yerlerde doldurulur.",
+          "importingHint": "İçe aktarılıyor, bu biraz sürebilir.",
+          "legend": {
+            "partial": "Oyuncu verisi veya drafti olmayan oyunlar",
+            "done": "Her oyunda oyuncu verisi ve draft var"
+          }
+        }
       },
       "activeFilterLabel": "Aktivite",
       "activeFilterAny": "Tüm turnuvalar",

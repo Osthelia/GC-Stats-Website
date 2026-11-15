@@ -4425,6 +4425,47 @@
               "relay": "Riot 沒有返回這場比賽，請稍後再試。現有資料已保留。",
               "other": "無法執行獲取，請檢查地圖頁面。現有資料已保留。"
             }
+          },
+          "league": {
+            "description": "貼上本系列賽在 Liquipedia 上的 '{{Match}}'。對局和禁選中仍為空的部分會被補全。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "匯入此 wikicode？仍為空的對局和禁選會被補全。Riot 與 Leaguepedia 的資料、手動編輯過的禁選以及已輸入的內容都會保留。",
+            "importSuccess": "已匯入 wikicode：對局和禁選已更新。",
+            "liquipediaHint": "對陣雙方（opponent1、opponent2）也會儲存為戰隊的 Liquipedia 名稱。",
+            "error": {
+              "missingTeams": "匯入對局前必須先設定雙方隊伍。",
+              "oneMatchOnly": "wikicode 必須恰好包含一個 '{{Match}}'。",
+              "noGames": "在此 wikicode 中找不到已進行的對局。",
+              "unknownChampions": "wikicode 中有未知英雄：{names}。未匯入任何內容。",
+              "duplicateChampion": "第 {order} 場：{champion} 在禁選中出現多次。未匯入任何內容。"
+            },
+            "results": {
+              "forfeit": "wikicode 顯示為棄權。未匯入任何內容，請手動設定該比賽的棄權。",
+              "gameLabel": "第 {order} 場",
+              "created": "已根據 wikicode 建立對局。",
+              "filled": "已補全：{fields}。",
+              "differs": "與 wikicode 不同，已保留：{fields}。",
+              "field": {
+                "winner": "勝者",
+                "duration": "時長"
+              },
+              "draft": {
+                "written": "已匯入禁選。",
+                "kept": {
+                  "editedByHand": "已保留禁選：已被手動編輯。",
+                  "riotData": "已保留禁選：該場已有 Riot 資料。",
+                  "leaguepediaData": "已保留禁選：該場已有 Leaguepedia 資料。",
+                  "existingDraft": "已保留禁選：該場已有禁選。"
+                },
+                "none": {
+                  "noDraft": "wikicode 中沒有禁選。",
+                  "noSide": "未匯入禁選：wikicode 未說明第 1 隊所在的陣營。"
+                }
+              },
+              "patchSet": "已為比賽設定版本 {patch}。",
+              "bestOfDiffers": "wikicode 為 BO{bestOf}，比賽保留自己的設定。",
+              "firstPickAssumed": "wikicode 未說明誰擁有先選權，因此假定為藍色方。請檢查禁選。"
+            }
           }
         },
         "veto": {
@@ -5075,7 +5116,15 @@
         "doneDescription": "匯入已完成。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "正在匯入並獲取 Riot 資料，可能需要一些時間。",
-        "close": "關閉"
+        "close": "關閉",
+        "league": {
+          "dialogDescription": "貼上比賽的 wikicode。對局和禁選中仍為空的部分會被補全。",
+          "importingHint": "正在匯入，可能需要一點時間。",
+          "legend": {
+            "partial": "缺少選手資料或禁選的對局",
+            "done": "每場都有選手資料和禁選"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Leaguepedia 對局",

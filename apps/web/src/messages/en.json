@@ -4469,6 +4469,47 @@
               "relay": "Riot did not return this match, try again later. Existing data was kept.",
               "other": "The fetch could not run, check the map page. Existing data was kept."
             }
+          },
+          "league": {
+            "description": "Paste the Liquipedia '{{Match}}' of this series. Its games and drafts are filled in where they are still empty.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Import this wikicode? Games and drafts that are still empty are filled in. Riot and Leaguepedia data, drafts edited by hand and anything already entered are kept.",
+            "importSuccess": "Wikicode imported: games and drafts updated.",
+            "liquipediaHint": "The opponents (opponent1, opponent2) are also saved as the teams' Liquipedia names.",
+            "error": {
+              "missingTeams": "Both teams must be set before importing games.",
+              "oneMatchOnly": "The wikicode must contain exactly one '{{Match}}'.",
+              "noGames": "No played games found in this wikicode.",
+              "unknownChampions": "Unknown champions in the wikicode: {names}. Nothing was imported.",
+              "duplicateChampion": "Game {order}: {champion} appears more than once in the draft. Nothing was imported."
+            },
+            "results": {
+              "forfeit": "The wikicode shows a forfeit. Nothing was imported, set the forfeit on the match by hand.",
+              "gameLabel": "Game {order}",
+              "created": "Game created from the wikicode.",
+              "filled": "Filled in: {fields}.",
+              "differs": "Different from the wikicode, kept: {fields}.",
+              "field": {
+                "winner": "winner",
+                "duration": "length"
+              },
+              "draft": {
+                "written": "Draft imported.",
+                "kept": {
+                  "editedByHand": "Draft kept: it was edited by hand.",
+                  "riotData": "Draft kept: the game has Riot data.",
+                  "leaguepediaData": "Draft kept: the game has Leaguepedia data.",
+                  "existingDraft": "Draft kept: the game already has a draft."
+                },
+                "none": {
+                  "noDraft": "No draft in the wikicode.",
+                  "noSide": "No draft imported: the wikicode doesn't say which side team 1 played."
+                }
+              },
+              "patchSet": "Patch {patch} set on the match.",
+              "bestOfDiffers": "The wikicode says best of {bestOf}, the match keeps its own.",
+              "firstPickAssumed": "The wikicode doesn't say who had the first pick, so blue was assumed. Check the draft."
+            }
           }
         },
         "veto": {
@@ -5119,7 +5160,15 @@
         "doneDescription": "Import finished.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "Importing and fetching Riot data, this can take a moment.",
-        "close": "Close"
+        "close": "Close",
+        "league": {
+          "dialogDescription": "Paste the match wikicode. Its games and drafts are filled in where they are still empty.",
+          "importingHint": "Importing, this can take a moment.",
+          "legend": {
+            "partial": "Games without player data or draft",
+            "done": "Player data and draft in every game"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Leaguepedia games",
