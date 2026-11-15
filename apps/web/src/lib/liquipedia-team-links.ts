@@ -85,6 +85,33 @@ export async function planLiquipediaLinks(game: GameSlug, wikicode: string, entr
   return plans;
 }
 
+/** True when the pasted opponents clearly list the match's teams the other way round: opponent1 is entrant B and/or opponent2 is entrant A, and nothing says the opposite. Names are compared lower case, ignoring what each side can't be called. */
+export function opponentsSwapped(pasted: { 1: string | null; 2: string | null }, namesOfA: ReadonlySet<string>, namesOfB: ReadonlySet<string>): boolean {
+  const has = (names: ReadonlySet<string>, pastedName: string | null) => pastedName !== null && names.has(pastedName.trim().toLowerCase());
+  const straight = (has(namesOfA, pasted[1]) && !has(namesOfB, pasted[1])) || (has(namesOfB, pasted[2]) && !has(namesOfA, pasted[2]));
+  const swapped = (has(namesOfB, pasted[1]) && !has(namesOfA, pasted[1])) || (has(namesOfA, pasted[2]) && !has(namesOfB, pasted[2]));
+  return swapped && !straight;
+}
+
+/** Whether the pasted `{{Match}}` lists the two teams in the other order than the match's entrants A and B. Matches the entrant, team and Liquipedia names. */
+export async function pastedOpponentsSwapped(game: GameSlug, wikicode: string, entrantIds: [number, number]): Promise<boolean> {
+  const { entrants, teams, liquipediaTeamNames } = gameTables(game);
+  const entrantRows = await db
+    .select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName, teamName: teams.name })
+    .from(entrants)
+    .leftJoin(teams, eq(teams.id, entrants.teamId))
+    .where(inArray(entrants.id, entrantIds));
+  const teamIds = entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null);
+  const linked = teamIds.length ? await db.select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name }).from(liquipediaTeamNames).where(inArray(liquipediaTeamNames.teamId, teamIds)) : [];
+
+  const namesOf = (entrantId: number) => {
+    const row = entrantRows.find((e) => e.id === entrantId);
+    const names = [row?.displayName, row?.teamName, ...linked.filter((l) => l.teamId === row?.teamId).map((l) => l.name)];
+    return new Set(names.filter((n): n is string => !!n).map((n) => n.trim().toLowerCase()));
+  };
+  return opponentsSwapped(parseMatchOpponentNames(wikicode), namesOf(entrantIds[0]), namesOf(entrantIds[1]));
+}
+
 export type LinkDecision =
   | { ok: true; linksToWrite: LiquipediaLinkPlan[] }
   | { ok: false; error: "invalidResolution" }

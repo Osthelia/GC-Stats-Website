@@ -31,6 +31,7 @@ import { draftFromWikicode, parseLolMatchWikicode, resolveChampionNames, wikicod
 import { draftBlockedBy, planGameFields, type DraftBlock, type GameField, type GameFieldPlan } from "@/lib/liquipedia-lol-import-rules";
 import {
   decideLiquipediaLinks,
+  pastedOpponentsSwapped,
   planLiquipediaLinks,
   writeLiquipediaLinks,
   type LiquipediaImportConflict,
@@ -366,8 +367,10 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
 
   const match = await getAdminMatch(game, matchId);
   if (!match || match.entrantAId === null || match.entrantBId === null) return { ok: false, error: "missingTeams" };
-  const entrantAId = match.entrantAId;
-  const entrantBId = match.entrantBId;
+  // Opponent 1 of the wikicode is "A" below. When the paste lists the teams the other way round, A is our entrant B.
+  const swapped = await pastedOpponentsSwapped(game, trimmed, [match.entrantAId, match.entrantBId]);
+  const entrantAId = swapped ? match.entrantBId : match.entrantAId;
+  const entrantBId = swapped ? match.entrantAId : match.entrantBId;
 
   const parsed = parseLolMatchWikicode(trimmed);
   if (!parsed.ok) return parsed;
