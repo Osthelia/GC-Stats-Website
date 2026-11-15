@@ -94,9 +94,16 @@ export async function loadMatchExportBases(game: GameSlug, matchIds: number[]): 
   if (matchRows.length === 0) return [];
 
   const entrantIds = [...new Set(matchRows.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null))];
-  const [entrantRows, streamRows] = await Promise.all([
+  const [entrantRows, nameRows, streamRows] = await Promise.all([
     entrantIds.length
       ? db.select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, entrantIds))
+      : Promise.resolve([]),
+    entrantIds.length
+      ? db
+          .select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name })
+          .from(liquipediaTeamNames)
+          .innerJoin(entrants, eq(entrants.teamId, liquipediaTeamNames.teamId))
+          .where(inArray(entrants.id, entrantIds))
       : Promise.resolve([]),
     db
       .select({ matchId: matchStreams.matchId, name: streamChannels.name, platform: streamChannels.platform, languageCode: streamChannels.languageCode })
@@ -105,11 +112,6 @@ export async function loadMatchExportBases(game: GameSlug, matchIds: number[]): 
       .where(and(inArray(matchStreams.matchId, matchIds), eq(streamChannels.type, "official"), eq(streamChannels.isActive, true)))
       .orderBy(asc(streamChannels.id)),
   ]);
-
-  const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
-  const nameRows = teamIds.length
-    ? await db.select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name }).from(liquipediaTeamNames).where(inArray(liquipediaTeamNames.teamId, teamIds))
-    : [];
 
   const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
   const nameByTeam = new Map(nameRows.map((r) => [r.teamId, r.name]));
@@ -162,10 +164,9 @@ export async function loadMatchExportBases(game: GameSlug, matchIds: number[]): 
 
 async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
   const { matchVetos, maps, mapRoundsRaw } = valorantTablesOf(game);
-  const bases = await loadMatchExportBases(game, matchIds);
-  if (bases.length === 0) return [];
-
-  const [vetoRows, mapRows] = await Promise.all([
+  if (matchIds.length === 0) return [];
+  const [bases, vetoRows, mapRows] = await Promise.all([
+    loadMatchExportBases(game, matchIds),
     db
       .select({ matchId: matchVetos.matchId, entrantId: matchVetos.entrantId, mapName: matchVetos.mapName, type: matchVetos.type, side: matchVetos.side, sidePickedBy: matchVetos.sidePickedByEntrantId })
       .from(matchVetos)
@@ -177,6 +178,7 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
       .where(inArray(maps.matchId, matchIds))
       .orderBy(asc(maps.matchId), asc(maps.order)),
   ]);
+  if (bases.length === 0) return [];
   const firstRounds = mapRows.length
     ? await db
         .selectDistinctOn([mapRoundsRaw.mapId], { mapId: mapRoundsRaw.mapId, atkEntrantId: mapRoundsRaw.atkEntrantId })
