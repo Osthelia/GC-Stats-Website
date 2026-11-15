@@ -84,6 +84,7 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
         bestOf,
         completed: summary.status === "completed",
         forfeitWinner,
+        score: summary.scoreA !== null && summary.scoreB !== null ? { 1: summary.scoreA, 2: summary.scoreB } : null,
         opponent1,
         opponent2,
         twitch,

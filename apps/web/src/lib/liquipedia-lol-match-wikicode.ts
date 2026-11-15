@@ -233,6 +233,8 @@ export type LolMatchWikicodeInput = {
   completed: boolean;
   /** `score=FF` is written on the loser, nothing else of the games. */
   forfeitWinner: 1 | 2 | null;
+  /** The reported score, used as `score=` when a completed match has no games (the result was entered by hand). */
+  score: { 1: number; 2: number } | null;
   opponent1: string;
   opponent2: string;
   twitch: string[];
@@ -268,7 +270,8 @@ function buildGame(index: number, game: WikicodeLolBuildGame): string {
 
 /** The `{{Match}}` of a series. */
 export function buildLolMatchWikicode(input: LolMatchWikicodeInput): string {
-  const score = (slot: 1 | 2) => (input.forfeitWinner === null ? "" : `|score=${input.forfeitWinner === slot ? "W" : "FF"}`);
+  const scoreOnly = input.forfeitWinner === null && input.completed && input.games.length === 0 && input.score !== null;
+  const score = (slot: 1 | 2) => (input.forfeitWinner !== null ? `|score=${input.forfeitWinner === slot ? "W" : "FF"}` : scoreOnly && input.score ? `|score=${input.score[slot]}` : "");
   const lines = ["{{Match", `|bestof=${input.bestOf}`];
   lines.push(`|opponent1={{TeamOpponent|${input.opponent1}${score(1)}}}`);
   lines.push(`|opponent2={{TeamOpponent|${input.opponent2}${score(2)}}}`);
@@ -277,7 +280,7 @@ export function buildLolMatchWikicode(input: LolMatchWikicodeInput): string {
   if (channels.length > 0) lines.push(`|${channels.join("|")}`);
   if (input.patch) lines.push(`|patch=${input.patch}`);
 
-  if (input.forfeitWinner === null) {
+  if (input.forfeitWinner === null && !scoreOnly) {
     for (let index = 1; index <= Math.max(input.bestOf, input.games.length); index++) {
       const game = input.games[index - 1];
       if (game) lines.push(buildGame(index, game));

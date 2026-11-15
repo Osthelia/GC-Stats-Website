@@ -195,6 +195,7 @@ describe("buildLolMatchWikicode", () => {
     bestOf: 3,
     completed: true,
     forfeitWinner: null,
+    score: null,
     opponent1: "Rising Bees",
     opponent2: "g2 hel",
     twitch: ["equalesportsgg", "second"],
@@ -258,6 +259,15 @@ describe("buildLolMatchWikicode", () => {
     expect(code).toContain("|opponent1={{TeamOpponent|Rising Bees|score=FF}}");
     expect(code).toContain("|opponent2={{TeamOpponent|g2 hel|score=W}}");
     expect(code).not.toContain("|map1");
+  });
+
+  it("writes the reported score instead of skipped games when a completed match has no games", () => {
+    const code = buildLolMatchWikicode({ ...base, score: { 1: 2, 2: 0 }, games: [] });
+    expect(code).toContain("|opponent1={{TeamOpponent|Rising Bees|score=2}}");
+    expect(code).toContain("|opponent2={{TeamOpponent|g2 hel|score=0}}");
+    expect(code).not.toContain("|map1");
+    // With games, Liquipedia counts them itself.
+    expect(buildLolMatchWikicode({ ...base, score: { 1: 2, 2: 0 }, games: [game] })).not.toContain("score=");
   });
 
   it("is read back by the parser", () => {
