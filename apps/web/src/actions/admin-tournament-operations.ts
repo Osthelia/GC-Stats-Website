@@ -21,7 +21,7 @@ import { matchTag } from "@/lib/cache-tags";
 import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
 import { logActivity } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
-import { PATCH_MAX_LENGTH } from "@/lib/match-patch";
+import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 
 async function requireTournamentsActor(): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage);

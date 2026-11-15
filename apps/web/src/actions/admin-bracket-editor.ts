@@ -31,7 +31,7 @@ import { defaultRoundRobinTiebreakers, parseGroupConfig } from "@/lib/bracket/co
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
-import { PATCH_MAX_LENGTH } from "@/lib/match-patch";
+import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export async function requireTournamentsActor(): Promise<void> {
