@@ -25,7 +25,7 @@ import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
-import { getChampionNamesForPatch } from "@/lib/data-dragon-client";
+import { fetchChampionNamesForPatch, getChampionNamesForPatch } from "@/lib/data-dragon-client";
 import { WIKICODE_MAX_LENGTH } from "@/lib/wikicode-import";
 import { draftFromWikicode, parseLolMatchWikicode, resolveChampionNames, wikicodeChampionNames, type WikicodeLolGame } from "@/lib/liquipedia-lol-match-wikicode";
 import { draftBlockedBy, planGameFields, type DraftBlock, type GameField, type GameFieldPlan } from "@/lib/liquipedia-lol-import-rules";
@@ -382,7 +382,8 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
   if (wikiMatch.games.length === 0) return { ok: false, error: "noGames" };
 
   // One unknown champion stops the import: the names are stored as written, so a guess would stay wrong.
-  const displayNames = await getChampionNamesForPatch(match.patch ?? wikiMatch.patch);
+  // Catalogs are stored by imports, so a patch nothing was imported for has none yet: Data Dragon is asked then.
+  const displayNames = await fetchChampionNamesForPatch(match.patch ?? wikiMatch.patch);
   const champions = resolveChampionNames(wikiMatch.games.flatMap(wikicodeChampionNames), displayNames);
   if (!champions.ok) return { ok: false, error: "unknownChampions", names: champions.unknown };
 

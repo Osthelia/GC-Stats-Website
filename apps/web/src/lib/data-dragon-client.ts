@@ -130,11 +130,11 @@ async function fromDatabase(patch: string): Promise<DataDragonCatalog | null> {
   return version === null ? null : loadStored(version);
 }
 
-/** Asks Data Dragon for the patch's newest version and stores it. Null while the patch has no version yet, or when the request fails. */
-async function fetchFromDataDragon(patch: string): Promise<DataDragonCatalog | null> {
+/** Asks Data Dragon for the patch's newest version (the newest version of all for no patch) and stores it. Null while the patch has no version yet, or when the request fails. */
+async function fetchFromDataDragon(patch: string | null): Promise<DataDragonCatalog | null> {
   try {
     const versions = await getJson<string[]>(`${DATA_DRAGON_BASE}/api/versions.json`);
-    const version = pickDataDragonVersion(versions, patch);
+    const version = patch === null ? (versions[0] ?? null) : pickDataDragonVersion(versions, patch);
     if (version === null) return null;
     const [champions, items, runeStyles] = await Promise.all([
       getJson<ChampionFile>(`${CDN}/${version}/data/${LOCALE}/champion.json`),
@@ -173,6 +173,17 @@ async function storedCatalogForPatch(publicName: string | null, reader: Reader):
 /** Picks Champion names from given patch. if none is given from the newest Patch. Admin only: it must see a version an import just stored. */
 export async function getChampionNamesForPatch(patch: string | null): Promise<string[]> {
   const catalog = await storedCatalogForPatch(patch, db);
+  return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
+}
+
+/**
+ * Like getChampionNamesForPatch, but asks Data Dragon (which stores the catalog) when none is stored: for the patch,
+ * or for the newest version when no patch is given. Empty when Data Dragon can't be reached.
+ */
+export async function fetchChampionNamesForPatch(patch: string | null): Promise<string[]> {
+  const stored = await getChampionNamesForPatch(patch);
+  if (stored.length > 0) return stored;
+  const catalog = await fetchFromDataDragon(patch === null ? null : internalPatch(patch));
   return catalog ? [...catalog.championNameById.values()].sort((a, b) => a.localeCompare(b)) : [];
 }
 
