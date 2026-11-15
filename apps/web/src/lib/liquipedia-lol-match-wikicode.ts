@@ -19,6 +19,8 @@ import { formatGameDuration } from "@/lib/league-scoreboard";
 export const TEAM_SLOTS = 5;
 /** The most games a series can have; `map1` to `map9` are read, as for Valorant. */
 const MAX_GAMES = 9;
+/** The longest patch the match page and the bulk add accept. A longer one in a paste is not a patch and is ignored. */
+const MAX_PATCH_LENGTH = 20;
 const INDENT = "    ";
 
 // --- Draft steps of the ban slots --------------------------------------------------------
@@ -128,11 +130,12 @@ export function parseLolMatchWikicode(wikicode: string): ParseLolMatchResult {
   }
 
   const bestOf = Number(params["bestof"]);
+  const patch = params["patch"]?.trim() ?? "";
   return {
     ok: true,
     match: {
       bestOf: Number.isInteger(bestOf) && bestOf > 0 ? bestOf : null,
-      patch: params["patch"]?.trim() || null,
+      patch: patch !== "" && patch.length <= MAX_PATCH_LENGTH ? patch : null,
       forfeit: isForfeitScore(params["opponent1"]) || isForfeitScore(params["opponent2"]),
       games,
     },

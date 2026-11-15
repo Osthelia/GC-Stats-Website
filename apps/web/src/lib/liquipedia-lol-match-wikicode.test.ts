@@ -63,6 +63,13 @@ describe("parseLolMatchWikicode", () => {
     expect(result.match.games.map((g) => g.order)).toEqual([1, 2]);
   });
 
+  it("ignores a patch that is too long to be one", () => {
+    const code = match(GAME_1, "|bestof=1\n    |patch=26.13 (hotfix, see https://example.com/patch-notes)");
+    const result = parseLolMatchWikicode(code);
+    if (!result.ok) throw new Error("expected ok");
+    expect(result.match.patch).toBeNull();
+  });
+
   it("reads a forfeit as a match without games", () => {
     const code = `{{Match|bestof=3|opponent1={{TeamOpponent|Rising Bees|score=W}}|opponent2={{TeamOpponent|g2 hel|score=FF}}}}`;
     const result = parseLolMatchWikicode(code);
