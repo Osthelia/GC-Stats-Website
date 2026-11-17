@@ -11,9 +11,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, or } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import type { adminDb } from "@gc-stats/db/client";
-import { sharedPeople, gameTables, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
+import { sharedPeople, gameTables, lolGameEventsRaw, lolGameFramesRaw, lolGamePlayerStats, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 /** The client or transaction a write runs on. */
@@ -84,11 +84,27 @@ export async function setPersonUser(client: PersonWriteClient, personId: number,
   await client.update(sharedPeople).set({ userId }).where(eq(sharedPeople.id, personId));
 }
 
+/** Whether a League game still has stats, frames or events of the person. */
+async function isPersonInLolGames(client: PersonWriteClient, personId: number): Promise<boolean> {
+  // One at a time, a transaction runs a single query at once.
+  const [stat] = await client.select({ id: lolGamePlayerStats.id }).from(lolGamePlayerStats).where(eq(lolGamePlayerStats.personId, personId)).limit(1);
+  if (stat) return true;
+  const [frame] = await client.select({ gameId: lolGameFramesRaw.gameId }).from(lolGameFramesRaw).where(eq(lolGameFramesRaw.personId, personId)).limit(1);
+  if (frame) return true;
+  const [event] = await client
+    .select({ seq: lolGameEventsRaw.seq })
+    .from(lolGameEventsRaw)
+    .where(or(eq(lolGameEventsRaw.personId, personId), eq(lolGameEventsRaw.targetPersonId, personId), sql`${personId} = ANY(${lolGameEventsRaw.assistantPersonIds})`))
+    .limit(1);
+  return Boolean(event);
+}
+
 /** Whether the person is referenced by something this game keeps for good (entrants, match stats). */
 async function isPersonInUse(client: PersonWriteClient, game: GameSlug, personId: number): Promise<boolean> {
   const { entrants } = gameTables(game);
   const [entrant] = await client.select({ id: entrants.id }).from(entrants).where(eq(entrants.playerId, personId)).limit(1);
   if (entrant) return true;
+  if (game === "lol") return isPersonInLolGames(client, personId);
   if (game !== "valorant") return false;
 
   const { mapPlayerStats, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);

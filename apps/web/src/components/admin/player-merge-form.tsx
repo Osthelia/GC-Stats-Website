@@ -20,7 +20,7 @@ import { PersonPicker } from "@/components/admin/person-picker";
 import { MergeCategorySection, type MergeCategoryItem } from "@/components/admin/merge-category-section";
 import { useRouter } from "@/i18n/navigation";
 import { mergePlayers, searchPlayerMergeTargets } from "@/actions/admin-player-merge";
-import type { MergeMapStatEntry, MergeNewsEntry } from "@/lib/admin-player-merge";
+import type { MergeGameStatEntry, MergeMapStatEntry, MergeNewsEntry } from "@/lib/admin-player-merge";
 import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
 import type { PersonOrganization } from "@/lib/person-organizations-data";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
@@ -39,6 +39,7 @@ export function PlayerMergeForm({
   newsItems,
   logoItems,
   matchStatItems,
+  gameStatItems,
   riotAccountCount,
   initialTarget = null,
 }: {
@@ -52,6 +53,7 @@ export function PlayerMergeForm({
   newsItems: MergeNewsEntry[];
   logoItems: AdminLogoEntry[];
   matchStatItems: MergeMapStatEntry[];
+  gameStatItems: MergeGameStatEntry[];
   /** The Riot accounts of the player (League only, 0 elsewhere). */
   riotAccountCount: number;
   initialTarget?: { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null } | null;
@@ -71,6 +73,7 @@ export function PlayerMergeForm({
   const [news, setNews] = useState<Set<string>>(new Set());
   const [logosSel, setLogosSel] = useState<Set<string>>(new Set());
   const [matchStats, setMatchStats] = useState<Set<string>>(new Set());
+  const [gameStats, setGameStats] = useState<Set<string>>(new Set());
   const [linkedAccount, setLinkedAccount] = useState(false);
   const [riotAccounts, setRiotAccounts] = useState(true);
   const [removeSource, setRemoveSource] = useState(false);
@@ -145,6 +148,24 @@ export function PlayerMergeForm({
     [matchStatItems]
   );
 
+  const gameStatOptions: MergeCategoryItem[] = useMemo(
+    () =>
+      gameStatItems.map((entry) => ({
+        id: String(entry.statId),
+        label: (
+          <>
+            {entry.tournamentName}
+            <span className="text-muted-foreground">
+              {" "}
+              #{entry.order} {entry.championName}
+              {entry.role ? ` (${entry.role})` : ""}
+            </span>
+          </>
+        ),
+      })),
+    [gameStatItems]
+  );
+
   function makeToggle(set: Set<string>, setter: (next: Set<string>) => void) {
     return (id: string) => {
       const next = new Set(set);
@@ -158,7 +179,7 @@ export function PlayerMergeForm({
     return (checked: boolean) => setter(checked ? new Set(items.map((i) => i.id)) : new Set());
   }
 
-  const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + (linkedAccount ? 1 : 0) + (riotAccounts && riotAccountCount > 0 ? 1 : 0);
+  const totalSelected = teamHistory.size + organizations.size + production.size + news.size + logosSel.size + matchStats.size + gameStats.size + (linkedAccount ? 1 : 0) + (riotAccounts && riotAccountCount > 0 ? 1 : 0);
   const canSubmit = totalSelected > 0 || removeSource;
   // Removing the source deletes the Riot accounts it still holds, which is for good: the admin is told before and again at the confirmation.
   const losesRiotAccounts = removeSource && game === "lol" && riotAccountCount > 0 && !riotAccounts;
@@ -180,6 +201,7 @@ export function PlayerMergeForm({
         news: [...news].map(Number),
         logos: [...logosSel],
         matchStats: [...matchStats].map(Number),
+        gameStats: [...gameStats].map(Number),
         linkedAccount,
         riotAccounts: riotAccounts && riotAccountCount > 0,
         removeSource,
@@ -244,6 +266,14 @@ export function PlayerMergeForm({
             onToggle={makeToggle(matchStats, setMatchStats)}
             onToggleAll={makeToggleAll(matchStatOptions, setMatchStats)}
           />
+          <MergeCategorySection
+            title={t("categories.gameStats")}
+            hint={t("gameStatsHint")}
+            items={gameStatOptions}
+            selected={gameStats}
+            onToggle={makeToggle(gameStats, setGameStats)}
+            onToggleAll={makeToggleAll(gameStatOptions, setGameStats)}
+          />
           <MergeCategorySection title={t("categories.news")} items={newsOptions} selected={news} onToggle={makeToggle(news, setNews)} onToggleAll={makeToggleAll(newsOptions, setNews)} />
           <MergeCategorySection title={t("categories.logos")} items={logoOptions} selected={logosSel} onToggle={makeToggle(logosSel, setLogosSel)} onToggleAll={makeToggleAll(logoOptions, setLogosSel)} />
 
@@ -268,7 +298,7 @@ export function PlayerMergeForm({
           )}
         </div>
 
-        {teamHistoryOptions.length + organizationOptions.length + productionOptions.length + newsOptions.length + logoOptions.length + matchStatOptions.length === 0 && !hasLinkedAccount && riotAccountCount === 0 && (
+        {teamHistoryOptions.length + organizationOptions.length + productionOptions.length + newsOptions.length + logoOptions.length + matchStatOptions.length + gameStatOptions.length === 0 && !hasLinkedAccount && riotAccountCount === 0 && (
           <p className="text-sm text-muted-foreground">{t("nothingToMove")}</p>
         )}
 

@@ -13,7 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminPlayer, getAdminPlayerTeamHistory } from "@/lib/admin-players";
 import { countPersonAccounts } from "@/lib/lol-accounts";
-import { getMergeablePlayerMapStats, getMergeablePlayerNews } from "@/lib/admin-player-merge";
+import { getMergeablePlayerGameStats, getMergeablePlayerMapStats, getMergeablePlayerNews } from "@/lib/admin-player-merge";
 import { getPersonOrganizations } from "@/lib/person-organizations-data";
 import { getPersonProductionsPage } from "@/lib/production-credits-data";
 import { getEntityLogos } from "@/lib/admin-logos";
@@ -46,7 +46,7 @@ export default async function AdminPlayerMergePage({
   await requireAdminPermission(locale as AppLocale, PERMISSIONS.playersMerge, game);
   const t = await getTranslations({ locale, namespace: "admin.players.merge" });
 
-  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems, initialTarget, riotAccountCount] = await Promise.all([
+  const [player, teamHistory, organizations, production, newsItems, logoItems, matchStatItems, gameStatItems, initialTarget, riotAccountCount] = await Promise.all([
     getAdminPlayer(game, id),
     getAdminPlayerTeamHistory(game, id),
     getPersonOrganizations(game, id),
@@ -54,6 +54,7 @@ export default async function AdminPlayerMergePage({
     getMergeablePlayerNews(game, id),
     getEntityLogos("person", id),
     getMergeablePlayerMapStats(game, id),
+    getMergeablePlayerGameStats(game, id),
     targetId !== null && targetId !== id ? getPersonSummary(targetId) : Promise.resolve(null),
     game === "lol" ? countPersonAccounts(id) : Promise.resolve(0),
   ]);
@@ -79,6 +80,7 @@ export default async function AdminPlayerMergePage({
         newsItems={newsItems}
         logoItems={logoItems}
         matchStatItems={matchStatItems}
+        gameStatItems={gameStatItems}
         riotAccountCount={riotAccountCount}
         initialTarget={initialTarget}
       />
