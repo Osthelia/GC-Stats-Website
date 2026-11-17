@@ -32,8 +32,8 @@ import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
 // which page rendered the form that calls them.
-async function requireAdminActorId(permission: string = PERMISSIONS.teamsEdit): Promise<string> {
-  const access = await requireActorPermission(permission);
+async function requireAdminActorId(game: GameSlug, permission: string = PERMISSIONS.teamsEdit): Promise<string> {
+  const access = await requireActorPermission(permission, game);
   return access.userId;
 }
 
@@ -72,7 +72,7 @@ function isValidUrl(value: string): boolean {
 
 export async function updateTeamProfile(game: GameSlug, teamId: number, input: TeamProfileInput): Promise<TeamProfileResult> {
   const { teams } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const fieldErrors: TeamProfileFieldErrors = {};
 
@@ -181,7 +181,7 @@ export type NameHistoryResult = { ok: true } | { ok: false; fieldErrors: NameHis
 
 export async function addTeamNameHistoryEntry(game: GameSlug, teamId: number, name: string, from: string, until: string): Promise<NameHistoryResult> {
   const { teams, teamNameHistory } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const fieldErrors: NameHistoryFieldErrors = {};
   const trimmedName = name.trim();
@@ -216,7 +216,7 @@ export async function addTeamNameHistoryEntry(game: GameSlug, teamId: number, na
 
 export async function deleteTeamNameHistoryEntry(game: GameSlug, entryId: number): Promise<RosterActionResult> {
   const { teamNameHistory } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const [entry] = await db.select({ id: teamNameHistory.id, teamId: teamNameHistory.teamId, name: teamNameHistory.name }).from(teamNameHistory).where(eq(teamNameHistory.id, entryId)).limit(1);
   if (!entry) return { ok: false, error: "notFound" };
@@ -233,7 +233,7 @@ export async function deleteTeamNameHistoryEntry(game: GameSlug, entryId: number
 
 export async function toggleTeamNameHistoryVisibility(game: GameSlug, entryId: number, isVisible: boolean): Promise<RosterActionResult> {
   const { teamNameHistory } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const [entry] = await db
     .select({ id: teamNameHistory.id, teamId: teamNameHistory.teamId, name: teamNameHistory.name, isVisible: teamNameHistory.isVisible })
@@ -265,7 +265,7 @@ export type RosterActionResult = { ok: true } | { ok: false; error: string };
 /** Hard delete (not "close the period") — for a mistaken entry, not for someone actually leaving the team (use updateRosterMemberEntry's `until` for that). Shared by both the team roster panel and the player-side team-history panel (same rosterMemberships row). */
 export async function deleteRosterMembership(game: GameSlug, membershipId: number): Promise<RosterActionResult> {
   const { rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const [membership] = await db
     .select({ teamId: rosterMemberships.teamId, personId: rosterMemberships.personId, role: rosterMemberships.role })
@@ -297,7 +297,7 @@ async function findOpenMembershipsElsewhere(game: GameSlug, personId: number, te
 
 /** Called before saving a roster entry without end date, to ask whether the person's other current teams must be closed. */
 export async function getRosterConflicts(game: GameSlug, personId: number, teamId: number, excludeMembershipId?: number): Promise<RosterConflict[]> {
-  await requireAdminActorId();
+  await requireAdminActorId(game);
   return findOpenMembershipsElsewhere(game, personId, teamId, excludeMembershipId);
 }
 
@@ -319,7 +319,7 @@ export async function addTeamRosterMember(
   lanes: string[] = []
 ): Promise<AddRosterMemberResult> {
   const { teams, rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const fieldErrors: AddRosterMemberFieldErrors = {};
 
@@ -371,7 +371,7 @@ export type RosterEntryResult = { ok: true } | { ok: false; fieldErrors: RosterE
  */
 export async function updateRosterMemberEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = [], lanes: string[] = []): Promise<RosterEntryResult> {
   const { rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId();
+  const actorUserId = await requireAdminActorId(game);
 
   const fieldErrors: RosterEntryFieldErrors = {};
 
@@ -416,7 +416,7 @@ export type CreateTeamResult = { ok: true; id: number } | { ok: false; fieldErro
 /** Quick-create from the admin teams list — mirrors createPlayer's shape (name required, everything else optional, full profile editable afterwards). */
 export async function createTeam(game: GameSlug, input: CreateTeamInput): Promise<CreateTeamResult> {
   const { teams } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.teamsCreate);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.teamsCreate);
 
   const fieldErrors: CreateTeamFieldErrors = {};
 
@@ -465,7 +465,7 @@ export type DeleteTeamResult = { ok: true } | { ok: false; error: "notFound" | "
  */
 export async function deleteTeam(game: GameSlug, teamId: number): Promise<DeleteTeamResult> {
   const { teams } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.teamsDelete);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.teamsDelete);
 
   const [existing] = await db.select({ id: teams.id, name: teams.name }).from(teams).where(eq(teams.id, teamId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };

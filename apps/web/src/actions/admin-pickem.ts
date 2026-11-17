@@ -18,8 +18,8 @@ import { requireActorPermission } from "@/lib/rbac";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<void> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 }
 
 const GROUP_PICK_MODES = ["standings", "matches"] as const;
@@ -47,7 +47,7 @@ export type StagePickemSettingsResult = { ok: true } | { ok: false; fieldErrors:
 
 export async function updateStagePickemSettings(game: GameSlug, stageId: number, input: StagePickemSettingsInput): Promise<StagePickemSettingsResult> {
   const { pickemStageSettings, stages, stageContainers } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage) return { ok: false, fieldErrors: { opensAt: "stageNotFound" } };

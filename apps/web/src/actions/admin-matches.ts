@@ -40,8 +40,8 @@ import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -70,7 +70,7 @@ export type MatchDetailsResult = { ok: true } | { ok: false; fieldErrors: MatchD
 
 export async function updateMatchDetails(game: GameSlug, matchId: number, input: MatchDetailsInput): Promise<MatchDetailsResult> {
   const { matches, entrants, stageContainers, stages, groupEntries } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { label: "notFound" } };
@@ -156,7 +156,7 @@ export type DeleteMatchResult = { ok: true } | { ok: false; error: "notFound" | 
 /** V1's admin/matches/show.blade.php delete button — a completed match is locked (mirrors the same guard already used for entrant/status/bestOf edits above: its result may already be propagated through the bracket). */
 export async function deleteMatch(game: GameSlug, matchId: number): Promise<DeleteMatchResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: matches.id, status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -180,7 +180,7 @@ export type ReportResultInput = { winnerId: number; scoreA: string; scoreB: stri
 export type ReportResultResult = { ok: true } | { ok: false; fieldErrors: ReportResultFieldErrors };
 
 export async function reportMatchResult(game: GameSlug, matchId: number, input: ReportResultInput): Promise<ReportResultResult> {
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors: ReportResultFieldErrors = {};
   const scoreA = Number(input.scoreA);
@@ -221,7 +221,7 @@ export async function reportMatchResult(game: GameSlug, matchId: number, input: 
 /** Running score of an undecided series (e.g. 1-1 in a BO3): stored as is, the match stays open and nothing propagates. */
 export async function saveMatchLiveScore(game: GameSlug, matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const scoreA = Number(input.scoreA);
   const scoreB = Number(input.scoreB);
@@ -258,7 +258,7 @@ export type SaveVetoResult = { ok: true } | { ok: false; fieldErrors: VetoFieldE
 export async function saveMatchVeto(game: GameSlug, matchId: number, rows: VetoRowInput[]): Promise<SaveVetoResult> {
   const { matches } = gameTables(game);
   const { matchVetos } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { rows: "notFound" } };
@@ -389,7 +389,7 @@ function deriveMapIsForfeit(input: MapInput): boolean {
 export async function addMap(game: GameSlug, matchId: number, input: MapInput): Promise<MapResult> {
   const { matches } = gameTables(game);
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [match] = await db.select({ id: matches.id }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { mapName: "matchNotFound" } as MapFieldErrors };
@@ -425,7 +425,7 @@ export async function addMap(game: GameSlug, matchId: number, input: MapInput): 
 
 export async function updateMap(game: GameSlug, mapId: number, input: MapInput): Promise<MapResult> {
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { mapName: "notFound" } as MapFieldErrors };
@@ -460,7 +460,7 @@ export type DeleteMapResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteMap(game: GameSlug, mapId: number): Promise<DeleteMapResult> {
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -480,7 +480,7 @@ export type ResetMapResult = { ok: true } | { ok: false; error: "notFound" };
 /** V1's "Reset map" (admin.matches.maps.reset) — wipes stats/rounds/score but keeps apiMatchId/mapName so a Fetch can be retried. */
 export async function resetMap(game: GameSlug, mapId: number): Promise<ResetMapResult> {
   const { maps, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -550,7 +550,7 @@ function validatePlayerStatRow(row: MapPlayerStatInput, prefix: string, errors: 
 export async function updateMapPlayerStats(game: GameSlug, mapId: number, playersA: MapPlayerStatInput[], playersB: MapPlayerStatInput[]): Promise<UpdateMapPlayerStatsResult> {
   const { matches } = gameTables(game);
   const { maps, mapPlayerStats } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [map] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!map) return { ok: false, error: "notFound" };
@@ -625,7 +625,7 @@ export async function importMatchWikicode(
 ): Promise<ImportWikicodeResult> {
   const { matches } = gameTables(game);
   const { maps, matchVetos, mapPlayerStats } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const trimmed = wikicode.trim();
   if (!trimmed) return { ok: false, error: "required" };

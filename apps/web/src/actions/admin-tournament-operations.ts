@@ -23,8 +23,8 @@ import { logActivity } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
 import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -52,7 +52,7 @@ function isValidDate(value: string): boolean {
 
 export async function bulkPatchMatches(game: GameSlug, tournamentId: number, input: BulkPatchInput): Promise<BulkPatchResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors: BulkPatchFieldErrors = {};
   const patch = input.patch.trim();
@@ -106,7 +106,7 @@ export type BulkCreateResult = { ok: true; count: number } | { ok: false; fieldE
 
 export async function bulkCreateMatches(game: GameSlug, tournamentId: number, input: BulkCreateInput): Promise<BulkCreateResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors: BulkCreateFieldErrors = {};
 
@@ -168,7 +168,7 @@ export type BulkStatusResult = { ok: true; updated: number; skippedNoResult: num
  */
 export async function bulkSetMatchStatus(game: GameSlug, tournamentId: number, matchIds: number[], status: MatchStatus): Promise<BulkStatusResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   if (status !== "pending" && status !== "live" && status !== "completed") return { ok: false, error: "invalidStatus" };
   const ids = [...new Set(matchIds)].filter((id) => Number.isInteger(id));

@@ -20,8 +20,8 @@ import { HOME_TOURNAMENTS_TAG, TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -188,7 +188,7 @@ function coreColumns(input: TournamentInput) {
 
 export async function createTournament(game: GameSlug, input: TournamentInput): Promise<TournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors = await validateTournament(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -208,7 +208,7 @@ export async function createTournament(game: GameSlug, input: TournamentInput): 
 
 export async function updateTournament(game: GameSlug, id: number, input: TournamentInput): Promise<TournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existingRow] = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -234,7 +234,7 @@ export type ToggleActiveResult = { ok: true; active: boolean } | { ok: false; er
 
 export async function toggleTournamentActive(game: GameSlug, id: number): Promise<ToggleActiveResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: tournaments.id, active: tournaments.active }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -257,7 +257,7 @@ export type DeleteTournamentResult = { ok: true } | { ok: false; error: "notFoun
 
 export async function deleteTournament(game: GameSlug, id: number): Promise<DeleteTournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: tournaments.id, name: tournaments.name }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };

@@ -34,8 +34,8 @@ import { parseIsoInstant } from "@/lib/datetime-local";
 import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import type { GameSlug } from "@gc-stats/db/game";
 
-export async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function requireTournamentsActor(game: GameSlug): Promise<void> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 }
 
 export type BracketFormat = "single_elimination" | "double_elimination" | "triple_elimination" | "round_robin" | "round_robin_double" | "gsl_group";
@@ -53,7 +53,7 @@ export type GenerateTemplateResult = { ok: true } | { ok: false; error: string }
 
 export async function generateBracketFromTemplate(game: GameSlug, input: GenerateTemplateInput): Promise<GenerateTemplateResult> {
   const { stages, stageContainers, matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
   if (!stage) return { ok: false, error: "stageNotFound" };
@@ -316,7 +316,7 @@ async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput
 
 /** Adds a single match to a group, allowed even once the group has started (insert only, nothing existing is touched). */
 export async function addGroupMatch(game: GameSlug, input: AddGroupMatchInput): Promise<AddGroupMatchResult> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const { entrantAId, entrantBId, ...shared } = input;
   const result = await insertGroupMatches(game, { ...shared, matches: [{ entrantAId, entrantBId }] });
   if (result.ok) return { ok: true };
@@ -325,7 +325,7 @@ export async function addGroupMatch(game: GameSlug, input: AddGroupMatchInput): 
 
 /** Adds many matches at once that inherit the same round, best of and date. */
 export async function addGroupMatches(game: GameSlug, input: AddGroupMatchesInput): Promise<AddGroupMatchesResult> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   return insertGroupMatches(game, input);
 }
 
@@ -336,7 +336,7 @@ export type DeleteBracketMatchesResult = { ok: true } | { ok: false; error: stri
  *  (cascades from `matches` handle edges/seeds). */
 export async function resetContainer(game: GameSlug, containerId: number, stageId: number): Promise<DeleteBracketMatchesResult> {
   const { stageContainers, matches, groupEntries } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [container] = await db.select({ id: stageContainers.id }).from(stageContainers).where(and(eq(stageContainers.id, containerId), eq(stageContainers.stageId, stageId))).limit(1);
   if (!container) return { ok: false, error: "notFound" };
@@ -433,7 +433,7 @@ function buildSaveGraph(input: SaveManualGraphInput): BracketGraph {
  */
 export async function saveManualGraph(game: GameSlug, input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   const { stages, stageContainers, matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
   if (!stage) return { ok: false, error: "stageNotFound" };
@@ -494,7 +494,7 @@ const edgeKey = (from: string | number, result: string, to: string | number, slo
  */
 export async function saveBracketInPlace(game: GameSlug, input: SaveManualGraphInput): Promise<SaveManualGraphResult> {
   const { stages, stageContainers, matches, matchSeeds, bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
   if (!stage) return { ok: false, error: "stageNotFound" };
@@ -655,7 +655,7 @@ export type SetRoundScheduledAtResult = { ok: true; count: number } | { ok: fals
  */
 export async function setRoundScheduledAt(game: GameSlug, containerId: number, stageId: number, round: number, scheduledAtIso: string | null): Promise<SetRoundScheduledAtResult> {
   const { stageContainers, matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (!Number.isInteger(round) || round < 1) return { ok: false, error: "invalidRound" };
 
