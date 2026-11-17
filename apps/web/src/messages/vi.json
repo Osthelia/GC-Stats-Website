@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · Sản xuất",
     "formerOrganizations": "Các tổ chức cũ",
     "noFormerOrganizations": "Chưa ghi nhận tổ chức cũ nào.",
-    "unknownDate": "Không rõ"
+    "unknownDate": "Không rõ",
+    "addGameProfile": {
+      "title": "Bạn cũng chơi {game}?",
+      "description": "Thêm hồ sơ {game} của bạn chỉ với một cú nhấp. Tên, ảnh và liên kết của bạn được dùng lại, không cần điền lại.",
+      "button": "Thêm hồ sơ {game} của tôi",
+      "adding": "Đang thêm...",
+      "done": "Hồ sơ {game} của bạn đã sẵn sàng.",
+      "open": "Xem hồ sơ {game} của tôi",
+      "error": {
+        "unauthenticated": "Bạn cần đăng nhập.",
+        "notYours": "Tuyển thủ này không được liên kết với tài khoản của bạn.",
+        "invalidGame": "Game này không tồn tại."
+      }
+    },
+    "alsoOn": "Cũng có trên {game}"
   },
   "organizationPage": {
     "tabOverview": "Tổng quan",
@@ -2115,7 +2129,8 @@
       "error": {
         "userNotFound": "Không tìm thấy người dùng.",
         "roleNotFound": "Một trong các vai trò đã chọn không còn tồn tại.",
-        "selfDemote": "Bạn không thể gỡ quyền quản trị của chính mình."
+        "selfDemote": "Bạn không thể gỡ quyền quản trị của chính mình.",
+        "gameNotFound": "Game này không tồn tại."
       },
       "authMethods": {
         "heading": "Xác thực",
@@ -2396,7 +2411,8 @@
           "ownerOnly": "Chỉ chủ sở hữu mới có thể cấp hoặc sửa vai trò chủ sở hữu.",
           "userNotFound": "Không tìm thấy tài khoản.",
           "alreadyHasAccess": "Tài khoản này đã có quyền truy cập vào tổ chức này."
-        }
+        },
+        "fieldGames": "Game"
       },
       "filterKindLabel": "Loại tổ chức",
       "filterKindAll": "Tất cả tổ chức",
@@ -2689,6 +2705,21 @@
         "riotAccountErrorHeldByOther": "Tài khoản Riot này đã thuộc về {handle}.",
         "riotAccountErrorAlreadyOnPlayer": "Tuyển thủ này đã có tài khoản Riot này.",
         "riotAccountErrorGeneric": "Không thể thay đổi tài khoản Riot.",
+        "sectionGames": "Game",
+        "gamesHint": "Một người, một hồ sơ cho mỗi game. Tên, quốc gia, đại từ, tiểu sử, biệt danh, mạng xã hội, ảnh và tài khoản liên kết được dùng chung, phần còn lại thuộc về từng game.",
+        "sharedHint": "Tên, quốc gia, đại từ, tiểu sử, biệt danh, mạng xã hội và ảnh được dùng chung với các game khác của người này.",
+        "gameCurrent": "Game hiện tại",
+        "gameHasProfile": "Đã có hồ sơ",
+        "gameNoProfile": "Chưa có hồ sơ",
+        "gameOpen": "Mở",
+        "gameAddButton": "Thêm vào {game}",
+        "gameAdding": "Đang thêm...",
+        "gameAddSuccess": "Đã thêm vào {game}.",
+        "gameAddError": {
+          "invalidGame": "Game này không tồn tại.",
+          "notFound": "Tuyển thủ này không còn tồn tại.",
+          "alreadyThere": "Tuyển thủ này đã có hồ sơ trong game này."
+        },
         "sectionHistory": "Lịch sử đội",
         "sectionLogo": "Logo",
         "logoNoneYet": "Chưa có logo.",
@@ -2852,9 +2883,22 @@
           "samePlayer": "Hãy chọn một tuyển thủ khác làm đích gộp.",
           "sourceNotFound": "Không tìm thấy tuyển thủ.",
           "targetNotFound": "Không tìm thấy tuyển thủ đích.",
-          "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết."
+          "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết.",
+          "sourceStillUsed": "Tuyển thủ này vẫn được dùng bởi các đội tham gia hoặc thống kê trận đấu của game này. Hãy chọn cả các mục đó, hoặc giữ lại hồ sơ."
         },
+        "removeSource": "Xóa khỏi {game} sau khi gộp",
+        "removeSourceHint": "{name} bị xóa khỏi game này sau khi mọi thứ được chuyển, và bị xóa hoàn toàn nếu không game nào khác có hồ sơ này. Bị từ chối nếu các đội tham gia hoặc thống kê trận đấu vẫn đang dùng.",
         "riotAccountsLost": "{count} tài khoản Riot của {name} sẽ không được chuyển và sẽ bị xóa vĩnh viễn cùng người chơi. Các ván có tài khoản đó sẽ hiển thị là chưa liên kết ở lần nhập sau."
+      },
+      "duplicatesLink": "Có thể trùng lặp",
+      "duplicates": {
+        "title": "Có thể trùng lặp",
+        "description": "Những người có cùng handle nhưng ở các game khác nhau. Gộp hồ sơ {game} vào hồ sơ còn lại để chỉ giữ một hồ sơ.",
+        "backToList": "Quay lại danh sách tuyển thủ",
+        "columnSource": "Trong {game}",
+        "columnTarget": "Hồ sơ còn lại",
+        "merge": "Gộp",
+        "empty": "Không tìm thấy bản trùng lặp."
       }
     },
     "riotAccounts": {
@@ -5616,6 +5660,9 @@
       "copyOverlay": "Liên kết lớp phủ",
       "overlayCopied": "Đã sao chép liên kết lớp phủ, hãy thêm nó làm browser source."
     },
+    "personPicker": {
+      "notInGame": "Chưa có trong {game}"
+    },
     "rosterSource": {
       "placeholder": "Liên kết thông báo",
       "error": {
@@ -7812,7 +7859,8 @@
       "state": {
         "linkedToYou": "Hồ sơ này đã được liên kết với tài khoản của bạn.",
         "linkedToOther": "Hồ sơ này đã được liên kết với một tài khoản khác. Hãy liên hệ đội ngũ nếu bạn cho rằng đây là nhầm lẫn.",
-        "pending": "Bạn đã có một yêu cầu liên kết tài khoản đang chờ xem xét."
+        "pending": "Bạn đã có một yêu cầu liên kết tài khoản đang chờ xem xét.",
+        "linkedToAnotherPerson": "Tài khoản của bạn đã được liên kết với một tuyển thủ khác. Nếu hai hồ sơ là cùng một người, hãy nhờ ban quản trị gộp chúng lại."
       }
     },
     "error": {
@@ -7843,6 +7891,7 @@
       "invalidType": "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP.",
       "tooSmall": "Bức ảnh này quá nhỏ (tối thiểu 400 px ở cạnh ngắn nhất).",
       "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...).",
+      "userLinkOtherPerson": "Tài khoản của bạn đã được liên kết với một tuyển thủ khác. Nếu hai hồ sơ là cùng một người, hãy nhờ ban quản trị gộp chúng lại.",
       "sourceTooLong": "Liên kết này quá dài (tối đa 500 ký tự).",
       "invalidSource": "Tùy chọn này không khả dụng ở đây.",
       "leftSourceRequiresLeft": "Nguồn rời đi yêu cầu thành viên phải được đánh dấu là đã rời."
@@ -8723,6 +8772,9 @@
     "invalid": "Chỉ có thể chọn năm đường."
   },
   "game": {
+    "switcherLabel": "Game",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
     "notPublicBadge": "Chưa công khai",
     "previewBanner": "{game} chưa công khai. Chỉ quản trị viên mới xem được trang này."
   }

@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · 製作團隊",
     "formerOrganizations": "歷史機構",
     "noFormerOrganizations": "暫無歷史機構記錄。",
-    "unknownDate": "未知"
+    "unknownDate": "未知",
+    "addGameProfile": {
+      "title": "你也在玩 {game} 嗎？",
+      "description": "一鍵新增你的 {game} 檔案，會沿用你的名稱、照片和連結，不必重新填寫。",
+      "button": "新增我的 {game} 檔案",
+      "adding": "新增中…",
+      "done": "你的 {game} 檔案已就緒。",
+      "open": "查看我的 {game} 檔案",
+      "error": {
+        "unauthenticated": "你需要先登入。",
+        "notYours": "此選手尚未連結到你的帳號。",
+        "invalidGame": "此遊戲不存在。"
+      }
+    },
+    "alsoOn": "也在 {game}"
   },
   "organizationPage": {
     "tabOverview": "概覽",
@@ -2115,7 +2129,8 @@
       "error": {
         "userNotFound": "未找到該使用者。",
         "roleNotFound": "其中一個所選角色已不存在。",
-        "selfDemote": "您不能移除自己的管理員許可權。"
+        "selfDemote": "您不能移除自己的管理員許可權。",
+        "gameNotFound": "此遊戲不存在。"
       },
       "authMethods": {
         "heading": "身份驗證",
@@ -2396,7 +2411,8 @@
           "ownerOnly": "只有所有者才能授予或修改所有者角色。",
           "userNotFound": "未找到該帳戶。",
           "alreadyHasAccess": "該帳戶已擁有此機構的訪問許可權。"
-        }
+        },
+        "fieldGames": "遊戲"
       },
       "filterKindLabel": "組織類型",
       "filterKindAll": "所有組織",
@@ -2689,6 +2705,21 @@
         "riotAccountErrorHeldByOther": "此 Riot 帳號已屬於 {handle}。",
         "riotAccountErrorAlreadyOnPlayer": "該選手已有此 Riot 帳號。",
         "riotAccountErrorGeneric": "無法變更 Riot 帳號。",
+        "sectionGames": "遊戲",
+        "gamesHint": "一個人在每款遊戲各有一份檔案。名稱、國家、代名詞、簡介、別名、社群連結、照片和已連結的帳號為共用，其餘屬於各款遊戲。",
+        "sharedHint": "名稱、國家、代名詞、簡介、別名、社群連結和照片會與此人在其他遊戲的檔案共用。",
+        "gameCurrent": "目前遊戲",
+        "gameHasProfile": "已有檔案",
+        "gameNoProfile": "尚無檔案",
+        "gameOpen": "開啟",
+        "gameAddButton": "新增至 {game}",
+        "gameAdding": "新增中…",
+        "gameAddSuccess": "已新增至 {game}。",
+        "gameAddError": {
+          "invalidGame": "此遊戲不存在。",
+          "notFound": "此選手已不存在。",
+          "alreadyThere": "此選手在這款遊戲中已有檔案。"
+        },
         "sectionHistory": "戰隊歷史",
         "sectionLogo": "商標",
         "logoNoneYet": "暫無商標。",
@@ -2852,9 +2883,22 @@
           "samePlayer": "請選擇另一位選手作為合併目標。",
           "sourceNotFound": "未找到該選手。",
           "targetNotFound": "未找到目標選手。",
-          "targetAlreadyLinked": "目標選手已綁定帳戶。"
+          "targetAlreadyLinked": "目標選手已綁定帳戶。",
+          "sourceStillUsed": "此選手仍被這款遊戲的參賽方或比賽統計使用。請一併選取它們，或保留此檔案。"
         },
+        "removeSource": "合併後從 {game} 移除",
+        "removeSourceHint": "全部遷移後，{name} 會從這款遊戲移除；若沒有其他遊戲擁有此檔案，則會完全刪除。若參賽方或比賽統計仍在使用，則會被拒絕。",
         "riotAccountsLost": "{name} 的 {count} 個 Riot 帳號不會被移動，並將隨選手一併永久刪除。日後匯入時，使用這些帳號的比賽將顯示為未連結。"
+      },
+      "duplicatesLink": "可能的重複項目",
+      "duplicates": {
+        "title": "可能的重複項目",
+        "description": "擁有相同 ID、但分別存在於不同遊戲的人。將 {game} 檔案合併到另一份，即可只保留一份檔案。",
+        "backToList": "返回選手列表",
+        "columnSource": "在 {game}",
+        "columnTarget": "另一份檔案",
+        "merge": "合併",
+        "empty": "找不到重複項目。"
       }
     },
     "riotAccounts": {
@@ -5616,6 +5660,9 @@
       "copyOverlay": "覆蓋層連結",
       "overlayCopied": "已複製覆蓋層連結，請將其新增為瀏覽器來源。"
     },
+    "personPicker": {
+      "notInGame": "尚未加入 {game}"
+    },
     "rosterSource": {
       "placeholder": "公告連結",
       "error": {
@@ -7812,7 +7859,8 @@
       "state": {
         "linkedToYou": "此資料已綁定到你的帳戶。",
         "linkedToOther": "此資料已綁定到其他帳戶。如果你認為有誤，請聯絡工作人員。",
-        "pending": "你已有一個待稽核的帳戶綁定請求。"
+        "pending": "你已有一個待稽核的帳戶綁定請求。",
+        "linkedToAnotherPerson": "你的帳號已連結到另一位選手。如果兩份檔案是同一人，請聯絡工作人員將它們合併。"
       }
     },
     "error": {
@@ -7843,6 +7891,7 @@
       "invalidType": "僅接受 JPG、PNG 或 WebP 格式的照片。",
       "tooSmall": "這張照片太小（最短邊至少 400 畫素）。",
       "invalidDiscordId": "請輸入有效的 Discord 使用者 ID(17 到 20 位數字)或伺服器邀請連結(discord.gg/...)。",
+      "userLinkOtherPerson": "你的帳號已連結到另一位選手。如果兩份檔案是同一人，請聯絡工作人員將它們合併。",
       "sourceTooLong": "此連結過長（最多 500 個字元）。",
       "invalidSource": "此選項在此處不可用。",
       "leftSourceRequiresLeft": "離隊來源要求成員已標記為離隊。"
@@ -8723,6 +8772,9 @@
     "invalid": "只能選擇這五條分路。"
   },
   "game": {
+    "switcherLabel": "遊戲",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
     "notPublicBadge": "未公開",
     "previewBanner": "{game} 尚未公開，只有管理員可以看到此頁面。"
   }

@@ -1633,7 +1633,21 @@
     "productionTitle": "{player} · Production",
     "formerOrganizations": "Mga dating organisasyon",
     "noFormerOrganizations": "Walang naitalang dating organisasyon.",
-    "unknownDate": "Hindi alam"
+    "unknownDate": "Hindi alam",
+    "addGameProfile": {
+      "title": "Nasa {game} ka rin ba?",
+      "description": "Idagdag ang iyong {game} profile sa isang click. Gagamitin nito ang iyong pangalan, litrato at mga link, wala ka nang kailangang punan ulit.",
+      "button": "Idagdag ang aking {game} profile",
+      "adding": "Nagdaragdag...",
+      "done": "Handa na ang iyong {game} profile.",
+      "open": "Tingnan ang aking {game} profile",
+      "error": {
+        "unauthenticated": "Kailangan mong naka-log in.",
+        "notYours": "Hindi naka-link ang player na ito sa iyong account.",
+        "invalidGame": "Hindi umiiral ang larong ito."
+      }
+    },
+    "alsoOn": "Nasa {game} din"
   },
   "organizationPage": {
     "tabOverview": "Pangkalahatang-ideya",
@@ -2115,7 +2129,8 @@
       "error": {
         "userNotFound": "Hindi nahanap ang user.",
         "roleNotFound": "Wala na ang isa sa mga napiling tungkulin.",
-        "selfDemote": "Hindi mo maaaring alisin ang sarili mong admin access."
+        "selfDemote": "Hindi mo maaaring alisin ang sarili mong admin access.",
+        "gameNotFound": "Hindi umiiral ang larong ito."
       },
       "authMethods": {
         "heading": "Authentication",
@@ -2396,7 +2411,8 @@
           "ownerOnly": "May-ari lamang ang makakapagbigay o makakapag-edit ng tungkulin ng may-ari.",
           "userNotFound": "Hindi nahanap ang account.",
           "alreadyHasAccess": "May access na ang account na ito sa organisasyong ito."
-        }
+        },
+        "fieldGames": "Mga laro"
       },
       "filterKindLabel": "Uri ng organisasyon",
       "filterKindAll": "Lahat ng organisasyon",
@@ -2689,6 +2705,21 @@
         "riotAccountErrorHeldByOther": "Pag-aari na ni {handle} ang Riot account na ito.",
         "riotAccountErrorAlreadyOnPlayer": "Mayroon nang ganitong Riot account ang player na ito.",
         "riotAccountErrorGeneric": "Hindi mabago ang Riot account.",
+        "sectionGames": "Mga laro",
+        "gamesHint": "Isang tao, isang profile bawat laro. Ang pangalan, bansa, panghalip, bio, alias, socials, litrato at naka-link na account ay pinagsasaluhan, ang iba ay sa bawat laro.",
+        "sharedHint": "Ang pangalan, bansa, panghalip, bio, alias, socials at litrato ay pinagsasaluhan sa iba pang laro ng taong ito.",
+        "gameCurrent": "Kasalukuyang laro",
+        "gameHasProfile": "May profile",
+        "gameNoProfile": "Wala pang profile",
+        "gameOpen": "Buksan",
+        "gameAddButton": "Idagdag sa {game}",
+        "gameAdding": "Nagdaragdag...",
+        "gameAddSuccess": "Naidagdag sa {game}.",
+        "gameAddError": {
+          "invalidGame": "Hindi umiiral ang larong ito.",
+          "notFound": "Wala na ang player na ito.",
+          "alreadyThere": "May profile na ang player na ito sa larong ito."
+        },
         "sectionHistory": "Kasaysayan ng team",
         "sectionLogo": "Logo",
         "logoNoneYet": "Wala pang logo.",
@@ -2852,9 +2883,22 @@
           "samePlayer": "Pumili ng ibang manlalaro bilang target ng pagsasama.",
           "sourceNotFound": "Hindi nahanap ang manlalaro.",
           "targetNotFound": "Hindi nahanap ang target na manlalaro.",
-          "targetAlreadyLinked": "May naka-link nang account ang target na manlalaro."
+          "targetAlreadyLinked": "May naka-link nang account ang target na manlalaro.",
+          "sourceStillUsed": "Ginagamit pa ang player na ito ng mga entrant o match stats ng larong ito. Piliin din ang mga iyon, o panatilihin ang profile."
         },
+        "removeSource": "Alisin sa {game} pagkatapos mag-merge",
+        "removeSourceHint": "Aalisin ang {name} sa larong ito kapag nailipat na ang lahat, at tuluyan kapag walang ibang laro na may profile na ito. Tatanggihan kung ginagamit pa ito ng mga entrant o match stats.",
         "riotAccountsLost": "Ang {count} Riot account ni {name} ay hindi ililipat at permanenteng made-delete kasama ng player. Ang mga laro nila ay lalabas na hindi naka-link sa mga susunod na import."
+      },
+      "duplicatesLink": "Mga posibleng duplicate",
+      "duplicates": {
+        "title": "Mga posibleng duplicate",
+        "description": "Mga taong may parehong handle na nasa magkaibang laro. I-merge ang {game} profile sa isa pa para magkaroon ng iisang profile.",
+        "backToList": "Bumalik sa mga player",
+        "columnSource": "Sa {game}",
+        "columnTarget": "Kabilang profile",
+        "merge": "I-merge",
+        "empty": "Walang nakitang duplicate."
       }
     },
     "riotAccounts": {
@@ -5616,6 +5660,9 @@
       "copyOverlay": "Link ng overlay",
       "overlayCopied": "Nakopya ang link ng overlay, idagdag ito bilang browser source."
     },
+    "personPicker": {
+      "notInGame": "Wala pa sa {game}"
+    },
     "rosterSource": {
       "placeholder": "Link ng anunsyo",
       "error": {
@@ -7812,7 +7859,8 @@
       "state": {
         "linkedToYou": "Naka-link na ang profile na ito sa iyong account.",
         "linkedToOther": "Naka-link na ang profile na ito sa ibang account. Makipag-ugnayan sa staff kung sa tingin mo ay pagkakamali ito.",
-        "pending": "May nakabinbin ka nang kahilingan sa pag-link ng account na naghihintay ng pagsusuri."
+        "pending": "May nakabinbin ka nang kahilingan sa pag-link ng account na naghihintay ng pagsusuri.",
+        "linkedToAnotherPerson": "Naka-link na ang iyong account sa ibang player. Kung iisang tao ang dalawang profile, hilingin sa staff na i-merge ang mga ito."
       }
     },
     "error": {
@@ -7843,6 +7891,7 @@
       "invalidType": "JPG, PNG o WebP na larawan lamang ang tinatanggap.",
       "tooSmall": "Masyadong maliit ang larawang ito (hindi bababa sa 400 px sa pinakamaikling gilid).",
       "invalidDiscordId": "Maglagay ng wastong Discord user ID (17 hanggang 20 digit) o imbitasyon sa server (discord.gg/...).",
+      "userLinkOtherPerson": "Naka-link na ang iyong account sa ibang player. Kung iisang tao ang dalawang profile, hilingin sa staff na i-merge ang mga ito.",
       "sourceTooLong": "Masyadong mahaba ang link na ito (hanggang 500 character).",
       "invalidSource": "Hindi available dito ang opsyong ito.",
       "leftSourceRequiresLeft": "Kailangang markahan ang miyembro bilang umalis na para magkaroon ng pinagmulan ng pag-alis."
@@ -8723,6 +8772,9 @@
     "invalid": "Ang limang lane lang ang maaaring piliin."
   },
   "game": {
+    "switcherLabel": "Laro",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
     "notPublicBadge": "Hindi pa pampubliko",
     "previewBanner": "Hindi pa pampubliko ang {game}. Admin lang ang nakakakita ng page na ito."
   }
