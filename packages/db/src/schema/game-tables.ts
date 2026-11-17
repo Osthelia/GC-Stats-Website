@@ -1356,5 +1356,5 @@ export function gameTables(game: GameSlug): GameTables<"val"> | GameTables<"lol"
 
 /** The table a map reference points at: `val_maps` for Valorant, `lol_games` for LoL. Both have `id` and `match_id`. */
 export function seriesMapTableOf(game: GameSlug) {
-  return gameHasMaps(game) ? valorantTables.maps : leagueTables.games;
+  return game === "valorant" ? valorantTables.maps : leagueTables.games;
 }
