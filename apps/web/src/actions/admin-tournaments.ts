@@ -197,7 +197,7 @@ export async function createTournament(game: GameSlug, input: TournamentInput): 
   const created = await db.transaction(async (tx) => {
     const [row] = await tx.insert(tournaments).values(values).returning({ id: tournaments.id });
     if (!row) throw new Error("Insert returned no row");
-    await logActivity({ subject: "tournament", subjectId: row.id, event: "created", description: `Created tournament #${row.id} (${values.name})`, actorUserId }, tx);
+    await logActivity({ game, subject: "tournament", subjectId: row.id, event: "created", description: `Created tournament #${row.id} (${values.name})`, actorUserId }, tx);
     return row;
   });
   updateTag(HOME_TOURNAMENTS_TAG);
@@ -221,7 +221,7 @@ export async function updateTournament(game: GameSlug, id: number, input: Tourna
     await tx.update(tournaments).set(values).where(eq(tournaments.id, id));
     const changes = diffChanges(existingRow, values);
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "tournament", subjectId: id, event: "updated", description: `Updated tournament #${id} (${values.name})`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "tournament", subjectId: id, event: "updated", description: `Updated tournament #${id} (${values.name})`, actorUserId, changes }, tx);
     }
   });
   updateTag(HOME_TOURNAMENTS_TAG);
@@ -243,7 +243,7 @@ export async function toggleTournamentActive(game: GameSlug, id: number): Promis
   await db.transaction(async (tx) => {
     await tx.update(tournaments).set({ active }).where(eq(tournaments.id, id));
     await logActivity(
-      { subject: "tournament", subjectId: id, event: "updated", description: `${active ? "Activated" : "Deactivated"} tournament #${id}`, actorUserId, changes: { active: { old: existing.active, new: active } } },
+      { game, subject: "tournament", subjectId: id, event: "updated", description: `${active ? "Activated" : "Deactivated"} tournament #${id}`, actorUserId, changes: { active: { old: existing.active, new: active } } },
       tx
     );
   });
@@ -265,7 +265,7 @@ export async function deleteTournament(game: GameSlug, id: number): Promise<Dele
   try {
     await db.transaction(async (tx) => {
       await tx.delete(tournaments).where(eq(tournaments.id, id));
-      await logActivity({ subject: "tournament", subjectId: id, event: "deleted", description: `Deleted tournament #${id} (${existing.name})`, actorUserId }, tx);
+      await logActivity({ game, subject: "tournament", subjectId: id, event: "deleted", description: `Deleted tournament #${id} (${existing.name})`, actorUserId }, tx);
     });
   } catch (err) {
     // Known schema gap (documented in SUIVI.md): matches.entrant_*_id has no

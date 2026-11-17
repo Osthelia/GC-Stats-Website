@@ -54,7 +54,7 @@ async function activateLiveTournamentsForGame(game: GameSlug): Promise<string> {
         .returning({ id: tournaments.id });
       if (updated.length === 0) return false;
 
-      await logAutoActivation("tournament", tournament.id, `Tournament #${tournament.id} auto-activated (live)`, tx);
+      await logAutoActivation(game, "tournament", tournament.id, `Tournament #${tournament.id} auto-activated (live)`, tx);
       return true;
     });
     if (!didActivate) continue;

@@ -37,10 +37,10 @@ function permissionFor(entityType: LogoEntityType): string {
 }
 
 /** Logo edits are logged on the entity that owns the logo (news authors are not tracked). */
-async function logLogoChange(client: ActivityLogClient, entityType: LogoEntityType, entityId: number, actorUserId: string, action: "Added" | "Updated" | "Deleted", logoId: string): Promise<void> {
+async function logLogoChange(client: ActivityLogClient, game: GameSlug, entityType: LogoEntityType, entityId: number, actorUserId: string, action: "Added" | "Updated" | "Deleted", logoId: string): Promise<void> {
   const subject: ActivitySubject | null = entityType === "team" ? "team" : entityType === "person" ? "player" : entityType === "organization" ? "organization" : entityType === "tournament" ? "tournament" : null;
   if (!subject) return;
-  await logActivity({ subject, subjectId: entityId, event: "updated", description: `${action} logo of ${subject} #${entityId}`, actorUserId, properties: { section: "logo", logoId } }, client);
+  await logActivity({ game, subject, subjectId: entityId, event: "updated", description: `${action} logo of ${subject} #${entityId}`, actorUserId, properties: { section: "logo", logoId } }, client);
 }
 
 async function entityExists(game: GameSlug, entityType: LogoEntityType, entityId: number): Promise<boolean> {
@@ -123,7 +123,7 @@ export async function uploadEntityLogo(game: GameSlug, entityType: LogoEntityTyp
       }
 
       await tx.insert(logos).values({ id: stored.id, entityType, entityId, game: logoGameOf(entityType, game), period, theme, isVisible: true });
-      await logLogoChange(tx, entityType, entityId, actorUserId, "Added", stored.id);
+      await logLogoChange(tx, game, entityType, entityId, actorUserId, "Added", stored.id);
     });
   } catch (error) {
     // Don't leave orphaned files in the bucket if the DB write failed.
@@ -215,7 +215,7 @@ export async function updateEntityLogo(game: GameSlug, entityType: LogoEntityTyp
     }
 
     await tx.update(logos).set({ theme, period }).where(eq(logos.id, logoId));
-    await logLogoChange(tx, entityType, existing.entityId, actorUserId, "Updated", logoId);
+    await logLogoChange(tx, game, entityType, existing.entityId, actorUserId, "Updated", logoId);
   });
 
   return { ok: true };
@@ -235,7 +235,7 @@ export async function deleteEntityLogo(game: GameSlug, entityType: LogoEntityTyp
 
   await db.transaction(async (tx) => {
     await tx.delete(logos).where(eq(logos.id, logoId));
-    await logLogoChange(tx, entityType, row.entityId, actorUserId, "Deleted", logoId);
+    await logLogoChange(tx, game, entityType, row.entityId, actorUserId, "Deleted", logoId);
   });
   await deleteLogoFiles(entityType, logoId).catch(() => {});
 

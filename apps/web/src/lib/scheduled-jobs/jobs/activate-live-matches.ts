@@ -109,7 +109,7 @@ async function activateLiveMatchesForGame(game: GameSlug): Promise<string> {
         .returning({ id: matches.id });
       if (updated.length === 0) return false;
 
-      await logAutoActivation("match", match.id, `Match #${match.id} auto-activated (live)`, tx);
+      await logAutoActivation(game, "match", match.id, `Match #${match.id} auto-activated (live)`, tx);
       return true;
     });
     if (!didActivate) continue;

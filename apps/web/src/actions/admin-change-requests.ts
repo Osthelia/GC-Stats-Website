@@ -325,6 +325,7 @@ export async function resolveChangeRequestItem(game: GameSlug, itemId: number, a
       await applyChangeRequestItem({ game, id: request.id, requestedBy: request.requestedBy }, request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
       status = "approved";
       await logActivity({
+        game,
         subject: request.subjectType === "team" ? "team" : "player",
         subjectId: request.subjectId,
         event: "updated",

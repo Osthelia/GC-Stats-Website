@@ -364,7 +364,7 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
         subjectType: "person",
         subjectId: String(targetPersonId),
         event: "player.merged",
-        properties: { actorUserId: access.userId, sourceId: sourcePersonId, targetId: targetPersonId, sourceHandle: source.handle, targetHandle: target.handle, counts },
+        properties: { game, actorUserId: access.userId, sourceId: sourcePersonId, targetId: targetPersonId, sourceHandle: source.handle, targetHandle: target.handle, counts },
       });
     });
   } catch (error) {
