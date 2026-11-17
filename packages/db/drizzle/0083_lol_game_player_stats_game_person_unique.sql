@@ -1,0 +1,1 @@
+ALTER TABLE "lol_game_player_stats" ADD CONSTRAINT "lol_game_player_stats_game_person_unique" UNIQUE("game_id","person_id");

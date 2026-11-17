@@ -1019,6 +1019,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
   }, (t) => [
     index("lol_game_player_stats_entrant_id_idx").on(t.entrantId),
     index("lol_game_player_stats_person_id_idx").on(t.personId),
+    // Also serves the lookups and deletes by game. Players without a person (null) can repeat.
+    unique("lol_game_player_stats_game_person_unique").on(t.gameId, t.personId),
   ]);
 
   const gameTeamStats = pgTable("lol_game_team_stats", {
