@@ -14,13 +14,15 @@
 
 import { and, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
+import { after } from "next/server";
 import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { isValidTimezone, parseIsoInstant, zonedInputToIso } from "@/lib/datetime-local";
 import { logActivity } from "@/lib/activity-log";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasDataDragon, type GameSlug } from "@gc-stats/db/game";
+import { ensurePatchCatalog } from "@/lib/data-dragon-client";
 import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 
 async function requireTournamentsActor(game: GameSlug): Promise<string> {
@@ -95,6 +97,7 @@ export async function bulkPatchMatches(game: GameSlug, tournamentId: number, inp
     }
     return rows;
   });
+  if (gameHasDataDragon(game) && updated.length > 0) after(() => ensurePatchCatalog(patch));
 
   return { ok: true, count: updated.length };
 }

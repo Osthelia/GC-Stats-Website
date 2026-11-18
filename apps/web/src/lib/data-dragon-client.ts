@@ -5,7 +5,8 @@
  * champion and item ids, so the names come from here. Each Data Dragon version is stored once in
  * lol_data_dragon_catalogs (champion, item and rune names) and never fetched again, because a published version
  * does not change. An import reads the stored names, so it needs Data Dragon only the first time a version is
- * used, and pages never ask it. Never throws: a failure comes back as a typed error, and the caller stores
+ * used, and pages never ask it. Saving a League patch on a match or game also stores the patch's catalog and icons
+ * (ensurePatchCatalog), so the draft editor knows its champions before anything was imported. Never throws: a failure comes back as a typed error, and the caller stores
  * nothing. The icons (champions, items, summoner spells, runes) are copied to the public bucket per patch, after
  * the response (syncPatchIcons): every icon of a version once, never failing the import.
  *
@@ -268,6 +269,22 @@ interface Icon extends DataDragonIconRef {
   /** Edge length in pixels. Champions are larger than everything else. */
   size: number;
   url: string;
+}
+
+/**
+ * Makes sure a patch an admin saved (public name, "26.13") has its catalog and icons: the patch's stored catalog, else
+ * Data Dragon's (stored from then on), then its icons. Nothing for a patch Data Dragon has no version of yet, or for
+ * text that is not a patch. Never throws: it runs after the response.
+ */
+export async function ensurePatchCatalog(patch: string | null): Promise<void> {
+  const internal = patch === null ? null : internalPatch(patch.trim());
+  if (internal === null || patchOf(internal) !== internal) return;
+  try {
+    const catalog = fromMemory(internal) ?? (await fromDatabase(internal)) ?? (await fetchFromDataDragon(internal));
+    if (catalog) await syncPatchIcons(catalog.version);
+  } catch (err) {
+    console.warn(`[data-dragon] catalog check of patch ${patch} failed: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 /** The catalog of the patch (public name, or the newest when null) as stored, then its icons. For pages that show a patch's champions without an import. */

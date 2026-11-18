@@ -16,6 +16,7 @@
 
 import { eq, and, ne, inArray } from "drizzle-orm";
 import { updateTag } from "next/cache";
+import { after } from "next/server";
 import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables, leagueTablesOf } from "@gc-stats/db";
 import { gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
@@ -25,7 +26,7 @@ import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
-import { fetchChampionNamesForPatch, getChampionNamesForPatch } from "@/lib/data-dragon-client";
+import { ensurePatchCatalog, fetchChampionNamesForPatch, getChampionNamesForPatch } from "@/lib/data-dragon-client";
 import { WIKICODE_MAX_LENGTH } from "@/lib/wikicode-import";
 import { draftFromWikicode, parseLolMatchWikicode, resolveChampionNames, wikicodeChampionNames, type WikicodeLolGame } from "@/lib/liquipedia-lol-match-wikicode";
 import { draftBlockedBy, planGameFields, type DraftBlock, type GameField, type GameFieldPlan } from "@/lib/liquipedia-lol-import-rules";
@@ -160,6 +161,7 @@ export async function addLeagueGame(game: GameSlug, tournamentId: number, matchI
   });
   await syncMatchScoreFromGames(game, matchId);
   updateTag(matchTag(matchId));
+  after(() => ensurePatchCatalog(match.patch));
 
   return { ok: true, id: created.id };
 }
@@ -191,6 +193,7 @@ export async function updateLeagueGame(game: GameSlug, tournamentId: number, mat
   });
   await syncMatchScoreFromGames(game, matchId);
   updateTag(matchTag(matchId));
+  after(() => ensurePatchCatalog(match.patch));
 
   return { ok: true, id: gameId };
 }
@@ -382,7 +385,7 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
   if (wikiMatch.games.length === 0) return { ok: false, error: "noGames" };
 
   // One unknown champion stops the import: the names are stored as written, so a guess would stay wrong.
-  // Catalogs are stored by imports, so a patch nothing was imported for has none yet: Data Dragon is asked then.
+  // A patch nothing was imported or saved for has no catalog yet: Data Dragon is asked then.
   const displayNames = await fetchChampionNamesForPatch(match.patch ?? wikiMatch.patch);
   const champions = resolveChampionNames(wikiMatch.games.flatMap(wikicodeChampionNames), displayNames);
   if (!champions.ok) return { ok: false, error: "unknownChampions", names: champions.unknown };
@@ -471,6 +474,8 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
   });
   await syncMatchScoreFromGames(game, matchId);
   updateTag(matchTag(matchId));
+  // The names were read above; this also copies the patch's icons.
+  after(() => ensurePatchCatalog(match.patch ?? patchSet));
 
   return {
     ok: true,

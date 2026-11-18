@@ -14,6 +14,7 @@
 
 import { eq, ne, and, asc, inArray, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
+import { after } from "next/server";
 import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
@@ -38,7 +39,8 @@ import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasDataDragon, type GameSlug } from "@gc-stats/db/game";
+import { ensurePatchCatalog } from "@/lib/data-dragon-client";
 
 async function requireTournamentsActor(game: GameSlug): Promise<string> {
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
@@ -147,6 +149,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
     }
   });
   updateTag(matchTag(matchId));
+  if (gameHasDataDragon(game) && values.patch !== null) after(() => ensurePatchCatalog(values.patch));
 
   return { ok: true };
 }

@@ -56,6 +56,11 @@ export function gameHasSeriesGames(game: GameSlug): boolean {
   return game === "lol";
 }
 
+// Champion, item and rune names and icons come from Riot's Data Dragon, one catalog per patch.
+export function gameHasDataDragon(game: GameSlug): boolean {
+  return game === "lol";
+}
+
 // Roster entries carry lanes (Top to Support) in League of Legends.
 export function gameHasLanes(game: GameSlug): boolean {
   return game === "lol";
