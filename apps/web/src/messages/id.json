@@ -4061,8 +4061,8 @@
           "loss": "Kalah",
           "notUsed": "Poin hanya mengurutkan grup jika Poin ada di tiebreaker."
         },
-        "fieldMatchScope": "Tim juga bermain melawan tim dari grup lain (hitung pertandingan dari seluruh stage)",
-        "fieldMatchScopeHint": "Hanya tim yang disematkan ke grup ini yang ditampilkan, dan pertandingan mereka yang sudah selesai di grup mana pun pada stage ini ikut dihitung. Sematkan tim setelah menyimpan. Hanya untuk round robin.",
+        "fieldMatchScope": "Tim juga bermain melawan tim dari grup lain (hitung pertandingan dari grup lain yang memakai pengaturan ini)",
+        "fieldMatchScopeHint": "Hanya tim yang disematkan ke grup ini yang ditampilkan, dan pertandingan mereka yang sudah selesai dihitung di setiap grup pada stage ini yang juga memakai pengaturan ini. Pertandingan di grup tanpa pengaturan ini tidak dihitung. Sematkan tim setelah menyimpan. Hanya untuk round robin.",
         "matchScopeNoTeams": "Belum ada tim yang disematkan ke grup ini, jadi tabelnya kosong. Tetapkan tim ke grup ini terlebih dahulu.",
         "matchScopeSwitchWarning": "Beralih ke cakupan stage hanya akan menampilkan tim yang disematkan. Tim yang bermain di grup ini tetapi tidak disematkan akan hilang dari tabelnya sampai Anda menyematkannya."
       },

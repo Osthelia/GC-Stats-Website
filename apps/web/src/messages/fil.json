@@ -4061,8 +4061,8 @@
           "loss": "Talo",
           "notUsed": "Inaayos lang ng puntos ang grupo kapag nasa mga tiebreaker ang Puntos."
         },
-        "fieldMatchScope": "Naglalaro rin ang mga team laban sa mga team ng ibang group (bilangin ang mga laban ng buong stage)",
-        "fieldMatchScopeHint": "Ang mga team lang na naka-pin sa group na ito ang ililista, at mabibilang ang mga natapos nilang laban sa alinmang group ng stage na ito. I-pin ang mga team pagkatapos mag-save. Para lang sa round robin.",
+        "fieldMatchScope": "Naglalaro rin ang mga team laban sa mga team ng ibang group (bilangin ang mga laban ng ibang group na may ganitong setting)",
+        "fieldMatchScopeHint": "Ang mga team lang na naka-pin sa group na ito ang ililista, at mabibilang ang mga natapos nilang laban sa bawat group ng stage na ito na may ganitong setting din. Hindi binibilang ang mga laban sa mga group na wala nito. I-pin ang mga team pagkatapos mag-save. Para lang sa round robin.",
         "matchScopeNoTeams": "Wala pang naka-pin na team sa group na ito, kaya walang laman ang table nito. Mag-assign muna ng mga team dito.",
         "matchScopeSwitchWarning": "Kapag lumipat sa stage scope, ang mga naka-pin na team lang ang ililista. Ang mga team na naglaro sa group na ito pero hindi naka-pin ay mawawala sa table nito hanggang i-pin mo sila."
       },

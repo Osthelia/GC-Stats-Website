@@ -4057,8 +4057,8 @@
           "loss": "Kaybedildi",
           "notUsed": "Puanlar, Puan eşitlik bozucular arasında olduğunda grubu sıralar."
         },
-        "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (tüm aşamadaki maçlar sayılır)",
-        "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve bu aşamadaki herhangi bir gruptaki tamamlanmış maçları sayılır. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
+        "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (bu ayara sahip diğer grupların maçları sayılır)",
+        "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve tamamlanmış maçları, bu aşamada bu ayara da sahip her grupta sayılır. Bu ayarı olmayan gruplardaki maçlar sayılmaz. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
         "matchScopeNoTeams": "Bu gruba henüz takım atanmadı, bu yüzden tablosu boş. Önce takım atayın.",
         "matchScopeSwitchWarning": "Aşama kapsamına geçmek yalnızca atanan takımları listeler. Bu grupta oynayıp atanmamış takımlar, siz atayana kadar tablodan kaybolur."
       },

@@ -4061,8 +4061,8 @@
           "loss": "Thua",
           "notUsed": "Điểm chỉ xếp hạng bảng khi Điểm nằm trong các tiêu chí phụ."
         },
-        "fieldMatchScope": "Các đội cũng đấu với đội của bảng khác (tính các trận của cả giai đoạn)",
-        "fieldMatchScopeHint": "Chỉ các đội được ghim vào bảng này được liệt kê, và các trận đã hoàn thành của họ ở bất kỳ bảng nào trong giai đoạn này đều được tính. Hãy ghim các đội sau khi lưu. Chỉ áp dụng cho vòng tròn.",
+        "fieldMatchScope": "Các đội cũng đấu với đội của bảng khác (tính các trận của những bảng khác có cùng cài đặt này)",
+        "fieldMatchScopeHint": "Chỉ các đội được ghim vào bảng này được liệt kê, và các trận đã hoàn thành của họ được tính ở mọi bảng trong giai đoạn này cũng có cài đặt này. Các trận ở bảng không có cài đặt này không được tính. Hãy ghim các đội sau khi lưu. Chỉ áp dụng cho vòng tròn.",
         "matchScopeNoTeams": "Chưa có đội nào được ghim vào bảng này nên bảng xếp hạng đang trống. Hãy gán đội cho bảng trước.",
         "matchScopeSwitchWarning": "Chuyển sang phạm vi giai đoạn sẽ chỉ liệt kê các đội đã ghim. Những đội đã thi đấu trong bảng này nhưng chưa được ghim sẽ biến mất khỏi bảng xếp hạng cho đến khi bạn ghim họ."
       },

@@ -4061,8 +4061,8 @@
           "loss": "Perdu",
           "notUsed": "Les points n'ordonnent le groupe que si Points figure dans les départages."
         },
-        "fieldMatchScope": "Les équipes jouent aussi contre celles d'autres groupes (compter les matchs de toute la phase)",
-        "fieldMatchScopeHint": "Seules les équipes assignées à ce groupe sont listées, et leurs matchs terminés dans n'importe quel groupe de cette phase comptent. Assignez les équipes après l'enregistrement. Round robin uniquement.",
+        "fieldMatchScope": "Les équipes jouent aussi contre celles d'autres groupes (compter les matchs des autres groupes avec ce réglage)",
+        "fieldMatchScopeHint": "Seules les équipes assignées à ce groupe sont listées, et leurs matchs terminés comptent dans chaque groupe de cette phase qui a aussi ce réglage. Les matchs des groupes sans ce réglage ne comptent pas. Assignez les équipes après l'enregistrement. Round robin uniquement.",
         "matchScopeNoTeams": "Aucune équipe n'est encore assignée à ce groupe, son classement est donc vide. Assignez-lui d'abord des équipes.",
         "matchScopeSwitchWarning": "Passer à la portée de la phase ne liste que les équipes assignées. Les équipes qui ont joué dans ce groupe sans être assignées disparaîtront de son classement tant que vous ne les assignez pas."
       },

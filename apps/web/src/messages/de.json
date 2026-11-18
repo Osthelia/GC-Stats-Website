@@ -4057,8 +4057,8 @@
           "loss": "Verloren",
           "notUsed": "Punkte ordnen die Gruppe nur, wenn Punkte in den Tiebreakern steht."
         },
-        "fieldMatchScope": "Teams spielen auch gegen Teams anderer Gruppen (Spiele der ganzen Phase zählen)",
-        "fieldMatchScopeHint": "Es werden nur die dieser Gruppe zugewiesenen Teams gelistet; ihre abgeschlossenen Spiele in jeder Gruppe dieser Phase zählen. Teams nach dem Speichern zuweisen. Nur Round Robin.",
+        "fieldMatchScope": "Teams spielen auch gegen Teams anderer Gruppen (Spiele der anderen Gruppen mit dieser Einstellung zählen)",
+        "fieldMatchScopeHint": "Es werden nur die dieser Gruppe zugewiesenen Teams gelistet; ihre abgeschlossenen Spiele zählen in jeder Gruppe dieser Phase, die diese Einstellung ebenfalls hat. Spiele in Gruppen ohne sie zählen nicht. Teams nach dem Speichern zuweisen. Nur Round Robin.",
         "matchScopeNoTeams": "Dieser Gruppe sind noch keine Teams zugewiesen, daher ist die Tabelle leer. Weise ihr zuerst Teams zu.",
         "matchScopeSwitchWarning": "Beim Wechsel auf Phasen-Umfang werden nur die zugewiesenen Teams gelistet. Teams, die in dieser Gruppe gespielt haben, aber nicht zugewiesen sind, verschwinden aus der Tabelle, bis du sie zuweist."
       },

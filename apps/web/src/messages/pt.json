@@ -4057,8 +4057,8 @@
           "loss": "Perdido",
           "notUsed": "Os pontos só ordenam o grupo se Pontos estiver nos desempates."
         },
-        "fieldMatchScope": "As equipas também jogam contra equipas de outros grupos (contar os jogos de toda a fase)",
-        "fieldMatchScopeHint": "Só as equipas atribuídas a este grupo são listadas e os seus jogos concluídos em qualquer grupo desta fase contam. Atribui as equipas depois de guardar. Apenas round robin.",
+        "fieldMatchScope": "As equipas também jogam contra equipas de outros grupos (contar os jogos dos outros grupos com esta definição)",
+        "fieldMatchScopeHint": "Só as equipas atribuídas a este grupo são listadas e os seus jogos concluídos contam em cada grupo desta fase que também tenha esta definição. Os jogos de grupos sem ela não contam. Atribui as equipas depois de guardar. Apenas round robin.",
         "matchScopeNoTeams": "Ainda não há equipas atribuídas a este grupo, por isso a tabela está vazia. Atribui-lhe equipas primeiro.",
         "matchScopeSwitchWarning": "Ao mudar para o âmbito da fase só são listadas as equipas atribuídas. As equipas que jogaram neste grupo mas não estão atribuídas desaparecem da tabela até as atribuíres."
       },

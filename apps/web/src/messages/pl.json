@@ -4057,8 +4057,8 @@
           "loss": "Przegrana",
           "notUsed": "Punkty porządkują grupę tylko wtedy, gdy Punkty są w tiebreakerach."
         },
-        "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z całego etapu)",
-        "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a liczą się ich zakończone mecze w dowolnej grupie tego etapu. Przypisz drużyny po zapisaniu. Tylko round robin.",
+        "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z innych grup z tym ustawieniem)",
+        "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a ich zakończone mecze liczą się w każdej grupie tego etapu, która też ma to ustawienie. Mecze z grup bez niego się nie liczą. Przypisz drużyny po zapisaniu. Tylko round robin.",
         "matchScopeNoTeams": "Do tej grupy nie przypisano jeszcze drużyn, więc jej tabela jest pusta. Najpierw przypisz drużyny.",
         "matchScopeSwitchWarning": "Przejście na zakres etapu wyświetla tylko przypisane drużyny. Drużyny, które grały w tej grupie, ale nie są przypisane, znikną z jej tabeli, dopóki ich nie przypiszesz."
       },
