@@ -24,7 +24,7 @@ async function getLeagueImportStatuses(game: GameSlug, tournamentId: number): Pr
   const { matches, stageContainers, stages } = gameTables(game);
   const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
   const gameRows = await db
-    .select({ id: games.id, matchId: games.matchId })
+    .select({ id: games.id, matchId: games.matchId, source: games.source })
     .from(games)
     .innerJoin(matches, eq(matches.id, games.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
@@ -40,8 +40,11 @@ async function getLeagueImportStatuses(game: GameSlug, tournamentId: number): Pr
   const players = new Set(withPlayers.map((r) => r.gameId));
   const drafts = new Set(withDraft.map((r) => r.gameId));
 
+  // A game entered by hand (no source) has a manual lineup at most, which is not an import.
+  const importedPlayers = (row: { id: number; source: string | null }) => row.source !== null && players.has(row.id);
+
   const complete = new Map<number, boolean>();
-  for (const row of gameRows) complete.set(row.matchId, (complete.get(row.matchId) ?? true) && players.has(row.id) && drafts.has(row.id));
+  for (const row of gameRows) complete.set(row.matchId, (complete.get(row.matchId) ?? true) && importedPlayers(row) && drafts.has(row.id));
   return Object.fromEntries([...complete].map(([matchId, isComplete]) => [matchId, isComplete ? "done" : "partial"] as const));
 }
 
