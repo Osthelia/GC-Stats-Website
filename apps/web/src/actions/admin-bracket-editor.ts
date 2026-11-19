@@ -32,7 +32,9 @@ import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
 import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
-import type { GameSlug } from "@gc-stats/db/game";
+import { after } from "next/server";
+import { gameHasDataDragon, type GameSlug } from "@gc-stats/db/game";
+import { ensurePatchCatalog } from "@/lib/data-dragon-client";
 
 export async function requireTournamentsActor(game: GameSlug): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage, game);
@@ -311,6 +313,7 @@ async function insertGroupMatches(game: GameSlug, input: Omit<AddGroupMatchInput
   await db.insert(matches).values(
     input.matches.map((m, i) => ({ containerId: input.containerId, round, bestOf, status: "pending" as const, scheduledAt, patch: patch || null, label: labels[i], entrantAId: m.entrantAId, entrantBId: m.entrantBId }))
   );
+  if (gameHasDataDragon(game) && patch) after(() => ensurePatchCatalog(patch));
   return { ok: true, count: input.matches.length };
 }
 
