@@ -148,7 +148,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
       await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated match #${matchId}`, actorUserId, changes }, tx);
     }
   });
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   if (gameHasDataDragon(game) && values.patch !== null) after(() => ensurePatchCatalog(values.patch));
 
   return { ok: true };
@@ -216,7 +216,7 @@ export async function reportMatchResult(game: GameSlug, matchId: number, input: 
     actorUserId,
     properties: { section: "result", winnerId: input.winnerId, scoreA, scoreB },
   });
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true };
 }
@@ -241,7 +241,7 @@ export async function saveMatchLiveScore(game: GameSlug, matchId: number, input:
       await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Updated live score of match #${matchId} (${scoreA} - ${scoreB})`, actorUserId, changes }, tx);
     }
   });
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true };
 }
@@ -316,7 +316,7 @@ export async function saveMatchVeto(game: GameSlug, matchId: number, rows: VetoR
     );
   });
   await syncMatchScoreFromMaps(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true };
 }
@@ -421,7 +421,7 @@ export async function addMap(game: GameSlug, matchId: number, input: MapInput): 
     return row;
   });
   await syncMatchScoreFromMaps(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true, id: created.id };
 }
@@ -454,7 +454,7 @@ export async function updateMap(game: GameSlug, mapId: number, input: MapInput):
     }
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
-  updateTag(matchTag(existing.matchId));
+  updateTag(matchTag(game, existing.matchId));
 
   return { ok: true, id: mapId };
 }
@@ -474,7 +474,7 @@ export async function deleteMap(game: GameSlug, mapId: number): Promise<DeleteMa
     await logActivity({ game, subject: "match", subjectId: existing.matchId, event: "updated", description: `Deleted map ${existing.mapName} of match #${existing.matchId}`, actorUserId, properties: { section: "maps", mapId } }, tx);
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
-  updateTag(matchTag(existing.matchId));
+  updateTag(matchTag(game, existing.matchId));
   return { ok: true };
 }
 
@@ -496,7 +496,7 @@ export async function resetMap(game: GameSlug, mapId: number): Promise<ResetMapR
     await logMapChange(tx, { game, mapId, matchId: existing.matchId, actorUserId, description: `Reset map #${mapId} of match #${existing.matchId}`, properties: { section: "reset" } });
   });
   await syncMatchScoreFromMaps(game, existing.matchId);
-  updateTag(matchTag(existing.matchId));
+  updateTag(matchTag(game, existing.matchId));
 
   return { ok: true };
 }
@@ -590,7 +590,7 @@ export async function updateMapPlayerStats(game: GameSlug, mapId: number, player
     if (rowsToInsert.length > 0) await tx.insert(mapPlayerStats).values(rowsToInsert);
     await logMapChange(tx, { game, mapId, matchId: map.matchId, actorUserId, description: `Edited scoreboard of map #${mapId} (${rowsToInsert.length} players)`, properties: { section: "scoreboard", playerIds: rowsToInsert.map((r) => r.personId) } });
   });
-  updateTag(matchTag(map.matchId));
+  updateTag(matchTag(game, map.matchId));
 
   return { ok: true };
 }
@@ -741,11 +741,11 @@ export async function importMatchWikicode(
     if (staleMapIds.length > 0) await tx.delete(maps).where(inArray(maps.id, staleMapIds));
     await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", maps: playOrder.length } }, tx);
   });
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   const fetches = await fetchImportedMaps(game, matchId, fetchOrders, actorUserId);
   await syncVetoSidesFromRounds(game, matchId, match.entrantAId, match.entrantBId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true, linkedNames: linksToWrite.length, fetches };
 }

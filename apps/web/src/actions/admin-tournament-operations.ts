@@ -204,7 +204,7 @@ export async function bulkSetMatchStatus(game: GameSlug, tournamentId: number, m
     }
     return rows;
   });
-  for (const r of updated) updateTag(matchTag(r.id));
+  for (const r of updated) updateTag(matchTag(game, r.id));
 
   return { ok: true, updated: updated.length, skippedNoResult };
 }

@@ -9,11 +9,14 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import type { GameSlug } from "@gc-stats/db/game";
+
 export const HOME_TOURNAMENTS_TAG = "home-tournaments";
 export const NEWS_LANGUAGES_TAG = "news-languages";
 export const TOURNAMENT_FACETS_TAG = "tournament-facets";
 export const MATCH_STATS_TAG = "match-stats";
 
-export function matchTag(matchId: number): string {
-  return `match:${matchId}`;
+/** One match's cached data. With its game: match ids are counted per game, so the id alone would also clear the other game's match. */
+export function matchTag(game: GameSlug, matchId: number): string {
+  return `match:${game}:${matchId}`;
 }

@@ -252,7 +252,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
 export function getMatchLeagueGames(matchId: number, patch: string | null, entrants: { entrantAId: number | null; entrantBId: number | null }): Promise<LeagueSeries> {
   return unstable_cache(
     () => loadLeagueMatchGames(matchId, patch, entrants),
-    ["match-league-series-v12",String(matchId), patch ?? "", String(entrants.entrantAId), String(entrants.entrantBId)],
-    { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
+    ["match-league-series-v13",String(matchId), patch ?? "", String(entrants.entrantAId), String(entrants.entrantBId)],
+    { tags: [matchTag("lol", matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }

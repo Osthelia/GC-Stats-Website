@@ -396,7 +396,7 @@ export async function getVetoState(game: GameSlug, matchId: number): Promise<Vet
     return ctx;
   });
   if (!result) return null;
-  if (result.recordsDirty) revalidateTag(matchTag(matchId), { expire: 0 });
+  if (result.recordsDirty) revalidateTag(matchTag(game, matchId), { expire: 0 });
   return toPublicState(result, await entrantNames(game, result.entrantAId, result.entrantBId));
 }
 
@@ -447,7 +447,7 @@ export async function performVetoAction(game: GameSlug, viewerEntrantId: number,
 
   if ("error" in outcome) return { ok: false, error: outcome.error };
   const { ctx } = outcome;
-  if (ctx.recordsDirty) revalidateTag(matchTag(matchId), { expire: 0 });
+  if (ctx.recordsDirty) revalidateTag(matchTag(game, matchId), { expire: 0 });
   const names = await entrantNames(game, ctx.entrantAId, ctx.entrantBId);
   if (notifyStaff) await notifyGameFinished(matchId, names);
   return { ok: true, state: toPublicState(ctx, names) };
@@ -455,7 +455,7 @@ export async function performVetoAction(game: GameSlug, viewerEntrantId: number,
 
 async function notifyGameFinished(matchId: number, names: { a: string; b: string }) {
   const base = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-  await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🏁 **Game finished** : ${names.a} vs ${names.b}\n${base}/match/${matchId}`);
+  await postDiscordWebhook(process.env.DISCORD_MATCH_LIVE_WEBHOOK_URL, `🏁 **Game finished** : ${names.a} vs ${names.b}\n${base}/valorant/match/${matchId}`);
 }
 
 /** Resets a match veto (admin or organizer), keeping its pool override. The played maps of the veto are removed too. */
@@ -471,5 +471,5 @@ export async function resetVeto(matchId: number): Promise<void> {
       .set({ status: "waiting", readyA: false, readyB: false, coinTossWinnerId: null, firstEntrantId: null, stepStartedAt: null, staffNotifiedAt: null, version: sql`${matchVetoSessions.version} + 1`, updatedAt: new Date() })
       .where(eq(matchVetoSessions.matchId, matchId));
   });
-  revalidateTag(matchTag(matchId), { expire: 0 });
+  revalidateTag(matchTag("valorant", matchId), { expire: 0 });
 }
