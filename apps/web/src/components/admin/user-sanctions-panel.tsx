@@ -18,6 +18,7 @@ import { SanctionStatusBadge } from "@/components/admin/sanction-status-badge";
 import { SanctionDialog } from "@/components/admin/sanction-dialog";
 import type { AdminUserSanctionRow } from "@/lib/admin-user-detail";
 import { FormattedDate } from "@/components/formatted-date";
+import { GAME_INFO } from "@gc-stats/db/game";
 
 /** Mirrors V1's admin user detail "sanctions" card, plus the "Issue sanction" button V1 has next to the user's name. */
 export function UserSanctionsPanel({
@@ -56,7 +57,7 @@ export function UserSanctionsPanel({
                   <span className="truncate text-muted-foreground">{s.reason}</span>
                 </div>
                 <div className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
-                  {s.teamName && <span>{s.teamName}</span>}
+                  {s.teamName && <span>{s.teamGame ? `${s.teamName} (${GAME_INFO[s.teamGame].shortName})` : s.teamName}</span>}
                   <span>{s.endsAt ? <FormattedDate date={s.endsAt} /> : t("permanent")}</span>
                   <SanctionStatusBadge status={s.status} />
                 </div>
