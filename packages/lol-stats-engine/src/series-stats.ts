@@ -15,8 +15,10 @@ export interface PlayerGameLine {
   entrantId: number;
   personId: number | null;
   handle: string;
-  championName: string;
+  championName: string | null;
   role: string | null;
+  /** False for a manual lineup without a scoreboard. */
+  hasStats: boolean;
   kills: number;
   deaths: number;
   assists: number;
@@ -27,12 +29,15 @@ export interface PlayerGameLine {
 }
 
 /**
- * One player over the series. Kills, deaths and assists are totals over the series; the rates are averages per game.
- * `role` is the role of the player's first game. `champions` are distinct, in the order they were first played. A
- * per minute value is null when no game of the player has a known length.
+ * One player over the series. Kills, deaths and assists are totals over the games with stats; the rates are averages
+ * per game with stats. `role` is the role of the player's first game. `champions` are distinct, in the order they were
+ * first played. A per minute value is null when no game of the player has a known length. `hasStats` is false when no
+ * game of the player has stats: then the numbers are 0 and mean nothing.
  */
 export type SeriesAverage = Omit<PlayerGameLine, "championName"> & {
   games: number;
+  /** The games with stats, which the numbers come from. */
+  statGames: number;
   champions: string[];
 };
 
@@ -65,21 +70,25 @@ export function averageSeriesLines(lines: PlayerGameLine[]): SeriesAverage[] {
 
   return [...groups.values()].map((group) => {
     const first = group[0]!;
-    const sum = (pick: (line: PlayerGameLine) => number) => group.reduce((total, line) => total + pick(line), 0);
-    const average = (pick: (line: PlayerGameLine) => number) => sum(pick) / group.length;
+    // A game without stats counts as played, but its zeros never reach the numbers.
+    const withStats = group.filter((line) => line.hasStats);
+    const sum = (pick: (line: PlayerGameLine) => number) => withStats.reduce((total, line) => total + pick(line), 0);
+    const average = (pick: (line: PlayerGameLine) => number) => (withStats.length > 0 ? sum(pick) / withStats.length : 0);
     return {
       entrantId: first.entrantId,
       personId: first.personId,
       handle: first.handle,
       role: first.role,
+      hasStats: withStats.length > 0,
       games: group.length,
-      champions: [...new Set(group.map((line) => line.championName))],
+      statGames: withStats.length,
+      champions: [...new Set(group.flatMap((line) => (line.championName === null ? [] : [line.championName])))],
       kills: sum((line) => line.kills),
       deaths: sum((line) => line.deaths),
       assists: sum((line) => line.assists),
       killParticipation: average((line) => line.killParticipation),
-      csPerMinute: mean(group.map((line) => line.csPerMinute)),
-      goldPerMinute: mean(group.map((line) => line.goldPerMinute)),
+      csPerMinute: mean(withStats.map((line) => line.csPerMinute)),
+      goldPerMinute: mean(withStats.map((line) => line.goldPerMinute)),
     };
   });
 }

@@ -1,5 +1,5 @@
 {
-  "id": "c2b8731b-e8c1-432c-bbf8-7f850c48c689",
+  "id": "a54594bc-591d-46cd-a8c8-993b725ed005",
   "prevId": "e327713a-818f-413b-a7d8-462bca14f1f5",
   "version": "7",
   "dialect": "postgresql",
@@ -2116,6 +2116,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "summoners": {
+          "name": "summoners",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
         "icons_synced_at": {
           "name": "icons_synced_at",
           "type": "timestamp with time zone",
@@ -2882,7 +2888,7 @@
           "name": "champion_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "role": {
           "name": "role",
@@ -2922,21 +2928,21 @@
           "name": "gold",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": 0
         },
         "damage": {
           "name": "damage",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": 0
         },
         "vision": {
           "name": "vision",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": 0
         },
         "items": {
@@ -3001,6 +3007,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "has_stats": {
+          "name": "has_stats",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
         }
       },
       "indexes": {

@@ -157,7 +157,7 @@ export function PlayerMergeForm({
             {entry.tournamentName}
             <span className="text-muted-foreground">
               {" "}
-              #{entry.order} {entry.championName}
+              #{entry.order} {entry.championName ?? "–"}
               {entry.role ? ` (${entry.role})` : ""}
             </span>
           </>

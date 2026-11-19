@@ -246,9 +246,9 @@ export type LolMatchWikicodeInput = {
 };
 
 /** The champions of a team in lane order, from the player rows. Only when the five lanes are each there once. */
-export function championsInLaneOrder(players: { role: string | null; championName: string }[]): string[] {
+export function championsInLaneOrder(players: { role: string | null; championName: string | null }[]): string[] {
   const byRole = LEAGUE_ROLES.map((role) => players.filter((player) => player.role === role));
-  return players.length === LEAGUE_ROLES.length && byRole.every((matching) => matching.length === 1) ? byRole.flatMap(([player]) => (player ? [player.championName] : [])) : [];
+  return players.length === LEAGUE_ROLES.length && byRole.every((matching) => matching.length === 1) ? byRole.flatMap(([player]) => (player ? [player.championName ?? ""] : [])) : [];
 }
 
 function buildGame(index: number, game: WikicodeLolBuildGame): string {

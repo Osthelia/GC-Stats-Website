@@ -74,7 +74,7 @@ export type MergeGameStatEntry = {
   gameId: number;
   order: number;
   entrantId: number;
-  championName: string;
+  championName: string | null;
   role: string | null;
   tournamentId: number;
   tournamentName: string;

@@ -30,7 +30,7 @@ export type MatchGameView = AdminLeagueGameRow & { winnerName: string | null };
 
 type PanelTranslations = ReturnType<typeof useTranslations>;
 
-function GameRow({ game, canManage, draftHref, onEdit, onDelete, t }: { game: MatchGameView; canManage: boolean; draftHref: string; onEdit: () => void; onDelete: () => void; t: PanelTranslations }) {
+function GameRow({ game, canManage, draftHref, lineupHref, onEdit, onDelete, t }: { game: MatchGameView; canManage: boolean; draftHref: string; lineupHref: string; onEdit: () => void; onDelete: () => void; t: PanelTranslations }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
       <div className="min-w-0">
@@ -44,6 +44,11 @@ function GameRow({ game, canManage, draftHref, onEdit, onDelete, t }: { game: Ma
         <Button variant="outline" size="sm" render={<Link href={draftHref} />}>
           {t("draftButton")}
         </Button>
+        {game.source === null && (
+          <Button variant="outline" size="sm" render={<Link href={lineupHref} />}>
+            {t("lineupButton")}
+          </Button>
+        )}
         {canManage && (
           <>
             <Button variant="outline" size="sm" onClick={onEdit}>
@@ -121,6 +126,7 @@ export function MatchGamesPanel({
                 game={g}
                 canManage={canManage}
                 draftHref={`/admin/tournaments/${tournamentId}/matches/${matchId}/games/${g.id}/draft`}
+                lineupHref={`/admin/tournaments/${tournamentId}/matches/${matchId}/games/${g.id}/lineup`}
                 onEdit={() => setEditing(g)}
                 onDelete={() => setDeleting(g)}
                 t={t}

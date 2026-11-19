@@ -15,6 +15,8 @@ import { kdaRatio } from "./series-stats";
 export interface ChampionPickRow {
   championName: string;
   picks: number;
+  /** The picks whose game has stats */
+  statPicks: number;
   wins: number;
   kills: number;
   deaths: number;
@@ -34,6 +36,7 @@ export interface ChampionStatRow {
   totals: {
     games: number;
     picks: number;
+    statPicks: number;
     bans: number;
     wins: number;
     kills: number;
@@ -63,7 +66,7 @@ export function buildChampionStatRows(pickRows: ChampionPickRow[], banRows: Cham
   const rowOf = (championName: string) => {
     let row = rows.get(championName);
     if (!row) {
-      row = { groupKey: championName, mapsPlayed: 0, totals: { games, picks: 0, bans: 0, wins: 0, kills: 0, deaths: 0, assists: 0 }, roles: [] };
+      row = { groupKey: championName, mapsPlayed: 0, totals: { games, picks: 0, statPicks: 0, bans: 0, wins: 0, kills: 0, deaths: 0, assists: 0 }, roles: [] };
       rows.set(championName, row);
     }
     return row;
@@ -71,8 +74,8 @@ export function buildChampionStatRows(pickRows: ChampionPickRow[], banRows: Cham
 
   for (const p of pickRows) {
     const row = rowOf(p.championName);
-    row.mapsPlayed = p.picks;
-    Object.assign(row.totals, { picks: p.picks, wins: p.wins, kills: p.kills, deaths: p.deaths, assists: p.assists });
+    row.mapsPlayed = p.statPicks;
+    Object.assign(row.totals, { picks: p.picks, statPicks: p.statPicks, wins: p.wins, kills: p.kills, deaths: p.deaths, assists: p.assists });
     // Lane order. Roles can only be these five (overrides are validated, nulls are left out by the query).
     row.roles = sortLanes(p.roles);
   }
@@ -99,7 +102,7 @@ function leaders(rows: ChampionStatRow[], score: (row: ChampionStatRow) => numbe
   return scored.filter((row) => shown(row) === topValue).sort((a, b) => (a.groupKey < b.groupKey ? -1 : 1));
 }
 
-/** Most picked, most banned, highest presence, best win rate and best KDA (both need `minPicks` picks). A highlight nobody earns is left out. */
+/** Most picked, most banned, highest presence, best win rate and best KDA (both need `minPicks` picks, the KDA picks with stats). A highlight nobody earns is left out. */
 export function buildChampionInsights(rows: ChampionStatRow[], minPicks = MIN_PICKS_FOR_RATES): ChampionInsight[] {
   const insights: ChampionInsight[] = [];
   const add = (label: ChampionInsightLabel, candidates: ChampionStatRow[], score: (row: ChampionStatRow) => number, shown: (row: ChampionStatRow) => string) => {
@@ -110,11 +113,12 @@ export function buildChampionInsights(rows: ChampionStatRow[], minPicks = MIN_PI
   const winRate = (r: ChampionStatRow) => championWinRate(r.totals.wins, r.totals.picks);
   const kda = (r: ChampionStatRow) => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists);
   const pickedEnough = rows.filter((r) => r.totals.picks >= minPicks);
+  const statsEnough = rows.filter((r) => r.totals.statPicks >= minPicks);
 
   add("mostPicked", rows, (r) => r.totals.picks, (r) => String(r.totals.picks));
   add("mostBanned", rows, (r) => r.totals.bans, (r) => String(r.totals.bans));
   add("highestPresence", rows, presence, (r) => `${presence(r).toFixed(1)}%`);
   add("highestWinRate", pickedEnough, winRate, (r) => `${winRate(r).toFixed(1)}%`);
-  add("highestKda", pickedEnough, kda, (r) => kda(r).toFixed(2));
+  add("highestKda", statsEnough, kda, (r) => kda(r).toFixed(2));
   return insights;
 }

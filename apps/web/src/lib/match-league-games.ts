@@ -45,9 +45,10 @@ export type LeagueGamePlayer = {
   entrantId: number;
   personId: number | null;
   handle: string;
-  championName: string;
+  championName: string | null;
   championIconUrl: string | null;
   role: string | null;
+  hasStats: boolean;
   kills: number;
   deaths: number;
   assists: number;
@@ -55,7 +56,8 @@ export type LeagueGamePlayer = {
   /** Null for a game without a known length. */
   csPerMinute: number | null;
   goldPerMinute: number | null;
-  items: { name: string; iconUrl: string | null }[];
+  items: ({ name: string; iconUrl: string | null } | null)[];
+  summoners: { name: string; iconUrl: string | null }[];
   /** The role quest item, shown under the trinket. Null when the player has none. */
   roleItem: { name: string; iconUrl: string | null } | null;
   runes: PlayerRunes;
@@ -117,7 +119,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
   if (gameRows.length === 0) return { games: [], averages: [] };
   const gameIds = gameRows.map((g) => g.id);
 
-  const [teamRows, draftRows, playerRows, { championIconKeys: iconKeys, itemNames, runeNames }] = await Promise.all([
+  const [teamRows, draftRows, playerRows, { championIconKeys: iconKeys, itemNames, runeNames, summonerNames }] = await Promise.all([
     db
       .select({
         gameId: gameTeamStats.gameId,
@@ -147,6 +149,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
         handle: people.handle,
         championName: gamePlayerStats.championName,
         role: gamePlayerStats.role,
+        hasStats: gamePlayerStats.hasStats,
         kills: gamePlayerStats.kills,
         deaths: gamePlayerStats.deaths,
         assists: gamePlayerStats.assists,
@@ -155,6 +158,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
         items: gamePlayerStats.items,
         roleBoundItem: gamePlayerStats.roleBoundItem,
         runes: gamePlayerStats.runes,
+        summoners: gamePlayerStats.summoners,
       })
       .from(gamePlayerStats)
       .leftJoin(people, eq(people.id, gamePlayerStats.personId))
@@ -163,7 +167,8 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
     getDisplayCatalog(patch),
   ]);
 
-  const championIconUrl = (name: string): string | null => {
+  const championIconUrl = (name: string | null): string | null => {
+    if (name === null) return null;
     const key = iconKeys[name];
     return key === undefined ? null : lolIconUrl("champions", key);
   };
@@ -207,23 +212,31 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
       draft: steps.length === LEAGUE_DRAFT_STEPS.length ? { blueEntrantId, steps } : null,
       players: playerRows
         .filter((row) => row.gameId === game.id)
-        .map((row): LeagueGamePlayer => ({
-          entrantId: row.entrantId,
-          personId: row.personId,
-          handle: row.handle ?? row.championName,
-          championName: row.championName,
-          championIconUrl: championIconUrl(row.championName),
-          role: row.role,
-          kills: row.kills,
-          deaths: row.deaths,
-          assists: row.assists,
-          killParticipation: killParticipation(row.kills, row.assists, teams.find((team) => team.entrantId === row.entrantId)?.kills ?? 0),
-          csPerMinute: perMinute(row.cs, game.durationSeconds),
-          goldPerMinute: perMinute(row.gold, game.durationSeconds),
-          items: (row.items as number[]).map((id) => ({ name: itemNames[String(id)] ?? "Item", iconUrl: lolIconUrl("items", String(id)) })),
-          roleItem: row.roleBoundItem === null ? null : { name: itemNames[String(row.roleBoundItem)] ?? "Item", iconUrl: lolIconUrl("items", String(row.roleBoundItem)) },
-          runes: runesOf(row.runes, runeNames),
-        })),
+        .map((row): LeagueGamePlayer => {
+          // A manual scoreboard has no team stats: its team's kills are its players' kills.
+          const teamKills =
+            teams.find((team) => team.entrantId === row.entrantId)?.kills ??
+            playerRows.filter((other) => other.gameId === game.id && other.entrantId === row.entrantId && other.hasStats).reduce((total, other) => total + other.kills, 0);
+          return {
+            entrantId: row.entrantId,
+            personId: row.personId,
+            handle: row.handle ?? row.championName ?? "?",
+            championName: row.championName,
+            championIconUrl: championIconUrl(row.championName),
+            role: row.role,
+            hasStats: row.hasStats,
+            kills: row.kills,
+            deaths: row.deaths,
+            assists: row.assists,
+            killParticipation: row.hasStats ? killParticipation(row.kills, row.assists, teamKills) : 0,
+            csPerMinute: row.hasStats ? perMinute(row.cs, game.durationSeconds) : null,
+            goldPerMinute: row.hasStats && row.gold !== null ? perMinute(row.gold, game.durationSeconds) : null,
+            items: (row.items as number[]).map((id) => (id === 0 ? null : { name: itemNames[String(id)] ?? "Item", iconUrl: lolIconUrl("items", String(id)) })),
+            summoners: (row.summoners as number[]).filter((id) => id !== 0).map((id) => ({ name: summonerNames[String(id)] ?? "", iconUrl: lolIconUrl("spells", String(id)) })),
+            roleItem: row.roleBoundItem === null ? null : { name: itemNames[String(row.roleBoundItem)] ?? "Item", iconUrl: lolIconUrl("items", String(row.roleBoundItem)) },
+            runes: runesOf(row.runes, runeNames),
+          };
+        }),
     };
   });
 
@@ -239,7 +252,7 @@ async function loadLeagueMatchGames(matchId: number, patch: string | null, entra
 export function getMatchLeagueGames(matchId: number, patch: string | null, entrants: { entrantAId: number | null; entrantBId: number | null }): Promise<LeagueSeries> {
   return unstable_cache(
     () => loadLeagueMatchGames(matchId, patch, entrants),
-    ["match-league-series-v10",String(matchId), patch ?? "", String(entrants.entrantAId), String(entrants.entrantBId)],
+    ["match-league-series-v12",String(matchId), patch ?? "", String(entrants.entrantAId), String(entrants.entrantBId)],
     { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }

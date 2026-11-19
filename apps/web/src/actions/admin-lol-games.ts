@@ -26,7 +26,10 @@ import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
-import { ensurePatchCatalog, fetchChampionNamesForPatch, getChampionNamesForPatch } from "@/lib/data-dragon-client";
+import { ensurePatchCatalog, fetchChampionNamesForPatch, getBuildOptions, getChampionNamesForPatch } from "@/lib/data-dragon-client";
+import { buildHasParts, LINEUP_STAT_KEYS, lineupHasStats, lineupProblem, storedBuild, type LineupInput, type LineupProblem } from "@/lib/league-lineup-rules";
+import { buildCatalogOf } from "@/lib/league-build-options";
+import { createPerson, ensureGameProfiles } from "@/lib/person-service";
 import { WIKICODE_MAX_LENGTH } from "@/lib/wikicode-import";
 import { draftFromWikicode, parseLolMatchWikicode, resolveChampionNames, wikicodeChampionNames, type WikicodeLolGame } from "@/lib/liquipedia-lol-match-wikicode";
 import { draftBlockedBy, planGameFields, type DraftBlock, type GameField, type GameFieldPlan } from "@/lib/liquipedia-lol-import-rules";
@@ -486,4 +489,80 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
     firstPickAssumed: planned.some((p) => p.result.draft.status === "written" && !p.existing?.draftFirstPick),
     games: planned.map((p) => p.result),
   };
+}
+
+// --- Manual lineup ------------------------------------------------------------
+// Who played a game without Riot or Leaguepedia data (an old game, a VOD), in which lane and on which champion, and
+// optionally the scoreboard. It is the lowest-priority source: an imported game can't get one, and a later import
+// replaces it. A lineup without a scoreboard is stored with `has_stats` false, so it never lowers an average.
+
+export type LeagueLineupError = { kind: "notFound" } | { kind: "entrantsUnset" } | { kind: "importedGame" } | { kind: "unknownPerson" } | { kind: "lineupProblem"; problem: LineupProblem };
+export type LeagueLineupResult = { ok: true } | { ok: false; error: LeagueLineupError };
+
+/** Replaces the lineup of a game entered by hand. An empty lineup removes it. */
+export async function saveLeagueGameLineup(game: GameSlug, tournamentId: number, matchId: number, gameId: number, input: LineupInput): Promise<LeagueLineupResult> {
+  if (!gameHasSeriesGames(game)) return { ok: false, error: { kind: "notFound" } };
+  const actorUserId = await requireTournamentsActor(game);
+  const match = await loadMatchOfTournament(game, tournamentId, matchId);
+  if (!match) return { ok: false, error: { kind: "notFound" } };
+  if (match.entrantAId === null || match.entrantBId === null) return { ok: false, error: { kind: "entrantsUnset" } };
+
+  const { games, gameTeamStats, gamePlayerStats } = leagueTablesOf(game);
+  const [existing] = await db.select({ id: games.id, order: games.order, source: games.source }).from(games).where(and(eq(games.id, gameId), eq(games.matchId, matchId))).limit(1);
+  if (!existing) return { ok: false, error: { kind: "notFound" } };
+  const [teamStats] = await db.select({ gameId: gameTeamStats.gameId }).from(gameTeamStats).where(eq(gameTeamStats.gameId, gameId)).limit(1);
+  if (existing.source !== null || teamStats) return { ok: false, error: { kind: "importedGame" } };
+
+  // Only asked when a champion is named: Data Dragon is fetched for a patch nothing was imported or saved for yet.
+  const knownChampions = input.players.some((player) => player.championName !== null) ? new Set(await fetchChampionNamesForPatch(match.patch)) : new Set<string>();
+  // The same for the build: the patch's spells, runes and items are read only when a build has anything in it.
+  const buildOptions = input.players.some((player) => buildHasParts(player.build)) ? await getBuildOptions(match.patch) : null;
+  const problem = lineupProblem(input, { entrantIds: [match.entrantAId, match.entrantBId], knownChampions, buildCatalog: buildOptions ? buildCatalogOf(buildOptions) : null });
+  if (problem) return { ok: false, error: { kind: "lineupProblem", problem } };
+  const withStats = lineupHasStats(input);
+
+  try {
+    await db.transaction(async (tx) => {
+      const personIdOf = async (person: LineupInput["players"][number]["person"]): Promise<number> =>
+        "newHandle" in person ? createPerson(tx, game, { handle: person.newHandle.trim() }, { isActive: true }) : person.id;
+      const rows = [];
+      for (const player of input.players) {
+        rows.push({
+          gameId,
+          entrantId: player.entrantId,
+          personId: await personIdOf(player.person),
+          championName: player.championName,
+          role: player.role,
+          hasStats: withStats,
+          ...storedBuild(player.build),
+          // Only the known numbers: the input comes from the client, so other keys must not reach the row.
+          ...(withStats && player.stats ? Object.fromEntries(LINEUP_STAT_KEYS.map((key) => [key, player.stats![key]])) : {}),
+        });
+      }
+      await ensureGameProfiles(tx, game, rows.map((row) => row.personId));
+      await tx.delete(gamePlayerStats).where(eq(gamePlayerStats.gameId, gameId));
+      if (rows.length > 0) await tx.insert(gamePlayerStats).values(rows);
+      // The per minute numbers of a scoreboard need the game length; a lineup without one keeps whatever length the game had.
+      if (withStats) await tx.update(games).set({ durationSeconds: input.durationSeconds }).where(eq(games.id, gameId));
+      await logActivity(
+        {
+          game,
+          subject: "match",
+          subjectId: matchId,
+          event: "updated",
+          description: rows.length === 0 ? `Removed the lineup of game ${existing.order} of match #${matchId}` : `Set the lineup of game ${existing.order} of match #${matchId}${withStats ? " with a scoreboard" : ""}`,
+          actorUserId,
+          properties: { section: "lineup", gameId, players: rows.length, withStats },
+        },
+        tx,
+      );
+    });
+  } catch (err) {
+    // An unknown person id (deleted meanwhile, or made up) fails its foreign key.
+    if ((err as { cause?: { code?: string } }).cause?.code === "23503") return { ok: false, error: { kind: "unknownPerson" } };
+    throw err;
+  }
+  updateTag(matchTag(matchId));
+  after(() => ensurePatchCatalog(match.patch));
+  return { ok: true };
 }

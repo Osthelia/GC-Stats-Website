@@ -368,7 +368,7 @@ export async function getLeaguePlayerStatsFilterOptions(game: GameSlug, personId
   ]);
 
   return {
-    champions: championRows.map((r) => r.value).sort(),
+    champions: championRows.flatMap((r) => (r.value === null ? [] : [r.value])).sort(),
     patches: sortPatchesNewestFirst(patchRows.map((r) => r.value!)),
   };
 }
