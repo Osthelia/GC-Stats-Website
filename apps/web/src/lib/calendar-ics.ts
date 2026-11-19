@@ -69,6 +69,15 @@ export function parseCalendarId(value: string): number | null {
 }
 
 /** Builds the feed, null when the team/tournament doesn't exist (or isn't public). */
+/**
+ * The event's id in the calendar apps. Match ids are counted per game, so League's carry the game: a Valorant and a
+ * League match with the same id must not replace each other in a calendar subscribed to both. Valorant keeps the ids it
+ * always had, so existing subscriptions don't get every event twice.
+ */
+function eventUid(game: GameSlug, matchId: number): string {
+  return game === "valorant" ? `match-${matchId}` : `${game}-match-${matchId}`;
+}
+
 export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, locale: AppLocale, origin: string): Promise<string | null> {
   const { entrants, matches, stageContainers, stages, teams, tournaments } = gameTables(game);
   const t = await getTranslations({ locale, namespace: "calendar" });
@@ -157,12 +166,12 @@ export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, l
       row.status === "completed" && row.scoreA !== null && row.scoreB !== null
         ? `${nameA} ${scoreLabel(row.scoreA)} - ${scoreLabel(row.scoreB)} ${nameB}`
         : `${nameA} vs ${nameB}`;
-    const url = `${origin}/${locale}/match/${row.id}`;
+    const url = `${origin}/${locale}/${game}/match/${row.id}`;
     const description = [`${row.tournamentName} (${row.stageName})`, t("bestOf", { count: row.bestOf }), url].join("\n");
 
     lines.push(
       "BEGIN:VEVENT",
-      `UID:match-${row.id}@${host}`,
+      `UID:${eventUid(game, row.id)}@${host}`,
       `DTSTAMP:${stamp}`,
       `DTSTART:${formatUtc(start)}`,
       // Roughly one hour per map.
