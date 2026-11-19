@@ -49,7 +49,7 @@ export function MatchScoreboardHeader({
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
           <ThemedLogoImage dark={logoA} light={logoALight} alt={teamAName} width={28} height={28} className="h-6 w-6 object-contain" />
         </div>
-        <span className={`truncate text-sm font-black italic ${winner === "a" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{teamAName}</span>
+        <span className={`truncate pr-1 text-sm font-black italic ${winner === "a" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{teamAName}</span>
       </div>
       <div className="flex shrink-0 items-center gap-3 px-2 font-mono text-[11px] font-bold tracking-[0.3em] uppercase">
         {scores && <span className={`text-sm ${winner === "a" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{scores.a}</span>}
@@ -57,7 +57,7 @@ export function MatchScoreboardHeader({
         {scores && <span className={`text-sm ${winner === "b" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{scores.b}</span>}
       </div>
       <div className="flex min-w-0 items-center justify-end gap-2.5">
-        <span className={`truncate text-sm font-black italic ${winner === "b" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{teamBName}</span>
+        <span className={`truncate pr-1 text-sm font-black italic ${winner === "b" ? WINNER_CLASS : "text-(--gcs-text)"}`}>{teamBName}</span>
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-neutral-800" style={{ background: "var(--gcs-surface-2)" }}>
           <ThemedLogoImage dark={logoB} light={logoBLight} alt={teamBName} width={28} height={28} className="h-6 w-6 object-contain" />
         </div>
