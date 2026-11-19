@@ -44,10 +44,11 @@ export default async function AdminLeagueGameLineupPage({ params }: { params: Pr
     listTournamentEntrants(game, tournId),
   ]);
   if (!match || match.tournamentId !== tournId) notFound();
-  // Asks Data Dragon when nothing of this patch was imported or saved yet, so the champion pickers are never empty.
-  const [champions, buildOptions, lineup] = await Promise.all([fetchChampionNamesForPatch(match.patch), getBuildOptions(match.patch), getLeagueGameLineup(id, gameNumber, match)]);
+  const lineup = await getLeagueGameLineup(id, gameNumber, match);
   if (!lineup) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
+  // Only an editor of a game entered by hand needs the pickers' options: asking Data Dragon (and storing a catalog) is not for a read-only view.
+  const [champions, buildOptions] = canManage && !lineup.imported ? await Promise.all([fetchChampionNamesForPatch(match.patch), getBuildOptions(match.patch)]) : [[], null];
   const lineupT = await getTranslations("admin.tournaments.matches.lineup");
 
   const entrantName = (entrantId: number | null) => (entrantId === null ? t("entrantNone") : (entrants.find((e) => e.id === entrantId)?.displayName ?? t("entrantNone")));
