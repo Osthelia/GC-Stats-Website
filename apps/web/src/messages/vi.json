@@ -730,7 +730,7 @@
     "intro": "Bằng việc truy cập hoặc sử dụng GC Stats, bạn đồng ý bị ràng buộc bởi các Điều khoản dịch vụ này. Vui lòng đọc kỹ trước khi sử dụng nền tảng.",
     "service": {
       "title": "Về dịch vụ",
-      "text": "GC Stats là một nền tảng cộng đồng chuyên lưu trữ và chia sẻ dữ liệu thi đấu từ các giải đấu Valorant Game Changers và các sự kiện liên quan. Dịch vụ cung cấp quyền truy cập vào kết quả giải đấu, thống kê tuyển thủ, thông tin đội và dữ liệu trận đấu. GC Stats không liên kết, không được bảo trợ và không có mối liên hệ chính thức với Riot Games."
+      "text": "GC Stats là một nền tảng cộng đồng chuyên lưu trữ và chia sẻ dữ liệu thi đấu từ các giải đấu Game Changers và các sự kiện liên quan. Dịch vụ cung cấp quyền truy cập vào kết quả giải đấu, thống kê tuyển thủ, thông tin đội và dữ liệu trận đấu. GC Stats không liên kết, không được bảo trợ và không có mối liên hệ chính thức với Riot Games."
     },
     "access": {
       "title": "Truy cập & điều kiện sử dụng",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Dữ liệu trận đấu Riot",
-      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Dữ liệu này bao gồm:",
+      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia, hoặc được đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác. Dữ liệu này bao gồm:",
       "items": [
         "Riot ID (tên trong game và tagline) của các tuyển thủ tham gia",
         "Lịch sử trận đấu của các trận được xác định là thuộc các giải đấu được theo dõi",
-        "Thống kê trong trận: bảng điểm, tóm tắt hiệu suất, tóm tắt kinh tế và kill feed"
+        "Thống kê trong trận: bảng điểm, tóm tắt thành tích và hơn nữa"
       ],
       "optIn": "Việc tham gia trận đấu cơ bản (tên, thống kê) được ghi nhận cho mọi tuyển thủ xuất hiện trong một trận đấu giải đấu được theo dõi, vì đây là dữ liệu thi đấu công khai. Thông tin hồ sơ bổ sung (tiểu sử, mạng xã hội, ảnh) chỉ được thêm khi có sự đồng ý của tuyển thủ hoặc đội.",
       "correction": "Nếu bạn là tuyển thủ xuất hiện trong dữ liệu này và muốn yêu cầu chỉnh sửa hoặc xóa, bạn có thể liên hệ với chúng tôi bất cứ lúc nào (xem Chính sách quyền riêng tư để biết chi tiết)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Sử dụng API",
-      "text": "GC Stats cung cấp một API công khai cho cộng đồng và các dự án liên quan đến GC. Việc sử dụng API tuân theo các Điều khoản này. API dành cho mục đích thông tin, phân tích và cộng đồng. Giới hạn tốc độ có thể được áp dụng. GC Stats có quyền thu hồi quyền truy cập API đối với bất kỳ cách sử dụng nào vi phạm các Điều khoản này hoặc chính sách nhà phát triển của Riot Games."
+      "text": "GC Stats cung cấp một API công khai cho cộng đồng và các dự án liên quan đến GC. Hiện API chỉ hỗ trợ Valorant; League of Legends sẽ được bổ sung sau. Việc sử dụng API tuân theo các Điều khoản này. API dành cho mục đích thông tin, phân tích và cộng đồng. Giới hạn tốc độ có thể được áp dụng. GC Stats có quyền thu hồi quyền truy cập API đối với bất kỳ cách sử dụng nào vi phạm các Điều khoản này hoặc chính sách nhà phát triển của Riot Games."
     },
     "ip": {
       "title": "Sở hữu trí tuệ",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Dữ liệu công khai",
-      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, mạng xã hội, quốc gia) do tuyển thủ hoặc tổ chức của họ cung cấp, hoặc do đội ngũ của chúng tôi thêm từ nguồn công khai, rồi được hiển thị công khai trên trang. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận của giải đấu được theo dõi. Toàn bộ dữ liệu này là công khai và được chia sẻ qua API của chúng tôi."
+      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, mạng xã hội, quốc gia) do tuyển thủ hoặc tổ chức của họ cung cấp, hoặc do đội ngũ của chúng tôi thêm từ nguồn công khai, rồi được hiển thị công khai trên trang. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận của giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia (theo giấy phép CC BY-SA) hoặc được đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác. Toàn bộ dữ liệu này là công khai và được chia sẻ qua API của chúng tôi."
     },
     "privateData": {
       "title": "Dữ liệu riêng tư",
-      "text": "Dữ liệu cá nhân chúng tôi lưu trữ chỉ giới hạn ở những gì cần thiết để vận hành trang web và hệ thống tài khoản: một Riot ID để liên kết hồ sơ tuyển thủ, cùng dữ liệu tài khoản mô tả bên dưới đối với bất kỳ ai tạo tài khoản người dùng.",
-      "riotUsage": "Riot ID: Được đội ngũ của chúng tôi xác định và gán từ dữ liệu trận đấu lấy qua API chính thức của Riot Games. Chỉ dùng để gắn thống kê trận đấu với một hồ sơ tuyển thủ. Có thể được chỉnh sửa hoặc xóa khi có yêu cầu."
+      "text": "Dữ liệu cá nhân chúng tôi lưu trữ chỉ giới hạn ở những gì cần thiết để vận hành trang web và hệ thống tài khoản: các tài khoản Riot của tuyển thủ, để liên kết thống kê trận đấu với hồ sơ của họ, cùng dữ liệu tài khoản mô tả bên dưới đối với bất kỳ ai tạo tài khoản người dùng.",
+      "riotUsage": "Tài khoản Riot: Riot ID được đội ngũ của chúng tôi xác định và gán từ dữ liệu trận đấu lấy qua API chính thức của Riot Games hoặc Leaguepedia, hoặc được nhập thủ công khi chỉ có buổi phát sóng của trận đấu. Với League of Legends, chúng tôi còn lưu PUUID Riot của mỗi tài khoản, máy chủ và khu vực của tài khoản, cùng ngày tài khoản được thấy lần cuối trong một trận được theo dõi. Chỉ dùng để gắn thống kê trận đấu với hồ sơ tuyển thủ. Có thể được sửa hoặc xóa theo yêu cầu."
     },
     "accountData": {
       "title": "Tài khoản người dùng",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Không bao giờ hiển thị",
             "items": [
-              "ID Riot, chỉ dùng để gắn thống kê trận đấu vào đúng hồ sơ"
+              "Tài khoản Riot, chỉ dùng để liên kết thống kê trận đấu với đúng hồ sơ"
             ]
           }
         },
-        "source": "Chính người đó hoặc tổ chức của họ, đội ngũ của chúng tôi từ nguồn công khai (Liquipedia, thông báo chính thức), hoặc cộng đồng qua đề xuất được đội ngũ duyệt. ID Riot lấy từ API chính thức của Riot Games.",
-        "visibility": "Mọi người, trên trang và qua API của chúng tôi, trừ ID Riot.",
+        "source": "Chính người đó hoặc tổ chức của họ, đội ngũ của chúng tôi từ nguồn công khai (Liquipedia, thông báo chính thức), hoặc cộng đồng qua đề xuất được đội ngũ duyệt. Tài khoản Riot lấy từ API chính thức của Riot Games hoặc Leaguepedia, hoặc do đội ngũ của chúng tôi nhập.",
+        "visibility": "Mọi người, trên trang và qua API của chúng tôi, trừ các tài khoản Riot.",
         "retention": "Lưu vĩnh viễn như kho lưu trữ của cộng đồng, kể cả khi người đó ngừng thi đấu. Bạn có thể yêu cầu sửa hoặc xóa."
       },
       "matchStats": {
         "title": "Thống kê trận đấu",
         "groups": {
           "stats": {
-            "label": "Cho mỗi trận đấu",
+            "label": "Cho mỗi trận Valorant đã chơi",
             "items": [
               "Đặc vụ đã chơi",
               "Hạ gục, chết và hỗ trợ",
@@ -1351,9 +1351,20 @@
               "Kinh tế và trang bị",
               "Vị trí trên bản đồ"
             ]
+          },
+          "league": {
+            "label": "Cho mỗi ván League of Legends đã chơi",
+            "items": [
+              "Tướng, đường, phép bổ trợ và ngọc",
+              "Hạ gục, bị hạ và hỗ trợ",
+              "CS, vàng, sát thương và điểm tầm nhìn",
+              "Trang bị",
+              "Vàng, kinh nghiệm và CS so với đối thủ cùng đường ở phút 10 và 15",
+              "Vị trí trên bản đồ và các sự kiện trong ván (hạ gục, mục tiêu, mắt)"
+            ]
           }
         },
-        "source": "API chính thức của Riot Games, cho các trận của giải đấu chúng tôi theo dõi.",
+        "source": "API chính thức của Riot Games, cho các trận của giải đấu chúng tôi theo dõi. Với League of Legends còn có Leaguepedia, hoặc đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác.",
         "visibility": "Mọi người, trên trang và qua API của chúng tôi.",
         "retention": "Lưu như kho lưu trữ lịch sử các giải đấu."
       },
