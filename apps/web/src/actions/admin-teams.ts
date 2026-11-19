@@ -25,7 +25,7 @@ import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 import { ensureGameProfile, personExists } from "@/lib/person-service";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasVlr, type GameSlug } from "@gc-stats/db/game";
 import { closeOpenMemberships } from "@/lib/roster-close";
 import { normalizeRosterSource, validateRosterSource } from "@/lib/roster-source";
 
@@ -81,7 +81,7 @@ export async function updateTeamProfile(game: GameSlug, teamId: number, input: T
   const countryCode = input.countryCode.trim();
   const secondaryCountryCode = input.secondaryCountryCode.trim();
   const bio = input.bio.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
   const liquipediaLink = input.liquipediaLink.trim();
   const contactEmail = input.contactEmail.trim();
 
@@ -423,7 +423,7 @@ export async function createTeam(game: GameSlug, input: CreateTeamInput): Promis
   const name = input.name.trim();
   const shortName = input.shortName.trim();
   const countryCode = input.countryCode.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
 
   if (!name) fieldErrors.name = "required";
   else if (name.length > 255) fieldErrors.name = "tooLong";

@@ -35,7 +35,7 @@ import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError } from "@/
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 import { createPerson, updatePersonIdentity, updatePersonProfile, removePersonFromGame } from "@/lib/person-service";
-import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { gameHasVlr, isGameSlug, type GameSlug } from "@gc-stats/db/game";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -94,7 +94,7 @@ export async function updatePlayerProfile(game: GameSlug, playerId: number, inpu
   const countryCode = input.countryCode.trim();
   const secondaryCountryCode = input.secondaryCountryCode.trim();
   const bio = input.bio.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
   const liquipediaLink = input.liquipediaLink.trim();
 
   if (!handle) fieldErrors.handle = "required";
@@ -238,7 +238,7 @@ export async function createPlayer(game: GameSlug, input: CreatePlayerInput): Pr
 
   const handle = input.handle.trim();
   const countryCode = input.countryCode.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
   const teamId = input.teamId.trim();
 
   if (!handle) fieldErrors.handle = "required";

@@ -2423,6 +2423,7 @@
       "title": "ทีม",
       "subtitle": "จัดการโปรไฟล์และโรสเตอร์ของทีม",
       "searchPlaceholder": "ชื่อ ID หรือ VLR ID…",
+      "searchPlaceholderLol": "ชื่อหรือ ID…",
       "searchSubmit": "ค้นหา",
       "activeWithinLabel": "กิจกรรมล่าสุด",
       "activeWithinAny": "ทุกช่วงเวลา",

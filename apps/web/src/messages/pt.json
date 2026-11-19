@@ -2423,6 +2423,7 @@
       "title": "Times",
       "subtitle": "Gerencie os perfis e rosters dos times.",
       "searchPlaceholder": "Nome, ID ou ID VLR…",
+      "searchPlaceholderLol": "Nome ou ID…",
       "searchSubmit": "Buscar",
       "activeWithinLabel": "Atividade recente",
       "activeWithinAny": "Qualquer período",

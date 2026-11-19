@@ -2423,6 +2423,7 @@
       "title": "Takımlar",
       "subtitle": "Takım profillerini ve kadrolarını yönet.",
       "searchPlaceholder": "İsim, ID veya VLR ID…",
+      "searchPlaceholderLol": "İsim veya ID…",
       "searchSubmit": "Ara",
       "activeWithinLabel": "Son etkinlik",
       "activeWithinAny": "Her zaman",

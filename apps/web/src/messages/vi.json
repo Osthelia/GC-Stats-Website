@@ -2423,6 +2423,7 @@
       "title": "Đội",
       "subtitle": "Quản lý hồ sơ đội và đội hình.",
       "searchPlaceholder": "Tên, ID hoặc VLR ID…",
+      "searchPlaceholderLol": "Tên hoặc ID…",
       "searchSubmit": "Tìm kiếm",
       "activeWithinLabel": "Hoạt động gần đây",
       "activeWithinAny": "Bất kỳ lúc nào",

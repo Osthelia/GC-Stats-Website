@@ -2423,6 +2423,7 @@
       "title": "Team",
       "subtitle": "Gestisci i profili e i roster dei team.",
       "searchPlaceholder": "Nome, ID o ID VLR…",
+      "searchPlaceholderLol": "Nome o ID…",
       "searchSubmit": "Cerca",
       "activeWithinLabel": "Attività recente",
       "activeWithinAny": "Qualsiasi periodo",

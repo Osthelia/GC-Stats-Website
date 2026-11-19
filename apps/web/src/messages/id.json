@@ -2423,6 +2423,7 @@
       "title": "Tim",
       "subtitle": "Kelola profil dan roster tim.",
       "searchPlaceholder": "Nama, ID, atau ID VLR…",
+      "searchPlaceholderLol": "Nama atau ID…",
       "searchSubmit": "Cari",
       "activeWithinLabel": "Aktivitas terbaru",
       "activeWithinAny": "Kapan saja",

@@ -2423,6 +2423,7 @@
       "title": "الفرق",
       "subtitle": "إدارة ملفات الفرق وتشكيلاتها.",
       "searchPlaceholder": "الاسم أو ID أو معرّف VLR…",
+      "searchPlaceholderLol": "الاسم أو ID…",
       "searchSubmit": "بحث",
       "activeWithinLabel": "النشاط الأخير",
       "activeWithinAny": "أي وقت",

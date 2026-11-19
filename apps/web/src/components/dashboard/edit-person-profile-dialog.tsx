@@ -24,6 +24,7 @@ import { PersonPhotoDialog } from "@/components/change-request/person-photo-dial
 import type { PhotoConsent } from "@/lib/change-request-fields";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
 import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
@@ -214,9 +215,11 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
               <div className="flex flex-col gap-3 border-t pt-4">
                 <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">{t("editProfileAdvancedSection")}</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField label={t("editProfileVlrIdLabel")} htmlFor="edit-person-vlr-id" error={err("vlrId")}>
-                    <Input id="edit-person-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
-                  </FormField>
+                  {gameHasVlr(game) && (
+                    <FormField label={t("editProfileVlrIdLabel")} htmlFor="edit-person-vlr-id" error={err("vlrId")}>
+                      <Input id="edit-person-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
+                    </FormField>
+                  )}
                   <FormField label={t("editProfileLiquipediaLabel")} htmlFor="edit-person-liquipedia" error={err("liquipediaLink")}>
                     <Input id="edit-person-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!fieldErrors.liquipediaLink} />
                   </FormField>

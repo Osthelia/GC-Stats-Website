@@ -2423,6 +2423,7 @@
       "title": "Drużyny",
       "subtitle": "Zarządzaj profilami i składami drużyn.",
       "searchPlaceholder": "Nazwa, ID lub ID VLR…",
+      "searchPlaceholderLol": "Nazwa lub ID…",
       "searchSubmit": "Szukaj",
       "activeWithinLabel": "Ostatnia aktywność",
       "activeWithinAny": "Dowolny okres",

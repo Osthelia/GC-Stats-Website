@@ -2423,6 +2423,7 @@
       "title": "チーム",
       "subtitle": "チームプロフィールとロースターを管理します。",
       "searchPlaceholder": "名前、IDまたはVLR ID…",
+      "searchPlaceholderLol": "名前またはID…",
       "searchSubmit": "検索",
       "activeWithinLabel": "最近の活動",
       "activeWithinAny": "いつでも",

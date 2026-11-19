@@ -2423,6 +2423,7 @@
       "title": "팀",
       "subtitle": "팀 프로필과 로스터를 관리합니다.",
       "searchPlaceholder": "이름, ID 또는 VLR ID…",
+      "searchPlaceholderLol": "이름 또는 ID…",
       "searchSubmit": "검색",
       "activeWithinLabel": "최근 활동",
       "activeWithinAny": "전체 기간",

@@ -2423,6 +2423,7 @@
       "title": "Equipos",
       "subtitle": "Gestiona los perfiles y los rosters de los equipos.",
       "searchPlaceholder": "Nombre, ID o ID de VLR…",
+      "searchPlaceholderLol": "Nombre o ID…",
       "searchSubmit": "Buscar",
       "activeWithinLabel": "Actividad reciente",
       "activeWithinAny": "En cualquier momento",

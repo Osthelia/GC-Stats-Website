@@ -16,7 +16,7 @@ import { organizations, teamPrivateContacts, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike, qualifiedColumn } from "@/lib/db-search";
-import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLanes, gameHasVlr, type GameSlug } from "@gc-stats/db/game";
 import { resolveEntryLanes, splitEntryLanes, type EntryLanes } from "@/lib/roster-lanes";
 import { displayRosterRole } from "@/lib/roster-roles";
 import type { LeagueRole } from "@gc-stats/lol-stats-engine";
@@ -81,7 +81,7 @@ export async function listAdminTeams(game: GameSlug, opts: {
     const clauses = variants.flatMap((v) => [foldedIlike(teams.name, v), foldedIlike(teams.shortName, v)]);
     if (numeric) {
       const n = Number(q);
-      clauses.push(eq(teams.id, n), eq(teams.vlrId, n));
+      clauses.push(eq(teams.id, n), ...(gameHasVlr(game) ? [eq(teams.vlrId, n)] : []));
     }
     conditions.push(or(...clauses));
   }

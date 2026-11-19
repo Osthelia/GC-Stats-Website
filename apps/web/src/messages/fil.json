@@ -2423,6 +2423,7 @@
       "title": "Mga Team",
       "subtitle": "Pamahalaan ang mga profile at roster ng team.",
       "searchPlaceholder": "Pangalan, ID o VLR ID…",
+      "searchPlaceholderLol": "Pangalan o ID…",
       "searchSubmit": "Maghanap",
       "activeWithinLabel": "Kamakailang aktibidad",
       "activeWithinAny": "Anumang oras",

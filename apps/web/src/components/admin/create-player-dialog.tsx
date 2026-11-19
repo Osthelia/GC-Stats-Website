@@ -27,6 +27,7 @@ import { CountrySelect } from "@/components/admin/country-select";
 import { TeamPicker } from "@/components/admin/team-picker";
 import { createPlayer, type CreatePlayerFieldErrors } from "@/actions/admin-players";
 import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 export function CreatePlayerDialog() {
   const game = useGame();
@@ -100,9 +101,11 @@ export function CreatePlayerDialog() {
               />
             </FormField>
 
-            <FormField label={t("edit.fieldVlrId")} htmlFor="create-player-vlr-id" error={err("vlrId")}>
-              <Input id="create-player-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
-            </FormField>
+            {gameHasVlr(game) && (
+              <FormField label={t("edit.fieldVlrId")} htmlFor="create-player-vlr-id" error={err("vlrId")}>
+                <Input id="create-player-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
+              </FormField>
+            )}
 
             <FormField label={t("edit.fieldTeam")} htmlFor="create-player-team" error={err("teamId")}>
               <TeamPicker

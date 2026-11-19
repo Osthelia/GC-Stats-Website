@@ -2423,6 +2423,7 @@
       "title": "戰隊",
       "subtitle": "管理戰隊資料及名單。",
       "searchPlaceholder": "名稱、ID 或 VLR ID…",
+      "searchPlaceholderLol": "名稱或 ID…",
       "searchSubmit": "搜尋",
       "activeWithinLabel": "近期活躍度",
       "activeWithinAny": "任意時間",
