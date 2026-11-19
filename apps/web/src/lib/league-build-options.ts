@@ -24,6 +24,9 @@ export interface LeagueBuildOptions {
   trees: BuildOption[];
   items: BuildOption[];
   trinkets: BuildOption[];
+  /** Every Summoner's Rift id, also the variants the lists leave out: what a build is checked against. */
+  itemIds: number[];
+  trinketIds: number[];
 }
 
 /** The parts of item.json, summoner.json and runesReforged.json the options are made from. */
@@ -46,13 +49,17 @@ const byName = (a: BuildOption, b: BuildOption) => a.name.localeCompare(b.name);
 export function buildOptionsOf(files: BuildOptionFiles): LeagueBuildOptions {
   const items = new Map<string, BuildOption>();
   const trinkets = new Map<string, BuildOption>();
+  const itemIds: number[] = [];
+  const trinketIds: number[] = [];
   const ids = Object.keys(files.items.data)
     .filter((key) => Number.isInteger(Number(key)))
     .sort((a, b) => Number(a) - Number(b));
   for (const key of ids) {
     const item = files.items.data[key]!;
     if (item.maps?.[SUMMONERS_RIFT] !== true) continue;
-    const list = item.tags?.includes("Trinket") ? trinkets : items;
+    const isTrinket = item.tags?.includes("Trinket") === true;
+    (isTrinket ? trinketIds : itemIds).push(Number(key));
+    const list = isTrinket ? trinkets : items;
     if (!list.has(item.name)) list.set(item.name, { id: Number(key), name: item.name });
   }
 
@@ -69,6 +76,8 @@ export function buildOptionsOf(files: BuildOptionFiles): LeagueBuildOptions {
     trees: trees.sort(byName),
     items: [...items.values()].sort(byName),
     trinkets: [...trinkets.values()].sort(byName),
+    itemIds,
+    trinketIds,
   };
 }
 
@@ -78,7 +87,7 @@ export function buildCatalogOf(options: LeagueBuildOptions): LineupBuildCatalog 
     summoners: new Set(options.summoners.map((option) => option.id)),
     keystones: new Map(options.keystones.map((option) => [option.id, option.treeId])),
     trees: new Set(options.trees.map((option) => option.id)),
-    items: new Set(options.items.map((option) => option.id)),
-    trinkets: new Set(options.trinkets.map((option) => option.id)),
+    items: new Set(options.itemIds),
+    trinkets: new Set(options.trinketIds),
   };
 }

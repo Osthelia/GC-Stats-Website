@@ -47,4 +47,11 @@ describe("buildOptionsOf", () => {
     expect(options.trees.map((tree) => tree.name)).toEqual(["Domination", "Precision"]);
     expect(buildCatalogOf(options).keystones.get(8112)).toBe(8100);
   });
+
+  it("accepts the variants of an item the picker offers once", () => {
+    const catalog = buildCatalogOf(buildOptionsOf(files));
+    expect(catalog.items.has(221055)).toBe(true);
+    expect(catalog.items.has(3112)).toBe(false);
+    expect(catalog.trinkets.has(3340)).toBe(true);
+  });
 });
