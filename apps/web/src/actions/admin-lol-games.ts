@@ -540,6 +540,7 @@ export async function saveLeagueGameLineup(game: GameSlug, tournamentId: number,
         });
       }
       await ensureGameProfiles(tx, game, rows.map((row) => row.personId));
+      await tx.select({ id: games.id }).from(games).where(eq(games.id, gameId)).for("update");
       await tx.delete(gamePlayerStats).where(eq(gamePlayerStats.gameId, gameId));
       if (rows.length > 0) await tx.insert(gamePlayerStats).values(rows);
       // The per minute numbers of a scoreboard need the game length; a lineup without one keeps whatever length the game had.
