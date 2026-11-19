@@ -20,9 +20,9 @@ import { useTranslations } from "next-intl";
 import type { LeagueRole } from "@gc-stats/lol-stats-engine/lanes";
 
 type Props = {
-  kind: "champion" | "item" | "rune" | "tree";
+  kind: "champion" | "item" | "spell" | "rune" | "tree";
   url: string | null;
-  /** The champion, item or rune name: for alt text and the hover tooltip */
+  /** The champion, item, summoner spell or rune name: for alt text and the hover tooltip */
   name: string;
   /** Pixels, or a CSS length such as a variable when the size changes with the breakpoint. */
   size: number | string;
@@ -32,7 +32,7 @@ export function LolIcon({ kind, url, name, size }: Props) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const style = { width: size, height: size };
   const px = typeof size === "number" ? size : undefined;
-  const shape = kind === "rune" || kind === "tree" ? "rounded-full" : "rounded-sm";
+  const shape = "rounded-sm";
 
   if (url === null || url === failedUrl) {
     return (
@@ -50,7 +50,7 @@ export function LolIcon({ kind, url, name, size }: Props) {
   }
 
   const champion = kind === "champion";
-  // A rune tree's emblem fills its image to the edge, so a round crop would cut its tips: it is shown whole, no frame.
+  // A rune tree's emblem fills its image to the edge, so a crop would cut its tips: it is shown whole, inset in its frame.
   const tree = kind === "tree";
   return (
     <img
@@ -61,7 +61,7 @@ export function LolIcon({ kind, url, name, size }: Props) {
       width={px}
       height={px}
       style={{...style, clipPath: champion ? "inset(6% round 4px)" : ""}}
-      className={champion ? "flex-none object-cover" : tree ? "flex-none object-contain" : `flex-none border border-neutral-800 bg-(--gcs-surface-2) object-cover ${shape}`}
+      className={champion ? "flex-none object-cover" : `flex-none border border-neutral-800 bg-(--gcs-surface-2) ${tree ? "object-contain p-[12%]" : "object-cover"} ${shape}`}
       onError={() => setFailedUrl(url)}
     />
   );

@@ -33,9 +33,9 @@ export function gameHasMaps(game: GameSlug): boolean {
   return game === "valorant";
 }
 
-// Match wikicode and the match import rely on maps, so they stay Valorant only for now.
+// Match wikicode (import and export) reads and writes the maps of Valorant and the games and draft of League.
 export function gameHasLiquipediaMatches(game: GameSlug): boolean {
-  return game === "valorant";
+  return gameHasMaps(game) || gameHasSeriesGames(game);
 }
 
 // VLR.gg only covers Valorant.
@@ -53,6 +53,11 @@ export function gameHasStats(game: GameSlug): boolean {
 
 // A series is made of games stored in their own table (`lol_games`), not of maps.
 export function gameHasSeriesGames(game: GameSlug): boolean {
+  return game === "lol";
+}
+
+// Champion, item and rune names and icons come from Riot's Data Dragon, one catalog per patch.
+export function gameHasDataDragon(game: GameSlug): boolean {
   return game === "lol";
 }
 

@@ -35,15 +35,15 @@ import { PERSON_SOCIAL_KEYS, normalizeDiscordValue, personSocialError } from "@/
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { logRosterChange } from "@/lib/roster-activity-log";
 import { createPerson, updatePersonIdentity, updatePersonProfile, removePersonFromGame } from "@/lib/person-service";
-import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { gameHasVlr, isGameSlug, type GameSlug } from "@gc-stats/db/game";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Re-checked here, not just relied on from the /admin layout guard — server
 // actions are reachable directly (as their own POST endpoint) regardless of
 // which page rendered the form that calls them.
-async function requireAdminActorId(permission: string): Promise<string> {
-  const access = await requireActorPermission(permission);
+async function requireAdminActorId(game: GameSlug, permission: string): Promise<string> {
+  const access = await requireActorPermission(permission, game);
   return access.userId;
 }
 
@@ -84,7 +84,7 @@ function isValidUrl(value: string): boolean {
 
 export async function updatePlayerProfile(game: GameSlug, playerId: number, input: PlayerProfileInput): Promise<PlayerProfileResult> {
   const { people } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersEdit);
 
   const fieldErrors: PlayerProfileFieldErrors = {};
 
@@ -94,7 +94,7 @@ export async function updatePlayerProfile(game: GameSlug, playerId: number, inpu
   const countryCode = input.countryCode.trim();
   const secondaryCountryCode = input.secondaryCountryCode.trim();
   const bio = input.bio.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
   const liquipediaLink = input.liquipediaLink.trim();
 
   if (!handle) fieldErrors.handle = "required";
@@ -190,12 +190,12 @@ export async function updatePlayerProfile(game: GameSlug, playerId: number, inpu
 export type { LinkUserResult } from "@/lib/person-link-service";
 
 export async function linkUserToPlayer(game: GameSlug, playerId: number, userId: string): Promise<LinkUserResult> {
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersEdit);
   return linkUserToPersonEntry(game, playerId, userId, actorUserId);
 }
 
 export async function unlinkUserFromPlayer(game: GameSlug, playerId: number): Promise<LinkUserResult> {
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersEdit);
   return unlinkUserFromPersonEntry(game, playerId, actorUserId);
 }
 
@@ -232,13 +232,13 @@ export type CreatePlayerResult = { ok: true; id: number } | { ok: false; fieldEr
  */
 export async function createPlayer(game: GameSlug, input: CreatePlayerInput): Promise<CreatePlayerResult> {
   const { teams, rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersCreate);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersCreate);
 
   const fieldErrors: CreatePlayerFieldErrors = {};
 
   const handle = input.handle.trim();
   const countryCode = input.countryCode.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
   const teamId = input.teamId.trim();
 
   if (!handle) fieldErrors.handle = "required";
@@ -304,7 +304,7 @@ export async function addPlayerTeamHistoryEntry(
   lanes: string[] = []
 ): Promise<AddTeamHistoryResult> {
   const { people, teams, rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersEdit);
 
   const fieldErrors: AddTeamHistoryFieldErrors = {};
 
@@ -351,7 +351,7 @@ export type TeamHistoryEntryResult = { ok: true } | { ok: false; fieldErrors: Te
 /** Player-side mirror of admin-teams.ts::updateRosterMemberEntry — inline edit for an existing team-history card (role/join/left/inactive, not reassigning the team itself). */
 export async function updatePlayerTeamHistoryEntry(game: GameSlug, membershipId: number, role: string, from: string, until: string, hasLeft: boolean, inactiveSince: string, joinSource: string, leftSource: string, closeMembershipIds: number[] = [], lanes: string[] = []): Promise<TeamHistoryEntryResult> {
   const { rosterMemberships } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersEdit);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersEdit);
 
   const fieldErrors: TeamHistoryEntryFieldErrors = {};
 
@@ -396,7 +396,7 @@ export type DeletePlayerResult = { ok: true } | { ok: false; error: "notFound" |
  */
 export async function deletePlayer(game: GameSlug, playerId: number): Promise<DeletePlayerResult> {
   const { people } = gameTables(game);
-  const actorUserId = await requireAdminActorId(PERMISSIONS.playersDelete);
+  const actorUserId = await requireAdminActorId(game, PERMISSIONS.playersDelete);
 
   const [existing] = await db.select({ id: people.id, handle: people.handle }).from(people).where(eq(people.id, playerId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };

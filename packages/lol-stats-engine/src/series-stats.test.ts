@@ -21,6 +21,7 @@ function line(overrides: Partial<PlayerGameLine>): PlayerGameLine {
     handle: "Top",
     championName: "Ahri",
     role: "TOP",
+    hasStats: true,
     kills: 0,
     deaths: 0,
     assists: 0,
@@ -84,6 +85,21 @@ describe("averageSeriesLines", () => {
     const [average] = averageSeriesLines([line({ championName: "Ahri" }), line({ championName: "Jinx" }), line({ championName: "Ahri" })]);
     expect(average!.champions).toEqual(["Ahri", "Jinx"]);
     expect(average!.games).toBe(3);
+  });
+
+  it("counts a game without stats as played but leaves its zeros out of the numbers", () => {
+    const [average] = averageSeriesLines([
+      line({ kills: 4, deaths: 2, assists: 6, killParticipation: 50, csPerMinute: 8, goldPerMinute: 400 }),
+      line({ hasStats: false, championName: "Jinx", killParticipation: 0, csPerMinute: null, goldPerMinute: null }),
+    ]);
+    expect(average).toMatchObject({ games: 2, statGames: 1, hasStats: true, kills: 4, deaths: 2, assists: 6, killParticipation: 50, csPerMinute: 8, goldPerMinute: 400 });
+    expect(average!.champions).toEqual(["Ahri", "Jinx"]);
+  });
+
+  it("has no stats when none of the player's games has them, and leaves an unknown champion out", () => {
+    const [average] = averageSeriesLines([line({ hasStats: false, championName: null }), line({ hasStats: false })]);
+    expect(average).toMatchObject({ games: 2, statGames: 0, hasStats: false, kills: 0, killParticipation: 0 });
+    expect(average!.champions).toEqual(["Ahri"]);
   });
 
   it("keeps a player apart within each entrant and groups unmapped players by handle", () => {

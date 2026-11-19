@@ -12,16 +12,17 @@
 
 import { db } from "@gc-stats/db/client";
 import { activityLog } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import type { Tx } from "../bracket/repository";
 
 /** Shared activity_log entry for the two "auto-activate on schedule" jobs (matches/tournaments) — no user causer, this is a system action. */
-export async function logAutoActivation(subjectType: "match" | "tournament", subjectId: number, description: string, client: Tx = db): Promise<void> {
+export async function logAutoActivation(game: GameSlug, subjectType: "match" | "tournament", subjectId: number, description: string, client: Tx = db): Promise<void> {
   await client.insert(activityLog).values({
     logName: subjectType,
     description,
     subjectType,
     subjectId: String(subjectId),
     event: `${subjectType}.auto_activated`,
-    properties: { status: "live" },
+    properties: { game, status: "live" },
   });
 }

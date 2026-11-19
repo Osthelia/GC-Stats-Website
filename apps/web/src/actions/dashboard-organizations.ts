@@ -52,7 +52,7 @@ import {
   type MemberEntryResult,
   type MembershipActionResult,
 } from "@/lib/organization-membership-service";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasVlr, type GameSlug } from "@gc-stats/db/game";
 
 export type { OrganizationProfileInput, OrganizationProfileField, OrganizationProfileFieldErrors } from "@/lib/organization-profile-validation";
 export type OrganizationProfileResult = { ok: true } | { ok: false; fieldErrors: OrganizationProfileFieldErrors };
@@ -289,7 +289,7 @@ export async function updatePersonProfileForOrganization(game: GameSlug, organiz
   const lastName = input.lastName.trim();
   const countryCode = input.countryCode.trim();
   const liquipediaLink = input.liquipediaLink.trim();
-  const vlrId = input.vlrId.trim();
+  const vlrId = gameHasVlr(game) ? input.vlrId.trim() : "";
 
   if (!handle) fieldErrors.handle = "required";
   else if (handle.length > 255) fieldErrors.handle = "tooLong";
@@ -311,7 +311,7 @@ export async function updatePersonProfileForOrganization(game: GameSlug, organiz
 
   if (liquipediaLink && !isValidUrl(liquipediaLink)) fieldErrors.liquipediaLink = "invalid";
 
-  if (game === "valorant" && !fieldErrors.vlrId && vlrIdValue !== null) {
+  if (gameHasVlr(game) && !fieldErrors.vlrId && vlrIdValue !== null) {
     const [taken] = await db.select({ id: people.id }).from(people).where(and(eq(people.vlrId, vlrIdValue), ne(people.id, personId))).limit(1);
     if (taken) fieldErrors.vlrId = "taken";
   }
@@ -341,7 +341,7 @@ export async function updatePersonProfileForOrganization(game: GameSlug, organiz
     aliases,
     socials,
   };
-  const profileValues = { liquipediaLink: liquipediaLink || null, ...(game === "valorant" ? { vlrId: vlrIdValue } : {}) };
+  const profileValues = { liquipediaLink: liquipediaLink || null, ...(gameHasVlr(game) ? { vlrId: vlrIdValue } : {}) };
   await db.transaction(async (tx) => {
     await updatePersonIdentity(tx, personId, identityValues);
     await updatePersonProfile(tx, game, personId, profileValues);

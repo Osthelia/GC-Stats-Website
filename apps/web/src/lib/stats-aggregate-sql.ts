@@ -12,8 +12,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, sql, type SQL, type SQLWrapper } from "drizzle-orm";
-import type { PgColumn } from "drizzle-orm/pg-core";
+import { and, eq, inArray, isNotNull, sql, type SQL, type SQLWrapper } from "drizzle-orm";
+import { alias, type PgColumn } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
 import { leagueTablesOf, valorantTables } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
@@ -113,24 +113,42 @@ const avgFloat = (column: PgColumn) => sql<number | null>`avg(${column})::float8
 /** No lane opponent in any game: NaN, which the stats table shows as "–" and sorts last. */
 const orNaN = (average: number | null) => average ?? NaN;
 
-/** The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person or per champion. */
+/** The alias of the player stats in the subquery for a team's kills. */
+const TEAMMATE = "teammate";
+
+/**
+ * The players of `scope` (a `select lol_game_player_stats.id ...` subquery), one row per person or per champion.
+ * Every row counts for the games and wins; the numbers come only from the rows with stats (`has_stats`), so a manual
+ * lineup without a scoreboard never lowers an average. By champion, a lineup row without a known champion is left out.
+ */
 export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWrapper, groupBy: "championName" | "personId"): Promise<LeagueStatRow[]> {
   const { games, gamePlayerStats, gameTeamStats } = leagueTablesOf(game);
+  const withStats = (expr: SQL | PgColumn) => sql`case when ${gamePlayerStats.hasStats} then ${expr} end`;
+  // Gold, damage and vision can be missing from a manual scoreboard: their per minute numbers use only the games that have them.
+  const minutesWith = (column: PgColumn) => sumFloat(sql`case when ${gamePlayerStats.hasStats} and ${column} is not null then ${games.durationSeconds} / 60.0 end`);
+  // A manual scoreboard has no team stats: its team's kills are the kills of the team's players in that game.
+  const teammate = alias(gamePlayerStats, TEAMMATE);
+  // Inside a raw sql template an alias renders as its bare name, so the subquery names the table and its alias itself.
+  const teamKillsOfGame = sql`coalesce(${gameTeamStats.kills}, (select sum(${teammate.kills}) from ${gamePlayerStats} as ${sql.identifier(TEAMMATE)} where ${teammate.gameId} = ${gamePlayerStats.gameId} and ${teammate.entrantId} = ${gamePlayerStats.entrantId} and ${teammate.hasStats}))`;
 
   const rows = await db
     .select({
       groupKey: groupBy === "personId" ? sql<string>`coalesce(${gamePlayerStats.personId}::text, '?')` : sql<string>`${gamePlayerStats.championName}`,
       mapsPlayed: sql<number>`count(*)::int`,
+      statGames: sql<number>`count(*) filter (where ${gamePlayerStats.hasStats})::int`,
       wins: sumFloat(sql`case when ${games.winnerEntrantId} = ${gamePlayerStats.entrantId} then 1 else 0 end`),
-      kills: sumFloat(gamePlayerStats.kills),
-      deaths: sumFloat(gamePlayerStats.deaths),
-      assists: sumFloat(gamePlayerStats.assists),
-      teamKills: sumFloat(gameTeamStats.kills),
-      cs: sumFloat(gamePlayerStats.cs),
-      gold: sumFloat(gamePlayerStats.gold),
-      damage: sumFloat(gamePlayerStats.damage),
-      vision: sumFloat(gamePlayerStats.vision),
-      minutes: sumFloat(sql`${games.durationSeconds} / 60.0`),
+      kills: sumFloat(withStats(gamePlayerStats.kills)),
+      deaths: sumFloat(withStats(gamePlayerStats.deaths)),
+      assists: sumFloat(withStats(gamePlayerStats.assists)),
+      teamKills: sumFloat(withStats(teamKillsOfGame)),
+      cs: sumFloat(withStats(gamePlayerStats.cs)),
+      gold: sumFloat(withStats(gamePlayerStats.gold)),
+      damage: sumFloat(withStats(gamePlayerStats.damage)),
+      vision: sumFloat(withStats(gamePlayerStats.vision)),
+      minutes: sumFloat(withStats(sql`${games.durationSeconds} / 60.0`)),
+      goldMinutes: minutesWith(gamePlayerStats.gold),
+      damageMinutes: minutesWith(gamePlayerStats.damage),
+      visionMinutes: minutesWith(gamePlayerStats.vision),
       goldDiff10: avgFloat(gamePlayerStats.goldDiff10),
       goldDiff15: avgFloat(gamePlayerStats.goldDiff15),
       xpDiff10: avgFloat(gamePlayerStats.xpDiff10),
@@ -141,7 +159,7 @@ export async function aggregateLeaguePlayerStatsSql(game: GameSlug, scope: SQLWr
     .from(gamePlayerStats)
     .innerJoin(games, eq(games.id, gamePlayerStats.gameId))
     .leftJoin(gameTeamStats, and(eq(gameTeamStats.gameId, gamePlayerStats.gameId), eq(gameTeamStats.entrantId, gamePlayerStats.entrantId)))
-    .where(inArray(gamePlayerStats.id, scope))
+    .where(and(inArray(gamePlayerStats.id, scope), groupBy === "championName" ? isNotNull(gamePlayerStats.championName) : undefined))
     .groupBy(groupBy === "personId" ? gamePlayerStats.personId : gamePlayerStats.championName);
 
   return rows.map(({ groupKey, mapsPlayed, goldDiff10, goldDiff15, xpDiff10, xpDiff15, csDiff10, csDiff15, ...totals }) => ({

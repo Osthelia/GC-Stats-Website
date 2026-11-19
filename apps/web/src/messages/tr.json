@@ -2423,6 +2423,7 @@
       "title": "Takımlar",
       "subtitle": "Takım profillerini ve kadrolarını yönet.",
       "searchPlaceholder": "İsim, ID veya VLR ID…",
+      "searchPlaceholderLol": "İsim veya ID…",
       "searchSubmit": "Ara",
       "activeWithinLabel": "Son etkinlik",
       "activeWithinAny": "Her zaman",
@@ -2858,12 +2859,14 @@
           "organizations": "Organizasyon katkıları",
           "production": "Prodüksiyon katkıları",
           "matchStats": "Maç katılımı",
+          "gameStats": "Oyun katılımı",
           "news": "Haberler",
           "logos": "Logolar",
           "riotAccounts": "Riot hesapları ({count})",
           "linkedAccount": "Bağlı hesap"
         },
         "matchStatsHint": "Her haritanın arkasındaki tur tur verileri de (öldürmeler, hasarlar, konumlar) taşır. Bir turnuva katılımcısının kilitli kadro katkısı, yalnızca bu katılımcının her haritası seçildiğinde taşınır.",
+        "gameStatsHint": "Her oyunun frame ve olaylarını (öldürmeler, hedefler, totemler) de taşır. Bir turnuva katılımcısının kilitli kadro kaydı, yalnızca o katılımcının tüm oyunları seçildiğinde taşınır.",
         "periodOngoing": "{since} tarihinden beri",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "Riot hesapları tuttuğunuz oyuncuya geçer, böylece oyunları ona bağlı kalır.",
@@ -4055,8 +4058,8 @@
           "loss": "Kaybedildi",
           "notUsed": "Puanlar, Puan eşitlik bozucular arasında olduğunda grubu sıralar."
         },
-        "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (tüm aşamadaki maçlar sayılır)",
-        "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve bu aşamadaki herhangi bir gruptaki tamamlanmış maçları sayılır. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
+        "fieldMatchScope": "Takımlar diğer grupların takımlarıyla da oynar (bu ayara sahip diğer grupların maçları sayılır)",
+        "fieldMatchScopeHint": "Yalnızca bu gruba atanan takımlar listelenir ve tamamlanmış maçları, bu aşamada bu ayara da sahip her grupta sayılır. Bu ayarı olmayan gruplardaki maçlar sayılmaz. Takımları kaydettikten sonra atayın. Yalnızca round robin.",
         "matchScopeNoTeams": "Bu gruba henüz takım atanmadı, bu yüzden tablosu boş. Önce takım atayın.",
         "matchScopeSwitchWarning": "Aşama kapsamına geçmek yalnızca atanan takımları listeler. Bu grupta oynayıp atanmamış takımlar, siz atayana kadar tablodan kaybolur."
       },
@@ -4465,6 +4468,47 @@
               "relay": "Riot bu maçı döndürmedi, daha sonra tekrar deneyin. Mevcut veriler korundu.",
               "other": "Alma işlemi çalıştırılamadı, harita sayfasını kontrol edin. Mevcut veriler korundu."
             }
+          },
+          "league": {
+            "description": "Bu serinin Liquipedia '{{Match}}' kodunu yapıştırın. Oyunlar ve draftlar, henüz boş oldukları yerlerde doldurulur.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Bu wikicode içe aktarılsın mı? Henüz boş olan oyunlar ve draftlar doldurulur. Riot ve Leaguepedia verileri, elle düzenlenmiş draftlar ve önceden girilmiş her şey korunur.",
+            "importSuccess": "Wikicode içe aktarıldı: oyunlar ve draftlar güncellendi.",
+            "liquipediaHint": "Rakipler (opponent1, opponent2) takımların Liquipedia adı olarak da kaydedilir.",
+            "error": {
+              "missingTeams": "Oyunları içe aktarmadan önce iki takım da belirlenmiş olmalı.",
+              "oneMatchOnly": "Wikicode tam olarak bir '{{Match}}' içermeli.",
+              "noGames": "Bu wikicode içinde oynanmış oyun bulunamadı.",
+              "unknownChampions": "Wikicode içinde bilinmeyen şampiyonlar: {names}. Hiçbir şey içe aktarılmadı.",
+              "duplicateChampion": "{order}. oyun: {champion} draftta birden fazla kez geçiyor. Hiçbir şey içe aktarılmadı."
+            },
+            "results": {
+              "forfeit": "Wikicode bir hükmen sonucu gösteriyor. Hiçbir şey içe aktarılmadı, hükmen sonucu maçta elle ayarlayın.",
+              "gameLabel": "{order}. oyun",
+              "created": "Oyun wikicode'dan oluşturuldu.",
+              "filled": "Dolduruldu: {fields}.",
+              "differs": "Wikicode'dan farklı, korundu: {fields}.",
+              "field": {
+                "winner": "kazanan",
+                "duration": "süre"
+              },
+              "draft": {
+                "written": "Draft içe aktarıldı.",
+                "kept": {
+                  "editedByHand": "Draft korundu: elle düzenlenmiş.",
+                  "riotData": "Draft korundu: oyunda Riot verisi var.",
+                  "leaguepediaData": "Draft korundu: oyunda Leaguepedia verisi var.",
+                  "existingDraft": "Draft korundu: oyunda zaten bir draft var."
+                },
+                "none": {
+                  "noDraft": "Wikicode içinde draft yok.",
+                  "noSide": "Draft içe aktarılmadı: wikicode 1. takımın hangi tarafta oynadığını belirtmiyor."
+                }
+              },
+              "patchSet": "Maça {patch} yaması ayarlandı.",
+              "bestOfDiffers": "Wikicode best of {bestOf} diyor, maç kendi değerini koruyor.",
+              "firstPickAssumed": "Wikicode ilk pick'in kimde olduğunu belirtmiyor, bu yüzden mavi taraf varsayıldı. Drafta göz atın."
+            }
           }
         },
         "veto": {
@@ -4836,9 +4880,80 @@
             "riotFetch": "Riot'tan al",
             "riotSuccess": "Maç Riot'tan kaydedildi",
             "riotTournamentRealm": "Bu maç turnuva realm'inde oynandı, bu yüzden Riot API'sinden alınamaz."
-          }
+          },
+          "lineupButton": "Kadro dizilişi"
         },
-        "liquipediaImportButton": "Liquipedia maç içe aktarma"
+        "liquipediaImportButton": "Liquipedia maç içe aktarma",
+        "lineup": {
+          "metaTitle": "Kadro dizilişi",
+          "backToMatch": "Maça dön",
+          "title": "{order}. oyunun dizilişi",
+          "description": "Bu oyunu kimin, hangi koridorda ve hangi şampiyonla oynadığı. Riot veya Leaguepedia verisi olmayan oyunlar için; sonraki bir içe aktarma onun yerini alır.",
+          "importedHint": "Bu oyunun Riot veya Leaguepedia verisi var, bu yüzden oyuncular içe aktarmadan gelir.",
+          "fromPreviousGame": "Serinin önceki oyunundan dolduruldu. Oyuncuları kontrol edin, şampiyonları ekleyin, sonra kaydedin.",
+          "withStats": "Skor tablosunu ekle",
+          "withStatsHint": "On oyuncunun öldürme, ölüm, asist ve CS sayıları ile oyun süresi. Altın, hasar ve görüş boş bırakılabilir. Skor tablosu olmadan oyun, oynanan oyunlar, kazanma oranı ve şampiyonlar için sayılır ama ortalamalar için sayılmaz.",
+          "duration": "Oyun süresi (d:ss)",
+          "draftPicks": "Draftta seçilenler: {champions}",
+          "player": "Oyuncu",
+          "pickPlayer": "Oyuncu seç",
+          "searchPlayer": "Oyuncu ara…",
+          "newPlayer": "+ Yeni oyuncu",
+          "newPlayerHandle": "Yeni oyuncunun adı",
+          "newPlayerTag": "(yeni)",
+          "clearPlayer": "Oyuncuyu kaldır",
+          "champion": "Şampiyon",
+          "unknownChampion": "Bilinmiyor",
+          "searchChampion": "Şampiyon ara…",
+          "noResults": "Sonuç yok.",
+          "stat": {
+            "kills": "Öldürme",
+            "deaths": "Ölüm",
+            "assists": "Asist",
+            "cs": "CS",
+            "gold": "Altın",
+            "damage": "Hasar",
+            "vision": "Görüş"
+          },
+          "save": "Dizilişi kaydet",
+          "saving": "Kaydediliyor…",
+          "saved": "Diziliş kaydedildi.",
+          "error": {
+            "notFound": "Bu oyun maça ait değil.",
+            "entrantsUnset": "Önce maçın iki takımı da belirlenmeli.",
+            "importedGame": "Bu oyunun Riot veya Leaguepedia verisi var; dizilişi elle değiştirilemez.",
+            "unknownPerson": "Oyunculardan biri artık mevcut değil.",
+            "problem": {
+              "notAnEntrant": "Bir oyuncu bu maçta olmayan bir takımda.",
+              "invalidLane": "Bir koridor geçersiz.",
+              "duplicateLane": "{lane} bir takımda iki kez dolduruldu.",
+              "duplicatePerson": "Bir oyuncu dizilişte iki kez var.",
+              "invalidHandle": "Yeni bir oyuncunun adı olmalı.",
+              "unknownChampion": "{championName} bu yamanın şampiyonu değil.",
+              "duplicateChampion": "{championName} iki kez seçildi.",
+              "championsUnavailable": "Bu yamanın şampiyonları yüklenemedi. Daha sonra tekrar deneyin veya şampiyonları boş bırakın.",
+              "invalidStat": "0 ile {max} arasında bir tam sayı girin.",
+              "durationRequired": "Skor tablosu oyun süresini (d:ss) gerektirir.",
+              "playerMissing": "Skor tablosu, iki takımın her koridorunda bir oyuncu gerektirir.",
+              "statMissing": "Skor tablosu için gerekli.",
+              "buildUnavailable": "Bu yamanın sihirdar büyüleri, rünleri ve eşyaları yüklenemedi. Daha sonra tekrar deneyin veya dizilimi boş bırakın.",
+              "unknownBuildPart": "Bu yamada yok.",
+              "duplicateSummoner": "Zaten diğer sihirdar büyüsü.",
+              "secondaryTreeOfKeystone": "Bu, ana rünün kendi yolu; başka birini seçin."
+            }
+          },
+          "optional": "isteğe bağlı",
+          "build": "Dizilim",
+          "buildSet": "girildi",
+          "buildUnavailable": "Bu yamanın sihirdar büyüleri, rünleri ve eşyaları yüklenemedi. Daha sonra tekrar deneyin.",
+          "summoner": "Sihirdar büyüsü {slot}",
+          "keystone": "Ana rün",
+          "secondaryTree": "İkincil yol",
+          "item": "Eşya {slot}",
+          "trinket": "Muska",
+          "empty": "Boş",
+          "search": "Ara…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5115,7 +5230,15 @@
         "doneDescription": "İçe aktarma tamamlandı.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "İçe aktarılıyor ve Riot verileri alınıyor, biraz sürebilir.",
-        "close": "Kapat"
+        "close": "Kapat",
+        "league": {
+          "dialogDescription": "Maçın wikicode'unu yapıştırın. Oyunlar ve draftlar, henüz boş oldukları yerlerde doldurulur.",
+          "importingHint": "İçe aktarılıyor, bu biraz sürebilir.",
+          "legend": {
+            "partial": "Oyuncu verisi veya drafti olmayan oyunlar",
+            "done": "Her oyunda oyuncu verisi ve draft var"
+          }
+        }
       },
       "activeFilterLabel": "Aktivite",
       "activeFilterAny": "Tüm turnuvalar",

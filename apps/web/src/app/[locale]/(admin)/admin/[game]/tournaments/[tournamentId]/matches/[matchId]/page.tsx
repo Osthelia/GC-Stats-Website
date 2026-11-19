@@ -24,6 +24,7 @@ import { MatchDeleteButton } from "@/components/admin/match-delete-button";
 import { MatchMapsPanel } from "@/components/admin/match-maps-panel";
 import { MatchGamesPanel, type MatchGameView } from "@/components/admin/match-games-panel";
 import { getLeaguepediaLinkStatus, listLeaguepediaGameOptions } from "@/lib/admin-leaguepedia";
+import { isLolRelayAvailable } from "@/lib/lol-relay-client";
 import type { LeagueGameEntrant } from "@/components/admin/league-game-dialog";
 import { AdminPublicLinkButton } from "@/components/admin/admin-public-link-button";
 import { matchStatusBadgeClass } from "@/lib/status-colors";
@@ -49,7 +50,7 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
   if (!Number.isInteger(tournId) || !Number.isInteger(id)) notFound();
 
   // Maps are Valorant rows and LoL games are lol_games rows: each query only runs for the game that has it.
-  const [access, t, match, entrants, mapRows, gameRows, leaguepediaGames, leaguepediaStatus] = await Promise.all([
+  const [access, t, match, entrants, mapRows, gameRows, leaguepediaGames, leaguepediaStatus, relayAvailable] = await Promise.all([
     requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView, game),
     getTranslations("admin.tournaments.matches"),
     getAdminMatch(game, id),
@@ -58,6 +59,7 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
     gameHasSeriesGames(game) ? listLeagueMatchGames(id) : Promise.resolve([]),
     gameHasSeriesGames(game) ? listLeaguepediaGameOptions(tournId) : Promise.resolve([]),
     gameHasSeriesGames(game) ? getLeaguepediaLinkStatus(tournId) : Promise.resolve(null),
+    gameHasSeriesGames(game) ? isLolRelayAvailable() : Promise.resolve(false),
   ]);
   if (!match || match.tournamentId !== tournId) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
@@ -132,7 +134,7 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
         <div className="lg:col-span-5">
           {gameHasMaps(game) && <MatchMapsPanel tournamentId={tournId} matchId={id} maps={mapRows} canManage={canManage} />}
           {gameHasSeriesGames(game) && leaguepediaLink && (
-            <MatchGamesPanel tournamentId={tournId} matchId={id} games={games} entrants={matchEntrants} leaguepediaGames={leaguepediaGames} leaguepediaLink={leaguepediaLink} canManage={canManage} />
+            <MatchGamesPanel tournamentId={tournId} matchId={id} games={games} entrants={matchEntrants} leaguepediaGames={leaguepediaGames} leaguepediaLink={leaguepediaLink} relayAvailable={relayAvailable} canManage={canManage} />
           )}
         </div>
       </div>

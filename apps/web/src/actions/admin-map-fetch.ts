@@ -38,8 +38,8 @@ export type { FetchMapResult, FetchMapError, TeamColorRoster } from "@/lib/map-f
 export type { MissingPuuidPlayer } from "@/lib/map-fetch/identity-resolution";
 export type { RiotRelayError, RiotRelayRegion };
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -99,7 +99,7 @@ export type FetchMapOptions = { puuidMapping?: Record<string, number>; teamAColo
 
 export async function fetchMapData(game: GameSlug, mapId: number, options?: FetchMapOptions): Promise<FetchMapResult> {
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const applied = await applyFormMatchId(mapId, options?.apiMatchId, actorUserId);
   if (!applied.ok) return applied;
@@ -120,7 +120,7 @@ export type RenewMapError = RiotRelayError | { kind: "mapNotFound" } | { kind: "
 export type RenewMapResult = { ok: true } | { ok: false; error: RenewMapError };
 
 export async function renewMapData(game: GameSlug, mapId: number, apiMatchId?: string): Promise<RenewMapResult> {
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const applied = await applyFormMatchId(mapId, apiMatchId, actorUserId);
   if (!applied.ok) return applied;
@@ -145,7 +145,7 @@ const MATCH_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
 export async function mergeMapSegments(mapId: number, input: MergeSegmentsInput): Promise<MergeSegmentsResult> {
   const { maps } = valorantTables;
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor("valorant");
 
   const fieldErrors: MergeSegmentsFieldErrors = {};
   if (!RIOT_RELAY_REGIONS.includes(input.region)) fieldErrors.region = "invalid";

@@ -17,11 +17,11 @@ import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requirePointTypesActor(): Promise<void> {
+async function requirePointTypesActor(game: GameSlug): Promise<void> {
   // Re-checked here, not just relied on from the /admin layout guard — a
   // server action is reachable as its own POST endpoint regardless of which
   // page rendered the form that calls it.
-  await requireActorPermission(PERMISSIONS.pointTypesManage);
+  await requireActorPermission(PERMISSIONS.pointTypesManage, game);
 }
 
 export type PointTypeField = "name" | "label" | "startDate" | "endDate";
@@ -81,7 +81,7 @@ async function validatePointType(game: GameSlug, input: PointTypeInput, excludeI
 
 export async function createPointType(game: GameSlug, input: PointTypeInput): Promise<PointTypeResult> {
   const { pointTypes } = gameTables(game);
-  await requirePointTypesActor();
+  await requirePointTypesActor(game);
 
   const fieldErrors = await validatePointType(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -97,7 +97,7 @@ export async function createPointType(game: GameSlug, input: PointTypeInput): Pr
 
 export async function updatePointType(game: GameSlug, id: number, input: PointTypeInput): Promise<PointTypeResult> {
   const { pointTypes } = gameTables(game);
-  await requirePointTypesActor();
+  await requirePointTypesActor(game);
 
   const [existingRow] = await db.select({ id: pointTypes.id }).from(pointTypes).where(eq(pointTypes.id, id)).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -117,7 +117,7 @@ export type DeletePointTypeResult = { ok: true } | { ok: false; error: "notFound
 
 export async function deletePointType(game: GameSlug, id: number): Promise<DeletePointTypeResult> {
   const { pointTypes } = gameTables(game);
-  await requirePointTypesActor();
+  await requirePointTypesActor(game);
 
   const [existing] = await db.select({ id: pointTypes.id }).from(pointTypes).where(eq(pointTypes.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };

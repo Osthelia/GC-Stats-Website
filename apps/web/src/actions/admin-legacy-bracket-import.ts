@@ -57,7 +57,7 @@ export type GenerateLegacyShapeResult = { ok: true } | { ok: false; error: strin
  */
 export async function generateLegacyBracketShape(game: GameSlug, input: GenerateLegacyShapeInput): Promise<GenerateLegacyShapeResult> {
   const { stages, stageContainers } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select().from(stages).where(eq(stages.id, input.stageId));
   if (!stage) return { ok: false, error: "stageNotFound" };
@@ -173,7 +173,7 @@ export type AssignLegacyMatchResult = { ok: true } | { ok: false; error: string 
  */
 export async function assignLegacyMatchToSlot(game: GameSlug, input: AssignLegacyMatchInput): Promise<AssignLegacyMatchResult> {
   const { matches, bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (input.sourceMatchId === input.targetMatchId) return { ok: false, error: "sameMatch" };
 
@@ -208,7 +208,7 @@ export type UnassignLegacyMatchResult = { ok: true } | { ok: false; error: strin
  *  the generated shape stays complete and droppable. */
 export async function unassignLegacyMatch(game: GameSlug, input: UnassignLegacyMatchInput): Promise<UnassignLegacyMatchResult> {
   const { stageContainers, matches, bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const placed = await loadMatchWithContainer(game, input.matchId, input.stageId);
   if (!placed) return { ok: false, error: "notFound" };
@@ -262,7 +262,7 @@ export type AddLegacyTargetMatchResult = { ok: true } | { ok: false; error: stri
  *  the real matches they're placing. */
 export async function addLegacyTargetMatch(game: GameSlug, input: AddLegacyTargetMatchInput): Promise<AddLegacyTargetMatchResult> {
   const { matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (!Number.isInteger(input.round) || input.round < 1) return { ok: false, error: "invalidRound" };
   if (!Number.isInteger(input.bestOf) || input.bestOf < 1) return { ok: false, error: "invalidBestOf" };
@@ -280,7 +280,7 @@ export type DeleteLegacyTargetMatchResult = { ok: true } | { ok: false; error: s
  *  unassignLegacyMatch first — this never deletes a real match. */
 export async function deleteLegacyTargetMatch(game: GameSlug, input: DeleteLegacyTargetMatchInput): Promise<DeleteLegacyTargetMatchResult> {
   const { matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const loaded = await loadMatchWithContainer(game, input.matchId, input.stageId);
   if (!loaded) return { ok: false, error: "notFound" };
@@ -302,7 +302,7 @@ export type MoveLegacyTargetMatchResult = { ok: true } | { ok: false; error: str
  *  in the target canvas. */
 export async function moveLegacyTargetMatch(game: GameSlug, input: MoveLegacyTargetMatchInput): Promise<MoveLegacyTargetMatchResult> {
   const { matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (!Number.isInteger(input.round) || input.round < 1) return { ok: false, error: "invalidRound" };
 
@@ -323,7 +323,7 @@ export type ConnectLegacyEdgeResult = { ok: true } | { ok: false; error: string 
  *  slot, mirroring the normal editor's onConnect behavior. */
 export async function connectLegacyEdge(game: GameSlug, input: ConnectLegacyEdgeInput): Promise<ConnectLegacyEdgeResult> {
   const { bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (input.fromMatchId === input.toMatchId) return { ok: false, error: "sameMatch" };
   const from = await loadMatchWithContainer(game, input.fromMatchId, input.stageId);
@@ -344,7 +344,7 @@ export type DisconnectLegacyEdgeResult = { ok: true } | { ok: false; error: stri
 
 export async function disconnectLegacyEdge(game: GameSlug, input: DisconnectLegacyEdgeInput): Promise<DisconnectLegacyEdgeResult> {
   const { bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const to = await loadMatchWithContainer(game, input.toMatchId, input.stageId);
   if (!to || !to.isTarget) return { ok: false, error: "notFound" };

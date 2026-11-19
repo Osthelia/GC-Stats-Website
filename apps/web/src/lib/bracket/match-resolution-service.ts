@@ -147,7 +147,7 @@ async function allMatchesCompleted(game: GameSlug, tx: Tx, containerId: number):
 
 /**
  * Cross-group play: a group with `matchScope: "stage"` counts the stage's
- * matches (of the stage's round robin groups) that involve its pinned teams,
+ * matches (of the stage's stage-scoped groups) that involve its pinned teams,
  * wherever they are stored, plus every match stored in the group itself, so a
  * result in any of them can be the one that finishes it.
  */

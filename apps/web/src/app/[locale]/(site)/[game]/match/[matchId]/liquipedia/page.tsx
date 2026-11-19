@@ -7,12 +7,13 @@
  */
 
 import type { Metadata } from "next";
-import { gameHasLiquipediaMatches } from "@gc-stats/db/game";
+import { gameHasLiquipediaMatches, gameHasSeriesGames } from "@gc-stats/db/game";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { parseEntityId, slugify } from "@/lib/entity-id";
 import { getLiquipediaMatchWikicode } from "@/lib/liquipedia-match-data";
+import { getLiquipediaLolMatchWikicode } from "@/lib/liquipedia-lol-match-data";
 import { LiquipediaWikicodeBlock } from "@/components/match/liquipedia-wikicode-block";
 import { gameFromParams } from "@/lib/game";
 
@@ -29,7 +30,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const matchId = parseEntityId(matchIdParam);
   if (matchId == null) notFound();
 
-  const data = await getLiquipediaMatchWikicode(game, matchId);
+  const data = await (gameHasSeriesGames(game) ? getLiquipediaLolMatchWikicode : getLiquipediaMatchWikicode)(game, matchId);
   if (!data) notFound();
 
   const t = await getTranslations("matchLiquipedia");

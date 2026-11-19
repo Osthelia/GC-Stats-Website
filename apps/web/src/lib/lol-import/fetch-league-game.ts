@@ -315,7 +315,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
     return { ok: true, gameId: stored.gameId };
   } catch (err) {
     if (err instanceof AccountConflictError) return { ok: false, error: { kind: "accountConflict", puuid: err.puuid } };
-    console.error(`[leaguepedia] storing game ${input.order} of match #${input.matchId} failed`, err);
+         console.error("[leaguepedia] storing game %d of match #%s failed", input.order, input.matchId, err);
     return { ok: false, error: { kind: "storeFailed", message: describeStoreError(err) } };
   }
 }

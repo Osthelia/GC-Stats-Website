@@ -21,7 +21,7 @@ import {
   logos,
   activityLog,
   sharedPeople,
-  PERMISSIONS, gameTables, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
+  PERMISSIONS, gameTables, leagueTablesOf, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { MATCH_STATS_TAG } from "@/lib/cache-tags";
 import { rangeLower, closeRange } from "@/lib/daterange";
@@ -44,6 +44,8 @@ export type PlayerMergeSelection = {
   news: number[];
   logos: string[];
   matchStats: number[];
+  /** `lol_game_player_stats` ids (League only): the games to move, with their frames and events. */
+  gameStats: number[];
   linkedAccount: boolean;
   /** Moves the Riot accounts (League only). */
   riotAccounts: boolean;
@@ -55,6 +57,38 @@ class SourceStillUsedError extends Error {}
 
 export type MergePlayersResult = { ok: true } | { ok: false; error: "samePlayer" | "sourceNotFound" | "targetNotFound" | "targetAlreadyLinked" | "sourceStillUsed" };
 
+type MergeTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/**
+ * The locked roster credit (entrant_members) only follows the merge once every game or map stat the
+ * source has under that entrant is moved — a partial selection would otherwise credit the target
+ * with the whole entrant while most of the individual stats stay on the source.
+ */
+async function moveLockedRosterCredits(tx: MergeTx, game: GameSlug, sourcePersonId: number, targetPersonId: number, entrantIds: number[], moved: Map<number, number>, totals: Map<number, number>): Promise<void> {
+  const { entrantMembers } = gameTables(game);
+  for (const entrantId of entrantIds) {
+    if (moved.get(entrantId) !== totals.get(entrantId)) continue;
+
+    const memberRows = await tx
+      .select({ id: entrantMembers.id, role: entrantMembers.role })
+      .from(entrantMembers)
+      .where(and(eq(entrantMembers.entrantId, entrantId), eq(entrantMembers.personId, sourcePersonId)));
+
+    for (const member of memberRows) {
+      const [memberConflict] = await tx
+        .select({ id: entrantMembers.id })
+        .from(entrantMembers)
+        .where(and(eq(entrantMembers.entrantId, entrantId), eq(entrantMembers.personId, targetPersonId), eq(entrantMembers.role, member.role)))
+        .limit(1);
+      // $target is already a locked-roster member of this entrant with the same role — skip
+      // (the unique (entrant, person, role) constraint would reject a duplicate anyway).
+      if (memberConflict) continue;
+
+      await tx.update(entrantMembers).set({ personId: targetPersonId }).where(eq(entrantMembers.id, member.id));
+    }
+  }
+}
+
 /**
  * Merges specific items of $source's data into $target — player-side mirror
  * of admin-team-merge.ts::mergeTeams (see its docblock for the general
@@ -62,8 +96,9 @@ export type MergePlayersResult = { ok: true } | { ok: false; error: "samePlayer"
  * `removeSource` is set.
  */
 export async function mergePlayers(game: GameSlug, sourcePersonId: number, targetPersonId: number, selection: PlayerMergeSelection): Promise<MergePlayersResult> {
-  const { people, rosterMemberships, organizationMemberships, productionCredits, newsRelations, entrantMembers } = gameTables(game);
+  const { people, rosterMemberships, organizationMemberships, productionCredits, newsRelations } = gameTables(game);
   const { mapPlayerStats, mapRoundsRaw, mapRoundKillsRaw, mapRoundDamagesRaw, mapRoundPlayerLoadoutsRaw, mapRoundPlayerPositionsRaw } = valorantTablesOf(game);
+  const { gamePlayerStats, gameFramesRaw, gameEventsRaw } = leagueTablesOf(game);
   const access = await requireActorPermission(PERMISSIONS.playersMerge, game);
 
   if (sourcePersonId === targetPersonId) return { ok: false, error: "samePlayer" };
@@ -77,7 +112,7 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
   // admin explicitly asked to move this one item, so a conflict here is worth a clear rejection.
   if (selection.linkedAccount && source.userId && target.userId) return { ok: false, error: "targetAlreadyLinked" };
 
-  const counts = { teamHistory: 0, organizations: 0, productionCredits: 0, news: 0, logos: 0, matchStats: 0, riotAccounts: 0, linkedAccount: false, sourceRemoved: false };
+  const counts = { teamHistory: 0, organizations: 0, productionCredits: 0, news: 0, logos: 0, matchStats: 0, gameStats: 0, riotAccounts: 0, linkedAccount: false, sourceRemoved: false };
 
   try {
     await db.transaction(async (tx) => {
@@ -257,27 +292,49 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
           entrantMovedCounts.set(row.entrantId, (entrantMovedCounts.get(row.entrantId) ?? 0) + 1);
         }
 
-        for (const entrantId of entrantIds) {
-          if (entrantMovedCounts.get(entrantId) !== entrantTotals.get(entrantId)) continue;
+        await moveLockedRosterCredits(tx, game, sourcePersonId, targetPersonId, entrantIds, entrantMovedCounts, entrantTotals);
+      }
 
-          const memberRows = await tx
-            .select({ id: entrantMembers.id, role: entrantMembers.role })
-            .from(entrantMembers)
-            .where(and(eq(entrantMembers.entrantId, entrantId), eq(entrantMembers.personId, sourcePersonId)));
+      if (selection.gameStats.length) {
+        const rows = await tx
+          .select({ id: gamePlayerStats.id, gameId: gamePlayerStats.gameId, entrantId: gamePlayerStats.entrantId })
+          .from(gamePlayerStats)
+          .where(and(eq(gamePlayerStats.personId, sourcePersonId), inArray(gamePlayerStats.id, selection.gameStats)));
 
-          for (const member of memberRows) {
-            const [memberConflict] = await tx
-              .select({ id: entrantMembers.id })
-              .from(entrantMembers)
-              .where(and(eq(entrantMembers.entrantId, entrantId), eq(entrantMembers.personId, targetPersonId), eq(entrantMembers.role, member.role)))
-              .limit(1);
-            // $target is already a locked-roster member of this entrant with the same role — skip
-            // (the unique (entrant, person, role) constraint would reject a duplicate anyway).
-            if (memberConflict) continue;
-
-            await tx.update(entrantMembers).set({ personId: targetPersonId }).where(eq(entrantMembers.id, member.id));
-          }
+        const entrantIds = [...new Set(rows.map((r) => r.entrantId))];
+        const entrantTotals = new Map<number, number>();
+        if (entrantIds.length) {
+          const totals = await tx
+            .select({ entrantId: gamePlayerStats.entrantId, count: sql<number>`count(*)::int` })
+            .from(gamePlayerStats)
+            .where(and(eq(gamePlayerStats.personId, sourcePersonId), inArray(gamePlayerStats.entrantId, entrantIds)))
+            .groupBy(gamePlayerStats.entrantId);
+          for (const t of totals) entrantTotals.set(t.entrantId, t.count);
         }
+        const entrantMovedCounts = new Map<number, number>();
+
+        for (const row of rows) {
+          // $target already has stats or frames recorded for this exact game — skip (leaves it on $source).
+          const [statConflict] = await tx.select({ id: gamePlayerStats.id }).from(gamePlayerStats).where(and(eq(gamePlayerStats.personId, targetPersonId), eq(gamePlayerStats.gameId, row.gameId))).limit(1);
+          if (statConflict) continue;
+          const [frameConflict] = await tx.select({ frame: gameFramesRaw.frame }).from(gameFramesRaw).where(and(eq(gameFramesRaw.personId, targetPersonId), eq(gameFramesRaw.gameId, row.gameId))).limit(1);
+          if (frameConflict) continue;
+
+          await tx.update(gamePlayerStats).set({ personId: targetPersonId }).where(eq(gamePlayerStats.id, row.id));
+          counts.gameStats++;
+
+          await tx.update(gameFramesRaw).set({ personId: targetPersonId }).where(and(eq(gameFramesRaw.personId, sourcePersonId), eq(gameFramesRaw.gameId, row.gameId)));
+          await tx.update(gameEventsRaw).set({ personId: targetPersonId }).where(and(eq(gameEventsRaw.personId, sourcePersonId), eq(gameEventsRaw.gameId, row.gameId)));
+          await tx.update(gameEventsRaw).set({ targetPersonId }).where(and(eq(gameEventsRaw.targetPersonId, sourcePersonId), eq(gameEventsRaw.gameId, row.gameId)));
+          await tx
+            .update(gameEventsRaw)
+            .set({ assistantPersonIds: sql`array_replace(${gameEventsRaw.assistantPersonIds}, ${sourcePersonId}::bigint, ${targetPersonId}::bigint)` })
+            .where(and(eq(gameEventsRaw.gameId, row.gameId), sql`${sourcePersonId} = ANY(${gameEventsRaw.assistantPersonIds})`));
+
+          entrantMovedCounts.set(row.entrantId, (entrantMovedCounts.get(row.entrantId) ?? 0) + 1);
+        }
+
+        await moveLockedRosterCredits(tx, game, sourcePersonId, targetPersonId, entrantIds, entrantMovedCounts, entrantTotals);
       }
 
       if (selection.linkedAccount && source.userId && !target.userId) {
@@ -307,14 +364,14 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
         subjectType: "person",
         subjectId: String(targetPersonId),
         event: "player.merged",
-        properties: { actorUserId: access.userId, sourceId: sourcePersonId, targetId: targetPersonId, sourceHandle: source.handle, targetHandle: target.handle, counts },
+        properties: { game, actorUserId: access.userId, sourceId: sourcePersonId, targetId: targetPersonId, sourceHandle: source.handle, targetHandle: target.handle, counts },
       });
     });
   } catch (error) {
     if (error instanceof SourceStillUsedError) return { ok: false, error: "sourceStillUsed" };
     throw error;
   }
-  if (counts.matchStats > 0) updateTag(MATCH_STATS_TAG);
+  if (counts.matchStats > 0 || counts.gameStats > 0) updateTag(MATCH_STATS_TAG);
 
   return { ok: true };
 }

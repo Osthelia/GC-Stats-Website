@@ -42,6 +42,8 @@ export type ValorantTotals = {
 
 /** The sums over the games of one group. */
 export type LeagueTotals = {
+  /** The games with stats: a manual lineup without a scoreboard is excluded. */
+  statGames: number;
   wins: number;
   kills: number;
   deaths: number;
@@ -49,11 +51,16 @@ export type LeagueTotals = {
   /** The kills of the player's team in the same games, for the kill participation. */
   teamKills: number;
   cs: number;
+  /** Gold, damage and vision only over the games that have them: a manual scoreboard can leave them out. */
   gold: number;
   damage: number;
   vision: number;
   /** The length of the games played, in minutes, for the per minute stats. */
   minutes: number;
+  /** The minutes of the games that have the gold, the damage or the vision, for their per minute numbers. */
+  goldMinutes: number;
+  damageMinutes: number;
+  visionMinutes: number;
 };
 
 export type LeagueAverages = {

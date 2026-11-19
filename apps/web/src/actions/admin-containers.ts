@@ -23,8 +23,8 @@ import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
 import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type GroupMatchScope, type PointsField } from "@/lib/bracket/config-types";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<void> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 }
 
 export type ContainerField =
@@ -133,7 +133,7 @@ function validateSetName(name: string): ContainerFieldErrors {
 
 /** A set groups containers under one name. `parentId` nests it in another set of the same stage. */
 export async function createContainerSet(game: GameSlug, stageId: number, input: { name: string; parentId: number | null }): Promise<ContainerResult> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const { stageContainers, stages } = gameTables(game);
 
   const [stage] = await db.select({ id: stages.id }).from(stages).where(eq(stages.id, stageId)).limit(1);
@@ -155,7 +155,7 @@ export async function createContainerSet(game: GameSlug, stageId: number, input:
 }
 
 export async function renameContainerSet(game: GameSlug, id: number, stageId: number, input: { name: string }): Promise<ContainerResult> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const { stageContainers } = gameTables(game);
 
   const [existing] = await db
@@ -176,7 +176,7 @@ export type MoveToSetResult = { ok: true } | { ok: false; error: "notFound" | "i
 
 /** Moves a container into a set (or back to the root of its stage with a null parent), last among its new siblings unless an index is given. */
 export async function moveContainerToSet(game: GameSlug, id: number, stageId: number, parentId: number | null, index?: number): Promise<MoveToSetResult> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const { stageContainers } = gameTables(game);
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || (parentId !== null && !Number.isInteger(parentId))) return { ok: false, error: "invalid" };
@@ -197,7 +197,7 @@ export async function moveContainerToSet(game: GameSlug, id: number, stageId: nu
 
 export async function createContainer(game: GameSlug, stageId: number, input: ContainerInput): Promise<ContainerResult> {
   const { stageContainers, stages } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [stage] = await db.select({ id: stages.id, tournamentId: stages.tournamentId }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage) return { ok: false, fieldErrors: { name: "stageNotFound" } };
@@ -229,7 +229,7 @@ export async function createContainer(game: GameSlug, stageId: number, input: Co
  */
 export async function updateContainer(game: GameSlug, id: number, stageId: number, input: ContainerInput): Promise<ContainerResult> {
   const { stageContainers, groupEntries, matches, bracketEdges } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [existing] = await db
     .select({ id: stageContainers.id, containerType: stageContainers.containerType, config: stageContainers.config })
@@ -266,7 +266,7 @@ export type DeleteContainerResult = { ok: true } | { ok: false; error: "notFound
  *  container goes with every match, map and stat row underneath. */
 export async function deleteContainer(game: GameSlug, id: number, stageId: number, force: boolean): Promise<DeleteContainerResult> {
   const { stageContainers, matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (!Number.isInteger(id) || !Number.isInteger(stageId) || typeof force !== "boolean") return { ok: false, error: "invalid" };
 
@@ -305,7 +305,7 @@ export type AssignEntrantsResult = { ok: true } | { ok: false; error: "notFound"
  *  duplicates are avoided by checking first instead). */
 export async function assignEntrantsToContainer(game: GameSlug, containerId: number, entrantIds: number[]): Promise<AssignEntrantsResult> {
   const { stageContainers, stages, entrants, groupEntries } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [container] = await db
     .select({ id: stageContainers.id, tournamentId: stages.tournamentId })
@@ -335,7 +335,7 @@ export type RemoveGroupEntryResult = { ok: true } | { ok: false; error: "notFoun
 
 export async function removeEntrantFromContainer(game: GameSlug, containerId: number, entrantId: number): Promise<RemoveGroupEntryResult> {
   const { groupEntries } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const [existing] = await db
     .select({ id: groupEntries.id })
     .from(groupEntries)
@@ -356,7 +356,7 @@ export type SetParticipantsResult =
  */
 export async function setContainerParticipants(game: GameSlug, containerId: number, stageId: number, entrantIds: number[]): Promise<SetParticipantsResult> {
   const { stageContainers, stages, entrants, groupEntries, matches } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   if (!Number.isInteger(containerId) || !Number.isInteger(stageId) || !Array.isArray(entrantIds) || entrantIds.some((id) => !Number.isInteger(id))) {
     return { ok: false, error: "invalid" };

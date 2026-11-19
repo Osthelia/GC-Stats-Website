@@ -14,7 +14,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { forEachGame } from "../for-each-game";
 import type { GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { gameTables, valorantTablesOf } from "@gc-stats/db";
+import { gameTables, seriesMapTableOf } from "@gc-stats/db";
 
 const INACTIVITY_MONTHS = 12;
 
@@ -41,9 +41,9 @@ async function deactivateInactiveEntitiesForGame(game: GameSlug): Promise<string
     )
     .returning({ id: teams.id });
 
-  // Date of a production credit: the end of its tournament, resolved from whichever scope the credit targets
+  // Date of a production credit: the end of its tournament, resolved from whichever scope the credit targets (a credit's map is a Valorant map or a League game)
   const creditTournamentJoins = sql`
-    left join ${valorantTablesOf(game).maps} mp on mp.id = pc.map_id
+    left join ${seriesMapTableOf(game)} mp on mp.id = pc.map_id
     left join ${gameTables(game).matches} mt on mt.id = coalesce(pc.match_id, mp.match_id)
     left join ${gameTables(game).stageContainers} sc on sc.id = coalesce(pc.container_id, mt.container_id)
     left join ${gameTables(game).stages} st on st.id = coalesce(pc.stage_id, sc.stage_id)

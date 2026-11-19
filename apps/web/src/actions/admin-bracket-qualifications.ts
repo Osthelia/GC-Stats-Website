@@ -21,8 +21,8 @@ import { resolveContainerRankQualifications, resolveContainerMatchQualifications
 import type { Tx } from "@/lib/bracket/repository";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<void> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 }
 
 export async function searchQualificationDestinationContainers(game: GameSlug, query: string): Promise<QualificationContainerSearchResult[]> {
@@ -213,7 +213,7 @@ async function resolveIfSourceAlreadyDecided(game: GameSlug, tx: Tx, value: { so
 
 export async function createQualificationRule(game: GameSlug, input: QualificationRuleInput): Promise<QualificationRuleResult> {
   const { stageQualifications } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const validated = await validateRule(game, input);
   if ("fieldErrors" in validated) return { ok: false, fieldErrors: validated.fieldErrors };
@@ -227,7 +227,7 @@ export async function createQualificationRule(game: GameSlug, input: Qualificati
 
 export async function updateQualificationRule(game: GameSlug, id: number, input: QualificationRuleInput): Promise<QualificationRuleResult> {
   const { stageQualifications } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(stageQualifications).where(eq(stageQualifications.id, id));
   if (!existing) return { ok: false, fieldErrors: { general: "notFound" } };
@@ -246,7 +246,7 @@ export type DeleteQualificationRuleResult = { ok: true } | { ok: false; error: s
 
 export async function deleteQualificationRule(game: GameSlug, id: number): Promise<DeleteQualificationRuleResult> {
   const { stageQualifications } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(stageQualifications).where(eq(stageQualifications.id, id));
   if (!existing) return { ok: false, error: "notFound" };

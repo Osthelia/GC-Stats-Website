@@ -2423,6 +2423,7 @@
       "title": "战队",
       "subtitle": "管理战队资料及名单。",
       "searchPlaceholder": "名称、ID 或 VLR ID…",
+      "searchPlaceholderLol": "名称或 ID…",
       "searchSubmit": "搜索",
       "activeWithinLabel": "近期活跃度",
       "activeWithinAny": "任意时间",
@@ -2858,12 +2859,14 @@
           "organizations": "机构署名",
           "production": "制作署名",
           "matchStats": "参赛记录",
+          "gameStats": "对局记录",
           "news": "资讯",
           "logos": "商标",
           "riotAccounts": "Riot 账号（{count}）",
           "linkedAccount": "已绑定账户"
         },
         "matchStatsHint": "同时会迁移每张地图背后的逐回合数据（击杀、伤害、位置）。只有当该参赛方的每张地图都被选中时，其锁定的名单署名才会一并迁移。",
+        "gameStatsHint": "同时移动每局的帧数据和事件(击杀、目标、守卫)。赛事参赛队的锁定名单记录仅在选中该参赛队的所有对局后才会移动。",
         "periodOngoing": "自 {since} 起",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "Riot 账号会转移给保留的选手，使其对局保持关联。",
@@ -4055,8 +4058,8 @@
           "loss": "负",
           "notUsed": "仅当积分位于决胜规则中时，积分才会影响小组排名。"
         },
-        "fieldMatchScope": "队伍也会与其他小组的队伍比赛(统计整个阶段的比赛)",
-        "fieldMatchScopeHint": "仅列出分配到本组的队伍,并统计其在本阶段任意小组中已完成的比赛。保存后再分配队伍。仅限循环赛。",
+        "fieldMatchScope": "队伍也会与其他小组的队伍比赛(统计具有相同设置的其他小组的比赛)",
+        "fieldMatchScopeHint": "仅列出分配到本组的队伍,并统计其在本阶段同样具有此设置的小组中已完成的比赛。没有此设置的小组的比赛不计入。保存后再分配队伍。仅限循环赛。",
         "matchScopeNoTeams": "本组尚未分配任何队伍,因此积分表为空。请先为其分配队伍。",
         "matchScopeSwitchWarning": "切换为整个阶段范围后,只会列出已分配的队伍。在本组比赛过但未分配的队伍,在分配之前会从积分表中消失。"
       },
@@ -4465,6 +4468,47 @@
               "relay": "Riot 没有返回这场比赛，请稍后再试。现有数据已保留。",
               "other": "无法执行获取，请检查地图页面。现有数据已保留。"
             }
+          },
+          "league": {
+            "description": "粘贴本系列赛在 Liquipedia 上的 '{{Match}}'。对局和选角中仍为空的部分会被补全。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "导入此 wikicode？仍为空的对局和选角会被补全。Riot 和 Leaguepedia 的数据、手动编辑过的选角以及已录入的内容都会保留。",
+            "importSuccess": "已导入 wikicode：对局和选角已更新。",
+            "liquipediaHint": "对阵双方（opponent1、opponent2）也会保存为战队的 Liquipedia 名称。",
+            "error": {
+              "missingTeams": "导入对局前必须先设置双方战队。",
+              "oneMatchOnly": "wikicode 必须恰好包含一个 '{{Match}}'。",
+              "noGames": "在此 wikicode 中未找到已进行的对局。",
+              "unknownChampions": "wikicode 中有未知英雄：{names}。未导入任何内容。",
+              "duplicateChampion": "第 {order} 局：{champion} 在选角中出现了多次。未导入任何内容。"
+            },
+            "results": {
+              "forfeit": "wikicode 显示为弃权。未导入任何内容，请手动设置该比赛的弃权。",
+              "gameLabel": "第 {order} 局",
+              "created": "已根据 wikicode 创建对局。",
+              "filled": "已补全：{fields}。",
+              "differs": "与 wikicode 不同，已保留：{fields}。",
+              "field": {
+                "winner": "胜者",
+                "duration": "时长"
+              },
+              "draft": {
+                "written": "已导入选角。",
+                "kept": {
+                  "editedByHand": "已保留选角：已被手动编辑。",
+                  "riotData": "已保留选角：该局已有 Riot 数据。",
+                  "leaguepediaData": "已保留选角：该局已有 Leaguepedia 数据。",
+                  "existingDraft": "已保留选角：该局已有选角。"
+                },
+                "none": {
+                  "noDraft": "wikicode 中没有选角。",
+                  "noSide": "未导入选角：wikicode 未说明 1 队所在的阵营。"
+                }
+              },
+              "patchSet": "已为比赛设置版本 {patch}。",
+              "bestOfDiffers": "wikicode 为 BO{bestOf}，比赛保留自己的设置。",
+              "firstPickAssumed": "wikicode 未说明谁拥有先选权，因此假定为蓝方。请检查选角。"
+            }
           }
         },
         "veto": {
@@ -4836,9 +4880,80 @@
             "riotFetch": "从 Riot 获取",
             "riotSuccess": "已从 Riot 保存对局",
             "riotTournamentRealm": "该对局在赛事服务器进行，无法从 Riot API 获取。"
-          }
+          },
+          "lineupButton": "出场阵容"
         },
-        "liquipediaImportButton": "Liquipedia 比赛导入"
+        "liquipediaImportButton": "Liquipedia 比赛导入",
+        "lineup": {
+          "metaTitle": "出场阵容",
+          "backToMatch": "返回比赛",
+          "title": "第 {order} 局出场阵容",
+          "description": "这一局谁上场、走哪条路、用哪个英雄。用于没有 Riot 或 Leaguepedia 数据的对局；之后导入会替换它。",
+          "importedHint": "这一局有 Riot 或 Leaguepedia 数据，因此选手来自导入。",
+          "fromPreviousGame": "已按本系列赛的上一局填写。请检查选手，补充英雄后保存。",
+          "withStats": "添加计分板",
+          "withStatsHint": "十名选手的击杀、死亡、助攻和补刀，以及对局时长。金币、伤害和视野可以留空。没有计分板时，该局计入出场局数、胜率和英雄，但不计入平均数据。",
+          "duration": "对局时长 (m:ss)",
+          "draftPicks": "BP 中选择：{champions}",
+          "player": "选手",
+          "pickPlayer": "选择选手",
+          "searchPlayer": "搜索选手…",
+          "newPlayer": "+ 新选手",
+          "newPlayerHandle": "新选手名称",
+          "newPlayerTag": "（新）",
+          "clearPlayer": "移除选手",
+          "champion": "英雄",
+          "unknownChampion": "未知",
+          "searchChampion": "搜索英雄…",
+          "noResults": "无结果。",
+          "stat": {
+            "kills": "击杀",
+            "deaths": "死亡",
+            "assists": "助攻",
+            "cs": "补刀",
+            "gold": "金币",
+            "damage": "伤害",
+            "vision": "视野"
+          },
+          "save": "保存出场阵容",
+          "saving": "保存中…",
+          "saved": "出场阵容已保存。",
+          "error": {
+            "notFound": "这一局不属于该比赛。",
+            "entrantsUnset": "请先设置比赛的两支队伍。",
+            "importedGame": "这一局有 Riot 或 Leaguepedia 数据，不能手动修改出场阵容。",
+            "unknownPerson": "其中一名选手已不存在。",
+            "problem": {
+              "notAnEntrant": "有选手属于不在本场比赛中的队伍。",
+              "invalidLane": "有一条分路无效。",
+              "duplicateLane": "一支队伍的{lane}填写了两次。",
+              "duplicatePerson": "出场阵容中有同一名选手出现两次。",
+              "invalidHandle": "新选手需要名称。",
+              "unknownChampion": "{championName} 不是此版本的英雄。",
+              "duplicateChampion": "{championName} 被选了两次。",
+              "championsUnavailable": "无法加载此版本的英雄。请稍后重试，或将英雄留空。",
+              "invalidStat": "请输入 0 到 {max} 之间的整数。",
+              "durationRequired": "计分板需要对局时长 (m:ss)。",
+              "playerMissing": "计分板需要两队每条分路都有选手。",
+              "statMissing": "计分板需要此项。",
+              "buildUnavailable": "无法加载此版本的召唤师技能、符文和装备。请稍后重试，或将出装留空。",
+              "unknownBuildPart": "不属于此版本。",
+              "duplicateSummoner": "已是另一个召唤师技能。",
+              "secondaryTreeOfKeystone": "这是基石符文所在的系别，请选择其他系别。"
+            }
+          },
+          "optional": "可选",
+          "build": "出装",
+          "buildSet": "已填写",
+          "buildUnavailable": "无法加载此版本的召唤师技能、符文和装备。请稍后重试。",
+          "summoner": "召唤师技能 {slot}",
+          "keystone": "基石符文",
+          "secondaryTree": "副系符文",
+          "item": "装备 {slot}",
+          "trinket": "饰品",
+          "empty": "无",
+          "search": "搜索…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5115,7 +5230,15 @@
         "doneDescription": "导入已完成。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "正在导入并获取 Riot 数据，可能需要一些时间。",
-        "close": "关闭"
+        "close": "关闭",
+        "league": {
+          "dialogDescription": "粘贴比赛的 wikicode。对局和选角中仍为空的部分会被补全。",
+          "importingHint": "正在导入，可能需要一点时间。",
+          "legend": {
+            "partial": "缺少选手数据或选角的对局",
+            "done": "每局都有选手数据和选角"
+          }
+        }
       },
       "activeFilterLabel": "活跃状态",
       "activeFilterAny": "所有赛事",

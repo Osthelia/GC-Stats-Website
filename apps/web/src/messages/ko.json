@@ -2423,6 +2423,7 @@
       "title": "팀",
       "subtitle": "팀 프로필과 로스터를 관리합니다.",
       "searchPlaceholder": "이름, ID 또는 VLR ID…",
+      "searchPlaceholderLol": "이름 또는 ID…",
       "searchSubmit": "검색",
       "activeWithinLabel": "최근 활동",
       "activeWithinAny": "전체 기간",
@@ -2858,12 +2859,14 @@
           "organizations": "단체 활동 이력",
           "production": "제작 활동 이력",
           "matchStats": "경기 참가 기록",
+          "gameStats": "게임 참가 기록",
           "news": "뉴스",
           "logos": "로고",
           "riotAccounts": "Riot 계정 ({count})",
           "linkedAccount": "연동된 계정"
         },
         "matchStatsHint": "각 맵의 라운드별 데이터(킬, 데미지, 포지션)도 함께 이동됩니다. 대회 참가자에 고정된 로스터 크레딧은 해당 참가자의 모든 맵이 선택된 경우에만 이동됩니다.",
+        "gameStatsHint": "각 게임의 프레임과 이벤트(킬, 오브젝트, 와드)도 함께 옮깁니다. 대회 참가 팀의 잠긴 로스터 크레딧은 해당 참가 팀의 모든 게임을 선택했을 때만 옮겨집니다.",
         "periodOngoing": "{since}부터",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "Riot 계정은 유지하는 선수에게 이동하여 그 선수의 게임이 계속 연결됩니다.",
@@ -4055,8 +4058,8 @@
           "loss": "패배",
           "notUsed": "포인트는 타이브레이커에 포인트가 있을 때만 그룹 순위에 반영됩니다."
         },
-        "fieldMatchScope": "팀이 다른 그룹의 팀과도 경기함 (스테이지 전체 경기 집계)",
-        "fieldMatchScopeHint": "이 그룹에 배정된 팀만 표시되며, 이 스테이지의 모든 그룹에서 치른 해당 팀의 완료된 경기가 집계됩니다. 저장 후 팀을 배정하세요. 라운드 로빈 전용.",
+        "fieldMatchScope": "팀이 다른 그룹의 팀과도 경기함 (같은 설정을 가진 다른 그룹의 경기 집계)",
+        "fieldMatchScopeHint": "이 그룹에 배정된 팀만 표시되며, 이 스테이지에서 같은 설정을 가진 그룹에서 치른 해당 팀의 완료된 경기가 집계됩니다. 이 설정이 없는 그룹의 경기는 집계되지 않습니다. 저장 후 팀을 배정하세요. 라운드 로빈 전용.",
         "matchScopeNoTeams": "이 그룹에 배정된 팀이 아직 없어 표가 비어 있습니다. 먼저 팀을 배정하세요.",
         "matchScopeSwitchWarning": "스테이지 범위로 전환하면 배정된 팀만 표시됩니다. 이 그룹에서 경기했지만 배정되지 않은 팀은 배정하기 전까지 표에서 사라집니다."
       },
@@ -4465,6 +4468,47 @@
               "relay": "Riot이 이 경기를 반환하지 않았습니다. 나중에 다시 시도하세요. 기존 데이터는 유지되었습니다.",
               "other": "가져오기를 실행할 수 없었습니다. 맵 페이지를 확인하세요. 기존 데이터는 유지되었습니다."
             }
+          },
+          "league": {
+            "description": "이 시리즈의 Liquipedia '{{Match}}'를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "이 위키코드를 가져올까요? 아직 비어 있는 게임과 드래프트가 채워집니다. Riot과 Leaguepedia 데이터, 수동으로 편집한 드래프트, 이미 입력된 내용은 유지됩니다.",
+            "importSuccess": "위키코드를 가져왔습니다: 게임과 드래프트가 업데이트되었습니다.",
+            "liquipediaHint": "상대 팀(opponent1, opponent2)도 팀의 Liquipedia 이름으로 저장됩니다.",
+            "error": {
+              "missingTeams": "게임을 가져오기 전에 두 팀이 모두 설정되어 있어야 합니다.",
+              "oneMatchOnly": "위키코드에는 '{{Match}}'가 정확히 하나만 있어야 합니다.",
+              "noGames": "이 위키코드에서 진행된 게임을 찾을 수 없습니다.",
+              "unknownChampions": "위키코드에 알 수 없는 챔피언이 있습니다: {names}. 아무것도 가져오지 않았습니다.",
+              "duplicateChampion": "{order}번 게임: {champion}이(가) 드래프트에 두 번 이상 나타납니다. 아무것도 가져오지 않았습니다."
+            },
+            "results": {
+              "forfeit": "위키코드가 기권을 나타냅니다. 아무것도 가져오지 않았습니다. 매치의 기권은 직접 설정하세요.",
+              "gameLabel": "{order}번 게임",
+              "created": "위키코드에서 게임을 만들었습니다.",
+              "filled": "채움: {fields}.",
+              "differs": "위키코드와 달라 유지함: {fields}.",
+              "field": {
+                "winner": "승자",
+                "duration": "경기 시간"
+              },
+              "draft": {
+                "written": "드래프트를 가져왔습니다.",
+                "kept": {
+                  "editedByHand": "드래프트 유지: 수동으로 편집되었습니다.",
+                  "riotData": "드래프트 유지: 이 게임에는 Riot 데이터가 있습니다.",
+                  "leaguepediaData": "드래프트 유지: 이 게임에는 Leaguepedia 데이터가 있습니다.",
+                  "existingDraft": "드래프트 유지: 이 게임에는 이미 드래프트가 있습니다."
+                },
+                "none": {
+                  "noDraft": "위키코드에 드래프트가 없습니다.",
+                  "noSide": "드래프트를 가져오지 않았습니다: 위키코드에 1팀이 어느 진영이었는지 나와 있지 않습니다."
+                }
+              },
+              "patchSet": "매치에 패치 {patch}을(를) 설정했습니다.",
+              "bestOfDiffers": "위키코드는 Best of {bestOf}이지만 매치는 자체 값을 유지합니다.",
+              "firstPickAssumed": "위키코드에 퍼스트 픽 팀이 나와 있지 않아 블루 진영으로 가정했습니다. 드래프트를 확인하세요."
+            }
           }
         },
         "veto": {
@@ -4836,9 +4880,80 @@
             "riotFetch": "Riot에서 가져오기",
             "riotSuccess": "Riot에서 게임을 저장했습니다",
             "riotTournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되어 Riot API에서 가져올 수 없습니다."
-          }
+          },
+          "lineupButton": "출전 명단"
         },
-        "liquipediaImportButton": "Liquipedia 경기 가져오기"
+        "liquipediaImportButton": "Liquipedia 경기 가져오기",
+        "lineup": {
+          "metaTitle": "출전 명단",
+          "backToMatch": "경기로 돌아가기",
+          "title": "{order}세트 출전 명단",
+          "description": "이 게임에 누가 어느 라인에서 어떤 챔피언으로 출전했는지. Riot이나 Leaguepedia 데이터가 없는 게임용이며, 나중에 가져오기를 하면 대체됩니다.",
+          "importedHint": "이 게임에는 Riot 또는 Leaguepedia 데이터가 있어 선수는 가져온 데이터에서 옵니다.",
+          "fromPreviousGame": "시리즈의 이전 게임에서 채웠습니다. 선수를 확인하고 챔피언을 추가한 뒤 저장하세요.",
+          "withStats": "스코어보드 추가",
+          "withStatsHint": "열 명 모두의 킬, 데스, 어시스트, CS와 게임 시간. 골드, 피해량, 시야는 비워 둘 수 있습니다. 스코어보드가 없으면 게임은 출전 경기 수, 승률, 챔피언에는 반영되지만 평균에는 반영되지 않습니다.",
+          "duration": "게임 시간 (m:ss)",
+          "draftPicks": "드래프트 픽: {champions}",
+          "player": "선수",
+          "pickPlayer": "선수 선택",
+          "searchPlayer": "선수 검색…",
+          "newPlayer": "+ 새 선수",
+          "newPlayerHandle": "새 선수 이름",
+          "newPlayerTag": "(신규)",
+          "clearPlayer": "선수 제거",
+          "champion": "챔피언",
+          "unknownChampion": "알 수 없음",
+          "searchChampion": "챔피언 검색…",
+          "noResults": "결과가 없습니다.",
+          "stat": {
+            "kills": "킬",
+            "deaths": "데스",
+            "assists": "어시스트",
+            "cs": "CS",
+            "gold": "골드",
+            "damage": "피해량",
+            "vision": "시야"
+          },
+          "save": "출전 명단 저장",
+          "saving": "저장 중…",
+          "saved": "출전 명단을 저장했습니다.",
+          "error": {
+            "notFound": "이 게임은 경기에 속하지 않습니다.",
+            "entrantsUnset": "먼저 경기의 두 팀을 모두 설정해야 합니다.",
+            "importedGame": "이 게임에는 Riot 또는 Leaguepedia 데이터가 있어 출전 명단을 직접 바꿀 수 없습니다.",
+            "unknownPerson": "선수 중 한 명이 더 이상 존재하지 않습니다.",
+            "problem": {
+              "notAnEntrant": "이 경기에 없는 팀의 선수가 있습니다.",
+              "invalidLane": "올바르지 않은 라인이 있습니다.",
+              "duplicateLane": "한 팀에 {lane}이(가) 두 번 입력되었습니다.",
+              "duplicatePerson": "출전 명단에 같은 선수가 두 번 있습니다.",
+              "invalidHandle": "새 선수에는 이름이 필요합니다.",
+              "unknownChampion": "{championName}은(는) 이 패치의 챔피언이 아닙니다.",
+              "duplicateChampion": "{championName}이(가) 두 번 선택되었습니다.",
+              "championsUnavailable": "이 패치의 챔피언을 불러오지 못했습니다. 나중에 다시 시도하거나 챔피언을 비워 두세요.",
+              "invalidStat": "0부터 {max}까지의 정수를 입력하세요.",
+              "durationRequired": "스코어보드에는 게임 시간(m:ss)이 필요합니다.",
+              "playerMissing": "스코어보드에는 두 팀의 모든 라인에 선수가 필요합니다.",
+              "statMissing": "스코어보드에 필요합니다.",
+              "buildUnavailable": "이 패치의 소환사 주문, 룬, 아이템을 불러오지 못했습니다. 나중에 다시 시도하거나 빌드를 비워 두세요.",
+              "unknownBuildPart": "이 패치에 없습니다.",
+              "duplicateSummoner": "이미 다른 소환사 주문입니다.",
+              "secondaryTreeOfKeystone": "핵심 룬과 같은 계열입니다. 다른 계열을 선택하세요."
+            }
+          },
+          "optional": "선택",
+          "build": "빌드",
+          "buildSet": "입력됨",
+          "buildUnavailable": "이 패치의 소환사 주문, 룬, 아이템을 불러오지 못했습니다. 나중에 다시 시도하세요.",
+          "summoner": "소환사 주문 {slot}",
+          "keystone": "핵심 룬",
+          "secondaryTree": "보조 룬",
+          "item": "아이템 {slot}",
+          "trinket": "장신구",
+          "empty": "없음",
+          "search": "검색…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5115,7 +5230,15 @@
         "doneDescription": "가져오기가 끝났습니다.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "가져오는 중이며 Riot 데이터를 불러오고 있습니다. 잠시 걸릴 수 있습니다.",
-        "close": "닫기"
+        "close": "닫기",
+        "league": {
+          "dialogDescription": "매치의 위키코드를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+          "importingHint": "가져오는 중입니다. 잠시 걸릴 수 있습니다.",
+          "legend": {
+            "partial": "선수 데이터나 드래프트가 없는 게임",
+            "done": "모든 게임에 선수 데이터와 드래프트 있음"
+          }
+        }
       },
       "activeFilterLabel": "활동",
       "activeFilterAny": "모든 대회",

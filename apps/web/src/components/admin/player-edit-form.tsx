@@ -24,6 +24,7 @@ import { updatePlayerProfile, type PlayerProfileFieldErrors } from "@/actions/ad
 import type { AdminPlayerProfile } from "@/lib/admin-players";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
 import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
@@ -157,7 +158,7 @@ export function PlayerEditForm({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {game === "valorant" && (
+                {gameHasVlr(game) && (
                   <FormField label={t("fieldVlrId")} htmlFor="player-vlr-id" error={err("vlrId")}>
                     <Input id="player-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!errors.vlrId} disabled={!canEdit} />
                   </FormField>

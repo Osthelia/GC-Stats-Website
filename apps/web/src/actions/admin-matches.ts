@@ -14,6 +14,7 @@
 
 import { eq, ne, and, asc, inArray, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
+import { after } from "next/server";
 import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
@@ -23,19 +24,26 @@ import { resolveMatch, MatchResolutionValidationError } from "@/lib/bracket/matc
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { MAP_OPTIONS, MAP_UNKNOWN, VALORANT_MAP_POOL } from "@/lib/valorant-maps";
 import { VALORANT_AGENTS } from "@/lib/valorant-agents";
-import { parseMapVeto, parseMapTemplates, parseMatchOpponentNames } from "@/lib/wikicode-import";
-import { findLiquipediaMappings } from "@/lib/admin-liquipedia";
+import { WIKICODE_MAX_LENGTH, parseMapVeto, parseMapTemplates } from "@/lib/wikicode-import";
+import {
+  decideLiquipediaLinks,
+  planLiquipediaLinks,
+  writeLiquipediaLinks,
+  type LiquipediaImportConflict,
+  type LiquipediaLinkResolutions,
+} from "@/lib/liquipedia-team-links";
 import { fetchMapData as runFetchMapData } from "@/lib/map-fetch/fetch-map-data";
 import { detectStartingAttacker } from "@/lib/map-fetch/detect-start-side";
 import type { FetchMapError, TeamColorRoster } from "@/lib/map-fetch/types";
-import { validateLiquipediaName } from "@/lib/liquipedia-name-validation";
 import { syncPlayedMapsFromVeto } from "@/lib/match-veto-maps";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import { PATCH_MAX_LENGTH } from "@/lib/admin-validation";
 import { logActivity, diffChanges, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
-import type { GameSlug } from "@gc-stats/db/game";
+import { gameHasDataDragon, type GameSlug } from "@gc-stats/db/game";
+import { ensurePatchCatalog } from "@/lib/data-dragon-client";
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -64,7 +72,7 @@ export type MatchDetailsResult = { ok: true } | { ok: false; fieldErrors: MatchD
 
 export async function updateMatchDetails(game: GameSlug, matchId: number, input: MatchDetailsInput): Promise<MatchDetailsResult> {
   const { matches, entrants, stageContainers, stages, groupEntries } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { label: "notFound" } };
@@ -120,7 +128,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
 
   const scheduledAt = input.scheduledAt ? parseIsoInstant(input.scheduledAt) : null;
   if (input.scheduledAt && !scheduledAt) fieldErrors.scheduledAt = "invalid";
-  if (input.patch.trim().length > 20) fieldErrors.patch = "tooLong";
+  if (input.patch.trim().length > PATCH_MAX_LENGTH) fieldErrors.patch = "tooLong";
   if (input.label.trim().length > 255) fieldErrors.label = "tooLong";
 
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -141,6 +149,7 @@ export async function updateMatchDetails(game: GameSlug, matchId: number, input:
     }
   });
   updateTag(matchTag(matchId));
+  if (gameHasDataDragon(game) && values.patch !== null) after(() => ensurePatchCatalog(values.patch));
 
   return { ok: true };
 }
@@ -150,7 +159,7 @@ export type DeleteMatchResult = { ok: true } | { ok: false; error: "notFound" | 
 /** V1's admin/matches/show.blade.php delete button — a completed match is locked (mirrors the same guard already used for entrant/status/bestOf edits above: its result may already be propagated through the bracket). */
 export async function deleteMatch(game: GameSlug, matchId: number): Promise<DeleteMatchResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: matches.id, status: matches.status }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -174,7 +183,7 @@ export type ReportResultInput = { winnerId: number; scoreA: string; scoreB: stri
 export type ReportResultResult = { ok: true } | { ok: false; fieldErrors: ReportResultFieldErrors };
 
 export async function reportMatchResult(game: GameSlug, matchId: number, input: ReportResultInput): Promise<ReportResultResult> {
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors: ReportResultFieldErrors = {};
   const scoreA = Number(input.scoreA);
@@ -215,7 +224,7 @@ export async function reportMatchResult(game: GameSlug, matchId: number, input: 
 /** Running score of an undecided series (e.g. 1-1 in a BO3): stored as is, the match stays open and nothing propagates. */
 export async function saveMatchLiveScore(game: GameSlug, matchId: number, input: { scoreA: string; scoreB: string }): Promise<ReportResultResult> {
   const { matches } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const scoreA = Number(input.scoreA);
   const scoreB = Number(input.scoreB);
@@ -252,7 +261,7 @@ export type SaveVetoResult = { ok: true } | { ok: false; fieldErrors: VetoFieldE
 export async function saveMatchVeto(game: GameSlug, matchId: number, rows: VetoRowInput[]): Promise<SaveVetoResult> {
   const { matches } = gameTables(game);
   const { matchVetos } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { rows: "notFound" } };
@@ -383,7 +392,7 @@ function deriveMapIsForfeit(input: MapInput): boolean {
 export async function addMap(game: GameSlug, matchId: number, input: MapInput): Promise<MapResult> {
   const { matches } = gameTables(game);
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [match] = await db.select({ id: matches.id }).from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, fieldErrors: { mapName: "matchNotFound" } as MapFieldErrors };
@@ -419,7 +428,7 @@ export async function addMap(game: GameSlug, matchId: number, input: MapInput): 
 
 export async function updateMap(game: GameSlug, mapId: number, input: MapInput): Promise<MapResult> {
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select().from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, fieldErrors: { mapName: "notFound" } as MapFieldErrors };
@@ -454,7 +463,7 @@ export type DeleteMapResult = { ok: true } | { ok: false; error: "notFound" };
 
 export async function deleteMap(game: GameSlug, mapId: number): Promise<DeleteMapResult> {
   const { maps } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -474,7 +483,7 @@ export type ResetMapResult = { ok: true } | { ok: false; error: "notFound" };
 /** V1's "Reset map" (admin.matches.maps.reset) — wipes stats/rounds/score but keeps apiMatchId/mapName so a Fetch can be retried. */
 export async function resetMap(game: GameSlug, mapId: number): Promise<ResetMapResult> {
   const { maps, mapPlayerStats, mapTeamRoundSummary, mapRoundsRaw } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -544,7 +553,7 @@ function validatePlayerStatRow(row: MapPlayerStatInput, prefix: string, errors: 
 export async function updateMapPlayerStats(game: GameSlug, mapId: number, playersA: MapPlayerStatInput[], playersB: MapPlayerStatInput[]): Promise<UpdateMapPlayerStatsResult> {
   const { matches } = gameTables(game);
   const { maps, mapPlayerStats } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [map] = await db.select({ id: maps.id, matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
   if (!map) return { ok: false, error: "notFound" };
@@ -602,22 +611,6 @@ export type ImportWikicodeError =
   | "duplicateMatchId"
   | "invalidResolution";
 
-/**
- * The wikicode's opponent name disagrees with the Liquipedia table: either
- * this team is already linked to another name, or this name to another team.
- */
-export type LiquipediaImportConflict = {
-  slot: 1 | 2;
-  teamId: number;
-  teamName: string;
-  importName: string;
-  currentNameForTeam: string | null;
-  currentTeamForName: { teamId: number; teamName: string } | null;
-};
-
-/** Per slot: keep the table as is, or relink according to the wikicode. */
-export type LiquipediaConflictResolution = "keep" | "import";
-
 /** Outcome of the Riot fetch run for one imported map. `needsStep` leaves the map's data untouched. */
 export type ImportMapFetch =
   | { mapId: number; order: number; mapName: string; status: "fetched" }
@@ -628,66 +621,18 @@ export type ImportWikicodeResult =
   | { ok: false; error: ImportWikicodeError }
   | { ok: false; error: "liquipediaConflict"; conflicts: LiquipediaImportConflict[] };
 
-type LiquipediaLinkPlan = { teamId: number; name: string; conflict: LiquipediaImportConflict | null };
-
-/** Compares the wikicode's opponents with the Liquipedia table, one plan per slot that has both a team and a name. */
-async function planLiquipediaLinks(game: GameSlug, wikicode: string, entrantIds: [number, number]): Promise<LiquipediaLinkPlan[]> {
-  const { entrants, teams } = gameTables(game);
-  const names = parseMatchOpponentNames(wikicode);
-  const entrantRows = await db
-    .select({ id: entrants.id, teamId: entrants.teamId, teamName: teams.name })
-    .from(entrants)
-    .innerJoin(teams, eq(teams.id, entrants.teamId))
-    .where(inArray(entrants.id, entrantIds));
-
-  const slots: { slot: 1 | 2; teamId: number; teamName: string; name: string }[] = [];
-  for (const slot of [1, 2] as const) {
-    const name = names[slot];
-    const entrant = entrantRows.find((e) => e.id === entrantIds[slot - 1]);
-    if (!name || !entrant?.teamId || validateLiquipediaName(name)) continue;
-    // Same name on both sides can't be one to one, leave the table alone.
-    if (slots.some((s) => s.name.toLowerCase() === name.toLowerCase() || s.teamId === entrant.teamId)) return [];
-    slots.push({ slot, teamId: entrant.teamId, teamName: entrant.teamName, name });
-  }
-  if (slots.length === 0) return [];
-
-  const mappings = await findLiquipediaMappings(
-    game, slots.map((s) => s.teamId),
-    slots.map((s) => s.name)
-  );
-  const plans: LiquipediaLinkPlan[] = [];
-  for (const s of slots) {
-    const byName = mappings.find((m) => m.name.toLowerCase() === s.name.toLowerCase()) ?? null;
-    const byTeam = mappings.find((m) => m.teamId === s.teamId) ?? null;
-    if (byName?.teamId === s.teamId) continue;
-    const conflict =
-      byName || byTeam
-        ? {
-            slot: s.slot,
-            teamId: s.teamId,
-            teamName: s.teamName,
-            importName: s.name,
-            currentNameForTeam: byTeam?.name ?? null,
-            currentTeamForName: byName ? { teamId: byName.teamId, teamName: byName.teamName } : null,
-          }
-        : null;
-    plans.push({ teamId: s.teamId, name: s.name, conflict });
-  }
-  return plans;
-}
-
 export async function importMatchWikicode(
   game: GameSlug, matchId: number,
   wikicode: string,
-  resolutions: Partial<Record<"1" | "2", LiquipediaConflictResolution>> = {}
+  resolutions: LiquipediaLinkResolutions = {}
 ): Promise<ImportWikicodeResult> {
-  const { matches, liquipediaTeamNames } = gameTables(game);
+  const { matches } = gameTables(game);
   const { maps, matchVetos, mapPlayerStats } = valorantTablesOf(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const trimmed = wikicode.trim();
   if (!trimmed) return { ok: false, error: "required" };
-  if (trimmed.length > 100_000) return { ok: false, error: "tooLong" };
+  if (trimmed.length > WIKICODE_MAX_LENGTH) return { ok: false, error: "tooLong" };
 
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return { ok: false, error: "missingTeams" };
@@ -713,27 +658,13 @@ export async function importMatchWikicode(
   }
 
   const linkPlans = await planLiquipediaLinks(game, trimmed, [match.entrantAId, match.entrantBId]);
-  const conflicts = linkPlans.map((p) => p.conflict).filter((c): c is LiquipediaImportConflict => c !== null);
-  for (const conflict of conflicts) {
-    const resolution = resolutions[String(conflict.slot) as "1" | "2"];
-    if (resolution === undefined) return { ok: false, error: "liquipediaConflict", conflicts };
-    if (resolution !== "keep" && resolution !== "import") return { ok: false, error: "invalidResolution" };
-  }
-  const linksToWrite = linkPlans.filter((p) => !p.conflict || resolutions[String(p.conflict.slot) as "1" | "2"] === "import");
+  const decision = decideLiquipediaLinks(linkPlans, resolutions);
+  if (!decision.ok) return decision;
+  const linksToWrite = decision.linksToWrite;
 
   const fetchOrders: number[] = [];
   await db.transaction(async (tx) => {
-    if (linksToWrite.length > 0) {
-      await tx
-        .delete(liquipediaTeamNames)
-        .where(
-          or(
-            inArray(liquipediaTeamNames.teamId, linksToWrite.map((l) => l.teamId)),
-            inArray(sql`lower(${liquipediaTeamNames.name})`, linksToWrite.map((l) => l.name.toLowerCase()))
-          )
-        );
-      await tx.insert(liquipediaTeamNames).values(linksToWrite.map((l) => ({ teamId: l.teamId, name: l.name })));
-    }
+    await writeLiquipediaLinks(tx, game, linksToWrite);
 
     // Sides already set survive a re-import when the same team still plays that map.
     const previousVetos = await tx.select().from(matchVetos).where(eq(matchVetos.matchId, matchId));

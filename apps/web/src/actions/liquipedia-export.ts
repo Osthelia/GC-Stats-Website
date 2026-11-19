@@ -12,11 +12,12 @@
 "use server";
 
 import { getLiquipediaMatchWikicode } from "@/lib/liquipedia-match-data";
+import { getLiquipediaLolMatchWikicode } from "@/lib/liquipedia-lol-match-data";
 import { getTournamentParticipantsWikicode } from "@/lib/liquipedia-participants-data";
 import { getTournamentTalentWikicode } from "@/lib/liquipedia-talent-data";
 import { getTournamentInfoboxWikicode } from "@/lib/liquipedia-infobox-data";
 import { getPublicTournamentHeader } from "@/lib/tournament-bracket-data";
-import { gameHasLiquipediaMatches, type GameSlug } from "@gc-stats/db/game";
+import { gameHasLiquipediaMatches, gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaExportResult =
   | { ok: true; wikicode: string; unlinkedTeams: string[]; unlinkedPeopleCount: number }
@@ -29,7 +30,7 @@ async function visibleTournament(game: GameSlug, tournamentId: number): Promise<
 export async function loadMatchWikicode(game: GameSlug, tournamentId: number, matchId: number): Promise<LiquipediaExportResult> {
   if (!gameHasLiquipediaMatches(game) || !Number.isInteger(tournamentId) || !Number.isInteger(matchId)) return { ok: false, error: "invalid" };
   if (!(await visibleTournament(game, tournamentId))) return { ok: false, error: "notFound" };
-  const match = await getLiquipediaMatchWikicode(game, matchId);
+  const match = await (gameHasSeriesGames(game) ? getLiquipediaLolMatchWikicode : getLiquipediaMatchWikicode)(game, matchId);
   // The match must belong to the tournament whose page asked for it.
   if (!match || match.tournamentId !== tournamentId || match.tournamentIsGhost) return { ok: false, error: "notFound" };
   return { ok: true, wikicode: match.wikicode, unlinkedTeams: match.unlinkedTeams, unlinkedPeopleCount: 0 };

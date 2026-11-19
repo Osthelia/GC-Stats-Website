@@ -2423,6 +2423,7 @@
       "title": "チーム",
       "subtitle": "チームプロフィールとロースターを管理します。",
       "searchPlaceholder": "名前、IDまたはVLR ID…",
+      "searchPlaceholderLol": "名前またはID…",
       "searchSubmit": "検索",
       "activeWithinLabel": "最近の活動",
       "activeWithinAny": "いつでも",
@@ -2858,12 +2859,14 @@
           "organizations": "組織クレジット",
           "production": "制作クレジット",
           "matchStats": "試合参加",
+          "gameStats": "ゲーム参加",
           "news": "ニュース",
           "logos": "ロゴ",
           "riotAccounts": "Riot アカウント（{count}）",
           "linkedAccount": "連携アカウント"
         },
         "matchStatsHint": "各マップに紐づくラウンドごとのデータ（キル、ダメージ、位置）も移動します。トーナメント出場者のロースタークレジットは、その出場者のすべてのマップが選択された場合のみ移動します。",
+        "gameStatsHint": "各ゲームのフレームとイベント(キル、オブジェクト、ワード)も一緒に移動します。大会参加者のロック済みロスタークレジットは、その参加者のすべてのゲームを選択した場合にのみ移動します。",
         "periodOngoing": "{since} から",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "Riot アカウントは残す選手に移り、その選手のゲームの紐づけが保たれます。",
@@ -4055,8 +4058,8 @@
           "loss": "負け",
           "notUsed": "ポイントはタイブレーカーにポイントが含まれる場合のみグループを並べ替えます。"
         },
-        "fieldMatchScope": "チームは他グループのチームとも対戦する(ステージ全体の試合を集計)",
-        "fieldMatchScopeHint": "このグループに割り当てたチームのみが表示され、このステージ内のどのグループでも、その終了済みの試合が集計されます。チームは保存後に割り当ててください。ラウンドロビンのみ。",
+        "fieldMatchScope": "チームは他グループのチームとも対戦する(同じ設定の他グループの試合を集計)",
+        "fieldMatchScopeHint": "このグループに割り当てたチームのみが表示され、このステージで同じ設定を持つグループでの終了済みの試合が集計されます。この設定のないグループの試合は集計されません。チームは保存後に割り当ててください。ラウンドロビンのみ。",
         "matchScopeNoTeams": "このグループにはまだチームが割り当てられていないため、表は空です。先にチームを割り当ててください。",
         "matchScopeSwitchWarning": "ステージ全体に切り替えると、割り当て済みのチームのみが表示されます。このグループで試合をしたが割り当てられていないチームは、割り当てるまで表から消えます。"
       },
@@ -4465,6 +4468,47 @@
               "relay": "Riotがこの試合を返しませんでした。後でもう一度お試しください。既存のデータは保持されました。",
               "other": "取得を実行できませんでした。マップのページを確認してください。既存のデータは保持されました。"
             }
+          },
+          "league": {
+            "description": "このシリーズのLiquipediaの'{{Match}}'を貼り付けてください。ゲームとドラフトは、まだ空の部分だけが補完されます。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "このwikicodeをインポートしますか？まだ空のゲームとドラフトが補完されます。RiotとLeaguepediaのデータ、手動で編集したドラフト、すでに入力済みの内容は保持されます。",
+            "importSuccess": "wikicodeをインポートしました。ゲームとドラフトを更新しました。",
+            "liquipediaHint": "対戦相手（opponent1、opponent2）もチームのLiquipedia名として保存されます。",
+            "error": {
+              "missingTeams": "ゲームをインポートする前に、両チームを設定する必要があります。",
+              "oneMatchOnly": "wikicodeには'{{Match}}'がちょうど1つ含まれている必要があります。",
+              "noGames": "このwikicodeにプレイ済みのゲームが見つかりません。",
+              "unknownChampions": "wikicodeに不明なチャンピオンがあります: {names}。何もインポートされませんでした。",
+              "duplicateChampion": "ゲーム {order}: {champion} がドラフト内に複数回現れます。何もインポートされませんでした。"
+            },
+            "results": {
+              "forfeit": "wikicodeは不戦勝を示しています。何もインポートされませんでした。マッチの不戦勝は手動で設定してください。",
+              "gameLabel": "ゲーム {order}",
+              "created": "wikicodeからゲームを作成しました。",
+              "filled": "補完しました: {fields}。",
+              "differs": "wikicodeと異なるため保持しました: {fields}。",
+              "field": {
+                "winner": "勝者",
+                "duration": "試合時間"
+              },
+              "draft": {
+                "written": "ドラフトをインポートしました。",
+                "kept": {
+                  "editedByHand": "ドラフトを保持しました: 手動で編集されています。",
+                  "riotData": "ドラフトを保持しました: このゲームにはRiotのデータがあります。",
+                  "leaguepediaData": "ドラフトを保持しました: このゲームにはLeaguepediaのデータがあります。",
+                  "existingDraft": "ドラフトを保持しました: このゲームにはすでにドラフトがあります。"
+                },
+                "none": {
+                  "noDraft": "wikicodeにドラフトがありません。",
+                  "noSide": "ドラフトをインポートしませんでした: wikicodeにチーム1のサイドが指定されていません。"
+                }
+              },
+              "patchSet": "パッチ {patch} をマッチに設定しました。",
+              "bestOfDiffers": "wikicodeはBest of {bestOf}ですが、マッチは自身の設定を保持します。",
+              "firstPickAssumed": "wikicodeにファーストピックのチームが指定されていないため、ブルー側と仮定しました。ドラフトを確認してください。"
+            }
           }
         },
         "veto": {
@@ -4836,9 +4880,80 @@
             "riotFetch": "Riot から取得",
             "riotSuccess": "Riot から保存しました",
             "riotTournamentRealm": "このゲームはトーナメントレルムで行われたため、Riot API から取得することはできません。"
-          }
+          },
+          "lineupButton": "出場メンバー"
         },
-        "liquipediaImportButton": "Liquipedia試合インポート"
+        "liquipediaImportButton": "Liquipedia試合インポート",
+        "lineup": {
+          "metaTitle": "出場メンバー",
+          "backToMatch": "試合に戻る",
+          "title": "ゲーム {order} の出場メンバー",
+          "description": "このゲームに誰が、どのレーンで、どのチャンピオンで出場したか。RiotやLeaguepediaのデータがないゲーム用で、後でインポートすると置き換えられます。",
+          "importedHint": "このゲームにはRiotまたはLeaguepediaのデータがあるため、選手はインポートから取得されます。",
+          "fromPreviousGame": "シリーズの前のゲームから入力しました。選手を確認し、チャンピオンを追加して保存してください。",
+          "withStats": "スコアボードを追加",
+          "withStatsHint": "10人全員のキル・デス・アシスト・CSとゲーム時間。ゴールド、ダメージ、視界は空欄でも構いません。スコアボードがない場合、ゲームは試合数・勝率・チャンピオンには数えられますが、平均には含まれません。",
+          "duration": "ゲーム時間 (m:ss)",
+          "draftPicks": "ドラフトでのピック：{champions}",
+          "player": "選手",
+          "pickPlayer": "選手を選択",
+          "searchPlayer": "選手を検索…",
+          "newPlayer": "+ 新しい選手",
+          "newPlayerHandle": "新しい選手の名前",
+          "newPlayerTag": "（新規）",
+          "clearPlayer": "選手を削除",
+          "champion": "チャンピオン",
+          "unknownChampion": "不明",
+          "searchChampion": "チャンピオンを検索…",
+          "noResults": "結果がありません。",
+          "stat": {
+            "kills": "キル",
+            "deaths": "デス",
+            "assists": "アシスト",
+            "cs": "CS",
+            "gold": "ゴールド",
+            "damage": "ダメージ",
+            "vision": "視界"
+          },
+          "save": "出場メンバーを保存",
+          "saving": "保存中…",
+          "saved": "出場メンバーを保存しました。",
+          "error": {
+            "notFound": "このゲームは試合に含まれていません。",
+            "entrantsUnset": "先に試合の両チームを設定してください。",
+            "importedGame": "このゲームにはRiotまたはLeaguepediaのデータがあるため、出場メンバーを手動で変更できません。",
+            "unknownPerson": "いずれかの選手が存在しなくなりました。",
+            "problem": {
+              "notAnEntrant": "この試合に出場していないチームの選手がいます。",
+              "invalidLane": "無効なレーンがあります。",
+              "duplicateLane": "1つのチームで{lane}が2回入力されています。",
+              "duplicatePerson": "出場メンバーに同じ選手が2回います。",
+              "invalidHandle": "新しい選手には名前が必要です。",
+              "unknownChampion": "{championName}はこのパッチのチャンピオンではありません。",
+              "duplicateChampion": "{championName}が2回選ばれています。",
+              "championsUnavailable": "このパッチのチャンピオンを読み込めませんでした。後でもう一度試すか、チャンピオンを空欄のままにしてください。",
+              "invalidStat": "0から{max}までの整数を入力してください。",
+              "durationRequired": "スコアボードにはゲーム時間 (m:ss) が必要です。",
+              "playerMissing": "スコアボードには両チームの全レーンに選手が必要です。",
+              "statMissing": "スコアボードに必要です。",
+              "buildUnavailable": "このパッチのサモナースペル、ルーン、アイテムを読み込めませんでした。後でもう一度試すか、ビルドを空欄のままにしてください。",
+              "unknownBuildPart": "このパッチにはありません。",
+              "duplicateSummoner": "もう一方のサモナースペルと同じです。",
+              "secondaryTreeOfKeystone": "キーストーンと同じパスです。別のパスを選んでください。"
+            }
+          },
+          "optional": "任意",
+          "build": "ビルド",
+          "buildSet": "入力済み",
+          "buildUnavailable": "このパッチのサモナースペル、ルーン、アイテムを読み込めませんでした。後でもう一度お試しください。",
+          "summoner": "サモナースペル {slot}",
+          "keystone": "キーストーン",
+          "secondaryTree": "サブパス",
+          "item": "アイテム {slot}",
+          "trinket": "トリンケット",
+          "empty": "なし",
+          "search": "検索…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5115,7 +5230,15 @@
         "doneDescription": "インポートが完了しました。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "インポートとRiotデータの取得中です。しばらくお待ちください。",
-        "close": "閉じる"
+        "close": "閉じる",
+        "league": {
+          "dialogDescription": "マッチのwikicodeを貼り付けてください。ゲームとドラフトは、まだ空の部分だけが補完されます。",
+          "importingHint": "インポート中です。しばらくお待ちください。",
+          "legend": {
+            "partial": "プレイヤーデータまたはドラフトのないゲーム",
+            "done": "すべてのゲームにプレイヤーデータとドラフトあり"
+          }
+        }
       },
       "activeFilterLabel": "アクティビティ",
       "activeFilterAny": "すべての大会",

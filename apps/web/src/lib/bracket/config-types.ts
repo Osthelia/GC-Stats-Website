@@ -40,11 +40,12 @@ export type RoundRobinTiebreaker = (typeof ROUND_ROBIN_TIEBREAKERS)[number];
 export type GroupMatchScope = "container" | "stage";
 
 /**
- * Whether a container's matches count towards a stage-scoped group. Only round
- * robin groups do.
+ * Whether a container's matches count towards a stage-scoped group: only those of
+ * the stage's other stage-scoped groups. A group that keeps to its own matches
+ * never adds them to another group's table.
  */
 export function countsForStageScope(container: { containerType: string; config: unknown }): boolean {
-  return container.containerType === "group" && (container.config as { type?: string } | null)?.type === "round_robin";
+  return container.containerType === "group" && usesStageScope(container.config);
 }
 
 /** Whether a group's raw config opts in to stage scope. Safe on a missing or malformed config (legacy or converted containers), unlike `parseGroupConfig`. */

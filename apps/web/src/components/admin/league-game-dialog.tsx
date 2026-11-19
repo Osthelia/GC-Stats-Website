@@ -79,6 +79,7 @@ export function LeagueGameDialog({
   entrants,
   leaguepediaGames,
   leaguepediaLink,
+  relayAvailable,
   editing,
   nextOrder,
   open,
@@ -89,6 +90,7 @@ export function LeagueGameDialog({
   entrants: LeagueGameEntrant[];
   leaguepediaGames: LeaguepediaGameOption[];
   leaguepediaLink: LeaguepediaLinkView;
+  relayAvailable: boolean;
   editing: AdminLeagueGameRow | null;
   nextOrder: number;
   open: boolean;
@@ -356,7 +358,7 @@ export function LeagueGameDialog({
             <p className="text-xs text-muted-foreground">{t("gameImport.riotTournamentRealm")}</p>
           )}
 
-          {!editing && (
+          {!editing && relayAvailable && (
             <div className="flex flex-col gap-1.5 rounded-lg border p-3">
               <div className="text-sm font-medium">{t("find.openLabel")}</div>
               <p className="text-xs text-muted-foreground">{t("find.openHint")}</p>

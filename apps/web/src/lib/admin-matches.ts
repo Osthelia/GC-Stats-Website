@@ -18,6 +18,7 @@ import { compareMatchPlayers } from "@/lib/match-player-order";
 import { gameTables, leagueTablesOf, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { GameSlug } from "@gc-stats/db/game";
 import { blueEntrantOf, type LeagueSide } from "@gc-stats/lol-stats-engine";
+import { buildFromStored, type LeagueLineupStats, type LineupBuild } from "@/lib/league-lineup-rules";
 
 export type AdminMatchListRow = {
   id: number;
@@ -449,4 +450,116 @@ export async function getTeamPreviousLineup(game: GameSlug, teamId: number, matc
   return rows
     .sort(compareMatchPlayers)
     .map((r) => ({ personId: r.personId!, handle: r.handle, valName: r.valName }));
+}
+
+export type { LeagueLineupStats } from "@/lib/league-lineup-rules";
+
+export type LeagueLineupPlayer = {
+  entrantId: number;
+  personId: number;
+  handle: string;
+  role: string | null;
+  championName: string | null;
+  stats: LeagueLineupStats | null;
+  build: LineupBuild | null;
+};
+
+export interface LeagueLineupView {
+  gameId: number;
+  order: number;
+  imported: boolean;
+  durationSeconds: number | null;
+  hasStats: boolean;
+  players: LeagueLineupPlayer[];
+  fromPreviousGame: boolean;
+  draftPicks: Record<number, string[]>;
+  suggestions: Record<number, AdminRosterMember[]>;
+}
+
+/** The lineup of one League game, or null when the game is not part of the series. */
+export async function getLeagueGameLineup(
+  matchId: number,
+  gameId: number,
+  match: { entrantAId: number | null; entrantBId: number | null; scheduledAt: string | null },
+): Promise<LeagueLineupView | null> {
+  const { games, gameTeamStats, gameDraft, gamePlayerStats } = leagueTablesOf("lol");
+  const { people } = gameTables("lol");
+  const [game] = await db
+    .select({ id: games.id, order: games.order, source: games.source, durationSeconds: games.durationSeconds })
+    .from(games)
+    .where(and(eq(games.id, gameId), eq(games.matchId, matchId)))
+    .limit(1);
+  if (!game) return null;
+
+  const entrantIds = [match.entrantAId, match.entrantBId].filter((id): id is number => id !== null);
+  const playerColumns = {
+    entrantId: gamePlayerStats.entrantId,
+    personId: gamePlayerStats.personId,
+    handle: people.handle,
+    role: gamePlayerStats.role,
+    championName: gamePlayerStats.championName,
+    hasStats: gamePlayerStats.hasStats,
+    kills: gamePlayerStats.kills,
+    deaths: gamePlayerStats.deaths,
+    assists: gamePlayerStats.assists,
+    cs: gamePlayerStats.cs,
+    gold: gamePlayerStats.gold,
+    damage: gamePlayerStats.damage,
+    vision: gamePlayerStats.vision,
+    summoners: gamePlayerStats.summoners,
+    items: gamePlayerStats.items,
+    runes: gamePlayerStats.runes,
+  };
+  const [teamStats, rows, picks, suggestionLists] = await Promise.all([
+    db.select({ id: gameTeamStats.gameId }).from(gameTeamStats).where(eq(gameTeamStats.gameId, gameId)).limit(1),
+    db.select(playerColumns).from(gamePlayerStats).innerJoin(people, eq(people.id, gamePlayerStats.personId)).where(eq(gamePlayerStats.gameId, gameId)).orderBy(asc(gamePlayerStats.id)),
+    db.select({ entrantId: gameDraft.entrantId, championName: gameDraft.championName }).from(gameDraft).where(and(eq(gameDraft.gameId, gameId), eq(gameDraft.type, "pick"))).orderBy(asc(gameDraft.order)),
+    Promise.all(entrantIds.map((entrantId) => getEntrantRoster("lol", entrantId, match.scheduledAt))),
+  ]);
+
+  // A game without a lineup starts from the previous game of the series: the same players usually play on.
+  let fromPreviousGame = false;
+  let lineupRows = rows;
+  if (rows.length === 0 && game.order > 1) {
+    const [previous] = await db
+      .select({ id: games.id })
+      .from(games)
+      .where(and(eq(games.matchId, matchId), lt(games.order, game.order)))
+      .orderBy(desc(games.order))
+      .limit(1);
+    if (previous) {
+      lineupRows = await db.select(playerColumns).from(gamePlayerStats).innerJoin(people, eq(people.id, gamePlayerStats.personId)).where(eq(gamePlayerStats.gameId, previous.id));
+      fromPreviousGame = lineupRows.length > 0;
+    }
+  }
+
+  const draftPicks: Record<number, string[]> = {};
+  for (const pick of picks) (draftPicks[pick.entrantId] ??= []).push(pick.championName);
+
+  return {
+    gameId: game.id,
+    order: game.order,
+    imported: game.source !== null || teamStats.length > 0,
+    durationSeconds: game.durationSeconds,
+    hasStats: rows.length > 0 && rows.every((row) => row.hasStats),
+    fromPreviousGame,
+    players: lineupRows.flatMap((row): LeagueLineupPlayer[] =>
+      row.personId === null
+        ? []
+        : [
+            {
+              entrantId: row.entrantId,
+              personId: row.personId,
+              handle: row.handle,
+              role: row.role,
+              championName: fromPreviousGame ? null : row.championName,
+              stats: fromPreviousGame || !row.hasStats ? null : { kills: row.kills, deaths: row.deaths, assists: row.assists, cs: row.cs, gold: row.gold, damage: row.damage, vision: row.vision },
+              // A build belongs to its game: the previous game's is not carried over.
+              build: fromPreviousGame ? null : buildFromStored(row.summoners, row.items, row.runes),
+            },
+          ],
+    ),
+    draftPicks,
+    suggestions: Object.fromEntries(entrantIds.map((entrantId, i) => [entrantId, suggestionLists[i] ?? []])),
+  };
 }

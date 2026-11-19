@@ -2423,6 +2423,7 @@
       "title": "Drużyny",
       "subtitle": "Zarządzaj profilami i składami drużyn.",
       "searchPlaceholder": "Nazwa, ID lub ID VLR…",
+      "searchPlaceholderLol": "Nazwa lub ID…",
       "searchSubmit": "Szukaj",
       "activeWithinLabel": "Ostatnia aktywność",
       "activeWithinAny": "Dowolny okres",
@@ -2858,12 +2859,14 @@
           "organizations": "Wpisy w organizacjach",
           "production": "Wpisy produkcyjne",
           "matchStats": "Udział w meczach",
+          "gameStats": "Udział w grach",
           "news": "Aktualności",
           "logos": "Logo",
           "riotAccounts": "Konta Riot ({count})",
           "linkedAccount": "Powiązane konto"
         },
         "matchStatsHint": "Przenosi też dane runda po rundzie (zabójstwa, obrażenia, pozycje) każdej mapy. Wpis w zablokowanym składzie uczestnika turnieju zostaje przeniesiony dopiero, gdy zaznaczono wszystkie mapy tego uczestnika.",
+        "gameStatsHint": "Przenosi także klatki i zdarzenia (zabójstwa, cele, wardy) z każdej gry. Zablokowany wpis w składzie uczestnika turnieju jest przenoszony dopiero po zaznaczeniu wszystkich jego gier.",
         "periodOngoing": "od {since}",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "Konta Riot przechodzą do zawodnika, którego zachowujesz, aby jego gry pozostały z nim powiązane.",
@@ -4055,8 +4058,8 @@
           "loss": "Przegrana",
           "notUsed": "Punkty porządkują grupę tylko wtedy, gdy Punkty są w tiebreakerach."
         },
-        "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z całego etapu)",
-        "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a liczą się ich zakończone mecze w dowolnej grupie tego etapu. Przypisz drużyny po zapisaniu. Tylko round robin.",
+        "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z innych grup z tym ustawieniem)",
+        "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a ich zakończone mecze liczą się w każdej grupie tego etapu, która też ma to ustawienie. Mecze z grup bez niego się nie liczą. Przypisz drużyny po zapisaniu. Tylko round robin.",
         "matchScopeNoTeams": "Do tej grupy nie przypisano jeszcze drużyn, więc jej tabela jest pusta. Najpierw przypisz drużyny.",
         "matchScopeSwitchWarning": "Przejście na zakres etapu wyświetla tylko przypisane drużyny. Drużyny, które grały w tej grupie, ale nie są przypisane, znikną z jej tabeli, dopóki ich nie przypiszesz."
       },
@@ -4465,6 +4468,47 @@
               "relay": "Riot nie zwrócił tego meczu, spróbuj ponownie później. Istniejące dane zostały zachowane.",
               "other": "Nie udało się uruchomić pobierania, sprawdź stronę mapy. Istniejące dane zostały zachowane."
             }
+          },
+          "league": {
+            "description": "Wklej '{{Match}}' z Liquipedii dla tej serii. Gry i drafty zostaną uzupełnione tam, gdzie są jeszcze puste.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Zaimportować ten wikicode? Puste jeszcze gry i drafty zostaną uzupełnione. Dane z Riot i Leaguepedii, drafty edytowane ręcznie oraz wszystko, co już wpisano, zostają bez zmian.",
+            "importSuccess": "Wikicode zaimportowany: gry i drafty zaktualizowane.",
+            "liquipediaHint": "Przeciwnicy (opponent1, opponent2) są też zapisywani jako nazwy drużyn na Liquipedii.",
+            "error": {
+              "missingTeams": "Przed importem gier muszą być ustawione obie drużyny.",
+              "oneMatchOnly": "Wikicode musi zawierać dokładnie jeden '{{Match}}'.",
+              "noGames": "Nie znaleziono rozegranych gier w tym wikicode.",
+              "unknownChampions": "Nieznani championowie w wikicode: {names}. Nic nie zaimportowano.",
+              "duplicateChampion": "Gra {order}: {champion} występuje w drafcie więcej niż raz. Nic nie zaimportowano."
+            },
+            "results": {
+              "forfeit": "Wikicode wskazuje walkower. Nic nie zaimportowano, ustaw walkower w meczu ręcznie.",
+              "gameLabel": "Gra {order}",
+              "created": "Gra utworzona z wikicode.",
+              "filled": "Uzupełniono: {fields}.",
+              "differs": "Inne niż w wikicode, zachowano: {fields}.",
+              "field": {
+                "winner": "zwycięzca",
+                "duration": "czas gry"
+              },
+              "draft": {
+                "written": "Draft zaimportowany.",
+                "kept": {
+                  "editedByHand": "Draft zachowany: był edytowany ręcznie.",
+                  "riotData": "Draft zachowany: gra ma dane Riot.",
+                  "leaguepediaData": "Draft zachowany: gra ma dane Leaguepedii.",
+                  "existingDraft": "Draft zachowany: gra ma już draft."
+                },
+                "none": {
+                  "noDraft": "Brak draftu w wikicode.",
+                  "noSide": "Nie zaimportowano draftu: wikicode nie podaje, po której stronie grała drużyna 1."
+                }
+              },
+              "patchSet": "Patch {patch} ustawiony w meczu.",
+              "bestOfDiffers": "Wikicode podaje best of {bestOf}, mecz zachowuje swoje.",
+              "firstPickAssumed": "Wikicode nie podaje, kto miał pierwszy pick, więc przyjęto niebieską stronę. Sprawdź draft."
+            }
           }
         },
         "veto": {
@@ -4836,9 +4880,80 @@
             "riotFetch": "Pobierz z Riot",
             "riotSuccess": "Gra zapisana z Riot",
             "riotTournamentRealm": "Ta gra odbyła się w realmie turniejowym, więc nie można jej pobrać z API Riot."
-          }
+          },
+          "lineupButton": "Ustawienie"
         },
-        "liquipediaImportButton": "Import meczu z Liquipedii"
+        "liquipediaImportButton": "Import meczu z Liquipedii",
+        "lineup": {
+          "metaTitle": "Ustawienie",
+          "backToMatch": "Wróć do meczu",
+          "title": "Ustawienie gry {order}",
+          "description": "Kto zagrał tę grę, na której linii i jakim bohaterem. Dla gier bez danych Riot lub Leaguepedii; późniejszy import je zastępuje.",
+          "importedHint": "Ta gra ma dane Riot lub Leaguepedii, więc zawodnicy pochodzą z importu.",
+          "fromPreviousGame": "Uzupełnione z poprzedniej gry serii. Sprawdź zawodników, dodaj bohaterów i zapisz.",
+          "withStats": "Dodaj tabelę wyników",
+          "withStatsHint": "Zabójstwa, śmierci, asysty i CS wszystkich dziesięciu zawodników oraz długość gry. Złoto, obrażenia i wizja mogą zostać puste. Bez tabeli wyników gra liczy się do rozegranych gier, odsetka wygranych i bohaterów, ale nie do średnich.",
+          "duration": "Długość gry (m:ss)",
+          "draftPicks": "Wybrani w drafcie: {champions}",
+          "player": "Zawodnik",
+          "pickPlayer": "Wybierz zawodnika",
+          "searchPlayer": "Szukaj zawodnika…",
+          "newPlayer": "+ Nowy zawodnik",
+          "newPlayerHandle": "Nazwa nowego zawodnika",
+          "newPlayerTag": "(nowy)",
+          "clearPlayer": "Usuń zawodnika",
+          "champion": "Bohater",
+          "unknownChampion": "Nieznany",
+          "searchChampion": "Szukaj bohatera…",
+          "noResults": "Brak wyników.",
+          "stat": {
+            "kills": "Zabójstwa",
+            "deaths": "Śmierci",
+            "assists": "Asysty",
+            "cs": "CS",
+            "gold": "Złoto",
+            "damage": "Obrażenia",
+            "vision": "Wizja"
+          },
+          "save": "Zapisz ustawienie",
+          "saving": "Zapisywanie…",
+          "saved": "Ustawienie zapisane.",
+          "error": {
+            "notFound": "Ta gra nie należy do meczu.",
+            "entrantsUnset": "Najpierw trzeba ustawić obie drużyny meczu.",
+            "importedGame": "Ta gra ma dane Riot lub Leaguepedii; jej ustawienia nie można zmienić ręcznie.",
+            "unknownPerson": "Jeden z zawodników już nie istnieje.",
+            "problem": {
+              "notAnEntrant": "Zawodnik jest w drużynie, która nie gra tego meczu.",
+              "invalidLane": "Linia jest nieprawidłowa.",
+              "duplicateLane": "{lane} jest zajęta dwa razy w jednej drużynie.",
+              "duplicatePerson": "Zawodnik jest w ustawieniu dwa razy.",
+              "invalidHandle": "Nowy zawodnik potrzebuje nazwy.",
+              "unknownChampion": "{championName} nie jest bohaterem tego patcha.",
+              "duplicateChampion": "{championName} jest wybrany dwa razy.",
+              "championsUnavailable": "Nie udało się wczytać bohaterów tego patcha. Spróbuj później albo zostaw bohaterów pustych.",
+              "invalidStat": "Wpisz liczbę całkowitą od 0 do {max}.",
+              "durationRequired": "Tabela wyników wymaga długości gry (m:ss).",
+              "playerMissing": "Tabela wyników wymaga zawodnika na każdej linii obu drużyn.",
+              "statMissing": "Wymagane w tabeli wyników.",
+              "buildUnavailable": "Nie udało się wczytać czarów przywoływacza, run i przedmiotów tego patcha. Spróbuj później albo zostaw build pusty.",
+              "unknownBuildPart": "Nie należy do tego patcha.",
+              "duplicateSummoner": "To już drugi czar przywoływacza.",
+              "secondaryTreeOfKeystone": "To ścieżka kluczowej runy; wybierz inną."
+            }
+          },
+          "optional": "opcjonalnie",
+          "build": "Build",
+          "buildSet": "ustawiony",
+          "buildUnavailable": "Nie udało się wczytać czarów przywoływacza, run i przedmiotów tego patcha. Spróbuj później.",
+          "summoner": "Czar przywoływacza {slot}",
+          "keystone": "Kluczowa runa",
+          "secondaryTree": "Ścieżka dodatkowa",
+          "item": "Przedmiot {slot}",
+          "trinket": "Talizman",
+          "empty": "Puste",
+          "search": "Szukaj…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5115,7 +5230,15 @@
         "doneDescription": "Import zakończony.",
         "wikicodeLabel": "Wikicode z Liquipedii",
         "importingHint": "Trwa import i pobieranie danych Riot, to może chwilę potrwać.",
-        "close": "Zamknij"
+        "close": "Zamknij",
+        "league": {
+          "dialogDescription": "Wklej wikicode meczu. Gry i drafty zostaną uzupełnione tam, gdzie są jeszcze puste.",
+          "importingHint": "Trwa import, to może chwilę potrwać.",
+          "legend": {
+            "partial": "Gry bez danych graczy lub draftu",
+            "done": "Dane graczy i draft w każdej grze"
+          }
+        }
       },
       "activeFilterLabel": "Aktywność",
       "activeFilterAny": "Wszystkie turnieje",

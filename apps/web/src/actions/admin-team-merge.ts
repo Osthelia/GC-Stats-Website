@@ -170,7 +170,7 @@ export async function mergeTeams(game: GameSlug, sourceTeamId: number, targetTea
       subjectType: "team",
       subjectId: String(targetTeamId),
       event: "team.merged",
-      properties: { actorUserId: access.userId, sourceId: sourceTeamId, targetId: targetTeamId, sourceName: source.name, targetName: target.name, counts },
+      properties: { game, actorUserId: access.userId, sourceId: sourceTeamId, targetId: targetTeamId, sourceName: source.name, targetName: target.name, counts },
     });
   });
 

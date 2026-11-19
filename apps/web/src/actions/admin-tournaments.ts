@@ -20,8 +20,8 @@ import { HOME_TOURNAMENTS_TAG, TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<string> {
-  const access = await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<string> {
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   return access.userId;
 }
 
@@ -188,7 +188,7 @@ function coreColumns(input: TournamentInput) {
 
 export async function createTournament(game: GameSlug, input: TournamentInput): Promise<TournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const fieldErrors = await validateTournament(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -197,7 +197,7 @@ export async function createTournament(game: GameSlug, input: TournamentInput): 
   const created = await db.transaction(async (tx) => {
     const [row] = await tx.insert(tournaments).values(values).returning({ id: tournaments.id });
     if (!row) throw new Error("Insert returned no row");
-    await logActivity({ subject: "tournament", subjectId: row.id, event: "created", description: `Created tournament #${row.id} (${values.name})`, actorUserId }, tx);
+    await logActivity({ game, subject: "tournament", subjectId: row.id, event: "created", description: `Created tournament #${row.id} (${values.name})`, actorUserId }, tx);
     return row;
   });
   updateTag(HOME_TOURNAMENTS_TAG);
@@ -208,7 +208,7 @@ export async function createTournament(game: GameSlug, input: TournamentInput): 
 
 export async function updateTournament(game: GameSlug, id: number, input: TournamentInput): Promise<TournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existingRow] = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existingRow) return { ok: false, fieldErrors: { name: "notFound" } };
@@ -221,7 +221,7 @@ export async function updateTournament(game: GameSlug, id: number, input: Tourna
     await tx.update(tournaments).set(values).where(eq(tournaments.id, id));
     const changes = diffChanges(existingRow, values);
     if (Object.keys(changes).length > 0) {
-      await logActivity({ subject: "tournament", subjectId: id, event: "updated", description: `Updated tournament #${id} (${values.name})`, actorUserId, changes }, tx);
+      await logActivity({ game, subject: "tournament", subjectId: id, event: "updated", description: `Updated tournament #${id} (${values.name})`, actorUserId, changes }, tx);
     }
   });
   updateTag(HOME_TOURNAMENTS_TAG);
@@ -234,7 +234,7 @@ export type ToggleActiveResult = { ok: true; active: boolean } | { ok: false; er
 
 export async function toggleTournamentActive(game: GameSlug, id: number): Promise<ToggleActiveResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: tournaments.id, active: tournaments.active }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -243,7 +243,7 @@ export async function toggleTournamentActive(game: GameSlug, id: number): Promis
   await db.transaction(async (tx) => {
     await tx.update(tournaments).set({ active }).where(eq(tournaments.id, id));
     await logActivity(
-      { subject: "tournament", subjectId: id, event: "updated", description: `${active ? "Activated" : "Deactivated"} tournament #${id}`, actorUserId, changes: { active: { old: existing.active, new: active } } },
+      { game, subject: "tournament", subjectId: id, event: "updated", description: `${active ? "Activated" : "Deactivated"} tournament #${id}`, actorUserId, changes: { active: { old: existing.active, new: active } } },
       tx
     );
   });
@@ -257,7 +257,7 @@ export type DeleteTournamentResult = { ok: true } | { ok: false; error: "notFoun
 
 export async function deleteTournament(game: GameSlug, id: number): Promise<DeleteTournamentResult> {
   const { tournaments } = gameTables(game);
-  const actorUserId = await requireTournamentsActor();
+  const actorUserId = await requireTournamentsActor(game);
 
   const [existing] = await db.select({ id: tournaments.id, name: tournaments.name }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
@@ -265,7 +265,7 @@ export async function deleteTournament(game: GameSlug, id: number): Promise<Dele
   try {
     await db.transaction(async (tx) => {
       await tx.delete(tournaments).where(eq(tournaments.id, id));
-      await logActivity({ subject: "tournament", subjectId: id, event: "deleted", description: `Deleted tournament #${id} (${existing.name})`, actorUserId }, tx);
+      await logActivity({ game, subject: "tournament", subjectId: id, event: "deleted", description: `Deleted tournament #${id} (${existing.name})`, actorUserId }, tx);
     });
   } catch (err) {
     // Known schema gap (documented in SUIVI.md): matches.entrant_*_id has no

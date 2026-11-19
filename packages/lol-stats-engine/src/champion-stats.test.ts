@@ -12,7 +12,7 @@
 import { describe, expect, it } from "vitest";
 import { buildChampionInsights, buildChampionStatRows, championPresence, championWinRate, type ChampionPickRow } from "./champion-stats";
 
-const pick = (championName: string, picks: number, wins: number, roles: string[] = ["MIDDLE"]): ChampionPickRow => ({ championName, picks, wins, kills: picks * 3, deaths: picks, assists: picks * 4, roles });
+const pick = (championName: string, picks: number, wins: number, roles: string[] = ["MIDDLE"]): ChampionPickRow => ({ championName, picks, statPicks: picks, wins, kills: picks * 3, deaths: picks, assists: picks * 4, roles });
 
 describe("championPresence", () => {
   it("counts picks and bans against the games played", () => {
@@ -73,6 +73,12 @@ describe("buildChampionInsights", () => {
     const kdaRows = buildChampionStatRows([pick("Ahri", 3, 1), pick("Leona", 4, 2), { ...pick("Jinx", 1, 1), kills: 10, deaths: 0 }], [], 10);
     const best = buildChampionInsights(kdaRows).find((i) => i.label === "highestKda");
     expect(best).toMatchObject({ championNames: ["Ahri", "Leona"], value: "7.00" });
+  });
+  it("needs the minimum of picks with stats for the best KDA", () => {
+    // Leona has 4 picks, but only one of them has stats (a manual lineup names the others): too few for the KDA card.
+    const kdaRows = buildChampionStatRows([pick("Ahri", 3, 1), { ...pick("Leona", 4, 2), statPicks: 1, kills: 20, deaths: 1, assists: 0 }], [], 10);
+    expect(buildChampionInsights(kdaRows).find((i) => i.label === "highestKda")).toMatchObject({ championNames: ["Ahri"] });
+    expect(kdaRows.find((r) => r.groupKey === "Leona")).toMatchObject({ mapsPlayed: 1, totals: { picks: 4, statPicks: 1 } });
   });
   it("leaves the best KDA out when nobody has enough picks", () => {
     expect(buildChampionInsights(rows, 6).find((i) => i.label === "highestKda")).toBeUndefined();

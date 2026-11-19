@@ -89,19 +89,29 @@ function ratio(numerator: number, denominator: number): number {
   return denominator > 0 ? numerator / denominator : 0;
 }
 
-/** The LoL columns: the same shape as the Valorant ones, over the games of a player. */
+/** A number of a League row: NaN (shown as "–", sorted last) when none of its games has stats, only manual lineups. */
+function withStats(row: LeagueStatRow, value: () => number): number {
+  return row.totals.statGames > 0 ? value() : NaN;
+}
+
+/** A per minute number over the games that have the stat; NaN ("–") when none has it. */
+function perMinuteOf(total: number, minutes: number): number {
+  return minutes > 0 ? total / minutes : NaN;
+}
+
+/** The LoL columns: the same shape as the Valorant ones, over the games of a player. Games and win rate count every game, the rest only the games with stats. */
 export const LEAGUE_STAT_COLUMNS: StatColumn<LeagueStatRow>[] = [
   { key: "played", i18nKey: "playedGames", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.mapsPlayed },
   { key: "winRate", i18nKey: "winRate", format: "percent", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.wins, r.mapsPlayed) * 100 },
-  { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.kills, r.mapsPlayed, m) },
-  { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.deaths, r.mapsPlayed, m) },
-  { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: true, value: (r, m) => perMap(r.totals.assists, r.mapsPlayed, m) },
-  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists) },
-  { key: "kp", i18nKey: "kp", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => ratio(r.totals.kills + r.totals.assists, r.totals.teamKills) * 100 },
-  { key: "csPerMinute", i18nKey: "csPerMinute", format: "decimal1", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.cs, r.totals.minutes) },
-  { key: "goldPerMinute", i18nKey: "goldPerMinute", format: "int", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.gold, r.totals.minutes) },
-  { key: "damagePerMinute", i18nKey: "damagePerMinute", format: "int", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.damage, r.totals.minutes) },
-  { key: "visionPerMinute", i18nKey: "visionPerMinute", format: "decimal2", defaultVisible: false, modeInvariant: true, value: (r) => ratio(r.totals.vision, r.totals.minutes) },
+  { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: true, value: (r, m) => withStats(r, () => perMap(r.totals.kills, r.totals.statGames, m)) },
+  { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: true, value: (r, m) => withStats(r, () => perMap(r.totals.deaths, r.totals.statGames, m)) },
+  { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: true, value: (r, m) => withStats(r, () => perMap(r.totals.assists, r.totals.statGames, m)) },
+  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => withStats(r, () => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists)) },
+  { key: "kp", i18nKey: "kp", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => withStats(r, () => ratio(r.totals.kills + r.totals.assists, r.totals.teamKills) * 100) },
+  { key: "csPerMinute", i18nKey: "csPerMinute", format: "decimal1", defaultVisible: false, modeInvariant: true, value: (r) => withStats(r, () => ratio(r.totals.cs, r.totals.minutes)) },
+  { key: "goldPerMinute", i18nKey: "goldPerMinute", format: "int", defaultVisible: false, modeInvariant: true, value: (r) => withStats(r, () => perMinuteOf(r.totals.gold, r.totals.goldMinutes)) },
+  { key: "damagePerMinute", i18nKey: "damagePerMinute", format: "int", defaultVisible: false, modeInvariant: true, value: (r) => withStats(r, () => perMinuteOf(r.totals.damage, r.totals.damageMinutes)) },
+  { key: "visionPerMinute", i18nKey: "visionPerMinute", format: "decimal2", defaultVisible: false, modeInvariant: true, value: (r) => withStats(r, () => perMinuteOf(r.totals.vision, r.totals.visionMinutes)) },
   { key: "goldDiff10", i18nKey: "goldDiff10", format: "int", defaultVisible: false, avgOnly: true, value: (r) => r.averages.goldDiff10 },
   { key: "goldDiff15", i18nKey: "goldDiff15", format: "int", defaultVisible: false, avgOnly: true, value: (r) => r.averages.goldDiff15 },
   { key: "xpDiff10", i18nKey: "xpDiff10", format: "int", defaultVisible: false, avgOnly: true, value: (r) => r.averages.xpDiff10 },
@@ -115,15 +125,20 @@ function whenPicked(row: ChampionStatRow, value: () => number): number {
   return row.totals.picks > 0 ? value() : NaN;
 }
 
+/** A K/D/A value: NaN as well for a champion picked only in manual lineups, which have no stats. */
+function whenPickedWithStats(row: ChampionStatRow, value: () => number): number {
+  return row.totals.statPicks > 0 ? value() : NaN;
+}
+
 export const CHAMPION_STAT_COLUMNS: StatColumn<ChampionStatRow>[] = [
   { key: "picks", i18nKey: "picks", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.totals.picks },
   { key: "bans", i18nKey: "bans", format: "int", defaultVisible: true, modeInvariant: true, value: (r) => r.totals.bans },
   { key: "presence", i18nKey: "presence", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => championPresence(r.totals.picks, r.totals.bans, r.totals.games) },
   { key: "winRate", i18nKey: "winRate", format: "percent", defaultVisible: true, modeInvariant: true, value: (r) => whenPicked(r, () => championWinRate(r.totals.wins, r.totals.picks)) },
-  { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.kills, r.mapsPlayed, m)) },
-  { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.deaths, r.mapsPlayed, m)) },
-  { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: false, value: (r, m) => whenPicked(r, () => perMap(r.totals.assists, r.mapsPlayed, m)) },
-  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => whenPicked(r, () => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists)) },
+  { key: "kills", i18nKey: "kills", format: "decimal1", defaultVisible: false, value: (r, m) => whenPickedWithStats(r, () => perMap(r.totals.kills, r.mapsPlayed, m)) },
+  { key: "deaths", i18nKey: "deaths", format: "decimal1", defaultVisible: false, value: (r, m) => whenPickedWithStats(r, () => perMap(r.totals.deaths, r.mapsPlayed, m)) },
+  { key: "assists", i18nKey: "assists", format: "decimal1", defaultVisible: false, value: (r, m) => whenPickedWithStats(r, () => perMap(r.totals.assists, r.mapsPlayed, m)) },
+  { key: "kda", i18nKey: "kda", format: "decimal2", defaultVisible: true, modeInvariant: true, value: (r) => whenPickedWithStats(r, () => kdaRatio(r.totals.kills, r.totals.deaths, r.totals.assists)) },
 ];
 
 /** Columns added after the column picker started saving a plain array: unknown to those saved choices. */

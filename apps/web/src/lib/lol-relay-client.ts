@@ -16,6 +16,25 @@ import type { RiotMatchDto, RiotTimelineDto } from "@gc-stats/lol-stats-engine";
 import { callRelay, relayConfig, type RelayResult, type RiotRelayError } from "./riot-relay-transport";
 import type { RelayProblem, RelayProblemKind } from "./riot-errors";
 
+const HEALTH_TIMEOUT_MS = 2_000;
+/** How long the relay's answer is kept, so a page view does not ask the relay each time. */
+const HEALTH_TTL_MS = 60_000;
+/** A failed call (timeout, relay restarting) is asked again sooner, so a blip doesn't hide the lol features for long. */
+const HEALTH_FAILED_TTL_MS = 5_000;
+let lastHealth: { available: boolean; checkedAt: number; ttlMs: number } | null = null;
+
+/* Check if the relay has the lol routes */
+export async function isLolRelayAvailable(): Promise<boolean> {
+  const config = relayConfig();
+  if (!config) return false;
+  const now = Date.now();
+  if (lastHealth && now - lastHealth.checkedAt < lastHealth.ttlMs) return lastHealth.available;
+  const result = await callRelay<{ lol?: unknown }>("/health", { method: "GET", signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS) }, config);
+  const available = result.ok && result.data?.lol === true;
+  lastHealth = { available, checkedAt: now, ttlMs: result.ok ? HEALTH_TTL_MS : HEALTH_FAILED_TTL_MS };
+  return available;
+}
+
 function matchPath(cluster: string, riotMatchId: string, suffix: string): string {
   return `/lol/match/${cluster}/${encodeURIComponent(riotMatchId)}${suffix}`;
 }

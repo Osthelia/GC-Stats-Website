@@ -46,8 +46,6 @@ const STACK_GRID = "150px minmax(0,1fr) 88px 48px 56px 64px";
 /** The phone layout's icons, in pixels. */
 /** The item slots before the trinket. */
 const ITEM_SLOTS = 6;
-/** The secondary rune is a tree emblem that fills its whole image, so it is shown smaller than the keystone. */
-const SECONDARY_SCALE = 0.6;
 const PHONE_ICONS = { champion: 48, small: 28, objective: 18 };
 
 export type ScoreboardLook = keyof typeof LOOKS;
@@ -63,8 +61,21 @@ function formatPerMinute(value: number | null, digits: number): string {
   return value === null ? "–" : value.toFixed(digits);
 }
 
-/** The K/D/A of one player: kills, deaths and assists, with the deaths in red. */
+/** The champions of a row: one placeholder when a manual lineup doesn't know the champion, so the row keeps its shape. */
+function ChampionIcons({ row, size }: { row: LeagueScoreRow; size: number }) {
+  if (row.champions.length === 0) return <LolIcon kind="champion" url={null} name="?" size={size} />;
+  return (
+    <>
+      {row.champions.map((champion) => (
+        <LolIcon key={`champion-${champion.name}`} kind="champion" url={champion.iconUrl} name={champion.name} size={size} />
+      ))}
+    </>
+  );
+}
+
+/** The K/D/A of one player: kills, deaths and assists, with the deaths in red. "–" without stats (a manual lineup). */
 function Kda({ row }: { row: LeagueScoreRow }) {
+  if (!row.hasStats) return <span className="text-neutral-500">–</span>;
   return (
     <>
       <span className="font-black text-(--gcs-text)">{row.kills}</span>
@@ -92,7 +103,7 @@ function StatCells({ row, reverse = false }: { row: LeagueScoreRow | null; rever
       <Kda row={row} />
     </div>,
     <div key="kp" className={STAT}>
-      {Math.round(row.killParticipation)}%
+      {row.hasStats ? `${Math.round(row.killParticipation)}%` : "–"}
     </div>,
     <div key="cs" className={STAT}>
       {formatPerMinute(row.csPerMinute, 1)}
@@ -123,29 +134,35 @@ function EmptySlot({ size }: { size: number }) {
 }
 
 /**
- * The runes (keystone and secondary, in one column) and the items, with the trinket last, and the role quest item
- * (if the player has one) under the trinket. A build always has
+ * The summoner spells and the runes (keystone and secondary), each in a column of their own, and the items, with the
+ * trinket last, and the role quest item (if the player has one) under the trinket. A build always has
  * ITEM_SLOTS items and a trinket, so the trinket is in the same place on every row. The right side reverses them.
  * With `line` everything is a plain icon in the parent's row.
+ *
+ * What a game doesn't know is left out rather than drawn as a placeholder: the summoner spells and a rune without an
+ * id, the item slots and the trinket when there are no items at all, and the trinket of a manual build without one.
  */
 function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow; side: Side; size: number; line?: boolean }) {
-  const runeIcons = row.runes
-    ? [
-        <LolIcon key="keystone" kind="rune" url={row.runes.keystoneIconUrl} name={row.runes.keystoneName ?? ""} size={size} />,
-        <LolIcon key="secondary" kind="tree" url={row.runes.secondaryIconUrl} name={row.runes.secondaryName ?? ""} size={Math.round(size * SECONDARY_SCALE)} />,
-      ]
-    : [];
-  const itemIcons = (row.items ?? []).map((item, i) => <LolIcon key={`item-${i}`} kind="item" url={item.iconUrl} name={item.name} size={size} />);
-  const trinketIcon = itemIcons.pop() ?? (row.items ? <EmptySlot key="trinket" size={size} /> : undefined);
+  const spellIcons = (row.summoners ?? []).map((spell, i) => <LolIcon key={`spell-${i}`} kind="spell" url={spell.iconUrl} name={spell.name} size={size} />);
+  const runeIcons: ReactNode[] = [];
+  if (row.runes?.keystoneIconUrl) runeIcons.push(<LolIcon key="keystone" kind="rune" url={row.runes.keystoneIconUrl} name={row.runes.keystoneName ?? ""} size={size} />);
+  if (row.runes?.secondaryIconUrl) runeIcons.push(<LolIcon key="secondary" kind="tree" url={row.runes.secondaryIconUrl} name={row.runes.secondaryName ?? ""} size={size} />);
+  const hasItems = (row.items?.length ?? 0) > 0;
+  // A manual build keeps its empty slots (null): an empty item slot is drawn as one, an empty trinket slot not at all.
+  const slots = [...(row.items ?? [])];
+  const trinketItem = slots.pop();
+  const itemIcons = slots.map((item, i) => (item ? <LolIcon key={`item-${i}`} kind="item" url={item.iconUrl} name={item.name} size={size} /> : <EmptySlot key={`item-${i}`} size={size} />));
+  const trinketIcon = trinketItem ? <LolIcon key="trinket" kind="item" url={trinketItem.iconUrl} name={trinketItem.name} size={size} /> : undefined;
   const roleIcon = row.roleItem ? <LolIcon key="role-item" kind="item" url={row.roleItem.iconUrl} name={row.roleItem.name} size={size} /> : undefined;
   // In a column the role quest item sits under the trinket; in a line there is no under, so it follows the trinket.
   const trinket = roleIcon && !line ? <div className="flex flex-col items-center">{trinketIcon}{roleIcon}</div> : trinketIcon;
-  if (row.items) {
+  if (hasItems) {
     while (itemIcons.length < ITEM_SLOTS) itemIcons.push(<EmptySlot key={`empty-${itemIcons.length}`} size={size} />);
   }
   if (line) {
     return (
       <>
+        {spellIcons}
         {runeIcons}
         {itemIcons}
         {trinket}
@@ -153,11 +170,14 @@ function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow;
       </>
     );
   }
-  const runes = <div className="flex flex-col items-center justify-center">{runeIcons}</div>;
-  const items = <div className="grid grid-cols-3">{itemIcons}</div>;
+  // Left out when empty, so no gap is kept for them in the row.
+  const spells = spellIcons.length > 0 ? <div className="flex flex-col items-center justify-center">{spellIcons}</div> : null;
+  const runes = runeIcons.length > 0 ? <div className="flex flex-col items-center justify-center">{runeIcons}</div> : null;
+  const items = itemIcons.length > 0 ? <div className="grid grid-cols-3">{itemIcons}</div> : null;
 
   return side === "left" ? (
     <>
+      {spells}
       {runes}
       {items}
       {trinket}
@@ -167,6 +187,7 @@ function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow;
       {trinket}
       {items}
       {runes}
+      {spells}
     </>
   );
 }
@@ -177,9 +198,7 @@ function RunesAndItems({ row, side, size, line = false }: { row: LeagueScoreRow;
  */
 function ChampionBuild({ row, side, look }: { row: LeagueScoreRow | null; side: Side; look: Look }) {
   if (!row) return <div />;
-  const champions = row.champions.map((champion) => (
-    <LolIcon key={`champion-${champion.name}`} kind="champion" url={champion.iconUrl} name={champion.name} size={look.icons.champion} />
-  ));
+  const champions = <ChampionIcons row={row} size={look.icons.champion} />;
   const build = <RunesAndItems row={row} side={side} size={look.icons.small} />;
 
   return side === "left" ? (
@@ -250,9 +269,7 @@ function TeamHeader({ team, size }: { team: StackTeam; size: number }) {
 
 /** A player on a phone: the champion, the name and the K/D/A, then the runes and items in a row of their own. */
 function PhonePlayer({ row, look }: { row: LeagueScoreRow; look: Look }) {
-  const champions = row.champions.map((champion) => (
-    <LolIcon key={`champion-${champion.name}`} kind="champion" url={champion.iconUrl} name={champion.name} size={PHONE_ICONS.champion} />
-  ));
+  const champions = <ChampionIcons row={row} size={PHONE_ICONS.champion} />;
   return (
     <div className="px-3 py-2">
       <div className="flex items-center gap-2">
@@ -267,7 +284,7 @@ function PhonePlayer({ row, look }: { row: LeagueScoreRow; look: Look }) {
           <div className="truncate text-[11px] text-neutral-500">{row.champions.map((champion) => champion.name).join(", ")}</div>
         </div>
       </div>
-      <div className="mt-2 flex items-center gap-1">
+      <div className="mt-2 flex items-center gap-1 empty:hidden">
         <RunesAndItems row={row} side="left" size={PHONE_ICONS.small} line />
       </div>
     </div>

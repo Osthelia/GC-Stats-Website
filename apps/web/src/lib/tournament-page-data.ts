@@ -566,8 +566,8 @@ export async function getTournamentChampionNames(game: GameSlug, tournamentId: n
   const rows = await db
     .selectDistinct({ value: gamePlayerStats.championName })
     .from(gamePlayerStats)
-    .where(inArray(gamePlayerStats.gameId, tournamentGameIds(game, tournamentId)));
-  return rows.map((r) => r.value).sort();
+    .where(and(inArray(gamePlayerStats.gameId, tournamentGameIds(game, tournamentId)), isNotNull(gamePlayerStats.championName)));
+  return rows.flatMap((r) => (r.value === null ? [] : [r.value])).sort();
 }
 
 export async function getTournamentPatches(game: GameSlug, tournamentId: number): Promise<string[]> {
@@ -609,7 +609,8 @@ export async function getLeagueStatsPlayerMeta(game: GameSlug, scope: SQLWrapper
 
   const championsByPerson = new Map<number, { name: string; iconUrl: string | null }[]>();
   for (const r of championRows) {
-    if (r.personId == null) continue;
+    // A manual lineup row may not know the champion.
+    if (r.personId == null || r.championName === null) continue;
     const champion = { name: r.championName, iconUrl: iconUrlOf(r.championName) };
     const champions = championsByPerson.get(r.personId);
     if (champions) champions.push(champion);
@@ -638,20 +639,22 @@ export async function getTournamentChampionStats(game: GameSlug, tournamentId: n
   const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
   const gameIds = tournamentGameIds(game, tournamentId, { patch: filters.patch });
 
-  const pickConditions = [inArray(gamePlayerStats.gameId, gameIds)];
+  const pickConditions = [inArray(gamePlayerStats.gameId, gameIds), isNotNull(gamePlayerStats.championName)];
   if (filters.role) pickConditions.push(eq(gamePlayerStats.role, filters.role));
   const sum = (expr: SQLWrapper) => sql<number>`coalesce(sum(${expr}), 0)::int`;
+  const withStats = (expr: SQLWrapper) => sql`case when ${gamePlayerStats.hasStats} then ${expr} end`;
 
   const [gameCount, pickRows, banRows, iconUrlOf] = await Promise.all([
     db.select({ games: count() }).from(games).where(inArray(games.id, gameIds)),
     db
       .select({
-        championName: gamePlayerStats.championName,
+        championName: sql<string>`${gamePlayerStats.championName}`,
         picks: sql<number>`count(*)::int`,
+        statPicks: sql<number>`count(*) filter (where ${gamePlayerStats.hasStats})::int`,
         wins: sum(sql`case when ${games.winnerEntrantId} = ${gamePlayerStats.entrantId} then 1 else 0 end`),
-        kills: sum(gamePlayerStats.kills),
-        deaths: sum(gamePlayerStats.deaths),
-        assists: sum(gamePlayerStats.assists),
+        kills: sum(withStats(gamePlayerStats.kills)),
+        deaths: sum(withStats(gamePlayerStats.deaths)),
+        assists: sum(withStats(gamePlayerStats.assists)),
         roles: sql<string[]>`coalesce(array_agg(distinct ${gamePlayerStats.role}) filter (where ${gamePlayerStats.role} is not null), '{}')`,
       })
       .from(gamePlayerStats)

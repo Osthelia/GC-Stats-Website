@@ -2423,6 +2423,7 @@
       "title": "Teams",
       "subtitle": "Manage team profiles and rosters.",
       "searchPlaceholder": "Name, ID or VLR ID…",
+      "searchPlaceholderLol": "Name or ID…",
       "searchSubmit": "Search",
       "activeWithinLabel": "Recent activity",
       "activeWithinAny": "Any time",
@@ -2858,12 +2859,14 @@
           "organizations": "Organization credits",
           "production": "Production credits",
           "matchStats": "Match participation",
+          "gameStats": "Game participation",
           "news": "News",
           "logos": "Logos",
           "riotAccounts": "Riot accounts ({count})",
           "linkedAccount": "Linked account"
         },
         "matchStatsHint": "Also moves the round-by-round data (kills, damages, positions) behind each map. The locked roster credit for a tournament entrant only moves once every map of that entrant is selected.",
+        "gameStatsHint": "Also moves the frames and events (kills, objectives, wards) of each game. The locked roster credit for a tournament entrant only moves once every game of that entrant is selected.",
         "periodOngoing": "since {since}",
         "periodRange": "{since} → {until}",
         "riotAccountsHint": "The Riot accounts move to the player you keep, so their games stay linked to them.",
@@ -4059,8 +4062,8 @@
           "loss": "Lost",
           "notUsed": "Points only order the group once Points is in the tiebreakers."
         },
-        "fieldMatchScope": "Teams also play teams from other groups (count matches from the whole stage)",
-        "fieldMatchScopeHint": "Only the teams pinned to this group are listed, and their completed matches in any group of this stage count. Pin the teams after saving. Round robin only.",
+        "fieldMatchScope": "Teams also play teams from other groups (count matches from the other groups with this setting)",
+        "fieldMatchScopeHint": "Only the teams pinned to this group are listed, and their completed matches count in every group of this stage that has this setting too. Matches in groups without it don't count. Pin the teams after saving. Round robin only.",
         "matchScopeNoTeams": "No teams are pinned to this group yet, so its table is empty. Assign teams to it first.",
         "matchScopeSwitchWarning": "Switching to stage scope lists only the pinned teams. Teams that played in this group but aren't pinned will disappear from its table until you pin them."
       },
@@ -4469,6 +4472,47 @@
               "relay": "Riot did not return this match, try again later. Existing data was kept.",
               "other": "The fetch could not run, check the map page. Existing data was kept."
             }
+          },
+          "league": {
+            "description": "Paste the Liquipedia '{{Match}}' of this series. Its games and drafts are filled in where they are still empty.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Import this wikicode? Games and drafts that are still empty are filled in. Riot and Leaguepedia data, drafts edited by hand and anything already entered are kept.",
+            "importSuccess": "Wikicode imported: games and drafts updated.",
+            "liquipediaHint": "The opponents (opponent1, opponent2) are also saved as the teams' Liquipedia names.",
+            "error": {
+              "missingTeams": "Both teams must be set before importing games.",
+              "oneMatchOnly": "The wikicode must contain exactly one '{{Match}}'.",
+              "noGames": "No played games found in this wikicode.",
+              "unknownChampions": "Unknown champions in the wikicode: {names}. Nothing was imported.",
+              "duplicateChampion": "Game {order}: {champion} appears more than once in the draft. Nothing was imported."
+            },
+            "results": {
+              "forfeit": "The wikicode shows a forfeit. Nothing was imported, set the forfeit on the match by hand.",
+              "gameLabel": "Game {order}",
+              "created": "Game created from the wikicode.",
+              "filled": "Filled in: {fields}.",
+              "differs": "Different from the wikicode, kept: {fields}.",
+              "field": {
+                "winner": "winner",
+                "duration": "length"
+              },
+              "draft": {
+                "written": "Draft imported.",
+                "kept": {
+                  "editedByHand": "Draft kept: it was edited by hand.",
+                  "riotData": "Draft kept: the game has Riot data.",
+                  "leaguepediaData": "Draft kept: the game has Leaguepedia data.",
+                  "existingDraft": "Draft kept: the game already has a draft."
+                },
+                "none": {
+                  "noDraft": "No draft in the wikicode.",
+                  "noSide": "No draft imported: the wikicode doesn't say which side team 1 played."
+                }
+              },
+              "patchSet": "Patch {patch} set on the match.",
+              "bestOfDiffers": "The wikicode says best of {bestOf}, the match keeps its own.",
+              "firstPickAssumed": "The wikicode doesn't say who had the first pick, so blue was assumed. Check the draft."
+            }
           }
         },
         "veto": {
@@ -4840,9 +4884,80 @@
             "riotFetch": "Fetch from Riot",
             "riotSuccess": "Game stored from Riot",
             "riotTournamentRealm": "This game was played on the tournament realm, so it can't be fetched from the Riot API."
-          }
+          },
+          "lineupButton": "Lineup"
         },
-        "liquipediaImportButton": "Liquipedia Match Import"
+        "liquipediaImportButton": "Liquipedia Match Import",
+        "lineup": {
+          "metaTitle": "Lineup",
+          "backToMatch": "Back to match",
+          "title": "Lineup of game {order}",
+          "description": "Who played this game, in which lane and on which champion. For games without Riot or Leaguepedia data; a later import replaces it.",
+          "importedHint": "This game has Riot or Leaguepedia data, so its players come from the import.",
+          "fromPreviousGame": "Filled in from the previous game of the series. Check the players, add the champions, then save.",
+          "withStats": "Add the scoreboard",
+          "withStatsHint": "Kills, deaths, assists and CS of all ten players, and the game length. Gold, damage and vision can be left empty. Without a scoreboard, the game counts for games played, win rate and champions, but not for the averages.",
+          "duration": "Game length (m:ss)",
+          "draftPicks": "Picked in the draft: {champions}",
+          "player": "Player",
+          "pickPlayer": "Choose a player",
+          "searchPlayer": "Search a player…",
+          "newPlayer": "+ New player",
+          "newPlayerHandle": "Name of the new player",
+          "newPlayerTag": "(new)",
+          "clearPlayer": "Remove player",
+          "champion": "Champion",
+          "unknownChampion": "Unknown",
+          "searchChampion": "Search a champion…",
+          "noResults": "No results.",
+          "stat": {
+            "kills": "Kills",
+            "deaths": "Deaths",
+            "assists": "Assists",
+            "cs": "CS",
+            "gold": "Gold",
+            "damage": "Damage",
+            "vision": "Vision"
+          },
+          "save": "Save lineup",
+          "saving": "Saving…",
+          "saved": "Lineup saved.",
+          "error": {
+            "notFound": "This game isn't part of the match.",
+            "entrantsUnset": "Both teams of the match must be set first.",
+            "importedGame": "This game has Riot or Leaguepedia data; its lineup can't be changed by hand.",
+            "unknownPerson": "One of the players no longer exists.",
+            "problem": {
+              "notAnEntrant": "A player is on a team that isn't in this match.",
+              "invalidLane": "A lane isn't valid.",
+              "duplicateLane": "{lane} is filled twice for one team.",
+              "duplicatePerson": "A player is in the lineup twice.",
+              "invalidHandle": "A new player needs a name.",
+              "unknownChampion": "{championName} isn't a champion of this patch.",
+              "duplicateChampion": "{championName} is picked twice.",
+              "championsUnavailable": "The champions of this patch couldn't be loaded. Try again later or leave the champions empty.",
+              "invalidStat": "Enter a whole number from 0 to {max}.",
+              "durationRequired": "A scoreboard needs the game length (m:ss).",
+              "playerMissing": "A scoreboard needs a player in every lane of both teams.",
+              "statMissing": "Needed for the scoreboard.",
+              "buildUnavailable": "The summoner spells, runes and items of this patch couldn't be loaded. Try again later or leave the build empty.",
+              "unknownBuildPart": "Not part of this patch.",
+              "duplicateSummoner": "Already the other summoner spell.",
+              "secondaryTreeOfKeystone": "This is the keystone's own tree; choose another one."
+            }
+          },
+          "optional": "optional",
+          "build": "Build",
+          "buildSet": "set",
+          "buildUnavailable": "The summoner spells, runes and items of this patch couldn't be loaded. Try again later.",
+          "summoner": "Summoner spell {slot}",
+          "keystone": "Keystone",
+          "secondaryTree": "Secondary tree",
+          "item": "Item {slot}",
+          "trinket": "Trinket",
+          "empty": "Empty",
+          "search": "Search…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -5119,7 +5234,15 @@
         "doneDescription": "Import finished.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "Importing and fetching Riot data, this can take a moment.",
-        "close": "Close"
+        "close": "Close",
+        "league": {
+          "dialogDescription": "Paste the match wikicode. Its games and drafts are filled in where they are still empty.",
+          "importingHint": "Importing, this can take a moment.",
+          "legend": {
+            "partial": "Games without player data or draft",
+            "done": "Player data and draft in every game"
+          }
+        }
       },
       "leaguepedia": {
         "title": "Leaguepedia games",

@@ -42,9 +42,26 @@ function isInternationalLanguage(code: string): boolean {
   return code.trim().toLowerCase().startsWith("en");
 }
 
-async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
+/** What every game's match wikicode starts from: the match, its two teams under their Liquipedia names and the official channels. */
+export type MatchExportBase = {
+  /** The part of the result that doesn't depend on the game. */
+  summary: Omit<LiquipediaMatchWikicode, "wikicode">;
+  bestOf: number;
+  patch: string | null;
+  isForfeit: boolean;
+  winnerEntrantId: number | null;
+  entrantAId: number | null;
+  entrantBId: number | null;
+  /** Names as written in the wikicode: the Liquipedia name, else the GC Stats one. */
+  opponent1: string;
+  opponent2: string;
+  twitch: string[];
+  youtube: string[];
+};
+
+/** The matches in one batch of queries, so a whole stage costs a fixed number. */
+export async function loadMatchExportBases(game: GameSlug, matchIds: number[]): Promise<MatchExportBase[]> {
   const { tournaments, stages, stageContainers, matches, entrants, liquipediaTeamNames, matchStreams, streamChannels } = gameTables(game);
-  const { matchVetos, maps, mapRoundsRaw } = valorantTablesOf(game);
   if (matchIds.length === 0) return [];
 
   const matchRows = await db
@@ -53,6 +70,9 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
       round: matches.round,
       label: matches.label,
       bestOf: matches.bestOf,
+      patch: matches.patch,
+      isForfeit: matches.isForfeit,
+      winnerEntrantId: matches.winnerId,
       status: matches.status,
       scheduledAt: matches.scheduledAt,
       scoreA: matches.scoreA,
@@ -74,10 +94,79 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
   if (matchRows.length === 0) return [];
 
   const entrantIds = [...new Set(matchRows.flatMap((m) => [m.entrantAId, m.entrantBId]).filter((id): id is number => id !== null))];
-  const [entrantRows, vetoRows, mapRows, streamRows] = await Promise.all([
+  const [entrantRows, nameRows, streamRows] = await Promise.all([
     entrantIds.length
       ? db.select({ id: entrants.id, teamId: entrants.teamId, displayName: entrants.displayName }).from(entrants).where(inArray(entrants.id, entrantIds))
       : Promise.resolve([]),
+    entrantIds.length
+      ? db
+          .select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name })
+          .from(liquipediaTeamNames)
+          .innerJoin(entrants, eq(entrants.teamId, liquipediaTeamNames.teamId))
+          .where(inArray(entrants.id, entrantIds))
+      : Promise.resolve([]),
+    db
+      .select({ matchId: matchStreams.matchId, name: streamChannels.name, platform: streamChannels.platform, languageCode: streamChannels.languageCode })
+      .from(matchStreams)
+      .innerJoin(streamChannels, eq(streamChannels.id, matchStreams.streamChannelId))
+      .where(and(inArray(matchStreams.matchId, matchIds), eq(streamChannels.type, "official"), eq(streamChannels.isActive, true)))
+      .orderBy(asc(streamChannels.id)),
+  ]);
+
+  const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
+  const nameByTeam = new Map(nameRows.map((r) => [r.teamId, r.name]));
+
+  return matchRows.map((match) => {
+    const channelsOf = (platform: string) => streamRows.filter((r) => r.matchId === match.id && r.platform === platform && isInternationalLanguage(r.languageCode)).map((r) => r.name);
+    const unlinkedTeams: string[] = [];
+    const side = (entrantId: number | null) => {
+      const entrant = entrantId !== null ? entrantById.get(entrantId) : undefined;
+      if (!entrant) return { display: "TBD", wiki: "TBD" };
+      const name = entrant.teamId !== null ? nameByTeam.get(entrant.teamId) : undefined;
+      if (!name) unlinkedTeams.push(entrant.displayName);
+      return { display: entrant.displayName, wiki: name ?? entrant.displayName };
+    };
+    const a = side(match.entrantAId);
+    const b = side(match.entrantBId);
+
+    return {
+      summary: {
+        matchId: match.id,
+        tournamentId: match.tournamentId,
+        tournamentName: match.tournamentName,
+        tournamentIsGhost: match.tournamentIsGhost,
+        stageId: match.stageId,
+        stageName: match.stageName,
+        containerName: match.containerName,
+        round: match.round,
+        label: match.label,
+        status: match.status,
+        scheduledAt: knownScheduledAt(match.scheduledAt),
+        scoreA: match.scoreA,
+        scoreB: match.scoreB,
+        teamAName: a.display,
+        teamBName: b.display,
+        unlinkedTeams,
+      },
+      bestOf: match.bestOf,
+      patch: match.patch,
+      isForfeit: match.isForfeit,
+      winnerEntrantId: match.winnerEntrantId,
+      entrantAId: match.entrantAId,
+      entrantBId: match.entrantBId,
+      opponent1: a.wiki,
+      opponent2: b.wiki,
+      twitch: channelsOf("twitch"),
+      youtube: channelsOf("youtube"),
+    };
+  });
+}
+
+async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<LiquipediaMatchWikicode[]> {
+  const { matchVetos, maps, mapRoundsRaw } = valorantTablesOf(game);
+  if (matchIds.length === 0) return [];
+  const [bases, vetoRows, mapRows] = await Promise.all([
+    loadMatchExportBases(game, matchIds),
     db
       .select({ matchId: matchVetos.matchId, entrantId: matchVetos.entrantId, mapName: matchVetos.mapName, type: matchVetos.type, side: matchVetos.side, sidePickedBy: matchVetos.sidePickedByEntrantId })
       .from(matchVetos)
@@ -88,37 +177,19 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
       .from(maps)
       .where(inArray(maps.matchId, matchIds))
       .orderBy(asc(maps.matchId), asc(maps.order)),
-    db
-      .select({ matchId: matchStreams.matchId, name: streamChannels.name, platform: streamChannels.platform, languageCode: streamChannels.languageCode })
-      .from(matchStreams)
-      .innerJoin(streamChannels, eq(streamChannels.id, matchStreams.streamChannelId))
-      .where(and(inArray(matchStreams.matchId, matchIds), eq(streamChannels.type, "official"), eq(streamChannels.isActive, true)))
-      .orderBy(asc(streamChannels.id)),
   ]);
-
-  const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
-  const [firstRounds, nameRows] = await Promise.all([
-    mapRows.length
-      ? db
-          .selectDistinctOn([mapRoundsRaw.mapId], { mapId: mapRoundsRaw.mapId, atkEntrantId: mapRoundsRaw.atkEntrantId })
-          .from(mapRoundsRaw)
-          .where(inArray(mapRoundsRaw.mapId, mapRows.map((m) => m.id)))
-          .orderBy(asc(mapRoundsRaw.mapId), asc(mapRoundsRaw.roundNumber))
-      : Promise.resolve([]),
-    teamIds.length
-      ? db.select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name }).from(liquipediaTeamNames).where(inArray(liquipediaTeamNames.teamId, teamIds))
-      : Promise.resolve([]),
-  ]);
-
-  const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
+  if (bases.length === 0) return [];
+  const firstRounds = mapRows.length
+    ? await db
+        .selectDistinctOn([mapRoundsRaw.mapId], { mapId: mapRoundsRaw.mapId, atkEntrantId: mapRoundsRaw.atkEntrantId })
+        .from(mapRoundsRaw)
+        .where(inArray(mapRoundsRaw.mapId, mapRows.map((m) => m.id)))
+        .orderBy(asc(mapRoundsRaw.mapId), asc(mapRoundsRaw.roundNumber))
+    : [];
   const firstAtkByMap = new Map(firstRounds.map((r) => [r.mapId, r.atkEntrantId]));
-  const nameByTeam = new Map(nameRows.map((r) => [r.teamId, r.name]));
 
-  return matchRows.map((match) => {
-    const entrantA = match.entrantAId;
-    const entrantB = match.entrantBId;
-    const matchVetoRows = vetoRows.filter((r) => r.matchId === match.id);
-    const channelsOf = (platform: string) => streamRows.filter((r) => r.matchId === match.id && r.platform === platform && isInternationalLanguage(r.languageCode)).map((r) => r.name);
+  return bases.map(({ summary, bestOf, entrantAId: entrantA, entrantBId: entrantB, opponent1, opponent2, twitch, youtube }) => {
+    const matchVetoRows = vetoRows.filter((r) => r.matchId === summary.matchId);
 
     const veto: WikicodeVetoStep[] = matchVetoRows
       .filter((row) => (row.entrantId === entrantA || row.entrantId === entrantB) && (row.type === "ban" || row.type === "pick" || row.type === "decider"))
@@ -131,7 +202,7 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
       return row.sidePickedBy === entrantA ? row.side === "def" : row.side === "atk";
     };
 
-    const matchMaps = mapRows.filter((m) => m.matchId === match.id);
+    const matchMaps = mapRows.filter((m) => m.matchId === summary.matchId);
     const wikicodeMaps: WikicodeMap[] =
       matchMaps.length > 0
         ? matchMaps.map((map) => {
@@ -148,45 +219,9 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
             .filter((step) => step.type !== "ban")
             .map((step) => ({ mapName: step.mapName, apiMatchId: null, skipped: false, team1StartedDefense: team1DefenseFromVeto(step.mapName) }));
 
-    const unlinkedTeams: string[] = [];
-    const side = (entrantId: number | null) => {
-      const entrant = entrantId !== null ? entrantById.get(entrantId) : undefined;
-      if (!entrant) return { display: "TBD", wiki: "TBD" };
-      const name = entrant.teamId !== null ? nameByTeam.get(entrant.teamId) : undefined;
-      if (!name) unlinkedTeams.push(entrant.displayName);
-      return { display: entrant.displayName, wiki: name ?? entrant.displayName };
-    };
-    const a = side(entrantA);
-    const b = side(entrantB);
-    const scheduledAt = knownScheduledAt(match.scheduledAt);
-
     return {
-      matchId: match.id,
-      tournamentId: match.tournamentId,
-      tournamentName: match.tournamentName,
-      tournamentIsGhost: match.tournamentIsGhost,
-      stageId: match.stageId,
-      stageName: match.stageName,
-      containerName: match.containerName,
-      round: match.round,
-      label: match.label,
-      status: match.status,
-      scheduledAt,
-      scoreA: match.scoreA,
-      scoreB: match.scoreB,
-      teamAName: a.display,
-      teamBName: b.display,
-      unlinkedTeams,
-      wikicode: buildMatchPageWikicode({
-        scheduledAt,
-        bestOf: match.bestOf,
-        opponent1: a.wiki,
-        opponent2: b.wiki,
-        twitch: channelsOf("twitch"),
-        youtube: channelsOf("youtube"),
-        veto,
-        maps: wikicodeMaps,
-      }),
+      ...summary,
+      wikicode: buildMatchPageWikicode({ scheduledAt: summary.scheduledAt, bestOf, opponent1, opponent2, twitch, youtube, veto, maps: wikicodeMaps }),
     };
   });
 }

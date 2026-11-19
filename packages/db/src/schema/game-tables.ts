@@ -996,16 +996,19 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     gameId: bigint("game_id", { mode: "number" }).notNull().references(() => games.id, { onDelete: "cascade" }),
     entrantId: bigint("entrant_id", { mode: "number" }).notNull().references(() => entrants.id),
     personId: bigint("person_id", { mode: "number" }).references(() => sharedPeople.id),
-    championName: text("champion_name").notNull(), // display name, e.g. "Ahri"
+    championName: text("champion_name"), // display name, e.g. "Ahri"; null in a manual lineup of a game whose champion is not known
     role: text("role"), // Riot teamPosition: TOP | JUNGLE | MIDDLE | BOTTOM | UTILITY, null if unknown
     kills: integer("kills").notNull().default(0),
     deaths: integer("deaths").notNull().default(0),
     assists: integer("assists").notNull().default(0),
     cs: integer("cs").notNull().default(0), // minions + jungle monsters killed
-    gold: integer("gold").notNull().default(0),
-    damage: integer("damage").notNull().default(0), // damage dealt to champions
-    vision: integer("vision").notNull().default(0), // Riot visionScore
-    items: jsonb("items").notNull().default([]), // item ids, in slot order
+    // Null in a manual scoreboard that doesn't know the number: only the games that have it count for its averages.
+    gold: integer("gold").default(0),
+    damage: integer("damage").default(0), // damage dealt to champions
+    vision: integer("vision").default(0), // Riot visionScore
+    // Item ids in slot order, the trinket last. An import leaves out the empty slots; a manual build keeps all seven
+    // slots, with 0 for an empty one, so its trinket stays the trinket.
+    items: jsonb("items").notNull().default([]),
     roleBoundItem: integer("role_bound_item"), // the role quest item (Riot roleBoundItem), null when the player has none
     runes: jsonb("runes").notNull().default({}), // the whole rune page: primary and secondary trees with their runes, and the stat shards
     summoners: jsonb("summoners").notNull().default([]), // the two summoner spell ids (4 Flash, 14 Ignite...)
@@ -1016,9 +1019,13 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     xpDiff15: integer("xp_diff_15"),
     csDiff10: integer("cs_diff_10"),
     csDiff15: integer("cs_diff_15"),
+    // for manual inputs that only input champions for players without stats
+    hasStats: boolean("has_stats").notNull().default(true),
   }, (t) => [
     index("lol_game_player_stats_entrant_id_idx").on(t.entrantId),
     index("lol_game_player_stats_person_id_idx").on(t.personId),
+    // Also serves the lookups and deletes by game. Players without a person (null) can repeat.
+    unique("lol_game_player_stats_game_person_unique").on(t.gameId, t.personId),
   ]);
 
   const gameTeamStats = pgTable("lol_game_team_stats", {
@@ -1151,6 +1158,8 @@ export function defineLeagueTables(g: GameTables<"lol">) {
     // Rune and rune tree names by id, so pages never ask Data Dragon. Null for versions stored before the column;
     // the icon sync fills it in.
     runes: jsonb("runes").$type<Record<string, string>>(),
+    // Summoner spell names by numeric id ("4" Flash). Null for versions stored before the column; the icon sync fills it in.
+    summoners: jsonb("summoners").$type<Record<string, string>>(),
     // Set only once every icon of the version is in the bucket. While null, the next request for the patch tries again.
     iconsSyncedAt: timestamp("icons_synced_at", { withTimezone: true }),
     // The lock of the icon sync: one sync per version at a time. A crashed sync frees it after ten minutes.
@@ -1356,5 +1365,5 @@ export function gameTables(game: GameSlug): GameTables<"val"> | GameTables<"lol"
 
 /** The table a map reference points at: `val_maps` for Valorant, `lol_games` for LoL. Both have `id` and `match_id`. */
 export function seriesMapTableOf(game: GameSlug) {
-  return gameHasMaps(game) ? valorantTables.maps : leagueTables.games;
+  return game === "valorant" ? valorantTables.maps : leagueTables.games;
 }

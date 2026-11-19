@@ -17,11 +17,17 @@ import { BracketViewerMatchActionProvider, type BracketViewerMatchTarget } from 
 import { LiquipediaMatchImportDialog } from "@/components/admin/liquipedia-match-import-dialog";
 import { IMPORT_STATUS_DOT_CLASS, type LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
+import { gameHasSeriesGames } from "@gc-stats/db/game";
 
 const LEGEND: LiquipediaImportStatus[] = ["none", "partial", "done"];
 
 export function LiquipediaImportViewer({ tournamentId, statuses, children }: { tournamentId: number; statuses: Record<number, LiquipediaImportStatus>; children: ReactNode }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.liquipediaImportPage");
+  const tLeague = useTranslations("admin.tournaments.liquipediaImportPage.league");
+  // League says what "partial" and "done" mean there; "none" is the same for both games.
+  const legendText = (status: LiquipediaImportStatus) => (gameHasSeriesGames(game) && status !== "none" ? tLeague(`legend.${status}`) : t(`legend.${status}`));
   const [selected, setSelected] = useState<BracketViewerMatchTarget | null>(null);
 
   return (
@@ -30,7 +36,7 @@ export function LiquipediaImportViewer({ tournamentId, statuses, children }: { t
         {LEGEND.map((status) => (
           <span key={status} className="flex items-center gap-1.5">
             <span className={cn("size-2.5 rounded-full", IMPORT_STATUS_DOT_CLASS[status])} />
-            {t(`legend.${status}`)}
+            {legendText(status)}
           </span>
         ))}
       </div>

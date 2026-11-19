@@ -24,8 +24,8 @@ import { GHOST_MATCH_BEST_OF_VALUES, GHOST_MATCH_PLAYER_SLOTS } from "@/lib/ghos
 import { parseIsoInstant } from "@/lib/datetime-local";
 import type { GameSlug } from "@gc-stats/db/game";
 
-async function requireTournamentsActor(): Promise<void> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+async function requireTournamentsActor(game: GameSlug): Promise<void> {
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 }
 
 /** A roster slot: an existing person, or a handle for a new ghost player. */
@@ -51,18 +51,18 @@ export type GhostMatchFieldErrors = Partial<Record<GhostMatchField, string>> & {
 export type GhostMatchResult = { ok: true; tournamentId: number; matchId: number } | { ok: false; fieldErrors: GhostMatchFieldErrors };
 
 export async function searchGhostTeams(game: GameSlug, query: string): Promise<TeamPickerResult[]> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   return searchTeamsQuery(game, query, undefined, "only");
 }
 
 export async function searchGhostPeople(game: GameSlug, query: string): Promise<PersonPickerResult[]> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   return searchPeopleQuery(game, query, undefined, undefined, "only");
 }
 
 /** GC side can field an uncovered stand-in, so public and ghost people are both valid. */
 export async function searchPeopleIncludingGhosts(game: GameSlug, query: string): Promise<PersonPickerResult[]> {
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   return searchPeopleQuery(game, query, undefined, undefined, "include");
 }
 
@@ -70,7 +70,7 @@ export async function searchPeopleIncludingGhosts(game: GameSlug, query: string)
 export async function searchPeopleForMapFetch(game: GameSlug, mapId: number, query: string): Promise<PersonPickerResult[]> {
   const { tournaments, stages, stageContainers, matches } = gameTables(game);
   const { maps } = valorantTablesOf(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const [row] = await db
     .select({ isGhost: tournaments.isGhost })
     .from(maps)
@@ -86,7 +86,7 @@ export async function searchPeopleForMapFetch(game: GameSlug, mapId: number, que
 /** Current player roster of a GC team, to prefill its side of the form. */
 export async function getTeamCurrentPlayers(game: GameSlug, teamId: number): Promise<{ id: number; handle: string }[]> {
   const { people, rosterMemberships } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   return db
     .select({ id: people.id, handle: people.handle })
     .from(rosterMemberships)
@@ -106,7 +106,7 @@ export async function getTeamCurrentPlayers(game: GameSlug, teamId: number): Pro
 /** Last roster fielded by a ghost team, to prefill the opponent side when reusing it. */
 export async function getGhostTeamLastPlayers(game: GameSlug, teamId: number): Promise<{ id: number; handle: string }[]> {
   const { entrants, entrantMembers, teams, people } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
   const [last] = await db
     .select({ id: entrants.id })
     .from(entrants)
@@ -155,7 +155,7 @@ async function validatePlayers(game: GameSlug, rows: GhostMatchPlayerInput[], gh
 
 export async function createGhostMatch(game: GameSlug, input: GhostMatchInput): Promise<GhostMatchResult> {
   const { tournaments, stages, stageContainers, entrants, entrantMembers, matches, teams } = gameTables(game);
-  await requireTournamentsActor();
+  await requireTournamentsActor(game);
 
   const fieldErrors: GhostMatchFieldErrors = {};
 

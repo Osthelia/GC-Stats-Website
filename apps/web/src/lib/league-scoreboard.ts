@@ -21,20 +21,23 @@ export type LeagueScoreRow = {
   personId: number | null;
   handle: string;
   champions: { name: string; iconUrl: string | null }[];
+  /** False when the numbers are not known (a manual lineup without a scoreboard): they show as "–". */
+  hasStats: boolean;
   kills: number;
   deaths: number;
   assists: number;
   killParticipation: number;
   csPerMinute: number | null;
   goldPerMinute: number | null;
-  items?: { name: string; iconUrl: string | null }[];
+  items?: ({ name: string; iconUrl: string | null } | null)[];
   roleItem?: { name: string; iconUrl: string | null } | null;
   runes?: PlayerRunes;
+  summoners?: { name: string; iconUrl: string | null }[];
 };
 
 /** The champion icon of each name, from any game it was played in: the averages only know the name. */
 export function championIconMap(games: LeagueMatchGame[]): Map<string, string | null> {
-  return new Map(games.flatMap((game) => game.players).map((player): [string, string | null] => [player.championName, player.championIconUrl]));
+  return new Map(games.flatMap((game) => game.players).flatMap((player): [string, string | null][] => (player.championName === null ? [] : [[player.championName, player.championIconUrl]])));
 }
 
 export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): LeagueScoreRow[] {
@@ -44,7 +47,8 @@ export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): 
     .map((player) => ({
       personId: player.personId,
       handle: player.handle,
-      champions: [{ name: player.championName, iconUrl: player.championIconUrl }],
+      champions: player.championName === null ? [] : [{ name: player.championName, iconUrl: player.championIconUrl }],
+      hasStats: player.hasStats,
       kills: player.kills,
       deaths: player.deaths,
       assists: player.assists,
@@ -54,6 +58,7 @@ export function gameScoreRows(game: LeagueMatchGame, entrantId: number | null): 
       items: player.items,
       roleItem: player.roleItem,
       runes: player.runes,
+      summoners: player.summoners,
     }));
 }
 
@@ -65,6 +70,7 @@ export function averageScoreRows(averages: SeriesAverage[], entrantId: number | 
       personId: average.personId,
       handle: average.handle,
       champions: average.champions.map((name) => ({ name, iconUrl: iconByChampion.get(name) ?? null })),
+      hasStats: average.hasStats,
       kills: average.kills,
       deaths: average.deaths,
       assists: average.assists,
