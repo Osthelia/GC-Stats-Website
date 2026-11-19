@@ -9,9 +9,11 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import type { GameSlug } from "@gc-stats/db/game";
 import { logActivity, type ActivityChanges, type ActivityLogClient } from "@/lib/activity-log";
 
 type RosterChangeInput = {
+  game: GameSlug;
   teamId: number;
   personId: number;
   role: string;
@@ -22,9 +24,9 @@ type RosterChangeInput = {
 
 /** Logged on the team and on the player, so both histories show the edit. */
 export async function logRosterChange(client: ActivityLogClient, input: RosterChangeInput): Promise<void> {
-  const { teamId, personId, role, actorUserId, action, changes } = input;
+  const { game, teamId, personId, role, actorUserId, action, changes } = input;
   const description = `${action} roster entry (${role}) of player #${personId} on team #${teamId}`;
   const properties = { section: "roster", teamId, personId, role };
-  await logActivity({ subject: "team", subjectId: teamId, event: "updated", description, actorUserId, changes, properties }, client);
-  await logActivity({ subject: "player", subjectId: personId, event: "updated", description, actorUserId, changes, properties }, client);
+  await logActivity({ game, subject: "team", subjectId: teamId, event: "updated", description, actorUserId, changes, properties }, client);
+  await logActivity({ game, subject: "player", subjectId: personId, event: "updated", description, actorUserId, changes, properties }, client);
 }

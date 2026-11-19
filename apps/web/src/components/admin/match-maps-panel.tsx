@@ -24,6 +24,7 @@ import { addMap, type MapInput, type MapFieldErrors } from "@/actions/admin-matc
 import { MAP_OPTIONS, mapSplashUrl } from "@/lib/valorant-maps";
 import { mapCompletedBadgeClass } from "@/lib/status-colors";
 import type { AdminMapRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 function emptyInput(order: number): MapInput {
   return { mapName: MAP_OPTIONS[0], order: String(order), teamAScore: "", teamBScore: "", isCompleted: false, note: "", apiMatchId: "" };
@@ -63,6 +64,7 @@ function MapCard({ map, tournamentId, matchId, t }: { map: AdminMapRow; tourname
 }
 
 function AddMapDialog({ matchId, nextOrder, existingMapNames, open, onOpenChange }: { matchId: number; nextOrder: number; existingMapNames: string[]; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -82,7 +84,7 @@ function AddMapDialog({ matchId, nextOrder, existingMapNames, open, onOpenChange
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addMap(matchId, value);
+      const result = await addMap(game, matchId, value);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         toast.error(t("mapSaveError"));

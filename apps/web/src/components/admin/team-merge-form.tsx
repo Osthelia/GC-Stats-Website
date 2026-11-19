@@ -22,6 +22,7 @@ import { mergeTeams, searchTeamMergeTargets } from "@/actions/admin-team-merge";
 import type { MergeTournamentEntry, MergeNewsEntry } from "@/lib/admin-team-merge";
 import type { AdminTeamRosterMember } from "@/lib/admin-teams";
 import type { AdminLogoEntry } from "@/lib/admin-logos";
+import { useGame } from "@/lib/use-game";
 
 export function TeamMergeForm({
   teamId,
@@ -38,6 +39,7 @@ export function TeamMergeForm({
   newsItems: MergeNewsEntry[];
   logoItems: AdminLogoEntry[];
 }) {
+  const game = useGame();
   const t = useTranslations("admin.teams.merge");
   const tRole = useTranslations("admin.teams.edit");
   const router = useRouter();
@@ -102,7 +104,7 @@ export function TeamMergeForm({
     setConfirmOpen(false);
 
     startTransition(async () => {
-      const result = await mergeTeams(teamId, target.id, {
+      const result = await mergeTeams(game, teamId, target.id, {
         roster: [...roster].map(Number),
         tournaments: [...tournamentsSel].map(Number),
         news: [...news].map(Number),
@@ -133,7 +135,7 @@ export function TeamMergeForm({
               placeholder={t("targetPlaceholder")}
               searchPlaceholder={t("targetSearchPlaceholder")}
               noResultsLabel={t("targetSearchEmpty")}
-              search={(query) => searchTeamMergeTargets(teamId, query)}
+              search={(query) => searchTeamMergeTargets(game, teamId, query)}
             />
           </div>
         </div>

@@ -13,9 +13,10 @@
 import { eq, inArray } from "drizzle-orm";
 import type { getTranslations } from "next-intl/server";
 import { db } from "@gc-stats/db/client";
-import { sanctions, userReports, changeRequests, changeRequestItems, teams, people } from "@gc-stats/db";
+import { sanctions, userReports, gameTables } from "@gc-stats/db";
 import { SANCTION_COLORS, type SanctionType } from "@/lib/sanction-constants";
 import type { DiscordContainer, DiscordContainerBlock, DiscordEmbed, DiscordEmbedField } from "@/lib/discord-notifications-client";
+import type { GameSlug } from "@gc-stats/db/game";
 
 type Translator = Awaited<ReturnType<typeof getTranslations>>;
 
@@ -201,7 +202,8 @@ export type ChangeRequestDecision = { recipientId: string; container: DiscordCon
  * coalesce several item resolutions, so this always reflects every item's
  * latest status, not just the one that last fired.
  */
-export async function buildChangeRequestDecisionContainer(t: Translator, changeRequestId: number, link: string, viewButtonLabel: string): Promise<ChangeRequestDecision> {
+export async function buildChangeRequestDecisionContainer(game: GameSlug, t: Translator, changeRequestId: number, link: string, viewButtonLabel: string): Promise<ChangeRequestDecision> {
+  const { changeRequests, changeRequestItems, teams, people } = gameTables(game);
   const [request] = await db
     .select({ subjectType: changeRequests.subjectType, subjectId: changeRequests.subjectId, requestedBy: changeRequests.requestedBy, status: changeRequests.status })
     .from(changeRequests)

@@ -15,6 +15,7 @@ import { TournamentContainerTabs, type TournamentContainerTab } from "@/componen
 import { TournamentFinalStandings } from "@/components/tournament/tournament-final-standings";
 import { groupBracketContainers } from "@/lib/bracket-group-containers";
 import type { PublicStage, PublicStageSummary } from "@/lib/tournament-bracket-data";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** A stage's own explicit dates only (never derived from its matches) — mirrors V1's phase tab exactly (`d M` / `d M – d M Y`), just with our "→" instead of V1's en dash (CLAUDE.md: no dashes in text). Calendar dates, no time-of-day, so formatted in UTC to avoid a viewer-timezone shift landing on the wrong day. */
 function formatStageDateRange(stage: Pick<PublicStage, "startDate" | "endDate">, locale: string): string | null {
@@ -25,7 +26,7 @@ function formatStageDateRange(stage: Pick<PublicStage, "startDate" | "endDate">,
   return fmt((stage.startDate ?? stage.endDate)!, true);
 }
 
-export async function TournamentOverview({ basePath, stages, activeStage }: { basePath: string; stages: PublicStageSummary[]; activeStage: PublicStage | null }) {
+export async function TournamentOverview({ game, basePath, stages, activeStage }: { game: GameSlug; basePath: string; stages: PublicStageSummary[]; activeStage: PublicStage | null }) {
   const t = await getTranslations("tournamentPage");
   const locale = await getLocale();
 
@@ -53,7 +54,7 @@ export async function TournamentOverview({ basePath, stages, activeStage }: { ba
     id: c.id,
     name: c.name,
     content: c.standings ? (
-      <TournamentStandingsTable standings={c.standings} showPoints={c.showPoints} qualificationRules={c.qualificationRules} />
+      <TournamentStandingsTable standings={c.standings} showPoints={c.showPoints} qualificationRules={c.qualificationRules} game={game} />
     ) : (
       <p className="rounded-lg border border-dashed border-neutral-800 px-3 py-6 text-center text-xs text-neutral-500">{t("containerNotStarted")}</p>
     ),

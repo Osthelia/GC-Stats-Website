@@ -6,7 +6,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
+import type { GameSlug } from "@gc-stats/db/game";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
 
 /**
@@ -20,6 +21,7 @@ export function TournamentBadge({
   logoUrlLight,
   size = 30,
   bare = false,
+  game,
 }: {
   name: string;
   logoUrl?: string | null;
@@ -27,9 +29,11 @@ export function TournamentBadge({
   size?: number;
   /** Skip the bordered tile background — just the logo itself. */
   bare?: boolean;
+  game: GameSlug;
 }) {
-  const dark = logoUrl || DEFAULT_TOURNAMENT_LOGO;
-  const light = logoUrlLight || logoUrl || DEFAULT_TOURNAMENT_LOGO;
+  const fallback = defaultTournamentLogo(game);
+  const dark = logoUrl || fallback;
+  const light = logoUrlLight || logoUrl || fallback;
   return (
     <span
       className={`relative flex flex-none items-center justify-center overflow-hidden ${bare ? "" : "rounded-lg border border-neutral-800"}`}

@@ -11,7 +11,8 @@
 
 import { asc, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { stages, stageContainers, matches } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Format of a phase's containers, `mixed` when it holds several different ones. */
 export type ApiPhaseType = "bracket" | "swiss" | "round_robin" | "group" | "set" | "mixed";
@@ -43,7 +44,8 @@ function toPhaseType(formats: ApiContainerType[]): ApiPhaseType | null {
   return distinct.size === 1 ? [...distinct][0]! : "mixed";
 }
 
-export async function getPhasesByIds(ids: number[]): Promise<Map<number, ApiPhase>> {
+export async function getPhasesByIds(game: GameSlug, ids: number[]): Promise<Map<number, ApiPhase>> {
+  const { stages, stageContainers } = gameTables(game);
   const uniqueIds = [...new Set(ids)];
   if (uniqueIds.length === 0) return new Map();
 
@@ -88,7 +90,8 @@ export type ApiContainerRef = ApiContainerPathItem & { path: ApiContainerPathIte
 const MAX_CONTAINER_DEPTH = 10;
 
 /** Resolves containers and every set above them, one query per nesting level. */
-export async function getContainerRefs(containerIds: number[]): Promise<Map<number, ApiContainerRef>> {
+export async function getContainerRefs(game: GameSlug, containerIds: number[]): Promise<Map<number, ApiContainerRef>> {
+  const { stageContainers } = gameTables(game);
   const known = new Map<number, ApiContainerPathItem & { parentId: number | null }>();
   let pending = [...new Set(containerIds)];
 
@@ -125,20 +128,21 @@ type MatchWithPhaseId = { id: number; phase_id: number | null };
 export type WithPhase<T extends MatchWithPhaseId> = Omit<T, "phase_id"> & { phase: ApiPhase | null; container: ApiContainerRef | null };
 
 /** Swaps `phase_id` for the full `phase` object and adds the match's `container` on a single entry. */
-export async function withPhase<T extends MatchWithPhaseId>(item: T): Promise<WithPhase<T>> {
-  const [result] = await withPhases([item]);
+export async function withPhase<T extends MatchWithPhaseId>(game: GameSlug, item: T): Promise<WithPhase<T>> {
+  const [result] = await withPhases(game, [item]);
   return result!;
 }
 
 /** Same as `withPhase` for many matches, resolving all phases and containers at once. */
-export async function withPhases<T extends MatchWithPhaseId>(items: T[]): Promise<WithPhase<T>[]> {
+export async function withPhases<T extends MatchWithPhaseId>(game: GameSlug, items: T[]): Promise<WithPhase<T>[]> {
+  const { matches } = gameTables(game);
   if (items.length === 0) return [];
   const [phases, matchContainers] = await Promise.all([
-    getPhasesByIds(items.map((i) => i.phase_id).filter((id): id is number => id != null)),
+    getPhasesByIds(game, items.map((i) => i.phase_id).filter((id): id is number => id != null)),
     db.select({ id: matches.id, containerId: matches.containerId }).from(matches).where(inArray(matches.id, items.map((i) => i.id))),
   ]);
   const containerIdByMatch = new Map(matchContainers.map((m) => [m.id, m.containerId]));
-  const containers = await getContainerRefs([...containerIdByMatch.values()]);
+  const containers = await getContainerRefs(game, [...containerIdByMatch.values()]);
 
   return items.map((item) => {
     const { phase_id, ...rest } = item;
@@ -154,7 +158,7 @@ export async function withPhases<T extends MatchWithPhaseId>(items: T[]): Promis
 type Paginated<T> = { page: number; per_page: number; total: number; total_pages: number; data: T[] };
 
 /** `withPhases` applied to the `data` of a paginated response. */
-export async function withPhasesPaginated<T extends MatchWithPhaseId>(result: Paginated<T> | null): Promise<Paginated<WithPhase<T>> | null> {
+export async function withPhasesPaginated<T extends MatchWithPhaseId>(game: GameSlug, result: Paginated<T> | null): Promise<Paginated<WithPhase<T>> | null> {
   if (!result) return null;
-  return { ...result, data: await withPhases(result.data) };
+  return { ...result, data: await withPhases(game, result.data) };
 }

@@ -12,8 +12,9 @@
 import { cache } from "react";
 import { asc, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stages, stageContainers, matches, bracketEdges, matchSeeds, entrants } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { containerOrderBy } from "@/lib/bracket/container-order";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type EditorMatch = {
   id: number;
@@ -54,7 +55,8 @@ export type StageEditorData = {
 };
 
 // Cached per request: generateMetadata and the page both read it.
-export const getStageEditorData = cache(async (stageId: number): Promise<StageEditorData | null> => {
+export const getStageEditorData = cache(async (game: GameSlug, stageId: number): Promise<StageEditorData | null> => {
+  const { stages, stageContainers, matches, bracketEdges, matchSeeds, entrants } = gameTables(game);
   // Everything keyed off the stage id through subqueries, so it all runs in one round trip.
   const stageContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(eq(stageContainers.stageId, stageId));
   const stageMatchIds = db.select({ id: matches.id }).from(matches).where(inArray(matches.containerId, stageContainerIds));
@@ -62,7 +64,7 @@ export const getStageEditorData = cache(async (stageId: number): Promise<StageEd
 
   const [[stage], containerRows, matchRows, edgeRows, seedRows, entrantRows] = await Promise.all([
     db.select().from(stages).where(eq(stages.id, stageId)),
-    db.select().from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy),
+    db.select().from(stageContainers).where(eq(stageContainers.stageId, stageId)).orderBy(...containerOrderBy(game)),
     db.select().from(matches).where(inArray(matches.containerId, stageContainerIds)).orderBy(asc(matches.round), asc(matches.id)),
     db.select().from(bracketEdges).where(inArray(bracketEdges.fromMatchId, stageMatchIds)),
     db.select().from(matchSeeds).where(inArray(matchSeeds.matchId, stageMatchIds)),

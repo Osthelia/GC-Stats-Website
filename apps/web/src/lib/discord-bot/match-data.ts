@@ -11,8 +11,10 @@
 import { and, eq, exists, gte, inArray, or, type SQL } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
-import { entrants, mapPlayerStats, matchVetos, matches, maps, people, stageContainers, stages, teams, tournaments } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 import type { AlertMatch, AlertMvp } from "./render";
+
+const { entrants, mapPlayerStats, maps, matchVetos, matches, people, stageContainers, stages, teams, tournaments } = valorantTables;
 
 /** A finished match older than this is never announced, so enabling an alert does not replay history. */
 const FINISHED_WINDOW_HOURS = 6;
@@ -101,7 +103,7 @@ export async function loadMatchContexts(onlyMatchId?: number): Promise<MatchCont
   const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
 
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id !== null))];
-  const logoByTeam = teamIds.length ? await getCurrentLogoUrls("team", teamIds) : new Map<number, string | null>();
+  const logoByTeam = teamIds.length ? await getCurrentLogoUrls("team", teamIds, "valorant") : new Map<number, string | null>();
   const mapRows = await db
     .select({ id: maps.id, matchId: maps.matchId, order: maps.order, mapName: maps.mapName, scoreA: maps.teamAScore, scoreB: maps.teamBScore, isCompleted: maps.isCompleted })
     .from(maps)

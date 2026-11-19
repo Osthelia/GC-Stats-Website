@@ -15,10 +15,11 @@
 import { and, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, maps, stages, stageContainers, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { syncGroupRecordsFromMatches } from "@/lib/bracket/group-progression";
+import type { GameSlug } from "@gc-stats/db/game";
 
 const ID_CHUNK = 1000;
 const SAMPLE_SIZE = 50;
@@ -68,7 +69,9 @@ function compute(c: Candidate): Computed | "undecided" {
   return { id: c.id, scoreA, scoreB, winnerId, winnerIsA: winnerId === c.entrantAId };
 }
 
-async function loadCandidates(tournamentId: number): Promise<Candidate[]> {
+async function loadCandidates(game: GameSlug, tournamentId: number): Promise<Candidate[]> {
+  const { matches, stages, stageContainers } = gameTables(game);
+  const { maps } = valorantTablesOf(game);
   const rows = await db
     .select({
       id: matches.id,
@@ -104,13 +107,14 @@ function sampleRows(computed: Computed[]): ScoreBackfillSample[] {
  * whose stored winner disagrees with its maps is left untouched and
  * reported as a conflict.
  */
-export async function backfillMatchScoresFromMaps(tournamentId: number, apply: boolean): Promise<ScoreBackfillReport> {
-  await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function backfillMatchScoresFromMaps(game: GameSlug, tournamentId: number, apply: boolean): Promise<ScoreBackfillReport> {
+  const { matches, stages, stageContainers } = gameTables(game);
+  await requireActorPermission(PERMISSIONS.tournamentsManage, game);
 
   const resolvable: Computed[] = [];
   const conflicts: Computed[] = [];
   let undecided = 0;
-  for (const candidate of await loadCandidates(tournamentId)) {
+  for (const candidate of await loadCandidates(game, tournamentId)) {
     const result = compute(candidate);
     if (result === "undecided") undecided++;
     else if (candidate.winnerId !== null && candidate.winnerId !== result.winnerId) conflicts.push(result);
@@ -150,7 +154,7 @@ export async function backfillMatchScoresFromMaps(tournamentId: number, apply: b
         .from(stageContainers)
         .innerJoin(stages, eq(stages.id, stageContainers.stageId))
         .where(and(eq(stages.tournamentId, tournamentId), eq(stageContainers.containerType, "group")));
-      for (const c of groupContainers) await syncGroupRecordsFromMatches(tx, c.id);
+      for (const c of groupContainers) await syncGroupRecordsFromMatches(game, tx, c.id);
     });
     for (const r of resolvable) updateTag(matchTag(r.id));
   }

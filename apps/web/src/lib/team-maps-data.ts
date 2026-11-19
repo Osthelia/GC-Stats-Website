@@ -14,12 +14,14 @@ import { cache } from "react";
 import { and, desc, eq, inArray, isNotNull, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import { entrants, maps, mapPlayerStats, mapTeamRoundSummary, matches } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import type { TournamentMapPickRate } from "@/lib/tournament-maps-data";
 import { mapsFilterConditions, type MapsFilters } from "@/lib/maps-filters";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // Shared by the map pool and the comps of the same request.
-const getTeamEntrantIds = cache(async (teamId: number): Promise<number[]> => {
+const getTeamEntrantIds = cache(async (game: GameSlug, teamId: number): Promise<number[]> => {
+  const { entrants } = gameTables(game);
   const rows = await db.select({ id: entrants.id }).from(entrants).where(eq(entrants.teamId, teamId));
   return rows.map((r) => r.id);
 });
@@ -40,8 +42,10 @@ export type TeamMapPoolRow = {
  * ATK/DEF round winrate — mirrors V1's `buildMapsPayload()`. Sorted by times
  * played desc, like the tournament maps page.
  */
-export async function getTeamMapPool(teamId: number, filters: MapsFilters): Promise<TeamMapPoolRow[]> {
-  const entrantIds = await getTeamEntrantIds(teamId);
+export async function getTeamMapPool(game: GameSlug, teamId: number, filters: MapsFilters): Promise<TeamMapPoolRow[]> {
+  const { matches } = gameTables(game);
+  const { maps, mapTeamRoundSummary } = valorantTablesOf(game);
+  const entrantIds = await getTeamEntrantIds(game, teamId);
   if (entrantIds.length === 0) return [];
 
   const isEntrantA = inArray(matches.entrantAId, entrantIds);
@@ -57,7 +61,7 @@ export async function getTeamMapPool(teamId: number, filters: MapsFilters): Prom
       })
       .from(maps)
       .innerJoin(matches, eq(matches.id, maps.matchId))
-      .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), or(isEntrantA, inArray(matches.entrantBId, entrantIds)), ...mapsFilterConditions(filters)))
+      .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), or(isEntrantA, inArray(matches.entrantBId, entrantIds)), ...mapsFilterConditions(game, filters)))
       .groupBy(maps.mapName)
       .orderBy(desc(sql`count(*)`), maps.mapName),
     db
@@ -70,7 +74,7 @@ export async function getTeamMapPool(teamId: number, filters: MapsFilters): Prom
       .from(mapTeamRoundSummary)
       .innerJoin(maps, eq(maps.id, mapTeamRoundSummary.mapId))
       .innerJoin(matches, eq(matches.id, maps.matchId))
-      .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), inArray(mapTeamRoundSummary.entrantId, entrantIds), ...mapsFilterConditions(filters)))
+      .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), inArray(mapTeamRoundSummary.entrantId, entrantIds), ...mapsFilterConditions(game, filters)))
       .groupBy(maps.mapName, mapTeamRoundSummary.side),
   ]);
 
@@ -144,7 +148,10 @@ export type TeamMapCompMatch = { matchId: number; opponent: string; ownScore: nu
 export type TeamMapComp = { agents: string[]; count: number; wins: number; winPct: number | null };
 
 // Agents drafted by one entrant on one map.
-const draftedAgents = sql<string[]>`array_agg(distinct ${mapPlayerStats.agentName})`;
+function draftedAgents() {
+  const { mapPlayerStats } = valorantTables;
+  return sql<string[]>`array_agg(distinct ${mapPlayerStats.agentName})`;
+}
 
 /**
  * Groups (map, entrant) rows for this team's own side only into 5-agent
@@ -154,17 +161,19 @@ const draftedAgents = sql<string[]>`array_agg(distinct ${mapPlayerStats.agentNam
  * agent's pick rate per map and across the whole pool.
  */
 export async function getTeamMapComps(
-  teamId: number,
+  game: GameSlug, teamId: number,
   filters: MapsFilters,
 ): Promise<{ compsByMap: Record<string, TeamMapComp[]>; pickRatesByMap: Record<string, TournamentMapPickRate[]>; overallPickRates: TournamentMapPickRate[] }> {
-  const entrantIds = await getTeamEntrantIds(teamId);
+  const { matches } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
+  const entrantIds = await getTeamEntrantIds(game, teamId);
   if (entrantIds.length === 0) return { compsByMap: {}, pickRatesByMap: {}, overallPickRates: [] };
 
   const groups = await db
     .select({
       mapName: sql<string>`${maps.mapName}`,
       entrantId: mapPlayerStats.entrantId,
-      agents: draftedAgents,
+      agents: draftedAgents(),
       teamAScore: maps.teamAScore,
       teamBScore: maps.teamBScore,
       entrantAId: matches.entrantAId,
@@ -172,7 +181,7 @@ export async function getTeamMapComps(
     .from(mapPlayerStats)
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
     .innerJoin(matches, eq(matches.id, maps.matchId))
-    .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), isNotNull(mapPlayerStats.agentName), inArray(mapPlayerStats.entrantId, entrantIds), ...mapsFilterConditions(filters)))
+    .where(and(eq(maps.isCompleted, true), isNotNull(maps.mapName), isNotNull(mapPlayerStats.agentName), inArray(mapPlayerStats.entrantId, entrantIds), ...mapsFilterConditions(game, filters)))
     .groupBy(maps.id, mapPlayerStats.entrantId, matches.id);
 
   const compByKey = new Map<string, { mapName: string; comp: TeamMapComp }>();
@@ -231,8 +240,10 @@ export async function getTeamMapComps(
 }
 
 /** Maps where this team drafted exactly `agents` on `mapName`, most recent first. */
-export async function getTeamMapCompMatches(teamId: number, mapName: string, agents: string[], filters: MapsFilters): Promise<TeamMapCompMatch[]> {
-  const entrantIds = await getTeamEntrantIds(teamId);
+export async function getTeamMapCompMatches(game: GameSlug, teamId: number, mapName: string, agents: string[], filters: MapsFilters): Promise<TeamMapCompMatch[]> {
+  const { entrants, matches } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
+  const entrantIds = await getTeamEntrantIds(game, teamId);
   if (entrantIds.length === 0) return [];
 
   // Set equality, independent of the agents' order.
@@ -252,9 +263,9 @@ export async function getTeamMapCompMatches(teamId: number, mapName: string, age
     .innerJoin(maps, eq(maps.id, mapPlayerStats.mapId))
     .innerJoin(matches, eq(matches.id, maps.matchId))
     .leftJoin(opponent, eq(opponent.id, sql`case when ${matches.entrantAId} = ${mapPlayerStats.entrantId} then ${matches.entrantBId} else ${matches.entrantAId} end`))
-    .where(and(eq(maps.isCompleted, true), eq(maps.mapName, mapName), isNotNull(mapPlayerStats.agentName), inArray(mapPlayerStats.entrantId, entrantIds), ...mapsFilterConditions(filters)))
+    .where(and(eq(maps.isCompleted, true), eq(maps.mapName, mapName), isNotNull(mapPlayerStats.agentName), inArray(mapPlayerStats.entrantId, entrantIds), ...mapsFilterConditions(game, filters)))
     .groupBy(maps.id, mapPlayerStats.entrantId, matches.id, opponent.displayName)
-    .having(sql`${draftedAgents} @> ${wanted} and ${draftedAgents} <@ ${wanted}`)
+    .having(sql`${draftedAgents()} @> ${wanted} and ${draftedAgents()} <@ ${wanted}`)
     .orderBy(sql`${matches.scheduledAt} desc nulls last`);
 
   return rows.map((r) => {

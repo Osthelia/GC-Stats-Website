@@ -8,8 +8,9 @@
 
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { GAMES } from "@gc-stats/db/game";
 import { PERMISSIONS } from "@gc-stats/db";
-import { requireAdminAccess } from "@/lib/rbac";
+import { getGlobalAccess, requireAdminAccess } from "@/lib/rbac";
 import { getAdminChangeRequestCounts } from "@/lib/admin-change-requests";
 import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -36,10 +37,22 @@ export default async function AdminLayout({
 }) {
   const { locale } = await params;
   const access = await requireAdminAccess(locale as AppLocale);
+  // The sidebar shows a section when any game grants it, each page then checks the permission for its own game.
+  const perGame = await Promise.all(GAMES.map((game) => getGlobalAccess(access.userId, game)));
+  const permissions = new Set([...access.permissions, ...perGame.flatMap((a) => [...a.permissions])]);
+  const isSuperAdmin = access.isSuperAdmin || perGame.some((a) => a.isSuperAdmin);
 
-  const can = (permission: string) => access.isSuperAdmin || access.permissions.has(permission);
+  const can = (permission: string) => isSuperAdmin || permissions.has(permission);
+  // Change requests exist per game: the badge shows when any game has a pending one the viewer may see.
+  const pendingChangeRequests = Promise.all(
+    GAMES.map(async (game, i) => {
+      const gameAccess = perGame[i]!;
+      const canSee = access.isSuperAdmin || gameAccess.isSuperAdmin || access.permissions.has(PERMISSIONS.changeRequestsView) || gameAccess.permissions.has(PERMISSIONS.changeRequestsView);
+      return canSee && (await getAdminChangeRequestCounts(game)).pending > 0;
+    })
+  ).then((pending) => pending.some(Boolean));
   const [changeRequests, discordImages, reports, rosterWatch, moderation] = await Promise.all([
-    can(PERMISSIONS.changeRequestsView) ? getAdminChangeRequestCounts().then((counts) => counts.pending > 0) : false,
+    pendingChangeRequests,
     can(PERMISSIONS.moderationView) ? countPendingDiscordImages().then((count) => count > 0) : false,
     can(PERMISSIONS.reportsView) ? getAdminReportCounts().then((counts) => counts.pending > 0) : false,
     can(PERMISSIONS.rosterWatchView) ? getRosterWatchTabCounts().then((counts) => counts.roster + counts.unsure > 0) : false,
@@ -57,8 +70,8 @@ export default async function AdminLayout({
     <NextIntlClientProvider>
       <SidebarProvider>
         <AdminSidebar
-          permissions={[...access.permissions]}
-          isSuperAdmin={access.isSuperAdmin}
+          permissions={[...permissions]}
+          isSuperAdmin={isSuperAdmin}
           alerts={alerts}
         />
         <SidebarInset>

@@ -14,7 +14,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems, changeRequestMessages, PERMISSIONS } from "@gc-stats/db";
+import { PERMISSIONS, gameTables } from "@gc-stats/db";
 import { tryStoreLogoPair, validateImageBuffer, MAX_IMAGE_BYTES, deleteLogoFiles } from "@gc-stats/storage";
 import { auth } from "@/auth";
 import { INTERNATIONAL_CODE } from "@/lib/countries";
@@ -26,7 +26,6 @@ import { notify } from "@/lib/notify";
 import {
   fieldsForSubject,
   readFieldValue,
-  ROSTER_ROLES,
   MAX_MEMBERSHIP_ADDITIONS,
   type ChangeRequestSubjectType,
   type MembershipOperation,
@@ -38,6 +37,10 @@ import {
 } from "@/lib/change-request-fields";
 import { getUserLinkStatus, buildUserLinkItem, type UserLinkStatus } from "@/lib/user-link-request";
 import { normalizeDiscordValue } from "@/lib/person-social-keys";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import { isRosterRoleOf } from "@/lib/roster-roles";
+import { areLanes, type LeagueRole } from "@gc-stats/lol-stats-engine";
+import { getStoredLanes, lanesToStore } from "@/lib/roster-lanes";
 
 export type ChangeRequestFieldErrors = Record<string, string>;
 export type SubmitChangeRequestResult =
@@ -53,9 +56,20 @@ type Item = { field: string; oldValue: unknown; newValue: unknown };
 const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, string> = {
   linkedToYou: "userLinkAlreadyYours",
   linkedToOther: "userLinkTaken",
+  linkedToAnotherPerson: "userLinkOtherPerson",
   pending: "userLinkPending",
   notFound: "notFound",
 };
+
+/** Lanes of a membership operation are optional, but when given they must be lanes. */
+function validLanes(lanes: unknown): boolean {
+  return lanes === undefined || (areLanes(lanes) && (lanes as unknown[]).length <= 5);
+}
+
+/** The lanes of a membership operation as stored in the request: only League entries carry them, and only for roles that have lanes. */
+function lanesField(game: GameSlug, op: { role: string; lanes?: string[] }): { lanes?: string[] } {
+  return gameHasLanes(game) && op.lanes !== undefined ? { lanes: lanesToStore(game, op.role, op.lanes) } : {};
+}
 
 /**
  * Proposes edits to a team or person profile — simple fields, logo history,
@@ -69,10 +83,11 @@ const USER_LINK_ERRORS: Record<Exclude<UserLinkStatus["state"], "available">, st
  * text fields in one submission, same convention as actions/admin-logos.ts.
  */
 export async function submitChangeRequest(
-  subjectType: ChangeRequestSubjectType,
+  game: GameSlug, subjectType: ChangeRequestSubjectType,
   subjectId: number,
   formData: FormData
 ): Promise<SubmitChangeRequestResult> {
+  const { teams, people, rosterMemberships, teamNameHistory, changeRequests, changeRequestItems } = gameTables(game);
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { ok: false, fieldErrors: {}, formError: "unauthenticated" };
@@ -184,9 +199,13 @@ export async function submitChangeRequest(
     const additions = ops.filter((op) => op.type === "add");
     if (additions.length > MAX_MEMBERSHIP_ADDITIONS) return { ok: false, fieldErrors: {}, formError: "tooManyAdditions" };
 
+    // The saved lanes of every edited entry, read once for the old values below.
+    const editedIds = ops.flatMap((op) => (op.type === "edit" && Number.isInteger(op.membershipId) ? [op.membershipId] : []));
+    const storedLanes = gameHasLanes(game) ? await getStoredLanes(editedIds) : new Map<number, LeagueRole[]>();
+
     for (const op of ops) {
       if (op.type === "add") {
-        if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+        if (!isRosterRoleOf(game, op.role) || !validLanes(op.lanes)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
         if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
@@ -206,7 +225,7 @@ export async function submitChangeRequest(
         membershipItems.push({
           field: "membership_add",
           oldValue: null,
-          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
+          newValue: { personId: op.personId, teamId: op.teamId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource), ...lanesField(game, op) },
         });
       } else if (op.type === "edit" || op.type === "delete") {
         const [membership] = await db
@@ -220,7 +239,7 @@ export async function submitChangeRequest(
         if (op.type === "delete") {
           membershipItems.push({ field: "membership_delete", oldValue: { membershipId: op.membershipId }, newValue: null });
         } else {
-          if (!(ROSTER_ROLES as readonly string[]).includes(op.role)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
+          if (!isRosterRoleOf(game, op.role) || !validLanes(op.lanes)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (!DATE_RE.test(op.since)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && !DATE_RE.test(op.until)) return { ok: false, fieldErrors: {}, formError: "invalidMembership" };
           if (op.until && op.until <= op.since) return { ok: false, fieldErrors: {}, formError: "membershipDateOrder" };
@@ -242,8 +261,9 @@ export async function submitChangeRequest(
               inactiveSince: membership.inactiveSince,
               joinSource: membership.joinSource,
               leftSource: membership.leftSource,
+              ...(gameHasLanes(game) ? { lanes: storedLanes.get(op.membershipId) ?? [] } : {}),
             },
-            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource) },
+            newValue: { membershipId: op.membershipId, role: op.role, since: op.since, until: op.until, hasLeft: op.hasLeft, inactiveSince: op.inactiveSince, joinSource: normalizeRosterSource(op.joinSource), leftSource: normalizeRosterSource(op.leftSource), ...lanesField(game, op) },
           });
         }
       }
@@ -287,7 +307,7 @@ export async function submitChangeRequest(
     } catch {
       return { ok: false, fieldErrors: {}, formError: "invalidLogo" };
     }
-    const existingLogos = await getEntityLogos(subjectType, subjectId);
+    const existingLogos = await getEntityLogos(subjectType, subjectId, game);
     for (const op of ops) {
       const exists = existingLogos.some((l) => l.id === op.logoId);
       if (!exists) return { ok: false, fieldErrors: {}, formError: "invalidLogo" };
@@ -332,9 +352,9 @@ export async function submitChangeRequest(
   if (linkUser !== null && linkUser !== "true" && linkUser !== "false") return { ok: false, fieldErrors: { linkUser: "invalid" } };
   if (linkUser === "true") {
     if (subjectType !== "person") return { ok: false, fieldErrors: { linkUser: "invalid" } };
-    const status = await getUserLinkStatus(userId, subjectId);
+    const status = await getUserLinkStatus(game, userId, subjectId);
     if (status.state !== "available") return { ok: false, fieldErrors: { linkUser: USER_LINK_ERRORS[status.state] } };
-    userLinkItems.push(buildUserLinkItem(userId, status.previousPersonId));
+    userLinkItems.push(buildUserLinkItem(userId));
   }
 
   const allItems = [...items, ...membershipItems, ...nameHistoryItems, ...logoHistoryItems, ...userLinkItems];
@@ -349,7 +369,7 @@ export async function submitChangeRequest(
     const storedResult = await tryStoreLogoPair(subjectType, logoBuffer);
     if (!storedResult.ok) return { ok: false, fieldErrors: { logo: storedResult.error } };
     storedLogoId = storedResult.logo.id;
-    const liveLogo = currentLogo(await getEntityLogos(subjectType, subjectId));
+    const liveLogo = currentLogo(await getEntityLogos(subjectType, subjectId, game));
     allItems.push({
       field: "logo",
       oldValue: liveLogo?.id ?? null,
@@ -408,7 +428,8 @@ async function requireUserId(): Promise<string> {
  * or anyone with change-requests.manage — mirrors the same two-sided
  * conversation as news_messages, just without the approval workflow.
  */
-export async function postChangeRequestMessage(changeRequestId: number, body: string): Promise<ChangeRequestMessageActionResult> {
+export async function postChangeRequestMessage(game: GameSlug, changeRequestId: number, body: string): Promise<ChangeRequestMessageActionResult> {
+  const { changeRequests, changeRequestMessages } = gameTables(game);
   const userId = await requireUserId();
 
   const trimmed = body.trim();
@@ -418,7 +439,7 @@ export async function postChangeRequestMessage(changeRequestId: number, body: st
   const [request] = await db.select({ requestedBy: changeRequests.requestedBy, status: changeRequests.status }).from(changeRequests).where(eq(changeRequests.id, changeRequestId)).limit(1);
   if (!request) return { ok: false, error: "notFound" };
 
-  const access = await getGlobalAccess(userId);
+  const access = await getGlobalAccess(userId, game);
   const isOwner = request.requestedBy === userId;
   const isManager = hasAccess(access, PERMISSIONS.changeRequestsManage);
   if (!isOwner && !isManager) return { ok: false, error: "notAuthorized" };
@@ -427,14 +448,15 @@ export async function postChangeRequestMessage(changeRequestId: number, body: st
   await db.insert(changeRequestMessages).values({ changeRequestId, userId, type: "comment", body: trimmed });
 
   if (isManager && !isOwner && request.requestedBy) {
-    await notify({ recipientId: request.requestedBy, type: "change_request.comment", authorId: userId, link: `/settings/change-requests/${changeRequestId}`, data: { changeRequestId } });
+    await notify({ recipientId: request.requestedBy, type: "change_request.comment", authorId: userId, link: `/settings/change-requests/${game}/${changeRequestId}`, data: { changeRequestId, game } });
   }
 
   return { ok: true };
 }
 
 /** Only the request's own author can withdraw, and only while still pending — mirrors the pending-only edit window everywhere else in this flow. */
-export async function withdrawChangeRequest(changeRequestId: number): Promise<ChangeRequestMessageActionResult> {
+export async function withdrawChangeRequest(game: GameSlug, changeRequestId: number): Promise<ChangeRequestMessageActionResult> {
+  const { changeRequests } = gameTables(game);
   const userId = await requireUserId();
 
   const [request] = await db.select({ requestedBy: changeRequests.requestedBy, status: changeRequests.status }).from(changeRequests).where(eq(changeRequests.id, changeRequestId)).limit(1);

@@ -17,6 +17,7 @@ import { userReports, PERMISSIONS } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import type { ReportStatus } from "@/lib/admin-reports";
 import { notify } from "@/lib/notify";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ReportFieldErrors = { note?: string };
 export type ReportResult = { ok: true } | { ok: false; fieldErrors: ReportFieldErrors };
@@ -27,8 +28,8 @@ export type ReportResult = { ok: true } | { ok: false; fieldErrors: ReportFieldE
  * used by the news review workflow, so a status change is never left
  * unexplained for whoever reads it later.
  */
-export async function resolveReport(id: number, status: "resolved" | "dismissed", note: string): Promise<ReportResult> {
-  const access = await requireActorPermission(PERMISSIONS.reportsManage);
+export async function resolveReport(game: GameSlug, id: number, status: "resolved" | "dismissed", note: string): Promise<ReportResult> {
+  const access = await requireActorPermission(PERMISSIONS.reportsManage, game);
 
   const trimmedNote = note.trim();
   if (trimmedNote.length < 3) return { ok: false, fieldErrors: { note: "required" } };

@@ -12,9 +12,11 @@
 
 import { cache } from "react";
 import { eq, and, isNull } from "drizzle-orm";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 import { db } from "@gc-stats/db/client";
-import { roles, rolePermissions, permissions, userRoles } from "@gc-stats/db";
+import { roles, rolePermissions, permissions, userRoles, GAME_PERMISSIONS } from "@gc-stats/db";
 import { getSession } from "@/lib/session";
+import { isGamePublic } from "@/lib/public-games";
 import { redirect } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
@@ -24,6 +26,8 @@ export type CurrentUserAccess = {
   userId: string;
   isSuperAdmin: boolean;
   permissions: Set<string>;
+  /** Admin access that applies to the requested game: a role for every game or for that game (every-game roles only without `game`). */
+  isGameAdmin: boolean;
 };
 
 /**
@@ -32,12 +36,18 @@ export type CurrentUserAccess = {
  * /admin access. /dashboard (org-level features) does not use this table at
  * all; see apps/web/src/lib/dashboard-rbac.ts.
  * Deduplicated per request (layout, headers and dashboard checks all call it).
+ *
+ * A role can be assigned to every game (user_roles.game null) or to a single
+ * one. Without `game` only the every-game assignments count, with `game` the
+ * ones limited to that game count too. Holding admin.access through any
+ * assignment lets the user into /admin.
  */
-export const getGlobalAccess = cache(async (userId: string): Promise<CurrentUserAccess> => {
+export const getGlobalAccess = cache(async (userId: string, game?: GameSlug): Promise<CurrentUserAccess> => {
   const rows = await db
     .select({
       isSuperAdmin: roles.isSuperAdmin,
       permissionName: permissions.name,
+      assignedGame: userRoles.game,
     })
     .from(userRoles)
     .innerJoin(roles, eq(roles.id, userRoles.roleId))
@@ -47,11 +57,16 @@ export const getGlobalAccess = cache(async (userId: string): Promise<CurrentUser
 
   const perms = new Set<string>();
   let isSuperAdmin = false;
+  let isGameAdmin = false;
   for (const row of rows) {
-    if (row.isSuperAdmin) isSuperAdmin = true;
-    if (row.permissionName) perms.add(row.permissionName);
+    const applies = row.assignedGame === null || row.assignedGame === game;
+    if (row.isSuperAdmin && applies) isSuperAdmin = true;
+    if (applies && (row.isSuperAdmin || row.permissionName === ADMIN_ACCESS_PERMISSION)) isGameAdmin = true;
+    // A role limited to a game only grants the content permissions of that game.
+    const allowed = row.assignedGame === null || (GAME_PERMISSIONS as readonly string[]).includes(row.permissionName ?? "");
+    if (row.permissionName && ((applies && allowed) || row.permissionName === ADMIN_ACCESS_PERMISSION)) perms.add(row.permissionName);
   }
-  return { userId, isSuperAdmin, permissions: perms };
+  return { userId, isSuperAdmin, permissions: perms, isGameAdmin };
 });
 
 export function hasAccess(access: CurrentUserAccess, permission: string): boolean {
@@ -71,8 +86,33 @@ export async function isViewerAdmin(): Promise<boolean> {
   return hasAccess(access, ADMIN_ACCESS_PERMISSION);
 }
 
+/**
+ * Whether the viewer may see the public pages of `game`: anyone when the game is public (`PUBLIC_GAMES`),
+ * otherwise only a signed-in user with admin access for that game. Asked once per request.
+ */
+export const canViewGame = cache(async (game: GameSlug): Promise<boolean> => {
+  if (isGamePublic(game)) return true;
+  const session = await getSession();
+  const userId = session?.user?.id;
+  if (!userId) return false;
+  return (await getGlobalAccess(userId, game)).isGameAdmin;
+});
+
+/** A game visitors can't see yet that this viewer may still open (banner and noindex on its pages). */
+export const isGamePreview = cache(async (game: GameSlug): Promise<boolean> => {
+  return !isGamePublic(game) && (await canViewGame(game));
+});
+
+export type ViewableGame = { game: GameSlug; preview: boolean };
+
+/** The games this viewer may see, in switcher order, with `preview` set for the ones visitors can't see yet. */
+export async function listViewableGames(): Promise<ViewableGame[]> {
+  const games = await Promise.all(GAMES.map(async (game) => ({ game, viewable: await canViewGame(game), preview: await isGamePreview(game) })));
+  return games.filter((g) => g.viewable).map(({ game, preview }) => ({ game, preview }));
+}
+
 /** Redirects to /login (no session) or / (logged in, no admin access) — use at the top of /admin server layouts/pages. */
-export async function requireAdminAccess(locale: AppLocale): Promise<CurrentUserAccess> {
+export async function requireAdminAccess(locale: AppLocale, game?: GameSlug): Promise<CurrentUserAccess> {
   const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) {
@@ -83,7 +123,7 @@ export async function requireAdminAccess(locale: AppLocale): Promise<CurrentUser
     redirect({ href: "/login", locale });
   }
 
-  const access = await getGlobalAccess(userId as string);
+  const access = await getGlobalAccess(userId as string, game);
   if (!hasAccess(access, ADMIN_ACCESS_PERMISSION)) {
     redirect({ href: "/", locale });
   }
@@ -98,8 +138,8 @@ export async function requireAdminAccess(locale: AppLocale): Promise<CurrentUser
  * site. Use at the top of any /admin/* page gated by more than the base
  * admin.access check.
  */
-export async function requireAdminPermission(locale: AppLocale, permission: string): Promise<CurrentUserAccess> {
-  const access = await requireAdminAccess(locale);
+export async function requireAdminPermission(locale: AppLocale, permission: string, game?: GameSlug): Promise<CurrentUserAccess> {
+  const access = await requireAdminAccess(locale, game);
   if (!hasAccess(access, permission)) {
     redirect({ href: "/admin", locale });
   }
@@ -107,18 +147,18 @@ export async function requireAdminPermission(locale: AppLocale, permission: stri
 }
 
 /** Re-check for server actions — mirrors requireAdminAccess but throws instead of redirecting (no response to redirect). */
-export async function requireActorAccess(): Promise<CurrentUserAccess> {
+export async function requireActorAccess(game?: GameSlug): Promise<CurrentUserAccess> {
   const session = await getSession();
   const userId = session?.user?.id;
   if (!userId) throw new Error("Not authenticated");
-  const access = await getGlobalAccess(userId);
+  const access = await getGlobalAccess(userId, game);
   if (!hasAccess(access, ADMIN_ACCESS_PERMISSION)) throw new Error("Not authorized");
   return access;
 }
 
 /** Same as requireActorAccess, plus a specific permission. */
-export async function requireActorPermission(permission: string): Promise<CurrentUserAccess> {
-  const access = await requireActorAccess();
+export async function requireActorPermission(permission: string, game?: GameSlug): Promise<CurrentUserAccess> {
+  const access = await requireActorAccess(game);
   if (!hasAccess(access, permission)) throw new Error("Not authorized");
   return access;
 }

@@ -23,6 +23,7 @@ import { QualificationSourceLabel } from "@/components/tournament/qualification-
 import { removeEntrant } from "@/actions/admin-tournament-entrants";
 import { stripAccents, typoVariants } from "@/lib/search-typo";
 import type { AdminEntrantRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 type SortCol = "seed" | "name" | "type" | "qualification";
 type Direction = "asc" | "desc";
@@ -41,6 +42,7 @@ function compare(a: AdminEntrantRow, b: AdminEntrantRow, col: SortCol): number {
 }
 
 export function TournamentEntrantsPanel({ tournamentId, entrants, pointTypeOptions, canManage }: { tournamentId: number; entrants: AdminEntrantRow[]; pointTypeOptions: { id: number; label: string }[]; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.entrants");
   const tSource = useTranslations("qualificationSource");
   const router = useRouter();
@@ -61,7 +63,7 @@ export function TournamentEntrantsPanel({ tournamentId, entrants, pointTypeOptio
   function handleRemove(entrant: AdminEntrantRow) {
     if (!window.confirm(t("removeConfirm", { name: entrant.displayName }))) return;
     startTransition(async () => {
-      const result = await removeEntrant(entrant.id, tournamentId);
+      const result = await removeEntrant(game, entrant.id, tournamentId);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

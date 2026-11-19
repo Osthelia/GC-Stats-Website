@@ -14,7 +14,7 @@
 
 import { and, count, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { discordBotGuildSettings, discordBotSubscriptions, discordBotTemplates, teams } from "@gc-stats/db";
+import { discordBotGuildSettings, discordBotSubscriptions, discordBotTemplates, valorantTables } from "@gc-stats/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { deleteDiscordBackground, storeDiscordBackground, validateImageBuffer } from "@gc-stats/storage";
 import { encrypt } from "@/lib/encryption";
@@ -43,6 +43,8 @@ import {
   type DiscordBotEvent,
   type DiscordBotOfficialFilter,
 } from "@/lib/discord-bot/shared";
+
+const { teams } = valorantTables;
 
 export type DiscordSubscriptionInput = {
   channelId: unknown;

@@ -11,11 +11,12 @@
 
 import { and, asc, eq, ilike, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, stages, stageContainers, matches } from "@gc-stats/db";
+import { gameTables, valorantTables } from "@gc-stats/db";
 import { escapeLike } from "../params";
 import { getLogoUrls, getLogoUrlsBatch, getLogoHistoryResponse, type ApiLogoUrls, type ApiLogoHistoryResponse } from "../logo-response";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { rejectGhost } from "@/lib/api/v1/ghost";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiTournament = {
   id: number;
@@ -42,7 +43,8 @@ export type ApiTournamentPhase = {
 
 export type ApiTournamentFullResponse = ApiTournament & { phases: ApiTournamentPhase[]; logo: ApiLogoUrls | null };
 
-export function toApiTournament(row: typeof tournaments.$inferSelect): ApiTournament {
+export function toApiTournament(game: GameSlug, row: typeof valorantTables.tournaments.$inferSelect): ApiTournament {
+  const { tournaments } = gameTables(game);
   return {
     id: row.id,
     name: row.name,
@@ -60,7 +62,8 @@ export function toApiTournament(row: typeof tournaments.$inferSelect): ApiTourna
 type ApiTournamentPhaseRaw = ApiTournamentPhase & { liquipedia_link: string | null };
 
 /** `match_ids` aggregates every match across all of a stage's `stage_containers`. Includes `liquipedia_link` even though v1's `ApiTournamentPhase` doesn't expose it — kept for V2 to reuse without a second query, stripped by `buildPhasesByTournament` for the v1 contract. */
-async function buildPhasesByTournamentRaw(tournamentIds: number[]): Promise<Map<number, ApiTournamentPhaseRaw[]>> {
+async function buildPhasesByTournamentRaw(game: GameSlug, tournamentIds: number[]): Promise<Map<number, ApiTournamentPhaseRaw[]>> {
+  const { stages, stageContainers, matches } = gameTables(game);
   const result = new Map<number, ApiTournamentPhaseRaw[]>();
   for (const id of tournamentIds) result.set(id, []);
   if (tournamentIds.length === 0) return result;
@@ -109,12 +112,12 @@ async function buildPhasesByTournamentRaw(tournamentIds: number[]): Promise<Map<
   return result;
 }
 
-export async function buildPhasesByTournamentWithLiquipedia(tournamentIds: number[]): Promise<Map<number, ApiTournamentPhaseRaw[]>> {
-  return buildPhasesByTournamentRaw(tournamentIds);
+export async function buildPhasesByTournamentWithLiquipedia(game: GameSlug, tournamentIds: number[]): Promise<Map<number, ApiTournamentPhaseRaw[]>> {
+  return buildPhasesByTournamentRaw(game, tournamentIds);
 }
 
-async function buildPhasesByTournament(tournamentIds: number[]): Promise<Map<number, ApiTournamentPhase[]>> {
-  const raw = await buildPhasesByTournamentRaw(tournamentIds);
+async function buildPhasesByTournament(game: GameSlug, tournamentIds: number[]): Promise<Map<number, ApiTournamentPhase[]>> {
+  const raw = await buildPhasesByTournamentRaw(game, tournamentIds);
   const result = new Map<number, ApiTournamentPhase[]>();
   for (const [tournamentId, phases] of raw) {
     result.set(
@@ -125,26 +128,28 @@ async function buildPhasesByTournament(tournamentIds: number[]): Promise<Map<num
   return result;
 }
 
-export async function searchTournamentsByName(query: string): Promise<ApiTournamentFullResponse[]> {
+export async function searchTournamentsByName(game: GameSlug, query: string): Promise<ApiTournamentFullResponse[]> {
+  const { tournaments } = gameTables(game);
   const pattern = `${escapeLike(query)}%`;
-  const rows = await db.select().from(tournaments).where(and(ilike(tournaments.name, pattern), visibleTournament)).orderBy(asc(tournaments.name)).limit(20);
+  const rows = await db.select().from(tournaments).where(and(ilike(tournaments.name, pattern), visibleTournament(game))).orderBy(asc(tournaments.name)).limit(20);
 
   const ids = rows.map((r) => r.id);
-  const [phasesByTournament, logos] = await Promise.all([buildPhasesByTournament(ids), getLogoUrlsBatch("tournament", ids)]);
+  const [phasesByTournament, logos] = await Promise.all([buildPhasesByTournament(game, ids), getLogoUrlsBatch("tournament", ids, game)]);
 
-  return rows.map((row) => ({ ...toApiTournament(row), phases: phasesByTournament.get(row.id) ?? [], logo: logos.get(row.id) ?? null }));
+  return rows.map((row) => ({ ...toApiTournament(game, row), phases: phasesByTournament.get(row.id) ?? [], logo: logos.get(row.id) ?? null }));
 }
 
-export async function getTournamentById(id: number): Promise<ApiTournamentFullResponse | null> {
+export async function getTournamentById(game: GameSlug, id: number): Promise<ApiTournamentFullResponse | null> {
+  const { tournaments } = gameTables(game);
   const [row] = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
   rejectGhost(row, "tournament");
   if (!row) return null;
 
-  const [phasesByTournament, logo] = await Promise.all([buildPhasesByTournament([id]), getLogoUrls("tournament", id)]);
-  return { ...toApiTournament(row), phases: phasesByTournament.get(id) ?? [], logo };
+  const [phasesByTournament, logo] = await Promise.all([buildPhasesByTournament(game, [id]), getLogoUrls("tournament", id, game)]);
+  return { ...toApiTournament(game, row), phases: phasesByTournament.get(id) ?? [], logo };
 }
 
 /** No existence gate — mirrors V1 (`/tournaments/{id}/logos` never documented a 404, always 200 with an empty history). */
-export async function getTournamentLogoHistory(id: number): Promise<ApiLogoHistoryResponse> {
-  return getLogoHistoryResponse("tournament", id);
+export async function getTournamentLogoHistory(game: GameSlug, id: number): Promise<ApiLogoHistoryResponse> {
+  return getLogoHistoryResponse("tournament", id, game);
 }

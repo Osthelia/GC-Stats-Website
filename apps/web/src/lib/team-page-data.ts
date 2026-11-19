@@ -15,22 +15,7 @@ import { and, desc, eq, inArray, isNotNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
 import { visibleTeam } from "@/lib/ghost-visibility";
 import {
-  teams,
-  teamNameHistory,
-  rosterMemberships,
-  people,
-  entrants,
-  matches,
-  tournaments,
-  stages,
-  stageContainers,
-  qualificationResults,
-  stageQualifications,
-  news,
-  organizations,
-  newsAuthors,
-  newsRelations,
-} from "@gc-stats/db";
+  organizations, newsAuthors, gameTables } from "@gc-stats/db";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { getEntityLogos, themedLogoUrls, getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { getEntityMatches } from "@/lib/entity-matches";
@@ -39,13 +24,17 @@ import { resolveNewsLanguages } from "@/lib/news-languages";
 import { isNewsPublishedCondition } from "@/lib/news-publish-condition";
 import type { AppLocale } from "@/i18n/routing";
 import { getOrganizationMembers, type OrganizationMember } from "@/lib/organization-page-data";
+import { gameHasLanes, type GameSlug } from "@gc-stats/db/game";
+import type { LeagueRole } from "@gc-stats/lol-stats-engine";
+import { resolveEntryLanes } from "@/lib/roster-lanes";
+import { displayRosterRole } from "@/lib/roster-roles";
 
 // Managers and coaches already show on the roster, the staff tab covers the rest of the organization.
 const ROSTER_ORGANIZATION_ROLES = ["manager"];
 
 /** Members of the team's linked organization, current and former, minus the roles already on the roster. */
-export async function getTeamStaff(organizationId: number): Promise<{ current: OrganizationMember[]; formers: OrganizationMember[] }> {
-  const members = await getOrganizationMembers(organizationId);
+export async function getTeamStaff(game: GameSlug, organizationId: number): Promise<{ current: OrganizationMember[]; formers: OrganizationMember[] }> {
+  const members = await getOrganizationMembers(game, organizationId);
   const keep = (m: OrganizationMember) => !ROSTER_ORGANIZATION_ROLES.includes(m.role);
   return { current: members.current.filter(keep), formers: members.formers.filter(keep) };
 }
@@ -69,7 +58,8 @@ export type TeamPageInfo = {
 };
 
 /** Deduplicated per request: the tabs layout and the page both read it. */
-export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | null> => {
+export const getTeamPageInfo = cache(async (game: GameSlug, id: number): Promise<TeamPageInfo | null> => {
+  const { teams } = gameTables(game);
   const [[row], logoEntries] = await Promise.all([
     db
       .select({
@@ -87,9 +77,9 @@ export const getTeamPageInfo = cache(async (id: number): Promise<TeamPageInfo | 
         organizationId: teams.organizationId,
       })
       .from(teams)
-      .where(and(eq(teams.id, id), visibleTeam))
+      .where(and(eq(teams.id, id), visibleTeam(game)))
       .limit(1),
-    getEntityLogos("team", id),
+    getEntityLogos("team", id, game),
   ]);
   if (!row) return null;
   const themed = themedLogoUrls(logoEntries, "team");
@@ -129,6 +119,10 @@ export type TeamRosterMember = {
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
+  /** Lanes (Top to Support), League only. */
+  lanes: LeagueRole[];
+  /** True when the lanes come from imported games and are not saved on the entry. */
+  lanesFromGames: boolean;
 };
 
 export type TeamFormerMember = {
@@ -144,6 +138,8 @@ export type TeamFormerMember = {
   photoUrl: string | null;
   photoUrlLight: string | null;
   pronouns: number | null;
+  lanes: LeagueRole[];
+  lanesFromGames: boolean;
 };
 
 export type TeamRosterOptions = {
@@ -154,9 +150,10 @@ export type TeamRosterOptions = {
 };
 
 export async function getTeamRoster(
-  teamId: number,
+  game: GameSlug, teamId: number,
   { formers: formersSlice, photos = true }: TeamRosterOptions = {},
 ): Promise<{ current: TeamRosterMember[]; formers: TeamFormerMember[]; formersTotal: number }> {
+  const { rosterMemberships, people } = gameTables(game);
   const rows = await db
     .select({
       membershipId: rosterMemberships.id,
@@ -193,7 +190,7 @@ export async function getTeamRoster(
         handle: r.handle,
         countryCode: r.countryCode,
         secondaryCountryCode: r.secondaryCountryCode,
-        role: r.role,
+        role: displayRosterRole(game, r.role),
         since: rangeLower(r.period),
         isStaff: STAFF_ROLES.has(r.role),
         inactiveSince: r.inactiveSince,
@@ -202,13 +199,15 @@ export async function getTeamRoster(
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
+        lanes: [],
+        lanesFromGames: false,
       });
     } else {
       allFormers.push({
         membershipId: r.membershipId,
         personId: r.personId,
         handle: r.handle,
-        role: r.role,
+        role: displayRosterRole(game, r.role),
         since: rangeLower(r.period),
         until: rangeUpper(r.period),
         inactiveSince: r.inactiveSince,
@@ -217,6 +216,8 @@ export async function getTeamRoster(
         photoUrl: null,
         photoUrlLight: null,
         pronouns: r.pronouns,
+        lanes: [],
+        lanesFromGames: false,
       });
     }
   }
@@ -225,6 +226,22 @@ export async function getTeamRoster(
   const current = [...currentByPersonId.values()].sort((a, b) => Number(a.isStaff) - Number(b.isStaff));
   allFormers.sort((a, b) => (b.until ?? "").localeCompare(a.until ?? ""));
   const formers = formersSlice ? allFormers.slice(formersSlice.offset, formersSlice.offset + formersSlice.limit) : allFormers;
+
+  // Lanes only for the members actually rendered.
+  if (gameHasLanes(game)) {
+    const shown = [...current, ...formers];
+    const rowByMembershipId = new Map(rows.map((r) => [r.membershipId, r]));
+    const entries = shown.map((m) => {
+      const r = rowByMembershipId.get(m.membershipId)!;
+      return { membershipId: m.membershipId, personId: m.personId, teamId, role: r.role, period: r.period, hasLeft: r.hasLeft };
+    });
+    const lanesByMembershipId = await resolveEntryLanes(entries);
+    for (const m of shown) {
+      const entryLanes = lanesByMembershipId.get(m.membershipId);
+      m.lanes = entryLanes?.lanes ?? [];
+      m.lanesFromGames = entryLanes?.fromGames ?? false;
+    }
+  }
 
   // Photos only for the members actually rendered.
   if (photos) {
@@ -248,7 +265,8 @@ export type TeamNameHistoryEntry = {
   isVisible: boolean;
 };
 
-export async function getTeamNameHistory(teamId: number): Promise<TeamNameHistoryEntry[]> {
+export async function getTeamNameHistory(game: GameSlug, teamId: number): Promise<TeamNameHistoryEntry[]> {
+  const { teamNameHistory } = gameTables(game);
   const rows = await db
     .select({ id: teamNameHistory.id, name: teamNameHistory.name, period: teamNameHistory.period, isVisible: teamNameHistory.isVisible })
     .from(teamNameHistory)
@@ -259,12 +277,12 @@ export async function getTeamNameHistory(teamId: number): Promise<TeamNameHistor
 }
 
 /** Overview tab: only played/in-progress matches, capped short. */
-export async function getTeamRecentMatches(teamId: number, limit = 10): Promise<HomeMatch[]> {
-  return getEntityMatches({ kind: "team", id: teamId }, { statuses: ["completed", "live"], limit });
+export async function getTeamRecentMatches(game: GameSlug, teamId: number, limit = 10): Promise<HomeMatch[]> {
+  return getEntityMatches(game, { kind: "team", id: teamId }, { statuses: ["completed", "live"], limit });
 }
 
-export async function getTeamUpcomingMatches(teamId: number, limit = 2): Promise<HomeMatch[]> {
-  return getEntityMatches({ kind: "team", id: teamId }, { statuses: ["pending"], scheduledFrom: new Date(), limit });
+export async function getTeamUpcomingMatches(game: GameSlug, teamId: number, limit = 2): Promise<HomeMatch[]> {
+  return getEntityMatches(game, { kind: "team", id: teamId }, { statuses: ["pending"], scheduledFrom: new Date(), limit });
 }
 
 export type TeamAchievement = {
@@ -277,7 +295,8 @@ export type TeamAchievement = {
   endDate: string;
 };
 
-export async function getTeamAchievements(teamId: number): Promise<{ items: TeamAchievement[]; titles: number; podiums: number }> {
+export async function getTeamAchievements(game: GameSlug, teamId: number): Promise<{ items: TeamAchievement[]; titles: number; podiums: number }> {
+  const { entrants, matches, tournaments, stages, stageContainers, qualificationResults, stageQualifications } = gameTables(game);
   const rows = await db
     .select({
       qualificationId: stageQualifications.id,
@@ -317,7 +336,8 @@ export async function getTeamAchievements(teamId: number): Promise<{ items: Team
 export type TeamStatsPlayer = { id: number; handle: string; countryCode: string | null; secondaryCountryCode: string | null };
 
 /** Handles (+ nationality, used by the tournament stats table's Nationality column) for the personIds a team's/tournament's aggregated stats rows reference. */
-export async function getPeopleHandles(personIds: number[]): Promise<Map<number, TeamStatsPlayer>> {
+export async function getPeopleHandles(game: GameSlug, personIds: number[]): Promise<Map<number, TeamStatsPlayer>> {
+  const { people } = gameTables(game);
   if (personIds.length === 0) return new Map();
   const rows = await db
     .select({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode })
@@ -335,7 +355,8 @@ export type TeamPressItem = {
 };
 
 /** Not customizable here (only the /news listing page exposes the language filter) — always the site-locale + English default rule. */
-export async function getTeamPress(teamId: number, locale: AppLocale, limit = 5): Promise<TeamPressItem[]> {
+export async function getTeamPress(game: GameSlug, teamId: number, locale: AppLocale, limit = 5): Promise<TeamPressItem[]> {
+  const { news, newsRelations } = gameTables(game);
   const languages = await resolveNewsLanguages(locale);
   const rows = await db
     .select({
@@ -350,7 +371,7 @@ export async function getTeamPress(teamId: number, locale: AppLocale, limit = 5)
     .innerJoin(news, eq(news.id, newsRelations.newsId))
     .leftJoin(organizations, eq(organizations.id, news.organizationId))
     .leftJoin(newsAuthors, eq(newsAuthors.id, news.authorId))
-    .where(and(eq(newsRelations.relatableType, "team"), eq(newsRelations.relatableId, teamId), isNewsPublishedCondition(), inArray(news.lang, languages)))
+    .where(and(eq(newsRelations.relatableType, "team"), eq(newsRelations.relatableId, teamId), isNewsPublishedCondition(game), inArray(news.lang, languages)))
     .orderBy(desc(news.publishedAt))
     .limit(limit);
 

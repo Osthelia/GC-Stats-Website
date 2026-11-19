@@ -12,7 +12,8 @@
 
 import { eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, accounts, people, rosterMemberships, teams, sanctions } from "@gc-stats/db";
+import { users, accounts, sanctions, gameTables } from "@gc-stats/db";
+import { GAMES } from "@gc-stats/db/game";
 
 /**
  * Builds the RGPD data export for one account — mirrors V1's
@@ -39,20 +40,21 @@ export async function buildAccountExport(userId: string) {
 
   const linkedAccounts = await db.select({ provider: accounts.provider, providerAccountId: accounts.providerAccountId }).from(accounts).where(eq(accounts.userId, userId));
 
-  const [person] = await db
-    .select({ id: people.id, handle: people.handle, firstName: people.firstName, lastName: people.lastName, countryCode: people.countryCode, bio: people.bio })
-    .from(people)
-    .where(eq(people.userId, userId))
-    .limit(1);
-
-  let rosterHistory: { teamName: string; role: string; period: string }[] = [];
-  if (person) {
-    const rows = await db
+  const linkedPlayerProfiles: Record<string, unknown> = {};
+  for (const game of GAMES) {
+    const { people, rosterMemberships, teams } = gameTables(game);
+    const [person] = await db
+      .select({ id: people.id, handle: people.handle, firstName: people.firstName, lastName: people.lastName, countryCode: people.countryCode, bio: people.bio })
+      .from(people)
+      .where(eq(people.userId, userId))
+      .limit(1);
+    if (!person) continue;
+    const rosterHistory = await db
       .select({ teamName: teams.name, role: rosterMemberships.role, period: rosterMemberships.period })
       .from(rosterMemberships)
       .innerJoin(teams, eq(teams.id, rosterMemberships.teamId))
       .where(eq(rosterMemberships.personId, person.id));
-    rosterHistory = rows;
+    linkedPlayerProfiles[game] = { ...person, rosterHistory };
   }
 
   const sanctionsReceived = await db
@@ -64,7 +66,8 @@ export async function buildAccountExport(userId: string) {
     exportedAt: new Date().toISOString(),
     profile: user ?? null,
     connectedAccounts: linkedAccounts,
-    linkedPlayerProfile: person ? { ...person, rosterHistory } : null,
+    linkedPlayerProfile: linkedPlayerProfiles.valorant ?? null,
+    linkedPlayerProfiles,
     sanctionsReceived,
   };
 }

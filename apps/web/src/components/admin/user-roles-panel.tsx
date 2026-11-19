@@ -17,20 +17,26 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RoleNameBadge } from "@/components/admin/role-name-badge";
 import { updateUserGlobalRoles } from "@/actions/admin-users";
 import type { AdminUserRole } from "@/lib/admin-users";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export function UserRolesPanel({
   userId,
   currentRoles,
   allRoles,
   canManage,
+  game = null,
 }: {
   userId: string;
   currentRoles: AdminUserRole[];
   allRoles: AdminUserRole[];
   /** Role assignment is super-admin-only, see actions/admin-users.ts::updateUserGlobalRoles */
   canManage: boolean;
+  /** Game the roles are limited to (their content permissions), null for the roles that apply everywhere. */
+  game?: GameSlug | null;
 }) {
   const t = useTranslations("admin.users");
+  const tGame = useTranslations("game");
+  const title = game ? `${t("columnRoles")} (${tGame(game)})` : t("columnRoles");
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<Set<number>>(() => new Set(currentRoles.map((r) => r.id)));
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +53,7 @@ export function UserRolesPanel({
   function handleSave() {
     setError(null);
     startTransition(async () => {
-      const result = await updateUserGlobalRoles(userId, [...selected]);
+      const result = await updateUserGlobalRoles(userId, [...selected], game);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -60,7 +66,7 @@ export function UserRolesPanel({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t("columnRoles")}</CardTitle>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
           {currentRoles.length === 0 ? (
@@ -80,7 +86,7 @@ export function UserRolesPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("columnRoles")}</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {allRoles.map((role) => (

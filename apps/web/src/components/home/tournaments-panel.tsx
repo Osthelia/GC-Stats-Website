@@ -6,12 +6,13 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import type { GameSlug } from "@gc-stats/db/game";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { TournamentListCard } from "@/components/tournament/tournament-list-card";
 import type { HomeTournament } from "@/lib/home-data";
 
-export function TournamentsPanel({ groups }: { groups: { label: "ongoing" | "upcomingGroup"; items: HomeTournament[] }[] }) {
+export function TournamentsPanel({ groups, game }: { groups: { label: "ongoing" | "upcomingGroup"; items: HomeTournament[] }[]; game: GameSlug }) {
   const t = useTranslations("home");
 
   return (
@@ -34,7 +35,7 @@ export function TournamentsPanel({ groups }: { groups: { label: "ongoing" | "upc
             </div>
             <div className="flex flex-col gap-1.5">
               {group.items.map((tour) => (
-                <TournamentListCard key={tour.id} tournament={tour} />
+                <TournamentListCard key={tour.id} tournament={tour} game={game} />
               ))}
             </div>
           </div>

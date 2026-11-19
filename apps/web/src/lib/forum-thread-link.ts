@@ -12,7 +12,8 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { forumThreads, news } from "@gc-stats/db";
+import { forumThreads, gameTables } from "@gc-stats/db";
+import { isGameSlug } from "@gc-stats/db/game";
 
 /**
  * Public URL for a thread, for notification links. A "general" thread has
@@ -23,20 +24,23 @@ import { forumThreads, news } from "@gc-stats/db";
  */
 export async function resolveForumThreadLink(threadId: number, messageId: number): Promise<string> {
   const [thread] = await db
-    .select({ category: forumThreads.category, subjectType: forumThreads.subjectType, subjectId: forumThreads.subjectId })
+    .select({ category: forumThreads.category, subjectType: forumThreads.subjectType, subjectId: forumThreads.subjectId, game: forumThreads.game })
     .from(forumThreads)
     .where(eq(forumThreads.id, threadId))
     .limit(1);
 
   const anchor = `#message-${messageId}`;
   if (!thread) return "/forum";
+  const game = thread.game;
+  if (!isGameSlug(game)) return `/forum/threads/${threadId}${anchor}`;
 
-  if (thread.subjectType === "match" && thread.subjectId) return `/match/${thread.subjectId}${anchor}`;
-  if (thread.subjectType === "tournament" && thread.subjectId) return `/tournaments/${thread.subjectId}/discussion${anchor}`;
+  if (thread.subjectType === "match" && thread.subjectId) return `/${game}/match/${thread.subjectId}${anchor}`;
+  if (thread.subjectType === "tournament" && thread.subjectId) return `/${game}/tournaments/${thread.subjectId}/discussion${anchor}`;
 
   if (thread.subjectType === "news" && thread.subjectId) {
+    const { news } = gameTables(game);
     const [article] = await db.select({ slug: news.slug }).from(news).where(eq(news.id, thread.subjectId)).limit(1);
-    if (article) return `/news/${article.slug}${anchor}`;
+    if (article) return `/${game}/news/${article.slug}${anchor}`;
   }
 
   return `/forum/threads/${threadId}${anchor}`;

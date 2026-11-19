@@ -12,9 +12,10 @@
 
 import { and, eq, inArray, isNotNull, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { entrants, maps, mapPlayerStats, mapTeamRoundSummary, matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { mapsFilterConditions, type MapsFilters } from "@/lib/maps-filters";
+import type { GameSlug } from "@gc-stats/db/game";
 
 // --- Map pool (times played + ATK/DEF winrate) -----------------------------
 
@@ -32,7 +33,9 @@ export type TournamentMapPoolRow = {
  * `game_player_advanced_stats.atk_rounds(_won)`/`def_rounds(_won)` covered.
  * Sorted by times played desc, like V1's `public/tournament/maps.blade.php`.
  */
-export async function getTournamentMapPool(tournamentId: number, filters: MapsFilters): Promise<TournamentMapPoolRow[]> {
+export async function getTournamentMapPool(game: GameSlug, tournamentId: number, filters: MapsFilters): Promise<TournamentMapPoolRow[]> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapTeamRoundSummary } = valorantTablesOf(game);
   const [playedRows, sideRows] = await Promise.all([
     db
       .select({ mapName: maps.mapName, timesPlayed: sql<number>`count(*)` })
@@ -40,7 +43,7 @@ export async function getTournamentMapPool(tournamentId: number, filters: MapsFi
       .innerJoin(matches, eq(matches.id, maps.matchId))
       .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-      .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), ...mapsFilterConditions(filters)))
+      .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), ...mapsFilterConditions(game, filters)))
       .groupBy(maps.mapName),
     db
       .select({
@@ -54,7 +57,7 @@ export async function getTournamentMapPool(tournamentId: number, filters: MapsFi
       .innerJoin(matches, eq(matches.id, maps.matchId))
       .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-      .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), ...mapsFilterConditions(filters)))
+      .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), ...mapsFilterConditions(game, filters)))
       .groupBy(maps.mapName, mapTeamRoundSummary.side),
   ]);
 
@@ -139,9 +142,11 @@ export type TournamentMapPickRate = { agent: string; count: number; pickPct: num
  * included them).
  */
 export async function getTournamentMapComps(
-  tournamentId: number,
+  game: GameSlug, tournamentId: number,
   filters: MapsFilters,
 ): Promise<{ compsByMap: Record<string, TournamentMapComp[]>; pickRatesByMap: Record<string, TournamentMapPickRate[]>; overallPickRates: TournamentMapPickRate[] }> {
+  const { entrants, matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   // One row per (map, entrant) with the agents it drafted.
   const groups = await db
     .select({
@@ -160,7 +165,7 @@ export async function getTournamentMapComps(
     .innerJoin(matches, eq(matches.id, maps.matchId))
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
-    .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), isNotNull(mapPlayerStats.agentName), ...mapsFilterConditions(filters)))
+    .where(and(eq(stages.tournamentId, tournamentId), eq(maps.isCompleted, true), isNotNull(maps.mapName), isNotNull(mapPlayerStats.agentName), ...mapsFilterConditions(game, filters)))
     .groupBy(maps.id, mapPlayerStats.entrantId, matches.id);
 
   const entrantIds = [...new Set(groups.flatMap((g) => [g.entrantId, g.entrantAId, g.entrantBId]).filter((id): id is number => id != null))];
@@ -169,7 +174,7 @@ export async function getTournamentMapComps(
     : [];
   const entrantById = new Map(entrantRows.map((e) => [e.id, e]));
   const teamIds = [...new Set(entrantRows.map((e) => e.teamId).filter((id): id is number => id != null))];
-  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds);
+  const logosByTeamId = await getCurrentLogoUrlsThemed("team", teamIds, game);
 
   // key = mapName|sorted-agents — grouped by composition, not by team: several
   // teams drafting the exact same comp on a map merge into one entry, with a

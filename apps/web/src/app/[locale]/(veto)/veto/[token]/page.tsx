@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function VetoPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const view = await getTeamVetoView(token, null);
+  const view = await getTeamVetoView("valorant", token, null);
   if (!view) notFound();
   return <VetoRoom token={token} initial={view} />;
 }

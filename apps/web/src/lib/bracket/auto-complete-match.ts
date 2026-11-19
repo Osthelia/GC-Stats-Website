@@ -14,8 +14,10 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: these reads must see writes made moments earlier.
 import { adminDb as db } from "@gc-stats/db/client";
-import { matches, maps } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { resolveMatch } from "./match-resolution-service";
+import { listMatchMapResults } from "./repository";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 /**
  * Recomputes the series score from its completed maps. An undecided match
@@ -32,32 +34,33 @@ import { resolveMatch } from "./match-resolution-service";
  * inside it — `resolveMatch` opens its own transaction on a separate
  * connection, which would not see uncommitted writes from an outer one.
  */
-export async function maybeAutoCompleteMatchFromMaps(matchId: number): Promise<void> {
+export async function maybeAutoCompleteMatchFromMaps(game: GameSlug, matchId: number): Promise<void> {
+  const { matches } = gameTables(game);
   const [match] = await db.select().from(matches).where(eq(matches.id, matchId)).limit(1);
   if (!match) return;
   if (match.entrantAId === null || match.entrantBId === null) return;
 
-  const mapRows = await db.select().from(maps).where(eq(maps.matchId, matchId));
-  const playedMaps = mapRows.filter((m) => m.isCompleted && m.teamAScore !== null && m.teamBScore !== null);
+  const mapResults = await listMatchMapResults(game, db, [matchId]);
+  // Completed with a result: a Valorant map with both scores (a draw included), a LoL game with a winner.
+  const playedMaps = mapResults.filter((map) => map.winner !== null || (map.isCompleted && map.roundsA !== null && map.roundsB !== null));
 
-  let winsA = 0;
-  let winsB = 0;
-  for (const map of playedMaps) {
-    if (map.teamAScore! > map.teamBScore!) winsA++;
-    else if (map.teamBScore! > map.teamAScore!) winsB++;
-  }
+  const winsA = mapResults.filter((map) => map.winner === "a").length;
+  const winsB = mapResults.filter((map) => map.winner === "b").length;
 
   const majority = Math.ceil(match.bestOf / 2);
-  // BO1: the match score IS the map score (round count), not a 1-0 map-win tally.
+  // BO1: the match score IS the map's round score, not a 1-0 map-win tally. LoL has no rounds, so its BO1 stays 1-0.
   const decidingMap = playedMaps[0];
-  const [scoreA, scoreB] = match.bestOf === 1 && decidingMap ? [decidingMap.teamAScore!, decidingMap.teamBScore!] : [winsA, winsB];
+  const [scoreA, scoreB] = match.bestOf === 1 && decidingMap && decidingMap.roundsA !== null && decidingMap.roundsB !== null ? [decidingMap.roundsA, decidingMap.roundsB] : [winsA, winsB];
   const winnerId = winsA >= majority ? match.entrantAId : winsB >= majority ? match.entrantBId : null;
 
-  // A closed unplayed map is completed without any score; it reopens if the series is no longer decided.
-  const isUnscored = (m: (typeof mapRows)[number]) => m.teamAScore === null && m.teamBScore === null;
-  const toToggle = mapRows.filter((m) => isUnscored(m) && m.isCompleted === (winnerId === null));
-  if (toToggle.length > 0) {
-    await db.update(maps).set({ isCompleted: winnerId !== null }).where(inArray(maps.id, toToggle.map((m) => m.id)));
+  // Valorant only: a closed unplayed map is completed without any score; it reopens if the series is no longer decided.
+  if (gameHasMaps(game)) {
+    const { maps } = valorantTablesOf(game);
+    const isUnscored = (map: (typeof mapResults)[number]) => map.roundsA === null && map.roundsB === null;
+    const toToggle = mapResults.filter((map) => isUnscored(map) && map.isCompleted === (winnerId === null));
+    if (toToggle.length > 0) {
+      await db.update(maps).set({ isCompleted: winnerId !== null }).where(inArray(maps.id, toToggle.map((map) => map.id)));
+    }
   }
 
   if (match.status === "completed") {
@@ -68,12 +71,12 @@ export async function maybeAutoCompleteMatchFromMaps(matchId: number): Promise<v
   }
 
   if (winnerId !== null) {
-    await resolveMatch({ matchId, winnerId, scoreA, scoreB });
+    await resolveMatch(game, { matchId, winnerId, scoreA, scoreB });
     return;
   }
 
   // No maps at all: leave whatever score an admin typed by hand.
-  if (mapRows.length === 0) return;
+  if (mapResults.length === 0) return;
   const runningA = playedMaps.length > 0 ? scoreA : null;
   const runningB = playedMaps.length > 0 ? scoreB : null;
   if (match.scoreA !== runningA || match.scoreB !== runningB) {

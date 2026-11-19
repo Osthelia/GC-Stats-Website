@@ -11,10 +11,15 @@
 import { useTranslations } from "next-intl";
 import { ArrowDownIcon, ArrowUpIcon, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useGame } from "@/lib/use-game";
+import { gameHasMaps } from "@gc-stats/db/game";
 
 // Ordered list of tiebreakers: wins always come first, then these in the order shown
 export function TiebreakerOrder({ value, options, onChange }: { value: string[]; options: readonly string[]; onChange: (next: string[]) => void }) {
   const t = useTranslations("admin.tournaments.stages.tiebreakerOrder");
+  const game = useGame();
+  // A game without maps counts games, not maps
+  const optionLabel = (key: string) => t(`options.${key === "map_diff" && !gameHasMaps(game) ? "game_diff" : key}`);
   const unused = options.filter((o) => !value.includes(o));
   const move = (index: number, delta: number) => {
     const next = [...value];
@@ -33,7 +38,7 @@ export function TiebreakerOrder({ value, options, onChange }: { value: string[];
         {value.map((key, index) => (
           <li key={key} className="flex items-center gap-2 rounded-md border bg-card px-2.5 py-1.5 text-sm">
             <span className="w-5 text-center text-xs text-muted-foreground">{index + 2}</span>
-            <span className="flex-1">{t(`options.${key}`)}</span>
+            <span className="flex-1">{optionLabel(key)}</span>
             <Button type="button" variant="ghost" size="icon-xs" aria-label={t("moveUp")} disabled={index === 0} onClick={() => move(index, -1)}>
               <ArrowUpIcon />
             </Button>
@@ -51,7 +56,7 @@ export function TiebreakerOrder({ value, options, onChange }: { value: string[];
           {unused.map((key) => (
             <Button key={key} type="button" variant="outline" size="sm" onClick={() => onChange([...value, key])}>
               <PlusIcon />
-              {t(`options.${key}`)}
+              {optionLabel(key)}
             </Button>
           ))}
         </div>

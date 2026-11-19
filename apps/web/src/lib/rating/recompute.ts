@@ -11,7 +11,7 @@
 
 import { and, eq, isNotNull, ne, or, isNull, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { mapPlayerStats, ratingModels } from "@gc-stats/db";
+import { ratingModels, valorantTables } from "@gc-stats/db";
 import {
   accumulateWinProb,
   buildRatingModel,
@@ -26,6 +26,8 @@ import {
 import { RATING_LOCK_KEY } from "./active-model";
 import { storedRatingDetails } from "./stored-details";
 import { listRatableMapIds, loadRawRatingMaps, type RawRatingMap } from "./raw-input";
+
+const { mapPlayerStats } = valorantTables;
 
 const LOAD_BATCH_MAPS = 100;
 const WRITE_BATCH_ROWS = 500;

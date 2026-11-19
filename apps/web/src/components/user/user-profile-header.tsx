@@ -10,6 +10,8 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import { getUserFanTeam, type UserProfileInfo } from "@/lib/user-profile-data";
+import { getPreferredGame } from "@/lib/game";
+import type { GameSlug } from "@gc-stats/db/game";
 import { DiscordIcon, TwitchIcon, XIcon, InstagramIcon, YoutubeIcon, TiktokIcon, SOCIAL_BRAND_COLORS } from "@/components/icons/brand-icons";
 import { HeaderUtilityBar } from "@/components/site/header-utility-bar";
 import { AdminPanelLink } from "@/components/site/admin-panel-link";
@@ -35,14 +37,17 @@ export async function UserProfileHeader({
   user,
   activeTab,
   hasNewsTab,
+  game,
 }: {
   user: UserProfileInfo;
   activeTab: (typeof TABS)[number];
   hasNewsTab: boolean;
+  /** Game whose fan team is shown, the last browsed one outside the per-game pages. */
+  game?: GameSlug;
 }) {
   const t = await getTranslations("userPage");
   const tNav = await getTranslations("nav");
-  const [viewerId, isAdmin, fanTeam] = await Promise.all([getCurrentUserId(), isViewerAdmin(), getUserFanTeam(user.id)]);
+  const [viewerId, isAdmin, fanTeam] = await Promise.all([getCurrentUserId(), isViewerAdmin(), getUserFanTeam(user.id, game ?? (await getPreferredGame()))]);
   const isOwnProfile = viewerId === user.id;
 
   const links: { key: string; label: string; icon: (props: { className?: string }) => React.ReactNode; href: string }[] = [];

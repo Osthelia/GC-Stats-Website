@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MatchPoster, POSTER_WIDTH, type PosterData } from "@/components/match/match-poster";
 import { slugify } from "@/lib/entity-id";
+import { useGame } from "@/lib/use-game";
 
 const PILL_BASE = "rounded-full px-5 py-2 text-[11px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95";
 const PILL_ACTIVE = "bg-[#e4ae22] text-black shadow-[0_0_18px_rgba(228,174,34,0.35)]";
@@ -26,6 +27,7 @@ const PILL_IDLE = "bg-white/5 text-neutral-400 hover:-translate-y-0.5 hover:bg-w
 type LoadState = { status: "loading" } | { status: "error" } | { status: "ready"; data: PosterData };
 
 export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: number; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("matchPoster");
   const tMatch = useTranslations("matchPage");
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -43,7 +45,7 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
     if (!open) return;
     const controller = new AbortController();
     setState({ status: "loading" });
-    fetch(`/api/match-poster/${matchId}`, { signal: controller.signal })
+    fetch(`/api/${game}/match-poster/${matchId}`, { signal: controller.signal })
       .then((res) => (res.ok ? (res.json() as Promise<PosterData>) : Promise.reject(new Error(String(res.status)))))
       .then((data) => setState({ status: "ready", data }))
       .catch((error) => {
@@ -53,7 +55,7 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
         }
       });
     return () => controller.abort();
-  }, [open, matchId, attempt]);
+  }, [open, matchId, attempt, game]);
 
   // The poster is a fixed width canvas (POSTER_WIDTH), scaled down to fit the dialog for the preview only.
   const frameCallback = useCallback((node: HTMLDivElement | null) => {
@@ -84,8 +86,8 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
     try {
       const blob = await render();
       if (!blob) throw new Error("Empty capture");
-      const { match, maps } = state.data;
-      const mapName = mapId != null ? maps.find((m) => m.id === mapId)?.mapName : null;
+      const { match } = state.data;
+      const mapName = mapId != null ? choices.find((c) => c.id === mapId)?.label : null;
       const link = document.createElement("a");
       link.download = `${["gcs", slugify(match.a.displayName), "vs", slugify(match.b.displayName), mapName ? slugify(mapName) : null].filter(Boolean).join("-")}.png`;
       link.href = URL.createObjectURL(blob);
@@ -122,25 +124,31 @@ export function MatchPosterDialog({ matchId, open, onOpenChange }: { matchId: nu
     return () => clearTimeout(timer);
   }, [copied]);
 
-  const playedMaps = state.status === "ready" ? state.data.maps.filter((m) => m.isCompleted && m.teamAScore != null && m.teamBScore != null && !(m.teamAScore === -1 && m.teamBScore === -1)) : [];
-  const url = typeof window === "undefined" ? "" : `${window.location.host}/match/${matchId}`;
+  // Valorant picks a map, a LoL series a game (the games replace the maps in the poster data).
+  const choices =
+    state.status !== "ready"
+      ? []
+      : state.data.games
+        ? state.data.games.filter((g) => g.isCompleted).map((g) => ({ id: g.id, label: tMatch("gameTab", { order: g.order }) }))
+        : state.data.maps.filter((m) => m.isCompleted && m.teamAScore != null && m.teamBScore != null && !(m.teamAScore === -1 && m.teamBScore === -1)).map((m) => ({ id: m.id, label: m.mapName }));
+  const url = typeof window === "undefined" ? "" : `${window.location.host}/${game}/match/${matchId}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description", { width: POSTER_WIDTH })}</DialogDescription>
+          <DialogDescription>{t(state.status === "ready" && state.data.games ? "descriptionGames" : "description", { width: POSTER_WIDTH })}</DialogDescription>
         </DialogHeader>
 
-        {state.status === "ready" && playedMaps.length > 0 && (
+        {choices.length > 0 && (
           <div className="flex flex-wrap gap-2" role="tablist" aria-label={tMatch("maps")}>
             <button type="button" role="tab" aria-selected={mapId == null} onClick={() => setMapId(null)} className={`${PILL_BASE} ${mapId == null ? PILL_ACTIVE : PILL_IDLE}`}>
-              {tMatch("allMaps")}
+              {state.status === "ready" && state.data.games ? tMatch("allGames") : tMatch("allMaps")}
             </button>
-            {playedMaps.map((m) => (
-              <button key={m.id} type="button" role="tab" aria-selected={mapId === m.id} onClick={() => setMapId(m.id)} className={`${PILL_BASE} ${mapId === m.id ? PILL_ACTIVE : PILL_IDLE}`}>
-                {m.mapName}
+            {choices.map((c) => (
+              <button key={c.id} type="button" role="tab" aria-selected={mapId === c.id} onClick={() => setMapId(c.id)} className={`${PILL_BASE} ${mapId === c.id ? PILL_ACTIVE : PILL_IDLE}`}>
+                {c.label}
               </button>
             ))}
           </div>

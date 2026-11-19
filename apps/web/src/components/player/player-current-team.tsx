@@ -12,6 +12,7 @@ import type { PlayerTeamHistoryEntry } from "@/lib/player-page-data";
 import { TeamBadge } from "@/components/home/team-badge";
 import { displayMonthYear } from "@/lib/daterange";
 import { slugify } from "@/lib/entity-id";
+import { LaneIcons } from "@/components/match/lol-icon";
 
 // Same role-group accent colors as `TeamRoster` (mirrors V1's RosterRole),
 // just applied to a "which team is this person on" card instead of "who's
@@ -76,6 +77,7 @@ export async function PlayerCurrentTeam({
                         ? tRoles(team.role, { pronouns: pronouns ?? 2 })
                         : team.role}
                     </span>
+                    <LaneIcons lanes={team.lanes} size={14} />
                     <span className="truncate font-mono text-[9px] font-bold tracking-widest text-neutral-500 uppercase">
                       {displayMonthYear(team.since, t("unknownDate"))}
                     </span>

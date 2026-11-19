@@ -13,11 +13,13 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { postChangeRequestMessage } from "@/actions/change-requests";
 import type { ChangeRequestMessageRow } from "@/lib/change-request-messages";
+import { useGame } from "@/lib/use-game";
 
 const inputClass =
   "w-full rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60";
 
 export function ChangeRequestMessageThread({ changeRequestId, messages, canPost, currentUserId }: { changeRequestId: number; messages: ChangeRequestMessageRow[]; canPost: boolean; currentUserId: string }) {
+  const game = useGame();
   const t = useTranslations("accountSettings.changeRequests.detail.thread");
   const router = useRouter();
   const [body, setBody] = useState("");
@@ -28,7 +30,7 @@ export function ChangeRequestMessageThread({ changeRequestId, messages, canPost,
     e.preventDefault();
     setError(null);
     setPending(true);
-    const result = await postChangeRequestMessage(changeRequestId, body);
+    const result = await postChangeRequestMessage(game, changeRequestId, body);
     setPending(false);
     if (!result.ok) {
       setError(result.error);

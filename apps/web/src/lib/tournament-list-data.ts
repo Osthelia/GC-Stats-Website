@@ -13,11 +13,12 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import { tournaments, entrants } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { visibleTournament } from "@/lib/ghost-visibility";
 import { qualifiedColumn } from "@/lib/db-search";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
 import { TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type TournamentListSort = "date" | "name";
 export type SortDirection = "asc" | "desc";
@@ -41,21 +42,25 @@ export type TournamentListRow = {
 // instead (see tournaments/page.tsx), so more fit comfortably per page.
 const PAGE_SIZE = 24;
 
-const teamsCountSql = sql<number>`(
+function teamsCountSql(game: GameSlug) {
+  const { tournaments, entrants } = gameTables(game);
+  return sql<number>`(
   SELECT COUNT(*) FROM ${entrants} e
   WHERE e.tournament_id = ${qualifiedColumn(tournaments, "id")} AND e.kind = 'team'
 )`;
+}
 
 // Filter options only change through the admin tournament actions, which invalidate the tag.
 const getTournamentFacets = unstable_cache(
-  async (): Promise<{ regions: string[]; categories: string[]; years: number[] }> => {
+  async (game: GameSlug): Promise<{ regions: string[]; categories: string[]; years: number[] }> => {
+        const { tournaments } = gameTables(game);
     const [regionRows, categoryRows, yearRows] = await Promise.all([
-      db.selectDistinct({ region: tournaments.region }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament, sql`${tournaments.region} IS NOT NULL`)),
-      db.selectDistinct({ category: tournaments.category }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament, sql`${tournaments.category} IS NOT NULL`)),
+      db.selectDistinct({ region: tournaments.region }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament(game), sql`${tournaments.region} IS NOT NULL`)),
+      db.selectDistinct({ category: tournaments.category }).from(tournaments).where(and(eq(tournaments.active, true), visibleTournament(game), sql`${tournaments.category} IS NOT NULL`)),
       db
         .selectDistinct({ year: sql<number>`EXTRACT(YEAR FROM ${tournaments.startDate})::int` })
         .from(tournaments)
-        .where(and(eq(tournaments.active, true), visibleTournament)),
+        .where(and(eq(tournaments.active, true), visibleTournament(game))),
     ]);
     return {
       regions: regionRows.map((r) => r.region!).sort(),
@@ -70,7 +75,7 @@ const getTournamentFacets = unstable_cache(
 // Mirrors V1's public TournamentController::index() exactly: only active
 // tournaments are listed, region/category are exact matches, year filters on
 // the calendar year of start_date, sort is date (start_date) or name, 12/page.
-export async function listPublicTournaments(opts: {
+export async function listPublicTournaments(game: GameSlug, opts: {
   region: string;
   category: string;
   year: string;
@@ -78,7 +83,8 @@ export async function listPublicTournaments(opts: {
   direction: SortDirection;
   page: number;
 }): Promise<{ rows: TournamentListRow[]; total: number; regions: string[]; categories: string[]; years: number[] }> {
-  const conditions = [eq(tournaments.active, true), visibleTournament];
+  const { tournaments } = gameTables(game);
+  const conditions = [eq(tournaments.active, true), visibleTournament(game)];
   if (opts.region) conditions.push(eq(tournaments.region, opts.region));
   if (opts.category) conditions.push(eq(tournaments.category, opts.category));
   if (opts.year && /^\d{4}$/.test(opts.year)) {
@@ -101,7 +107,7 @@ export async function listPublicTournaments(opts: {
         startDate: tournaments.startDate,
         endDate: tournaments.endDate,
         status: tournaments.status,
-        teamsCount: teamsCountSql,
+        teamsCount: teamsCountSql(game),
       })
       .from(tournaments)
       .where(where)
@@ -109,10 +115,10 @@ export async function listPublicTournaments(opts: {
       .limit(PAGE_SIZE)
       .offset((opts.page - 1) * PAGE_SIZE),
     db.select({ count: sql<number>`count(*)` }).from(tournaments).where(where),
-    getTournamentFacets(),
+    getTournamentFacets(game),
   ]);
 
-  const logosByTournamentId = await getCurrentLogoUrlsThemed("tournament", rows.map((r) => r.id));
+  const logosByTournamentId = await getCurrentLogoUrlsThemed("tournament", rows.map((r) => r.id), game);
 
   return {
     rows: rows.map((r) => ({ ...r, logoUrl: logosByTournamentId.get(r.id)?.dark ?? null, logoUrlLight: logosByTournamentId.get(r.id)?.light ?? null })),

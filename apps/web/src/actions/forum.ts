@@ -25,6 +25,7 @@ import { notify } from "@/lib/notify";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 import { excerpt } from "@/lib/text-excerpt";
+import type { GameSlug } from "@gc-stats/db/game";
 
 const TITLE_MAX_LENGTH = 150;
 const BODY_MAX_LENGTH = 5000;
@@ -80,7 +81,7 @@ export async function acceptForumRules(): Promise<ForumActionResult> {
   return { ok: true };
 }
 
-export async function createGeneralThread(input: { title: string; body: string }): Promise<ForumActionResult<{ threadId: number }>> {
+export async function createGeneralThread(game: GameSlug, input: { title: string; body: string }): Promise<ForumActionResult<{ threadId: number }>> {
   const userId = await requireUserId();
 
   const guardError = await assertCanPostToForum(userId);
@@ -107,13 +108,13 @@ export async function createGeneralThread(input: { title: string; body: string }
     return { threadId: thread!.id, messageId: message!.id };
   });
 
-  after(() => moderateForumMessage(messageId, `${title}\n\n${body}`));
+  after(() => moderateForumMessage(game, messageId, `${title}\n\n${body}`));
   after(() => notifyForumMessage({ threadId, messageId, authorId: userId, body }));
 
   return { ok: true, threadId };
 }
 
-export async function postForumMessage(input: { threadId: number; body: string; parentId?: number | null }): Promise<ForumActionResult<{ messageId: number }>> {
+export async function postForumMessage(game: GameSlug, input: { threadId: number; body: string; parentId?: number | null }): Promise<ForumActionResult<{ messageId: number }>> {
   const userId = await requireUserId();
 
   const guardError = await assertCanPostToForum(userId);
@@ -150,7 +151,7 @@ export async function postForumMessage(input: { threadId: number; body: string; 
     return message!.id;
   });
 
-  after(() => moderateForumMessage(messageId, body));
+  after(() => moderateForumMessage(game, messageId, body));
   after(() => notifyForumMessage({ threadId: input.threadId, messageId, authorId: userId, body, parentAuthorId, parentBody }));
 
   return { ok: true, messageId };

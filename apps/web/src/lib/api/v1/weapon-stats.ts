@@ -11,14 +11,16 @@
 
 import { and, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { mapPlayerStats, maps, matches, stageContainers, stages } from "@gc-stats/db";
+import { gameTables, valorantTables, valorantTablesOf } from "@gc-stats/db";
 import { exclusiveUpperBound, type MapsFilter } from "./params";
 import { jsonObject } from "@/lib/stats-aggregate-sql";
 import type { EntityScope } from "./avg-stats";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiWeaponStatsEntry = { weapon: string; times_played: number | null; kills: number };
 
 function scopeCondition(scope: EntityScope) {
+  const { mapPlayerStats } = valorantTables;
   return scope.kind === "team" ? inArray(mapPlayerStats.entrantId, scope.entrantIds) : eq(mapPlayerStats.personId, scope.personId);
 }
 
@@ -37,7 +39,9 @@ function isEmptyTeamScope(scope: EntityScope): boolean {
  * (rounds the weapon was held) still needs the RAW round layer, same as V1.
  * Shared by `/teams/{id}/weapons` and `/players/{id}/weapons`.
  */
-export async function fetchWeaponStats(scope: EntityScope, filter: MapsFilter): Promise<ApiWeaponStatsEntry[]> {
+export async function fetchWeaponStats(game: GameSlug, scope: EntityScope, filter: MapsFilter): Promise<ApiWeaponStatsEntry[]> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { mapPlayerStats, maps, mapRoundsRaw, mapRoundPlayerLoadoutsRaw } = valorantTablesOf(game);
   if (isEmptyTeamScope(scope)) return [];
 
   const needsStage = !!filter.tournamentId;
@@ -61,9 +65,9 @@ export async function fetchWeaponStats(scope: EntityScope, filter: MapsFilter): 
 
   const playedQuery = db.execute<{ weapon: string; times_played: number }>(sql`
     SELECT ps.weapon AS weapon, COUNT(*)::int AS times_played
-    FROM map_round_player_loadouts_raw ps
-    ${needsMatch ? sql`JOIN map_rounds_raw r ON r.id = ps.map_round_id JOIN maps gm ON gm.id = r.map_id JOIN matches m ON m.id = gm.match_id` : sql``}
-    ${needsStage ? sql`JOIN stage_containers sc ON sc.id = m.container_id JOIN stages st ON st.id = sc.stage_id` : sql``}
+    FROM ${mapRoundPlayerLoadoutsRaw} ps
+    ${needsMatch ? sql`JOIN ${mapRoundsRaw} r ON r.id = ps.map_round_id JOIN ${maps} gm ON gm.id = r.map_id JOIN ${matches} m ON m.id = gm.match_id` : sql``}
+    ${needsStage ? sql`JOIN ${stageContainers} sc ON sc.id = m.container_id JOIN ${stages} st ON st.id = sc.stage_id` : sql``}
     WHERE ps.weapon IS NOT NULL AND ${roundScopeSql(scope)}
       ${filter.from ? sql`AND m.scheduled_at >= ${new Date(`${filter.from}T00:00:00.000Z`)}` : sql``}
       ${filter.to ? sql`AND m.scheduled_at < ${exclusiveUpperBound(filter.to)}` : sql``}

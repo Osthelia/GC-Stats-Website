@@ -14,9 +14,10 @@ import { and, desc, eq, gte, inArray, isNotNull, lte, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import { entrants, maps, mapPlayerStats, mapRoundPlayerPositionsRaw, mapRoundsRaw, matches } from "@gc-stats/db";
+import { gameTables, valorantTablesOf } from "@gc-stats/db";
 import { VALORANT_MINIMAPS, projectToMinimap } from "@/lib/valorant-minimaps";
 import { visibleMatch } from "@/lib/ghost-visibility";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type HeatmapPosition = { x: number; y: number; side: "atk" | "def" | null; eventType: string };
 
@@ -47,13 +48,15 @@ export type HeatmapFilters = {
  * a scene is live, and the underlying position history only grows between
  * completed maps, so re-running the full join on every paint is pure waste.
  */
-export async function getHeatmapPositions(filters: HeatmapFilters): Promise<HeatmapPosition[]> {
+export async function getHeatmapPositions(game: GameSlug, filters: HeatmapFilters): Promise<HeatmapPosition[]> {
   const cacheKey = JSON.stringify({ ...filters, start: filters.start?.toISOString(), end: filters.end?.toISOString() });
   const tags = ["heatmap", ...(filters.tournamentId != null ? [`tournament-${filters.tournamentId}`] : [])];
-  return unstable_cache(() => computeHeatmapPositions(filters), ["heatmap-positions", cacheKey], { revalidate: 300, tags })();
+  return unstable_cache(() => computeHeatmapPositions(game, filters), ["heatmap-positions", game, cacheKey], { revalidate: 300, tags })();
 }
 
-async function computeHeatmapPositions(filters: HeatmapFilters): Promise<HeatmapPosition[]> {
+async function computeHeatmapPositions(game: GameSlug, filters: HeatmapFilters): Promise<HeatmapPosition[]> {
+  const { entrants, matches } = gameTables(game);
+  const { maps, mapPlayerStats, mapRoundPlayerPositionsRaw, mapRoundsRaw } = valorantTablesOf(game);
   const calibration = VALORANT_MINIMAPS[filters.mapKey];
   if (!calibration) return [];
 
@@ -153,7 +156,8 @@ export function getHeatmapPreviewPositions(): HeatmapPosition[] {
 export type WidgetPreviewMatch = { teamAId: number; teamBId: number };
 
 /** Latest finished match between two real teams — feeds the head-to-head directory card's live iframe preview (mirrors V1's $previewMatch). */
-export async function getWidgetPreviewMatch(): Promise<WidgetPreviewMatch | null> {
+export async function getWidgetPreviewMatch(game: GameSlug): Promise<WidgetPreviewMatch | null> {
+  const { entrants, matches } = gameTables(game);
   const entrantA = alias(entrants, "entrant_a");
   const entrantB = alias(entrants, "entrant_b");
 
@@ -162,7 +166,7 @@ export async function getWidgetPreviewMatch(): Promise<WidgetPreviewMatch | null
     .from(matches)
     .innerJoin(entrantA, eq(entrantA.id, matches.entrantAId))
     .innerJoin(entrantB, eq(entrantB.id, matches.entrantBId))
-    .where(and(isNotNull(entrantA.teamId), isNotNull(entrantB.teamId), eq(matches.status, "completed"), visibleMatch))
+    .where(and(isNotNull(entrantA.teamId), isNotNull(entrantB.teamId), eq(matches.status, "completed"), visibleMatch(game)))
     .orderBy(desc(matches.scheduledAt))
     .limit(1);
   if (!row || row.teamAId == null || row.teamBId == null) return null;

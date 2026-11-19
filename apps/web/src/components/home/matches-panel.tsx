@@ -17,6 +17,7 @@ import type { HomeMatch, HomeMatchPage, MatchStatus } from "@/lib/home-data";
 import { groupHomeDays, type HomeDay } from "@/lib/home-day-order";
 import { useDisplayTimezone } from "@/lib/site-settings";
 import { loadMoreHomeMatches } from "@/actions/home";
+import { useGame } from "@/lib/use-game";
 import { TeamBadge } from "@/components/home/team-badge";
 import { FormattedDate } from "@/components/formatted-date";
 
@@ -26,6 +27,7 @@ type FilterKey = "all" | MatchStatus;
 const MOBILE_INITIAL_MATCHES = 6;
 
 export function MatchesPanel({ initialPage }: { initialPage: HomeMatchPage }) {
+  const game = useGame();
   const t = useTranslations("home");
   const locale = useLocale();
   const timeZone = useDisplayTimezone();
@@ -43,7 +45,7 @@ export function MatchesPanel({ initialPage }: { initialPage: HomeMatchPage }) {
 
   const handleLoadMore = () => {
     startLoadMore(async () => {
-      const page = await loadMoreHomeMatches(direction, cursor.offset);
+      const page = await loadMoreHomeMatches(game, direction, cursor.offset);
       setAllMatches((prev) => {
         const byId = new Map(prev.map((m) => [m.id, m]));
         for (const m of page.matches) byId.set(m.id, m);

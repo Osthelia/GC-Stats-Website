@@ -8,8 +8,10 @@
 
 import { asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { discordBotSubscriptions, teams } from "@gc-stats/db";
+import { discordBotSubscriptions, valorantTables } from "@gc-stats/db";
 import type { DiscordBotEvent, DiscordBotOfficialFilter, DiscordBotSubscriptionView } from "./shared";
+
+const { teams } = valorantTables;
 
 export async function listGuildSubscriptions(guildId: string): Promise<DiscordBotSubscriptionView[]> {
   const rows = await db.select().from(discordBotSubscriptions).where(eq(discordBotSubscriptions.guildId, guildId)).orderBy(asc(discordBotSubscriptions.createdAt));

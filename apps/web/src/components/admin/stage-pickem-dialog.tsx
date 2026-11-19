@@ -20,8 +20,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { updateStagePickemSettings, type StagePickemSettingsFieldErrors } from "@/actions/admin-pickem";
 import type { AdminStageRow } from "@/lib/admin-tournament-detail";
+import { useGame } from "@/lib/use-game";
 
 export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminStageRow | null; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages.pickem");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -43,7 +45,7 @@ export function StagePickemDialog({ stage, open, onOpenChange }: { stage: AdminS
     if (!stage) return;
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateStagePickemSettings(stage.id, { enabled, opensAt, groupPickMode });
+      const result = await updateStagePickemSettings(game, stage.id, { enabled, opensAt, groupPickMode });
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

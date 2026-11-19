@@ -1,8 +1,8 @@
 ﻿/**
  * GC-Stats - standings
  *
- * Computes ranked group standings (swiss, round robin) with map/round
- * records read at request time from `maps`, not trusted from `group_entries`.
+ * Computes ranked group standings (swiss, round robin) with game/round
+ * records read at request time from the series maps, not trusted from `group_entries`.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -10,12 +10,14 @@
  */
 
 import { and, eq, inArray } from "drizzle-orm";
-import { groupEntries, matches, maps as mapRows } from "@gc-stats/db";
+import { alias } from "drizzle-orm/pg-core";
+import { gameTables } from "@gc-stats/db";
 import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@osthelia/bracket-engine";
-import type { Tx } from "./repository";
-import { parseGroupConfig } from "./config-types";
+import { listMatchMapResults, type Tx } from "./repository";
+import { countsForStageScope, parseGroupConfig, type GroupContainerConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
 import { recordsFromMatches } from "./group-progression";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type GroupStandingsEntry = RankedStandingsEntry & { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
 
@@ -23,8 +25,8 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
 
 /**
  * Per-entrant map record (win/loss) and round win/loss totals, computed
- * read-time from `maps` (same `matches.entrantAId`/`entrantBId` <->
- * `maps.teamAScore`/`teamBScore` convention as `points.ts`) rather than
+ * read-time from the series maps (same `matches.entrantAId`/`entrantBId` <->
+ * `teamAScore`/`teamBScore` of a Valorant map, as in `points.ts`) rather than
  * trusted from `group_entries` — that column is match-level bookkeeping
  * only (never updated with map/round data, cf. group-progression.ts) and,
  * for historically-migrated containers, was reconstructed at 0 anyway
@@ -33,7 +35,8 @@ type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundL
  * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
  * round count and would otherwise skew the differential.
  */
-export async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
+export async function computeMapRecord(game: GameSlug, tx: Tx, containerIds: number[]): Promise<Map<number, MapRecord>> {
+  const { matches } = gameTables(game);
   const stats = new Map<number, MapRecord>();
   const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
     if (entrantId === null) return;
@@ -46,51 +49,75 @@ export async function computeMapRecord(tx: Tx, containerId: number): Promise<Map
     });
   };
 
-  const containerMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
+  const containerMatches = await tx.select().from(matches).where(inArray(matches.containerId, containerIds));
   if (containerMatches.length === 0) return stats;
   const matchById = new Map(containerMatches.map((m) => [m.id, m]));
 
-  const containerMaps = await tx.select().from(mapRows).where(inArray(mapRows.matchId, containerMatches.map((m) => m.id)));
-  for (const mp of containerMaps) {
-    if (!mp.isCompleted || mp.teamAScore === null || mp.teamBScore === null) continue;
-    const match = matchById.get(mp.matchId);
+  const mapResults = await listMatchMapResults(game, tx, containerMatches.map((m) => m.id));
+  for (const map of mapResults) {
+    const match = matchById.get(map.matchId);
     if (!match) continue;
-    if (mp.teamAScore > mp.teamBScore) {
+    if (map.winner === "a") {
       bump(match.entrantAId, { mapWins: 1 });
       bump(match.entrantBId, { mapLosses: 1 });
-    } else if (mp.teamBScore > mp.teamAScore) {
+    } else if (map.winner === "b") {
       bump(match.entrantBId, { mapWins: 1 });
       bump(match.entrantAId, { mapLosses: 1 });
     }
-    if (!mp.isForfeit) {
-      bump(match.entrantAId, { roundWins: mp.teamAScore, roundLosses: mp.teamBScore });
-      bump(match.entrantBId, { roundWins: mp.teamBScore, roundLosses: mp.teamAScore });
+    // Rounds only exist for Valorant maps, and a forfeit's score is not a real round count.
+    if (map.isCompleted && !map.isForfeit && map.roundsA !== null && map.roundsB !== null) {
+      bump(match.entrantAId, { roundWins: map.roundsA, roundLosses: map.roundsB });
+      bump(match.entrantBId, { roundWins: map.roundsB, roundLosses: map.roundsA });
     }
   }
   return stats;
 }
 
+type StageContainerRef = { id: number; containerType: string; config: unknown };
+
+/** Which containers a group's matches are read from, and whether its table is limited to the pinned teams.
+ *  `stageContainers` (every container of the group's stage) saves the lookup for callers that already hold them. */
+async function resolveMatchScope(game: GameSlug, tx: Tx, containerId: number, config: GroupContainerConfig, stageContainers?: StageContainerRef[]): Promise<{ containerIds: number[]; pinnedOnly: boolean }> {
+  if (config.matchScope === "container") return { containerIds: [containerId], pinnedOnly: false };
+  let siblings = stageContainers;
+  if (!siblings) {
+    const { stageContainers: containersTable } = gameTables(game);
+    const sibling = alias(containersTable, "sibling");
+    // One round trip: the group's stage and every container in it.
+    siblings = await tx
+      .select({ id: sibling.id, containerType: sibling.containerType, config: sibling.config })
+      .from(containersTable)
+      .innerJoin(sibling, eq(sibling.stageId, containersTable.stageId))
+      .where(eq(containersTable.id, containerId));
+  }
+  return { containerIds: siblings.filter(countsForStageScope).map((c) => c.id), pinnedOnly: true };
+}
+
 /** Ranked standings for a group container, using the calculator that
  *  matches its configured format (swiss vs round robin). Wins/losses are
  *  derived from the matches, and an entrant playing in the group without a
- *  `group_entries` row is still listed. */
-export async function computeContainerStandings(tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
+ *  `group_entries` row is still listed. Pass the stage's containers when
+ *  the caller already has them, a stage-scoped group then needs no lookup. */
+export async function computeContainerStandings(game: GameSlug, tx: Tx, containerId: number, rawConfig: unknown, stageContainers?: StageContainerRef[]): Promise<GroupStandingsEntry[]> {
+  const { groupEntries, matches } = gameTables(game);
   const config = parseGroupConfig(rawConfig);
+  const { containerIds, pinnedOnly } = await resolveMatchScope(game, tx, containerId, config, stageContainers);
   const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
-    recordsFromMatches(tx, containerId),
-    config.pointsConfig ? computeContainerPoints(tx, containerId, config.pointsConfig) : null,
-    computeMapRecord(tx, containerId),
+    recordsFromMatches(game, tx, containerIds),
+    config.pointsConfig ? computeContainerPoints(game, tx, containerIds, config.pointsConfig) : null,
+    computeMapRecord(game, tx, containerIds),
     // Head to head input, only read by round robin.
     config.type === "swiss"
       ? []
       : tx
           .select()
           .from(matches)
-          .where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
+          .where(and(inArray(matches.containerId, containerIds), eq(matches.status, "completed"))),
   ]);
   const storedById = new Map(storedEntries.map((e) => [e.entrantId, e]));
-  const entrantIds = [...new Set([...storedById.keys(), ...matchRecord.keys()])];
+  // Cross-group play: the table is its pinned teams only, whoever else played the counted matches.
+  const entrantIds = pinnedOnly ? [...storedById.keys()] : [...new Set([...storedById.keys(), ...matchRecord.keys()])];
   const entries = entrantIds.map((entrantId) => {
     const stored = storedById.get(entrantId);
     const r = matchRecord.get(entrantId) ?? { wins: 0, losses: 0 };
@@ -132,15 +159,19 @@ export async function computeContainerStandings(tx: Tx, containerId: number, raw
     return withMapRecord(createSwissStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
   }
 
-  // round_robin: build head-to-head from completed matches in this container.
+  // round_robin: build head-to-head from the completed matches in scope.
   const dtos: StandingsEntry[] = entries.map((e) => {
-    const headToHead = new Map<string, "win" | "loss">();
+    // Cross-group play lets a pair meet more than once, so tally per opponent instead of keeping the last result.
+    const tally = new Map<string, number>();
     for (const m of completedMatches) {
-      if (m.entrantAId === e.entrantId && m.entrantBId !== null) {
-        headToHead.set(String(m.entrantBId), m.winnerId === e.entrantId ? "win" : "loss");
-      } else if (m.entrantBId === e.entrantId && m.entrantAId !== null) {
-        headToHead.set(String(m.entrantAId), m.winnerId === e.entrantId ? "win" : "loss");
-      }
+      const opponentId = m.entrantAId === e.entrantId ? m.entrantBId : m.entrantBId === e.entrantId ? m.entrantAId : null;
+      if (opponentId === null) continue;
+      tally.set(String(opponentId), (tally.get(String(opponentId)) ?? 0) + (m.winnerId === e.entrantId ? 1 : -1));
+    }
+    // An even split has no head-to-head winner, so it is left out and the next tiebreaker decides.
+    const headToHead = new Map<string, "win" | "loss">();
+    for (const [opponentId, net] of tally) {
+      if (net !== 0) headToHead.set(opponentId, net > 0 ? "win" : "loss");
     }
     return {
       id: String(e.entrantId),

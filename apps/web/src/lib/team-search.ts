@@ -12,10 +12,11 @@
 
 import { and, eq, ne, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { teams } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { typoVariants } from "@/lib/search-typo";
 import { foldedIlike } from "@/lib/db-search";
 import { ghostScopeClause, type GhostScope } from "@/lib/ghost-visibility";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type TeamPickerResult = { id: number; name: string; countryCode: string | null };
 
@@ -30,7 +31,8 @@ export type TeamPickerResult = { id: number; name: string; countryCode: string |
  * uses this to hide the source team itself) without needing a separate query
  * function. `ghosts` picks public teams, ghost teams or both.
  */
-export async function searchTeamsQuery(query: string, excludeId?: number, ghosts: GhostScope = "exclude"): Promise<TeamPickerResult[]> {
+export async function searchTeamsQuery(game: GameSlug, query: string, excludeId?: number, ghosts: GhostScope = "exclude"): Promise<TeamPickerResult[]> {
+  const { teams } = gameTables(game);
   const q = query.trim();
   const excludeClause = and(excludeId !== undefined ? ne(teams.id, excludeId) : undefined, ghostScopeClause(teams.isGhost, ghosts));
 

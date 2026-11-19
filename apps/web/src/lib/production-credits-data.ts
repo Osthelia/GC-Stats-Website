@@ -13,18 +13,10 @@
 import { and, count, desc, eq, inArray, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@gc-stats/db/client";
-import {
-  productionCredits,
-  people,
-  organizations,
-  tournaments,
-  matches,
-  maps,
-  entrants,
-  stageContainers,
-  stages,
-} from "@gc-stats/db";
+import { organizations, gameTables, seriesMapTableOf } from "@gc-stats/db";
 import { getCurrentLogoUrlsThemed } from "@/lib/admin-logos";
+import { listMapRefs } from "@/lib/series-map-refs";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type OrgProductionCredit = {
   id: number;
@@ -60,7 +52,8 @@ export type ProductionTarget =
     };
 
 /** Every match label the way admin-matches.ts's listTournamentMatches would compute it, but for an arbitrary set of match ids scattered across tournaments — used to resolve production_credits rows pointing at matchId. */
-export async function resolveMatchTargets(matchIds: number[]) {
+export async function resolveMatchTargets(game: GameSlug, matchIds: number[]) {
+  const { tournaments, matches, entrants, stageContainers, stages } = gameTables(game);
   if (matchIds.length === 0)
     return new Map<
       number,
@@ -114,15 +107,12 @@ export async function resolveMatchTargets(matchIds: number[]) {
 type MapTarget = Extract<ProductionTarget, { scope: "map" }>;
 
 /** Same as resolveMatchTargets for credits pointing at a map: the map's own label plus its match's "A vs B" and tournament. */
-export async function resolveMapTargets(mapIds: number[]) {
+export async function resolveMapTargets(game: GameSlug, mapIds: number[]) {
   const result = new Map<number, { target: Omit<MapTarget, "scope">; scheduledAt: Date | null }>();
   if (mapIds.length === 0) return result;
 
-  const mapRows = await db
-    .select({ id: maps.id, matchId: maps.matchId, mapName: maps.mapName, order: maps.order })
-    .from(maps)
-    .where(inArray(maps.id, mapIds));
-  const matchTargetById = await resolveMatchTargets([...new Set(mapRows.map((m) => m.matchId))]);
+  const mapRows = await listMapRefs(db, game, mapIds);
+  const matchTargetById = await resolveMatchTargets(game, [...new Set(mapRows.map((m) => m.matchId))]);
 
   for (const m of mapRows) {
     const match = matchTargetById.get(m.matchId);
@@ -135,7 +125,7 @@ export async function resolveMapTargets(mapIds: number[]) {
         tournamentId: match.tournamentId,
         tournamentName: match.tournamentName,
         label: match.label,
-        mapLabel: `${m.mapName ?? "?"} (Map ${m.order})`,
+        mapLabel: m.label,
       },
     });
   }
@@ -144,8 +134,9 @@ export async function resolveMapTargets(mapIds: number[]) {
 
 /** /dashboard management only (see components/dashboard/org-production-credits-panel.tsx) — the public site reads through `getOrganizationProductionsPage` instead, see below. */
 export async function getOrganizationProductionCredits(
-  organizationId: number,
+  game: GameSlug, organizationId: number,
 ): Promise<OrgProductionCredit[]> {
+  const { productionCredits, people, tournaments } = gameTables(game);
   const rows = await db
     .select({
       id: productionCredits.id,
@@ -180,9 +171,9 @@ export async function getOrganizationProductionCredits(
   const matchIds = rows
     .map((r) => r.matchId)
     .filter((id): id is number => id !== null);
-  const matchTargetById = await resolveMatchTargets(matchIds);
+  const matchTargetById = await resolveMatchTargets(game, matchIds);
   const mapTargetById = await resolveMapTargets(
-    rows.map((r) => r.mapId).filter((id): id is number => id !== null),
+    game, rows.map((r) => r.mapId).filter((id): id is number => id !== null),
   );
 
   return rows.flatMap((r): OrgProductionCredit[] => {
@@ -235,8 +226,9 @@ export async function getOrganizationProductionCredits(
 }
 
 export async function getMatchTournamentId(
-  matchId: number,
+  game: GameSlug, matchId: number,
 ): Promise<number | null> {
+  const { matches, stageContainers, stages } = gameTables(game);
   const [row] = await db
     .select({ tournamentId: stages.tournamentId })
     .from(matches)
@@ -251,8 +243,9 @@ export type CreditMatchOption = { id: number; label: string };
 
 /** Backs the Match <Select> once a tournament is picked in the add-credit form — plain read, no search-as-you-type needed since a tournament rarely has more than a few dozen matches. */
 export async function getTournamentMatchOptionsForCredit(
-  tournamentId: number,
+  game: GameSlug, tournamentId: number,
 ): Promise<CreditMatchOption[]> {
+  const { matches, entrants, stageContainers, stages } = gameTables(game);
   const containerRows = await db
     .select({ id: stageContainers.id })
     .from(stageContainers)
@@ -346,8 +339,9 @@ type RawProductionRow = {
 };
 
 async function resolveTournamentNamesAndDates(
-  tournamentIds: number[],
+  game: GameSlug, tournamentIds: number[],
 ): Promise<Map<number, { name: string; startDate: Date | null }>> {
+  const { tournaments } = gameTables(game);
   if (tournamentIds.length === 0) return new Map();
   const rows = await db
     .select({
@@ -367,8 +361,9 @@ async function resolveTournamentNamesAndDates(
 
 /** Batch-resolves person/organization/tournament/match info for a set of raw production_credits rows — shared by the org/tournament/person "Production" pages below. */
 async function resolveProductionEntries(
-  rows: RawProductionRow[],
+  game: GameSlug, rows: RawProductionRow[],
 ): Promise<ProductionEntry[]> {
+  const { people } = gameTables(game);
   const personIds = [...new Set(rows.map((r) => r.personId))];
   const orgIds = [
     ...new Set(
@@ -417,9 +412,9 @@ async function resolveProductionEntries(
             .where(inArray(organizations.id, orgIds))
         : [],
       getCurrentLogoUrlsThemed("organization", orgIds),
-      resolveMatchTargets(matchIds),
-      resolveTournamentNamesAndDates(directTournamentIds),
-      resolveMapTargets(mapIds),
+      resolveMatchTargets(game, matchIds),
+      resolveTournamentNamesAndDates(game, directTournamentIds),
+      resolveMapTargets(game, mapIds),
     ]);
 
   const personById = new Map(personRows.map((p) => [p.id, p]));
@@ -524,12 +519,13 @@ function sortRoles(roles: string[]): string[] {
  * so ORDER BY/LIMIT run in Postgres instead of resolving and sorting every credit in memory.
  */
 async function paginateProductionRows(
-  scopeClause: SQL,
+  game: GameSlug, scopeClause: SQL,
   opts: ProductionPageOpts<"tournament" | "target" | "date">,
 ): Promise<ProductionPage> {
+    const { productionCredits, tournaments, matches, entrants, stageContainers, stages } = gameTables(game);
   const pageSize = opts.pageSize ?? DEFAULT_PAGE_SIZE;
 
-  const creditMaps = alias(maps, "prod_credit_maps");
+  const creditMaps = alias(seriesMapTableOf(game), "prod_credit_maps");
   const matchContainers = alias(stageContainers, "prod_match_containers");
   const matchStages = alias(stages, "prod_match_stages");
   const matchTournaments = alias(tournaments, "prod_match_tournaments");
@@ -607,7 +603,7 @@ async function paginateProductionRows(
   // Only an out of range page needs a second query.
   const rows = page === requestedPage ? requestedRows : await selectPage(page);
 
-  const items = await resolveProductionEntries(rows);
+  const items = await resolveProductionEntries(game, rows);
   return {
     items,
     total,
@@ -621,11 +617,12 @@ export type OrganizationProductionSort = "tournament" | "date";
 
 /** Org page's "Production" tab — every production credit given on this organization's behalf, across all its tournaments. */
 export async function getOrganizationProductionsPage(
-  organizationId: number,
+  game: GameSlug, organizationId: number,
   opts: ProductionPageOpts<OrganizationProductionSort>,
 ): Promise<ProductionPage> {
+  const { productionCredits } = gameTables(game);
   return paginateProductionRows(
-    eq(productionCredits.organizationId, organizationId),
+    game, eq(productionCredits.organizationId, organizationId),
     opts,
   );
 }
@@ -634,9 +631,11 @@ export type TournamentProductionSort = "target" | "date";
 
 /** Tournament page's "Production" tab — production credits scoped to this tournament, whether given at the tournament level, on one of its matches or on one of their maps. */
 export async function getTournamentProductionsPage(
-  tournamentId: number,
+  game: GameSlug, tournamentId: number,
   opts: ProductionPageOpts<TournamentProductionSort>,
 ): Promise<ProductionPage> {
+    const { productionCredits, matches, stageContainers, stages } = gameTables(game);
+  const mapTable = seriesMapTableOf(game);
   const tournamentMatchIds = db
     .select({ id: matches.id })
     .from(matches)
@@ -645,12 +644,12 @@ export async function getTournamentProductionsPage(
     .where(eq(stages.tournamentId, tournamentId));
 
   return paginateProductionRows(
-    or(
+    game, or(
       eq(productionCredits.tournamentId, tournamentId),
       inArray(productionCredits.matchId, tournamentMatchIds),
       inArray(
         productionCredits.mapId,
-        db.select({ id: maps.id }).from(maps).where(inArray(maps.matchId, tournamentMatchIds)),
+        db.select({ id: mapTable.id }).from(mapTable).where(inArray(mapTable.matchId, tournamentMatchIds)),
       ),
     )!,
     opts,
@@ -661,8 +660,9 @@ export type PersonProductionSort = "tournament" | "date";
 
 /** People page's "Production" tab — every production this person has been credited on, across every organization. */
 export async function getPersonProductionsPage(
-  personId: number,
+  game: GameSlug, personId: number,
   opts: ProductionPageOpts<PersonProductionSort>,
 ): Promise<ProductionPage> {
-  return paginateProductionRows(eq(productionCredits.personId, personId), opts);
+  const { productionCredits } = gameTables(game);
+  return paginateProductionRows(game, eq(productionCredits.personId, personId), opts);
 }

@@ -21,6 +21,7 @@ import { PointTypeDialog } from "@/components/admin/point-type-dialog";
 import { deletePointType } from "@/actions/admin-point-types";
 import { cn } from "@/lib/utils";
 import type { AdminPointTypeRow, SortDirection } from "@/lib/admin-point-types";
+import { useGame } from "@/lib/use-game";
 
 type PointTypeValidity = "active" | "upcoming" | "expired";
 
@@ -49,6 +50,7 @@ export function PointTypesPanel({
   sortable: { pathname: string; sort: string; direction: SortDirection; query: Record<string, string> };
   pagination: { page: number; totalPages: number; total: number };
 }) {
+  const game = useGame();
   const t = useTranslations("admin.pointTypes");
   const locale = useLocale();
   const router = useRouter();
@@ -65,7 +67,7 @@ export function PointTypesPanel({
   function handleDelete(pointType: AdminPointTypeRow) {
     if (!window.confirm(t("deleteConfirm", { name: pointType.name }))) return;
     startTransition(async () => {
-      const result = await deletePointType(pointType.id);
+      const result = await deletePointType(game, pointType.id);
       if (!result.ok) {
         toast.error(t("error.notFound"));
         return;

@@ -9,7 +9,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT } from "@/lib/default-logos";
+import { defaultTeamLogos } from "@/lib/default-logos";
+import { useGame } from "@/lib/use-game";
 import { winTypeIconUrl } from "@/lib/valorant-agents";
 import type { MatchRound, MatchSide } from "@/lib/match-page-data";
 import { ThemedLogoImage } from "@/components/site/themed-logo-image";
@@ -61,15 +62,17 @@ function RoundCell({ round, side, entrantId, numberBelow }: { round: MatchRound;
 
 export function MatchRoundHistory({ rounds, a, b }: { rounds: MatchRound[]; a: MatchSide; b: MatchSide }) {
   const t = useTranslations("matchPage");
+  const game = useGame();
   if (rounds.length === 0) return null;
   const chunks = chunk(rounds, MAX_PER_LINE);
   const wrapped = chunks.length > 1;
   const teamAName = a.entrantId != null ? a.displayName : t("teamTbd");
   const teamBName = b.entrantId != null ? b.displayName : t("teamTbd");
-  const logoA = a.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoALight = a.logoUrlLight ?? a.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
-  const logoB = b.logoUrl ?? DEFAULT_TEAM_LOGO_DARK;
-  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? DEFAULT_TEAM_LOGO_LIGHT;
+  const defaults = defaultTeamLogos(game);
+  const logoA = a.logoUrl ?? defaults.dark;
+  const logoALight = a.logoUrlLight ?? a.logoUrl ?? defaults.light;
+  const logoB = b.logoUrl ?? defaults.dark;
+  const logoBLight = b.logoUrlLight ?? b.logoUrl ?? defaults.light;
 
   return (
     <section className="w-full overflow-hidden rounded-2xl border border-neutral-800 shadow-2xl" style={{ background: "var(--gcs-surface-2)" }} aria-label={t("roundHistory")}>

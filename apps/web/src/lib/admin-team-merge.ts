@@ -11,7 +11,8 @@
 
 import { and, desc, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, tournaments, newsRelations, news } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type MergeTournamentEntry = {
   entrantId: number;
@@ -22,7 +23,8 @@ export type MergeTournamentEntry = {
 };
 
 /** `entrants` rows this team is (or was) registered under — the merge unit for "tournament participation" (see mergeTeams' mergeTournaments). */
-export async function getMergeableTeamTournaments(teamId: number): Promise<MergeTournamentEntry[]> {
+export async function getMergeableTeamTournaments(game: GameSlug, teamId: number): Promise<MergeTournamentEntry[]> {
+  const { entrants, tournaments } = gameTables(game);
   const rows = await db
     .select({
       entrantId: entrants.id,
@@ -42,7 +44,8 @@ export async function getMergeableTeamTournaments(teamId: number): Promise<Merge
 export type MergeNewsEntry = { newsId: number; title: string };
 
 /** `news_relations` rows tagging this team — merge unit keyed by `newsId` (mirrors V1's TeamMergeService::mergeNews, which moves by news id, not the pivot row id). */
-export async function getMergeableTeamNews(teamId: number): Promise<MergeNewsEntry[]> {
+export async function getMergeableTeamNews(game: GameSlug, teamId: number): Promise<MergeNewsEntry[]> {
+  const { newsRelations, news } = gameTables(game);
   const rows = await db
     .select({ newsId: news.id, title: news.title })
     .from(newsRelations)

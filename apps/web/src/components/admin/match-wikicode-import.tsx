@@ -18,29 +18,43 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2Icon } from "lucide-react";
 import { LiquipediaImportFetchResults } from "@/components/admin/liquipedia-import-fetch-results";
-import { importMatchWikicode, type ImportMapFetch, type LiquipediaConflictResolution, type LiquipediaImportConflict } from "@/actions/admin-matches";
+import { importMatchWikicode, type ImportMapFetch } from "@/actions/admin-matches";
+import { importLeagueMatchWikicode } from "@/actions/admin-lol-games";
+import { LeagueWikicodeImportResults, useLeagueImportErrorText, type LeagueWikicodeImportDone } from "@/components/admin/league-wikicode-import-results";
+import { gameHasSeriesGames } from "@gc-stats/db/game";
+import type { LiquipediaConflictResolution, LiquipediaImportConflict, LiquipediaLinkResolutions } from "@/lib/liquipedia-team-links";
 import { cn } from "@/lib/utils";
+import { useGame } from "@/lib/use-game";
 
-type Resolutions = Partial<Record<"1" | "2", LiquipediaConflictResolution>>;
-
-/** Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild the veto and sync the maps from it. */
+/**
+ * Port of V1's "Import from wikicode" card (admin/matches/edit.blade.php) — paste a Liquipedia {{MapVeto}}/{{mapN}} block, rebuild the veto and sync the maps from it.
+ * For League the paste is a `{{Match}}` and the import fills the games and drafts that are still empty.
+ */
 export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tournamentId: number; matchId: number; canManage: boolean }) {
+  const game = useGame();
+  const isLeague = gameHasSeriesGames(game);
   const t = useTranslations("admin.tournaments.matches.wikicode");
+  const tLeague = useTranslations("admin.tournaments.matches.wikicode.league");
+  // The League texts for the card itself have the same keys as the Valorant ones.
+  const copy = isLeague ? tLeague : t;
+  const leagueErrorText = useLeagueImportErrorText();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [wikicode, setWikicode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [conflicts, setConflicts] = useState<LiquipediaImportConflict[] | null>(null);
-  const [resolutions, setResolutions] = useState<Resolutions>({});
+  const [resolutions, setResolutions] = useState<LiquipediaLinkResolutions>({});
   const [fetches, setFetches] = useState<ImportMapFetch[] | null>(null);
+  const [leagueResult, setLeagueResult] = useState<LeagueWikicodeImportDone | null>(null);
 
   if (!canManage) return null;
 
-  function runImport(chosen: Resolutions) {
+  function runImport(chosen: LiquipediaLinkResolutions) {
     setError(null);
     setFetches(null);
+    setLeagueResult(null);
     startTransition(async () => {
-      const result = await importMatchWikicode(matchId, wikicode, chosen);
+      const result = isLeague ? await importLeagueMatchWikicode(game, matchId, wikicode, chosen) : await importMatchWikicode(game, matchId, wikicode, chosen);
       if (!result.ok) {
         if (result.error === "liquipediaConflict" && "conflicts" in result) {
           setResolutions({});
@@ -48,19 +62,21 @@ export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tour
           return;
         }
         setConflicts(null);
-        setError(t(`error.${result.error}`));
+        // The League errors carry details, the Valorant ones are plain keys.
+        setError(isLeague ? leagueErrorText(result as Parameters<typeof leagueErrorText>[0]) : t(`error.${result.error}` as "error.required"));
         return;
       }
       setConflicts(null);
       setWikicode("");
-      setFetches(result.fetches);
+      if ("fetches" in result) setFetches(result.fetches);
+      else setLeagueResult(result);
       router.refresh();
-      toast.success(result.linkedNames > 0 ? t("importSuccessLinked", { count: result.linkedNames }) : t("importSuccess"));
+      toast.success(result.linkedNames > 0 ? t("importSuccessLinked", { count: result.linkedNames }) : copy("importSuccess"));
     });
   }
 
   function handleImport() {
-    if (!window.confirm(t("importConfirm"))) return;
+    if (!window.confirm(copy("importConfirm"))) return;
     runImport({});
   }
 
@@ -71,13 +87,13 @@ export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tour
       <CardHeader>
         <CardTitle className="text-base">{t("title")}</CardTitle>
         <CardDescription>
-          {t("description")} {t("liquipediaHint")}
+          {copy("description")} {copy("liquipediaHint")}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <Textarea
           rows={6}
-          placeholder={t("placeholder")}
+          placeholder={copy("placeholder")}
           value={wikicode}
           onChange={(e) => setWikicode(e.target.value)}
           className="font-mono text-xs"
@@ -95,6 +111,7 @@ export function MatchWikicodeImport({ tournamentId, matchId, canManage }: { tour
           {isPending && <Loader2Icon className="size-4 animate-spin text-muted-foreground" />}
         </div>
         {fetches && <LiquipediaImportFetchResults tournamentId={tournamentId} matchId={matchId} fetches={fetches} />}
+        {leagueResult && <LeagueWikicodeImportResults result={leagueResult} />}
       </CardContent>
 
       <Dialog open={conflicts !== null} onOpenChange={(open) => !open && !isPending && setConflicts(null)}>

@@ -17,8 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { createPickemGroup } from "@/actions/pickem";
+import { useGame } from "@/lib/use-game";
 
 export function CreateGroupDialog({ tournamentId, open, onOpenChange }: { tournamentId: number; open: boolean; onOpenChange: (open: boolean) => void }) {
+  const game = useGame();
   const t = useTranslations("pickemPage.groups");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -28,7 +30,7 @@ export function CreateGroupDialog({ tournamentId, open, onOpenChange }: { tourna
   function handleSubmit() {
     setError(null);
     startTransition(async () => {
-      const result = await createPickemGroup(tournamentId, name);
+      const result = await createPickemGroup(game, tournamentId, name);
       if (!result.ok) {
         setError(t(`createError.${result.error}`));
         return;

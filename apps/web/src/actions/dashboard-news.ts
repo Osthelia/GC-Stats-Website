@@ -14,7 +14,7 @@
 
 import { eq, ne, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { news, newsMessages, newsRelations, newsImages, newsAuthors, users, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { newsAuthors, users, ORGANIZATION_PERMISSIONS, gameTables } from "@gc-stats/db";
 import { storeNewsImage, deleteNewsImage, newsImageUrl, validateImageBuffer } from "@gc-stats/storage";
 import { requireDashboardOrgActor, requireAuthorActor, hasOrgPermission, type DashboardOrgMembership } from "@/lib/dashboard-rbac";
 import { getOrCreateAuthorProfileId, isNewsLanguageActive, scopeCondition, type DashboardNewsScope } from "@/lib/dashboard-news-data";
@@ -26,6 +26,7 @@ import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tourn
 import { searchNewsAuthorsQuery, type NewsAuthorPickerResult } from "@/lib/news-author-search";
 import { slugify } from "@/lib/entity-id";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Resolves + gates the acting scope for one article action.
@@ -68,7 +69,8 @@ async function resolveArticleAuthorId(organizationId: number | null, requestedAu
   return { authorId: row.id, invalid: false };
 }
 
-async function insertNewsMessage(newsId: number, userId: string, type: string, body: string): Promise<void> {
+async function insertNewsMessage(game: GameSlug, newsId: number, userId: string, type: string, body: string): Promise<void> {
+  const { newsMessages } = gameTables(game);
   await db.insert(newsMessages).values({ newsId, userId, type, body });
 }
 
@@ -100,7 +102,8 @@ export type NewsArticleInput = {
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-async function validateArticle(input: NewsArticleInput, excludeId?: number): Promise<{ fieldErrors: NewsArticleFieldErrors; slug: string; content: string }> {
+async function validateArticle(game: GameSlug, input: NewsArticleInput, excludeId?: number): Promise<{ fieldErrors: NewsArticleFieldErrors; slug: string; content: string }> {
+  const { news } = gameTables(game);
   const fieldErrors: NewsArticleFieldErrors = {};
 
   const title = input.title.trim();
@@ -136,10 +139,11 @@ async function validateArticle(input: NewsArticleInput, excludeId?: number): Pro
   return { fieldErrors, slug, content };
 }
 
-export async function createDashboardNewsArticle(organizationId: number | null, input: NewsArticleInput): Promise<NewsArticleResult> {
+export async function createDashboardNewsArticle(game: GameSlug, organizationId: number | null, input: NewsArticleInput): Promise<NewsArticleResult> {
+  const { news } = gameTables(game);
   const { userId, authorId: selfAuthorId } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsEdit);
 
-  const { fieldErrors, slug, content } = await validateArticle(input);
+  const { fieldErrors, slug, content } = await validateArticle(game, input);
   const { authorId, invalid: authorInvalid } = await resolveArticleAuthorId(organizationId, input.authorId, selfAuthorId);
   if (authorInvalid) fieldErrors.authorId = "invalid";
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -163,10 +167,11 @@ export async function createDashboardNewsArticle(organizationId: number | null, 
   return { ok: true, id: created.id };
 }
 
-export async function updateDashboardNewsArticle(organizationId: number | null, newsId: number, input: NewsArticleInput): Promise<NewsArticleResult> {
+export async function updateDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number, input: NewsArticleInput): Promise<NewsArticleResult> {
+  const { news } = gameTables(game);
   const { userId, authorId: selfAuthorId, scope, membership } = await resolveScope(organizationId, [ORGANIZATION_PERMISSIONS.newsEdit, ORGANIZATION_PERMISSIONS.newsEditPublished]);
 
-  const [existing] = await db.select().from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select().from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, fieldErrors: { title: "notFound" } };
   if (isUnderReview(existing.status)) return { ok: false, fieldErrors: {}, error: "locked" };
   if (existing.status === "published") {
@@ -177,7 +182,7 @@ export async function updateDashboardNewsArticle(organizationId: number | null, 
     return { ok: false, fieldErrors: {}, error: "locked" };
   }
 
-  const { fieldErrors, slug, content } = await validateArticle(input, newsId);
+  const { fieldErrors, slug, content } = await validateArticle(game, input, newsId);
   const { authorId, invalid: authorInvalid } = await resolveArticleAuthorId(organizationId, input.authorId, selfAuthorId);
   if (authorInvalid) fieldErrors.authorId = "invalid";
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
@@ -208,10 +213,11 @@ export type SimpleNewsResult = { ok: true } | { ok: false; error: "notFound" | "
  * 'approved' (the PR-style gate); the individual /dashboard/author space has
  * no review step, so any status may be published directly, same as before.
  */
-export async function publishDashboardNewsArticle(organizationId: number | null, newsId: number, scheduledAt?: string | null): Promise<SimpleNewsResult> {
+export async function publishDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number, scheduledAt?: string | null): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsPublish);
 
-  const [existing] = await db.select({ id: news.id, status: news.status, publishedAt: news.publishedAt }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status, publishedAt: news.publishedAt }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (organizationId !== null && existing.status !== "approved") return { ok: false, error: "invalidState" };
 
@@ -224,52 +230,55 @@ export async function publishDashboardNewsArticle(organizationId: number | null,
 
   await db.update(news).set({ status: "published", publishedAt: publishAt, updatedAt: new Date() }).where(eq(news.id, newsId));
   const scheduled = publishAt.getTime() > Date.now();
-  await insertNewsMessage(newsId, userId, scheduled ? "scheduled" : "published", publishAt.toISOString());
+  await insertNewsMessage(game, newsId, userId, scheduled ? "scheduled" : "published", publishAt.toISOString());
   await logNews({ userId, organizationId, newsId, event: "updated", description: `${scheduled ? "Scheduled" : "Published"} news article #${newsId}`, section: "status", changes: { status: { old: existing.status, new: "published" }, publishedAt: { old: existing.publishedAt?.toISOString() ?? null, new: publishAt.toISOString() } } });
 
   return { ok: true };
 }
 
 /** Undoes a publish (immediate or scheduled) — back to draft with publishedAt cleared, so a wrong schedule/live mistake can be corrected without going through archive. Reopens content editing (see isContentLocked). */
-export async function unpublishDashboardNewsArticle(organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+export async function unpublishDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsPublish);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status !== "published") return { ok: false, error: "invalidState" };
 
   await db.update(news).set({ status: "draft", publishedAt: null, updatedAt: new Date() }).where(eq(news.id, newsId));
-  await insertNewsMessage(newsId, userId, "unpublished", "");
+  await insertNewsMessage(game, newsId, userId, "unpublished", "");
   await logNews({ userId, organizationId, newsId, event: "updated", description: `Unpublished news article #${newsId}`, section: "status", changes: { status: { old: "published", new: "draft" } } });
 
   return { ok: true };
 }
 
 /** Writer submits a draft (or a draft sent back with changes requested) for review — org scope only, see schema/content.ts's status doc comment. */
-export async function submitDashboardNewsForReview(organizationId: number, newsId: number): Promise<SimpleNewsResult> {
+export async function submitDashboardNewsForReview(game: GameSlug, organizationId: number, newsId: number): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsEdit);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status !== "draft" && existing.status !== "changes_requested") return { ok: false, error: "invalidState" };
 
   await db.update(news).set({ status: "in_review", submittedBy: userId, submittedAt: new Date(), updatedAt: new Date() }).where(eq(news.id, newsId));
-  await insertNewsMessage(newsId, userId, "submitted", "");
+  await insertNewsMessage(game, newsId, userId, "submitted", "");
   await logNews({ userId, organizationId, newsId, event: "updated", description: `Submitted news article #${newsId} for review`, section: "status", changes: { status: { old: existing.status, new: "in_review" } } });
 
   return { ok: true };
 }
 
 /** Reviewer approves — the article can now be published (immediately or scheduled) by a newsPublish holder, a separate grant from review. */
-export async function approveDashboardNewsArticle(organizationId: number, newsId: number): Promise<SimpleNewsResult> {
+export async function approveDashboardNewsArticle(game: GameSlug, organizationId: number, newsId: number): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsReview);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status !== "in_review") return { ok: false, error: "invalidState" };
 
   await db.update(news).set({ status: "approved", reviewedBy: userId, reviewedAt: new Date(), updatedAt: new Date() }).where(eq(news.id, newsId));
-  await insertNewsMessage(newsId, userId, "approved", "");
+  await insertNewsMessage(game, newsId, userId, "approved", "");
   await logNews({ userId, organizationId, newsId, event: "updated", description: `Approved news article #${newsId}`, section: "status", changes: { status: { old: "in_review", new: "approved" } } });
 
   return { ok: true };
@@ -278,10 +287,11 @@ export async function approveDashboardNewsArticle(organizationId: number, newsId
 export type RequestNewsChangesResult = { ok: true } | { ok: false; error: "notFound" | "invalidState" | "empty" };
 
 /** Reviewer sends the article back to the writer — mirrors a PR "request changes" review, a note is required (mirrors GitHub, which won't let you request changes with no comment). */
-export async function requestDashboardNewsChanges(organizationId: number, newsId: number, note: string): Promise<RequestNewsChangesResult> {
+export async function requestDashboardNewsChanges(game: GameSlug, organizationId: number, newsId: number, note: string): Promise<RequestNewsChangesResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsReview);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status !== "in_review") return { ok: false, error: "invalidState" };
 
@@ -289,7 +299,7 @@ export async function requestDashboardNewsChanges(organizationId: number, newsId
   if (!trimmed) return { ok: false, error: "empty" };
 
   await db.update(news).set({ status: "changes_requested", reviewedBy: userId, reviewedAt: new Date(), updatedAt: new Date() }).where(eq(news.id, newsId));
-  await insertNewsMessage(newsId, userId, "changes_requested", trimmed);
+  await insertNewsMessage(game, newsId, userId, "changes_requested", trimmed);
   await logNews({ userId, organizationId, newsId, event: "updated", description: `Requested changes on news article #${newsId}`, section: "status", changes: { status: { old: "in_review", new: "changes_requested" } } });
 
   return { ok: true };
@@ -298,7 +308,8 @@ export async function requestDashboardNewsChanges(organizationId: number, newsId
 export type PostNewsMessageResult = { ok: true } | { ok: false; error: "notFound" | "empty" | "tooLong" };
 
 /** The private conversation — visible/postable by whoever can reach this article's editor (a writer via newsEdit, a reviewer via newsReview, or a publisher via newsPublish/newsEditPublished alone, see resolveScope's array form). */
-export async function postDashboardNewsMessage(organizationId: number | null, newsId: number, body: string): Promise<PostNewsMessageResult> {
+export async function postDashboardNewsMessage(game: GameSlug, organizationId: number | null, newsId: number, body: string): Promise<PostNewsMessageResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, [
     ORGANIZATION_PERMISSIONS.newsEdit,
     ORGANIZATION_PERMISSIONS.newsEditPublished,
@@ -306,22 +317,23 @@ export async function postDashboardNewsMessage(organizationId: number | null, ne
     ORGANIZATION_PERMISSIONS.newsPublish,
   ]);
 
-  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const trimmed = body.trim();
   if (!trimmed) return { ok: false, error: "empty" };
   if (trimmed.length > 4000) return { ok: false, error: "tooLong" };
 
-  await insertNewsMessage(newsId, userId, "comment", trimmed);
+  await insertNewsMessage(game, newsId, userId, "comment", trimmed);
   return { ok: true };
 }
 
 /** Soft-delete alternative to destroy — same permission as delete, mirrors V1. */
-export async function archiveDashboardNewsArticle(organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+export async function archiveDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsDelete);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(news).set({ status: "archived", updatedAt: new Date() }).where(eq(news.id, newsId));
@@ -330,10 +342,11 @@ export async function archiveDashboardNewsArticle(organizationId: number | null,
 }
 
 /** Reverses archiveDashboardNewsArticle — back to draft, so an article archived by mistake can be reworked and republished instead of being a one way trip. */
-export async function unarchiveDashboardNewsArticle(organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+export async function unarchiveDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsDelete);
 
-  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, status: news.status }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
   if (existing.status !== "archived") return { ok: false, error: "invalidState" };
 
@@ -342,10 +355,11 @@ export async function unarchiveDashboardNewsArticle(organizationId: number | nul
   return { ok: true };
 }
 
-export async function deleteDashboardNewsArticle(organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+export async function deleteDashboardNewsArticle(game: GameSlug, organizationId: number | null, newsId: number): Promise<SimpleNewsResult> {
+  const { news, newsImages } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsDelete);
 
-  const [existing] = await db.select({ id: news.id, title: news.title }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, title: news.title }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const images = await db.select({ id: newsImages.id }).from(newsImages).where(eq(newsImages.newsId, newsId));
@@ -361,9 +375,10 @@ export async function deleteDashboardNewsArticle(organizationId: number | null, 
  * has no news section (SUIVI.MD, 2026-09-13 session) — tied to the same
  * trust level as publishing rather than inventing a separate global gate.
  */
-export async function toggleDashboardNewsFeature(organizationId: number | null, newsId: number, value: boolean): Promise<SimpleNewsResult> {
+export async function toggleDashboardNewsFeature(game: GameSlug, organizationId: number | null, newsId: number, value: boolean): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsPublish);
-  const [existing] = await db.select({ id: news.id, isFeatured: news.isFeatured }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, isFeatured: news.isFeatured }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(news).set({ isFeatured: value, updatedAt: new Date() }).where(eq(news.id, newsId));
@@ -371,9 +386,10 @@ export async function toggleDashboardNewsFeature(organizationId: number | null, 
   return { ok: true };
 }
 
-export async function toggleDashboardNewsShowOnHome(organizationId: number | null, newsId: number, value: boolean): Promise<SimpleNewsResult> {
+export async function toggleDashboardNewsShowOnHome(game: GameSlug, organizationId: number | null, newsId: number, value: boolean): Promise<SimpleNewsResult> {
+  const { news } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, ORGANIZATION_PERMISSIONS.newsPublish);
-  const [existing] = await db.select({ id: news.id, showOnHome: news.showOnHome }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, showOnHome: news.showOnHome }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.update(news).set({ showOnHome: value, updatedAt: new Date() }).where(eq(news.id, newsId));
@@ -383,9 +399,10 @@ export async function toggleDashboardNewsShowOnHome(organizationId: number | nul
 
 export type SyncNewsRelationsInput = { teamIds: number[]; personIds: number[]; tournamentIds: number[] };
 
-export async function syncDashboardNewsRelations(organizationId: number | null, newsId: number, input: SyncNewsRelationsInput): Promise<SimpleNewsResult> {
+export async function syncDashboardNewsRelations(game: GameSlug, organizationId: number | null, newsId: number, input: SyncNewsRelationsInput): Promise<SimpleNewsResult> {
+  const { news, newsRelations } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, [ORGANIZATION_PERMISSIONS.newsEdit, ORGANIZATION_PERMISSIONS.newsEditPublished]);
-  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   await db.delete(newsRelations).where(eq(newsRelations.newsId, newsId));
@@ -405,9 +422,10 @@ export type UploadNewsImageResult = { ok: true; id: string; url: string } | { ok
 
 const MAX_NEWS_IMAGE_BYTES = 10 * 1024 * 1024;
 
-export async function uploadDashboardNewsImage(organizationId: number | null, newsId: number, formData: FormData): Promise<UploadNewsImageResult> {
+export async function uploadDashboardNewsImage(game: GameSlug, organizationId: number | null, newsId: number, formData: FormData): Promise<UploadNewsImageResult> {
+  const { news, newsImages } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, [ORGANIZATION_PERMISSIONS.newsEdit, ORGANIZATION_PERMISSIONS.newsEditPublished]);
-  const [existing] = await db.select({ id: news.id, authorId: news.authorId }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id, authorId: news.authorId }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const file = formData.get("file");
@@ -425,9 +443,10 @@ export async function uploadDashboardNewsImage(organizationId: number | null, ne
   return { ok: true, id: stored.id, url: stored.url };
 }
 
-export async function setDashboardNewsCover(organizationId: number | null, newsId: number, newsImageId: string): Promise<SimpleNewsResult> {
+export async function setDashboardNewsCover(game: GameSlug, organizationId: number | null, newsId: number, newsImageId: string): Promise<SimpleNewsResult> {
+  const { news, newsImages } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, [ORGANIZATION_PERMISSIONS.newsEdit, ORGANIZATION_PERMISSIONS.newsEditPublished]);
-  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   // Only one of THIS article's own uploaded images can become its cover —
@@ -442,9 +461,10 @@ export async function setDashboardNewsCover(organizationId: number | null, newsI
   return { ok: true };
 }
 
-export async function deleteDashboardNewsImage(organizationId: number | null, newsId: number, newsImageId: string): Promise<SimpleNewsResult> {
+export async function deleteDashboardNewsImage(game: GameSlug, organizationId: number | null, newsId: number, newsImageId: string): Promise<SimpleNewsResult> {
+  const { news, newsImages } = gameTables(game);
   const { userId, scope } = await resolveScope(organizationId, [ORGANIZATION_PERMISSIONS.newsEdit, ORGANIZATION_PERMISSIONS.newsEditPublished]);
-  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+  const [existing] = await db.select({ id: news.id }).from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
   const [image] = await db.select({ id: newsImages.id }).from(newsImages).where(and(eq(newsImages.id, newsImageId), eq(newsImages.newsId, newsId))).limit(1);
@@ -466,19 +486,19 @@ async function requireNewsEditAccess(organizationId: number | null): Promise<voi
   await requireAuthorActor();
 }
 
-export async function searchDashboardTeams(organizationId: number | null, query: string): Promise<TeamPickerResult[]> {
+export async function searchDashboardTeams(game: GameSlug, organizationId: number | null, query: string): Promise<TeamPickerResult[]> {
   await requireNewsEditAccess(organizationId);
-  return searchTeamsQuery(query);
+  return searchTeamsQuery(game, query);
 }
 
-export async function searchDashboardPeople(organizationId: number | null, query: string): Promise<PersonPickerResult[]> {
+export async function searchDashboardPeople(game: GameSlug, organizationId: number | null, query: string): Promise<PersonPickerResult[]> {
   await requireNewsEditAccess(organizationId);
-  return searchPeopleQuery(query);
+  return searchPeopleQuery(game, query);
 }
 
-export async function searchDashboardTournaments(organizationId: number | null, query: string): Promise<TournamentPickerResult[]> {
+export async function searchDashboardTournaments(game: GameSlug, organizationId: number | null, query: string): Promise<TournamentPickerResult[]> {
   await requireNewsEditAccess(organizationId);
-  return searchTournamentsQuery(query);
+  return searchTournamentsQuery(game, query);
 }
 
 export async function searchDashboardNewsAuthors(organizationId: number | null, query: string): Promise<NewsAuthorPickerResult[]> {

@@ -33,8 +33,9 @@ import { TeamNameHistorySection } from "@/components/change-request/team-name-hi
 import type { AdminLogoEntry } from "@/lib/admin-logos";
 import type { TeamNameHistoryEntry } from "@/lib/team-page-data";
 import type { UserLinkStatus } from "@/lib/user-link-request";
+import { useGame } from "@/lib/use-game";
 
-export type SuggestEditUserLink = { state: UserLinkStatus["state"]; previousHandle: string | null };
+export type SuggestEditUserLink = { state: UserLinkStatus["state"] };
 
 const inputClass =
   "w-full rounded-[9px] border border-neutral-700 bg-[var(--gcs-surface-2)] px-3.5 py-2.5 text-[14.5px] text-neutral-50 outline-none transition-colors focus:border-[#e4ae22]/60 aria-[invalid=true]:border-[#e08585]";
@@ -76,6 +77,7 @@ export function SuggestEditForm({
   /** Discord account linked to the viewer's own user account, offered as a one click fill for the Discord field. */
   linkedDiscordId?: string | null;
 }) {
+  const game = useGame();
   const t = useTranslations("suggestEdit");
   const fields = fieldsForSubject(subjectType);
   const textLikeFields = fields.filter((f) => f.type === "text" || f.type === "textarea" || f.type === "url" || f.type === "discordId" || f.type === "country" || f.type === "select");
@@ -134,7 +136,7 @@ export function SuggestEditForm({
       if (subjectType === "person" && logoMeta.consent) formData.set("photoConsent", logoMeta.consent);
     }
 
-    const result = await submitChangeRequest(subjectType, subjectId, formData);
+    const result = await submitChangeRequest(game, subjectType, subjectId, formData);
     setPending(false);
 
     if (!result.ok) {
@@ -344,9 +346,6 @@ export function SuggestEditForm({
                 {t("userLink.checkbox", { name: entityName })}
               </label>
               <p className="text-[12.5px] text-neutral-500">{t("userLink.hint")}</p>
-              {linkUser && userLink.previousHandle && (
-                <p className="text-[12.5px] text-[#e4ae22]">{t("userLink.replaces", { previous: userLink.previousHandle })}</p>
-              )}
             </>
           ) : (
             <p className="text-[13.5px] text-neutral-400">{t(`userLink.state.${userLink.state}`)}</p>

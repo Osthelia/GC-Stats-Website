@@ -18,8 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "@/i18n/navigation";
 import { setTournamentVetoEnabled } from "@/actions/veto-management";
+import { useGame } from "@/lib/use-game";
 
 export function VetoEnableCard({ tournamentId, enabled, canManage }: { tournamentId: number; enabled: boolean; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.vetoManagement");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -27,7 +29,7 @@ export function VetoEnableCard({ tournamentId, enabled, canManage }: { tournamen
 
   function toggle() {
     startTransition(async () => {
-      const result = await setTournamentVetoEnabled(tournamentId, !current);
+      const result = await setTournamentVetoEnabled(game, tournamentId, !current);
       if (!result.ok) {
         toast.error(t("error.notFound"));
         return;

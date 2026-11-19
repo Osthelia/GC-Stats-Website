@@ -33,8 +33,8 @@ export type MatchWikicodeInput = {
 
 const INDENT = "    ";
 
-/** `|twitch=A|twitch2=B`, or null when there is no channel. */
-function buildChannels(key: "twitch" | "youtube", names: string[]): string | null {
+/** `|twitch=A|twitch2=B`, or null when there is no channel. Shared with the League `{{Match}}`. */
+export function buildChannels(key: "twitch" | "youtube", names: string[]): string | null {
   if (names.length === 0) return null;
   return names.map((name, index) => `${key}${index === 0 ? "" : index + 1}=${name}`).join("|");
 }

@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { EntityMultiPicker, type EntityOption } from "@/components/dashboard/news/entity-multi-picker";
 import { searchDashboardTeams, searchDashboardPeople, searchDashboardTournaments } from "@/actions/dashboard-news";
 import { FormField } from "@/components/admin/form-field";
+import { useGame } from "@/lib/use-game";
 
 export type NewsRelationsValue = { teams: EntityOption[]; people: EntityOption[]; tournaments: EntityOption[] };
 
@@ -24,6 +25,7 @@ export function NewsRelationsPicker({
   value: NewsRelationsValue;
   onChange: (next: NewsRelationsValue) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("dashboard.news.editor");
 
   return (
@@ -32,7 +34,7 @@ export function NewsRelationsPicker({
         <EntityMultiPicker
           value={value.teams}
           onChange={(teams) => onChange({ ...value, teams })}
-          search={async (q) => (await searchDashboardTeams(organizationId, q)).map((r) => ({ id: r.id, label: r.name }))}
+          search={async (q) => (await searchDashboardTeams(game, organizationId, q)).map((r) => ({ id: r.id, label: r.name }))}
           placeholder={t("relationsSearchPlaceholder")}
           noResultsLabel={t("relationsNoResults")}
           removeLabel={t("relationsRemove")}
@@ -43,7 +45,7 @@ export function NewsRelationsPicker({
         <EntityMultiPicker
           value={value.people}
           onChange={(people) => onChange({ ...value, people })}
-          search={async (q) => (await searchDashboardPeople(organizationId, q)).map((r) => ({ id: r.id, label: r.handle }))}
+          search={async (q) => (await searchDashboardPeople(game, organizationId, q)).map((r) => ({ id: r.id, label: r.handle }))}
           placeholder={t("relationsSearchPlaceholder")}
           noResultsLabel={t("relationsNoResults")}
           removeLabel={t("relationsRemove")}
@@ -54,7 +56,7 @@ export function NewsRelationsPicker({
         <EntityMultiPicker
           value={value.tournaments}
           onChange={(tournaments) => onChange({ ...value, tournaments })}
-          search={async (q) => (await searchDashboardTournaments(organizationId, q)).map((r) => ({ id: r.id, label: r.name }))}
+          search={async (q) => (await searchDashboardTournaments(game, organizationId, q)).map((r) => ({ id: r.id, label: r.name }))}
           placeholder={t("relationsSearchPlaceholder")}
           noResultsLabel={t("relationsNoResults")}
           removeLabel={t("relationsRemove")}

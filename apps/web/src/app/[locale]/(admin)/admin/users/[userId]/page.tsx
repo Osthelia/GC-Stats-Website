@@ -13,6 +13,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "@/i18n/navigation";
 import { ApiKeysPanel } from "@/components/admin/api-keys-panel";
+import { GAMES } from "@gc-stats/db/game";
 import { UserRolesPanel } from "@/components/admin/user-roles-panel";
 import { UserAuthMethodsPanel } from "@/components/admin/user-auth-methods-panel";
 import { AuthorAccessPanel } from "@/components/admin/author-access-panel";
@@ -25,7 +26,7 @@ import { AdminPagination } from "@/components/admin/admin-pagination";
 import {
   getAdminUserProfile,
   getAdminUserAuthMethods,
-  getAdminUserLinkedPlayer,
+  getAdminUserLinkedPlayers,
   getAdminUserOrganizations,
   listUserSanctions,
   listUserReportsReceived,
@@ -76,7 +77,7 @@ export default async function AdminUserDetailPage({
     canViewConnections ? getAdminUserAuthMethods(userId) : Promise.resolve(null),
     canViewApiKeys ? listUserApiKeys(userId) : Promise.resolve([]),
     listGlobalRoles(),
-    canViewPlayer ? getAdminUserLinkedPlayer(userId) : Promise.resolve(null),
+    canViewPlayer ? getAdminUserLinkedPlayers(userId) : Promise.resolve([]),
     canViewOrganizations ? getAdminUserOrganizations(userId) : Promise.resolve([]),
     canViewSanctions ? listUserSanctions(userId) : Promise.resolve([]),
     canViewReports ? listUserReportsReceived(userId) : Promise.resolve([]),
@@ -129,8 +130,11 @@ export default async function AdminUserDetailPage({
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="flex flex-col gap-6">
           <UserRolesPanel userId={profile.id} currentRoles={profile.roles} allRoles={globalRoles} canManage={access.isSuperAdmin} />
+          {GAMES.map((roleGame) => (
+            <UserRolesPanel key={roleGame} userId={profile.id} game={roleGame} currentRoles={profile.gameRoles[roleGame]} allRoles={globalRoles} canManage={access.isSuperAdmin} />
+          ))}
           <AuthorAccessPanel userId={profile.id} isAuthor={profile.isAuthor} canManage={canManageUsers} />
-          {canViewPlayer && <LinkedPlayerPanel player={linkedPlayer} />}
+          {canViewPlayer && <LinkedPlayerPanel players={linkedPlayer} />}
           {canViewOrganizations && <UserOrganizationsPanel organizations={userOrganizations} />}
         </div>
         <div className="flex flex-col gap-6">

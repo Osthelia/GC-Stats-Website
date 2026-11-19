@@ -11,12 +11,14 @@
  */
 
 import { eq, inArray } from "drizzle-orm";
-import { stageQualifications, qualificationResults, matches, stageContainers } from "@gc-stats/db";
+import { gameTables, valorantTables } from "@gc-stats/db";
 import type { Tx } from "./repository";
 import { findGroupRankSeeds, findQualificationSeeds, fillMatchSlotFromSeed } from "./repository";
 import { computeContainerStandings } from "./standings";
+import type { GameSlug } from "@gc-stats/db/game";
 
-async function recordQualification(tx: Tx, qualificationId: number, entrantId: number, rank: number | null): Promise<void> {
+async function recordQualification(game: GameSlug, tx: Tx, qualificationId: number, entrantId: number, rank: number | null): Promise<void> {
+  const { qualificationResults } = gameTables(game);
   await tx
     .insert(qualificationResults)
     .values({ qualificationId, entrantId, rank })
@@ -31,11 +33,12 @@ async function recordQualification(tx: Tx, qualificationId: number, entrantId: n
  * (containerId, rank) pair — the group-shaped counterpart to
  * `resolveMatchInGraph`'s bracket-edge propagation.
  */
-export async function resolveContainerRankQualifications(tx: Tx, container: typeof stageContainers.$inferSelect): Promise<void> {
+export async function resolveContainerRankQualifications(game: GameSlug, tx: Tx, container: typeof valorantTables.stageContainers.$inferSelect): Promise<void> {
+  const { stageQualifications, stageContainers } = gameTables(game);
   const rules = await tx.select().from(stageQualifications).where(eq(stageQualifications.sourceContainerId, container.id));
   if (rules.length === 0) return;
 
-  const standings = await computeContainerStandings(tx, container.id, container.config);
+  const standings = await computeContainerStandings(game, tx, container.id, container.config);
 
   for (const rule of rules) {
     const from = rule.rankFrom ?? 1;
@@ -45,12 +48,12 @@ export async function resolveContainerRankQualifications(tx: Tx, container: type
       if (!entry) continue;
       const entrantId = Number(entry.id);
 
-      await recordQualification(tx, rule.id, entrantId, rank);
+      await recordQualification(game, tx, rule.id, entrantId, rank);
 
       if (rule.destinationType === "container") {
-        const seeds = await findGroupRankSeeds(tx, container.id, rank);
+        const seeds = await findGroupRankSeeds(game, tx, container.id, rank);
         for (const seed of seeds) {
-          await fillMatchSlotFromSeed(tx, seed.matchId, seed.slot, entrantId);
+          await fillMatchSlotFromSeed(game, tx, seed.matchId, seed.slot, entrantId);
         }
       }
     }
@@ -62,17 +65,19 @@ export async function resolveContainerRankQualifications(tx: Tx, container: type
  * outcome (e.g. "loser of the 3rd place decider"). Runs as soon as the
  * match completes, the outcome doesn't depend on the rest of its container.
  */
-export async function resolveMatchQualifications(tx: Tx, matchId: number): Promise<void> {
-  await resolveMatchOutcomeRules(tx, [matchId]);
+export async function resolveMatchQualifications(game: GameSlug, tx: Tx, matchId: number): Promise<void> {
+  await resolveMatchOutcomeRules(game, tx, [matchId]);
 }
 
 /** Same as `resolveMatchQualifications`, for every completed match of a container. */
-export async function resolveContainerMatchQualifications(tx: Tx, containerId: number): Promise<void> {
+export async function resolveContainerMatchQualifications(game: GameSlug, tx: Tx, containerId: number): Promise<void> {
+  const { matches } = gameTables(game);
   const containerMatches = await tx.select({ id: matches.id }).from(matches).where(eq(matches.containerId, containerId));
-  await resolveMatchOutcomeRules(tx, containerMatches.map((m) => m.id));
+  await resolveMatchOutcomeRules(game, tx, containerMatches.map((m) => m.id));
 }
 
-async function resolveMatchOutcomeRules(tx: Tx, matchIds: number[]): Promise<void> {
+async function resolveMatchOutcomeRules(game: GameSlug, tx: Tx, matchIds: number[]): Promise<void> {
+  const { stageQualifications, matches } = gameTables(game);
   if (matchIds.length === 0) return;
 
   const rules = await tx.select().from(stageQualifications).where(inArray(stageQualifications.sourceMatchId, matchIds));
@@ -88,12 +93,12 @@ async function resolveMatchOutcomeRules(tx: Tx, matchIds: number[]): Promise<voi
     const entrantId = rule.outcome === "winner" ? match.winnerId : loserId;
     if (entrantId === null) continue;
 
-    await recordQualification(tx, rule.id, entrantId, null);
+    await recordQualification(game, tx, rule.id, entrantId, null);
 
     if (rule.destinationType === "container") {
-      const seeds = await findQualificationSeeds(tx, rule.id);
+      const seeds = await findQualificationSeeds(game, tx, rule.id);
       for (const seed of seeds) {
-        await fillMatchSlotFromSeed(tx, seed.matchId, seed.slot, entrantId);
+        await fillMatchSlotFromSeed(game, tx, seed.matchId, seed.slot, entrantId);
       }
     }
   }

@@ -12,7 +12,8 @@
 
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { tournaments, stages, stageContainers, matches, groupEntries, entrants, teams } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import { computeContainerStandings } from "@/lib/bracket/standings";
 import { parseGroupConfig, type GroupContainerConfig } from "@/lib/bracket/config-types";
 import { rejectGhost } from "../../v1/ghost";
@@ -98,7 +99,8 @@ function safeParseGroupConfig(raw: unknown): GroupContainerConfig | null {
   }
 }
 
-async function visibleTournamentExists(id: number): Promise<boolean> {
+async function visibleTournamentExists(game: GameSlug, id: number): Promise<boolean> {
+  const { tournaments } = gameTables(game);
   const [row] = await db.select({ id: tournaments.id, isGhost: tournaments.isGhost }).from(tournaments).where(eq(tournaments.id, id)).limit(1);
   rejectGhost(row, "tournament");
   return !!row;
@@ -109,8 +111,9 @@ async function visibleTournamentExists(id: number): Promise<boolean> {
  * with its read time standings (same calculator as the public tournament
  * page) and its matches grouped by round in play order.
  */
-export async function getTournamentGroupsV3(tournamentId: number, stageId?: number): Promise<ApiTournamentGroups | null> {
-  if (!(await visibleTournamentExists(tournamentId))) return null;
+export async function getTournamentGroupsV3(game: GameSlug, tournamentId: number, stageId?: number): Promise<ApiTournamentGroups | null> {
+  const { stages, stageContainers, matches, groupEntries, entrants, teams } = gameTables(game);
+  if (!(await visibleTournamentExists(game, tournamentId))) return null;
 
   if (stageId) {
     const [stage] = await db.select({ id: stages.id }).from(stages).where(and(eq(stages.id, stageId), eq(stages.tournamentId, tournamentId))).limit(1);
@@ -138,9 +141,9 @@ export async function getTournamentGroupsV3(tournamentId: number, stageId?: numb
   const [matchRows, entryRows, standingsByContainer, phases, containerRefs] = await Promise.all([
     db.select().from(matches).where(inArray(matches.containerId, containerIds)).orderBy(asc(matches.round), asc(matches.displayOrder), asc(matches.id)),
     db.select({ containerId: groupEntries.containerId, entrantId: groupEntries.entrantId, status: groupEntries.status }).from(groupEntries).where(inArray(groupEntries.containerId, containerIds)),
-    Promise.all(containers.map(async (c) => [c.id, await computeContainerStandings(db, c.id, c.config)] as const)),
-    getPhasesByIds(containers.map((c) => c.stageId)),
-    getContainerRefs(containerIds),
+    Promise.all(containers.map(async (c) => [c.id, await computeContainerStandings(game, db, c.id, c.config)] as const)),
+    getPhasesByIds(game, containers.map((c) => c.stageId)),
+    getContainerRefs(game, containerIds),
   ]);
   const standingsById = new Map(standingsByContainer);
   const statusByEntry = new Map(entryRows.map((e) => [`${e.containerId}:${e.entrantId}`, e.status]));
@@ -239,7 +242,7 @@ export async function getTournamentGroupsV3(tournamentId: number, stageId?: numb
   return { tournament_id: tournamentId, groups };
 }
 
-export async function getTournamentGroupsByNameV3(name: string, stageId?: number): Promise<ApiTournamentGroups | null> {
-  const tournamentId = await resolveTournamentIdByName(name);
-  return tournamentId === null ? null : getTournamentGroupsV3(tournamentId, stageId);
+export async function getTournamentGroupsByNameV3(game: GameSlug, name: string, stageId?: number): Promise<ApiTournamentGroups | null> {
+  const tournamentId = await resolveTournamentIdByName(game, name);
+  return tournamentId === null ? null : getTournamentGroupsV3(game, tournamentId, stageId);
 }

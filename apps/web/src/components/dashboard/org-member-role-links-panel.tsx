@@ -17,7 +17,6 @@ import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import { setOrganizationMemberRoleLink } from "@/actions/dashboard-organizations";
 import type { OrganizationMemberRoleLink } from "@/lib/organization-roles-data";
 import type { OrganizationRoleSummary } from "@/lib/organization-roles-data";
-
 const NONE = "none";
 const OWNER = "owner";
 

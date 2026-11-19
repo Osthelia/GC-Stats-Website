@@ -7,12 +7,16 @@
  */
 
 import { asc, sql, type SQL } from "drizzle-orm";
-import { stageContainers } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Insert value placing a new container last in its stage. */
-export function nextContainerDisplayOrder(stageId: number): SQL<number> {
+export function nextContainerDisplayOrder(game: GameSlug, stageId: number): SQL<number> {
+  const { stageContainers } = gameTables(game);
   return sql<number>`(select coalesce(max(${stageContainers.displayOrder}), 0) + 1 from ${stageContainers} where ${stageContainers.stageId} = ${stageId})`;
 }
 
-/** Admin-set position within the stage, id as tie-break. */
-export const containerOrderBy = [asc(stageContainers.displayOrder), asc(stageContainers.id)] as const;
+export function containerOrderBy(game: GameSlug) {
+  const { stageContainers } = gameTables(game);
+  return [asc(stageContainers.displayOrder), asc(stageContainers.id)] as const;
+}
