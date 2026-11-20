@@ -17,6 +17,7 @@ import { gameTables } from "@gc-stats/db";
 import { visibleTeam, visibleTournament } from "@/lib/ghost-visibility";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { routing, type AppLocale } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/widget-api";
 import type { GameSlug } from "@gc-stats/db/game";
 
 export type CalendarScope = { kind: "all" } | { kind: "team"; teamId: number } | { kind: "tournament"; tournamentId: number };
@@ -78,7 +79,7 @@ function eventUid(game: GameSlug, matchId: number): string {
   return game === "valorant" ? `match-${matchId}` : `${game}-match-${matchId}`;
 }
 
-export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, locale: AppLocale, origin: string): Promise<string | null> {
+export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, locale: AppLocale): Promise<string | null> {
   const { entrants, matches, stageContainers, stages, teams, tournaments } = gameTables(game);
   const t = await getTranslations({ locale, namespace: "calendar" });
 
@@ -145,6 +146,8 @@ export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, l
   const scoreLabel = (score: number | null) => (score === -1 ? "FF" : String(score ?? 0));
 
   const stamp = formatUtc(new Date());
+  // SITE_URL, not the request's origin: behind a reverse proxy the server only sees its own bind address (0.0.0.0:3000).
+  const origin = SITE_URL;
   const host = new URL(origin).host;
   const lines = [
     "BEGIN:VCALENDAR",
@@ -192,7 +195,7 @@ export async function buildMatchCalendar(game: GameSlug, scope: CalendarScope, l
 export async function calendarResponse(game: GameSlug, request: Request, scope: CalendarScope | null): Promise<Response> {
   if (!scope) return NextResponse.json({ error: "Invalid id, expected a positive number (optionally followed by .ics)." }, { status: 400 });
   const url = new URL(request.url);
-  const body = await buildMatchCalendar(game, scope, parseLocale(url.searchParams.get("lang")), url.origin);
+  const body = await buildMatchCalendar(game, scope, parseLocale(url.searchParams.get("lang")));
   if (body === null) return NextResponse.json({ error: `${scope.kind === "team" ? "Team" : "Tournament"} not found.` }, { status: 404 });
   const filename = scope.kind === "all" ? "gc-stats-matches" : `gc-stats-${scope.kind}-${scope.kind === "team" ? scope.teamId : scope.tournamentId}`;
   return new Response(body, {
