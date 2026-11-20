@@ -30,8 +30,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   // Seeds useSession() with the session already read above: without it the
   // header's account menu shows a skeleton until a client-side round trip to
   // /api/auth/session resolves after hydration.
+  // SessionProvider only reads its `session` prop on mount, so the key forces a
+  // remount (re-seeding it) when login/logout changes the user after a refresh.
   return (
-    <SessionProvider session={session}>
+    <SessionProvider key={userId ?? "anonymous"} session={session}>
       {/* Pages without a game (legal, about...) stay on the game the visitor browsed last. */}
       <PreferredGameScope game={preferredGame} viewableGames={games.map((entry) => entry.game)}>
         <SiteHeader isAdmin={isAdmin} isDashboard={isDashboard} newsLanguageOptions={newsLanguageOptions} games={games} />
