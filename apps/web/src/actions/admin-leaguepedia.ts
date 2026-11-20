@@ -112,7 +112,7 @@ export async function commitGameForMatch(tournamentId: number, matchId: number, 
 
   const result = await commitGame({ tournamentId, matchId, ...input });
   if (result.ok) {
-    updateTag(matchTag(matchId));
+    updateTag(matchTag("lol", matchId));
     await logActivity({
       game: "lol",
       subject: "match",

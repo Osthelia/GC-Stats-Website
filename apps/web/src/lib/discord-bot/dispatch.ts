@@ -141,7 +141,7 @@ async function replaceModeratedImages(budget: { left: number }): Promise<number>
     const guildSettings = settings.get(message.guildId);
     const kind = KIND_BY_EVENT[message.event as DiscordBotEvent];
     const accent = message.color ?? (kind === "live" ? guildSettings?.colorLive : kind === "map" ? guildSettings?.colorMap : guildSettings?.colorFinished) ?? DISCORD_BOT_DEFAULT_COLORS[kind ?? "finished"];
-    const url = `${GCS_SITE_URL}/${message.locale}/match/${message.matchId}`;
+    const url = `${GCS_SITE_URL}/${message.locale}/valorant/match/${message.matchId}`;
     const replacement = composeRemovedImageMessage({
       notice: await resolveImageRemovedNotice(message.locale),
       accent,

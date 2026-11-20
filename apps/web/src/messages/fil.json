@@ -730,7 +730,7 @@
     "intro": "Sa pag-access o paggamit ng GC Stats, sumasang-ayon ka na masasakop ng mga Tuntunin ng Serbisyong ito. Mangyaring basahin ang mga ito nang mabuti bago gamitin ang platform.",
     "service": {
       "title": "Tungkol sa Serbisyo",
-      "text": "Ang GC Stats ay isang community platform na nakatuon sa pag-archive at pagbabahagi ng competitive data mula sa mga torneo ng Valorant Game Changers at mga kaugnay na event. Nagbibigay ang serbisyo ng access sa mga resulta ng torneo, estadistika ng mga manlalaro, impormasyon ng mga team, at data ng mga laban. Ang GC Stats ay hindi kaanib, inendorso, o opisyal na konektado sa Riot Games."
+      "text": "Ang GC Stats ay isang community platform na nakatuon sa pag-archive at pagbabahagi ng competitive data mula sa mga torneo ng Game Changers at mga kaugnay na event. Nagbibigay ang serbisyo ng access sa mga resulta ng torneo, estadistika ng mga manlalaro, impormasyon ng mga team, at data ng mga laban. Ang GC Stats ay hindi kaanib, inendorso, o opisyal na konektado sa Riot Games."
     },
     "access": {
       "title": "Access at Pagiging Karapat-dapat",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Data ng Laban ng Riot",
-      "text": "Direktang kinukuha ng GC Stats ang estadistika ng laban mula sa opisyal na Riot Games API para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo. Kasama sa data na ito ang:",
+      "text": "Direktang kinukuha ng GC Stats ang estadistika ng laban mula sa opisyal na Riot Games API para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo. Para sa League of Legends, puwede ring manggaling ang stats sa Leaguepedia, o ilagay nang mano-mano ng aming team. Kasama sa data na ito ang:",
       "items": [
         "Mga Riot ID (game name at tagline) ng mga kalahok na manlalaro",
         "Kasaysayan ng laban para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo",
-        "Mga estadistika sa loob ng laban: scoreboard, buod ng performance, buod ng economy, at kill feed"
+        "Stats sa laban: scoreboard, buod ng performance, at iba pa"
       ],
       "optIn": "Ang pangunahing paglahok sa laban (pangalan, estadistika) ay itinatala para sa sinumang manlalarong lumabas sa isang laban ng sinusubaybayang torneo, dahil pampublikong competitive data ito. Ang karagdagang impormasyon sa profile (talambuhay, social, larawan) ay idinaragdag lamang nang may pahintulot ng manlalaro o team.",
       "correction": "Kung ikaw ay manlalarong lumalabas sa data na ito at nais humiling ng pagwawasto o pag-alis, maaari kang makipag-ugnayan sa amin anumang oras (tingnan ang aming Patakaran sa Privacy para sa mga detalye)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Paggamit ng API",
-      "text": "Nagbibigay ang GC Stats ng pampublikong API para sa mga proyekto ng komunidad at mga proyektong may kaugnayan sa GC. Saklaw ng mga Tuntuning ito ang paggamit ng API. Ang API ay para sa impormasyon, pagsusuri, at layuning pangkomunidad. Maaaring ipatupad ang rate limiting. May karapatan ang GC Stats na bawiin ang access sa API para sa anumang paggamit na lumalabag sa mga Tuntuning ito o sa mga patakaran ng developer ng Riot Games."
+      "text": "Nagbibigay ang GC Stats ng pampublikong API para sa mga proyekto ng komunidad at mga proyektong may kaugnayan sa GC. Sa ngayon, Valorant lang ang saklaw nito; susunod ang League of Legends. Saklaw ng mga Tuntuning ito ang paggamit ng API. Ang API ay para sa impormasyon, pagsusuri, at layuning pangkomunidad. Maaaring ipatupad ang rate limiting. May karapatan ang GC Stats na bawiin ang access sa API para sa anumang paggamit na lumalabag sa mga Tuntuning ito o sa mga patakaran ng developer ng Riot Games."
     },
     "ip": {
       "title": "Intellectual Property",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Pampublikong Data",
-      "text": "Ang impormasyon ng profile (handle, bio, socials, bansa) ay ibinibigay ng player o ng kanyang organisasyon, o idinadagdag ng aming team mula sa mga pampublikong source, at ipinapakita sa publiko sa site. Kinokolekta ang stats ng laro direkta mula sa opisyal na API ng Riot Games para sa mga laban ng mga torneong sinusundan. Pampubliko ang lahat ng data na ito at ibinabahagi sa aming API."
+      "text": "Ang impormasyon ng profile (handle, bio, socials, bansa) ay ibinibigay ng player o ng kanyang organisasyon, o idinadagdag ng aming team mula sa mga pampublikong source, at ipinapakita sa publiko sa site. Kinokolekta ang stats ng laro direkta mula sa opisyal na API ng Riot Games para sa mga laban ng mga torneong sinusundan. Para sa League of Legends, puwede rin itong manggaling sa Leaguepedia (sa ilalim ng lisensyang CC BY-SA) o ilagay nang mano-mano ng aming team mula sa stream kapag walang ibang data. Pampubliko ang lahat ng data na ito at ibinabahagi sa aming API."
     },
     "privateData": {
       "title": "Pribadong Data",
-      "text": "Ang personal na data na iniimbak namin ay limitado sa kailangan para patakbuhin ang site at ang sistema ng account nito: isang Riot ID para i-link ang profile ng manlalaro, kasama ang data ng account na inilalarawan sa ibaba para sa sinumang gumagawa ng user account.",
-      "riotUsage": "Riot ID: Tinutukoy at itinatalaga ng aming team mula sa data ng laban na nakuha sa opisyal na Riot Games API. Ginagamit lamang para iugnay ang mga estadistika ng laban sa isang profile ng manlalaro. Maaaring itama o alisin kapag hiniling."
+      "text": "Ang personal na data na iniimbak namin ay limitado sa kailangan para patakbuhin ang site at ang sistema ng account nito: ang mga Riot account ng mga manlalaro, para i-link ang stats ng laban sa kanilang profile, kasama ang data ng account na inilalarawan sa ibaba para sa sinumang gumagawa ng user account.",
+      "riotUsage": "Mga Riot account: Tinutukoy at itinatalaga ng aming team ang mga Riot ID mula sa data ng laban na kinuha sa opisyal na Riot Games API o sa Leaguepedia, o inilalagay nang mano-mano kapag stream lang ng laban ang meron. Para sa League of Legends, iniimbak din namin ang Riot PUUID ng bawat account, ang server at rehiyon nito, at ang petsa kung kailan ito huling nakita sa isang sinusubaybayang laro. Ginagamit lang para iugnay ang stats ng laban sa profile ng manlalaro. Puwedeng itama o alisin kapag hiniling."
     },
     "accountData": {
       "title": "User Account",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Hindi kailanman ipinapakita",
             "items": [
-              "Riot ID, ginagamit lang para ikonekta ang stats ng laban sa tamang profile"
+              "Mga Riot account, ginagamit lang para i-link ang stats ng laban sa tamang profile"
             ]
           }
         },
-        "source": "Ang tao mismo o ang kanyang organisasyon, ang aming team mula sa mga pampublikong source (Liquipedia, opisyal na anunsyo), o ang komunidad sa pamamagitan ng mungkahing inaprubahan ng aming team. Galing ang Riot ID sa opisyal na API ng Riot Games.",
-        "visibility": "Lahat, sa site at sa aming API, maliban sa Riot ID.",
+        "source": "Ang tao mismo o ang kanyang organisasyon, ang aming team mula sa mga pampublikong source (Liquipedia, opisyal na anunsyo), o ang komunidad sa pamamagitan ng mungkahing inaprubahan ng aming team. Galing ang mga Riot account sa opisyal na API ng Riot Games o sa Leaguepedia, o inilalagay ng aming team.",
+        "visibility": "Lahat, sa site at sa aming API, maliban sa mga Riot account.",
         "retention": "Iniingatan habambuhay bilang archive ng eksena, kahit huminto na sa paglalaro ang tao. Maaari kang humiling ng pagwawasto o pagbura."
       },
       "matchStats": {
         "title": "Stats ng laban",
         "groups": {
           "stats": {
-            "label": "Para sa bawat laban",
+            "label": "Para sa bawat nilarong Valorant match",
             "items": [
               "Mga agent na nilaro",
               "Kills, deaths at assists",
@@ -1351,9 +1351,20 @@
               "Ekonomiya at loadout",
               "Mga posisyon sa mapa"
             ]
+          },
+          "league": {
+            "label": "Para sa bawat nilarong League of Legends game",
+            "items": [
+              "Champion, lane, summoner spells at runes",
+              "Kills, deaths at assists",
+              "CS, gold, damage at vision score",
+              "Mga item",
+              "Gold, experience at CS kumpara sa kalaban sa lane sa ika-10 at ika-15 minuto",
+              "Mga posisyon sa mapa at mga pangyayari sa laro (kills, objectives, wards)"
+            ]
           }
         },
-        "source": "Ang opisyal na API ng Riot Games, para sa mga laban ng mga torneong sinusundan namin.",
+        "source": "Ang opisyal na API ng Riot Games, para sa mga laban ng mga torneong sinusundan namin. Para sa League of Legends, pati ang Leaguepedia, o ang aming team nang mano-mano mula sa stream kapag walang ibang data.",
         "visibility": "Lahat, sa site at sa aming API.",
         "retention": "Iniingatan bilang makasaysayang archive ng mga kompetisyon."
       },

@@ -119,10 +119,15 @@ export function AuthForm({ mode, callbackUrl }: { mode: Mode; callbackUrl?: stri
 
     if (mode === "register") {
       setJustRegistered(true);
-      setTimeout(() => router.push(callbackUrl ?? "/"), 2500);
+      setTimeout(() => goAfterSignIn(), 2500);
       return;
     }
+    goAfterSignIn();
+  }
+
+  function goAfterSignIn() {
     router.push(callbackUrl ?? "/");
+    router.refresh();
   }
 
   async function handlePasskeySignIn() {
@@ -138,7 +143,7 @@ export function AuthForm({ mode, callbackUrl }: { mode: Mode; callbackUrl?: stri
         setPasskeyPending(false);
         return;
       }
-      router.push(callbackUrl ?? "/");
+      goAfterSignIn();
     } catch {
       setFormError("unknown");
       setPasskeyPending(false);

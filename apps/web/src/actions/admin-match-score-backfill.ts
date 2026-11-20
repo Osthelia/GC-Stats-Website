@@ -156,7 +156,7 @@ export async function backfillMatchScoresFromMaps(game: GameSlug, tournamentId: 
         .where(and(eq(stages.tournamentId, tournamentId), eq(stageContainers.containerType, "group")));
       for (const c of groupContainers) await syncGroupRecordsFromMatches(game, tx, c.id);
     });
-    for (const r of resolvable) updateTag(matchTag(r.id));
+    for (const r of resolvable) updateTag(matchTag(game, r.id));
   }
 
   return { ok: true, resolvable: resolvable.length, undecided, conflicts: conflicts.length, sample: sampleRows(resolvable), conflictSample: sampleRows(conflicts) };

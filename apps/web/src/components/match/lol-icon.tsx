@@ -54,6 +54,7 @@ export function LolIcon({ kind, url, name, size }: Props) {
   const tree = kind === "tree";
   return (
     <img
+      key={url}
       src={url}
       alt={`${name} ${kind} image`}
       title={name}

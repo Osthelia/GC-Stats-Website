@@ -111,6 +111,12 @@ export async function listViewableGames(): Promise<ViewableGame[]> {
   return games.filter((g) => g.viewable).map(({ game, preview }) => ({ game, preview }));
 }
 
+/** The games this user can administer (an admin role for every game or for that game), in switcher order. */
+export async function listAdminGames(userId: string): Promise<GameSlug[]> {
+  const access = await Promise.all(GAMES.map((game) => getGlobalAccess(userId, game)));
+  return GAMES.filter((_, i) => access[i]!.isGameAdmin);
+}
+
 /** Redirects to /login (no session) or / (logged in, no admin access) — use at the top of /admin server layouts/pages. */
 export async function requireAdminAccess(locale: AppLocale, game?: GameSlug): Promise<CurrentUserAccess> {
   const session = await getSession();

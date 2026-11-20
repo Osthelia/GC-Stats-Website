@@ -91,7 +91,7 @@ async function applyFormMatchId(mapId: number, apiMatchId: string | undefined, a
     changes: { apiMatchId: { old: current.apiMatchId, new: trimmed } },
     properties: { matchId: current.matchId },
   });
-  updateTag(matchTag(current.matchId));
+  updateTag(matchTag("valorant", current.matchId));
   return { ok: true };
 }
 
@@ -110,7 +110,7 @@ export async function fetchMapData(game: GameSlug, mapId: number, options?: Fetc
     const [map] = await db.select({ matchId: maps.matchId }).from(maps).where(eq(maps.id, mapId)).limit(1);
     if (map) {
       await logMapFetchChange(mapId, map.matchId, actorUserId, `Fetched data of map #${mapId}`, { section: "fetch" });
-      updateTag(matchTag(map.matchId));
+      updateTag(matchTag(game, map.matchId));
     }
   }
   return result;

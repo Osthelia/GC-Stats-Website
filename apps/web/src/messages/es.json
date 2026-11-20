@@ -730,7 +730,7 @@
     "intro": "Al acceder a GC Stats o utilizarlo, aceptas quedar vinculado por estas Condiciones de uso. Léelas atentamente antes de utilizar la plataforma.",
     "service": {
       "title": "Sobre el servicio",
-      "text": "GC Stats es una plataforma comunitaria dedicada a archivar y compartir datos competitivos de los torneos de Valorant Game Changers y eventos relacionados. El servicio da acceso a resultados de torneos, estadísticas de jugadores, información de equipos y datos de partidos. GC Stats no está afiliado, respaldado ni vinculado oficialmente a Riot Games."
+      "text": "GC Stats es una plataforma comunitaria dedicada a archivar y compartir datos competitivos de los torneos de Game Changers y eventos relacionados. El servicio da acceso a resultados de torneos, estadísticas de jugadores, información de equipos y datos de partidos. GC Stats no está afiliado, respaldado ni vinculado oficialmente a Riot Games."
     },
     "access": {
       "title": "Acceso y requisitos",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Datos de partidos de Riot",
-      "text": "GC Stats obtiene las estadísticas de los partidos directamente de la API oficial de Riot Games para los partidos identificados como parte de torneos seguidos. Estos datos incluyen:",
+      "text": "GC Stats obtiene las estadísticas de los partidos directamente de la API oficial de Riot Games para los partidos identificados como parte de torneos seguidos. En League of Legends, las estadísticas también pueden venir de Leaguepedia o introducirlas a mano nuestro equipo. Estos datos incluyen:",
       "items": [
         "Los Riot ID (nombre de juego y tagline) de los jugadores participantes",
         "El historial de partidos identificados como parte de torneos seguidos",
-        "Las estadísticas dentro del partido: marcador, resumen de rendimiento, resumen de economía y registro de bajas"
+        "Estadísticas de la partida: marcador, resumen de rendimiento y más"
       ],
       "optIn": "La participación básica en los partidos (nombre, estadísticas) se registra para cualquier jugador que aparezca en un partido de un torneo seguido, ya que se trata de datos competitivos públicos. La información de perfil adicional (biografía, redes sociales, foto) solo se añade con el consentimiento del jugador o del equipo.",
       "correction": "Si eres un jugador que aparece en estos datos y deseas solicitar una corrección o eliminación, puedes contactarnos en cualquier momento (consulta nuestra Política de privacidad para más detalles)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Uso de la API",
-      "text": "GC Stats ofrece una API pública para proyectos comunitarios y relacionados con GC. El uso de la API está sujeto a estas Condiciones. La API está destinada a fines informativos, analíticos y comunitarios. Se pueden aplicar límites de uso. GC Stats se reserva el derecho de revocar el acceso a la API ante cualquier uso que infrinja estas Condiciones o las políticas para desarrolladores de Riot Games."
+      "text": "GC Stats ofrece una API pública para proyectos comunitarios y relacionados con GC. Por ahora solo cubre Valorant; League of Legends llegará más adelante. El uso de la API está sujeto a estas Condiciones. La API está destinada a fines informativos, analíticos y comunitarios. Se pueden aplicar límites de uso. GC Stats se reserva el derecho de revocar el acceso a la API ante cualquier uso que infrinja estas Condiciones o las políticas para desarrolladores de Riot Games."
     },
     "ip": {
       "title": "Propiedad intelectual",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Datos públicos",
-      "text": "La información de perfil (alias, biografía, redes sociales, país) la proporciona la jugadora o su organización, o la añade nuestro equipo a partir de fuentes públicas, y se muestra públicamente en el sitio. Las estadísticas de juego se recopilan directamente a través de la API oficial de Riot Games para los partidos de los torneos cubiertos. Todos estos datos son públicos y se comparten a través de nuestra API."
+      "text": "La información de perfil (alias, biografía, redes sociales, país) la proporciona la jugadora o su organización, o la añade nuestro equipo a partir de fuentes públicas, y se muestra públicamente en el sitio. Las estadísticas de juego se recopilan directamente a través de la API oficial de Riot Games para los partidos de los torneos cubiertos. En League of Legends también pueden venir de Leaguepedia (bajo la licencia CC BY-SA) o introducirlas a mano nuestro equipo a partir del stream cuando no hay otros datos disponibles. Todos estos datos son públicos y se comparten a través de nuestra API."
     },
     "privateData": {
       "title": "Datos privados",
-      "text": "Los datos personales que almacenamos se limitan a lo necesario para el funcionamiento del sitio y de su sistema de cuentas: un Riot ID para vincular un perfil de jugador, más los datos de cuenta descritos a continuación para quien cree una cuenta de usuario.",
-      "riotUsage": "Riot ID: identificado y asignado por nuestro equipo a partir de los datos de partidos obtenidos mediante la API oficial de Riot Games. Se usa únicamente para asociar las estadísticas de los partidos a un perfil de jugador. Puede corregirse o eliminarse previa solicitud."
+      "text": "Los datos personales que almacenamos se limitan a lo necesario para el funcionamiento del sitio y de su sistema de cuentas: las cuentas de Riot de las jugadoras, para vincular las estadísticas de partida a su perfil, más los datos de cuenta descritos a continuación para quien cree una cuenta de usuario.",
+      "riotUsage": "Cuentas de Riot: nuestro equipo identifica y asigna los Riot ID a partir de los datos de partidas obtenidos de la API oficial de Riot Games o de Leaguepedia, o los introduce a mano cuando solo hay un stream de la partida. En League of Legends también guardamos el PUUID de Riot de cada cuenta, su servidor y región, y la fecha en que se vio por última vez en una partida seguida. Se usan únicamente para asociar las estadísticas de partida a un perfil de jugadora. Pueden corregirse o eliminarse a petición."
     },
     "accountData": {
       "title": "Cuenta de usuario",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Nunca se muestra",
             "items": [
-              "Identificador de Riot, usado solo para vincular las estadísticas de partido al perfil correcto"
+              "Cuentas de Riot, usadas solo para vincular las estadísticas de partida al perfil correcto"
             ]
           }
         },
-        "source": "La propia persona o su organización, nuestro equipo a partir de fuentes públicas (Liquipedia, anuncios oficiales), o la comunidad mediante una propuesta validada por nuestro equipo. El identificador de Riot viene de la API oficial de Riot Games.",
-        "visibility": "Todo el mundo, en el sitio y a través de nuestra API, salvo el identificador de Riot.",
+        "source": "La propia persona o su organización, nuestro equipo a partir de fuentes públicas (Liquipedia, anuncios oficiales), o la comunidad mediante una propuesta validada por nuestro equipo. Las cuentas de Riot vienen de la API oficial de Riot Games o de Leaguepedia, o las introduce nuestro equipo.",
+        "visibility": "Todo el mundo, en el sitio y a través de nuestra API, salvo las cuentas de Riot.",
         "retention": "Se conservan de por vida, como archivo de la escena, incluso cuando la persona deja de jugar. Puedes pedir una corrección o una eliminación."
       },
       "matchStats": {
         "title": "Estadísticas de partido",
         "groups": {
           "stats": {
-            "label": "Para cada partido jugado",
+            "label": "Por cada partido de Valorant jugado",
             "items": [
               "Agentes jugados",
               "Asesinatos, muertes y asistencias",
@@ -1351,9 +1351,20 @@
               "Economía y equipamiento",
               "Posiciones en el mapa"
             ]
+          },
+          "league": {
+            "label": "Por cada partida de League of Legends jugada",
+            "items": [
+              "Campeón, calle, hechizos de invocador y runas",
+              "Asesinatos, muertes y asistencias",
+              "CS, oro, daño y puntuación de visión",
+              "Objetos",
+              "Oro, experiencia y CS frente al rival de calle a los 10 y 15 minutos",
+              "Posiciones en el mapa y eventos de la partida (asesinatos, objetivos, guardianes)"
+            ]
           }
         },
-        "source": "La API oficial de Riot Games, para los partidos de los torneos que cubrimos.",
+        "source": "La API oficial de Riot Games, para los partidos de los torneos que cubrimos. En League of Legends también Leaguepedia, o nuestro equipo a mano a partir del stream cuando no hay otros datos disponibles.",
         "visibility": "Todo el mundo, en el sitio y a través de nuestra API.",
         "retention": "Se conservan como archivo histórico de las competiciones."
       },
