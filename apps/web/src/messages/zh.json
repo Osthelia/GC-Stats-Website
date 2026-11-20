@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Riot 比赛数据",
-      "text": "对于被识别为受追踪赛事一部分的比赛，GC Stats 直接通过 Riot Games 官方 API 获取比赛数据。League of Legends 的统计也可能来自 Leaguepedia，或在没有其他数据时由我们团队根据直播手动录入。这些数据包括：",
+      "text": "对于被识别为受追踪赛事一部分的比赛，GC Stats 直接通过 Riot Games 官方 API 获取比赛数据。League of Legends 的统计也可能来自 Leaguepedia，或由我们团队手动录入。这些数据包括：",
       "items": [
         "参赛选手的 Riot ID（游戏名及标签）",
         "被识别为受追踪赛事一部分的比赛历史",

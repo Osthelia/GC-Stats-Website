@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Dados de Partidas da Riot",
-      "text": "O GC Stats obtém as estatísticas de partidas diretamente da API oficial da Riot Games para partidas identificadas como parte de torneios acompanhados. Para League of Legends, as estatísticas também podem vir da Leaguepedia ou ser inseridas manualmente pela nossa equipe a partir da transmissão quando não há outros dados disponíveis. Esses dados incluem:",
+      "text": "O GC Stats obtém as estatísticas de partidas diretamente da API oficial da Riot Games para partidas identificadas como parte de torneios acompanhados. Para League of Legends, as estatísticas também podem vir da Leaguepedia ou ser inseridas manualmente pela nossa equipe. Esses dados incluem:",
       "items": [
         "Riot IDs (nome no jogo e tagline) das jogadoras participantes",
         "Histórico de partidas identificadas como parte de torneios acompanhados",

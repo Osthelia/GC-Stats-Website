@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Data Pertandingan Riot",
-      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia, atau dimasukkan secara manual oleh tim kami dari siaran jika tidak ada data lain. Data ini mencakup:",
+      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia, atau dimasukkan secara manual oleh tim kami. Data ini mencakup:",
       "items": [
         "Riot ID (nama game dan tagline) pemain yang berpartisipasi",
         "Riwayat pertandingan untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak",

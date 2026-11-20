@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Riot 경기 데이터",
-      "text": "GC Stats는 추적 대상 대회의 일부로 확인된 경기에 대해 Riot Games 공식 API에서 직접 경기 통계를 가져와요. League of Legends는 통계를 Leaguepedia에서 가져오거나, 다른 데이터가 없으면 저희 팀이 방송을 보고 직접 입력하기도 해요. 여기에는 다음이 포함돼요.",
+      "text": "GC Stats는 추적 대상 대회의 일부로 확인된 경기에 대해 Riot Games 공식 API에서 직접 경기 통계를 가져와요. League of Legends는 통계를 Leaguepedia에서 가져오거나, 저희 팀이 직접 입력하기도 해요. 여기에는 다음이 포함돼요.",
       "items": [
         "참가 선수의 Riot ID (게임 이름 및 태그라인)",
         "추적 대상 대회의 일부로 확인된 경기의 전적",

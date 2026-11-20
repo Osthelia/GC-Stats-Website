@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Riot Maç Verileri",
-      "text": "GC Stats, takip edilen turnuvaların parçası olarak belirlenen maçlara ait istatistikleri doğrudan resmi Riot Games API'sinden alır. League of Legends için istatistikler Leaguepedia'dan da gelebilir veya başka veri olmadığında ekibimiz tarafından yayından elle girilebilir. Bu veriler şunları içerir:",
+      "text": "GC Stats, takip edilen turnuvaların parçası olarak belirlenen maçlara ait istatistikleri doğrudan resmi Riot Games API'sinden alır. League of Legends için istatistikler Leaguepedia'dan da gelebilir veya ekibimiz tarafından elle girilebilir. Bu veriler şunları içerir:",
       "items": [
         "Katılımcı oyuncuların Riot ID'leri (oyun içi isim ve etiket)",
         "Takip edilen turnuvaların parçası olarak belirlenen maçların geçmişi",

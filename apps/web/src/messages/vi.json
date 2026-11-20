@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Dữ liệu trận đấu Riot",
-      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia, hoặc được đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác. Dữ liệu này bao gồm:",
+      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia, hoặc được đội ngũ của chúng tôi nhập thủ công. Dữ liệu này bao gồm:",
       "items": [
         "Riot ID (tên trong game và tagline) của các tuyển thủ tham gia",
         "Lịch sử trận đấu của các trận được xác định là thuộc các giải đấu được theo dõi",

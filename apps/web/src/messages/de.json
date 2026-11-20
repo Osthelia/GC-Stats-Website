@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Riot Spieldaten",
-      "text": "GC Stats ruft Spielstatistiken direkt über die offizielle Riot Games API für Spiele ab, die als Teil verfolgter Turniere identifiziert wurden. Für League of Legends können Statistiken auch von Leaguepedia stammen oder von unserem Team anhand des Streams von Hand eingetragen werden, wenn keine anderen Daten verfügbar sind. Diese Daten umfassen:",
+      "text": "GC Stats ruft Spielstatistiken direkt über die offizielle Riot Games API für Spiele ab, die als Teil verfolgter Turniere identifiziert wurden. Für League of Legends können Statistiken auch von Leaguepedia stammen oder von unserem Team von Hand eingetragen werden. Diese Daten umfassen:",
       "items": [
         "Riot IDs (Spielername und Tagline) der teilnehmenden Spieler",
         "Spielverlauf für Spiele, die als Teil verfolgter Turniere identifiziert wurden",

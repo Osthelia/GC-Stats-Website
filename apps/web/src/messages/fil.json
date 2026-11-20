@@ -738,7 +738,7 @@
     },
     "riotData": {
       "title": "Data ng Laban ng Riot",
-      "text": "Direktang kinukuha ng GC Stats ang estadistika ng laban mula sa opisyal na Riot Games API para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo. Para sa League of Legends, puwede ring manggaling ang stats sa Leaguepedia, o ilagay nang mano-mano ng aming team mula sa stream kapag walang ibang data. Kasama sa data na ito ang:",
+      "text": "Direktang kinukuha ng GC Stats ang estadistika ng laban mula sa opisyal na Riot Games API para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo. Para sa League of Legends, puwede ring manggaling ang stats sa Leaguepedia, o ilagay nang mano-mano ng aming team. Kasama sa data na ito ang:",
       "items": [
         "Mga Riot ID (game name at tagline) ng mga kalahok na manlalaro",
         "Kasaysayan ng laban para sa mga laban na natukoy bilang bahagi ng mga sinusubaybayang torneo",
