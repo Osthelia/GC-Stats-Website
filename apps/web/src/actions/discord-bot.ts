@@ -411,7 +411,7 @@ export async function sendDiscordTestAlert(guildId: string, event: DiscordBotEve
   const template = { ...parsed.data, backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
   try {
     const { matchId, fields, images } = await resolvePreviewData(kind, resolvedLocale);
-    const url = `${GCS_SITE_URL}/${resolvedLocale}/match/${matchId}`;
+    const url = `${GCS_SITE_URL}/${resolvedLocale}/valorant/match/${matchId}`;
     const png = await renderTemplateImage(template, { fields, images, locale: resolvedLocale, footerUrl: url.replace(/^https?:\/\//, "") });
     const message = composeAlertMessage({
       kind,
