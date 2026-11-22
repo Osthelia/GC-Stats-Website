@@ -1712,7 +1712,9 @@
       "recruitmentManager": "採用マネージャー",
       "developer": "デベロッパー",
       "volunteer": "ボランティア",
+      "headOfEsports": "eスポーツ責任者",
       "headOfValorant": "VALORANT責任者",
+      "headOfLeague": "League of Legends責任者",
       "streamer": "配信者"
     },
     "unknownDate": "不明",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "採用マネージャー",
           "developer": "開発者",
           "volunteer": "ボランティア",
+          "headOfEsports": "eスポーツ責任者",
           "headOfValorant": "VALORANT責任者",
+          "headOfLeague": "League of Legends責任者",
           "streamer": "配信者"
         },
         "error": {

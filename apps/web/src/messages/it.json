@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Responsabile reclutamento",
       "developer": "Sviluppatore",
       "volunteer": "Volontario",
+      "headOfEsports": "Responsabile esport",
       "headOfValorant": "Responsabile Valorant",
+      "headOfLeague": "Responsabile League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Sconosciuta",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Responsabile reclutamento",
           "developer": "Sviluppatore",
           "volunteer": "Volontario",
+          "headOfEsports": "Responsabile esport",
           "headOfValorant": "Responsabile Valorant",
+          "headOfLeague": "Responsabile League of Legends",
           "streamer": "Streamer"
         },
         "error": {

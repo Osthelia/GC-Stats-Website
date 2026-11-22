@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Manajer rekrutmen",
       "developer": "Pengembang",
       "volunteer": "Relawan",
+      "headOfEsports": "Kepala Esports",
       "headOfValorant": "Kepala Valorant",
+      "headOfLeague": "Kepala League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Tidak diketahui",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Manajer rekrutmen",
           "developer": "Pengembang",
           "volunteer": "Relawan",
+          "headOfEsports": "Kepala Esports",
           "headOfValorant": "Kepala Valorant",
+          "headOfLeague": "Kepala League of Legends",
           "streamer": "Streamer"
         },
         "error": {

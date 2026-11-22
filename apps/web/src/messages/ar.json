@@ -1712,7 +1712,9 @@
       "recruitmentManager": "مدير التوظيف",
       "developer": "مطوّر",
       "volunteer": "متطوع",
+      "headOfEsports": "مسؤول الرياضات الإلكترونية",
       "headOfValorant": "مسؤول فالورانت",
+      "headOfLeague": "مسؤول League of Legends",
       "streamer": "ستريمر"
     },
     "unknownDate": "غير معروف",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "مدير التوظيف",
           "developer": "مطوّر",
           "volunteer": "متطوع",
+          "headOfEsports": "مسؤول الرياضات الإلكترونية",
           "headOfValorant": "مسؤول فالورانت",
+          "headOfLeague": "مسؤول League of Legends",
           "streamer": "ستريمر"
         },
         "error": {

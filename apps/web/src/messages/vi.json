@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Quản lý tuyển dụng",
       "developer": "Lập trình viên",
       "volunteer": "Tình nguyện viên",
+      "headOfEsports": "Trưởng bộ phận Esports",
       "headOfValorant": "Trưởng bộ phận Valorant",
+      "headOfLeague": "Trưởng bộ phận League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Không rõ",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Quản lý tuyển dụng",
           "developer": "Lập trình viên",
           "volunteer": "Tình nguyện viên",
+          "headOfEsports": "Trưởng bộ phận Esports",
           "headOfValorant": "Trưởng bộ phận Valorant",
+          "headOfLeague": "Trưởng bộ phận League of Legends",
           "streamer": "Streamer"
         },
         "error": {

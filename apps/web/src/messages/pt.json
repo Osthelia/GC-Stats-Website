@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Gerente de recrutamento",
       "developer": "Desenvolvedor(a)",
       "volunteer": "Voluntário(a)",
+      "headOfEsports": "Responsável por esports",
       "headOfValorant": "Responsável por Valorant",
+      "headOfLeague": "Responsável por League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Desconhecida",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Gerente de recrutamento",
           "developer": "Desenvolvedor(a)",
           "volunteer": "Voluntário(a)",
+          "headOfEsports": "Responsável por esports",
           "headOfValorant": "Responsável por Valorant",
+          "headOfLeague": "Responsável por League of Legends",
           "streamer": "Streamer"
         },
         "error": {

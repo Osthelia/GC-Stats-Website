@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Recruitment manager",
       "developer": "Developer",
       "volunteer": "Boluntaryo",
+      "headOfEsports": "Head of Esports",
       "headOfValorant": "Head of Valorant",
+      "headOfLeague": "Head of League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Hindi alam",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Recruitment manager",
           "developer": "Developer",
           "volunteer": "Boluntaryo",
+          "headOfEsports": "Head of Esports",
           "headOfValorant": "Head of Valorant",
+          "headOfLeague": "Head of League of Legends",
           "streamer": "Streamer"
         },
         "error": {

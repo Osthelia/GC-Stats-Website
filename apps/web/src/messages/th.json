@@ -1712,7 +1712,9 @@
       "recruitmentManager": "ผู้จัดการฝ่ายสรรหา",
       "developer": "นักพัฒนา",
       "volunteer": "อาสาสมัคร",
+      "headOfEsports": "หัวหน้าฝ่ายอีสปอร์ต",
       "headOfValorant": "หัวหน้าฝ่าย Valorant",
+      "headOfLeague": "หัวหน้าฝ่าย League of Legends",
       "streamer": "สตรีมเมอร์"
     },
     "unknownDate": "ไม่ทราบ",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "ผู้จัดการฝ่ายสรรหา",
           "developer": "นักพัฒนา",
           "volunteer": "อาสาสมัคร",
+          "headOfEsports": "หัวหน้าฝ่ายอีสปอร์ต",
           "headOfValorant": "หัวหน้าฝ่าย Valorant",
+          "headOfLeague": "หัวหน้าฝ่าย League of Legends",
           "streamer": "สตรีมเมอร์"
         },
         "error": {

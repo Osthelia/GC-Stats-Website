@@ -1712,7 +1712,9 @@
       "recruitmentManager": "Responsable recrutement",
       "developer": "{pronouns, select, 0 {Développeuse} 1 {Développeur} other {Développeur·se}}",
       "volunteer": "Bénévole",
+      "headOfEsports": "Responsable Esports",
       "headOfValorant": "Responsable Valorant",
+      "headOfLeague": "Responsable League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Inconnue",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "Responsable recrutement",
           "developer": "Développeur·se",
           "volunteer": "Bénévole",
+          "headOfEsports": "Responsable Esports",
           "headOfValorant": "Responsable Valorant",
+          "headOfLeague": "Responsable League of Legends",
           "streamer": "Streamer"
         },
         "error": {

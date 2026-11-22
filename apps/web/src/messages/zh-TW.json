@@ -1712,7 +1712,9 @@
       "recruitmentManager": "招募經理",
       "developer": "開發者",
       "volunteer": "志願者",
+      "headOfEsports": "電競負責人",
       "headOfValorant": "VALORANT 負責人",
+      "headOfLeague": "League of Legends 負責人",
       "streamer": "主播"
     },
     "unknownDate": "未知",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "招募經理",
           "developer": "開發者",
           "volunteer": "志願者",
+          "headOfEsports": "電競負責人",
           "headOfValorant": "VALORANT 負責人",
+          "headOfLeague": "League of Legends 負責人",
           "streamer": "主播"
         },
         "error": {

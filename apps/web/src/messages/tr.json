@@ -1712,7 +1712,9 @@
       "recruitmentManager": "İşe alım yöneticisi",
       "developer": "Geliştirici",
       "volunteer": "Gönüllü",
+      "headOfEsports": "E-spor sorumlusu",
       "headOfValorant": "Valorant sorumlusu",
+      "headOfLeague": "League of Legends sorumlusu",
       "streamer": "Yayıncı"
     },
     "unknownDate": "Bilinmiyor",
@@ -2398,7 +2400,9 @@
           "recruitmentManager": "İşe alım yöneticisi",
           "developer": "Geliştirici",
           "volunteer": "Gönüllü",
+          "headOfEsports": "E-spor sorumlusu",
           "headOfValorant": "Valorant sorumlusu",
+          "headOfLeague": "League of Legends sorumlusu",
           "streamer": "Yayıncı"
         },
         "error": {
