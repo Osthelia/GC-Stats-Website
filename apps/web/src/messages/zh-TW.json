@@ -730,7 +730,7 @@
     "intro": "訪問或使用 GC Stats 即表示您同意接受本使用條款的約束。使用本平臺前，請仔細閱讀以下內容。",
     "service": {
       "title": "關於本服務",
-      "text": "GC Stats 是一個社群平臺，致力於歸檔並分享 VALORANT Game Changers 賽事及相關活動的競技資料。本服務提供賽事結果、選手資料、戰隊資訊及比賽資料的訪問。GC Stats 與 Riot Games 沒有任何關聯，未獲得其認可，也不是其官方合作方。"
+      "text": "GC Stats 是一個社群平臺，致力於歸檔並分享 Game Changers 賽事及相關活動的競技資料。本服務提供賽事結果、選手資料、戰隊資訊及比賽資料的訪問。GC Stats 與 Riot Games 沒有任何關聯，未獲得其認可，也不是其官方合作方。"
     },
     "access": {
       "title": "訪問與使用資格",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Riot 比賽資料",
-      "text": "對於被識別為受追蹤賽事一部分的比賽，GC Stats 直接通過 Riot Games 官方 API 獲取比賽資料，包括：",
+      "text": "對於被識別為受追蹤賽事一部分的比賽，GC Stats 直接通過 Riot Games 官方 API 獲取比賽資料。League of Legends 的統計也可能來自 Leaguepedia，或由我們團隊手動輸入。這些資料包括：",
       "items": [
         "參賽選手的 Riot ID（遊戲名及標籤）",
         "被識別為受追蹤賽事一部分的比賽歷史",
-        "比賽內統計：記分板、表現總結、經濟總結及擊殺記錄"
+        "比賽內統計：記分板、表現概覽等"
       ],
       "optIn": "對於出現在受追蹤賽事比賽中的任何選手，我們都會記錄基本的參賽資訊（姓名、資料），因為這屬於公開的競技資料。額外的資料資訊（簡介、社群帳號、照片）只有在選手或戰隊同意後才會新增。",
       "correction": "如果您是資料中出現的選手，並希望申請更正或刪除，您可以隨時聯絡我們（詳見我們的隱私政策）。"
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "API 使用",
-      "text": "GC Stats 為社群及 GC 相關專案提供公開 API。使用本 API 須遵守本條款，其用途限於資訊、分析及社群相關場景。我們可能會實施速率限制。對於任何違反本條款或 Riot Games 開發者政策的使用，GC Stats 保留撤銷 API 訪問許可權的權利。"
+      "text": "GC Stats 為社群及 GC 相關專案提供公開 API。目前僅支援 VALORANT，League of Legends 將於之後加入。使用本 API 須遵守本條款，其用途限於資訊、分析及社群相關場景。我們可能會實施速率限制。對於任何違反本條款或 Riot Games 開發者政策的使用，GC Stats 保留撤銷 API 訪問許可權的權利。"
     },
     "ip": {
       "title": "智慧財產權",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "公開資料",
-      "text": "檔案資訊（遊戲 ID、簡介、社群帳號、國家）由選手本人或其組織提供，或由我們團隊根據公開來源新增，並在網站上公開顯示。遊戲統計透過 Riot Games 官方 API 直接收集，針對我們關注的賽事中的比賽。所有這些資料都是公開的，並透過我們的 API 分享。"
+      "text": "檔案資訊（遊戲 ID、簡介、社群帳號、國家）由選手本人或其組織提供，或由我們團隊根據公開來源新增，並在網站上公開顯示。遊戲統計透過 Riot Games 官方 API 直接收集，針對我們關注的賽事中的比賽。League of Legends 的統計也可能來自 Leaguepedia（採用 CC BY-SA 授權），或在沒有其他資料時由我們團隊根據直播手動輸入。所有這些資料都是公開的，並透過我們的 API 分享。"
     },
     "privateData": {
       "title": "私密資料",
-      "text": "我們儲存的個人資料僅限於執行本站及其帳戶系統所需的內容：用於綁定選手資料的 Riot ID，以及下文所述、任何建立使用者帳戶者的帳戶資料。",
-      "riotUsage": "Riot ID：由我們的團隊根據 Riot Games 官方 API 獲取的比賽資料進行識別和分配，僅用於將比賽資料與選手資料關聯。可根據申請進行更正或刪除。"
+      "text": "我們儲存的個人資料僅限於執行本站及其帳戶系統所需的內容：選手的 Riot 帳戶，用於將比賽統計連結到其檔案，以及下文所述、任何建立使用者帳戶者的帳戶資料。",
+      "riotUsage": "Riot 帳戶：Riot ID 由我們團隊根據透過 Riot Games 官方 API 或 Leaguepedia 取得的比賽資料識別並指派，或在只有比賽直播時手動輸入。對於 League of Legends，我們還會儲存每個帳戶的 Riot PUUID、其伺服器與地區，以及該帳戶最近一次出現在受追蹤對局中的日期。僅用於將比賽統計連結到選手檔案。可應要求更正或刪除。"
     },
     "accountData": {
       "title": "使用者帳戶",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "從不顯示",
             "items": [
-              "Riot ID，僅用於將比賽統計連結到正確的檔案"
+              "Riot 帳戶，僅用於將比賽統計連結到正確的檔案"
             ]
           }
         },
-        "source": "本人或其所屬組織，我們團隊根據公開來源（Liquipedia、官方公告）新增，或社群提交並經我們團隊審核的建議。Riot ID 來自 Riot Games 官方 API。",
-        "visibility": "所有人，在網站上與透過我們的 API，Riot ID 除外。",
+        "source": "本人或其所屬組織，我們團隊根據公開來源（Liquipedia、官方公告）新增，或社群提交並經我們團隊審核的建議。Riot 帳戶來自 Riot Games 官方 API 或 Leaguepedia，或由我們團隊輸入。",
+        "visibility": "所有人，在網站上與透過我們的 API，Riot 帳戶除外。",
         "retention": "作為賽事圈的檔案永久保存，即使本人已不再參賽。你可以申請更正或刪除。"
       },
       "matchStats": {
         "title": "比賽統計",
         "groups": {
           "stats": {
-            "label": "每場比賽",
+            "label": "每場已進行的 VALORANT 比賽",
             "items": [
               "使用的特務",
               "擊殺、死亡與助攻",
@@ -1351,9 +1351,20 @@
               "經濟與裝備",
               "地圖上的位置"
             ]
+          },
+          "league": {
+            "label": "每局已進行的 League of Legends 對局",
+            "items": [
+              "英雄、分路、召喚師技能與符文",
+              "擊殺、死亡與助攻",
+              "補刀、金錢、傷害與視野分數",
+              "裝備",
+              "第 10 與 15 分鐘與對線對手相比的金錢、經驗與補刀",
+              "地圖上的位置與對局中的事件（擊殺、目標、守衛）"
+            ]
           }
         },
-        "source": "Riot Games 官方 API，針對我們關注的賽事中的比賽。",
+        "source": "Riot Games 官方 API，針對我們關注的賽事中的比賽。League of Legends 還包括 Leaguepedia，或在沒有其他資料時由我們團隊根據直播手動輸入。",
         "visibility": "所有人，在網站上與透過我們的 API。",
         "retention": "作為賽事的歷史檔案保存。"
       },
@@ -1701,7 +1712,9 @@
       "recruitmentManager": "招募經理",
       "developer": "開發者",
       "volunteer": "志願者",
+      "headOfEsports": "電競負責人",
       "headOfValorant": "VALORANT 負責人",
+      "headOfLeague": "League of Legends 負責人",
       "streamer": "主播"
     },
     "unknownDate": "未知",
@@ -2387,7 +2400,9 @@
           "recruitmentManager": "招募經理",
           "developer": "開發者",
           "volunteer": "志願者",
+          "headOfEsports": "電競負責人",
           "headOfValorant": "VALORANT 負責人",
+          "headOfLeague": "League of Legends 負責人",
           "streamer": "主播"
         },
         "error": {

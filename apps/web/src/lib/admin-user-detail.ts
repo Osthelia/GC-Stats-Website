@@ -11,10 +11,10 @@
 
 import { and, count, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, roles, userRoles, accounts, authenticators, sessions, sanctions, userReports, organizationAccess, organizations, organizationAccessRoles, organizationRoles, valorantTables, gameTables } from "@gc-stats/db";
+import { users, roles, userRoles, accounts, authenticators, sessions, sanctions, userReports, organizationAccess, organizations, organizationAccessRoles, organizationRoles, gameTables } from "@gc-stats/db";
 import type { AdminUserRole } from "@/lib/admin-users";
 import { getAdminPlayerTeamHistory } from "@/lib/admin-players";
-import { statusOf, type SanctionStatus, type SanctionType } from "@/lib/admin-sanctions";
+import { sanctionTeamGame, sanctionTeamName, statusOf, type SanctionStatus, type SanctionType } from "@/lib/admin-sanctions";
 import type { ReportStatus } from "@/lib/admin-reports";
 import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
@@ -135,6 +135,7 @@ export type AdminUserSanctionRow = {
   id: number;
   teamId: number | null;
   teamName: string | null;
+  teamGame: GameSlug | null;
   type: SanctionType;
   reason: string;
   endsAt: string | null;
@@ -142,12 +143,9 @@ export type AdminUserSanctionRow = {
 };
 
 export async function listUserSanctions(userId: string, limit = 15): Promise<AdminUserSanctionRow[]> {
-  // Sanction teams come from the V1 data, which was Valorant only.
-  const { teams } = valorantTables;
   const rows = await db
-    .select({ id: sanctions.id, teamId: sanctions.teamId, teamName: teams.name, type: sanctions.type, reason: sanctions.reason, endsAt: sanctions.endsAt, revokedAt: sanctions.revokedAt })
+    .select({ id: sanctions.id, teamId: sanctions.teamId, teamName: sanctionTeamName(), teamGame: sanctions.game, type: sanctions.type, reason: sanctions.reason, endsAt: sanctions.endsAt, revokedAt: sanctions.revokedAt })
     .from(sanctions)
-    .leftJoin(teams, eq(teams.id, sanctions.teamId))
     .where(eq(sanctions.userId, userId))
     .orderBy(desc(sanctions.id))
     .limit(limit);
@@ -156,6 +154,7 @@ export async function listUserSanctions(userId: string, limit = 15): Promise<Adm
     id: r.id,
     teamId: r.teamId,
     teamName: r.teamName,
+    teamGame: sanctionTeamGame(r.teamGame),
     type: r.type as SanctionType,
     reason: r.reason,
     endsAt: r.endsAt ? r.endsAt.toISOString() : null,

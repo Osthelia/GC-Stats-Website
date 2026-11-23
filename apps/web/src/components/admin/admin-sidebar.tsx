@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { GAMES } from "@gc-stats/db/game";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 import { withGame } from "@/lib/game-href";
 import { cn } from "@/lib/utils";
 import { ADMIN_TOP_ITEMS as TOP_ITEMS, ADMIN_NAV_GROUPS as NAV_GROUPS, ADMIN_GAME_ITEMS as GAME_ITEMS, type AdminNavItem as NavItem } from "@/lib/admin-nav-items";
@@ -113,14 +113,20 @@ function NavItemLabel({ item, label, hasAlert, alertLabel }: { item: NavItem; la
   );
 }
 
+export type AdminSidebarGame = { game: GameSlug; permissions: string[]; isSuperAdmin: boolean; isGameAdmin: boolean };
+
 export function AdminSidebar({
   permissions,
   isSuperAdmin,
+  games,
   alerts,
+  gameAlerts,
 }: {
   permissions: string[];
   isSuperAdmin: boolean;
+  games: AdminSidebarGame[];
   alerts: Record<string, boolean>;
+  gameAlerts: Record<GameSlug, Record<string, boolean>>;
 }) {
   const t = useTranslations("admin.nav");
   const tGame = useTranslations("game");
@@ -131,10 +137,15 @@ export function AdminSidebar({
   const isActive = (item: NavItem, href = item.href) =>
     item.href === "/admin" ? isDashboard : item.exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
-  const canSee = (item: NavItem) =>
-    isSuperAdmin || ((!item.superAdminOnly) && (!item.permission || permissions.includes(item.permission)));
+  const canSeeWith = (granted: string[], superAdmin: boolean) => (item: NavItem) =>
+    superAdmin || (!item.superAdminOnly && (!item.permission || granted.includes(item.permission)));
+  const canSee = canSeeWith(permissions, isSuperAdmin);
 
-  const visibleGameItems = GAME_ITEMS.filter(canSee);
+  // Per game, the items the viewer may open there; a game without any (or without admin access) gets no group.
+  const gameGroups = games
+    .filter((entry) => entry.isGameAdmin)
+    .map((entry) => ({ game: entry.game, items: GAME_ITEMS.filter(canSeeWith(entry.permissions, entry.isSuperAdmin)) }))
+    .filter((group) => group.items.length > 0);
 
   const visibleGroups = NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter(canSee) })).filter(
     (group) => group.items.length > 0
@@ -171,11 +182,10 @@ export function AdminSidebar({
           <SidebarSeparator className="mt-3 mb-0 group-data-[collapsible=icon]:hidden" />
         </SidebarGroup>
 
-        {visibleGameItems.length > 0 &&
-          GAMES.map((game) => (
+        {gameGroups.map(({ game, items }) => (
             <NavGroup key={game} groupKey={`game_${game}`} label={tGame(game)}>
               <SidebarMenu className="gap-1.5">
-                {visibleGameItems.map((item) => {
+                {items.map((item) => {
                   const href = withGame(item.href, game);
                   const alertKey = ALERT_LABEL_KEYS[item.href];
                   return (
@@ -188,7 +198,7 @@ export function AdminSidebar({
                         <NavItemLabel
                           item={item}
                           label={t(item.labelKey)}
-                          hasAlert={alerts[item.href] === true}
+                          hasAlert={gameAlerts[game]?.[item.href] === true}
                           alertLabel={alertKey ? t(alertKey) : ""}
                         />
                       </SidebarMenuButton>

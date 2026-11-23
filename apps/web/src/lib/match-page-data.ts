@@ -416,8 +416,8 @@ export async function getCompletedMatchStats(
         getMatchMaps(game, matchId, entrantAId, entrantBId),
         getMatchMapsStatsBatch(matchId, entrantAId, entrantBId),
       ]),
-    ["completed-match-stats-v3", game, String(matchId), String(entrantAId), String(entrantBId), String(ratingModelId)],
-    { tags: [matchTag(matchId), MATCH_STATS_TAG], revalidate: 86400 },
+    ["completed-match-stats-v4", game, String(matchId), String(entrantAId), String(entrantBId), String(ratingModelId)],
+    { tags: [matchTag(game, matchId), MATCH_STATS_TAG], revalidate: 86400 },
   )();
 }
 

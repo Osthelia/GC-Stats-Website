@@ -163,7 +163,7 @@ export async function addLeagueGame(game: GameSlug, tournamentId: number, matchI
     return row;
   });
   await syncMatchScoreFromGames(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   after(() => ensurePatchCatalog(match.patch));
 
   return { ok: true, id: created.id };
@@ -195,7 +195,7 @@ export async function updateLeagueGame(game: GameSlug, tournamentId: number, mat
     }
   });
   await syncMatchScoreFromGames(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   after(() => ensurePatchCatalog(match.patch));
 
   return { ok: true, id: gameId };
@@ -282,7 +282,7 @@ export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, 
     await tx.update(games).set({ draftEditedAt: new Date(), draftImportDiffers: false, draftFirstPick: input.firstPick, draftBlueEntrantId: input.blueEntrantId }).where(eq(games.id, gameId));
     await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Edited the draft of game ${existing.order} of match #${matchId}`, actorUserId, properties: { section: "draft", gameId, steps: stepRows.length, unplacedPicks: pickRows.length, firstPick: input.firstPick } }, tx);
   });
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   return { ok: true };
 }
 
@@ -305,7 +305,7 @@ export async function deleteLeagueGame(game: GameSlug, tournamentId: number, mat
     await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Deleted game ${existing.order} of match #${matchId}`, actorUserId, properties: { section: "games", gameId } }, tx);
   });
   await syncMatchScoreFromGames(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
 
   return { ok: true };
 }
@@ -476,7 +476,7 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
     await logActivity({ game, subject: "match", subjectId: matchId, event: "updated", description: `Imported Liquipedia wikicode into match #${matchId}`, actorUserId, properties: { section: "wikicodeImport", games: planned.length } }, tx);
   });
   await syncMatchScoreFromGames(game, matchId);
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   // The names were read above; this also copies the patch's icons.
   after(() => ensurePatchCatalog(match.patch ?? patchSet));
 
@@ -563,7 +563,7 @@ export async function saveLeagueGameLineup(game: GameSlug, tournamentId: number,
     if ((err as { cause?: { code?: string } }).cause?.code === "23503") return { ok: false, error: { kind: "unknownPerson" } };
     throw err;
   }
-  updateTag(matchTag(matchId));
+  updateTag(matchTag(game, matchId));
   after(() => ensurePatchCatalog(match.patch));
   return { ok: true };
 }

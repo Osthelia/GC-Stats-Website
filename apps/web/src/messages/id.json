@@ -730,7 +730,7 @@
     "intro": "Dengan mengakses atau menggunakan GC Stats, Anda setuju terikat pada Ketentuan Layanan ini. Harap baca dengan saksama sebelum menggunakan platform.",
     "service": {
       "title": "Tentang Layanan",
-      "text": "GC Stats adalah platform komunitas yang berdedikasi untuk mengarsipkan dan membagikan data kompetitif dari turnamen Valorant Game Changers dan acara terkait. Layanan ini menyediakan akses ke hasil turnamen, statistik pemain, informasi tim, dan data pertandingan. GC Stats tidak berafiliasi dengan, didukung oleh, atau terhubung secara resmi dengan Riot Games."
+      "text": "GC Stats adalah platform komunitas yang berdedikasi untuk mengarsipkan dan membagikan data kompetitif dari turnamen Game Changers dan acara terkait. Layanan ini menyediakan akses ke hasil turnamen, statistik pemain, informasi tim, dan data pertandingan. GC Stats tidak berafiliasi dengan, didukung oleh, atau terhubung secara resmi dengan Riot Games."
     },
     "access": {
       "title": "Akses dan Kelayakan",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Data Pertandingan Riot",
-      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Data ini mencakup:",
+      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia, atau dimasukkan secara manual oleh tim kami. Data ini mencakup:",
       "items": [
         "Riot ID (nama game dan tagline) pemain yang berpartisipasi",
         "Riwayat pertandingan untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak",
-        "Statistik dalam pertandingan: papan skor, ringkasan performa, ringkasan ekonomi, dan kill feed"
+        "Statistik dalam pertandingan: papan skor, ringkasan performa, dan lainnya"
       ],
       "optIn": "Partisipasi dasar dalam pertandingan (nama, statistik) dicatat untuk setiap pemain yang muncul dalam pertandingan turnamen yang dilacak, karena ini adalah data kompetitif publik. Informasi profil tambahan (biografi, media sosial, foto) hanya ditambahkan dengan persetujuan pemain atau tim.",
       "correction": "Jika Anda adalah pemain yang muncul dalam data ini dan ingin meminta koreksi atau penghapusan, Anda dapat menghubungi kami kapan saja (lihat Kebijakan Privasi kami untuk detailnya)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Penggunaan API",
-      "text": "GC Stats menyediakan API publik untuk proyek komunitas dan proyek terkait GC. Penggunaan API tunduk pada Ketentuan ini. API ditujukan untuk keperluan informasi, analisis, dan komunitas. Pembatasan laju permintaan dapat diberlakukan. GC Stats berhak mencabut akses API untuk penggunaan apa pun yang melanggar Ketentuan ini atau kebijakan pengembang Riot Games."
+      "text": "GC Stats menyediakan API publik untuk proyek komunitas dan proyek terkait GC. Saat ini API hanya mencakup Valorant; League of Legends akan menyusul. Penggunaan API tunduk pada Ketentuan ini. API ditujukan untuk keperluan informasi, analisis, dan komunitas. Pembatasan laju permintaan dapat diberlakukan. GC Stats berhak mencabut akses API untuk penggunaan apa pun yang melanggar Ketentuan ini atau kebijakan pengembang Riot Games."
     },
     "ip": {
       "title": "Kekayaan Intelektual",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Data Publik",
-      "text": "Informasi profil (nama panggilan, bio, media sosial, negara) diberikan oleh pemain atau organisasinya, atau ditambahkan oleh tim kami dari sumber publik, lalu ditampilkan secara publik di situs. Statistik permainan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan turnamen yang diikuti. Semua data ini tersedia untuk publik dan dibagikan melalui API kami."
+      "text": "Informasi profil (nama panggilan, bio, media sosial, negara) diberikan oleh pemain atau organisasinya, atau ditambahkan oleh tim kami dari sumber publik, lalu ditampilkan secara publik di situs. Statistik permainan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan turnamen yang diikuti. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia (dengan lisensi CC BY-SA) atau dimasukkan secara manual oleh tim kami dari siaran jika tidak ada data lain. Semua data ini tersedia untuk publik dan dibagikan melalui API kami."
     },
     "privateData": {
       "title": "Data Pribadi",
-      "text": "Data pribadi yang kami simpan terbatas pada apa yang diperlukan untuk menjalankan situs dan sistem akunnya: Riot ID untuk menautkan profil pemain, ditambah data akun yang dijelaskan di bawah bagi siapa pun yang membuat akun pengguna.",
-      "riotUsage": "Riot ID: Diidentifikasi dan ditetapkan oleh tim kami dari data pertandingan yang diambil melalui API resmi Riot Games. Digunakan hanya untuk mengaitkan statistik pertandingan dengan profil pemain. Dapat dikoreksi atau dihapus atas permintaan."
+      "text": "Data pribadi yang kami simpan terbatas pada apa yang diperlukan untuk menjalankan situs dan sistem akunnya: akun Riot para pemain, untuk menautkan statistik pertandingan ke profil mereka, ditambah data akun yang dijelaskan di bawah bagi siapa pun yang membuat akun pengguna.",
+      "riotUsage": "Akun Riot: Riot ID diidentifikasi dan ditetapkan oleh tim kami dari data pertandingan yang diambil melalui API resmi Riot Games atau Leaguepedia, atau dimasukkan secara manual jika hanya tersedia siaran pertandingannya. Untuk League of Legends, kami juga menyimpan PUUID Riot setiap akun, server dan wilayahnya, serta tanggal terakhir akun itu terlihat dalam pertandingan yang dilacak. Hanya digunakan untuk mengaitkan statistik pertandingan dengan profil pemain. Dapat dikoreksi atau dihapus atas permintaan."
     },
     "accountData": {
       "title": "Akun Pengguna",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Tidak pernah ditampilkan",
             "items": [
-              "ID Riot, hanya digunakan untuk menautkan statistik pertandingan ke profil yang benar"
+              "Akun Riot, hanya digunakan untuk menautkan statistik pertandingan ke profil yang tepat"
             ]
           }
         },
-        "source": "Orang itu sendiri atau organisasinya, tim kami dari sumber publik (Liquipedia, pengumuman resmi), atau komunitas melalui usulan yang disetujui tim kami. ID Riot berasal dari API resmi Riot Games.",
-        "visibility": "Semua orang, di situs dan melalui API kami, kecuali ID Riot.",
+        "source": "Orang itu sendiri atau organisasinya, tim kami dari sumber publik (Liquipedia, pengumuman resmi), atau komunitas melalui usulan yang disetujui tim kami. Akun Riot berasal dari API resmi Riot Games atau Leaguepedia, atau dimasukkan oleh tim kami.",
+        "visibility": "Semua orang, di situs dan melalui API kami, kecuali akun Riot.",
         "retention": "Disimpan selamanya sebagai arsip skena, bahkan ketika orang tersebut berhenti bermain. Anda dapat meminta perbaikan atau penghapusan."
       },
       "matchStats": {
         "title": "Statistik pertandingan",
         "groups": {
           "stats": {
-            "label": "Untuk setiap pertandingan",
+            "label": "Untuk setiap pertandingan Valorant yang dimainkan",
             "items": [
               "Agen yang dimainkan",
               "Kill, death, dan assist",
@@ -1351,9 +1351,20 @@
               "Ekonomi dan perlengkapan",
               "Posisi di peta"
             ]
+          },
+          "league": {
+            "label": "Untuk setiap game League of Legends yang dimainkan",
+            "items": [
+              "Champion, lane, summoner spell, dan rune",
+              "Kill, kematian, dan asis",
+              "CS, gold, damage, dan skor vision",
+              "Item",
+              "Gold, pengalaman, dan CS dibandingkan lawan lane pada menit 10 dan 15",
+              "Posisi di peta dan kejadian dalam game (kill, objektif, ward)"
+            ]
           }
         },
-        "source": "API resmi Riot Games, untuk pertandingan turnamen yang kami ikuti.",
+        "source": "API resmi Riot Games, untuk pertandingan turnamen yang kami liput. Untuk League of Legends juga Leaguepedia, atau tim kami secara manual dari siaran jika tidak ada data lain.",
         "visibility": "Semua orang, di situs dan melalui API kami.",
         "retention": "Disimpan sebagai arsip sejarah kompetisi."
       },
@@ -1701,7 +1712,9 @@
       "recruitmentManager": "Manajer rekrutmen",
       "developer": "Pengembang",
       "volunteer": "Relawan",
+      "headOfEsports": "Kepala Esports",
       "headOfValorant": "Kepala Valorant",
+      "headOfLeague": "Kepala League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Tidak diketahui",
@@ -2387,7 +2400,9 @@
           "recruitmentManager": "Manajer rekrutmen",
           "developer": "Pengembang",
           "volunteer": "Relawan",
+          "headOfEsports": "Kepala Esports",
           "headOfValorant": "Kepala Valorant",
+          "headOfLeague": "Kepala League of Legends",
           "streamer": "Streamer"
         },
         "error": {

@@ -10,7 +10,10 @@ import type { Metadata } from "next";
 import { gameFromParams } from "@/lib/game";
 import { getTranslations } from "next-intl/server";
 import { Users, Shield, Trophy, User, Gamepad2 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
+import { PERMISSIONS } from "@gc-stats/db";
+import { hasAccess, listAdminGames, requireAdminAccess } from "@/lib/rbac";
+import type { AppLocale } from "@/i18n/routing";
 import { AdminGameSwitcher } from "@/components/admin/admin-game-switcher";
 import { publicGames } from "@/lib/public-games";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
@@ -36,6 +39,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function AdminDashboardPage({ params, searchParams }: { params: Promise<{ locale: string; game: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { locale } = await params;
   const game = await gameFromParams(params);
+  const access = await requireAdminAccess(locale as AppLocale, game);
+  const adminGames = await listAdminGames(access.userId);
+  if (!access.isGameAdmin) redirect({ href: adminGames[0] ? `/admin/${adminGames[0]}` : "/", locale });
+
+  const showTournaments = hasAccess(access, PERMISSIONS.tournamentsView);
+  const showTeams = hasAccess(access, PERMISSIONS.teamsView);
+  const showPlayers = hasAccess(access, PERMISSIONS.playersView);
   const sp = await searchParams;
   const query: Record<string, string> = {};
   for (const key of PAGE_KEYS) {
@@ -46,18 +56,18 @@ export default async function AdminDashboardPage({ params, searchParams }: { par
   const t = await getTranslations({ locale, namespace: "admin.dashboard" });
   const [counts, tournaments, recentMatches, teamMods, playerMods] = await Promise.all([
     getDashboardCounts(game),
-    getDashboardTournaments(game, tournamentTab, parsePage(query.tournamentPage)),
-    getDashboardRecentMatches(game, parsePage(query.matchPage)),
-    getDashboardModifications(game, "team", parsePage(query.teamPage)),
-    getDashboardModifications(game, "player", parsePage(query.playerPage)),
+    showTournaments ? getDashboardTournaments(game, tournamentTab, parsePage(query.tournamentPage)) : null,
+    showTournaments ? getDashboardRecentMatches(game, parsePage(query.matchPage)) : null,
+    showTeams ? getDashboardModifications(game, "team", parsePage(query.teamPage)) : null,
+    showPlayers ? getDashboardModifications(game, "player", parsePage(query.playerPage)) : null,
   ]);
 
   const cards = [
-    { href: "/admin/tournaments", label: t("tournaments"), value: counts.tournaments, icon: Trophy, color: "amber" as const },
-    { href: "/admin/teams", label: t("teams"), value: counts.teams, icon: Shield, color: "violet" as const },
-    { href: "/admin/players", label: t("players"), value: counts.players, icon: User, color: "sky" as const },
-    { href: "/admin/tournaments", label: t("matches"), value: counts.matches, icon: Gamepad2, color: "orange" as const },
-  ];
+    { href: "/admin/tournaments", label: t("tournaments"), value: counts.tournaments, icon: Trophy, color: "amber" as const, visible: showTournaments },
+    { href: "/admin/teams", label: t("teams"), value: counts.teams, icon: Shield, color: "violet" as const, visible: showTeams },
+    { href: "/admin/players", label: t("players"), value: counts.players, icon: User, color: "sky" as const, visible: showPlayers },
+    { href: "/admin/tournaments", label: t("matches"), value: counts.matches, icon: Gamepad2, color: "orange" as const, visible: showTournaments },
+  ].filter((card) => card.visible);
 
   return (
     <div className="flex flex-col gap-6">
@@ -66,7 +76,7 @@ export default async function AdminDashboardPage({ params, searchParams }: { par
           <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <AdminGameSwitcher publicGames={publicGames()} />
+        <AdminGameSwitcher games={adminGames} publicGames={publicGames()} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -82,10 +92,10 @@ export default async function AdminDashboardPage({ params, searchParams }: { par
       </div>
 
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <DashboardTournamentsWidget tab={tournamentTab} data={tournaments} query={query} />
-        <DashboardModificationsWidget type="team" data={teamMods} query={query} />
-        <DashboardModificationsWidget type="player" data={playerMods} query={query} />
-        <DashboardMatchesWidget data={recentMatches} query={query} />
+        {tournaments && <DashboardTournamentsWidget tab={tournamentTab} data={tournaments} query={query} />}
+        {teamMods && <DashboardModificationsWidget type="team" data={teamMods} query={query} />}
+        {playerMods && <DashboardModificationsWidget type="player" data={playerMods} query={query} />}
+        {recentMatches && <DashboardMatchesWidget data={recentMatches} query={query} />}
       </div>
     </div>
   );

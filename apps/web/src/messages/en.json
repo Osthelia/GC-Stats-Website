@@ -730,7 +730,7 @@
     "intro": "By accessing or using GC Stats, you agree to be bound by these Terms of Service. Please read them carefully before using the platform.",
     "service": {
       "title": "About the Service",
-      "text": "GC Stats is a community platform dedicated to archiving and sharing competitive data from Valorant Game Changers tournaments and related events. The service provides access to tournament results, player statistics, team information, and match data. GC Stats is not affiliated with, endorsed by, or officially connected to Riot Games."
+      "text": "GC Stats is a community platform dedicated to archiving and sharing competitive data from Game Changers tournaments and related events. The service provides access to tournament results, player statistics, team information, and match data. GC Stats is not affiliated with, endorsed by, or officially connected to Riot Games."
     },
     "access": {
       "title": "Access & Eligibility",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Riot Match Data",
-      "text": "GC Stats retrieves match statistics directly from the official Riot Games API for matches identified as part of tracked tournaments. This data includes:",
+      "text": "GC Stats retrieves match statistics directly from the official Riot Games API for matches identified as part of tracked tournaments. For League of Legends, statistics can also come from Leaguepedia, or be entered by hand by our team. This data includes:",
       "items": [
         "Riot IDs (game name and tagline) of participating players",
         "Match history for matches identified as part of tracked tournaments",
-        "In-match statistics: scoreboard, performance summary, economy summary, and kill feed"
+        "In-match statistics: scoreboard, performance summary, and more"
       ],
       "optIn": "Basic match participation (name, statistics) is recorded for any player appearing in a tracked tournament match, as this is public competitive data. Additional profile information (biography, socials, photo) is only added with the player's or team's consent.",
       "correction": "If you are a player appearing in this data and wish to request a correction or removal, you may contact us at any time (see our Privacy Policy for details)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "API Usage",
-      "text": "GC Stats provides a public API for community and GC-related projects. Use of the API is subject to these Terms. The API is intended for informational, analytical, and community purposes. Rate limiting may be enforced. GC Stats reserves the right to revoke API access for any usage that violates these Terms or Riot Games's developer policies."
+      "text": "GC Stats provides a public API for community and GC-related projects. It currently covers Valorant only; League of Legends will follow later. Use of the API is subject to these Terms. The API is intended for informational, analytical, and community purposes. Rate limiting may be enforced. GC Stats reserves the right to revoke API access for any usage that violates these Terms or Riot Games's developer policies."
     },
     "ip": {
       "title": "Intellectual Property",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Public Data",
-      "text": "Profile information (handle, bio, socials, country) is provided by the player or their organization, or added by our team from public sources, then shown publicly on the site. Game statistics are collected directly through the official Riot Games API for the matches of covered tournaments. All of this data is publicly available and shared through our API."
+      "text": "Profile information (handle, bio, socials, country) is provided by the player or their organization, or added by our team from public sources, then shown publicly on the site. Game statistics are collected directly through the official Riot Games API for the matches of covered tournaments. For League of Legends, they can also come from Leaguepedia (under the CC BY-SA license) or be entered by hand by our team from the stream when no other data is available. All of this data is publicly available and shared through our API."
     },
     "privateData": {
       "title": "Private Data",
-      "text": "The personal data we store is limited to what is needed to run the site and its account system: a Riot ID to link a player profile, plus the account data described below for anyone who creates a user account.",
-      "riotUsage": "Riot ID: Identified and assigned by our team from match data retrieved through the official Riot Games API. Used solely to associate match statistics with a player profile. Can be corrected or removed upon request."
+      "text": "The personal data we store is limited to what is needed to run the site and its account system: the Riot accounts of players, to link match statistics to their profile, plus the account data described below for anyone who creates a user account.",
+      "riotUsage": "Riot accounts: Riot IDs are identified and assigned by our team from match data retrieved through the official Riot Games API or Leaguepedia, or entered by hand when only a stream of the match is available. For League of Legends, we also store each account's Riot PUUID, its server and region, and the date it was last seen in a tracked game. Used solely to associate match statistics with a player profile. Can be corrected or removed upon request."
     },
     "accountData": {
       "title": "User Account",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Never shown",
             "items": [
-              "Riot ID, only used to link match statistics to the right profile"
+              "Riot accounts, only used to link match statistics to the right profile"
             ]
           }
         },
-        "source": "The person themselves or their organization, our team from public sources (Liquipedia, official announcements), or the community through a suggestion approved by our team. The Riot ID comes from the official Riot Games API.",
-        "visibility": "Everyone, on the site and through our API, except the Riot ID.",
+        "source": "The person themselves or their organization, our team from public sources (Liquipedia, official announcements), or the community through a suggestion approved by our team. Riot accounts come from the official Riot Games API or Leaguepedia, or are entered by our team.",
+        "visibility": "Everyone, on the site and through our API, except the Riot accounts.",
         "retention": "Kept for life, as an archive of the scene, even when the person stops playing. You can ask for a correction or a deletion."
       },
       "matchStats": {
         "title": "Match statistics",
         "groups": {
           "stats": {
-            "label": "For each match played",
+            "label": "For each Valorant match played",
             "items": [
               "Agents played",
               "Kills, deaths and assists",
@@ -1351,9 +1351,20 @@
               "Economy and loadout",
               "Positions on the map"
             ]
+          },
+          "league": {
+            "label": "For each League of Legends game played",
+            "items": [
+              "Champion, lane, summoner spells and runes",
+              "Kills, deaths and assists",
+              "CS, gold, damage and vision score",
+              "Items",
+              "Gold, experience and CS against the lane opponent at 10 and 15 minutes",
+              "Positions on the map and events of the game (kills, objectives, wards)"
+            ]
           }
         },
-        "source": "The official Riot Games API, for the matches of the tournaments we cover.",
+        "source": "The official Riot Games API, for the matches of the tournaments we cover. For League of Legends also Leaguepedia, or our team by hand from the stream when no other data is available.",
         "visibility": "Everyone, on the site and through our API.",
         "retention": "Kept as a historical archive of competitions."
       },
@@ -1701,7 +1712,9 @@
       "recruitmentManager": "Recruitment manager",
       "developer": "Developer",
       "volunteer": "Volunteer",
+      "headOfEsports": "Head of Esports",
       "headOfValorant": "Head of Valorant",
+      "headOfLeague": "Head of League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Unknown",
@@ -2387,7 +2400,9 @@
           "recruitmentManager": "Recruitment manager",
           "developer": "Developer",
           "volunteer": "Volunteer",
+          "headOfEsports": "Head of Esports",
           "headOfValorant": "Head of Valorant",
+          "headOfLeague": "Head of League of Legends",
           "streamer": "Streamer"
         },
         "error": {

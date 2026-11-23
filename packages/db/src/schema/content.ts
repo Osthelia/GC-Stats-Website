@@ -11,7 +11,8 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, integer, timestamp, uuid, unique, type AnyPgColumn, index } from "drizzle-orm/pg-core";
+import { pgTable, bigserial, bigint, text, varchar, jsonb, boolean, integer, timestamp, uuid, unique, check, type AnyPgColumn, index } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { users } from "./auth";
 import { organizations } from "./people";
 
@@ -123,6 +124,8 @@ export const sanctions = pgTable("sanctions", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
   teamId: bigint("team_id", { mode: "number" }),
+  // The game of the team (team ids are counted per game); null for a sanction without a team.
+  game: text("game"),
   issuedBy: text("issued_by").references(() => users.id, { onDelete: "set null" }),
   type: text("type").notNull(), // 'note' | 'warning' | 'mute' | 'suspension' | 'ban'
   reason: text("reason").notNull(),
@@ -131,7 +134,9 @@ export const sanctions = pgTable("sanctions", {
   revokedAt: timestamp("revoked_at", { withTimezone: true }),
   revokedBy: text("revoked_by").references(() => users.id, { onDelete: "set null" }),
   transferredFrom: bigint("transferred_from", { mode: "number" }),
-});
+}, (t) => [
+  check("sanctions_team_game_check", sql`(${t.teamId} IS NULL) = (${t.game} IS NULL)`),
+]);
 
 export const sanctionIdentities = pgTable("sanction_identities", {
   id: bigserial("id", { mode: "number" }).primaryKey(),

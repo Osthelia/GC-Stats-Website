@@ -730,7 +730,7 @@
     "intro": "GC Stats'a erişerek veya onu kullanarak, bu Kullanım Koşulları'na uymayı kabul edersiniz. Platformu kullanmadan önce lütfen bu koşulları dikkatlice okuyun.",
     "service": {
       "title": "Hizmet Hakkında",
-      "text": "GC Stats, Valorant Game Changers turnuvalarına ve ilgili etkinliklere ait rekabetçi verilerin arşivlenmesine ve paylaşılmasına adanmış bir topluluk platformudur. Hizmet, turnuva sonuçlarına, oyuncu istatistiklerine, takım bilgilerine ve maç verilerine erişim sağlar. GC Stats, Riot Games ile bağlantılı değildir, onun tarafından desteklenmez veya onunla resmi bir ilişkisi yoktur."
+      "text": "GC Stats, Game Changers turnuvalarına ve ilgili etkinliklere ait rekabetçi verilerin arşivlenmesine ve paylaşılmasına adanmış bir topluluk platformudur. Hizmet, turnuva sonuçlarına, oyuncu istatistiklerine, takım bilgilerine ve maç verilerine erişim sağlar. GC Stats, Riot Games ile bağlantılı değildir, onun tarafından desteklenmez veya onunla resmi bir ilişkisi yoktur."
     },
     "access": {
       "title": "Erişim ve Uygunluk",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Riot Maç Verileri",
-      "text": "GC Stats, takip edilen turnuvaların parçası olarak belirlenen maçlara ait istatistikleri doğrudan resmi Riot Games API'sinden alır. Bu veriler şunları içerir:",
+      "text": "GC Stats, takip edilen turnuvaların parçası olarak belirlenen maçlara ait istatistikleri doğrudan resmi Riot Games API'sinden alır. League of Legends için istatistikler Leaguepedia'dan da gelebilir veya ekibimiz tarafından elle girilebilir. Bu veriler şunları içerir:",
       "items": [
         "Katılımcı oyuncuların Riot ID'leri (oyun içi isim ve etiket)",
         "Takip edilen turnuvaların parçası olarak belirlenen maçların geçmişi",
-        "Maç içi istatistikler: skor tablosu, performans özeti, ekonomi özeti ve öldürme akışı (kill feed)"
+        "Maç içi istatistikler: skor tablosu, performans özeti ve daha fazlası"
       ],
       "optIn": "Bu, herkese açık rekabetçi bir veri olduğundan, takip edilen bir turnuva maçında yer alan herhangi bir oyuncu için temel maç katılımı (isim, istatistikler) kaydedilir. Ek profil bilgileri (biyografi, sosyal medya, fotoğraf) yalnızca oyuncunun veya takımın onayıyla eklenir.",
       "correction": "Bu verilerde yer alan bir oyuncuysanız ve bir düzeltme veya kaldırma talebinde bulunmak istiyorsanız, bizimle her zaman iletişime geçebilirsiniz (ayrıntılar için Gizlilik Politikamıza bakın)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "API Kullanımı",
-      "text": "GC Stats, topluluk ve GC ile ilgili projeler için herkese açık bir API sunar. API'nin kullanımı bu Koşullara tabidir. API, bilgilendirme, analiz ve topluluk amaçları için tasarlanmıştır. Hız sınırlaması uygulanabilir. GC Stats, bu Koşulları veya Riot Games'in geliştirici politikalarını ihlal eden her türlü kullanım için API erişimini iptal etme hakkını saklı tutar."
+      "text": "GC Stats, topluluk ve GC ile ilgili projeler için herkese açık bir API sunar. API şu anda yalnızca Valorant'ı kapsar; League of Legends daha sonra eklenecek. API'nin kullanımı bu Koşullara tabidir. API, bilgilendirme, analiz ve topluluk amaçları için tasarlanmıştır. Hız sınırlaması uygulanabilir. GC Stats, bu Koşulları veya Riot Games'in geliştirici politikalarını ihlal eden her türlü kullanım için API erişimini iptal etme hakkını saklı tutar."
     },
     "ip": {
       "title": "Fikri Mülkiyet",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Herkese Açık Veriler",
-      "text": "Profil bilgileri (takma ad, biyografi, sosyal medya, ülke) oyuncu veya organizasyonu tarafından sağlanır ya da ekibimiz tarafından herkese açık kaynaklardan eklenir ve sitede herkese açık olarak gösterilir. Oyun istatistikleri, takip edilen turnuvaların maçları için doğrudan Riot Games'in resmi API'si üzerinden toplanır. Tüm bu veriler herkese açıktır ve API'miz üzerinden paylaşılır."
+      "text": "Profil bilgileri (takma ad, biyografi, sosyal medya, ülke) oyuncu veya organizasyonu tarafından sağlanır ya da ekibimiz tarafından herkese açık kaynaklardan eklenir ve sitede herkese açık olarak gösterilir. Oyun istatistikleri, takip edilen turnuvaların maçları için doğrudan Riot Games'in resmi API'si üzerinden toplanır. League of Legends için Leaguepedia'dan (CC BY-SA lisansıyla) da gelebilir veya başka veri olmadığında ekibimiz tarafından yayından elle girilebilir. Tüm bu veriler herkese açıktır ve API'miz üzerinden paylaşılır."
     },
     "privateData": {
       "title": "Özel Veriler",
-      "text": "Sakladığımız kişisel veriler, siteyi ve hesap sistemini çalıştırmak için gereken bilgilerle sınırlıdır: bir oyuncu profilini bağlamak için bir Riot ID'si, ayrıca bir kullanıcı hesabı oluşturan herkes için aşağıda açıklanan hesap verileri.",
-      "riotUsage": "Riot ID: Resmi Riot Games API'si aracılığıyla alınan maç verilerinden ekibimiz tarafından belirlenir ve atanır. Yalnızca maç istatistiklerini bir oyuncu profiliyle ilişkilendirmek için kullanılır. Talep üzerine düzeltilebilir veya kaldırılabilir."
+      "text": "Sakladığımız kişisel veriler, siteyi ve hesap sistemini çalıştırmak için gereken bilgilerle sınırlıdır: maç istatistiklerini profillerine bağlamak için oyuncuların Riot hesapları, ayrıca bir kullanıcı hesabı oluşturan herkes için aşağıda açıklanan hesap verileri.",
+      "riotUsage": "Riot hesapları: Riot ID'leri, ekibimiz tarafından resmi Riot Games API'sinden veya Leaguepedia'dan alınan maç verilerine göre belirlenip atanır ya da maçın yalnızca yayını mevcut olduğunda elle girilir. League of Legends için her hesabın Riot PUUID'sini, sunucusunu ve bölgesini ve takip edilen bir oyunda en son görüldüğü tarihi de saklarız. Yalnızca maç istatistiklerini bir oyuncu profiliyle ilişkilendirmek için kullanılır. Talep üzerine düzeltilebilir veya kaldırılabilir."
     },
     "accountData": {
       "title": "Kullanıcı Hesabı",
@@ -1331,19 +1331,19 @@
           "hidden": {
             "label": "Asla gösterilmez",
             "items": [
-              "Riot kimliği, yalnızca maç istatistiklerini doğru profile bağlamak için kullanılır"
+              "Riot hesapları, yalnızca maç istatistiklerini doğru profile bağlamak için kullanılır"
             ]
           }
         },
-        "source": "Kişinin kendisi veya organizasyonu, ekibimiz herkese açık kaynaklardan (Liquipedia, resmi duyurular) ya da topluluk, ekibimizin onayladığı bir öneriyle. Riot kimliği, Riot Games'in resmi API'sinden gelir.",
-        "visibility": "Herkes, sitede ve API'miz üzerinden, Riot kimliği hariç.",
+        "source": "Kişinin kendisi veya organizasyonu, ekibimiz herkese açık kaynaklardan (Liquipedia, resmi duyurular) ya da topluluk, ekibimizin onayladığı bir öneriyle. Riot hesapları, resmi Riot Games API'sinden veya Leaguepedia'dan gelir ya da ekibimiz tarafından girilir.",
+        "visibility": "Herkes, sitede ve API'miz üzerinden, Riot hesapları hariç.",
         "retention": "Kişi oynamayı bıraksa bile sahnenin arşivi olarak ömür boyu saklanır. Düzeltme veya silme talep edebilirsiniz."
       },
       "matchStats": {
         "title": "Maç istatistikleri",
         "groups": {
           "stats": {
-            "label": "Oynanan her maç için",
+            "label": "Oynanan her Valorant maçı için",
             "items": [
               "Oynanan ajanlar",
               "Öldürmeler, ölümler ve asistler",
@@ -1351,9 +1351,20 @@
               "Ekonomi ve ekipman",
               "Haritadaki konumlar"
             ]
+          },
+          "league": {
+            "label": "Oynanan her League of Legends oyunu için",
+            "items": [
+              "Şampiyon, koridor, sihirdar büyüleri ve rünler",
+              "Öldürme, ölüm ve asist",
+              "CS, altın, hasar ve görüş skoru",
+              "Eşyalar",
+              "10. ve 15. dakikada koridor rakibine göre altın, deneyim ve CS",
+              "Haritadaki konumlar ve oyun olayları (öldürmeler, hedefler, totemler)"
+            ]
           }
         },
-        "source": "Takip ettiğimiz turnuvaların maçları için Riot Games'in resmi API'si.",
+        "source": "Takip ettiğimiz turnuvaların maçları için resmi Riot Games API'si. League of Legends için ayrıca Leaguepedia veya başka veri olmadığında ekibimiz tarafından yayından elle girilen veriler.",
         "visibility": "Herkes, sitede ve API'miz üzerinden.",
         "retention": "Turnuvaların tarihsel arşivi olarak saklanır."
       },
@@ -1701,7 +1712,9 @@
       "recruitmentManager": "İşe alım yöneticisi",
       "developer": "Geliştirici",
       "volunteer": "Gönüllü",
+      "headOfEsports": "E-spor sorumlusu",
       "headOfValorant": "Valorant sorumlusu",
+      "headOfLeague": "League of Legends sorumlusu",
       "streamer": "Yayıncı"
     },
     "unknownDate": "Bilinmiyor",
@@ -2387,7 +2400,9 @@
           "recruitmentManager": "İşe alım yöneticisi",
           "developer": "Geliştirici",
           "volunteer": "Gönüllü",
+          "headOfEsports": "E-spor sorumlusu",
           "headOfValorant": "Valorant sorumlusu",
+          "headOfLeague": "League of Legends sorumlusu",
           "streamer": "Yayıncı"
         },
         "error": {

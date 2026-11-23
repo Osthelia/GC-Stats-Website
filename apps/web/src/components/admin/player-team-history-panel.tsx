@@ -38,6 +38,7 @@ import type { LeagueRole } from "@gc-stats/lol-stats-engine";
 import { cn } from "@/lib/utils";
 import type { AdminPlayerTeamHistoryEntry } from "@/lib/admin-players";
 import { useGame } from "@/lib/use-game";
+import { useRouter } from "@/i18n/navigation";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -237,7 +238,14 @@ export function PlayerTeamHistoryPanel({
 }) {
   const game = useGame();
   const t = useTranslations("admin.players.edit");
+  const router = useRouter();
   const [entries, setEntries] = useState(initialEntries);
+
+  const [loadedEntries, setLoadedEntries] = useState(initialEntries);
+  if (initialEntries !== loadedEntries) {
+    setLoadedEntries(initialEntries);
+    setEntries(initialEntries);
+  }
   const [isPending, startTransition] = useTransition();
   const [team, setTeam] = useState<{ id: number; name: string } | null>(null);
   const [role, setRole] = useState<(typeof ROSTER_ROLES)[number]>("player");
@@ -271,10 +279,10 @@ export function PlayerTeamHistoryPanel({
       setJoinSource("");
       setLeftSource("");
       setLanes([]);
-      // No toast here: redundant with the reload below (which is itself the
-      // visual feedback) and would get cut off before it could ever be seen.
+      toast.success(t("historyAddSubmit"));
+      // Not a reload: that would throw away unsaved changes in the other forms of the page (the profile above).
       // The refresh also picks up memberships closed through the conflict dialog.
-      window.location.reload();
+      router.refresh();
     });
   }
 

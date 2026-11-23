@@ -18,7 +18,7 @@ import { requireActorPermission } from "@/lib/rbac";
 import { SANCTION_TYPES, type SanctionType } from "@/lib/admin-sanctions";
 import { notify } from "@/lib/notify";
 import { parseIsoInstant } from "@/lib/datetime-local";
-import type { GameSlug } from "@gc-stats/db/game";
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
 
 export type SanctionField = "target" | "type" | "reason" | "startsAt" | "endsAt";
 export type SanctionFieldErrors = Partial<Record<SanctionField, string>>;
@@ -27,14 +27,15 @@ export type SanctionResult = { ok: true; id: number } | { ok: false; fieldErrors
 export type SanctionInput = {
   userId: string | null;
   teamId: number | null;
+  /** The game of `teamId`: team ids are counted per game. */
+  teamGame: GameSlug | null;
   type: string;
   reason: string;
   startsAt: string;
   endsAt: string;
 };
 
-async function validateSanction(game: GameSlug, input: SanctionInput): Promise<SanctionFieldErrors> {
-  const { teams } = gameTables(game);
+async function validateSanction(input: SanctionInput): Promise<SanctionFieldErrors> {
   const fieldErrors: SanctionFieldErrors = {};
 
   if (!input.userId && !input.teamId) fieldErrors.target = "required";
@@ -43,8 +44,14 @@ async function validateSanction(game: GameSlug, input: SanctionInput): Promise<S
     if (!row) fieldErrors.target = "notFound";
   }
   if (input.teamId) {
-    const [row] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, input.teamId)).limit(1);
-    if (!row) fieldErrors.target = "notFound";
+    // A team is found in the tables of its own game: the same id is another team in the other game.
+    if (!isGameSlug(input.teamGame)) {
+      fieldErrors.target = "notFound";
+    } else {
+      const { teams } = gameTables(input.teamGame);
+      const [row] = await db.select({ id: teams.id }).from(teams).where(eq(teams.id, input.teamId)).limit(1);
+      if (!row) fieldErrors.target = "notFound";
+    }
   }
 
   if (!(SANCTION_TYPES as readonly string[]).includes(input.type)) fieldErrors.type = "invalid";
@@ -69,7 +76,7 @@ async function validateSanction(game: GameSlug, input: SanctionInput): Promise<S
 export async function createSanction(game: GameSlug, input: SanctionInput): Promise<SanctionResult> {
   const access = await requireActorPermission(PERMISSIONS.sanctionsManage, game);
 
-  const fieldErrors = await validateSanction(game, input);
+  const fieldErrors = await validateSanction(input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const [created] = await db
@@ -77,6 +84,7 @@ export async function createSanction(game: GameSlug, input: SanctionInput): Prom
     .values({
       userId: input.userId,
       teamId: input.teamId,
+      game: input.teamId ? input.teamGame : null,
       issuedBy: access.userId,
       type: input.type as SanctionType,
       reason: input.reason.trim(),
