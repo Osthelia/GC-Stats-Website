@@ -134,17 +134,14 @@ export function LeagueGameDialog({
 
   const winnerItems: Record<string, string> = { [NO_WINNER]: t("fieldWinnerNone"), ...Object.fromEntries(entrants.map((e) => [String(e.id), e.name])) };
 
-  // Games between the two entrants of this series come first; the rest of the list follows, so a naming difference never hides a game.
-  const entrantNames = new Set(entrants.map((e) => e.name.trim().toLowerCase()));
-  const isSeriesGame = (g: LeaguepediaGameOption) => entrantNames.has((g.team1 ?? "").trim().toLowerCase()) && entrantNames.has((g.team2 ?? "").trim().toLowerCase());
-  const orderedLeaguepediaGames = [...leaguepediaGames].sort((a, b) => Number(isSeriesGame(b)) - Number(isSeriesGame(a)));
   const leaguepediaLabel = (g: LeaguepediaGameOption) => {
     const date = g.playedAt ? new Date(g.playedAt).toLocaleDateString(locale) : "";
     // A game already stored is greyed out, except the one being edited, which keeps its own Leaguepedia game.
     const stored = g.storedAs && g.storedAs.gameId !== editing?.id ? t(g.storedAs.matchId === matchId ? "gameImport.alreadyStoredHere" : "gameImport.alreadyStoredElsewhere", { order: g.storedAs.order }) : "";
     return [`${g.team1 ?? "?"} vs ${g.team2 ?? "?"}`, t("gameImport.gameNumber", { number: g.gameInMatch }), date, g.hasData ? "" : t("gameImport.noData"), stored].filter(Boolean).join(" · ");
   };
-  const leaguepediaOptions = orderedLeaguepediaGames.map((g) => ({
+  // The page ranks the list: the series' own games first (rankLeaguepediaGames); the rest follows, so a naming difference never hides a game.
+  const leaguepediaOptions = leaguepediaGames.map((g) => ({
     id: g.leaguepediaGameId,
     label: leaguepediaLabel(g),
     disabled: !g.hasData || (g.storedAs !== null && g.storedAs.gameId !== editing?.id),

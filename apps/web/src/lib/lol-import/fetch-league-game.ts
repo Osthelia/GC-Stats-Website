@@ -47,7 +47,7 @@ import type { RelayProblem } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
 import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
-import { compareTeamNames } from "@/lib/liquipedia-team-match";
+import { entrantForName, type SeriesEntrant } from "@/lib/lol-import/series-entrants";
 import { accountHolder, insertAccount, isAccountTaken } from "@/lib/lol-accounts";
 import { importGame } from "./import-game";
 import { loadLeaguepediaGame } from "./leaguepedia-game";
@@ -472,18 +472,6 @@ function riotLoadError(error: RiotGameError): GameImportError {
   }
 }
 
-/** An entrant of the series, with every name a Leaguepedia team name can be matched against. */
-export interface SeriesEntrant {
-  id: number;
-  /** The entrant's display name. */
-  name: string;
-  teamId: number | null;
-  /** The display name, the team's name and its short name. */
-  names: string[];
-  /** The Leaguepedia name an earlier import linked to the entrant's team (lol_leaguepedia_team_names). */
-  leaguepediaName: string | null;
-}
-
 export async function findMatchEntrants(matchId: number): Promise<{ entrantAId: number; entrantBId: number; entrants: SeriesEntrant[] } | null> {
   const [match] = await db.select({ entrantAId: lolMatches.entrantAId, entrantBId: lolMatches.entrantBId }).from(lolMatches).where(eq(lolMatches.id, matchId)).limit(1);
   if (!match || match.entrantAId === null || match.entrantBId === null) return null;
@@ -677,32 +665,6 @@ export function sidesFromNames(names: { blue: string | null; red: string | null 
   if (blue !== null) return { blue, red: other(blue) };
   if (red !== null) return { blue: other(red), red };
   return null;
-}
-
-/**
- * The entrant a Leaguepedia team name stands for: the one whose team an earlier import linked to that name, else the
- * one with the closest own name (compareTeamNames from the Liquipedia matching, exact or confident only). Null when
- * nothing matches, or both entrants match equally well.
- */
-export function entrantForName(name: string | null, entrants: SeriesEntrant[]): number | null {
-  if (!name?.trim()) return null;
-  const key = name.trim().toLowerCase();
-  const linked = entrants.find((e) => e.leaguepediaName?.trim().toLowerCase() === key);
-  if (linked) return linked.id;
-
-  const scored = entrants.map((e) => ({
-    id: e.id,
-    score: Math.max(
-      0,
-      ...e.names.map((own) => {
-        const result = compareTeamNames(own, name);
-        return result && result.confidence !== "possible" ? result.score : 0;
-      })
-    ),
-  }));
-  const best = Math.max(0, ...scored.map((s) => s.score));
-  const top = scored.filter((s) => s.score === best);
-  return best > 0 && top.length === 1 ? top[0]!.id : null;
 }
 
 type RiotGameError = { kind: "tournamentRealm" } | { kind: "notInBucket" } | { kind: "storageUnavailable" } | { kind: "riotUnavailable"; error: RiotRelayError };
