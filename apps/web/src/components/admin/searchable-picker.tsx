@@ -17,6 +17,7 @@ import { createPortal } from "react-dom";
 import { ChevronDownIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { matchesSearchWords, searchWords } from "@/lib/search-words";
 import { useAnchorRect } from "@/hooks/use-anchor-rect";
 
 export interface SearchablePickerOption {
@@ -76,8 +77,8 @@ export function SearchablePicker({
   }, [active, open]);
 
   const label = options.find((o) => o.id === value)?.label ?? null;
-  const needle = query.trim().toLowerCase();
-  const matches = needle ? options.filter((o) => o.label.toLowerCase().includes(needle)) : options;
+  const words = searchWords(query);
+  const matches = words.length ? options.filter((o) => matchesSearchWords(o.label, words)) : options;
   const rows: { id: string | null; label: string; disabled?: boolean }[] = [{ id: null, label: noneLabel }, ...matches];
 
   // Closing gives the focus back to the select. Otherwise the search box unmounts with the focus, and Tab starts again at the top of the page.
@@ -95,9 +96,9 @@ export function SearchablePicker({
   // Where the highlight starts for a search: on the first champion that matches and can be chosen, so Enter picks it.
   // The none row only when nothing can be picked, so Enter never clears a champion while searching by accident.
   function startingRow(search: string): number {
-    const needle = search.trim().toLowerCase();
-    if (!needle) return 0;
-    const firstEnabled = options.filter((o) => o.label.toLowerCase().includes(needle)).findIndex((o) => !o.disabled);
+    const words = searchWords(search);
+    if (!words.length) return 0;
+    const firstEnabled = options.filter((o) => matchesSearchWords(o.label, words)).findIndex((o) => !o.disabled);
     return firstEnabled === -1 ? 0 : firstEnabled + 1;
   }
 
