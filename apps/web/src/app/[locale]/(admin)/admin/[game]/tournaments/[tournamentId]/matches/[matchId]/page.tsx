@@ -24,6 +24,8 @@ import { MatchDeleteButton } from "@/components/admin/match-delete-button";
 import { MatchMapsPanel } from "@/components/admin/match-maps-panel";
 import { MatchGamesPanel, type MatchGameView } from "@/components/admin/match-games-panel";
 import { getLeaguepediaLinkStatus, listLeaguepediaGameOptions } from "@/lib/admin-leaguepedia";
+import { findMatchEntrants } from "@/lib/lol-import/fetch-league-game";
+import { rankLeaguepediaGames } from "@/lib/lol-import/series-entrants";
 import { isLolRelayAvailable } from "@/lib/lol-relay-client";
 import type { LeagueGameEntrant } from "@/components/admin/league-game-dialog";
 import { AdminPublicLinkButton } from "@/components/admin/admin-public-link-button";
@@ -50,7 +52,7 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
   if (!Number.isInteger(tournId) || !Number.isInteger(id)) notFound();
 
   // Maps are Valorant rows and LoL games are lol_games rows: each query only runs for the game that has it.
-  const [access, t, match, entrants, mapRows, gameRows, leaguepediaGames, leaguepediaStatus, relayAvailable] = await Promise.all([
+  const [access, t, match, entrants, mapRows, gameRows, tournamentLeaguepediaGames, leaguepediaStatus, relayAvailable, seriesEntrants] = await Promise.all([
     requireAdminPermission(locale as AppLocale, PERMISSIONS.tournamentsView, game),
     getTranslations("admin.tournaments.matches"),
     getAdminMatch(game, id),
@@ -60,9 +62,12 @@ export default async function AdminMatchShowPage({ params }: { params: Promise<{
     gameHasSeriesGames(game) ? listLeaguepediaGameOptions(tournId) : Promise.resolve([]),
     gameHasSeriesGames(game) ? getLeaguepediaLinkStatus(tournId) : Promise.resolve(null),
     gameHasSeriesGames(game) ? isLolRelayAvailable() : Promise.resolve(false),
+    gameHasSeriesGames(game) ? findMatchEntrants(id) : Promise.resolve(null),
   ]);
   if (!match || match.tournamentId !== tournId) notFound();
   const canManage = hasAccess(access, PERMISSIONS.tournamentsManage);
+  // The series' own games first (its two teams, played closest to its scheduled time), so the add game dialog opens on them.
+  const leaguepediaGames = rankLeaguepediaGames(tournamentLeaguepediaGames, seriesEntrants?.entrants ?? [], match.scheduledAt ? new Date(match.scheduledAt).toISOString() : null);
   const leaguepediaLink = leaguepediaStatus && { linked: leaguepediaStatus.overviewPage !== null, fetchedAt: leaguepediaStatus.gamesFetchedAt?.toISOString() ?? null };
 
   const entrantAName = entrants.find((e) => e.id === match.entrantAId)?.displayName ?? t("entrantNone");
