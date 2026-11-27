@@ -788,7 +788,7 @@
     "intro": "Esta política explica como tratamos os dados neste site, com foco em transparência e respeito à privacidade.",
     "analytics": {
       "title": "Navegação e Estatísticas",
-      "text": "Medimos a audiência do site de forma totalmente anônima: apenas a página visitada, o dia e o número de visualizações são contados, sem endereço IP, sem rastreamento (tracking) individual nem impressão digital (fingerprinting). Para proteger o site contra bots e abusos, nossos servidores registram cada requisição (endereço IP, página solicitada, navegador, data) por 14 dias. Se você tem uma conta, o endereço IP de cada login também é guardado por 90 dias no registro de segurança da sua conta."
+      "text": "Medimos a audiência do site apenas a partir dos registros dos nossos servidores, sem rastreador no seu navegador, sem cookie de rastreamento e sem impressão digital (fingerprinting). Para acompanhar o tráfego e proteger o site contra bots e abusos, nossos servidores registram cada requisição (endereço IP, página solicitada, navegador, data) por 14 dias, junto com o país e a operadora de rede deduzidos do endereço IP. Os números globais obtidos desses registros (quantidade de requisições por site e por país) não contêm nenhum endereço IP. Se você tiver uma conta, o endereço IP de cada login também é mantido por 90 dias no registro de segurança da sua conta."
     },
     "publicData": {
       "title": "Dados Públicos",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "O mínimo necessário",
-        "text": "Coletamos apenas o que o site precisa para funcionar e continuar seguro. Sem publicidade, sem rastreadores, sem cookies de rastreamento: a audiência é contada de forma anônima, sem endereço IP."
+        "text": "Coletamos apenas o necessário para o site funcionar e continuar seguro. Sem anúncios, sem rastreadores, sem cookies de rastreamento: a audiência é medida apenas a partir dos registros dos nossos servidores."
       },
       "switzerland": {
         "title": "Hospedado na Suíça",
@@ -1274,6 +1274,7 @@
               "Endereço IP",
               "Página solicitada",
               "Navegador",
+              "País e operadora de rede deduzidos do endereço IP",
               "Data e hora",
               "Uso do portal OpenData (conta, endereço IP com hash, conjunto de dados), excluído após 30 dias"
             ]
@@ -2074,7 +2075,6 @@
       "forumMessages": "Mensagens do fórum",
       "sanctions": "Sanções",
       "activityLog": "Registro de atividades",
-      "analytics": "Analytics",
       "oauthClients": "Clientes OAuth",
       "settings": "Configuração",
       "discordImages": "Imagens do bot Discord",
@@ -3595,7 +3595,6 @@
         "forum": "Fórum",
         "sanctions": "Sanções",
         "activityLog": "Registro de atividades",
-        "analytics": "Analytics",
         "oauthClients": "Clientes OAuth",
         "settings": "Configuração",
         "rosterWatch": "Vigilância de rosters",
@@ -3646,7 +3645,6 @@
         "sanctions_view": "Ver sanções",
         "sanctions_manage": "Aplicar ou revogar sanções",
         "activity_log_view": "Ver o registro de atividades",
-        "analytics_view": "Ver analytics",
         "oauth_clients_view": "Ver clientes OAuth",
         "oauth_clients_manage": "Criar, editar ou excluir clientes OAuth",
         "settings_view": "Ver a configuração e o monitoramento do OpenData",
@@ -4042,8 +4040,8 @@
         },
         "tiebreakerOrder": {
           "title": "Desempates",
-          "hint": "As vitórias contam sempre primeiro. Os empates são depois resolvidos nesta ordem, o último mostrado é o recurso final.",
-          "wins": "Vitórias",
+          "hint": "Se os pontos estiverem ativados, eles contam primeiro. Em seguida vem o retrospecto de partidas (vitórias e depois derrotas). Os empates são então resolvidos nesta ordem, que recomeça para as equipes ainda empatadas. As que continuarem empatadas são ordenadas pelo seed.",
+          "wins": "Retrospecto de partidas",
           "moveUp": "Subir",
           "moveDown": "Descer",
           "remove": "Remover",
@@ -4054,13 +4052,16 @@
             "game_diff": "Diferença de jogos",
             "round_diff": "Diferença de rounds",
             "head_to_head": "Confronto direto",
+            "h2h_map_diff": "Saldo de mapas no confronto direto (2 equipes)",
+            "h2h_game_diff": "Saldo de jogos no confronto direto (2 equipes)",
+            "h2h_round_diff": "Saldo de rounds no confronto direto (2 equipes)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Pontos",
-          "hint": "Cada partida, mapa e round ganho ou perdido dá pontos à equipe. Os rounds só contam nos mapas com placar registrado.",
-          "hintGames": "Cada partida e cada jogo ganho ou perdido dá pontos à equipe.",
+          "hint": "Cada partida, mapa e round ganho ou perdido dá pontos à equipe. Os rounds só contam nos mapas com placar registrado. Quando ativados, os pontos ordenam as equipes antes do retrospecto de partidas e dos desempates.",
+          "hintGames": "Cada partida e cada jogo ganho ou perdido dá pontos à equipe. Quando ativados, os pontos ordenam as equipes antes do retrospecto de partidas e dos desempates.",
           "enable": "Usar pontos",
           "scopes": {
             "match": "Partida",
@@ -4070,8 +4071,7 @@
             "forfeit": "W.O. (substitui os outros)"
           },
           "win": "Ganho",
-          "loss": "Perdido",
-          "notUsed": "Os pontos só ordenam o grupo se Pontos estiver nos desempates."
+          "loss": "Perdido"
         },
         "fieldMatchScope": "As equipas também jogam contra equipas de outros grupos (contar os jogos dos outros grupos com esta definição)",
         "fieldMatchScopeHint": "Só as equipas atribuídas a este grupo são listadas e os seus jogos concluídos contam em cada grupo desta fase que também tenha esta definição. Os jogos de grupos sem ela não contam. Atribui as equipas depois de guardar. Apenas round robin.",
@@ -5590,25 +5590,6 @@
       "viewCauser": "Ver usuário",
       "attributeChanges": "Alterações de atributos",
       "properties": "Propriedades"
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "Tráfego de visualizações de páginas no site, por região.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "Américas",
-        "APAC": "Ásia-Pacífico",
-        "OTHE": "Outras"
-      },
-      "dailyAverage": "média diária",
-      "chartHeading": "Visualizações por dia, últimos 30 dias",
-      "chartEmpty": "Nenhuma visualização de página nos últimos 30 dias.",
-      "topPagesHeading": "Páginas mais vistas",
-      "searchPlaceholder": "Caminho da página…",
-      "searchSubmit": "Buscar",
-      "columnPage": "Página",
-      "columnViews": "Visualizações",
-      "empty": "Nenhuma visualização de página nos últimos 30 dias."
     },
     "ghost": {
       "badge": "Fantasma",
@@ -7778,6 +7759,7 @@
     "title": "Sugerir uma edição",
     "subtitle": "Proponha uma alteração nesta página (ela será revisada pela nossa staff antes de ser aplicada), nada muda imediatamente.",
     "intro": "Preencha apenas os campos que você quer alterar para {name}. Deixe o resto como está.",
+    "englishNotice": "Escreva o seu pedido em inglês para que a nossa equipe possa analisar.",
     "sectionProfile": "Perfil",
     "sectionSocials": "Redes sociais",
     "sectionReview": "Revisar e enviar",

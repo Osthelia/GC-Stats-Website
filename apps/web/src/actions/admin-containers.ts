@@ -21,7 +21,7 @@ import { containerOrderBy, nextContainerDisplayOrder } from "@/lib/bracket/conta
 import { isStageStatus, type StageStatus } from "@/lib/stage-status";
 import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 import { checkMove, placeAmongSiblings, subtreeOf, type TreeRow } from "@osthelia/bracket-engine";
-import { MAX_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, type GroupMatchScope, type PointsField } from "@/lib/bracket/config-types";
+import { MAX_POINTS, POINTS_FIELDS, allowedTiebreakers, type GroupMatchScope, type PointsField } from "@/lib/bracket/config-types";
 
 async function requireTournamentsActor(game: GameSlug): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage, game);
@@ -57,12 +57,12 @@ export type ContainerInput =
       qualifyAtWins: number | null;
       eliminateAtLosses: number | null;
       maxRounds: number | null;
-      // Ordered, wins always count first
+      // Ordered, applied after the match record
       tiebreakers: string[];
       pointsConfig: PointsInput;
     };
 
-function validateContainer(input: ContainerInput): ContainerFieldErrors {
+function validateContainer(game: GameSlug, input: ContainerInput): ContainerFieldErrors {
   const fieldErrors: ContainerFieldErrors = {};
   const name = input.name.trim();
   if (!name) fieldErrors.name = "required";
@@ -78,7 +78,7 @@ function validateContainer(input: ContainerInput): ContainerFieldErrors {
     // Swiss pairs inside one container and keeps per-container counters, so only round robin can count the whole stage.
     if (input.matchScope === "stage" && input.groupFormat !== "round_robin") fieldErrors.matchScope = "roundRobinOnly";
     else if (input.matchScope !== undefined && input.matchScope !== "container" && input.matchScope !== "stage") fieldErrors.matchScope = "invalid";
-    const allowed: readonly string[] = input.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS;
+    const allowed: readonly string[] = allowedTiebreakers(game, input.groupFormat === "swiss" ? "swiss" : "round_robin");
     const tiebreakers: unknown = input.tiebreakers;
     if (!Array.isArray(tiebreakers) || tiebreakers.some((tb) => !allowed.includes(tb)) || new Set(tiebreakers).size !== tiebreakers.length) {
       fieldErrors.tiebreakers = "tiebreakersInvalid";
@@ -202,7 +202,7 @@ export async function createContainer(game: GameSlug, stageId: number, input: Co
   const [stage] = await db.select({ id: stages.id, tournamentId: stages.tournamentId }).from(stages).where(eq(stages.id, stageId)).limit(1);
   if (!stage) return { ok: false, fieldErrors: { name: "stageNotFound" } };
 
-  const fieldErrors = validateContainer(input);
+  const fieldErrors = validateContainer(game, input);
   if (input.parentId !== null) {
     const parent = (await loadTreeRows(game, stageId)).find((r) => r.id === input.parentId);
     if (!parent || !parent.isSet) fieldErrors.parentId = "invalid";
@@ -238,7 +238,7 @@ export async function updateContainer(game: GameSlug, id: number, stageId: numbe
     .limit(1);
   if (!existing) return { ok: false, fieldErrors: { name: "notFound" } };
 
-  const fieldErrors = validateContainer(input);
+  const fieldErrors = validateContainer(game, input);
   if (Object.keys(fieldErrors).length > 0) return { ok: false, fieldErrors };
 
   const legacyImportTarget = (existing.config as { legacyImportTarget?: boolean } | null)?.legacyImportTarget === true;

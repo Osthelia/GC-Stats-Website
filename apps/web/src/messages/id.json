@@ -788,7 +788,7 @@
     "intro": "Kebijakan ini menjelaskan bagaimana kami menangani data di situs ini, dengan fokus pada transparansi dan penghormatan terhadap privasi.",
     "analytics": {
       "title": "Navigasi dan Statistik",
-      "text": "Kami mengukur pengunjung situs secara sepenuhnya anonim: hanya halaman yang dikunjungi, hari, dan jumlah tayangan yang dihitung, tanpa alamat IP, tanpa pelacakan individu, dan tanpa fingerprinting. Untuk melindungi situs dari bot dan penyalahgunaan, server kami mencatat setiap permintaan (alamat IP, halaman yang diminta, peramban, tanggal) selama 14 hari. Jika Anda memiliki akun, alamat IP setiap login juga disimpan selama 90 hari dalam log keamanan akun Anda."
+      "text": "Kami mengukur jumlah pengunjung situs hanya dari log server kami, tanpa pelacak di browser Anda, tanpa cookie pelacakan, dan tanpa fingerprinting. Untuk memantau lalu lintas serta melindungi situs dari bot dan penyalahgunaan, server kami mencatat setiap permintaan (alamat IP, halaman yang diminta, browser, tanggal) selama 14 hari, beserta negara dan operator jaringan yang disimpulkan dari alamat IP. Angka keseluruhan dari log tersebut (jumlah permintaan per situs dan per negara) tidak memuat alamat IP. Jika Anda memiliki akun, alamat IP setiap login juga disimpan selama 90 hari di log keamanan akun Anda."
     },
     "publicData": {
       "title": "Data Publik",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Seminimal mungkin",
-        "text": "Kami hanya mengumpulkan apa yang dibutuhkan situs agar berfungsi dan tetap aman. Tanpa iklan, tanpa pelacak, tanpa cookie pelacakan: pengunjung dihitung secara anonim, tanpa alamat IP."
+        "text": "Kami hanya mengumpulkan apa yang dibutuhkan situs agar berfungsi dan tetap aman. Tanpa iklan, tanpa pelacak, tanpa cookie pelacakan: jumlah pengunjung diukur hanya dari log server kami."
       },
       "switzerland": {
         "title": "Di-hosting di Swiss",
@@ -1274,6 +1274,7 @@
               "Alamat IP",
               "Halaman yang diminta",
               "Peramban",
+              "Negara dan operator jaringan yang disimpulkan dari alamat IP",
               "Tanggal dan waktu",
               "Penggunaan portal OpenData (akun, alamat IP yang di-hash, dataset), dihapus setelah 30 hari"
             ]
@@ -2074,7 +2075,6 @@
       "forumMessages": "Pesan forum",
       "sanctions": "Sanksi",
       "activityLog": "Log aktivitas",
-      "analytics": "Analitik",
       "oauthClients": "Klien OAuth",
       "settings": "Konfigurasi",
       "discordImages": "Gambar bot Discord",
@@ -3595,7 +3595,6 @@
         "forum": "Forum",
         "sanctions": "Sanksi",
         "activityLog": "Log aktivitas",
-        "analytics": "Analitik",
         "oauthClients": "Klien OAuth",
         "settings": "Konfigurasi",
         "rosterWatch": "Pantauan roster",
@@ -3646,7 +3645,6 @@
         "sanctions_view": "Melihat sanksi",
         "sanctions_manage": "Menjatuhkan atau mencabut sanksi",
         "activity_log_view": "Melihat log aktivitas",
-        "analytics_view": "Melihat analitik",
         "oauth_clients_view": "Melihat klien OAuth",
         "oauth_clients_manage": "Membuat, menyunting, atau menghapus klien OAuth",
         "settings_view": "Melihat konfigurasi dan pemantauan OpenData",
@@ -4046,8 +4044,8 @@
         },
         "tiebreakerOrder": {
           "title": "Tiebreaker",
-          "hint": "Kemenangan selalu dihitung lebih dulu. Hasil imbang lalu ditentukan dengan urutan ini, yang terakhir menjadi penentu akhir.",
-          "wins": "Kemenangan",
+          "hint": "Jika poin diaktifkan, poin dihitung lebih dulu. Berikutnya rekor pertandingan (menang, lalu kalah). Hasil imbang kemudian diputus dengan urutan ini, yang diulang untuk tim yang masih imbang. Tim yang tetap imbang diurutkan berdasarkan seed.",
+          "wins": "Rekor pertandingan",
           "moveUp": "Naikkan",
           "moveDown": "Turunkan",
           "remove": "Hapus",
@@ -4058,13 +4056,16 @@
             "game_diff": "Selisih game",
             "round_diff": "Selisih ronde",
             "head_to_head": "Head to head",
+            "h2h_map_diff": "Selisih map pada pertemuan langsung (2 tim)",
+            "h2h_game_diff": "Selisih game pada pertemuan langsung (2 tim)",
+            "h2h_round_diff": "Selisih ronde pada pertemuan langsung (2 tim)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Poin",
-          "hint": "Setiap match, map, dan ronde yang dimenangkan atau dikalahkan memberi poin kepada tim. Ronde hanya dihitung pada map dengan skor tercatat.",
-          "hintGames": "Setiap match dan game yang dimenangkan atau dikalahkan memberi poin kepada tim.",
+          "hint": "Setiap match, map, dan ronde yang dimenangkan atau dikalahkan memberi poin kepada tim. Ronde hanya dihitung pada map dengan skor tercatat. Jika diaktifkan, poin mengurutkan tim sebelum rekor pertandingan dan tiebreaker.",
+          "hintGames": "Setiap match dan game yang dimenangkan atau dikalahkan memberi poin kepada tim. Jika diaktifkan, poin mengurutkan tim sebelum rekor pertandingan dan tiebreaker.",
           "enable": "Gunakan poin",
           "scopes": {
             "match": "Match",
@@ -4074,8 +4075,7 @@
             "forfeit": "Forfeit (menggantikan yang lain)"
           },
           "win": "Menang",
-          "loss": "Kalah",
-          "notUsed": "Poin hanya mengurutkan grup jika Poin ada di tiebreaker."
+          "loss": "Kalah"
         },
         "fieldMatchScope": "Tim juga bermain melawan tim dari grup lain (hitung pertandingan dari grup lain yang memakai pengaturan ini)",
         "fieldMatchScopeHint": "Hanya tim yang disematkan ke grup ini yang ditampilkan, dan pertandingan mereka yang sudah selesai dihitung di setiap grup pada stage ini yang juga memakai pengaturan ini. Pertandingan di grup tanpa pengaturan ini tidak dihitung. Sematkan tim setelah menyimpan. Hanya untuk round robin.",
@@ -5590,25 +5590,6 @@
       "viewCauser": "Lihat pengguna",
       "attributeChanges": "Perubahan atribut",
       "properties": "Properti"
-    },
-    "analytics": {
-      "title": "Analitik",
-      "subtitle": "Lalu lintas tampilan halaman di seluruh situs, per wilayah.",
-      "region": {
-        "EURO": "Eropa",
-        "AMER": "Amerika",
-        "APAC": "Asia Pasifik",
-        "OTHE": "Lainnya"
-      },
-      "dailyAverage": "rerata harian",
-      "chartHeading": "Tampilan per hari, 30 hari terakhir",
-      "chartEmpty": "Tidak ada tampilan halaman dalam 30 hari terakhir.",
-      "topPagesHeading": "Halaman teratas",
-      "searchPlaceholder": "Jalur halaman…",
-      "searchSubmit": "Cari",
-      "columnPage": "Halaman",
-      "columnViews": "Tampilan",
-      "empty": "Tidak ada tampilan halaman dalam 30 hari terakhir."
     },
     "ghost": {
       "badge": "Hantu",
@@ -7778,6 +7759,7 @@
     "title": "Usulkan suntingan",
     "subtitle": "Usulkan perubahan pada halaman ini (akan ditinjau staf kami sebelum diterapkan), tidak ada yang berubah langsung.",
     "intro": "Isi hanya kolom yang ingin Anda ubah untuk {name}. Biarkan sisanya.",
+    "englishNotice": "Tulis permintaan Anda dalam bahasa Inggris agar staf kami dapat meninjaunya.",
     "sectionProfile": "Profil",
     "sectionSocials": "Media sosial",
     "sectionReview": "Tinjau dan kirim",

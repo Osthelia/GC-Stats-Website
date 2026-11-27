@@ -9,9 +9,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { stripAccents } from "@/lib/search-typo";
+import { countryNames } from "@/lib/countries";
+import type { AppLocale } from "@/i18n/routing";
+import { CountryBadge } from "@/components/team/country-badge";
 import type { SearchResultItem, SearchResultType, SearchResults } from "@/lib/search";
 import { useGame } from "@/lib/use-game";
 
@@ -89,6 +92,7 @@ function ResultRow({
   onHover: () => void;
 }) {
   const match = splitMatch(item.title, query);
+  const locale = useLocale() as AppLocale;
 
   return (
     <button
@@ -103,16 +107,24 @@ function ResultRow({
       style={active ? { borderLeftColor: "#e4ae22", background: "var(--gcs-hover)", color: "var(--gcs-text)" } : undefined}
     >
       <ResultAvatar item={item} />
-      <span className="min-w-0 flex-1 truncate font-semibold">
-        {match ? (
-          <>
-            {match[0]}
-            <mark className="bg-transparent text-[#e4ae22]">{match[1]}</mark>
-            {match[2]}
-          </>
-        ) : (
-          item.title
-        )}
+      <span className="flex min-w-0 flex-1 items-center gap-2">
+        <CountryBadge
+          code={item.countryCode}
+          secondaryCode={item.secondaryCountryCode}
+          size={16}
+          label={countryNames(item.countryCode, item.secondaryCountryCode, locale)}
+        />
+        <span className="truncate font-semibold">
+          {match ? (
+            <>
+              {match[0]}
+              <mark className="bg-transparent text-[#e4ae22]">{match[1]}</mark>
+              {match[2]}
+            </>
+          ) : (
+            item.title
+          )}
+        </span>
       </span>
       {item.subtitle && <span className="flex-none truncate text-xs text-[var(--gcs-text-tertiary)]">{item.subtitle}</span>}
     </button>

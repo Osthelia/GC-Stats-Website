@@ -34,7 +34,6 @@ import {
   MessagesSquare,
   Ban,
   History,
-  LineChart,
   Plug,
   Settings,
 } from "lucide-react";
@@ -100,7 +99,6 @@ export const ADMIN_NAV_GROUPS: { key: string; labelKey: string; items: AdminNavI
       { href: "/admin/news-languages", labelKey: "newsLanguages", icon: Languages, exact: false, permission: PERMISSIONS.newsLanguagesView },
       { href: "/admin/finance", labelKey: "finance", icon: Landmark, exact: false, permission: PERMISSIONS.financeView },
       { href: "/admin/about", labelKey: "about", icon: Info, exact: false, permission: PERMISSIONS.aboutView },
-      { href: "/admin/analytics", labelKey: "analytics", icon: LineChart, exact: false, permission: PERMISSIONS.analyticsView },
       { href: "/admin/activity-log", labelKey: "activityLog", icon: History, exact: false, permission: PERMISSIONS.activityLogView },
       { href: "/admin/settings", labelKey: "settings", icon: Settings, exact: false, permission: PERMISSIONS.settingsView },
     ],

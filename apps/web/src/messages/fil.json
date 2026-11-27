@@ -788,7 +788,7 @@
     "intro": "Ipinapaliwanag ng patakarang ito kung paano namin hinahawakan ang data sa site na ito, na may pokus sa transparency at paggalang sa privacy.",
     "analytics": {
       "title": "Nabigasyon at Estadistika",
-      "text": "Sinusukat namin ang mga bisita ng site nang ganap na anonymous: ang binisitang page, ang araw at ang bilang ng views lang ang binibilang, walang IP address, walang indibidwal na tracking at walang fingerprinting. Para protektahan ang site laban sa mga bot at pang-aabuso, nire-record ng aming mga server ang bawat request (IP address, hiniling na page, browser, petsa) nang 14 na araw. Kung may account ka, iniingatan din nang 90 araw ang IP address ng bawat login sa security log ng iyong account."
+      "text": "Sinusukat namin ang dami ng bumibisita sa site mula lamang sa mga log ng aming server, walang tracker sa iyong browser, walang tracking cookie, at walang fingerprinting. Para masubaybayan ang traffic at maprotektahan ang site laban sa mga bot at pang-aabuso, itinatala ng aming mga server ang bawat request (IP address, hiniling na pahina, browser, petsa) sa loob ng 14 na araw, kasama ang bansa at network operator na hinuha mula sa IP address. Walang IP address ang mga kabuuang bilang na kinukuha mula sa mga log na ito (bilang ng request bawat site at bawat bansa). Kung mayroon kang account, itinatago rin nang 90 araw ang IP address ng bawat pag-login sa security log ng iyong account."
     },
     "publicData": {
       "title": "Pampublikong Data",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Ang pinakakailangan lamang",
-        "text": "Kinokolekta lang namin ang kailangan ng site para gumana at manatiling ligtas. Walang ads, walang tracker, walang tracking cookie: binibilang ang mga bisita nang anonymous, walang IP address."
+        "text": "Kinokolekta lamang namin ang kailangan ng site para gumana at manatiling ligtas. Walang ad, walang tracker, walang tracking cookie: ang dami ng bumibisita ay sinusukat mula lamang sa mga log ng aming server."
       },
       "switzerland": {
         "title": "Naka-host sa Switzerland",
@@ -1274,6 +1274,7 @@
               "IP address",
               "Hiniling na page",
               "Browser",
+              "Bansa at network operator na hinuha mula sa IP address",
               "Petsa at oras",
               "Paggamit ng OpenData portal (account, naka-hash na IP address, dataset), binubura pagkalipas ng 30 araw"
             ]
@@ -2074,7 +2075,6 @@
       "forumMessages": "Mga mensahe sa forum",
       "sanctions": "Mga Parusa",
       "activityLog": "Activity log",
-      "analytics": "Analytics",
       "oauthClients": "Mga OAuth client",
       "settings": "Configuration",
       "discordImages": "Mga larawan ng Discord bot",
@@ -3595,7 +3595,6 @@
         "forum": "Forum",
         "sanctions": "Mga Parusa",
         "activityLog": "Activity log",
-        "analytics": "Analytics",
         "oauthClients": "Mga OAuth client",
         "settings": "Configuration",
         "rosterWatch": "Roster watch",
@@ -3646,7 +3645,6 @@
         "sanctions_view": "Tingnan ang mga parusa",
         "sanctions_manage": "Magbigay o magbawi ng mga parusa",
         "activity_log_view": "Tingnan ang activity log",
-        "analytics_view": "Tingnan ang analytics",
         "oauth_clients_view": "Tingnan ang mga OAuth client",
         "oauth_clients_manage": "Gumawa, mag-edit, o magbura ng mga OAuth client",
         "settings_view": "Tingnan ang configuration at ang monitoring ng OpenData",
@@ -4046,8 +4044,8 @@
         },
         "tiebreakerOrder": {
           "title": "Mga tiebreaker",
-          "hint": "Laging unang binibilang ang mga panalo. Pagkatapos, binabasag ang tabla ayon sa ayos na ito, ang huli ang pangwakas na batayan.",
-          "wins": "Mga panalo",
+          "hint": "Kapag naka-on ang puntos, ito ang unang binibilang. Sunod ang rekord ng laban (panalo, saka talo). Pagkatapos ay binabasag ang tabla ayon sa ayos na ito, na nagsisimulang muli para sa mga koponang tabla pa rin. Ang mga nananatiling tabla ay inaayos ayon sa seed.",
+          "wins": "Rekord ng laban",
           "moveUp": "Itaas",
           "moveDown": "Ibaba",
           "remove": "Alisin",
@@ -4058,13 +4056,16 @@
             "game_diff": "Diperensya ng laro",
             "round_diff": "Diperensya ng round",
             "head_to_head": "Head to head",
+            "h2h_map_diff": "Agwat ng mapa sa harapang laban (2 koponan)",
+            "h2h_game_diff": "Agwat ng laro sa harapang laban (2 koponan)",
+            "h2h_round_diff": "Agwat ng round sa harapang laban (2 koponan)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Puntos",
-          "hint": "Bawat match, map at round na naipanalo o natalo ay nagbibigay ng puntos sa team. Binibilang lang ang mga round sa mga map na may naitalang score.",
-          "hintGames": "Bawat match at laro na naipanalo o natalo ay nagbibigay ng puntos sa team.",
+          "hint": "Bawat match, map at round na naipanalo o natalo ay nagbibigay ng puntos sa team. Binibilang lang ang mga round sa mga map na may naitalang score. Kapag naka-on, inaayos ng puntos ang mga team bago ang rekord ng laban at mga tiebreaker.",
+          "hintGames": "Bawat match at laro na naipanalo o natalo ay nagbibigay ng puntos sa team. Kapag naka-on, inaayos ng puntos ang mga team bago ang rekord ng laban at mga tiebreaker.",
           "enable": "Gumamit ng puntos",
           "scopes": {
             "match": "Match",
@@ -4074,8 +4075,7 @@
             "forfeit": "Forfeit (pumapalit sa iba)"
           },
           "win": "Panalo",
-          "loss": "Talo",
-          "notUsed": "Inaayos lang ng puntos ang grupo kapag nasa mga tiebreaker ang Puntos."
+          "loss": "Talo"
         },
         "fieldMatchScope": "Naglalaro rin ang mga team laban sa mga team ng ibang group (bilangin ang mga laban ng ibang group na may ganitong setting)",
         "fieldMatchScopeHint": "Ang mga team lang na naka-pin sa group na ito ang ililista, at mabibilang ang mga natapos nilang laban sa bawat group ng stage na ito na may ganitong setting din. Hindi binibilang ang mga laban sa mga group na wala nito. I-pin ang mga team pagkatapos mag-save. Para lang sa round robin.",
@@ -5590,25 +5590,6 @@
       "viewCauser": "Tingnan ang user",
       "attributeChanges": "Mga pagbabago sa attribute",
       "properties": "Mga property"
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "Trapiko ng page view sa buong site, ayon sa rehiyon.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "Amerika",
-        "APAC": "Asya Pasipiko",
-        "OTHE": "Iba pa"
-      },
-      "dailyAverage": "karaniwan kada araw",
-      "chartHeading": "Mga view kada araw, huling 30 araw",
-      "chartEmpty": "Walang page view sa nakalipas na 30 araw.",
-      "topPagesHeading": "Mga nangungunang pahina",
-      "searchPlaceholder": "Path ng pahina…",
-      "searchSubmit": "Maghanap",
-      "columnPage": "Pahina",
-      "columnViews": "Mga View",
-      "empty": "Walang page view sa nakalipas na 30 araw."
     },
     "ghost": {
       "badge": "Ghost",
@@ -7778,6 +7759,7 @@
     "title": "Magmungkahi ng pagbabago",
     "subtitle": "Magmungkahi ng pagbabago sa pahinang ito (susuriin ito ng aming staff bago ilapat), walang magbabago agad.",
     "intro": "Punan lamang ang mga field na nais mong baguhin para kay {name}. Huwag galawin ang iba.",
+    "englishNotice": "Pakisulat ang iyong kahilingan sa Ingles para masuri ito ng aming staff.",
     "sectionProfile": "Profile",
     "sectionSocials": "Mga social",
     "sectionReview": "Suriin at isumite",

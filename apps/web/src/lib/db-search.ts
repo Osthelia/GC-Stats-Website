@@ -61,6 +61,11 @@ export function specialCharFoldedArrayIlike(column: AnyPgColumn, pattern: string
   return sql`EXISTS (SELECT 1 FROM unnest(${column}) AS kw WHERE regexp_replace(translate(lower(kw), ${ACCENT_SRC}, ${ACCENT_DST}), '[^a-z0-9]', '', 'g') LIKE ${`%${escapeLikePattern(pattern)}%`})`;
 }
 
+/** Ranking expression for ORDER BY, 0 when the folded column equals the pattern, 1 otherwise. */
+export function specialCharExactRank(column: AnyPgColumn, pattern: string) {
+  return sql`CASE WHEN regexp_replace(translate(lower(${column}), ${ACCENT_SRC}, ${ACCENT_DST}), '[^a-z0-9]', '', 'g') = ${pattern} THEN 0 ELSE 1 END`;
+}
+
 /**
  * Ranking expression for ORDER BY — 0 for an exact prefix match, 1 for a
  * substring match elsewhere, 2 otherwise. Mirrors V1's App\Services\

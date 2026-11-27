@@ -209,7 +209,7 @@ export async function TeamHeader({
             </div>
 
             {team.bio && (
-              <p className="max-w-[620px] text-[14.5px] leading-relaxed text-neutral-400">
+              <p className="max-w-[1100px] text-[14.5px] leading-relaxed text-neutral-400">
                 {team.bio}
               </p>
             )}

@@ -788,7 +788,7 @@
     "intro": "Esta política te informa sobre cómo tratamos los datos en este sitio, con especial atención a la transparencia y al respeto de la privacidad.",
     "analytics": {
       "title": "Navegación y estadísticas",
-      "text": "Medimos la audiencia del sitio de forma totalmente anónima: solo se cuentan la página visitada, el día y el número de visitas, sin dirección IP, sin seguimiento (tracking) individual ni huella digital (fingerprinting). Para proteger el sitio contra bots y abusos, nuestros servidores registran cada petición (dirección IP, página solicitada, navegador, fecha) durante 14 días. Si tienes una cuenta, la dirección IP de cada inicio de sesión también se guarda 90 días en el registro de seguridad de tu cuenta."
+      "text": "Medimos la audiencia del sitio únicamente a partir de los registros de nuestros servidores, sin rastreador en su navegador, sin cookies de seguimiento ni huella digital (fingerprinting). Para seguir el tráfico y proteger el sitio contra bots y abusos, nuestros servidores registran cada solicitud (dirección IP, página solicitada, navegador, fecha) durante 14 días, junto con el país y el operador de red deducidos de la dirección IP. Las cifras globales obtenidas de estos registros (número de solicitudes por sitio y por país) no contienen ninguna dirección IP. Si tiene una cuenta, la dirección IP de cada inicio de sesión también se guarda durante 90 días en el registro de seguridad de su cuenta."
     },
     "publicData": {
       "title": "Datos públicos",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Lo estrictamente necesario",
-        "text": "Solo recopilamos lo que el sitio necesita para funcionar y mantenerse seguro. Sin publicidad, sin rastreadores, sin cookies de seguimiento: la audiencia se cuenta de forma anónima, sin dirección IP."
+        "text": "Solo recopilamos lo que el sitio necesita para funcionar y mantenerse seguro. Sin publicidad, sin rastreadores, sin cookies de seguimiento: la audiencia se mide únicamente a partir de los registros de nuestros servidores."
       },
       "switzerland": {
         "title": "Alojado en Suiza",
@@ -1274,6 +1274,7 @@
               "Dirección IP",
               "Página solicitada",
               "Navegador",
+              "País y operador de red deducidos de la dirección IP",
               "Fecha y hora",
               "Uso del portal OpenData (cuenta, dirección IP cifrada con hash, conjunto de datos), eliminado tras 30 días"
             ]
@@ -2074,7 +2075,6 @@
       "forumMessages": "Mensajes del foro",
       "sanctions": "Sanciones",
       "activityLog": "Registro de actividad",
-      "analytics": "Analíticas",
       "oauthClients": "Clientes OAuth",
       "settings": "Configuración",
       "discordImages": "Imágenes del bot de Discord",
@@ -3595,7 +3595,6 @@
         "forum": "Foro",
         "sanctions": "Sanciones",
         "activityLog": "Registro de actividad",
-        "analytics": "Analíticas",
         "oauthClients": "Clientes OAuth",
         "settings": "Configuración",
         "rosterWatch": "Vigilancia de rosters",
@@ -3646,7 +3645,6 @@
         "sanctions_view": "Ver las sanciones",
         "sanctions_manage": "Aplicar o revocar sanciones",
         "activity_log_view": "Ver el registro de actividad",
-        "analytics_view": "Ver las analíticas",
         "oauth_clients_view": "Ver los clientes OAuth",
         "oauth_clients_manage": "Crear, editar o eliminar clientes OAuth",
         "settings_view": "Ver la configuración y la monitorización de OpenData",
@@ -4046,8 +4044,8 @@
         },
         "tiebreakerOrder": {
           "title": "Desempates",
-          "hint": "Las victorias cuentan siempre primero. Los empates se rompen después en este orden, el último mostrado es el recurso final.",
-          "wins": "Victorias",
+          "hint": "Si los puntos están activados, cuentan primero. Después va el balance de partidos (victorias y después derrotas). Los empates se resuelven en este orden, que vuelve a empezar para los equipos que sigan empatados. Los que continúen empatados se ordenan por seed.",
+          "wins": "Balance de partidos",
           "moveUp": "Subir",
           "moveDown": "Bajar",
           "remove": "Quitar",
@@ -4058,13 +4056,16 @@
             "game_diff": "Diferencia de partidas",
             "round_diff": "Diferencia de rondas",
             "head_to_head": "Enfrentamiento directo",
+            "h2h_map_diff": "Diferencia de mapas en el enfrentamiento directo (2 equipos)",
+            "h2h_game_diff": "Diferencia de partidas en el enfrentamiento directo (2 equipos)",
+            "h2h_round_diff": "Diferencia de rondas en el enfrentamiento directo (2 equipos)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Puntos",
-          "hint": "Cada partido, mapa y ronda ganado o perdido da puntos al equipo. Las rondas solo cuentan en los mapas con un marcador registrado.",
-          "hintGames": "Cada partido y cada partida ganados o perdidos da puntos al equipo.",
+          "hint": "Cada partido, mapa y ronda ganado o perdido da puntos al equipo. Las rondas solo cuentan en los mapas con un marcador registrado. Cuando están activados, los puntos ordenan a los equipos antes que el balance de partidos y los desempates.",
+          "hintGames": "Cada partido y cada partida ganados o perdidos da puntos al equipo. Cuando están activados, los puntos ordenan a los equipos antes que el balance de partidos y los desempates.",
           "enable": "Usar puntos",
           "scopes": {
             "match": "Partido",
@@ -4074,8 +4075,7 @@
             "forfeit": "Abandono (sustituye a los otros)"
           },
           "win": "Ganado",
-          "loss": "Perdido",
-          "notUsed": "Los puntos solo ordenan el grupo si Puntos está en los desempates."
+          "loss": "Perdido"
         },
         "fieldMatchScope": "Los equipos también juegan contra equipos de otros grupos (contar los partidos de los otros grupos con este ajuste)",
         "fieldMatchScopeHint": "Solo se listan los equipos asignados a este grupo y cuentan sus partidos terminados en cada grupo de esta fase que también tenga este ajuste. Los partidos de grupos sin él no cuentan. Asigna los equipos tras guardar. Solo round robin.",
@@ -5590,25 +5590,6 @@
       "viewCauser": "Ver el usuario",
       "attributeChanges": "Cambios de atributos",
       "properties": "Propiedades"
-    },
-    "analytics": {
-      "title": "Analíticas",
-      "subtitle": "Tráfico de páginas vistas en el sitio, por región.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "América",
-        "APAC": "Asia Pacífico",
-        "OTHE": "Otras"
-      },
-      "dailyAverage": "media diaria",
-      "chartHeading": "Visitas por día, últimos 30 días",
-      "chartEmpty": "No hay páginas vistas en los últimos 30 días.",
-      "topPagesHeading": "Páginas más vistas",
-      "searchPlaceholder": "Ruta de la página…",
-      "searchSubmit": "Buscar",
-      "columnPage": "Página",
-      "columnViews": "Visitas",
-      "empty": "No hay páginas vistas en los últimos 30 días."
     },
     "ghost": {
       "badge": "Fantasma",
@@ -7778,6 +7759,7 @@
     "title": "Sugerir una modificación",
     "subtitle": "Propón un cambio en esta página (nuestro staff lo revisará antes de aplicarlo), no cambia nada de inmediato.",
     "intro": "Rellena solo los campos que quieras cambiar para {name}. Deja el resto como está.",
+    "englishNotice": "Escribe tu solicitud en inglés para que nuestro equipo pueda revisarla.",
     "sectionProfile": "Perfil",
     "sectionSocials": "Redes sociales",
     "sectionReview": "Revisar y enviar",

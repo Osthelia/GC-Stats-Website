@@ -788,7 +788,7 @@
     "intro": "Ta polityka informuje, jak przetwarzamy dane na tej stronie, stawiając na przejrzystość i poszanowanie prywatności.",
     "analytics": {
       "title": "Nawigacja i statystyki",
-      "text": "Mierzymy oglądalność strony w pełni anonimowo: liczone są tylko odwiedzona strona, dzień i liczba wyświetleń, bez adresu IP, bez indywidualnego śledzenia i bez fingerprintingu. Aby chronić stronę przed botami i nadużyciami, nasze serwery zapisują każde żądanie (adres IP, żądana strona, przeglądarka, data) przez 14 dni. Jeśli masz konto, adres IP każdego logowania jest też przechowywany przez 90 dni w dzienniku bezpieczeństwa Twojego konta."
+      "text": "Oglądalność serwisu mierzymy wyłącznie na podstawie logów naszych serwerów, bez skryptów śledzących w przeglądarce, bez śledzących plików cookie i bez fingerprintingu. Aby monitorować ruch i chronić serwis przed botami i nadużyciami, nasze serwery zapisują każde żądanie (adres IP, żądana strona, przeglądarka, data) przez 14 dni, wraz z krajem i operatorem sieci ustalonymi na podstawie adresu IP. Zbiorcze dane uzyskane z tych logów (liczba żądań według serwisu i kraju) nie zawierają żadnego adresu IP. Jeśli masz konto, adres IP każdego logowania jest też przechowywany przez 90 dni w dzienniku bezpieczeństwa konta."
     },
     "publicData": {
       "title": "Dane publiczne",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Absolutne minimum",
-        "text": "Zbieramy tylko to, czego strona potrzebuje, by działać i być bezpieczna. Bez reklam, bez trackerów, bez śledzących plików cookie: oglądalność liczona jest anonimowo, bez adresu IP."
+        "text": "Zbieramy tylko to, czego serwis potrzebuje do działania i zachowania bezpieczeństwa. Bez reklam, bez skryptów śledzących, bez śledzących plików cookie: oglądalność mierzymy wyłącznie na podstawie logów serwerów."
       },
       "switzerland": {
         "title": "Hosting w Szwajcarii",
@@ -1274,6 +1274,7 @@
               "Adres IP",
               "Żądana strona",
               "Przeglądarka",
+              "Kraj i operator sieci ustalone na podstawie adresu IP",
               "Data i godzina",
               "Korzystanie z portalu OpenData (konto, zahaszowany adres IP, zbiór danych), usuwane po 30 dniach"
             ]
@@ -2074,7 +2075,6 @@
       "forumMessages": "Wiadomości na forum",
       "sanctions": "Sankcje",
       "activityLog": "Dziennik aktywności",
-      "analytics": "Statystyki ruchu",
       "oauthClients": "Klienci OAuth",
       "settings": "Konfiguracja",
       "discordImages": "Obrazy bota Discord",
@@ -3595,7 +3595,6 @@
         "forum": "Forum",
         "sanctions": "Sankcje",
         "activityLog": "Dziennik aktywności",
-        "analytics": "Statystyki ruchu",
         "oauthClients": "Klienci OAuth",
         "settings": "Konfiguracja",
         "rosterWatch": "Obserwacja rosterów",
@@ -3646,7 +3645,6 @@
         "sanctions_view": "Podgląd sankcji",
         "sanctions_manage": "Nakładanie lub znoszenie sankcji",
         "activity_log_view": "Podgląd dziennika aktywności",
-        "analytics_view": "Podgląd statystyk ruchu",
         "oauth_clients_view": "Podgląd klientów OAuth",
         "oauth_clients_manage": "Tworzenie, edycja lub usuwanie klientów OAuth",
         "settings_view": "Wyświetlanie konfiguracji i monitoringu OpenData",
@@ -4042,8 +4040,8 @@
         },
         "tiebreakerOrder": {
           "title": "Tiebreakery",
-          "hint": "Zwycięstwa zawsze liczą się najpierw. Remisy są następnie rozstrzygane w tej kolejności, ostatni pokazany jest ostatecznym kryterium.",
-          "wins": "Zwycięstwa",
+          "hint": "Jeśli punkty są włączone, liczą się jako pierwsze. Następnie liczy się bilans meczów (zwycięstwa, potem porażki). Remisy są potem rozstrzygane w tej kolejności, która zaczyna się od nowa dla drużyn nadal remisujących. Drużyny, które pozostaną w remisie, są ustawiane według rozstawienia.",
+          "wins": "Bilans meczów",
           "moveUp": "W górę",
           "moveDown": "W dół",
           "remove": "Usuń",
@@ -4054,13 +4052,16 @@
             "game_diff": "Różnica gier",
             "round_diff": "Różnica rund",
             "head_to_head": "Bezpośrednie starcie",
+            "h2h_map_diff": "Różnica map w meczach bezpośrednich (2 drużyny)",
+            "h2h_game_diff": "Różnica gier w meczach bezpośrednich (2 drużyny)",
+            "h2h_round_diff": "Różnica rund w meczach bezpośrednich (2 drużyny)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Punkty",
-          "hint": "Każdy wygrany lub przegrany mecz, mapa i runda daje drużynie punkty. Rundy liczą się tylko na mapach z zapisanym wynikiem.",
-          "hintGames": "Każdy wygrany lub przegrany mecz i każda gra daje drużynie punkty.",
+          "hint": "Każdy wygrany lub przegrany mecz, mapa i runda daje drużynie punkty. Rundy liczą się tylko na mapach z zapisanym wynikiem. Po włączeniu punkty porządkują drużyny przed bilansem meczów i tiebreakerami.",
+          "hintGames": "Każdy wygrany lub przegrany mecz i każda gra daje drużynie punkty. Po włączeniu punkty porządkują drużyny przed bilansem meczów i tiebreakerami.",
           "enable": "Używaj punktów",
           "scopes": {
             "match": "Mecz",
@@ -4070,8 +4071,7 @@
             "forfeit": "Walkower (zastępuje pozostałe)"
           },
           "win": "Wygrana",
-          "loss": "Przegrana",
-          "notUsed": "Punkty porządkują grupę tylko wtedy, gdy Punkty są w tiebreakerach."
+          "loss": "Przegrana"
         },
         "fieldMatchScope": "Drużyny grają też z drużynami z innych grup (liczą się mecze z innych grup z tym ustawieniem)",
         "fieldMatchScopeHint": "Wyświetlane są tylko drużyny przypisane do tej grupy, a ich zakończone mecze liczą się w każdej grupie tego etapu, która też ma to ustawienie. Mecze z grup bez niego się nie liczą. Przypisz drużyny po zapisaniu. Tylko round robin.",
@@ -5590,25 +5590,6 @@
       "viewCauser": "Zobacz użytkownika",
       "attributeChanges": "Zmiany pól",
       "properties": "Właściwości"
-    },
-    "analytics": {
-      "title": "Statystyki ruchu",
-      "subtitle": "Ruch na stronach serwisu według regionu.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "Ameryki",
-        "APAC": "Azja i Pacyfik",
-        "OTHE": "Inne"
-      },
-      "dailyAverage": "średnio dziennie",
-      "chartHeading": "Wyświetlenia dziennie, ostatnie 30 dni",
-      "chartEmpty": "Brak wyświetleń w ciągu ostatnich 30 dni.",
-      "topPagesHeading": "Najpopularniejsze strony",
-      "searchPlaceholder": "Ścieżka strony…",
-      "searchSubmit": "Szukaj",
-      "columnPage": "Strona",
-      "columnViews": "Wyświetlenia",
-      "empty": "Brak wyświetleń w ciągu ostatnich 30 dni."
     },
     "ghost": {
       "badge": "Widmo",
@@ -7778,6 +7759,7 @@
     "title": "Zaproponuj zmianę",
     "subtitle": "Zaproponuj zmianę na tej stronie (zostanie sprawdzona przez nasz zespół przed zastosowaniem), nic nie zmienia się od razu.",
     "intro": "Wypełnij tylko pola, które chcesz zmienić dla {name}. Resztę zostaw bez zmian.",
+    "englishNotice": "Napisz swoją prośbę po angielsku, aby nasz zespół mógł ją rozpatrzyć.",
     "sectionProfile": "Profil",
     "sectionSocials": "Social media",
     "sectionReview": "Sprawdzenie i wysyłka",

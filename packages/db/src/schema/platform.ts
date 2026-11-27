@@ -85,6 +85,7 @@ export const externalApiSessions = pgTable("external_api_sessions", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Unused, kept so the table survives a rolling deployment. To be dropped in a later release.
 export const pageViews = pgTable("page_views", {
   uri: text("uri").notNull(),
   viewedAt: date("viewed_at").notNull(),

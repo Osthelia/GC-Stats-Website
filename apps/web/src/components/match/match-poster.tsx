@@ -32,6 +32,8 @@ const BLUE = "#3b82f6";
 const RED = "#ef4444";
 const MAX_ROUNDS_PER_LINE = 30;
 const MAX_AGENTS = 5;
+// Grid columns taken by one team on a scoreboard row: agents, name and six stats.
+const PLAYER_COLUMNS = 8;
 const AGENT_OVERLAP = 14;
 const HALF_LENGTH = 12;
 const REGULATION_LENGTH = 24;
@@ -184,7 +186,7 @@ function StatCell({ children, className = "", style }: { children: React.ReactNo
 
 function PlayerStats({ p, mirrored, mvp }: { p: MatchMapPlayerRow | null; mirrored: boolean; mvp: boolean }) {
   const t = useTranslations("matchPage");
-  if (!p) return Array.from({ length: 7 }).map((_, i) => <div key={i} aria-hidden />);
+  if (!p) return Array.from({ length: PLAYER_COLUMNS }).map((_, i) => <div key={i} aria-hidden />);
 
   const agents = (
     <div key="agents" className={`flex ${mirrored ? "justify-end" : ""}`}>

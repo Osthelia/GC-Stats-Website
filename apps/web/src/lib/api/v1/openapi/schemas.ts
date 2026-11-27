@@ -1157,7 +1157,7 @@ export const ApiSearchResultItemSchema = z
     logo_url_light: z.string().nullable(),
     path: z.string(),
     score: z.number().int(),
-    popularity: z.number().int(),
+    popularity: z.number().int().openapi({ description: "Matches played in the last 90 days (by the team or player, in the tournament, in the organizer's tournaments), plus the fans of a team." }),
   })
   .openapi("SearchResultItem");
 
@@ -1227,7 +1227,7 @@ export const ApiGroupSchema = z
       qualify_at_wins: z.number().int().nullable(),
       eliminate_at_losses: z.number().int().nullable(),
       max_rounds: z.number().int().nullable(),
-      tiebreakers: z.array(z.string()).openapi({ description: "Tiebreakers applied in order after the number of wins." }),
+      tiebreakers: z.array(z.string()).openapi({ description: "Tiebreakers applied in order after the match record, starting over for the teams still tied." }),
       uses_points: z.boolean(),
     }),
     standings: z.array(ApiGroupStandingSchema),

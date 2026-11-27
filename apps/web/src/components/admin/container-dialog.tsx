@@ -22,7 +22,7 @@ import { RequiredMark } from "@/components/admin/required-mark";
 import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { TiebreakerOrder } from "@/components/admin/tiebreaker-order";
 import { createContainer, updateContainer, moveContainerToSet, type ContainerFieldErrors, type ContainerInput } from "@/actions/admin-containers";
-import { EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, defaultRoundRobinTiebreakers, parseGroupConfig, usesStageScope, type PointsField } from "@/lib/bracket/config-types";
+import { EMPTY_POINTS, POINTS_FIELDS, allowedTiebreakers, defaultTiebreakers, parseGroupConfig, usesStageScope, type PointsField } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
 import { useGame } from "@/lib/use-game";
@@ -51,9 +51,6 @@ type FormState = {
   points: Record<PointsField, string>;
 };
 
-// Round robin ranks on map or round difference depending on the game, a game without rounds has no round difference.
-const defaultTiebreakers = (game: GameSlug, format: GroupFormat): string[] => (format === "swiss" ? ["buchholz", "round_diff", "seed"] : defaultRoundRobinTiebreakers(game, false));
-
 const pointsState = (values: Record<PointsField, number>) => Object.fromEntries(POINTS_FIELDS.map((f) => [f, String(values[f])])) as Record<PointsField, string>;
 
 function emptyState(game: GameSlug, parentId: number | null = null): FormState {
@@ -67,7 +64,7 @@ function emptyState(game: GameSlug, parentId: number | null = null): FormState {
     eliminateAtLosses: "3",
     maxRounds: "5",
     stageScope: false,
-    tiebreakers: defaultTiebreakers(game, "swiss"),
+    tiebreakers: defaultTiebreakers(game),
     pointsOn: false,
     points: pointsState(EMPTY_POINTS),
   };
@@ -89,7 +86,8 @@ function stateFromContainer(game: GameSlug, container: AdminContainerRow): FormS
     base.eliminateAtLosses = config.eliminateAtLosses !== null ? String(config.eliminateAtLosses) : "";
     base.maxRounds = String(config.maxRounds);
   }
-  base.tiebreakers = [...config.tiebreakers];
+  const allowed: readonly string[] = allowedTiebreakers(game, config.type);
+  base.tiebreakers = config.tiebreakers.filter((tiebreaker) => allowed.includes(tiebreaker));
   base.pointsOn = config.pointsConfig !== null;
   base.points = pointsState(config.pointsConfig ?? EMPTY_POINTS);
   return base;
@@ -229,7 +227,7 @@ export function ContainerDialog({
           {form.containerType === "group" && (
             <>
               <FormField label={t("fieldGroupFormat")} htmlFor="ctr-group-format" required>
-                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: defaultTiebreakers(game, v as GroupFormat) }))}>
+                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: defaultTiebreakers(game) }))}>
                   <SelectTrigger id="ctr-group-format" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -272,7 +270,7 @@ export function ContainerDialog({
                   <RequiredMark />
                 </p>
                 <p className="text-xs text-muted-foreground">{t("tiebreakerOrder.hint")}</p>
-                <TiebreakerOrder value={form.tiebreakers} options={form.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS} onChange={(next) => set("tiebreakers", next)} />
+                <TiebreakerOrder value={form.tiebreakers} options={allowedTiebreakers(game, form.groupFormat)} pointsFirst={form.pointsOn} onChange={(next) => set("tiebreakers", next)} />
                 {fieldErrors.tiebreakers && (
                   <p role="alert" className="text-sm text-destructive">
                     {err("tiebreakers")}
@@ -315,7 +313,6 @@ export function ContainerDialog({
                     ))}
                   </div>
                 )}
-                {form.pointsOn && !form.tiebreakers.includes("points") && <p className="text-xs text-muted-foreground">{t("pointsConfig.notUsed")}</p>}
               </div>
             </>
           )}

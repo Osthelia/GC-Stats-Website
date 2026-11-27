@@ -32,6 +32,9 @@ const nextConfig = {
   async rewrites() {
     return [{ source: "/api/:version(v\\d+)/:path*", destination: "/api/valorant/:version/:path*" }];
   },
+  async redirects() {
+    return [{ source: "/.well-known/change-password", destination: "/settings/account", permanent: false }];
+  },
   async headers() {
     return [
       // Fonts and chunks fetched cross-origin from the CDN host need CORS.

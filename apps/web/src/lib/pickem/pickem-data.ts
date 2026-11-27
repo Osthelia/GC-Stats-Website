@@ -446,7 +446,7 @@ async function loadStageLeaderboardContext(game: GameSlug, stageId: number): Pro
   const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];
   const nameById = new Map<string, string | null>();
   if (participantIds.length > 0) {
-    const userRows = await db.select({ id: users.id, username: users.username, name: users.name }).from(users).where(inArray(users.id, participantIds));
+    const userRows = await db.select({ id: users.id, name: users.name }).from(users).where(inArray(users.id, participantIds));
     for (const u of userRows) {
       nameById.set(u.id, u.name);
     }
