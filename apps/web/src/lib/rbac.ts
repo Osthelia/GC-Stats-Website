@@ -40,7 +40,8 @@ export type CurrentUserAccess = {
  * A role can be assigned to every game (user_roles.game null) or to a single
  * one. Without `game` only the every-game assignments count, with `game` the
  * ones limited to that game count too. Holding admin.access through any
- * assignment lets the user into /admin.
+ * assignment lets the user into /admin. A super admin role limited to a game
+ * is only an admin of that game's content.
  */
 export const getGlobalAccess = cache(async (userId: string, game?: GameSlug): Promise<CurrentUserAccess> => {
   const rows = await db
@@ -60,7 +61,11 @@ export const getGlobalAccess = cache(async (userId: string, game?: GameSlug): Pr
   let isGameAdmin = false;
   for (const row of rows) {
     const applies = row.assignedGame === null || row.assignedGame === game;
-    if (row.isSuperAdmin && applies) isSuperAdmin = true;
+    if (row.isSuperAdmin && row.assignedGame === null) isSuperAdmin = true;
+    if (row.isSuperAdmin && row.assignedGame !== null) {
+      perms.add(ADMIN_ACCESS_PERMISSION);
+      if (applies) for (const permission of GAME_PERMISSIONS) perms.add(permission);
+    }
     if (applies && (row.isSuperAdmin || row.permissionName === ADMIN_ACCESS_PERMISSION)) isGameAdmin = true;
     // A role limited to a game only grants the content permissions of that game.
     const allowed = row.assignedGame === null || (GAME_PERMISSIONS as readonly string[]).includes(row.permissionName ?? "");

@@ -66,7 +66,8 @@ export function ChangeRequestDetailPanel({ detail, canManage, messages }: { deta
         })
       );
       setBulkNote("");
-      toast.success(t("actionSuccess"));
+      if (results.some((r) => !r.result.ok && r.result.error === "otherGame")) toast.error(t("applyErrorCode.otherGame"));
+      else toast.success(t("actionSuccess"));
     });
   }
 

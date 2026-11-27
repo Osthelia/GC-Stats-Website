@@ -55,7 +55,7 @@ export async function importGame(input: ImportGameInput): Promise<ImportGameResu
     try {
       await storeLolImport(input.source, validation.match.metadata.matchId, { match: validation.match, timeline: validation.timeline });
     } catch (err) {
-      console.error(`[lol-import] could not store game ${validation.match.metadata.matchId} in the imports bucket`, err);
+      console.error("[lol-import] could not store game %s in the imports bucket", validation.match.metadata.matchId, err);
       return { ok: false, error: { kind: "storageUnavailable" } };
     }
   }

@@ -3,9 +3,10 @@
  *
  * i18n routing middleware (Next.js 16 renamed the "middleware" file
  * convention to "proxy"), matches all routes except API, internal Next.js
- * assets, and files with an extension. Also sends game-less URLs of
- * per-game pages ("/team/3") to the game the visitor browsed last, and
- * remembers the game of the page being visited (public games only, see PUBLIC_GAMES).
+ * assets, and files with an extension. Also completes game-less URLs of
+ * per-game pages: an entity ("/team/3") goes to the default game, the other
+ * pages ("/search") to the game the visitor browsed last. Remembers the game
+ * of the page being visited (public games only, see PUBLIC_GAMES).
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -16,7 +17,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_GAME, isGameSlug } from "@gc-stats/db/game";
 import { routing } from "./i18n/routing";
-import { withGame } from "./lib/game-href";
+import { isLegacyEntityPath, withGame } from "./lib/game-href";
 import { fallbackPublicGame, isGamePublic } from "./lib/public-games";
 
 const GAME_COOKIE = "gcs-game";
@@ -34,7 +35,7 @@ export default function proxy(request: NextRequest) {
   const cookieGame = request.cookies.get(GAME_COOKIE)?.value;
   // A visitor is never sent into a game that is not public yet, whatever the cookie says.
   const preferred = fallbackPublicGame(isGameSlug(cookieGame) ? cookieGame : DEFAULT_GAME);
-  const completed = withGame(rest, preferred);
+  const completed = withGame(rest, isLegacyEntityPath(rest) ? fallbackPublicGame(DEFAULT_GAME) : preferred);
   if (completed !== rest) {
     const url = request.nextUrl.clone();
     url.pathname = (locale ? `/${locale}` : "") + completed;

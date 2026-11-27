@@ -84,7 +84,7 @@ export function ChangeRequestItemCard({ item, canManage, onResolved }: { item: A
     startTransition(async () => {
       const result = await resolveChangeRequestItem(game, item.id, action, note, closeIds);
       if (!result.ok) {
-        toast.error(t("actionError"));
+        toast.error(t(result.error === "otherGame" ? "applyErrorCode.otherGame" : "actionError"));
         return;
       }
       onResolved({ ...item, status: result.status, applyError: result.applyError, resolutionNote: note.trim() || null });

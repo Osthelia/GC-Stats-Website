@@ -60,7 +60,7 @@ export async function listGlobalRolesWithCounts(opts: { q: string; sort: AdminRo
         permissionCount,
       })
       .from(roles)
-      .leftJoin(userRoles, and(eq(userRoles.roleId, roles.id), isNull(userRoles.scopeId)))
+      .leftJoin(userRoles, and(eq(userRoles.roleId, roles.id), isNull(userRoles.scopeId), isNull(userRoles.game)))
       .leftJoin(permCounts, eq(permCounts.roleId, roles.id))
       .where(where)
       .groupBy(roles.id, permCounts.permissionCount)
@@ -100,7 +100,7 @@ export async function getGlobalRoleDetail(roleId: number): Promise<AdminRoleDeta
       .select({ id: users.id, username: users.username, email: users.email, image: users.image })
       .from(userRoles)
       .innerJoin(users, eq(users.id, userRoles.userId))
-      .where(and(eq(userRoles.roleId, roleId), isNull(userRoles.scopeId)))
+      .where(and(eq(userRoles.roleId, roleId), isNull(userRoles.scopeId), isNull(userRoles.game)))
       .orderBy(users.username),
   ]);
 

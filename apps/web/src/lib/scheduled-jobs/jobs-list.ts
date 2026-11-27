@@ -56,9 +56,9 @@ export async function runJobsForCron(cronExpr: string): Promise<void> {
   for (const job of jobs.filter((j) => j.cron === cronExpr)) {
     try {
       const summary = await job.run();
-      if (!isNoopSummary(summary)) console.log(`[scheduled:${job.name}] ${summary}`);
+      if (!isNoopSummary(summary)) console.log("[scheduled:%s] %s", job.name, summary);
     } catch (error) {
-      console.error(`[scheduled:${job.name}] failed`, error);
+      console.error("[scheduled:%s] failed", job.name, error);
     }
   }
 }

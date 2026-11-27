@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Nie znaleziono zawodniczki.",
           "targetNotFound": "Nie znaleziono zawodniczki docelowej.",
           "targetAlreadyLinked": "Zawodniczka docelowa ma już powiązane konto.",
-          "sourceStillUsed": "Ten gracz jest nadal używany przez uczestników lub statystyki meczów tej gry. Zaznacz je również albo zachowaj profil."
+          "sourceStillUsed": "Ten gracz jest nadal używany przez uczestników lub statystyki meczów tej gry. Zaznacz je również albo zachowaj profil.",
+          "otherGame": "Gracz docelowy nie należy do żadnej gry, którą zarządzasz, więc nie można przenieść połączonego konta.",
+          "sourceHasData": "Niczego nie scalono, ponieważ usunięcie gracza spowodowałoby utratę danych: {items}. Zaznacz je również (element pominięty z powodu konfliktu trzeba najpierw usunąć) albo zachowaj profil."
         },
         "removeSource": "Usuń z {game} po połączeniu",
-        "removeSourceHint": "{name} zostaje usunięty z tej gry po przeniesieniu wszystkiego, a całkowicie, jeśli żadna inna gra nie ma tego profilu. Odrzucone, jeśli uczestnicy lub statystyki meczów nadal go używają.",
-        "riotAccountsLost": "Konta Riot gracza {name} (liczba: {count}) nie zostaną przeniesione i zostaną trwale usunięte razem z graczem. Gry z ich udziałem będą w przyszłych importach niepowiązane."
+        "removeSourceHint": "{name} zostaje usunięty z tej gry, a całkowicie, gdy żadna inna gra nie ma tego profilu. Operacja jest odrzucana, dopóki są dane do przeniesienia albo korzystają z niego uczestnicy lub statystyki meczów. Nazwa z Liquipedii, zablokowane wpisy składu i transmisje meczów są przenoszone przy scalaniu."
       },
       "duplicatesLink": "Możliwe duplikaty",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Ta zawodniczka jest już powiązana z innym kontem.",
           "unknownField": "Nieobsługiwane pole.",
           "unknown": "Nieznany błąd.",
-          "invalidSource": "Link do źródła nie jest już prawidłowy."
+          "invalidSource": "Link do źródła nie jest już prawidłowy.",
+          "otherGame": "Wcześniej połączony gracz nie należy do żadnej gry, którą zarządzasz."
         },
         "oldValue": "Obecnie",
         "newValue": "Proponowane",
@@ -4955,7 +4957,8 @@
               "unknownBuildPart": "Nie należy do tego patcha.",
               "duplicateSummoner": "To już drugi czar przywoływacza.",
               "secondaryTreeOfKeystone": "To ścieżka kluczowej runy; wybierz inną."
-            }
+            },
+            "createNotAllowed": "Nie masz uprawnień do tworzenia graczy. Wybierz istniejących."
           },
           "optional": "opcjonalnie",
           "build": "Build",

@@ -2900,11 +2900,12 @@
           "sourceNotFound": "선수를 찾을 수 없습니다.",
           "targetNotFound": "대상 선수를 찾을 수 없습니다.",
           "targetAlreadyLinked": "대상 선수에게 이미 연동된 계정이 있습니다.",
-          "sourceStillUsed": "이 선수는 아직 이 게임의 참가자 또는 경기 통계에서 사용 중입니다. 해당 항목도 선택하거나 프로필을 유지하세요."
+          "sourceStillUsed": "이 선수는 아직 이 게임의 참가자 또는 경기 통계에서 사용 중입니다. 해당 항목도 선택하거나 프로필을 유지하세요.",
+          "otherGame": "대상 선수가 관리 권한이 있는 게임에 속해 있지 않아 연결된 계정을 옮길 수 없습니다.",
+          "sourceHasData": "선수를 제거하면 데이터가 사라지므로 병합하지 않았습니다: {items}. 해당 항목도 선택하거나(충돌로 건너뛴 항목은 먼저 삭제해야 합니다) 프로필을 유지하세요."
         },
         "removeSource": "병합 후 {game}에서 제거",
-        "removeSourceHint": "모든 항목을 옮긴 뒤 {name}은(는) 이 게임에서 제거되며, 다른 게임에 이 프로필이 없으면 완전히 제거됩니다. 참가자나 경기 통계가 아직 사용 중이면 거부됩니다.",
-        "riotAccountsLost": "{name}의 Riot 계정 {count}개는 이동되지 않고 선수와 함께 영구 삭제됩니다. 이후 가져오기에서 해당 계정의 경기는 연결되지 않은 것으로 표시됩니다."
+        "removeSourceHint": "{name}은(는) 이 게임에서 제거되며, 다른 게임에 이 프로필이 없으면 완전히 삭제됩니다. 옮길 데이터가 남아 있거나 참가 정보나 경기 통계에서 사용 중이면 거부됩니다. Liquipedia 이름, 확정된 로스터 기록, 경기 방송은 병합 대상으로 함께 옮겨집니다."
       },
       "duplicatesLink": "중복 가능성",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "이 선수는 이미 다른 계정에 연동되어 있습니다.",
           "unknownField": "지원하지 않는 필드입니다.",
           "unknown": "알 수 없는 오류입니다.",
-          "invalidSource": "출처 링크가 더 이상 유효하지 않습니다."
+          "invalidSource": "출처 링크가 더 이상 유효하지 않습니다.",
+          "otherGame": "이전에 연결된 선수가 관리 권한이 있는 게임에 속해 있지 않습니다."
         },
         "oldValue": "현재",
         "newValue": "제안됨",
@@ -4955,7 +4957,8 @@
               "unknownBuildPart": "이 패치에 없습니다.",
               "duplicateSummoner": "이미 다른 소환사 주문입니다.",
               "secondaryTreeOfKeystone": "핵심 룬과 같은 계열입니다. 다른 계열을 선택하세요."
-            }
+            },
+            "createNotAllowed": "선수를 만들 권한이 없습니다. 기존 선수를 선택하세요."
           },
           "optional": "선택",
           "build": "빌드",

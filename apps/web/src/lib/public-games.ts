@@ -24,7 +24,7 @@ export function parsePublicGames(value: string | undefined): GameSlug[] {
     if (!isGameSlug(slug)) {
       if (!warned.has(slug)) {
         warned.add(slug);
-        console.warn(`PUBLIC_GAMES: ignoring unknown game "${slug}"`);
+        console.warn("PUBLIC_GAMES: ignoring unknown game \"%s\"", slug);
       }
       continue;
     }

@@ -84,7 +84,7 @@ export async function refreshGameList(tournamentId: number, overviewPage: string
   } catch (err) {
     // Two base pages can overlap (Equal Esports Cup 2026 and Equal Esports Cup 2026/Playoffs), so a game can be listed by both. The transaction is rolled back.
     if (!isUniqueViolation(err, GAME_ID_CONSTRAINT)) throw err;
-    console.warn(`[leaguepedia] a game of tournament ${tournamentId} is already listed under another tournament`);
+    console.warn("[leaguepedia] a game of tournament %s is already listed under another tournament", tournamentId);
     return { ok: false, error: { kind: "gameClaimed" } };
   }
   return { ok: true, data: games.length };

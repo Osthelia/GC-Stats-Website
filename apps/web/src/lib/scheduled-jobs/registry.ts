@@ -25,21 +25,21 @@ export function startScheduledJobs(): void {
 
     cron.schedule(job.cron, async () => {
       if (isRunning) {
-        console.warn(`[scheduled:${job.name}] previous run still in progress, skipping tick`);
+        console.warn("[scheduled:%s] previous run still in progress, skipping tick", job.name);
         return;
       }
 
       isRunning = true;
       try {
         const summary = await job.run();
-        if (!isNoopSummary(summary)) console.log(`[scheduled:${job.name}] ${summary}`);
+        if (!isNoopSummary(summary)) console.log("[scheduled:%s] %s", job.name, summary);
       } catch (error) {
-        console.error(`[scheduled:${job.name}] failed`, error);
+        console.error("[scheduled:%s] failed", job.name, error);
       } finally {
         isRunning = false;
       }
     });
 
-    console.log(`[scheduled:${job.name}] registered (${job.cron})`);
+    console.log("[scheduled:%s] registered (%s)", job.name, job.cron);
   }
 }

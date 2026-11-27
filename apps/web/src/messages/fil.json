@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Hindi nahanap ang manlalaro.",
           "targetNotFound": "Hindi nahanap ang target na manlalaro.",
           "targetAlreadyLinked": "May naka-link nang account ang target na manlalaro.",
-          "sourceStillUsed": "Ginagamit pa ang player na ito ng mga entrant o match stats ng larong ito. Piliin din ang mga iyon, o panatilihin ang profile."
+          "sourceStillUsed": "Ginagamit pa ang player na ito ng mga entrant o match stats ng larong ito. Piliin din ang mga iyon, o panatilihin ang profile.",
+          "otherGame": "Ang target na manlalaro ay hindi kabilang sa anumang larong pinamamahalaan mo, kaya hindi mailipat ang naka-link na account.",
+          "sourceHasData": "Walang pinagsama, dahil may mawawalang data kapag inalis ang manlalaro: {items}. Piliin din ang mga ito (ang item na nilaktawan dahil sa salungatan ay kailangang burahin muna), o panatilihin ang profile."
         },
         "removeSource": "Alisin sa {game} pagkatapos mag-merge",
-        "removeSourceHint": "Aalisin ang {name} sa larong ito kapag nailipat na ang lahat, at tuluyan kapag walang ibang laro na may profile na ito. Tatanggihan kung ginagamit pa ito ng mga entrant o match stats.",
-        "riotAccountsLost": "Ang {count} Riot account ni {name} ay hindi ililipat at permanenteng made-delete kasama ng player. Ang mga laro nila ay lalabas na hindi naka-link sa mga susunod na import."
+        "removeSourceHint": "Aalisin si {name} sa larong ito, at tuluyan kung walang ibang larong may ganitong profile. Tatanggihan habang may data pang ililipat, o habang ginagamit ito ng mga kalahok o stats ng laban. Kasamang lilipat ang pangalan sa Liquipedia, mga naka-lock na credit sa roster at mga stream ng laban."
       },
       "duplicatesLink": "Mga posibleng duplicate",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Naka-link na ang manlalarong ito sa ibang account.",
           "unknownField": "Hindi suportadong field.",
           "unknown": "Hindi kilalang error.",
-          "invalidSource": "Hindi na wasto ang link ng pinagmulan."
+          "invalidSource": "Hindi na wasto ang link ng pinagmulan.",
+          "otherGame": "Ang dating naka-link na manlalaro ay hindi kabilang sa anumang larong pinamamahalaan mo."
         },
         "oldValue": "Kasalukuyan",
         "newValue": "Iminungkahi",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Wala sa patch na ito.",
               "duplicateSummoner": "Ito na ang isa pang summoner spell.",
               "secondaryTreeOfKeystone": "Ito ang tree ng keystone; pumili ng iba."
-            }
+            },
+            "createNotAllowed": "Wala kang pahintulot na gumawa ng mga manlalaro. Pumili ng mga mayroon na."
           },
           "optional": "opsyonal",
           "build": "Build",

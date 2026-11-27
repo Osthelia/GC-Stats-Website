@@ -196,7 +196,7 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
   try {
     await maybeAutoCompleteMatchFromMaps("lol", input.matchId);
   } catch (err) {
-    console.warn(`[lol-import] auto-complete failed for match #${input.matchId}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[lol-import] auto-complete failed for match #%s: %s", input.matchId, err instanceof Error ? err.message : String(err));
   }
 
   return { gameId };

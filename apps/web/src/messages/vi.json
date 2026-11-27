@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Không tìm thấy tuyển thủ.",
           "targetNotFound": "Không tìm thấy tuyển thủ đích.",
           "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết.",
-          "sourceStillUsed": "Tuyển thủ này vẫn được dùng bởi các đội tham gia hoặc thống kê trận đấu của game này. Hãy chọn cả các mục đó, hoặc giữ lại hồ sơ."
+          "sourceStillUsed": "Tuyển thủ này vẫn được dùng bởi các đội tham gia hoặc thống kê trận đấu của game này. Hãy chọn cả các mục đó, hoặc giữ lại hồ sơ.",
+          "otherGame": "Người chơi đích không thuộc trò chơi nào bạn quản lý, nên không thể chuyển tài khoản liên kết.",
+          "sourceHasData": "Không có gì được gộp, vì xóa người chơi sẽ làm mất dữ liệu: {items}. Hãy chọn cả dữ liệu đó (mục bị bỏ qua do xung đột phải được xóa trước) hoặc giữ lại hồ sơ."
         },
         "removeSource": "Xóa khỏi {game} sau khi gộp",
-        "removeSourceHint": "{name} bị xóa khỏi game này sau khi mọi thứ được chuyển, và bị xóa hoàn toàn nếu không game nào khác có hồ sơ này. Bị từ chối nếu các đội tham gia hoặc thống kê trận đấu vẫn đang dùng.",
-        "riotAccountsLost": "{count} tài khoản Riot của {name} sẽ không được chuyển và sẽ bị xóa vĩnh viễn cùng người chơi. Các ván có tài khoản đó sẽ hiển thị là chưa liên kết ở lần nhập sau."
+        "removeSourceHint": "{name} bị xóa khỏi trò chơi này, và bị xóa hoàn toàn nếu không trò chơi nào khác có hồ sơ này. Bị từ chối khi vẫn còn dữ liệu cần chuyển, hoặc khi người tham gia hay thống kê trận đấu còn dùng hồ sơ. Tên Liquipedia, ghi nhận đội hình đã khóa và luồng phát trận đấu được chuyển theo khi gộp."
       },
       "duplicatesLink": "Có thể trùng lặp",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Tuyển thủ này đã được liên kết với một tài khoản khác.",
           "unknownField": "Trường không được hỗ trợ.",
           "unknown": "Lỗi không xác định.",
-          "invalidSource": "Liên kết nguồn không còn hợp lệ."
+          "invalidSource": "Liên kết nguồn không còn hợp lệ.",
+          "otherGame": "Người chơi được liên kết trước đó không thuộc trò chơi nào bạn quản lý."
         },
         "oldValue": "Hiện tại",
         "newValue": "Đề xuất",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Không có trong bản cập nhật này.",
               "duplicateSummoner": "Đã là phép bổ trợ còn lại.",
               "secondaryTreeOfKeystone": "Đây là nhánh của ngọc chính; hãy chọn nhánh khác."
-            }
+            },
+            "createNotAllowed": "Bạn không được phép tạo người chơi. Hãy chọn người chơi có sẵn."
           },
           "optional": "không bắt buộc",
           "build": "Trang bị & ngọc",

@@ -85,7 +85,7 @@ export async function persistPuuidMapping(game: GameSlug, mapping: Map<string, n
     // Already linked to this very person (a retry after a later step failed): nothing to do.
     if (conflict?.id === personId) continue;
     if (conflict) {
-      console.warn(`[map-fetch] puuid already mapped to person #${conflict.id}, skipping mapping to person #${personId}`);
+      console.warn("[map-fetch] puuid already mapped to person #%s, skipping mapping to person #%s", conflict.id, personId);
       return { ok: false, error: { kind: "puuidConflict" } };
     }
     try {
@@ -95,7 +95,7 @@ export async function persistPuuidMapping(game: GameSlug, mapping: Map<string, n
         await db.update(personProfiles).set({ esportsValId: puuid }).where(eq(personProfiles.personId, personId));
       }
     } catch (err) {
-      console.warn(`[map-fetch] puuid mapping to person #${personId} failed (likely a concurrent conflict): ${err instanceof Error ? err.message : String(err)}`);
+      console.warn("[map-fetch] puuid mapping to person #%s failed (likely a concurrent conflict): %s", personId, err instanceof Error ? err.message : String(err));
       return { ok: false, error: { kind: "puuidConflict" } };
     }
   }

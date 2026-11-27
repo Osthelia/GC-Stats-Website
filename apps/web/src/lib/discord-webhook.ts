@@ -19,7 +19,7 @@ export async function postDiscordWebhook(url: string | undefined, content: strin
     });
 
     if (!response.ok) {
-      console.warn(`[discord-webhook] request failed with status ${response.status}`);
+      console.warn("[discord-webhook] request failed with status %s", response.status);
     }
   } catch (error) {
     console.warn("[discord-webhook] request threw", error);

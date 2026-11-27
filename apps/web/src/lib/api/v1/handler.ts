@@ -115,7 +115,7 @@ export async function withApiV1<T>(request: Request, endpointTemplate: string, h
       logRequest(request, endpointTemplate, key.id, startedAt, err.status);
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
-    console.error(`API v1 error on ${endpointTemplate}`, err);
+    console.error("API v1 error on %s", endpointTemplate, err);
     logRequest(request, endpointTemplate, key.id, startedAt, 500);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Pemain tidak ditemukan.",
           "targetNotFound": "Pemain tujuan tidak ditemukan.",
           "targetAlreadyLinked": "Pemain tujuan sudah memiliki akun tertaut.",
-          "sourceStillUsed": "Pemain ini masih dipakai oleh peserta atau statistik pertandingan game ini. Pilih juga item tersebut, atau pertahankan profilnya."
+          "sourceStillUsed": "Pemain ini masih dipakai oleh peserta atau statistik pertandingan game ini. Pilih juga item tersebut, atau pertahankan profilnya.",
+          "otherGame": "Pemain tujuan tidak termasuk dalam game apa pun yang Anda kelola, sehingga akun tertaut tidak dapat dipindahkan.",
+          "sourceHasData": "Tidak ada yang digabungkan, karena menghapus pemain akan menghilangkan data: {items}. Pilih juga data tersebut (item yang dilewati karena konflik harus dihapus dulu), atau pertahankan profil."
         },
         "removeSource": "Hapus dari {game} setelah digabung",
-        "removeSourceHint": "{name} dihapus dari game ini setelah semuanya dipindahkan, dan dihapus seluruhnya jika tidak ada game lain yang memiliki profil ini. Ditolak jika peserta atau statistik pertandingan masih memakainya.",
-        "riotAccountsLost": "{count} akun Riot milik {name} tidak dipindahkan dan akan dihapus permanen bersama pemain. Game dengan akun itu akan tampil belum terhubung pada impor berikutnya."
+        "removeSourceHint": "{name} dihapus dari game ini, dan seluruhnya jika tidak ada game lain yang memiliki profil ini. Ditolak selama masih ada data yang harus dipindahkan, atau selama peserta atau statistik pertandingan memakainya. Nama Liquipedia, kredit roster terkunci, dan siaran pertandingan ikut digabungkan."
       },
       "duplicatesLink": "Kemungkinan duplikat",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Pemain ini sudah tertaut ke akun lain.",
           "unknownField": "Kolom tidak didukung.",
           "unknown": "Kesalahan tidak diketahui.",
-          "invalidSource": "Tautan sumber tidak lagi valid."
+          "invalidSource": "Tautan sumber tidak lagi valid.",
+          "otherGame": "Pemain yang sebelumnya tertaut tidak termasuk dalam game apa pun yang Anda kelola."
         },
         "oldValue": "Saat ini",
         "newValue": "Diusulkan",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Tidak ada di patch ini.",
               "duplicateSummoner": "Sudah menjadi summoner spell yang lain.",
               "secondaryTreeOfKeystone": "Ini jalur milik keystone; pilih jalur lain."
-            }
+            },
+            "createNotAllowed": "Anda tidak diizinkan membuat pemain. Pilih pemain yang sudah ada."
           },
           "optional": "opsional",
           "build": "Build",

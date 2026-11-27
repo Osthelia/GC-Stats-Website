@@ -122,7 +122,7 @@ export async function fetchMapData(game: GameSlug, mapId: number, options: Fetch
   try {
     await maybeAutoCompleteMatchFromMaps(game, row.matchId);
   } catch (err) {
-    console.warn(`[map-fetch] auto-complete failed for match #${row.matchId}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[map-fetch] auto-complete failed for match #%s: %s", row.matchId, err instanceof Error ? err.message : String(err));
   }
 
   return { ok: true };

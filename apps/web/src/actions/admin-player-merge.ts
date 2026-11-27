@@ -13,7 +13,8 @@
 "use server";
 
 import { logoGameClause } from "@/lib/admin-logos";
-import { ensureGameProfile, setPersonUser, removePersonFromGame } from "@/lib/person-service";
+import { ensureGameProfile, setPersonUser, removePersonFromGame, listRemainingPersonData, movePersonHiddenData, type PersonRemainingData } from "@/lib/person-service";
+import { managesAGameOfPerson } from "@/lib/person-identity-access";
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { adminDb as db } from "@gc-stats/db/client";
@@ -49,13 +50,22 @@ export type PlayerMergeSelection = {
   linkedAccount: boolean;
   /** Moves the Riot accounts (League only). */
   riotAccounts: boolean;
-  /** Removes the source from this game once everything is moved (its identity too when no other game has it). */
+  /** Removes the source from this game once everything is moved (its identity too when no other game has it). Refused while data is left on it. */
   removeSource: boolean;
 };
 
 class SourceStillUsedError extends Error {}
 
-export type MergePlayersResult = { ok: true } | { ok: false; error: "samePlayer" | "sourceNotFound" | "targetNotFound" | "targetAlreadyLinked" | "sourceStillUsed" };
+class SourceHasDataError extends Error {
+  constructor(readonly remaining: PersonRemainingData[]) {
+    super("sourceHasData");
+  }
+}
+
+export type MergePlayersResult =
+  | { ok: true }
+  | { ok: false; error: "samePlayer" | "sourceNotFound" | "targetNotFound" | "targetAlreadyLinked" | "sourceStillUsed" | "otherGame" }
+  | { ok: false; error: "sourceHasData"; remaining: PersonRemainingData[] };
 
 type MergeTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -111,6 +121,8 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
   // Checked up front (not silently skipped mid-transaction like the other categories' dedupe) — the
   // admin explicitly asked to move this one item, so a conflict here is worth a clear rejection.
   if (selection.linkedAccount && source.userId && target.userId) return { ok: false, error: "targetAlreadyLinked" };
+  // The source is in this game, the target may only exist in others.
+  if (selection.linkedAccount && !(await managesAGameOfPerson(access.userId, targetPersonId, PERMISSIONS.playersMerge))) return { ok: false, error: "otherGame" };
 
   const counts = { teamHistory: 0, organizations: 0, productionCredits: 0, news: 0, logos: 0, matchStats: 0, gameStats: 0, riotAccounts: 0, linkedAccount: false, sourceRemoved: false };
 
@@ -354,6 +366,10 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
 
       if (selection.removeSource) {
         // Refused when entrants or stats of this game still point at the source, nothing is merged then.
+        // Everything is rolled back when something would be lost.
+        const remaining = await listRemainingPersonData(tx, game, sourcePersonId);
+        if (remaining.length) throw new SourceHasDataError(remaining);
+        await movePersonHiddenData(tx, game, sourcePersonId, targetPersonId);
         if ((await removePersonFromGame(tx, game, sourcePersonId)) === "inUse") throw new SourceStillUsedError();
         counts.sourceRemoved = true;
       }
@@ -369,6 +385,7 @@ export async function mergePlayers(game: GameSlug, sourcePersonId: number, targe
     });
   } catch (error) {
     if (error instanceof SourceStillUsedError) return { ok: false, error: "sourceStillUsed" };
+    if (error instanceof SourceHasDataError) return { ok: false, error: "sourceHasData", remaining: error.remaining };
     throw error;
   }
   if (counts.matchStats > 0 || counts.gameStats > 0) updateTag(MATCH_STATS_TAG);

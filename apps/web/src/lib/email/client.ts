@@ -39,7 +39,7 @@ export async function sendEmail(input: SendEmailInput): Promise<void> {
     });
 
     if (!response.ok) {
-      console.warn(`[email] Resend request failed with status ${response.status}`);
+      console.warn("[email] Resend request failed with status %s", response.status);
     }
   } catch (error) {
     console.warn("[email] Resend request threw", error);

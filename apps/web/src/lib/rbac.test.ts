@@ -9,7 +9,7 @@ vi.mock("@gc-stats/db/client", () => ({
   db: { select: () => ({ from: () => ({ innerJoin: () => ({ leftJoin: () => ({ leftJoin: () => ({ where: () => rows() }) }) }) }) }) },
 }));
 
-import { canViewGame, isGamePreview } from "./rbac";
+import { canViewGame, getGlobalAccess, hasAccess, isGamePreview } from "./rbac";
 
 const adminRow = (assignedGame: string | null) => ({ isSuperAdmin: false, permissionName: "admin.access", assignedGame });
 
@@ -83,5 +83,21 @@ describe("isGamePreview", () => {
     getSession.mockResolvedValue({ user: { id: "u5" } });
     rows.mockResolvedValue([adminRow("lol")]);
     expect(await isGamePreview("lol")).toBe(true);
+  });
+});
+
+describe("getGlobalAccess with a super admin role limited to a game", () => {
+  beforeEach(() => rows.mockResolvedValue([{ isSuperAdmin: true, permissionName: null, assignedGame: "lol" }]));
+
+  it("grants the content permissions of that game only", async () => {
+    const access = await getGlobalAccess("u9", "lol");
+    expect(access.isSuperAdmin).toBe(false);
+    expect(hasAccess(access, "tournaments.manage")).toBe(true);
+    expect(hasAccess(access, "users.manage")).toBe(false);
+  });
+
+  it("grants nothing but the admin panel in another game", async () => {
+    const access = await getGlobalAccess("u10", "valorant");
+    expect([...access.permissions]).toEqual(["admin.access"]);
   });
 });

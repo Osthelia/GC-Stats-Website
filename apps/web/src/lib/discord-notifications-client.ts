@@ -79,7 +79,7 @@ export async function sendDiscordNotification(input: DiscordNotificationInput): 
     });
     const body = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     if (!response.ok || !body.ok) {
-      console.warn(`[discord-notifications-client] request failed with status ${response.status}`, body.error);
+      console.warn("[discord-notifications-client] request failed with status %s", response.status, body.error);
       return { ok: false, error: body.error ?? "request_failed" };
     }
     return { ok: true };

@@ -11,9 +11,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, or, sql } from "drizzle-orm";
+import { and, eq, inArray, or, sql } from "drizzle-orm";
 import type { adminDb } from "@gc-stats/db/client";
-import { sharedPeople, gameTables, lolGameEventsRaw, lolGameFramesRaw, lolGamePlayerStats, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
+import { logos, sharedPeople, gameTables, lolGameEventsRaw, lolGameFramesRaw, lolGamePlayerStats, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 /** The client or transaction a write runs on. */
@@ -119,6 +119,60 @@ async function isPersonInUse(client: PersonWriteClient, game: GameSlug, personId
   return Boolean(position);
 }
 
+/** What the merge screen can move, and removing the person would delete or leave behind. */
+export type PersonRemainingData = { category: "teamHistory" | "organizations" | "production" | "news" | "logos" | "riotAccounts"; count: number };
+
+export async function listRemainingPersonData(client: PersonWriteClient, game: GameSlug, personId: number): Promise<PersonRemainingData[]> {
+  const { rosterMemberships, organizationMemberships, productionCredits, newsRelations } = gameTables(game);
+  // One at a time, a transaction runs a single query at once.
+  const rosters = await client.select({ id: rosterMemberships.id }).from(rosterMemberships).where(eq(rosterMemberships.personId, personId));
+  const organizations = await client.select({ id: organizationMemberships.id }).from(organizationMemberships).where(eq(organizationMemberships.personId, personId));
+  const credits = await client.select({ id: productionCredits.id }).from(productionCredits).where(eq(productionCredits.personId, personId));
+  const news = await client.select({ id: newsRelations.id }).from(newsRelations).where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId)));
+  const accounts = game === "lol" ? await client.select({ puuid: lolPersonAccounts.puuid }).from(lolPersonAccounts).where(eq(lolPersonAccounts.personId, personId)) : [];
+  // Logos belong to the identity, they are only lost when it goes.
+  const ownLogos = (await hasProfileElsewhere(client, game, personId))
+    ? []
+    : await client.select({ id: logos.id }).from(logos).where(and(eq(logos.entityType, "person"), eq(logos.entityId, personId)));
+
+  const found: PersonRemainingData[] = [
+    { category: "teamHistory", count: rosters.length },
+    { category: "organizations", count: organizations.length },
+    { category: "production", count: credits.length },
+    { category: "news", count: news.length },
+    { category: "logos", count: ownLogos.length },
+    { category: "riotAccounts", count: accounts.length },
+  ];
+  return found.filter((entry) => entry.count > 0);
+}
+
+/**
+ * Hands over what the merge screen does not list: the Liquipedia name (unless the target has one),
+ * locked roster credits (unless the target has the same one) and match streams.
+ */
+export async function movePersonHiddenData(client: PersonWriteClient, game: GameSlug, sourcePersonId: number, targetPersonId: number): Promise<void> {
+  const { liquipediaPersonNames, entrantMembers, matchPlayerPovs } = gameTables(game);
+  const [targetName] = await client.select({ id: liquipediaPersonNames.id }).from(liquipediaPersonNames).where(eq(liquipediaPersonNames.personId, targetPersonId)).limit(1);
+  if (!targetName) await client.update(liquipediaPersonNames).set({ personId: targetPersonId }).where(eq(liquipediaPersonNames.personId, sourcePersonId));
+
+  const targetCredits = await client.select({ entrantId: entrantMembers.entrantId, role: entrantMembers.role }).from(entrantMembers).where(eq(entrantMembers.personId, targetPersonId));
+  const taken = new Set(targetCredits.map((credit) => `${credit.entrantId}:${credit.role}`));
+  const sourceCredits = await client.select({ id: entrantMembers.id, entrantId: entrantMembers.entrantId, role: entrantMembers.role }).from(entrantMembers).where(eq(entrantMembers.personId, sourcePersonId));
+  const movable = sourceCredits.filter((credit) => !taken.has(`${credit.entrantId}:${credit.role}`)).map((credit) => credit.id);
+  if (movable.length) await client.update(entrantMembers).set({ personId: targetPersonId }).where(inArray(entrantMembers.id, movable));
+
+  await client.update(matchPlayerPovs).set({ personId: targetPersonId }).where(eq(matchPlayerPovs.personId, sourcePersonId));
+}
+
+async function hasProfileElsewhere(client: PersonWriteClient, game: GameSlug, personId: number): Promise<boolean> {
+  for (const other of GAMES.filter((g) => g !== game)) {
+    const profiles = gameTables(other).personProfiles;
+    const [row] = await client.select({ id: profiles.personId }).from(profiles).where(eq(profiles.personId, personId)).limit(1);
+    if (row) return true;
+  }
+  return false;
+}
+
 /**
  * Removes the person from this game: its rosters, memberships and credits here go with it, and
  * the identity too when no other game has a profile for it. Refused ("inUse") when entrants or
@@ -137,11 +191,6 @@ export async function removePersonFromGame(client: PersonWriteClient, game: Game
   if (game === "lol") await client.delete(lolPersonAccounts).where(eq(lolPersonAccounts.personId, personId));
   await client.delete(personProfiles).where(eq(personProfiles.personId, personId));
 
-  for (const other of GAMES.filter((g) => g !== game)) {
-    const profiles = gameTables(other).personProfiles;
-    const [row] = await client.select({ id: profiles.personId }).from(profiles).where(eq(profiles.personId, personId)).limit(1);
-    if (row) return "ok";
-  }
-  await client.delete(sharedPeople).where(eq(sharedPeople.id, personId));
+  if (!(await hasProfileElsewhere(client, game, personId))) await client.delete(sharedPeople).where(eq(sharedPeople.id, personId));
   return "ok";
 }

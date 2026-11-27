@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Giocatrice non trovata.",
           "targetNotFound": "Giocatrice di destinazione non trovata.",
           "targetAlreadyLinked": "La giocatrice di destinazione ha già un account collegato.",
-          "sourceStillUsed": "Questo giocatore è ancora usato da partecipanti o statistiche di partita di questo gioco. Selezionali anche, oppure mantieni il profilo."
+          "sourceStillUsed": "Questo giocatore è ancora usato da partecipanti o statistiche di partita di questo gioco. Selezionali anche, oppure mantieni il profilo.",
+          "otherGame": "Il giocatore di destinazione non appartiene a nessun gioco che gestisci, quindi l'account collegato non può essere spostato.",
+          "sourceHasData": "Nessuna unione effettuata, perché rimuovendo il giocatore si perderebbero dei dati: {items}. Seleziona anche questi (un elemento saltato per un conflitto va prima eliminato) oppure mantieni il profilo."
         },
         "removeSource": "Rimuovi da {game} dopo l'unione",
-        "removeSourceHint": "{name} viene rimosso da questo gioco quando tutto è stato spostato, e del tutto se nessun altro gioco ha questo profilo. Rifiutato se partecipanti o statistiche di partita lo usano ancora.",
-        "riotAccountsLost": "{count} account Riot di {name} non vengono spostati e saranno eliminati definitivamente insieme al giocatore. Le partite con questi account risulteranno non collegate nelle prossime importazioni."
+        "removeSourceHint": "{name} viene rimosso da questo gioco, e del tutto se nessun altro gioco ha questo profilo. Rifiutato finché restano dati da spostare, o finché partecipanti o statistiche delle partite lo usano. Il nome Liquipedia, i crediti di roster bloccati e le dirette delle partite seguono l'unione."
       },
       "duplicatesLink": "Possibili duplicati",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Questa giocatrice è già collegata a un altro account.",
           "unknownField": "Campo non supportato.",
           "unknown": "Errore sconosciuto.",
-          "invalidSource": "Il link della fonte non è più valido."
+          "invalidSource": "Il link della fonte non è più valido.",
+          "otherGame": "Il giocatore collegato in precedenza non appartiene a nessun gioco che gestisci."
         },
         "oldValue": "Attuale",
         "newValue": "Proposto",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Non fa parte di questa patch.",
               "duplicateSummoner": "È già l'altro incantesimo dell'evocatore.",
               "secondaryTreeOfKeystone": "È il ramo della runa chiave; scegline un altro."
-            }
+            },
+            "createNotAllowed": "Non hai il permesso di creare giocatori. Scegli giocatori esistenti."
           },
           "optional": "facoltativo",
           "build": "Build",

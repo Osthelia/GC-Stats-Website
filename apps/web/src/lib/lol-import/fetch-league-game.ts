@@ -424,7 +424,7 @@ async function refreshAccounts(match: RiotMatchDto, platform: string, seenAt: Da
       .where(sql`${a.puuid} = v.puuid`);
   } catch (err) {
     // The game is stored; a stale Riot ID is not worth failing the save for.
-    console.error(`[leaguepedia] could not refresh the accounts of game ${match.metadata.matchId}`, err);
+    console.error("[leaguepedia] could not refresh the accounts of game %s", match.metadata.matchId, err);
   }
 }
 

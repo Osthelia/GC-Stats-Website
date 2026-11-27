@@ -381,7 +381,7 @@ async function syncMatchScoreFromMaps(game: GameSlug, matchId: number): Promise<
   try {
     await maybeAutoCompleteMatchFromMaps(game, matchId);
   } catch (err) {
-    console.warn(`[admin-matches] match score sync failed for match #${matchId}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[admin-matches] match score sync failed for match #%s: %s", matchId, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -783,7 +783,7 @@ async function fetchImportedMaps(game: GameSlug, matchId: number, orders: number
         outcomes.push({ ...base, status: "needsStep", reason: result.error.kind });
       }
     } catch (err) {
-      console.warn(`[wikicode-import] fetch failed for map #${row.id}: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn("[wikicode-import] fetch failed for map #%s: %s", row.id, err instanceof Error ? err.message : String(err));
       outcomes.push({ ...base, status: "needsStep", reason: "unexpected" });
     }
   }

@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Spieler:in nicht gefunden.",
           "targetNotFound": "Ziel Spieler:in nicht gefunden.",
           "targetAlreadyLinked": "Die Ziel Spieler:in hat bereits ein verknüpftes Konto.",
-          "sourceStillUsed": "Dieser Spieler wird noch von Teilnehmern oder Matchstatistiken dieses Spiels verwendet. Wähle sie ebenfalls aus oder behalte das Profil."
+          "sourceStillUsed": "Dieser Spieler wird noch von Teilnehmern oder Matchstatistiken dieses Spiels verwendet. Wähle sie ebenfalls aus oder behalte das Profil.",
+          "otherGame": "Der Zielspieler gehört zu keinem Spiel, das du verwaltest. Das verknüpfte Konto kann daher nicht verschoben werden.",
+          "sourceHasData": "Es wurde nichts zusammengeführt, da beim Entfernen des Spielers Daten verloren gingen: {items}. Wähle sie ebenfalls aus (ein wegen eines Konflikts übersprungener Eintrag muss zuerst gelöscht werden) oder behalte das Profil."
         },
         "removeSource": "Nach dem Zusammenführen aus {game} entfernen",
-        "removeSourceHint": "{name} wird aus diesem Spiel entfernt, sobald alles verschoben ist, und ganz, wenn kein anderes Spiel dieses Profil hat. Abgelehnt, wenn Teilnehmer oder Matchstatistiken es noch verwenden.",
-        "riotAccountsLost": "{count} Riot-Konto/Konten von {name} werden nicht verschoben und mit dem Spieler endgültig gelöscht. Spiele mit ihnen erscheinen bei künftigen Importen als nicht verknüpft."
+        "removeSourceHint": "{name} wird aus diesem Spiel entfernt, und vollständig, wenn kein anderes Spiel dieses Profil hat. Abgelehnt, solange noch Daten zu verschieben sind oder Teilnehmer oder Matchstatistiken das Profil verwenden. Liquipedia-Name, gesperrte Kadereinträge und Match-Streams werden mit übertragen."
       },
       "duplicatesLink": "Mögliche Duplikate",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Diese:r Spieler:in ist bereits mit einem anderen Konto verknüpft.",
           "unknownField": "Nicht unterstütztes Feld.",
           "unknown": "Unbekannter Fehler.",
-          "invalidSource": "Der Quellenlink ist nicht mehr gültig."
+          "invalidSource": "Der Quellenlink ist nicht mehr gültig.",
+          "otherGame": "Der zuvor verknüpfte Spieler gehört zu keinem Spiel, das du verwaltest."
         },
         "oldValue": "Aktuell",
         "newValue": "Vorgeschlagen",
@@ -4955,7 +4957,8 @@
               "unknownBuildPart": "Gehört nicht zu diesem Patch.",
               "duplicateSummoner": "Ist schon der andere Beschwörerzauber.",
               "secondaryTreeOfKeystone": "Das ist der Pfad des Schlüsselsteins; einen anderen wählen."
-            }
+            },
+            "createNotAllowed": "Du darfst keine Spieler anlegen. Wähle vorhandene Spieler aus."
           },
           "optional": "optional",
           "build": "Build",

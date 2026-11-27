@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Player not found.",
           "targetNotFound": "Target player not found.",
           "targetAlreadyLinked": "The target player already has a linked account.",
-          "sourceStillUsed": "This player is still used by entrants or match stats of this game. Select them too, or keep the profile."
+          "sourceStillUsed": "This player is still used by entrants or match stats of this game. Select them too, or keep the profile.",
+          "otherGame": "The target player belongs to no game you manage, so the linked account can't be moved.",
+          "sourceHasData": "Nothing was merged, because removing the player would lose data: {items}. Select it too (an item skipped for a conflict has to be deleted first), or keep the profile."
         },
         "removeSource": "Remove from {game} after merging",
-        "removeSourceHint": "{name} is removed from this game once everything is moved, and entirely when no other game has this profile. Refused if entrants or match stats still use it.",
-        "riotAccountsLost": "{count} Riot account(s) of {name} are not moved and will be deleted for good with the player. Games with them will show as unlinked in future imports."
+        "removeSourceHint": "{name} is removed from this game, and entirely when no other game has this profile. Refused while there is still data to move, or while entrants or match stats use it. The Liquipedia name, locked roster credits and match streams follow the merge."
       },
       "duplicatesLink": "Possible duplicates",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "This player is already linked to another account.",
           "unknownField": "Unsupported field.",
           "unknown": "Unknown error.",
-          "invalidSource": "The source link is no longer valid."
+          "invalidSource": "The source link is no longer valid.",
+          "otherGame": "The previously linked player belongs to no game you manage."
         },
         "oldValue": "Current",
         "newValue": "Proposed",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Not part of this patch.",
               "duplicateSummoner": "Already the other summoner spell.",
               "secondaryTreeOfKeystone": "This is the keystone's own tree; choose another one."
-            }
+            },
+            "createNotAllowed": "You aren't allowed to create players. Pick existing ones."
           },
           "optional": "optional",
           "build": "Build",

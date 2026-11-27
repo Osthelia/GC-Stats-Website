@@ -28,6 +28,7 @@ import { replaceEntryLanes } from "@/lib/roster-lanes";
 import { notify, type NotificationType } from "@/lib/notify";
 import { logActivity } from "@/lib/activity-log";
 import { ensureGameProfile, personExists, updatePersonIdentity, updatePersonProfile, setPersonUser } from "@/lib/person-service";
+import { managesAGameOfPerson } from "@/lib/person-identity-access";
 import type { GameSlug } from "@gc-stats/db/game";
 
 type ItemStatus = "approved" | "rejected" | "failed";
@@ -48,6 +49,16 @@ const PERSON_PROFILE_COLUMNS = ["liquipediaLink", "liquipediaSourced", "isActive
  * on failure — caught by the caller and stored in applyError.
  */
 type RequestContext = { game: GameSlug; id: number; requestedBy: string | null };
+
+/** The people whose data shared by every game (identity, socials, linked account) an item changes. */
+function sharedPeopleChanged(subjectType: string, subjectId: number, field: string, newValue: unknown): number[] {
+  if (subjectType !== "person") return [];
+  if (field === "user_link") {
+    const { previousPersonId } = newValue as { previousPersonId: number | null };
+    return previousPersonId ? [subjectId, previousPersonId] : [subjectId];
+  }
+  return field.startsWith("socials.") || (PERSON_IDENTITY_COLUMNS as readonly string[]).includes(field) ? [subjectId] : [];
+}
 
 /** True when the request comes from the person themselves: their linked account, or a link to this person accepted in the same request. */
 async function isRequestedByPerson(request: RequestContext, personId: number): Promise<boolean> {
@@ -321,6 +332,11 @@ export async function resolveChangeRequestItem(game: GameSlug, itemId: number, a
   let applyError: string | null = null;
 
   if (action === "approve") {
+    // The item stays pending, for a reviewer who manages one of the person's games.
+    for (const personId of sharedPeopleChanged(request.subjectType, request.subjectId, item.field, item.newValue)) {
+      if (!(await managesAGameOfPerson(access.userId, personId, PERMISSIONS.changeRequestsManage))) return { ok: false, error: "otherGame" };
+    }
+
     try {
       await applyChangeRequestItem({ game, id: request.id, requestedBy: request.requestedBy }, request.subjectType as "team" | "person", request.subjectId, item.field, item.oldValue, item.newValue, closeMembershipIds);
       status = "approved";

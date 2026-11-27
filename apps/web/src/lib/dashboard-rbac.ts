@@ -17,7 +17,7 @@ import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
 import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import type { AppLocale } from "@/i18n/routing";
-import { publicGames } from "@/lib/public-games";
+import { GAMES } from "@gc-stats/db/game";
 
 export type DashboardOrgMembership = {
   organizationId: number;
@@ -70,6 +70,14 @@ async function getHasPersonalApiKey(userId: string): Promise<boolean> {
   return !!row;
 }
 
+/** True when the organization runs a team in any game, public or not: permissions depend on it. */
+function orgHasTeamSql() {
+  return or(...GAMES.map((game) => {
+    const { teams } = gameTables(game);
+    return exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id)));
+  }))!;
+}
+
 /**
  * Every organization this ACCOUNT has been granted dashboard access to
  * (organization_access, keyed on users.id — never on people/
@@ -79,14 +87,6 @@ async function getHasPersonalApiKey(userId: string): Promise<boolean> {
  * — they're an organization with a single access grant (role_id NULL, i.e.
  * 'owner'), same as any other; see SUIVI.MD.
  */
-/** True when the organization runs a team in any public game. */
-function orgHasTeamSql() {
-  return or(...publicGames().map((game) => {
-    const { teams } = gameTables(game);
-    return exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id)));
-  }))!;
-}
-
 export async function getDashboardMemberships(userId: string): Promise<DashboardOrgMembership[]> {
   const rows = await db
     .select({

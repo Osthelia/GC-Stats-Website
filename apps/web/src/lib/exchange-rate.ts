@@ -21,7 +21,7 @@ export async function eurToUsd(): Promise<{ rate: number; stale: boolean }> {
   try {
     const res = await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD", { signal: AbortSignal.timeout(5000) });
     if (!res.ok) {
-      console.error(`eurToUsd: frankfurter.app returned ${res.status}, falling back to 1:1 rate`);
+      console.error("eurToUsd: frankfurter.app returned %s, falling back to 1:1 rate", res.status);
       return { rate: 1, stale: true };
     }
     const data = (await res.json()) as { rates?: { USD?: number } };

@@ -72,7 +72,7 @@ export async function callRelay<T>(path: string, init: RequestInit, config: { ur
   try {
     response = await fetch(`${config.url}${path}`, { ...init, headers: { ...init.headers, Authorization: config.token } });
   } catch (err) {
-    console.warn(`[riot-relay] network error calling ${path}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[riot-relay] network error calling %s: %s", path, err instanceof Error ? err.message : String(err));
     return { ok: false, error: { kind: "networkError" } };
   }
 

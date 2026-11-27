@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Oyuncu bulunamadı.",
           "targetNotFound": "Hedef oyuncu bulunamadı.",
           "targetAlreadyLinked": "Hedef oyuncunun zaten bağlı bir hesabı var.",
-          "sourceStillUsed": "Bu oyuncu hâlâ bu oyundaki katılımcılar veya maç istatistikleri tarafından kullanılıyor. Onları da seç ya da profili koru."
+          "sourceStillUsed": "Bu oyuncu hâlâ bu oyundaki katılımcılar veya maç istatistikleri tarafından kullanılıyor. Onları da seç ya da profili koru.",
+          "otherGame": "Hedef oyuncu yönettiğin hiçbir oyuna ait değil, bu yüzden bağlı hesap taşınamaz.",
+          "sourceHasData": "Hiçbir şey birleştirilmedi, çünkü oyuncuyu kaldırmak veri kaybına yol açardı: {items}. Bunları da seç (çakışma nedeniyle atlanan bir öğe önce silinmeli) veya profili koru."
         },
         "removeSource": "Birleştirdikten sonra {game} oyunundan kaldır",
-        "removeSourceHint": "{name}, her şey taşındığında bu oyundan, başka hiçbir oyunda bu profil yoksa tamamen kaldırılır. Katılımcılar veya maç istatistikleri hâlâ kullanıyorsa reddedilir.",
-        "riotAccountsLost": "{name} oyuncusunun {count} Riot hesabı taşınmayacak ve oyuncuyla birlikte kalıcı olarak silinecek. Bu hesaplarla oynanan oyunlar sonraki içe aktarmalarda bağlantısız görünecek."
+        "removeSourceHint": "{name} bu oyundan kaldırılır, başka hiçbir oyunda bu profil yoksa tamamen silinir. Taşınacak veri kaldığı veya katılımcılar ya da maç istatistikleri onu kullandığı sürece reddedilir. Liquipedia adı, kilitli kadro kayıtları ve maç yayınları birleştirmeyle taşınır."
       },
       "duplicatesLink": "Olası kopyalar",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Bu oyuncu zaten başka bir hesaba bağlı.",
           "unknownField": "Desteklenmeyen alan.",
           "unknown": "Bilinmeyen hata.",
-          "invalidSource": "Kaynak bağlantısı artık geçerli değil."
+          "invalidSource": "Kaynak bağlantısı artık geçerli değil.",
+          "otherGame": "Daha önce bağlı olan oyuncu yönettiğin hiçbir oyuna ait değil."
         },
         "oldValue": "Mevcut",
         "newValue": "Önerilen",
@@ -4955,7 +4957,8 @@
               "unknownBuildPart": "Bu yamada yok.",
               "duplicateSummoner": "Zaten diğer sihirdar büyüsü.",
               "secondaryTreeOfKeystone": "Bu, ana rünün kendi yolu; başka birini seçin."
-            }
+            },
+            "createNotAllowed": "Oyuncu oluşturma iznin yok. Mevcut oyuncuları seç."
           },
           "optional": "isteğe bağlı",
           "build": "Dizilim",

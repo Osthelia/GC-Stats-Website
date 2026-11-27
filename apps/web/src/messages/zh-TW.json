@@ -2900,11 +2900,12 @@
           "sourceNotFound": "未找到該選手。",
           "targetNotFound": "未找到目標選手。",
           "targetAlreadyLinked": "目標選手已綁定帳戶。",
-          "sourceStillUsed": "此選手仍被這款遊戲的參賽方或比賽統計使用。請一併選取它們，或保留此檔案。"
+          "sourceStillUsed": "此選手仍被這款遊戲的參賽方或比賽統計使用。請一併選取它們，或保留此檔案。",
+          "otherGame": "目標選手不屬於你管理的任何遊戲，因此無法轉移連結帳戶。",
+          "sourceHasData": "未進行任何合併，因為移除該選手會遺失資料：{items}。請一併選取這些資料（因衝突而略過的項目需先刪除），或保留該檔案。"
         },
         "removeSource": "合併後從 {game} 移除",
-        "removeSourceHint": "全部遷移後，{name} 會從這款遊戲移除；若沒有其他遊戲擁有此檔案，則會完全刪除。若參賽方或比賽統計仍在使用，則會被拒絕。",
-        "riotAccountsLost": "{name} 的 {count} 個 Riot 帳號不會被移動，並將隨選手一併永久刪除。日後匯入時，使用這些帳號的比賽將顯示為未連結。"
+        "removeSourceHint": "{name} 將從該遊戲中移除，如果沒有其他遊戲使用此檔案，則會完全刪除。仍有資料需要轉移，或參賽紀錄、比賽數據仍在使用時會被拒絕。Liquipedia 名稱、已鎖定的陣容紀錄和比賽直播會隨合併一起轉移。"
       },
       "duplicatesLink": "可能的重複項目",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "該選手已綁定至另一個帳戶。",
           "unknownField": "不受支援的欄位。",
           "unknown": "未知錯誤。",
-          "invalidSource": "來源連結已失效。"
+          "invalidSource": "來源連結已失效。",
+          "otherGame": "先前連結的選手不屬於你管理的任何遊戲。"
         },
         "oldValue": "當前",
         "newValue": "建議修改為",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "不屬於此版本。",
               "duplicateSummoner": "已是另一個召喚師技能。",
               "secondaryTreeOfKeystone": "這是基石符文所在的系列，請選擇其他系列。"
-            }
+            },
+            "createNotAllowed": "你無權建立選手，請選擇現有選手。"
           },
           "optional": "選填",
           "build": "出裝",

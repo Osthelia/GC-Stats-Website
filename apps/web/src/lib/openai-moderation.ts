@@ -38,7 +38,7 @@ export async function checkTextModeration(text: string): Promise<ModerationResul
     });
 
     if (!response.ok) {
-      console.warn(`[forum-automod] OpenAI moderation request failed with status ${response.status}`);
+      console.warn("[forum-automod] OpenAI moderation request failed with status %s", response.status);
       return { flagged: false, categories: [] };
     }
 

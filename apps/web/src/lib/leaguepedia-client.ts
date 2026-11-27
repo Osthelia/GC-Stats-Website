@@ -286,7 +286,7 @@ function toLeaguepediaError(err: unknown): LeaguepediaError {
     // Still not logged in right after logging in: the bot account or its rights are wrong.
     return isAssertUserFailed(err) ? { kind: "loginFailed" } : err.error;
   }
-  console.warn(`[leaguepedia] ${err instanceof Error ? err.message : String(err)}`);
+  console.warn("[leaguepedia] %s", err instanceof Error ? err.message : String(err));
   return { kind: "unexpected" };
 }
 

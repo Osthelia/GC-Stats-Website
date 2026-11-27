@@ -42,6 +42,18 @@ export function withGame(href: string, game: GameSlug): string {
   return href;
 }
 
+// Game-less paths naming one existing entity by id or slug.
+const PUBLIC_ENTITY_RE = new RegExp(String.raw`^/(?:(?:team|player|match|organization|tournaments|news)/[^/?#]|widget${END})`);
+const ADMIN_ENTITY_RE = /^\/(?:admin\/[a-z-]+|dashboard\/\d+\/[a-z]+|dashboard\/author|dashboard\/authors\/\d+)\/\d+(?=[/?#]|$)/;
+
+/**
+ * True when a game-less `href` points at one entity. Ids and slugs belong to a game, and every
+ * such URL predates the other games, so it can only mean the default one.
+ */
+export function isLegacyEntityPath(href: string): boolean {
+  return PUBLIC_ENTITY_RE.test(href) || ADMIN_ENTITY_RE.test(href);
+}
+
 /** True when `href` is a per-game page still missing its game. */
 export function needsGame(href: string): boolean {
   return withGame(href, "valorant") !== href;

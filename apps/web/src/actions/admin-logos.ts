@@ -153,7 +153,8 @@ export async function updateEntityLogo(game: GameSlug, entityType: LogoEntityTyp
     .from(logos)
     .where(and(eq(logos.id, logoId), eq(logos.entityType, entityType), logoGameClause(entityType, game)))
     .limit(1);
-  if (!existing) return { ok: false, fieldErrors: { file: "notFound" } };
+  // A person's photo is shared by every game, editing it takes a profile in the game the actor manages.
+  if (!existing || (entityType === "person" && !(await entityExists(game, entityType, existing.entityId)))) return { ok: false, fieldErrors: { file: "notFound" } };
 
   const fieldErrors: UpdateLogoFieldErrors = {};
 
@@ -231,7 +232,7 @@ export async function deleteEntityLogo(game: GameSlug, entityType: LogoEntityTyp
     .from(logos)
     .where(and(eq(logos.id, logoId), eq(logos.entityType, entityType), logoGameClause(entityType, game)))
     .limit(1);
-  if (!row) return { ok: false, error: "notFound" };
+  if (!row || (entityType === "person" && !(await entityExists(game, entityType, row.entityId)))) return { ok: false, error: "notFound" };
 
   await db.transaction(async (tx) => {
     await tx.delete(logos).where(eq(logos.id, logoId));

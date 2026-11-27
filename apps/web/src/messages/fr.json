@@ -2900,11 +2900,12 @@
           "sourceNotFound": "Joueur·se introuvable.",
           "targetNotFound": "Joueur·se cible introuvable.",
           "targetAlreadyLinked": "Le·la joueur·se cible a déjà un compte lié.",
-          "sourceStillUsed": "Ce joueur est encore utilisé par des participants ou des stats de match de ce jeu. Sélectionnez aussi ces éléments, ou gardez le profil."
+          "sourceStillUsed": "Ce joueur est encore utilisé par des participants ou des stats de match de ce jeu. Sélectionnez aussi ces éléments, ou gardez le profil.",
+          "otherGame": "Le joueur cible n'appartient à aucun jeu que vous gérez : le compte lié ne peut pas être déplacé.",
+          "sourceHasData": "Rien n'a été fusionné, car retirer le joueur ferait perdre des données : {items}. Sélectionnez-les aussi (un élément ignoré pour cause de conflit doit d'abord être supprimé), ou conservez le profil."
         },
         "removeSource": "Retirer de {game} après la fusion",
-        "removeSourceHint": "{name} est retiré de ce jeu une fois tout déplacé, et entièrement si aucun autre jeu n'a ce profil. Refusé si des participants ou des stats de match l'utilisent encore.",
-        "riotAccountsLost": "{count} compte(s) Riot de {name} ne sont pas déplacés et seront supprimés définitivement avec le joueur. Les parties jouées avec eux apparaîtront comme non liées lors des prochains imports."
+        "removeSourceHint": "{name} est retiré de ce jeu, et entièrement si aucun autre jeu n'a ce profil. Refusé tant qu'il reste des données à déplacer, ou que des participations ou des statistiques de match l'utilisent. Le nom Liquipedia, les crédits de roster verrouillés et les streams de match suivent la fusion."
       },
       "duplicatesLink": "Doublons potentiels",
       "duplicates": {
@@ -3512,7 +3513,8 @@
           "alreadyLinked": "Ce joueur est déjà lié à un autre compte.",
           "unknownField": "Champ non pris en charge.",
           "unknown": "Erreur inconnue.",
-          "invalidSource": "Le lien de source n'est plus valide."
+          "invalidSource": "Le lien de source n'est plus valide.",
+          "otherGame": "Le joueur précédemment lié n'appartient à aucun jeu que vous gérez."
         },
         "oldValue": "Actuel",
         "newValue": "Proposé",
@@ -4959,7 +4961,8 @@
               "unknownBuildPart": "Ne fait pas partie de ce patch.",
               "duplicateSummoner": "C'est déjà l'autre sort d'invocateur.",
               "secondaryTreeOfKeystone": "C'est l'arbre de la rune clé ; choisissez-en un autre."
-            }
+            },
+            "createNotAllowed": "Vous n'êtes pas autorisé à créer des joueurs. Choisissez des joueurs existants."
           },
           "optional": "facultatif",
           "build": "Build",

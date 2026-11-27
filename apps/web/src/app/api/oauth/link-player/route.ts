@@ -18,7 +18,8 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { gameTables, sharedPeople } from "@gc-stats/db";
 import { ensureGameProfile } from "@/lib/person-service";
 import { getUserLinkStatus, buildUserLinkItem } from "@/lib/user-link-request";
-import { DEFAULT_GAME, isGameSlug, type GameSlug } from "@gc-stats/db/game";
+import { DEFAULT_GAME, isGameSlug } from "@gc-stats/db/game";
+import { isGamePublic } from "@/lib/public-games";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { resolveAccessToken } from "@/lib/oauth/token-resolve";
 import { checkOAuthRateLimit } from "@/lib/oauth/rate-limit";
@@ -38,7 +39,8 @@ export async function POST(request: Request) {
 
   const body = (await request.json().catch(() => null)) as { personId?: unknown; game?: unknown } | null;
   // Apps written before LoL existed send no game: that is Valorant.
-  const game: GameSlug = body && isGameSlug(body.game) ? body.game : DEFAULT_GAME;
+  const game = body?.game === undefined ? DEFAULT_GAME : body.game;
+  if (!isGameSlug(game) || !isGamePublic(game)) return oauthError(400, "invalid_request", "Unknown game.");
   const { people, changeRequests, changeRequestItems } = gameTables(game);
   const personId = body && typeof body.personId === "number" && Number.isInteger(body.personId) && body.personId > 0 ? body.personId : null;
   if (!personId) return oauthError(400, "invalid_request", "personId must be a positive integer.");

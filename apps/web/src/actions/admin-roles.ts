@@ -132,12 +132,13 @@ export async function removeRoleMember(roleId: number, userId: string): Promise<
     const remainingRoleIds = await db
       .select({ roleId: userRoles.roleId })
       .from(userRoles)
-      .where(and(eq(userRoles.userId, userId), isNull(userRoles.scopeId), ne(userRoles.roleId, roleId)));
+      .where(and(eq(userRoles.userId, userId), isNull(userRoles.scopeId), isNull(userRoles.game), ne(userRoles.roleId, roleId)));
     const stillHasAdminAccess = await roleSetGrantsAdminAccess(remainingRoleIds.map((r) => r.roleId));
     if (!stillHasAdminAccess) return { ok: false, error: "selfDemote" };
   }
 
-  await db.delete(userRoles).where(and(eq(userRoles.userId, userId), eq(userRoles.roleId, roleId), isNull(userRoles.scopeId)));
+  // Assignments limited to a game are managed from the user page and stay.
+  await db.delete(userRoles).where(and(eq(userRoles.userId, userId), eq(userRoles.roleId, roleId), isNull(userRoles.scopeId), isNull(userRoles.game)));
   return { ok: true };
 }
 

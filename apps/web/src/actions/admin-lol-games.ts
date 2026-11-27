@@ -21,7 +21,7 @@ import { adminDb as db } from "@gc-stats/db/client";
 import { PERMISSIONS, gameTables, leagueTablesOf } from "@gc-stats/db";
 import { gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
 import { draftProblem, draftStep, stepSide, type DraftEntry, type DraftProblem, type LeagueSide } from "@gc-stats/lol-stats-engine";
-import { requireActorPermission } from "@/lib/rbac";
+import { hasAccess, requireActorPermission } from "@/lib/rbac";
 import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
@@ -80,7 +80,7 @@ async function syncMatchScoreFromGames(game: GameSlug, matchId: number): Promise
   try {
     await maybeAutoCompleteMatchFromMaps(game, matchId);
   } catch (err) {
-    console.warn(`[admin-lol-games] match score sync failed for match #${matchId}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[admin-lol-games] match score sync failed for match #%s: %s", matchId, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -496,13 +496,15 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
 // optionally the scoreboard. It is the lowest-priority source: an imported game can't get one, and a later import
 // replaces it. A lineup without a scoreboard is stored with `has_stats` false, so it never lowers an average.
 
-export type LeagueLineupError = { kind: "notFound" } | { kind: "entrantsUnset" } | { kind: "importedGame" } | { kind: "unknownPerson" } | { kind: "lineupProblem"; problem: LineupProblem };
+export type LeagueLineupError = { kind: "notFound" } | { kind: "createNotAllowed" } | { kind: "entrantsUnset" } | { kind: "importedGame" } | { kind: "unknownPerson" } | { kind: "lineupProblem"; problem: LineupProblem };
 export type LeagueLineupResult = { ok: true } | { ok: false; error: LeagueLineupError };
 
 /** Replaces the lineup of a game entered by hand. An empty lineup removes it. */
 export async function saveLeagueGameLineup(game: GameSlug, tournamentId: number, matchId: number, gameId: number, input: LineupInput): Promise<LeagueLineupResult> {
   if (!gameHasSeriesGames(game)) return { ok: false, error: { kind: "notFound" } };
-  const actorUserId = await requireTournamentsActor(game);
+  const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
+  const actorUserId = access.userId;
+  if (input.players.some((player) => "newHandle" in player.person) && !hasAccess(access, PERMISSIONS.playersCreate)) return { ok: false, error: { kind: "createNotAllowed" } };
   const match = await loadMatchOfTournament(game, tournamentId, matchId);
   if (!match) return { ok: false, error: { kind: "notFound" } };
   if (match.entrantAId === null || match.entrantBId === null) return { ok: false, error: { kind: "entrantsUnset" } };

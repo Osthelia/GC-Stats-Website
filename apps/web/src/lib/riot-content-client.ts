@@ -48,7 +48,7 @@ export async function getRiotContent(region: RiotRelayRegion): Promise<RiotConte
       headers: { "X-Riot-Token": apiKey },
     });
     if (!response.ok) {
-      console.warn(`[riot-content] content request failed with status ${response.status}`);
+      console.warn("[riot-content] content request failed with status %s", response.status);
       return EMPTY_CONTENT;
     }
 
@@ -65,7 +65,7 @@ export async function getRiotContent(region: RiotRelayRegion): Promise<RiotConte
     cache.set(region, { value, expiresAt: Date.now() + CONTENT_TTL_MS });
     return value;
   } catch (err) {
-    console.warn(`[riot-content] request error: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[riot-content] request error: %s", err instanceof Error ? err.message : String(err));
     return EMPTY_CONTENT;
   }
 }

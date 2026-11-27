@@ -60,7 +60,7 @@ async function activateLiveMatchesForGame(game: GameSlug): Promise<string> {
     .from(matches)
     .where(and(eq(matches.status, "pending"), isNotNull(matches.entrantAId), isNotNull(matches.entrantBId), lt(matches.scheduledAt, windowStart), gte(matches.scheduledAt, staleCutoff)));
   if (stalePending.length > 0) {
-    console.info(`[scheduled:activate-live-matches] ${stalePending.length} match(es) missed the activation window and are stuck pending: ${stalePending.map((m) => m.id).join(", ")}`);
+    console.info("[scheduled:activate-live-matches] %s match(es) missed the activation window and are stuck pending: %s", stalePending.length, stalePending.map((m) => m.id).join(", "));
   }
 
   if (candidates.length === 0) return "no match to activate";

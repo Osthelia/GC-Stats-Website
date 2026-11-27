@@ -92,7 +92,7 @@ export async function getChampionCatalog(gameVersion: string): Promise<ChampionC
 }
 
 function unavailable(reason: string): { ok: false; error: { kind: "dataDragonUnavailable" } } {
-  console.warn(`[data-dragon] ${reason}`);
+  console.warn("[data-dragon] %s", reason);
   return { ok: false, error: { kind: "dataDragonUnavailable" } };
 }
 
@@ -164,7 +164,7 @@ async function fetchFromDataDragon(patch: string | null): Promise<DataDragonCata
     await storeCatalog(version, championRecords, itemRecords, runeRecords, summonerRecords);
     return remember(version, championRecords, itemRecords, runeRecords, summonerRecords);
   } catch (err) {
-    console.warn(`[data-dragon] catalog request error: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] catalog request error: %s", err instanceof Error ? err.message : String(err));
     return null;
   }
 }
@@ -255,7 +255,7 @@ export async function getBuildOptions(patch: string | null): Promise<LeagueBuild
     buildOptionsByVersion.set(catalog.version, options);
     return options;
   } catch (err) {
-    console.warn(`[data-dragon] build options of patch ${patch ?? "newest"} failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] build options of patch %s failed: %s", patch ?? "newest", err instanceof Error ? err.message : String(err));
     return null;
   }
 }
@@ -281,7 +281,7 @@ async function storeCatalog(version: string, champions: ChampionRecords, items: 
   try {
     await db.insert(lolDataDragonCatalogs).values({ version, champions, items, runes, summoners }).onConflictDoNothing();
   } catch (err) {
-    console.warn(`[data-dragon] could not store ${version}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] could not store %s: %s", version, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -325,7 +325,7 @@ export async function ensurePatchCatalog(patch: string | null): Promise<void> {
     const catalog = fromMemory(internal) ?? (await fromDatabase(internal)) ?? (await fetchFromDataDragon(internal));
     if (catalog) await syncPatchIcons(catalog.version);
   } catch (err) {
-    console.warn(`[data-dragon] catalog check of patch ${patch} failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] catalog check of patch %s failed: %s", patch, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -368,7 +368,7 @@ export async function syncPatchIcons(version: string): Promise<void> {
     }
     if (synced) syncedVersions.add(version);
   } catch (err) {
-    console.warn(`[data-dragon] icon sync of ${version} failed: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] icon sync of %s failed: %s", version, err instanceof Error ? err.message : String(err));
   }
 }
 
@@ -443,13 +443,13 @@ async function storeIcon(icon: Icon): Promise<boolean> {
     await db.insert(lolDataDragonIcons).values({ kind: icon.kind, iconId: icon.id }).onConflictDoNothing();
     return true;
   } catch (err) {
-    console.warn(`[data-dragon] could not store ${icon.kind}/${icon.id}: ${err instanceof Error ? err.message : String(err)}`);
+    console.warn("[data-dragon] could not store %s/%s: %s", icon.kind, icon.id, err instanceof Error ? err.message : String(err));
     return false;
   }
 }
 
 function sourceFailure(err: unknown): null {
-  console.warn(`[data-dragon] could not read a Data Dragon file: ${err instanceof Error ? err.message : String(err)}`);
+  console.warn("[data-dragon] could not read a Data Dragon file: %s", err instanceof Error ? err.message : String(err));
   return null;
 }
 
