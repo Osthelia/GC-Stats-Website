@@ -68,7 +68,6 @@ export const PERMISSIONS = {
   sanctionsView: "sanctions.view",
   sanctionsManage: "sanctions.manage",
   activityLogView: "activity-log.view",
-  analyticsView: "analytics.view",
   oauthClientsView: "oauth-clients.view",
   oauthClientsManage: "oauth-clients.manage",
   settingsView: "settings.view",
@@ -104,7 +103,6 @@ export const PERMISSION_GROUPS: { key: string; permissions: PermissionName[] }[]
   { key: "forum", permissions: [PERMISSIONS.forumView, PERMISSIONS.forumManage] },
   { key: "sanctions", permissions: [PERMISSIONS.sanctionsView, PERMISSIONS.sanctionsManage] },
   { key: "activityLog", permissions: [PERMISSIONS.activityLogView] },
-  { key: "analytics", permissions: [PERMISSIONS.analyticsView] },
   { key: "oauthClients", permissions: [PERMISSIONS.oauthClientsView, PERMISSIONS.oauthClientsManage] },
   { key: "settings", permissions: [PERMISSIONS.settingsView, PERMISSIONS.settingsManage] },
 ];

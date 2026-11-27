@@ -788,7 +788,7 @@
     "intro": "Questa informativa spiega come trattiamo i dati su questo sito, con attenzione alla trasparenza e al rispetto della privacy.",
     "analytics": {
       "title": "Navigazione e statistiche",
-      "text": "Misuriamo il pubblico del sito in modo totalmente anonimo: vengono contati solo la pagina visitata, il giorno e il numero di visualizzazioni, senza indirizzo IP, senza tracciamento individuale né fingerprinting. Per proteggere il sito da bot e abusi, i nostri server registrano ogni richiesta (indirizzo IP, pagina richiesta, browser, data) per 14 giorni. Se hai un account, l'indirizzo IP di ogni accesso viene anche conservato per 90 giorni nel registro di sicurezza del tuo account."
+      "text": "Misuriamo il pubblico del sito solo a partire dai log dei nostri server, senza tracker nel browser, senza cookie di tracciamento e senza fingerprinting. Per seguire il traffico e proteggere il sito da bot e abusi, i nostri server registrano ogni richiesta (indirizzo IP, pagina richiesta, browser, data) per 14 giorni, insieme al paese e all'operatore di rete ricavati dall'indirizzo IP. I dati complessivi ottenuti da questi log (numero di richieste per sito e per paese) non contengono alcun indirizzo IP. Se hai un account, l'indirizzo IP di ogni accesso viene conservato anche per 90 giorni nel registro di sicurezza del tuo account."
     },
     "publicData": {
       "title": "Dati pubblici",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Lo stretto necessario",
-        "text": "Raccogliamo solo ciò che serve al sito per funzionare e restare sicuro. Niente pubblicità, niente tracker, niente cookie di tracciamento: il pubblico viene contato in modo anonimo, senza indirizzo IP."
+        "text": "Raccogliamo solo ciò che serve al sito per funzionare e restare sicuro. Niente pubblicità, niente tracker, niente cookie di tracciamento: il pubblico è misurato solo a partire dai log dei nostri server."
       },
       "switzerland": {
         "title": "Ospitato in Svizzera",
@@ -1274,6 +1274,7 @@
               "Indirizzo IP",
               "Pagina richiesta",
               "Browser",
+              "Paese e operatore di rete ricavati dall'indirizzo IP",
               "Data e ora",
               "Utilizzo del portale OpenData (account, indirizzo IP con hash, dataset), eliminato dopo 30 giorni"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "Messaggi del forum",
       "sanctions": "Sanzioni",
       "activityLog": "Registro attività",
-      "analytics": "Statistiche",
       "oauthClients": "Client OAuth",
       "settings": "Configurazione",
       "discordImages": "Immagini del bot Discord",
@@ -3472,7 +3472,6 @@
         "forum": "Forum",
         "sanctions": "Sanzioni",
         "activityLog": "Registro attività",
-        "analytics": "Statistiche",
         "oauthClients": "Client OAuth",
         "settings": "Configurazione",
         "rosterWatch": "Roster watch",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "Vedere le sanzioni",
         "sanctions_manage": "Applicare o revocare sanzioni",
         "activity_log_view": "Vedere il registro attività",
-        "analytics_view": "Vedere le statistiche",
         "oauth_clients_view": "Vedere i client OAuth",
         "oauth_clients_manage": "Creare, modificare o eliminare client OAuth",
         "settings_view": "Vedere la configurazione e il monitoraggio OpenData",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "Spareggi",
-          "hint": "Le vittorie contano sempre per prime. I pareggi vengono poi risolti in questo ordine, l'ultimo mostrato è il criterio finale.",
-          "wins": "Vittorie",
+          "hint": "Se i punti sono attivi, contano per primi. Segue il bilancio delle partite (vittorie, poi sconfitte). I pareggi si risolvono quindi in questo ordine, che riparte per le squadre ancora a pari merito. Quelle che restano in parità sono ordinate in base al seed.",
+          "wins": "Bilancio delle partite",
           "moveUp": "Sposta su",
           "moveDown": "Sposta giù",
           "remove": "Rimuovi",
@@ -3925,12 +3923,14 @@
             "map_diff": "Differenza mappe",
             "round_diff": "Differenza round",
             "head_to_head": "Scontro diretto",
+            "h2h_map_diff": "Differenza mappe negli scontri diretti (2 squadre)",
+            "h2h_round_diff": "Differenza round negli scontri diretti (2 squadre)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Punti",
-          "hint": "Ogni match, mappa e round vinto o perso dà punti alla squadra. I round contano solo sulle mappe con un punteggio registrato.",
+          "hint": "Ogni match, mappa e round vinto o perso dà punti alla squadra. I round contano solo sulle mappe con un punteggio registrato. Se attivi, i punti ordinano le squadre prima del bilancio delle partite e degli spareggi.",
           "enable": "Usa i punti",
           "scopes": {
             "match": "Match",
@@ -3939,8 +3939,7 @@
             "forfeit": "Forfait (sostituisce gli altri)"
           },
           "win": "Vinto",
-          "loss": "Perso",
-          "notUsed": "I punti ordinano il gruppo solo se Punti è tra gli spareggi."
+          "loss": "Perso"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "Vedi utente",
       "attributeChanges": "Modifiche ai campi",
       "properties": "Proprietà"
-    },
-    "analytics": {
-      "title": "Statistiche",
-      "subtitle": "Traffico delle pagine del sito, per regione.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "Americhe",
-        "APAC": "Asia e Pacifico",
-        "OTHE": "Altro"
-      },
-      "dailyAverage": "media giornaliera",
-      "chartHeading": "Visualizzazioni al giorno, ultimi 30 giorni",
-      "chartEmpty": "Nessuna visualizzazione negli ultimi 30 giorni.",
-      "topPagesHeading": "Pagine più viste",
-      "searchPlaceholder": "Percorso della pagina…",
-      "searchSubmit": "Cerca",
-      "columnPage": "Pagina",
-      "columnViews": "Visualizzazioni",
-      "empty": "Nessuna visualizzazione negli ultimi 30 giorni."
     },
     "ghost": {
       "badge": "Fantasma",
@@ -7278,6 +7258,7 @@
     "title": "Suggerisci una modifica",
     "subtitle": "Proponi una modifica a questa pagina (verrà esaminata dal nostro staff prima di essere applicata), nulla cambia subito.",
     "intro": "Compila solo i campi che vuoi modificare per {name}. Lascia invariato il resto.",
+    "englishNotice": "Scrivi la tua richiesta in inglese, così il nostro staff potrà esaminarla.",
     "sectionProfile": "Profilo",
     "sectionSocials": "Social",
     "sectionReview": "Revisione e invio",

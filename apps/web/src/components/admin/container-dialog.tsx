@@ -22,7 +22,7 @@ import { RequiredMark } from "@/components/admin/required-mark";
 import { StageStatusSelect } from "@/components/admin/stage-status-select";
 import { TiebreakerOrder } from "@/components/admin/tiebreaker-order";
 import { createContainer, updateContainer, moveContainerToSet, type ContainerFieldErrors, type ContainerInput } from "@/actions/admin-containers";
-import { EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, parseGroupConfig, type PointsField } from "@/lib/bracket/config-types";
+import { DEFAULT_TIEBREAKERS, EMPTY_POINTS, POINTS_FIELDS, ROUND_ROBIN_TIEBREAKERS, SWISS_TIEBREAKERS, parseGroupConfig, type PointsField } from "@/lib/bracket/config-types";
 import type { AdminContainerRow } from "@/lib/admin-tournament-detail";
 import type { StageStatus } from "@/lib/stage-status";
 
@@ -48,8 +48,6 @@ type FormState = {
   points: Record<PointsField, string>;
 };
 
-const DEFAULT_TIEBREAKERS: Record<GroupFormat, string[]> = { swiss: ["buchholz", "round_diff", "seed"], round_robin: ["round_diff", "head_to_head", "seed"] };
-
 const pointsState = (values: Record<PointsField, number>) => Object.fromEntries(POINTS_FIELDS.map((f) => [f, String(values[f])])) as Record<PointsField, string>;
 
 function emptyState(parentId: number | null = null): FormState {
@@ -62,7 +60,7 @@ function emptyState(parentId: number | null = null): FormState {
     qualifyAtWins: "3",
     eliminateAtLosses: "3",
     maxRounds: "5",
-    tiebreakers: DEFAULT_TIEBREAKERS.swiss,
+    tiebreakers: [...DEFAULT_TIEBREAKERS],
     pointsOn: false,
     points: pointsState(EMPTY_POINTS),
   };
@@ -218,7 +216,7 @@ export function ContainerDialog({
           {form.containerType === "group" && (
             <>
               <FormField label={t("fieldGroupFormat")} htmlFor="ctr-group-format" required>
-                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: DEFAULT_TIEBREAKERS[v as GroupFormat] }))}>
+                <Select items={{ swiss: t("groupFormatSwiss"), round_robin: t("groupFormatRoundRobin") }} value={form.groupFormat} onValueChange={(v) => setForm((prev) => (prev.groupFormat === v ? prev : { ...prev, groupFormat: v as GroupFormat, tiebreakers: [...DEFAULT_TIEBREAKERS] }))}>
                   <SelectTrigger id="ctr-group-format" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -249,7 +247,7 @@ export function ContainerDialog({
                   <RequiredMark />
                 </p>
                 <p className="text-xs text-muted-foreground">{t("tiebreakerOrder.hint")}</p>
-                <TiebreakerOrder value={form.tiebreakers} options={form.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS} onChange={(next) => set("tiebreakers", next)} />
+                <TiebreakerOrder value={form.tiebreakers} options={form.groupFormat === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS} pointsFirst={form.pointsOn} onChange={(next) => set("tiebreakers", next)} />
                 {fieldErrors.tiebreakers && (
                   <p role="alert" className="text-sm text-destructive">
                     {err("tiebreakers")}
@@ -292,7 +290,6 @@ export function ContainerDialog({
                     ))}
                   </div>
                 )}
-                {form.pointsOn && !form.tiebreakers.includes("points") && <p className="text-xs text-muted-foreground">{t("pointsConfig.notUsed")}</p>}
               </div>
             </>
           )}

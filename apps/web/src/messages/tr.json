@@ -788,7 +788,7 @@
     "intro": "Bu politika, şeffaflığa ve gizliliğe saygıya odaklanarak, bu sitede verileri nasıl işlediğimiz hakkında sizi bilgilendirir.",
     "analytics": {
       "title": "Gezinme ve İstatistikler",
-      "text": "Sitenin ziyaretçi sayısını tamamen anonim olarak ölçüyoruz: yalnızca ziyaret edilen sayfa, gün ve görüntülenme sayısı sayılır, IP adresi, bireysel takip veya parmak izi (fingerprinting) olmadan. Siteyi botlara ve kötüye kullanıma karşı korumak için sunucularımız her isteği (IP adresi, istenen sayfa, tarayıcı, tarih) 14 gün boyunca kaydeder. Bir hesabınız varsa, her girişin IP adresi de hesabınızın güvenlik kaydında 90 gün saklanır."
+      "text": "Sitenin ziyaretçi sayısını yalnızca sunucu kayıtlarımızdan ölçüyoruz; tarayıcınızda izleyici, takip çerezi veya parmak izi (fingerprinting) yoktur. Trafiği izlemek ve siteyi botlara ve kötüye kullanıma karşı korumak için sunucularımız her isteği (IP adresi, istenen sayfa, tarayıcı, tarih), IP adresinden çıkarılan ülke ve ağ operatörüyle birlikte 14 gün boyunca kaydeder. Bu kayıtlardan elde edilen genel rakamlar (site ve ülke başına istek sayısı) hiçbir IP adresi içermez. Hesabınız varsa her girişin IP adresi ayrıca hesabınızın güvenlik kaydında 90 gün saklanır."
     },
     "publicData": {
       "title": "Herkese Açık Veriler",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Yalnızca gerekli olan",
-        "text": "Yalnızca sitenin çalışması ve güvende kalması için gerekeni topluyoruz. Reklam yok, izleyici yok, takip çerezi yok: ziyaretçiler IP adresi olmadan anonim olarak sayılır."
+        "text": "Yalnızca sitenin çalışması ve güvende kalması için gerekenleri topluyoruz. Reklam yok, izleyici yok, takip çerezi yok: ziyaretçi sayısı yalnızca sunucu kayıtlarımızdan ölçülür."
       },
       "switzerland": {
         "title": "İsviçre'de barındırılıyor",
@@ -1274,6 +1274,7 @@
               "IP adresi",
               "İstenen sayfa",
               "Tarayıcı",
+              "IP adresinden çıkarılan ülke ve ağ operatörü",
               "Tarih ve saat",
               "OpenData portalı kullanımı (hesap, hash'lenmiş IP adresi, veri seti), 30 gün sonra silinir"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "Forum mesajları",
       "sanctions": "Yaptırımlar",
       "activityLog": "Etkinlik günlüğü",
-      "analytics": "Analitik",
       "oauthClients": "OAuth istemcileri",
       "settings": "Yapılandırma",
       "discordImages": "Discord botu görselleri",
@@ -3472,7 +3472,6 @@
         "forum": "Forum",
         "sanctions": "Yaptırımlar",
         "activityLog": "Etkinlik günlüğü",
-        "analytics": "Analitik",
         "oauthClients": "OAuth istemcileri",
         "settings": "Yapılandırma",
         "rosterWatch": "Roster takibi",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "Yaptırımları görüntüle",
         "sanctions_manage": "Yaptırım uygula veya kaldır",
         "activity_log_view": "Etkinlik günlüğünü görüntüle",
-        "analytics_view": "Analitiği görüntüle",
         "oauth_clients_view": "OAuth istemcilerini görüntüle",
         "oauth_clients_manage": "OAuth istemcileri oluştur, düzenle veya sil",
         "settings_view": "Yapılandırmayı ve OpenData izlemesini görüntüleme",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "Eşitlik bozucular",
-          "hint": "Galibiyetler her zaman önce sayılır. Eşitlikler ardından bu sırayla bozulur, gösterilen son kriter nihai çözümdür.",
-          "wins": "Galibiyetler",
+          "hint": "Puanlar etkinse önce onlar sayılır. Ardından maç karnesi gelir (galibiyetler, sonra mağlubiyetler). Eşitlikler daha sonra bu sırayla bozulur ve sıra hâlâ eşit olan takımlar için baştan başlar. Eşit kalan takımlar seri başı sırasına göre dizilir.",
+          "wins": "Maç karnesi",
           "moveUp": "Yukarı taşı",
           "moveDown": "Aşağı taşı",
           "remove": "Kaldır",
@@ -3925,12 +3923,14 @@
             "map_diff": "Harita farkı",
             "round_diff": "Raunt farkı",
             "head_to_head": "İkili averaj",
+            "h2h_map_diff": "İkili maçlarda harita farkı (2 takım)",
+            "h2h_round_diff": "İkili maçlarda round farkı (2 takım)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Puan",
-          "hint": "Kazanılan veya kaybedilen her maç, harita ve raunt takıma puan kazandırır. Rauntlar yalnızca skoru girilmiş haritalarda sayılır.",
+          "hint": "Kazanılan veya kaybedilen her maç, harita ve raunt takıma puan kazandırır. Rauntlar yalnızca skoru girilmiş haritalarda sayılır. Etkinleştirildiğinde puanlar, takımları maç karnesinden ve eşitlik bozuculardan önce sıralar.",
           "enable": "Puan kullan",
           "scopes": {
             "match": "Maç",
@@ -3939,8 +3939,7 @@
             "forfeit": "Hükmen (diğerlerinin yerine geçer)"
           },
           "win": "Kazanıldı",
-          "loss": "Kaybedildi",
-          "notUsed": "Puanlar, Puan eşitlik bozucular arasında olduğunda grubu sıralar."
+          "loss": "Kaybedildi"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "Kullanıcıyı görüntüle",
       "attributeChanges": "Alan değişiklikleri",
       "properties": "Özellikler"
-    },
-    "analytics": {
-      "title": "Analitik",
-      "subtitle": "Bölgeye göre site genelindeki sayfa görüntülenme trafiği.",
-      "region": {
-        "EURO": "Avrupa",
-        "AMER": "Amerika",
-        "APAC": "Asya Pasifik",
-        "OTHE": "Diğer"
-      },
-      "dailyAverage": "günlük ortalama",
-      "chartHeading": "Son 30 gündeki günlük görüntülenmeler",
-      "chartEmpty": "Son 30 günde sayfa görüntülenmesi yok.",
-      "topPagesHeading": "En çok görüntülenen sayfalar",
-      "searchPlaceholder": "Sayfa yolu…",
-      "searchSubmit": "Ara",
-      "columnPage": "Sayfa",
-      "columnViews": "Görüntülenme",
-      "empty": "Son 30 günde sayfa görüntülenmesi yok."
     },
     "ghost": {
       "badge": "Hayalet",
@@ -7278,6 +7258,7 @@
     "title": "Düzenleme öner",
     "subtitle": "Bu sayfada bir değişiklik önerin (uygulanmadan önce ekibimiz tarafından incelenecektir), hiçbir şey hemen değişmez.",
     "intro": "{name} için yalnızca değiştirmek istediğiniz alanları doldurun. Diğerlerine dokunmayın.",
+    "englishNotice": "Ekibimizin inceleyebilmesi için lütfen talebinizi İngilizce yazın.",
     "sectionProfile": "Profil",
     "sectionSocials": "Sosyal medya",
     "sectionReview": "İnceleme ve gönderim",

@@ -53,7 +53,7 @@ export type ContainerInput =
       qualifyAtWins: number | null;
       eliminateAtLosses: number | null;
       maxRounds: number | null;
-      // Ordered, wins always count first
+      // Ordered, applied after the match record
       tiebreakers: string[];
       pointsConfig: PointsInput;
     };

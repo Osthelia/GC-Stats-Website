@@ -788,7 +788,7 @@
     "intro": "Diese Richtlinie informiert Sie darüber, wie wir Daten auf dieser Website verarbeiten, mit besonderem Augenmerk auf Transparenz und den Schutz der Privatsphäre.",
     "analytics": {
       "title": "Navigation und Statistiken",
-      "text": "Wir messen die Besucherzahlen der Website völlig anonym: Gezählt werden nur die besuchte Seite, der Tag und die Anzahl der Aufrufe, ohne IP-Adresse, ohne individuelles Tracking und ohne Fingerprinting. Zum Schutz der Website vor Bots und Missbrauch protokollieren unsere Server jede Anfrage (IP-Adresse, angeforderte Seite, Browser, Datum) 14 Tage lang. Wenn du ein Konto hast, wird die IP-Adresse jeder Anmeldung außerdem 90 Tage lang im Sicherheitsprotokoll deines Kontos gespeichert."
+      "text": "Wir messen die Besucherzahlen der Website ausschließlich anhand unserer Serverprotokolle, ohne Tracker in Ihrem Browser, ohne Tracking-Cookies und ohne Fingerprinting. Um den Datenverkehr zu verfolgen und die Website vor Bots und Missbrauch zu schützen, protokollieren unsere Server jede Anfrage (IP-Adresse, aufgerufene Seite, Browser, Datum) 14 Tage lang, zusammen mit dem Land und dem Netzbetreiber, die aus der IP-Adresse abgeleitet werden. Die aus diesen Protokollen gewonnenen Gesamtzahlen (Anfragen je Website und Land) enthalten keine IP-Adresse. Wenn Sie ein Konto haben, wird die IP-Adresse jeder Anmeldung außerdem 90 Tage lang im Sicherheitsprotokoll Ihres Kontos gespeichert."
     },
     "publicData": {
       "title": "Öffentliche Daten",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Nur das Nötigste",
-        "text": "Wir erheben nur, was die Website zum Funktionieren und für ihre Sicherheit braucht. Keine Werbung, keine Tracker, keine Tracking-Cookies: Besucher werden anonym gezählt, ohne IP-Adresse."
+        "text": "Wir erheben nur, was die Website zum Funktionieren und für ihre Sicherheit braucht. Keine Werbung, keine Tracker, keine Tracking-Cookies: Besucherzahlen werden ausschließlich anhand unserer Serverprotokolle gemessen."
       },
       "switzerland": {
         "title": "In der Schweiz gehostet",
@@ -1274,6 +1274,7 @@
               "IP-Adresse",
               "Angeforderte Seite",
               "Browser",
+              "Aus der IP-Adresse abgeleitetes Land und Netzbetreiber",
               "Datum und Uhrzeit",
               "Nutzung des OpenData Portals (Konto, gehashte IP Adresse, Datensatz), nach 30 Tagen gelöscht"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "Forumsbeiträge",
       "sanctions": "Sanktionen",
       "activityLog": "Aktivitätsprotokoll",
-      "analytics": "Analytics",
       "oauthClients": "OAuth-Clients",
       "settings": "Konfiguration",
       "discordImages": "Discord Bot Bilder",
@@ -3472,7 +3472,6 @@
         "forum": "Forum",
         "sanctions": "Sanktionen",
         "activityLog": "Aktivitätsprotokoll",
-        "analytics": "Analytics",
         "oauthClients": "OAuth-Clients",
         "settings": "Konfiguration",
         "rosterWatch": "Roster Watch",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "Sanktionen ansehen",
         "sanctions_manage": "Sanktionen aussprechen oder widerrufen",
         "activity_log_view": "Das Aktivitätsprotokoll ansehen",
-        "analytics_view": "Analytics ansehen",
         "oauth_clients_view": "OAuth-Clients ansehen",
         "oauth_clients_manage": "OAuth-Clients erstellen, bearbeiten oder löschen",
         "settings_view": "Konfiguration und OpenData Monitoring ansehen",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "Tiebreaker",
-          "hint": "Siege zählen immer zuerst. Gleichstände werden dann in dieser Reihenfolge aufgelöst, der letzte Eintrag ist der finale Ausweg.",
-          "wins": "Siege",
+          "hint": "Sind Punkte aktiviert, zählen sie zuerst. Danach folgt die Matchbilanz (Siege, dann Niederlagen). Gleichstände werden anschließend in dieser Reihenfolge aufgelöst, die für weiterhin gleichauf liegende Teams neu beginnt. Bleiben Teams gleichauf, entscheidet die Setzliste.",
+          "wins": "Matchbilanz",
           "moveUp": "Nach oben",
           "moveDown": "Nach unten",
           "remove": "Entfernen",
@@ -3925,12 +3923,14 @@
             "map_diff": "Mapdifferenz",
             "round_diff": "Rundendifferenz",
             "head_to_head": "Direkter Vergleich",
+            "h2h_map_diff": "Mapdifferenz im direkten Vergleich (2 Teams)",
+            "h2h_round_diff": "Rundendifferenz im direkten Vergleich (2 Teams)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Punkte",
-          "hint": "Jedes gewonnene oder verlorene Match, jede Map und jede Runde bringt dem Team Punkte. Runden zählen nur auf Maps mit erfasstem Ergebnis.",
+          "hint": "Jedes gewonnene oder verlorene Match, jede Map und jede Runde bringt dem Team Punkte. Runden zählen nur auf Maps mit erfasstem Ergebnis. Wenn aktiviert, ordnen Punkte die Teams vor der Matchbilanz und den Tiebreakern.",
           "enable": "Punkte verwenden",
           "scopes": {
             "match": "Match",
@@ -3939,8 +3939,7 @@
             "forfeit": "Forfeit (ersetzt die anderen)"
           },
           "win": "Gewonnen",
-          "loss": "Verloren",
-          "notUsed": "Punkte ordnen die Gruppe nur, wenn Punkte in den Tiebreakern steht."
+          "loss": "Verloren"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "Nutzer ansehen",
       "attributeChanges": "Attributänderungen",
       "properties": "Eigenschaften"
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "Seitenaufrufe der gesamten Website, nach Region.",
-      "region": {
-        "EURO": "Europa",
-        "AMER": "Amerika",
-        "APAC": "Asien Pazifik",
-        "OTHE": "Andere"
-      },
-      "dailyAverage": "Tagesdurchschnitt",
-      "chartHeading": "Aufrufe pro Tag, letzte 30 Tage",
-      "chartEmpty": "Keine Seitenaufrufe in den letzten 30 Tagen.",
-      "topPagesHeading": "Top Seiten",
-      "searchPlaceholder": "Seitenpfad…",
-      "searchSubmit": "Suchen",
-      "columnPage": "Seite",
-      "columnViews": "Aufrufe",
-      "empty": "Keine Seitenaufrufe in den letzten 30 Tagen."
     },
     "ghost": {
       "badge": "Geist",
@@ -7278,6 +7258,7 @@
     "title": "Änderung vorschlagen",
     "subtitle": "Schlagen Sie eine Änderung für diese Seite vor (sie wird von unserem Team geprüft, bevor sie übernommen wird), nichts ändert sich sofort.",
     "intro": "Füllen Sie nur die Felder aus, die Sie für {name} ändern möchten. Lassen Sie den Rest unverändert.",
+    "englishNotice": "Bitte verfasse deine Anfrage auf Englisch, damit unser Team sie prüfen kann.",
     "sectionProfile": "Profil",
     "sectionSocials": "Soziale Netzwerke",
     "sectionReview": "Prüfen und absenden",

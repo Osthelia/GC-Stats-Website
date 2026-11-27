@@ -10,6 +10,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
+import { TriangleAlert } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { submitChangeRequest, type ChangeRequestFieldErrors } from "@/actions/change-requests";
 import {
@@ -298,6 +299,10 @@ export function SuggestEditForm({
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
       <p className="text-[14.5px] leading-relaxed text-neutral-400">{t("intro", { name: entityName })}</p>
+      <p className="flex items-start gap-2.5 rounded-xl border border-[#5c4c22] bg-[#e4ae22]/10 px-4 py-3 text-[13.5px] text-[#e4ae22]">
+        <TriangleAlert aria-hidden="true" className="mt-0.5 h-4 w-4 flex-none" />
+        {t("englishNotice")}
+      </p>
 
       {/* Same two-column shape as admin's {Team,Player}EditForm — profile fields
           on the left, socials + logo on the right — rather than one long

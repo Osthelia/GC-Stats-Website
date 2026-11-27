@@ -437,7 +437,7 @@ async function loadStageLeaderboardContext(stageId: number): Promise<StageLeader
   const participantIds = [...new Set([...matchPickRows.map((r) => r.userId), ...standingPickRows.map((r) => r.userId)])];
   const nameById = new Map<string, string | null>();
   if (participantIds.length > 0) {
-    const userRows = await db.select({ id: users.id, username: users.username, name: users.name }).from(users).where(inArray(users.id, participantIds));
+    const userRows = await db.select({ id: users.id, name: users.name }).from(users).where(inArray(users.id, participantIds));
     for (const u of userRows) {
       nameById.set(u.id, u.name);
     }
@@ -577,7 +577,7 @@ export type PickemGroupDetail = {
   ownerUserId: string;
   scoringMode: "default" | "custom";
   joinCode: string;
-  members: { userId: string; username: string | null }[];
+  members: { userId: string; name: string | null }[];
 };
 
 export async function getGroupDetail(groupId: number): Promise<PickemGroupDetail | null> {
@@ -585,7 +585,7 @@ export async function getGroupDetail(groupId: number): Promise<PickemGroupDetail
   if (!group) return null;
 
   const memberRows = await db
-    .select({ userId: pickemGroupMembers.userId, username: users.username })
+    .select({ userId: pickemGroupMembers.userId, name: users.name })
     .from(pickemGroupMembers)
     .innerJoin(users, eq(users.id, pickemGroupMembers.userId))
     .where(eq(pickemGroupMembers.groupId, groupId));

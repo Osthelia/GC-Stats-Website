@@ -17,7 +17,6 @@ import { routing, rtlLocales, type AppLocale } from "@/i18n/routing";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteSettingsProvider, THEME_INIT_SCRIPT } from "@/lib/site-settings";
-import { PageViewTracker } from "@/components/page-view-tracker";
 import "../globals.css";
 import "flag-icons/css/flag-icons.min.css";
 
@@ -84,7 +83,6 @@ export default async function LocaleLayout({
             </SiteSettingsProvider>
           </SessionProvider>
           <Toaster />
-          <PageViewTracker />
         </NextIntlClientProvider>
       </body>
     </html>

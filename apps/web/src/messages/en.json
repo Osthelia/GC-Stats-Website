@@ -788,7 +788,7 @@
     "intro": "This policy informs you about how we handle data on this site, with a focus on transparency and respect for privacy.",
     "analytics": {
       "title": "Navigation & Statistics",
-      "text": "We measure the site's audience in a fully anonymous way: only the visited page, the day and the number of views are counted, with no IP address, no individual tracking and no fingerprinting. To protect the site against bots and abuse, our servers log every request (IP address, requested page, browser, date) for 14 days. If you have an account, the IP address of each login is also kept for 90 days in your account's security log."
+      "text": "We measure the site's audience from our server logs only, with no tracker in your browser, no tracking cookie and no fingerprinting. To follow traffic and protect the site against bots and abuse, our servers log every request (IP address, requested page, browser, date) for 14 days, together with the country and network operator deduced from the IP address. The overall figures drawn from these logs (number of requests per site and per country) contain no IP address. If you have an account, the IP address of each login is also kept for 90 days in your account's security log."
     },
     "publicData": {
       "title": "Public Data",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "The bare minimum",
-        "text": "We only collect what the site needs to work and stay safe. No ads, no trackers, no tracking cookies: the audience is counted anonymously, with no IP address."
+        "text": "We only collect what the site needs to work and stay safe. No ads, no trackers, no tracking cookies: the audience is measured from our server logs only."
       },
       "switzerland": {
         "title": "Hosted in Switzerland",
@@ -1274,6 +1274,7 @@
               "IP address",
               "Requested page",
               "Browser",
+              "Country and network operator deduced from the IP address",
               "Date and time",
               "OpenData portal usage (account, hashed IP address, dataset), deleted after 30 days"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "Forum messages",
       "sanctions": "Sanctions",
       "activityLog": "Activity log",
-      "analytics": "Analytics",
       "oauthClients": "OAuth clients",
       "settings": "Configuration",
       "discordImages": "Discord bot images",
@@ -3472,7 +3472,6 @@
         "forum": "Forum",
         "sanctions": "Sanctions",
         "activityLog": "Activity log",
-        "analytics": "Analytics",
         "oauthClients": "OAuth clients",
         "settings": "Configuration",
         "rosterWatch": "Roster watch",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "View sanctions",
         "sanctions_manage": "Issue or revoke sanctions",
         "activity_log_view": "View the activity log",
-        "analytics_view": "View analytics",
         "oauth_clients_view": "View OAuth clients",
         "oauth_clients_manage": "Create, edit or delete OAuth clients",
         "settings_view": "View the configuration and the OpenData monitoring",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "Tiebreakers",
-          "hint": "Wins always count first. Ties are then broken in this order, the last one shown is the final fallback.",
-          "wins": "Wins",
+          "hint": "When points are enabled, they count first. The match record comes next (wins, then losses). Ties are then broken in this order, which starts again for the teams still tied. Teams that remain tied are ordered by seed.",
+          "wins": "Match record",
           "moveUp": "Move up",
           "moveDown": "Move down",
           "remove": "Remove",
@@ -3925,12 +3923,14 @@
             "map_diff": "Map difference",
             "round_diff": "Round difference",
             "head_to_head": "Head to head",
+            "h2h_map_diff": "Head to head map difference (2 teams)",
+            "h2h_round_diff": "Head to head round difference (2 teams)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Points",
-          "hint": "Each match, map and round won or lost gives points to the team. Rounds count only on maps with a recorded score.",
+          "hint": "Each match, map and round won or lost gives points to the team. Rounds count only on maps with a recorded score. When enabled, points rank the teams before the match record and the tiebreakers.",
           "enable": "Use points",
           "scopes": {
             "match": "Match",
@@ -3939,8 +3939,7 @@
             "forfeit": "Forfeit (replaces the others)"
           },
           "win": "Won",
-          "loss": "Lost",
-          "notUsed": "Points only order the group once Points is in the tiebreakers."
+          "loss": "Lost"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "View user",
       "attributeChanges": "Attribute changes",
       "properties": "Properties"
-    },
-    "analytics": {
-      "title": "Analytics",
-      "subtitle": "Page view traffic across the site, by region.",
-      "region": {
-        "EURO": "Europe",
-        "AMER": "Americas",
-        "APAC": "Asia-Pacific",
-        "OTHE": "Other"
-      },
-      "dailyAverage": "daily average",
-      "chartHeading": "Views per day, last 30 days",
-      "chartEmpty": "No page views in the last 30 days.",
-      "topPagesHeading": "Top pages",
-      "searchPlaceholder": "Page path…",
-      "searchSubmit": "Search",
-      "columnPage": "Page",
-      "columnViews": "Views",
-      "empty": "No page views in the last 30 days."
     },
     "ghost": {
       "badge": "Ghost",
@@ -7276,6 +7256,7 @@
     "title": "Suggest an edit",
     "subtitle": "Propose a change to this page (it will be reviewed by our staff before it's applied), nothing changes immediately.",
     "intro": "Only fill in the fields you want to change for {name}. Leave the rest untouched.",
+    "englishNotice": "Please write your request in English so our staff can review it.",
     "sectionProfile": "Profile",
     "sectionSocials": "Socials",
     "sectionReview": "Review & submit",

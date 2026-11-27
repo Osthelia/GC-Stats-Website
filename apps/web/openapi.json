@@ -2444,7 +2444,7 @@
                 "items": {
                   "type": "string"
                 },
-                "description": "Tiebreakers applied in order after the number of wins."
+                "description": "Tiebreakers applied in order after the match record, starting over for the teams still tied."
               },
               "uses_points": {
                 "type": "boolean"
@@ -4334,7 +4334,8 @@
             "type": "integer"
           },
           "popularity": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Matches played in the last 90 days (by the team or player, in the tournament, in the organizer's tournaments), plus the fans of a team."
           }
         },
         "required": [

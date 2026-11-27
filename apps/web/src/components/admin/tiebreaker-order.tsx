@@ -12,10 +12,11 @@ import { useTranslations } from "next-intl";
 import { ArrowDownIcon, ArrowUpIcon, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Ordered list of tiebreakers: wins always come first, then these in the order shown
-export function TiebreakerOrder({ value, options, onChange }: { value: string[]; options: readonly string[]; onChange: (next: string[]) => void }) {
+// Ordered list of tiebreakers, applied in the order shown after the fixed criteria (points if enabled, match record)
+export function TiebreakerOrder({ value, options, pointsFirst, onChange }: { value: string[]; options: readonly string[]; pointsFirst: boolean; onChange: (next: string[]) => void }) {
   const t = useTranslations("admin.tournaments.stages.tiebreakerOrder");
   const unused = options.filter((o) => !value.includes(o));
+  const fixed = pointsFirst ? [t("options.points"), t("wins")] : [t("wins")];
   const move = (index: number, delta: number) => {
     const next = [...value];
     const [item] = next.splice(index, 1);
@@ -26,13 +27,15 @@ export function TiebreakerOrder({ value, options, onChange }: { value: string[];
   return (
     <div className="flex flex-col gap-2">
       <ol className="flex flex-col gap-1.5">
-        <li className="flex items-center gap-2 rounded-md border border-dashed px-2.5 py-1.5 text-sm text-muted-foreground">
-          <span className="w-5 text-center text-xs">1</span>
-          {t("wins")}
-        </li>
+        {fixed.map((label, index) => (
+          <li key={label} className="flex items-center gap-2 rounded-md border border-dashed px-2.5 py-1.5 text-sm text-muted-foreground">
+            <span className="w-5 text-center text-xs">{index + 1}</span>
+            {label}
+          </li>
+        ))}
         {value.map((key, index) => (
           <li key={key} className="flex items-center gap-2 rounded-md border bg-card px-2.5 py-1.5 text-sm">
-            <span className="w-5 text-center text-xs text-muted-foreground">{index + 2}</span>
+            <span className="w-5 text-center text-xs text-muted-foreground">{index + fixed.length + 1}</span>
             <span className="flex-1">{t(`options.${key}`)}</span>
             <Button type="button" variant="ghost" size="icon-xs" aria-label={t("moveUp")} disabled={index === 0} onClick={() => move(index, -1)}>
               <ArrowUpIcon />

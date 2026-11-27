@@ -31,6 +31,7 @@ import { parseGroupConfig } from "@/lib/bracket/config-types";
 import { labelBracketTiers, type BracketTier } from "@/lib/bracket-naming";
 import { validateEditorGraph } from "@/lib/bracket-editor-validation";
 import { parseIsoInstant } from "@/lib/datetime-local";
+import { DEFAULT_TIEBREAKERS } from "@/lib/bracket/config-types";
 
 export async function requireTournamentsActor(): Promise<void> {
   await requireActorPermission(PERMISSIONS.tournamentsManage);
@@ -127,7 +128,7 @@ export async function generateBracketFromTemplate(input: GenerateTemplateInput):
     // page and made it 500 (found 2026-09-12 auditing why real migrated
     // tournaments' pages were crashing; this is the still-live code path,
     // not just old migrated data — see SUIVI.md).
-    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: ["round_diff", "head_to_head", "seed"], pointsConfig: null });
+    const groupId = await makeContainer("Round Robin", "group", { type: "round_robin", tiebreakers: DEFAULT_TIEBREAKERS, pointsConfig: null });
     containerIdMap = { group: groupId };
     graph = generateRoundRobin({ containerId: "group", entrantCount, bestOf: input.bestOf, double: input.format === "round_robin_double" });
   } else {

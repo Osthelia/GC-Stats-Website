@@ -788,7 +788,7 @@
     "intro": "本政策向您說明我們如何處理本站的資料，重點在於透明度與對隱私的尊重。",
     "analytics": {
       "title": "訪問與統計資料",
-      "text": "我們以完全匿名的方式統計網站瀏覽量：只統計瀏覽的頁面、日期與瀏覽次數，不記錄 IP 位址，不進行個人追蹤，也不使用指紋辨識。為了保護網站免受機器人與濫用的侵害，我們的伺服器會記錄每個請求（IP 位址、請求的頁面、瀏覽器、日期），保存 14 天。如果你有帳號，每次登入的 IP 位址也會在帳號的安全日誌中保存 90 天。"
+      "text": "我們僅根據伺服器日誌統計網站流量，不在您的瀏覽器中使用追蹤器、追蹤 Cookie 或裝置指紋辨識。為了掌握流量並保護網站免受機器人與濫用行為侵害，我們的伺服器會記錄每個請求（IP 位址、請求的頁面、瀏覽器、日期），以及由 IP 位址推斷的國家與網路業者，保存 14 天。由這些日誌得出的彙總數據（依網站與國家統計的請求數）不含任何 IP 位址。如果您有帳戶，每次登入的 IP 位址也會在帳戶安全日誌中保存 90 天。"
     },
     "publicData": {
       "title": "公開資料",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "只收集必要的",
-        "text": "我們只收集網站運作與維持安全所需的內容。沒有廣告、沒有追蹤器、沒有追蹤 Cookie：瀏覽量以匿名方式統計，不記錄 IP 位址。"
+        "text": "我們只收集網站運作與維護安全所需的資料。沒有廣告、追蹤器和追蹤 Cookie：流量僅根據伺服器日誌統計。"
       },
       "switzerland": {
         "title": "託管於瑞士",
@@ -1274,6 +1274,7 @@
               "IP 位址",
               "請求的頁面",
               "瀏覽器",
+              "由 IP 位址推斷的國家與網路業者",
               "日期與時間",
               "OpenData 入口網站使用紀錄（帳號、雜湊處理的 IP 位址、資料集），30 天後刪除"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "論壇訊息",
       "sanctions": "處罰記錄",
       "activityLog": "活動日誌",
-      "analytics": "統計分析",
       "oauthClients": "OAuth 客戶端",
       "settings": "設定",
       "discordImages": "Discord 機器人圖片",
@@ -3472,7 +3472,6 @@
         "forum": "論壇",
         "sanctions": "處罰記錄",
         "activityLog": "活動日誌",
-        "analytics": "統計分析",
         "oauthClients": "OAuth 客戶端",
         "settings": "設定",
         "rosterWatch": "名單監控",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "檢視處罰記錄",
         "sanctions_manage": "發起或解除處罰",
         "activity_log_view": "檢視活動日誌",
-        "analytics_view": "檢視統計分析",
         "oauth_clients_view": "檢視 OAuth 客戶端",
         "oauth_clients_manage": "建立、編輯或刪除 OAuth 客戶端",
         "settings_view": "檢視設定與 OpenData 監控",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "決勝規則",
-          "hint": "勝場始終優先計算。平手隨後依此順序判定，最後一項為最終依據。",
-          "wins": "勝場",
+          "hint": "啟用積分時，先比較積分。其次比較比賽戰績（先比勝場，再比敗場）。接著依此順序打破平手，對仍然平手的隊伍會從頭重新套用。最後仍平手的隊伍依種子序排列。",
+          "wins": "比賽戰績",
           "moveUp": "上移",
           "moveDown": "下移",
           "remove": "移除",
@@ -3925,12 +3923,14 @@
             "map_diff": "地圖差",
             "round_diff": "回合差",
             "head_to_head": "直接對戰",
+            "h2h_map_diff": "對戰地圖淨勝數（2 支隊伍）",
+            "h2h_round_diff": "對戰回合淨勝數（2 支隊伍）",
             "seed": "種子"
           }
         },
         "pointsConfig": {
           "title": "積分",
-          "hint": "每場勝負的比賽、地圖和回合都會為隊伍帶來積分。回合僅在已記錄比分的地圖上計算。",
+          "hint": "每場勝負的比賽、地圖和回合都會為隊伍帶來積分。回合僅在已記錄比分的地圖上計算。啟用後，積分會優先於比賽戰績與決勝規則決定隊伍排名。",
           "enable": "使用積分",
           "scopes": {
             "match": "比賽",
@@ -3939,8 +3939,7 @@
             "forfeit": "棄權（取代其他項）"
           },
           "win": "勝",
-          "loss": "負",
-          "notUsed": "僅當積分位於決勝規則中時，積分才會影響小組排名。"
+          "loss": "負"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "檢視使用者",
       "attributeChanges": "欄位變更",
       "properties": "屬性"
-    },
-    "analytics": {
-      "title": "統計分析",
-      "subtitle": "按地區劃分的站點頁面訪問流量。",
-      "region": {
-        "EURO": "歐洲",
-        "AMER": "美洲",
-        "APAC": "亞太",
-        "OTHE": "其他"
-      },
-      "dailyAverage": "日均",
-      "chartHeading": "最近 30 天每日訪問量",
-      "chartEmpty": "最近 30 天內沒有頁面訪問記錄。",
-      "topPagesHeading": "熱門頁面",
-      "searchPlaceholder": "頁面路徑…",
-      "searchSubmit": "搜尋",
-      "columnPage": "頁面",
-      "columnViews": "訪問量",
-      "empty": "最近 30 天內沒有頁面訪問記錄。"
     },
     "ghost": {
       "badge": "幽靈",
@@ -7278,6 +7258,7 @@
     "title": "建議編輯",
     "subtitle": "提議對此頁面進行修改（會在應用前由我們的團隊稽核），修改不會立即生效。",
     "intro": "只需填寫您想為 {name} 修改的欄位，其餘保持不變。",
+    "englishNotice": "請以英文撰寫您的請求，方便我們的工作人員審核。",
     "sectionProfile": "資料",
     "sectionSocials": "社群帳號",
     "sectionReview": "審閱並提交",

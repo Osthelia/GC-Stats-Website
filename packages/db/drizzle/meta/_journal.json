@@ -519,6 +519,13 @@
       "when": 1794046224510,
       "tag": "0073_oauth_provider_username",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1795800884008,
+      "tag": "0074_remove_analytics_permission",
+      "breakpoints": true
     }
   ]
 }

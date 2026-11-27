@@ -788,7 +788,7 @@
     "intro": "Chính sách này cho bạn biết cách chúng tôi xử lý dữ liệu trên trang web này, với trọng tâm là sự minh bạch và tôn trọng quyền riêng tư.",
     "analytics": {
       "title": "Điều hướng & thống kê",
-      "text": "Chúng tôi đo lượt truy cập hoàn toàn ẩn danh: chỉ đếm trang đã xem, ngày và số lượt xem, không có địa chỉ IP, không theo dõi cá nhân và không lấy dấu vân tay trình duyệt (fingerprinting). Để bảo vệ trang khỏi bot và lạm dụng, máy chủ của chúng tôi ghi lại mọi yêu cầu (địa chỉ IP, trang được yêu cầu, trình duyệt, ngày) trong 14 ngày. Nếu bạn có tài khoản, địa chỉ IP của mỗi lần đăng nhập cũng được giữ 90 ngày trong nhật ký bảo mật của tài khoản."
+      "text": "Chúng tôi chỉ đo lượng truy cập trang web từ nhật ký máy chủ, không có trình theo dõi trong trình duyệt của bạn, không có cookie theo dõi và không lấy dấu vân tay thiết bị. Để theo dõi lưu lượng và bảo vệ trang web khỏi bot cùng hành vi lạm dụng, máy chủ của chúng tôi ghi lại mọi yêu cầu (địa chỉ IP, trang được yêu cầu, trình duyệt, ngày) trong 14 ngày, kèm quốc gia và nhà mạng suy ra từ địa chỉ IP. Các số liệu tổng hợp từ nhật ký này (số yêu cầu theo trang web và quốc gia) không chứa địa chỉ IP nào. Nếu bạn có tài khoản, địa chỉ IP của mỗi lần đăng nhập cũng được lưu 90 ngày trong nhật ký bảo mật của tài khoản."
     },
     "publicData": {
       "title": "Dữ liệu công khai",
@@ -1172,7 +1172,7 @@
       },
       "minimal": {
         "title": "Tối thiểu nhất có thể",
-        "text": "Chúng tôi chỉ thu thập những gì trang cần để hoạt động và an toàn. Không quảng cáo, không trình theo dõi, không cookie theo dõi: lượt truy cập được đếm ẩn danh, không có địa chỉ IP."
+        "text": "Chúng tôi chỉ thu thập những gì trang web cần để hoạt động và an toàn. Không quảng cáo, không trình theo dõi, không cookie theo dõi: lượng truy cập chỉ được đo từ nhật ký máy chủ."
       },
       "switzerland": {
         "title": "Lưu trữ tại Thụy Sĩ",
@@ -1274,6 +1274,7 @@
               "Địa chỉ IP",
               "Trang được yêu cầu",
               "Trình duyệt",
+              "Quốc gia và nhà mạng suy ra từ địa chỉ IP",
               "Ngày và giờ",
               "Lượt dùng cổng OpenData (tài khoản, địa chỉ IP đã băm, bộ dữ liệu), xóa sau 30 ngày"
             ]
@@ -2027,7 +2028,6 @@
       "forumMessages": "Tin nhắn diễn đàn",
       "sanctions": "Hình phạt",
       "activityLog": "Nhật ký hoạt động",
-      "analytics": "Phân tích",
       "oauthClients": "Ứng dụng OAuth",
       "settings": "Cấu hình",
       "discordImages": "Hình ảnh của bot Discord",
@@ -3472,7 +3472,6 @@
         "forum": "Diễn đàn",
         "sanctions": "Hình phạt",
         "activityLog": "Nhật ký hoạt động",
-        "analytics": "Phân tích",
         "oauthClients": "Ứng dụng OAuth",
         "settings": "Cấu hình",
         "rosterWatch": "Theo dõi roster",
@@ -3523,7 +3522,6 @@
         "sanctions_view": "Xem hình phạt",
         "sanctions_manage": "Áp dụng hoặc thu hồi hình phạt",
         "activity_log_view": "Xem nhật ký hoạt động",
-        "analytics_view": "Xem phân tích",
         "oauth_clients_view": "Xem ứng dụng OAuth",
         "oauth_clients_manage": "Tạo, sửa hoặc xóa ứng dụng OAuth",
         "settings_view": "Xem cấu hình và giám sát OpenData",
@@ -3914,8 +3912,8 @@
         },
         "tiebreakerOrder": {
           "title": "Tiêu chí phụ",
-          "hint": "Số trận thắng luôn được tính trước. Sau đó các trường hợp bằng nhau được phân định theo thứ tự này, mục cuối cùng là tiêu chí sau cùng.",
-          "wins": "Số trận thắng",
+          "hint": "Khi bật điểm, điểm được tính trước tiên. Tiếp theo là thành tích trận đấu (số trận thắng, rồi số trận thua). Sau đó các trường hợp bằng nhau được phân định theo thứ tự này, và áp dụng lại từ đầu cho các đội còn bằng nhau. Các đội vẫn bằng nhau được xếp theo hạt giống.",
+          "wins": "Thành tích trận đấu",
           "moveUp": "Lên",
           "moveDown": "Xuống",
           "remove": "Xóa",
@@ -3925,12 +3923,14 @@
             "map_diff": "Hiệu số map",
             "round_diff": "Hiệu số round",
             "head_to_head": "Đối đầu",
+            "h2h_map_diff": "Hiệu số bản đồ đối đầu trực tiếp (2 đội)",
+            "h2h_round_diff": "Hiệu số vòng đối đầu trực tiếp (2 đội)",
             "seed": "Seed"
           }
         },
         "pointsConfig": {
           "title": "Điểm",
-          "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số.",
+          "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số. Khi bật, điểm xếp hạng các đội trước thành tích trận đấu và các tiêu chí phụ.",
           "enable": "Dùng điểm",
           "scopes": {
             "match": "Trận",
@@ -3939,8 +3939,7 @@
             "forfeit": "Xử thua (thay thế các mục khác)"
           },
           "win": "Thắng",
-          "loss": "Thua",
-          "notUsed": "Điểm chỉ xếp hạng bảng khi Điểm nằm trong các tiêu chí phụ."
+          "loss": "Thua"
         }
       },
       "bracketPage": {
@@ -5101,25 +5100,6 @@
       "viewCauser": "Xem người dùng",
       "attributeChanges": "Thay đổi thuộc tính",
       "properties": "Thuộc tính"
-    },
-    "analytics": {
-      "title": "Phân tích",
-      "subtitle": "Lưu lượng lượt xem trang trên toàn trang web, theo khu vực.",
-      "region": {
-        "EURO": "Châu Âu",
-        "AMER": "Châu Mỹ",
-        "APAC": "Châu Á Thái Bình Dương",
-        "OTHE": "Khác"
-      },
-      "dailyAverage": "trung bình mỗi ngày",
-      "chartHeading": "Lượt xem mỗi ngày, 30 ngày qua",
-      "chartEmpty": "Không có lượt xem trang nào trong 30 ngày qua.",
-      "topPagesHeading": "Trang hàng đầu",
-      "searchPlaceholder": "Đường dẫn trang…",
-      "searchSubmit": "Tìm kiếm",
-      "columnPage": "Trang",
-      "columnViews": "Lượt xem",
-      "empty": "Không có lượt xem trang nào trong 30 ngày qua."
     },
     "ghost": {
       "badge": "Ghost",
@@ -7278,6 +7258,7 @@
     "title": "Đề xuất chỉnh sửa",
     "subtitle": "Đề xuất một thay đổi cho trang này (sẽ được đội ngũ của chúng tôi xem xét trước khi áp dụng), không có gì thay đổi ngay lập tức.",
     "intro": "Chỉ điền các trường bạn muốn thay đổi cho {name}. Giữ nguyên phần còn lại.",
+    "englishNotice": "Vui lòng viết yêu cầu bằng tiếng Anh để đội ngũ của chúng tôi có thể xem xét.",
     "sectionProfile": "Hồ sơ",
     "sectionSocials": "Mạng xã hội",
     "sectionReview": "Xem lại & gửi",

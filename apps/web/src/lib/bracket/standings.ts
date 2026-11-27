@@ -9,9 +9,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { groupEntries, matches, maps as mapRows } from "@gc-stats/db";
-import { createSwissStandings, createRoundRobinStandings, type RankedStandingsEntry, type StandingsEntry } from "@osthelia/bracket-engine";
+import { createSwissStandings, createRoundRobinStandings, type HeadToHeadRecord, type RankedStandingsEntry, type StandingsEntry } from "@osthelia/bracket-engine";
 import type { Tx } from "./repository";
 import { parseGroupConfig } from "./config-types";
 import { computeContainerPoints } from "./points";
@@ -20,54 +20,83 @@ import { recordsFromMatches } from "./group-progression";
 export type GroupStandingsEntry = RankedStandingsEntry & { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
 
 type MapRecord = { mapWins: number; mapLosses: number; roundWins: number; roundLosses: number };
+export type StandingsMatch = Pick<typeof matches.$inferSelect, "id" | "entrantAId" | "entrantBId" | "winnerId" | "status">;
+export type StandingsMap = Pick<typeof mapRows.$inferSelect, "matchId" | "isCompleted" | "isForfeit" | "teamAScore" | "teamBScore">;
+
+const emptyMapRecord = (): MapRecord => ({ mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 });
+
+/** One map seen from each side, null when it has no result. A forfeited map counts as a map,
+ *  but its score is not a round count. */
+function mapResult(mp: StandingsMap): { a: MapRecord; b: MapRecord } | null {
+  if (!mp.isCompleted || mp.teamAScore === null || mp.teamBScore === null) return null;
+  const aWon = mp.teamAScore > mp.teamBScore ? 1 : 0;
+  const bWon = mp.teamBScore > mp.teamAScore ? 1 : 0;
+  const roundsA = mp.isForfeit ? 0 : mp.teamAScore;
+  const roundsB = mp.isForfeit ? 0 : mp.teamBScore;
+  return {
+    a: { mapWins: aWon, mapLosses: bWon, roundWins: roundsA, roundLosses: roundsB },
+    b: { mapWins: bWon, mapLosses: aWon, roundWins: roundsB, roundLosses: roundsA },
+  };
+}
 
 /**
- * Per-entrant map record (win/loss) and round win/loss totals, computed
- * read-time from `maps` (same `matches.entrantAId`/`entrantBId` <->
- * `maps.teamAScore`/`teamBScore` convention as `points.ts`) rather than
- * trusted from `group_entries` — that column is match-level bookkeeping
- * only (never updated with map/round data, cf. group-progression.ts) and,
- * for historically-migrated containers, was reconstructed at 0 anyway
- * (SUIVI.md, 2026-09-12 group_entries backfill). Round totals exclude
- * forfeited maps (mirrors V1's `TournamentStandings::compute`, which never
- * sees a forfeit's non-real score to begin with) — a `-1` isn't a real
- * round count and would otherwise skew the differential.
+ * Map and round totals per entrant, plus the head to head record of every pair over their
+ * completed matches. Same `entrantAId`/`entrantBId` <-> `teamAScore`/`teamBScore` convention
+ * as `points.ts`.
  */
-export async function computeMapRecord(tx: Tx, containerId: number): Promise<Map<number, MapRecord>> {
-  const stats = new Map<number, MapRecord>();
-  const bump = (entrantId: number | null, delta: Partial<MapRecord>) => {
+export function groupRecords(containerMatches: StandingsMatch[], containerMaps: StandingsMap[]) {
+  const totals = new Map<number, MapRecord>();
+  const meetings = new Map<number, Map<string, HeadToHeadRecord>>();
+
+  const addTotals = (entrantId: number | null, delta: MapRecord) => {
     if (entrantId === null) return;
-    const cur = stats.get(entrantId) ?? { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
-    stats.set(entrantId, {
-      mapWins: cur.mapWins + (delta.mapWins ?? 0),
-      mapLosses: cur.mapLosses + (delta.mapLosses ?? 0),
-      roundWins: cur.roundWins + (delta.roundWins ?? 0),
-      roundLosses: cur.roundLosses + (delta.roundLosses ?? 0),
+    const cur = totals.get(entrantId) ?? emptyMapRecord();
+    totals.set(entrantId, {
+      mapWins: cur.mapWins + delta.mapWins,
+      mapLosses: cur.mapLosses + delta.mapLosses,
+      roundWins: cur.roundWins + delta.roundWins,
+      roundLosses: cur.roundLosses + delta.roundLosses,
     });
   };
+  const addMeeting = (entrantId: number, opponentId: number, delta: Partial<HeadToHeadRecord>) => {
+    const own = meetings.get(entrantId) ?? new Map<string, HeadToHeadRecord>();
+    const cur = own.get(String(opponentId)) ?? { wins: 0, losses: 0, mapDiff: 0, roundDiff: 0 };
+    own.set(String(opponentId), {
+      wins: cur.wins + (delta.wins ?? 0),
+      losses: cur.losses + (delta.losses ?? 0),
+      mapDiff: cur.mapDiff + (delta.mapDiff ?? 0),
+      roundDiff: cur.roundDiff + (delta.roundDiff ?? 0),
+    });
+    meetings.set(entrantId, own);
+  };
 
-  const containerMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
-  if (containerMatches.length === 0) return stats;
   const matchById = new Map(containerMatches.map((m) => [m.id, m]));
-
-  const containerMaps = await tx.select().from(mapRows).where(inArray(mapRows.matchId, containerMatches.map((m) => m.id)));
-  for (const mp of containerMaps) {
-    if (!mp.isCompleted || mp.teamAScore === null || mp.teamBScore === null) continue;
-    const match = matchById.get(mp.matchId);
-    if (!match) continue;
-    if (mp.teamAScore > mp.teamBScore) {
-      bump(match.entrantAId, { mapWins: 1 });
-      bump(match.entrantBId, { mapLosses: 1 });
-    } else if (mp.teamBScore > mp.teamAScore) {
-      bump(match.entrantBId, { mapWins: 1 });
-      bump(match.entrantAId, { mapLosses: 1 });
-    }
-    if (!mp.isForfeit) {
-      bump(match.entrantAId, { roundWins: mp.teamAScore, roundLosses: mp.teamBScore });
-      bump(match.entrantBId, { roundWins: mp.teamBScore, roundLosses: mp.teamAScore });
-    }
+  for (const m of containerMatches) {
+    if (m.status !== "completed" || m.winnerId === null || m.entrantAId === null || m.entrantBId === null) continue;
+    const loserId = m.winnerId === m.entrantAId ? m.entrantBId : m.entrantAId;
+    addMeeting(m.winnerId, loserId, { wins: 1 });
+    addMeeting(loserId, m.winnerId, { losses: 1 });
   }
-  return stats;
+
+  for (const mp of containerMaps) {
+    const match = matchById.get(mp.matchId);
+    const result = mapResult(mp);
+    if (!match || !result) continue;
+    addTotals(match.entrantAId, result.a);
+    addTotals(match.entrantBId, result.b);
+    if (match.status !== "completed" || match.entrantAId === null || match.entrantBId === null) continue;
+    const diff = (r: MapRecord) => ({ mapDiff: r.mapWins - r.mapLosses, roundDiff: r.roundWins - r.roundLosses });
+    addMeeting(match.entrantAId, match.entrantBId, diff(result.a));
+    addMeeting(match.entrantBId, match.entrantAId, diff(result.b));
+  }
+
+  return { totals, meetings };
+}
+
+async function loadGroupRecords(tx: Tx, containerId: number) {
+  const containerMatches = await tx.select().from(matches).where(eq(matches.containerId, containerId));
+  const containerMaps = containerMatches.length ? await tx.select().from(mapRows).where(inArray(mapRows.matchId, containerMatches.map((m) => m.id))) : [];
+  return groupRecords(containerMatches, containerMaps);
 }
 
 /** Ranked standings for a group container, using the calculator that
@@ -76,87 +105,39 @@ export async function computeMapRecord(tx: Tx, containerId: number): Promise<Map
  *  `group_entries` row is still listed. */
 export async function computeContainerStandings(tx: Tx, containerId: number, rawConfig: unknown): Promise<GroupStandingsEntry[]> {
   const config = parseGroupConfig(rawConfig);
-  const [storedEntries, matchRecord, points, mapRecord, completedMatches] = await Promise.all([
+  const [storedEntries, matchRecord, points, records] = await Promise.all([
     tx.select().from(groupEntries).where(eq(groupEntries.containerId, containerId)),
     recordsFromMatches(tx, containerId),
     config.pointsConfig ? computeContainerPoints(tx, containerId, config.pointsConfig) : null,
-    computeMapRecord(tx, containerId),
-    // Head to head input, only read by round robin.
-    config.type === "swiss"
-      ? []
-      : tx
-          .select()
-          .from(matches)
-          .where(and(eq(matches.containerId, containerId), eq(matches.status, "completed"))),
+    loadGroupRecords(tx, containerId),
   ]);
   const storedById = new Map(storedEntries.map((e) => [e.entrantId, e]));
   const entrantIds = [...new Set([...storedById.keys(), ...matchRecord.keys()])];
-  const entries = entrantIds.map((entrantId) => {
+
+  const dtos: StandingsEntry[] = entrantIds.map((entrantId) => {
     const stored = storedById.get(entrantId);
-    const r = matchRecord.get(entrantId) ?? { wins: 0, losses: 0 };
+    const record = matchRecord.get(entrantId) ?? { wins: 0, losses: 0 };
+    const maps = records.totals.get(entrantId) ?? emptyMapRecord();
     return {
-      entrantId,
-      seed: stored?.seed ?? null,
-      wins: r.wins + (stored?.hadBye ? 1 : 0),
-      losses: r.losses,
+      id: String(entrantId),
+      seed: stored?.seed ?? 0,
+      wins: record.wins + (stored?.hadBye ? 1 : 0),
+      losses: record.losses,
       buchholz: stored?.buchholz ?? 0,
+      roundDiff: maps.roundWins - maps.roundLosses,
+      mapDiff: maps.mapWins - maps.mapLosses,
+      meetings: records.meetings.get(entrantId),
+      points: points?.get(entrantId) ?? 0,
     };
   });
-
-  const emptyRecord: MapRecord = { mapWins: 0, mapLosses: 0, roundWins: 0, roundLosses: 0 };
-  const roundDiffOf = (entrantId: number) => {
-    const rec = mapRecord.get(entrantId) ?? emptyRecord;
-    return rec.roundWins - rec.roundLosses;
-  };
-  const mapDiffOf = (entrantId: number) => {
-    const rec = mapRecord.get(entrantId) ?? emptyRecord;
-    return rec.mapWins - rec.mapLosses;
-  };
   const withMapRecord = (ranked: RankedStandingsEntry[]): GroupStandingsEntry[] =>
-    ranked.map((r) => {
-      const rec = mapRecord.get(Number(r.id)) ?? emptyRecord;
-      return { ...r, mapWins: rec.mapWins, mapLosses: rec.mapLosses, roundWins: rec.roundWins, roundLosses: rec.roundLosses };
-    });
+    ranked.map((r) => ({ ...r, ...(records.totals.get(Number(r.id)) ?? emptyMapRecord()) }));
 
-  if (config.type === "swiss") {
-    const dtos: StandingsEntry[] = entries.map((e) => ({
-      id: String(e.entrantId),
-      seed: e.seed ?? 0,
-      wins: e.wins,
-      losses: e.losses,
-      buchholz: e.buchholz,
-      roundDiff: roundDiffOf(e.entrantId),
-      mapDiff: mapDiffOf(e.entrantId),
-      points: points?.get(e.entrantId) ?? 0,
-    }));
-    return withMapRecord(createSwissStandings({ tiebreakers: config.tiebreakers }).recompute(dtos));
-  }
-
-  // round_robin: build head-to-head from completed matches in this container.
-  const dtos: StandingsEntry[] = entries.map((e) => {
-    const headToHead = new Map<string, "win" | "loss">();
-    for (const m of completedMatches) {
-      if (m.entrantAId === e.entrantId && m.entrantBId !== null) {
-        headToHead.set(String(m.entrantBId), m.winnerId === e.entrantId ? "win" : "loss");
-      } else if (m.entrantBId === e.entrantId && m.entrantAId !== null) {
-        headToHead.set(String(m.entrantAId), m.winnerId === e.entrantId ? "win" : "loss");
-      }
-    }
-    return {
-      id: String(e.entrantId),
-      seed: e.seed ?? 0,
-      wins: e.wins,
-      losses: e.losses,
-      buchholz: e.buchholz,
-      roundDiff: roundDiffOf(e.entrantId),
-      mapDiff: mapDiffOf(e.entrantId),
-      headToHead,
-      points: points?.get(e.entrantId) ?? 0,
-    };
-  });
-  const ranked = createRoundRobinStandings({ tiebreakers: config.tiebreakers }).recompute(dtos);
-  if (!points) return withMapRecord(ranked);
-
-  const byPoints = [...ranked].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
-  return withMapRecord(byPoints.map((r, i) => ({ ...r, rank: i + 1 })));
+  const calculator =
+    config.type === "swiss" ? createSwissStandings({ tiebreakers: config.tiebreakers }) : createRoundRobinStandings({ tiebreakers: config.tiebreakers });
+  const ranked = calculator.recompute(dtos);
+  // Points, when enabled, come before the match record and the tiebreakers.
+  if (points) ranked.sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
+  // One rank per entrant, those the chain leaves level are listed in seed order.
+  return withMapRecord(ranked.map((r, i) => ({ ...r, rank: i + 1 })));
 }

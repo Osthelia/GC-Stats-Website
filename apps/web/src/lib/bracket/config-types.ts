@@ -12,9 +12,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import type { SwissTiebreaker } from "@osthelia/bracket-engine";
+import { GAME_CHANGERS_TIEBREAKERS, type RoundRobinTiebreaker, type SwissStandingsTiebreaker } from "@osthelia/bracket-engine";
 
-/** Points per match, map and round won or lost, they order the group when "points" is a tiebreaker.
+/** Points per match, map and round won or lost, when set they order the group before anything else.
  *  A forfeited match is worth the forfeit values alone. */
 export const POINTS_FIELDS = ["matchWin", "matchLoss", "mapWin", "mapLoss", "roundWin", "roundLoss", "forfeitWin", "forfeitLoss"] as const;
 export type PointsField = (typeof POINTS_FIELDS)[number];
@@ -24,10 +24,12 @@ export const MAX_POINTS = 1000;
 
 export const EMPTY_POINTS: StandingsPointsConfig = { matchWin: 0, matchLoss: 0, mapWin: 0, mapLoss: 0, roundWin: 0, roundLoss: 0, forfeitWin: 0, forfeitLoss: 0 };
 
-// Tiebreakers a group format understands, wins always count first
-export const SWISS_TIEBREAKERS = ["points", "buchholz", "map_diff", "round_diff", "seed"] as const;
-export const ROUND_ROBIN_TIEBREAKERS = ["points", "map_diff", "round_diff", "head_to_head", "seed"] as const;
-export type RoundRobinTiebreaker = (typeof ROUND_ROBIN_TIEBREAKERS)[number];
+// Tiebreakers a group format understands, applied after the match record
+export const ROUND_ROBIN_TIEBREAKERS = ["points", "head_to_head", "h2h_map_diff", "h2h_round_diff", "map_diff", "round_diff", "seed"] as const satisfies readonly RoundRobinTiebreaker[];
+export const SWISS_TIEBREAKERS = [...ROUND_ROBIN_TIEBREAKERS, "buchholz"] as const satisfies readonly SwissStandingsTiebreaker[];
+
+/** Order applied to a new group, and to one that has none of its own. */
+export const DEFAULT_TIEBREAKERS = GAME_CHANGERS_TIEBREAKERS;
 
 export interface SwissGroupConfig {
   type: "swiss";
@@ -35,7 +37,7 @@ export interface SwissGroupConfig {
   eliminateAtLosses: number | null;
   maxRounds: number;
   roundFormat: Record<number, number>;
-  tiebreakers: SwissTiebreaker[];
+  tiebreakers: SwissStandingsTiebreaker[];
   pointsConfig: StandingsPointsConfig | null;
 }
 
@@ -76,13 +78,13 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
       eliminateAtLosses: c.eliminateAtLosses ?? null,
       maxRounds: c.maxRounds ?? 5,
       roundFormat: c.roundFormat ?? {},
-      tiebreakers: c.tiebreakers ?? ["buchholz", "round_diff", "seed"],
+      tiebreakers: c.tiebreakers ?? [...DEFAULT_TIEBREAKERS],
       pointsConfig: parsePointsConfig(c.pointsConfig),
     };
   }
   if (type === "round_robin") {
     const c = config as Partial<RoundRobinGroupConfig>;
-    return { type: "round_robin", tiebreakers: c.tiebreakers ?? ["round_diff", "seed"], pointsConfig: parsePointsConfig(c.pointsConfig) };
+    return { type: "round_robin", tiebreakers: c.tiebreakers ?? [...DEFAULT_TIEBREAKERS], pointsConfig: parsePointsConfig(c.pointsConfig) };
   }
   throw new Error(`parseGroupConfig: unknown group config type "${String(type)}"`);
 }
