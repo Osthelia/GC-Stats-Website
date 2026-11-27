@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "Der Wikicode muss genau ein '{{Match}}' enthalten.",
               "noGames": "Keine gespielten Spiele in diesem Wikicode gefunden.",
               "unknownChampions": "Unbekannte Champions im Wikicode: {names}. Es wurde nichts importiert.",
-              "duplicateChampion": "Spiel {order}: {champion} kommt im Draft mehrfach vor. Es wurde nichts importiert."
+              "duplicateChampion": "Spiel {order}: {champion} kommt im Draft mehrfach vor. Es wurde nichts importiert.",
+              "championsUnavailable": "Die Champion-Liste dieses Patches ist derzeit nicht verfügbar, daher können die Namen nicht geprüft werden. Es wurde nichts importiert, versuche es später erneut."
             },
             "results": {
               "forfeit": "Der Wikicode zeigt einen Forfeit. Es wurde nichts importiert, setze den Forfeit am Match von Hand.",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "Der First Pick muss Blue oder Red sein.",
             "invalidStep": "Schritt {step} existiert nicht oder ist doppelt angegeben.",
             "unknownChampion": "{championName} steht nicht in der Champion-Liste.",
-            "duplicateChampion": "{championName} ist mehr als einmal in der Draft."
+            "duplicateChampion": "{championName} ist mehr als einmal in der Draft.",
+            "invalidSide": "Ein noch nicht platzierter Pick muss auf der Blue- oder Red-Seite liegen.",
+            "championsUnavailable": "Die Champion-Liste dieses Patches ist derzeit nicht verfügbar, versuche es später erneut.",
+            "invalidDraft": "Der gesendete Draft ist ungültig. Lade die Seite neu und versuche es erneut."
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "Unbekannte Champion-IDs: {ids}",
               "storageUnavailable": "Der Speicher für LoL-Importe konnte nicht erreicht werden. Prüfe die Konfiguration und versuche es erneut.",
               "duplicateAccount": "Dasselbe Riot-Konto ist doppelt verknüpft. Verknüpfe jedes Konto nur einmal.",
-              "tournamentRealm": "Dieses Spiel wurde im Turnier-Realm gespielt. Rufe es stattdessen von Leaguepedia ab."
+              "tournamentRealm": "Dieses Spiel wurde im Turnier-Realm gespielt. Rufe es stattdessen von Leaguepedia ab.",
+              "duplicatePerson": "Zwei Spieler dieses Spiels sind derselben Person zugeordnet. Ordne jeden Spieler einer anderen Person zu.",
+              "matchIdMismatch": "Die geladenen Spieldaten gehören nicht zum angeforderten Match. Es wurde nichts gespeichert.",
+              "invalidGame": "Das zu importierende Spiel ist ungültig. Wähle ein Leaguepedia-Spiel aus oder gib eine Riot-Match-ID ein."
             },
             "searchPlaceholder": "Nach Team, Spiel oder Datum suchen",
             "noResults": "Keine Spiele gefunden",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "Du darfst keine Spieler anlegen. Wähle vorhandene Spieler aus."
           },
-          "optional": "optional",
           "build": "Build",
           "buildSet": "gesetzt",
           "buildUnavailable": "Die Beschwörerzauber, Runen und Gegenstände dieses Patches konnten nicht geladen werden. Später erneut versuchen.",

@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "Wikicode phải chứa đúng một '{{Match}}'.",
               "noGames": "Không tìm thấy ván đã chơi nào trong wikicode này.",
               "unknownChampions": "Có tướng không xác định trong wikicode: {names}. Chưa nhập gì cả.",
-              "duplicateChampion": "Ván {order}: {champion} xuất hiện nhiều hơn một lần trong draft. Chưa nhập gì cả."
+              "duplicateChampion": "Ván {order}: {champion} xuất hiện nhiều hơn một lần trong draft. Chưa nhập gì cả.",
+              "championsUnavailable": "Danh sách tướng của bản vá này hiện không khả dụng nên không thể kiểm tra tên. Chưa nhập gì cả, hãy thử lại sau."
             },
             "results": {
               "forfeit": "Wikicode cho thấy một trận bỏ cuộc. Chưa nhập gì cả, hãy đặt kết quả bỏ cuộc cho trận bằng tay.",
@@ -4737,7 +4738,10 @@
             "invalidFirstPick": "Bên chọn trước phải là xanh hoặc đỏ.",
             "invalidStep": "Bước {step} không tồn tại hoặc bị đưa ra hai lần.",
             "unknownChampion": "{championName} không có trong danh sách tướng.",
-            "duplicateChampion": "{championName} xuất hiện nhiều hơn một lần trong draft."
+            "duplicateChampion": "{championName} xuất hiện nhiều hơn một lần trong draft.",
+            "invalidSide": "Lượt chọn chưa được đặt phải thuộc đội xanh hoặc đội đỏ.",
+            "championsUnavailable": "Danh sách tướng của bản vá này hiện không khả dụng, hãy thử lại sau.",
+            "invalidDraft": "Bản draft đã gửi không hợp lệ. Hãy tải lại trang và thử lại."
           }
         },
         "games": {
@@ -4861,7 +4865,10 @@
               "unknownChampions": "Champion id không xác định: {ids}",
               "storageUnavailable": "Không thể kết nối tới bucket nhập LoL. Hãy kiểm tra cấu hình rồi thử lại.",
               "duplicateAccount": "Cùng một tài khoản Riot được liên kết hai lần. Mỗi tài khoản chỉ liên kết một lần.",
-              "tournamentRealm": "Ván này được chơi trên tournament realm. Hãy lấy nó từ Leaguepedia thay thế."
+              "tournamentRealm": "Ván này được chơi trên tournament realm. Hãy lấy nó từ Leaguepedia thay thế.",
+              "duplicatePerson": "Hai tuyển thủ của ván này được liên kết với cùng một người. Hãy liên kết mỗi tuyển thủ với một người khác nhau.",
+              "matchIdMismatch": "Dữ liệu ván đã tải không phải của trận đấu được yêu cầu. Chưa lưu gì cả.",
+              "invalidGame": "Ván cần nhập không hợp lệ. Hãy chọn một ván trên Leaguepedia hoặc nhập ID trận Riot."
             },
             "searchPlaceholder": "Tìm theo đội, ván hoặc ngày",
             "noResults": "Không có ván nào khớp",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "Bạn không được phép tạo người chơi. Hãy chọn người chơi có sẵn."
           },
-          "optional": "không bắt buộc",
           "build": "Trang bị & ngọc",
           "buildSet": "đã nhập",
           "buildUnavailable": "Không tải được phép bổ trợ, ngọc và trang bị của bản cập nhật này. Hãy thử lại sau.",

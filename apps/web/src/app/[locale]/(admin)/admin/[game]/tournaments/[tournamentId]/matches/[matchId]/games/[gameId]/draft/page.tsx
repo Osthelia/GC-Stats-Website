@@ -14,7 +14,7 @@ import { PERMISSIONS } from "@gc-stats/db";
 import { Link } from "@/i18n/navigation";
 import { getAdminMatch, getLeagueGameDraft } from "@/lib/admin-matches";
 import { after } from "next/server";
-import { getChampionNamesForPatch, syncIconsOfPatch } from "@/lib/data-dragon-client";
+import { fetchChampionNamesForPatch, syncIconsOfPatch } from "@/lib/data-dragon-client";
 import { listTournamentEntrants } from "@/lib/admin-tournament-detail";
 import { requireAdminPermission, hasAccess } from "@/lib/rbac";
 import type { AppLocale } from "@/i18n/routing";
@@ -45,7 +45,8 @@ export default async function AdminLeagueGameDraftPage({ params }: { params: Pro
     listTournamentEntrants(game, tournId),
   ]);
   if (!match || match.tournamentId !== tournId) notFound();
-  const champions = await getChampionNamesForPatch(match.patch);
+  // Same list as the save action checks against, so a patch without a stored catalog still offers its champions.
+  const champions = await fetchChampionNamesForPatch(match.patch);
   // A champion that only appears in a manual draft has no import to bring its icon, so the patch's icons are synced here too.
   after(() => syncIconsOfPatch(match.patch));
   const draft = await getLeagueGameDraft(id, gameNumber, match);

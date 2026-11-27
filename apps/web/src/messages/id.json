@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "Wikicode harus berisi tepat satu '{{Match}}'.",
               "noGames": "Tidak ada game yang dimainkan di wikicode ini.",
               "unknownChampions": "Champion tidak dikenal di wikicode: {names}. Tidak ada yang diimpor.",
-              "duplicateChampion": "Game {order}: {champion} muncul lebih dari sekali di draft. Tidak ada yang diimpor."
+              "duplicateChampion": "Game {order}: {champion} muncul lebih dari sekali di draft. Tidak ada yang diimpor.",
+              "championsUnavailable": "Daftar champion patch ini sedang tidak tersedia, sehingga nama tidak dapat diperiksa. Tidak ada yang diimpor, coba lagi nanti."
             },
             "results": {
               "forfeit": "Wikicode menunjukkan forfeit. Tidak ada yang diimpor, atur forfeit pada match secara manual.",
@@ -4737,7 +4738,10 @@
             "invalidFirstPick": "First pick harus biru atau merah.",
             "invalidStep": "Langkah {step} tidak ada atau diberikan dua kali.",
             "unknownChampion": "{championName} tidak ada dalam daftar champion.",
-            "duplicateChampion": "{championName} muncul lebih dari sekali dalam draft."
+            "duplicateChampion": "{championName} muncul lebih dari sekali dalam draft.",
+            "invalidSide": "Pick yang belum ditempatkan harus berada di blue side atau red side.",
+            "championsUnavailable": "Daftar champion patch ini sedang tidak tersedia, coba lagi nanti.",
+            "invalidDraft": "Draft yang dikirim tidak valid. Muat ulang halaman dan coba lagi."
           }
         },
         "games": {
@@ -4861,7 +4865,10 @@
               "unknownChampions": "Champion id tidak dikenal: {ids}",
               "storageUnavailable": "Bucket impor LoL tidak dapat dijangkau. Periksa konfigurasinya, lalu coba lagi.",
               "duplicateAccount": "Akun Riot yang sama ditautkan dua kali. Tautkan setiap akun hanya sekali.",
-              "tournamentRealm": "Game ini dimainkan di tournament realm. Ambil dari Leaguepedia sebagai gantinya."
+              "tournamentRealm": "Game ini dimainkan di tournament realm. Ambil dari Leaguepedia sebagai gantinya.",
+              "duplicatePerson": "Dua pemain di game ini ditautkan ke orang yang sama. Tautkan setiap pemain ke orang yang berbeda.",
+              "matchIdMismatch": "Data game yang dimuat bukan pertandingan yang diminta. Tidak ada yang disimpan.",
+              "invalidGame": "Game yang akan diimpor tidak valid. Pilih game Leaguepedia atau ketik ID match Riot."
             },
             "searchPlaceholder": "Cari berdasarkan tim, game, atau tanggal",
             "noResults": "Tidak ada game yang cocok",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "Anda tidak diizinkan membuat pemain. Pilih pemain yang sudah ada."
           },
-          "optional": "opsional",
           "build": "Build",
           "buildSet": "diisi",
           "buildUnavailable": "Summoner spell, rune, dan item patch ini tidak bisa dimuat. Coba lagi nanti.",

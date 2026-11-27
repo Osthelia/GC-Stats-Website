@@ -26,7 +26,7 @@ import { matchTag } from "@/lib/cache-tags";
 import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
-import { ensurePatchCatalog, fetchChampionNamesForPatch, getBuildOptions, getChampionNamesForPatch } from "@/lib/data-dragon-client";
+import { ensurePatchCatalog, fetchChampionNamesForPatch, getBuildOptions } from "@/lib/data-dragon-client";
 import { buildHasParts, LINEUP_STAT_KEYS, lineupHasStats, lineupProblem, storedBuild, type LineupInput, type LineupProblem } from "@/lib/league-lineup-rules";
 import { buildCatalogOf } from "@/lib/league-build-options";
 import { createPerson, ensureGameProfiles } from "@/lib/person-service";
@@ -218,8 +218,22 @@ export type LeagueDraftError =
   | { kind: "blueLocked" }
   | { kind: "firstPickLocked" }
   | { kind: "invalidFirstPick" }
+  | { kind: "invalidSide" }
+  | { kind: "invalidDraft" }
+  | { kind: "championsUnavailable" }
   | { kind: "draftProblem"; problem: DraftProblem };
 export type LeagueDraftResult = { ok: true } | { ok: false; error: LeagueDraftError };
+
+/** The input comes from the client: the lists and names must have the expected types before any rule reads them. */
+function isDraftInputShape(input: LeagueDraftInput): boolean {
+  const value = input as unknown as { steps?: unknown; unplacedPicks?: unknown } | null;
+  if (!value || !Array.isArray(value.steps) || !Array.isArray(value.unplacedPicks)) return false;
+  const isEntry = (entry: unknown, key: "step" | "side") => {
+    const e = entry as Record<string, unknown> | null;
+    return !!e && typeof e.championName === "string" && (key === "step" ? Number.isInteger(e.step) : typeof e.side === "string");
+  };
+  return value.steps.every((entry) => isEntry(entry, "step")) && value.unplacedPicks.every((pick) => isEntry(pick, "side"));
+}
 
 /**
  * Saves the draft of one game. One transaction replaces its draft rows and marks the draft as edited by hand, so a
@@ -228,6 +242,7 @@ export type LeagueDraftResult = { ok: true } | { ok: false; error: LeagueDraftEr
 export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, matchId: number, gameId: number, input: LeagueDraftInput): Promise<LeagueDraftResult> {
   if (!gameHasSeriesGames(game)) return { ok: false, error: { kind: "notFound" } };
   const actorUserId = await requireTournamentsActor(game);
+  if (!isDraftInputShape(input)) return { ok: false, error: { kind: "invalidDraft" } };
   const match = await loadMatchOfTournament(game, tournamentId, matchId);
   if (!match) return { ok: false, error: { kind: "notFound" } };
   if (match.entrantAId === null || match.entrantBId === null) return { ok: false, error: { kind: "entrantsUnset" } };
@@ -246,6 +261,7 @@ export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, 
   // check that side and firstpick are not changed if they are imported
   if (input.blueEntrantId !== entrantAId && input.blueEntrantId !== entrantBId) return { ok: false, error: { kind: "blueNotAnEntrant" } };
   if (input.firstPick !== "blue" && input.firstPick !== "red") return { ok: false, error: { kind: "invalidFirstPick" } };
+  if (input.unplacedPicks.some((pick) => pick.side !== "blue" && pick.side !== "red")) return { ok: false, error: { kind: "invalidSide" } };
   if (existing.source !== null) {
     const [blueTeam] = await db
       .select({ entrantId: gameTeamStats.entrantId })
@@ -256,10 +272,14 @@ export async function saveLeagueGameDraft(game: GameSlug, tournamentId: number, 
     if (existing.draftFirstPick !== null && input.firstPick !== existing.draftFirstPick) return { ok: false, error: { kind: "firstPickLocked" } };
   }
 
+  // Data Dragon is asked when the patch has no stored catalog yet.
+  const hasChampions = input.steps.length > 0 || input.unplacedPicks.length > 0;
+  const championNames = hasChampions ? await fetchChampionNamesForPatch(match.patch) : [];
+  if (hasChampions && championNames.length === 0) return { ok: false, error: { kind: "championsUnavailable" } };
   const problem = draftProblem({
     steps: input.steps,
     unplacedPicks: input.unplacedPicks.map((pick) => pick.championName),
-    knownChampions: new Set(await getChampionNamesForPatch(match.patch)),
+    knownChampions: new Set(championNames),
   });
   if (problem) return { ok: false, error: { kind: "draftProblem", problem } };
 
@@ -315,7 +335,7 @@ export async function deleteLeagueGame(game: GameSlug, tournamentId: number, mat
 // lowest-priority source: it never overwrites Riot or Leaguepedia data, anything entered by hand or an earlier
 // import, and a Riot or Leaguepedia import later replaces what it filled.
 
-export type ImportLeagueWikicodeError = "required" | "tooLong" | "missingTeams" | "oneMatchOnly" | "noGames" | "invalidResolution";
+export type ImportLeagueWikicodeError = "required" | "tooLong" | "missingTeams" | "oneMatchOnly" | "noGames" | "invalidResolution" | "championsUnavailable";
 
 /** What happened to the draft of one game. */
 export type LeagueWikicodeDraftOutcome =
@@ -387,12 +407,6 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
   if (wikiMatch.forfeit && wikiMatch.games.length === 0) return { ok: true, linkedNames: 0, forfeit: true, patchSet: null, bestOfDiffers, firstPickAssumed: false, games: [] };
   if (wikiMatch.games.length === 0) return { ok: false, error: "noGames" };
 
-  // One unknown champion stops the import: the names are stored as written, so a guess would stay wrong.
-  // A patch nothing was imported or saved for has no catalog yet: Data Dragon is asked then.
-  const displayNames = await fetchChampionNamesForPatch(match.patch ?? wikiMatch.patch);
-  const champions = resolveChampionNames(wikiMatch.games.flatMap(wikicodeChampionNames), displayNames);
-  if (!champions.ok) return { ok: false, error: "unknownChampions", names: champions.unknown };
-
   const linkDecision = decideLiquipediaLinks(await planLiquipediaLinks(game, trimmed, [entrantAId, entrantBId]), resolutions);
   if (!linkDecision.ok) return linkDecision;
 
@@ -411,22 +425,42 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
     : [[], []];
   const withDraftRows = new Set(draftRowGames.map((r) => r.gameId));
   const withTeamStats = new Set(teamStatGames.map((r) => r.gameId));
+  const existingOf = (order: number) => existingGames.find((g) => g.order === order) ?? null;
+  const draftBlockOf = (existing: ExistingLeagueGame | null) =>
+    existing ? draftBlockedBy({ ...existing, hasDraftRows: withDraftRows.has(existing.id), hasTeamStats: withTeamStats.has(existing.id) }) : null;
+
+  // One unknown champion stops the import: the names are stored as written, so a guess would stay wrong. Only the
+  // drafts that can be written are checked, so winners and lengths still import while Data Dragon is down.
+  // A patch nothing was imported or saved for has no catalog yet: Data Dragon is asked then.
+  const blueEntrantOf = (wiki: WikicodeLolGame, existing: ExistingLeagueGame | null): number | null =>
+    existing?.draftBlueEntrantId ?? (wiki.team1Side === "blue" ? entrantAId : wiki.team1Side === "red" ? entrantBId : null);
+  const draftNames = wikiMatch.games
+    .filter((wiki) => {
+      const existing = existingOf(wiki.order);
+      return draftBlockOf(existing) === null && blueEntrantOf(wiki, existing) !== null;
+    })
+    .flatMap(wikicodeChampionNames)
+    .filter((name) => name !== "");
+  const displayNames = draftNames.length > 0 ? await fetchChampionNamesForPatch(match.patch ?? wikiMatch.patch) : [];
+  if (draftNames.length > 0 && displayNames.length === 0) return { ok: false, error: "championsUnavailable" };
+  const champions = resolveChampionNames(draftNames, displayNames);
+  if (!champions.ok) return { ok: false, error: "unknownChampions", names: champions.unknown };
 
   const planned: PlannedGame[] = [];
   for (const wiki of wikiMatch.games) {
-    const existing = existingGames.find((g) => g.order === wiki.order) ?? null;
+    const existing = existingOf(wiki.order);
     const wikiWinnerEntrantId = wiki.winner === 1 ? entrantAId : wiki.winner === 2 ? entrantBId : null;
     const { values, filled, differs } = planGameFields(existing, { winnerEntrantId: wikiWinnerEntrantId, lengthSeconds: wiki.lengthSeconds });
 
     const hasDraft = wikicodeChampionNames(wiki).some((name) => name !== "");
-    const blockedBy = existing ? draftBlockedBy({ ...existing, hasDraftRows: withDraftRows.has(existing.id), hasTeamStats: withTeamStats.has(existing.id) }) : null;
+    const blockedBy = draftBlockOf(existing);
     let outcome: LeagueWikicodeDraftOutcome = { status: "none", reason: "noDraft" };
     let draft: PlannedGame["draft"] = null;
     if (hasDraft && blockedBy) {
       outcome = { status: "kept", reason: blockedBy };
     } else if (hasDraft) {
       // The blue side already on the game wins over the wikicode, as does the first pick; blue is assumed for the first pick otherwise.
-      const blueEntrantId = existing?.draftBlueEntrantId ?? (wiki.team1Side === "blue" ? entrantAId : wiki.team1Side === "red" ? entrantBId : null);
+      const blueEntrantId = blueEntrantOf(wiki, existing);
       if (blueEntrantId === null) {
         outcome = { status: "none", reason: "noSide" };
       } else {
@@ -486,7 +520,9 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
     forfeit: false,
     patchSet,
     bestOfDiffers,
-    firstPickAssumed: planned.some((p) => p.result.draft.status === "written" && !p.existing?.draftFirstPick),
+    // The wikicode has no first pick. A first pick from Riot data (source, team stats) or a hand edit (draftEditedAt)
+    // blocks the draft in draftBlockedBy, so a stored one on a written draft comes from an earlier paste: assumed too.
+    firstPickAssumed: planned.some((p) => p.draft !== null),
     games: planned.map((p) => p.result),
   };
 }

@@ -27,6 +27,7 @@ const DATA_DRAGON_BASE = "https://ddragon.leagueoflegends.com";
 const CDN = `${DATA_DRAGON_BASE}/cdn`;
 const LOCALE = "en_US";
 const ICON_BATCH_SIZE = 8;
+const DATA_DRAGON_TIMEOUT_MS = 10_000;
 const ICON_WEBP_QUALITY = 80;
 /** A sync that crashed leaves its lock behind; after this long another import may take it over. */
 const ICON_SYNC_LOCK_MINUTES = 10;
@@ -463,7 +464,8 @@ async function inIconBatches<T, R>(items: T[], task: (item: T) => Promise<R>): P
 }
 
 async function getJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+  // A slow Data Dragon must not hold a page or an action: the timeout rejects like any failed request.
+  const response = await fetch(url, { signal: AbortSignal.timeout(DATA_DRAGON_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`${url} returned status ${response.status}`);
   return (await response.json()) as T;
 }

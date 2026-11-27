@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "Dapat eksaktong isang '{{Match}}' ang laman ng wikicode.",
               "noGames": "Walang nakitang nalaro na laro sa wikicode na ito.",
               "unknownChampions": "May mga hindi kilalang champion sa wikicode: {names}. Walang na-import.",
-              "duplicateChampion": "Laro {order}: lumalabas nang higit sa isang beses sa draft ang {champion}. Walang na-import."
+              "duplicateChampion": "Laro {order}: lumalabas nang higit sa isang beses sa draft ang {champion}. Walang na-import.",
+              "championsUnavailable": "Hindi available ngayon ang listahan ng mga champion ng patch na ito, kaya hindi masuri ang mga pangalan. Walang na-import, subukan muli mamaya."
             },
             "results": {
               "forfeit": "Nagpapakita ng forfeit ang wikicode. Walang na-import, itakda ang forfeit sa match nang mano-mano.",
@@ -4737,7 +4738,10 @@
             "invalidFirstPick": "Dapat blue o red ang unang pick.",
             "invalidStep": "Walang hakbang na {step} o dalawang beses itong ibinigay.",
             "unknownChampion": "Wala ang {championName} sa listahan ng mga champion.",
-            "duplicateChampion": "Mahigit isang beses nasa draft ang {championName}."
+            "duplicateChampion": "Mahigit isang beses nasa draft ang {championName}.",
+            "invalidSide": "Ang pick na hindi pa nailalagay ay dapat nasa blue o red side.",
+            "championsUnavailable": "Hindi available ngayon ang listahan ng mga champion ng patch na ito, subukan muli mamaya.",
+            "invalidDraft": "Hindi valid ang ipinadalang draft. I-reload ang page at subukan muli."
           }
         },
         "games": {
@@ -4861,7 +4865,10 @@
               "unknownChampions": "Hindi kilalang champion id: {ids}",
               "storageUnavailable": "Hindi maabot ang bucket ng mga LoL import. Suriin ang configuration nito, saka subukan muli.",
               "duplicateAccount": "Dalawang beses na-link ang parehong Riot account. I-link ang bawat account nang isang beses lang.",
-              "tournamentRealm": "Nilaro ang larong ito sa tournament realm. Kunin ito sa Leaguepedia sa halip."
+              "tournamentRealm": "Nilaro ang larong ito sa tournament realm. Kunin ito sa Leaguepedia sa halip.",
+              "duplicatePerson": "Dalawang player ng larong ito ang naka-link sa iisang tao. I-link ang bawat player sa magkaibang tao.",
+              "matchIdMismatch": "Hindi ang hiniling na laban ang na-load na data ng laro. Walang na-save.",
+              "invalidGame": "Hindi valid ang larong ii-import. Pumili ng laro mula sa Leaguepedia o mag-type ng Riot match id."
             },
             "searchPlaceholder": "Maghanap ayon sa team, laro o petsa",
             "noResults": "Walang tugmang laro",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "Wala kang pahintulot na gumawa ng mga manlalaro. Pumili ng mga mayroon na."
           },
-          "optional": "opsyonal",
           "build": "Build",
           "buildSet": "naitakda",
           "buildUnavailable": "Hindi ma-load ang mga summoner spell, rune at item ng patch na ito. Subukan ulit mamaya.",

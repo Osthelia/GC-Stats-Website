@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "wikicode 必須恰好包含一個 '{{Match}}'。",
               "noGames": "在此 wikicode 中找不到已進行的對局。",
               "unknownChampions": "wikicode 中有未知英雄：{names}。未匯入任何內容。",
-              "duplicateChampion": "第 {order} 場：{champion} 在禁選中出現多次。未匯入任何內容。"
+              "duplicateChampion": "第 {order} 場：{champion} 在禁選中出現多次。未匯入任何內容。",
+              "championsUnavailable": "此版本的英雄清單目前無法使用，因此無法檢查名稱。未匯入任何內容，請稍後再試。"
             },
             "results": {
               "forfeit": "wikicode 顯示為棄權。未匯入任何內容，請手動設定該比賽的棄權。",
@@ -4737,7 +4738,10 @@
             "invalidFirstPick": "先選方必須是藍色方或紅色方。",
             "invalidStep": "步驟 {step} 不存在，或被重複指定。",
             "unknownChampion": "{championName} 不在英雄清單中。",
-            "duplicateChampion": "{championName} 在禁選中出現不只一次。"
+            "duplicateChampion": "{championName} 在禁選中出現不只一次。",
+            "invalidSide": "尚未放置的選擇必須在藍色方或紅色方。",
+            "championsUnavailable": "此版本的英雄清單目前無法使用，請稍後再試。",
+            "invalidDraft": "送出的選角內容無效。請重新載入頁面後再試一次。"
           }
         },
         "games": {
@@ -4861,7 +4865,10 @@
               "unknownChampions": "未知的英雄 ID：{ids}",
               "storageUnavailable": "無法連線到 LoL 匯入 bucket。請檢查其設定後再試。",
               "duplicateAccount": "同一個 Riot 帳號被連結了兩次。每個帳號只能連結一次。",
-              "tournamentRealm": "此對局是在錦標賽伺服器（tournament realm）上進行的，請改從 Leaguepedia 取得。"
+              "tournamentRealm": "此對局是在錦標賽伺服器（tournament realm）上進行的，請改從 Leaguepedia 取得。",
+              "duplicatePerson": "此對局的兩位選手連結到同一個人員。請將每位選手連結到不同的人員。",
+              "matchIdMismatch": "載入的對局資料不是所請求的比賽。未儲存任何內容。",
+              "invalidGame": "要匯入的對局無效。請選擇 Leaguepedia 對局，或輸入 Riot 對戰 ID。"
             },
             "searchPlaceholder": "依隊伍、對局或日期搜尋",
             "noResults": "沒有符合的對局",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "你無權建立選手，請選擇現有選手。"
           },
-          "optional": "選填",
           "build": "出裝",
           "buildSet": "已填寫",
           "buildUnavailable": "無法載入此版本的召喚師技能、符文與裝備。請稍後再試。",

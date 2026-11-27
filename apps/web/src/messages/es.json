@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "El wikicode debe contener exactamente un '{{Match}}'.",
               "noGames": "No se encontraron partidas jugadas en este wikicode.",
               "unknownChampions": "Campeones desconocidos en el wikicode: {names}. No se importó nada.",
-              "duplicateChampion": "Partida {order}: {champion} aparece más de una vez en el draft. No se importó nada."
+              "duplicateChampion": "Partida {order}: {champion} aparece más de una vez en el draft. No se importó nada.",
+              "championsUnavailable": "La lista de campeones de este parche no está disponible ahora, así que no se pueden comprobar los nombres. No se importó nada, inténtalo más tarde."
             },
             "results": {
               "forfeit": "El wikicode indica una derrota por incomparecencia. No se importó nada, define la incomparecencia en el partido a mano.",
@@ -4736,7 +4737,10 @@
             "invalidFirstPick": "El primer pick debe ser azul o rojo.",
             "invalidStep": "El paso {step} no existe o está repetido.",
             "unknownChampion": "{championName} no está en la lista de campeones.",
-            "duplicateChampion": "{championName} aparece más de una vez en la selección."
+            "duplicateChampion": "{championName} aparece más de una vez en la selección.",
+            "invalidSide": "Un pick aún no colocado debe estar en el lado azul o rojo.",
+            "championsUnavailable": "La lista de campeones de este parche no está disponible ahora, inténtalo más tarde.",
+            "invalidDraft": "El draft enviado no es válido. Recarga la página e inténtalo de nuevo."
           }
         },
         "games": {
@@ -4860,7 +4864,10 @@
               "unknownChampions": "IDs de campeón desconocidos: {ids}",
               "storageUnavailable": "No se pudo acceder al almacenamiento de importaciones de LoL. Revisa la configuración e inténtalo de nuevo.",
               "duplicateAccount": "La misma cuenta de Riot está vinculada dos veces. Vincula cada cuenta una sola vez.",
-              "tournamentRealm": "Esta partida se jugó en el reino de torneos. Obtenla de Leaguepedia en su lugar."
+              "tournamentRealm": "Esta partida se jugó en el reino de torneos. Obtenla de Leaguepedia en su lugar.",
+              "duplicatePerson": "Dos jugadores de esta partida están vinculados a la misma persona. Vincula cada jugador a una persona distinta.",
+              "matchIdMismatch": "Los datos de partida cargados no corresponden al partido solicitado. No se guardó nada.",
+              "invalidGame": "La partida a importar no es válida. Elige una partida de Leaguepedia o escribe un ID de partida de Riot."
             },
             "searchPlaceholder": "Buscar por equipo, partida o fecha",
             "noResults": "Ninguna partida coincide",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "No tienes permiso para crear jugadores. Elige jugadores existentes."
           },
-          "optional": "opcional",
           "build": "Build",
           "buildSet": "definida",
           "buildUnavailable": "No se pudieron cargar los hechizos de invocador, runas y objetos de este parche. Inténtalo más tarde.",

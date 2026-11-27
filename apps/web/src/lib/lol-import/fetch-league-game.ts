@@ -72,6 +72,9 @@ export type GameImportError =
   | { kind: "missingPlayers"; count: number }
   | { kind: "accountConflict"; puuid: string }
   | { kind: "duplicateAccount" }
+  | { kind: "duplicatePerson" }
+  | { kind: "matchIdMismatch" }
+  | { kind: "invalidGame" }
   | { kind: "invalidUpload"; errors: string[] }
   | { kind: "dataDragonUnavailable" }
   | { kind: "unknownChampions"; ids: number[] }
@@ -157,6 +160,7 @@ export interface CommitInput {
 export type CommitResult = { ok: true; gameId: number } | { ok: false; error: GameImportError };
 
 export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
+  if (!isGameRef(input.game)) return { ok: false, error: { kind: "invalidGame" } };
   const resolved = await resolveGame(input.tournamentId, input.game);
   if (!resolved) return { ok: false, error: { kind: "noData" } };
 
@@ -168,6 +172,8 @@ export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
 
   const validation = validateImport(loaded.payload.match, loaded.payload.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
+  // The pair is stored and looked up under the requested id, so it must be that game.
+  if (validation.match.metadata.matchId !== resolved.riotMatchId) return { ok: false, error: { kind: "matchIdMismatch" } };
 
   // The raw pair is kept before anything else, so the commit can read it back without asking the source again.
   if (!loaded.fromBucket) {
@@ -240,6 +246,7 @@ export async function prepareGame(input: PrepareInput): Promise<PrepareResult> {
 }
 
 export async function commitGame(input: CommitInput): Promise<CommitResult> {
+  if (!isGameRef(input.game)) return { ok: false, error: { kind: "invalidGame" } };
   if (!Number.isInteger(input.order) || input.order < 1) return { ok: false, error: { kind: "invalidOrder" } };
 
   const resolved = await resolveGame(input.tournamentId, input.game);
@@ -253,7 +260,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
 
   let stored: LolImportPayload | null;
   try {
-    stored = await readLolImport(input.game.source, resolved.riotMatchId);
+    stored = await readStoredImport(input.game, resolved.riotMatchId);
   } catch (err) {
     console.error("[%s] could not read game %s from the imports bucket", input.game.source, resolved.riotMatchId, err);
     return { ok: false, error: { kind: "storageUnavailable" } };
@@ -261,6 +268,7 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
   if (!stored) return { ok: false, error: { kind: "notInBucket" } };
   const validation = validateImport(stored.match, stored.timeline);
   if (!validation.ok) return { ok: false, error: { kind: "invalidUpload", errors: validation.errors } };
+  if (validation.match.metadata.matchId !== resolved.riotMatchId) return { ok: false, error: { kind: "matchIdMismatch" } };
   // The game number is taken by another game of the series: the store would insert a second one and fail on the unique key.
   const [taken] = await db.select({ id: lolGames.id, apiMatchId: lolGames.apiMatchId }).from(lolGames).where(and(eq(lolGames.matchId, input.matchId), eq(lolGames.order, input.order))).limit(1);
   if (taken && taken.id !== input.gameId && taken.apiMatchId !== validation.match.metadata.matchId) return { ok: false, error: { kind: "orderTaken", order: input.order } };
@@ -278,6 +286,17 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
 
   // The same account twice in one save would race its own link, so it is refused before anything is written.
   if (new Set(input.mappings.map((m) => m.puuid)).size !== input.mappings.length) return { ok: false, error: { kind: "duplicateAccount" } };
+  // One person plays one slot: two accounts of the game on the same person would fail on the game/person unique key.
+  // A new person counts by handle: two accounts created under the same handle would be the same player.
+  const gamePersonKeys = puuids.flatMap((puuid) => {
+    const known = linked.get(puuid);
+    if (known) return [`id:${known.id}`];
+    const mapping = mappingByPuuid.get(puuid);
+    if (mapping?.personId != null) return [`id:${mapping.personId}`];
+    const handle = (mapping?.createHandle ?? "").trim().toLowerCase();
+    return handle === "" ? [] : [`new:${handle}`];
+  });
+  if (new Set(gamePersonKeys).size !== gamePersonKeys.length) return { ok: false, error: { kind: "duplicatePerson" } };
 
   const platform = gamePlatform(validation.match, resolved.riotMatchId);
   const seenAt = new Date(validation.match.info.gameCreation);
@@ -335,6 +354,23 @@ export function describeStoreError(err: unknown): string {
 async function savedRoleOverrides(riotMatchId: string): Promise<Record<string, string | null>> {
   const [game] = await db.select({ roleOverrides: lolGames.roleOverrides }).from(lolGames).where(eq(lolGames.apiMatchId, riotMatchId)).limit(1);
   return game?.roleOverrides ?? {};
+}
+
+/** The game reference comes from the client: a known source and a non empty id. */
+function isGameRef(game: unknown): game is GameRef {
+  const ref = game as { source?: unknown; riotMatchId?: unknown; leaguepediaGameId?: unknown } | null;
+  if (!ref) return false;
+  if (ref.source === "riot") return typeof ref.riotMatchId === "string" && ref.riotMatchId.trim() !== "";
+  if (ref.source === "leaguepedia") return typeof ref.leaguepediaGameId === "string" && ref.leaguepediaGameId.trim() !== "";
+  return false;
+}
+
+/** The raw pair from the bucket. A Riot game stored before ids were upper-cased may sit under the id as it was typed. */
+async function readStoredImport(game: GameRef, riotMatchId: string): Promise<LolImportPayload | null> {
+  const stored = await readLolImport(game.source, riotMatchId);
+  if (stored || game.source !== "riot") return stored;
+  const typed = game.riotMatchId.trim();
+  return typed === riotMatchId ? null : readLolImport("riot", typed);
 }
 
 function isMapped(mapping: PlayerMapping | undefined): boolean {
@@ -440,7 +476,8 @@ async function findListedGame(tournamentId: number, leaguepediaGameId: string) {
 
 /** The Riot match id and the team names of a game. A Riot game has no list entry, so it has no team names. */
 async function resolveGame(tournamentId: number, game: GameRef): Promise<{ riotMatchId: string; blue: string | null; red: string | null } | null> {
-  if (game.source === "riot") return { riotMatchId: game.riotMatchId, blue: null, red: null };
+  // Riot ids are upper case ("EUW1_123"): a typed one is normalized once, so the bucket key and lookups match the stored game.
+  if (game.source === "riot") return { riotMatchId: game.riotMatchId.trim().toUpperCase(), blue: null, red: null };
   const listed = await findListedGame(tournamentId, game.leaguepediaGameId);
   return listed ? { riotMatchId: listed.riotMatchId, blue: listed.blue, red: listed.red } : null;
 }
@@ -452,7 +489,7 @@ async function loadGame(
   mode: GameLoadMode
 ): Promise<{ ok: true; payload: LolImportPayload; fromBucket: boolean } | { ok: false; error: GameImportError }> {
   if (game.source === "riot") {
-    const loaded = await loadRiotGame(riotMatchId, mode);
+    const loaded = await loadRiotGame(riotMatchId, mode, game);
     return loaded.ok ? loaded : { ok: false, error: riotLoadError(loaded.error) };
   }
   const loaded = await loadLeaguepediaGame(riotMatchId, mode);
@@ -676,7 +713,7 @@ type RiotGameResult = { ok: true; payload: LolImportPayload; fromBucket: boolean
  * game is refused before any request, because the public API does not serve it and the request would only use up rate limit.
  * fetch: the bucket, or RiotRelay when the game is not there. renew: RiotRelay, always. reprocess: the bucket only.
  */
-async function loadRiotGame(riotMatchId: string, mode: GameLoadMode): Promise<RiotGameResult> {
+async function loadRiotGame(riotMatchId: string, mode: GameLoadMode, game: GameRef): Promise<RiotGameResult> {
   if (isTournamentRealm(riotMatchId)) return { ok: false, error: { kind: "tournamentRealm" } };
   const cluster = riotCluster(riotMatchId);
   if (cluster === null) return { ok: false, error: { kind: "riotUnavailable", error: { kind: "invalidRequest" } } };
@@ -684,7 +721,7 @@ async function loadRiotGame(riotMatchId: string, mode: GameLoadMode): Promise<Ri
   if (mode !== "renew") {
     let stored: LolImportPayload | null;
     try {
-      stored = await readLolImport("riot", riotMatchId);
+      stored = await readStoredImport(game, riotMatchId);
     } catch (err) {
       // A bucket that cannot be read is not a game that is missing: fetching from Riot would hide the setup problem.
       console.error("[riot] could not read game %s from the imports bucket", riotMatchId, err);

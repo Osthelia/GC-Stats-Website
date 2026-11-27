@@ -4501,7 +4501,8 @@
               "oneMatchOnly": "The wikicode must contain exactly one '{{Match}}'.",
               "noGames": "No played games found in this wikicode.",
               "unknownChampions": "Unknown champions in the wikicode: {names}. Nothing was imported.",
-              "duplicateChampion": "Game {order}: {champion} appears more than once in the draft. Nothing was imported."
+              "duplicateChampion": "Game {order}: {champion} appears more than once in the draft. Nothing was imported.",
+              "championsUnavailable": "The champion list of this patch is unavailable right now, so the names can't be checked. Nothing was imported, try again later."
             },
             "results": {
               "forfeit": "The wikicode shows a forfeit. Nothing was imported, set the forfeit on the match by hand.",
@@ -4736,7 +4737,10 @@
             "invalidFirstPick": "The first pick must be blue or red.",
             "invalidStep": "Step {step} does not exist or is given twice.",
             "unknownChampion": "{championName} is not in the champion list.",
-            "duplicateChampion": "{championName} is in the draft more than once."
+            "duplicateChampion": "{championName} is in the draft more than once.",
+            "invalidSide": "A pick not placed yet must be on the blue or red side.",
+            "championsUnavailable": "The champion list of this patch is unavailable right now, try again later.",
+            "invalidDraft": "The draft sent is not valid. Reload the page and try again."
           }
         },
         "games": {
@@ -4860,7 +4864,10 @@
               "unknownChampions": "Unknown champion id(s): {ids}",
               "storageUnavailable": "The LoL imports bucket could not be reached. Check its configuration, then try again.",
               "duplicateAccount": "The same Riot account is linked twice. Link each account only once.",
-              "tournamentRealm": "This game was played on the tournament realm. Fetch it from Leaguepedia instead."
+              "tournamentRealm": "This game was played on the tournament realm. Fetch it from Leaguepedia instead.",
+              "duplicatePerson": "Two players of this game are linked to the same person. Link each player to a different person.",
+              "matchIdMismatch": "The game data loaded is not the requested match. Nothing was stored.",
+              "invalidGame": "The game to import is not valid. Pick a Leaguepedia game or type a Riot match id."
             },
             "searchPlaceholder": "Search by team, game or date",
             "noResults": "No games match",
@@ -4964,7 +4971,6 @@
             },
             "createNotAllowed": "You aren't allowed to create players. Pick existing ones."
           },
-          "optional": "optional",
           "build": "Build",
           "buildSet": "set",
           "buildUnavailable": "The summoner spells, runes and items of this patch couldn't be loaded. Try again later.",

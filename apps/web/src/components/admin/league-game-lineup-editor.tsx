@@ -25,6 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { SearchablePicker, type SearchablePickerOption } from "@/components/admin/searchable-picker";
 import { PersonPicker } from "@/components/admin/person-picker";
+import { RequiredMark } from "@/components/admin/required-mark";
 import { laneIconUrl } from "@/components/match/lol-icon";
 import { saveLeagueGameLineup, type LeagueLineupError } from "@/actions/admin-lol-games";
 import type { LeagueLineupView } from "@/lib/admin-matches";
@@ -440,7 +441,8 @@ export function LeagueGameLineupEditor({
                           return (
                             <Field
                               key={stat}
-                              label={LINEUP_OPTIONAL_STATS.has(stat) ? `${t(`stat.${stat}`)} (${t("optional")})` : t(`stat.${stat}`)}
+                              label={t(`stat.${stat}`)}
+                              required={!LINEUP_OPTIONAL_STATS.has(stat)}
                               htmlFor={fieldId(key, stat)}
                               error={statProblem}
                             >
@@ -484,11 +486,12 @@ export function LeagueGameLineupEditor({
 }
 
 /** A labelled field with its problem, when it has one, under it in red. */
-function Field({ label, htmlFor, error, children }: { label: string; htmlFor: string; error: string | null; children: ReactNode }) {
+function Field({ label, htmlFor, error, required = false, children }: { label: string; htmlFor: string; error: string | null; required?: boolean; children: ReactNode }) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <Label htmlFor={htmlFor} className={cn("truncate text-[11px] text-muted-foreground", error && "text-destructive")}>
-        {label}
+      <Label htmlFor={htmlFor} className={cn("min-w-0 gap-0.5 text-[11px] text-muted-foreground", error && "text-destructive")}>
+        <span className="truncate">{label}</span>
+        {required && <span className="shrink-0"><RequiredMark /></span>}
       </Label>
       {children}
       {error && (

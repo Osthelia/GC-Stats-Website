@@ -215,6 +215,8 @@ export function draftFromWikicode(game: WikicodeLolGame, names: ReadonlyMap<stri
 // --- Writing ------------------------------------------------------------------------------
 
 export type WikicodeLolBuildGame = {
+  /** The game number in the series, written as `mapN`. */
+  order: number;
   /** Team 1 is entrant A. Null when the side is unknown. */
   team1Side: LeagueSide | null;
   /** 1 or 2, null when nobody won. */
@@ -283,10 +285,13 @@ export function buildLolMatchWikicode(input: LolMatchWikicodeInput): string {
   if (input.patch) lines.push(`|patch=${input.patch}`);
 
   if (input.forfeitWinner === null && !scoreOnly) {
-    for (let index = 1; index <= Math.max(input.bestOf, input.games.length); index++) {
-      const game = input.games[index - 1];
+    // Numbered by game order, so a gap in the series stays a gap and a re-import matches the same games.
+    const lastOrder = input.games.reduce((max, game) => Math.max(max, game.order), 0);
+    for (let index = 1; index <= Math.max(input.bestOf, lastOrder); index++) {
+      const game = input.games.find((g) => g.order === index);
       if (game) lines.push(buildGame(index, game));
-      else lines.push(input.completed ? `|map${index}={{Map|finished=skip}}` : `|map${index}={{Map}}`);
+      // A gap before the last game was played but isn't stored here: left empty, not skipped.
+      else lines.push(input.completed && index > lastOrder ? `|map${index}={{Map|finished=skip}}` : `|map${index}={{Map}}`);
     }
   }
 

@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "Wikicode tam olarak bir '{{Match}}' içermeli.",
               "noGames": "Bu wikicode içinde oynanmış oyun bulunamadı.",
               "unknownChampions": "Wikicode içinde bilinmeyen şampiyonlar: {names}. Hiçbir şey içe aktarılmadı.",
-              "duplicateChampion": "{order}. oyun: {champion} draftta birden fazla kez geçiyor. Hiçbir şey içe aktarılmadı."
+              "duplicateChampion": "{order}. oyun: {champion} draftta birden fazla kez geçiyor. Hiçbir şey içe aktarılmadı.",
+              "championsUnavailable": "Bu yamanın şampiyon listesi şu anda kullanılamıyor, bu yüzden isimler doğrulanamıyor. Hiçbir şey içe aktarılmadı, daha sonra tekrar deneyin."
             },
             "results": {
               "forfeit": "Wikicode bir hükmen sonucu gösteriyor. Hiçbir şey içe aktarılmadı, hükmen sonucu maçta elle ayarlayın.",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "İlk pick mavi ya da kırmızı olmalıdır.",
             "invalidStep": "{step}. adım yok ya da iki kez verilmiş.",
             "unknownChampion": "{championName} şampiyon listesinde yok.",
-            "duplicateChampion": "{championName} draftta birden fazla kez var."
+            "duplicateChampion": "{championName} draftta birden fazla kez var.",
+            "invalidSide": "Henüz yerleştirilmemiş bir pick mavi ya da kırmızı tarafta olmalıdır.",
+            "championsUnavailable": "Bu yamanın şampiyon listesi şu anda kullanılamıyor, daha sonra tekrar deneyin.",
+            "invalidDraft": "Gönderilen draft geçerli değil. Sayfayı yenileyip tekrar dene."
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "Bilinmeyen şampiyon kimliği: {ids}",
               "storageUnavailable": "LoL içe aktarma depolamasına ulaşılamadı. Yapılandırmayı kontrol edip tekrar deneyin.",
               "duplicateAccount": "Aynı Riot hesabı iki kez bağlanmış. Her hesabı yalnızca bir kez bağlayın.",
-              "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın."
+              "tournamentRealm": "Bu maç turnuva realm'inde oynandı. Bunun yerine Leaguepedia'dan alın.",
+              "duplicatePerson": "Bu oyunun iki oyuncusu aynı kişiye bağlı. Her oyuncuyu farklı bir kişiye bağlayın.",
+              "matchIdMismatch": "Yüklenen oyun verisi istenen maça ait değil. Hiçbir şey kaydedilmedi.",
+              "invalidGame": "İçe aktarılacak oyun geçerli değil. Bir Leaguepedia oyunu seç veya bir Riot maç kimliği yaz."
             },
             "searchPlaceholder": "Takım, maç veya tarihe göre ara",
             "noResults": "Eşleşen maç yok",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "Oyuncu oluşturma iznin yok. Mevcut oyuncuları seç."
           },
-          "optional": "isteğe bağlı",
           "build": "Dizilim",
           "buildSet": "girildi",
           "buildUnavailable": "Bu yamanın sihirdar büyüleri, rünleri ve eşyaları yüklenemedi. Daha sonra tekrar deneyin.",

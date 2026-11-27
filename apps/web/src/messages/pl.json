@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "Wikicode musi zawierać dokładnie jeden '{{Match}}'.",
               "noGames": "Nie znaleziono rozegranych gier w tym wikicode.",
               "unknownChampions": "Nieznani championowie w wikicode: {names}. Nic nie zaimportowano.",
-              "duplicateChampion": "Gra {order}: {champion} występuje w drafcie więcej niż raz. Nic nie zaimportowano."
+              "duplicateChampion": "Gra {order}: {champion} występuje w drafcie więcej niż raz. Nic nie zaimportowano.",
+              "championsUnavailable": "Lista championów tego patcha jest teraz niedostępna, więc nie można sprawdzić nazw. Nic nie zaimportowano, spróbuj ponownie później."
             },
             "results": {
               "forfeit": "Wikicode wskazuje walkower. Nic nie zaimportowano, ustaw walkower w meczu ręcznie.",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "Pierwszy pick musi być niebieski lub czerwony.",
             "invalidStep": "Krok {step} nie istnieje albo jest podany dwa razy.",
             "unknownChampion": "{championName} nie ma na liście mistrzów.",
-            "duplicateChampion": "{championName} występuje w drafcie więcej niż raz."
+            "duplicateChampion": "{championName} występuje w drafcie więcej niż raz.",
+            "invalidSide": "Pick, który nie został jeszcze umieszczony, musi być po stronie niebieskiej lub czerwonej.",
+            "championsUnavailable": "Lista championów tego patcha jest teraz niedostępna, spróbuj ponownie później.",
+            "invalidDraft": "Wysłany draft jest nieprawidłowy. Odśwież stronę i spróbuj ponownie."
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "Nieznane identyfikatory mistrzów: {ids}",
               "storageUnavailable": "Nie udało się połączyć z magazynem importów LoL. Sprawdź konfigurację i spróbuj ponownie.",
               "duplicateAccount": "To samo konto Riot jest powiązane dwa razy. Powiąż każde konto tylko raz.",
-              "tournamentRealm": "Ta gra odbyła się w realmie turniejowym. Pobierz ją z Leaguepedia."
+              "tournamentRealm": "Ta gra odbyła się w realmie turniejowym. Pobierz ją z Leaguepedia.",
+              "duplicatePerson": "Dwóch graczy tej gry jest przypisanych do tej samej osoby. Przypisz każdego gracza do innej osoby.",
+              "matchIdMismatch": "Wczytane dane gry nie dotyczą żądanego meczu. Nic nie zapisano.",
+              "invalidGame": "Gra do zaimportowania jest nieprawidłowa. Wybierz grę z Leaguepedia lub wpisz identyfikator meczu Riot."
             },
             "searchPlaceholder": "Szukaj po drużynie, meczu lub dacie",
             "noResults": "Brak pasujących meczów",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "Nie masz uprawnień do tworzenia graczy. Wybierz istniejących."
           },
-          "optional": "opcjonalnie",
           "build": "Build",
           "buildSet": "ustawiony",
           "buildUnavailable": "Nie udało się wczytać czarów przywoływacza, run i przedmiotów tego patcha. Spróbuj później.",

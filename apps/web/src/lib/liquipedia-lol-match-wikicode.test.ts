@@ -210,6 +210,7 @@ describe("buildLolMatchWikicode", () => {
     patch: "26.13",
   };
   const game: WikicodeLolBuildGame = {
+    order: 1,
     team1Side: "red",
     winner: 1,
     durationSeconds: 2201,
@@ -220,7 +221,7 @@ describe("buildLolMatchWikicode", () => {
   };
 
   it("writes the match, a played game and the skipped third game", () => {
-    const code = buildLolMatchWikicode({ ...base, games: [game, { ...game, team1Side: "blue", winner: 1 }] });
+    const code = buildLolMatchWikicode({ ...base, games: [game, { ...game, order: 2, team1Side: "blue", winner: 1 }] });
     expect(code).toContain("{{Match\n");
     expect(code).toContain("|bestof=3");
     expect(code).toContain("|opponent1={{TeamOpponent|Rising Bees}}");
@@ -238,6 +239,13 @@ describe("buildLolMatchWikicode", () => {
     expect(code).toContain("|winner=1");
     expect(code).toContain("|map3={{Map|finished=skip}}");
     expect(code.endsWith("}}")).toBe(true);
+  });
+
+  it("numbers the maps by game order and leaves a gap empty", () => {
+    const code = buildLolMatchWikicode({ ...base, games: [game, { ...game, order: 3, team1Side: "blue" }] });
+    expect(code).toContain("|map2={{Map}}");
+    expect(code).toContain("|map3={{Map\n");
+    expect(code).toContain("|team1side=blue");
   });
 
   it("keeps an empty ban slot between bans and drops the empty ones at the end", () => {

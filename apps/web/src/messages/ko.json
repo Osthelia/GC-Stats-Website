@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "위키코드에는 '{{Match}}'가 정확히 하나만 있어야 합니다.",
               "noGames": "이 위키코드에서 진행된 게임을 찾을 수 없습니다.",
               "unknownChampions": "위키코드에 알 수 없는 챔피언이 있습니다: {names}. 아무것도 가져오지 않았습니다.",
-              "duplicateChampion": "{order}번 게임: {champion}이(가) 드래프트에 두 번 이상 나타납니다. 아무것도 가져오지 않았습니다."
+              "duplicateChampion": "{order}번 게임: {champion}이(가) 드래프트에 두 번 이상 나타납니다. 아무것도 가져오지 않았습니다.",
+              "championsUnavailable": "이 패치의 챔피언 목록을 현재 사용할 수 없어 이름을 확인할 수 없습니다. 아무것도 가져오지 않았습니다. 나중에 다시 시도하세요."
             },
             "results": {
               "forfeit": "위키코드가 기권을 나타냅니다. 아무것도 가져오지 않았습니다. 매치의 기권은 직접 설정하세요.",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "퍼스트 픽은 블루 또는 레드여야 합니다.",
             "invalidStep": "{step} 단계가 없거나 두 번 지정되었습니다.",
             "unknownChampion": "{championName}은(는) 챔피언 목록에 없습니다.",
-            "duplicateChampion": "{championName}이(가) 드래프트에 두 번 이상 있습니다."
+            "duplicateChampion": "{championName}이(가) 드래프트에 두 번 이상 있습니다.",
+            "invalidSide": "아직 배치되지 않은 픽은 블루 또는 레드 진영이어야 합니다.",
+            "championsUnavailable": "이 패치의 챔피언 목록을 현재 사용할 수 없습니다. 나중에 다시 시도하세요.",
+            "invalidDraft": "전송된 드래프트가 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도해 주세요."
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "알 수 없는 챔피언 ID: {ids}",
               "storageUnavailable": "LoL 가져오기 저장소에 연결할 수 없습니다. 설정을 확인한 뒤 다시 시도하세요.",
               "duplicateAccount": "같은 Riot 계정이 두 번 연결되었습니다. 계정마다 한 번만 연결하세요.",
-              "tournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되었습니다. 대신 Leaguepedia에서 가져오세요."
+              "tournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되었습니다. 대신 Leaguepedia에서 가져오세요.",
+              "duplicatePerson": "이 게임의 두 선수가 같은 사람과 연결되어 있습니다. 각 선수를 서로 다른 사람과 연결하세요.",
+              "matchIdMismatch": "불러온 게임 데이터가 요청한 매치의 것이 아닙니다. 아무것도 저장되지 않았습니다.",
+              "invalidGame": "가져올 게임이 올바르지 않습니다. Leaguepedia 게임을 선택하거나 Riot 매치 ID를 입력해 주세요."
             },
             "searchPlaceholder": "팀, 경기 또는 날짜로 검색",
             "noResults": "일치하는 경기가 없습니다",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "선수를 만들 권한이 없습니다. 기존 선수를 선택하세요."
           },
-          "optional": "선택",
           "build": "빌드",
           "buildSet": "입력됨",
           "buildUnavailable": "이 패치의 소환사 주문, 룬, 아이템을 불러오지 못했습니다. 나중에 다시 시도하세요.",

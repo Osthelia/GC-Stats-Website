@@ -25,7 +25,7 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
   if (bases.length === 0) return [];
 
   const gameRows = await db
-    .select({ id: games.id, matchId: games.matchId, winnerEntrantId: games.winnerEntrantId, durationSeconds: games.durationSeconds, draftBlueEntrantId: games.draftBlueEntrantId })
+    .select({ id: games.id, matchId: games.matchId, order: games.order, winnerEntrantId: games.winnerEntrantId, durationSeconds: games.durationSeconds, draftBlueEntrantId: games.draftBlueEntrantId })
     .from(games)
     .where(inArray(games.matchId, matchIds))
     .orderBy(asc(games.matchId), asc(games.order));
@@ -66,6 +66,7 @@ async function buildWikicodes(game: GameSlug, matchIds: number[]): Promise<Liqui
       const team1 = teamOf(entrantAId);
       const team2 = teamOf(entrantBId);
       return {
+        order: row.order,
         team1Side,
         winner: row.winnerEntrantId === null ? null : row.winnerEntrantId === entrantAId ? 1 : row.winnerEntrantId === entrantBId ? 2 : null,
         durationSeconds: row.durationSeconds,

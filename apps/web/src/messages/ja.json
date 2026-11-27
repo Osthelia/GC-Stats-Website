@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "wikicodeには'{{Match}}'がちょうど1つ含まれている必要があります。",
               "noGames": "このwikicodeにプレイ済みのゲームが見つかりません。",
               "unknownChampions": "wikicodeに不明なチャンピオンがあります: {names}。何もインポートされませんでした。",
-              "duplicateChampion": "ゲーム {order}: {champion} がドラフト内に複数回現れます。何もインポートされませんでした。"
+              "duplicateChampion": "ゲーム {order}: {champion} がドラフト内に複数回現れます。何もインポートされませんでした。",
+              "championsUnavailable": "このパッチのチャンピオン一覧が現在利用できないため、名前を確認できません。何もインポートされませんでした。しばらくしてから再度お試しください。"
             },
             "results": {
               "forfeit": "wikicodeは不戦勝を示しています。何もインポートされませんでした。マッチの不戦勝は手動で設定してください。",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "ファーストピックはブルーかレッドである必要があります。",
             "invalidStep": "ステップ {step} は存在しないか、重複しています。",
             "unknownChampion": "{championName} はチャンピオン一覧にありません。",
-            "duplicateChampion": "{championName} がドラフト内に複数あります。"
+            "duplicateChampion": "{championName} がドラフト内に複数あります。",
+            "invalidSide": "まだ配置されていないピックは、ブルー側かレッド側である必要があります。",
+            "championsUnavailable": "このパッチのチャンピオン一覧が現在利用できません。しばらくしてから再度お試しください。",
+            "invalidDraft": "送信されたドラフトが無効です。ページを再読み込みして、もう一度お試しください。"
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "不明なチャンピオンID: {ids}",
               "storageUnavailable": "LoL インポート用のストレージに接続できません。設定を確認して、もう一度お試しください。",
               "duplicateAccount": "同じ Riot アカウントが2回紐づけられています。アカウントごとに1回だけ紐づけてください。",
-              "tournamentRealm": "このゲームはトーナメントレルムで行われました。代わりに Leaguepedia から取得してください。"
+              "tournamentRealm": "このゲームはトーナメントレルムで行われました。代わりに Leaguepedia から取得してください。",
+              "duplicatePerson": "このゲームの2人のプレイヤーが同じ人物に紐づけられています。各プレイヤーを別の人物に紐づけてください。",
+              "matchIdMismatch": "読み込んだゲームデータは、リクエストした試合のものではありません。何も保存されませんでした。",
+              "invalidGame": "インポートするゲームが無効です。Leaguepedia のゲームを選択するか、Riot のマッチ ID を入力してください。"
             },
             "searchPlaceholder": "チーム・試合・日付で検索",
             "noResults": "一致する試合はありません",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "選手を作成する権限がありません。既存の選手を選んでください。"
           },
-          "optional": "任意",
           "build": "ビルド",
           "buildSet": "入力済み",
           "buildUnavailable": "このパッチのサモナースペル、ルーン、アイテムを読み込めませんでした。後でもう一度お試しください。",

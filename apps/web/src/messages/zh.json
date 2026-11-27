@@ -4497,7 +4497,8 @@
               "oneMatchOnly": "wikicode 必须恰好包含一个 '{{Match}}'。",
               "noGames": "在此 wikicode 中未找到已进行的对局。",
               "unknownChampions": "wikicode 中有未知英雄：{names}。未导入任何内容。",
-              "duplicateChampion": "第 {order} 局：{champion} 在选角中出现了多次。未导入任何内容。"
+              "duplicateChampion": "第 {order} 局：{champion} 在选角中出现了多次。未导入任何内容。",
+              "championsUnavailable": "该版本的英雄列表目前不可用，因此无法检查名称。未导入任何内容，请稍后重试。"
             },
             "results": {
               "forfeit": "wikicode 显示为弃权。未导入任何内容，请手动设置该比赛的弃权。",
@@ -4732,7 +4733,10 @@
             "invalidFirstPick": "先选必须是蓝方或红方。",
             "invalidStep": "第 {step} 步不存在或被重复指定。",
             "unknownChampion": "{championName} 不在英雄列表中。",
-            "duplicateChampion": "{championName} 在选角中出现了不止一次。"
+            "duplicateChampion": "{championName} 在选角中出现了不止一次。",
+            "invalidSide": "尚未放置的选择必须在蓝方或红方。",
+            "championsUnavailable": "该版本的英雄列表目前不可用，请稍后重试。",
+            "invalidDraft": "提交的选角内容无效。请刷新页面后重试。"
           }
         },
         "games": {
@@ -4856,7 +4860,10 @@
               "unknownChampions": "未知的英雄 ID：{ids}",
               "storageUnavailable": "无法连接 LoL 导入存储，请检查配置后重试。",
               "duplicateAccount": "同一个 Riot 账号被关联了两次。每个账号只关联一次。",
-              "tournamentRealm": "该对局在赛事服务器进行，请改从 Leaguepedia 获取。"
+              "tournamentRealm": "该对局在赛事服务器进行，请改从 Leaguepedia 获取。",
+              "duplicatePerson": "该局的两名选手关联到了同一个人员。请将每名选手关联到不同的人员。",
+              "matchIdMismatch": "加载的对局数据不是所请求的比赛。未存储任何内容。",
+              "invalidGame": "要导入的对局无效。请选择 Leaguepedia 对局，或输入 Riot 对战 ID。"
             },
             "searchPlaceholder": "按队伍、局数或日期搜索",
             "noResults": "没有匹配的比赛",
@@ -4960,7 +4967,6 @@
             },
             "createNotAllowed": "你无权创建选手，请选择现有选手。"
           },
-          "optional": "可选",
           "build": "出装",
           "buildSet": "已填写",
           "buildUnavailable": "无法加载此版本的召唤师技能、符文和装备。请稍后重试。",

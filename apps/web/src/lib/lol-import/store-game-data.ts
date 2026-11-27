@@ -157,10 +157,11 @@ export async function storeGameData(input: StoreGameInput): Promise<{ gameId: nu
     const dragonTypes = computeDragonTypes(rows);
 
     const players = summary.players.map((p) => ({ ...p, ...(p.personId === null ? undefined : laneDiffs.get(p.personId)) }));
+    // When the timeline doesn't say (chronobreak, no kill events), the match's own objective flags do.
     const teams = summary.teams.map((t) => ({
       ...t,
-      firstBlood: firstBlood?.side === t.side,
-      firstTower: firstTower?.side === t.side,
+      firstBlood: firstBlood ? firstBlood.side === t.side : (t.objectives.champion?.first ?? false),
+      firstTower: firstTower ? firstTower.side === t.side : (t.objectives.tower?.first ?? false),
       objectiveTimings: objectiveTimings[t.side],
       dragonTypes: dragonTypes[t.side],
     }));
