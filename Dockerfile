@@ -3,6 +3,7 @@
 # GC-Stats V2 (apps/web), npm workspaces monorepo build.
 #
 # Stages:
+#   runtime  -> base image of the final stages, with the pending Debian security fixes
 #   deps     -> installs the full workspace tree (incl. devDependencies)
 #   builder  -> runs `next build` (output: "standalone", see next.config.mjs)
 #   migrator -> drizzle-orm + pg only, applies packages/db/drizzle and syncs the permissions (no drizzle-kit)
@@ -13,12 +14,17 @@ ARG NODE_VERSION=24-slim
 FROM node:${NODE_VERSION} AS base
 WORKDIR /repo
 
+# The official Node image can lag behind Debian security updates, which Trivy flags.
+FROM node:${NODE_VERSION} AS runtime
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
+
 FROM base AS deps
 COPY package.json package-lock.json ./
 COPY apps/web/package.json apps/web/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY packages/storage/package.json packages/storage/package.json
 COPY packages/map-stats-engine/package.json packages/map-stats-engine/package.json
+COPY packages/lol-stats-engine/package.json packages/lol-stats-engine/package.json
 # Workspace layout must exist before `npm ci` so symlinks land correctly.
 RUN npm ci
 
@@ -42,7 +48,7 @@ WORKDIR /app
 COPY packages/db/migrate/package.json packages/db/migrate/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
-FROM node:${NODE_VERSION} AS migrator
+FROM runtime AS migrator
 ENV NODE_ENV=production
 # npm and corepack ship their own dependency copies and are not needed at runtime.
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
@@ -55,7 +61,7 @@ COPY --chown=node:node packages/db/src/permissions.ts ./permissions.ts
 USER node
 CMD ["node", "migrate.mjs"]
 
-FROM node:${NODE_VERSION} AS runner
+FROM runtime AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

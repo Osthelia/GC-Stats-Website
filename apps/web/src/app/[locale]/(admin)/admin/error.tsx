@@ -9,6 +9,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { captureBoundaryError } from "@/lib/monitoring/capture-boundary-error";
 import { ServerCrash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -26,6 +27,7 @@ export default function AdminError({
 
   useEffect(() => {
     console.error(error);
+    captureBoundaryError(error);
   }, [error]);
 
   return (
