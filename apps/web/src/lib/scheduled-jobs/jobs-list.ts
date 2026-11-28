@@ -3,7 +3,8 @@
  *
  * Registry of all scheduled jobs (cron expression + run function) and the
  * dispatcher that runs the jobs due for a given cron tick, called by the
- * /api/internal/cron route (Kubernetes CronJobs) and by registry.ts.
+ * /api/internal/cron route (Kubernetes CronJobs) and by registry.ts. Each
+ * dispatch reports to a Sentry cron monitor, see cron-monitor.ts.
  *
  * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
  * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
@@ -27,6 +28,8 @@ import { pruneWebhookLogs } from "./jobs/prune-webhook-logs";
 import { dispatchDiscordBot } from "./jobs/dispatch-discord-bot";
 import { rosterWatch } from "./jobs/roster-watch";
 import { isNoopSummary } from "./for-each-game";
+import { startCronCheckIn } from "./cron-monitor";
+import * as Sentry from "@sentry/nextjs";
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string> };
 // No node-cron import here on purpose: registry.ts (local dev only) is the only file allowed to import it.
 export const jobs: ScheduledJob[] = [
@@ -50,12 +53,17 @@ export const jobs: ScheduledJob[] = [
 ];
 /** Runs every job matching this cron expression, sequentially, swallowing individual failures. Used by the /api/internal/cron route. */
 export async function runJobsForCron(cronExpr: string): Promise<void> {
+  const finishCheckIn = startCronCheckIn(cronExpr);
+  let failed = false;
   for (const job of jobs.filter((j) => j.cron === cronExpr)) {
     try {
       const summary = await job.run();
       if (!isNoopSummary(summary)) console.log("[scheduled:%s] %s", job.name, summary);
     } catch (error) {
       console.error("[scheduled:%s] failed", job.name, error);
+      Sentry.captureException(error, { tags: { cron_job: job.name } });
+      failed = true;
     }
   }
+  finishCheckIn(failed ? "error" : "ok");
 }

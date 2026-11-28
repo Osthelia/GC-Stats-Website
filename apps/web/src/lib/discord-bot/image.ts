@@ -26,6 +26,9 @@ const ASSET_MAX_BYTES = 10 * 1024 * 1024;
 // Rendered at twice the canvas size so the image stays sharp on high density screens.
 const PIXEL_RATIO = 2;
 
+// The libvips operation cache keeps decoded pictures in memory between renders, for little speed in return.
+sharp.cache(false);
+
 export type AlertImageData = {
   /** Texts and raw values of the alert, the source of text layers and conditions. */
   fields: Record<string, string>;

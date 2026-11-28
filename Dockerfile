@@ -67,6 +67,9 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
+# Image processing (sharp) allocates from many threads: with glibc's default arenas the freed memory is not given back
+# and the process stays at its peak.
+ENV MALLOC_ARENA_MAX=2
 
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
