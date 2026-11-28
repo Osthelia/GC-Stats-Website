@@ -82,7 +82,8 @@ export async function getAboutTeam(): Promise<AboutTeamMember[]> {
       };
       byUser.set(row.userId, member);
     }
-    member.roleNames.push(row.roleName);
+    // A role held for several games comes back once per assignment.
+    if (!member.roleNames.includes(row.roleName)) member.roleNames.push(row.roleName);
   }
   return [...byUser.values()].sort((a, b) => {
     // Uncategorized members sort after every category, mirroring "no category" reading as least specific.

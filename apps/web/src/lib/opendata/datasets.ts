@@ -49,7 +49,7 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       t.secondary_country_code,
       t.is_active,
       (select count(distinct rm.person_id)::int from val_roster_memberships rm
-        join people rp on rp.id = rm.person_id and not rp.is_ghost
+        join val_people rp on rp.id = rm.person_id and not rp.is_ghost
         where rm.team_id = t.id and upper_inf(rm.period) and not rm.has_left and rm.role in ('player', 'player-igl')) as players_count,
       (select count(*)::int from val_entrants e
         join val_tournaments et on et.id = e.tournament_id and et.active and not et.is_ghost
@@ -77,7 +77,7 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
       p.vlr_id,
       p.liquipedia_link,
       p.socials
-    from people p
+    from val_people p
     left join lateral (
       select rm.team_id, tm.name as team_name, rm.role
       from val_roster_memberships rm
@@ -184,7 +184,7 @@ const BASE_QUERIES: Record<OpenDataDataset, SQL> = {
     join val_stages s on s.id = c.stage_id
     join val_tournaments t on t.id = s.tournament_id and t.active and not t.is_ghost
     join val_entrants e on e.id = ps.entrant_id
-    left join people p on p.id = ps.person_id`,
+    left join val_people p on p.id = ps.person_id`,
 };
 const SEARCH_COLUMNS: Record<OpenDataDataset, string[]> = {
   tournaments: ["name", "region", "category", "location", "organizer_name"],

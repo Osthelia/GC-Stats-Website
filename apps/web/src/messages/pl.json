@@ -4842,6 +4842,8 @@
             "reprocess": "Przetwórz ponownie",
             "success": "Mecz zapisany z Leaguepedia",
             "error": {
+              "invalidMapping": "Przesłane powiązania graczy są nieprawidłowe. Odśwież stronę i spróbuj ponownie.",
+              "handleTooLong": "Nazwa nowego gracza jest zbyt długa (maksymalnie {max} znaków).",
               "noData": "Ten mecz nie ma danych V5 na Leaguepedia.",
               "notInBucket": "Tego meczu nie ma jeszcze w magazynie. Najpierw go pobierz.",
               "pageInvalid": "Strony Leaguepedia tego meczu nie zawierają poprawnych danych meczu.",
@@ -4943,6 +4945,7 @@
           "saving": "Zapisywanie…",
           "saved": "Ustawienie zapisane.",
           "error": {
+            "invalidInput": "Przesłany skład jest nieprawidłowy. Odśwież stronę i spróbuj ponownie.",
             "notFound": "Ta gra nie należy do meczu.",
             "entrantsUnset": "Najpierw trzeba ustawić obie drużyny meczu.",
             "importedGame": "Ta gra ma dane Riot lub Leaguepedii; jej ustawienia nie można zmienić ręcznie.",

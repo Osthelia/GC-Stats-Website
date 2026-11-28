@@ -4846,6 +4846,8 @@
             "reprocess": "Reprocesar",
             "success": "Partida guardada desde Leaguepedia",
             "error": {
+              "invalidMapping": "Las vinculaciones de jugadores enviadas no son válidas. Recarga la página e inténtalo de nuevo.",
+              "handleTooLong": "El nombre de un jugador nuevo es demasiado largo ({max} caracteres como máximo).",
               "noData": "Esta partida no tiene datos V5 en Leaguepedia.",
               "notInBucket": "Esta partida aún no está en el almacén. Cárgala primero.",
               "pageInvalid": "Las páginas de Leaguepedia de esta partida no son datos de partida válidos.",
@@ -4947,6 +4949,7 @@
           "saving": "Guardando…",
           "saved": "Alineación guardada.",
           "error": {
+            "invalidInput": "La alineación enviada no es válida. Recarga la página e inténtalo de nuevo.",
             "notFound": "Esta partida no forma parte del partido.",
             "entrantsUnset": "Primero hay que definir los dos equipos del partido.",
             "importedGame": "Esta partida tiene datos de Riot o Leaguepedia; su alineación no se puede cambiar a mano.",

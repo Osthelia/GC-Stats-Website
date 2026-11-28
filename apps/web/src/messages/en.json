@@ -4846,6 +4846,8 @@
             "reprocess": "Reprocess",
             "success": "Game stored from Leaguepedia",
             "error": {
+              "invalidMapping": "The player links sent are invalid. Reload the page and try again.",
+              "handleTooLong": "A new player name is too long ({max} characters at most).",
               "noData": "This game has no V5 data on Leaguepedia.",
               "notInBucket": "This game is not in the bucket yet. Fetch it first.",
               "pageInvalid": "Leaguepedia's pages for this game are not valid match data.",
@@ -4947,6 +4949,7 @@
           "saving": "Saving…",
           "saved": "Lineup saved.",
           "error": {
+            "invalidInput": "The lineup sent is invalid. Reload the page and try again.",
             "notFound": "This game isn't part of the match.",
             "entrantsUnset": "Both teams of the match must be set first.",
             "importedGame": "This game has Riot or Leaguepedia data; its lineup can't be changed by hand.",

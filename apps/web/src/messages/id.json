@@ -4847,6 +4847,8 @@
             "reprocess": "Proses ulang",
             "success": "Game disimpan dari Leaguepedia",
             "error": {
+              "invalidMapping": "Tautan pemain yang dikirim tidak valid. Muat ulang halaman lalu coba lagi.",
+              "handleTooLong": "Nama pemain baru terlalu panjang (maksimal {max} karakter).",
               "noData": "Game ini tidak memiliki data V5 di Leaguepedia.",
               "notInBucket": "Game ini belum ada di bucket. Ambil terlebih dahulu.",
               "pageInvalid": "Halaman Leaguepedia untuk game ini bukan data pertandingan yang valid.",
@@ -4947,6 +4949,7 @@
           "saving": "Menyimpan…",
           "saved": "Lineup disimpan.",
           "error": {
+            "invalidInput": "Susunan pemain yang dikirim tidak valid. Muat ulang halaman lalu coba lagi.",
             "notFound": "Game ini bukan bagian dari pertandingan.",
             "entrantsUnset": "Kedua tim pertandingan harus ditentukan dulu.",
             "importedGame": "Game ini punya data Riot atau Leaguepedia; lineup-nya tidak bisa diubah manual.",

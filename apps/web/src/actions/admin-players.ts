@@ -401,13 +401,19 @@ export async function deletePlayer(game: GameSlug, playerId: number): Promise<De
   const [existing] = await db.select({ id: people.id, handle: people.handle }).from(people).where(eq(people.id, playerId)).limit(1);
   if (!existing) return { ok: false, error: "notFound" };
 
-  const outcome = await db.transaction(async (tx) => {
-    const removed = await removePersonFromGame(tx, game, playerId);
-    if (removed === "inUse") return removed;
-    await logActivity({ game, subject: "player", subjectId: playerId, event: "deleted", description: `Deleted player #${playerId} (${existing.handle})`, actorUserId }, tx);
-    return removed;
-  });
-  if (outcome === "inUse") return { ok: false, error: "inUse" };
+  try {
+    const outcome = await db.transaction(async (tx) => {
+      const removed = await removePersonFromGame(tx, game, playerId);
+      if (removed === "inUse") return removed;
+      await logActivity({ game, subject: "player", subjectId: playerId, event: "deleted", description: `Deleted player #${playerId} (${existing.handle})`, actorUserId }, tx);
+      return removed;
+    });
+    if (outcome === "inUse") return { ok: false, error: "inUse" };
+  } catch (err) {
+    // A reference added meanwhile, or from another game, fails its foreign key.
+    if ((err as { cause?: { code?: string } }).cause?.code === "23503") return { ok: false, error: "inUse" };
+    throw err;
+  }
 
   return { ok: true };
 }

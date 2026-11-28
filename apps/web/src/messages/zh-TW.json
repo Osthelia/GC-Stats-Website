@@ -4847,6 +4847,8 @@
             "reprocess": "重新處理",
             "success": "已從 Leaguepedia 儲存對局",
             "error": {
+              "invalidMapping": "送出的選手連結無效。請重新載入頁面後再試一次。",
+              "handleTooLong": "新選手名稱過長（最多 {max} 個字元）。",
               "noData": "此對局在 Leaguepedia 上沒有 V5 資料。",
               "notInBucket": "此對局尚未在 bucket 中，請先取得。",
               "pageInvalid": "Leaguepedia 上此對局的頁面不是有效的比賽資料。",
@@ -4947,6 +4949,7 @@
           "saving": "儲存中…",
           "saved": "出賽陣容已儲存。",
           "error": {
+            "invalidInput": "送出的陣容無效。請重新載入頁面後再試一次。",
             "notFound": "這一局不屬於該比賽。",
             "entrantsUnset": "請先設定比賽的兩支隊伍。",
             "importedGame": "這一局有 Riot 或 Leaguepedia 資料，無法手動修改出賽陣容。",

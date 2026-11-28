@@ -11,7 +11,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, eq, inArray, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, or, sql } from "drizzle-orm";
 import type { adminDb } from "@gc-stats/db/client";
 import { logos, sharedPeople, gameTables, lolGameEventsRaw, lolGameFramesRaw, lolGamePlayerStats, lolPersonAccounts, valorantTablesOf } from "@gc-stats/db";
 import { GAMES, type GameSlug } from "@gc-stats/db/game";
@@ -120,7 +120,7 @@ async function isPersonInUse(client: PersonWriteClient, game: GameSlug, personId
 }
 
 /** What the merge screen can move, and removing the person would delete or leave behind. */
-export type PersonRemainingData = { category: "teamHistory" | "organizations" | "production" | "news" | "logos" | "riotAccounts"; count: number };
+export type PersonRemainingData = { category: "teamHistory" | "organizations" | "production" | "news" | "logos" | "riotAccounts" | "linkedAccount"; count: number };
 
 export async function listRemainingPersonData(client: PersonWriteClient, game: GameSlug, personId: number): Promise<PersonRemainingData[]> {
   const { rosterMemberships, organizationMemberships, productionCredits, newsRelations } = gameTables(game);
@@ -130,10 +130,14 @@ export async function listRemainingPersonData(client: PersonWriteClient, game: G
   const credits = await client.select({ id: productionCredits.id }).from(productionCredits).where(eq(productionCredits.personId, personId));
   const news = await client.select({ id: newsRelations.id }).from(newsRelations).where(and(eq(newsRelations.relatableType, "person"), eq(newsRelations.relatableId, personId)));
   const accounts = game === "lol" ? await client.select({ puuid: lolPersonAccounts.puuid }).from(lolPersonAccounts).where(eq(lolPersonAccounts.personId, personId)) : [];
-  // Logos belong to the identity, they are only lost when it goes.
-  const ownLogos = (await hasProfileElsewhere(client, game, personId))
-    ? []
-    : await client.select({ id: logos.id }).from(logos).where(and(eq(logos.entityType, "person"), eq(logos.entityId, personId)));
+  // Logos and the linked account belong to the identity, they are only lost when it goes.
+  const identityGoes = !(await hasProfileElsewhere(client, game, personId));
+  const ownLogos = identityGoes
+    ? await client.select({ id: logos.id }).from(logos).where(and(eq(logos.entityType, "person"), eq(logos.entityId, personId)))
+    : [];
+  const linked = identityGoes
+    ? await client.select({ id: sharedPeople.id }).from(sharedPeople).where(and(eq(sharedPeople.id, personId), isNotNull(sharedPeople.userId)))
+    : [];
 
   const found: PersonRemainingData[] = [
     { category: "teamHistory", count: rosters.length },
@@ -142,6 +146,7 @@ export async function listRemainingPersonData(client: PersonWriteClient, game: G
     { category: "news", count: news.length },
     { category: "logos", count: ownLogos.length },
     { category: "riotAccounts", count: accounts.length },
+    { category: "linkedAccount", count: linked.length },
   ];
   return found.filter((entry) => entry.count > 0);
 }

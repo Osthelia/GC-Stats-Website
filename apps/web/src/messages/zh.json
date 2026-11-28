@@ -4842,6 +4842,8 @@
             "reprocess": "重新处理",
             "success": "已从 Leaguepedia 保存该局",
             "error": {
+              "invalidMapping": "提交的选手关联无效。请刷新页面后重试。",
+              "handleTooLong": "新选手名称过长（最多 {max} 个字符）。",
               "noData": "该局在 Leaguepedia 上没有 V5 数据。",
               "notInBucket": "该局尚未在存储中，请先获取。",
               "pageInvalid": "该局的 Leaguepedia 页面不是有效的比赛数据。",
@@ -4943,6 +4945,7 @@
           "saving": "保存中…",
           "saved": "出场阵容已保存。",
           "error": {
+            "invalidInput": "提交的阵容无效。请刷新页面后重试。",
             "notFound": "这一局不属于该比赛。",
             "entrantsUnset": "请先设置比赛的两支队伍。",
             "importedGame": "这一局有 Riot 或 Leaguepedia 数据，不能手动修改出场阵容。",

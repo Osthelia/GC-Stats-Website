@@ -27,7 +27,7 @@ import { getAdminMatch, type AdminMatchDetail } from "@/lib/admin-matches";
 import { maybeAutoCompleteMatchFromMaps } from "@/lib/bracket/auto-complete-match";
 import { diffChanges, logActivity } from "@/lib/activity-log";
 import { ensurePatchCatalog, fetchChampionNamesForPatch, getBuildOptions } from "@/lib/data-dragon-client";
-import { buildHasParts, LINEUP_STAT_KEYS, lineupHasStats, lineupProblem, storedBuild, type LineupInput, type LineupProblem } from "@/lib/league-lineup-rules";
+import { buildHasParts, isLineupInput, LINEUP_STAT_KEYS, lineupHasStats, lineupProblem, storedBuild, type LineupInput, type LineupProblem } from "@/lib/league-lineup-rules";
 import { buildCatalogOf } from "@/lib/league-build-options";
 import { createPerson, ensureGameProfiles } from "@/lib/person-service";
 import { WIKICODE_MAX_LENGTH } from "@/lib/wikicode-import";
@@ -532,7 +532,7 @@ export async function importLeagueMatchWikicode(game: GameSlug, matchId: number,
 // optionally the scoreboard. It is the lowest-priority source: an imported game can't get one, and a later import
 // replaces it. A lineup without a scoreboard is stored with `has_stats` false, so it never lowers an average.
 
-export type LeagueLineupError = { kind: "notFound" } | { kind: "createNotAllowed" } | { kind: "entrantsUnset" } | { kind: "importedGame" } | { kind: "unknownPerson" } | { kind: "lineupProblem"; problem: LineupProblem };
+export type LeagueLineupError = { kind: "notFound" } | { kind: "createNotAllowed" } | { kind: "entrantsUnset" } | { kind: "importedGame" } | { kind: "invalidInput" } | { kind: "unknownPerson" } | { kind: "lineupProblem"; problem: LineupProblem };
 export type LeagueLineupResult = { ok: true } | { ok: false; error: LeagueLineupError };
 
 /** Replaces the lineup of a game entered by hand. An empty lineup removes it. */
@@ -540,6 +540,7 @@ export async function saveLeagueGameLineup(game: GameSlug, tournamentId: number,
   if (!gameHasSeriesGames(game)) return { ok: false, error: { kind: "notFound" } };
   const access = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   const actorUserId = access.userId;
+  if (!isLineupInput(input)) return { ok: false, error: { kind: "invalidInput" } };
   if (input.players.some((player) => "newHandle" in player.person) && !hasAccess(access, PERMISSIONS.playersCreate)) return { ok: false, error: { kind: "createNotAllowed" } };
   const match = await loadMatchOfTournament(game, tournamentId, matchId);
   if (!match) return { ok: false, error: { kind: "notFound" } };

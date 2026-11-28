@@ -194,6 +194,7 @@ export function LeagueGameDialog({
             : t(`gameImport.error.${error.kind}`, {
                 count: error.kind === "missingPlayers" ? error.count : 0,
                 ids: error.kind === "unknownChampions" ? error.ids.join(", ") : "",
+                max: error.kind === "handleTooLong" ? error.max : 0,
               })
         );
         return;

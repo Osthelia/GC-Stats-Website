@@ -4842,6 +4842,8 @@
             "reprocess": "다시 처리",
             "success": "Leaguepedia에서 경기를 저장했습니다",
             "error": {
+              "invalidMapping": "전송된 선수 연결 정보가 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도하세요.",
+              "handleTooLong": "새 선수 이름이 너무 깁니다(최대 {max}자).",
               "noData": "이 경기는 Leaguepedia에 V5 데이터가 없습니다.",
               "notInBucket": "이 경기는 아직 저장소에 없습니다. 먼저 가져오세요.",
               "pageInvalid": "이 경기의 Leaguepedia 페이지는 올바른 경기 데이터가 아닙니다.",
@@ -4943,6 +4945,7 @@
           "saving": "저장 중…",
           "saved": "출전 명단을 저장했습니다.",
           "error": {
+            "invalidInput": "전송된 라인업이 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도하세요.",
             "notFound": "이 게임은 경기에 속하지 않습니다.",
             "entrantsUnset": "먼저 경기의 두 팀을 모두 설정해야 합니다.",
             "importedGame": "이 게임에는 Riot 또는 Leaguepedia 데이터가 있어 출전 명단을 직접 바꿀 수 없습니다.",

@@ -45,6 +45,7 @@ import { getChampionCatalog } from "@/lib/data-dragon-client";
 import { getLolMatch, getLolTimeline, relayProblem, renewLolMatch, renewLolTimeline } from "@/lib/lol-relay-client";
 import type { RelayProblem } from "@/lib/riot-errors";
 import type { RiotRelayError } from "@/lib/riot-relay-transport";
+import { LINEUP_HANDLE_MAX_LENGTH } from "@/lib/league-lineup-rules";
 import { createPerson, ensureGameProfile, type PersonWriteClient } from "@/lib/person-service";
 import { getEntrantPersonIds } from "@/lib/map-fetch/identity-resolution";
 import { entrantForName, type SeriesEntrant } from "@/lib/lol-import/series-entrants";
@@ -73,6 +74,8 @@ export type GameImportError =
   | { kind: "accountConflict"; puuid: string }
   | { kind: "duplicateAccount" }
   | { kind: "duplicatePerson" }
+  | { kind: "invalidMapping" }
+  | { kind: "handleTooLong"; max: number }
   | { kind: "matchIdMismatch" }
   | { kind: "invalidGame" }
   | { kind: "invalidUpload"; errors: string[] }
@@ -249,6 +252,9 @@ export async function commitGame(input: CommitInput): Promise<CommitResult> {
   if (!isGameRef(input.game)) return { ok: false, error: { kind: "invalidGame" } };
   if (!Number.isInteger(input.order) || input.order < 1) return { ok: false, error: { kind: "invalidOrder" } };
 
+  const mappingError = mappingsError(input.mappings);
+  if (mappingError) return { ok: false, error: mappingError };
+
   const resolved = await resolveGame(input.tournamentId, input.game);
   if (!resolved) return { ok: false, error: { kind: "noData" } };
 
@@ -371,6 +377,19 @@ async function readStoredImport(game: GameRef, riotMatchId: string): Promise<Lol
   if (stored || game.source !== "riot") return stored;
   const typed = game.riotMatchId.trim();
   return typed === riotMatchId ? null : readLolImport("riot", typed);
+}
+
+/** The mappings come from the client: their shape and the length of a new handle are checked before any use. */
+function mappingsError(mappings: unknown): GameImportError | null {
+  if (!Array.isArray(mappings)) return { kind: "invalidMapping" };
+  for (const mapping of mappings as unknown[]) {
+    const { puuid, personId, createHandle } = (mapping ?? {}) as { puuid?: unknown; personId?: unknown; createHandle?: unknown };
+    if (typeof puuid !== "string") return { kind: "invalidMapping" };
+    if (personId !== null && !(Number.isInteger(personId) && (personId as number) > 0)) return { kind: "invalidMapping" };
+    if (createHandle !== null && typeof createHandle !== "string") return { kind: "invalidMapping" };
+    if (typeof createHandle === "string" && createHandle.trim().length > LINEUP_HANDLE_MAX_LENGTH) return { kind: "handleTooLong", max: LINEUP_HANDLE_MAX_LENGTH };
+  }
+  return null;
 }
 
 function isMapped(mapping: PlayerMapping | undefined): boolean {

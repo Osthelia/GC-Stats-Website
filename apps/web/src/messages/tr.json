@@ -4842,6 +4842,8 @@
             "reprocess": "Yeniden işle",
             "success": "Maç Leaguepedia'dan kaydedildi",
             "error": {
+              "invalidMapping": "Gönderilen oyuncu bağlantıları geçersiz. Sayfayı yenileyip tekrar deneyin.",
+              "handleTooLong": "Yeni bir oyuncunun adı çok uzun (en fazla {max} karakter).",
               "noData": "Bu maçın Leaguepedia'da V5 verisi yok.",
               "notInBucket": "Bu maç henüz depoda yok. Önce getirin.",
               "pageInvalid": "Bu maçın Leaguepedia sayfaları geçerli maç verisi değil.",
@@ -4943,6 +4945,7 @@
           "saving": "Kaydediliyor…",
           "saved": "Diziliş kaydedildi.",
           "error": {
+            "invalidInput": "Gönderilen kadro geçersiz. Sayfayı yenileyip tekrar deneyin.",
             "notFound": "Bu oyun maça ait değil.",
             "entrantsUnset": "Önce maçın iki takımı da belirlenmeli.",
             "importedGame": "Bu oyunun Riot veya Leaguepedia verisi var; dizilişi elle değiştirilemez.",

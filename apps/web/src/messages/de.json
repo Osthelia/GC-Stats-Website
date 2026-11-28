@@ -4842,6 +4842,8 @@
             "reprocess": "Neu verarbeiten",
             "success": "Spiel aus Leaguepedia gespeichert",
             "error": {
+              "invalidMapping": "Die gesendeten Spielerzuordnungen sind ungültig. Lade die Seite neu und versuche es noch einmal.",
+              "handleTooLong": "Der Name eines neuen Spielers ist zu lang (höchstens {max} Zeichen).",
               "noData": "Dieses Spiel hat keine V5-Daten auf Leaguepedia.",
               "notInBucket": "Dieses Spiel ist noch nicht im Speicher. Lade es zuerst.",
               "pageInvalid": "Die Leaguepedia-Seiten dieses Spiels sind keine gültigen Matchdaten.",
@@ -4943,6 +4945,7 @@
           "saving": "Wird gespeichert…",
           "saved": "Aufstellung gespeichert.",
           "error": {
+            "invalidInput": "Die gesendete Aufstellung ist ungültig. Lade die Seite neu und versuche es noch einmal.",
             "notFound": "Dieses Spiel gehört nicht zum Match.",
             "entrantsUnset": "Zuerst müssen beide Teams des Matches gesetzt sein.",
             "importedGame": "Dieses Spiel hat Riot- oder Leaguepedia-Daten; seine Aufstellung kann nicht von Hand geändert werden.",

@@ -11,7 +11,8 @@
  */
 
 import cron from "node-cron";
-import { jobs, isNoopSummary } from "./jobs-list";
+import { jobs } from "./jobs-list";
+import { isNoopSummary } from "./for-each-game";
 
 let started = false;
 

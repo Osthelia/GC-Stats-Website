@@ -26,11 +26,8 @@ import { dispatchWebhooks } from "./jobs/dispatch-webhooks";
 import { pruneWebhookLogs } from "./jobs/prune-webhook-logs";
 import { dispatchDiscordBot } from "./jobs/dispatch-discord-bot";
 import { rosterWatch } from "./jobs/roster-watch";
+import { isNoopSummary } from "./for-each-game";
 export type ScheduledJob = { name: string; cron: string; run: () => Promise<string> };
-/** A job summary reporting zero effective work (nothing activated/recorded), so the per-minute jobs don't flood logs with a line every tick. */
-export function isNoopSummary(summary: string): boolean {
-  return summary.startsWith("no ") || /^activated 0\//.test(summary) || /recorded\/updated 0 POV stream/.test(summary) || /^sent 0\//.test(summary);
-}
 // No node-cron import here on purpose: registry.ts (local dev only) is the only file allowed to import it.
 export const jobs: ScheduledJob[] = [
   { name: "prune-api-key-reveals", cron: "*/15 * * * *", run: pruneApiKeyReveals },

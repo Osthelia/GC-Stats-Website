@@ -135,6 +135,21 @@ function buildProblem(build: LineupBuild, catalog: LineupBuildCatalog | null, at
   return null;
 }
 
+const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+
+/** The shape of a lineup received from a client; the values are then checked by `lineupProblem`. */
+export function isLineupInput(input: unknown): input is LineupInput {
+  if (!isObject(input) || !Array.isArray(input.players)) return false;
+  if (input.durationSeconds !== null && typeof input.durationSeconds !== "number") return false;
+  return input.players.every((player: unknown) => {
+    if (!isObject(player) || !isObject(player.person)) return false;
+    if ("newHandle" in player.person ? typeof player.person.newHandle !== "string" : typeof player.person.id !== "number") return false;
+    if (player.championName !== null && typeof player.championName !== "string") return false;
+    if (player.stats !== null && !isObject(player.stats)) return false;
+    return player.build === null || (isObject(player.build) && Array.isArray(player.build.summoners) && Array.isArray(player.build.items));
+  });
+}
+
 /**
  * The first thing wrong with a lineup, null when it can be saved. `knownChampions` is empty when the patch's champions
  * can't be read, `buildCatalog` null when its summoner spells, runes and items can't.

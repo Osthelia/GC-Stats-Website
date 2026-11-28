@@ -24,6 +24,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/admin/form-field";
 import { PersonPicker } from "@/components/admin/person-picker";
 import { commitGameForMatch, getLolPersonAccounts, type GameRef, type GamePreview, type PersonAccountSummary, type PersonRef, type PlayerMapping, type PreviewPlayer } from "@/actions/admin-leaguepedia";
+import { LINEUP_HANDLE_MAX_LENGTH } from "@/lib/league-lineup-rules";
 import { LolSideBadge } from "@/components/admin/lol-side-badge";
 import { useRiotErrorText } from "@/components/admin/use-riot-error-text";
 import { isRelayProblemKind, retryAfterOf } from "@/lib/riot-errors";
@@ -108,7 +109,7 @@ export function GameImportPreview({
         const count = result.error.kind === "missingPlayers" ? result.error.count : 0;
         const ids = result.error.kind === "unknownChampions" ? result.error.ids.join(", ") : "";
         const description = result.error.kind === "storeFailed" ? result.error.message : result.error.kind === "invalidUpload" ? result.error.errors.join("; ") : undefined;
-        toast.error(isRelayProblemKind(result.error.kind) ? riotText(result.error.kind, undefined, retryAfterOf(result.error)) : t(`gameImport.error.${result.error.kind}`, { count, order, ids }), { description });
+        toast.error(isRelayProblemKind(result.error.kind) ? riotText(result.error.kind, undefined, retryAfterOf(result.error)) : t(`gameImport.error.${result.error.kind}`, { count, order, ids, max: result.error.kind === "handleTooLong" ? result.error.max : 0 }), { description });
         return;
       }
       onSaved();
@@ -267,7 +268,7 @@ function PlayerRow({
                 noResultsLabel={t("gameImport.noResults")}
               />
             ) : (
-              <Input value={mapping?.handle ?? ""} onChange={(e) => onChange({ handle: e.target.value })} placeholder={t("gameImport.newHandle")} />
+              <Input maxLength={LINEUP_HANDLE_MAX_LENGTH} value={mapping?.handle ?? ""} onChange={(e) => onChange({ handle: e.target.value })} placeholder={t("gameImport.newHandle")} />
             )}
             {mapping?.mode === "existing" && mapping.person && existingAccounts !== undefined && existingAccounts.length > 0 && (
               <p className="text-xs text-amber-500">

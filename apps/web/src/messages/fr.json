@@ -4846,6 +4846,8 @@
             "reprocess": "Retraiter",
             "success": "Match enregistré depuis Leaguepedia",
             "error": {
+              "invalidMapping": "Les liaisons de joueurs envoyées sont invalides. Rechargez la page et réessayez.",
+              "handleTooLong": "Un nom de nouveau joueur est trop long ({max} caractères maximum).",
               "noData": "Ce match n'a pas de données V5 sur Leaguepedia.",
               "notInBucket": "Ce match n'est pas encore dans le stockage. Chargez-le d'abord.",
               "pageInvalid": "Les pages Leaguepedia de ce match ne sont pas des données de match valides.",
@@ -4947,6 +4949,7 @@
           "saving": "Enregistrement…",
           "saved": "Composition enregistrée.",
           "error": {
+            "invalidInput": "La composition envoyée est invalide. Rechargez la page et réessayez.",
             "notFound": "Cette partie ne fait pas partie du match.",
             "entrantsUnset": "Les deux équipes du match doivent d'abord être définies.",
             "importedGame": "Cette partie a des données Riot ou Leaguepedia ; sa composition ne peut pas être modifiée à la main.",

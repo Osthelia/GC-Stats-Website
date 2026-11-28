@@ -4847,6 +4847,8 @@
             "reprocess": "Xử lý lại",
             "success": "Đã lưu ván từ Leaguepedia",
             "error": {
+              "invalidMapping": "Liên kết người chơi đã gửi không hợp lệ. Hãy tải lại trang và thử lại.",
+              "handleTooLong": "Tên người chơi mới quá dài (tối đa {max} ký tự).",
               "noData": "Ván này không có dữ liệu V5 trên Leaguepedia.",
               "notInBucket": "Ván này chưa có trong bucket. Hãy lấy nó trước.",
               "pageInvalid": "Các trang Leaguepedia của ván này không phải dữ liệu trận đấu hợp lệ.",
@@ -4947,6 +4949,7 @@
           "saving": "Đang lưu…",
           "saved": "Đã lưu đội hình.",
           "error": {
+            "invalidInput": "Đội hình đã gửi không hợp lệ. Hãy tải lại trang và thử lại.",
             "notFound": "Ván này không thuộc trận đấu.",
             "entrantsUnset": "Cần đặt cả hai đội của trận trước.",
             "importedGame": "Ván này có dữ liệu Riot hoặc Leaguepedia; không thể sửa đội hình bằng tay.",

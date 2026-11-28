@@ -4846,6 +4846,8 @@
             "reprocess": "Rielabora",
             "success": "Partita salvata da Leaguepedia",
             "error": {
+              "invalidMapping": "I collegamenti dei giocatori inviati non sono validi. Ricarica la pagina e riprova.",
+              "handleTooLong": "Il nome di un nuovo giocatore è troppo lungo (massimo {max} caratteri).",
               "noData": "Questa partita non ha dati V5 su Leaguepedia.",
               "notInBucket": "Questa partita non è ancora nello storage. Caricala prima.",
               "pageInvalid": "Le pagine Leaguepedia di questa partita non sono dati di partita validi.",
@@ -4947,6 +4949,7 @@
           "saving": "Salvataggio…",
           "saved": "Formazione salvata.",
           "error": {
+            "invalidInput": "La formazione inviata non è valida. Ricarica la pagina e riprova.",
             "notFound": "Questa partita non fa parte del match.",
             "entrantsUnset": "Prima vanno impostate entrambe le squadre del match.",
             "importedGame": "Questa partita ha dati Riot o Leaguepedia; la formazione non si può modificare a mano.",

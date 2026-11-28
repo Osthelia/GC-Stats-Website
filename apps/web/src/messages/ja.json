@@ -4842,6 +4842,8 @@
             "reprocess": "再処理",
             "success": "Leaguepedia から試合を保存しました",
             "error": {
+              "invalidMapping": "送信されたプレイヤーの紐付けが無効です。ページを再読み込みしてもう一度お試しください。",
+              "handleTooLong": "新しいプレイヤー名が長すぎます（最大{max}文字）。",
               "noData": "この試合には Leaguepedia に V5 データがありません。",
               "notInBucket": "この試合はまだストレージにありません。先に取得してください。",
               "pageInvalid": "この試合の Leaguepedia ページは有効な試合データではありません。",
@@ -4943,6 +4945,7 @@
           "saving": "保存中…",
           "saved": "出場メンバーを保存しました。",
           "error": {
+            "invalidInput": "送信されたラインナップが無効です。ページを再読み込みしてもう一度お試しください。",
             "notFound": "このゲームは試合に含まれていません。",
             "entrantsUnset": "先に試合の両チームを設定してください。",
             "importedGame": "このゲームにはRiotまたはLeaguepediaのデータがあるため、出場メンバーを手動で変更できません。",
