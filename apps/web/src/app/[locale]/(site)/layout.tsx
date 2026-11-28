@@ -8,29 +8,38 @@
 
 import { SessionProvider } from "next-auth/react";
 import { getSession } from "@/lib/session";
-import { getGlobalAccess, hasAccess, ADMIN_ACCESS_PERMISSION } from "@/lib/rbac";
+import { getGlobalAccess, hasAccess, listViewableGames, ADMIN_ACCESS_PERMISSION } from "@/lib/rbac";
 import { hasDashboardAccess } from "@/lib/dashboard-rbac";
 import { listActiveNewsLanguages } from "@/lib/news-languages";
 import { SiteHeader } from "@/components/site-header";
+import { getPreferredGame } from "@/lib/game";
+import { PreferredGameScope } from "@/lib/use-game";
 import { SiteFooter } from "@/components/site-footer";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
   const userId = session?.user?.id;
-  const [isAdmin, isDashboard, newsLanguageOptions] = await Promise.all([
+  const [isAdmin, isDashboard, newsLanguageOptions, games, preferredGame] = await Promise.all([
     userId ? getGlobalAccess(userId).then((access) => hasAccess(access, ADMIN_ACCESS_PERMISSION)) : false,
     userId ? hasDashboardAccess(userId) : false,
     listActiveNewsLanguages(),
+    listViewableGames(),
+    getPreferredGame(),
   ]);
 
   // Seeds useSession() with the session already read above: without it the
   // header's account menu shows a skeleton until a client-side round trip to
   // /api/auth/session resolves after hydration.
+  // SessionProvider only reads its `session` prop on mount, so the key forces a
+  // remount (re-seeding it) when login/logout changes the user after a refresh.
   return (
-    <SessionProvider session={session}>
-      <SiteHeader isAdmin={isAdmin} isDashboard={isDashboard} newsLanguageOptions={newsLanguageOptions} />
-      <main className="flex-1">{children}</main>
-      <SiteFooter />
+    <SessionProvider key={userId ?? "anonymous"} session={session}>
+      {/* Pages without a game (legal, about...) stay on the game the visitor browsed last. */}
+      <PreferredGameScope game={preferredGame} viewableGames={games.map((entry) => entry.game)}>
+        <SiteHeader isAdmin={isAdmin} isDashboard={isDashboard} newsLanguageOptions={newsLanguageOptions} games={games} />
+        <main className="flex-1">{children}</main>
+        <SiteFooter />
+      </PreferredGameScope>
     </SessionProvider>
   );
 }

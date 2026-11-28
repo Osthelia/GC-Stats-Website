@@ -12,10 +12,46 @@
 import { eq, inArray } from "drizzle-orm";
 // adminDb: the page must show the import that just ran.
 import { adminDb as db } from "@gc-stats/db/client";
-import { maps, matches, stageContainers, stages, mapPlayerStats } from "@gc-stats/db";
+import { gameTables, leagueTablesOf, valorantTablesOf } from "@gc-stats/db";
 import type { LiquipediaImportStatus } from "@/lib/liquipedia-import-status-types";
+import { gameHasSeriesGames, type GameSlug } from "@gc-stats/db/game";
 
-export async function getTournamentImportStatuses(tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+/**
+ * League: done when every game of the match has player data (a Riot or Leaguepedia import) and a draft, partial when the
+ * match has games but not all of them do, none when it has no games.
+ */
+async function getLeagueImportStatuses(game: GameSlug, tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { games, gamePlayerStats, gameDraft } = leagueTablesOf(game);
+  const gameRows = await db
+    .select({ id: games.id, matchId: games.matchId, source: games.source })
+    .from(games)
+    .innerJoin(matches, eq(matches.id, games.matchId))
+    .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
+    .innerJoin(stages, eq(stages.id, stageContainers.stageId))
+    .where(eq(stages.tournamentId, tournamentId));
+  if (gameRows.length === 0) return {};
+
+  const gameIds = gameRows.map((g) => g.id);
+  const [withPlayers, withDraft] = await Promise.all([
+    db.selectDistinct({ gameId: gamePlayerStats.gameId }).from(gamePlayerStats).where(inArray(gamePlayerStats.gameId, gameIds)),
+    db.selectDistinct({ gameId: gameDraft.gameId }).from(gameDraft).where(inArray(gameDraft.gameId, gameIds)),
+  ]);
+  const players = new Set(withPlayers.map((r) => r.gameId));
+  const drafts = new Set(withDraft.map((r) => r.gameId));
+
+  // A game entered by hand (no source) has a manual lineup at most, which is not an import.
+  const importedPlayers = (row: { id: number; source: string | null }) => row.source !== null && players.has(row.id);
+
+  const complete = new Map<number, boolean>();
+  for (const row of gameRows) complete.set(row.matchId, (complete.get(row.matchId) ?? true) && importedPlayers(row) && drafts.has(row.id));
+  return Object.fromEntries([...complete].map(([matchId, isComplete]) => [matchId, isComplete ? "done" : "partial"] as const));
+}
+
+export async function getTournamentImportStatuses(game: GameSlug, tournamentId: number): Promise<Record<number, LiquipediaImportStatus>> {
+  if (gameHasSeriesGames(game)) return getLeagueImportStatuses(game, tournamentId);
+  const { matches, stageContainers, stages } = gameTables(game);
+  const { maps, mapPlayerStats } = valorantTablesOf(game);
   const mapRows = await db
     .select({ id: maps.id, matchId: maps.matchId, apiMatchId: maps.apiMatchId, teamAScore: maps.teamAScore, teamBScore: maps.teamBScore })
     .from(maps)

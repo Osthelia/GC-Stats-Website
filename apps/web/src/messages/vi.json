@@ -730,7 +730,7 @@
     "intro": "Bằng việc truy cập hoặc sử dụng GC Stats, bạn đồng ý bị ràng buộc bởi các Điều khoản dịch vụ này. Vui lòng đọc kỹ trước khi sử dụng nền tảng.",
     "service": {
       "title": "Về dịch vụ",
-      "text": "GC Stats là một nền tảng cộng đồng chuyên lưu trữ và chia sẻ dữ liệu thi đấu từ các giải đấu Valorant Game Changers và các sự kiện liên quan. Dịch vụ cung cấp quyền truy cập vào kết quả giải đấu, thống kê tuyển thủ, thông tin đội và dữ liệu trận đấu. GC Stats không liên kết, không được bảo trợ và không có mối liên hệ chính thức với Riot Games."
+      "text": "GC Stats là một nền tảng cộng đồng chuyên lưu trữ và chia sẻ dữ liệu thi đấu từ các giải đấu Game Changers và các sự kiện liên quan. Dịch vụ cung cấp quyền truy cập vào kết quả giải đấu, thống kê tuyển thủ, thông tin đội và dữ liệu trận đấu. GC Stats không liên kết, không được bảo trợ và không có mối liên hệ chính thức với Riot Games."
     },
     "access": {
       "title": "Truy cập & điều kiện sử dụng",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Dữ liệu trận đấu Riot",
-      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Dữ liệu này bao gồm:",
+      "text": "GC Stats lấy thống kê trận đấu trực tiếp từ API chính thức của Riot Games cho các trận đấu được xác định là thuộc các giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia, hoặc được đội ngũ của chúng tôi nhập thủ công. Dữ liệu này bao gồm:",
       "items": [
         "Riot ID (tên trong game và tagline) của các tuyển thủ tham gia",
         "Lịch sử trận đấu của các trận được xác định là thuộc các giải đấu được theo dõi",
-        "Thống kê trong trận: bảng điểm, tóm tắt hiệu suất, tóm tắt kinh tế và kill feed"
+        "Thống kê trong trận: bảng điểm, tóm tắt thành tích và hơn nữa"
       ],
       "optIn": "Việc tham gia trận đấu cơ bản (tên, thống kê) được ghi nhận cho mọi tuyển thủ xuất hiện trong một trận đấu giải đấu được theo dõi, vì đây là dữ liệu thi đấu công khai. Thông tin hồ sơ bổ sung (tiểu sử, mạng xã hội, ảnh) chỉ được thêm khi có sự đồng ý của tuyển thủ hoặc đội.",
       "correction": "Nếu bạn là tuyển thủ xuất hiện trong dữ liệu này và muốn yêu cầu chỉnh sửa hoặc xóa, bạn có thể liên hệ với chúng tôi bất cứ lúc nào (xem Chính sách quyền riêng tư để biết chi tiết)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Sử dụng API",
-      "text": "GC Stats cung cấp một API công khai cho cộng đồng và các dự án liên quan đến GC. Việc sử dụng API tuân theo các Điều khoản này. API dành cho mục đích thông tin, phân tích và cộng đồng. Giới hạn tốc độ có thể được áp dụng. GC Stats có quyền thu hồi quyền truy cập API đối với bất kỳ cách sử dụng nào vi phạm các Điều khoản này hoặc chính sách nhà phát triển của Riot Games."
+      "text": "GC Stats cung cấp một API công khai cho cộng đồng và các dự án liên quan đến GC. Hiện API chỉ hỗ trợ Valorant; League of Legends sẽ được bổ sung sau. Việc sử dụng API tuân theo các Điều khoản này. API dành cho mục đích thông tin, phân tích và cộng đồng. Giới hạn tốc độ có thể được áp dụng. GC Stats có quyền thu hồi quyền truy cập API đối với bất kỳ cách sử dụng nào vi phạm các Điều khoản này hoặc chính sách nhà phát triển của Riot Games."
     },
     "ip": {
       "title": "Sở hữu trí tuệ",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Dữ liệu công khai",
-      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, mạng xã hội, quốc gia) do tuyển thủ hoặc tổ chức của họ cung cấp, hoặc do đội ngũ của chúng tôi thêm từ nguồn công khai, rồi được hiển thị công khai trên trang. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận của giải đấu được theo dõi. Toàn bộ dữ liệu này là công khai và được chia sẻ qua API của chúng tôi."
+      "text": "Thông tin hồ sơ (biệt danh, tiểu sử, mạng xã hội, quốc gia) do tuyển thủ hoặc tổ chức của họ cung cấp, hoặc do đội ngũ của chúng tôi thêm từ nguồn công khai, rồi được hiển thị công khai trên trang. Thống kê trận đấu được thu thập trực tiếp qua API chính thức của Riot Games cho các trận của giải đấu được theo dõi. Với League of Legends, thống kê cũng có thể đến từ Leaguepedia (theo giấy phép CC BY-SA) hoặc được đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác. Toàn bộ dữ liệu này là công khai và được chia sẻ qua API của chúng tôi."
     },
     "privateData": {
       "title": "Dữ liệu riêng tư",
-      "text": "Dữ liệu cá nhân chúng tôi lưu trữ chỉ giới hạn ở những gì cần thiết để vận hành trang web và hệ thống tài khoản: một Riot ID để liên kết hồ sơ tuyển thủ, cùng dữ liệu tài khoản mô tả bên dưới đối với bất kỳ ai tạo tài khoản người dùng.",
-      "riotUsage": "Riot ID: Được đội ngũ của chúng tôi xác định và gán từ dữ liệu trận đấu lấy qua API chính thức của Riot Games. Chỉ dùng để gắn thống kê trận đấu với một hồ sơ tuyển thủ. Có thể được chỉnh sửa hoặc xóa khi có yêu cầu."
+      "text": "Dữ liệu cá nhân chúng tôi lưu trữ chỉ giới hạn ở những gì cần thiết để vận hành trang web và hệ thống tài khoản: các tài khoản Riot của tuyển thủ, để liên kết thống kê trận đấu với hồ sơ của họ, cùng dữ liệu tài khoản mô tả bên dưới đối với bất kỳ ai tạo tài khoản người dùng.",
+      "riotUsage": "Tài khoản Riot: Riot ID được đội ngũ của chúng tôi xác định và gán từ dữ liệu trận đấu lấy qua API chính thức của Riot Games hoặc Leaguepedia, hoặc được nhập thủ công khi chỉ có buổi phát sóng của trận đấu. Với League of Legends, chúng tôi còn lưu PUUID Riot của mỗi tài khoản, máy chủ và khu vực của tài khoản, cùng ngày tài khoản được thấy lần cuối trong một trận được theo dõi. Chỉ dùng để gắn thống kê trận đấu với hồ sơ tuyển thủ. Có thể được sửa hoặc xóa theo yêu cầu."
     },
     "accountData": {
       "title": "Tài khoản người dùng",
@@ -1332,19 +1332,19 @@
           "hidden": {
             "label": "Không bao giờ hiển thị",
             "items": [
-              "ID Riot, chỉ dùng để gắn thống kê trận đấu vào đúng hồ sơ"
+              "Tài khoản Riot, chỉ dùng để liên kết thống kê trận đấu với đúng hồ sơ"
             ]
           }
         },
-        "source": "Chính người đó hoặc tổ chức của họ, đội ngũ của chúng tôi từ nguồn công khai (Liquipedia, thông báo chính thức), hoặc cộng đồng qua đề xuất được đội ngũ duyệt. ID Riot lấy từ API chính thức của Riot Games.",
-        "visibility": "Mọi người, trên trang và qua API của chúng tôi, trừ ID Riot.",
+        "source": "Chính người đó hoặc tổ chức của họ, đội ngũ của chúng tôi từ nguồn công khai (Liquipedia, thông báo chính thức), hoặc cộng đồng qua đề xuất được đội ngũ duyệt. Tài khoản Riot lấy từ API chính thức của Riot Games hoặc Leaguepedia, hoặc do đội ngũ của chúng tôi nhập.",
+        "visibility": "Mọi người, trên trang và qua API của chúng tôi, trừ các tài khoản Riot.",
         "retention": "Lưu vĩnh viễn như kho lưu trữ của cộng đồng, kể cả khi người đó ngừng thi đấu. Bạn có thể yêu cầu sửa hoặc xóa."
       },
       "matchStats": {
         "title": "Thống kê trận đấu",
         "groups": {
           "stats": {
-            "label": "Cho mỗi trận đấu",
+            "label": "Cho mỗi trận Valorant đã chơi",
             "items": [
               "Đặc vụ đã chơi",
               "Hạ gục, chết và hỗ trợ",
@@ -1352,9 +1352,20 @@
               "Kinh tế và trang bị",
               "Vị trí trên bản đồ"
             ]
+          },
+          "league": {
+            "label": "Cho mỗi ván League of Legends đã chơi",
+            "items": [
+              "Tướng, đường, phép bổ trợ và ngọc",
+              "Hạ gục, bị hạ và hỗ trợ",
+              "CS, vàng, sát thương và điểm tầm nhìn",
+              "Trang bị",
+              "Vàng, kinh nghiệm và CS so với đối thủ cùng đường ở phút 10 và 15",
+              "Vị trí trên bản đồ và các sự kiện trong ván (hạ gục, mục tiêu, mắt)"
+            ]
           }
         },
-        "source": "API chính thức của Riot Games, cho các trận của giải đấu chúng tôi theo dõi.",
+        "source": "API chính thức của Riot Games, cho các trận của giải đấu chúng tôi theo dõi. Với League of Legends còn có Leaguepedia, hoặc đội ngũ của chúng tôi nhập thủ công từ buổi phát sóng khi không có dữ liệu nào khác.",
         "visibility": "Mọi người, trên trang và qua API của chúng tôi.",
         "retention": "Lưu như kho lưu trữ lịch sử các giải đấu."
       },
@@ -1634,7 +1645,21 @@
     "productionTitle": "{player} · Sản xuất",
     "formerOrganizations": "Các tổ chức cũ",
     "noFormerOrganizations": "Chưa ghi nhận tổ chức cũ nào.",
-    "unknownDate": "Không rõ"
+    "unknownDate": "Không rõ",
+    "addGameProfile": {
+      "title": "Bạn cũng chơi {game}?",
+      "description": "Thêm hồ sơ {game} của bạn chỉ với một cú nhấp. Tên, ảnh và liên kết của bạn được dùng lại, không cần điền lại.",
+      "button": "Thêm hồ sơ {game} của tôi",
+      "adding": "Đang thêm...",
+      "done": "Hồ sơ {game} của bạn đã sẵn sàng.",
+      "open": "Xem hồ sơ {game} của tôi",
+      "error": {
+        "unauthenticated": "Bạn cần đăng nhập.",
+        "notYours": "Tuyển thủ này không được liên kết với tài khoản của bạn.",
+        "invalidGame": "Game này không tồn tại."
+      }
+    },
+    "alsoOn": "Cũng có trên {game}"
   },
   "organizationPage": {
     "tabOverview": "Tổng quan",
@@ -1688,7 +1713,9 @@
       "recruitmentManager": "Quản lý tuyển dụng",
       "developer": "Lập trình viên",
       "volunteer": "Tình nguyện viên",
+      "headOfEsports": "Trưởng bộ phận Esports",
       "headOfValorant": "Trưởng bộ phận Valorant",
+      "headOfLeague": "Trưởng bộ phận League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Không rõ",
@@ -1794,7 +1821,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Thảo luận",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD ván {n}",
+    "games": "Các ván",
+    "gameTab": "Ván {order}",
+    "noGames": "Chưa có ván nào được ghi nhận.",
+    "noGameData": "Không có dữ liệu cho ván này",
+    "duration": "Thời lượng",
+    "forfeit": "Bỏ cuộc",
+    "towers": "Trụ",
+    "inhibitors": "Nhà lính",
+    "dragons": "Rồng",
+    "barons": "Baron",
+    "heralds": "Sứ Giả Khe Nứt",
+    "grubs": "Ấu trùng Hư Không",
+    "draftNotSet": "Chưa có draft nào được ghi nhận cho ván này.",
+    "ban": "Cấm",
+    "pick": "Chọn",
+    "unplacedPicks": "Lượt chọn chưa được xếp vị trí",
+    "colChampion": "Tướng",
+    "allGames": "Tất cả các ván",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Mọi giải đấu Game Changers chính thức, tại một nơi.",
@@ -2095,7 +2142,8 @@
       "error": {
         "userNotFound": "Không tìm thấy người dùng.",
         "roleNotFound": "Một trong các vai trò đã chọn không còn tồn tại.",
-        "selfDemote": "Bạn không thể gỡ quyền quản trị của chính mình."
+        "selfDemote": "Bạn không thể gỡ quyền quản trị của chính mình.",
+        "gameNotFound": "Game này không tồn tại."
       },
       "authMethods": {
         "heading": "Xác thực",
@@ -2352,7 +2400,9 @@
           "recruitmentManager": "Quản lý tuyển dụng",
           "developer": "Lập trình viên",
           "volunteer": "Tình nguyện viên",
+          "headOfEsports": "Trưởng bộ phận Esports",
           "headOfValorant": "Trưởng bộ phận Valorant",
+          "headOfLeague": "Trưởng bộ phận League of Legends",
           "streamer": "Streamer"
         },
         "error": {
@@ -2376,7 +2426,8 @@
           "ownerOnly": "Chỉ chủ sở hữu mới có thể cấp hoặc sửa vai trò chủ sở hữu.",
           "userNotFound": "Không tìm thấy tài khoản.",
           "alreadyHasAccess": "Tài khoản này đã có quyền truy cập vào tổ chức này."
-        }
+        },
+        "fieldGames": "Game"
       },
       "filterKindLabel": "Loại tổ chức",
       "filterKindAll": "Tất cả tổ chức",
@@ -2387,6 +2438,7 @@
       "title": "Đội",
       "subtitle": "Quản lý hồ sơ đội và đội hình.",
       "searchPlaceholder": "Tên, ID hoặc VLR ID…",
+      "searchPlaceholderLol": "Tên hoặc ID…",
       "searchSubmit": "Tìm kiếm",
       "activeWithinLabel": "Hoạt động gần đây",
       "activeWithinAny": "Bất kỳ lúc nào",
@@ -2605,6 +2657,7 @@
       "title": "Tuyển thủ",
       "subtitle": "Quản lý hồ sơ và đội trực thuộc.",
       "searchPlaceholder": "Biệt danh, ID hoặc VLR ID…",
+      "searchPlaceholderLol": "Biệt danh, ID hoặc Riot ID…",
       "searchSubmit": "Tìm kiếm",
       "activeWithinLabel": "Hoạt động gần đây",
       "activeWithinAny": "Bất kỳ lúc nào",
@@ -2649,6 +2702,40 @@
         },
         "sectionProfile": "Hồ sơ",
         "sectionSocials": "Liên kết mạng xã hội",
+        "sectionRiotAccounts": "Tài khoản Riot",
+        "riotAccountsHint": "Các tài khoản League of Legends mà tuyển thủ chơi. Các ván đã nhập được liên kết với tuyển thủ qua những tài khoản này.",
+        "riotAccountsEmpty": "Chưa có tài khoản Riot. Tài khoản được thêm khi nhập một ván đấu, hoặc tại đây.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Máy chủ giải đấu",
+        "riotAccountSourceAdmin": "Thêm thủ công",
+        "riotAccountLastSeen": "Thấy lần cuối <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Khu vực",
+        "riotAccountAdd": "Thêm tài khoản",
+        "riotAccountAdding": "Đang thêm…",
+        "riotAccountAdded": "Đã thêm tài khoản Riot.",
+        "riotAccountRemoved": "Đã xóa tài khoản Riot.",
+        "riotAccountRemove": "Xóa",
+        "riotAccountRemoveTitle": "Xóa tài khoản Riot này?",
+        "riotAccountRemoveDescription": "{riotId} sẽ không còn liên kết với {handle}. Các ván đã nhập vẫn thuộc về tuyển thủ.",
+        "riotAccountErrorHeldByOther": "Tài khoản Riot này đã thuộc về {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Tuyển thủ này đã có tài khoản Riot này.",
+        "riotAccountErrorGeneric": "Không thể thay đổi tài khoản Riot.",
+        "sectionGames": "Game",
+        "gamesHint": "Một người, một hồ sơ cho mỗi game. Tên, quốc gia, đại từ, tiểu sử, biệt danh, mạng xã hội, ảnh và tài khoản liên kết được dùng chung, phần còn lại thuộc về từng game.",
+        "sharedHint": "Tên, quốc gia, đại từ, tiểu sử, biệt danh, mạng xã hội và ảnh được dùng chung với các game khác của người này.",
+        "gameCurrent": "Game hiện tại",
+        "gameHasProfile": "Đã có hồ sơ",
+        "gameNoProfile": "Chưa có hồ sơ",
+        "gameOpen": "Mở",
+        "gameAddButton": "Thêm vào {game}",
+        "gameAdding": "Đang thêm...",
+        "gameAddSuccess": "Đã thêm vào {game}.",
+        "gameAddError": {
+          "invalidGame": "Game này không tồn tại.",
+          "notFound": "Tuyển thủ này không còn tồn tại.",
+          "alreadyThere": "Tuyển thủ này đã có hồ sơ trong game này."
+        },
         "sectionHistory": "Lịch sử đội",
         "sectionLogo": "Logo",
         "logoNoneYet": "Chưa có logo.",
@@ -2787,13 +2874,17 @@
           "organizations": "Ghi công tổ chức",
           "production": "Ghi công sản xuất",
           "matchStats": "Tham gia trận đấu",
+          "gameStats": "Tham gia ván đấu",
           "news": "Tin tức",
           "logos": "Logo",
+          "riotAccounts": "Tài khoản Riot ({count})",
           "linkedAccount": "Tài khoản đã liên kết"
         },
         "matchStatsHint": "Cũng chuyển dữ liệu từng round (kills, sát thương, vị trí) đằng sau mỗi bản đồ. Ghi công đội hình bị khóa cho một đội tham gia giải đấu chỉ được chuyển khi mọi bản đồ của đội đó đã được chọn.",
+        "gameStatsHint": "Đồng thời chuyển các frame và sự kiện (hạ gục, mục tiêu, mắt) của từng ván. Tín nhiệm đội hình bị khóa của một đội tham dự giải chỉ được chuyển khi đã chọn mọi ván của đội đó.",
         "periodOngoing": "từ {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Các tài khoản Riot chuyển sang tuyển thủ bạn giữ lại, để các ván của họ vẫn được liên kết.",
         "linkedAccountHint": "Chuyển tài khoản hiện đang liên kết với tuyển thủ này. Chỉ hiển thị khi có tài khoản liên kết và đích chưa có.",
         "nothingToMove": "Tuyển thủ này chưa có gì để chuyển.",
         "confirm": "Gộp các mục đã chọn từ {source} vào {target}? Không thể hoàn tác tự động.",
@@ -2808,8 +2899,40 @@
           "samePlayer": "Hãy chọn một tuyển thủ khác làm đích gộp.",
           "sourceNotFound": "Không tìm thấy tuyển thủ.",
           "targetNotFound": "Không tìm thấy tuyển thủ đích.",
-          "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết."
-        }
+          "targetAlreadyLinked": "Tuyển thủ đích đã có tài khoản liên kết.",
+          "sourceStillUsed": "Tuyển thủ này vẫn được dùng bởi các đội tham gia hoặc thống kê trận đấu của game này. Hãy chọn cả các mục đó, hoặc giữ lại hồ sơ.",
+          "otherGame": "Người chơi đích không thuộc trò chơi nào bạn quản lý, nên không thể chuyển tài khoản liên kết.",
+          "sourceHasData": "Không có gì được gộp, vì xóa người chơi sẽ làm mất dữ liệu: {items}. Hãy chọn cả dữ liệu đó (mục bị bỏ qua do xung đột phải được xóa trước) hoặc giữ lại hồ sơ."
+        },
+        "removeSource": "Xóa khỏi {game} sau khi gộp",
+        "removeSourceHint": "{name} bị xóa khỏi trò chơi này, và bị xóa hoàn toàn nếu không trò chơi nào khác có hồ sơ này. Bị từ chối khi vẫn còn dữ liệu cần chuyển, hoặc khi người tham gia hay thống kê trận đấu còn dùng hồ sơ. Tên Liquipedia, ghi nhận đội hình đã khóa và luồng phát trận đấu được chuyển theo khi gộp."
+      },
+      "duplicatesLink": "Có thể trùng lặp",
+      "duplicates": {
+        "title": "Có thể trùng lặp",
+        "description": "Những người có cùng handle nhưng ở các game khác nhau. Gộp hồ sơ {game} vào hồ sơ còn lại để chỉ giữ một hồ sơ.",
+        "backToList": "Quay lại danh sách tuyển thủ",
+        "columnSource": "Trong {game}",
+        "columnTarget": "Hồ sơ còn lại",
+        "merge": "Gộp",
+        "empty": "Không tìm thấy bản trùng lặp."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} không phải là Riot ID (tên#tag).",
+        "riotIdNotFound": "Không có tài khoản Riot nào tên {riotId}.",
+        "relayNotConfigured": "Relay Riot chưa được thiết lập trên máy chủ này.",
+        "relayUnauthorized": "Relay đã từ chối thông tin xác thực của chúng tôi. Hãy kiểm tra RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot đã từ chối khóa API League of Legends của relay. Khóa có thể đã hết hạn hoặc sai (kiểm tra LOL_RIOT_API_KEY trên relay).",
+        "relayLeagueUnavailable": "Relay chưa đặt khóa API League of Legends hoặc cơ sở dữ liệu cache của nó không khả dụng. Hãy kiểm tra LOL_RIOT_API_KEY và cơ sở dữ liệu trên relay.",
+        "routeUnavailable": "Relay không cung cấp các route League mà tìm kiếm này cần. Hãy cập nhật relay.",
+        "relayUnreachable": "Không thể kết nối tới relay Riot. Hãy kiểm tra relay đang chạy và RIOT_RELAY_URL đúng.",
+        "riotUnavailable": "Hiện không thể đọc dữ liệu của Riot. Hãy thử lại sau.",
+        "rateLimited": "Riot đang giới hạn yêu cầu của khóa này. Hãy đợi một phút rồi thử lại.",
+        "rateLimitedIn": "Riot đang giới hạn yêu cầu của khóa này. Hãy thử lại sau {seconds} giây.",
+        "invalidRequest": "Relay từ chối yêu cầu vì không hợp lệ. Hãy kiểm tra Riot ID, khu vực và khoảng thời gian.",
+        "notFound": "Riot không có dữ liệu cho yêu cầu này: tài khoản hoặc ván đấu không tồn tại hoặc không thuộc khu vực này."
       }
     },
     "finance": {
@@ -3385,11 +3508,13 @@
           "entityNotFound": "Một đội hoặc tuyển thủ được tham chiếu không còn tồn tại.",
           "membershipNotFound": "Mục đội hình không còn tồn tại.",
           "invalidRole": "Vai trò không còn hợp lệ.",
+          "invalidLane": "Có một đường không hợp lệ.",
           "logoNotFound": "Mục logo không còn tồn tại.",
           "alreadyLinked": "Tuyển thủ này đã được liên kết với một tài khoản khác.",
           "unknownField": "Trường không được hỗ trợ.",
           "unknown": "Lỗi không xác định.",
-          "invalidSource": "Liên kết nguồn không còn hợp lệ."
+          "invalidSource": "Liên kết nguồn không còn hợp lệ.",
+          "otherGame": "Người chơi được liên kết trước đó không thuộc trò chơi nào bạn quản lý."
         },
         "oldValue": "Hiện tại",
         "newValue": "Đề xuất",
@@ -3829,6 +3954,14 @@
         "fieldEliminateAtLossesHint": "Số trận thua. Để trống cho Swiss tự do không có ngưỡng.",
         "fieldMaxRounds": "Số round tối đa",
         "openEditorButton": "Mở trình chỉnh sửa nhánh đấu",
+        "assignEntrantsButton": "Quản lý đội tham gia",
+        "assignEntrantsTitle": "Đội tham gia của bảng",
+        "assignEntrantsDescription": "Chọn những đội tham gia nào của giải đấu thuộc bảng Swiss này.",
+        "assignEntrantsEmpty": "Giải đấu này chưa có đội tham gia nào.",
+        "assignEntrantsInGroup": "Trong {name}",
+        "assignEntrantsSuccess": "Đã cập nhật đội tham gia.",
+        "startSwissButton": "Bắt đầu round 1",
+        "startSwissSuccess": "Đã tạo round 1.",
         "addMatchButton": "Thêm một trận đấu",
         "addMatchTitle": "Thêm một trận đấu vào {name}",
         "addMatchDescription": "Trận đấu được thêm vào round đã chọn, ngay cả khi bảng đã bắt đầu. Các đội có thể để TBD và gán sau từ trang trận đấu.",
@@ -3905,6 +4038,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Chỉ các bảng đấu vòng tròn mới có thể tính các trận của cả giai đoạn.",
           "cannotMove": "Không thể di chuyển vùng chứa này thêm nữa.",
           "parentInvalid": "Không thể dùng bộ này ở đây.",
           "tiebreakersInvalid": "Chỉ dùng mỗi tiêu chí một lần, từ danh sách có sẵn.",
@@ -3921,9 +4055,11 @@
             "points": "Điểm",
             "buchholz": "Buchholz",
             "map_diff": "Hiệu số map",
+            "game_diff": "Hiệu số ván",
             "round_diff": "Hiệu số round",
             "head_to_head": "Đối đầu",
             "h2h_map_diff": "Hiệu số bản đồ đối đầu trực tiếp (2 đội)",
+            "h2h_game_diff": "Hiệu số ván đối đầu trực tiếp (2 đội)",
             "h2h_round_diff": "Hiệu số vòng đối đầu trực tiếp (2 đội)",
             "seed": "Seed"
           }
@@ -3931,16 +4067,22 @@
         "pointsConfig": {
           "title": "Điểm",
           "hint": "Mỗi trận, map và round thắng hoặc thua đều mang lại điểm cho đội. Round chỉ được tính trên các map đã ghi tỉ số. Khi bật, điểm xếp hạng các đội trước thành tích trận đấu và các tiêu chí phụ.",
+          "hintGames": "Mỗi trận và ván thắng hoặc thua đều mang lại điểm cho đội. Khi bật, điểm xếp hạng các đội trước thành tích trận đấu và các tiêu chí phụ.",
           "enable": "Dùng điểm",
           "scopes": {
             "match": "Trận",
             "map": "Mỗi map",
+            "game": "Mỗi ván",
             "round": "Mỗi round",
             "forfeit": "Xử thua (thay thế các mục khác)"
           },
           "win": "Thắng",
           "loss": "Thua"
-        }
+        },
+        "fieldMatchScope": "Các đội cũng đấu với đội của bảng khác (tính các trận của những bảng khác có cùng cài đặt này)",
+        "fieldMatchScopeHint": "Chỉ các đội được ghim vào bảng này được liệt kê, và các trận đã hoàn thành của họ được tính ở mọi bảng trong giai đoạn này cũng có cài đặt này. Các trận ở bảng không có cài đặt này không được tính. Hãy ghim các đội sau khi lưu. Chỉ áp dụng cho vòng tròn.",
+        "matchScopeNoTeams": "Chưa có đội nào được ghim vào bảng này nên bảng xếp hạng đang trống. Hãy gán đội cho bảng trước.",
+        "matchScopeSwitchWarning": "Chuyển sang phạm vi giai đoạn sẽ chỉ liệt kê các đội đã ghim. Những đội đã thi đấu trong bảng này nhưng chưa được ghim sẽ biến mất khỏi bảng xếp hạng cho đến khi bạn ghim họ."
       },
       "bracketPage": {
         "title": "Quản lý nhánh đấu",
@@ -4347,6 +4489,48 @@
               "relay": "Riot không trả về trận đấu này, hãy thử lại sau. Dữ liệu hiện có được giữ nguyên.",
               "other": "Không thể thực hiện việc lấy dữ liệu, hãy kiểm tra trang bản đồ. Dữ liệu hiện có được giữ nguyên."
             }
+          },
+          "league": {
+            "description": "Dán '{{Match}}' trên Liquipedia của series này. Các ván và draft sẽ được điền vào chỗ còn trống.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Nhập wikicode này? Các ván và draft còn trống sẽ được điền. Dữ liệu Riot và Leaguepedia, draft đã chỉnh tay và mọi thứ đã nhập sẽ được giữ nguyên.",
+            "importSuccess": "Đã nhập wikicode: các ván và draft đã được cập nhật.",
+            "liquipediaHint": "Các đối thủ (opponent1, opponent2) cũng được lưu làm tên Liquipedia của các đội.",
+            "error": {
+              "missingTeams": "Phải đặt cả hai đội trước khi nhập các ván.",
+              "oneMatchOnly": "Wikicode phải chứa đúng một '{{Match}}'.",
+              "noGames": "Không tìm thấy ván đã chơi nào trong wikicode này.",
+              "unknownChampions": "Có tướng không xác định trong wikicode: {names}. Chưa nhập gì cả.",
+              "duplicateChampion": "Ván {order}: {champion} xuất hiện nhiều hơn một lần trong draft. Chưa nhập gì cả.",
+              "championsUnavailable": "Danh sách tướng của bản vá này hiện không khả dụng nên không thể kiểm tra tên. Chưa nhập gì cả, hãy thử lại sau."
+            },
+            "results": {
+              "forfeit": "Wikicode cho thấy một trận bỏ cuộc. Chưa nhập gì cả, hãy đặt kết quả bỏ cuộc cho trận bằng tay.",
+              "gameLabel": "Ván {order}",
+              "created": "Ván được tạo từ wikicode.",
+              "filled": "Đã điền: {fields}.",
+              "differs": "Khác với wikicode, được giữ lại: {fields}.",
+              "field": {
+                "winner": "đội thắng",
+                "duration": "thời lượng"
+              },
+              "draft": {
+                "written": "Đã nhập draft.",
+                "kept": {
+                  "editedByHand": "Giữ draft: draft đã được chỉnh tay.",
+                  "riotData": "Giữ draft: ván này có dữ liệu Riot.",
+                  "leaguepediaData": "Giữ draft: ván này có dữ liệu Leaguepedia.",
+                  "existingDraft": "Giữ draft: ván này đã có draft."
+                },
+                "none": {
+                  "noDraft": "Wikicode không có draft.",
+                  "noSide": "Chưa nhập draft: wikicode không cho biết đội 1 chơi ở phe nào."
+                }
+              },
+              "patchSet": "Đã đặt bản vá {patch} cho trận.",
+              "bestOfDiffers": "Wikicode ghi best of {bestOf}, trận giữ nguyên giá trị của mình.",
+              "firstPickAssumed": "Wikicode không cho biết ai chọn trước, nên đã giả định là phe xanh. Hãy kiểm tra draft."
+            }
           }
         },
         "veto": {
@@ -4513,7 +4697,294 @@
             "mergeMapNotFound": "Bản đồ này không còn tồn tại."
           }
         },
-        "liquipediaImportButton": "Nhập trận đấu từ Liquipedia"
+        "liquipediaImportButton": "Nhập trận đấu từ Liquipedia",
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft của ván {order}",
+          "backToMatch": "Quay lại trận đấu",
+          "description": "Thứ tự cấm và chọn tướng của ván này. Để trống một bước nếu bước đó không được dùng.",
+          "differsWarning": "Bản nhập không khớp với draft đã lưu: lần nhập lại cho ra các tướng khác. Hãy kiểm tra draft và lưu để giữ bản của bạn.",
+          "blueSide": "Đội xanh",
+          "blueLockedHint": "Do bản nhập quyết định (đội xanh của Riot).",
+          "firstPickLockedHint": "Do bản nhập quyết định (bên đã cấm tướng đầu tiên).",
+          "firstPick": "Chọn trước",
+          "phase": {
+            "ban1": "Giai đoạn cấm 1",
+            "pick1": "Giai đoạn chọn 1",
+            "ban2": "Giai đoạn cấm 2",
+            "pick2": "Giai đoạn chọn 2"
+          },
+          "side": {
+            "blue": "Xanh",
+            "red": "Đỏ"
+          },
+          "type": {
+            "ban": "Cấm",
+            "pick": "Chọn"
+          },
+          "noChampion": "Không có tướng",
+          "searchPlaceholder": "Tìm tướng",
+          "noResults": "Không có tướng nào khớp",
+          "unplacedTitle": "Lượt chọn chưa được xếp vị trí",
+          "save": "Lưu draft",
+          "saving": "Đang lưu…",
+          "saved": "Đã lưu draft",
+          "error": {
+            "notFound": "Không tìm thấy ván này.",
+            "entrantsUnset": "Cần xác định hai đội của trận đấu trước.",
+            "blueNotAnEntrant": "Đội xanh phải là một trong hai đội của trận đấu.",
+            "blueLocked": "Đội xanh của ván đã nhập do bản nhập quyết định.",
+            "firstPickLocked": "Bên chọn trước của ván đã nhập do bản nhập quyết định.",
+            "invalidFirstPick": "Bên chọn trước phải là xanh hoặc đỏ.",
+            "invalidStep": "Bước {step} không tồn tại hoặc bị đưa ra hai lần.",
+            "unknownChampion": "{championName} không có trong danh sách tướng.",
+            "duplicateChampion": "{championName} xuất hiện nhiều hơn một lần trong draft.",
+            "invalidSide": "Lượt chọn chưa được đặt phải thuộc đội xanh hoặc đội đỏ.",
+            "championsUnavailable": "Danh sách tướng của bản vá này hiện không khả dụng, hãy thử lại sau.",
+            "invalidDraft": "Bản draft đã gửi không hợp lệ. Hãy tải lại trang và thử lại."
+          }
+        },
+        "games": {
+          "heading": "Các ván",
+          "description": "Các ván đã diễn ra trong loạt trận này, theo thứ tự.",
+          "empty": "Chưa có ván nào.",
+          "gameLabel": "Ván {order}",
+          "winnerLabel": "Thắng: {name}",
+          "noWinner": "Chưa có đội thắng",
+          "finished": "Đã kết thúc",
+          "notFinished": "Chưa kết thúc",
+          "draftButton": "Draft",
+          "draftDiffers": "Bản nhập khác với draft đã lưu",
+          "forfeit": "Bỏ cuộc",
+          "cancel": "Hủy",
+          "save": "Lưu",
+          "saving": "Đang lưu…",
+          "createButton": "Thêm ván",
+          "createTitle": "Thêm ván",
+          "editTitle": "Sửa ván",
+          "dialogDescription": "Nhập kết quả của một ván trong loạt trận này.",
+          "editButton": "Sửa",
+          "deleteButton": "Xóa",
+          "deleteTitle": "Xóa ván",
+          "deleteConfirm": "Xóa ván {order}? Tỷ số trận đấu sẽ được tính lại từ các ván còn lại.",
+          "deleteError": "Không thể xóa ván.",
+          "deleteSuccess": "Đã xóa ván.",
+          "saveError": "Không thể lưu ván.",
+          "saveSuccess": "Đã lưu ván.",
+          "fieldOrder": "Thứ tự",
+          "fieldWinner": "Đội thắng",
+          "fieldWinnerNone": "Chưa có đội thắng",
+          "fieldCompleted": "Đã hoàn thành",
+          "fieldForfeit": "Bỏ cuộc",
+          "fieldNote": "Ghi chú",
+          "fieldError": {
+            "invalid": "Hãy nhập giá trị hợp lệ.",
+            "tooLong": "Quá dài.",
+            "duplicateOrder": "Một ván khác đã dùng thứ tự này.",
+            "winnerRequired": "Ván đã hoàn thành cần có đội thắng.",
+            "notAnEntrant": "Đội thắng phải là một trong hai đội.",
+            "notCompleted": "Hãy đánh dấu ván là đã hoàn thành để chọn đội thắng.",
+            "invalidMatchId": "Dùng định dạng EUW1_6123456789: mã nền tảng, dấu gạch dưới, rồi đến số trận.",
+            "duplicateMatchId": "Một ván khác đã dùng Riot match ID này."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "Ví dụ EUW1_6123456789. Nền tảng được đọc từ ID này.",
+          "find": {
+            "open": "Tìm ván đấu",
+            "openLabel": "Tìm ván đấu trên Riot",
+            "openHint": "Tìm các ván chơi bằng mã giải đấu. Không dùng được cho các ván chơi trên client giải đấu.",
+            "title": "Tìm ván đấu",
+            "description": "Tìm các ván đấu chơi bằng mã giải đấu trong lịch sử trận của các tuyển thủ.",
+            "relayWarning": "Tìm ván đấu chỉ hoạt động khi relay Riot có khóa API League of Legends còn dùng được. Khóa phát triển hết hạn sau 24 giờ.",
+            "teamAccounts": "{name}: {count}/{total} tuyển thủ có tài khoản Riot",
+            "regionInferred": "Đang tìm trên {cluster}, theo khu vực giải đấu.",
+            "regionLabel": "Tìm trên",
+            "regionAsk": "Khu vực giải đấu không cho biết các ván được chơi ở đâu. Hãy chọn một khu vực.",
+            "regionUnsupported": "Không thể tìm các ván đấu trên máy chủ Trung Quốc.",
+            "windowStart": "Từ",
+            "windowEnd": "Đến",
+            "windowHint": "Bắt đầu trước giờ dự kiến một tiếng và kết thúc sau bốn tiếng. Hãy đổi nếu loạt đấu diễn ra vào lúc khác.",
+            "noSchedule": "Loạt đấu này chưa có giờ dự kiến. Hãy nhập khoảng thời gian.",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "Tài khoản của một tuyển thủ, ví dụ tài khoản phụ. Chỉ được lưu khi nó xuất hiện trong ván đấu bạn lưu.",
+            "riotIdRequired": "Chưa đội nào có tài khoản Riot ở khu vực này. Hãy nhập ít nhất một Riot ID.",
+            "addRiotId": "Thêm nữa",
+            "search": "Tìm",
+            "searching": "Đang tìm…",
+            "resultsCount": "{count, plural, other {Tìm thấy # ván đấu}}",
+            "minutes": "{minutes} phút",
+            "sideSummary": "{team} · biết {known}/{players}",
+            "sideUnknown": "đội không xác định",
+            "badgeBoth": "Tìm thấy cả hai đội",
+            "badgeOne": "Chỉ tìm thấy {name}, hãy kiểm tra đối thủ",
+            "badgeNames": "{count}/{total} tên khớp với {name}",
+            "badgeImported": "Đã nhập thành ván {order}",
+            "badgeImportedElsewhere": "Đã nhập ở loạt đấu khác",
+            "badgeRemake": "Chơi lại?",
+            "badgeRiotIds": "Có {count}/{total} Riot ID của bạn",
+            "use": "Dùng ván này",
+            "emptyTitle": "Không tìm thấy ván đấu nào. Nguyên nhân có thể:",
+            "emptyNoCode": "Phòng không có mã giải đấu. Hãy dán ID trận hoặc dùng Leaguepedia.",
+            "emptyOtherAccount": "Một tuyển thủ đã dùng tài khoản khác. Hãy thử Riot ID khác.",
+            "emptyWindow": "Khoảng thời gian chưa đúng. Hãy mở rộng ra.",
+            "emptyRegion": "Các ván được chơi ở khu vực khác. Hãy tìm ở đó.",
+            "error": {
+              "windowInvalid": "Khoảng thời gian tối đa là 48 giờ.",
+              "generic": "Không thể chạy tìm kiếm."
+            },
+            "incompleteRateLimited": "Riot đã giới hạn {failed} trong {total} lượt tra cứu, nên danh sách này có thể thiếu hoặc lẫn ván của loạt trận khác. Hãy đợi một phút rồi tìm lại.",
+            "incomplete": "{failed} trong {total} lượt tra cứu thất bại, nên danh sách này có thể thiếu hoặc lẫn ván của loạt trận khác. Hãy tìm lại."
+          },
+          "gameImport": {
+            "label": "Ván trên Leaguepedia",
+            "none": "Không có",
+            "noData": "không có dữ liệu",
+            "gameNumber": "Ván {number}",
+            "fetch": "Lấy từ Leaguepedia",
+            "fetching": "Đang lấy…",
+            "renew": "Làm mới",
+            "reprocess": "Xử lý lại",
+            "success": "Đã lưu ván từ Leaguepedia",
+            "error": {
+              "invalidMapping": "Liên kết người chơi đã gửi không hợp lệ. Hãy tải lại trang và thử lại.",
+              "handleTooLong": "Tên người chơi mới quá dài (tối đa {max} ký tự).",
+              "noData": "Ván này không có dữ liệu V5 trên Leaguepedia.",
+              "notInBucket": "Ván này chưa có trong bucket. Hãy lấy nó trước.",
+              "pageInvalid": "Các trang Leaguepedia của ván này không phải dữ liệu trận đấu hợp lệ.",
+              "fetch": "Không thể đọc Leaguepedia. Hãy thử lại sau.",
+              "missingConfig": "Chưa thiết lập đăng nhập bot Leaguepedia trên máy chủ này.",
+              "sidesUnresolved": "Hai đội của ván này không khớp với hai đội tham gia của loạt trận.",
+              "missingPlayers": "{count, plural, other {# tuyển thủ chưa được liên kết với một người}}",
+              "invalidUpload": "Dữ liệu ván không vượt qua các bước kiểm tra khi nhập.",
+              "storeFailed": "Không thể lưu ván.",
+              "invalidOrder": "Số ván phải là số nguyên từ 1 trở lên.",
+              "accountConflict": "Một tài khoản Riot đã được liên kết với người khác.",
+              "sidesInvalid": "Hãy chọn hai đội tham gia khác nhau cho bên xanh và bên đỏ.",
+              "roleInvalid": "Một vị trí trong thay đổi không hợp lệ.",
+              "orderTaken": "Ván {order} của loạt trận này đã được lưu với dữ liệu khác. Hãy chọn số ván khác rồi lưu lại.",
+              "dataDragonUnavailable": "Hiện không có tên tướng, hãy thử lại sau.",
+              "unknownChampions": "Champion id không xác định: {ids}",
+              "storageUnavailable": "Không thể kết nối tới bucket nhập LoL. Hãy kiểm tra cấu hình rồi thử lại.",
+              "duplicateAccount": "Cùng một tài khoản Riot được liên kết hai lần. Mỗi tài khoản chỉ liên kết một lần.",
+              "tournamentRealm": "Ván này được chơi trên tournament realm. Hãy lấy nó từ Leaguepedia thay thế.",
+              "duplicatePerson": "Hai tuyển thủ của ván này được liên kết với cùng một người. Hãy liên kết mỗi tuyển thủ với một người khác nhau.",
+              "matchIdMismatch": "Dữ liệu ván đã tải không phải của trận đấu được yêu cầu. Chưa lưu gì cả.",
+              "invalidGame": "Ván cần nhập không hợp lệ. Hãy chọn một ván trên Leaguepedia hoặc nhập ID trận Riot."
+            },
+            "searchPlaceholder": "Tìm theo đội, ván hoặc ngày",
+            "noResults": "Không có ván nào khớp",
+            "previewTitle": "Kiểm tra ván",
+            "previewDescription": "Chọn đội tham gia cho mỗi bên, và liên kết mọi tuyển thủ chưa được liên kết.",
+            "back": "Quay lại",
+            "saveGame": "Lưu ván",
+            "sideBlue": "Xanh",
+            "sideRed": "Đỏ",
+            "sidesTitle": "Các bên",
+            "blueSide": "Bên xanh",
+            "redSide": "Bên đỏ",
+            "chooseEntrant": "Chọn đội tham gia",
+            "suggestedPlayers": "Gợi ý từ các tuyển thủ đã liên kết",
+            "suggestedNames": "Gợi ý từ tên đội",
+            "winnerLabel": "Thắng: {name}",
+            "noWinner": "Không có đội thắng",
+            "lengthLabel": "Thời lượng: {minutes} phút",
+            "playersTitle": "Tuyển thủ",
+            "notLinked": "Chưa liên kết",
+            "linkExisting": "Liên kết với người có sẵn",
+            "createNew": "Tạo mới",
+            "newHandle": "Tên của người mới",
+            "unresolvedHint": "Hãy liên kết hoặc tạo một người cho mỗi tuyển thủ chưa được liên kết.",
+            "suggestedPeople": "Gợi ý từ đội:",
+            "realmLive": "trực tiếp",
+            "realmTournament": "máy chủ giải đấu",
+            "accountNote": "Thêm một tài khoản khác ({realm}, {platform}). {handle} đã có: {existing}.",
+            "roleLabel": "Vị trí",
+            "roleNone": "Không có vị trí",
+            "positionRole": "Vị trí trên bản đồ gợi ý {role}",
+            "alreadyStoredHere": "đã lưu là ván {order} của loạt trận này",
+            "alreadyStoredElsewhere": "đã lưu trong loạt trận khác",
+            "refreshGames": "Làm mới danh sách ván",
+            "refreshCooldown": "Đã làm mới cách đây chưa đến một giờ. Hãy thử lại sau.",
+            "refreshed": "Đã làm mới danh sách ván ({count} ván)",
+            "refreshError": "Không thể làm mới danh sách ván. Hãy thử lại sau.",
+            "riotFetch": "Lấy từ Riot",
+            "riotSuccess": "Đã lưu ván từ Riot",
+            "riotTournamentRealm": "Ván này được chơi trên tournament realm nên không thể lấy từ Riot API."
+          },
+          "lineupButton": "Đội hình ra sân"
+        },
+        "lineup": {
+          "metaTitle": "Đội hình ra sân",
+          "backToMatch": "Quay lại trận",
+          "title": "Đội hình ván {order}",
+          "description": "Ai đã chơi ván này, ở đường nào và với tướng nào. Dành cho các ván không có dữ liệu Riot hay Leaguepedia; lần nhập sau sẽ thay thế nó.",
+          "importedHint": "Ván này có dữ liệu Riot hoặc Leaguepedia nên tuyển thủ đến từ dữ liệu nhập.",
+          "fromPreviousGame": "Được điền từ ván trước của loạt trận. Kiểm tra tuyển thủ, thêm tướng rồi lưu.",
+          "withStats": "Thêm bảng điểm",
+          "withStatsHint": "Số hạ gục, bị hạ, hỗ trợ và CS của cả mười tuyển thủ, cùng thời lượng ván. Vàng, sát thương và tầm nhìn có thể để trống. Không có bảng điểm, ván vẫn được tính cho số ván, tỉ lệ thắng và tướng, nhưng không tính vào các chỉ số trung bình.",
+          "duration": "Thời lượng ván (m:ss)",
+          "draftPicks": "Đã chọn trong draft: {champions}",
+          "player": "Tuyển thủ",
+          "pickPlayer": "Chọn tuyển thủ",
+          "searchPlayer": "Tìm tuyển thủ…",
+          "newPlayer": "+ Tuyển thủ mới",
+          "newPlayerHandle": "Tên tuyển thủ mới",
+          "newPlayerTag": "(mới)",
+          "clearPlayer": "Xóa tuyển thủ",
+          "champion": "Tướng",
+          "unknownChampion": "Không rõ",
+          "searchChampion": "Tìm tướng…",
+          "noResults": "Không có kết quả.",
+          "stat": {
+            "kills": "Hạ gục",
+            "deaths": "Bị hạ",
+            "assists": "Hỗ trợ",
+            "cs": "CS",
+            "gold": "Vàng",
+            "damage": "Sát thương",
+            "vision": "Tầm nhìn"
+          },
+          "save": "Lưu đội hình",
+          "saving": "Đang lưu…",
+          "saved": "Đã lưu đội hình.",
+          "error": {
+            "invalidInput": "Đội hình đã gửi không hợp lệ. Hãy tải lại trang và thử lại.",
+            "notFound": "Ván này không thuộc trận đấu.",
+            "entrantsUnset": "Cần đặt cả hai đội của trận trước.",
+            "importedGame": "Ván này có dữ liệu Riot hoặc Leaguepedia; không thể sửa đội hình bằng tay.",
+            "unknownPerson": "Một trong các tuyển thủ không còn tồn tại.",
+            "problem": {
+              "notAnEntrant": "Một tuyển thủ thuộc đội không có trong trận này.",
+              "invalidLane": "Một đường không hợp lệ.",
+              "duplicateLane": "{lane} bị điền hai lần cho một đội.",
+              "duplicatePerson": "Một tuyển thủ có mặt hai lần trong đội hình.",
+              "invalidHandle": "Tuyển thủ mới cần có tên.",
+              "unknownChampion": "{championName} không phải tướng của bản cập nhật này.",
+              "duplicateChampion": "{championName} được chọn hai lần.",
+              "championsUnavailable": "Không tải được tướng của bản cập nhật này. Hãy thử lại sau hoặc để trống tướng.",
+              "invalidStat": "Nhập một số nguyên từ 0 đến {max}.",
+              "durationRequired": "Bảng điểm cần thời lượng ván (m:ss).",
+              "playerMissing": "Bảng điểm cần một tuyển thủ ở mỗi đường của cả hai đội.",
+              "statMissing": "Cần cho bảng điểm.",
+              "buildUnavailable": "Không tải được phép bổ trợ, ngọc và trang bị của bản cập nhật này. Hãy thử lại sau hoặc để trống.",
+              "unknownBuildPart": "Không có trong bản cập nhật này.",
+              "duplicateSummoner": "Đã là phép bổ trợ còn lại.",
+              "secondaryTreeOfKeystone": "Đây là nhánh của ngọc chính; hãy chọn nhánh khác."
+            },
+            "createNotAllowed": "Bạn không được phép tạo người chơi. Hãy chọn người chơi có sẵn."
+          },
+          "build": "Trang bị & ngọc",
+          "buildSet": "đã nhập",
+          "buildUnavailable": "Không tải được phép bổ trợ, ngọc và trang bị của bản cập nhật này. Hãy thử lại sau.",
+          "summoner": "Phép bổ trợ {slot}",
+          "keystone": "Ngọc chính",
+          "secondaryTree": "Nhánh phụ",
+          "item": "Trang bị {slot}",
+          "trinket": "Phụ kiện",
+          "empty": "Trống",
+          "search": "Tìm…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4790,8 +5261,39 @@
         "doneDescription": "Đã nhập xong.",
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Đang nhập và lấy dữ liệu Riot, việc này có thể mất một lúc.",
-        "close": "Đóng"
-      }
+        "close": "Đóng",
+        "league": {
+          "dialogDescription": "Dán wikicode của trận. Các ván và draft sẽ được điền vào chỗ còn trống.",
+          "importingHint": "Đang nhập, việc này có thể mất một lúc.",
+          "legend": {
+            "partial": "Ván chưa có dữ liệu người chơi hoặc draft",
+            "done": "Ván nào cũng có dữ liệu người chơi và draft"
+          }
+        }
+      },
+      "leaguepedia": {
+        "title": "Các ván trên Leaguepedia",
+        "description": "Danh sách ván lấy từ các bảng Cargo của Leaguepedia, cho trang gốc và mọi trang bên dưới nó.",
+        "basePageLabel": "Trang gốc trên Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Khi lưu, các ván sẽ được đọc từ Leaguepedia. Nếu việc đọc thất bại thì sẽ không lưu gì.",
+        "save": "Lưu và lấy các ván",
+        "saving": "Đang lấy…",
+        "refresh": "Làm mới từ Leaguepedia",
+        "lastFetched": "Lấy lần cuối {date} · {count, plural, other {# ván}}",
+        "neverFetched": "Chưa lấy",
+        "success": "Đã lấy {count, plural, other {# ván}}",
+        "error": {
+          "gameClaimed": "Các ván này đã thuộc về giải đấu khác nên không thể liên kết ở đây.",
+          "invalidBasePage": "Dùng tên trang không có # < > [ ] | '{ }', và không có dấu / ở đầu hoặc cuối.",
+          "notFound": "Không tìm thấy giải đấu.",
+          "notLinked": "Hãy lưu trang gốc trước.",
+          "cooldown": "Danh sách ván được đọc cách đây chưa đến một giờ. Hãy thử lại sau.",
+          "missingConfig": "Chưa thiết lập đăng nhập bot Leaguepedia trên máy chủ này.",
+          "fetch": "Không thể đọc Leaguepedia. Hãy thử lại sau."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Báo cáo",
@@ -5238,6 +5740,9 @@
       "copyOverlay": "Liên kết lớp phủ",
       "overlayCopied": "Đã sao chép liên kết lớp phủ, hãy thêm nó làm browser source."
     },
+    "personPicker": {
+      "notInGame": "Chưa có trong {game}"
+    },
     "rosterSource": {
       "placeholder": "Liên kết thông báo",
       "error": {
@@ -5483,7 +5988,6 @@
         "staff_change": "Thay đổi staff",
         "tryouts": "Tryouts",
         "not_enough_info": "Chưa đủ thông tin",
-
         "wrong_game": "Sai game",
         "noise": "Nhiễu",
         "match_promo": "Quảng bá trận đấu",
@@ -5526,7 +6030,6 @@
         "explanation": "Giải thích",
         "explanationPlaceholder": "Vì sao không liên quan đến đội hình?",
         "confirm": "Xác nhận",
-
         "pickTopic": "Nội dung nói về gì?"
       },
       "reviewed": {
@@ -5996,7 +6499,8 @@
       "level": {
         "tournament": "Giải đấu",
         "match": "Trận đấu",
-        "map": "Bản đồ"
+        "map": "Bản đồ",
+        "game": "Ván"
       },
       "matchSearchPlaceholder": "Tìm một trận đấu…",
       "mapSearchPlaceholder": "Tìm một bản đồ…",
@@ -6015,7 +6519,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Trận đấu",
       "openMaps": "Bản đồ",
-      "goBack": "Quay lại"
+      "goBack": "Quay lại",
+      "gameEmpty": "Trận đấu này không có ván nào.",
+      "gameSearchPlaceholder": "Tìm một ván…",
+      "openGames": "Các ván"
     },
     "streams": {
       "title": "Kênh stream",
@@ -6153,8 +6660,14 @@
         "matchNotInTournament": "Trận đấu này không thuộc giải đấu đã chọn.",
         "mapNotFound": "Không tìm thấy bản đồ.",
         "mapNotInMatch": "Bản đồ này không thuộc trận đấu đã chọn.",
-        "notFound": "Không tìm thấy VOD."
-      }
+        "notFound": "Không tìm thấy VOD.",
+        "gameNotFound": "Không tìm thấy ván.",
+        "gameNotInMatch": "Ván này không thuộc trận đấu đã chọn."
+      },
+      "scopeGame": "Một ván cụ thể",
+      "gameLabel": "Ván",
+      "gamePlaceholder": "Chọn một ván…",
+      "gameLoading": "Đang tải…"
     },
     "apiKeys": {
       "title": "Khóa API",
@@ -7427,7 +7940,8 @@
       "state": {
         "linkedToYou": "Hồ sơ này đã được liên kết với tài khoản của bạn.",
         "linkedToOther": "Hồ sơ này đã được liên kết với một tài khoản khác. Hãy liên hệ đội ngũ nếu bạn cho rằng đây là nhầm lẫn.",
-        "pending": "Bạn đã có một yêu cầu liên kết tài khoản đang chờ xem xét."
+        "pending": "Bạn đã có một yêu cầu liên kết tài khoản đang chờ xem xét.",
+        "linkedToAnotherPerson": "Tài khoản của bạn đã được liên kết với một tuyển thủ khác. Nếu hai hồ sơ là cùng một người, hãy nhờ ban quản trị gộp chúng lại."
       }
     },
     "error": {
@@ -7458,6 +7972,7 @@
       "invalidType": "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP.",
       "tooSmall": "Bức ảnh này quá nhỏ (tối thiểu 400 px ở cạnh ngắn nhất).",
       "invalidDiscordId": "Nhập ID người dùng Discord hợp lệ (17 đến 20 chữ số) hoặc lời mời máy chủ (discord.gg/...).",
+      "userLinkOtherPerson": "Tài khoản của bạn đã được liên kết với một tuyển thủ khác. Nếu hai hồ sơ là cùng một người, hãy nhờ ban quản trị gộp chúng lại.",
       "sourceTooLong": "Liên kết này quá dài (tối đa 500 ký tự).",
       "invalidSource": "Tùy chọn này không khả dụng ở đây.",
       "leftSourceRequiresLeft": "Nguồn rời đi yêu cầu thành viên phải được đánh dấu là đã rời."
@@ -7533,6 +8048,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "Thống kê",
     "tabMaps": "Bản đồ",
+    "tabChampions": "Tướng",
+    "championsEmpty": "Chưa có ván nào được chơi.",
+    "championsRolesColumn": "Vị trí",
+    "championsRoleBansNote": "Lượt cấm và tỷ lệ xuất hiện được tính cho mọi vị trí.",
+    "championsInsightMostPicked": "Được chọn nhiều nhất",
+    "championsInsightMostBanned": "Bị cấm nhiều nhất",
+    "championsInsightHighestPresence": "Tỷ lệ xuất hiện cao nhất",
+    "championsInsightHighestWinRate": "Tỷ lệ thắng cao nhất",
+    "championsInsightHighestKda": "KDA cao nhất",
     "tabProduction": "Sản xuất",
     "productionTitle": "{tournament} · Sản xuất",
     "statsGroupByLabel": "Nhóm theo",
@@ -7567,6 +8091,15 @@
     "statsFilterAgentAll": "Tất cả tướng",
     "statsFilterMap": "Bản đồ",
     "statsFilterMapAll": "Tất cả bản đồ",
+    "statsChampionColumn": "Tướng",
+    "statsFilterChampion": "Tướng",
+    "statsFilterChampionAll": "Tất cả các tướng",
+    "statsFilterChampionSearch": "Tìm tướng…",
+    "statsFilterChampionNoResult": "Không tìm thấy tướng",
+    "statsFilterRole": "Vị trí",
+    "statsFilterRoleAll": "Tất cả vị trí",
+    "statsFilterPatch": "Phiên bản",
+    "statsFilterPatchAll": "Tất cả phiên bản",
     "statsFilterStartDate": "Từ",
     "statsFilterEndDate": "Đến",
     "statsFilterSubmit": "Áp dụng bộ lọc",
@@ -7585,6 +8118,22 @@
     "pageOf": "Trang {page} trên {total}",
     "statsColumns": {
       "played": "Bản đồ",
+      "playedGames": "Số ván",
+      "winRate": "Tỷ lệ thắng",
+      "picks": "Lượt chọn",
+      "bans": "Lượt cấm",
+      "presence": "Tỷ lệ xuất hiện",
+      "kp": "KP",
+      "csPerMinute": "CS/phút",
+      "goldPerMinute": "Vàng/phút",
+      "damagePerMinute": "Sát thương/phút",
+      "visionPerMinute": "Tầm nhìn/phút",
+      "goldDiff10": "Chênh lệch vàng @10",
+      "goldDiff15": "Chênh lệch vàng @15",
+      "xpDiff10": "Chênh lệch XP @10",
+      "xpDiff15": "Chênh lệch XP @15",
+      "csDiff10": "Chênh lệch CS @10",
+      "csDiff15": "Chênh lệch CS @15",
       "roundsPlayed": "Round",
       "rating": "Rating",
       "acs": "ACS",
@@ -7628,7 +8177,8 @@
     "mapsPickRatesShowMore": "Hiện tất cả",
     "mapsPickRatesShowLess": "Hiện ít hơn",
     "factOrganizer": "Đơn vị tổ chức",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Ván"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7886,7 +8436,8 @@
     "copied": "Đã sao chép",
     "copyError": "Không thể sao chép hình ảnh. Hãy tải xuống thay thế.",
     "exporting": "Đang tạo",
-    "exportError": "Không thể tạo hình ảnh. Hãy thử lại."
+    "exportError": "Không thể tạo hình ảnh. Hãy thử lại.",
+    "descriptionGames": "Ảnh PNG rộng {width} px, sẵn sàng để chia sẻ. Chọn tất cả các ván hoặc chỉ một ván."
   },
   "share": {
     "button": "Chia sẻ",
@@ -8286,5 +8837,26 @@
       "multikills_4k": "4K",
       "multikills_5k": "5K"
     }
+  },
+  "leaguepediaSource": {
+    "text": "Một số dữ liệu ván trên trang này lấy từ Leaguepedia (CC BY-SA). Xem các trang gốc:",
+    "game": "Ván {order}"
+  },
+  "lanes": {
+    "TOP": "Đường trên",
+    "JUNGLE": "Đi rừng",
+    "MIDDLE": "Đường giữa",
+    "BOTTOM": "Xạ thủ",
+    "UTILITY": "Hỗ trợ",
+    "label": "Đường",
+    "fromGames": "Theo các trận:",
+    "invalid": "Chỉ có thể chọn năm đường."
+  },
+  "game": {
+    "switcherLabel": "Game",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "Chưa công khai",
+    "previewBanner": "{game} chưa công khai. Chỉ quản trị viên mới xem được trang này."
   }
 }

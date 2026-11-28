@@ -8,8 +8,9 @@
 
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 import { PERMISSIONS } from "@gc-stats/db";
-import { requireAdminAccess } from "@/lib/rbac";
+import { getGlobalAccess, requireAdminAccess } from "@/lib/rbac";
 import { getAdminChangeRequestCounts } from "@/lib/admin-change-requests";
 import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
@@ -36,17 +37,36 @@ export default async function AdminLayout({
 }) {
   const { locale } = await params;
   const access = await requireAdminAccess(locale as AppLocale);
+  // Each game's sidebar group shows what the viewer may do in that game, and only for a game she can administer.
+  // The other sections are not per game: their pages check the every-game permissions, so the sidebar does too.
+  const perGame = await Promise.all(GAMES.map((game) => getGlobalAccess(access.userId, game)));
+  const gameAccess = GAMES.map((game, i) => ({
+    game,
+    permissions: [...perGame[i]!.permissions],
+    isSuperAdmin: perGame[i]!.isSuperAdmin,
+    isGameAdmin: perGame[i]!.isGameAdmin,
+  }));
 
   const can = (permission: string) => access.isSuperAdmin || access.permissions.has(permission);
-  const [changeRequests, discordImages, reports, rosterWatch, moderation] = await Promise.all([
-    can(PERMISSIONS.changeRequestsView) ? getAdminChangeRequestCounts().then((counts) => counts.pending > 0) : false,
+  // Change requests exist per game: each game's item gets its own dot.
+  const pendingChangeRequests = Promise.all(
+    gameAccess.map(async ({ game, permissions, isSuperAdmin }) => {
+      const canSee = isSuperAdmin || permissions.includes(PERMISSIONS.changeRequestsView);
+      return [game, canSee && (await getAdminChangeRequestCounts(game)).pending > 0] as const;
+    })
+  ).then((pending) => {
+    const byGame = {} as Record<GameSlug, Record<string, boolean>>;
+    for (const [game, hasPending] of pending) byGame[game] = { "/admin/change-requests": hasPending };
+    return byGame;
+  });
+  const [gameAlerts, discordImages, reports, rosterWatch, moderation] = await Promise.all([
+    pendingChangeRequests,
     can(PERMISSIONS.moderationView) ? countPendingDiscordImages().then((count) => count > 0) : false,
     can(PERMISSIONS.reportsView) ? getAdminReportCounts().then((counts) => counts.pending > 0) : false,
     can(PERMISSIONS.rosterWatchView) ? getRosterWatchTabCounts().then((counts) => counts.roster + counts.unsure > 0) : false,
     can(PERMISSIONS.moderationView) ? getAdminModerationSuspectCounts().then((counts) => counts.pending > 0) : false,
   ]);
   const alerts = {
-    "/admin/change-requests": changeRequests,
     "/admin/discord-images": discordImages,
     "/admin/reports": reports,
     "/admin/roster-watch": rosterWatch,
@@ -59,7 +79,9 @@ export default async function AdminLayout({
         <AdminSidebar
           permissions={[...access.permissions]}
           isSuperAdmin={access.isSuperAdmin}
+          games={gameAccess}
           alerts={alerts}
+          gameAlerts={gameAlerts}
         />
         <SidebarInset>
           <AdminHeader />

@@ -11,12 +11,12 @@
 
 import { sql } from "drizzle-orm";
 import { pgTable, bigserial, bigint, text, jsonb, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
-import { teams } from "./people";
+import { valTeams } from "./game-tables";
 import { users } from "./auth";
 
 export const teamInfoRequests = pgTable("team_info_requests", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
-  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => teams.id, { onDelete: "cascade" }),
+  teamId: bigint("team_id", { mode: "number" }).notNull().references(() => valTeams.id, { onDelete: "cascade" }),
   status: text("status").notNull().default("pending"), // 'pending' | 'done'
   // Items flagged red when the message was prepared: 'logo', a social key, 'roster'.
   items: jsonb("items").$type<string[]>().notNull().default([]),
@@ -38,7 +38,7 @@ export const teamInfoRequests = pgTable("team_info_requests", {
 // Private email of a team, used only to contact it. Kept apart from `teams` on purpose: that table is read
 // whole by public pages and the API, so a column there could leak. Only admin code reads this table.
 export const teamPrivateContacts = pgTable("team_private_contacts", {
-  teamId: bigint("team_id", { mode: "number" }).primaryKey().references(() => teams.id, { onDelete: "cascade" }),
+  teamId: bigint("team_id", { mode: "number" }).primaryKey().references(() => valTeams.id, { onDelete: "cascade" }),
   email: text("email").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

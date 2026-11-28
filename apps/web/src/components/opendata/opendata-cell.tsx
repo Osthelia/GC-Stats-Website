@@ -8,6 +8,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { withGame } from "@/lib/game-href";
 import { CountryBadge } from "@/components/team/country-badge";
 import { FormattedDate } from "@/components/formatted-date";
 import type { OpenDataColumnMeta, OpenDataRow } from "@/lib/opendata/datasets-meta";
@@ -33,7 +34,8 @@ export function OpenDataCell({ column, row }: { column: OpenDataColumnMeta; row:
   const linkId = column.link ? row[column.link.linkIdKey ?? column.key] : null;
   const wrapLink = (content: React.ReactNode) =>
     column.link && linkId != null ? (
-      <Link href={`${column.link.path}/${linkId}`} className="text-neutral-100 underline-offset-4 transition-colors hover:text-[#e4ae22] hover:underline active:opacity-70">
+      // The datasets are Valorant's, so the links name the game rather than taking the viewer's.
+      <Link href={withGame(`${column.link.path}/${linkId}`, "valorant")} className="text-neutral-100 underline-offset-4 transition-colors hover:text-[#e4ae22] hover:underline active:opacity-70">
         {content}
       </Link>
     ) : (

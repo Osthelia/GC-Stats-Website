@@ -14,16 +14,17 @@
  */
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { teams, people, tournaments, organizations } from "@gc-stats/db";
+import { organizations, gameTables } from "@gc-stats/db";
 import { organizationHasNoTeam } from "@/lib/organization-team-link";
 import { typoVariants, stripAccents, stripSpecialChars } from "@/lib/search-typo";
 import { specialCharFoldedIlike, specialCharFoldedArrayIlike, specialCharExactRank, specialCharPrefixRank } from "@/lib/db-search";
 import { getEntityLogosBatch, themedLogoUrls } from "@/lib/admin-logos";
 import { slugify } from "@/lib/entity-id";
-import { DEFAULT_TEAM_LOGO_DARK, DEFAULT_TEAM_LOGO_LIGHT, DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTeamLogos, defaultTournamentLogo } from "@/lib/default-logos";
 import { abbreviateTournamentName } from "@/lib/home-data";
 import { visibleTeam, visiblePerson, visibleTournament } from "@/lib/ghost-visibility";
-import { getPopularity } from "@/lib/search-popularity";
+import type { GameSlug } from "@gc-stats/db/game";
+import { gameSqlTables, getPopularity } from "@/lib/search-popularity";
 
 export type SearchResultType = "team" | "player" | "tournament" | "organization";
 
@@ -58,15 +59,18 @@ const RECENCY_MAX_DAYS = 365;
 // Covers both other bonuses, an exact handle stays ahead of a longer one that is more recent or popular.
 const EXACT_MATCH_BONUS = RECENCY_BONUS + POPULARITY_CAP;
 
-// Latest map the person played, falling back to the match schedule for maps without a start time.
-// "people"."id" is spelled out so the subquery always correlates with the outer table.
-const lastPlayedAt = sql<string | null>`(
-  select max(coalesce(mp.started_at, m.scheduled_at))
-  from map_player_stats s
-  join maps mp on mp.id = s.map_id
-  join matches m on m.id = mp.match_id
-  where s.person_id = "people"."id"
-)`;
+// Latest map (or game) the person played, falling back to the match schedule when it has no start time.
+// The outer id is table qualified so the subquery always correlates with it.
+const lastPlayedAtSql = (game: GameSlug) => {
+  const t = gameSqlTables(game);
+  return sql<string | null>`(
+    select max(coalesce(sm.started_at, m.scheduled_at))
+    from ${t.playerStats} s
+    join ${t.series} sm on sm.id = s.${t.seriesKey}
+    join ${t.matches} m on m.id = sm.match_id
+    where s.person_id = ${t.people}.id
+  )`;
+};
 
 export function recencyBonus(lastPlayed: Date | null, now: Date = new Date()): number {
   if (!lastPlayed) return 0;
@@ -88,7 +92,8 @@ export function scoreMatch(name: string, term: string, termLen: number, populari
   return (folded.startsWith(term) ? 1000 : 0) + (folded.includes(term) ? 75 : 0) + Math.max(0, 100 - diff * 10) + Math.min(popularity, POPULARITY_CAP);
 }
 
-export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: number; candidateLimit?: number } = {}): Promise<SearchResults> {
+export async function searchGlobal(game: GameSlug, rawTerm: string, opts: { perTypeLimit?: number; candidateLimit?: number } = {}): Promise<SearchResults> {
+  const { teams, people, tournaments } = gameTables(game);
   // Defaults mirror V1's SearchService::search(perTypeLimit: 5, candidateLimit: 15)
   // — the header dropdown's defaults; the /search page passes SearchController's
   // own (50, 100) explicitly.
@@ -108,18 +113,19 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
   if (variants.length === 0) return EMPTY_RESULTS;
   const base = variants[0]!;
   const termLen = base.length;
+  const lastPlayedAt = lastPlayedAtSql(game);
 
   const [teamRows, playerRows, tournamentRows, organizationRows] = await Promise.all([
     db
       .select({ id: teams.id, name: teams.name, shortName: teams.shortName, countryCode: teams.countryCode, secondaryCountryCode: teams.secondaryCountryCode, isActive: teams.isActive })
       .from(teams)
-      .where(and(visibleTeam, or(...variants.flatMap((v) => [specialCharFoldedIlike(teams.name, v), specialCharFoldedIlike(teams.shortName, v)]))))
+      .where(and(visibleTeam(game), or(...variants.flatMap((v) => [specialCharFoldedIlike(teams.name, v), specialCharFoldedIlike(teams.shortName, v)]))))
       .orderBy(desc(teams.isActive), specialCharPrefixRank(teams.name, base))
       .limit(candidateLimit),
     db
       .select({ id: people.id, handle: people.handle, countryCode: people.countryCode, secondaryCountryCode: people.secondaryCountryCode, isActive: people.isActive, lastPlayedAt })
       .from(people)
-      .where(and(visiblePerson, or(...variants.map((v) => specialCharFoldedIlike(people.handle, v)))))
+      .where(and(visiblePerson(game), or(...variants.map((v) => specialCharFoldedIlike(people.handle, v)))))
       // Exact handles come before recency, so the limit never drops them.
       .orderBy(desc(people.isActive), specialCharExactRank(people.handle, base), specialCharPrefixRank(people.handle, base), sql`${lastPlayedAt} desc nulls last`)
       .limit(candidateLimit),
@@ -127,7 +133,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       .select({ id: tournaments.id, name: tournaments.name, region: tournaments.region })
       .from(tournaments)
       // V1 only ever searches active tournaments (Tournament::where('active', true)).
-      .where(and(eq(tournaments.active, true), visibleTournament, or(...variants.flatMap((v) => [specialCharFoldedIlike(tournaments.name, v), specialCharFoldedArrayIlike(tournaments.keywords, v)]))))
+      .where(and(eq(tournaments.active, true), visibleTournament(game), or(...variants.flatMap((v) => [specialCharFoldedIlike(tournaments.name, v), specialCharFoldedArrayIlike(tournaments.keywords, v)]))))
       .orderBy(specialCharPrefixRank(tournaments.name, base))
       .limit(candidateLimit),
     db
@@ -140,7 +146,7 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
           // fold of the name, on top of the folded name match.
           or(...variants.flatMap((v) => [specialCharFoldedIlike(organizations.name, v), specialCharFoldedIlike(organizations.slug, v)])),
           // A team-linked organization has no public page.
-          organizationHasNoTeam()
+          organizationHasNoTeam(game)
         )
       )
       .orderBy(specialCharPrefixRank(organizations.name, base))
@@ -148,17 +154,17 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
   ]);
 
   const [teamLogos, personLogos, tournamentLogos, organizationLogos] = await Promise.all([
-    getEntityLogosBatch("team", teamRows.map((t) => t.id)),
+    getEntityLogosBatch("team", teamRows.map((t) => t.id), game),
     getEntityLogosBatch("person", playerRows.map((p) => p.id)),
-    getEntityLogosBatch("tournament", tournamentRows.map((t) => t.id)),
+    getEntityLogosBatch("tournament", tournamentRows.map((t) => t.id), game),
     getEntityLogosBatch("organization", organizationRows.map((o) => o.id)),
   ]);
 
   const [teamPopularity, playerPopularity, tournamentPopularity, organizationPopularity] = await Promise.all([
-    getPopularity("team", teamRows.map((t) => t.id)),
-    getPopularity("player", playerRows.map((p) => p.id)),
-    getPopularity("tournament", tournamentRows.map((t) => t.id)),
-    getPopularity("organization", organizationRows.map((o) => o.id)),
+    getPopularity(game, "team", teamRows.map((t) => t.id)),
+    getPopularity(game, "player", playerRows.map((p) => p.id)),
+    getPopularity(game, "tournament", tournamentRows.map((t) => t.id)),
+    getPopularity(game, "organization", organizationRows.map((o) => o.id)),
   ]);
 
   const team: SearchResultItem[] = teamRows
@@ -176,8 +182,8 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       subtitle: t.shortName,
       countryCode: t.countryCode,
       secondaryCountryCode: t.secondaryCountryCode,
-      logoUrl: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").dark ?? DEFAULT_TEAM_LOGO_DARK,
-      logoUrlLight: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").light ?? DEFAULT_TEAM_LOGO_LIGHT,
+      logoUrl: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").dark ?? defaultTeamLogos(game).dark,
+      logoUrlLight: themedLogoUrls(teamLogos.get(t.id) ?? [], "team").light ?? defaultTeamLogos(game).light,
       // team/player use a separate id/slug segment pair (/team/{id}/{slug}), same as tournaments.
       path: `team/${t.id}/${slugify(t.name)}`,
       score,
@@ -221,8 +227,8 @@ export async function searchGlobal(rawTerm: string, opts: { perTypeLimit?: numbe
       subtitle: t.region,
       countryCode: null,
       secondaryCountryCode: null,
-      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? DEFAULT_TOURNAMENT_LOGO,
-      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? DEFAULT_TOURNAMENT_LOGO,
+      logoUrl: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").dark ?? defaultTournamentLogo(game),
+      logoUrlLight: themedLogoUrls(tournamentLogos.get(t.id) ?? [], "tournament").light ?? defaultTournamentLogo(game),
       path: `tournaments/${t.id}/${slugify(t.name)}`,
       score,
       popularity,

@@ -11,13 +11,14 @@
 
 import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { teams, webhookDeliveries, webhookEndpoints } from "@gc-stats/db";
+import { valorantTables, webhookDeliveries, webhookEndpoints } from "@gc-stats/db";
 import { isWebhookEvent, type WebhookDeliveryStatus, type WebhookDeliveryView, type WebhookEndpointView, type WebhookKind, type WebhookOfficialFilter } from "./shared";
 
 const RECENT_DELIVERIES = 30;
 
 export async function listWebhookEndpoints(apiKeyId: number): Promise<WebhookEndpointView[]> {
   const rows = await db.select().from(webhookEndpoints).where(eq(webhookEndpoints.apiKeyId, apiKeyId)).orderBy(asc(webhookEndpoints.createdAt));
+  const { teams } = valorantTables;
   const teamIds = [...new Set(rows.flatMap((r) => r.filterTeamIds))];
   const teamRows = teamIds.length ? await db.select({ id: teams.id, name: teams.name }).from(teams).where(inArray(teams.id, teamIds)) : [];
   const teamName = new Map(teamRows.map((t) => [t.id, t.name]));
@@ -63,6 +64,6 @@ export async function listRecentWebhookDeliveries(apiKeyId: number): Promise<Web
 
 /** Regions of the public tournaments, the choices of the region filter. */
 export async function listWebhookRegions(): Promise<string[]> {
-  const result = await db.execute<{ region: string }>(sql`select distinct region from tournaments where active and not is_ghost and region is not null and region <> '' order by region`);
+  const result = await db.execute<{ region: string }>(sql`select distinct region from val_tournaments where active and not is_ghost and region is not null and region <> '' order by region`);
   return result.rows.map((r) => r.region);
 }

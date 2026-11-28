@@ -9,6 +9,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState, useTransition, type ReactNode } from "react";
+import { useGame } from "@/lib/use-game";
 import { useTranslations } from "next-intl";
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useDraggable, useDroppable, useSensor, useSensors, type CollisionDetection, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { GripVerticalIcon, Loader2Icon } from "lucide-react";
@@ -56,6 +57,7 @@ const nearestSlot: CollisionDetection = (args) => {
 
 /** Drag and drop of the containers of a stage: reorder them, put them in a set or take them out of one. */
 export function StructureDnd({ stageId, nodes, enabled, children }: { stageId: number; nodes: DndNode[]; enabled: boolean; children: ReactNode }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.stages");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -94,7 +96,7 @@ export function StructureDnd({ stageId, nodes, enabled, children }: { stageId: n
     // The slots count the dragged container itself, taking it out shifts the ones after it
     if (parentId === node.parentId && nodes.filter((n) => n.parentId === parentId).findIndex((n) => n.id === node.id) < index) index -= 1;
     startTransition(async () => {
-      const result = await moveContainerToSet(node.id, stageId, parentId, index);
+      const result = await moveContainerToSet(game, node.id, stageId, parentId, index);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

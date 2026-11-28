@@ -81,7 +81,8 @@ export async function listAboutTeamMembersAdmin(): Promise<AboutTeamMemberRow[]>
       };
       byUser.set(row.userId, member);
     }
-    member.roleNames.push(row.roleName);
+    // A role held for several games comes back once per assignment.
+    if (!member.roleNames.includes(row.roleName)) member.roleNames.push(row.roleName);
   }
   return [...byUser.values()].sort((a, b) => (a.name ?? a.username).localeCompare(b.name ?? b.username));
 }

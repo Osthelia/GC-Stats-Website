@@ -14,13 +14,14 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, matches, matchVetoSessions, stageContainers, stages, tournamentVetoSettings, tournaments, ORGANIZATION_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
+import { ORGANIZATION_PERMISSIONS, PERMISSIONS, gameTables, valorantTablesOf } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { logActivity } from "@/lib/activity-log";
 import { VALORANT_MAP_POOL } from "@/lib/valorant-maps";
 import { requiredPoolSize } from "@/lib/veto/engine";
 import { ensureVetoTokens, getVetoSettings, mapPoolFromPatch, regenerateVetoToken, resetVeto, type FirstMoverMode } from "@/lib/veto/service";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /** Site admins act on any tournament, an organizer only on those its organization organizes. */
 type VetoScope = { organizationId?: number };
@@ -31,15 +32,17 @@ const MIN_TIMEOUT = 10;
 const MAX_TIMEOUT = 600;
 const PATCH_PATTERN = /^\d{1,3}(\.\d{1,3}){1,2}$/;
 
-async function requireVetoActor(tournamentId: number, scope: VetoScope): Promise<string> {
-  if (scope.organizationId === undefined) return (await requireActorPermission(PERMISSIONS.tournamentsManage)).userId;
+async function requireVetoActor(game: GameSlug, tournamentId: number, scope: VetoScope): Promise<string> {
+  const { tournaments } = gameTables(game);
+  if (scope.organizationId === undefined) return (await requireActorPermission(PERMISSIONS.tournamentsManage, game)).userId;
   const { userId } = await requireDashboardOrgActorPermission(scope.organizationId, ORGANIZATION_PERMISSIONS.vetoManage);
   const [tournament] = await db.select({ organizerOrganizationId: tournaments.organizerOrganizationId }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
   if (tournament?.organizerOrganizationId !== scope.organizationId) throw new Error("Not authorized");
   return userId;
 }
 
-async function matchTournamentId(matchId: number): Promise<number | null> {
+async function matchTournamentId(game: GameSlug, matchId: number): Promise<number | null> {
+  const { matches, stageContainers, stages } = gameTables(game);
   const [row] = await db
     .select({ tournamentId: stages.tournamentId })
     .from(matches)
@@ -61,14 +64,15 @@ function validatePool(maps: string[]): "invalidMap" | "duplicateMap" | "poolSize
 export type VetoToggleResult = { ok: true } | { ok: false; error: "notFound" };
 
 /** Site admin only: an organizer cannot enable the veto for itself. */
-export async function setTournamentVetoEnabled(tournamentId: number, enabled: boolean): Promise<VetoToggleResult> {
-  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.tournamentsManage);
+export async function setTournamentVetoEnabled(game: GameSlug, tournamentId: number, enabled: boolean): Promise<VetoToggleResult> {
+  const { tournaments } = gameTables(game);
+  const { userId: actorUserId } = await requireActorPermission(PERMISSIONS.tournamentsManage, game);
   const [tournament] = await db.select({ id: tournaments.id, vetoEnabled: tournaments.vetoEnabled }).from(tournaments).where(eq(tournaments.id, tournamentId)).limit(1);
   if (!tournament) return { ok: false, error: "notFound" };
   if (tournament.vetoEnabled === enabled) return { ok: true };
 
   await db.update(tournaments).set({ vetoEnabled: enabled }).where(eq(tournaments.id, tournamentId));
-  if (enabled) await ensureVetoTokens(tournamentId);
+  if (enabled) await ensureVetoTokens(game, tournamentId);
   await logActivity({ subject: "tournament", subjectId: tournamentId, event: "updated", description: `${enabled ? "Enabled" : "Disabled"} the live veto of tournament #${tournamentId}`, actorUserId });
   return { ok: true };
 }
@@ -85,8 +89,10 @@ export type VetoSettingsInput = {
 };
 export type VetoSettingsResult = { ok: true } | { ok: false; fieldErrors: VetoSettingsFieldErrors };
 
-export async function saveVetoSettings(tournamentId: number, input: VetoSettingsInput, scope: VetoScope = {}): Promise<VetoSettingsResult> {
-  const actorUserId = await requireVetoActor(tournamentId, scope);
+export async function saveVetoSettings(game: GameSlug, tournamentId: number, input: VetoSettingsInput, scope: VetoScope = {}): Promise<VetoSettingsResult> {
+  const { entrants, matches } = gameTables(game);
+  const { matchVetoSessions, tournamentVetoSettings } = valorantTablesOf(game);
+  const actorUserId = await requireVetoActor(game, tournamentId, scope);
   const fieldErrors: VetoSettingsFieldErrors = {};
 
   if (!(FIRST_MOVER_MODES as readonly string[]).includes(input.firstMoverMode)) fieldErrors.firstMoverMode = "invalid";
@@ -120,7 +126,7 @@ export async function saveVetoSettings(tournamentId: number, input: VetoSettings
     fieldErrors.mapPool = "required";
   } else if (!PATCH_PATTERN.test(patch)) {
     fieldErrors.mapPoolPatch = "invalidPatch";
-  } else if ((await mapPoolFromPatch(patch)).length !== POOL_SIZE) {
+  } else if ((await mapPoolFromPatch(game, patch)).length !== POOL_SIZE) {
     fieldErrors.mapPoolPatch = "patchUnknown";
   }
 
@@ -158,9 +164,10 @@ export async function saveVetoSettings(tournamentId: number, input: VetoSettings
 export type MatchPoolResult = { ok: true } | { ok: false; error: "notFound" | "invalidMap" | "duplicateMap" | "poolSize" | "vetoStarted" };
 
 /** Pool of one match, an empty list goes back to the tournament pool. */
-export async function saveMatchVetoPool(tournamentId: number, matchId: number, mapPool: string[], scope: VetoScope = {}): Promise<MatchPoolResult> {
-  const actorUserId = await requireVetoActor(tournamentId, scope);
-  if ((await matchTournamentId(matchId)) !== tournamentId) return { ok: false, error: "notFound" };
+export async function saveMatchVetoPool(game: GameSlug, tournamentId: number, matchId: number, mapPool: string[], scope: VetoScope = {}): Promise<MatchPoolResult> {
+  const { matchVetoSessions } = valorantTablesOf(game);
+  const actorUserId = await requireVetoActor(game, tournamentId, scope);
+  if ((await matchTournamentId(game, matchId)) !== tournamentId) return { ok: false, error: "notFound" };
   if (mapPool.length > 0) {
     const poolError = validatePool(mapPool);
     if (poolError) return { ok: false, error: poolError };
@@ -176,21 +183,22 @@ export async function saveMatchVetoPool(tournamentId: number, matchId: number, m
 
 export type RegenerateLinkResult = { ok: true; token: string } | { ok: false; error: "notFound" };
 
-export async function regenerateTeamVetoLink(tournamentId: number, entrantId: number, scope: VetoScope = {}): Promise<RegenerateLinkResult> {
-  const actorUserId = await requireVetoActor(tournamentId, scope);
+export async function regenerateTeamVetoLink(game: GameSlug, tournamentId: number, entrantId: number, scope: VetoScope = {}): Promise<RegenerateLinkResult> {
+  const { entrants } = gameTables(game);
+  const actorUserId = await requireVetoActor(game, tournamentId, scope);
   const [entrant] = await db.select({ id: entrants.id }).from(entrants).where(and(eq(entrants.id, entrantId), eq(entrants.tournamentId, tournamentId))).limit(1);
   if (!entrant) return { ok: false, error: "notFound" };
 
-  const token = await regenerateVetoToken(entrantId);
+  const token = await regenerateVetoToken(game, entrantId);
   await logActivity({ subject: "tournament", subjectId: tournamentId, event: "updated", description: `Regenerated the veto link of entrant #${entrantId}`, actorUserId: actorUserId, properties: { section: "veto", entrantId } });
   return { ok: true, token };
 }
 
 export type ResetVetoResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function resetMatchVeto(tournamentId: number, matchId: number, scope: VetoScope = {}): Promise<ResetVetoResult> {
-  const actorUserId = await requireVetoActor(tournamentId, scope);
-  if ((await matchTournamentId(matchId)) !== tournamentId) return { ok: false, error: "notFound" };
+export async function resetMatchVeto(game: GameSlug, tournamentId: number, matchId: number, scope: VetoScope = {}): Promise<ResetVetoResult> {
+  const actorUserId = await requireVetoActor(game, tournamentId, scope);
+  if ((await matchTournamentId(game, matchId)) !== tournamentId) return { ok: false, error: "notFound" };
 
   await resetVeto(matchId);
   await logActivity({ subject: "match", subjectId: matchId, event: "updated", description: `Reset the live veto of match #${matchId}`, actorUserId: actorUserId, properties: { section: "veto" } });

@@ -11,9 +11,11 @@
 
 import { and, asc, count, desc, eq, gte, ilike, ne, or, type SQL } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teams, users, xMonitoredAccounts, xRosterSignals, type XSignalMedia } from "@gc-stats/db";
+import { users, xMonitoredAccounts, xRosterSignals, type XSignalMedia, valorantTables } from "@gc-stats/db";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
 import { ROSTER_WATCH_PERIODS, TOPICS, type SignalStatus, type Stage, type Topic, type Verdict } from "@/lib/roster-watch/constants";
+
+const { teams } = valorantTables;
 
 export const ROSTER_WATCH_PAGE_SIZE = 20;
 
@@ -118,7 +120,7 @@ export async function listRosterWatchSignals(filters: RosterWatchFilters): Promi
     db.select({ n: count() }).from(xRosterSignals).innerJoin(teams, eq(teams.id, xRosterSignals.teamId)).where(where),
   ]);
 
-  const logos = await getCurrentLogoUrls("team", [...new Set(rows.map((row) => row.teamId))]);
+  const logos = await getCurrentLogoUrls("team", [...new Set(rows.map((row) => row.teamId))], "valorant");
 
   return {
     total: totalRow?.n ?? 0,

@@ -13,6 +13,7 @@
  */
 
 import { GAME_CHANGERS_TIEBREAKERS, type RoundRobinTiebreaker, type SwissStandingsTiebreaker } from "@osthelia/bracket-engine";
+import { gameHasMaps, type GameSlug } from "@gc-stats/db/game";
 
 /** Points per match, map and round won or lost, when set they order the group before anything else.
  *  A forfeited match is worth the forfeit values alone. */
@@ -31,8 +32,33 @@ export const SWISS_TIEBREAKERS = [...ROUND_ROBIN_TIEBREAKERS, "buchholz"] as con
 /** Order applied to a new group, and to one that has none of its own. */
 export const DEFAULT_TIEBREAKERS = GAME_CHANGERS_TIEBREAKERS;
 
+/**
+ * Which matches a group's table counts. `"container"` (default, and the only
+ * behaviour before this key existed) lists anyone who played a match stored in the group.
+ * `"stage"` lists only the pinned teams and counts their completed matches in
+ * any container of the same stage, for tournaments whose groups also play
+ * each other. Round robin only.
+ */
+export type GroupMatchScope = "container" | "stage";
+
+/**
+ * Whether a container's matches count towards a stage-scoped group: only those of
+ * the stage's other stage-scoped groups. A group that keeps to its own matches
+ * never adds them to another group's table.
+ */
+export function countsForStageScope(container: { containerType: string; config: unknown }): boolean {
+  return container.containerType === "group" && usesStageScope(container.config);
+}
+
+/** Whether a group's raw config opts in to stage scope. Safe on a missing or malformed config (legacy or converted containers), unlike `parseGroupConfig`. */
+export function usesStageScope(config: unknown): boolean {
+  const c = config as { type?: string; matchScope?: string } | null;
+  return c?.type === "round_robin" && c.matchScope === "stage";
+}
+
 export interface SwissGroupConfig {
   type: "swiss";
+  matchScope: GroupMatchScope;
   qualifyAtWins: number | null;
   eliminateAtLosses: number | null;
   maxRounds: number;
@@ -43,6 +69,7 @@ export interface SwissGroupConfig {
 
 export interface RoundRobinGroupConfig {
   type: "round_robin";
+  matchScope: GroupMatchScope;
   tiebreakers: RoundRobinTiebreaker[];
   pointsConfig: StandingsPointsConfig | null;
 }
@@ -65,6 +92,18 @@ function parsePointsConfig(raw: unknown): StandingsPointsConfig | null {
   return Object.fromEntries(POINTS_FIELDS.map((f) => [f, isPointValue(c[f]) ? c[f] : 0])) as StandingsPointsConfig;
 }
 
+// A game without maps has no rounds, so the round based tiebreakers never apply to it.
+const fitsGame = (game: GameSlug) => (tiebreaker: string) => gameHasMaps(game) || (tiebreaker !== "round_diff" && tiebreaker !== "h2h_round_diff");
+
+/** Tiebreakers an admin can pick for a group format of this game. */
+export function allowedTiebreakers(game: GameSlug, format: GroupContainerConfig["type"]): SwissStandingsTiebreaker[] {
+  return (format === "swiss" ? SWISS_TIEBREAKERS : ROUND_ROBIN_TIEBREAKERS).filter(fitsGame(game));
+}
+
+export function defaultTiebreakers(game: GameSlug): RoundRobinTiebreaker[] {
+  return DEFAULT_TIEBREAKERS.filter(fitsGame(game));
+}
+
 export function parseGroupConfig(config: unknown): GroupContainerConfig {
   if (!config || typeof config !== "object" || !("type" in config)) {
     throw new Error("parseGroupConfig: container.config is missing a \"type\" discriminant");
@@ -74,6 +113,7 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
     const c = config as Partial<SwissGroupConfig>;
     return {
       type: "swiss",
+      matchScope: "container",
       qualifyAtWins: c.qualifyAtWins ?? null,
       eliminateAtLosses: c.eliminateAtLosses ?? null,
       maxRounds: c.maxRounds ?? 5,
@@ -84,7 +124,12 @@ export function parseGroupConfig(config: unknown): GroupContainerConfig {
   }
   if (type === "round_robin") {
     const c = config as Partial<RoundRobinGroupConfig>;
-    return { type: "round_robin", tiebreakers: c.tiebreakers ?? [...DEFAULT_TIEBREAKERS], pointsConfig: parsePointsConfig(c.pointsConfig) };
+    return {
+      type: "round_robin",
+      matchScope: c.matchScope === "stage" ? "stage" : "container",
+      tiebreakers: c.tiebreakers ?? [...DEFAULT_TIEBREAKERS],
+      pointsConfig: parsePointsConfig(c.pointsConfig),
+    };
   }
   throw new Error(`parseGroupConfig: unknown group config type "${String(type)}"`);
 }

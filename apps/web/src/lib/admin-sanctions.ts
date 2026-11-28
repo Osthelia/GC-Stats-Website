@@ -9,17 +9,34 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { and, asc, desc, eq, gt, isNull, isNotNull, lte, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, isNull, isNotNull, lte, or, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { adminDb as db } from "@gc-stats/db/client";
-import { sanctions, users, teams } from "@gc-stats/db";
+import { sanctions, users, gameTables } from "@gc-stats/db";
+import { GAMES, isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { typoVariants } from "@/lib/search-typo";
-import { foldedIlike } from "@/lib/db-search";
+import { foldedIlike, foldedIlikeExpr } from "@/lib/db-search";
 import { SANCTION_TYPES, type SanctionType } from "@/lib/sanction-constants";
-
 export { SANCTION_TYPES, type SanctionType };
 
 export const SANCTIONS_PAGE_SIZE = 30;
+
+/**
+ * The name of a sanction's team, from the team table of the sanction's game (team ids are counted per game, so the
+ * same id is another team in the other game). Null for a sanction without a team.
+ */
+export function sanctionTeamName(): SQL<string | null> {
+  const lookups = GAMES.map((game) => {
+    const { teams } = gameTables(game);
+    return sql`(select ${teams.name} from ${teams} where ${teams.id} = ${sanctions.teamId} and ${sanctions.game} = ${game})`;
+  });
+  return sql<string | null>`coalesce(${sql.join(lookups, sql`, `)})`;
+}
+
+/** The stored game of a sanction's team, null for a sanction without one. */
+export function sanctionTeamGame(value: string | null): GameSlug | null {
+  return isGameSlug(value) ? value : null;
+}
 
 export type SanctionStatus = "active" | "expired" | "revoked";
 export type SanctionSort = "startsAt" | "type" | "status";
@@ -31,6 +48,7 @@ export type AdminSanctionRow = {
   username: string | null;
   teamId: number | null;
   teamName: string | null;
+  teamGame: GameSlug | null;
   issuedByUsername: string | null;
   type: SanctionType;
   reason: string;
@@ -56,6 +74,7 @@ export async function listAdminSanctions(opts: {
   page: number;
 }): Promise<{ rows: AdminSanctionRow[]; total: number }> {
   const { q, status, type, sort, direction, page } = opts;
+  const teamName = sanctionTeamName();
 
   const issuedBy = alias(users, "issued_by_user");
   const revokedByAlias = alias(users, "revoked_by_user");
@@ -65,7 +84,7 @@ export async function listAdminSanctions(opts: {
   if (q) {
     const numeric = /^\d+$/.test(q);
     const variants = typoVariants(q.toLowerCase());
-    const clauses = [...variants.map((v) => foldedIlike(sanctions.reason, v)), ...variants.map((v) => foldedIlike(users.username, v)), ...variants.map((v) => foldedIlike(teams.name, v))];
+    const clauses = [...variants.map((v) => foldedIlike(sanctions.reason, v)), ...variants.map((v) => foldedIlike(users.username, v)), ...variants.map((v) => foldedIlikeExpr(teamName, v))];
     if (numeric) clauses.push(eq(sanctions.id, Number(q)));
     conditions.push(or(...clauses));
   }
@@ -84,7 +103,8 @@ export async function listAdminSanctions(opts: {
         userId: sanctions.userId,
         username: users.username,
         teamId: sanctions.teamId,
-        teamName: teams.name,
+        teamName,
+        teamGame: sanctions.game,
         issuedByUsername: issuedBy.username,
         type: sanctions.type,
         reason: sanctions.reason,
@@ -95,7 +115,6 @@ export async function listAdminSanctions(opts: {
       })
       .from(sanctions)
       .leftJoin(users, eq(users.id, sanctions.userId))
-      .leftJoin(teams, eq(teams.id, sanctions.teamId))
       .leftJoin(issuedBy, eq(issuedBy.id, sanctions.issuedBy))
       .leftJoin(revokedByAlias, eq(revokedByAlias.id, sanctions.revokedBy))
       .where(where)
@@ -106,7 +125,6 @@ export async function listAdminSanctions(opts: {
       .select({ count: sql<number>`count(*)::int` })
       .from(sanctions)
       .leftJoin(users, eq(users.id, sanctions.userId))
-      .leftJoin(teams, eq(teams.id, sanctions.teamId))
       .where(where),
   ]);
 
@@ -119,6 +137,7 @@ export async function listAdminSanctions(opts: {
       username: r.username,
       teamId: r.teamId,
       teamName: r.teamName,
+      teamGame: sanctionTeamGame(r.teamGame),
       issuedByUsername: r.issuedByUsername,
       type: r.type as SanctionType,
       reason: r.reason,

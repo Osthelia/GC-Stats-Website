@@ -10,6 +10,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import { isGameSlug, type GameSlug } from "@gc-stats/db/game";
 import { isValidCountryCode } from "@/lib/countries";
 import { ORGANIZATION_TAGS } from "@/lib/organization-tags";
 
@@ -99,4 +100,12 @@ export function validateOrganizationProfileInput(input: OrganizationProfileInput
   if (Object.keys(socialErrors).length > 0) fieldErrors.socials = socialErrors;
 
   return { fieldErrors, name, slug, countryCode, secondaryCountryCode, bio, liquipediaLink, socials, tags };
+}
+
+/** Games an organization is listed on: at least one, only known games. Admin only, the /dashboard editor does not change it. */
+export function validateOrganizationGames(input: string[]): { games: GameSlug[]; error?: "required" | "invalid" } {
+  const games = [...new Set(input)];
+  if (games.length === 0) return { games: [], error: "required" };
+  if (!games.every((game) => isGameSlug(game))) return { games: [], error: "invalid" };
+  return { games: games as GameSlug[] };
 }

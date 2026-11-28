@@ -10,7 +10,8 @@
 
 import { and, eq, gte, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrantMembers, entrants, liquipediaPersonNames, liquipediaTeamNames, people, rosterMemberships, teams, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import { rangeLower, rangeUpper } from "@/lib/daterange";
 import { liquipediaFlagCode } from "@/lib/countries";
 import { liquipediaTitleFromLink } from "@/lib/liquipedia-api";
@@ -32,7 +33,8 @@ export type TransfersWikicode = {
 /** Memberships with a join, a leave or an inactivity date inside the month. */
 type MonthMembership = TransferMembership & { teamId: number; teamHasLiquipediaName: boolean };
 
-async function getMonthMemberships(range: MonthRange): Promise<MonthMembership[]> {
+async function getMonthMemberships(game: GameSlug, range: MonthRange): Promise<MonthMembership[]> {
+  const { liquipediaPersonNames, liquipediaTeamNames, people, rosterMemberships, teams } = gameTables(game);
   const rows = await db
     .select({
       personId: people.id,
@@ -93,7 +95,8 @@ async function getMonthMemberships(range: MonthRange): Promise<MonthMembership[]
  * the first tournament the person played for the team from their arrival, the last one before their departure.
  * Only tournaments with a Liquipedia link count, the others cannot be referenced.
  */
-async function resolveSourceTournaments(memberships: MonthMembership[]): Promise<void> {
+async function resolveSourceTournaments(game: GameSlug, memberships: MonthMembership[]): Promise<void> {
+  const { entrantMembers, entrants, tournaments } = gameTables(game);
   const needing = memberships.filter((m) => m.joinSource === ROSTER_SOURCE_TEXTS.startedTournament || m.leftSource === ROSTER_SOURCE_TEXTS.stoppedTournament);
   if (needing.length === 0) return;
 
@@ -121,9 +124,9 @@ async function resolveSourceTournaments(memberships: MonthMembership[]): Promise
 }
 
 /** Completes the page with the month's roster movements, or returns what is wrong with the page. */
-export async function getCompletedTransfersWikicode(wikicode: string, range: MonthRange): Promise<TransfersWikicode | TransferPageError> {
-  const memberships = await getMonthMemberships(range);
-  await resolveSourceTournaments(memberships);
+export async function getCompletedTransfersWikicode(game: GameSlug, wikicode: string, range: MonthRange): Promise<TransfersWikicode | TransferPageError> {
+  const memberships = await getMonthMemberships(game, range);
+  await resolveSourceTournaments(game, memberships);
   const entries = buildTransferEntries(memberships, range);
   const completed = completeTransferPage(wikicode, entries);
   if (typeof completed === "string") return completed;

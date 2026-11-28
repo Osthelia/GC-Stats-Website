@@ -49,7 +49,7 @@ async function renderPreview(userId: string, event: DiscordBotEvent, locale: str
   const kind = KIND_BY_EVENT[event];
   const { matchId, fields, images } = await resolvePreviewData(kind, locale);
   try {
-    const png = await renderTemplateImage(template, { fields, images, locale, footerUrl: `${GCS_SITE_URL.replace(/^https?:\/\//, "")}/${locale}/match/${matchId}`, imagePins });
+    const png = await renderTemplateImage(template, { fields, images, locale, footerUrl: `${GCS_SITE_URL.replace(/^https?:\/\//, "")}/${locale}/valorant/match/${matchId}`, imagePins });
     return new Response(new Uint8Array(png), { headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" } });
   } catch (error) {
     console.error("[discord-bot] preview render failed (%s)", event, error);

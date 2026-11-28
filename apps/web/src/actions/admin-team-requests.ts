@@ -14,7 +14,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { teamInfoRequests, teams, PERMISSIONS } from "@gc-stats/db";
+import { teamInfoRequests, PERMISSIONS, valorantTables } from "@gc-stats/db";
 import { requireActorPermission } from "@/lib/rbac";
 import { logActivity } from "@/lib/activity-log";
 import { searchTeamsQuery } from "@/lib/team-search";
@@ -30,6 +30,8 @@ import {
   type TeamRequestContactKind,
   type TeamRequestItem,
 } from "@/lib/team-requests/constants";
+
+const { teams } = valorantTables;
 
 export type CreateTeamRequestInput = {
   teamId: number | null;
@@ -54,7 +56,7 @@ function isUniqueViolation(error: unknown): boolean {
 
 export async function searchRequestTeams(query: string) {
   await requireActorPermission(PERMISSIONS.teamRequestsManage);
-  return searchTeamsQuery(typeof query === "string" ? query.slice(0, 100) : "");
+  return searchTeamsQuery("valorant", typeof query === "string" ? query.slice(0, 100) : "");
 }
 
 export async function loadTeamRequestContext(teamId: number): Promise<TeamRequestContext | null> {

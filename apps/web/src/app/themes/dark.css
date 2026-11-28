@@ -3,10 +3,11 @@
  * the pre-hydration fallback (no `data-site-theme` attribute yet = dark),
  * matching the site's original always-dark look. See ../themes/light.css
  * for the counterpart and src/lib/site-settings.tsx for how the attribute
- * gets set.
+ * gets set. Not limited to `:root`: an element with the attribute (the match
+ * poster) keeps its subtree dark even when the site is in the light theme.
  */
 :root,
-:root[data-site-theme="dark"] {
+[data-site-theme="dark"] {
   color-scheme: dark;
 
   /* Surfaces, darkest to lightest */

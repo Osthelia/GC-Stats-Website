@@ -14,8 +14,8 @@ type PillMap = { id: number; mapName: string; teamAScore: number | null; teamBSc
 
 const isPlayed = (m: PillMap) => m.teamAScore != null && m.teamBScore != null && !(m.teamAScore === -1 && m.teamBScore === -1);
 
-const ACTIVE_CLASS = "scale-105 bg-[#e4ae22] text-black shadow-[0_0_18px_rgba(228,174,34,0.35)]";
-const INACTIVE_CLASS = "bg-white/5 text-neutral-400 hover:-translate-y-0.5 hover:bg-white/10 hover:text-neutral-200 active:translate-y-0 active:scale-95";
+export const PILL_ACTIVE_CLASS = "scale-105 bg-[#e4ae22] text-black shadow-[0_0_18px_rgba(228,174,34,0.35)]";
+export const PILL_INACTIVE_CLASS = "bg-white/5 text-neutral-400 hover:-translate-y-0.5 hover:bg-white/10 hover:text-neutral-200 active:translate-y-0 active:scale-95";
 
 /** Map selector pill bar. Switches which map's stats show below, no navigation (mirrors V1). `activeMapId` null means the aggregated "All Maps" tab is active. */
 export function MatchMapPills({ maps, bestOf, activeMapId, onSelect }: { maps: PillMap[]; bestOf: number; activeMapId: number | null; onSelect: (mapId: number | null) => void }) {
@@ -30,7 +30,7 @@ export function MatchMapPills({ maps, bestOf, activeMapId, onSelect }: { maps: P
           role="tab"
           aria-selected={activeMapId == null}
           className={`rounded-full px-7 py-2.5 text-[10px] font-black tracking-widest uppercase transition-all duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
-            activeMapId == null ? ACTIVE_CLASS : INACTIVE_CLASS
+            activeMapId == null ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS
           }`}
         >
           {t("allMaps")}
@@ -40,7 +40,7 @@ export function MatchMapPills({ maps, bestOf, activeMapId, onSelect }: { maps: P
         const played = isPlayed(m);
         const active = activeMapId === m.id;
         const scoreLabel = played ? `${m.teamAScore === -1 ? "FF" : m.teamAScore}-${m.teamBScore === -1 ? "FF" : m.teamBScore}` : null;
-        const className = `group flex items-center rounded-full px-5 py-2.5 text-[10px] font-black tracking-widest uppercase transition-all duration-300 ease-out ${active ? ACTIVE_CLASS : INACTIVE_CLASS}`;
+        const className = `group flex items-center rounded-full px-5 py-2.5 text-[10px] font-black tracking-widest uppercase transition-all duration-300 ease-out ${active ? PILL_ACTIVE_CLASS : PILL_INACTIVE_CLASS}`;
 
         if (!played) {
           return (

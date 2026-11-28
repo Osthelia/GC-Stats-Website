@@ -40,6 +40,7 @@ import {
 } from "@/actions/dashboard-organizations";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import type { AdminOrganizationMember } from "@/lib/admin-organizations";
+import { useGame } from "@/lib/use-game";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -50,6 +51,7 @@ const roleItemsFor = (t: ReturnType<typeof useTranslations>) =>
 
 /** Per-row linked-account control, gated by the separate peopleLinkUser permission, condensed sibling of admin's PlayerLinkedAccountCard (no Card wrapper, this already lives inside one). */
 function LinkedAccountRow({ organizationId, member, onChanged }: { organizationId: number; member: AdminOrganizationMember; onChanged: (linkedUserId: string | null, linkedUsername: string | null) => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.members");
   const [isPending, startTransition] = useTransition();
   const [picked, setPicked] = useState<{ id: string; username: string | null } | null>(null);
@@ -58,7 +60,7 @@ function LinkedAccountRow({ organizationId, member, onChanged }: { organizationI
   function handleLink() {
     if (!picked) return;
     startTransition(async () => {
-      const result = await linkDashboardOrganizationMemberUser(organizationId, member.personId, picked.id);
+      const result = await linkDashboardOrganizationMemberUser(game, organizationId, member.personId, picked.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}` as "error.invalid"));
         return;
@@ -72,7 +74,7 @@ function LinkedAccountRow({ organizationId, member, onChanged }: { organizationI
   function confirmUnlink() {
     setUnlinkConfirmOpen(false);
     startTransition(async () => {
-      const result = await unlinkDashboardOrganizationMemberUser(organizationId, member.personId);
+      const result = await unlinkDashboardOrganizationMemberUser(game, organizationId, member.personId);
       if (!result.ok) {
         toast.error(t(`error.${result.error}` as "error.invalid"));
         return;
@@ -140,6 +142,7 @@ function MemberRow({
   onSaved: (updated: AdminOrganizationMember) => void;
   onDeleted: (membershipId: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.organizations.edit");
   const tMembers = useTranslations("dashboard.members");
   const [isPending, startTransition] = useTransition();
@@ -155,7 +158,7 @@ function MemberRow({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateDashboardOrganizationMember(organizationId, member.membershipId, role, from, until);
+      const result = await updateDashboardOrganizationMember(game, organizationId, member.membershipId, role, from, until);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -168,7 +171,7 @@ function MemberRow({
   function confirmDelete() {
     setDeleteConfirmOpen(false);
     startTransition(async () => {
-      const result = await deleteDashboardOrganizationMembership(organizationId, member.membershipId);
+      const result = await deleteDashboardOrganizationMembership(game, organizationId, member.membershipId);
       if (!result.ok) {
         toast.error(tMembers("removeError"));
         return;
@@ -307,6 +310,7 @@ export function OrgMembersPanel({
   canLinkUser: boolean;
   canEditProfile: boolean;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.organizations.edit");
   const tMembers = useTranslations("dashboard.members");
   const router = useRouter();
@@ -324,7 +328,7 @@ export function OrgMembersPanel({
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addDashboardOrganizationMember(organizationId, person?.id ?? null, role, from, until);
+      const result = await addDashboardOrganizationMember(game, organizationId, person?.id ?? null, role, from, until);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -382,7 +386,7 @@ export function OrgMembersPanel({
                       placeholder={t("memberAddPersonPlaceholder")}
                       searchPlaceholder={t("memberAddPersonSearchPlaceholder")}
                       noResultsLabel={t("memberAddPersonNoResults")}
-                      search={(q) => searchPeopleForNewOrganizationMember(organizationId, q)}
+                      search={(q) => searchPeopleForNewOrganizationMember(game, organizationId, q)}
                     />
                     {canCreatePerson && <CreatePersonDialog organizationId={organizationId} onCreated={setPerson} />}
                   </div>

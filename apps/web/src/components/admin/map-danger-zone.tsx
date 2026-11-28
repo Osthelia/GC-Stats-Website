@@ -15,8 +15,10 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { deleteMap, resetMap } from "@/actions/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 export function MapDangerZone({ mapId, tournamentId, matchId }: { mapId: number; tournamentId: number; matchId: number }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.matches.maps");
   const router = useRouter();
   const [isResetPending, startReset] = useTransition();
@@ -25,7 +27,7 @@ export function MapDangerZone({ mapId, tournamentId, matchId }: { mapId: number;
   function handleReset() {
     if (!window.confirm(t("resetMapConfirm"))) return;
     startReset(async () => {
-      const result = await resetMap(mapId);
+      const result = await resetMap(game, mapId);
       if (!result.ok) {
         toast.error(t("resetMapError"));
         return;
@@ -38,7 +40,7 @@ export function MapDangerZone({ mapId, tournamentId, matchId }: { mapId: number;
   function handleDelete() {
     if (!window.confirm(t("deleteMapConfirm"))) return;
     startDelete(async () => {
-      const result = await deleteMap(mapId);
+      const result = await deleteMap(game, mapId);
       if (!result.ok) {
         toast.error(t("mapDeleteError"));
         return;

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TeamPicker } from "@/components/admin/team-picker";
 import { quickAttachTeamEntrant, quickCreateTeamEntrant } from "@/actions/admin-tournament-entrants";
+import { useGame } from "@/lib/use-game";
 
 /**
  * V1-parity quick add (see tournament-team-picker.blade.php): pick a team
@@ -24,6 +25,7 @@ import { quickAttachTeamEntrant, quickCreateTeamEntrant } from "@/actions/admin-
  * the same step, for a team that isn't in the database yet.
  */
 export function QuickAddEntrant({ tournamentId }: { tournamentId: number }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.entrants");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -32,7 +34,7 @@ export function QuickAddEntrant({ tournamentId }: { tournamentId: number }) {
   function handlePick(team: { id: number; name: string } | null) {
     if (!team) return;
     startTransition(async () => {
-      const result = await quickAttachTeamEntrant(tournamentId, team.id);
+      const result = await quickAttachTeamEntrant(game, tournamentId, team.id);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;
@@ -46,7 +48,7 @@ export function QuickAddEntrant({ tournamentId }: { tournamentId: number }) {
     const name = newTeamName.trim();
     if (!name) return;
     startTransition(async () => {
-      const result = await quickCreateTeamEntrant(tournamentId, name);
+      const result = await quickCreateTeamEntrant(game, tournamentId, name);
       if (!result.ok) {
         toast.error(t(`error.${result.error}`));
         return;

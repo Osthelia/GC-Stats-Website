@@ -11,8 +11,9 @@
 
 import { asc, inArray } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matchVetos, maps } from "@gc-stats/db";
+import { valorantTablesOf } from "@gc-stats/db";
 import { resolveEntrantTeamIds } from "../entrant-teams";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ApiMatchVeto = { match_id: number; team_id: number; map_name: string; type: string; order: number };
 
@@ -22,7 +23,8 @@ export type ApiMatchVeto = { match_id: number; team_id: number; map_name: string
  * process, so matches missing from `match_vetos` fall back to the maps
  * actually played (`type: "played"`).
  */
-export async function buildVetosByMatch(matchIds: number[]): Promise<Map<number, ApiMatchVeto[]>> {
+export async function buildVetosByMatch(game: GameSlug, matchIds: number[]): Promise<Map<number, ApiMatchVeto[]>> {
+  const { matchVetos, maps } = valorantTablesOf(game);
   if (matchIds.length === 0) return new Map();
 
   const vetoRows = await db
@@ -31,7 +33,7 @@ export async function buildVetosByMatch(matchIds: number[]): Promise<Map<number,
     .where(inArray(matchVetos.matchId, matchIds))
     .orderBy(asc(matchVetos.matchId), asc(matchVetos.order));
 
-  const teamIdByEntrantId = await resolveEntrantTeamIds([...new Set(vetoRows.map((v) => v.entrantId))]);
+  const teamIdByEntrantId = await resolveEntrantTeamIds(game, [...new Set(vetoRows.map((v) => v.entrantId))]);
 
   const vetosByMatch = new Map<number, ApiMatchVeto[]>();
   for (const v of vetoRows) {

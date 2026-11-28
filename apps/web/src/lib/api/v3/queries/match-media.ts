@@ -11,7 +11,8 @@
 
 import { and, asc, eq, inArray, isNull, or } from "drizzle-orm";
 import { db } from "@gc-stats/db/client";
-import { matchStreams, streamChannels, matchPlayerPovs, people, vods, maps, organizations } from "@gc-stats/db";
+import { gameTables, organizations, seriesMapTableOf } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 import { visiblePerson } from "@/lib/ghost-visibility";
 import { resolveEntrantTeamIds } from "../../v1/entrant-teams";
 
@@ -51,7 +52,8 @@ export type ApiMatchMedia = {
   vods: ApiMatchVod[];
 };
 
-async function getStreams(matchId: number): Promise<ApiMatchStream[]> {
+async function getStreams(game: GameSlug, matchId: number): Promise<ApiMatchStream[]> {
+  const { matchStreams, streamChannels } = gameTables(game);
   const rows = await db
     .select({
       id: streamChannels.id,
@@ -81,7 +83,8 @@ async function getStreams(matchId: number): Promise<ApiMatchStream[]> {
     }));
 }
 
-async function getPlayerPovs(matchId: number): Promise<ApiMatchPlayerPov[]> {
+async function getPlayerPovs(game: GameSlug, matchId: number): Promise<ApiMatchPlayerPov[]> {
+  const { matchPlayerPovs, people } = gameTables(game);
   const rows = await db
     .select({
       id: matchPlayerPovs.id,
@@ -95,10 +98,10 @@ async function getPlayerPovs(matchId: number): Promise<ApiMatchPlayerPov[]> {
     })
     .from(matchPlayerPovs)
     .leftJoin(people, eq(people.id, matchPlayerPovs.personId))
-    .where(and(eq(matchPlayerPovs.matchId, matchId), or(isNull(matchPlayerPovs.personId), visiblePerson)))
+    .where(and(eq(matchPlayerPovs.matchId, matchId), or(isNull(matchPlayerPovs.personId), visiblePerson(game))))
     .orderBy(asc(matchPlayerPovs.id));
 
-  const teamByEntrant = await resolveEntrantTeamIds([...new Set(rows.map((r) => r.entrantId))]);
+  const teamByEntrant = await resolveEntrantTeamIds(game, [...new Set(rows.map((r) => r.entrantId))]);
 
   return rows.map((r) => ({
     id: r.id,
@@ -112,7 +115,9 @@ async function getPlayerPovs(matchId: number): Promise<ApiMatchPlayerPov[]> {
   }));
 }
 
-async function getVods(matchId: number): Promise<ApiMatchVod[]> {
+async function getVods(game: GameSlug, matchId: number): Promise<ApiMatchVod[]> {
+  const { vods } = gameTables(game);
+  const maps = seriesMapTableOf(game);
   const rows = await db
     .select({ id: vods.id, url: vods.url, languageCode: vods.languageCode, mapId: vods.mapId, organizationId: vods.organizationId })
     .from(vods)
@@ -143,7 +148,7 @@ async function getVods(matchId: number): Promise<ApiMatchVod[]> {
   });
 }
 
-export async function getMatchMedia(matchId: number): Promise<ApiMatchMedia> {
-  const [streams, playerPovs, matchVods] = await Promise.all([getStreams(matchId), getPlayerPovs(matchId), getVods(matchId)]);
+export async function getMatchMedia(game: GameSlug, matchId: number): Promise<ApiMatchMedia> {
+  const [streams, playerPovs, matchVods] = await Promise.all([getStreams(game, matchId), getPlayerPovs(game, matchId), getVods(game, matchId)]);
   return { streams, player_povs: playerPovs, vods: matchVods };
 }

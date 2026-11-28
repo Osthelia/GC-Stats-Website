@@ -11,12 +11,13 @@
 
 import { eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { entrants, liquipediaTeamNames, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { getTournamentLiquipediaPeople } from "@/lib/admin-liquipedia";
 import { resolveEntrantQualificationSources } from "@/lib/entrant-qualification-source";
 import { liquipediaTitleFromLink } from "@/lib/liquipedia-api";
 import { liquipediaFlagCode } from "@/lib/countries";
 import { buildTeamParticipantsWikicode, type ParticipantQualification, type ParticipantTeam } from "@/lib/liquipedia-participants-wikicode";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type LiquipediaParticipantsWikicode = {
   wikicode: string;
@@ -27,7 +28,8 @@ export type LiquipediaParticipantsWikicode = {
   unlinkedPeopleCount: number;
 };
 
-export async function getTournamentParticipantsWikicode(tournamentId: number): Promise<LiquipediaParticipantsWikicode> {
+export async function getTournamentParticipantsWikicode(game: GameSlug, tournamentId: number): Promise<LiquipediaParticipantsWikicode> {
+  const { entrants, liquipediaTeamNames, tournaments } = gameTables(game);
   const entrantRows = await db
     .select({
       id: entrants.id,
@@ -45,8 +47,8 @@ export async function getTournamentParticipantsWikicode(tournamentId: number): P
 
   const teamIds = teamEntrants.map((e) => e.teamId as number);
   const [people, sources, nameRows] = await Promise.all([
-    getTournamentLiquipediaPeople(tournamentId),
-    resolveEntrantQualificationSources(db, tournamentId, teamEntrants),
+    getTournamentLiquipediaPeople(game, tournamentId),
+    resolveEntrantQualificationSources(game, db, tournamentId, teamEntrants),
     db.select({ teamId: liquipediaTeamNames.teamId, name: liquipediaTeamNames.name }).from(liquipediaTeamNames).where(inArray(liquipediaTeamNames.teamId, teamIds)),
   ]);
 

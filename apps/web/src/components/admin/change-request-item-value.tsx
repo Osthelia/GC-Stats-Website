@@ -7,6 +7,8 @@
  */
 
 import { useTranslations } from "next-intl";
+import { sortLanes } from "@gc-stats/lol-stats-engine/lanes";
+import { LaneIcons } from "@/components/match/lol-icon";
 import { rosterSourceTextKey } from "@/lib/roster-source";
 
 const PRONOUN_KEYS: Record<string, "0" | "1" | "2"> = { "0": "0", "1": "1", "2": "2" };
@@ -55,7 +57,7 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
 
   if (field === "membership_add" || field === "membership_edit") {
     if (side === "old" && field === "membership_add") return <span className="text-muted-foreground">{t("noValue")}</span>;
-    const v = value as { role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null } | null;
+    const v = value as { role: string; since: string; until: string | null; hasLeft?: boolean; inactiveSince: string | null; joinSource?: string | null; leftSource?: string | null; lanes?: string[] } | null;
     if (!v) return <span className="text-muted-foreground">{t("noValue")}</span>;
     return (
       <div className="flex flex-col text-sm">
@@ -65,6 +67,7 @@ export function ChangeRequestValue({ field, value, display, side }: { field: str
           </span>
         )}
         <span>{v.role}</span>
+        {v.lanes && v.lanes.length > 0 && <LaneIcons lanes={sortLanes(v.lanes)} />}
         <span className="text-muted-foreground">
           {v.since} → {v.until ?? "…"}
         </span>

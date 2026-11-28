@@ -23,6 +23,8 @@ import { OrgLogoTile } from "@/components/dashboard/org-logo";
 import { PersonPhotoDialog } from "@/components/change-request/person-photo-dialog";
 import type { PhotoConsent } from "@/lib/change-request-fields";
 import { PERSON_SOCIAL_KEYS } from "@/lib/person-social-keys";
+import { useGame } from "@/lib/use-game";
+import { gameHasVlr } from "@gc-stats/db/game";
 
 const PRONOUN_VALUES = ["0", "1", "2"] as const;
 
@@ -35,6 +37,7 @@ const PRONOUN_VALUES = ["0", "1", "2"] as const;
  * route (no dashboard page lists people outside the org roster).
  */
 export function EditPersonProfileDialog({ organizationId, personId, handle, onSaved }: { organizationId: number; personId: number; handle: string; onSaved: (handle: string) => void }) {
+  const game = useGame();
   const t = useTranslations("dashboard.members");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,7 +74,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
     setLoading(true);
     setFieldErrors({});
     setPhotoFile(null);
-    getPersonProfileForOrganization(organizationId, personId).then((profile) => {
+    getPersonProfileForOrganization(game, organizationId, personId).then((profile) => {
       if (!profile) {
         setOpen(false);
         return;
@@ -97,7 +100,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         const formData = new FormData();
         formData.set("file", photoFile);
         if (photoConsent) formData.set("photoConsent", photoConsent);
-        const upload = await uploadPersonPhotoForOrganization(organizationId, personId, formData);
+        const upload = await uploadPersonPhotoForOrganization(game, organizationId, personId, formData);
         if (!upload.ok) {
           setFieldErrors({ photo: upload.error });
           return;
@@ -106,7 +109,7 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
         setPhotoFile(null);
         setPhotoConsent(null);
       }
-      const result = await updatePersonProfileForOrganization(organizationId, personId, {
+      const result = await updatePersonProfileForOrganization(game, organizationId, personId, {
         handle: editHandle,
         firstName,
         lastName,
@@ -212,9 +215,11 @@ export function EditPersonProfileDialog({ organizationId, personId, handle, onSa
               <div className="flex flex-col gap-3 border-t pt-4">
                 <p className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">{t("editProfileAdvancedSection")}</p>
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField label={t("editProfileVlrIdLabel")} htmlFor="edit-person-vlr-id" error={err("vlrId")}>
-                    <Input id="edit-person-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
-                  </FormField>
+                  {gameHasVlr(game) && (
+                    <FormField label={t("editProfileVlrIdLabel")} htmlFor="edit-person-vlr-id" error={err("vlrId")}>
+                      <Input id="edit-person-vlr-id" inputMode="numeric" value={vlrId} onChange={(e) => setVlrId(e.target.value)} aria-invalid={!!fieldErrors.vlrId} />
+                    </FormField>
+                  )}
                   <FormField label={t("editProfileLiquipediaLabel")} htmlFor="edit-person-liquipedia" error={err("liquipediaLink")}>
                     <Input id="edit-person-liquipedia" value={liquipediaLink} onChange={(e) => setLiquipediaLink(e.target.value)} aria-invalid={!!fieldErrors.liquipediaLink} />
                   </FormField>

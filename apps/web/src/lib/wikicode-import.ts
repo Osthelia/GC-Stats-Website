@@ -11,6 +11,9 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+/** The longest wikicode an import accepts, for every game. */
+export const WIKICODE_MAX_LENGTH = 100_000;
+
 /** Extracts a top-level `{{Name|...}}` template by brace-depth scanning (handles nested `{{...}}` inside param values). */
 export function extractTemplate(wikicode: string, name: string): string | null {
   const marker = `{{${name.toLowerCase()}`;

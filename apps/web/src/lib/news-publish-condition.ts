@@ -12,7 +12,8 @@
  */
 
 import { and, eq, lte } from "drizzle-orm";
-import { news } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 /**
  * Every public site query listing/reading news must use this instead of a
@@ -23,6 +24,7 @@ import { news } from "@gc-stats/db";
  * due. Kept in its own file (no other imports) so every page module that
  * needs it can import it without risking a circular dependency.
  */
-export function isNewsPublishedCondition() {
+export function isNewsPublishedCondition(game: GameSlug) {
+  const { news } = gameTables(game);
   return and(eq(news.status, "published"), lte(news.publishedAt, new Date()));
 }

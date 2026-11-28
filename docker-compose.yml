@@ -105,8 +105,67 @@ services:
       - cf-tunnel
     profiles: ["tools"]
 
+  # Dev only: a local S3-compatible bucket server (RustFS, a drop-in for the
+  # archived MinIO) for logo/news uploads and LoL raw imports. Started only with
+  # `docker compose --profile dev up -d`; plain `docker compose up` and prod
+  # are unaffected. S3 API on localhost:9000, web console on localhost:9001
+  # (log in with S3_ACCESS_KEY_ID / S3_SECRET_ACCESS_KEY).
+  # Pin RUSTFS_IMAGE to a fixed tag if `latest` ever breaks.
+  s3:
+    image: ${RUSTFS_IMAGE:-rustfs/rustfs:latest}
+    container_name: s3-dev
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY_ID:-gcsdevaccess}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:-gcsdevsecretkey}
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+    volumes:
+      - s3_data:/data
+    ports:
+      - "127.0.0.1:${S3_DEV_PORT:-9000}:9000"
+      - "127.0.0.1:${S3_DEV_CONSOLE_PORT:-9001}:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    profiles: ["dev"]
+
+  # Dev only, one-off: creates S3_BUCKET and S3_LOL_IMPORTS_BUCKET on the dev
+  # server. S3_BUCKET's objects are publicly readable (like the prod bucket
+  # behind S3_PUBLIC_URL); S3_LOL_IMPORTS_BUCKET stays private, so its anonymous
+  # access is set to none, which also undoes a public setting from an earlier run.
+  # Uses RustFS's own CLI `rc`. Runs with `--profile dev up`, safe to re-run.
+  # Pin RC_IMAGE like RUSTFS_IMAGE if needed.
+  s3-init:
+    image: ${RC_IMAGE:-rustfs/rc:latest}
+    depends_on:
+      s3:
+        condition: service_healthy
+    environment:
+      S3_KEY: ${S3_ACCESS_KEY_ID:-gcsdevaccess}
+      S3_SECRET: ${S3_SECRET_ACCESS_KEY:-gcsdevsecretkey}
+      PUBLIC_BUCKET: ${S3_BUCKET:-gcs-dev}
+      PRIVATE_BUCKET: ${S3_LOL_IMPORTS_BUCKET:-gcs-lol-imports-dev}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        until rc alias set dev http://s3:9000 "$$S3_KEY" "$$S3_SECRET" > /dev/null; do echo "waiting for s3..."; sleep 1; done
+        rc mb "dev/$$PUBLIC_BUCKET" --ignore-existing
+        rc bucket anonymous set download "dev/$$PUBLIC_BUCKET"
+        echo "bucket ready (public): $$PUBLIC_BUCKET"
+        rc mb "dev/$$PRIVATE_BUCKET" --ignore-existing
+        rc bucket anonymous set none "dev/$$PRIVATE_BUCKET"
+        echo "bucket ready (private): $$PRIVATE_BUCKET"
+    profiles: ["dev"]
+
 volumes:
   db_data:
+  s3_data:
 
 networks:
   proxy:

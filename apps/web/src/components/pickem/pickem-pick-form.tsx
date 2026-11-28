@@ -23,6 +23,7 @@ import { computeVirtualBracket, getPickableMatches, getDownstreamMatchIds, getRe
 import type { PickFormData } from "@/lib/pickem/pickem-data";
 import type { PhaseScoringConfig } from "@/lib/pickem/scoring";
 import { PickemBracketCanvas } from "@/components/pickem/pickem-bracket-canvas";
+import { useGame } from "@/lib/use-game";
 import { PickemGroupMatchList } from "@/components/pickem/pickem-group-match-list";
 import { PickOutcomeIcon, OUTCOME_COLORS, type PickOutcome } from "@/components/pickem/pick-outcome-icon";
 import { tint } from "@/lib/theme-colors";
@@ -43,6 +44,7 @@ const NO_SELECTION = "none";
  * the bracket.
  */
 export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false }: { stageId: number; data: PickFormData; scoringConfig: PhaseScoringConfig; readOnly?: boolean }) {
+  const game = useGame();
   const t = useTranslations("pickemPage");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -112,7 +114,7 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
     setPick(entrantId);
     setSaving(true);
     try {
-      const result = await submitGroupMatchPick(stageId, matchId, entrantId);
+      const result = await submitGroupMatchPick(game, stageId, matchId, entrantId);
       if (!result.ok) {
         setPick(previous);
         toast.error(t(`saveError.${result.error}`));
@@ -134,7 +136,7 @@ export function PickemPickForm({ stageId, data, scoringConfig, readOnly = false 
     );
 
     startTransition(async () => {
-      const result = await submitStagePicks(stageId, { matchPicks: matchPicksInput, standingPicks: standingPicksInput });
+      const result = await submitStagePicks(game, stageId, { matchPicks: matchPicksInput, standingPicks: standingPicksInput });
       if (!result.ok) {
         toast.error(t(`saveError.${result.error}`));
         return;

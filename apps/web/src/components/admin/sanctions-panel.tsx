@@ -22,6 +22,7 @@ import { SanctionStatusBadge } from "@/components/admin/sanction-status-badge";
 import { SanctionDialog } from "@/components/admin/sanction-dialog";
 import { revokeSanction } from "@/actions/admin-sanctions";
 import { cn } from "@/lib/utils";
+import { GAME_INFO } from "@gc-stats/db/game";
 import type { AdminSanctionRow, SortDirection } from "@/lib/admin-sanctions";
 import { FormattedDate } from "@/components/formatted-date";
 
@@ -92,13 +93,15 @@ export function SanctionsPanel({
                         {row.username ?? t("unknownTarget")}
                       </Link>
                     ) : row.teamId ? (
-                      <Link href={`/admin/teams/${row.teamId}`} className="text-sm font-medium hover:underline">
+                      <Link href={`/admin/${row.teamGame ?? "valorant"}/teams/${row.teamId}`} className="text-sm font-medium hover:underline">
                         {row.teamName ?? t("unknownTarget")}
                       </Link>
                     ) : (
                       <span className="text-sm font-medium">{t("unknownTarget")}</span>
                     )}
-                    <span className="text-xs text-muted-foreground">{row.teamId ? t("targetTeam") : t("targetUser")}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {row.teamId ? (row.teamGame ? `${t("targetTeam")} · ${GAME_INFO[row.teamGame].shortName}` : t("targetTeam")) : t("targetUser")}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell>

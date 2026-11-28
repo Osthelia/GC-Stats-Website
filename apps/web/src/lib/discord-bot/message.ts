@@ -68,7 +68,8 @@ export async function buildAlertMessage(kind: AlertKind, match: AlertMatch, loca
   const fields = await resolveAlertFields(kind, match, locale, map);
   const images = resolveAlertImages(kind, match, map);
 
-  const url = `${GCS_SITE_URL}/${locale}/match/${match.id}`;
+  // The bot posts Valorant matches; a link without the game would open the visitor's last game, where the id is another match.
+  const url = `${GCS_SITE_URL}/${locale}/valorant/match/${match.id}`;
   const accent = live ? colors.live : kind === "map" ? colors.map : colors.finished;
   const imageData = { fields, images, locale, footerUrl: url.replace(/^https?:\/\//, "") };
 

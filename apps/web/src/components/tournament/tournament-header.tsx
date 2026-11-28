@@ -10,7 +10,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { GOLD, tint } from "@/lib/theme-colors";
 import { REGIONS, normalizeRegion } from "@/lib/tournament-regions";
-import { DEFAULT_TOURNAMENT_LOGO } from "@/lib/default-logos";
+import { defaultTournamentLogo } from "@/lib/default-logos";
 import {
   getPublicTournamentStageLinks,
   type TournamentHeaderInfo,
@@ -33,6 +33,7 @@ import { AdminPanelLink } from "@/components/site/admin-panel-link";
 import { ShareMenuButton } from "@/components/site/share-menu-button";
 import { isViewerAdmin } from "@/lib/rbac";
 import { EntityTabBar } from "@/components/site/entity-tab-bar";
+import { gameHasMaps, gameHasSeriesGames, gameHasStats, type GameSlug } from "@gc-stats/db/game";
 
 const SOCIAL_ICONS: Record<
   string,
@@ -118,14 +119,17 @@ const TABS = [
   "pickem",
   "stats",
   "maps",
+  "champions",
   "production",
 ] as const;
 
 export async function TournamentHeader({
+  game,
   tournament,
   basePath,
   activeTab,
 }: {
+  game: GameSlug;
   tournament: TournamentHeaderInfo;
   basePath: string;
   activeTab: (typeof TABS)[number];
@@ -136,7 +140,7 @@ export async function TournamentHeader({
     getTranslations("share"),
     getLocale(),
     isViewerAdmin(),
-    getPublicTournamentStageLinks(tournament.id),
+    getPublicTournamentStageLinks(game, tournament.id),
   ]);
   const regionMeta = REGIONS[normalizeRegion(tournament.region)];
 
@@ -146,6 +150,7 @@ export async function TournamentHeader({
     pickem: `/tournaments/${basePath}/pickem`,
     stats: `/tournaments/${basePath}/stats`,
     maps: `/tournaments/${basePath}/maps`,
+    champions: `/tournaments/${basePath}/champions`,
     production: `/tournaments/${basePath}/production`,
   };
   const tabLabels: Record<(typeof TABS)[number], string> = {
@@ -154,6 +159,7 @@ export async function TournamentHeader({
     pickem: t("tabPickem"),
     stats: t("tabStats"),
     maps: t("tabMaps"),
+    champions: t("tabChampions"),
     production: t("tabProduction"),
   };
 
@@ -246,11 +252,11 @@ export async function TournamentHeader({
             }}
           >
             <ThemedLogoImage
-              dark={tournament.logoUrl || DEFAULT_TOURNAMENT_LOGO}
+              dark={tournament.logoUrl || defaultTournamentLogo(game)}
               light={
                 tournament.logoUrlLight ||
                 tournament.logoUrl ||
-                DEFAULT_TOURNAMENT_LOGO
+                defaultTournamentLogo(game)
               }
               alt={tournament.name}
               width={84}
@@ -388,7 +394,7 @@ export async function TournamentHeader({
         </div>
 
         <EntityTabBar
-          tabs={TABS.map((tab) => ({
+          tabs={TABS.filter((tab) => (tab !== "maps" || gameHasMaps(game)) && (tab !== "champions" || gameHasSeriesGames(game)) && (tab !== "stats" || gameHasStats(game))).map((tab) => ({
             key: tab,
             href: tabHrefs[tab],
             label: tabLabels[tab],

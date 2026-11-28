@@ -130,7 +130,7 @@ export async function createFinanceEntry(input: CreateFinanceEntryInput): Promis
     })
     .returning({ id: financeEntries.id });
   if (!created) throw new Error("Insert returned no row");
-  if (staleRate) console.error(`createFinanceEntry: entry ${created.id} created with a 1:1 fallback EUR/USD rate`);
+  if (staleRate) console.error("createFinanceEntry: entry %s created with a 1:1 fallback EUR/USD rate", created.id);
 
   return { ok: true, id: created.id, staleRate };
 }

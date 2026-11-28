@@ -15,8 +15,10 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { leavePickemGroup } from "@/actions/pickem";
+import { useGame } from "@/lib/use-game";
 
 export function LeaveGroupButton({ groupId, redirectHref }: { groupId: number; redirectHref: string }) {
+  const game = useGame();
   const t = useTranslations("pickemPage.groups");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -24,7 +26,7 @@ export function LeaveGroupButton({ groupId, redirectHref }: { groupId: number; r
 
   function handleLeave() {
     startTransition(async () => {
-      const result = await leavePickemGroup(groupId);
+      const result = await leavePickemGroup(game, groupId);
       if (!result.ok) {
         setConfirmOpen(false);
         toast.error(t(`leaveError.${result.error}`));

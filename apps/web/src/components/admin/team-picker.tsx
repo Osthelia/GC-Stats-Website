@@ -8,6 +8,7 @@
 
 "use client";
 
+import { useGame } from "@/lib/use-game";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocale } from "next-intl";
@@ -32,7 +33,7 @@ export function TeamPicker({
   placeholder,
   searchPlaceholder,
   noResultsLabel,
-  search = searchTeams,
+  search,
 }: {
   id?: string;
   value: { id: number; name: string } | null;
@@ -44,6 +45,7 @@ export function TeamPicker({
   search?: (query: string) => Promise<TeamPickerResult[]>;
 }) {
   const locale = useLocale() as AppLocale;
+  const game = useGame();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TeamPickerResult[]>([]);
@@ -75,7 +77,7 @@ export function TeamPicker({
     const id = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      search(query).then((rows) => {
+      (search ?? ((q: string) => searchTeams(game, q)))(query).then((rows) => {
         if (id === requestId.current) {
           setResults(rows);
           setLoading(false);

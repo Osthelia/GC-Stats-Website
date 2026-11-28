@@ -38,7 +38,7 @@ const PRIVATE_CATEGORIES: Category[] = [
 
 const PUBLIC_CATEGORIES: Category[] = [
   { key: "players", icon: icons.users, groups: ["identity", "career", "hidden"] },
-  { key: "matchStats", icon: icons.chart, groups: ["stats"] },
+  { key: "matchStats", icon: icons.chart, groups: ["stats", "league"] },
   { key: "community", icon: icons.heart, groups: ["content"] },
 ];
 

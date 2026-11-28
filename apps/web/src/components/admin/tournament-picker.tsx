@@ -8,6 +8,7 @@
 
 "use client";
 
+import { useGame } from "@/lib/use-game";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDownIcon, Loader2Icon } from "lucide-react";
@@ -25,7 +26,7 @@ export function TournamentPicker({
   placeholder,
   searchPlaceholder,
   noResultsLabel,
-  search = searchSourceTournaments,
+  search,
 }: {
   id?: string;
   value: TournamentPickerResult | null;
@@ -35,6 +36,7 @@ export function TournamentPicker({
   noResultsLabel: string;
   search?: (query: string) => Promise<TournamentPickerResult[]>;
 }) {
+  const game = useGame();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TournamentPickerResult[]>([]);
@@ -63,7 +65,7 @@ export function TournamentPicker({
     const current = ++requestId.current;
     setLoading(true);
     const timeout = setTimeout(() => {
-      search(query).then((rows) => {
+      (search ?? ((q: string) => searchSourceTournaments(game, q)))(query).then((rows) => {
         if (current === requestId.current) {
           setResults(rows);
           setLoading(false);

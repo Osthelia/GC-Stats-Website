@@ -60,7 +60,16 @@ export default async function LocaleLayout({
   const { admin: _admin, dashboard: _dashboard, ...clientMessages } = await getMessages();
 
   return (
-    <html lang={locale} dir={rtlLocales.includes(locale) ? "rtl" : "ltr"} className={`dark ${instrumentSans.variable}`} suppressHydrationWarning>
+    <html
+      lang={locale}
+      dir={rtlLocales.includes(locale) ? "rtl" : "ltr"}
+      className={`dark ${instrumentSans.variable}`}
+      // Read by instrumentation-client.ts, which has no access to runtime environment variables.
+      data-sentry-dsn={process.env.SENTRY_DSN || undefined}
+      data-sentry-environment={process.env.SENTRY_ENVIRONMENT || undefined}
+      data-sentry-traces-sample-rate={process.env.SENTRY_TRACES_SAMPLE_RATE || undefined}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-screen flex-col bg-[var(--gcs-bg)] font-[family-name:var(--font-body)] text-[15px] text-[var(--gcs-text)] antialiased">
         {/* Sets data-site-theme before first paint so the light theme (if
             stored) doesn't flash dark first — see THEME_INIT_SCRIPT.

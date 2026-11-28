@@ -11,9 +11,10 @@
 
 import { and, asc, desc, eq, isNull, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { news, newsAuthors, newsMessages, newsRelations, newsImages, newsLanguages, teams, people, tournaments, users } from "@gc-stats/db";
+import { newsAuthors, newsLanguages, users, gameTables } from "@gc-stats/db";
 import { newsImageUrl } from "@gc-stats/storage";
 import { slugify } from "@/lib/entity-id";
+import type { GameSlug } from "@gc-stats/db/game";
 
 function isScheduled(status: string, publishedAt: Date | null): boolean {
   return status === "published" && !!publishedAt && publishedAt.getTime() > Date.now();
@@ -22,7 +23,8 @@ function isScheduled(status: string, publishedAt: Date | null): boolean {
 /** A news article always belongs to exactly one of these two scopes — never both, never neither (organizationId is NULL for an individually-authored article). */
 export type DashboardNewsScope = { organizationId: number } | { authorId: number };
 
-export function scopeCondition(scope: DashboardNewsScope) {
+export function scopeCondition(game: GameSlug, scope: DashboardNewsScope) {
+  const { news } = gameTables(game);
   return "organizationId" in scope ? eq(news.organizationId, scope.organizationId) : and(isNull(news.organizationId), eq(news.authorId, scope.authorId));
 }
 
@@ -40,7 +42,8 @@ export type DashboardNewsListRow = {
   updatedAt: Date;
 };
 
-export async function listDashboardNewsArticles(scope: DashboardNewsScope): Promise<DashboardNewsListRow[]> {
+export async function listDashboardNewsArticles(game: GameSlug, scope: DashboardNewsScope): Promise<DashboardNewsListRow[]> {
+  const { news } = gameTables(game);
   const rows = await db
     .select({
       id: news.id,
@@ -54,7 +57,7 @@ export async function listDashboardNewsArticles(scope: DashboardNewsScope): Prom
       updatedAt: news.updatedAt,
     })
     .from(news)
-    .where(scopeCondition(scope))
+    .where(scopeCondition(game, scope))
     .orderBy(desc(news.updatedAt));
 
   return rows.map((r) => ({ ...r, isScheduled: isScheduled(r.status, r.publishedAt) }));
@@ -94,8 +97,9 @@ async function labelForUserId(userId: string | null): Promise<string | null> {
   return row?.name || row?.username || null;
 }
 
-export async function getDashboardNewsArticle(scope: DashboardNewsScope, newsId: number): Promise<DashboardNewsArticleDetail | null> {
-  const [row] = await db.select().from(news).where(and(eq(news.id, newsId), scopeCondition(scope))).limit(1);
+export async function getDashboardNewsArticle(game: GameSlug, scope: DashboardNewsScope, newsId: number): Promise<DashboardNewsArticleDetail | null> {
+  const { news, newsRelations, newsImages, teams, people, tournaments } = gameTables(game);
+  const [row] = await db.select().from(news).where(and(eq(news.id, newsId), scopeCondition(game, scope))).limit(1);
   if (!row) return null;
 
   const relations = await db.select({ relatableType: newsRelations.relatableType, relatableId: newsRelations.relatableId }).from(newsRelations).where(eq(newsRelations.newsId, newsId));
@@ -149,7 +153,8 @@ export type DashboardNewsMessage = {
   authorName: string | null;
 };
 
-export async function listDashboardNewsMessages(newsId: number): Promise<DashboardNewsMessage[]> {
+export async function listDashboardNewsMessages(game: GameSlug, newsId: number): Promise<DashboardNewsMessage[]> {
+  const { newsMessages } = gameTables(game);
   const rows = await db
     .select({ id: newsMessages.id, type: newsMessages.type, body: newsMessages.body, createdAt: newsMessages.createdAt, name: users.name, username: users.username })
     .from(newsMessages)

@@ -6,6 +6,7 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
+import type { GameSlug } from "@gc-stats/db/game";
 import { Link } from "@/i18n/navigation";
 import { TournamentBadge } from "@/components/tournament/tournament-badge";
 
@@ -21,14 +22,14 @@ export type TournamentListCardItem = {
 };
 
 /** Compact tournament row (logo, name, region, dates) shared by the home and organization pages. */
-export function TournamentListCard({ tournament }: { tournament: TournamentListCardItem }) {
+export function TournamentListCard({ tournament, game }: { tournament: TournamentListCardItem; game: GameSlug }) {
   return (
     <Link
       href={`/tournaments/${tournament.id}/${tournament.slug}`}
       className="gcs-accent-card flex items-center gap-2.5 rounded-xl border border-neutral-800 bg-[var(--gcs-surface)] py-2.5 pl-3 pr-3 transition-all hover:translate-x-1 hover:bg-[var(--gcs-hover)] active:scale-[0.98]"
       style={{ borderLeft: `3px solid ${tournament.regionColor}` }}
     >
-      <TournamentBadge name={tournament.name} logoUrl={tournament.logoUrl} logoUrlLight={tournament.logoUrlLight} size={30} bare />
+      <TournamentBadge name={tournament.name} logoUrl={tournament.logoUrl} logoUrlLight={tournament.logoUrlLight} size={30} bare game={game} />
       <div className="min-w-0 flex-1">
         <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold tracking-tight text-neutral-50">{tournament.name}</div>
         <div className="mt-0.5 flex items-center gap-1.5">

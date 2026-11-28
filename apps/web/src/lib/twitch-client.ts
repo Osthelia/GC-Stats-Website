@@ -35,7 +35,7 @@ async function getAppAccessToken(): Promise<string | null> {
 
   const response = await fetch("https://id.twitch.tv/oauth2/token", { method: "POST", body: params });
   if (!response.ok) {
-    console.warn(`[twitch-client] app access token request failed with status ${response.status}`);
+    console.warn("[twitch-client] app access token request failed with status %s", response.status);
     return null;
   }
 
@@ -70,7 +70,7 @@ export async function getLiveStreams(logins: string[]): Promise<Map<string, Live
     });
 
     if (!response.ok) {
-      console.warn(`[twitch-client] get-streams call failed with status ${response.status}`);
+      console.warn("[twitch-client] get-streams call failed with status %s", response.status);
       continue;
     }
 

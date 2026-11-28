@@ -11,8 +11,9 @@
  */
 
 import { and, asc, eq, inArray } from "drizzle-orm";
-import { stageQualifications, stageContainers, stages, tournaments } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import type { Tx } from "./repository";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type ContainerAdvancementRule = {
   rankFrom: number;
@@ -32,7 +33,8 @@ export type ContainerAdvancementRule = {
  * points, cash prize — V1's `leaderboard.blade.php`) are a different,
  * not-yet-built widget and are intentionally excluded here.
  */
-export async function getContainerAdvancementRules(tx: Tx, containerId: number): Promise<ContainerAdvancementRule[]> {
+export async function getContainerAdvancementRules(game: GameSlug, tx: Tx, containerId: number): Promise<ContainerAdvancementRule[]> {
+  const { stageQualifications, stageContainers, stages, tournaments } = gameTables(game);
   const rules = await tx
     .select()
     .from(stageQualifications)
@@ -75,7 +77,8 @@ export type MatchAdvancementRule = {
  * `bracket-grid.blade.php` "Qualified" column. Same `'container'` filter,
  * placement rules stay with the final standings widget.
  */
-export async function getMatchAdvancementRules(tx: Tx, matchIds: number[]): Promise<MatchAdvancementRule[]> {
+export async function getMatchAdvancementRules(game: GameSlug, tx: Tx, matchIds: number[]): Promise<MatchAdvancementRule[]> {
+  const { stageQualifications, stageContainers, stages, tournaments } = gameTables(game);
   if (matchIds.length === 0) return [];
   const rows = await tx
     .select({

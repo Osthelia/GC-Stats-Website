@@ -1,3 +1,4 @@
+import { getPreferredGame } from "@/lib/game";
 import EventCalendar from "@/components/calendar/event-calendar";
 import { getCalendarMonth, getCalendarTeam, getCalendarTournamentFacets, isCalendarDate, isCalendarMonth, offsetCalendarMonth, parseCalendarTeamId, type CalendarFilters } from "@/lib/calendar-data";
 import { getTranslations } from "next-intl/server";
@@ -11,6 +12,7 @@ export default async function CalendarPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
+  const game = await getPreferredGame();
   const t = await getTranslations("tournamentsPage");
   const calendarT = await getTranslations("calendar");
   const navT = await getTranslations("nav");
@@ -34,9 +36,9 @@ export default async function CalendarPage({
   const previousMonth = offsetCalendarMonth(month, -1);
   const nextMonth = offsetCalendarMonth(month, 1);
   const [monthsEvents, facets, selectedTeam] = await Promise.all([
-    Promise.all([previousMonth, month, nextMonth].map((month) => getCalendarMonth(month, filters))),
-    getCalendarTournamentFacets(),
-    filters.teamId === undefined ? null : getCalendarTeam(filters.teamId),
+    Promise.all([previousMonth, month, nextMonth].map((month) => getCalendarMonth(game, month, filters))),
+    getCalendarTournamentFacets(game),
+    filters.teamId === undefined ? null : getCalendarTeam(game, filters.teamId),
   ]);
   // Deduplicate events across months.
   const events = [...new Map(monthsEvents.flat().map((event) => [event.id, event])).values()]
@@ -65,7 +67,7 @@ export default async function CalendarPage({
         }}
       >
         <FilterBarRow label={calendarT("filterTeamLabel")}>
-          <CalendarTeamFilter selectedTeam={filters.teamId === undefined ? null : (
+          <CalendarTeamFilter game={game} selectedTeam={filters.teamId === undefined ? null : (
             selectedTeam ?? { id: filters.teamId, name: calendarT("teamUnavailable") }
           )} />
         </FilterBarRow>

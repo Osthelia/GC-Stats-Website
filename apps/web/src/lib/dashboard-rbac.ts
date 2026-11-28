@@ -9,14 +9,15 @@
  * @link      https://github.com/Osthelia/GC-Stats-Website
  */
 
-import { eq, exists, inArray } from "drizzle-orm";
+import { eq, exists, inArray, or } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, teams, users, apiKeys, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS, PERMISSIONS } from "@gc-stats/db";
+import { organizations, organizationAccess, organizationAccessRoles, organizationRoles, organizationRolePermissions, users, apiKeys, ORGANIZATION_PERMISSIONS, ALL_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_PERMISSIONS, LINKED_ORGANIZATION_FORBIDDEN_PERMISSIONS, PERMISSIONS, gameTables } from "@gc-stats/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "@/i18n/navigation";
 import { getGlobalAccess, hasAccess } from "@/lib/rbac";
 import { getLinkedDiscordId } from "@/lib/discord-guild-membership";
 import type { AppLocale } from "@/i18n/routing";
+import { GAMES } from "@gc-stats/db/game";
 
 export type DashboardOrgMembership = {
   organizationId: number;
@@ -69,6 +70,14 @@ async function getHasPersonalApiKey(userId: string): Promise<boolean> {
   return !!row;
 }
 
+/** True when the organization runs a team in any game, public or not: permissions depend on it. */
+function orgHasTeamSql() {
+  return or(...GAMES.map((game) => {
+    const { teams } = gameTables(game);
+    return exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id)));
+  }))!;
+}
+
 /**
  * Every organization this ACCOUNT has been granted dashboard access to
  * (organization_access, keyed on users.id — never on people/
@@ -88,7 +97,7 @@ export async function getDashboardMemberships(userId: string): Promise<Dashboard
       maxPermissions: organizations.maxPermissions,
       accessId: organizationAccess.id,
       isOwner: organizationAccess.isOwner,
-      isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
+      isTeamLinked: orgHasTeamSql().mapWith(Boolean),
     })
     .from(organizationAccess)
     .innerJoin(organizations, eq(organizations.id, organizationAccess.organizationId))
@@ -158,7 +167,7 @@ async function getGlobalOrgAdminMemberships(userId: string): Promise<DashboardOr
       name: organizations.name,
       slug: organizations.slug,
       tags: organizations.tags,
-      isTeamLinked: exists(db.select({ id: teams.id }).from(teams).where(eq(teams.organizationId, organizations.id))).mapWith(Boolean),
+      isTeamLinked: orgHasTeamSql().mapWith(Boolean),
     })
     .from(organizations);
   return rows.map((r) => ({

@@ -22,6 +22,7 @@ import { createQualificationRule, updateQualificationRule, type QualificationRul
 import type { AdminQualificationRule } from "@/lib/admin-bracket-qualifications";
 import type { AdminContainerOption } from "@/lib/admin-tournament-detail";
 import type { AdminMatchListRow } from "@/lib/admin-matches";
+import { useGame } from "@/lib/use-game";
 
 type FormState = {
   sourceKind: "rank" | "match";
@@ -100,6 +101,7 @@ export function QualificationRuleDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.qualifications");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -135,7 +137,7 @@ export function QualificationRuleDialog({
     };
 
     startTransition(async () => {
-      const result = rule ? await updateQualificationRule(rule.id, input) : await createQualificationRule(input);
+      const result = rule ? await updateQualificationRule(game, rule.id, input) : await createQualificationRule(game, input);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

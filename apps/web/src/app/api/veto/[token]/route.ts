@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: Params) {
   const { token } = await params;
   if (!(await checkRateLimitDb(`veto-poll:${getClientIp(request.headers)}`, 10_000, 150))) return NextResponse.json({ error: "rateLimited" }, { status: 429, headers: NO_STORE });
   const requested = Number(new URL(request.url).searchParams.get("match"));
-  const view = await getTeamVetoView(token, Number.isInteger(requested) && requested > 0 ? requested : null);
+  const view = await getTeamVetoView("valorant", token, Number.isInteger(requested) && requested > 0 ? requested : null);
   if (!view) return NextResponse.json({ error: "notFound" }, { status: 404, headers: NO_STORE });
   return NextResponse.json(view, { headers: NO_STORE });
 }
@@ -34,14 +34,14 @@ export async function POST(request: Request, { params }: Params) {
   const allowed = await checkRateLimitDb(`veto-action:${getClientIp(request.headers)}`, 10_000, 30);
   if (!allowed) return NextResponse.json({ error: "rateLimited" }, { status: 429, headers: NO_STORE });
 
-  const context = await getTeamContext(token);
+  const context = await getTeamContext("valorant", token);
   if (!context) return NextResponse.json({ error: "notFound" }, { status: 404, headers: NO_STORE });
 
   const body: unknown = await request.json().catch(() => null);
   const parsed = parseVetoAction(body);
   if (!parsed) return NextResponse.json({ error: "invalidRequest" }, { status: 400, headers: NO_STORE });
 
-  const result = await performVetoAction(context.entrantId, parsed.matchId, parsed.action);
+  const result = await performVetoAction("valorant", context.entrantId, parsed.matchId, parsed.action);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.error === "notFound" || result.error === "notAllowed" ? 404 : 409, headers: NO_STORE });
   return NextResponse.json({ state: result.state }, { headers: NO_STORE });
 }

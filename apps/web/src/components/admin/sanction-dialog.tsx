@@ -20,9 +20,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { FormField } from "@/components/admin/form-field";
 import { UserPicker } from "@/components/admin/user-picker";
 import { TeamPicker } from "@/components/admin/team-picker";
+import { searchTeams } from "@/actions/admin-players";
 import { cn } from "@/lib/utils";
 import { createSanction, type SanctionFieldErrors } from "@/actions/admin-sanctions";
 import { SANCTION_TYPES } from "@/lib/sanction-constants";
+import { useGame } from "@/lib/use-game";
+import { GAMES, type GameSlug } from "@gc-stats/db/game";
 
 type TargetMode = "user" | "team";
 
@@ -40,13 +43,17 @@ export function SanctionDialog({
   /** Pre-selects the target user (e.g. opened from a report review) instead of starting empty. */
   initialUser?: { id: string; username: string | null } | null;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.sanctions");
+  const tGame = useTranslations("game");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [fieldErrors, setFieldErrors] = useState<SanctionFieldErrors>({});
   const [targetMode, setTargetMode] = useState<TargetMode>("user");
   const [user, setUser] = useState<{ id: string; username: string | null } | null>(null);
   const [team, setTeam] = useState<{ id: number; name: string } | null>(null);
+  // Team ids are counted per game: the team is picked from, and stored with, one game. The page's game to start with.
+  const [teamGame, setTeamGame] = useState<GameSlug>(game);
   const [type, setType] = useState<string>("warning");
   const [reason, setReason] = useState("");
   const [startsAt, setStartsAt] = useState<string | null>(nowToMinute());
@@ -58,19 +65,21 @@ export function SanctionDialog({
       setTargetMode("user");
       setUser(initialUser);
       setTeam(null);
+      setTeamGame(game);
       setType("warning");
       setReason("");
       setStartsAt(nowToMinute());
       setEndsAt(null);
     }
-  }, [open, initialUser]);
+  }, [open, initialUser, game]);
 
   function handleSubmit() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await createSanction({
+      const result = await createSanction(game, {
         userId: targetMode === "user" ? (user?.id ?? null) : null,
         teamId: targetMode === "team" ? (team?.id ?? null) : null,
+        teamGame: targetMode === "team" ? teamGame : null,
         type,
         reason,
         startsAt: startsAt ?? "",
@@ -119,7 +128,35 @@ export function SanctionDialog({
               {targetMode === "user" ? (
                 <UserPicker value={user} onChange={setUser} placeholder={t("pickUserPlaceholder")} searchPlaceholder={t("pickUserSearchPlaceholder")} noResultsLabel={t("pickNoResults")} />
               ) : (
-                <TeamPicker value={team} onChange={setTeam} placeholder={t("pickTeamPlaceholder")} searchPlaceholder={t("pickTeamSearchPlaceholder")} noResultsLabel={t("pickNoResults")} />
+                <div className="flex flex-col gap-2">
+                  <div role="group" aria-label={tGame("switcherLabel")} className="inline-flex w-fit rounded-lg border border-input p-0.5">
+                    {GAMES.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-pressed={teamGame === option}
+                        onClick={() => {
+                          // A team picked in the other game is not a team of this one.
+                          if (option !== teamGame) setTeam(null);
+                          setTeamGame(option);
+                        }}
+                        className={cn("rounded-md px-3 py-1 text-xs font-medium transition-colors", teamGame === option ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+                      >
+                        {tGame(option)}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Keyed by the game, so the picker's search starts over in the other game. */}
+                  <TeamPicker
+                    key={teamGame}
+                    value={team}
+                    onChange={setTeam}
+                    search={(query) => searchTeams(teamGame, query)}
+                    placeholder={t("pickTeamPlaceholder")}
+                    searchPlaceholder={t("pickTeamSearchPlaceholder")}
+                    noResultsLabel={t("pickNoResults")}
+                  />
+                </div>
               )}
             </div>
           </FormField>

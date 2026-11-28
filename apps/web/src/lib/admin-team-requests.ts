@@ -12,7 +12,7 @@
 
 import { and, count, countDistinct, desc, eq, gte, inArray, isNotNull, isNull, lte, notExists, or, sql } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { aboutTeamMemberSettings, entrants, mapPlayerStats, maps, matches, organizations, people, rosterMemberships, roles, teamInfoRequests, teamPrivateContacts, teams, tournaments, userRoles, users } from "@gc-stats/db";
+import { aboutTeamMemberSettings, organizations, roles, teamInfoRequests, teamPrivateContacts, userRoles, users, valorantTables } from "@gc-stats/db";
 import { getCurrentLogoUrls } from "@/lib/admin-logos";
 import { getAdminTeamRoster } from "@/lib/admin-teams";
 import {
@@ -28,6 +28,8 @@ import {
   type TeamRequestSocialKey,
   type TeamRequestTab,
 } from "@/lib/team-requests/constants";
+
+const { entrants, mapPlayerStats, maps, matches, people, rosterMemberships, teams, tournaments } = valorantTables;
 
 const PLAYER_ROLES = ["player", "player-igl", "sub"];
 const MANAGER_ROLES = ["manager"];
@@ -134,7 +136,7 @@ export async function listRecommendedTeams(): Promise<RecommendedTeamRow[]> {
     }))
     .sort((x, y) => y.lastPlayedAt.localeCompare(x.lastPlayedAt));
 
-  const logos = await getCurrentLogoUrls("team", list.map((r) => r.teamId));
+  const logos = await getCurrentLogoUrls("team", list.map((r) => r.teamId), "valorant");
   return list.map((r) => ({ ...r, teamLogoUrl: logos.get(r.teamId) ?? null }));
 }
 
@@ -197,7 +199,7 @@ export async function listTeamRequests(opts: {
     db.select({ total: count() }).from(teamInfoRequests).where(where),
   ]);
 
-  const logos = await getCurrentLogoUrls("team", [...new Set(rows.map((r) => r.teamId))]);
+  const logos = await getCurrentLogoUrls("team", [...new Set(rows.map((r) => r.teamId))], "valorant");
   return {
     total: totalRow?.total ?? 0,
     rows: rows.map((r) => ({
@@ -300,8 +302,8 @@ export async function getTeamRequestContext(teamId: number, userId: string): Pro
   if (!team) return null;
 
   const [logos, roster, orgRow, lastRequest, pending, privateContact, signature] = await Promise.all([
-    getCurrentLogoUrls("team", [teamId]),
-    getAdminTeamRoster(teamId),
+    getCurrentLogoUrls("team", [teamId], "valorant"),
+    getAdminTeamRoster("valorant", teamId),
     team.organizationId
       ? db.select({ name: organizations.name, socials: organizations.socials }).from(organizations).where(eq(organizations.id, team.organizationId)).limit(1)
       : Promise.resolve([]),

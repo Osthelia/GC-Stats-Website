@@ -8,12 +8,19 @@
 
 "use client";
 
+import { useEffect } from "react";
+import { captureBoundaryError } from "@/lib/monitoring/capture-boundary-error";
+
 /**
  * Root-level fallback, only rendered if [locale]/layout.tsx itself throws.
  * No next-intl context reachable here, so both languages are shown at once
  * rather than guessing the locale.
  */
-export default function GlobalError({ retry }: { error: Error & { digest?: string }; retry: () => void }) {
+export default function GlobalError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
+  useEffect(() => {
+    captureBoundaryError(error);
+  }, [error]);
+
   return (
     <html lang="en">
       <body

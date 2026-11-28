@@ -11,8 +11,10 @@
 
 import { asc, inArray, and } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { mapPlayerStats, mapRoundDamagesRaw, mapRoundKillsRaw, mapRoundPlayerLoadoutsRaw, mapRoundPlayerPositionsRaw, mapRoundsRaw } from "@gc-stats/db";
+import { valorantTables } from "@gc-stats/db";
 import { agentKey, agentRole, heuristicAttackerForRound, ratingKillCause, type RatingMapInput, type RatingRound, type RiotTeamId } from "@gc-stats/map-stats-engine";
+
+const { mapPlayerStats, mapRoundDamagesRaw, mapRoundKillsRaw, mapRoundPlayerLoadoutsRaw, mapRoundPlayerPositionsRaw, mapRoundsRaw } = valorantTables;
 
 export interface RawRatingMap {
   mapId: number;

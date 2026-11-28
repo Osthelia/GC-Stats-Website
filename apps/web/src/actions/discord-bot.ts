@@ -14,7 +14,7 @@
 
 import { and, count, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { discordBotGuildSettings, discordBotSubscriptions, discordBotTemplates, teams } from "@gc-stats/db";
+import { discordBotGuildSettings, discordBotSubscriptions, discordBotTemplates, valorantTables } from "@gc-stats/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { deleteDiscordBackground, storeDiscordBackground, validateImageBuffer } from "@gc-stats/storage";
 import { encrypt } from "@/lib/encryption";
@@ -43,6 +43,8 @@ import {
   type DiscordBotEvent,
   type DiscordBotOfficialFilter,
 } from "@/lib/discord-bot/shared";
+
+const { teams } = valorantTables;
 
 export type DiscordSubscriptionInput = {
   channelId: unknown;
@@ -409,7 +411,7 @@ export async function sendDiscordTestAlert(guildId: string, event: DiscordBotEve
   const template = { ...parsed.data, backgroundImageId: await currentBackgroundId(auth.guildId, auth.event) };
   try {
     const { matchId, fields, images } = await resolvePreviewData(kind, resolvedLocale);
-    const url = `${GCS_SITE_URL}/${resolvedLocale}/match/${matchId}`;
+    const url = `${GCS_SITE_URL}/${resolvedLocale}/valorant/match/${matchId}`;
     const png = await renderTemplateImage(template, { fields, images, locale: resolvedLocale, footerUrl: url.replace(/^https?:\/\//, "") });
     const message = composeAlertMessage({
       kind,

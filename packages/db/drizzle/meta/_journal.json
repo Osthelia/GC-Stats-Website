@@ -523,8 +523,92 @@
     {
       "idx": 74,
       "version": "7",
-      "when": 1795800884008,
-      "tag": "0074_remove_analytics_permission",
+      "when": 1795800944008,
+      "tag": "0074_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1795801004008,
+      "tag": "0075_user_lol_fan_team",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1795801064008,
+      "tag": "0076_organization_games",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1795801124008,
+      "tag": "0077_activity_log_game",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1795801184008,
+      "tag": "0078_shared_people",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1795801244008,
+      "tag": "0079_powerful_wolfpack",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1795801304008,
+      "tag": "0080_data_dragon_icon_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1795801364008,
+      "tag": "0081_lol_roster_membership_lanes",
+      "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1795801424008,
+      "tag": "0082_lol_person_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1795801484008,
+      "tag": "0083_lol_game_player_stats_lineups",
+      "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1795801544008,
+      "tag": "0084_logos_and_sanctions_per_game",
+      "breakpoints": true
+    },
+    {
+      "idx": 85,
+      "version": "7",
+      "when": 1795801604008,
+      "tag": "0085_remove_analytics_permission",
+      "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "7",
+      "when": 1795822249305,
+      "tag": "0086_val_person_webhooks",
       "breakpoints": true
     }
   ]

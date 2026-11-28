@@ -16,8 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { backfillMatchScoresFromMaps, type ScoreBackfillReport, type ScoreBackfillSample } from "@/actions/admin-match-score-backfill";
+import { useGame } from "@/lib/use-game";
 
 export function MatchScoreBackfillCard({ tournamentId }: { tournamentId: number }) {
+  const game = useGame();
   const t = useTranslations("admin.tournaments.scoreBackfill");
   const [isPending, startTransition] = useTransition();
   const [report, setReport] = useState<ScoreBackfillReport | null>(null);
@@ -26,12 +28,12 @@ export function MatchScoreBackfillCard({ tournamentId }: { tournamentId: number 
   function run(apply: boolean) {
     startTransition(async () => {
       try {
-        const result = await backfillMatchScoresFromMaps(tournamentId, apply);
+        const result = await backfillMatchScoresFromMaps(game, tournamentId, apply);
         if (apply) {
           toast.success(t("applySuccess", { count: result.resolvable }));
           setConfirmOpen(false);
           // Re-preview so what's left (undecided/conflicts) stays visible.
-          setReport(await backfillMatchScoresFromMaps(tournamentId, false));
+          setReport(await backfillMatchScoresFromMaps(game, tournamentId, false));
         } else {
           setReport(result);
         }

@@ -1,0 +1,41 @@
+/**
+ * GC-Stats - route
+ *
+ * Data behind the match screenshot dialog (components/match/match-poster-dialog.tsx), loaded on open.
+ *
+ * @copyright Copyright (c) 2026 Osthelia - GC-Stats-Website
+ * @license   https://github.com/Osthelia/GC-Stats-Website/blob/main/LICENSE.md Osthelia Limited Commercial License v2.0
+ * @link      https://github.com/Osthelia/GC-Stats-Website
+ */
+
+import { NextResponse } from "next/server";
+import { parseEntityId } from "@/lib/entity-id";
+import { aggregateMatchStats, getCompletedMatchStats, getMatchHeader, getMatchMaps, getMatchMapsStatsBatch } from "@/lib/match-page-data";
+import { getMatchLeagueGames } from "@/lib/match-league-games";
+import { gameFromParams } from "@/lib/game";
+import { viewableGameGate } from "@/lib/api/game-gate";
+import { gameHasSeriesGames } from "@gc-stats/db/game";
+
+export async function GET(_request: Request, { params }: { params: Promise<{ matchId: string; game: string }> }) {
+  const game = await gameFromParams(params);
+  const hidden = await viewableGameGate(game);
+  if (hidden) return hidden;
+  const matchId = parseEntityId((await params).matchId);
+  if (matchId == null) return NextResponse.json({ error: "Invalid match id" }, { status: 400 });
+
+  const match = await getMatchHeader(game, matchId);
+  if (!match) return NextResponse.json({ error: "Match not found" }, { status: 404 });
+
+  if (gameHasSeriesGames(game)) {
+    const { games, averages } = await getMatchLeagueGames(matchId, match.patch, { entrantAId: match.a.entrantId, entrantBId: match.b.entrantId });
+    return NextResponse.json({ match, maps: [], aggregated: { playersA: [], playersB: [] }, roundsByMapId: {}, games, averages });
+  }
+
+  const [maps, { roundsByMapId }] =
+    match.status === "completed"
+      ? await getCompletedMatchStats(game, matchId, match.a.entrantId, match.b.entrantId)
+      : await Promise.all([getMatchMaps(game, matchId, match.a.entrantId, match.b.entrantId), getMatchMapsStatsBatch(matchId, match.a.entrantId, match.b.entrantId)]);
+  const aggregated = aggregateMatchStats(maps, match.a.entrantId, match.b.entrantId);
+
+  return NextResponse.json({ match, maps, aggregated, roundsByMapId });
+}

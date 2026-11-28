@@ -24,19 +24,14 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@gc-stats/db/client";
-import {
-  matches,
-  entrants,
-  tournaments,
-  stages,
-  stageContainers,
-} from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { normalizeRegion } from "@/lib/tournament-regions";
 import { abbreviateTournamentName, type HomeMatch } from "@/lib/home-data";
 import { buildTeamDisplayResolver } from "@/lib/historical-team-display";
 import { formatSideScore } from "@/lib/match-score-format";
 import { TOURNAMENT_FACETS_TAG } from "@/lib/cache-tags";
 import { visibleTournament } from "@/lib/ghost-visibility";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type MatchListStatus = "all" | "live" | "upcoming" | "finished";
 export type MatchListSort = "date" | "tournament";
@@ -86,10 +81,18 @@ type RawMatchRow = {
   tournamentName: string;
 };
 
-const entrantA = alias(entrants, "entrant_a");
-const entrantB = alias(entrants, "entrant_b");
+function entrantA(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_a");
+}
+function entrantB(game: GameSlug) {
+  const { entrants } = gameTables(game);
+  return alias(entrants, "entrant_b");
+}
 
-const listColumns = {
+function listColumns(game: GameSlug) {
+  const { matches, tournaments } = gameTables(game);
+  return {
   id: matches.id,
   status: matches.status,
   scheduledAt: matches.scheduledAt,
@@ -99,38 +102,41 @@ const listColumns = {
   scoreB: matches.scoreB,
   entrantAId: matches.entrantAId,
   entrantBId: matches.entrantBId,
-  aDisplayName: entrantA.displayName,
-  aTeamId: entrantA.teamId,
-  bDisplayName: entrantB.displayName,
-  bTeamId: entrantB.teamId,
+  aDisplayName: entrantA(game).displayName,
+  aTeamId: entrantA(game).teamId,
+  bDisplayName: entrantB(game).displayName,
+  bTeamId: entrantB(game).teamId,
   region: tournaments.region,
   tournamentName: tournaments.name,
 };
+}
 
 // Both entrants are required to render a row, so inner joins drop nothing the list would show.
-function selectListRows() {
+function selectListRows(game: GameSlug) {
+  const { matches, tournaments, stages, stageContainers } = gameTables(game);
   return db
-    .select(listColumns)
+    .select(listColumns(game))
     .from(matches)
     .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
-    .innerJoin(entrantA, eq(entrantA.id, matches.entrantAId))
-    .innerJoin(entrantB, eq(entrantB.id, matches.entrantBId));
+    .innerJoin(entrantA(game), eq(entrantA(game).id, matches.entrantAId))
+    .innerJoin(entrantB(game), eq(entrantB(game).id, matches.entrantBId));
 }
 
 // Region/category options, invalidated with the tournament facets.
 const getMatchFacets = unstable_cache(
-  async (): Promise<{ regions: string[]; categories: string[] }> => {
+  async (game: GameSlug): Promise<{ regions: string[]; categories: string[] }> => {
+        const { tournaments } = gameTables(game);
     const [regionRows, categoryRows] = await Promise.all([
       db
         .selectDistinct({ region: tournaments.region })
         .from(tournaments)
-        .where(and(visibleTournament, sql`${tournaments.region} IS NOT NULL`)),
+        .where(and(visibleTournament(game), sql`${tournaments.region} IS NOT NULL`)),
       db
         .selectDistinct({ category: tournaments.category })
         .from(tournaments)
-        .where(and(visibleTournament, sql`${tournaments.category} IS NOT NULL`)),
+        .where(and(visibleTournament(game), sql`${tournaments.category} IS NOT NULL`)),
     ]);
     return {
       regions: regionRows
@@ -147,9 +153,9 @@ const getMatchFacets = unstable_cache(
   { tags: [TOURNAMENT_FACETS_TAG], revalidate: 3600 },
 );
 
-async function enrichMatchRows(rows: RawMatchRow[]): Promise<HomeMatch[]> {
+async function enrichMatchRows(game: GameSlug, rows: RawMatchRow[]): Promise<HomeMatch[]> {
   const resolver = await buildTeamDisplayResolver(
-    rows
+    game, rows
       .flatMap((r) => [r.aTeamId, r.bTeamId])
       .filter((id): id is number => id != null),
   );
@@ -214,7 +220,7 @@ async function enrichMatchRows(rows: RawMatchRow[]): Promise<HomeMatch[]> {
   return homeMatches;
 }
 
-export async function listPublicMatches(opts: {
+export async function listPublicMatches(game: GameSlug, opts: {
   status: MatchListStatus;
   region: string;
   category: string;
@@ -233,13 +239,14 @@ export async function listPublicMatches(opts: {
   /** Requested page, clamped to the last one. */
   page: number;
 }> {
+  const { matches, tournaments, stages, stageContainers } = gameTables(game);
   // Filters that narrow the counted set regardless of the status tab itself
   // (so switching status tabs never resets the region/category/date the user picked).
   // Matches without both entrants can't be rendered, filtered in SQL so counts and pages stay accurate.
   const baseConditions: SQL[] = [
     isNotNull(matches.entrantAId),
     isNotNull(matches.entrantBId),
-    visibleTournament,
+    visibleTournament(game),
   ];
   if (opts.region) baseConditions.push(eq(tournaments.region, opts.region));
   if (opts.category)
@@ -273,7 +280,7 @@ export async function listPublicMatches(opts: {
       : [orderNullsLast(matches.scheduledAt, opts.direction)];
 
   const selectPage = (page: number) =>
-    selectListRows()
+    selectListRows(game)
       .where(where)
       .orderBy(...orderBys)
       .limit(PAGE_SIZE)
@@ -282,7 +289,7 @@ export async function listPublicMatches(opts: {
   const [requestedRows, facets, statusCountRows] =
     await Promise.all([
       selectPage(opts.page),
-      getMatchFacets(),
+      getMatchFacets(game),
       db
         .select({ status: matches.status, count: sql<number>`count(*)` })
         .from(matches)
@@ -311,7 +318,7 @@ export async function listPublicMatches(opts: {
   // Only an out of range page needs a second query.
   const rows = page === opts.page ? requestedRows : await selectPage(page);
 
-  let homeMatches = await enrichMatchRows(rows);
+  let homeMatches = await enrichMatchRows(game, rows);
   let usedFallback = false;
 
   // A dead-end filter combination (or just a quiet stretch with nothing
@@ -320,11 +327,11 @@ export async function listPublicMatches(opts: {
   // matches these filters." with nothing else to look at.
   // Only when nothing matches at all, not for a page past the last one.
   if (homeMatches.length === 0 && total === 0) {
-    const fallbackRows = await selectListRows()
-      .where(and(isNotNull(matches.entrantAId), isNotNull(matches.entrantBId), visibleTournament))
+    const fallbackRows = await selectListRows(game)
+      .where(and(isNotNull(matches.entrantAId), isNotNull(matches.entrantBId), visibleTournament(game)))
       .orderBy(orderNullsLast(matches.scheduledAt, "desc"))
       .limit(FALLBACK_RESULTS_LIMIT);
-    homeMatches = await enrichMatchRows(fallbackRows);
+    homeMatches = await enrichMatchRows(game, fallbackRows);
     usedFallback = homeMatches.length > 0;
   }
 

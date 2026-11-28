@@ -14,6 +14,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { publicGames } from "@/lib/public-games";
 import { DashboardRefreshOnFocus } from "@/components/dashboard/dashboard-refresh-on-focus";
 
 // Overrides the root layout's "%s | GC-Stats" template for everything under
@@ -63,7 +64,7 @@ export default async function DashboardLayout({
         <DashboardRefreshOnFocus />
         <DashboardSidebar organizations={organizations} isAuthorAdmin={access.isAuthorAdmin} />
         <SidebarInset>
-          <DashboardHeader organizations={switcherOrganizations} isAuthor={access.isAuthor} hasApiKey={access.hasApiKey} hasDiscord={access.hasDiscord} isAuthorAdmin={access.isAuthorAdmin} />
+          <DashboardHeader organizations={switcherOrganizations} isAuthor={access.isAuthor} hasApiKey={access.hasApiKey} hasDiscord={access.hasDiscord} isAuthorAdmin={access.isAuthorAdmin} games={publicGames()} />
           <div className="flex-1 p-6">{children}</div>
         </SidebarInset>
       </SidebarProvider>

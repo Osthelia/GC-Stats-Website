@@ -16,6 +16,7 @@ import { countryNames } from "@/lib/countries";
 import type { AppLocale } from "@/i18n/routing";
 import { CountryBadge } from "@/components/team/country-badge";
 import type { SearchResultItem, SearchResultType, SearchResults } from "@/lib/search";
+import { useGame } from "@/lib/use-game";
 
 const EMPTY_RESULTS: SearchResults = { team: [], player: [], tournament: [], organization: [] };
 const TYPE_ORDER: SearchResultType[] = ["team", "player", "tournament", "organization"];
@@ -131,6 +132,7 @@ function ResultRow({
 }
 
 export function GlobalSearch() {
+  const game = useGame();
   const t = useTranslations("globalSearch");
   const tTypes = useTranslations("globalSearch.type");
   const router = useRouter();
@@ -196,7 +198,7 @@ export function GlobalSearch() {
     abortRef.current = controller;
 
     const handle = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal })
+      fetch(`/api/${game}/search?q=${encodeURIComponent(query.trim())}`, { signal: controller.signal })
         .then((res) => {
           if (!res.ok) throw new Error(`Search failed (${res.status})`);
           return res.json();

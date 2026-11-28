@@ -13,8 +13,9 @@
 import { and, asc, eq, inArray, or, sql } from "drizzle-orm";
 import { foldedIlike } from "@/lib/db-search";
 import { adminDb as db } from "@gc-stats/db/client";
-import { stageQualifications, qualificationResults, stageContainers, stages, tournaments, entrants, matches } from "@gc-stats/db";
+import { gameTables } from "@gc-stats/db";
 import { containerOrderBy } from "@/lib/bracket/container-order";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type AdminQualificationSource =
   | { kind: "rank"; containerId: number; containerName: string; stageName: string; rankFrom: number; rankTo: number }
@@ -34,7 +35,8 @@ export type AdminQualificationRule = {
 };
 
 /** Every `stage_qualifications` row anchored (directly or via its source match's container) on one of this tournament's stages — the full set an admin can manage from the tournament's bracket editor hub. */
-export async function getAdminQualificationRules(tournamentId: number): Promise<AdminQualificationRule[]> {
+export async function getAdminQualificationRules(game: GameSlug, tournamentId: number): Promise<AdminQualificationRule[]> {
+  const { stageQualifications, qualificationResults, stageContainers, stages, tournaments, entrants, matches } = gameTables(game);
   const tournamentStageIds = db.select({ id: stages.id }).from(stages).where(eq(stages.tournamentId, tournamentId));
   const tournamentContainerIds = db.select({ id: stageContainers.id }).from(stageContainers).where(inArray(stageContainers.stageId, tournamentStageIds));
   const tournamentMatchIds = db.select({ id: matches.id }).from(matches).where(inArray(matches.containerId, tournamentContainerIds));
@@ -127,7 +129,8 @@ export async function getAdminQualificationRules(tournamentId: number): Promise<
 export type QualificationContainerSearchResult = { id: number; name: string; stageName: string; tournamentId: number; tournamentName: string };
 
 /** Cross-tournament container search for the destination picker (a rule can advance an entrant into another tournament entirely, e.g. regional -> major). */
-export async function searchQualificationDestinationContainers(query: string): Promise<QualificationContainerSearchResult[]> {
+export async function searchQualificationDestinationContainers(game: GameSlug, query: string): Promise<QualificationContainerSearchResult[]> {
+  const { stageContainers, stages, tournaments } = gameTables(game);
   const words = query
     .trim()
     .toLowerCase()
@@ -145,6 +148,6 @@ export async function searchQualificationDestinationContainers(query: string): P
     .innerJoin(stages, eq(stages.id, stageContainers.stageId))
     .innerJoin(tournaments, eq(tournaments.id, stages.tournamentId))
     .where(and(...conditions))
-    .orderBy(sql`${tournaments.startDate} DESC NULLS LAST`, asc(stages.id), ...containerOrderBy)
+    .orderBy(sql`${tournaments.startDate} DESC NULLS LAST`, asc(stages.id), ...containerOrderBy(game))
     .limit(30);
 }

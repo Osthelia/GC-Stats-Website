@@ -730,7 +730,7 @@
     "intro": "訪問或使用 GC Stats 即表示您同意接受本使用條款的約束。使用本平臺前，請仔細閱讀以下內容。",
     "service": {
       "title": "關於本服務",
-      "text": "GC Stats 是一個社群平臺，致力於歸檔並分享 VALORANT Game Changers 賽事及相關活動的競技資料。本服務提供賽事結果、選手資料、戰隊資訊及比賽資料的訪問。GC Stats 與 Riot Games 沒有任何關聯，未獲得其認可，也不是其官方合作方。"
+      "text": "GC Stats 是一個社群平臺，致力於歸檔並分享 Game Changers 賽事及相關活動的競技資料。本服務提供賽事結果、選手資料、戰隊資訊及比賽資料的訪問。GC Stats 與 Riot Games 沒有任何關聯，未獲得其認可，也不是其官方合作方。"
     },
     "access": {
       "title": "訪問與使用資格",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Riot 比賽資料",
-      "text": "對於被識別為受追蹤賽事一部分的比賽，GC Stats 直接通過 Riot Games 官方 API 獲取比賽資料，包括：",
+      "text": "對於被識別為受追蹤賽事一部分的比賽，GC Stats 直接通過 Riot Games 官方 API 獲取比賽資料。League of Legends 的統計也可能來自 Leaguepedia，或由我們團隊手動輸入。這些資料包括：",
       "items": [
         "參賽選手的 Riot ID（遊戲名及標籤）",
         "被識別為受追蹤賽事一部分的比賽歷史",
-        "比賽內統計：記分板、表現總結、經濟總結及擊殺記錄"
+        "比賽內統計：記分板、表現概覽等"
       ],
       "optIn": "對於出現在受追蹤賽事比賽中的任何選手，我們都會記錄基本的參賽資訊（姓名、資料），因為這屬於公開的競技資料。額外的資料資訊（簡介、社群帳號、照片）只有在選手或戰隊同意後才會新增。",
       "correction": "如果您是資料中出現的選手，並希望申請更正或刪除，您可以隨時聯絡我們（詳見我們的隱私政策）。"
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "API 使用",
-      "text": "GC Stats 為社群及 GC 相關專案提供公開 API。使用本 API 須遵守本條款，其用途限於資訊、分析及社群相關場景。我們可能會實施速率限制。對於任何違反本條款或 Riot Games 開發者政策的使用，GC Stats 保留撤銷 API 訪問許可權的權利。"
+      "text": "GC Stats 為社群及 GC 相關專案提供公開 API。目前僅支援 VALORANT，League of Legends 將於之後加入。使用本 API 須遵守本條款，其用途限於資訊、分析及社群相關場景。我們可能會實施速率限制。對於任何違反本條款或 Riot Games 開發者政策的使用，GC Stats 保留撤銷 API 訪問許可權的權利。"
     },
     "ip": {
       "title": "智慧財產權",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "公開資料",
-      "text": "檔案資訊（遊戲 ID、簡介、社群帳號、國家）由選手本人或其組織提供，或由我們團隊根據公開來源新增，並在網站上公開顯示。遊戲統計透過 Riot Games 官方 API 直接收集，針對我們關注的賽事中的比賽。所有這些資料都是公開的，並透過我們的 API 分享。"
+      "text": "檔案資訊（遊戲 ID、簡介、社群帳號、國家）由選手本人或其組織提供，或由我們團隊根據公開來源新增，並在網站上公開顯示。遊戲統計透過 Riot Games 官方 API 直接收集，針對我們關注的賽事中的比賽。League of Legends 的統計也可能來自 Leaguepedia（採用 CC BY-SA 授權），或在沒有其他資料時由我們團隊根據直播手動輸入。所有這些資料都是公開的，並透過我們的 API 分享。"
     },
     "privateData": {
       "title": "私密資料",
-      "text": "我們儲存的個人資料僅限於執行本站及其帳戶系統所需的內容：用於綁定選手資料的 Riot ID，以及下文所述、任何建立使用者帳戶者的帳戶資料。",
-      "riotUsage": "Riot ID：由我們的團隊根據 Riot Games 官方 API 獲取的比賽資料進行識別和分配，僅用於將比賽資料與選手資料關聯。可根據申請進行更正或刪除。"
+      "text": "我們儲存的個人資料僅限於執行本站及其帳戶系統所需的內容：選手的 Riot 帳戶，用於將比賽統計連結到其檔案，以及下文所述、任何建立使用者帳戶者的帳戶資料。",
+      "riotUsage": "Riot 帳戶：Riot ID 由我們團隊根據透過 Riot Games 官方 API 或 Leaguepedia 取得的比賽資料識別並指派，或在只有比賽直播時手動輸入。對於 League of Legends，我們還會儲存每個帳戶的 Riot PUUID、其伺服器與地區，以及該帳戶最近一次出現在受追蹤對局中的日期。僅用於將比賽統計連結到選手檔案。可應要求更正或刪除。"
     },
     "accountData": {
       "title": "使用者帳戶",
@@ -1332,19 +1332,19 @@
           "hidden": {
             "label": "從不顯示",
             "items": [
-              "Riot ID，僅用於將比賽統計連結到正確的檔案"
+              "Riot 帳戶，僅用於將比賽統計連結到正確的檔案"
             ]
           }
         },
-        "source": "本人或其所屬組織，我們團隊根據公開來源（Liquipedia、官方公告）新增，或社群提交並經我們團隊審核的建議。Riot ID 來自 Riot Games 官方 API。",
-        "visibility": "所有人，在網站上與透過我們的 API，Riot ID 除外。",
+        "source": "本人或其所屬組織，我們團隊根據公開來源（Liquipedia、官方公告）新增，或社群提交並經我們團隊審核的建議。Riot 帳戶來自 Riot Games 官方 API 或 Leaguepedia，或由我們團隊輸入。",
+        "visibility": "所有人，在網站上與透過我們的 API，Riot 帳戶除外。",
         "retention": "作為賽事圈的檔案永久保存，即使本人已不再參賽。你可以申請更正或刪除。"
       },
       "matchStats": {
         "title": "比賽統計",
         "groups": {
           "stats": {
-            "label": "每場比賽",
+            "label": "每場已進行的 VALORANT 比賽",
             "items": [
               "使用的特務",
               "擊殺、死亡與助攻",
@@ -1352,9 +1352,20 @@
               "經濟與裝備",
               "地圖上的位置"
             ]
+          },
+          "league": {
+            "label": "每局已進行的 League of Legends 對局",
+            "items": [
+              "英雄、分路、召喚師技能與符文",
+              "擊殺、死亡與助攻",
+              "補刀、金錢、傷害與視野分數",
+              "裝備",
+              "第 10 與 15 分鐘與對線對手相比的金錢、經驗與補刀",
+              "地圖上的位置與對局中的事件（擊殺、目標、守衛）"
+            ]
           }
         },
-        "source": "Riot Games 官方 API，針對我們關注的賽事中的比賽。",
+        "source": "Riot Games 官方 API，針對我們關注的賽事中的比賽。League of Legends 還包括 Leaguepedia，或在沒有其他資料時由我們團隊根據直播手動輸入。",
         "visibility": "所有人，在網站上與透過我們的 API。",
         "retention": "作為賽事的歷史檔案保存。"
       },
@@ -1634,7 +1645,21 @@
     "productionTitle": "{player} · 製作團隊",
     "formerOrganizations": "歷史機構",
     "noFormerOrganizations": "暫無歷史機構記錄。",
-    "unknownDate": "未知"
+    "unknownDate": "未知",
+    "addGameProfile": {
+      "title": "你也在玩 {game} 嗎？",
+      "description": "一鍵新增你的 {game} 檔案，會沿用你的名稱、照片和連結，不必重新填寫。",
+      "button": "新增我的 {game} 檔案",
+      "adding": "新增中…",
+      "done": "你的 {game} 檔案已就緒。",
+      "open": "查看我的 {game} 檔案",
+      "error": {
+        "unauthenticated": "你需要先登入。",
+        "notYours": "此選手尚未連結到你的帳號。",
+        "invalidGame": "此遊戲不存在。"
+      }
+    },
+    "alsoOn": "也在 {game}"
   },
   "organizationPage": {
     "tabOverview": "概覽",
@@ -1688,7 +1713,9 @@
       "recruitmentManager": "招募經理",
       "developer": "開發者",
       "volunteer": "志願者",
+      "headOfEsports": "電競負責人",
       "headOfValorant": "VALORANT 負責人",
+      "headOfLeague": "League of Legends 負責人",
       "streamer": "主播"
     },
     "unknownDate": "未知",
@@ -1794,7 +1821,27 @@
     "teamTbd": "待定",
     "teamBye": "輪空",
     "discussion": "討論",
-    "watchparty": "觀賽派對"
+    "watchparty": "觀賽派對",
+    "vodGame": "第 {n} 場錄影",
+    "games": "對局",
+    "gameTab": "第 {order} 場",
+    "noGames": "尚無對局記錄。",
+    "noGameData": "此對局沒有資料",
+    "duration": "時長",
+    "forfeit": "棄權",
+    "towers": "防禦塔",
+    "inhibitors": "抑制器",
+    "dragons": "小龍",
+    "barons": "大龍",
+    "heralds": "峽谷先鋒",
+    "grubs": "虛空幼蟲",
+    "draftNotSet": "此對局沒有禁選記錄。",
+    "ban": "禁用",
+    "pick": "選用",
+    "unplacedPicks": "尚未安排位置的選用",
+    "colChampion": "英雄",
+    "allGames": "所有對局",
+    "draft": "禁選"
   },
   "footer": {
     "tagline": "匯聚所有官方 Game Changers 賽事。",
@@ -2095,7 +2142,8 @@
       "error": {
         "userNotFound": "未找到該使用者。",
         "roleNotFound": "其中一個所選角色已不存在。",
-        "selfDemote": "您不能移除自己的管理員許可權。"
+        "selfDemote": "您不能移除自己的管理員許可權。",
+        "gameNotFound": "此遊戲不存在。"
       },
       "authMethods": {
         "heading": "身份驗證",
@@ -2352,7 +2400,9 @@
           "recruitmentManager": "招募經理",
           "developer": "開發者",
           "volunteer": "志願者",
+          "headOfEsports": "電競負責人",
           "headOfValorant": "VALORANT 負責人",
+          "headOfLeague": "League of Legends 負責人",
           "streamer": "主播"
         },
         "error": {
@@ -2376,7 +2426,8 @@
           "ownerOnly": "只有所有者才能授予或修改所有者角色。",
           "userNotFound": "未找到該帳戶。",
           "alreadyHasAccess": "該帳戶已擁有此機構的訪問許可權。"
-        }
+        },
+        "fieldGames": "遊戲"
       },
       "filterKindLabel": "組織類型",
       "filterKindAll": "所有組織",
@@ -2387,6 +2438,7 @@
       "title": "戰隊",
       "subtitle": "管理戰隊資料及名單。",
       "searchPlaceholder": "名稱、ID 或 VLR ID…",
+      "searchPlaceholderLol": "名稱或 ID…",
       "searchSubmit": "搜尋",
       "activeWithinLabel": "近期活躍度",
       "activeWithinAny": "任意時間",
@@ -2605,6 +2657,7 @@
       "title": "選手",
       "subtitle": "管理選手資料及戰隊歸屬。",
       "searchPlaceholder": "使用者名稱、ID 或 VLR ID…",
+      "searchPlaceholderLol": "使用者名稱、ID 或 Riot ID…",
       "searchSubmit": "搜尋",
       "activeWithinLabel": "近期活躍度",
       "activeWithinAny": "任意時間",
@@ -2649,6 +2702,40 @@
         },
         "sectionProfile": "資料",
         "sectionSocials": "社群連結",
+        "sectionRiotAccounts": "Riot 帳號",
+        "riotAccountsHint": "該選手使用的 League of Legends 帳號。已匯入的對局透過這些帳號關聯到選手。",
+        "riotAccountsEmpty": "尚無 Riot 帳號。匯入對局時或在此處新增。",
+        "riotAccountLive": "正式服",
+        "riotAccountTournament": "賽事服",
+        "riotAccountSourceAdmin": "手動新增",
+        "riotAccountLastSeen": "最近出現 <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "區域",
+        "riotAccountAdd": "新增帳號",
+        "riotAccountAdding": "新增中…",
+        "riotAccountAdded": "已新增 Riot 帳號。",
+        "riotAccountRemoved": "已移除 Riot 帳號。",
+        "riotAccountRemove": "移除",
+        "riotAccountRemoveTitle": "移除此 Riot 帳號？",
+        "riotAccountRemoveDescription": "{riotId} 將不再關聯到 {handle}。已匯入的對局仍屬於該選手。",
+        "riotAccountErrorHeldByOther": "此 Riot 帳號已屬於 {handle}。",
+        "riotAccountErrorAlreadyOnPlayer": "該選手已有此 Riot 帳號。",
+        "riotAccountErrorGeneric": "無法變更 Riot 帳號。",
+        "sectionGames": "遊戲",
+        "gamesHint": "一個人在每款遊戲各有一份檔案。名稱、國家、代名詞、簡介、別名、社群連結、照片和已連結的帳號為共用，其餘屬於各款遊戲。",
+        "sharedHint": "名稱、國家、代名詞、簡介、別名、社群連結和照片會與此人在其他遊戲的檔案共用。",
+        "gameCurrent": "目前遊戲",
+        "gameHasProfile": "已有檔案",
+        "gameNoProfile": "尚無檔案",
+        "gameOpen": "開啟",
+        "gameAddButton": "新增至 {game}",
+        "gameAdding": "新增中…",
+        "gameAddSuccess": "已新增至 {game}。",
+        "gameAddError": {
+          "invalidGame": "此遊戲不存在。",
+          "notFound": "此選手已不存在。",
+          "alreadyThere": "此選手在這款遊戲中已有檔案。"
+        },
         "sectionHistory": "戰隊歷史",
         "sectionLogo": "商標",
         "logoNoneYet": "暫無商標。",
@@ -2787,13 +2874,17 @@
           "organizations": "機構署名",
           "production": "製作署名",
           "matchStats": "參賽記錄",
+          "gameStats": "對局記錄",
           "news": "資訊",
           "logos": "商標",
+          "riotAccounts": "Riot 帳號（{count}）",
           "linkedAccount": "已綁定帳戶"
         },
         "matchStatsHint": "同時會遷移每張地圖背後的逐回合資料（擊殺、傷害、位置）。只有當該參賽方的每張地圖都被選中時，其鎖定的名單署名才會一併遷移。",
+        "gameStatsHint": "同時移動每局的影格資料與事件(擊殺、目標、守衛)。賽事參賽隊的鎖定名單記錄僅在選取該參賽隊的所有對局後才會移動。",
         "periodOngoing": "自 {since} 起",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Riot 帳號會轉移給保留的選手，使其對局保持關聯。",
         "linkedAccountHint": "遷移當前綁定至該選手的帳戶，僅在有綁定帳戶且目標選手尚未綁定時顯示。",
         "nothingToMove": "該選手暫無可遷移的資料。",
         "confirm": "確定要將所選專案從 {source} 合併至 {target} 嗎？此操作無法自動撤銷。",
@@ -2808,8 +2899,40 @@
           "samePlayer": "請選擇另一位選手作為合併目標。",
           "sourceNotFound": "未找到該選手。",
           "targetNotFound": "未找到目標選手。",
-          "targetAlreadyLinked": "目標選手已綁定帳戶。"
-        }
+          "targetAlreadyLinked": "目標選手已綁定帳戶。",
+          "sourceStillUsed": "此選手仍被這款遊戲的參賽方或比賽統計使用。請一併選取它們，或保留此檔案。",
+          "otherGame": "目標選手不屬於你管理的任何遊戲，因此無法轉移連結帳戶。",
+          "sourceHasData": "未進行任何合併，因為移除該選手會遺失資料：{items}。請一併選取這些資料（因衝突而略過的項目需先刪除），或保留該檔案。"
+        },
+        "removeSource": "合併後從 {game} 移除",
+        "removeSourceHint": "{name} 將從該遊戲中移除，如果沒有其他遊戲使用此檔案，則會完全刪除。仍有資料需要轉移，或參賽紀錄、比賽數據仍在使用時會被拒絕。Liquipedia 名稱、已鎖定的陣容紀錄和比賽直播會隨合併一起轉移。"
+      },
+      "duplicatesLink": "可能的重複項目",
+      "duplicates": {
+        "title": "可能的重複項目",
+        "description": "擁有相同 ID、但分別存在於不同遊戲的人。將 {game} 檔案合併到另一份，即可只保留一份檔案。",
+        "backToList": "返回選手列表",
+        "columnSource": "在 {game}",
+        "columnTarget": "另一份檔案",
+        "merge": "合併",
+        "empty": "找不到重複項目。"
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} 不是 Riot ID（名稱#標籤）。",
+        "riotIdNotFound": "沒有名為 {riotId} 的 Riot 帳號。",
+        "relayNotConfigured": "此伺服器未設定 Riot 中繼。",
+        "relayUnauthorized": "中繼拒絕了我們的憑證。請檢查 RIOT_RELAY_TOKEN。",
+        "riotKeyRejected": "Riot 拒絕了中繼的 League of Legends API 金鑰。它可能已過期或有誤（請檢查中繼上的 LOL_RIOT_API_KEY）。",
+        "relayLeagueUnavailable": "中繼沒有設定 League of Legends API 金鑰，或其快取資料庫無法使用。請檢查中繼上的 LOL_RIOT_API_KEY 和資料庫。",
+        "routeUnavailable": "中繼沒有此搜尋所需的 League 路由。請更新中繼。",
+        "relayUnreachable": "無法連線到 Riot 中繼。請檢查它是否在執行，以及 RIOT_RELAY_URL 是否正確。",
+        "riotUnavailable": "目前無法讀取 Riot 的資料，請稍後再試。",
+        "rateLimited": "Riot 正在限制此金鑰的請求。請等待一分鐘後再試。",
+        "rateLimitedIn": "Riot 正在限制此金鑰的請求。請在 {seconds} 秒後重試。",
+        "invalidRequest": "中繼認為該請求無效並拒絕了它。請檢查 Riot ID、地區和時間範圍。",
+        "notFound": "Riot 沒有此請求的資料：帳號或比賽不存在，或不在此地區。"
       }
     },
     "finance": {
@@ -3385,11 +3508,13 @@
           "entityNotFound": "被引用的戰隊或選手已不存在。",
           "membershipNotFound": "該名單記錄已不存在。",
           "invalidRole": "該角色已不再有效。",
+          "invalidLane": "有一條分路無效。",
           "logoNotFound": "該商標記錄已不存在。",
           "alreadyLinked": "該選手已綁定至另一個帳戶。",
           "unknownField": "不受支援的欄位。",
           "unknown": "未知錯誤。",
-          "invalidSource": "來源連結已失效。"
+          "invalidSource": "來源連結已失效。",
+          "otherGame": "先前連結的選手不屬於你管理的任何遊戲。"
         },
         "oldValue": "當前",
         "newValue": "建議修改為",
@@ -3829,6 +3954,14 @@
         "fieldEliminateAtLossesHint": "所需負場數，留空表示無固定閾值的自由瑞士輪。",
         "fieldMaxRounds": "最大輪次數",
         "openEditorButton": "開啟對陣表編輯器",
+        "assignEntrantsButton": "管理參賽方",
+        "assignEntrantsTitle": "小組參賽方",
+        "assignEntrantsDescription": "選擇該賽事中哪些參賽方屬於此瑞士輪小組。",
+        "assignEntrantsEmpty": "該賽事暫無參賽方。",
+        "assignEntrantsInGroup": "位於 {name}",
+        "assignEntrantsSuccess": "參賽方已更新。",
+        "startSwissButton": "開始第 1 輪",
+        "startSwissSuccess": "第 1 輪已生成。",
         "addMatchButton": "新增比賽",
         "addMatchTitle": "在 {name} 中新增比賽",
         "addMatchDescription": "即使小組已經開始，比賽也會新增到所選輪次。隊伍可以暫定為待定，之後在比賽頁面分配。",
@@ -3905,6 +4038,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "只有迴圈賽小組可以計入整個階段的比賽。",
           "cannotMove": "此容器無法再移動。",
           "parentInvalid": "此集合無法在此處使用。",
           "tiebreakersInvalid": "每個決勝規則只能從所列選項中使用一次。",
@@ -3921,9 +4055,11 @@
             "points": "積分",
             "buchholz": "Buchholz",
             "map_diff": "地圖差",
+            "game_diff": "對局差",
             "round_diff": "回合差",
             "head_to_head": "直接對戰",
             "h2h_map_diff": "對戰地圖淨勝數（2 支隊伍）",
+            "h2h_game_diff": "對戰對局淨勝數（2 支隊伍）",
             "h2h_round_diff": "對戰回合淨勝數（2 支隊伍）",
             "seed": "種子"
           }
@@ -3931,16 +4067,22 @@
         "pointsConfig": {
           "title": "積分",
           "hint": "每場勝負的比賽、地圖和回合都會為隊伍帶來積分。回合僅在已記錄比分的地圖上計算。啟用後，積分會優先於比賽戰績與決勝規則決定隊伍排名。",
+          "hintGames": "每場勝負的比賽與對局都會為隊伍帶來積分。啟用後，積分會優先於比賽戰績與決勝規則決定隊伍排名。",
           "enable": "使用積分",
           "scopes": {
             "match": "比賽",
             "map": "每張地圖",
+            "game": "每場對局",
             "round": "每個回合",
             "forfeit": "棄權（取代其他項）"
           },
           "win": "勝",
           "loss": "負"
-        }
+        },
+        "fieldMatchScope": "隊伍也會與其他小組的隊伍交手（計入具有相同設定的其他小組的比賽）",
+        "fieldMatchScopeHint": "只會列出已固定在此小組的隊伍，且其在本階段同樣具有此設定的小組中已完成的比賽都會計入。沒有此設定的小組的比賽不計入。請在儲存後固定隊伍。僅適用於迴圈賽。",
+        "matchScopeNoTeams": "此小組尚未固定任何隊伍，因此積分表是空的。請先為其指派隊伍。",
+        "matchScopeSwitchWarning": "切換為階段範圍後只會列出已固定的隊伍。曾在此小組比賽但未固定的隊伍，在固定之前不會顯示於積分表。"
       },
       "bracketPage": {
         "title": "對陣表管理",
@@ -4347,6 +4489,48 @@
               "relay": "Riot 沒有返回這場比賽，請稍後再試。現有資料已保留。",
               "other": "無法執行獲取，請檢查地圖頁面。現有資料已保留。"
             }
+          },
+          "league": {
+            "description": "貼上本系列賽在 Liquipedia 上的 '{{Match}}'。對局和禁選中仍為空的部分會被補全。",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "匯入此 wikicode？仍為空的對局和禁選會被補全。Riot 與 Leaguepedia 的資料、手動編輯過的禁選以及已輸入的內容都會保留。",
+            "importSuccess": "已匯入 wikicode：對局和禁選已更新。",
+            "liquipediaHint": "對陣雙方（opponent1、opponent2）也會儲存為戰隊的 Liquipedia 名稱。",
+            "error": {
+              "missingTeams": "匯入對局前必須先設定雙方隊伍。",
+              "oneMatchOnly": "wikicode 必須恰好包含一個 '{{Match}}'。",
+              "noGames": "在此 wikicode 中找不到已進行的對局。",
+              "unknownChampions": "wikicode 中有未知英雄：{names}。未匯入任何內容。",
+              "duplicateChampion": "第 {order} 場：{champion} 在禁選中出現多次。未匯入任何內容。",
+              "championsUnavailable": "此版本的英雄清單目前無法使用，因此無法檢查名稱。未匯入任何內容，請稍後再試。"
+            },
+            "results": {
+              "forfeit": "wikicode 顯示為棄權。未匯入任何內容，請手動設定該比賽的棄權。",
+              "gameLabel": "第 {order} 場",
+              "created": "已根據 wikicode 建立對局。",
+              "filled": "已補全：{fields}。",
+              "differs": "與 wikicode 不同，已保留：{fields}。",
+              "field": {
+                "winner": "勝者",
+                "duration": "時長"
+              },
+              "draft": {
+                "written": "已匯入禁選。",
+                "kept": {
+                  "editedByHand": "已保留禁選：已被手動編輯。",
+                  "riotData": "已保留禁選：該場已有 Riot 資料。",
+                  "leaguepediaData": "已保留禁選：該場已有 Leaguepedia 資料。",
+                  "existingDraft": "已保留禁選：該場已有禁選。"
+                },
+                "none": {
+                  "noDraft": "wikicode 中沒有禁選。",
+                  "noSide": "未匯入禁選：wikicode 未說明第 1 隊所在的陣營。"
+                }
+              },
+              "patchSet": "已為比賽設定版本 {patch}。",
+              "bestOfDiffers": "wikicode 為 BO{bestOf}，比賽保留自己的設定。",
+              "firstPickAssumed": "wikicode 未說明誰擁有先選權，因此假定為藍色方。請檢查禁選。"
+            }
           }
         },
         "veto": {
@@ -4513,7 +4697,294 @@
             "mergeMapNotFound": "該地圖已不存在。"
           }
         },
-        "liquipediaImportButton": "Liquipedia 比賽匯入"
+        "liquipediaImportButton": "Liquipedia 比賽匯入",
+        "draft": {
+          "metaTitle": "禁選",
+          "title": "第 {order} 場對局的禁選",
+          "backToMatch": "返回比賽",
+          "description": "此對局的禁用與選用順序。若某一步驟未使用，請留空。",
+          "differsWarning": "匯入內容與已儲存的禁選不一致：重新匯入找到了其他英雄。請檢查禁選，並儲存以保留您的版本。",
+          "blueSide": "藍色方",
+          "blueLockedHint": "由匯入決定（Riot 的藍色方）。",
+          "firstPickLockedHint": "由匯入決定（先進行第一次禁用的一方）。",
+          "firstPick": "先選",
+          "phase": {
+            "ban1": "第 1 輪禁用",
+            "pick1": "第 1 輪選用",
+            "ban2": "第 2 輪禁用",
+            "pick2": "第 2 輪選用"
+          },
+          "side": {
+            "blue": "藍",
+            "red": "紅"
+          },
+          "type": {
+            "ban": "禁用",
+            "pick": "選用"
+          },
+          "noChampion": "無英雄",
+          "searchPlaceholder": "搜尋英雄",
+          "noResults": "沒有符合的英雄",
+          "unplacedTitle": "尚未安排位置的選用",
+          "save": "儲存禁選",
+          "saving": "儲存中…",
+          "saved": "禁選已儲存",
+          "error": {
+            "notFound": "找不到此對局。",
+            "entrantsUnset": "必須先設定比賽的兩支隊伍。",
+            "blueNotAnEntrant": "藍色方必須是該比賽的兩支隊伍之一。",
+            "blueLocked": "已匯入對局的藍色方由匯入決定。",
+            "firstPickLocked": "已匯入對局的先選方由匯入決定。",
+            "invalidFirstPick": "先選方必須是藍色方或紅色方。",
+            "invalidStep": "步驟 {step} 不存在，或被重複指定。",
+            "unknownChampion": "{championName} 不在英雄清單中。",
+            "duplicateChampion": "{championName} 在禁選中出現不只一次。",
+            "invalidSide": "尚未放置的選擇必須在藍色方或紅色方。",
+            "championsUnavailable": "此版本的英雄清單目前無法使用，請稍後再試。",
+            "invalidDraft": "送出的選角內容無效。請重新載入頁面後再試一次。"
+          }
+        },
+        "games": {
+          "heading": "對局",
+          "description": "此系列賽中已進行的對局，依順序排列。",
+          "empty": "尚無對局。",
+          "gameLabel": "第 {order} 場",
+          "winnerLabel": "勝者：{name}",
+          "noWinner": "尚無勝者",
+          "finished": "已結束",
+          "notFinished": "未結束",
+          "draftButton": "禁選",
+          "draftDiffers": "匯入內容與已儲存的禁選不一致",
+          "forfeit": "棄權",
+          "cancel": "取消",
+          "save": "儲存",
+          "saving": "儲存中…",
+          "createButton": "新增對局",
+          "createTitle": "新增對局",
+          "editTitle": "編輯對局",
+          "dialogDescription": "輸入此系列賽其中一場對局的結果。",
+          "editButton": "編輯",
+          "deleteButton": "刪除",
+          "deleteTitle": "刪除對局",
+          "deleteConfirm": "要刪除第 {order} 場嗎？比賽比分會依其餘對局重新計算。",
+          "deleteError": "無法刪除對局。",
+          "deleteSuccess": "對局已刪除。",
+          "saveError": "無法儲存對局。",
+          "saveSuccess": "對局已儲存。",
+          "fieldOrder": "順序",
+          "fieldWinner": "勝者",
+          "fieldWinnerNone": "尚無勝者",
+          "fieldCompleted": "已完成",
+          "fieldForfeit": "棄權",
+          "fieldNote": "備註",
+          "fieldError": {
+            "invalid": "請輸入有效的值。",
+            "tooLong": "太長。",
+            "duplicateOrder": "已有其他對局使用此順序。",
+            "winnerRequired": "已完成的對局必須有勝者。",
+            "notAnEntrant": "勝者必須是兩支隊伍之一。",
+            "notCompleted": "請將對局標記為已完成，才能設定勝者。",
+            "invalidMatchId": "請使用格式 EUW1_6123456789：平台代碼、底線，再加上比賽編號。",
+            "duplicateMatchId": "已有其他對局使用此 Riot 比賽 ID。"
+          },
+          "fieldApiMatchId": "Riot 比賽 ID",
+          "fieldApiMatchIdHint": "例如 EUW1_6123456789。平台會從中讀取。",
+          "find": {
+            "open": "尋找對局",
+            "openLabel": "在 Riot 上尋找對局",
+            "openHint": "搜尋使用賽事代碼進行的對局。不適用於在賽事客戶端中進行的對局。",
+            "title": "尋找對局",
+            "description": "在選手的對局紀錄中尋找使用賽事代碼進行的對局。",
+            "relayWarning": "「尋找對局」僅在 Riot 中繼擁有可用的 League of Legends API 金鑰時才能使用。開發金鑰 24 小時後失效。",
+            "teamAccounts": "{name}：{total} 名選手中有 {count} 名擁有 Riot 帳號",
+            "regionInferred": "依賽事賽區，在 {cluster} 上搜尋。",
+            "regionLabel": "搜尋區域",
+            "regionAsk": "賽事賽區並未說明對局在哪裡進行。請選擇一個區域。",
+            "regionUnsupported": "無法搜尋中國伺服器上的對局。",
+            "windowStart": "開始",
+            "windowEnd": "結束",
+            "windowHint": "從預定時間前 1 小時到後 4 小時。若系列賽在其他時間進行，請修改。",
+            "noSchedule": "此系列賽沒有預定時間。請輸入時間範圍。",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "選手的帳號，例如小帳。只有出現在你儲存的對局中時才會儲存。",
+            "riotIdRequired": "此區域還沒有任何戰隊擁有 Riot 帳號。請至少輸入一個 Riot ID。",
+            "addRiotId": "再新增一個",
+            "search": "搜尋",
+            "searching": "搜尋中…",
+            "resultsCount": "{count, plural, other {找到 # 場對局}}",
+            "minutes": "{minutes} 分鐘",
+            "sideSummary": "{team} · 已知 {known}/{players}",
+            "sideUnknown": "未知戰隊",
+            "badgeBoth": "已找到兩支戰隊",
+            "badgeOne": "只找到 {name}，請核對對手",
+            "badgeNames": "{total} 個名稱中有 {count} 個與 {name} 相符",
+            "badgeImported": "已匯入為第 {order} 局",
+            "badgeImportedElsewhere": "已在其他系列賽中匯入",
+            "badgeRemake": "重開？",
+            "badgeRiotIds": "包含你輸入的 {total} 個 Riot ID 中的 {count} 個",
+            "use": "使用此對局",
+            "emptyTitle": "找不到對局。可能的原因：",
+            "emptyNoCode": "房間沒有賽事代碼。請貼上對局 ID 或使用 Leaguepedia。",
+            "emptyOtherAccount": "有選手使用了其他帳號。請嘗試其他 Riot ID。",
+            "emptyWindow": "時間範圍不對。請擴大範圍。",
+            "emptyRegion": "對局在其他區域進行。請在那裡搜尋。",
+            "error": {
+              "windowInvalid": "時間範圍最長為 48 小時。",
+              "generic": "無法執行搜尋。"
+            },
+            "incompleteRateLimited": "Riot 限制了 {total} 次查詢中的 {failed} 次，此清單可能不完整，或包含其他系列賽的比賽。請等待一分鐘後重新搜尋。",
+            "incomplete": "{total} 次查詢中有 {failed} 次失敗，此清單可能不完整，或包含其他系列賽的比賽。請重新搜尋。"
+          },
+          "gameImport": {
+            "label": "Leaguepedia 對局",
+            "none": "無",
+            "noData": "無資料",
+            "gameNumber": "第 {number} 場",
+            "fetch": "從 Leaguepedia 取得",
+            "fetching": "取得中…",
+            "renew": "更新",
+            "reprocess": "重新處理",
+            "success": "已從 Leaguepedia 儲存對局",
+            "error": {
+              "invalidMapping": "送出的選手連結無效。請重新載入頁面後再試一次。",
+              "handleTooLong": "新選手名稱過長（最多 {max} 個字元）。",
+              "noData": "此對局在 Leaguepedia 上沒有 V5 資料。",
+              "notInBucket": "此對局尚未在 bucket 中，請先取得。",
+              "pageInvalid": "Leaguepedia 上此對局的頁面不是有效的比賽資料。",
+              "fetch": "無法讀取 Leaguepedia，請稍後再試。",
+              "missingConfig": "此伺服器尚未設定 Leaguepedia 機器人登入。",
+              "sidesUnresolved": "此對局的兩支隊伍與系列賽的兩位參賽者不符。",
+              "missingPlayers": "{count, plural, other {# 位選手尚未連結到人員}}",
+              "invalidUpload": "對局資料未通過匯入檢查。",
+              "storeFailed": "無法儲存對局。",
+              "invalidOrder": "對局編號必須是 1 以上的整數。",
+              "accountConflict": "有 Riot 帳號已連結到其他人員。",
+              "sidesInvalid": "請為藍色方與紅色方選擇兩位不同的參賽者。",
+              "roleInvalid": "變更中有一個位置無效。",
+              "orderTaken": "此系列賽的第 {order} 場已儲存為其他資料。請選擇其他對局編號後再儲存。",
+              "dataDragonUnavailable": "目前無法取得英雄名稱，請稍後再試。",
+              "unknownChampions": "未知的英雄 ID：{ids}",
+              "storageUnavailable": "無法連線到 LoL 匯入 bucket。請檢查其設定後再試。",
+              "duplicateAccount": "同一個 Riot 帳號被連結了兩次。每個帳號只能連結一次。",
+              "tournamentRealm": "此對局是在錦標賽伺服器（tournament realm）上進行的，請改從 Leaguepedia 取得。",
+              "duplicatePerson": "此對局的兩位選手連結到同一個人員。請將每位選手連結到不同的人員。",
+              "matchIdMismatch": "載入的對局資料不是所請求的比賽。未儲存任何內容。",
+              "invalidGame": "要匯入的對局無效。請選擇 Leaguepedia 對局，或輸入 Riot 對戰 ID。"
+            },
+            "searchPlaceholder": "依隊伍、對局或日期搜尋",
+            "noResults": "沒有符合的對局",
+            "previewTitle": "檢查對局",
+            "previewDescription": "為每一方選擇參賽者，並連結所有尚未連結的選手。",
+            "back": "返回",
+            "saveGame": "儲存對局",
+            "sideBlue": "藍",
+            "sideRed": "紅",
+            "sidesTitle": "陣營",
+            "blueSide": "藍色方",
+            "redSide": "紅色方",
+            "chooseEntrant": "選擇參賽者",
+            "suggestedPlayers": "依已連結的選手建議",
+            "suggestedNames": "依隊伍名稱建議",
+            "winnerLabel": "勝者：{name}",
+            "noWinner": "無勝者",
+            "lengthLabel": "時長：{minutes} 分鐘",
+            "playersTitle": "選手",
+            "notLinked": "尚未連結",
+            "linkExisting": "連結現有人員",
+            "createNew": "建立新人員",
+            "newHandle": "新人員的名稱",
+            "unresolvedHint": "請為每位尚未連結的選手連結或建立人員。",
+            "suggestedPeople": "來自戰隊的建議：",
+            "realmLive": "正式服",
+            "realmTournament": "賽事服",
+            "accountNote": "將新增另一個帳號（{realm}，{platform}）。{handle} 已有：{existing}。",
+            "roleLabel": "位置",
+            "roleNone": "無位置",
+            "positionRole": "地圖上的走位顯示為 {role}",
+            "alreadyStoredHere": "已儲存為此系列賽的第 {order} 場",
+            "alreadyStoredElsewhere": "已儲存於其他系列賽",
+            "refreshGames": "重新整理對局清單",
+            "refreshCooldown": "不到一小時前已重新整理，請稍後再試。",
+            "refreshed": "對局清單已重新整理（{count} 場）",
+            "refreshError": "無法重新整理對局清單，請稍後再試。",
+            "riotFetch": "從 Riot 取得",
+            "riotSuccess": "已從 Riot 儲存對局",
+            "riotTournamentRealm": "此對局是在錦標賽伺服器（tournament realm）上進行的，因此無法從 Riot API 取得。"
+          },
+          "lineupButton": "出賽陣容"
+        },
+        "lineup": {
+          "metaTitle": "出賽陣容",
+          "backToMatch": "返回比賽",
+          "title": "第 {order} 局出賽陣容",
+          "description": "這一局誰上場、走哪一路、用哪隻英雄。適用於沒有 Riot 或 Leaguepedia 資料的對局；之後匯入會取代它。",
+          "importedHint": "這一局有 Riot 或 Leaguepedia 資料，因此選手來自匯入。",
+          "fromPreviousGame": "已依本系列賽的上一局填入。請檢查選手、補上英雄後儲存。",
+          "withStats": "加入記分板",
+          "withStatsHint": "十名選手的擊殺、死亡、助攻與補刀，以及對局時長。金錢、傷害與視野可以留空。沒有記分板時，該局會計入出賽局數、勝率與英雄，但不計入平均數據。",
+          "duration": "對局時長 (m:ss)",
+          "draftPicks": "選角中選擇：{champions}",
+          "player": "選手",
+          "pickPlayer": "選擇選手",
+          "searchPlayer": "搜尋選手…",
+          "newPlayer": "+ 新選手",
+          "newPlayerHandle": "新選手名稱",
+          "newPlayerTag": "（新）",
+          "clearPlayer": "移除選手",
+          "champion": "英雄",
+          "unknownChampion": "未知",
+          "searchChampion": "搜尋英雄…",
+          "noResults": "沒有結果。",
+          "stat": {
+            "kills": "擊殺",
+            "deaths": "死亡",
+            "assists": "助攻",
+            "cs": "補刀",
+            "gold": "金錢",
+            "damage": "傷害",
+            "vision": "視野"
+          },
+          "save": "儲存出賽陣容",
+          "saving": "儲存中…",
+          "saved": "出賽陣容已儲存。",
+          "error": {
+            "invalidInput": "送出的陣容無效。請重新載入頁面後再試一次。",
+            "notFound": "這一局不屬於該比賽。",
+            "entrantsUnset": "請先設定比賽的兩支隊伍。",
+            "importedGame": "這一局有 Riot 或 Leaguepedia 資料，無法手動修改出賽陣容。",
+            "unknownPerson": "其中一名選手已不存在。",
+            "problem": {
+              "notAnEntrant": "有選手屬於不在這場比賽中的隊伍。",
+              "invalidLane": "有一路無效。",
+              "duplicateLane": "一支隊伍的{lane}填了兩次。",
+              "duplicatePerson": "出賽陣容中有同一名選手出現兩次。",
+              "invalidHandle": "新選手需要名稱。",
+              "unknownChampion": "{championName} 不是此版本的英雄。",
+              "duplicateChampion": "{championName} 被選了兩次。",
+              "championsUnavailable": "無法載入此版本的英雄。請稍後再試，或將英雄留空。",
+              "invalidStat": "請輸入 0 到 {max} 之間的整數。",
+              "durationRequired": "記分板需要對局時長 (m:ss)。",
+              "playerMissing": "記分板需要兩隊每一路都有選手。",
+              "statMissing": "記分板需要此項。",
+              "buildUnavailable": "無法載入此版本的召喚師技能、符文與裝備。請稍後再試，或將出裝留空。",
+              "unknownBuildPart": "不屬於此版本。",
+              "duplicateSummoner": "已是另一個召喚師技能。",
+              "secondaryTreeOfKeystone": "這是基石符文所在的系列，請選擇其他系列。"
+            },
+            "createNotAllowed": "你無權建立選手，請選擇現有選手。"
+          },
+          "build": "出裝",
+          "buildSet": "已填寫",
+          "buildUnavailable": "無法載入此版本的召喚師技能、符文與裝備。請稍後再試。",
+          "summoner": "召喚師技能 {slot}",
+          "keystone": "基石符文",
+          "secondaryTree": "次要符文",
+          "item": "裝備 {slot}",
+          "trinket": "飾品",
+          "empty": "無",
+          "search": "搜尋…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4790,8 +5261,39 @@
         "doneDescription": "匯入已完成。",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "正在匯入並獲取 Riot 資料，可能需要一些時間。",
-        "close": "關閉"
-      }
+        "close": "關閉",
+        "league": {
+          "dialogDescription": "貼上比賽的 wikicode。對局和禁選中仍為空的部分會被補全。",
+          "importingHint": "正在匯入，可能需要一點時間。",
+          "legend": {
+            "partial": "缺少選手資料或禁選的對局",
+            "done": "每場都有選手資料和禁選"
+          }
+        }
+      },
+      "leaguepedia": {
+        "title": "Leaguepedia 對局",
+        "description": "對局清單來自 Leaguepedia 的 Cargo 資料表，涵蓋基礎頁面及其下的所有頁面。",
+        "basePageLabel": "Leaguepedia 基礎頁面",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "儲存時會從 Leaguepedia 讀取對局。若讀取失敗，則不會儲存任何內容。",
+        "save": "儲存並取得對局",
+        "saving": "取得中…",
+        "refresh": "從 Leaguepedia 重新整理",
+        "lastFetched": "上次取得 {date} · {count, plural, other {# 場對局}}",
+        "neverFetched": "尚未取得",
+        "success": "已取得 {count, plural, other {# 場對局}}",
+        "error": {
+          "gameClaimed": "這些對局已屬於其他錦標賽，因此無法連結到此處。",
+          "invalidBasePage": "請使用不含 # < > [ ] | '{ }' 的頁面名稱，且開頭與結尾不可有 /。",
+          "notFound": "找不到錦標賽。",
+          "notLinked": "請先儲存基礎頁面。",
+          "cooldown": "對局清單在不到一小時前已讀取過，請稍後再試。",
+          "missingConfig": "此伺服器尚未設定 Leaguepedia 機器人登入。",
+          "fetch": "無法讀取 Leaguepedia，請稍後再試。"
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "舉報",
@@ -5238,6 +5740,9 @@
       "copyOverlay": "覆蓋層連結",
       "overlayCopied": "已複製覆蓋層連結，請將其新增為瀏覽器來源。"
     },
+    "personPicker": {
+      "notInGame": "尚未加入 {game}"
+    },
     "rosterSource": {
       "placeholder": "公告連結",
       "error": {
@@ -5483,7 +5988,6 @@
         "staff_change": "教練組異動",
         "tryouts": "Tryouts",
         "not_enough_info": "資訊不足",
-
         "wrong_game": "非本遊戲",
         "noise": "雜訊",
         "match_promo": "比賽宣傳",
@@ -5526,7 +6030,6 @@
         "explanation": "說明",
         "explanationPlaceholder": "為什麼與陣容無關？",
         "confirm": "確認",
-
         "pickTopic": "內容是關於什麼？"
       },
       "reviewed": {
@@ -5996,7 +6499,8 @@
       "level": {
         "tournament": "賽事",
         "match": "比賽",
-        "map": "地圖"
+        "map": "地圖",
+        "game": "對局"
       },
       "matchSearchPlaceholder": "搜尋比賽…",
       "mapSearchPlaceholder": "搜尋地圖…",
@@ -6015,7 +6519,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "比賽",
       "openMaps": "地圖",
-      "goBack": "返回"
+      "goBack": "返回",
+      "gameEmpty": "此比賽中沒有對局。",
+      "gameSearchPlaceholder": "搜尋對局…",
+      "openGames": "對局"
     },
     "streams": {
       "title": "直播頻道",
@@ -6153,8 +6660,14 @@
         "matchNotInTournament": "此比賽不屬於所選賽事。",
         "mapNotFound": "未找到該地圖。",
         "mapNotInMatch": "此地圖不屬於所選比賽。",
-        "notFound": "未找到該錄影。"
-      }
+        "notFound": "未找到該錄影。",
+        "gameNotFound": "找不到對局。",
+        "gameNotInMatch": "此對局不屬於所選的比賽。"
+      },
+      "scopeGame": "特定對局",
+      "gameLabel": "對局",
+      "gamePlaceholder": "選擇對局…",
+      "gameLoading": "載入中…"
     },
     "apiKeys": {
       "title": "API 金鑰",
@@ -7427,7 +7940,8 @@
       "state": {
         "linkedToYou": "此資料已綁定到你的帳戶。",
         "linkedToOther": "此資料已綁定到其他帳戶。如果你認為有誤，請聯絡工作人員。",
-        "pending": "你已有一個待稽核的帳戶綁定請求。"
+        "pending": "你已有一個待稽核的帳戶綁定請求。",
+        "linkedToAnotherPerson": "你的帳號已連結到另一位選手。如果兩份檔案是同一人，請聯絡工作人員將它們合併。"
       }
     },
     "error": {
@@ -7458,6 +7972,7 @@
       "invalidType": "僅接受 JPG、PNG 或 WebP 格式的照片。",
       "tooSmall": "這張照片太小（最短邊至少 400 畫素）。",
       "invalidDiscordId": "請輸入有效的 Discord 使用者 ID(17 到 20 位數字)或伺服器邀請連結(discord.gg/...)。",
+      "userLinkOtherPerson": "你的帳號已連結到另一位選手。如果兩份檔案是同一人，請聯絡工作人員將它們合併。",
       "sourceTooLong": "此連結過長（最多 500 個字元）。",
       "invalidSource": "此選項在此處不可用。",
       "leftSourceRequiresLeft": "離隊來源要求成員已標記為離隊。"
@@ -7533,6 +8048,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "資料",
     "tabMaps": "地圖",
+    "tabChampions": "英雄",
+    "championsEmpty": "尚未進行任何對局。",
+    "championsRolesColumn": "位置",
+    "championsRoleBansNote": "禁用與出場率會計入所有位置。",
+    "championsInsightMostPicked": "選用最多",
+    "championsInsightMostBanned": "禁用最多",
+    "championsInsightHighestPresence": "出場率最高",
+    "championsInsightHighestWinRate": "勝率最高",
+    "championsInsightHighestKda": "KDA 最高",
     "tabProduction": "製作團隊",
     "productionTitle": "{tournament} · 製作團隊",
     "statsGroupByLabel": "分組依據",
@@ -7567,6 +8091,15 @@
     "statsFilterAgentAll": "所有特工",
     "statsFilterMap": "地圖",
     "statsFilterMapAll": "所有地圖",
+    "statsChampionColumn": "英雄",
+    "statsFilterChampion": "英雄",
+    "statsFilterChampionAll": "所有英雄",
+    "statsFilterChampionSearch": "搜尋英雄…",
+    "statsFilterChampionNoResult": "找不到英雄",
+    "statsFilterRole": "位置",
+    "statsFilterRoleAll": "所有位置",
+    "statsFilterPatch": "版本",
+    "statsFilterPatchAll": "所有版本",
     "statsFilterStartDate": "起始",
     "statsFilterEndDate": "截止",
     "statsFilterSubmit": "應用篩選",
@@ -7585,6 +8118,22 @@
     "pageOf": "第 {page} 頁，共 {total} 頁",
     "statsColumns": {
       "played": "地圖數",
+      "playedGames": "場數",
+      "winRate": "勝率",
+      "picks": "選用",
+      "bans": "禁用",
+      "presence": "出場率",
+      "kp": "KP",
+      "csPerMinute": "CS/分鐘",
+      "goldPerMinute": "金錢/分鐘",
+      "damagePerMinute": "傷害/分鐘",
+      "visionPerMinute": "視野/分鐘",
+      "goldDiff10": "10 分鐘金錢差",
+      "goldDiff15": "15 分鐘金錢差",
+      "xpDiff10": "10 分鐘經驗差",
+      "xpDiff15": "15 分鐘經驗差",
+      "csDiff10": "10 分鐘 CS 差",
+      "csDiff15": "15 分鐘 CS 差",
       "roundsPlayed": "回合",
       "rating": "評分",
       "acs": "ACS",
@@ -7628,7 +8177,8 @@
     "mapsPickRatesShowMore": "顯示全部",
     "mapsPickRatesShowLess": "收起",
     "factOrganizer": "主辦方",
-    "vs": "對"
+    "vs": "對",
+    "standingsGames": "場數"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7886,7 +8436,8 @@
     "copied": "已複製",
     "copyError": "無法複製圖片，請改為下載。",
     "exporting": "生成中",
-    "exportError": "無法生成圖片，請重試。"
+    "exportError": "無法生成圖片，請重試。",
+    "descriptionGames": "寬度 {width} px 的 PNG 圖片，可直接分享。可選擇所有對局或單一對局。"
   },
   "share": {
     "button": "分享",
@@ -8286,5 +8837,26 @@
       "multikills_4k": "4K",
       "multikills_5k": "5K"
     }
+  },
+  "leaguepediaSource": {
+    "text": "此頁面上的部分對局資料來自 Leaguepedia（CC BY-SA）。請參閱原始頁面：",
+    "game": "第 {order} 場"
+  },
+  "lanes": {
+    "TOP": "上路",
+    "JUNGLE": "打野",
+    "MIDDLE": "中路",
+    "BOTTOM": "下路",
+    "UTILITY": "輔助",
+    "label": "分路",
+    "fromGames": "來自比賽：",
+    "invalid": "只能選擇這五條分路。"
+  },
+  "game": {
+    "switcherLabel": "遊戲",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "未公開",
+    "previewBanner": "{game} 尚未公開，只有管理員可以看到此頁面。"
   }
 }

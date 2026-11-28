@@ -29,6 +29,7 @@ import {
 } from "@/actions/admin-organizations";
 import { ORGANIZATION_MEMBER_ROLES } from "@/lib/organization-roles";
 import type { AdminOrganizationMember } from "@/lib/admin-organizations";
+import { useGame } from "@/lib/use-game";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -49,6 +50,7 @@ function MemberRow({
   onSaved: (updated: AdminOrganizationMember) => void;
   onDeleted: (membershipId: number) => void;
 }) {
+  const game = useGame();
   const t = useTranslations("admin.organizations.edit");
   const [isPending, startTransition] = useTransition();
   const [role, setRole] = useState<(typeof ORGANIZATION_MEMBER_ROLES)[number]>(member.role as (typeof ORGANIZATION_MEMBER_ROLES)[number]);
@@ -62,7 +64,7 @@ function MemberRow({
   function handleSave() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await updateOrganizationMember(member.membershipId, role, from, until);
+      const result = await updateOrganizationMember(game, member.membershipId, role, from, until);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;
@@ -75,7 +77,7 @@ function MemberRow({
   function handleDelete() {
     if (!window.confirm(t("memberDeleteConfirm", { handle: member.handle }))) return;
     startTransition(async () => {
-      const result = await deleteOrganizationMembership(member.membershipId);
+      const result = await deleteOrganizationMembership(game, member.membershipId);
       if (!result.ok) return;
       onDeleted(member.membershipId);
       toast.success(t("memberDelete"));
@@ -168,6 +170,7 @@ function MemberRow({
 }
 
 export function OrganizationMembersPanel({ organizationId, initialMembers, canManage }: { organizationId: number; initialMembers: AdminOrganizationMember[]; canManage: boolean }) {
+  const game = useGame();
   const t = useTranslations("admin.organizations.edit");
   const [members, setMembers] = useState(initialMembers);
   const [isPending, startTransition] = useTransition();
@@ -182,7 +185,7 @@ export function OrganizationMembersPanel({ organizationId, initialMembers, canMa
   function handleAdd() {
     setFieldErrors({});
     startTransition(async () => {
-      const result = await addOrganizationMember(organizationId, person?.id ?? null, role, from, until);
+      const result = await addOrganizationMember(game, organizationId, person?.id ?? null, role, from, until);
       if (!result.ok) {
         setFieldErrors(result.fieldErrors);
         return;

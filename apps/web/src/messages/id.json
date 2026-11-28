@@ -730,7 +730,7 @@
     "intro": "Dengan mengakses atau menggunakan GC Stats, Anda setuju terikat pada Ketentuan Layanan ini. Harap baca dengan saksama sebelum menggunakan platform.",
     "service": {
       "title": "Tentang Layanan",
-      "text": "GC Stats adalah platform komunitas yang berdedikasi untuk mengarsipkan dan membagikan data kompetitif dari turnamen Valorant Game Changers dan acara terkait. Layanan ini menyediakan akses ke hasil turnamen, statistik pemain, informasi tim, dan data pertandingan. GC Stats tidak berafiliasi dengan, didukung oleh, atau terhubung secara resmi dengan Riot Games."
+      "text": "GC Stats adalah platform komunitas yang berdedikasi untuk mengarsipkan dan membagikan data kompetitif dari turnamen Game Changers dan acara terkait. Layanan ini menyediakan akses ke hasil turnamen, statistik pemain, informasi tim, dan data pertandingan. GC Stats tidak berafiliasi dengan, didukung oleh, atau terhubung secara resmi dengan Riot Games."
     },
     "access": {
       "title": "Akses dan Kelayakan",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Data Pertandingan Riot",
-      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Data ini mencakup:",
+      "text": "GC Stats mengambil statistik pertandingan langsung dari API resmi Riot Games untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia, atau dimasukkan secara manual oleh tim kami. Data ini mencakup:",
       "items": [
         "Riot ID (nama game dan tagline) pemain yang berpartisipasi",
         "Riwayat pertandingan untuk pertandingan yang teridentifikasi sebagai bagian dari turnamen yang dilacak",
-        "Statistik dalam pertandingan: papan skor, ringkasan performa, ringkasan ekonomi, dan kill feed"
+        "Statistik dalam pertandingan: papan skor, ringkasan performa, dan lainnya"
       ],
       "optIn": "Partisipasi dasar dalam pertandingan (nama, statistik) dicatat untuk setiap pemain yang muncul dalam pertandingan turnamen yang dilacak, karena ini adalah data kompetitif publik. Informasi profil tambahan (biografi, media sosial, foto) hanya ditambahkan dengan persetujuan pemain atau tim.",
       "correction": "Jika Anda adalah pemain yang muncul dalam data ini dan ingin meminta koreksi atau penghapusan, Anda dapat menghubungi kami kapan saja (lihat Kebijakan Privasi kami untuk detailnya)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "Penggunaan API",
-      "text": "GC Stats menyediakan API publik untuk proyek komunitas dan proyek terkait GC. Penggunaan API tunduk pada Ketentuan ini. API ditujukan untuk keperluan informasi, analisis, dan komunitas. Pembatasan laju permintaan dapat diberlakukan. GC Stats berhak mencabut akses API untuk penggunaan apa pun yang melanggar Ketentuan ini atau kebijakan pengembang Riot Games."
+      "text": "GC Stats menyediakan API publik untuk proyek komunitas dan proyek terkait GC. Saat ini API hanya mencakup Valorant; League of Legends akan menyusul. Penggunaan API tunduk pada Ketentuan ini. API ditujukan untuk keperluan informasi, analisis, dan komunitas. Pembatasan laju permintaan dapat diberlakukan. GC Stats berhak mencabut akses API untuk penggunaan apa pun yang melanggar Ketentuan ini atau kebijakan pengembang Riot Games."
     },
     "ip": {
       "title": "Kekayaan Intelektual",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "Data Publik",
-      "text": "Informasi profil (nama panggilan, bio, media sosial, negara) diberikan oleh pemain atau organisasinya, atau ditambahkan oleh tim kami dari sumber publik, lalu ditampilkan secara publik di situs. Statistik permainan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan turnamen yang diikuti. Semua data ini tersedia untuk publik dan dibagikan melalui API kami."
+      "text": "Informasi profil (nama panggilan, bio, media sosial, negara) diberikan oleh pemain atau organisasinya, atau ditambahkan oleh tim kami dari sumber publik, lalu ditampilkan secara publik di situs. Statistik permainan dikumpulkan langsung melalui API resmi Riot Games untuk pertandingan turnamen yang diikuti. Untuk League of Legends, statistik juga dapat berasal dari Leaguepedia (dengan lisensi CC BY-SA) atau dimasukkan secara manual oleh tim kami dari siaran jika tidak ada data lain. Semua data ini tersedia untuk publik dan dibagikan melalui API kami."
     },
     "privateData": {
       "title": "Data Pribadi",
-      "text": "Data pribadi yang kami simpan terbatas pada apa yang diperlukan untuk menjalankan situs dan sistem akunnya: Riot ID untuk menautkan profil pemain, ditambah data akun yang dijelaskan di bawah bagi siapa pun yang membuat akun pengguna.",
-      "riotUsage": "Riot ID: Diidentifikasi dan ditetapkan oleh tim kami dari data pertandingan yang diambil melalui API resmi Riot Games. Digunakan hanya untuk mengaitkan statistik pertandingan dengan profil pemain. Dapat dikoreksi atau dihapus atas permintaan."
+      "text": "Data pribadi yang kami simpan terbatas pada apa yang diperlukan untuk menjalankan situs dan sistem akunnya: akun Riot para pemain, untuk menautkan statistik pertandingan ke profil mereka, ditambah data akun yang dijelaskan di bawah bagi siapa pun yang membuat akun pengguna.",
+      "riotUsage": "Akun Riot: Riot ID diidentifikasi dan ditetapkan oleh tim kami dari data pertandingan yang diambil melalui API resmi Riot Games atau Leaguepedia, atau dimasukkan secara manual jika hanya tersedia siaran pertandingannya. Untuk League of Legends, kami juga menyimpan PUUID Riot setiap akun, server dan wilayahnya, serta tanggal terakhir akun itu terlihat dalam pertandingan yang dilacak. Hanya digunakan untuk mengaitkan statistik pertandingan dengan profil pemain. Dapat dikoreksi atau dihapus atas permintaan."
     },
     "accountData": {
       "title": "Akun Pengguna",
@@ -1332,19 +1332,19 @@
           "hidden": {
             "label": "Tidak pernah ditampilkan",
             "items": [
-              "ID Riot, hanya digunakan untuk menautkan statistik pertandingan ke profil yang benar"
+              "Akun Riot, hanya digunakan untuk menautkan statistik pertandingan ke profil yang tepat"
             ]
           }
         },
-        "source": "Orang itu sendiri atau organisasinya, tim kami dari sumber publik (Liquipedia, pengumuman resmi), atau komunitas melalui usulan yang disetujui tim kami. ID Riot berasal dari API resmi Riot Games.",
-        "visibility": "Semua orang, di situs dan melalui API kami, kecuali ID Riot.",
+        "source": "Orang itu sendiri atau organisasinya, tim kami dari sumber publik (Liquipedia, pengumuman resmi), atau komunitas melalui usulan yang disetujui tim kami. Akun Riot berasal dari API resmi Riot Games atau Leaguepedia, atau dimasukkan oleh tim kami.",
+        "visibility": "Semua orang, di situs dan melalui API kami, kecuali akun Riot.",
         "retention": "Disimpan selamanya sebagai arsip skena, bahkan ketika orang tersebut berhenti bermain. Anda dapat meminta perbaikan atau penghapusan."
       },
       "matchStats": {
         "title": "Statistik pertandingan",
         "groups": {
           "stats": {
-            "label": "Untuk setiap pertandingan",
+            "label": "Untuk setiap pertandingan Valorant yang dimainkan",
             "items": [
               "Agen yang dimainkan",
               "Kill, death, dan assist",
@@ -1352,9 +1352,20 @@
               "Ekonomi dan perlengkapan",
               "Posisi di peta"
             ]
+          },
+          "league": {
+            "label": "Untuk setiap game League of Legends yang dimainkan",
+            "items": [
+              "Champion, lane, summoner spell, dan rune",
+              "Kill, kematian, dan asis",
+              "CS, gold, damage, dan skor vision",
+              "Item",
+              "Gold, pengalaman, dan CS dibandingkan lawan lane pada menit 10 dan 15",
+              "Posisi di peta dan kejadian dalam game (kill, objektif, ward)"
+            ]
           }
         },
-        "source": "API resmi Riot Games, untuk pertandingan turnamen yang kami ikuti.",
+        "source": "API resmi Riot Games, untuk pertandingan turnamen yang kami liput. Untuk League of Legends juga Leaguepedia, atau tim kami secara manual dari siaran jika tidak ada data lain.",
         "visibility": "Semua orang, di situs dan melalui API kami.",
         "retention": "Disimpan sebagai arsip sejarah kompetisi."
       },
@@ -1634,7 +1645,21 @@
     "productionTitle": "{player} · Produksi",
     "formerOrganizations": "Mantan organisasi",
     "noFormerOrganizations": "Tidak ada mantan organisasi yang tercatat.",
-    "unknownDate": "Tidak diketahui"
+    "unknownDate": "Tidak diketahui",
+    "addGameProfile": {
+      "title": "Juga ada di {game}?",
+      "description": "Tambahkan profil {game} Anda dengan satu klik. Nama, foto, dan tautan Anda dipakai ulang, tidak perlu mengisi lagi.",
+      "button": "Tambahkan profil {game} saya",
+      "adding": "Menambahkan...",
+      "done": "Profil {game} Anda sudah siap.",
+      "open": "Lihat profil {game} saya",
+      "error": {
+        "unauthenticated": "Anda harus masuk terlebih dahulu.",
+        "notYours": "Pemain ini tidak tertaut ke akun Anda.",
+        "invalidGame": "Game ini tidak ada."
+      }
+    },
+    "alsoOn": "Juga di {game}"
   },
   "organizationPage": {
     "tabOverview": "Ikhtisar",
@@ -1688,7 +1713,9 @@
       "recruitmentManager": "Manajer rekrutmen",
       "developer": "Pengembang",
       "volunteer": "Relawan",
+      "headOfEsports": "Kepala Esports",
       "headOfValorant": "Kepala Valorant",
+      "headOfLeague": "Kepala League of Legends",
       "streamer": "Streamer"
     },
     "unknownDate": "Tidak diketahui",
@@ -1794,7 +1821,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "Diskusi",
-    "watchparty": "Watchparty"
+    "watchparty": "Watchparty",
+    "vodGame": "VOD Game {n}",
+    "games": "Game",
+    "gameTab": "Game {order}",
+    "noGames": "Belum ada game yang tercatat.",
+    "noGameData": "Tidak ada data untuk game ini",
+    "duration": "Durasi",
+    "forfeit": "Forfeit",
+    "towers": "Tower",
+    "inhibitors": "Inhibitor",
+    "dragons": "Dragon",
+    "barons": "Baron",
+    "heralds": "Rift Herald",
+    "grubs": "Void grub",
+    "draftNotSet": "Belum ada draft yang tercatat untuk game ini.",
+    "ban": "Ban",
+    "pick": "Pick",
+    "unplacedPicks": "Pick yang belum ditempatkan",
+    "colChampion": "Champion",
+    "allGames": "Semua game",
+    "draft": "Draft"
   },
   "footer": {
     "tagline": "Setiap kompetisi resmi Game Changers, di satu tempat.",
@@ -2095,7 +2142,8 @@
       "error": {
         "userNotFound": "Pengguna tidak ditemukan.",
         "roleNotFound": "Salah satu peran yang dipilih sudah tidak ada.",
-        "selfDemote": "Anda tidak dapat mencabut akses admin Anda sendiri."
+        "selfDemote": "Anda tidak dapat mencabut akses admin Anda sendiri.",
+        "gameNotFound": "Game ini tidak ada."
       },
       "authMethods": {
         "heading": "Autentikasi",
@@ -2352,7 +2400,9 @@
           "recruitmentManager": "Manajer rekrutmen",
           "developer": "Pengembang",
           "volunteer": "Relawan",
+          "headOfEsports": "Kepala Esports",
           "headOfValorant": "Kepala Valorant",
+          "headOfLeague": "Kepala League of Legends",
           "streamer": "Streamer"
         },
         "error": {
@@ -2376,7 +2426,8 @@
           "ownerOnly": "Hanya pemilik yang dapat memberikan atau menyunting peran pemilik.",
           "userNotFound": "Akun tidak ditemukan.",
           "alreadyHasAccess": "Akun ini sudah memiliki akses ke organisasi ini."
-        }
+        },
+        "fieldGames": "Game"
       },
       "filterKindLabel": "Jenis organisasi",
       "filterKindAll": "Semua organisasi",
@@ -2387,6 +2438,7 @@
       "title": "Tim",
       "subtitle": "Kelola profil dan roster tim.",
       "searchPlaceholder": "Nama, ID, atau ID VLR…",
+      "searchPlaceholderLol": "Nama atau ID…",
       "searchSubmit": "Cari",
       "activeWithinLabel": "Aktivitas terbaru",
       "activeWithinAny": "Kapan saja",
@@ -2605,6 +2657,7 @@
       "title": "Pemain",
       "subtitle": "Kelola profil dan afiliasi tim.",
       "searchPlaceholder": "Handle, ID, atau ID VLR…",
+      "searchPlaceholderLol": "Handle, ID, atau Riot ID…",
       "searchSubmit": "Cari",
       "activeWithinLabel": "Aktivitas terbaru",
       "activeWithinAny": "Kapan saja",
@@ -2649,6 +2702,40 @@
         },
         "sectionProfile": "Profil",
         "sectionSocials": "Tautan media sosial",
+        "sectionRiotAccounts": "Akun Riot",
+        "riotAccountsHint": "Akun League of Legends yang dimainkan pemain ini. Game yang diimpor ditautkan ke pemain lewat akun-akun ini.",
+        "riotAccountsEmpty": "Belum ada akun Riot. Akun ditambahkan saat game diimpor, atau di sini.",
+        "riotAccountLive": "Live",
+        "riotAccountTournament": "Realm turnamen",
+        "riotAccountSourceAdmin": "Ditambahkan manual",
+        "riotAccountLastSeen": "Terakhir terlihat <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "Wilayah",
+        "riotAccountAdd": "Tambah akun",
+        "riotAccountAdding": "Menambahkan…",
+        "riotAccountAdded": "Akun Riot ditambahkan.",
+        "riotAccountRemoved": "Akun Riot dihapus.",
+        "riotAccountRemove": "Hapus",
+        "riotAccountRemoveTitle": "Hapus akun Riot ini?",
+        "riotAccountRemoveDescription": "{riotId} tidak akan lagi ditautkan ke {handle}. Game yang sudah diimpor tetap bersama pemain.",
+        "riotAccountErrorHeldByOther": "Akun Riot ini sudah milik {handle}.",
+        "riotAccountErrorAlreadyOnPlayer": "Pemain ini sudah memiliki akun Riot ini.",
+        "riotAccountErrorGeneric": "Akun Riot tidak dapat diubah.",
+        "sectionGames": "Game",
+        "gamesHint": "Satu orang, satu profil per game. Nama, negara, kata ganti, bio, alias, sosial media, foto, dan akun tertaut dibagikan, sisanya milik masing-masing game.",
+        "sharedHint": "Nama, negara, kata ganti, bio, alias, sosial media, dan foto dibagikan dengan game lain milik orang ini.",
+        "gameCurrent": "Game saat ini",
+        "gameHasProfile": "Punya profil",
+        "gameNoProfile": "Belum ada profil",
+        "gameOpen": "Buka",
+        "gameAddButton": "Tambahkan ke {game}",
+        "gameAdding": "Menambahkan...",
+        "gameAddSuccess": "Ditambahkan ke {game}.",
+        "gameAddError": {
+          "invalidGame": "Game ini tidak ada.",
+          "notFound": "Pemain ini sudah tidak ada.",
+          "alreadyThere": "Pemain ini sudah punya profil di game ini."
+        },
         "sectionHistory": "Riwayat tim",
         "sectionLogo": "Logo",
         "logoNoneYet": "Belum ada logo.",
@@ -2787,13 +2874,17 @@
           "organizations": "Kredit organisasi",
           "production": "Kredit produksi",
           "matchStats": "Partisipasi pertandingan",
+          "gameStats": "Partisipasi game",
           "news": "Berita",
           "logos": "Logo",
+          "riotAccounts": "Akun Riot ({count})",
           "linkedAccount": "Akun tertaut"
         },
         "matchStatsHint": "Juga memindahkan data ronde demi ronde (kill, damage, posisi) di balik setiap peta. Kredit roster terkunci untuk peserta turnamen hanya dipindahkan setelah setiap peta peserta tersebut dipilih.",
+        "gameStatsHint": "Juga memindahkan frame dan event (kill, objektif, ward) dari setiap game. Kredit roster terkunci untuk peserta turnamen baru dipindahkan setelah semua game peserta itu dipilih.",
         "periodOngoing": "sejak {since}",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Akun Riot berpindah ke pemain yang kamu pertahankan, agar game-nya tetap tertaut ke pemain itu.",
         "linkedAccountHint": "Memindahkan akun yang saat ini tertaut ke pemain ini. Hanya ditampilkan jika ada yang tertaut dan tujuan belum memilikinya.",
         "nothingToMove": "Pemain ini belum memiliki apa pun untuk dipindahkan.",
         "confirm": "Gabungkan item yang dipilih dari {source} ke {target}? Tindakan ini tidak dapat dibatalkan secara otomatis.",
@@ -2808,8 +2899,40 @@
           "samePlayer": "Pilih pemain lain sebagai tujuan penggabungan.",
           "sourceNotFound": "Pemain tidak ditemukan.",
           "targetNotFound": "Pemain tujuan tidak ditemukan.",
-          "targetAlreadyLinked": "Pemain tujuan sudah memiliki akun tertaut."
-        }
+          "targetAlreadyLinked": "Pemain tujuan sudah memiliki akun tertaut.",
+          "sourceStillUsed": "Pemain ini masih dipakai oleh peserta atau statistik pertandingan game ini. Pilih juga item tersebut, atau pertahankan profilnya.",
+          "otherGame": "Pemain tujuan tidak termasuk dalam game apa pun yang Anda kelola, sehingga akun tertaut tidak dapat dipindahkan.",
+          "sourceHasData": "Tidak ada yang digabungkan, karena menghapus pemain akan menghilangkan data: {items}. Pilih juga data tersebut (item yang dilewati karena konflik harus dihapus dulu), atau pertahankan profil."
+        },
+        "removeSource": "Hapus dari {game} setelah digabung",
+        "removeSourceHint": "{name} dihapus dari game ini, dan seluruhnya jika tidak ada game lain yang memiliki profil ini. Ditolak selama masih ada data yang harus dipindahkan, atau selama peserta atau statistik pertandingan memakainya. Nama Liquipedia, kredit roster terkunci, dan siaran pertandingan ikut digabungkan."
+      },
+      "duplicatesLink": "Kemungkinan duplikat",
+      "duplicates": {
+        "title": "Kemungkinan duplikat",
+        "description": "Orang dengan handle yang sama yang masing-masing ada di game berbeda. Gabungkan profil {game} ke profil lain agar hanya ada satu profil.",
+        "backToList": "Kembali ke pemain",
+        "columnSource": "Di {game}",
+        "columnTarget": "Profil lain",
+        "merge": "Gabungkan",
+        "empty": "Tidak ada duplikat."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId} bukan Riot ID (nama#tag).",
+        "riotIdNotFound": "Tidak ada akun Riot dengan nama {riotId}.",
+        "relayNotConfigured": "Relay Riot belum diatur di server ini.",
+        "relayUnauthorized": "Relay menolak kredensial kami. Periksa RIOT_RELAY_TOKEN.",
+        "riotKeyRejected": "Riot menolak kunci API League of Legends milik relay. Mungkin sudah kedaluwarsa atau salah (periksa LOL_RIOT_API_KEY di relay).",
+        "relayLeagueUnavailable": "Relay tidak memiliki kunci API League of Legends atau database cache-nya tidak tersedia. Periksa LOL_RIOT_API_KEY dan database di relay.",
+        "routeUnavailable": "Relay tidak menyediakan rute League yang dibutuhkan pencarian ini. Perbarui relay.",
+        "relayUnreachable": "Relay Riot tidak dapat dijangkau. Pastikan relay berjalan dan RIOT_RELAY_URL benar.",
+        "riotUnavailable": "Data Riot tidak dapat dibaca saat ini. Coba lagi nanti.",
+        "rateLimited": "Riot membatasi permintaan kunci ini. Tunggu semenit sebelum mencoba lagi.",
+        "rateLimitedIn": "Riot membatasi permintaan kunci ini. Coba lagi dalam {seconds} dtk.",
+        "invalidRequest": "Relay menolak permintaan karena tidak valid. Periksa Riot ID, wilayah, dan rentang waktu.",
+        "notFound": "Riot tidak punya data untuk permintaan ini: akun atau game tidak ada, atau tidak berada di wilayah ini."
       }
     },
     "finance": {
@@ -3385,11 +3508,13 @@
           "entityNotFound": "Tim atau pemain yang dirujuk sudah tidak ada.",
           "membershipNotFound": "Entri roster sudah tidak ada.",
           "invalidRole": "Peran tidak lagi valid.",
+          "invalidLane": "Salah satu lane tidak valid.",
           "logoNotFound": "Entri logo sudah tidak ada.",
           "alreadyLinked": "Pemain ini sudah tertaut ke akun lain.",
           "unknownField": "Kolom tidak didukung.",
           "unknown": "Kesalahan tidak diketahui.",
-          "invalidSource": "Tautan sumber tidak lagi valid."
+          "invalidSource": "Tautan sumber tidak lagi valid.",
+          "otherGame": "Pemain yang sebelumnya tertaut tidak termasuk dalam game apa pun yang Anda kelola."
         },
         "oldValue": "Saat ini",
         "newValue": "Diusulkan",
@@ -3829,6 +3954,14 @@
         "fieldEliminateAtLossesHint": "Jumlah kekalahan. Biarkan kosong untuk Swiss bebas tanpa ambang.",
         "fieldMaxRounds": "Ronde maksimum",
         "openEditorButton": "Buka editor bracket",
+        "assignEntrantsButton": "Kelola peserta",
+        "assignEntrantsTitle": "Peserta grup",
+        "assignEntrantsDescription": "Pilih peserta turnamen mana yang menjadi bagian dari grup Swiss ini.",
+        "assignEntrantsEmpty": "Tidak ada peserta di turnamen ini.",
+        "assignEntrantsInGroup": "Di {name}",
+        "assignEntrantsSuccess": "Peserta diperbarui.",
+        "startSwissButton": "Mulai ronde 1",
+        "startSwissSuccess": "Ronde 1 dibuat.",
         "addMatchButton": "Tambah pertandingan",
         "addMatchTitle": "Tambah pertandingan di {name}",
         "addMatchDescription": "Pertandingan ditambahkan ke ronde yang dipilih, meskipun grup sudah dimulai. Tim dapat tetap TBD dan ditetapkan nanti dari halaman pertandingan.",
@@ -3905,6 +4038,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "Hanya grup round robin yang dapat menghitung pertandingan dari seluruh stage.",
           "cannotMove": "Kontainer ini tidak dapat dipindahkan lebih jauh.",
           "parentInvalid": "Set ini tidak dapat digunakan di sini.",
           "tiebreakersInvalid": "Gunakan setiap tiebreaker sekali saja, dari daftar yang tersedia.",
@@ -3921,9 +4055,11 @@
             "points": "Poin",
             "buchholz": "Buchholz",
             "map_diff": "Selisih map",
+            "game_diff": "Selisih game",
             "round_diff": "Selisih ronde",
             "head_to_head": "Head to head",
             "h2h_map_diff": "Selisih map pada pertemuan langsung (2 tim)",
+            "h2h_game_diff": "Selisih game pada pertemuan langsung (2 tim)",
             "h2h_round_diff": "Selisih ronde pada pertemuan langsung (2 tim)",
             "seed": "Seed"
           }
@@ -3931,16 +4067,22 @@
         "pointsConfig": {
           "title": "Poin",
           "hint": "Setiap match, map, dan ronde yang dimenangkan atau dikalahkan memberi poin kepada tim. Ronde hanya dihitung pada map dengan skor tercatat. Jika diaktifkan, poin mengurutkan tim sebelum rekor pertandingan dan tiebreaker.",
+          "hintGames": "Setiap match dan game yang dimenangkan atau dikalahkan memberi poin kepada tim. Jika diaktifkan, poin mengurutkan tim sebelum rekor pertandingan dan tiebreaker.",
           "enable": "Gunakan poin",
           "scopes": {
             "match": "Match",
             "map": "Setiap map",
+            "game": "Setiap game",
             "round": "Setiap ronde",
             "forfeit": "Forfeit (menggantikan yang lain)"
           },
           "win": "Menang",
           "loss": "Kalah"
-        }
+        },
+        "fieldMatchScope": "Tim juga bermain melawan tim dari grup lain (hitung pertandingan dari grup lain yang memakai pengaturan ini)",
+        "fieldMatchScopeHint": "Hanya tim yang disematkan ke grup ini yang ditampilkan, dan pertandingan mereka yang sudah selesai dihitung di setiap grup pada stage ini yang juga memakai pengaturan ini. Pertandingan di grup tanpa pengaturan ini tidak dihitung. Sematkan tim setelah menyimpan. Hanya untuk round robin.",
+        "matchScopeNoTeams": "Belum ada tim yang disematkan ke grup ini, jadi tabelnya kosong. Tetapkan tim ke grup ini terlebih dahulu.",
+        "matchScopeSwitchWarning": "Beralih ke cakupan stage hanya akan menampilkan tim yang disematkan. Tim yang bermain di grup ini tetapi tidak disematkan akan hilang dari tabelnya sampai Anda menyematkannya."
       },
       "bracketPage": {
         "title": "Manajemen bracket",
@@ -4347,6 +4489,48 @@
               "relay": "Riot tidak mengembalikan pertandingan ini, coba lagi nanti. Data yang ada dipertahankan.",
               "other": "Pengambilan tidak dapat dijalankan, periksa halaman peta. Data yang ada dipertahankan."
             }
+          },
+          "league": {
+            "description": "Tempel '{{Match}}' Liquipedia dari seri ini. Game dan draft diisi di tempat yang masih kosong.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "Impor wikicode ini? Game dan draft yang masih kosong akan diisi. Data Riot dan Leaguepedia, draft yang diedit manual, serta semua yang sudah dimasukkan tetap dipertahankan.",
+            "importSuccess": "Wikicode diimpor: game dan draft diperbarui.",
+            "liquipediaHint": "Lawan (opponent1, opponent2) juga disimpan sebagai nama Liquipedia tim.",
+            "error": {
+              "missingTeams": "Kedua tim harus sudah ditentukan sebelum mengimpor game.",
+              "oneMatchOnly": "Wikicode harus berisi tepat satu '{{Match}}'.",
+              "noGames": "Tidak ada game yang dimainkan di wikicode ini.",
+              "unknownChampions": "Champion tidak dikenal di wikicode: {names}. Tidak ada yang diimpor.",
+              "duplicateChampion": "Game {order}: {champion} muncul lebih dari sekali di draft. Tidak ada yang diimpor.",
+              "championsUnavailable": "Daftar champion patch ini sedang tidak tersedia, sehingga nama tidak dapat diperiksa. Tidak ada yang diimpor, coba lagi nanti."
+            },
+            "results": {
+              "forfeit": "Wikicode menunjukkan forfeit. Tidak ada yang diimpor, atur forfeit pada match secara manual.",
+              "gameLabel": "Game {order}",
+              "created": "Game dibuat dari wikicode.",
+              "filled": "Diisi: {fields}.",
+              "differs": "Berbeda dari wikicode, dipertahankan: {fields}.",
+              "field": {
+                "winner": "pemenang",
+                "duration": "durasi"
+              },
+              "draft": {
+                "written": "Draft diimpor.",
+                "kept": {
+                  "editedByHand": "Draft dipertahankan: diedit secara manual.",
+                  "riotData": "Draft dipertahankan: game ini punya data Riot.",
+                  "leaguepediaData": "Draft dipertahankan: game ini punya data Leaguepedia.",
+                  "existingDraft": "Draft dipertahankan: game ini sudah punya draft."
+                },
+                "none": {
+                  "noDraft": "Tidak ada draft di wikicode.",
+                  "noSide": "Draft tidak diimpor: wikicode tidak menyebutkan di sisi mana tim 1 bermain."
+                }
+              },
+              "patchSet": "Patch {patch} diatur pada match.",
+              "bestOfDiffers": "Wikicode menyebut best of {bestOf}, match tetap memakai miliknya.",
+              "firstPickAssumed": "Wikicode tidak menyebutkan siapa yang mendapat first pick, jadi blue diasumsikan. Periksa draft."
+            }
           }
         },
         "veto": {
@@ -4513,7 +4697,294 @@
             "mergeMapNotFound": "Peta ini sudah tidak ada."
           }
         },
-        "liquipediaImportButton": "Impor Pertandingan Liquipedia"
+        "liquipediaImportButton": "Impor Pertandingan Liquipedia",
+        "draft": {
+          "metaTitle": "Draft",
+          "title": "Draft game {order}",
+          "backToMatch": "Kembali ke pertandingan",
+          "description": "Urutan ban dan pick game ini. Biarkan langkah kosong jika tidak digunakan.",
+          "differsWarning": "Impor tidak sesuai dengan draft yang tersimpan: impor ulang menemukan champion lain. Periksa draft lalu simpan untuk mempertahankan draft Anda.",
+          "blueSide": "Blue side",
+          "blueLockedHint": "Ditentukan oleh impor (tim biru Riot).",
+          "firstPickLockedHint": "Ditentukan oleh impor (sisi yang melakukan ban pertama).",
+          "firstPick": "First pick",
+          "phase": {
+            "ban1": "Fase ban 1",
+            "pick1": "Fase pick 1",
+            "ban2": "Fase ban 2",
+            "pick2": "Fase pick 2"
+          },
+          "side": {
+            "blue": "Biru",
+            "red": "Merah"
+          },
+          "type": {
+            "ban": "Ban",
+            "pick": "Pick"
+          },
+          "noChampion": "Tanpa champion",
+          "searchPlaceholder": "Cari champion",
+          "noResults": "Tidak ada champion yang cocok",
+          "unplacedTitle": "Pick yang belum ditempatkan",
+          "save": "Simpan draft",
+          "saving": "Menyimpan…",
+          "saved": "Draft tersimpan",
+          "error": {
+            "notFound": "Game ini tidak ditemukan.",
+            "entrantsUnset": "Kedua tim pertandingan harus ditentukan terlebih dahulu.",
+            "blueNotAnEntrant": "Blue side harus salah satu dari dua tim dalam pertandingan.",
+            "blueLocked": "Blue side game yang diimpor ditentukan oleh impor.",
+            "firstPickLocked": "First pick game yang diimpor ditentukan oleh impor.",
+            "invalidFirstPick": "First pick harus biru atau merah.",
+            "invalidStep": "Langkah {step} tidak ada atau diberikan dua kali.",
+            "unknownChampion": "{championName} tidak ada dalam daftar champion.",
+            "duplicateChampion": "{championName} muncul lebih dari sekali dalam draft.",
+            "invalidSide": "Pick yang belum ditempatkan harus berada di blue side atau red side.",
+            "championsUnavailable": "Daftar champion patch ini sedang tidak tersedia, coba lagi nanti.",
+            "invalidDraft": "Draft yang dikirim tidak valid. Muat ulang halaman dan coba lagi."
+          }
+        },
+        "games": {
+          "heading": "Game",
+          "description": "Game yang dimainkan dalam seri ini, secara berurutan.",
+          "empty": "Belum ada game.",
+          "gameLabel": "Game {order}",
+          "winnerLabel": "Pemenang: {name}",
+          "noWinner": "Belum ada pemenang",
+          "finished": "Selesai",
+          "notFinished": "Belum selesai",
+          "draftButton": "Draft",
+          "draftDiffers": "Impor berbeda dari draft yang tersimpan",
+          "forfeit": "Forfeit",
+          "cancel": "Batal",
+          "save": "Simpan",
+          "saving": "Menyimpan…",
+          "createButton": "Tambah game",
+          "createTitle": "Tambah game",
+          "editTitle": "Edit game",
+          "dialogDescription": "Masukkan hasil satu game dari seri ini.",
+          "editButton": "Edit",
+          "deleteButton": "Hapus",
+          "deleteTitle": "Hapus game",
+          "deleteConfirm": "Hapus game {order}? Skor pertandingan akan dihitung ulang dari game yang tersisa.",
+          "deleteError": "Game tidak dapat dihapus.",
+          "deleteSuccess": "Game dihapus.",
+          "saveError": "Game tidak dapat disimpan.",
+          "saveSuccess": "Game tersimpan.",
+          "fieldOrder": "Urutan",
+          "fieldWinner": "Pemenang",
+          "fieldWinnerNone": "Belum ada pemenang",
+          "fieldCompleted": "Selesai",
+          "fieldForfeit": "Forfeit",
+          "fieldNote": "Catatan",
+          "fieldError": {
+            "invalid": "Masukkan nilai yang valid.",
+            "tooLong": "Terlalu panjang.",
+            "duplicateOrder": "Game lain sudah menggunakan urutan ini.",
+            "winnerRequired": "Game yang selesai membutuhkan pemenang.",
+            "notAnEntrant": "Pemenang harus salah satu dari dua tim.",
+            "notCompleted": "Tandai game sebagai selesai untuk menentukan pemenang.",
+            "invalidMatchId": "Gunakan format EUW1_6123456789: kode platform, garis bawah, lalu nomor pertandingan.",
+            "duplicateMatchId": "Game lain sudah menggunakan Riot match ID ini."
+          },
+          "fieldApiMatchId": "Riot match ID",
+          "fieldApiMatchIdHint": "Contoh: EUW1_6123456789. Platform dibaca dari ID ini.",
+          "find": {
+            "open": "Cari game",
+            "openLabel": "Cari game di Riot",
+            "openHint": "Mencari game yang dimainkan dengan kode turnamen. Tidak berfungsi untuk game yang dimainkan di klien turnamen.",
+            "title": "Cari game",
+            "description": "Mencari game yang dimainkan dengan kode turnamen di riwayat pertandingan para pemain.",
+            "relayWarning": "Cari game hanya berfungsi jika relay Riot memiliki kunci API League of Legends yang berfungsi. Kunci pengembangan kedaluwarsa setelah 24 jam.",
+            "teamAccounts": "{name}: {count} dari {total} pemain memiliki akun Riot",
+            "regionInferred": "Mencari di {cluster}, berdasarkan wilayah turnamen.",
+            "regionLabel": "Cari di",
+            "regionAsk": "Wilayah turnamen tidak menyebutkan di mana game-nya dimainkan. Pilih wilayah.",
+            "regionUnsupported": "Game di server China tidak dapat dicari.",
+            "windowStart": "Dari",
+            "windowEnd": "Sampai",
+            "windowHint": "Dimulai satu jam sebelum dan berakhir empat jam setelah waktu terjadwal. Ubah jika seri dimainkan pada waktu lain.",
+            "noSchedule": "Seri ini tidak memiliki waktu terjadwal. Masukkan rentang waktu.",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "Akun seorang pemain, misalnya akun cadangan. Hanya disimpan jika muncul di game yang kamu simpan.",
+            "riotIdRequired": "Belum ada tim yang memiliki akun Riot di wilayah ini. Masukkan setidaknya satu Riot ID.",
+            "addRiotId": "Tambah lagi",
+            "search": "Cari",
+            "searching": "Mencari…",
+            "resultsCount": "{count, plural, other {# game ditemukan}}",
+            "minutes": "{minutes} mnt",
+            "sideSummary": "{team} · {known} dari {players} dikenal",
+            "sideUnknown": "tim tidak dikenal",
+            "badgeBoth": "Kedua tim ditemukan",
+            "badgeOne": "Hanya {name} yang ditemukan, periksa lawannya",
+            "badgeNames": "{count} dari {total} nama cocok dengan {name}",
+            "badgeImported": "Sudah diimpor sebagai game {order}",
+            "badgeImportedElsewhere": "Sudah diimpor di seri lain",
+            "badgeRemake": "Remake?",
+            "badgeRiotIds": "Berisi {count} dari {total} Riot ID kamu",
+            "use": "Gunakan game ini",
+            "emptyTitle": "Tidak ada game yang ditemukan. Kemungkinan penyebab:",
+            "emptyNoCode": "Lobi tidak memiliki kode turnamen. Tempel ID pertandingan atau gunakan Leaguepedia.",
+            "emptyOtherAccount": "Seorang pemain memakai akun lain. Coba Riot ID lain.",
+            "emptyWindow": "Rentang waktunya salah. Perlebar.",
+            "emptyRegion": "Game dimainkan di wilayah lain. Cari di sana.",
+            "error": {
+              "windowInvalid": "Rentang waktu maksimal 48 jam.",
+              "generic": "Pencarian tidak dapat dijalankan."
+            },
+            "incompleteRateLimited": "Riot membatasi {failed} dari {total} permintaan, jadi daftar ini mungkin tidak lengkap atau memuat game dari seri lain. Tunggu semenit lalu cari lagi.",
+            "incomplete": "{failed} dari {total} permintaan gagal, jadi daftar ini mungkin tidak lengkap atau memuat game dari seri lain. Cari lagi."
+          },
+          "gameImport": {
+            "label": "Game Leaguepedia",
+            "none": "Tidak ada",
+            "noData": "tidak ada data",
+            "gameNumber": "Game {number}",
+            "fetch": "Ambil dari Leaguepedia",
+            "fetching": "Mengambil…",
+            "renew": "Perbarui",
+            "reprocess": "Proses ulang",
+            "success": "Game disimpan dari Leaguepedia",
+            "error": {
+              "invalidMapping": "Tautan pemain yang dikirim tidak valid. Muat ulang halaman lalu coba lagi.",
+              "handleTooLong": "Nama pemain baru terlalu panjang (maksimal {max} karakter).",
+              "noData": "Game ini tidak memiliki data V5 di Leaguepedia.",
+              "notInBucket": "Game ini belum ada di bucket. Ambil terlebih dahulu.",
+              "pageInvalid": "Halaman Leaguepedia untuk game ini bukan data pertandingan yang valid.",
+              "fetch": "Leaguepedia tidak dapat dibaca. Coba lagi nanti.",
+              "missingConfig": "Login bot Leaguepedia belum diatur di server ini.",
+              "sidesUnresolved": "Kedua tim game ini tidak cocok dengan dua peserta seri.",
+              "missingPlayers": "{count, plural, other {# pemain belum ditautkan ke seseorang}}",
+              "invalidUpload": "Data game tidak lolos pemeriksaan impor.",
+              "storeFailed": "Game tidak dapat disimpan.",
+              "invalidOrder": "Nomor game harus bilangan bulat, 1 atau lebih.",
+              "accountConflict": "Akun Riot sudah ditautkan ke orang lain.",
+              "sidesInvalid": "Pilih dua peserta yang berbeda untuk biru dan merah.",
+              "roleInvalid": "Salah satu role dalam perubahan tidak valid.",
+              "orderTaken": "Game {order} dari seri ini sudah tersimpan dengan data lain. Pilih nomor game lain lalu simpan lagi.",
+              "dataDragonUnavailable": "Nama champion tidak tersedia saat ini, coba lagi nanti.",
+              "unknownChampions": "Champion id tidak dikenal: {ids}",
+              "storageUnavailable": "Bucket impor LoL tidak dapat dijangkau. Periksa konfigurasinya, lalu coba lagi.",
+              "duplicateAccount": "Akun Riot yang sama ditautkan dua kali. Tautkan setiap akun hanya sekali.",
+              "tournamentRealm": "Game ini dimainkan di tournament realm. Ambil dari Leaguepedia sebagai gantinya.",
+              "duplicatePerson": "Dua pemain di game ini ditautkan ke orang yang sama. Tautkan setiap pemain ke orang yang berbeda.",
+              "matchIdMismatch": "Data game yang dimuat bukan pertandingan yang diminta. Tidak ada yang disimpan.",
+              "invalidGame": "Game yang akan diimpor tidak valid. Pilih game Leaguepedia atau ketik ID match Riot."
+            },
+            "searchPlaceholder": "Cari berdasarkan tim, game, atau tanggal",
+            "noResults": "Tidak ada game yang cocok",
+            "previewTitle": "Periksa game",
+            "previewDescription": "Pilih peserta untuk setiap sisi, dan tautkan setiap pemain yang belum ditautkan.",
+            "back": "Kembali",
+            "saveGame": "Simpan game",
+            "sideBlue": "Biru",
+            "sideRed": "Merah",
+            "sidesTitle": "Sisi",
+            "blueSide": "Blue side",
+            "redSide": "Red side",
+            "chooseEntrant": "Pilih peserta",
+            "suggestedPlayers": "Disarankan dari pemain yang ditautkan",
+            "suggestedNames": "Disarankan dari nama tim",
+            "winnerLabel": "Pemenang: {name}",
+            "noWinner": "Tidak ada pemenang",
+            "lengthLabel": "Durasi: {minutes} mnt",
+            "playersTitle": "Pemain",
+            "notLinked": "Belum ditautkan",
+            "linkExisting": "Tautkan yang ada",
+            "createNew": "Buat baru",
+            "newHandle": "Nama orang baru",
+            "unresolvedHint": "Tautkan atau buat orang untuk setiap pemain yang belum ditautkan.",
+            "suggestedPeople": "Saran dari tim:",
+            "realmLive": "live",
+            "realmTournament": "realm turnamen",
+            "accountNote": "Menambahkan akun lain ({realm}, {platform}). {handle} sudah memiliki: {existing}.",
+            "roleLabel": "Role",
+            "roleNone": "Tanpa role",
+            "positionRole": "Posisi di peta menyarankan {role}",
+            "alreadyStoredHere": "tersimpan sebagai game {order} dari seri ini",
+            "alreadyStoredElsewhere": "tersimpan di seri lain",
+            "refreshGames": "Muat ulang daftar game",
+            "refreshCooldown": "Dimuat ulang kurang dari satu jam lalu. Coba lagi nanti.",
+            "refreshed": "Daftar game dimuat ulang ({count} game)",
+            "refreshError": "Daftar game tidak dapat dimuat ulang. Coba lagi nanti.",
+            "riotFetch": "Ambil dari Riot",
+            "riotSuccess": "Game disimpan dari Riot",
+            "riotTournamentRealm": "Game ini dimainkan di tournament realm, jadi tidak dapat diambil dari Riot API."
+          },
+          "lineupButton": "Lineup"
+        },
+        "lineup": {
+          "metaTitle": "Lineup",
+          "backToMatch": "Kembali ke pertandingan",
+          "title": "Lineup game {order}",
+          "description": "Siapa yang memainkan game ini, di lane mana, dan dengan champion apa. Untuk game tanpa data Riot atau Leaguepedia; impor berikutnya akan menggantikannya.",
+          "importedHint": "Game ini punya data Riot atau Leaguepedia, jadi pemainnya berasal dari impor.",
+          "fromPreviousGame": "Diisi dari game sebelumnya dalam seri ini. Periksa pemain, tambahkan champion, lalu simpan.",
+          "withStats": "Tambahkan papan skor",
+          "withStatsHint": "Kill, kematian, asis, dan CS kesepuluh pemain, serta durasi game. Gold, damage, dan vision boleh dikosongkan. Tanpa papan skor, game dihitung untuk jumlah game, persentase menang, dan champion, tetapi tidak untuk rata-rata.",
+          "duration": "Durasi game (m:ss)",
+          "draftPicks": "Dipilih saat draft: {champions}",
+          "player": "Pemain",
+          "pickPlayer": "Pilih pemain",
+          "searchPlayer": "Cari pemain…",
+          "newPlayer": "+ Pemain baru",
+          "newPlayerHandle": "Nama pemain baru",
+          "newPlayerTag": "(baru)",
+          "clearPlayer": "Hapus pemain",
+          "champion": "Champion",
+          "unknownChampion": "Tidak diketahui",
+          "searchChampion": "Cari champion…",
+          "noResults": "Tidak ada hasil.",
+          "stat": {
+            "kills": "Kill",
+            "deaths": "Kematian",
+            "assists": "Asis",
+            "cs": "CS",
+            "gold": "Gold",
+            "damage": "Damage",
+            "vision": "Vision"
+          },
+          "save": "Simpan lineup",
+          "saving": "Menyimpan…",
+          "saved": "Lineup disimpan.",
+          "error": {
+            "invalidInput": "Susunan pemain yang dikirim tidak valid. Muat ulang halaman lalu coba lagi.",
+            "notFound": "Game ini bukan bagian dari pertandingan.",
+            "entrantsUnset": "Kedua tim pertandingan harus ditentukan dulu.",
+            "importedGame": "Game ini punya data Riot atau Leaguepedia; lineup-nya tidak bisa diubah manual.",
+            "unknownPerson": "Salah satu pemain sudah tidak ada.",
+            "problem": {
+              "notAnEntrant": "Seorang pemain ada di tim yang tidak bermain di pertandingan ini.",
+              "invalidLane": "Sebuah lane tidak valid.",
+              "duplicateLane": "{lane} diisi dua kali untuk satu tim.",
+              "duplicatePerson": "Seorang pemain ada dua kali di lineup.",
+              "invalidHandle": "Pemain baru perlu nama.",
+              "unknownChampion": "{championName} bukan champion di patch ini.",
+              "duplicateChampion": "{championName} dipilih dua kali.",
+              "championsUnavailable": "Champion patch ini tidak bisa dimuat. Coba lagi nanti atau biarkan champion kosong.",
+              "invalidStat": "Masukkan bilangan bulat dari 0 sampai {max}.",
+              "durationRequired": "Papan skor membutuhkan durasi game (m:ss).",
+              "playerMissing": "Papan skor membutuhkan pemain di setiap lane kedua tim.",
+              "statMissing": "Dibutuhkan untuk papan skor.",
+              "buildUnavailable": "Summoner spell, rune, dan item patch ini tidak bisa dimuat. Coba lagi nanti atau kosongkan build-nya.",
+              "unknownBuildPart": "Tidak ada di patch ini.",
+              "duplicateSummoner": "Sudah menjadi summoner spell yang lain.",
+              "secondaryTreeOfKeystone": "Ini jalur milik keystone; pilih jalur lain."
+            },
+            "createNotAllowed": "Anda tidak diizinkan membuat pemain. Pilih pemain yang sudah ada."
+          },
+          "build": "Build",
+          "buildSet": "diisi",
+          "buildUnavailable": "Summoner spell, rune, dan item patch ini tidak bisa dimuat. Coba lagi nanti.",
+          "summoner": "Summoner spell {slot}",
+          "keystone": "Keystone",
+          "secondaryTree": "Jalur sekunder",
+          "item": "Item {slot}",
+          "trinket": "Trinket",
+          "empty": "Kosong",
+          "search": "Cari…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4790,8 +5261,39 @@
         "doneDescription": "Impor selesai.",
         "wikicodeLabel": "Wikicode Liquipedia",
         "importingHint": "Mengimpor dan mengambil data Riot, ini dapat memakan waktu.",
-        "close": "Tutup"
-      }
+        "close": "Tutup",
+        "league": {
+          "dialogDescription": "Tempel wikicode match. Game dan draft diisi di tempat yang masih kosong.",
+          "importingHint": "Sedang mengimpor, ini mungkin butuh beberapa saat.",
+          "legend": {
+            "partial": "Game tanpa data pemain atau draft",
+            "done": "Data pemain dan draft di setiap game"
+          }
+        }
+      },
+      "leaguepedia": {
+        "title": "Game Leaguepedia",
+        "description": "Daftar game berasal dari tabel Cargo Leaguepedia, untuk halaman dasar dan setiap halaman di bawahnya.",
+        "basePageLabel": "Halaman dasar Leaguepedia",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "Menyimpan akan membaca game dari Leaguepedia. Jika pembacaan gagal, tidak ada yang disimpan.",
+        "save": "Simpan dan ambil game",
+        "saving": "Mengambil…",
+        "refresh": "Muat ulang dari Leaguepedia",
+        "lastFetched": "Terakhir diambil {date} · {count, plural, other {# game}}",
+        "neverFetched": "Belum diambil",
+        "success": "{count, plural, other {# game}} diambil",
+        "error": {
+          "gameClaimed": "Game ini sudah menjadi milik turnamen lain, jadi tidak dapat ditautkan di sini.",
+          "invalidBasePage": "Gunakan nama halaman tanpa # < > [ ] | '{ }', dan tanpa / di awal atau akhir.",
+          "notFound": "Turnamen tidak ditemukan.",
+          "notLinked": "Simpan halaman dasar terlebih dahulu.",
+          "cooldown": "Daftar game dibaca kurang dari satu jam lalu. Coba lagi nanti.",
+          "missingConfig": "Login bot Leaguepedia belum diatur di server ini.",
+          "fetch": "Leaguepedia tidak dapat dibaca. Coba lagi nanti."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "Laporan",
@@ -5238,6 +5740,9 @@
       "copyOverlay": "Tautan overlay",
       "overlayCopied": "Tautan overlay disalin, tambahkan sebagai sumber browser."
     },
+    "personPicker": {
+      "notInGame": "Belum ada di {game}"
+    },
     "rosterSource": {
       "placeholder": "Tautan pengumuman",
       "error": {
@@ -5483,7 +5988,6 @@
         "staff_change": "Perubahan staf",
         "tryouts": "Tryouts",
         "not_enough_info": "Info belum cukup",
-
         "wrong_game": "Game salah",
         "noise": "Noise",
         "match_promo": "Promo pertandingan",
@@ -5526,7 +6030,6 @@
         "explanation": "Penjelasan",
         "explanationPlaceholder": "Kenapa ini tidak soal roster?",
         "confirm": "Konfirmasi",
-
         "pickTopic": "Ini tentang apa?"
       },
       "reviewed": {
@@ -5996,7 +6499,8 @@
       "level": {
         "tournament": "Turnamen",
         "match": "Pertandingan",
-        "map": "Peta"
+        "map": "Peta",
+        "game": "Game"
       },
       "matchSearchPlaceholder": "Cari pertandingan…",
       "mapSearchPlaceholder": "Cari peta…",
@@ -6015,7 +6519,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "Pertandingan",
       "openMaps": "Peta",
-      "goBack": "Kembali"
+      "goBack": "Kembali",
+      "gameEmpty": "Tidak ada game dalam pertandingan ini.",
+      "gameSearchPlaceholder": "Cari game…",
+      "openGames": "Game"
     },
     "streams": {
       "title": "Kanal siaran",
@@ -6153,8 +6660,14 @@
         "matchNotInTournament": "Pertandingan ini bukan bagian dari turnamen yang dipilih.",
         "mapNotFound": "Peta tidak ditemukan.",
         "mapNotInMatch": "Peta ini bukan bagian dari pertandingan yang dipilih.",
-        "notFound": "VOD tidak ditemukan."
-      }
+        "notFound": "VOD tidak ditemukan.",
+        "gameNotFound": "Game tidak ditemukan.",
+        "gameNotInMatch": "Game ini bukan bagian dari pertandingan yang dipilih."
+      },
+      "scopeGame": "Game tertentu",
+      "gameLabel": "Game",
+      "gamePlaceholder": "Pilih game…",
+      "gameLoading": "Memuat…"
     },
     "apiKeys": {
       "title": "Kunci API",
@@ -7427,7 +7940,8 @@
       "state": {
         "linkedToYou": "Profil ini sudah tertaut ke akun Anda.",
         "linkedToOther": "Profil ini sudah tertaut ke akun lain. Hubungi staf jika Anda merasa ini kesalahan.",
-        "pending": "Anda sudah memiliki permintaan tautan akun yang menunggu tinjauan."
+        "pending": "Anda sudah memiliki permintaan tautan akun yang menunggu tinjauan.",
+        "linkedToAnotherPerson": "Akun Anda sudah tertaut ke pemain lain. Jika kedua profil adalah orang yang sama, minta staf untuk menggabungkannya."
       }
     },
     "error": {
@@ -7458,6 +7972,7 @@
       "invalidType": "Hanya foto JPG, PNG, atau WebP yang diterima.",
       "tooSmall": "Foto ini terlalu kecil (minimal 400 px pada sisi terpendek).",
       "invalidDiscordId": "Masukkan ID pengguna Discord yang valid (17 sampai 20 digit) atau undangan server (discord.gg/...).",
+      "userLinkOtherPerson": "Akun Anda sudah tertaut ke pemain lain. Jika kedua profil adalah orang yang sama, minta staf untuk menggabungkannya.",
       "sourceTooLong": "Tautan ini terlalu panjang (maksimal 500 karakter).",
       "invalidSource": "Opsi ini tidak tersedia di sini.",
       "leftSourceRequiresLeft": "Sumber kepergian mengharuskan anggota ditandai sudah keluar."
@@ -7533,6 +8048,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "Statistik",
     "tabMaps": "Peta",
+    "tabChampions": "Champion",
+    "championsEmpty": "Belum ada game yang dimainkan.",
+    "championsRolesColumn": "Role",
+    "championsRoleBansNote": "Ban dan presence dihitung di semua role.",
+    "championsInsightMostPicked": "Paling sering dipick",
+    "championsInsightMostBanned": "Paling sering diban",
+    "championsInsightHighestPresence": "Presence tertinggi",
+    "championsInsightHighestWinRate": "Win rate tertinggi",
+    "championsInsightHighestKda": "KDA tertinggi",
     "tabProduction": "Produksi",
     "productionTitle": "{tournament} · Produksi",
     "statsGroupByLabel": "Kelompokkan berdasarkan",
@@ -7567,6 +8091,15 @@
     "statsFilterAgentAll": "Semua agen",
     "statsFilterMap": "Peta",
     "statsFilterMapAll": "Semua peta",
+    "statsChampionColumn": "Champion",
+    "statsFilterChampion": "Champion",
+    "statsFilterChampionAll": "Semua champion",
+    "statsFilterChampionSearch": "Cari champion…",
+    "statsFilterChampionNoResult": "Champion tidak ditemukan",
+    "statsFilterRole": "Role",
+    "statsFilterRoleAll": "Semua role",
+    "statsFilterPatch": "Patch",
+    "statsFilterPatchAll": "Semua patch",
     "statsFilterStartDate": "Dari",
     "statsFilterEndDate": "Sampai",
     "statsFilterSubmit": "Terapkan filter",
@@ -7585,6 +8118,22 @@
     "pageOf": "Halaman {page} dari {total}",
     "statsColumns": {
       "played": "Peta",
+      "playedGames": "Game",
+      "winRate": "Win rate",
+      "picks": "Pick",
+      "bans": "Ban",
+      "presence": "Presence",
+      "kp": "KP",
+      "csPerMinute": "CS/mnt",
+      "goldPerMinute": "Gold/mnt",
+      "damagePerMinute": "Damage/mnt",
+      "visionPerMinute": "Vision/mnt",
+      "goldDiff10": "Selisih gold @10",
+      "goldDiff15": "Selisih gold @15",
+      "xpDiff10": "Selisih XP @10",
+      "xpDiff15": "Selisih XP @15",
+      "csDiff10": "Selisih CS @10",
+      "csDiff15": "Selisih CS @15",
       "roundsPlayed": "Ronde",
       "rating": "Rating",
       "acs": "ACS",
@@ -7628,7 +8177,8 @@
     "mapsPickRatesShowMore": "Tampilkan semua",
     "mapsPickRatesShowLess": "Tampilkan lebih sedikit",
     "factOrganizer": "Penyelenggara",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "Game"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7886,7 +8436,8 @@
     "copied": "Tersalin",
     "copyError": "Gambar tidak dapat disalin. Unduh saja.",
     "exporting": "Membuat",
-    "exportError": "Gambar tidak dapat dibuat. Coba lagi."
+    "exportError": "Gambar tidak dapat dibuat. Coba lagi.",
+    "descriptionGames": "Gambar PNG selebar {width} px, siap dibagikan. Pilih semua game atau satu game saja."
   },
   "share": {
     "button": "Bagikan",
@@ -8286,5 +8837,26 @@
       "multikills_4k": "4K",
       "multikills_5k": "5K"
     }
+  },
+  "leaguepediaSource": {
+    "text": "Sebagian data game di halaman ini berasal dari Leaguepedia (CC BY-SA). Lihat halaman aslinya:",
+    "game": "Game {order}"
+  },
+  "lanes": {
+    "TOP": "Top",
+    "JUNGLE": "Jungle",
+    "MIDDLE": "Mid",
+    "BOTTOM": "Bot",
+    "UTILITY": "Support",
+    "label": "Lane",
+    "fromGames": "Dari game:",
+    "invalid": "Hanya kelima lane yang dapat dipilih."
+  },
+  "game": {
+    "switcherLabel": "Game",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "Belum publik",
+    "previewBanner": "{game} belum publik. Hanya admin yang dapat melihat halaman ini."
   }
 }

@@ -11,7 +11,8 @@
 
 import { count } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { users, teams, tournaments, people, matches } from "@gc-stats/db";
+import { users, gameTables } from "@gc-stats/db";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type DashboardCounts = {
   users: number;
@@ -22,7 +23,8 @@ export type DashboardCounts = {
 };
 
 /** Same 4 core counts as V1's admin dashboard (tournaments/teams/players/matches), plus V2's own `users` card. */
-export async function getDashboardCounts(): Promise<DashboardCounts> {
+export async function getDashboardCounts(game: GameSlug): Promise<DashboardCounts> {
+  const { teams, tournaments, people, matches } = gameTables(game);
   const [[u], [t], [tr], [p], [m]] = await Promise.all([
     db.select({ value: count() }).from(users),
     db.select({ value: count() }).from(teams),

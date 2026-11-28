@@ -13,7 +13,7 @@
 
 import { and, eq, inArray } from "drizzle-orm";
 import { adminDb as db } from "@gc-stats/db/client";
-import { streamChannels, matchStreams, matches, stageContainers, stages, newsLanguages, ORGANIZATION_PERMISSIONS } from "@gc-stats/db";
+import { newsLanguages, ORGANIZATION_PERMISSIONS, gameTables } from "@gc-stats/db";
 import { requireDashboardOrgActorPermission } from "@/lib/dashboard-rbac";
 import { isValidUrl } from "@/lib/admin-validation";
 import { STREAM_PLATFORMS, STREAM_CHANNEL_TYPES } from "@/lib/stream-platforms";
@@ -21,6 +21,7 @@ import { searchTournamentsQuery, type TournamentPickerResult } from "@/lib/tourn
 import { logActivity, diffChanges } from "@/lib/activity-log";
 import { getOrganizationTeamIds, filterMatchIdsInvolvingTeams, getTournamentIdsOfTeams } from "@/lib/organization-team-link";
 import { getMatchTournamentId, getTournamentMatchOptionsForCredit, type CreditMatchOption } from "@/lib/production-credits-data";
+import type { GameSlug } from "@gc-stats/db/game";
 
 export type { CreditMatchOption } from "@/lib/production-credits-data";
 
@@ -55,7 +56,8 @@ async function validateChannelInput(input: StreamChannelInput): Promise<{ fieldE
 
 export type StreamChannelResult = { ok: true; id: number } | { ok: false; fieldErrors: StreamChannelFieldErrors };
 
-export async function createStreamChannel(organizationId: number, input: StreamChannelInput): Promise<StreamChannelResult> {
+export async function createStreamChannel(game: GameSlug, organizationId: number, input: StreamChannelInput): Promise<StreamChannelResult> {
+  const { streamChannels } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
 
   const { fieldErrors, name } = await validateChannelInput(input);
@@ -75,7 +77,8 @@ export async function createStreamChannel(organizationId: number, input: StreamC
 
 export type UpdateStreamChannelResult = { ok: true } | { ok: false; fieldErrors: StreamChannelFieldErrors; error?: "notFound" };
 
-export async function updateStreamChannel(organizationId: number, channelId: number, input: StreamChannelInput): Promise<UpdateStreamChannelResult> {
+export async function updateStreamChannel(game: GameSlug, organizationId: number, channelId: number, input: StreamChannelInput): Promise<UpdateStreamChannelResult> {
+  const { streamChannels } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsEdit);
 
   const [existing] = await db.select().from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
@@ -97,7 +100,8 @@ export async function updateStreamChannel(organizationId: number, channelId: num
 
 export type DeleteStreamChannelResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function deleteStreamChannel(organizationId: number, channelId: number): Promise<DeleteStreamChannelResult> {
+export async function deleteStreamChannel(game: GameSlug, organizationId: number, channelId: number): Promise<DeleteStreamChannelResult> {
+  const { streamChannels } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsDelete);
 
   const [existing] = await db.select({ organizationId: streamChannels.organizationId, name: streamChannels.name }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
@@ -111,35 +115,36 @@ export async function deleteStreamChannel(organizationId: number, channelId: num
 }
 
 /** Same search as the production-credits tournament picker, gated by this organization's streamsLink permission instead. */
-export async function searchTournamentsForStreamLink(organizationId: number, query: string): Promise<TournamentPickerResult[]> {
+export async function searchTournamentsForStreamLink(game: GameSlug, organizationId: number, query: string): Promise<TournamentPickerResult[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
-  const teamIds = await getOrganizationTeamIds(organizationId);
-  return searchTournamentsQuery(query, teamIds.length > 0 ? { onlyTournamentIds: await getTournamentIdsOfTeams(teamIds) } : {});
+  const teamIds = await getOrganizationTeamIds(game, organizationId);
+  return searchTournamentsQuery(game, query, teamIds.length > 0 ? { onlyTournamentIds: await getTournamentIdsOfTeams(game, teamIds) } : {});
 }
 
-export async function getMatchOptionsForStreamLink(organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
+export async function getMatchOptionsForStreamLink(game: GameSlug, organizationId: number, tournamentId: number): Promise<CreditMatchOption[]> {
   await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
-  const options = await getTournamentMatchOptionsForCredit(tournamentId);
-  const teamIds = await getOrganizationTeamIds(organizationId);
+  const options = await getTournamentMatchOptionsForCredit(game, tournamentId);
+  const teamIds = await getOrganizationTeamIds(game, organizationId);
   if (teamIds.length === 0) return options;
-  const allowed = await filterMatchIdsInvolvingTeams(options.map((o) => o.id), teamIds);
+  const allowed = await filterMatchIdsInvolvingTeams(game, options.map((o) => o.id), teamIds);
   return options.filter((o) => allowed.has(o.id));
 }
 
 export type LinkStreamResult = { ok: true } | { ok: false; error: "channelNotFound" | "matchNotFound" | "matchNotInTournament" | "matchNotInTeams" | "alreadyLinked" };
 
-export async function linkStreamChannelToMatch(organizationId: number, channelId: number, tournamentId: number, matchId: number): Promise<LinkStreamResult> {
+export async function linkStreamChannelToMatch(game: GameSlug, organizationId: number, channelId: number, tournamentId: number, matchId: number): Promise<LinkStreamResult> {
+  const { streamChannels, matchStreams } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
   if (!channel || channel.organizationId !== organizationId) return { ok: false, error: "channelNotFound" };
 
-  const matchTournamentId = await getMatchTournamentId(matchId);
+  const matchTournamentId = await getMatchTournamentId(game, matchId);
   if (matchTournamentId === null) return { ok: false, error: "matchNotFound" };
   if (matchTournamentId !== tournamentId) return { ok: false, error: "matchNotInTournament" };
 
-  const teamIds = await getOrganizationTeamIds(organizationId);
-  if (teamIds.length > 0 && !(await filterMatchIdsInvolvingTeams([matchId], teamIds)).has(matchId)) return { ok: false, error: "matchNotInTeams" };
+  const teamIds = await getOrganizationTeamIds(game, organizationId);
+  if (teamIds.length > 0 && !(await filterMatchIdsInvolvingTeams(game, [matchId], teamIds)).has(matchId)) return { ok: false, error: "matchNotInTeams" };
 
   const [existing] = await db.select().from(matchStreams).where(and(eq(matchStreams.matchId, matchId), eq(matchStreams.streamChannelId, channelId))).limit(1);
   if (existing) return { ok: false, error: "alreadyLinked" };
@@ -162,7 +167,8 @@ export type LinkManyStreamResult = { ok: true; linked: number; alreadyLinked: nu
  * tournament, since the caller only ever passes matchIds it already fetched
  * for this exact tournament.
  */
-export async function linkStreamChannelToMatches(organizationId: number, channelId: number, tournamentId: number, matchIds: number[]): Promise<LinkManyStreamResult> {
+export async function linkStreamChannelToMatches(game: GameSlug, organizationId: number, channelId: number, tournamentId: number, matchIds: number[]): Promise<LinkManyStreamResult> {
+  const { streamChannels, matchStreams, matches, stageContainers, stages } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);
@@ -177,12 +183,12 @@ export async function linkStreamChannelToMatches(organizationId: number, channel
       .innerJoin(stageContainers, eq(stageContainers.id, matches.containerId))
       .innerJoin(stages, eq(stages.id, stageContainers.stageId))
       .where(and(inArray(matches.id, matchIds), eq(stages.tournamentId, tournamentId))),
-    getOrganizationTeamIds(organizationId),
+    getOrganizationTeamIds(game, organizationId),
   ]);
   const tournamentMatchIds = tournamentMatchRows.map((r) => r.matchId);
   let inTournament = new Set(tournamentMatchIds);
   if (teamIds.length > 0) {
-    inTournament = await filterMatchIdsInvolvingTeams(tournamentMatchIds, teamIds);
+    inTournament = await filterMatchIdsInvolvingTeams(game, tournamentMatchIds, teamIds);
     if (inTournament.size < tournamentMatchIds.length) return { ok: false, error: "matchNotInTeams" };
   }
 
@@ -207,7 +213,8 @@ export async function linkStreamChannelToMatches(organizationId: number, channel
 
 export type UnlinkStreamResult = { ok: true } | { ok: false; error: "notFound" };
 
-export async function unlinkStreamChannelFromMatch(organizationId: number, channelId: number, matchId: number): Promise<UnlinkStreamResult> {
+export async function unlinkStreamChannelFromMatch(game: GameSlug, organizationId: number, channelId: number, matchId: number): Promise<UnlinkStreamResult> {
+  const { streamChannels, matchStreams } = gameTables(game);
   const { userId: actorUserId } = await requireDashboardOrgActorPermission(organizationId, ORGANIZATION_PERMISSIONS.streamsLink);
 
   const [channel] = await db.select({ organizationId: streamChannels.organizationId }).from(streamChannels).where(eq(streamChannels.id, channelId)).limit(1);

@@ -6,8 +6,8 @@
     "home": "홈",
     "matches": "경기",
     "tournaments": "대회",
-    "news": "뉴스",
     "calendar": "일정",
+    "news": "뉴스",
     "forum": "포럼",
     "about": "소개",
     "search": "검색",
@@ -730,7 +730,7 @@
     "intro": "GC Stats에 접속하거나 이용함으로써 회원님은 본 이용약관에 동의하는 것으로 간주돼요. 플랫폼을 이용하기 전에 주의 깊게 읽어 주세요.",
     "service": {
       "title": "서비스 소개",
-      "text": "GC Stats는 Valorant Game Changers 대회 및 관련 행사의 경쟁 데이터를 기록하고 공유하는 커뮤니티 플랫폼이에요. 본 서비스는 대회 결과, 선수 통계, 팀 정보, 경기 데이터에 대한 접근을 제공해요. GC Stats는 Riot Games와 제휴, 후원, 공식적인 관계가 없어요."
+      "text": "GC Stats는 Game Changers 대회 및 관련 행사의 경쟁 데이터를 기록하고 공유하는 커뮤니티 플랫폼이에요. 본 서비스는 대회 결과, 선수 통계, 팀 정보, 경기 데이터에 대한 접근을 제공해요. GC Stats는 Riot Games와 제휴, 후원, 공식적인 관계가 없어요."
     },
     "access": {
       "title": "접근 및 이용 자격",
@@ -738,11 +738,11 @@
     },
     "riotData": {
       "title": "Riot 경기 데이터",
-      "text": "GC Stats는 추적 대상 대회의 일부로 확인된 경기에 대해 Riot Games 공식 API에서 직접 경기 통계를 가져와요. 여기에는 다음이 포함돼요.",
+      "text": "GC Stats는 추적 대상 대회의 일부로 확인된 경기에 대해 Riot Games 공식 API에서 직접 경기 통계를 가져와요. League of Legends는 통계를 Leaguepedia에서 가져오거나, 저희 팀이 직접 입력하기도 해요. 여기에는 다음이 포함돼요.",
       "items": [
         "참가 선수의 Riot ID (게임 이름 및 태그라인)",
         "추적 대상 대회의 일부로 확인된 경기의 전적",
-        "경기 내 통계 (스코어보드, 퍼포먼스 요약, 경제 요약, 킬 피드)"
+        "경기 내 통계: 스코어보드, 퍼포먼스 요약 등"
       ],
       "optIn": "이는 공개된 경쟁 데이터이므로, 추적 대상 대회 경기에 등장하는 모든 선수의 기본 경기 참여 정보(이름, 통계)가 기록돼요. 추가 프로필 정보(자기소개, 소셜 링크, 사진)는 선수 또는 팀의 동의가 있을 때만 추가돼요.",
       "correction": "본 데이터에 등장하는 선수로서 정정이나 삭제를 요청하고 싶다면 언제든지 문의해 주세요 (자세한 내용은 개인정보처리방침을 참고해 주세요)."
@@ -761,7 +761,7 @@
     },
     "api": {
       "title": "API 이용",
-      "text": "GC Stats는 커뮤니티 및 GC 관련 프로젝트를 위한 공개 API를 제공해요. API 이용은 본 약관의 적용을 받아요. 이 API는 정보 제공, 분석, 커뮤니티 목적을 위한 것이에요. 요청 제한이 적용될 수 있어요. GC Stats는 본 약관이나 Riot Games의 개발자 정책을 위반하는 모든 이용에 대해 API 접근을 취소할 권리를 가져요."
+      "text": "GC Stats는 커뮤니티 및 GC 관련 프로젝트를 위한 공개 API를 제공해요. 현재는 VALORANT만 지원하며, League of Legends는 나중에 추가될 예정이에요. API 이용은 본 약관의 적용을 받아요. 이 API는 정보 제공, 분석, 커뮤니티 목적을 위한 것이에요. 요청 제한이 적용될 수 있어요. GC Stats는 본 약관이나 Riot Games의 개발자 정책을 위반하는 모든 이용에 대해 API 접근을 취소할 권리를 가져요."
     },
     "ip": {
       "title": "지적 재산권",
@@ -792,12 +792,12 @@
     },
     "publicData": {
       "title": "공개 데이터",
-      "text": "프로필 정보(닉네임, 소개, SNS, 국가)는 선수 본인이나 소속 조직이 제공하거나, 저희 팀이 공개 자료를 바탕으로 추가하며, 사이트에 공개적으로 표시됩니다. 게임 통계는 다루는 대회의 경기에 대해 Riot Games 공식 API에서 직접 수집됩니다. 이 모든 데이터는 공개되어 있으며 API로 공유됩니다."
+      "text": "프로필 정보(닉네임, 소개, SNS, 국가)는 선수 본인이나 소속 조직이 제공하거나, 저희 팀이 공개 자료를 바탕으로 추가하며, 사이트에 공개적으로 표시됩니다. 게임 통계는 다루는 대회의 경기에 대해 Riot Games 공식 API에서 직접 수집됩니다. League of Legends는 Leaguepedia(CC BY-SA 라이선스)에서 가져오거나, 다른 데이터가 없으면 저희 팀이 방송을 보고 직접 입력하기도 합니다. 이 모든 데이터는 공개되어 있으며 API로 공유됩니다."
     },
     "privateData": {
       "title": "비공개 데이터",
-      "text": "저희가 저장하는 개인 데이터는 사이트와 계정 시스템 운영에 필요한 최소한의 정보로 제한돼요. 선수 프로필 연동을 위한 Riot ID, 그리고 사용자 계정을 생성하는 모든 회원에 대해 아래에 설명된 계정 데이터예요.",
-      "riotUsage": "Riot ID: Riot Games 공식 API를 통해 가져온 경기 데이터를 바탕으로 저희 팀이 확인하고 부여해요. 경기 통계를 선수 프로필과 연결하는 목적으로만 사용되며, 요청 시 정정하거나 삭제할 수 있어요."
+      "text": "저희가 저장하는 개인 데이터는 사이트와 계정 시스템 운영에 필요한 최소한의 정보로 제한돼요. 경기 통계를 선수 프로필과 연결하기 위한 선수의 Riot 계정, 그리고 사용자 계정을 생성하는 모든 회원에 대해 아래에 설명된 계정 데이터예요.",
+      "riotUsage": "Riot 계정: Riot ID는 Riot Games 공식 API나 Leaguepedia에서 가져온 경기 데이터를 바탕으로 저희 팀이 확인해 지정하거나, 경기 방송만 있을 때는 직접 입력해요. League of Legends는 각 계정의 Riot PUUID, 서버와 지역, 추적 대상 경기에서 마지막으로 확인된 날짜도 저장해요. 경기 통계를 선수 프로필과 연결하는 용도로만 사용해요. 요청 시 수정하거나 삭제할 수 있어요."
     },
     "accountData": {
       "title": "사용자 계정",
@@ -1332,19 +1332,19 @@
           "hidden": {
             "label": "표시되지 않음",
             "items": [
-              "Riot ID(경기 통계를 올바른 프로필에 연결하는 용도로만 사용)"
+              "Riot 계정. 경기 통계를 올바른 프로필에 연결하는 데만 사용"
             ]
           }
         },
-        "source": "본인 또는 소속 조직, 공개 자료(Liquipedia, 공식 발표)를 바탕으로 한 저희 팀, 또는 저희 팀이 승인한 커뮤니티 제안. Riot ID는 Riot Games 공식 API에서 가져옵니다.",
-        "visibility": "Riot ID를 제외하고 누구나(사이트와 API).",
+        "source": "본인 또는 소속 조직, 공개 자료(Liquipedia, 공식 발표)를 바탕으로 한 저희 팀, 또는 저희 팀이 승인한 커뮤니티 제안. Riot 계정은 Riot Games 공식 API나 Leaguepedia에서 가져오거나 저희 팀이 입력합니다.",
+        "visibility": "Riot 계정을 제외하고 누구나(사이트와 API).",
         "retention": "씬의 기록으로 영구 보관되며, 선수가 은퇴한 후에도 마찬가지입니다. 수정이나 삭제를 요청할 수 있습니다."
       },
       "matchStats": {
         "title": "경기 통계",
         "groups": {
           "stats": {
-            "label": "각 경기마다",
+            "label": "플레이한 VALORANT 경기마다",
             "items": [
               "플레이한 요원",
               "킬, 데스, 어시스트",
@@ -1352,9 +1352,20 @@
               "경제와 장비",
               "맵 위의 위치"
             ]
+          },
+          "league": {
+            "label": "플레이한 League of Legends 게임마다",
+            "items": [
+              "챔피언, 라인, 소환사 주문, 룬",
+              "킬, 데스, 어시스트",
+              "CS, 골드, 피해량, 시야 점수",
+              "아이템",
+              "10분과 15분 시점 맞라이너 대비 골드, 경험치, CS",
+              "맵 위 위치와 게임 내 이벤트(킬, 오브젝트, 와드)"
+            ]
           }
         },
-        "source": "저희가 다루는 대회의 경기에 대해 Riot Games 공식 API에서 가져옵니다.",
+        "source": "저희가 다루는 대회 경기에 대해서는 Riot Games 공식 API. League of Legends는 Leaguepedia도 포함되며, 다른 데이터가 없으면 저희 팀이 방송을 보고 직접 입력해요.",
         "visibility": "누구나(사이트와 API).",
         "retention": "대회의 역사 기록으로 보관됩니다."
       },
@@ -1634,7 +1645,21 @@
     "productionTitle": "{player} · 프로덕션",
     "formerOrganizations": "이전 소속 단체",
     "noFormerOrganizations": "기록된 이전 소속 단체가 없어요.",
-    "unknownDate": "알 수 없음"
+    "unknownDate": "알 수 없음",
+    "addGameProfile": {
+      "title": "{game}에서도 활동하시나요?",
+      "description": "한 번의 클릭으로 {game} 프로필을 추가하세요. 이름, 사진, 링크를 그대로 사용하므로 다시 입력할 필요가 없습니다.",
+      "button": "내 {game} 프로필 추가",
+      "adding": "추가 중...",
+      "done": "{game} 프로필이 준비되었습니다.",
+      "open": "내 {game} 프로필 보기",
+      "error": {
+        "unauthenticated": "로그인이 필요합니다.",
+        "notYours": "이 선수는 회원님의 계정에 연결되어 있지 않습니다.",
+        "invalidGame": "존재하지 않는 게임입니다."
+      }
+    },
+    "alsoOn": "{game}에서도 활동"
   },
   "organizationPage": {
     "tabOverview": "개요",
@@ -1688,7 +1713,9 @@
       "recruitmentManager": "채용 매니저",
       "developer": "개발자",
       "volunteer": "자원봉사자",
+      "headOfEsports": "e스포츠 총괄",
       "headOfValorant": "발로란트 총괄",
+      "headOfLeague": "League of Legends 총괄",
       "streamer": "스트리머"
     },
     "unknownDate": "알 수 없음",
@@ -1794,7 +1821,27 @@
     "teamTbd": "TBD",
     "teamBye": "BYE",
     "discussion": "토론",
-    "watchparty": "워치파티"
+    "watchparty": "워치파티",
+    "vodGame": "게임 {n} VOD",
+    "games": "게임",
+    "gameTab": "게임 {order}",
+    "noGames": "아직 기록된 게임이 없습니다.",
+    "noGameData": "이 게임의 데이터가 없습니다",
+    "duration": "경기 시간",
+    "forfeit": "기권",
+    "towers": "포탑",
+    "inhibitors": "억제기",
+    "dragons": "드래곤",
+    "barons": "바론",
+    "heralds": "전령",
+    "grubs": "공허 유충",
+    "draftNotSet": "이 게임의 밴픽 기록이 없습니다.",
+    "ban": "밴",
+    "pick": "픽",
+    "unplacedPicks": "배치되지 않은 픽",
+    "colChampion": "챔피언",
+    "allGames": "모든 게임",
+    "draft": "드래프트"
   },
   "footer": {
     "tagline": "모든 공식 Game Changers 대회를 한곳에서 만나보세요.",
@@ -2095,7 +2142,8 @@
       "error": {
         "userNotFound": "사용자를 찾을 수 없습니다.",
         "roleNotFound": "선택한 역할 중 하나가 더 이상 존재하지 않습니다.",
-        "selfDemote": "자신의 관리자 권한은 제거할 수 없습니다."
+        "selfDemote": "자신의 관리자 권한은 제거할 수 없습니다.",
+        "gameNotFound": "존재하지 않는 게임입니다."
       },
       "authMethods": {
         "heading": "인증",
@@ -2352,7 +2400,9 @@
           "recruitmentManager": "채용 매니저",
           "developer": "개발자",
           "volunteer": "자원봉사자",
+          "headOfEsports": "e스포츠 총괄",
           "headOfValorant": "발로란트 총괄",
+          "headOfLeague": "League of Legends 총괄",
           "streamer": "스트리머"
         },
         "error": {
@@ -2376,7 +2426,8 @@
           "ownerOnly": "소유자 역할은 소유자만 부여하거나 수정할 수 있습니다.",
           "userNotFound": "계정을 찾을 수 없습니다.",
           "alreadyHasAccess": "이 계정은 이미 이 단체에 대한 접근 권한을 가지고 있습니다."
-        }
+        },
+        "fieldGames": "게임"
       },
       "filterKindLabel": "조직 유형",
       "filterKindAll": "모든 조직",
@@ -2387,6 +2438,7 @@
       "title": "팀",
       "subtitle": "팀 프로필과 로스터를 관리합니다.",
       "searchPlaceholder": "이름, ID 또는 VLR ID…",
+      "searchPlaceholderLol": "이름 또는 ID…",
       "searchSubmit": "검색",
       "activeWithinLabel": "최근 활동",
       "activeWithinAny": "전체 기간",
@@ -2605,6 +2657,7 @@
       "title": "선수",
       "subtitle": "프로필과 소속 팀을 관리합니다.",
       "searchPlaceholder": "핸들, ID 또는 VLR ID…",
+      "searchPlaceholderLol": "핸들, ID 또는 Riot ID…",
       "searchSubmit": "검색",
       "activeWithinLabel": "최근 활동",
       "activeWithinAny": "전체 기간",
@@ -2772,11 +2825,45 @@
           "requiresLeft": "탈퇴일을 입력하려면 '팀을 떠남'을 체크하세요."
         },
         "fieldDiscordId": "Discord",
-        "discordIdHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크."
+        "discordIdHint": "Discord 사용자 ID(개발자 모드, 프로필 우클릭, 사용자 ID 복사) 또는 서버 초대 링크.",
+        "sectionRiotAccounts": "Riot 계정",
+        "riotAccountsHint": "선수가 플레이하는 League of Legends 계정입니다. 가져온 게임은 이 계정으로 선수에게 연결됩니다.",
+        "riotAccountsEmpty": "아직 Riot 계정이 없습니다. 게임을 가져올 때 또는 여기서 추가됩니다.",
+        "riotAccountLive": "라이브",
+        "riotAccountTournament": "토너먼트 렐름",
+        "riotAccountSourceAdmin": "수동으로 추가됨",
+        "riotAccountLastSeen": "마지막 확인 <date></date>",
+        "riotAccountIdLabel": "Riot ID",
+        "riotAccountRegionLabel": "지역",
+        "riotAccountAdd": "계정 추가",
+        "riotAccountAdding": "추가 중…",
+        "riotAccountAdded": "Riot 계정을 추가했습니다.",
+        "riotAccountRemoved": "Riot 계정을 제거했습니다.",
+        "riotAccountRemove": "제거",
+        "riotAccountRemoveTitle": "이 Riot 계정을 제거할까요?",
+        "riotAccountRemoveDescription": "{riotId}은(는) 더 이상 {handle}에 연결되지 않습니다. 이미 가져온 게임은 선수에게 남습니다.",
+        "riotAccountErrorHeldByOther": "이 Riot 계정은 이미 {handle}의 것입니다.",
+        "riotAccountErrorAlreadyOnPlayer": "이 선수는 이미 이 Riot 계정을 가지고 있습니다.",
+        "riotAccountErrorGeneric": "Riot 계정을 변경할 수 없습니다.",
+        "sectionGames": "게임",
+        "gamesHint": "한 사람에 게임별 프로필 하나. 이름, 국가, 대명사, 소개, 별칭, SNS, 사진, 연결된 계정은 공유되고 나머지는 게임별로 관리됩니다.",
+        "sharedHint": "이름, 국가, 대명사, 소개, 별칭, SNS, 사진은 이 사람의 다른 게임과 공유됩니다.",
+        "gameCurrent": "현재 게임",
+        "gameHasProfile": "프로필 있음",
+        "gameNoProfile": "아직 프로필 없음",
+        "gameOpen": "열기",
+        "gameAddButton": "{game}에 추가",
+        "gameAdding": "추가 중...",
+        "gameAddSuccess": "{game}에 추가했습니다.",
+        "gameAddError": {
+          "invalidGame": "존재하지 않는 게임입니다.",
+          "notFound": "이 선수는 더 이상 존재하지 않습니다.",
+          "alreadyThere": "이 선수는 이미 이 게임의 프로필이 있습니다."
+        }
       },
       "merge": {
         "title": "선수 병합",
-        "description": "병합 대상 선수를 선택하고, 항목별로 {name}의 데이터 중 어떤 것을 옮길지 정확히 선택하세요. {name} 자체는 이 과정에서 삭제되지 않습니다.",
+        "description": "병합 대상 선수를 선택하고, 항목별로 {name}의 데이터 중 어떤 것을 옮길지 정확히 선택하세요.",
         "backToPlayer": "← 선수로 돌아가기",
         "selectTarget": "병합 대상",
         "targetPlaceholder": "선수 선택…",
@@ -2787,13 +2874,17 @@
           "organizations": "단체 활동 이력",
           "production": "제작 활동 이력",
           "matchStats": "경기 참가 기록",
+          "gameStats": "게임 참가 기록",
           "news": "뉴스",
           "logos": "로고",
+          "riotAccounts": "Riot 계정 ({count})",
           "linkedAccount": "연동된 계정"
         },
         "matchStatsHint": "각 맵의 라운드별 데이터(킬, 데미지, 포지션)도 함께 이동됩니다. 대회 참가자에 고정된 로스터 크레딧은 해당 참가자의 모든 맵이 선택된 경우에만 이동됩니다.",
+        "gameStatsHint": "각 게임의 프레임과 이벤트(킬, 오브젝트, 와드)도 함께 옮깁니다. 대회 참가 팀의 잠긴 로스터 크레딧은 해당 참가 팀의 모든 게임을 선택했을 때만 옮겨집니다.",
         "periodOngoing": "{since}부터",
         "periodRange": "{since} → {until}",
+        "riotAccountsHint": "Riot 계정은 유지하는 선수에게 이동하여 그 선수의 게임이 계속 연결됩니다.",
         "linkedAccountHint": "현재 이 선수와 연동된 계정을 이전합니다. 계정이 연동되어 있고 대상 선수에게 연동된 계정이 없는 경우에만 표시됩니다.",
         "nothingToMove": "이 선수에게는 아직 이동할 항목이 없습니다.",
         "confirm": "선택한 항목을 {source}에서 {target}(으)로 병합하시겠습니까? 이 작업은 자동으로 되돌릴 수 없습니다.",
@@ -2808,8 +2899,40 @@
           "samePlayer": "병합 대상으로 다른 선수를 선택하세요.",
           "sourceNotFound": "선수를 찾을 수 없습니다.",
           "targetNotFound": "대상 선수를 찾을 수 없습니다.",
-          "targetAlreadyLinked": "대상 선수에게 이미 연동된 계정이 있습니다."
-        }
+          "targetAlreadyLinked": "대상 선수에게 이미 연동된 계정이 있습니다.",
+          "sourceStillUsed": "이 선수는 아직 이 게임의 참가자 또는 경기 통계에서 사용 중입니다. 해당 항목도 선택하거나 프로필을 유지하세요.",
+          "otherGame": "대상 선수가 관리 권한이 있는 게임에 속해 있지 않아 연결된 계정을 옮길 수 없습니다.",
+          "sourceHasData": "선수를 제거하면 데이터가 사라지므로 병합하지 않았습니다: {items}. 해당 항목도 선택하거나(충돌로 건너뛴 항목은 먼저 삭제해야 합니다) 프로필을 유지하세요."
+        },
+        "removeSource": "병합 후 {game}에서 제거",
+        "removeSourceHint": "{name}은(는) 이 게임에서 제거되며, 다른 게임에 이 프로필이 없으면 완전히 삭제됩니다. 옮길 데이터가 남아 있거나 참가 정보나 경기 통계에서 사용 중이면 거부됩니다. Liquipedia 이름, 확정된 로스터 기록, 경기 방송은 병합 대상으로 함께 옮겨집니다."
+      },
+      "duplicatesLink": "중복 가능성",
+      "duplicates": {
+        "title": "중복 가능성",
+        "description": "같은 핸들을 쓰며 각각 다른 게임에 존재하는 사람들입니다. {game} 프로필을 다른 쪽에 병합하면 프로필이 하나로 유지됩니다.",
+        "backToList": "선수 목록으로 돌아가기",
+        "columnSource": "{game}에서",
+        "columnTarget": "다른 프로필",
+        "merge": "병합",
+        "empty": "중복이 없습니다."
+      }
+    },
+    "riotAccounts": {
+      "error": {
+        "riotIdInvalid": "{riotId}은(는) Riot ID(이름#태그)가 아닙니다.",
+        "riotIdNotFound": "{riotId}라는 이름의 Riot 계정이 없습니다.",
+        "relayNotConfigured": "이 서버에는 Riot 릴레이가 설정되어 있지 않습니다.",
+        "relayUnauthorized": "릴레이가 자격 증명을 거부했습니다. RIOT_RELAY_TOKEN을 확인하세요.",
+        "riotKeyRejected": "Riot이 릴레이의 League of Legends API 키를 거부했습니다. 만료되었거나 잘못되었을 수 있습니다(릴레이의 LOL_RIOT_API_KEY를 확인하세요).",
+        "relayLeagueUnavailable": "릴레이에 League of Legends API 키가 설정되어 있지 않거나 캐시 데이터베이스를 사용할 수 없습니다. 릴레이의 LOL_RIOT_API_KEY와 데이터베이스를 확인하세요.",
+        "routeUnavailable": "릴레이에 이 검색에 필요한 League 경로가 없습니다. 릴레이를 업데이트하세요.",
+        "relayUnreachable": "Riot 릴레이에 연결할 수 없습니다. 실행 중인지, RIOT_RELAY_URL이 올바른지 확인하세요.",
+        "riotUnavailable": "지금은 Riot 데이터를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+        "rateLimited": "Riot이 이 키의 요청을 제한하고 있습니다. 1분 후 다시 시도하세요.",
+        "rateLimitedIn": "Riot이 이 키의 요청을 제한하고 있습니다. {seconds}초 후 다시 시도하세요.",
+        "invalidRequest": "릴레이가 잘못된 요청으로 거부했습니다. Riot ID, 지역, 기간을 확인하세요.",
+        "notFound": "Riot에 이 요청에 대한 데이터가 없습니다. 계정이나 경기가 없거나 이 지역에 없습니다."
       }
     },
     "finance": {
@@ -3385,11 +3508,13 @@
           "entityNotFound": "참조된 팀 또는 선수가 더 이상 존재하지 않습니다.",
           "membershipNotFound": "로스터 항목이 더 이상 존재하지 않습니다.",
           "invalidRole": "역할이 더 이상 유효하지 않습니다.",
+          "invalidLane": "유효하지 않은 라인이 있습니다.",
           "logoNotFound": "로고 항목이 더 이상 존재하지 않습니다.",
           "alreadyLinked": "이 선수는 이미 다른 계정에 연동되어 있습니다.",
           "unknownField": "지원하지 않는 필드입니다.",
           "unknown": "알 수 없는 오류입니다.",
-          "invalidSource": "출처 링크가 더 이상 유효하지 않습니다."
+          "invalidSource": "출처 링크가 더 이상 유효하지 않습니다.",
+          "otherGame": "이전에 연결된 선수가 관리 권한이 있는 게임에 속해 있지 않습니다."
         },
         "oldValue": "현재",
         "newValue": "제안됨",
@@ -3574,10 +3699,6 @@
       "subtitle": "토너먼트와 그 스테이지, 브래킷, 참가팀을 생성하고 관리합니다.",
       "searchPlaceholder": "토너먼트 이름…",
       "searchSubmit": "검색",
-      "activeFilterLabel": "활동",
-      "activeFilterAny": "모든 대회",
-      "activeFilterActive": "활성",
-      "activeFilterInactive": "비활성",
       "heading": "토너먼트",
       "statTotal": "전체 토너먼트",
       "columnName": "이름",
@@ -3829,6 +3950,14 @@
         "fieldEliminateAtLossesHint": "패배 횟수 기준입니다. 임계값 없는 자유 형식 Swiss로 두려면 비워 두세요.",
         "fieldMaxRounds": "최대 라운드 수",
         "openEditorButton": "브래킷 에디터 열기",
+        "assignEntrantsButton": "참가팀 관리",
+        "assignEntrantsTitle": "그룹 참가팀",
+        "assignEntrantsDescription": "이 Swiss 그룹에 포함할 토너먼트 참가팀을 선택하세요.",
+        "assignEntrantsEmpty": "이 토너먼트에 참가팀이 없습니다.",
+        "assignEntrantsInGroup": "{name} 소속",
+        "assignEntrantsSuccess": "참가팀이 수정되었습니다.",
+        "startSwissButton": "1라운드 시작",
+        "startSwissSuccess": "1라운드가 생성되었습니다.",
         "addMatchButton": "경기 추가",
         "addMatchTitle": "{name}에 경기 추가",
         "addMatchDescription": "그룹이 이미 시작되었더라도 선택한 라운드에 경기가 추가됩니다. 팀은 TBD로 두었다가 나중에 경기 페이지에서 배정할 수 있습니다.",
@@ -3905,6 +4034,7 @@
           "invalidDate": "Invalid date.",
           "noMatches": "Add at least one match.",
           "tooManyMatches": "You can add 500 matches at most at once.",
+          "roundRobinOnly": "라운드 로빈 그룹만 스테이지 전체 경기를 집계할 수 있습니다.",
           "cannotMove": "이 컨테이너는 더 이상 이동할 수 없습니다.",
           "parentInvalid": "이 세트는 여기에서 사용할 수 없습니다.",
           "tiebreakersInvalid": "제시된 목록에서 각 타이브레이커를 한 번만 사용하세요.",
@@ -3921,9 +4051,11 @@
             "points": "포인트",
             "buchholz": "Buchholz",
             "map_diff": "맵 득실",
+            "game_diff": "게임 득실",
             "round_diff": "라운드 득실",
             "head_to_head": "상대 전적",
             "h2h_map_diff": "상대 전적 맵 득실차 (2팀)",
+            "h2h_game_diff": "상대 전적 게임 득실차 (2팀)",
             "h2h_round_diff": "상대 전적 라운드 득실차 (2팀)",
             "seed": "시드"
           }
@@ -3931,16 +4063,22 @@
         "pointsConfig": {
           "title": "포인트",
           "hint": "이기거나 진 각 경기, 맵, 라운드가 팀에 포인트를 줍니다. 라운드는 점수가 기록된 맵에서만 계산됩니다. 사용하면 포인트가 경기 전적과 타이브레이커보다 먼저 팀 순위를 정합니다.",
+          "hintGames": "이기거나 진 각 경기와 게임이 팀에 포인트를 줍니다. 사용하면 포인트가 경기 전적과 타이브레이커보다 먼저 팀 순위를 정합니다.",
           "enable": "포인트 사용",
           "scopes": {
             "match": "경기",
             "map": "각 맵",
+            "game": "각 게임",
             "round": "각 라운드",
             "forfeit": "몰수 (다른 항목 대체)"
           },
           "win": "승리",
           "loss": "패배"
-        }
+        },
+        "fieldMatchScope": "팀이 다른 그룹의 팀과도 경기함 (같은 설정을 가진 다른 그룹의 경기 집계)",
+        "fieldMatchScopeHint": "이 그룹에 배정된 팀만 표시되며, 이 스테이지에서 같은 설정을 가진 그룹에서 치른 해당 팀의 완료된 경기가 집계됩니다. 이 설정이 없는 그룹의 경기는 집계되지 않습니다. 저장 후 팀을 배정하세요. 라운드 로빈 전용.",
+        "matchScopeNoTeams": "이 그룹에 배정된 팀이 아직 없어 표가 비어 있습니다. 먼저 팀을 배정하세요.",
+        "matchScopeSwitchWarning": "스테이지 범위로 전환하면 배정된 팀만 표시됩니다. 이 그룹에서 경기했지만 배정되지 않은 팀은 배정하기 전까지 표에서 사라집니다."
       },
       "bracketPage": {
         "title": "브래킷 관리",
@@ -4347,6 +4485,48 @@
               "relay": "Riot이 이 경기를 반환하지 않았습니다. 나중에 다시 시도하세요. 기존 데이터는 유지되었습니다.",
               "other": "가져오기를 실행할 수 없었습니다. 맵 페이지를 확인하세요. 기존 데이터는 유지되었습니다."
             }
+          },
+          "league": {
+            "description": "이 시리즈의 Liquipedia '{{Match}}'를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+            "placeholder": "'{{Match|bestof=3|opponent1={{TeamOpponent|Team A}}|opponent2={{TeamOpponent|Team B}}|map1={{Map|team1side=blue|winner=1}}}}'",
+            "importConfirm": "이 위키코드를 가져올까요? 아직 비어 있는 게임과 드래프트가 채워집니다. Riot과 Leaguepedia 데이터, 수동으로 편집한 드래프트, 이미 입력된 내용은 유지됩니다.",
+            "importSuccess": "위키코드를 가져왔습니다: 게임과 드래프트가 업데이트되었습니다.",
+            "liquipediaHint": "상대 팀(opponent1, opponent2)도 팀의 Liquipedia 이름으로 저장됩니다.",
+            "error": {
+              "missingTeams": "게임을 가져오기 전에 두 팀이 모두 설정되어 있어야 합니다.",
+              "oneMatchOnly": "위키코드에는 '{{Match}}'가 정확히 하나만 있어야 합니다.",
+              "noGames": "이 위키코드에서 진행된 게임을 찾을 수 없습니다.",
+              "unknownChampions": "위키코드에 알 수 없는 챔피언이 있습니다: {names}. 아무것도 가져오지 않았습니다.",
+              "duplicateChampion": "{order}번 게임: {champion}이(가) 드래프트에 두 번 이상 나타납니다. 아무것도 가져오지 않았습니다.",
+              "championsUnavailable": "이 패치의 챔피언 목록을 현재 사용할 수 없어 이름을 확인할 수 없습니다. 아무것도 가져오지 않았습니다. 나중에 다시 시도하세요."
+            },
+            "results": {
+              "forfeit": "위키코드가 기권을 나타냅니다. 아무것도 가져오지 않았습니다. 매치의 기권은 직접 설정하세요.",
+              "gameLabel": "{order}번 게임",
+              "created": "위키코드에서 게임을 만들었습니다.",
+              "filled": "채움: {fields}.",
+              "differs": "위키코드와 달라 유지함: {fields}.",
+              "field": {
+                "winner": "승자",
+                "duration": "경기 시간"
+              },
+              "draft": {
+                "written": "드래프트를 가져왔습니다.",
+                "kept": {
+                  "editedByHand": "드래프트 유지: 수동으로 편집되었습니다.",
+                  "riotData": "드래프트 유지: 이 게임에는 Riot 데이터가 있습니다.",
+                  "leaguepediaData": "드래프트 유지: 이 게임에는 Leaguepedia 데이터가 있습니다.",
+                  "existingDraft": "드래프트 유지: 이 게임에는 이미 드래프트가 있습니다."
+                },
+                "none": {
+                  "noDraft": "위키코드에 드래프트가 없습니다.",
+                  "noSide": "드래프트를 가져오지 않았습니다: 위키코드에 1팀이 어느 진영이었는지 나와 있지 않습니다."
+                }
+              },
+              "patchSet": "매치에 패치 {patch}을(를) 설정했습니다.",
+              "bestOfDiffers": "위키코드는 Best of {bestOf}이지만 매치는 자체 값을 유지합니다.",
+              "firstPickAssumed": "위키코드에 퍼스트 픽 팀이 나와 있지 않아 블루 진영으로 가정했습니다. 드래프트를 확인하세요."
+            }
           }
         },
         "veto": {
@@ -4513,7 +4693,294 @@
             "mergeMapNotFound": "이 맵은 더 이상 존재하지 않습니다."
           }
         },
-        "liquipediaImportButton": "Liquipedia 경기 가져오기"
+        "draft": {
+          "metaTitle": "드래프트",
+          "title": "{order}번 게임 드래프트",
+          "backToMatch": "매치로 돌아가기",
+          "description": "이 게임의 밴과 픽 순서입니다. 사용되지 않은 단계는 비워 두세요.",
+          "differsWarning": "가져온 데이터가 저장된 드래프트와 다릅니다. 다시 가져오기에서 다른 챔피언이 발견되었습니다. 내용을 확인하고 저장하면 현재 드래프트가 유지됩니다.",
+          "blueSide": "블루 진영",
+          "blueLockedHint": "가져오기에서 정해집니다 (Riot의 블루 팀).",
+          "firstPickLockedHint": "가져오기로 설정됩니다 (첫 밴을 한 진영).",
+          "firstPick": "퍼스트 픽",
+          "phase": {
+            "ban1": "밴 1 단계",
+            "pick1": "픽 1 단계",
+            "ban2": "밴 2 단계",
+            "pick2": "픽 2 단계"
+          },
+          "side": {
+            "blue": "블루",
+            "red": "레드"
+          },
+          "type": {
+            "ban": "밴",
+            "pick": "픽"
+          },
+          "noChampion": "챔피언 없음",
+          "searchPlaceholder": "챔피언 검색",
+          "noResults": "일치하는 챔피언이 없습니다",
+          "unplacedTitle": "아직 배치되지 않은 픽",
+          "save": "드래프트 저장",
+          "saving": "저장 중…",
+          "saved": "드래프트를 저장했습니다",
+          "error": {
+            "notFound": "이 게임을 찾을 수 없습니다.",
+            "entrantsUnset": "먼저 매치의 두 팀을 설정해야 합니다.",
+            "blueNotAnEntrant": "블루 진영은 매치의 두 팀 중 하나여야 합니다.",
+            "blueLocked": "가져온 게임의 블루 진영은 가져오기에서 정해집니다.",
+            "firstPickLocked": "가져온 게임의 첫 픽은 가져오기로 설정됩니다.",
+            "invalidFirstPick": "퍼스트 픽은 블루 또는 레드여야 합니다.",
+            "invalidStep": "{step} 단계가 없거나 두 번 지정되었습니다.",
+            "unknownChampion": "{championName}은(는) 챔피언 목록에 없습니다.",
+            "duplicateChampion": "{championName}이(가) 드래프트에 두 번 이상 있습니다.",
+            "invalidSide": "아직 배치되지 않은 픽은 블루 또는 레드 진영이어야 합니다.",
+            "championsUnavailable": "이 패치의 챔피언 목록을 현재 사용할 수 없습니다. 나중에 다시 시도하세요.",
+            "invalidDraft": "전송된 드래프트가 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도해 주세요."
+          }
+        },
+        "games": {
+          "heading": "게임",
+          "description": "이 시리즈에서 진행된 게임을 순서대로 표시합니다.",
+          "empty": "아직 게임이 없습니다.",
+          "gameLabel": "게임 {order}",
+          "winnerLabel": "승자: {name}",
+          "noWinner": "아직 승자가 없습니다",
+          "finished": "완료",
+          "notFinished": "미완료",
+          "draftButton": "드래프트",
+          "draftDiffers": "가져온 데이터가 저장된 드래프트와 다릅니다",
+          "forfeit": "기권",
+          "cancel": "취소",
+          "save": "저장",
+          "saving": "저장 중…",
+          "createButton": "게임 추가",
+          "createTitle": "게임 추가",
+          "editTitle": "게임 수정",
+          "dialogDescription": "이 시리즈의 게임 한 판 결과를 입력합니다.",
+          "editButton": "수정",
+          "deleteButton": "삭제",
+          "deleteTitle": "게임 삭제",
+          "deleteConfirm": "{order} 게임을 삭제할까요? 나머지 게임으로 매치 점수를 다시 계산합니다.",
+          "deleteError": "게임을 삭제하지 못했습니다.",
+          "deleteSuccess": "게임을 삭제했습니다.",
+          "saveError": "게임을 저장하지 못했습니다.",
+          "saveSuccess": "게임을 저장했습니다.",
+          "fieldOrder": "순서",
+          "fieldWinner": "승자",
+          "fieldWinnerNone": "아직 승자가 없습니다",
+          "fieldCompleted": "완료",
+          "fieldForfeit": "기권",
+          "fieldNote": "메모",
+          "fieldError": {
+            "invalid": "올바른 값을 입력하세요.",
+            "tooLong": "너무 깁니다.",
+            "duplicateOrder": "이 순서는 이미 다른 게임에서 사용 중입니다.",
+            "winnerRequired": "완료된 게임에는 승자가 필요합니다.",
+            "notAnEntrant": "승자는 두 팀 중 하나여야 합니다.",
+            "notCompleted": "승자를 지정하려면 게임을 완료로 표시하세요.",
+            "invalidMatchId": "EUW1_6123456789 형식을 사용하세요: 플랫폼 코드, 밑줄, 그다음 매치 번호.",
+            "duplicateMatchId": "다른 게임이 이 Riot 매치 ID를 이미 사용 중입니다."
+          },
+          "fieldApiMatchId": "Riot 매치 ID",
+          "fieldApiMatchIdHint": "예: EUW1_6123456789. 플랫폼은 이 값에서 읽습니다.",
+          "find": {
+            "open": "게임 찾기",
+            "openLabel": "Riot에서 게임 찾기",
+            "openHint": "토너먼트 코드로 진행된 게임을 검색합니다. 토너먼트 클라이언트에서 진행된 게임에는 사용할 수 없습니다.",
+            "title": "게임 찾기",
+            "description": "선수들의 매치 기록에서 토너먼트 코드로 진행된 게임을 찾습니다.",
+            "relayWarning": "'게임 찾기'는 Riot 릴레이에 작동하는 League of Legends API 키가 있어야 동작합니다. 개발용 키는 24시간 후 만료됩니다.",
+            "teamAccounts": "{name}: 선수 {total}명 중 {count}명이 Riot 계정을 가지고 있습니다",
+            "regionInferred": "대회 지역에 따라 {cluster}에서 검색합니다.",
+            "regionLabel": "검색 지역",
+            "regionAsk": "대회 지역으로는 게임이 진행된 곳을 알 수 없습니다. 지역을 선택하세요.",
+            "regionUnsupported": "중국 서버의 게임은 검색할 수 없습니다.",
+            "windowStart": "시작",
+            "windowEnd": "종료",
+            "windowHint": "예정 시간 1시간 전부터 4시간 후까지입니다. 시리즈가 다른 시간에 진행되었다면 변경하세요.",
+            "noSchedule": "이 시리즈에는 예정 시간이 없습니다. 시간 범위를 입력하세요.",
+            "riotIdLabel": "Riot ID",
+            "riotIdPlaceholder": "name#tag",
+            "riotIdHint": "선수의 계정(예: 부계정)입니다. 저장하는 게임에 나타날 때만 저장됩니다.",
+            "riotIdRequired": "이 지역에 Riot 계정이 있는 팀이 아직 없습니다. Riot ID를 하나 이상 입력하세요.",
+            "addRiotId": "추가",
+            "search": "검색",
+            "searching": "검색 중…",
+            "resultsCount": "{count, plural, other {게임 #개를 찾았습니다}}",
+            "minutes": "{minutes}분",
+            "sideSummary": "{team} · {players}명 중 {known}명 확인됨",
+            "sideUnknown": "알 수 없는 팀",
+            "badgeBoth": "두 팀 모두 찾음",
+            "badgeOne": "{name}만 찾았습니다. 상대를 확인하세요",
+            "badgeNames": "이름 {total}개 중 {count}개가 {name}와(과) 일치",
+            "badgeImported": "게임 {order}(으)로 이미 가져옴",
+            "badgeImportedElsewhere": "다른 시리즈에서 이미 가져옴",
+            "badgeRemake": "리메이크?",
+            "badgeRiotIds": "입력한 Riot ID {total}개 중 {count}개 포함",
+            "use": "이 게임 사용",
+            "emptyTitle": "게임을 찾지 못했습니다. 가능한 원인:",
+            "emptyNoCode": "로비에 토너먼트 코드가 없었습니다. 매치 ID를 붙여넣거나 Leaguepedia를 사용하세요.",
+            "emptyOtherAccount": "선수가 다른 계정을 사용했습니다. 다른 Riot ID를 시도해 보세요.",
+            "emptyWindow": "시간 범위가 맞지 않았습니다. 범위를 넓히세요.",
+            "emptyRegion": "게임이 다른 지역에서 진행되었습니다. 그 지역에서 검색하세요.",
+            "error": {
+              "windowInvalid": "시간 범위는 최대 48시간입니다.",
+              "generic": "검색을 실행할 수 없습니다."
+            },
+            "incompleteRateLimited": "Riot이 조회 {total}건 중 {failed}건을 제한하여 이 목록이 불완전하거나 다른 시리즈의 경기를 포함할 수 있습니다. 1분 후 다시 검색하세요.",
+            "incomplete": "조회 {total}건 중 {failed}건이 실패하여 이 목록이 불완전하거나 다른 시리즈의 경기를 포함할 수 있습니다. 다시 검색하세요."
+          },
+          "gameImport": {
+            "label": "Leaguepedia 경기",
+            "none": "없음",
+            "noData": "데이터 없음",
+            "gameNumber": "{number}번째 경기",
+            "fetch": "Leaguepedia에서 가져오기",
+            "fetching": "가져오는 중…",
+            "renew": "갱신",
+            "reprocess": "다시 처리",
+            "success": "Leaguepedia에서 경기를 저장했습니다",
+            "error": {
+              "invalidMapping": "전송된 선수 연결 정보가 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도하세요.",
+              "handleTooLong": "새 선수 이름이 너무 깁니다(최대 {max}자).",
+              "noData": "이 경기는 Leaguepedia에 V5 데이터가 없습니다.",
+              "notInBucket": "이 경기는 아직 저장소에 없습니다. 먼저 가져오세요.",
+              "pageInvalid": "이 경기의 Leaguepedia 페이지는 올바른 경기 데이터가 아닙니다.",
+              "fetch": "Leaguepedia를 읽을 수 없습니다. 나중에 다시 시도하세요.",
+              "missingConfig": "이 서버에는 Leaguepedia 봇 로그인이 설정되어 있지 않습니다.",
+              "sidesUnresolved": "이 경기의 두 팀이 시리즈의 두 참가자와 일치하지 않습니다.",
+              "missingPlayers": "{count, plural, other {#명의 선수가 아직 사람과 연결되지 않았습니다}}",
+              "invalidUpload": "경기 데이터가 가져오기 검사를 통과하지 못했습니다.",
+              "storeFailed": "경기를 저장할 수 없습니다.",
+              "invalidOrder": "경기 번호는 1 이상의 정수여야 합니다.",
+              "accountConflict": "이 Riot 계정은 이미 다른 사람에게 연결되어 있습니다.",
+              "sidesInvalid": "블루와 레드에는 서로 다른 참가자 두 명을 선택하세요.",
+              "roleInvalid": "변경 사항의 역할이 올바르지 않습니다.",
+              "orderTaken": "이 시리즈의 {order}번째 경기는 이미 다른 데이터로 저장되어 있습니다. 다른 경기 번호를 선택하고 다시 저장하세요.",
+              "dataDragonUnavailable": "챔피언 이름을 지금은 가져올 수 없습니다. 나중에 다시 시도하세요.",
+              "unknownChampions": "알 수 없는 챔피언 ID: {ids}",
+              "storageUnavailable": "LoL 가져오기 저장소에 연결할 수 없습니다. 설정을 확인한 뒤 다시 시도하세요.",
+              "duplicateAccount": "같은 Riot 계정이 두 번 연결되었습니다. 계정마다 한 번만 연결하세요.",
+              "tournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되었습니다. 대신 Leaguepedia에서 가져오세요.",
+              "duplicatePerson": "이 게임의 두 선수가 같은 사람과 연결되어 있습니다. 각 선수를 서로 다른 사람과 연결하세요.",
+              "matchIdMismatch": "불러온 게임 데이터가 요청한 매치의 것이 아닙니다. 아무것도 저장되지 않았습니다.",
+              "invalidGame": "가져올 게임이 올바르지 않습니다. Leaguepedia 게임을 선택하거나 Riot 매치 ID를 입력해 주세요."
+            },
+            "searchPlaceholder": "팀, 경기 또는 날짜로 검색",
+            "noResults": "일치하는 경기가 없습니다",
+            "previewTitle": "경기 확인",
+            "previewDescription": "각 진영의 참가자를 고르고, 아직 연결되지 않은 선수를 모두 연결하세요.",
+            "back": "뒤로",
+            "saveGame": "경기 저장",
+            "sideBlue": "블루",
+            "sideRed": "레드",
+            "sidesTitle": "진영",
+            "blueSide": "블루 진영",
+            "redSide": "레드 진영",
+            "chooseEntrant": "참가자 선택",
+            "suggestedPlayers": "연결된 선수 기준 추천",
+            "suggestedNames": "팀 이름 기준 추천",
+            "winnerLabel": "승자: {name}",
+            "noWinner": "승자 없음",
+            "lengthLabel": "경기 시간: {minutes}분",
+            "playersTitle": "선수",
+            "notLinked": "아직 연결되지 않음",
+            "linkExisting": "기존 사람에 연결",
+            "createNew": "새로 만들기",
+            "newHandle": "새 사람의 이름",
+            "unresolvedHint": "아직 연결되지 않은 선수마다 사람을 연결하거나 새로 만드세요.",
+            "suggestedPeople": "팀 추천:",
+            "realmLive": "라이브",
+            "realmTournament": "토너먼트 렐름",
+            "accountNote": "다른 계정을 추가합니다({realm}, {platform}). {handle}에게는 이미 {existing}이(가) 있습니다.",
+            "roleLabel": "역할",
+            "roleNone": "역할 없음",
+            "positionRole": "맵 위치상 {role}",
+            "alreadyStoredHere": "이 시리즈의 {order}번째 경기로 저장됨",
+            "alreadyStoredElsewhere": "다른 시리즈에 저장됨",
+            "refreshGames": "게임 목록 새로고침",
+            "refreshCooldown": "1시간 이내에 새로고침했습니다. 나중에 다시 시도하세요.",
+            "refreshed": "게임 목록을 새로고침했습니다 ({count}개)",
+            "refreshError": "게임 목록을 새로고침하지 못했습니다. 나중에 다시 시도하세요.",
+            "riotFetch": "Riot에서 가져오기",
+            "riotSuccess": "Riot에서 게임을 저장했습니다",
+            "riotTournamentRealm": "이 게임은 토너먼트 렐름에서 플레이되어 Riot API에서 가져올 수 없습니다."
+          },
+          "lineupButton": "출전 명단"
+        },
+        "liquipediaImportButton": "Liquipedia 경기 가져오기",
+        "lineup": {
+          "metaTitle": "출전 명단",
+          "backToMatch": "경기로 돌아가기",
+          "title": "{order}세트 출전 명단",
+          "description": "이 게임에 누가 어느 라인에서 어떤 챔피언으로 출전했는지. Riot이나 Leaguepedia 데이터가 없는 게임용이며, 나중에 가져오기를 하면 대체됩니다.",
+          "importedHint": "이 게임에는 Riot 또는 Leaguepedia 데이터가 있어 선수는 가져온 데이터에서 옵니다.",
+          "fromPreviousGame": "시리즈의 이전 게임에서 채웠습니다. 선수를 확인하고 챔피언을 추가한 뒤 저장하세요.",
+          "withStats": "스코어보드 추가",
+          "withStatsHint": "열 명 모두의 킬, 데스, 어시스트, CS와 게임 시간. 골드, 피해량, 시야는 비워 둘 수 있습니다. 스코어보드가 없으면 게임은 출전 경기 수, 승률, 챔피언에는 반영되지만 평균에는 반영되지 않습니다.",
+          "duration": "게임 시간 (m:ss)",
+          "draftPicks": "드래프트 픽: {champions}",
+          "player": "선수",
+          "pickPlayer": "선수 선택",
+          "searchPlayer": "선수 검색…",
+          "newPlayer": "+ 새 선수",
+          "newPlayerHandle": "새 선수 이름",
+          "newPlayerTag": "(신규)",
+          "clearPlayer": "선수 제거",
+          "champion": "챔피언",
+          "unknownChampion": "알 수 없음",
+          "searchChampion": "챔피언 검색…",
+          "noResults": "결과가 없습니다.",
+          "stat": {
+            "kills": "킬",
+            "deaths": "데스",
+            "assists": "어시스트",
+            "cs": "CS",
+            "gold": "골드",
+            "damage": "피해량",
+            "vision": "시야"
+          },
+          "save": "출전 명단 저장",
+          "saving": "저장 중…",
+          "saved": "출전 명단을 저장했습니다.",
+          "error": {
+            "invalidInput": "전송된 라인업이 올바르지 않습니다. 페이지를 새로고침한 후 다시 시도하세요.",
+            "notFound": "이 게임은 경기에 속하지 않습니다.",
+            "entrantsUnset": "먼저 경기의 두 팀을 모두 설정해야 합니다.",
+            "importedGame": "이 게임에는 Riot 또는 Leaguepedia 데이터가 있어 출전 명단을 직접 바꿀 수 없습니다.",
+            "unknownPerson": "선수 중 한 명이 더 이상 존재하지 않습니다.",
+            "problem": {
+              "notAnEntrant": "이 경기에 없는 팀의 선수가 있습니다.",
+              "invalidLane": "올바르지 않은 라인이 있습니다.",
+              "duplicateLane": "한 팀에 {lane}이(가) 두 번 입력되었습니다.",
+              "duplicatePerson": "출전 명단에 같은 선수가 두 번 있습니다.",
+              "invalidHandle": "새 선수에는 이름이 필요합니다.",
+              "unknownChampion": "{championName}은(는) 이 패치의 챔피언이 아닙니다.",
+              "duplicateChampion": "{championName}이(가) 두 번 선택되었습니다.",
+              "championsUnavailable": "이 패치의 챔피언을 불러오지 못했습니다. 나중에 다시 시도하거나 챔피언을 비워 두세요.",
+              "invalidStat": "0부터 {max}까지의 정수를 입력하세요.",
+              "durationRequired": "스코어보드에는 게임 시간(m:ss)이 필요합니다.",
+              "playerMissing": "스코어보드에는 두 팀의 모든 라인에 선수가 필요합니다.",
+              "statMissing": "스코어보드에 필요합니다.",
+              "buildUnavailable": "이 패치의 소환사 주문, 룬, 아이템을 불러오지 못했습니다. 나중에 다시 시도하거나 빌드를 비워 두세요.",
+              "unknownBuildPart": "이 패치에 없습니다.",
+              "duplicateSummoner": "이미 다른 소환사 주문입니다.",
+              "secondaryTreeOfKeystone": "핵심 룬과 같은 계열입니다. 다른 계열을 선택하세요."
+            },
+            "createNotAllowed": "선수를 만들 권한이 없습니다. 기존 선수를 선택하세요."
+          },
+          "build": "빌드",
+          "buildSet": "입력됨",
+          "buildUnavailable": "이 패치의 소환사 주문, 룬, 아이템을 불러오지 못했습니다. 나중에 다시 시도하세요.",
+          "summoner": "소환사 주문 {slot}",
+          "keystone": "핵심 룬",
+          "secondaryTree": "보조 룬",
+          "item": "아이템 {slot}",
+          "trinket": "장신구",
+          "empty": "없음",
+          "search": "검색…"
+        }
       },
       "liquipediaButton": "Liquipedia",
       "liquipedia": {
@@ -4790,8 +5257,43 @@
         "doneDescription": "가져오기가 끝났습니다.",
         "wikicodeLabel": "Liquipedia wikicode",
         "importingHint": "가져오는 중이며 Riot 데이터를 불러오고 있습니다. 잠시 걸릴 수 있습니다.",
-        "close": "닫기"
-      }
+        "close": "닫기",
+        "league": {
+          "dialogDescription": "매치의 위키코드를 붙여넣으세요. 게임과 드래프트는 아직 비어 있는 부분만 채워집니다.",
+          "importingHint": "가져오는 중입니다. 잠시 걸릴 수 있습니다.",
+          "legend": {
+            "partial": "선수 데이터나 드래프트가 없는 게임",
+            "done": "모든 게임에 선수 데이터와 드래프트 있음"
+          }
+        }
+      },
+      "activeFilterLabel": "활동",
+      "activeFilterAny": "모든 대회",
+      "activeFilterActive": "활성",
+      "activeFilterInactive": "비활성",
+      "leaguepedia": {
+        "title": "Leaguepedia 경기",
+        "description": "경기 목록은 기본 페이지와 그 아래의 모든 페이지에 대해 Leaguepedia의 Cargo 테이블에서 가져옵니다.",
+        "basePageLabel": "Leaguepedia 기본 페이지",
+        "basePagePlaceholder": "LoL Game Changers/2026 Season/Stage 4",
+        "basePageHint": "저장하면 Leaguepedia에서 경기를 읽습니다. 읽기에 실패하면 아무것도 저장되지 않습니다.",
+        "save": "저장하고 경기 가져오기",
+        "saving": "가져오는 중…",
+        "refresh": "Leaguepedia에서 새로고침",
+        "lastFetched": "마지막 가져오기 {date} · {count, plural, other {경기 #개}}",
+        "neverFetched": "아직 가져오지 않음",
+        "success": "{count, plural, other {경기 #개를 가져왔습니다}}",
+        "error": {
+          "gameClaimed": "이 게임들은 이미 다른 토너먼트에 속해 있어 여기서 연결할 수 없습니다.",
+          "invalidBasePage": "# < > [ ] | '{ }' 를 포함하지 않고, 앞뒤에 / 가 없는 페이지 이름을 사용하세요.",
+          "notFound": "대회를 찾을 수 없습니다.",
+          "notLinked": "먼저 기본 페이지를 저장하세요.",
+          "cooldown": "경기 목록은 1시간 이내에 읽었습니다. 나중에 다시 시도하세요.",
+          "missingConfig": "이 서버에는 Leaguepedia 봇 로그인이 설정되어 있지 않습니다.",
+          "fetch": "Leaguepedia를 읽을 수 없습니다. 나중에 다시 시도하세요."
+        }
+      },
+      "leaguepediaButton": "Leaguepedia"
     },
     "reports": {
       "title": "신고",
@@ -5238,6 +5740,9 @@
       "copyOverlay": "오버레이 링크",
       "overlayCopied": "오버레이 링크가 복사되었습니다. 브라우저 소스로 추가하세요."
     },
+    "personPicker": {
+      "notInGame": "아직 {game}에 없음"
+    },
     "rosterSource": {
       "placeholder": "발표 링크",
       "error": {
@@ -5483,7 +5988,6 @@
         "staff_change": "스태프 변경",
         "tryouts": "Tryouts",
         "not_enough_info": "정보 부족",
-
         "wrong_game": "다른 게임",
         "noise": "잡음",
         "match_promo": "경기 홍보",
@@ -5526,7 +6030,6 @@
         "explanation": "설명",
         "explanationPlaceholder": "로스터와 관련이 없는 이유는?",
         "confirm": "확인",
-
         "pickTopic": "무엇에 관한 내용인가요?"
       },
       "reviewed": {
@@ -5996,7 +6499,8 @@
       "level": {
         "tournament": "대회",
         "match": "경기",
-        "map": "맵"
+        "map": "맵",
+        "game": "게임"
       },
       "matchSearchPlaceholder": "경기 검색…",
       "mapSearchPlaceholder": "맵 검색…",
@@ -6015,7 +6519,10 @@
       "targetMap": "{map}, {label} ({tournament})",
       "openMatches": "경기",
       "openMaps": "맵",
-      "goBack": "뒤로 가기"
+      "goBack": "뒤로 가기",
+      "gameEmpty": "이 매치에 게임이 없습니다.",
+      "gameSearchPlaceholder": "게임 검색…",
+      "openGames": "게임"
     },
     "streams": {
       "title": "스트림 채널",
@@ -6153,8 +6660,14 @@
         "matchNotInTournament": "이 매치는 선택한 토너먼트에 속하지 않습니다.",
         "mapNotFound": "맵을 찾을 수 없습니다.",
         "mapNotInMatch": "이 맵은 선택한 매치에 속하지 않습니다.",
-        "notFound": "VOD를 찾을 수 없습니다."
-      }
+        "notFound": "VOD를 찾을 수 없습니다.",
+        "gameNotFound": "게임을 찾을 수 없습니다.",
+        "gameNotInMatch": "이 게임은 선택한 매치에 속하지 않습니다."
+      },
+      "scopeGame": "특정 게임",
+      "gameLabel": "게임",
+      "gamePlaceholder": "게임 선택…",
+      "gameLoading": "불러오는 중…"
     },
     "apiKeys": {
       "title": "API 키",
@@ -7427,7 +7940,8 @@
       "state": {
         "linkedToYou": "이 프로필은 이미 내 계정에 연결되어 있습니다.",
         "linkedToOther": "이 프로필은 이미 다른 계정에 연결되어 있습니다. 오류라고 생각되면 스태프에게 문의하세요.",
-        "pending": "검토 대기 중인 계정 연결 요청이 이미 있습니다."
+        "pending": "검토 대기 중인 계정 연결 요청이 이미 있습니다.",
+        "linkedToAnotherPerson": "계정이 이미 다른 선수에 연결되어 있습니다. 두 프로필이 같은 사람이라면 스태프에게 병합을 요청하세요."
       }
     },
     "error": {
@@ -7458,6 +7972,7 @@
       "invalidType": "JPG, PNG 또는 WebP 사진만 사용할 수 있습니다.",
       "tooSmall": "사진이 너무 작습니다(짧은 변 기준 최소 400 px).",
       "invalidDiscordId": "올바른 Discord 사용자 ID(17~20자리) 또는 서버 초대(discord.gg/...)를 입력하세요.",
+      "userLinkOtherPerson": "계정이 이미 다른 선수에 연결되어 있습니다. 두 프로필이 같은 사람이라면 스태프에게 병합을 요청하세요.",
       "sourceTooLong": "이 링크가 너무 깁니다(최대 500자).",
       "invalidSource": "이 옵션은 여기서 사용할 수 없습니다.",
       "leftSourceRequiresLeft": "출처를 설정하려면 멤버가 탈퇴로 표시되어 있어야 합니다."
@@ -7533,6 +8048,15 @@
     "tabPickem": "Pick'em",
     "tabStats": "통계",
     "tabMaps": "맵",
+    "tabChampions": "챔피언",
+    "championsEmpty": "아직 진행된 경기가 없습니다.",
+    "championsRolesColumn": "포지션",
+    "championsRoleBansNote": "밴과 참여율은 모든 포지션을 집계합니다.",
+    "championsInsightMostPicked": "최다 픽",
+    "championsInsightMostBanned": "최다 밴",
+    "championsInsightHighestPresence": "최고 참여율",
+    "championsInsightHighestWinRate": "최고 승률",
+    "championsInsightHighestKda": "최고 KDA",
     "tabProduction": "프로덕션",
     "productionTitle": "{tournament} · 프로덕션",
     "statsGroupByLabel": "그룹 기준",
@@ -7567,6 +8091,15 @@
     "statsFilterAgentAll": "모든 요원",
     "statsFilterMap": "맵",
     "statsFilterMapAll": "모든 맵",
+    "statsChampionColumn": "챔피언",
+    "statsFilterChampion": "챔피언",
+    "statsFilterChampionAll": "모든 챔피언",
+    "statsFilterChampionSearch": "챔피언 검색…",
+    "statsFilterChampionNoResult": "챔피언을 찾을 수 없습니다",
+    "statsFilterRole": "포지션",
+    "statsFilterRoleAll": "모든 포지션",
+    "statsFilterPatch": "패치",
+    "statsFilterPatchAll": "모든 패치",
     "statsFilterStartDate": "시작일",
     "statsFilterEndDate": "종료일",
     "statsFilterSubmit": "필터 적용",
@@ -7585,6 +8118,22 @@
     "pageOf": "{total} 중 {page} 페이지",
     "statsColumns": {
       "played": "맵 수",
+      "playedGames": "게임",
+      "winRate": "승률",
+      "picks": "픽",
+      "bans": "밴",
+      "presence": "참여율",
+      "kp": "KP",
+      "csPerMinute": "CS/min",
+      "goldPerMinute": "Gold/min",
+      "damagePerMinute": "Damage/min",
+      "visionPerMinute": "Vision/min",
+      "goldDiff10": "Gold diff @10",
+      "goldDiff15": "Gold diff @15",
+      "xpDiff10": "XP diff @10",
+      "xpDiff15": "XP diff @15",
+      "csDiff10": "CS diff @10",
+      "csDiff15": "CS diff @15",
       "roundsPlayed": "라운드",
       "rating": "레이팅",
       "acs": "ACS",
@@ -7628,7 +8177,8 @@
     "mapsPickRatesShowMore": "전체 보기",
     "mapsPickRatesShowLess": "간단히 보기",
     "factOrganizer": "주최자",
-    "vs": "vs"
+    "vs": "vs",
+    "standingsGames": "게임"
   },
   "pickemPage": {
     "heading": "Pick'em",
@@ -7842,6 +8392,10 @@
     "text": "이 페이지의 일부 정보는 Liquipedia에서 가져왔습니다.",
     "link": "원문 보기"
   },
+  "leaguepediaSource": {
+    "text": "이 페이지의 일부 게임 데이터는 Leaguepedia에서 가져왔습니다 (CC BY-SA). 원문 페이지:",
+    "game": "게임 {order}"
+  },
   "matchLiquipedia": {
     "metaTitle": "Liquipedia wikicode",
     "title": "Liquipedia wikicode",
@@ -7886,7 +8440,8 @@
     "copied": "복사됨",
     "copyError": "이미지를 복사하지 못했습니다. 대신 다운로드해 주세요.",
     "exporting": "생성 중",
-    "exportError": "이미지를 생성하지 못했습니다. 다시 시도해 주세요."
+    "exportError": "이미지를 생성하지 못했습니다. 다시 시도해 주세요.",
+    "descriptionGames": "PNG 이미지 (너비 {width} px), 공유할 준비가 되었습니다. 모든 게임 또는 한 게임을 선택하세요."
   },
   "share": {
     "button": "공유",
@@ -8009,6 +8564,23 @@
       "rateLimited": "요청이 너무 많습니다. 잠시 기다려 주세요.",
       "invalidRequest": "올바르지 않은 요청입니다."
     }
+  },
+  "game": {
+    "switcherLabel": "게임",
+    "valorant": "VALORANT",
+    "lol": "League of Legends",
+    "notPublicBadge": "비공개",
+    "previewBanner": "{game}은(는) 아직 공개되지 않았습니다. 관리자만 이 페이지를 볼 수 있습니다."
+  },
+  "lanes": {
+    "TOP": "탑",
+    "JUNGLE": "정글",
+    "MIDDLE": "미드",
+    "BOTTOM": "원딜",
+    "UTILITY": "서포터",
+    "label": "라인",
+    "fromGames": "경기 기준:",
+    "invalid": "다섯 개의 라인만 선택할 수 있습니다."
   },
   "liquipediaHub": {
     "title": "Liquipedia",
