@@ -7,17 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://gc-stats.app/api/{game}",
-      "variables": {
-        "game": {
-          "default": "valorant",
-          "enum": [
-            "valorant",
-            "lol"
-          ],
-          "description": "Game the data belongs to. Maps, stats and veto endpoints only exist for valorant."
-        }
-      }
+      "url": "https://gc-stats.app/api"
     }
   ],
   "components": {
